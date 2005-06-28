@@ -33,7 +33,7 @@
 
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     final ImcmsServices service = Imcms.getServices();
-    final DocumentMapper documentMapper = service.getDocumentMapper();
+    final DefaultDocumentMapper documentMapper = service.getDefaultDocumentMapper();
     final CategoryMapper categoryMapper = service.getCategoryMapper();
 
     DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
@@ -106,8 +106,8 @@ function checkFocus() {
  ******************************************************************************************* */
 
 %>
-<table border="0" cellspacing="0" cellpadding="0">
 <form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentPageFlowDispatcher">
+<table border="0" cellspacing="0" cellpadding="0">
 <tr>
 	<td><input type="submit" name="<%= PageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2001 ?>"></td>
 	<td>&nbsp;</td>
@@ -581,8 +581,8 @@ function checkFocus() {
 <tr>
 	<td>#gui_hr( "blue" )</td>
 </tr>
-</form>
 </table>
+</form>
 #gui_bottom()
 #gui_outer_end()
 </vel:velocity>

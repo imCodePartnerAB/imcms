@@ -6,7 +6,7 @@ import imcode.server.MockImcmsServices;
 import imcode.server.Config;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.RoleDomainObject;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentId;
 import com.imcode.imcms.mapping.DatabaseDocumentGetter;
@@ -28,7 +28,7 @@ public class TestDateTextFieldTextDocumentComparator extends TestCase {
         internalUser.addRole( RoleDomainObject.SUPERADMIN );
         contentManagementSystem.setCurrentInternalUser( internalUser );
         MockImcmsServices imcmsServices = new MockImcmsServices();
-        imcmsServices.setDocumentMapper( new DocumentMapper( imcmsServices, null, new DatabaseDocumentGetter(null, imcmsServices), null, null, null, new Config(), new CategoryMapper(null)) {
+        imcmsServices.setDocumentMapper( new DefaultDocumentMapper( imcmsServices, null, new DatabaseDocumentGetter(null, imcmsServices), null, null, null, new Config(), new CategoryMapper(null)) {
             public DocumentDomainObject getDocument( DocumentId metaId ) {
                 TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
                 textDocument.setId( metaId.intValue() );

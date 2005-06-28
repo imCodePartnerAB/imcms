@@ -1,7 +1,6 @@
 package imcode.util;
 
 import com.imcode.imcms.servlet.admin.AdminDoc;
-import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;

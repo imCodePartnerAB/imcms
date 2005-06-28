@@ -3,7 +3,7 @@ package com.imcode.imcms.servlet.superadmin;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -94,7 +94,7 @@ public class AdminDeleteDoc extends Administrator {
             }
 
             // Ok, Lets delete the meta id
-            DocumentMapper documentMapper = imcref.getDocumentMapper();
+            DefaultDocumentMapper documentMapper = imcref.getDefaultDocumentMapper();
             DocumentDomainObject document = documentMapper.getDocument( metaId ) ;
             documentMapper.deleteDocument( document, user);
             imcref.updateMainLog( "Document  " + "[" + document.getId() +

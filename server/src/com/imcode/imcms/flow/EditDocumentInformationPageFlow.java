@@ -6,7 +6,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.SectionDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -162,7 +162,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
                                                                     HttpServletRequest request ) {
 
         final ImcmsServices service = Imcms.getServices();
-        final DocumentMapper documentMapper = service.getDocumentMapper();
+        final DefaultDocumentMapper documentMapper = service.getDefaultDocumentMapper();
         final CategoryMapper categoryMapper = service.getCategoryMapper();
 
         String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE );

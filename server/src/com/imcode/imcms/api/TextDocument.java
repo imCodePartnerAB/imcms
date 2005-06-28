@@ -3,7 +3,7 @@ package com.imcode.imcms.api;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.DocumentReference;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
@@ -91,7 +91,7 @@ public class TextDocument extends Document {
         Transformer fromDomainToAPITransformer = new Transformer() {
             public Object transform(Object o) {
                 Integer tempMetaId = (Integer) o;
-                return DocumentService.wrapDocumentDomainObject(getDocumentMapper().getDocument(tempMetaId.intValue()), contentManagementSystem );
+                return DocumentService.wrapDocumentDomainObject(getDocumentGetter().getDocument(new DocumentId(tempMetaId.intValue())), contentManagementSystem );
             }
         };
 
@@ -101,8 +101,8 @@ public class TextDocument extends Document {
 
     }
 
-    private DocumentMapper getDocumentMapper() {
-        return contentManagementSystem.getInternal().getDocumentMapper() ;
+    private DocumentGetter getDocumentGetter() {
+        return contentManagementSystem.getInternal().getDefaultDocumentMapper() ;
     }
 
     private SortedMap filterAndConvertValues(Map map, Predicate predicate, Transformer transformer) {
@@ -169,7 +169,7 @@ public class TextDocument extends Document {
     public Document getInclude(int includeIndexInDocument) {
         Integer includedDocumentId = getInternalTextDocument().getIncludedDocumentId(includeIndexInDocument);
         if (null != includedDocumentId) {
-            DocumentDomainObject includedDocument = getDocumentMapper().getDocument(includedDocumentId.intValue());
+            DocumentDomainObject includedDocument = getDocumentGetter().getDocument(new DocumentId(includedDocumentId.intValue()));
             if (null != includedDocument) {
                 return DocumentService.wrapDocumentDomainObject(includedDocument, contentManagementSystem );
             }
@@ -334,13 +334,11 @@ public class TextDocument extends Document {
          */
         public final static int SORT_BY_TREE_ORDER_DESCENDING = imcode.server.document.textdocument.MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER;
 
-        private final TextDocument textDocument;
         private final TextDocumentDomainObject internalTextDocument;
         private final int menuIndex;
         private final ContentManagementSystem contentManagementSystem;
 
         Menu(TextDocument document, int menuIndex) {
-            this.textDocument = document ;
             this.internalTextDocument = document.getInternalTextDocument();
             this.menuIndex = menuIndex;
             this.contentManagementSystem = document.getContentManagementSystem() ;
@@ -353,7 +351,7 @@ public class TextDocument extends Document {
          */
         public void addDocument(Document documentToAdd) {
             ImcmsServices internal = contentManagementSystem.getInternal();
-            DocumentMapper documentMapper = internal.getDocumentMapper();
+            DefaultDocumentMapper documentMapper = internal.getDefaultDocumentMapper();
             DocumentReference documentReference = documentMapper.getDocumentReference( documentMapper.getDocument(documentToAdd.getId()) );
             internalTextDocument.getMenu(menuIndex).addMenuItem(new MenuItemDomainObject(documentReference ));
         }

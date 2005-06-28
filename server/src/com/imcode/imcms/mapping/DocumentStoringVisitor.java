@@ -315,7 +315,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             database.executeUpdateQuery( sqlInsert, new String[]{""+ fileDocument.getId(), fileId, filename, fileDocumentFile.getMimeType(), fileDocumentFile.isCreatedAsImage() ? "1" : "0", isDefaultFile ? "1" : "0"} );
             saveFileDocumentFile( fileDocument.getId(), fileDocumentFile, fileId );
         }
-        DocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;
+        DefaultDocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;
     }
 
     private String truncateFilename(String filename, int length) {

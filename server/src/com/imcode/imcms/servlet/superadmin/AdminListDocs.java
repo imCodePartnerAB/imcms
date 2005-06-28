@@ -58,7 +58,7 @@ public class AdminListDocs extends Administrator {
             return;
         }
 
-        Map allDocumentTypeIdsAndNames = imcref.getDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage( user );
+        Map allDocumentTypeIdsAndNames = imcref.getDefaultDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage( user );
 
         // Lets generate the html page
         StringBuffer optionList = new StringBuffer();
@@ -244,7 +244,7 @@ public class AdminListDocs extends Administrator {
     private String getSelectedDocTypeNames( ImcmsServices imcref, int[] selectedDocTypeIds,
                                             UserDomainObject user ) {
         List selectedDocTypeNames = new ArrayList();
-        Map allDocTypes = imcref.getDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage( user );
+        Map allDocTypes = imcref.getDefaultDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage( user );
 
         for ( int i = 0; i < selectedDocTypeIds.length; i++ ) {
             int selectedDocTypeId = selectedDocTypeIds[i];

@@ -8,7 +8,7 @@
 
 ImcmsServices service = Imcms.getServices() ;
 
-SectionDomainObject[] sections = service.getDocumentMapper().getAllSections() ;
+SectionDomainObject[] sections = service.getDefaultDocumentMapper().getAllSections() ;
 
 %>
 <html>

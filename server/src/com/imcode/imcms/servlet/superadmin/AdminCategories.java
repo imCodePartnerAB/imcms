@@ -5,8 +5,8 @@ import com.imcode.imcms.servlet.admin.ImageBrowser;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
-import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
@@ -90,7 +90,7 @@ public class AdminCategories extends HttpServlet {
         } else if ( null != req.getParameter( PARAMETER_MODE__EDIT_CATEGORY ) ) {
             adminCategoriesPage = editCategory( req, res, adminCategoriesPage, categoryMapper );
         } else if ( req.getParameter( PARAMETER_MODE__DELETE_CATEGORY ) != null ) {
-            deleteCategory( category, categoryType, req, adminCategoriesPage, categoryMapper, service.getDocumentMapper() );
+            deleteCategory( category, categoryType, req, adminCategoriesPage, categoryMapper, service.getDefaultDocumentMapper() );
         } else if ( null != req.getParameter( PARAMETER_MODE__VIEW_CATEGORY ) ) {
             viewCategory( categoryType, category, req, adminCategoriesPage );
         }

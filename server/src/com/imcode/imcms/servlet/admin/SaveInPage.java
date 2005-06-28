@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
@@ -9,7 +8,6 @@ import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuExcept
 import imcode.server.user.UserDomainObject;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
-import imcode.util.ShouldNotBeThrownException;
 import org.apache.commons.lang.UnhandledException;
 
 import javax.servlet.ServletException;
@@ -22,6 +20,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.imcode.imcms.mapping.DocumentMapper;
+
 /**
  * Save data from editwindow.
  */
@@ -33,7 +33,7 @@ public class SaveInPage extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         ImcmsServices services = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        DocumentMapper documentMapper = services.getDocumentMapper();
+        DocumentMapper documentMapper = services.getDefaultDocumentMapper();
 
         int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument( documentId );

@@ -6,13 +6,13 @@
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
                  com.imcode.imcms.servlet.superadmin.DocumentReferences,
-                 imcode.util.Html"%>
+                 imcode.util.Html"%><%@ page import="com.imcode.imcms.mapping.DefaultDocumentMapper"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     if (!user.isSuperAdmin()) {
         return ;
     }
-    DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairs = (DocumentMapper.TextDocumentMenuIndexPair[])request.getAttribute( DocumentReferences.REQUEST_ATTRIBUTE__DOCUMENT_MENU_PAIRS ) ;
+    DefaultDocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairs = (DefaultDocumentMapper.TextDocumentMenuIndexPair[])request.getAttribute( DocumentReferences.REQUEST_ATTRIBUTE__DOCUMENT_MENU_PAIRS ) ;
 %><vel:velocity><html>
     <head>
         <title><? web/imcms/lang/jsp/document_references.jsp/heading ?></title>
@@ -40,7 +40,7 @@
             </tr>
         <%
             for ( int i = 0; i < documentMenuPairs.length; i++ ) {
-                DocumentMapper.TextDocumentMenuIndexPair textDocumentMenuIndexPair = documentMenuPairs[i];
+                DefaultDocumentMapper.TextDocumentMenuIndexPair textDocumentMenuIndexPair = documentMenuPairs[i];
                 TextDocumentDomainObject textDocument = textDocumentMenuIndexPair.getDocument();
                 int menuIndex = textDocumentMenuIndexPair.getMenuIndex();
         %>

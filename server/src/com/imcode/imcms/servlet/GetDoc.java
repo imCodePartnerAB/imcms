@@ -2,7 +2,6 @@ package com.imcode.imcms.servlet;
 
 import imcode.server.*;
 import imcode.server.document.*;
-import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -14,6 +13,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.*;
 import java.io.*;
 import java.util.*;
+
+import com.imcode.imcms.mapping.DocumentMapper;
 
 public class GetDoc extends HttpServlet {
 
@@ -74,7 +75,7 @@ public class GetDoc extends HttpServlet {
             history.push( meta_int );
         }
 
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentMapper documentMapper = imcref.getDefaultDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( meta_id );
         if ( null == document ) {
             return getDocumentDoesNotExistPage( res, user );
@@ -145,10 +146,10 @@ public class GetDoc extends HttpServlet {
                 br_id = "";
             }
             String tmp = imcref.getDatabase().executeStringQuery( "select top 1 to_meta_id\n"
-                                             + "from browser_docs\n"
-                                             + "join browsers on browsers.browser_id = browser_docs.browser_id\n"
-                                             + "where meta_id = ? and ? like user_agent order by value desc",
-                                             new String[]{"" + meta_id, br_id} );
+                                                                  + "from browser_docs\n"
+                                                                  + "join browsers on browsers.browser_id = browser_docs.browser_id\n"
+                                                                  + "where meta_id = ? and ? like user_agent order by value desc",
+                                                                  new String[]{"" + meta_id, br_id} );
             if ( tmp != null && ( !"".equals( tmp ) ) ) {
                 meta_id = Integer.parseInt( tmp );
             } else {

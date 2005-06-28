@@ -445,11 +445,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private Date archivedDatetime;
         private Date createdDatetime;
         private UserDomainObject creator;
-        private String headline;
+        private String headline = "";
         private String image;
         private String languageIso639_2;
         private boolean linkableByOtherUsers;
-        private String menuText;
+        private String menuText = "";
         private int id;
         private Date modifiedDatetime;
         private Date actualModifiedDatetime;

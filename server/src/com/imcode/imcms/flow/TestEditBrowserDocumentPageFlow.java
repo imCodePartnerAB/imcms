@@ -6,7 +6,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.BrowserDocumentDomainObject;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
 import com.imcode.imcms.mapping.DatabaseDocumentGetter;
 import com.imcode.imcms.mapping.CategoryMapper;
@@ -21,7 +21,7 @@ public class TestEditBrowserDocumentPageFlow extends TestCase {
     EditBrowserDocumentPageFlow editBrowserDocumentPageFlow;
     private BrowserDocumentDomainObject browserDocument;
     private BrowserDocumentDomainObject.Browser otherBrowser;
-    private DocumentMapper documentMapper;
+    private DefaultDocumentMapper documentMapper;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -42,7 +42,7 @@ public class TestEditBrowserDocumentPageFlow extends TestCase {
         assertEquals( new Integer( 1001 ), addedBrowsers.get( BrowserDocumentDomainObject.Browser.DEFAULT ));
     }
 
-    public class MockDocumentMapper extends DocumentMapper {
+    public class MockDocumentMapper extends DefaultDocumentMapper {
 
 
 

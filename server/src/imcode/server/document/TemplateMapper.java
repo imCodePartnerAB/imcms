@@ -1,13 +1,14 @@
 package imcode.server.document;
 
 import imcode.server.ImcmsServices;
-import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.db.Database;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.io.File;
 import java.util.*;
+
+import com.imcode.imcms.mapping.DocumentMapper;
 
 public class TemplateMapper {
 
@@ -47,7 +48,7 @@ public class TemplateMapper {
     }
 
     public String createHtmlOptionListOfTemplateGroups( TemplateGroupDomainObject[] templateGroups,
-                                                         TemplateGroupDomainObject selectedTemplateGroup ) {
+                                                        TemplateGroupDomainObject selectedTemplateGroup ) {
         String temps = "";
         for ( int i = 0; i < templateGroups.length; i++ ) {
             TemplateGroupDomainObject templateGroup = templateGroups[i];
@@ -152,7 +153,7 @@ public class TemplateMapper {
         String[][] temp = database.execute2dArrayQuery(
                 "select td.meta_id, meta_headline from text_docs td join meta m on td.meta_id = m.meta_id where template_id = ? order by td.meta_id",
                 new String[]{"" + template.getId()} );
-        DocumentMapper documentMapper = services.getDocumentMapper();
+        DocumentMapper documentMapper = services.getDefaultDocumentMapper();
         DocumentDomainObject[] documents = new DocumentDomainObject[temp.length];
         for ( int i = 0; i < documents.length; i++ ) {
             int documentId = Integer.parseInt( temp[i][0] );
@@ -232,9 +233,9 @@ public class TemplateMapper {
     }
 
     private static String[][] sprocGetTemplateGroupsForUser( Database service, UserDomainObject user,
-                                                            int meta_id ) {
+                                                             int meta_id ) {
         return service.execute2dArrayProcedure( SPROC_GET_TEMPLATE_GROUPS_FOR_USER,
-                                          new String[]{String.valueOf( meta_id ), String.valueOf( user.getId() )} );
+                                                new String[]{String.valueOf( meta_id ), String.valueOf( user.getId() )} );
     }
 
     private TemplateDomainObject createTemplateFromSqlResultRow( String[] sqlResultRow ) {
@@ -278,8 +279,8 @@ public class TemplateMapper {
 
     public void createTemplateGroup( String name ) {
         database.executeUpdateQuery( "declare @new_id int\n"
-                               + "select @new_id = max(group_id)+1 from templategroups\n"
-                               + "insert into templategroups values(@new_id,?)", new String[]{name} );
+                                     + "select @new_id = max(group_id)+1 from templategroups\n"
+                                     + "insert into templategroups values(@new_id,?)", new String[]{name} );
     }
 
     public boolean templateGroupContainsTemplate( TemplateGroupDomainObject templateGroup,

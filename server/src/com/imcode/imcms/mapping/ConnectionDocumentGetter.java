@@ -52,7 +52,7 @@ public class ConnectionDocumentGetter implements DocumentGetter {
 
     private String[] sprocGetDocumentInfo(ConvenienceDatabaseConnection connection, int metaId) {
         String[] params = new String[]{String.valueOf(metaId)};
-        return connection.executeArrayQuery(DocumentMapper.SQL_GET_DOCUMENT, params);
+        return connection.executeArrayQuery(DefaultDocumentMapper.SQL_GET_DOCUMENT, params);
     }
 
     private DocumentDomainObject getDocumentFromSqlResultRow(String[] result) {
@@ -65,31 +65,31 @@ public class ConnectionDocumentGetter implements DocumentGetter {
         document.setMenuImage(result[4]);
         UserDomainObject creator = userAndRoleMapper.getUser(Integer.parseInt(result[5]));
         document.setCreator(creator);
-        document.setRestrictedOneMorePrivilegedThanRestrictedTwo(DocumentMapper.getBooleanFromSqlResultString(result[6]));
-        document.setLinkableByOtherUsers(DocumentMapper.getBooleanFromSqlResultString(result[7]));
-        document.setVisibleInMenusForUnauthorizedUsers(DocumentMapper.getBooleanFromSqlResultString(result[8]));
+        document.setRestrictedOneMorePrivilegedThanRestrictedTwo(getBooleanFromSqlResultString(result[6]));
+        document.setLinkableByOtherUsers(getBooleanFromSqlResultString(result[7]));
+        document.setVisibleInMenusForUnauthorizedUsers(getBooleanFromSqlResultString(result[8]));
         document.setLanguageIso639_2(LanguageMapper.getAsIso639_2OrDefaultLanguage(result[9], services.getDefaultLanguage()));
         DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING);
-        document.setCreatedDatetime(DocumentMapper.parseDateFormat(dateFormat, result[10]));
-        Date modifiedDatetime = DocumentMapper.parseDateFormat(dateFormat, result[11]);
+        document.setCreatedDatetime(DefaultDocumentMapper.parseDateFormat(dateFormat, result[10]));
+        Date modifiedDatetime = DefaultDocumentMapper.parseDateFormat(dateFormat, result[11]);
         document.setModifiedDatetime(modifiedDatetime);
         document.setActualModifiedDatetime(modifiedDatetime);
-        document.setSearchDisabled(DocumentMapper.getBooleanFromSqlResultString(result[12]));
+        document.setSearchDisabled(getBooleanFromSqlResultString(result[12]));
         document.setTarget(result[13]);
-        document.setArchivedDatetime(DocumentMapper.parseDateFormat(dateFormat, result[14]));
+        document.setArchivedDatetime(DefaultDocumentMapper.parseDateFormat(dateFormat, result[14]));
         String publisherIdStr = result[15];
         if (null != publisherIdStr) {
             UserDomainObject publisher = userAndRoleMapper.getUser(Integer.parseInt(publisherIdStr));
             document.setPublisher(publisher);
         }
         document.setStatus(Integer.parseInt(result[16]));
-        document.setPublicationStartDatetime(DocumentMapper.parseDateFormat(dateFormat, result[17]));
-        document.setPublicationEndDatetime(DocumentMapper.parseDateFormat(dateFormat, result[18]));
+        document.setPublicationStartDatetime(DefaultDocumentMapper.parseDateFormat(dateFormat, result[17]));
+        document.setPublicationEndDatetime(DefaultDocumentMapper.parseDateFormat(dateFormat, result[18]));
         return document;
     }
 
     private DocumentPermissionSetMapper getDocumentPermissionSetMapper() {
-        return services.getDocumentMapper().getDocumentPermissionSetMapper();
+        return services.getDefaultDocumentMapper().getDocumentPermissionSetMapper();
     }
 
     public void initDocumentAttributes(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {
@@ -120,7 +120,7 @@ public class ConnectionDocumentGetter implements DocumentGetter {
      */
     private SectionDomainObject[] getSections(ConvenienceDatabaseConnection connection, int meta_id) {
         String[] parameters = new String[]{String.valueOf(meta_id)};
-        String[][] sectionData = connection.execute2dArrayQuery(DocumentMapper.SQL_GET_SECTIONS_FOR_DOCUMENT, parameters);
+        String[][] sectionData = connection.execute2dArrayQuery(DefaultDocumentMapper.SQL_GET_SECTIONS_FOR_DOCUMENT, parameters);
 
         SectionDomainObject[] sections = new SectionDomainObject[sectionData.length];
 
@@ -150,4 +150,7 @@ public class ConnectionDocumentGetter implements DocumentGetter {
 
     }
 
+    private static boolean getBooleanFromSqlResultString(final String columnValue) {
+        return !"0".equals(columnValue);
+    }
 }

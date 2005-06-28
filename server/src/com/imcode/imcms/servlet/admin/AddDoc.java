@@ -5,6 +5,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
@@ -38,7 +39,7 @@ public class AddDoc extends HttpServlet {
         } else {
 
             ImcmsServices services = Imcms.getServices();
-            DocumentMapper documentMapper = services.getDocumentMapper();
+            DocumentMapper documentMapper = services.getDefaultDocumentMapper();
 
             DocumentDomainObject parentDocument = documentMapper.getDocument( parentId );
             SaveNewDocumentAndAddToMenuCommand saveNewDocumentAndAddToMenuCommand = new SaveNewDocumentAndAddToMenuCommand( (TextDocumentDomainObject)parentDocument, parentMenuIndex );
@@ -169,7 +170,7 @@ public class AddDoc extends HttpServlet {
         public synchronized void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException
         {
             if ( null == savedDocument ) {
-                final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+                final DefaultDocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
                 documentMapper.saveNewDocument( document, user );
                 this.savedDocument = document ;
                 if (null != parentMenuIndex) {
@@ -203,7 +204,7 @@ public class AddDoc extends HttpServlet {
                                                                HttpServletResponse response ) throws IOException, ServletException, NoPermissionToCreateDocumentException {
             UserDomainObject user = Utility.getLoggedOnUser( request );
             ImcmsServices services = Imcms.getServices();
-            DocumentMapper documentMapper = services.getDocumentMapper();
+            DefaultDocumentMapper documentMapper = services.getDefaultDocumentMapper();
             DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( documentTypeId, parentDocument, user );
             PageFlow pageFlow = null;
             if ( document instanceof TextDocumentDomainObject ) {

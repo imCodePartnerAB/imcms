@@ -40,7 +40,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
             String[] sqlRow = sqlResult[i];
             int toMetaId = Integer.parseInt( sqlRow[0] );
             int browserId = Integer.parseInt( sqlRow[1] );
-            BrowserDocumentDomainObject.Browser browser = service.getDocumentMapper().getBrowserById( browserId );
+            BrowserDocumentDomainObject.Browser browser = service.getDefaultDocumentMapper().getBrowserById( browserId );
             document.setBrowserDocumentId( browser, toMetaId );
         }
     }
@@ -162,7 +162,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
                 document.setMenu( menuIndex, menu );
             }
             // FIXME: DocumentReference here dangerous? Use DocumentGetter/DocumentId?
-            final DocumentReference documentReference = service.getDocumentMapper().getDocumentReference( childId );
+            final DocumentReference documentReference = service.getDefaultDocumentMapper().getDocumentReference( childId );
             menu.addMenuItem( new MenuItemDomainObject( documentReference, new Integer( manualSortKey ), treeSortKey ) );
         }
     }
@@ -236,7 +236,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
             if ( ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {
                 try {
                     int fileDocumentId = Integer.parseInt( imageSource );
-                    DocumentMapper documentMapper = service.getDocumentMapper();
+                    DefaultDocumentMapper documentMapper = service.getDefaultDocumentMapper();
                     DocumentDomainObject document = documentMapper.getDocument( fileDocumentId );
                     if (null != document) {
                         image.setSource( new FileDocumentImageSource( documentMapper.getDocumentReference( document ) ) );

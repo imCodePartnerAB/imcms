@@ -3,7 +3,6 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
-import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.ConcurrentDocumentModificationException;
@@ -13,13 +12,13 @@ import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuExcept
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
-import imcode.util.ShouldNotBeThrownException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ConcurrentModificationException;
+
+import com.imcode.imcms.mapping.DocumentMapper;
 
 public final class SaveText extends HttpServlet {
 
@@ -31,7 +30,7 @@ public final class SaveText extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentMapper documentMapper = imcref.getDefaultDocumentMapper();
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id );
 
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );

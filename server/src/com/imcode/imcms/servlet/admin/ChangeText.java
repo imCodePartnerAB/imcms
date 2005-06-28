@@ -2,7 +2,6 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.Imcms;
 import imcode.server.document.*;
-import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -14,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
+
+import com.imcode.imcms.mapping.DocumentMapper;
 
 /**
  * Edit textdocument in a document.
@@ -29,7 +30,7 @@ public class ChangeText extends HttpServlet {
         Writer out = res.getWriter();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
         int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
 

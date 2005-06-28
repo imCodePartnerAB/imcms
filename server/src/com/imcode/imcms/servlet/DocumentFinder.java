@@ -49,7 +49,7 @@ public class DocumentFinder extends WebComponent {
 
     void forwardWithPage(HttpServletRequest request, HttpServletResponse response, SearchDocumentsPage page) throws IOException, ServletException {
         ImcmsServices service = Imcms.getServices();
-        DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
+        DocumentIndex index = service.getDefaultDocumentMapper().getDocumentIndex();
         BooleanQuery booleanQuery = new BooleanQuery();
         if ( null != page.getQuery() ) {
             booleanQuery.add( page.getQuery(), true, false );

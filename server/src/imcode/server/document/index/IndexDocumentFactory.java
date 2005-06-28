@@ -2,7 +2,7 @@ package imcode.server.document.index;
 
 import imcode.server.Imcms;
 import imcode.server.document.*;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -51,7 +51,7 @@ class IndexDocumentFactory {
 
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__PHASE, "" + document.getLifeCyclePhase() ) ) ;
 
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        DefaultDocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
 
         try {
             document.accept( new IndexDocumentAdaptingVisitor( indexDocument ) );

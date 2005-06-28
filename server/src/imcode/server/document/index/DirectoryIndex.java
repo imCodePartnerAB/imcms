@@ -3,6 +3,7 @@ package imcode.server.document.index;
 import com.imcode.util.HumanReadable;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IntervalSchedule;
@@ -70,7 +71,7 @@ class DirectoryIndex implements DocumentIndex {
 
     private List getDocumentListForHits( Hits hits, UserDomainObject searchingUser ) throws IOException {
         List documentList = new ArrayList( hits.length() );
-        final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        final DocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
         for ( int i = 0; i < hits.length(); ++i ) {
             int metaId = Integer.parseInt( hits.doc( i ).get( DocumentIndex.FIELD__META_ID ) );
             DocumentDomainObject document = documentMapper.getDocument( metaId );
@@ -135,7 +136,7 @@ class DirectoryIndex implements DocumentIndex {
     }
 
     private void indexAllDocumentsToIndexWriter( IndexWriter indexWriter ) throws IOException {
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        DefaultDocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
         int[] documentIds = documentMapper.getAllDocumentIds();
 
         logIndexingStarting( documentIds.length );

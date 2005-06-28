@@ -3,7 +3,7 @@ package imcode.util;
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.*;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -75,7 +75,7 @@ public class ImcmsImageUtils {
         ImageSource imageSource = null;
 
         try {
-            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+            DefaultDocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
             DocumentDomainObject document = documentMapper.getDocument( Integer.parseInt( imageUrl ) );
             if ( document instanceof FileDocumentDomainObject ) {
                 imageSource = new FileDocumentImageSource( documentMapper.getDocumentReference( document ) );

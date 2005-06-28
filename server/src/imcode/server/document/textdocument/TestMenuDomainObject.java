@@ -4,7 +4,7 @@ import imcode.server.Config;
 import imcode.server.MockImcmsServices;
 import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.DocumentDomainObject;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.document.DocumentReference;
 import imcode.server.document.DocumentId;
 import com.imcode.imcms.mapping.DatabaseDocumentGetter;
@@ -31,7 +31,7 @@ public class TestMenuDomainObject extends TestCase {
         this.menu = new MenuDomainObject() ;
         MockDatabase database = new MockDatabase();
         final MockImcmsServices services = new MockImcmsServices();
-        DocumentMapper documentMapper = new DocumentMapper( services, database, new DatabaseDocumentGetter(database, services), null, null, null, new Config(), new CategoryMapper(database)) {
+        DefaultDocumentMapper documentMapper = new DefaultDocumentMapper( services, database, new DatabaseDocumentGetter(database, services), null, null, null, new Config(), new CategoryMapper(database)) {
             public DocumentDomainObject getDocument( DocumentId metaId ) {
                 if (1002 == metaId.intValue()) {
                     TextDocumentDomainObject textDocument = new TextDocumentDomainObject();

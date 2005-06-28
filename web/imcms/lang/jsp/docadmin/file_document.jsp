@@ -10,7 +10,7 @@
           java.util.*,
           com.imcode.imcms.servlet.GetDoc,
           com.imcode.util.HumanReadable"
-%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+%><%@ page import="com.imcode.imcms.mapping.DefaultDocumentMapper"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
 <html>
 <head>
@@ -86,7 +86,7 @@ if (StringUtils.isNotBlank(selectedFile.getFilename())) {
 			<option value=""<% if (StringUtils.isBlank( selectedFile.getMimeType() ) ) { %> selected<% } %>>
 			<? install/htdocs/sv/jsp/docadmin/file_document.jsp/autodetect_or_fill_in_below ?></option><%
 
-    final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+    final DefaultDocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
     String[][] mimeTypes = documentMapper.getAllMimeTypesWithDescriptions(Utility.getLoggedOnUser( request ));
     boolean documentMimeTypeFoundInDropDown = false ;
 

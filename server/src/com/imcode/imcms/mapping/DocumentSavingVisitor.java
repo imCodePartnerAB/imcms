@@ -37,9 +37,13 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         TemplateDomainObject defaultTemplateForRestricted1 = ( (TextDocumentPermissionSetDomainObject)textDocument.getPermissionSetForRestrictedOneForNewDocuments() ).getDefaultTemplate();
         TemplateDomainObject defaultTemplateForRestricted2 = ( (TextDocumentPermissionSetDomainObject)textDocument.getPermissionSetForRestrictedTwoForNewDocuments() ).getDefaultTemplate();
 
+        TemplateDomainObject template = textDocument.getTemplate();
+        int templateGroupId = textDocument.getTemplateGroupId();
+        int templateId = template.getId();
+
         database.executeUpdateQuery( sqlStr, new String[]{
-            "" + textDocument.getTemplate().getId(),
-            "" + textDocument.getTemplateGroupId(),
+            "" + templateId,
+            "" + templateGroupId,
             (null != defaultTemplate ? "" + defaultTemplate.getId() : null),
             null != defaultTemplateForRestricted1 ? "" + defaultTemplateForRestricted1.getId() : "-1",
             null != defaultTemplateForRestricted2 ? "" + defaultTemplateForRestricted2.getId() : "-1",

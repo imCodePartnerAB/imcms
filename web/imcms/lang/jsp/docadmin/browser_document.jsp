@@ -46,7 +46,7 @@
         <%
             Map addedBrowsers = (Map)request.getAttribute( EditBrowserDocumentPageFlow.REQUEST_ATTRIBUTE__ADDED_BROWSERS );
 
-            BrowserDocumentDomainObject.Browser[] allBrowsers = Imcms.getServices().getDocumentMapper().getAllBrowsers() ;
+            BrowserDocumentDomainObject.Browser[] allBrowsers = Imcms.getServices().getDefaultDocumentMapper().getAllBrowsers() ;
             Arrays.sort(allBrowsers) ;
 
             for ( int i = 0; i < allBrowsers.length; i++ ) {

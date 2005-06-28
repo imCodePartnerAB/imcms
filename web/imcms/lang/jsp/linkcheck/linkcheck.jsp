@@ -8,7 +8,7 @@
                  imcode.server.document.DocumentDomainObject,
                  com.imcode.imcms.servlet.superadmin.DocumentReferences,
                  imcode.util.Html,
-                 org.apache.commons.lang.StringEscapeUtils"%>
+                 org.apache.commons.lang.StringEscapeUtils"%><%@ page import="com.imcode.imcms.mapping.DefaultDocumentMapper"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
 LinkCheck.LinkCheckPage linkCheckPage = (LinkCheck.LinkCheckPage) request.getAttribute(LinkCheck.LinkCheckPage.REQUEST_ATTRIBUTE__PAGE) ;
@@ -85,7 +85,7 @@ if (doCheckLinks) {
 	<td><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td><%
 			if (link instanceof LinkCheck.UrlDocumentLink) {
 				LinkCheck.UrlDocumentLink urlDocumentLink = (LinkCheck.UrlDocumentLink)link ;
-				DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument = urlDocumentLink.getDocumentMenuPairsContainingUrlDocument(); %>
+				DefaultDocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument = urlDocumentLink.getDocumentMenuPairsContainingUrlDocument(); %>
 	<td><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/url_document ?></td>
 	<td><a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%=
 				document.getId() %>&<%=

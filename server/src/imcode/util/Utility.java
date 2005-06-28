@@ -235,6 +235,9 @@ public class Utility {
     }
 
     public static Date truncateDateToMinutePrecision( Date fieldValue ) {
+        if (null == fieldValue) {
+            return null ;
+        }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime( fieldValue );
         calendar.set( Calendar.MILLISECOND, 0 );

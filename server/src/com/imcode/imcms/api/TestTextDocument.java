@@ -5,7 +5,7 @@ import imcode.server.MockImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.DocumentGetter;
 import imcode.server.document.DocumentReference;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
@@ -154,7 +154,7 @@ public class TestTextDocument extends TestCase {
                 return null ;
             }
         };
-        DocumentMapper documentMapper = new DocumentMapper(null,null,documentGetter,null,null,null,new Config(), new CategoryMapper(null));
+        DefaultDocumentMapper documentMapper = new DefaultDocumentMapper(null,null,documentGetter,null,null,null,new Config(), new CategoryMapper(null));
         imcmsServices.setDocumentMapper( documentMapper );
         menu.addDocument( otherTextDocument );
         assertEquals(0, menu.getDocuments().length) ;

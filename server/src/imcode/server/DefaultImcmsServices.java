@@ -4,7 +4,7 @@ import imcode.server.db.Database;
 import imcode.server.document.*;
 import com.imcode.imcms.mapping.DatabaseDocumentGetter;
 import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.index.AutorebuildingDirectoryIndex;
 import imcode.server.document.index.DocumentIndex;
@@ -53,7 +53,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserMapperAndRole;
     private ExternalizedImcmsAuthenticatorAndUserRegistry externalizedImcmsAuthAndMapper = null;
-    private DocumentMapper documentMapper;
+    private DefaultDocumentMapper documentMapper;
     private TemplateMapper templateMapper;
     private Map languagePropertiesMap = new HashMap();
     private KeyStore keyStore;
@@ -181,7 +181,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         File indexDirectory = new File( getRealContextPath(), "WEB-INF/index" );
         DocumentIndex documentIndex = new AutorebuildingDirectoryIndex( indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes() );
         categoryMapper = new CategoryMapper(this.getDatabase());
-        documentMapper = new DocumentMapper( this, this.getDatabase(), new DatabaseDocumentGetter(this.getDatabase(), this), new DocumentPermissionSetMapper( database, this ), documentIndex, this.getClock(), this.getConfig(), categoryMapper);
+        documentMapper = new DefaultDocumentMapper( this, this.getDatabase(), new DatabaseDocumentGetter(this.getDatabase(), this), new DocumentPermissionSetMapper( database, this ), documentIndex, this.getClock(), this.getConfig(), categoryMapper);
     }
 
     private void initTemplateMapper() {
@@ -332,7 +332,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     }
 
-    public DocumentMapper getDocumentMapper() {
+    public DefaultDocumentMapper getDefaultDocumentMapper() {
         return documentMapper;
     }
 

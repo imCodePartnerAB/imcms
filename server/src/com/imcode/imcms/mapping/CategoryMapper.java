@@ -277,4 +277,19 @@ public class CategoryMapper {
         }
 
     }
+
+    public void saveCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
+        CategoryDomainObject categoryInDb = getCategory(category.getType(), category.getName());
+        if (null != categoryInDb && category.getId() != categoryInDb.getId()) {
+            throw new CategoryAlreadyExistsException("A category with name \"" + category.getName()
+                                                     + "\" already exists in category type \""
+                                                     + category.getType().getName()
+                                                     + "\".");
+        }
+        if (0 == category.getId()) {
+            addCategory(category);
+        } else {
+            updateCategory(category);
+        }
+    }
 }

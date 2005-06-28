@@ -6,6 +6,6 @@ import imcode.server.document.FileDocumentDomainObject;
 public class DocumentDeletingVisitor extends DocumentVisitor {
 
     public void visitFileDocument(FileDocumentDomainObject fileDocument) {
-        DocumentMapper.deleteAllFileDocumentFiles(fileDocument);
+        DefaultDocumentMapper.deleteAllFileDocumentFiles(fileDocument);
     }
 }

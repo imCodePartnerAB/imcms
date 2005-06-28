@@ -1,7 +1,7 @@
 package imcode.server ;
 
 import imcode.server.db.Database;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
@@ -100,7 +100,7 @@ public interface ImcmsServices extends Clock {
 
     void updateMainLog( String logMessage );
 
-    DocumentMapper getDocumentMapper();
+    DefaultDocumentMapper getDefaultDocumentMapper();
 
     ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper();
 

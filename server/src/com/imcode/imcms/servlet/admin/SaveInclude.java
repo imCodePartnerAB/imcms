@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
@@ -25,6 +24,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.imcode.imcms.mapping.DocumentMapper;
+
 public class SaveInclude extends HttpServlet {
 
     private final static DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSS " );
@@ -40,7 +41,7 @@ public class SaveInclude extends HttpServlet {
         int meta_id = Integer.parseInt( meta_id_str );
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentMapper documentMapper = imcref.getDefaultDocumentMapper();
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id );
 
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
@@ -81,7 +82,6 @@ public class SaveInclude extends HttpServlet {
                         if ( user.canAddDocumentToAnyMenu(includedDocument) ) {
                             document.setInclude(Integer.parseInt(include_id), includedDocument.getId());
                             documentMapper.saveDocument(document, user);
-                            documentMapper.setInclude(meta_id, Integer.parseInt(include_id), included_meta_id_int);
                             imcref.updateMainLog(dateFormat.format(new java.util.Date()) + "Include nr [" + include_id
                                                  + "] on ["
                                                  + meta_id_str

@@ -1,7 +1,7 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.document.*;
 import imcode.server.document.index.IndexException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -209,8 +209,8 @@ public class DocumentService {
         }
     }
 
-    private DocumentMapper getDocumentMapper() {
-        return contentManagementSystem.getInternal().getDocumentMapper();
+    private DefaultDocumentMapper getDocumentMapper() {
+        return contentManagementSystem.getInternal().getDefaultDocumentMapper();
     }
 
     public SearchQuery parseLuceneSearchQuery( String query ) throws BadQueryException {
@@ -226,7 +226,7 @@ public class DocumentService {
 
     public void saveCategory( Category category ) throws NoPermissionException, CategoryAlreadyExistsException {
         getSecurityChecker().isSuperAdmin();
-        getDocumentMapper().saveCategory( category.getInternal() );
+        getCategoryMapper().saveCategory( category.getInternal() );
     }
 
     static class ApiWrappingDocumentVisitor extends DocumentVisitor {

@@ -311,7 +311,7 @@ public class AdminRoles extends Administrator {
             String roleIdStr = params.getProperty( "ROLE_ID" );
             int roleId = Integer.parseInt( roleIdStr ) ;
             RoleDomainObject role = userAndRoleMapper.getRoleById( roleId ) ;
-            List affectedDocuments = imcref.getDocumentMapper().getDocumentsWithPermissionsForRole(role) ;
+            List affectedDocuments = imcref.getDefaultDocumentMapper().getDocumentsWithPermissionsForRole(role) ;
             int affectedDocumentsCount = affectedDocuments.size() ;
             if (affectedDocuments.size() > 50) {
                 affectedDocuments = affectedDocuments.subList( 0, 50 ) ;

@@ -9,6 +9,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
@@ -18,7 +19,6 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
-import imcode.util.ShouldNotBeThrownException;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.io.InputStreamSource;
 import org.apache.commons.lang.StringUtils;
@@ -68,7 +68,7 @@ public class ChangeImage extends HttpServlet {
         ImageDomainObject image = getImageFromRequest(request);
         UserDomainObject user = Utility.getLoggedOnUser(request);
         ImcmsServices imcref = Imcms.getServices();
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DefaultDocumentMapper documentMapper = imcref.getDefaultDocumentMapper();
         final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(Integer.parseInt(request.getParameter(REQUEST_PARAMETER__DOCUMENT_ID)));
         final int imageIndex = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__IMAGE_INDEX));
 
@@ -106,7 +106,7 @@ public class ChangeImage extends HttpServlet {
         }
     }
 
-    private void goToImageAdder(final DocumentMapper documentMapper, final TextDocumentDomainObject document,
+    private void goToImageAdder(final DefaultDocumentMapper documentMapper, final TextDocumentDomainObject document,
                                 UserDomainObject user, final ImageDomainObject image, final int imageIndex,
                                 HttpServletRequest request,
                                 HttpServletResponse response) throws IOException, ServletException {
@@ -163,7 +163,7 @@ public class ChangeImage extends HttpServlet {
         imageBrowser.forward(request, response);
     }
 
-    private void goToImageSearch(final DocumentMapper documentMapper, final TextDocumentDomainObject document,
+    private void goToImageSearch(final DefaultDocumentMapper documentMapper, final TextDocumentDomainObject document,
                                  final int imageIndex,
                                  final ImageDomainObject image, final HttpServletRequest request,
                                  final HttpServletResponse response) throws IOException, ServletException {
@@ -250,7 +250,7 @@ public class ChangeImage extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ImcmsServices imcref = Imcms.getServices();
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentMapper documentMapper = imcref.getDefaultDocumentMapper();
         TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(Integer.parseInt(request.getParameter("meta_id")));
         ImageDomainObject image = document.getImage(getImageNumberParam(request));
         UserDomainObject user = Utility.getLoggedOnUser(request);
@@ -266,7 +266,7 @@ public class ChangeImage extends HttpServlet {
     }
 
     private boolean userHasImagePermissionsOnDocument(UserDomainObject user, TextDocumentDomainObject document) {
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(document);
         boolean imagePermission = textDocumentPermissionSet.getEditImages();
         return imagePermission;

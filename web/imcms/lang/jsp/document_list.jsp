@@ -11,7 +11,7 @@
                  java.net.URLEncoder,
                  org.apache.commons.lang.ObjectUtils,
                  imcode.util.Html,
-                 imcode.server.document.DocumentComparator"%>
+                 imcode.server.document.DocumentComparator"%><%@ page import="com.imcode.imcms.mapping.DefaultDocumentMapper"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <% ListDocuments.FormData formData = (ListDocuments.FormData)request.getAttribute( ListDocuments.REQUEST_ATTRIBUTE__FORM_DATA ) ;%>
 <vel:velocity>
@@ -53,13 +53,13 @@ if (null != formData.documentsIterator) { %>
 	<td>&nbsp; <b><? imcms/lang/jsp/document_list.jsp/heading_child_documents ?></b></td>
 </tr><%
 
-	DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+	DefaultDocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
 	UserDomainObject user = Utility.getLoggedOnUser(request);
 	Map documentTypes = documentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user) ;
 
 	while ( formData.documentsIterator.hasNext() ) {
 		DocumentDomainObject document = (DocumentDomainObject)formData.documentsIterator.next();
-		DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingDocument = documentMapper.getDocumentMenuPairsContainingDocument( document ); %>
+		DefaultDocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingDocument = documentMapper.getDocumentMenuPairsContainingDocument( document ); %>
 <tr>
 	<td colspan="5"><img src="$contextPath/imcms/$language/images/admin/1x1_cccccc.gif" width="100%" height="1"></td>
 </tr>

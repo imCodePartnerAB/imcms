@@ -119,11 +119,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.ChangeExternalDoc2</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.ChangeExternalDoc2</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.ChangeImage</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.ChangeImage</servlet-class>
     </servlet>
@@ -376,11 +371,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.BackDoc</servlet-name>
         <url-pattern>/servlet/BackDoc</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.ChangeExternalDoc2</servlet-name>
-        <url-pattern>/servlet/ChangeExternalDoc2</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

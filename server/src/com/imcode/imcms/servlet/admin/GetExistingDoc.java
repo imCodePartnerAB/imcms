@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -59,7 +60,7 @@ public class GetExistingDoc extends HttpServlet {
         Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DefaultDocumentMapper documentMapper = imcref.getDefaultDocumentMapper();
         TextDocumentDomainObject parentDocument = (TextDocumentDomainObject)documentMapper.getDocument( Integer.parseInt( req.getParameter( "meta_id_value" ) ) );
 
         // Lets get the doc_menu_number
@@ -197,7 +198,7 @@ public class GetExistingDoc extends HttpServlet {
             values = new String[0];
         }
 
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentMapper documentMapper = imcref.getDefaultDocumentMapper();
 
         // Lets loop through all the selected existsing meta ids and add them to the current menu
         for ( int m = 0; m < values.length; m++ ) {
@@ -227,7 +228,7 @@ public class GetExistingDoc extends HttpServlet {
     private void addDocumentToMenu( DocumentDomainObject document, TextDocumentDomainObject parentDocument,
                                     int menuIndex, UserDomainObject user ) {
         Set allowedDocumentTypeIds = getUsersAllowedDocumentTypeIdsOnDocument( user, parentDocument ) ;
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        DefaultDocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
         boolean sharePermission = user.canAddDocumentToAnyMenu( document );
         boolean canAddToMenu = allowedDocumentTypeIds.contains( new Integer( document.getDocumentTypeId() ) )
                                && sharePermission;

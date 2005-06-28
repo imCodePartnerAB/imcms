@@ -3,8 +3,7 @@ package com.imcode.imcms.api;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
 import imcode.server.db.impl.MockDatabase;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.DatabaseDocumentGetter;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -15,6 +14,7 @@ public class TestDocumentService extends TestCase {
     private DocumentService documentService;
     private MockDatabase database;
     private User user;
+    private DefaultDocumentMapper documentMapper;
 
     public void setUp() throws Exception {
         super.setUp();
@@ -23,7 +23,8 @@ public class TestDocumentService extends TestCase {
         contentManagementSystem.setCurrentUser( user );
         MockImcmsServices imcmsServices = new MockImcmsServices();
         database = new MockDatabase();
-        imcmsServices.setDocumentMapper(new DocumentMapper(imcmsServices, database, new DatabaseDocumentGetter(database, imcmsServices), null,null,null,new Config(), new CategoryMapper(database))) ;
+        documentMapper = new DefaultDocumentMapper(imcmsServices, database, null, null,null,null,new Config(), new CategoryMapper(database));
+        imcmsServices.setDocumentMapper(documentMapper) ;
         imcmsServices.setCategoryMapper(new CategoryMapper(database));
         contentManagementSystem.setInternal( imcmsServices );
         this.documentService = new DocumentService(contentManagementSystem) ;
@@ -68,7 +69,5 @@ public class TestDocumentService extends TestCase {
         documentService.saveCategory( category );
         database.assertCalled( new MockDatabase.UpdateTableSqlCallPredicate( "categories", otherName ));
     }
-
-    
 
 }

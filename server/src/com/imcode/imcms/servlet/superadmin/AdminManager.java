@@ -15,7 +15,7 @@ import imcode.server.document.DocumentComparator;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.NoPermissionToCreateDocumentException;
 import imcode.server.document.NoPermissionToEditDocumentException;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.index.DocumentIndex;
@@ -88,7 +88,7 @@ public class AdminManager extends Administrator {
             return;
         }
 
-        final DocumentMapper documentMapper = service.getDocumentMapper();
+        final DefaultDocumentMapper documentMapper = service.getDefaultDocumentMapper();
         if ( Utility.parameterIsSet( request, REQUEST_PARAMETER__CREATE_NEW_DOCUMENT ) ) {
             try {
                 int parentId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID ) );
@@ -126,7 +126,7 @@ public class AdminManager extends Administrator {
                                                 LocalizedMessage errorMessage ) throws IOException, ServletException {
         UserDomainObject loggedOnUser = Utility.getLoggedOnUser( request );
         ImcmsServices service = Imcms.getServices();
-        final DocumentMapper documentMapper = service.getDocumentMapper();
+        final DefaultDocumentMapper documentMapper = service.getDefaultDocumentMapper();
         String tabToShow = null != request.getParameter( REQUEST_PARAMETER__SHOW )
                            ? request.getParameter( REQUEST_PARAMETER__SHOW ) : PARAMETER_VALUE__SHOW_NEW;
 
@@ -566,7 +566,7 @@ public class AdminManager extends Administrator {
     private static class SaveNewDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
 
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException {
-            Imcms.getServices().getDocumentMapper().saveNewDocument( document, user );
+            Imcms.getServices().getDefaultDocumentMapper().saveNewDocument( document, user );
         }
     }
 
