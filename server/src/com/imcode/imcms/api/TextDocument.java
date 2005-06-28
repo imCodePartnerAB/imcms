@@ -162,7 +162,7 @@ public class TextDocument extends Document {
         }
     }
 
-    public void setTemplate(Template template) throws NoPermissionException {
+    public void setTemplate(Template template) {
         setTemplate(null, template);
     }
 
