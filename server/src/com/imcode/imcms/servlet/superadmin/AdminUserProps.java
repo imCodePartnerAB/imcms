@@ -813,7 +813,7 @@ public class AdminUserProps extends Administrator {
                   + "<br>";
         }
 
-        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapperAndRole = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
 
         if ( !adminUserProps.validateParameters( req, res, user ) ) {
             return;
@@ -826,7 +826,7 @@ public class AdminUserProps extends Administrator {
         boolean useradminRoleIsSelected = false;
         for ( int i = 0; roleIdsFromRequest != null && i < roleIdsFromRequest.length; i++ ) {
             int roleId = roleIdsFromRequest[i];
-            RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapperAndRole.getRoleById( roleId );
+            RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapper.getRoleById( roleId );
             userFromRequest.addRole( role );
             if ( role.equals( RoleDomainObject.USERADMIN ) ) {
                 useradminRoleIsSelected = true;
@@ -834,7 +834,7 @@ public class AdminUserProps extends Administrator {
         }
 
         try {
-            imcmsAuthenticatorAndUserAndRoleMapperAndRole.addUser( userFromRequest, user );
+            imcmsAuthenticatorAndUserAndRoleMapper.addUser( userFromRequest, user );
         } catch ( UserAlreadyExistsException e ) {
             String header = "Error in AdminUserProps. ";
             log.debug( header + "- username already exists" );
@@ -859,11 +859,9 @@ public class AdminUserProps extends Administrator {
                 for ( int i = 0; i < phonesV.size(); i++ ) {
                     String[] aPhone = (String[])phonesV.elementAt( i );
 
-                    imcref.getDatabase().executeUpdateProcedure( "PhoneNbrAdd", new String[] {
-                                                                                            ""
-                                                                                            + userFromRequest.getId(),
-                                                                                                    aPhone[1], aPhone[3]
-                                                                                            } );
+                    String phoneNumber = aPhone[1];
+                    int phoneNumberType = Integer.parseInt(aPhone[3]);
+                    imcmsAuthenticatorAndUserAndRoleMapper.addPhoneNumber(userFromRequest.getId(),phoneNumber, phoneNumberType );
                 }
             }
             // we are processing data from a user template
@@ -874,11 +872,11 @@ public class AdminUserProps extends Administrator {
             Database database = imcref.getDatabase();
             if ( !( "" ).equals( workPhone ) ) {
                 int phoneNumberType = 2;
-                ImcmsAuthenticatorAndUserAndRoleMapper.addPhoneNumber( userFromRequest.getId(), workPhone, phoneNumberType, database );
+                imcmsAuthenticatorAndUserAndRoleMapper.addPhoneNumber( userFromRequest.getId(), workPhone, phoneNumberType);
             }
             if ( !( "" ).equals( mobilePhone ) ) {
                 int phoneNumberType = 3;
-                ImcmsAuthenticatorAndUserAndRoleMapper.addPhoneNumber( userFromRequest.getId(), workPhone, phoneNumberType, database );
+                imcmsAuthenticatorAndUserAndRoleMapper.addPhoneNumber( userFromRequest.getId(), workPhone, phoneNumberType);
             }
         }
 

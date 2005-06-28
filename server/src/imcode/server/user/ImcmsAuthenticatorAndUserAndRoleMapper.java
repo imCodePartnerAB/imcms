@@ -12,7 +12,6 @@ import imcode.util.Utility;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.log4j.Logger;
 
 import java.util.*;
 
@@ -287,19 +286,19 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         final int PHONE_TYPE_WORK_MOBILE = 3;
         final int PHONE_TYPE_FAX_PHONE = 4;
         if ( newUser.getHomePhone().length() > 0 ) {
-            addPhoneNumber( newUser.getId(), newUser.getHomePhone(), PHONE_TYPE_HOME_PHONE, database );
+            addPhoneNumber( newUser.getId(), newUser.getHomePhone(), PHONE_TYPE_HOME_PHONE);
         }
         if ( newUser.getWorkPhone().length() > 0 ) {
-            addPhoneNumber( newUser.getId(), newUser.getWorkPhone(), PHONE_TYPE_WORK_PHONE, database );
+            addPhoneNumber( newUser.getId(), newUser.getWorkPhone(), PHONE_TYPE_WORK_PHONE);
         }
         if ( newUser.getMobilePhone().length() > 0 ) {
-            addPhoneNumber( newUser.getId(), newUser.getMobilePhone(), PHONE_TYPE_WORK_MOBILE, database );
+            addPhoneNumber( newUser.getId(), newUser.getMobilePhone(), PHONE_TYPE_WORK_MOBILE);
         }
         if ( newUser.getFaxPhone().length() > 0 ) {
-            addPhoneNumber( newUser.getId(), newUser.getFaxPhone(), PHONE_TYPE_FAX_PHONE, database );
+            addPhoneNumber( newUser.getId(), newUser.getFaxPhone(), PHONE_TYPE_FAX_PHONE);
         }
         if ( newUser.getOtherPhone().length() > 0 ) {
-            addPhoneNumber( newUser.getId(), newUser.getOtherPhone(), PHONE_TYPE_OTHER_PHONE, database );
+            addPhoneNumber( newUser.getId(), newUser.getOtherPhone(), PHONE_TYPE_OTHER_PHONE);
         }
     }
 
@@ -383,7 +382,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         }
     }
 
-    public static void addPhoneNumber( final int newUserId, final String phoneNumber, final int phoneNumberType, Database database ) {
+    public void addPhoneNumber(final int newUserId, final String phoneNumber, final int phoneNumberType
+    ) {
         try {
             database.executeCommand(new InsertIntoTableDatabaseCommand("phones", new String[][] {
                 {"user_id", ""+newUserId},
