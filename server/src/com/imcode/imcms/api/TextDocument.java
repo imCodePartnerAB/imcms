@@ -278,12 +278,24 @@ public class TextDocument extends Document {
             return child;
         }
 
+
+        /**
+            @deprecated Use {@link #getSortKey()}
+       **/
         public int getManualNumber() {
             Integer sortKey = internalMenuItem.getSortKey();
             if (null == sortKey) {
                 return 0;
             }
             return sortKey.intValue();
+        }
+
+        public Integer getSortKey() {
+            return internalMenuItem.getSortKey();
+        }
+
+        public void setSortKey( Integer sortKey ) {
+            internalMenuItem.setSortKey(sortKey);
         }
 
         public TreeKey getTreeKey() {
