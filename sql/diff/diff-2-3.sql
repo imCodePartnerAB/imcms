@@ -357,3 +357,60 @@ DROP PROCEDURE DeleteInclude
 DROP PROCEDURE GetHighestUserId
 
 -- 2005-06-17 Kreiger - Issue 3347
+
+
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.sys_data
+	DROP CONSTRAINT FK_sys_data_sys_types
+GO
+COMMIT
+BEGIN TRANSACTION
+CREATE TABLE dbo.Tmp_sys_data
+	(
+	sys_id tinyint NOT NULL IDENTITY (1, 1),
+	type_id tinyint NOT NULL,
+	[value] varchar(1000) NULL
+	)  ON [PRIMARY]
+GO
+SET IDENTITY_INSERT dbo.Tmp_sys_data ON
+GO
+IF EXISTS(SELECT * FROM dbo.sys_data)
+	 EXEC('INSERT INTO dbo.Tmp_sys_data (sys_id, type_id, [value])
+		SELECT sys_id, type_id, [value] FROM dbo.sys_data TABLOCKX')
+GO
+SET IDENTITY_INSERT dbo.Tmp_sys_data OFF
+GO
+DROP TABLE dbo.sys_data
+GO
+EXECUTE sp_rename N'dbo.Tmp_sys_data', N'sys_data', 'OBJECT'
+GO
+ALTER TABLE dbo.sys_data ADD CONSTRAINT
+	PK_sys_data PRIMARY KEY NONCLUSTERED
+	(
+	sys_id,
+	type_id
+	) ON [PRIMARY]
+
+GO
+ALTER TABLE dbo.sys_data WITH NOCHECK ADD CONSTRAINT
+	FK_sys_data_sys_types FOREIGN KEY
+	(
+	type_id
+	) REFERENCES dbo.sys_types
+	(
+	type_id
+	)
+GO
+COMMIT
+
+-- 2005-07-01 Lennart Å - Issue 3072, Increasing the size for system data value to varchar 1000.
