@@ -4,6 +4,7 @@
             com.imcode.imcms.flow.EditDocumentInformationPageFlow,
             com.imcode.imcms.flow.PageFlow,
             com.imcode.imcms.mapping.*,
+            com.imcode.imcms.api.Document,
             imcode.server.Imcms,
             imcode.server.ImcmsServices,
             imcode.server.LanguageMapper,
@@ -202,16 +203,16 @@ function checkFocus() {
 		<? install/htdocs/sv/jsp/docadmin/document_information.jsp/status ?></td>
 		<td>
 		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__STATUS %>" onFocus="selFocused = true;">
-			<option value="<%= DocumentDomainObject.STATUS_NEW %>"<%
-				if (DocumentDomainObject.STATUS_NEW == document.getStatus()) {
+			<option value="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__STATUS__NEW %>"<%
+				if (Document.PublicationStatus.NEW.equals(document.getPublicationStatus())) {
 					%> selected<%
 				} %>><? install/htdocs/sv/jsp/docadmin/document_information.jsp/status_new ?></option>
-			<option value="<%= DocumentDomainObject.STATUS_PUBLICATION_APPROVED %>"<%
-				if (DocumentDomainObject.STATUS_PUBLICATION_APPROVED == document.getStatus()) {
+			<option value="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__STATUS__APPROVED %>"<%
+				if (Document.PublicationStatus.APPROVED.equals(document.getPublicationStatus())) {
 					%> selected<%
 				} %>><? install/htdocs/sv/jsp/docadmin/document_information.jsp/status_publication_approved ?></option>
-			<option value="<%= DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED %>"<%
-				if (DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == document.getStatus()) {
+			<option value="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__STATUS__DISAPPROVED %>"<%
+				if (Document.PublicationStatus.DISAPPROVED.equals(document.getPublicationStatus())) {
 					%> selected<%
 				} %>><? install/htdocs/sv/jsp/docadmin/document_information.jsp/status_publication_disapproved ?></option>
 		</select>
@@ -220,7 +221,7 @@ function checkFocus() {
 			<td class="imcmsAdmText"><%
 			Date now = new Date();
 			Date publicationStartDatetime = document.getPublicationStartDatetime();
-			if (document.getStatus() != DocumentDomainObject.STATUS_PUBLICATION_APPROVED || null == publicationStartDatetime || publicationStartDatetime.after(now)) { %>
+			if (!Document.PublicationStatus.APPROVED.equals(document.getPublicationStatus()) || null == publicationStartDatetime || publicationStartDatetime.after(now)) { %>
 			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_will_be_published_at ?><%
 			} else { %>
 			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_was_published_at ?><%

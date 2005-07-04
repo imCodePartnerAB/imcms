@@ -148,7 +148,7 @@ public class TestDocumentMapper extends TestCase {
         documentResultRow[0] = ""+textDocument.getId() ;
         documentResultRow[1] = ""+textDocument.getDocumentTypeId() ;
         documentResultRow[5] = ""+user.getId() ;
-        documentResultRow[16] = ""+textDocument.getStatus() ;
+        documentResultRow[16] = ""+textDocument.getPublicationStatus() ;
         database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( DefaultDocumentMapper.SQL_GET_DOCUMENT ), documentResultRow );
         String[] textDocsResultRow = new String[] { "1","1","1","1","1" } ;
         database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "FROM text_docs"), textDocsResultRow );

@@ -20,6 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
 
+import com.imcode.imcms.api.Document;
+
 public class ConnectionDocumentGetter implements DocumentGetter {
     private ConvenienceDatabaseConnection connection;
     private ImcmsServices services;
@@ -82,10 +84,22 @@ public class ConnectionDocumentGetter implements DocumentGetter {
             UserDomainObject publisher = userAndRoleMapper.getUser(Integer.parseInt(publisherIdStr));
             document.setPublisher(publisher);
         }
-        document.setStatus(Integer.parseInt(result[16]));
+        int publicationStatusInt = Integer.parseInt(result[16]);
+        Document.PublicationStatus publicationStatus = publicationStatusFromInt(publicationStatusInt) ;
+        document.setPublicationStatus(publicationStatus);
         document.setPublicationStartDatetime(DefaultDocumentMapper.parseDateFormat(dateFormat, result[17]));
         document.setPublicationEndDatetime(DefaultDocumentMapper.parseDateFormat(dateFormat, result[18]));
         return document;
+    }
+
+    private Document.PublicationStatus publicationStatusFromInt(int publicationStatusInt) {
+        Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
+        if ( Document.STATUS_PUBLICATION_APPROVED == publicationStatusInt ) {
+            publicationStatus = Document.PublicationStatus.APPROVED;
+        } else if ( Document.STATUS_PUBLICATION_DISAPPROVED == publicationStatusInt ) {
+                publicationStatus = Document.PublicationStatus.DISAPPROVED;
+        }
+        return publicationStatus;
     }
 
     private DocumentPermissionSetMapper getDocumentPermissionSetMapper() {

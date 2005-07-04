@@ -15,10 +15,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private TreeMap menus = new TreeMap();
 
     public TextDocumentDomainObject() {
-        this.attributes.permissionSetForRestrictedOne = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 ) ;
-        this.attributes.permissionSetForRestrictedTwo = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 );
-        this.attributes.permissionSetForRestrictedOneForNewDocuments = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
-        this.attributes.permissionSetForRestrictedTwoForNewDocuments = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 );
+        setPermissionSetForRestrictedOne(new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 )) ;
+        setPermissionSetForRestrictedTwo(new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 )) ;
+        setPermissionSetForRestrictedOneForNewDocuments(new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 )) ;
+        setPermissionSetForRestrictedTwoForNewDocuments(new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 )) ;
     }
 
     public Object clone() throws CloneNotSupportedException {

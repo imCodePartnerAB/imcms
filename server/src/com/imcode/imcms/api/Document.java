@@ -22,9 +22,13 @@ public class Document implements Serializable {
     ContentManagementSystem contentManagementSystem;
 
     private final static Logger log = Logger.getLogger( com.imcode.imcms.api.Document.class.getName() );
-    public static final int STATUS_NEW = DocumentDomainObject.STATUS_NEW;
-    public static final int STATUS_PUBLICATION_DISAPPROVED = DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED;
-    public static final int STATUS_PUBLICATION_APPROVED = DocumentDomainObject.STATUS_PUBLICATION_APPROVED;
+
+    /** @deprecated Use {@link Document.PublicationStatus#NEW} instead. */
+    public static final int STATUS_NEW = 0;
+    /** @deprecated Use {@link Document.PublicationStatus#DISAPPROVED} instead. */
+    public static final int STATUS_PUBLICATION_DISAPPROVED = 1;
+    /** @deprecated Use {@link Document.PublicationStatus#APPROVED} instead. */
+    public static final int STATUS_PUBLICATION_APPROVED = 2;
 
     protected Document( DocumentDomainObject document, ContentManagementSystem contentManagementSystem ) {
         this.internalDocument = document;
@@ -305,8 +309,9 @@ public class Document implements Serializable {
         internalDocument.addSection( section.internalSection );
     }
 
+    /** @deprecated Use {@link #setPublicationStatus} instead. */
     public void setStatus( int status ) {
-        internalDocument.setStatus( status );
+        internalDocument.setPublicationStatus( new PublicationStatus(status) );
     }
 
     public void setLanguage( Language language ) {
@@ -321,8 +326,9 @@ public class Document implements Serializable {
         return internalDocument.getPublicationEndDatetime();
     }
 
+    /** @deprecated Use {@link #getPublicationStatus} instead. */
     public int getStatus() {
-        return internalDocument.getStatus();
+        return internalDocument.getPublicationStatus().status ;
     }
 
     public void setVisibleInMenusForUnauthorizedUsers( boolean visibleInMenusForUnauthorizedUsers ) {
@@ -339,6 +345,46 @@ public class Document implements Serializable {
 
     public void setLinkableByOtherUsers(boolean linkableByOtherUsers) {
         internalDocument.setLinkableByOtherUsers(linkableByOtherUsers);
+    }
+
+    public PublicationStatus getPublicationStatus() {
+        return internalDocument.getPublicationStatus();
+    }
+
+    public void setPublicationStatus(PublicationStatus publicationStatus) {
+        internalDocument.setPublicationStatus(publicationStatus) ;
+    }
+
+    public static class PublicationStatus {
+        public static final PublicationStatus NEW = new PublicationStatus(STATUS_NEW);
+        public static final PublicationStatus APPROVED = new PublicationStatus(STATUS_PUBLICATION_APPROVED);
+        public static final PublicationStatus DISAPPROVED = new PublicationStatus(STATUS_PUBLICATION_DISAPPROVED);
+
+        private final int status;
+
+        private PublicationStatus(int status) {
+            this.status = status;
+        }
+
+        public String toString() {
+            return ""+status ;
+        }
+
+        public boolean equals(Object o) {
+            if ( this == o ) {
+                return true;
+            }
+            if ( o == null || getClass() != o.getClass() ) {
+                return false;
+            }
+
+            return status == ( (PublicationStatus) o ).status;
+
+        }
+
+        public int hashCode() {
+            return status;
+        }
     }
 
     public static class LifeCyclePhase {

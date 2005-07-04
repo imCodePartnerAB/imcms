@@ -5,6 +5,8 @@ import junit.framework.TestCase;
 
 import java.util.Date;
 
+import com.imcode.imcms.api.Document;
+
 public class TestDocumentDomainObject extends TestCase {
 
     DocumentDomainObject document ;
@@ -31,9 +33,9 @@ public class TestDocumentDomainObject extends TestCase {
 
     public void testGetPublicationStatus() throws Exception {
         assertEquals( DocumentDomainObject.LifeCyclePhase.NEW, document.getLifeCyclePhase() ) ;
-        document.setStatus( DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED );
+        document.setPublicationStatus( Document.PublicationStatus.DISAPPROVED );
         assertEquals( DocumentDomainObject.LifeCyclePhase.DISAPPROVED, document.getLifeCyclePhase() );
-        document.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
+        document.setPublicationStatus( Document.PublicationStatus.APPROVED );
         assertEquals( DocumentDomainObject.LifeCyclePhase.APPROVED, document.getLifeCyclePhase() );
         document.setPublicationStartDatetime( new Date( 0 ) );
         assertEquals( DocumentDomainObject.LifeCyclePhase.PUBLISHED, document.getLifeCyclePhase() );

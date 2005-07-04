@@ -1,10 +1,10 @@
 package imcode.server.parser;
 
-import imcode.server.document.textdocument.TextDocumentDomainObject;
+import com.imcode.imcms.api.Document;
 import imcode.server.document.DocumentPermissionSetDomainObject;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.user.UserDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 
 import java.util.Date;
@@ -33,7 +33,7 @@ public class TestMenuParser extends TestCase {
 
     public void testUserCantSeePublishedDocumentInMenuWithoutPermissions() {
         textDocument.setPublicationStartDatetime( new Date(0) );
-        textDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
+        textDocument.setPublicationStatus( Document.PublicationStatus.APPROVED );
         assertCanNotSeeDocumentInMenu();
     }
 
@@ -46,7 +46,7 @@ public class TestMenuParser extends TestCase {
         textDocument.setPermissionSetIdForRole( RoleDomainObject.USERS, DocumentPermissionSetDomainObject.TYPE_ID__READ );
         textDocument.setPublicationStartDatetime( new Date( 0 ) );
         assertCanNotSeeDocumentInMenu();
-        textDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
+        textDocument.setPublicationStatus( Document.PublicationStatus.APPROVED );
         assertCanSeeDocumentInMenu();
     }
 
@@ -79,7 +79,7 @@ public class TestMenuParser extends TestCase {
         textDocument.setVisibleInMenusForUnauthorizedUsers( true );
         assertCanNotSeeDocumentInMenu();
         textDocument.setPublicationStartDatetime( new Date( 0 ) );
-        textDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
+        textDocument.setPublicationStatus( Document.PublicationStatus.APPROVED );
         assertCanSeeDocumentInMenu();
     }
 

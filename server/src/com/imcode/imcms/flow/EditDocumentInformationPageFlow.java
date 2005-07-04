@@ -8,6 +8,7 @@ import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.api.Document;
 import imcode.server.document.SectionDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
@@ -52,10 +53,16 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER = "browseForCreator";
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER = "browseForMenuImage";
     public static final String PAGE__DOCUMENT_INFORMATION = "document_information";
-    private boolean adminButtonsHidden;
+
+    public static final String REQUEST_PARAMETER__STATUS__NEW = "new";
+    public static final String REQUEST_PARAMETER__STATUS__APPROVED = "approved";
+    public static final String REQUEST_PARAMETER__STATUS__DISAPPROVED = "disapproved";
+
     private static final LocalizedMessage BUTTON_TEXT__SELECT_USER = new LocalizedMessage( "templates/sv/AdminChangeUser.htm/2007" );
     private static final LocalizedMessage HEADLINE__SELECT_CREATOR = new LocalizedMessage( "server/src/com/imcode/imcms/flow/EditDocumentInformationPageFlow/select_creator_headline" );
     private static final LocalizedMessage HEADLINE__SELECT_PUBLISHER = new LocalizedMessage( "server/src/com/imcode/imcms/flow/EditDocumentInformationPageFlow/select_publisher_headline" );
+
+    private boolean adminButtonsHidden;
 
     public EditDocumentInformationPageFlow( DocumentDomainObject document, DispatchCommand returnCommand,
                                             SaveDocumentCommand saveDocumentCommand ) {
@@ -174,8 +181,9 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         String imageUrl = request.getParameter( REQUEST_PARAMETER__IMAGE );
         document.setMenuImage( imageUrl );
 
-        int status = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__STATUS ) );
-        document.setStatus( status );
+        String status = request.getParameter( REQUEST_PARAMETER__STATUS );
+        Document.PublicationStatus publicationStatus = publicationStatusFromString(status);
+        document.setPublicationStatus( publicationStatus );
 
         SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
         SimpleDateFormat timeFormat = new SimpleDateFormat( DateConstants.TIME_NO_SECONDS_FORMAT_STRING );
@@ -237,6 +245,18 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         document.setCreatedDatetime( createdDatetime );
         document.setModifiedDatetime( modifiedDatetime );
 
+    }
+
+    private static Document.PublicationStatus publicationStatusFromString(String status) {
+        Document.PublicationStatus publicationStatus = null ;
+        if (status.equals(REQUEST_PARAMETER__STATUS__NEW)) {
+            publicationStatus = Document.PublicationStatus.NEW;
+        } else if (status.equals(REQUEST_PARAMETER__STATUS__APPROVED)) {
+            publicationStatus = Document.PublicationStatus.APPROVED;
+        } else if (status.equals(REQUEST_PARAMETER__STATUS__DISAPPROVED)) {
+            publicationStatus = Document.PublicationStatus.DISAPPROVED;
+        }
+        return publicationStatus;
     }
 
     private static String[] parseKeywords( String keywordsString ) {

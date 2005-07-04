@@ -11,6 +11,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.api.Document;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;
@@ -124,7 +125,7 @@ public class ChangeImage extends HttpServlet {
                     FileDocumentDomainObject.FileDocumentFile file = (FileDocumentDomainObject.FileDocumentFile) files.values().iterator().next();
                     if ( null != file ) {
                         fileDocument.setHeadline(file.getFilename());
-                        fileDocument.setStatus(DocumentDomainObject.STATUS_PUBLICATION_APPROVED);
+                        fileDocument.setPublicationStatus(Document.PublicationStatus.APPROVED);
                         documentMapper.saveNewDocument(document, user);
                         image.setSourceAndClearSize(new FileDocumentImageSource(documentMapper.getDocumentReference(fileDocument)));
                     }

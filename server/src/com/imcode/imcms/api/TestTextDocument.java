@@ -68,16 +68,14 @@ public class TestTextDocument extends TestCase {
     public void testMenuGetVisible() {
         internalUser.addRole( readRole );
         otherTextDocumentDO.setPermissionSetIdForRole( readRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
-        otherTextDocumentDO.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
-        otherTextDocumentDO.setPublicationStartDatetime( new Date( 0 ) );
+        publish(otherTextDocumentDO);
         assertGetVisibleReturnDocuments();
     }
 
     public void testMenuGetVisibleWithArchived() {
         internalUser.addRole( readRole );
         otherTextDocumentDO.setPermissionSetIdForRole( readRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
-        otherTextDocumentDO.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
-        otherTextDocumentDO.setPublicationStartDatetime( new Date( 0 ) );
+        publish(otherTextDocumentDO);
         otherTextDocumentDO.setArchivedDatetime( new Date( 0 ) );
         assertGetVisibleDoNotReturnDocuments();
     }
@@ -98,7 +96,7 @@ public class TestTextDocument extends TestCase {
     }
 
     public void testMenuGetVisibleWithApprovedStatus() {
-        otherTextDocumentDO.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
+        otherTextDocumentDO.setPublicationStatus(Document.PublicationStatus.APPROVED );
         assertGetVisibleDoNotReturnDocuments();
     }
 
@@ -108,8 +106,7 @@ public class TestTextDocument extends TestCase {
     }
 
     public void testMenuGetVisibleWithPublished() {
-        otherTextDocumentDO.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
-        otherTextDocumentDO.setPublicationStartDatetime( new Date( 0 ) );
+        publish(otherTextDocumentDO);
         assertGetVisibleDoNotReturnDocuments();
     }
 
@@ -119,8 +116,7 @@ public class TestTextDocument extends TestCase {
     }
 
     public void testMenuGetVisibleWithPublishedAndVisibleInMenusForUnauthorizedUsers() {
-        otherTextDocumentDO.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
-        otherTextDocumentDO.setPublicationStartDatetime( new Date( 0 ) );
+        publish(otherTextDocumentDO);
         otherTextDocumentDO.setVisibleInMenusForUnauthorizedUsers( true );
         assertGetVisibleReturnDocuments();
     }
@@ -170,8 +166,12 @@ public class TestTextDocument extends TestCase {
     }
 
     private void publish(Document document) {
-        document.setStatus(DocumentDomainObject.STATUS_PUBLICATION_APPROVED);
-        document.setPublicationStartDatetime(new Date(0));
+        publish(document.getInternal()) ;
+    }
+
+    private void publish(DocumentDomainObject document) {
+        document.setPublicationStatus( Document.PublicationStatus.APPROVED );
+        document.setPublicationStartDatetime( new Date( 0 ) );
     }
 
     private static class MockDocumentReference extends DocumentReference {

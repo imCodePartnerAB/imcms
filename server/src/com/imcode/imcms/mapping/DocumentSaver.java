@@ -17,6 +17,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
+import com.imcode.imcms.api.Document;
 
 class DocumentSaver {
 
@@ -30,7 +31,7 @@ class DocumentSaver {
     }
 
     void saveDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
-                              final UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException {
+                      final UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException {
         if (!user.canEdit(oldDocument)) {
             throw new NoPermissionToEditDocumentException("No permission to edit document "+oldDocument.getId()) ;
         }
@@ -113,13 +114,25 @@ class DocumentSaver {
             makeIntSqlUpdateClause("owner_id", new Integer(creator.getId()), sqlUpdateColumns,
                                    sqlUpdateValues);
         }
-        makeIntSqlUpdateClause("status", new Integer(document.getStatus()), sqlUpdateColumns, sqlUpdateValues);
+        Document.PublicationStatus publicationStatus = document.getPublicationStatus();
+        int publicationStatusInt = convertPublicationStatusToInt(publicationStatus);
+        makeIntSqlUpdateClause("status", new Integer(publicationStatusInt), sqlUpdateColumns, sqlUpdateValues);
 
         sqlStr.append(StringUtils.join(sqlUpdateColumns.iterator(), ","));
         sqlStr.append(" where meta_id = ?");
         sqlUpdateValues.add("" + document.getId());
         String[] params = (String[]) sqlUpdateValues.toArray(new String[sqlUpdateValues.size()]);
         documentMapper.getDatabase().executeUpdateQuery(sqlStr.toString(), params);
+    }
+
+    private int convertPublicationStatusToInt(Document.PublicationStatus publicationStatus) {
+        int publicationStatusInt = Document.STATUS_NEW;
+        if ( Document.PublicationStatus.APPROVED.equals(publicationStatus) ) {
+            publicationStatusInt = Document.STATUS_PUBLICATION_APPROVED ;
+        } else if ( Document.PublicationStatus.DISAPPROVED.equals(publicationStatus) ) {
+            publicationStatusInt = Document.STATUS_PUBLICATION_DISAPPROVED ;
+        }
+        return publicationStatusInt;
     }
 
     private void updateDocumentSectionsCategoriesKeywords(DocumentDomainObject document) {
@@ -131,7 +144,7 @@ class DocumentSaver {
     }
 
     void saveNewDocument(UserDomainObject user,
-                                 DocumentDomainObject document) throws NoPermissionToAddDocumentToMenuException {
+                         DocumentDomainObject document) throws NoPermissionToAddDocumentToMenuException {
         if (!user.canEdit(document)) {
             return; // TODO: More specific check needed. Throw exception ?
         }
@@ -249,7 +262,7 @@ class DocumentSaver {
             { "activate", "1"},
             { "archived_datetime", Utility.makeSqlStringFromDate(document.getArchivedDatetime())},
             { "publisher_id", null != document.getPublisher() ? document.getPublisher().getId() + "" : null},
-            { "status", "" + document.getStatus()},
+            { "status", "" + document.getPublicationStatus()},
             { "publication_start_datetime", Utility.makeSqlStringFromDate(document.getPublicationStartDatetime())},
             { "publication_end_datetime", Utility.makeSqlStringFromDate(document.getPublicationEndDatetime())}
         }));

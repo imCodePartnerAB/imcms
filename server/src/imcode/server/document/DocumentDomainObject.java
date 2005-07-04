@@ -5,16 +5,15 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;
 import org.apache.commons.collections.map.TypedMap;
+import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.*;
 
-public abstract class DocumentDomainObject implements Cloneable, Serializable {
+import com.imcode.imcms.api.Document;
 
-    public static final int STATUS_NEW = 0;
-    public static final int STATUS_PUBLICATION_DISAPPROVED = 1;
-    public static final int STATUS_PUBLICATION_APPROVED = 2;
+public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public static final int ID_NEW = 0;
 
@@ -202,20 +201,15 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.sections = new HashSet( Arrays.asList( sections ) );
     }
 
-    public int getStatus() {
-        return attributes.status;
+    public Document.PublicationStatus getPublicationStatus() {
+        return attributes.publicationStatus;
     }
 
-    public void setStatus( int status ) {
-        switch ( status ) {
-            case STATUS_NEW:
-            case STATUS_PUBLICATION_APPROVED:
-            case STATUS_PUBLICATION_DISAPPROVED:
-                attributes.status = status;
-                break;
-            default:
-                throw new IllegalArgumentException( "Bad status." );
+    public void setPublicationStatus( Document.PublicationStatus status ) {
+        if (null == status) {
+            throw new NullArgumentException("status") ;
         }
+        attributes.publicationStatus = status;
     }
 
     public String getTarget() {
@@ -297,11 +291,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
         final DocumentDomainObject document = (DocumentDomainObject)o;
 
-        if ( attributes.id != document.attributes.id ) {
-            return false;
-        }
+        return attributes.id == document.attributes.id;
 
-        return true;
     }
 
     public CategoryDomainObject[] getCategoriesOfType( CategoryTypeDomainObject type ) {
@@ -362,12 +353,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     private boolean isPublishedAtTime( Date date ) {
-        Attributes documentProperties = this.attributes;
-        boolean publicationStartDatetimeIsNotNullAndInThePast = documentProperties.publicationStartDatetime != null
-                                                                && documentProperties.publicationStartDatetime.before( date );
-        boolean publicationEndDatetimeIsNullOrInTheFuture = documentProperties.publicationEndDatetime == null
-                                                            || documentProperties.publicationEndDatetime.after( date );
-        boolean statusIsApproved = documentProperties.status == STATUS_PUBLICATION_APPROVED;
+        Attributes documentAttributes = this.attributes;
+        boolean publicationStartDatetimeIsNotNullAndInThePast = documentAttributes.publicationStartDatetime != null
+                                                                && documentAttributes.publicationStartDatetime.before( date );
+        boolean publicationEndDatetimeIsNullOrInTheFuture = documentAttributes.publicationEndDatetime == null
+                                                            || documentAttributes.publicationEndDatetime.after( date );
+        boolean statusIsApproved = Document.PublicationStatus.APPROVED.equals(documentAttributes.publicationStatus);
         boolean isPublished = statusIsApproved && publicationStartDatetimeIsNotNullAndInThePast
                               && publicationEndDatetimeIsNullOrInTheFuture;
         return isPublished;
@@ -414,10 +405,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public abstract void accept( DocumentVisitor documentVisitor );
 
     public LifeCyclePhase getLifeCyclePhase() {
-        DocumentDomainObject.LifeCyclePhase lifeCyclePhase = null ;
-        if ( DocumentDomainObject.STATUS_NEW == getStatus() ) {
+        DocumentDomainObject.LifeCyclePhase lifeCyclePhase;
+        Document.PublicationStatus publicationStatus = getPublicationStatus();
+        if ( Document.PublicationStatus.NEW.equals(publicationStatus) ) {
             lifeCyclePhase = LifeCyclePhase.NEW;
-        } else if ( DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == getStatus() ) {
+        } else if ( Document.PublicationStatus.DISAPPROVED.equals(publicationStatus) ) {
             lifeCyclePhase = LifeCyclePhase.DISAPPROVED;
         } else if ( isActive() ) {
             lifeCyclePhase = LifeCyclePhase.PUBLISHED;
@@ -458,17 +450,17 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private Date publicationEndDatetime;
         private UserDomainObject publisher;
         private boolean searchDisabled;
-        private int status;
+        private Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
         private String target;
         private boolean visibleInMenusForUnauthorizedUsers;
 
         private Set categories = new HashSet();
         private Set keywords = new HashSet();
         private Set sections = new HashSet();
-        public DocumentPermissionSetDomainObject permissionSetForRestrictedOne ;
-        public DocumentPermissionSetDomainObject permissionSetForRestrictedTwo ;
-        public DocumentPermissionSetDomainObject permissionSetForRestrictedOneForNewDocuments ;
-        public DocumentPermissionSetDomainObject permissionSetForRestrictedTwoForNewDocuments ;
+        private DocumentPermissionSetDomainObject permissionSetForRestrictedOne ;
+        private DocumentPermissionSetDomainObject permissionSetForRestrictedTwo ;
+        private DocumentPermissionSetDomainObject permissionSetForRestrictedOneForNewDocuments ;
+        private DocumentPermissionSetDomainObject permissionSetForRestrictedTwoForNewDocuments ;
 
         private Map rolesMappedToDocumentPermissionSetIds = new HashMap();
 
@@ -502,4 +494,5 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             return name ;
         }
     }
+
 }

@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.flow.DocumentPageFlow;
+import com.imcode.imcms.api.Document;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -158,7 +159,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
         document.setPublicationStartDatetime(now);
         document.setArchivedDatetime(null);
         document.setPublicationEndDatetime(null);
-        document.setStatus(DocumentDomainObject.STATUS_NEW);
+        document.setPublicationStatus(Document.PublicationStatus.NEW);
     }
 
     public SectionDomainObject[] getAllSections() {
