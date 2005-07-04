@@ -65,7 +65,7 @@
             TextDocument.MenuItem menuItem = menuItems[i];
             Document linkedDocument = menuItem.getDocument();
             %><li><%=makeLink( linkedDocument, request )%><br>
-            Manual sort key:<%=menuItem.getManualNumber()%><br>
+            Manual sort key:<%=menuItem.getSortKey()%><br>
             Tree key:<%=menuItem.getTreeKey()%></li><%
         }
         %></ul><%
