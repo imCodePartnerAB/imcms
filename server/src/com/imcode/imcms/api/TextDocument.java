@@ -302,16 +302,19 @@ public class TextDocument extends Document {
             return new TreeKey(internalMenuItem.getTreeSortKey());
         }
 
-        public void setTreeKey(String treeSortKey) {
-            TreeSortKeyDomainObject internalTreeSortKey = new TreeSortKeyDomainObject(treeSortKey);
-            this.internalMenuItem.setTreeSortKey(internalTreeSortKey); 
+        public void setTreeKey(TreeKey treeKey) {
+            this.internalMenuItem.setTreeSortKey(treeKey.internalTreeSortKey);
         }
 
-        public class TreeKey {
+        public static class TreeKey {
             TreeSortKeyDomainObject internalTreeSortKey;
 
             public TreeKey(TreeSortKeyDomainObject internalTreeSortKey) {
                 this.internalTreeSortKey = internalTreeSortKey;
+            }
+
+            public TreeKey(String treeSortKey) {
+                this.internalTreeSortKey = new TreeSortKeyDomainObject(treeSortKey); ;
             }
 
             public int getLevelCount() {
