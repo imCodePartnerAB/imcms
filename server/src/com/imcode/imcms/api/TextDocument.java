@@ -302,6 +302,11 @@ public class TextDocument extends Document {
             return new TreeKey(internalMenuItem.getTreeSortKey());
         }
 
+        public void setTreeKey(String treeSortKey) {
+            TreeSortKeyDomainObject internalTreeSortKey = new TreeSortKeyDomainObject(treeSortKey);
+            this.internalMenuItem.setTreeSortKey(internalTreeSortKey); 
+        }
+
         public class TreeKey {
             TreeSortKeyDomainObject internalTreeSortKey;
 
