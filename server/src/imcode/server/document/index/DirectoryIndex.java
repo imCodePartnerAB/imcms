@@ -160,7 +160,7 @@ class DirectoryIndex implements DocumentIndex {
     }
 
     private void logIndexingStarting( int documentCount ) {
-        log.info( "Building index of all " + documentCount + " documents" );
+        log.debug( "Building index of all " + documentCount + " documents" );
     }
 
     private void logIndexingProgress( int documentsCompleted, int numberOfDocuments, StopWatch stopWatch ) {

@@ -3,29 +3,32 @@ package imcode.server.document.index;
 import imcode.server.document.DocumentDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.IndexReader;
+import org.apache.log4j.NDC;
+import org.apache.commons.lang.ClassUtils;
 
-import java.io.File;
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 class IndexBuildingThread extends Thread {
     private Set documentsToAddToNewIndex = Collections.synchronizedSet(new LinkedHashSet());
     private Set documentsToRemoveFromNewIndex = Collections.synchronizedSet(new LinkedHashSet());
-    private final File indexDirectory;
     private boolean indexing;
     private final static Logger log = Logger.getLogger(IndexBuildingThread.class.getName());
+    private BackgroundIndexBuilder backgroundIndexBuilder;
 
-    IndexBuildingThread(File indexDirectory) {
-        super("Background indexing thread");
+    IndexBuildingThread(BackgroundIndexBuilder backgroundIndexBuilder) {
+        setName(ClassUtils.getShortClassName(getClass())+" "+getName());
+        this.backgroundIndexBuilder = backgroundIndexBuilder;
         setPriority(Thread.MIN_PRIORITY);
         setDaemon(true);
-        this.indexDirectory = indexDirectory ;
     }
 
     public void run() {
+        NDC.push(Thread.currentThread().getName());
         try {
-            File newIndexDirectory = getDirectoryForNewIndex( indexDirectory );
-            DirectoryIndex newIndex = new DirectoryIndex(newIndexDirectory) ;
+            DirectoryIndex newIndex = new DirectoryIndex(backgroundIndexBuilder.getNewIndexDirectory()) ;
             synchronized ( this ) {
                 indexing = true ;
             }
@@ -33,7 +36,7 @@ class IndexBuildingThread extends Thread {
             synchronized ( this ) {
                 indexing = false ;
                 considerDocumentsAddedOrRemovedDuringIndexing(newIndex);
-                FileUtility.backupRename( newIndex.getDirectory(), indexDirectory );
+                FileUtility.backupRename( newIndex.getDirectory(), backgroundIndexBuilder.getIndexDirectory() );
             }
             log.info("Indexing completed.");
         } catch ( Throwable e ) {
@@ -42,16 +45,9 @@ class IndexBuildingThread extends Thread {
             synchronized ( this ) {
                 indexing = false ;
             }
+            backgroundIndexBuilder.notifyIndexingDone();
+            NDC.pop() ;
         }
-    }
-
-    private File getDirectoryForNewIndex(File indexDirectory) {
-        File newIndexDirectory = indexDirectory ;
-        if (IndexReader.indexExists( newIndexDirectory )) {
-            newIndexDirectory = new File(newIndexDirectory.getParentFile(), newIndexDirectory.getName()
-                                                                             + ".new");
-        }
-        return newIndexDirectory;
     }
 
     private synchronized void considerDocumentsAddedOrRemovedDuringIndexing(DirectoryIndex index) throws IndexException {
