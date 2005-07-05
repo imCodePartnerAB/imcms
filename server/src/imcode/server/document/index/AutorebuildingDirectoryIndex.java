@@ -17,14 +17,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class AutorebuildingDirectoryIndex implements DocumentIndex {
-
     private final static Logger log = Logger.getLogger(AutorebuildingDirectoryIndex.class.getName());
 
     private final DirectoryIndex index;
     private final File indexDirectory;
     private final int indexingSchedulePeriodInMilliseconds;
 
-    private IndexBuildingThread indexBuildingThread ;
+    private IndexBuildingThread indexBuildingThread;
 
     static {
         // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow queries?
@@ -32,25 +31,29 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
     }
 
     public AutorebuildingDirectoryIndex(File indexDirectory, int indexingSchedulePeriodInMinutes) {
-        this.indexDirectory = indexDirectory ;
-        this.indexingSchedulePeriodInMilliseconds = indexingSchedulePeriodInMinutes * DateUtils.MILLIS_IN_MINUTE ;
+        this.indexDirectory = indexDirectory;
+        this.indexingSchedulePeriodInMilliseconds = indexingSchedulePeriodInMinutes * DateUtils.MILLIS_IN_MINUTE;
         this.index = new DirectoryIndex(indexDirectory);
-        Timer scheduledIndexBuildingTimer = new Timer(true);
-        long scheduledIndexDelay = 0 ;
-        if ( IndexReader.indexExists(indexDirectory) ) {
-            try {
-                long indexModifiedTime = IndexReader.lastModified(indexDirectory);
-                long time = System.currentTimeMillis();
-                long nextTime = indexModifiedTime + indexingSchedulePeriodInMilliseconds;
-                if (nextTime > time) {
-                    log.info("First indexing scheduled at " + formatDatetime(new Date(nextTime)));
-                    scheduledIndexDelay = nextTime - time;
+        if ( indexingSchedulePeriodInMilliseconds <= 0 ) {
+            log.info("Scheduled indexing is disabled.") ;
+        } else {
+            Timer scheduledIndexBuildingTimer = new Timer(true);
+            long scheduledIndexDelay = 0;
+            if ( IndexReader.indexExists(indexDirectory) ) {
+                try {
+                    long indexModifiedTime = IndexReader.lastModified(indexDirectory);
+                    long time = System.currentTimeMillis();
+                    long nextTime = indexModifiedTime + indexingSchedulePeriodInMilliseconds;
+                    if ( nextTime > time ) {
+                        log.info("First indexing scheduled at " + formatDatetime(new Date(nextTime)));
+                        scheduledIndexDelay = nextTime - time;
+                    }
+                } catch ( IOException e ) {
+                    log.warn("Failed to get last modified time of index.", e);
                 }
-            } catch ( IOException e ) {
-                log.warn("Failed to get last modified time of index.", e) ;
             }
+            scheduledIndexBuildingTimer.scheduleAtFixedRate(new ScheduledIndexingTimerTask(), scheduledIndexDelay, indexingSchedulePeriodInMilliseconds);
         }
-        scheduledIndexBuildingTimer.scheduleAtFixedRate(new ScheduledIndexingTimerTask(), scheduledIndexDelay, indexingSchedulePeriodInMilliseconds);
     }
 
     private String formatDatetime(Date nextExecutionTime) {
@@ -58,9 +61,9 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
     }
 
     public void indexDocument(DocumentDomainObject document) {
-        log.debug( "Adding document.") ;
-        if (null != indexBuildingThread) {
-            indexBuildingThread.addDocument(document) ;
+        log.debug("Adding document.");
+        if ( null != indexBuildingThread ) {
+            indexBuildingThread.addDocument(document);
         }
         try {
             index.indexDocument(document);
@@ -70,9 +73,9 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
     }
 
     public void removeDocument(DocumentDomainObject document) {
-        log.debug( "Removing document.") ;
-        if (null != indexBuildingThread) {
-            indexBuildingThread.removeDocument(document) ;
+        log.debug("Removing document.");
+        if ( null != indexBuildingThread ) {
+            indexBuildingThread.removeDocument(document);
         }
         try {
             index.removeDocument(document);
@@ -85,7 +88,7 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
                                          UserDomainObject searchingUser) throws IndexException {
         try {
             DocumentDomainObject[] documents = index.search(query, searchingUser);
-            if (index.isInconsistent()) {
+            if ( index.isInconsistent() ) {
                 rebuildBecauseOfError("Index is inconsistent.", null);
             }
             return documents;
@@ -105,13 +108,13 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
     }
 
     private void rebuildInBackground() {
-        if (null == indexBuildingThread || !indexBuildingThread.isAlive()) {
+        if ( null == indexBuildingThread || !indexBuildingThread.isAlive() ) {
             indexBuildingThread = new IndexBuildingThread(indexDirectory);
         }
         try {
             indexBuildingThread.start();
         } catch ( IllegalThreadStateException itse ) {
-            log.debug("Ignoring request to build new index. Already in progress.") ;
+            log.debug("Ignoring request to build new index. Already in progress.");
         }
     }
 

@@ -17,7 +17,7 @@ public class Config {
     private String defaultLanguage;
     private String sessionCookieDomain;
     private String fileAdminRootPaths;
-    private int indexingSchedulePeriodInMinutes = 1440 ;
+    private int indexingSchedulePeriodInMinutes = 0 ;
     private String documentPathPrefix;
     private int documentCacheMaxSize = 100 ;
     private String keyStorePath ;
