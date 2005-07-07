@@ -10,7 +10,6 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
@@ -30,29 +29,33 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
     }
 
     public AutorebuildingDirectoryIndex(File indexDirectory, int indexingSchedulePeriodInMinutes) {
-        backgroundIndexBuilder = new BackgroundIndexBuilder(indexDirectory);
-        this.indexingSchedulePeriodInMilliseconds = indexingSchedulePeriodInMinutes * DateUtils.MILLIS_IN_MINUTE;
         this.index = new DirectoryIndex(indexDirectory);
+        this.indexingSchedulePeriodInMilliseconds = indexingSchedulePeriodInMinutes * DateUtils.MILLIS_IN_MINUTE;
 
+        Date nextTime = getNextScheduledIndexingTime(indexDirectory, indexingSchedulePeriodInMilliseconds);
+        indexDirectory.setLastModified(System.currentTimeMillis()) ;
+        backgroundIndexBuilder = new BackgroundIndexBuilder(indexDirectory);
+        if (null != nextTime) {
+            scheduledIndexBuildingTimer.schedule(new ScheduledIndexingTimerTask(), nextTime);
+        }
+    }
+
+    private Date getNextScheduledIndexingTime(File indexDirectory, int indexingSchedulePeriodInMilliseconds) {
+        Date nextTime = null ;
         if ( indexingSchedulePeriodInMilliseconds <= 0 ) {
             log.info("Scheduled indexing is disabled.") ;
         } else {
-            Date nextTime = new Date();
             if ( IndexReader.indexExists(indexDirectory) ) {
-                try {
-                    long indexModifiedTime = IndexReader.lastModified(indexDirectory);
-                    long time = System.currentTimeMillis();
-                    long headStartOverOlderThreads = 10000 ;
-                    nextTime = new Date(indexModifiedTime + indexingSchedulePeriodInMilliseconds - headStartOverOlderThreads);
-                    if ( nextTime.getTime() > time ) {
-                        log.info("First indexing scheduled at " + formatDatetime(nextTime));
-                    }
-                } catch ( IOException e ) {
-                    log.warn("Failed to get last modified time of index.", e);
+                long indexModifiedTime = indexDirectory.lastModified();
+                long time = System.currentTimeMillis();
+                long headStartOverOlderThreads = 10000 ;
+                nextTime = new Date(indexModifiedTime + indexingSchedulePeriodInMilliseconds - headStartOverOlderThreads);
+                if ( nextTime.getTime() > time ) {
+                    log.info("First indexing scheduled at " + formatDatetime(nextTime));
                 }
             }
-            scheduledIndexBuildingTimer.schedule(new ScheduledIndexingTimerTask(), nextTime);
         }
+        return nextTime;
     }
 
     private String formatDatetime(Date nextExecutionTime) {
