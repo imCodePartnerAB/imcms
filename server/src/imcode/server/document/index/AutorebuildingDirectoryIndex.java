@@ -52,6 +52,8 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
                 nextTime = new Date(indexModifiedTime + indexingSchedulePeriodInMilliseconds - headStartOverOlderThreads);
                 if ( nextTime.getTime() > time ) {
                     log.info("First indexing scheduled at " + formatDatetime(nextTime));
+                } else {
+                    nextTime.setTime(time);
                 }
             }
         }
