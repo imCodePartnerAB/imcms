@@ -41,7 +41,8 @@ public class AdminManager extends Administrator {
     private final static String HTML_ADMINTASK = "AdminManager_adminTask_element.htm";
     private final static String HTML_USERADMINTASK = "AdminManager_useradminTask_element.htm";
     public final static String REQUEST_PARAMETER__SHOW = "show";
-    public final static String PARAMETER_VALUE__SHOW_NEW = "new";
+    public final static String PARAMETER_VALUE__SHOW_CREATE = "create";
+    public final static String PARAMETER_VALUE__SHOW_RECENT = "recent";
     public final static String PARAMETER_VALUE__SHOW_REMINDERS = "reminders";
     public final static String PARAMETER_VALUE__SHOW_SUMMARY = "summary";
     public final static String PARAMETER_VALUE__SHOW_SEARCH = "search";
@@ -96,39 +97,45 @@ public class AdminManager extends Administrator {
                 String createDocumentAction = request.getParameter( REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION );
                 if ( REQUEST_PARAMETER__ACTION__COPY.equals( createDocumentAction ) ) {
                     documentMapper.copyDocument( parentDocument, user );
-                    createAndShowAdminManagerPage( request, response, null );
+                    createAndShowAdminManagerPage( request, response, null, PARAMETER_VALUE__SHOW_RECENT);
                 } else {
                     if (!(parentDocument instanceof TextDocumentDomainObject)) {
-                        createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__PARENT_MUST_BE_TEXT_DOCUMENT );
+                        createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__PARENT_MUST_BE_TEXT_DOCUMENT, PARAMETER_VALUE__SHOW_CREATE);
                         return ;
                     }
                     int documentTypeId = Integer.parseInt( createDocumentAction );
 
                     DocumentPageFlow.SaveDocumentCommand saveNewDocumentCommand = new SaveNewDocumentCommand();
-                    DispatchCommand returnCommand = new ShowAdminManagerPageCommand();
+                    DispatchCommand returnCommand = new ShowRecentChangesPageCommand();
 
                     AddDoc.DocumentCreator documentCreator = new AddDoc.DocumentCreator( saveNewDocumentCommand, returnCommand, getServletContext() );
                     documentCreator.createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument, request, response );
                 }
             } catch ( NumberFormatException nfe ) {
-                createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__NO_PARENT_ID );
+                createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__NO_PARENT_ID, PARAMETER_VALUE__SHOW_CREATE);
             } catch ( NoPermissionToCreateDocumentException ex ) {
-                createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__NO_CREATE_PERMISSION );
+                createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__NO_CREATE_PERMISSION, PARAMETER_VALUE__SHOW_CREATE);
             } catch ( NoPermissionToAddDocumentToMenuException e ) {
                 throw new UnhandledException(e);
             }
         } else {
-            createAndShowAdminManagerPage( request, response, null );
+            createAndShowAdminManagerPage( request, response, null);
         }
     }
 
     private void createAndShowAdminManagerPage( HttpServletRequest request, HttpServletResponse response,
                                                 LocalizedMessage errorMessage ) throws IOException, ServletException {
+
+        String tabToShow = null != request.getParameter( REQUEST_PARAMETER__SHOW )
+                           ? request.getParameter( REQUEST_PARAMETER__SHOW ) : PARAMETER_VALUE__SHOW_CREATE;
+
+        createAndShowAdminManagerPage(request, response, errorMessage, tabToShow);
+    }
+
+    private void createAndShowAdminManagerPage(HttpServletRequest request, HttpServletResponse response, LocalizedMessage errorMessage, String tabToShow) throws IOException, ServletException {
         UserDomainObject loggedOnUser = Utility.getLoggedOnUser( request );
         ImcmsServices service = Imcms.getServices();
         final DefaultDocumentMapper documentMapper = service.getDefaultDocumentMapper();
-        String tabToShow = null != request.getParameter( REQUEST_PARAMETER__SHOW )
-                           ? request.getParameter( REQUEST_PARAMETER__SHOW ) : PARAMETER_VALUE__SHOW_NEW;
 
         String html_admin_part = "";
 
@@ -169,13 +176,19 @@ public class AdminManager extends Administrator {
         }
 
         AdminManagerPage adminManagerPage = null;
-        if ( tabToShow.equals( PARAMETER_VALUE__SHOW_NEW ) ) {
+        if ( tabToShow.equals( PARAMETER_VALUE__SHOW_CREATE ) ) {
+            AdminManagerPage newDocumentsAdminManagerPage = new AdminManagerPage();
+            newDocumentsAdminManagerPage.setTabName( PARAMETER_VALUE__SHOW_CREATE );
+            newDocumentsAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0" ) );
+            adminManagerPage = newDocumentsAdminManagerPage;
+
+        } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_RECENT ) ) {
 
             newDocumentsSubreport.setMaxDocumentCount( 10 );
 
             AdminManagerPage newDocumentsAdminManagerPage = new AdminManagerPage();
-            newDocumentsAdminManagerPage.setTabName( "new" );
-            newDocumentsAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0" ) );
+            newDocumentsAdminManagerPage.setTabName( PARAMETER_VALUE__SHOW_RECENT );
+            newDocumentsAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1" ) );
 
             newDocumentsAdminManagerPage.addSubreport( newDocumentsSubreport );
 
@@ -187,8 +200,8 @@ public class AdminManager extends Administrator {
         } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_REMINDERS ) ) {
 
             AdminManagerPage reminderAdminManagerPage = new AdminManagerPage();
-            reminderAdminManagerPage.setTabName( "reminders" );
-            reminderAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1" ) );
+            reminderAdminManagerPage.setTabName( PARAMETER_VALUE__SHOW_REMINDERS );
+            reminderAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/2" ) );
 
             documentsArchivedWithinOneWeekSubreport.setMaxDocumentCount( 10 );
             reminderAdminManagerPage.addSubreport( documentsArchivedWithinOneWeekSubreport );
@@ -204,8 +217,8 @@ public class AdminManager extends Administrator {
         } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_SUMMARY ) ) {
 
             AdminManagerPage summaryAdminManagerPage = new AdminManagerPage();
-            summaryAdminManagerPage.setTabName( "summary" );
-            summaryAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/2" ) );
+            summaryAdminManagerPage.setTabName( PARAMETER_VALUE__SHOW_SUMMARY );
+            summaryAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/3" ) );
 
             summaryAdminManagerPage.addSubreport( newDocumentsSubreport );
 
@@ -230,7 +243,7 @@ public class AdminManager extends Administrator {
                     documentFinder.forward( request, response );
                 }
             };
-            searchAdminManagerPage.setTabName( "search" );
+            searchAdminManagerPage.setTabName( PARAMETER_VALUE__SHOW_SEARCH );
             searchAdminManagerPage.setHeading( new LocalizedMessage( "global/Search" ) );
             adminManagerPage = searchAdminManagerPage;
         }
@@ -570,10 +583,10 @@ public class AdminManager extends Administrator {
         }
     }
 
-    private class ShowAdminManagerPageCommand implements DispatchCommand {
+    private class ShowRecentChangesPageCommand implements DispatchCommand {
 
         public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-            createAndShowAdminManagerPage( request, response, null );
+            createAndShowAdminManagerPage( request, response, null, PARAMETER_VALUE__SHOW_RECENT );
         }
     }
 } // End of class

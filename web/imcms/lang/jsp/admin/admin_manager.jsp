@@ -20,10 +20,11 @@
 
 <%
     Tab[] tabs = {
-        new Tab("new", "<? web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0 ?>", "AdminManager?show=new" ),
-        new Tab("reminders", "<? web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1 ?>", "AdminManager?show=reminders"),
-        new Tab("summary", "<? web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/2 ?>", "AdminManager?show=summary"),
-        new Tab("search", "<? global/Search ?>", "AdminManager?show=search")
+        new Tab(AdminManager.PARAMETER_VALUE__SHOW_CREATE, "<? web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0 ?>", "AdminManager?show=" + AdminManager.PARAMETER_VALUE__SHOW_CREATE ),
+        new Tab(AdminManager.PARAMETER_VALUE__SHOW_RECENT, "<? web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1 ?>", "AdminManager?show=" + AdminManager.PARAMETER_VALUE__SHOW_RECENT ),
+        new Tab(AdminManager.PARAMETER_VALUE__SHOW_REMINDERS, "<? web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/2 ?>", "AdminManager?show=" + AdminManager.PARAMETER_VALUE__SHOW_REMINDERS),
+        new Tab(AdminManager.PARAMETER_VALUE__SHOW_SUMMARY, "<? web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/3 ?>", "AdminManager?show=" + AdminManager.PARAMETER_VALUE__SHOW_SUMMARY),
+        new Tab(AdminManager.PARAMETER_VALUE__SHOW_SEARCH, "<? global/Search ?>", "AdminManager?show=" + AdminManager.PARAMETER_VALUE__SHOW_SEARCH)
     } ;
 
     String tabString = getTabs(tabs, adminManagerPage.getTabName(), request ) ;
@@ -91,8 +92,8 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
 	} %>
 	<table border="0" cellspacing="0" cellpadding="2" width="656">
 	<form method="POST" action="AdminManager">
-	<input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__SHOW %>" value="<%= adminManagerPage.getTabName() %>"><%
-	if (AdminManager.PARAMETER_VALUE__SHOW_NEW.equals( adminManagerPage.getTabName() ) ) { %>
+    <input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__SHOW %>" value="<%= adminManagerPage.getTabName() %>"><%
+    if (AdminManager.PARAMETER_VALUE__SHOW_CREATE.equals( adminManagerPage.getTabName() ) || AdminManager.PARAMETER_VALUE__SHOW_RECENT.equals( adminManagerPage.getTabName() ) ) {%>
 	<tr>
 		<td><img src="<%= imagesPath %>/1x1.gif" width="1" height="26"></td>
 	</tr>
@@ -122,7 +123,10 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
 		<input type="text" name="<%= AdminManager.REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID %>" value="" size="5">&nbsp;
 		<input type="submit" name="<%= AdminManager.REQUEST_PARAMETER__CREATE_NEW_DOCUMENT %>" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/create_button ?>" class="imcmsFormBtnSmall"></td>
 	</tr>
-	</table><%
+    <tr>
+		<td><img src="<%= imagesPath %>/1x1.gif" width="1" height="10"></td>
+	</tr>
+    </table><%
 	}
 
 	List subreports = adminManagerPage.getSubreports() ;
