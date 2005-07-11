@@ -9,7 +9,7 @@ public class TestImcmsAuthenticatorAndUserAndRoleMapper extends TestCase {
         MockDatabase database = new MockDatabase();
         database.addExpectedSqlCall(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("users", "Test"), new Integer(1));
 
-        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( database, null );
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( database, null);
         UserDomainObject user = new UserDomainObject();
         user.setLoginName( "Test" );
         user.setImcmsExternal( true );

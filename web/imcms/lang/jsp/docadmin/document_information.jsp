@@ -7,7 +7,6 @@
             com.imcode.imcms.api.Document,
             imcode.server.Imcms,
             imcode.server.ImcmsServices,
-            imcode.server.LanguageMapper,
             imcode.server.document.CategoryDomainObject,
             imcode.server.document.CategoryTypeDomainObject,
             imcode.server.document.DocumentDomainObject,
@@ -18,7 +17,6 @@
             imcode.util.Html,
             imcode.util.HttpSessionUtils,
             imcode.util.Utility,
-            org.apache.commons.collections.Transformer,
             org.apache.commons.lang.ObjectUtils,
             org.apache.commons.lang.StringEscapeUtils,
             org.apache.commons.lang.StringUtils,
@@ -30,7 +28,7 @@
             java.util.*,
             java.util.regex.Pattern"
 
-%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
+%><%@ page import="imcode.util.ToStringPairTransformer"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     final ImcmsServices service = Imcms.getServices();
@@ -321,13 +319,13 @@ function checkFocus() {
 		<a href="$contextPath/imcms/$language/jsp/section_descriptions.jsp" target="_blank"><? global/view ?> info</a><br>
 		<img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
 		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SECTIONS %>" size="<%= (sections.length > 5) ? 5 : sections.length %>" multiple><%
-		Transformer sectionToStrings = new Transformer() {
-			public Object transform( Object o ) {
+		ToStringPairTransformer sectionToStrings = new ToStringPairTransformer() {
+			public String[] transformToStringPair( Object o ) {
 				SectionDomainObject section = (SectionDomainObject) o ;
 				return new String[] { ""+section.getId(), section.getName() } ;
 			}
 		} ; %>
-		<%= Html.createOptionList( Arrays.asList( sections ), Arrays.asList(documentSections), sectionToStrings ) %>
+		<%= Html.createOptionList( Arrays.asList( sections ), documentSections, sectionToStrings ) %>
 		</select>
 		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_section ?>
 		<%=
@@ -349,9 +347,9 @@ function checkFocus() {
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/26 ?></td>
 		<td class="imcmsAdmText">
 		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__LANGUAGE %>" size="1" onFocus="selFocused = true;">
-			<%= LanguageMapper.getLanguageOptionList( user, document.getLanguageIso639_2() ) %>
+			<%= service.getLanguageMapper().createLanguagesOptionList( user, document.getLanguageIso639_2() ) %>
 		</select>
-		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_language ?> <%= LanguageMapper.getCurrentLanguageNameInUsersLanguage( user, document.getLanguageIso639_2() )%></td>
+		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_language ?> <%= service.getLanguageMapper().getCurrentLanguageNameInUsersLanguage( user, document.getLanguageIso639_2() )%></td>
 	</tr>
 	<tr>
 		<td colspan="2">#gui_hr( "cccccc" )</td>

@@ -143,7 +143,7 @@
                             new Integer( 1000 ),
                         } ;
                     %>
-                    <%= Html.createOptionList(Arrays.asList(ranges), new Integer( documentsPerPage ), new ToStringPairArrayTransformer()) %>
+                    <%= Html.createOptionList(Arrays.asList(ranges), new Integer( documentsPerPage ), new ToDoubleObjectStringPairTransformer()) %>
                 </select>
             </td>
         </tr>

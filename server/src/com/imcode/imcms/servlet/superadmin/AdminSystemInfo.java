@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.SystemData;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -9,12 +10,13 @@ import org.apache.log4j.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Map;
 import java.util.HashMap;
 
-public class AdminSystemInfo extends Administrator {
+public class AdminSystemInfo extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( AdminSystemInfo.class.getName() );
 
@@ -29,7 +31,7 @@ public class AdminSystemInfo extends Administrator {
 
         ImcmsServices imcref = Imcms.getServices();
 
-        imcode.server.SystemData sysData = imcref.getSystemData();
+        SystemData sysData = imcref.getSystemData();
 
         int startDoc = sysData.getStartDocument();
 
@@ -43,14 +45,14 @@ public class AdminSystemInfo extends Administrator {
 
         // Lets generate the html page
         Map vm = new HashMap();
-        vm.put("STARTDOCUMENT", "" + startDoc) ;
-        vm.put("SYSTEM_MESSAGE", msg) ;
-        vm.put("WEB_MASTER", webMaster) ;
-        vm.put("WEB_MASTER_EMAIL", webMasterEmail) ;
-        vm.put("SERVER_MASTER", serverMaster) ;
-        vm.put("SERVER_MASTER_EMAIL", serverMasterEmail) ;
+        vm.put("STARTDOCUMENT", "" + startDoc);
+        vm.put("SYSTEM_MESSAGE", msg);
+        vm.put("WEB_MASTER", webMaster);
+        vm.put("WEB_MASTER_EMAIL", webMasterEmail);
+        vm.put("SERVER_MASTER", serverMaster);
+        vm.put("SERVER_MASTER_EMAIL", serverMasterEmail);
 
-        this.sendHtml(req, res, vm, HTML_TEMPLATE);
+        Administrator.sendHtml(req, res, vm, HTML_TEMPLATE);
     } // End doGet
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
@@ -62,10 +64,10 @@ public class AdminSystemInfo extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (user.isSuperAdmin() == false) {
             String header = "Error in AdminSystemInfo. ";
-            Properties langproperties = imcref.getLanguageProperties( user );
+            Properties langproperties = imcref.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-            log.debug( header + "- user is not an administrator" );
-            new AdminError(req, res, header, msg);
+            log.debug(header + "- user is not an administrator");
+            Administrator.printErrorMessage(req, res, header, msg);
             return;
         }
 
@@ -110,9 +112,10 @@ public class AdminSystemInfo extends Administrator {
             // Lets validate the parameters
             if (serverMaster.equalsIgnoreCase("") || !Utility.isValidEmail( serverMasterEmail )) {
                 String header = "Error in AdminSystemInfo, servermaster info.";
-                Properties langproperties = imcref.getLanguageProperties( user );
-                String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters") + "<br>";
-                new AdminError(req, res, header, msg);
+                Properties langproperties = imcref.getLanguageProperties(user);
+                String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters")
+                             + "<br>";
+                Administrator.printErrorMessage(req, res, header, msg);
                 return;
             }
 
@@ -137,9 +140,10 @@ public class AdminSystemInfo extends Administrator {
             // Lets validate the parameters
             if (webMaster.equalsIgnoreCase("") || !Utility.isValidEmail( webMasterEmail )) {
                 String header = "Error in AdminSystemInfo, webmaster info.";
-                Properties langproperties = imcref.getLanguageProperties( user );
-                String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters") + "<br>";
-                new AdminError(req, res, header, msg);
+                Properties langproperties = imcref.getLanguageProperties(user);
+                String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters")
+                             + "<br>";
+                Administrator.printErrorMessage(req, res, header, msg);
                 return;
             }
 

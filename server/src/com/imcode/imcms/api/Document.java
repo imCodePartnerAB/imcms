@@ -178,14 +178,6 @@ public class Document implements Serializable {
         return Language.getLanguageByISO639_2( internalDocument.getLanguageIso639_2() );
     }
 
-    /**
-        @deprecated Use {@link #setLanguage(Language)}      
-     **/
-    public void setLanguage( int lang_id ) {
-        String lang_prefix = contentManagementSystem.getInternal().getLanguagePrefixByLangId( lang_id );
-        internalDocument.setLanguageIso639_2( lang_prefix );
-    }
-
     public void addCategory( Category category ) {
         internalDocument.addCategory( category.getInternal() );
     }

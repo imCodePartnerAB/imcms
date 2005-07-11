@@ -11,7 +11,6 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
-import org.apache.commons.collections.Transformer;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -103,8 +102,8 @@ public class AddDoc extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
 
         final UserDomainObject user = Utility.getLoggedOnUser( request );
-        String sortOrderStr = Html.createOptionList( GetExistingDoc.SORT_ORDERS_MAP.entrySet(), null, new Transformer() {
-            public Object transform(Object input) {
+        String sortOrderStr = Html.createOptionList( GetExistingDoc.SORT_ORDERS_MAP.entrySet(), new ToStringPairTransformer() {
+            public String[] transformToStringPair(Object input) {
                 Map.Entry entry = (Map.Entry)input ;
                 return new String[] {(String)entry.getKey(), ((LocalizedMessage)entry.getValue()).toLocalizedString( user )} ;
             }

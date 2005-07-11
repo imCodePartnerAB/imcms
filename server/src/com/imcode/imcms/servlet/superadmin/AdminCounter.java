@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 
 
-public class AdminCounter extends Administrator {
+public class AdminCounter extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( AdminCounter.class.getName() );
     private final static String HTML_TEMPLATE = "AdminCounter.htm";
@@ -35,24 +35,24 @@ public class AdminCounter extends Administrator {
         // Lets validate the session
         ImcmsServices imcref = Imcms.getServices();
 
-        UserDomainObject user = Utility.getLoggedOnUser( req );
-        if (!user.isSuperAdmin()) {
+        UserDomainObject user = Utility.getLoggedOnUser(req);
+        if ( !user.isSuperAdmin() ) {
             String header = "Error in AdminCounter.";
-            Properties langproperties = imcref.getLanguageProperties( user );
-            String msg = langproperties.getProperty("error/servlet/global/no_administrator")+ "<BR>";
-            log.debug( header + "- user is not an administrator");
-            new AdminError(req, res, header, msg);
+            Properties langproperties = imcref.getLanguageProperties(user);
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<BR>";
+            log.debug(header + "- user is not an administrator");
+            Administrator.printErrorMessage(req, res, header, msg);
             return;
         }
 
         // ***** RETURN TO ADMIN MANAGER *****
-        if (req.getParameter("CancelCounter") != null) {
+        if ( req.getParameter("CancelCounter") != null ) {
             res.sendRedirect("AdminManager");
             return;
         }
 
         // ***** SET COUNTER *****
-        if (req.getParameter("setSessionCounter") != null) {
+        if ( req.getParameter("setSessionCounter") != null ) {
             // Lets get the parameter and validate it
             Properties props = this.getParameters(req);
             String userVal = props.getProperty("COUNTER_VALUE");
@@ -61,16 +61,16 @@ public class AdminCounter extends Administrator {
 
             boolean ok = true;
             try {
-                if (userVal.equals("")) {
+                if ( userVal.equals("") ) {
                     ok = false;
                 }
                 theUserInt = Integer.parseInt(userVal);
 
-            } catch (Exception e) {
+            } catch ( Exception e ) {
                 ok = false;
             }
 
-            if (ok) imcref.setSessionCounter(theUserInt);
+            if ( ok ) imcref.setSessionCounter(theUserInt);
 
         }
 
@@ -82,26 +82,26 @@ public class AdminCounter extends Administrator {
         DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
         String newDateStr = dateFormat.format(currentDate);
 
-        if (req.getParameter("setDate") != null) {
+        if ( req.getParameter("setDate") != null ) {
             // Lets get the parameter and validate it
 
             String dateStr = req.getParameter("date_value");
 
-            try{
-                Date date= dateFormat.parse(dateStr);
+            try {
+                Date date = dateFormat.parse(dateStr);
                 newDateStr = dateFormat.format(date);
-                if ( !newDateStr.equals(dateStr) ){
-                    Properties langproperties = imcref.getLanguageProperties( user );
+                if ( !newDateStr.equals(dateStr) ) {
+                    Properties langproperties = imcref.getLanguageProperties(user);
                     errormsg = langproperties.getProperty("error/servlet/AdminCounter/no_valid_date");
                     newDateStr = dateStr;
-                }else{
+                } else {
                     imcref.setSessionCounterDate(date);
                 }
 
-            }catch (ParseException pe){
-                   Properties langproperties = imcref.getLanguageProperties( user );
-                   errormsg = langproperties.getProperty("error/servlet/AdminCounter/no_valid_date");
-                   newDateStr = dateStr;
+            } catch ( ParseException pe ) {
+                Properties langproperties = imcref.getLanguageProperties(user);
+                errormsg = langproperties.getProperty("error/servlet/AdminCounter/no_valid_date");
+                newDateStr = dateStr;
             }
         }
 
@@ -110,11 +110,11 @@ public class AdminCounter extends Administrator {
 
         // Lets generate the html page
         Map vm = new HashMap();
-        vm.put("COUNTER_VALUE", counterValue) ;
-        vm.put("CURRENT_DATE_VALUE", dateFormat.format(currentDate)) ;
-        vm.put("NEW_DATE_VALUE", newDateStr) ;
-        vm.put("ERRORMSG", errormsg) ;
-        this.sendHtml(req, res, vm, HTML_TEMPLATE);
+        vm.put("COUNTER_VALUE", counterValue);
+        vm.put("CURRENT_DATE_VALUE", dateFormat.format(currentDate));
+        vm.put("NEW_DATE_VALUE", newDateStr);
+        vm.put("ERRORMSG", errormsg);
+        Administrator.sendHtml(req, res, vm, HTML_TEMPLATE);
 
     } // End of doPost
 

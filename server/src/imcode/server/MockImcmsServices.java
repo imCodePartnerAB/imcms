@@ -27,6 +27,7 @@ public class MockImcmsServices implements ImcmsServices {
     private TemplateMapper templateMapper;
     private DefaultDocumentMapper documentMapper;
     private CategoryMapper categoryMapper;
+    private LanguageMapper languageMapper = new LanguageMapper(null, null);
 
     public UserDomainObject verifyUser( String login, String password ) {
         return null;
@@ -77,11 +78,6 @@ public class MockImcmsServices implements ImcmsServices {
 
     // get templatehome
     public File getTemplatePath() {
-        return null;
-    }
-
-    // get language prefix by id
-    public String getLanguagePrefixByLangId( int lang_id ) {
         return null;
     }
 
@@ -152,10 +148,6 @@ public class MockImcmsServices implements ImcmsServices {
         return imcmsAuthenticatorAndUserAndRoleMapper ;
     }
 
-    public String getDefaultLanguage() {
-        return null;
-    }
-
     public TemplateMapper getTemplateMapper() {
         return templateMapper;
     }
@@ -196,6 +188,10 @@ public class MockImcmsServices implements ImcmsServices {
         return categoryMapper ;
     }
 
+    public LanguageMapper getLanguageMapper() {
+        return languageMapper;
+    }
+
     public KeyStore getKeyStore() {
         return keyStore;
     }
@@ -223,5 +219,9 @@ public class MockImcmsServices implements ImcmsServices {
 
     public void setCategoryMapper(CategoryMapper categoryMapper) {
         this.categoryMapper = categoryMapper;
+    }
+
+    public void setLanguageMapper(LanguageMapper languageMapper) {
+        this.languageMapper = languageMapper;
     }
 }

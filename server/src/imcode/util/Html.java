@@ -1,14 +1,13 @@
 package imcode.util;
 
-import com.imcode.imcms.servlet.admin.AdminDoc;
 import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.servlet.admin.AdminDoc;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.UnhandledException;
 
@@ -25,9 +24,7 @@ public class Html {
     }
 
     /**
-     * CreateHtml code, can mark up several values as selected
-     *
-     * @deprecated Use {@link #createOptionList(java.util.Collection, java.util.Collection, org.apache.commons.collections.Transformer)} instead.
+     * @deprecated
      */
     public static String createOptionList( List allValues, List selectedValues ) {
         StringBuffer htmlStr = new StringBuffer();
@@ -43,33 +40,48 @@ public class Html {
         return htmlStr.toString();
     }
 
+    public static String createOptionList(Collection allValues, ToStringPairTransformer transformer) {
+        return createOptionList(allValues,(Collection)null,transformer) ;
+    }
+
     public static String createOptionList( Collection allValues, Object selectedValue,
-                                           Transformer objectToStringPairTransformer ) {
-        return createOptionList( allValues, Arrays.asList( new Object[]{selectedValue} ), objectToStringPairTransformer );
+                                           ToStringPairTransformer objectToStringPairTransformer ) {
+        return createOptionList( allValues, new Object[]{selectedValue}, objectToStringPairTransformer );
+    }
+
+    public static String createOptionList( Collection allValues, Object[] selectedValues,
+                                           ToStringPairTransformer objectToStringPairTransformer ) {
+        return createOptionList(allValues, Arrays.asList(selectedValues), objectToStringPairTransformer) ;
     }
 
     public static String createOptionList( Collection allValues, Collection selectedValues,
-                                           Transformer objectToStringPairTransformer ) {
-        StringBuffer htmlStr = new StringBuffer();
-
+                                           ToStringPairTransformer objectToStringPairTransformer ) {
         Set selectedValuesSet = null != selectedValues ? new HashSet( selectedValues ) : new HashSet();
-        for ( Iterator iterator = allValues.iterator(); iterator.hasNext(); ) {
+
+        return createOptionList(allValues, selectedValuesSet, objectToStringPairTransformer);
+    }
+
+    public static String createOptionList(Collection allValues, Set selectedValues,
+                                          ToStringPairTransformer objectToStringPairTransformer) {
+        return createOptionList(allValues.iterator(), selectedValues, objectToStringPairTransformer);
+    }
+
+    private static String createOptionList(Iterator iterator, Set selectedValuesSet,
+                                           ToStringPairTransformer objectToStringPairTransformer) {
+        StringBuffer htmlStr = new StringBuffer();
+        while ( iterator.hasNext() ) {
             Object valueObject = iterator.next();
             String[] valueAndNameStringPair = (String[])objectToStringPairTransformer.transform( valueObject );
             String value = valueAndNameStringPair[0];
             String name = valueAndNameStringPair[1];
             boolean valueSelected = selectedValuesSet.contains( valueObject );
             htmlStr.append( option( value, name, valueSelected ) );
-        } // end for
+        }
 
         return htmlStr.toString();
     }
 
-    /**
-     * CreateHtml code. Generates the following HTML code snippets. Format should be
-     * one of the arguments below.
-     */
-
+    /** @deprecated */
     public static String createOptionList( List data, String selected ) {
         return createOptionList( data, Arrays.asList( new String[]{selected} ) );
     }
@@ -81,13 +93,13 @@ public class Html {
         Arrays.sort( categories );
         CategoryDomainObject[] documentSelectedCategories = document.getCategoriesOfType( categoryType );
 
-        Transformer categoryToStringPairTransformer = new Transformer() {
-            public Object transform( Object o ) {
+        ToStringPairTransformer categoryToStringPairTransformer = new ToStringPairTransformer() {
+            protected String[] transformToStringPair(Object o) {
                 CategoryDomainObject category = (CategoryDomainObject)o;
                 return new String[]{"" + category.getId(), category.getName()};
             }
         };
-        String categoryOptionList = createOptionList( Arrays.asList( categories ), Arrays.asList( documentSelectedCategories ), categoryToStringPairTransformer );
+        String categoryOptionList = createOptionList( Arrays.asList( categories ), documentSelectedCategories, categoryToStringPairTransformer );
 
         if ( 1 == categoryType.getMaxChoices() ) {
             categoryOptionList = "<option>- " + (new LocalizedMessage("global/None")).toLocalizedString(request) + " -</option>" + categoryOptionList;
@@ -136,11 +148,11 @@ public class Html {
 
         StringBuffer option = new StringBuffer();
 
-        option.append( "<option value=\"" + StringEscapeUtils.escapeHtml( elementValue ) + "\"" );
+        option.append("<option value=\"").append(StringEscapeUtils.escapeHtml(elementValue)).append("\"");
         if ( selected ) {
             option.append( " selected" );
         }
-        option.append( ">" + StringEscapeUtils.escapeHtml( content ) + "</option>" );
+        option.append(">").append(StringEscapeUtils.escapeHtml(content)).append("</option>");
         return option.toString();
     }
 
@@ -186,12 +198,12 @@ public class Html {
 
     public static String createUsersOptionList( ImcmsServices imcref ) {
         UserDomainObject[] users = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUsers( true, false );
-        String usersOption = createOptionList(Arrays.asList( users ),null, new Transformer() {
-            public Object transform( Object input ) {
+        return createOptionList(Arrays.asList( users ), new ToStringPairTransformer() {
+            public String[] transformToStringPair( Object input ) {
                 UserDomainObject user = (UserDomainObject)input ;
                 return new String[] {""+user.getId(), user.getLastName()+", "+user.getFirstName()} ;
             }
-        } ) ;
-        return usersOption;
+        } );
     }
+
 }

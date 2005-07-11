@@ -57,9 +57,6 @@ public interface ImcmsServices extends Clock {
     File getTemplatePath()
 	;
 
-    // get language prefix by id
-    String getLanguagePrefixByLangId ( int lang_id );
-
     // get doctype
     int getDocType(int meta_id)
     ;
@@ -104,8 +101,6 @@ public interface ImcmsServices extends Clock {
 
     ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper();
 
-    String getDefaultLanguage();
-
     TemplateMapper getTemplateMapper();
 
     SMTP getSMTP();
@@ -127,4 +122,6 @@ public interface ImcmsServices extends Clock {
     Database getDatabase();
 
     CategoryMapper getCategoryMapper();
+
+    LanguageMapper getLanguageMapper();
 }

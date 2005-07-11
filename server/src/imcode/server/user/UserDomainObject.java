@@ -3,16 +3,19 @@ package imcode.server.user;
 import imcode.server.document.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 
 import java.util.*;
+import java.io.Serializable;
 
-public class UserDomainObject implements Cloneable {
+public class UserDomainObject implements Cloneable, Serializable {
 
     public static final int DEFAULT_USER_ID = 2;
 
     protected int id;
 
-    private String loginName;
+    private String loginName = "" ;
     private String password;
     private String firstName = "";
     private String lastName = "";
@@ -22,10 +25,10 @@ public class UserDomainObject implements Cloneable {
     private String city = "";
     private String zip = "";
     private String country = "";
-    private String countyCouncil = "";
+    private String district = "";
     private String emailAddress = "";
-    private boolean active;
-    private String create_date;
+    private boolean active = true;
+    private Date createDate;
 
     private String languageIso639_2;
 
@@ -39,6 +42,8 @@ public class UserDomainObject implements Cloneable {
     private String faxPhone = "";
     private String otherPhone = "";
 
+    private Set phoneNumbers = new HashSet();
+
     Set roles = createRolesSet();
 
     private HashSet createRolesSet() {
@@ -51,6 +56,7 @@ public class UserDomainObject implements Cloneable {
         try {
             UserDomainObject clone = (UserDomainObject) super.clone();
             clone.roles = new HashSet(roles);
+            clone.phoneNumbers = new HashSet(phoneNumbers);
             return clone;
         } catch ( CloneNotSupportedException e ) {
             throw new UnhandledException(e);
@@ -226,15 +232,15 @@ public class UserDomainObject implements Cloneable {
     /**
      * set county_council
      */
-    public void setCountyCouncil( String countyCouncil ) {
-        this.countyCouncil = countyCouncil;
+    public void setDistrict( String district ) {
+        this.district = district;
     }
 
     /**
      * get county_council
      */
-    public String getCountyCouncil() {
-        return this.countyCouncil;
+    public String getDistrict() {
+        return this.district;
     }
 
     /**
@@ -337,16 +343,17 @@ public class UserDomainObject implements Cloneable {
 
     /**
      * set create_date
+     * @param createDate
      */
-    public void setCreateDate( String create_date ) {
-        this.create_date = create_date;
+    public void setCreateDate( Date createDate ) {
+        this.createDate = createDate;
     }
 
     /**
      * get create_date
      */
-    public String getCreateDate() {
-        return this.create_date;
+    public Date getCreateDate() {
+        return this.createDate;
     }
 
     /**
@@ -474,6 +481,14 @@ public class UserDomainObject implements Cloneable {
 
     public String toString() {
         return "(user " + id + " \"" + loginName + "\")";
+    }
+
+    public void addPhoneNumber(PhoneNumber number) {
+        phoneNumbers.add(number) ;
+    }
+
+    public void removePhoneNumber(PhoneNumber number) {
+        phoneNumbers.remove(number);
     }
 
     /* FIXME: Current context path should be sent in a HttpServletRequest, not in an UserDomainObject. */
@@ -617,4 +632,11 @@ public class UserDomainObject implements Cloneable {
         return document.isVisibleInMenusForUnauthorizedUsers() || canAccess( document );
     }
 
+    public Set getPhoneNumbers() {
+        return Collections.unmodifiableSet(phoneNumbers);
+    }
+
+    public void removeAllRoles() {
+        roles.clear();
+    }
 }

@@ -13,6 +13,7 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ArraySet;
 import imcode.util.DateConstants;
+import imcode.util.Utility;
 import org.apache.log4j.Logger;
 
 import java.text.DateFormat;
@@ -70,15 +71,15 @@ public class ConnectionDocumentGetter implements DocumentGetter {
         document.setRestrictedOneMorePrivilegedThanRestrictedTwo(getBooleanFromSqlResultString(result[6]));
         document.setLinkableByOtherUsers(getBooleanFromSqlResultString(result[7]));
         document.setVisibleInMenusForUnauthorizedUsers(getBooleanFromSqlResultString(result[8]));
-        document.setLanguageIso639_2(LanguageMapper.getAsIso639_2OrDefaultLanguage(result[9], services.getDefaultLanguage()));
+        document.setLanguageIso639_2(LanguageMapper.getAsIso639_2OrDefaultLanguage(result[9], services.getLanguageMapper().getDefaultLanguage()));
         DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING);
-        document.setCreatedDatetime(DefaultDocumentMapper.parseDateFormat(dateFormat, result[10]));
-        Date modifiedDatetime = DefaultDocumentMapper.parseDateFormat(dateFormat, result[11]);
+        document.setCreatedDatetime(Utility.parseDateFormat(dateFormat, result[10]));
+        Date modifiedDatetime = Utility.parseDateFormat(dateFormat, result[11]);
         document.setModifiedDatetime(modifiedDatetime);
         document.setActualModifiedDatetime(modifiedDatetime);
         document.setSearchDisabled(getBooleanFromSqlResultString(result[12]));
         document.setTarget(result[13]);
-        document.setArchivedDatetime(DefaultDocumentMapper.parseDateFormat(dateFormat, result[14]));
+        document.setArchivedDatetime(Utility.parseDateFormat(dateFormat, result[14]));
         String publisherIdStr = result[15];
         if (null != publisherIdStr) {
             UserDomainObject publisher = userAndRoleMapper.getUser(Integer.parseInt(publisherIdStr));
@@ -87,8 +88,8 @@ public class ConnectionDocumentGetter implements DocumentGetter {
         int publicationStatusInt = Integer.parseInt(result[16]);
         Document.PublicationStatus publicationStatus = publicationStatusFromInt(publicationStatusInt) ;
         document.setPublicationStatus(publicationStatus);
-        document.setPublicationStartDatetime(DefaultDocumentMapper.parseDateFormat(dateFormat, result[17]));
-        document.setPublicationEndDatetime(DefaultDocumentMapper.parseDateFormat(dateFormat, result[18]));
+        document.setPublicationStartDatetime(Utility.parseDateFormat(dateFormat, result[17]));
+        document.setPublicationEndDatetime(Utility.parseDateFormat(dateFormat, result[18]));
         return document;
     }
 

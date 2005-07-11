@@ -449,14 +449,13 @@ class TagParser {
         if ( !"".equals( label ) ) {
             label_urlparam = removeHtmlTagsAndUrlEncode( label );
         }
-        String[] replace_tags = new String[]{
+        return new String[]{
             "#meta_id#", String.valueOf( document.getId() ),
             "#content_id#", "" + no,
             "#content#", finalresult,
             "#label_url#", label_urlparam,
             "#label#", label
         };
-        return replace_tags;
     }
 
     private String removeHtmlTagsAndUrlEncode( String label ) {
@@ -477,7 +476,7 @@ class TagParser {
         }
         // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
         String noStr = attributes.getProperty( "no" );
-        int no = 0;
+        int no;
         String result = null;
         if ( null == noStr ) {
             no = implicitImageNumber++;
@@ -644,7 +643,7 @@ class TagParser {
     private String tagLanguage( Properties attributes ) {
         String representation = attributes.getProperty( "representation" );
         if ( null == representation ) {
-            return LanguageMapper.getCurrentLanguageNameInUsersLanguage( documentRequest.getUser(), document.getLanguageIso639_2() );
+            return service.getLanguageMapper().getCurrentLanguageNameInUsersLanguage( documentRequest.getUser(), document.getLanguageIso639_2() );
         } else if ( LanguageMapper.ISO639_2.equalsIgnoreCase( representation ) ) {
             return document.getLanguageIso639_2();
         } else {

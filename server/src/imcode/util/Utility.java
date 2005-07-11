@@ -36,6 +36,7 @@ import java.security.KeyStoreException;
 import java.security.cert.Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -298,6 +299,16 @@ public class Utility {
             return null;
         }
         return new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING).format(date);
+    }
+
+    public static Date parseDateFormat(DateFormat dateFormat, String dateString) {
+        try {
+            return dateFormat.parse(dateString);
+        } catch (NullPointerException npe) {
+            return null;
+        } catch ( ParseException pe) {
+            return null;
+        }
     }
 
     private static class ObjectPairToMapEntryTransformer implements Transformer {

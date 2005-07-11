@@ -1,25 +1,24 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.admin.UserFinder;
-import com.imcode.imcms.servlet.WebComponent;
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.flow.DispatchCommand;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.LocalizedMessage;
+import imcode.util.Utility;
 import org.apache.log4j.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.util.Properties;
 
-public class AdminUser extends Administrator {
+public class AdminUser extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( AdminUser.class.getName() );
     private String CHANGE_EXTERNAL_USER_URL = "/jsp/changeexternaluser.jsp";
@@ -34,10 +33,10 @@ public class AdminUser extends Administrator {
         // Lets verify that the user is an admin, otherwise throw him out.
         if ( !user.isSuperAdmin() && !user.isUserAdmin() ) {
             String header = "Error in AdminUser.";
-            Properties langproperties = imcref.getLanguageProperties( user );
-            String msg = langproperties.getProperty( "error/servlet/global/no_administrator" ) + "<br>";
-            log.debug( header + "- user is not an administrator" );
-            new AdminError( req, res, header, msg );
+            Properties langproperties = imcref.getLanguageProperties(user);
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+            log.debug(header + "- user is not an administrator");
+            Administrator.printErrorMessage(req, res, header, msg);
             return;
         }
 
@@ -80,18 +79,30 @@ public class AdminUser extends Administrator {
     }
 
     private void redirectChangeUser( HttpServletRequest req, HttpServletResponse res, UserDomainObject user,
-                                     UserDomainObject userToChange ) throws IOException {
+                                     final UserDomainObject userToChange ) throws IOException, ServletException {
 
         if ( !user.isSuperAdmin() && !user.isUserAdmin() && !userToChange.equals( user ) ) {
             String header = "Error in AdminUser, change user.";
-            Properties langproperties = Imcms.getServices().getLanguageProperties( user );
-            String msg = langproperties.getProperty( "error/servlet/AdminUser/user_have_no_permission" ) + "<br>";
-            log.debug( header + "- user have no permission to edit user values" );
-            new AdminError( req, res, header, msg );
+            Properties langproperties = Imcms.getServices().getLanguageProperties(user);
+            String msg = langproperties.getProperty("error/servlet/AdminUser/user_have_no_permission") + "<br>";
+            log.debug(header + "- user have no permission to edit user values");
+            Administrator.printErrorMessage(req, res, header, msg);
         } else {
-            req.getSession().setAttribute( "userToChange", "" + userToChange.getId() );
-            res.sendRedirect( "AdminUserProps?CHANGE_USER=true" );
+            final DispatchCommand returnCommand = new DispatchCommand() {
+                public void dispatch(HttpServletRequest request,
+                                     HttpServletResponse response) throws IOException, ServletException {
+                    doGet(request, response);
+                }
+            };
+            DispatchCommand saveAndReturnCommand = new DispatchCommand() {
+                public void dispatch(HttpServletRequest request,
+                                     HttpServletResponse response) throws IOException, ServletException {
+                    Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(userToChange, Utility.getLoggedOnUser(request));
+                    returnCommand.dispatch(request, response);
+                }
+            };
+            UserEditorPage userEditorPage = new UserEditorPage(userToChange, saveAndReturnCommand, returnCommand);
+            userEditorPage.forward(req, res);
         }
     }
-
 }

@@ -59,10 +59,10 @@ public class AdminCategories extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !user.isSuperAdmin() ) {
             String header = "Error in AdminCategories. ";
-            Properties langproperties = service.getLanguageProperties( user );
-            String msg = langproperties.getProperty( "error/servlet/global/no_administrator" ) + "<br>";
-            this.log( header + "- user is not an administrator" );
-            new AdminError( req, res, header, msg );
+            Properties langproperties = service.getLanguageProperties(user);
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+            this.log(header + "- user is not an administrator");
+            Administrator.printErrorMessage(req, res, header, msg);
             return;
         }
 

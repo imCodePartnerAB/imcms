@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Map;
@@ -56,7 +57,7 @@ import java.util.HashMap;
  * @author Jerker Drottenmyr
  * @version 1.3 17 Oct 2000
  */
-public class AdminRoleBelongings extends Administrator {
+public class AdminRoleBelongings extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( AdminRoleBelongings.class.getName() );
 
@@ -73,21 +74,21 @@ public class AdminRoleBelongings extends Administrator {
         ImcmsServices imcref = Imcms.getServices();
 
         // Lets verify that the user who tries to add a new user is an admin
-        UserDomainObject user = Utility.getLoggedOnUser( req );
+        UserDomainObject user = Utility.getLoggedOnUser(req);
         if ( user.isSuperAdmin() == false ) {
             return;
         }
 
         // Lets get all ROLES from DB
-        String[][] queryResult = imcref.getDatabase().execute2dArrayProcedure( "RoleAdminGetAll", new String[0] );
+        String[][] queryResult = imcref.getDatabase().execute2dArrayProcedure("RoleAdminGetAll", new String[0]);
 
         // Lets generate the html page
-        String optionList = createListOfOptions( queryResult );
+        String optionList = createListOfOptions(queryResult);
 
         Map vm = new HashMap();
-        vm.put("ROLES_MENU", optionList) ;
+        vm.put("ROLES_MENU", optionList);
 
-        this.sendHtml( req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING );
+        Administrator.sendHtml(req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING);
     }
 
     /** POST */
@@ -104,10 +105,10 @@ public class AdminRoleBelongings extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( user.isSuperAdmin() == false ) {
             String header = "Error in AdminRoleBelongings.";
-            Properties langproperties = imcref.getLanguageProperties( user );
-            String msg = langproperties.getProperty( "error/servlet/global/no_administrator" ) + "<br>";
-            log.debug( header + "- user is not an administrator" );
-            new AdminError( req, res, header, msg );
+            Properties langproperties = imcref.getLanguageProperties(user);
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+            log.debug(header + "- user is not an administrator");
+            Administrator.printErrorMessage(req, res, header, msg);
             return;
         }
 
@@ -125,42 +126,42 @@ public class AdminRoleBelongings extends Administrator {
         // *************** GENERATE THE USER BELONGING TO ROLE PAGE *****************
         if ( req.getParameter( "VIEW_USER_BELONGING_ROLE" ) != null ) {
 
-            String roleId = req.getParameter( "ROLE_ID" );
+            String roleId = req.getParameter("ROLE_ID");
 
             if ( roleId == null ) {
 
                 // no role choisen
-                sendErrorMessage( imcref, eMailServerMaster, user, errorHeader, 100, res );
+                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 100, res);
 
                 return;
             }
 
-            String userOptionListTag = getUserOptionListTag( roleId, imcref );
+            String userOptionListTag = getUserOptionListTag(roleId, imcref);
 
             // Lets get all ROLES from DB
 
             String curentRoleId = roleId;
             try {
-                Integer.parseInt( curentRoleId );
+                Integer.parseInt(curentRoleId);
             } catch ( NumberFormatException e ) {
                 curentRoleId = "0";
             }
 
-            String[][] roleQueryResult = imcref.getDatabase().execute2dArrayProcedure( "RoleGetAllApartFromRole", new String[] {
-                                                                                                                          curentRoleId
-                                                                                                                  } );
+            String[][] roleQueryResult = imcref.getDatabase().execute2dArrayProcedure("RoleGetAllApartFromRole", new String[] {
+                    curentRoleId
+            });
 
-            String roleOptionList = createListOfOptions( roleQueryResult );
-            String curentRoleName = getRoleName( roleId, imcref );
+            String roleOptionList = createListOfOptions(roleQueryResult);
+            String curentRoleName = getRoleName(roleId, imcref);
 
             // Lets generate the html page
             Map vm = new HashMap();
-            vm.put("CURENT_ROLE_ID", roleId) ;
-            vm.put("CURENT_ROLE_NAME", curentRoleName) ;
-            vm.put("USER_MENU", userOptionListTag) ;
-            vm.put("ROLES_MENU", roleOptionList) ;
+            vm.put("CURENT_ROLE_ID", roleId);
+            vm.put("CURENT_ROLE_NAME", curentRoleName);
+            vm.put("USER_MENU", userOptionListTag);
+            vm.put("ROLES_MENU", roleOptionList);
 
-            this.sendHtml( req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING_EDIT );
+            Administrator.sendHtml(req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING_EDIT);
 
             return;
         }
@@ -168,26 +169,26 @@ public class AdminRoleBelongings extends Administrator {
         // *************** GENERATE THE USER DE/ACTIVATE TO ROLE PAGE *****************
         if ( req.getParameter( "VIEW_USER_ACTIVATE" ) != null ) {
 
-            String roleId = req.getParameter( "ROLE_ID" );
+            String roleId = req.getParameter("ROLE_ID");
 
             if ( roleId == null ) {
 
                 // no role choisen
-                sendErrorMessage( imcref, eMailServerMaster, user, errorHeader, 100, res );
+                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 100, res);
 
                 return;
             }
 
-            String userOptionListTag = getUserOptionListTag( roleId, imcref );
-            String curentRoleName = getRoleName( roleId, imcref );
+            String userOptionListTag = getUserOptionListTag(roleId, imcref);
+            String curentRoleName = getRoleName(roleId, imcref);
 
             //Lets generate the html page
             Map vm = new HashMap();
-            vm.put("CURENT_ROLE_ID", roleId) ;
-            vm.put("CURENT_ROLE_NAME", curentRoleName) ;
-            vm.put("USER_MENU", userOptionListTag) ;
+            vm.put("CURENT_ROLE_ID", roleId);
+            vm.put("CURENT_ROLE_NAME", curentRoleName);
+            vm.put("USER_MENU", userOptionListTag);
 
-            this.sendHtml( req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING_ACTIVATE );
+            Administrator.sendHtml(req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING_ACTIVATE);
 
             return;
         }
@@ -200,7 +201,7 @@ public class AdminRoleBelongings extends Administrator {
             if ( curentRoleId == null || userIds == null ) {
 
                 // no role choisen or/and no users
-                sendErrorMessage( imcref, eMailServerMaster, user, errorHeader, 101, res );
+                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 101, res);
                 return;
             }
 
@@ -219,7 +220,7 @@ public class AdminRoleBelongings extends Administrator {
             if ( roleId == null || userIds == null ) {
 
                 // no role choisen or/and no users
-                sendErrorMessage( imcref, eMailServerMaster, user, errorHeader, 102, res );
+                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 102, res);
                 return;
             }
 
@@ -239,7 +240,7 @@ public class AdminRoleBelongings extends Administrator {
 
             if ( roleId == null || userIds == null || curentRoleId == null ) {
                 // no role choisen or/and no users
-                sendErrorMessage( imcref, eMailServerMaster, user, errorHeader, 102, res );
+                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 102, res);
 
                 return;
             }
@@ -260,7 +261,7 @@ public class AdminRoleBelongings extends Administrator {
 
             if ( userIds == null ) {
                 // no user choisen
-                sendErrorMessage( imcref, eMailServerMaster, user, errorHeader, 101, res );
+                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 101, res);
                 return;
             }
 
@@ -277,7 +278,7 @@ public class AdminRoleBelongings extends Administrator {
 
             if ( userIds == null ) {
                 // no user choisen
-                sendErrorMessage( imcref, eMailServerMaster, user, errorHeader, 101, res );
+                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 101, res);
                 return;
             }
 

@@ -24,17 +24,22 @@ public abstract class OkCancelPage extends Page {
         if ( wasCanceled( request ) ) {
             dispatchCancel( request, response );
         } else {
-            updateFromRequest( request );
-            if ( wasOk( request ) ) {
-                dispatchOk( request, response );
-            } else {
-                dispatchOther( request, response );
-            }
+            dispatchNotCanceled(request, response);
+        }
+    }
+
+    protected void dispatchNotCanceled(HttpServletRequest request,
+                                     HttpServletResponse response) throws IOException, ServletException {
+        updateFromRequest( request );
+        if ( wasOk( request ) ) {
+            dispatchOk( request, response );
+        } else {
+            dispatchOther( request, response );
         }
     }
 
     protected void dispatchOk( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        Page.removeFromRequest( request );
+        removeFromSession(request) ;
         okCommand.dispatch( request, response );
     }
 

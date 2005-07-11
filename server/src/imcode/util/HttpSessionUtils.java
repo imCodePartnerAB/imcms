@@ -81,12 +81,6 @@ public class HttpSessionUtils {
         return sessionAttribute;
     }
 
-    public static Object removeSessionAttributeWithNameInRequest( HttpServletRequest request,
-                                                                  String requestAttributeOrParameterName ) {
-        String sessionAttributeName = getSessionAttributeNameFromRequest( request, requestAttributeOrParameterName );
-        return removeSessionAttribute( request, sessionAttributeName );
-    }
-
     public static Object removeSessionAttribute( HttpServletRequest request, String sessionAttributeName ) {
         Map sessionMap = getSessionMap( request );
         Object object = sessionMap.remove( sessionAttributeName );

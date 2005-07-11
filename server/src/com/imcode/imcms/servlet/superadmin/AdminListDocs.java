@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,7 +39,7 @@ import java.util.*;
  * @author Jerker Drottenmyr
  * @version 1.04 11 Nov 2000
  */
-public class AdminListDocs extends Administrator {
+public class AdminListDocs extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( AdminListDocs.class.getName() );
 
@@ -53,26 +54,26 @@ public class AdminListDocs extends Administrator {
 
         // Lets verify that the user who tries to add a new user is an admin
         ImcmsServices imcref = Imcms.getServices();
-        UserDomainObject user = Utility.getLoggedOnUser( request );
+        UserDomainObject user = Utility.getLoggedOnUser(request);
         if ( !user.isSuperAdmin() ) {
             return;
         }
 
-        Map allDocumentTypeIdsAndNames = imcref.getDefaultDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage( user );
+        Map allDocumentTypeIdsAndNames = imcref.getDefaultDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage(user);
 
         // Lets generate the html page
         StringBuffer optionList = new StringBuffer();
         for ( Iterator iterator = allDocumentTypeIdsAndNames.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)iterator.next();
-            Integer documentTypeId = (Integer)entry.getKey();
-            String documentTypeName = (String)entry.getValue();
-            optionList.append( Html.option( "" + documentTypeId, documentTypeName, false ) );
+            Map.Entry entry = (Map.Entry) iterator.next();
+            Integer documentTypeId = (Integer) entry.getKey();
+            String documentTypeName = (String) entry.getValue();
+            optionList.append(Html.option("" + documentTypeId, documentTypeName, false));
         }
 
         Map vm = new HashMap();
-        vm.put("DOCUMENT_TYPES", optionList.toString()) ;
+        vm.put("DOCUMENT_TYPES", optionList.toString());
 
-        this.sendHtml( request, response, vm, TEMPLATE_LISTDOC );
+        Administrator.sendHtml(request, response, vm, TEMPLATE_LISTDOC);
 
     }
 
@@ -89,10 +90,10 @@ public class AdminListDocs extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( request );
         if ( !user.isSuperAdmin() ) {
             String header = "Error in AdminListDocs. ";
-            Properties langproperties = imcref.getLanguageProperties( user );
-            String msg = langproperties.getProperty( "error/servlet/global/no_administrator" ) + "<br>";
-            log.debug( header + "- user is not an administrator" );
-            new AdminError( request, response, header, msg );
+            Properties langproperties = imcref.getLanguageProperties(user);
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+            log.debug(header + "- user is not an administrator");
+            Administrator.printErrorMessage(request, response, header, msg);
 
             return;
         }
@@ -195,48 +196,48 @@ public class AdminListDocs extends Administrator {
             if ( noErrors ) {
 
                 //lets get htmltemplate for tablerow
-                String htmlListElement = imcref.getAdminTemplate( TEMPLATE_LISTDOC_LIST_ELEMENT, user, null );
+                String htmlListElement = imcref.getAdminTemplate(TEMPLATE_LISTDOC_LIST_ELEMENT, user, null);
 
                 String[] tagData = {
-                    "#META_ID#", null,
-                    "#DOC_TYPE#", null,
-                    "#HEADER#", null,
-                    "#DATE#", null,
+                        "#META_ID#", null,
+                        "#DOC_TYPE#", null,
+                        "#HEADER#", null,
+                        "#DATE#", null,
                 };
 
                 StringBuffer listOfDocs = new StringBuffer();
                 String languagePrefix = user.getLanguageIso639_2();
                 for ( int i = 0; i < docTypesToShow.length; i++ ) {
-                    String[][] queryResult = imcref.getDatabase().execute2dArrayProcedure( "ListDocsByDate", new String[] {
-                                                                                                                              listMod,
-                                                                                                                      ""
-                                                                                                                      + docTypesToShow[i],
-                                                                                                                              startDate,
-                                                                                                                              endDate,
-                                                                                                                              languagePrefix
-                                                                                                                      } );
+                    String[][] queryResult = imcref.getDatabase().execute2dArrayProcedure("ListDocsByDate", new String[] {
+                            listMod,
+                            ""
+                            + docTypesToShow[i],
+                            startDate,
+                            endDate,
+                            languagePrefix
+                    });
 
                     for ( int j = 0; j < queryResult.length; j++ ) {
                         tagData[1] = queryResult[j][0];
                         tagData[3] = queryResult[j][1];
                         tagData[5] = queryResult[j][2];
                         tagData[7] = queryResult[j][3];
-                        listOfDocs.append( Parser.parseDoc( htmlListElement, tagData ) );
+                        listOfDocs.append(Parser.parseDoc(htmlListElement, tagData));
                     }
                 }
 
-                String selectedDocTypesName = getSelectedDocTypeNames( imcref, docTypes, user );
+                String selectedDocTypesName = getSelectedDocTypeNames(imcref, docTypes, user);
 
                 //Lets generate the html page
                 Map vm = new HashMap();
-                vm.put("LIST_DOCUMENT", listOfDocs.toString()) ;
-                vm.put("selectedDocTypes", selectedDocTypesName) ;
-                vm.put("selectedStartDate", startDate) ;
-                vm.put("selectedEndDate", endDate) ;
-                this.sendHtml( request, response, vm, parseTemplate );
+                vm.put("LIST_DOCUMENT", listOfDocs.toString());
+                vm.put("selectedDocTypes", selectedDocTypesName);
+                vm.put("selectedStartDate", startDate);
+                vm.put("selectedEndDate", endDate);
+                Administrator.sendHtml(request, response, vm, parseTemplate);
 
             } else {
-                sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 10, response );
+                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, ERROR_HEADER, 10, response);
             }
         }
     }

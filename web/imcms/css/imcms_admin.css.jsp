@@ -18,7 +18,6 @@ Perl5Util re = new Perl5Util() ;
 /* Check browser */
 
 String uAgent = request.getHeader("USER-AGENT") ;
-boolean isMac = re.match("/Mac/i", uAgent) ;
 boolean isIE  = re.match("/(MSIE 4|MSIE 5|MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) ;
 boolean isGecko = re.match("/Gecko/i", uAgent) ;
 boolean isNS  = re.match("/Mozilla/i", uAgent) && !isGecko && !isIE ;
@@ -198,6 +197,8 @@ if (isNS) { %>
 .red   { color:#cc0000; }
 .white { color:#ffffff; }
 .lighterBlue { color:#20568D;}
+
+.error { color: red; }
 
 BODY {
 	margin: 30 10;

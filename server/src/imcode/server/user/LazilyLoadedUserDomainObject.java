@@ -2,6 +2,8 @@ package imcode.server.user;
 
 import imcode.server.Imcms;
 
+import java.util.Date;
+
 public class LazilyLoadedUserDomainObject extends UserDomainObject {
 
     private boolean attributesLoaded;
@@ -23,7 +25,7 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
         }
         attributesLoaded = true;
         if ( 0 != id ) {
-            UserMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+            ImcmsAuthenticatorAndUserAndRoleMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
             userMapper.initUserAttributes( this );
         }
     }
@@ -34,7 +36,7 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
         }
         phoneNumbersLoaded = true;
         if ( 0 != id ) {
-            UserMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+            ImcmsAuthenticatorAndUserAndRoleMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
             userMapper.initUserPhoneNumbers( this );
         }
     }
@@ -45,7 +47,7 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
         }
         rolesLoaded = true;
         if ( 0 != id ) {
-            UserMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+            ImcmsAuthenticatorAndUserAndRoleMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
             userMapper.initUserRoles( this );
         }
     }
@@ -75,12 +77,12 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
         return super.getCountry();
     }
 
-    public String getCountyCouncil() {
+    public String getDistrict() {
         loadAttributes();
-        return super.getCountyCouncil();
+        return super.getDistrict();
     }
 
-    public String getCreateDate() {
+    public Date getCreateDate() {
         loadAttributes();
         return super.getCreateDate();
     }
@@ -200,14 +202,14 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
         super.setCountry( country );
     }
 
-    public void setCountyCouncil( String countyCouncil ) {
+    public void setDistrict( String countyCouncil ) {
         loadAttributes();
-        super.setCountyCouncil( countyCouncil );
+        super.setDistrict( countyCouncil );
     }
 
-    public void setCreateDate( String create_date ) {
+    public void setCreateDate( Date createDate ) {
         loadAttributes();
-        super.setCreateDate( create_date );
+        super.setCreateDate( createDate );
     }
 
     public void setEmailAddress( String emailAddress ) {

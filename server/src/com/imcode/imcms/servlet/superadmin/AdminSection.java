@@ -11,11 +11,12 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Vector;
 
-public class AdminSection extends Administrator {
+public class AdminSection extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( AdminSection.class.getName() );
 

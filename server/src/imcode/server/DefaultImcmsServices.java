@@ -60,6 +60,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private Map velocityEngines = new TreeMap();
     private CategoryMapper categoryMapper;
+    private LanguageMapper languageMapper;
 
     static {
         mainLog.info( "Main log started." );
@@ -74,6 +75,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
         initKeyStore();
         initSysData();
         initSessionCounter();
+        languageMapper = new LanguageMapper(database, config.getDefaultLanguage());
+        categoryMapper = new CategoryMapper(this.getDatabase());
         initAuthenticatorsAndUserAndRoleMappers( props );
         initDocumentMapper();
         initTemplateMapper();
@@ -180,7 +183,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private void initDocumentMapper() {
         File indexDirectory = new File( getRealContextPath(), "WEB-INF/index" );
         DocumentIndex documentIndex = new AutorebuildingDirectoryIndex( indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes() );
-        categoryMapper = new CategoryMapper(this.getDatabase());
         documentMapper = new DefaultDocumentMapper( this, this.getDatabase(), new DatabaseDocumentGetter(this.getDatabase(), this), new DocumentPermissionSetMapper( database, this ), documentIndex, this.getClock(), this.getConfig(), categoryMapper);
     }
 
@@ -216,10 +218,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
             log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
             log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
         }
-        imcmsAuthenticatorAndUserMapperAndRole = new ImcmsAuthenticatorAndUserAndRoleMapper( this.getDatabase(), this );
+        imcmsAuthenticatorAndUserMapperAndRole = new ImcmsAuthenticatorAndUserAndRoleMapper( this.getDatabase(), languageMapper);
         externalizedImcmsAuthAndMapper =
         new ExternalizedImcmsAuthenticatorAndUserRegistry( imcmsAuthenticatorAndUserMapperAndRole, externalAuthenticator,
-                                                           externalUserAndRoleRegistry, getDefaultLanguage() );
+                                                           externalUserAndRoleRegistry, getLanguageMapper().getDefaultLanguage() );
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
     }
 
@@ -453,16 +455,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
      */
     public File getTemplatePath() {
         return config.getTemplatePath();
-    }
-
-    public String getDefaultLanguage() {
-        return getConfig().getDefaultLanguage();
-    }
-
-    public String getLanguagePrefixByLangId( int lang_id ) {
-        String lang_prefix = getDatabase().executeStringProcedure( "GetLangPrefixFromId", new String[] {""
-                                                                                                        + lang_id} );
-        return lang_prefix;
     }
 
     /**
@@ -760,6 +752,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public CategoryMapper getCategoryMapper() {
         return categoryMapper;
+    }
+
+    public LanguageMapper getLanguageMapper() {
+        return this.languageMapper ;
     }
 
     private static class WebappRelativeFileConverter implements Converter {

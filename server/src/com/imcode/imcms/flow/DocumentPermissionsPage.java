@@ -36,10 +36,11 @@ public class DocumentPermissionsPage extends OkCancelPage {
         this.document = document;
     }
 
-    public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+    public String getPath(HttpServletRequest request) {
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        putInSessionAndForwardToPath( EditDocumentPageFlow.URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2()
-                                      + URL_I15D_PAGE__DOCUMENT_PERMISSIONS,request, response );
+        String path = EditDocumentPageFlow.URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2()
+                      + URL_I15D_PAGE__DOCUMENT_PERMISSIONS;
+        return path;
     }
 
     protected void dispatchOther( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {

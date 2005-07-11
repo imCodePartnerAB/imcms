@@ -229,16 +229,6 @@ public class DefaultDocumentMapper implements DocumentMapper {
         documentCache.remove(new DocumentId(document.getId()));
     }
 
-    static Date parseDateFormat(DateFormat dateFormat, String dateString) {
-        try {
-            return dateFormat.parse(dateString);
-        } catch (NullPointerException npe) {
-            return null;
-        } catch (ParseException pe) {
-            return null;
-        }
-    }
-
     public DocumentIndex getDocumentIndex() {
         return documentIndex;
     }

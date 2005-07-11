@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
 import imcode.server.MockImcmsServices;
+import imcode.server.LanguageMapper;
 import imcode.server.db.impl.MockDatabase;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
@@ -29,7 +30,8 @@ public class TestUserService extends TestCase {
         mockImcmsServices = new MockImcmsServices();
         database = new MockDatabase();
         mockImcmsServices.setDatabase( database );
-        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( database, mockImcmsServices );
+        mockImcmsServices.setLanguageMapper(new LanguageMapper(database, "eng")) ;
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( database, null);
         mockImcmsServices.setImcmsAuthenticatorAndUserAndRoleMapper( imcmsAuthenticatorAndUserAndRoleMapper );
         contentManagementSystem.setInternal(mockImcmsServices) ;
 

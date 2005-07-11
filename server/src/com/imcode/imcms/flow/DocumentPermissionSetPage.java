@@ -5,10 +5,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.server.Imcms;
 import imcode.util.Utility;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 public class DocumentPermissionSetPage extends OkCancelPage {
 
@@ -69,10 +66,11 @@ public class DocumentPermissionSetPage extends OkCancelPage {
         }
     }
 
-    public void forward( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+    public String getPath(HttpServletRequest request) {
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        putInSessionAndForwardToPath( EditDocumentPageFlow.URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2()
-                                      + URL_I15D_PAGE__DOCUMENT_PERMISSION_SET, request, response );
+        String path = EditDocumentPageFlow.URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2()
+                      + URL_I15D_PAGE__DOCUMENT_PERMISSION_SET;
+        return path;
     }
 
     public boolean isForNew() {

@@ -17,27 +17,17 @@ public abstract class Page implements Serializable, HttpSessionAttribute {
     private String sessionAttributeName;
 
     public static String htmlHidden( HttpServletRequest request ) {
-        return Html.hidden( IN_REQUEST, getPageSessionNameFromRequest( request ) ) ;
-    }
-
-    public static String getPageSessionNameFromRequest( HttpServletRequest request ) {
-        return HttpSessionUtils.getSessionAttributeNameFromRequest( request, Page.IN_REQUEST );
+        return Html.hidden( IN_REQUEST, fromRequest(request).getSessionAttributeName() ) ;
     }
 
     public static Page fromRequest( HttpServletRequest request ) {
         return (Page)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, IN_REQUEST );
     }
 
-    public static Page removeFromRequest( HttpServletRequest request ) {
-        return (Page)HttpSessionUtils.removeSessionAttributeWithNameInRequest( request, IN_REQUEST ) ;
-    }
-
-    protected void putInSessionAndForwardToPath( String pagePath, HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+    public void forward( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( this, request, IN_REQUEST );
-        request.getRequestDispatcher( pagePath ).forward( request, response );
+        request.getRequestDispatcher( getPath(request) ).forward( request, response );
     }
-
-    public abstract void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException ;
 
     public String getSessionAttributeName() {
         return sessionAttributeName ;
@@ -50,4 +40,9 @@ public abstract class Page implements Serializable, HttpSessionAttribute {
     protected void removeFromSession( HttpServletRequest request ) {
         HttpSessionUtils.removeSessionAttribute( request, getSessionAttributeName() ) ;
     }
+
+    public abstract void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException ;
+
+    public abstract String getPath( HttpServletRequest request ) ;
+
 }

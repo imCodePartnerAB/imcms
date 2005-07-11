@@ -6,7 +6,6 @@ import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 import imcode.util.io.FileUtility;
-import org.apache.commons.collections.Transformer;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -119,8 +118,6 @@ public class ImageBrowse extends HttpServlet {
         private static final String REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE = "imagebrowsepage";
 
         private String label;
-        private String directoriesOptionList;
-        private String imagesOptionList;
         private String imageUrl;
         private LocalizedMessage errorMessage;
         private File currentDirectory;
@@ -144,13 +141,12 @@ public class ImageBrowse extends HttpServlet {
             Collection imageDirectories = Utility.collectImageDirectories();
 
             File currentDirectoryRelativeToImageRootParent = FileUtility.relativizeFile( imagesRoot.getParentFile(), currentDirectory );
-            directoriesOptionList = Html.createOptionList( imageDirectories, currentDirectoryRelativeToImageRootParent, new Transformer() {
-                public Object transform( Object input ) {
-                    File file = (File)input;
-                    return new String[]{FileUtility.relativeFileToString(file), FileUtility.relativeFileToString(file)};
+            return Html.createOptionList(imageDirectories, currentDirectoryRelativeToImageRootParent, new ToStringPairTransformer() {
+                public String[] transformToStringPair(Object input) {
+                    File file = (File) input;
+                    return new String[] { FileUtility.relativeFileToString(file), FileUtility.relativeFileToString(file) };
                 }
-            } );
-            return directoriesOptionList;
+            });
         }
 
         public String getImagesOptionList() {
@@ -163,16 +159,16 @@ public class ImageBrowse extends HttpServlet {
             Arrays.sort( images );
             List imageList = Arrays.asList( images );
 
-            imagesOptionList = Html.createOptionList( imageList, currentImage, new Transformer() {
-                public Object transform( Object input ) {
-                    File file = (File)input;
-	                  String formattedFileSize = HumanReadable.getHumanReadableByteSize( file.length() ) ;
-                    return new String[]{
-                        FileUtility.relativeFileToString(FileUtility.relativizeFile( imagesRoot, file )), file.getName() + "\t[" + formattedFileSize + "]"
+            return Html.createOptionList(imageList, currentImage, new ToStringPairTransformer() {
+                public String[] transformToStringPair(Object input) {
+                    File file = (File) input;
+                    String formattedFileSize = HumanReadable.getHumanReadableByteSize(file.length());
+                    return new String[] {
+                            FileUtility.relativeFileToString(FileUtility.relativizeFile(imagesRoot, file)),
+                            file.getName() + "\t[" + formattedFileSize + "]"
                     };
                 }
-            } );
-            return imagesOptionList;
+            });
         }
 
         public String getImageUrl() {

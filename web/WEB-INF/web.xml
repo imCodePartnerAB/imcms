@@ -54,16 +54,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminError2</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminError2</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminError</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminError</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminIpAccess</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminIpAccess</servlet-class>
     </servlet>
@@ -106,11 +96,6 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminUser</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminUser</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminUserProps</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminUserProps</servlet-class>
     </servlet>
 
     <servlet>
@@ -309,16 +294,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminError2</servlet-name>
-        <url-pattern>/servlet/AdminError2</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminError</servlet-name>
-        <url-pattern>/servlet/AdminError</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminIpAccess</servlet-name>
         <url-pattern>/servlet/AdminIpAccess</url-pattern>
     </servlet-mapping>
@@ -361,11 +336,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminUser</servlet-name>
         <url-pattern>/servlet/AdminUser</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminUserProps</servlet-name>
-        <url-pattern>/servlet/AdminUserProps</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

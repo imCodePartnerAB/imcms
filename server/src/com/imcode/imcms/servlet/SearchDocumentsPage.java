@@ -278,16 +278,16 @@ public class SearchDocumentsPage extends OkCancelPage {
 
     private MultiMap getParameterMap( HttpServletRequest request ) {
         MultiMap parameters = new MultiHashMap();
-        String pageSessionNameFromRequest = Page.getPageSessionNameFromRequest( request );
+        String pageSessionNameFromRequest = Page.fromRequest( request ).getSessionAttributeName();
         if ( null != pageSessionNameFromRequest ) {
             parameters.put( Page.IN_REQUEST, pageSessionNameFromRequest );
         }
         return parameters;
     }
 
-    public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+    public String getPath(HttpServletRequest request) {
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        putInSessionAndForwardToPath( "/imcms/" + user.getLanguageIso639_2() + "/jsp/search_documents.jsp", request, response );
+        return "/imcms/" + user.getLanguageIso639_2() + "/jsp/search_documents.jsp";
     }
 
     public Set getSections() {

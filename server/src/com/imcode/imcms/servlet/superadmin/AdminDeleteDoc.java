@@ -11,12 +11,13 @@ import org.apache.log4j.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Map;
 import java.util.HashMap;
 
-public class AdminDeleteDoc extends Administrator {
+public class AdminDeleteDoc extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( AdminDeleteDoc.class.getName() );
 
@@ -33,17 +34,17 @@ public class AdminDeleteDoc extends Administrator {
         // Lets verify that this user is an admin
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
-        if (!user.isSuperAdmin()) {
+        if ( !user.isSuperAdmin() ) {
             String header = "Error in AdminCounter.";
-            Properties langproperties = imcref.getLanguageProperties( user );
-            String msg = langproperties.getProperty("error/servlet/global/no_administrator")+ "<br>";
+            Properties langproperties = imcref.getLanguageProperties(user);
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             log.debug(header + "- user is not an administrator");
-            new AdminError(req, res, header, msg);
+            Administrator.printErrorMessage(req, res, header, msg);
             return;
         }
 
         Map vm = new HashMap();
-        super.sendHtml(req, res, vm, HTML_TEMPLATE);
+        Administrator.sendHtml(req, res, vm, HTML_TEMPLATE);
 
     }
 
@@ -56,10 +57,10 @@ public class AdminDeleteDoc extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (user.isSuperAdmin() == false) {
             String header = "Error in AdminCounter.";
-            Properties langproperties = imcref.getLanguageProperties( user );
-            String msg = langproperties.getProperty("error/servlet/global/no_administrator")+"<br>";
+            Properties langproperties = imcref.getLanguageProperties(user);
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             log.debug(header + "- user is not an administrator");
-            new AdminError(req, res, header, msg);
+            Administrator.printErrorMessage(req, res, header, msg);
             return;
         }
 
@@ -71,10 +72,10 @@ public class AdminDeleteDoc extends Administrator {
             Properties params = this.getParameters(req);
             if (this.validateParameters(params) == false) {
                 String header = "Error in AdminDeleteDoc.";
-                Properties langproperties = imcref.getLanguageProperties( user );
-                String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_valid_metaid")+ "<br>";
+                Properties langproperties = imcref.getLanguageProperties(user);
+                String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_valid_metaid") + "<br>";
                 log.debug(header + "- no valid metaid");
-                new AdminError(req, res, header, msg);
+                Administrator.printErrorMessage(req, res, header, msg);
                 return;
             }
 
@@ -86,10 +87,11 @@ public class AdminDeleteDoc extends Administrator {
 
             if (foundMetaId == null) {
                 String header = "Error in AdminDeleteDoc. ";
-                Properties langproperties = imcref.getLanguageProperties( user );
-                String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_metaid_in_db") + "( " + metaId + " ) <br>";
+                Properties langproperties = imcref.getLanguageProperties(user);
+                String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_metaid_in_db") + "( " + metaId
+                             + " ) <br>";
                 log.debug(header + "- metaid could not be found in db");
-                new AdminError(req, res, header, msg);
+                Administrator.printErrorMessage(req, res, header, msg);
                 return;
             }
 
@@ -139,7 +141,7 @@ public class AdminDeleteDoc extends Administrator {
 
     private boolean validateParameters(Properties params) {
 
-        if (super.assertNoEmptyStringsInPropertyValues(params) == false) return false;
+        if ( Administrator.propertyValuesContainEmptyStrings(params) ) return false;
         try {
             Integer.parseInt(params.getProperty("DEL_META_ID"));
         } catch (NumberFormatException e) {

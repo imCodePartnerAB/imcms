@@ -15,6 +15,8 @@ import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.functors.EqualPredicate;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -41,58 +43,43 @@ public class Administrator extends HttpServlet {
 
     private static final String TEMPLATE_ERROR = "Error.html";
 
-    protected boolean assertNoEmptyStringsInPropertyValues(Properties aPropObj) {
-        // Ok, lets check that the user has typed anything in all the fields
-        Enumeration enumValues = aPropObj.elements();
-        Enumeration enumKeys = aPropObj.keys();
-        while ( ( enumValues.hasMoreElements() && enumKeys.hasMoreElements() ) ) {
-            enumKeys.nextElement();
-            Object oValue = ( enumValues.nextElement() );
-            String theVal = oValue.toString();
-            if ( theVal.equals( "" ) )
-                return false;
-        }
-        return true;
-    } // checkparameters
+    protected static boolean propertyValuesContainEmptyStrings(Properties aPropObj) {
+        return CollectionUtils.exists(aPropObj.values(), new EqualPredicate(""));
+    }
 
-
-    /**
-     SendHtml. Generates the html page to the browser.
-     **/
-    String createHtml( HttpServletRequest req,
-                       Map vm, String htmlFile ) throws IOException {
+    /** SendHtml. Generates the html page to the browser. */
+    static String createHtml(HttpServletRequest req,
+                      Map vm, String htmlFile) throws IOException {
 
         // Lets get the path to the admin templates folder
         ImcmsServices imcref = Imcms.getServices();
-        UserDomainObject user = Utility.getLoggedOnUser( req );
+        UserDomainObject user = Utility.getLoggedOnUser(req);
 
         // Lets add the server host
-        vm.put("SERVLET_URL", "") ;
-        vm.put("SERVLET_URL2", "") ;
+        vm.put("SERVLET_URL", "");
+        vm.put("SERVLET_URL2", "");
 
-        List tagsAndData1 = new ArrayList(vm.size()*2) ;
+        List tagsAndData1 = new ArrayList(vm.size() * 2);
         for ( Iterator tagsIterator = vm.entrySet().iterator(); tagsIterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)tagsIterator.next();
-            tagsAndData1.add("#"+entry.getKey() +"#") ;
-            tagsAndData1.add(entry.getValue()) ;
+            Map.Entry entry = (Map.Entry) tagsIterator.next();
+            tagsAndData1.add("#" + entry.getKey() + "#");
+            tagsAndData1.add(entry.getValue());
         }
-        List tagsAndData = tagsAndData1 ;
+        List tagsAndData = tagsAndData1;
 
-        String html = imcref.getAdminTemplate( htmlFile, user, tagsAndData );
+        String html = imcref.getAdminTemplate(htmlFile, user, tagsAndData);
         return html;
     }
 
-    /**
-     SendHtml. Generates the html page to the browser.
-     */
-    protected void sendHtml(HttpServletRequest req, HttpServletResponse res,
-                          Map vm, String htmlFile ) throws IOException {
+    /** SendHtml. Generates the html page to the browser. */
+    protected static void sendHtml(HttpServletRequest req, HttpServletResponse res,
+                            Map vm, String htmlFile) throws IOException {
 
-        String str = this.createHtml( req, vm, htmlFile );
+        String str = Administrator.createHtml(req, vm, htmlFile);
 
         // Lets send settings to a browser
         PrintWriter out = res.getWriter();
-        Utility.setDefaultHtmlContentType( res );
+        Utility.setDefaultHtmlContentType(res);
         out.println(str);
     }
 
@@ -100,28 +87,28 @@ public class Administrator extends HttpServlet {
      * send error message
      *
      * @param user
-     * @param errorCode         is the code to loock upp in ErrMsg.ini file
+     * @param errorCode is the code to loock upp in ErrMsg.ini file
      */
-    protected void sendErrorMessage(ImcmsServices imcref, String eMailServerMaster,
-                          UserDomainObject user, String errorHeader,
-                          int errorCode, HttpServletResponse response) throws IOException {
+    protected static void sendErrorMessage(ImcmsServices imcref, String eMailServerMaster,
+                                    UserDomainObject user, String errorHeader,
+                                    int errorCode, HttpServletResponse response) throws IOException {
 
-        String errorMessage = "" ;
+        String errorMessage = "";
         try {
             // Lets get the error code
             SettingsAccessor setObj = new SettingsAccessor("errmsg.ini", user, "admin");
             setObj.setDelimiter("=");
             setObj.loadSettings();
             errorMessage = setObj.getSetting("" + errorCode);
-            if (errorMessage == null) {
+            if ( errorMessage == null ) {
                 errorMessage = "Missing Errorcode";
             }
 
-        } catch (Exception e) {
-            throw new UnhandledException( e ) ;
+        } catch ( Exception e ) {
+            throw new UnhandledException(e);
         }
 
-        Utility.setDefaultHtmlContentType( response );
+        Utility.setDefaultHtmlContentType(response);
         ServletOutputStream out = response.getOutputStream();
 
         Vector tagParsList = new Vector();
@@ -133,8 +120,25 @@ public class Administrator extends HttpServlet {
         tagParsList.add("#EMAIL_SERVER_MASTER#");
         tagParsList.add(eMailServerMaster);
 
-        out.print(imcref.getAdminTemplate( TEMPLATE_ERROR, user, tagParsList ));
+        out.print(imcref.getAdminTemplate(TEMPLATE_ERROR, user, tagParsList));
     }
 
+    static void printErrorMessage(HttpServletRequest req, HttpServletResponse res, String header, String msg
+    ) throws IOException {
+        List tagsAndData = new ArrayList();
+        tagsAndData.add("#ERROR_HEADER#");
+        tagsAndData.add(header);
+        tagsAndData.add("#ERROR_MESSAGE#");
+        tagsAndData.add(msg);
 
+        String fileName = "AdminError.htm";
+
+        // Lets get the path to the admin templates folder
+        ImcmsServices imcref = Imcms.getServices();
+        UserDomainObject user = Utility.getLoggedOnUser(req);
+
+        String html = imcref.getAdminTemplate(fileName, user, tagsAndData);
+        Utility.setDefaultHtmlContentType(res);
+        res.getWriter().println(html);
+    }
 }

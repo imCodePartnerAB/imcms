@@ -1,15 +1,7 @@
 package com.imcode.imcms.api;
 
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.server.Imcms;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.collections.Transformer;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 public class User {
     private UserDomainObject internalUser;
@@ -63,7 +55,7 @@ public class User {
     }
 
     public String getCountyCouncil() {
-        return internalUser.getCountyCouncil();
+        return internalUser.getDistrict();
     }
 
     public String getEmailAddress() {
@@ -192,7 +184,7 @@ public class User {
     }
 
     public void setCountyCouncil( String countyCouncil ) {
-        internalUser.setCountyCouncil( countyCouncil );
+        internalUser.setDistrict( countyCouncil );
     }
 
     public void setEmailAddress( String emailAddress ) {

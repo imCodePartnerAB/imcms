@@ -43,9 +43,8 @@ public class CategoryDomainObject implements Comparable, Serializable {
 
         final CategoryDomainObject categoryDomainObject = (CategoryDomainObject) o;
 
-        if (id != categoryDomainObject.id) return false;
+        return id == categoryDomainObject.id;
 
-        return true;
     }
 
     public int hashCode() {

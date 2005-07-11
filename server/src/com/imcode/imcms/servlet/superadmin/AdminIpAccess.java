@@ -11,14 +11,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServlet;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Vector;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
-public class AdminIpAccess extends Administrator {
+public class AdminIpAccess extends HttpServlet {
 
     Logger log = Logger.getLogger( AdminIpAccess.class );
 
@@ -39,35 +36,35 @@ public class AdminIpAccess extends Administrator {
 
         // ********** GENERATE THE IP-ACCESS PAGE *********
         // Lets get all IP-accesses from DB
-        String[][] multi = imcref.getDatabase().execute2dArrayProcedure( "IPAccessesGetAll", new String[0] );
+        String[][] multi = imcref.getDatabase().execute2dArrayProcedure("IPAccessesGetAll", new String[0]);
 
         // Lets build the variables for each record
         Vector tags = new Vector();
-        tags.add( "IP_ACCESS_ID" );
-        tags.add( "USER_ID" );
-        tags.add( "LOGIN_NAME" );
-        tags.add( "IP_START" );
-        tags.add( "IP_END" );
+        tags.add("IP_ACCESS_ID");
+        tags.add("USER_ID");
+        tags.add("LOGIN_NAME");
+        tags.add("IP_START");
+        tags.add("IP_END");
 
         // Lets parse each record and put it in a string
         String recs = "";
         int nbrOfRows = multi.length;
-        for (int counter = 0; counter < nbrOfRows; counter++) {
-            Vector aRecV = new Vector( java.util.Arrays.asList( multi[counter] ) );
+        for ( int counter = 0; counter < nbrOfRows; counter++ ) {
+            Vector aRecV = new Vector(Arrays.asList(multi[counter]));
             Map vmRec = new HashMap();
-            aRecV.setElementAt( Utility.ipLongToString( Long.parseLong( (String) aRecV.elementAt( 3 ) ) ), 3 );
-            aRecV.setElementAt( Utility.ipLongToString( Long.parseLong( (String) aRecV.elementAt( 4 ) ) ), 4 );
-            for (int i = 0; i < tags.size(); i++) {
-                vmRec.put(tags.get( i ), aRecV.get( i )) ;
+            aRecV.setElementAt(Utility.ipLongToString(Long.parseLong((String) aRecV.elementAt(3))), 3);
+            aRecV.setElementAt(Utility.ipLongToString(Long.parseLong((String) aRecV.elementAt(4))), 4);
+            for ( int i = 0; i < tags.size(); i++ ) {
+                vmRec.put(tags.get(i), aRecV.get(i));
             }
-            vmRec.put("RECORD_COUNTER", "" + counter) ;
-            recs += super.createHtml( req, vmRec, HTML_IP_SNIPPET );
+            vmRec.put("RECORD_COUNTER", "" + counter);
+            recs += Administrator.createHtml(req, vmRec, HTML_IP_SNIPPET);
         }
 
         // Lets generate the html page
         Map vm = new HashMap();
-        vm.put("ALL_IP_ACCESSES", recs) ;
-        super.sendHtml( req, res, vm, HTML_TEMPLATE );
+        vm.put("ALL_IP_ACCESSES", recs);
+        Administrator.sendHtml(req, res, vm, HTML_TEMPLATE);
     }
 
     public void doPost( HttpServletRequest req, HttpServletResponse res )
@@ -78,10 +75,10 @@ public class AdminIpAccess extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (user.isSuperAdmin() == false) {
             String header = "Error in AdminCounter.";
-            Properties langproperties = imcref.getLanguageProperties( user );
-            String msg = langproperties.getProperty( "error/servlet/global/no_administrator" ) + "<br>";
-            log.debug( header + "- user is not an administrator" );
-            new AdminError( req, res, header, msg );
+            Properties langproperties = imcref.getLanguageProperties(user);
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+            log.debug(header + "- user is not an administrator");
+            Administrator.printErrorMessage(req, res, header, msg);
             return;
         }
 
@@ -89,12 +86,12 @@ public class AdminIpAccess extends Administrator {
         if (req.getParameter( "ADD_IP_ACCESS" ) != null) {
 
             // Lets get all USERS from DB
-            String usersOption = Html.createUsersOptionList( imcref );
+            String usersOption = Html.createUsersOptionList(imcref);
 
             // Lets generate the html page
             Map vm = new HashMap();
-            vm.put("USERS_LIST", usersOption) ;
-            super.sendHtml( req, res, vm, ADD_IP_TEMPLATE );
+            vm.put("USERS_LIST", usersOption);
+            Administrator.sendHtml(req, res, vm, ADD_IP_TEMPLATE);
             return;
         }
 
@@ -165,26 +162,26 @@ public class AdminIpAccess extends Administrator {
         else if (req.getParameter( "IP_WARN_DELETE" ) != null) {
 
             // Lets get the parameters from html page and validate them
-            HttpSession session = req.getSession( false );
-            if (session != null) {
+            HttpSession session = req.getSession(false);
+            if ( session != null ) {
                 Enumeration enumNames = req.getParameterNames();
-                while (enumNames.hasMoreElements()) {
-                    String paramName = (String) (enumNames.nextElement());
-                    String[] arr = req.getParameterValues( paramName );
-                    session.setAttribute( "IP." + paramName, arr );
+                while ( enumNames.hasMoreElements() ) {
+                    String paramName = (String) ( enumNames.nextElement() );
+                    String[] arr = req.getParameterValues(paramName);
+                    session.setAttribute("IP." + paramName, arr);
                 }
             } else {
                 String header = "Error in AdminIpAccess, delete. ";
-                Properties langproperties = imcref.getLanguageProperties( user );
-                String msg = langproperties.getProperty( "error/servlet/AdminIpAccess/no_session" ) + "<br>";
-                log.debug( header + "- session could not be created" );
-                new AdminError( req, res, header, msg );
+                Properties langproperties = imcref.getLanguageProperties(user);
+                String msg = langproperties.getProperty("error/servlet/AdminIpAccess/no_session") + "<br>";
+                log.debug(header + "- session could not be created");
+                Administrator.printErrorMessage(req, res, header, msg);
                 return;
             }
 
             // Lets generate the last warning html page
             Map vm = new HashMap();
-            super.sendHtml( req, res, vm, WARN_DEL_IP_TEMPLATE );
+            Administrator.sendHtml(req, res, vm, WARN_DEL_IP_TEMPLATE);
             return;
         }
 
@@ -208,10 +205,10 @@ public class AdminIpAccess extends Administrator {
                 }
             } else {
                 String header = "Error in AdminIpAccess, delete.";
-                Properties langproperties = imcref.getLanguageProperties( user );
-                String msg = langproperties.getProperty( "error/servlet/AdminIpAccess/no_session" ) + "<br>";
-                log.debug( header + "- session could not be created" );
-                new AdminError( req, res, header, msg );
+                Properties langproperties = imcref.getLanguageProperties(user);
+                String msg = langproperties.getProperty("error/servlet/AdminIpAccess/no_session") + "<br>";
+                log.debug(header + "- session could not be created");
+                Administrator.printErrorMessage(req, res, header, msg);
                 return;
             }
             doGet( req, res );
@@ -259,12 +256,12 @@ public class AdminIpAccess extends Administrator {
 
     private Properties validateParameters( Properties aPropObj, HttpServletRequest req, HttpServletResponse res, ImcmsServices imcref, UserDomainObject user ) throws IOException {
 
-        if (assertNoEmptyStringsInPropertyValues( aPropObj ) == false) {
+        if ( Administrator.propertyValuesContainEmptyStrings(aPropObj) ) {
             String header = "Error in AdminIpAccess, assertNoEmptyStringsInPropertyValues.";
-            Properties langproperties = imcref.getLanguageProperties( user );
-            String msg = langproperties.getProperty( "error/servlet/AdminIpAccess/vaidate_form_parameters" ) + "<br>";
-            log.debug( header + "- values is missing for some parameters" );
-            new AdminError( req, res, header, msg );
+            Properties langproperties = imcref.getLanguageProperties(user);
+            String msg = langproperties.getProperty("error/servlet/AdminIpAccess/vaidate_form_parameters") + "<br>";
+            log.debug(header + "- values is missing for some parameters");
+            Administrator.printErrorMessage(req, res, header, msg);
             return null;
         }
         return aPropObj;

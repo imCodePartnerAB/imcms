@@ -32,11 +32,12 @@ import org.apache.lucene.search.TermQuery;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
-public class AdminManager extends Administrator {
+public class AdminManager extends HttpServlet {
 
     private final static String HTML_ADMINTASK = "AdminManager_adminTask_element.htm";
     private final static String HTML_USERADMINTASK = "AdminManager_useradminTask_element.htm";

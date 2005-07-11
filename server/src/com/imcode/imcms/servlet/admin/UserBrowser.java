@@ -4,8 +4,10 @@ import imcode.server.Imcms;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserAlreadyExistsException;
 import imcode.util.HttpSessionUtils;
 import imcode.util.Utility;
+import imcode.util.ShouldNotBeThrownException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,6 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+
+import com.imcode.imcms.servlet.superadmin.UserEditorPage;
+import com.imcode.imcms.flow.DispatchCommand;
 
 public class UserBrowser extends HttpServlet {
 
@@ -42,10 +47,33 @@ public class UserBrowser extends HttpServlet {
             }
         } else if ( null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) ) {
             userFinder.cancel( request, response );
-            ;
         } else if ( null != request.getParameter( REQUEST_PARAMETER__ADD_USER ) && userFinder.isUsersAddable() ) {
-            response.sendRedirect( "AdminUserProps?ADD_USER=true" );
+            goToCreateUserPage(userFinder, request, response);
         }
+    }
+
+    private void goToCreateUserPage(final UserFinder userFinder, HttpServletRequest request,
+                                    HttpServletResponse response) throws ServletException, IOException {
+        final DispatchCommand returnCommand = new DispatchCommand() {
+            public void dispatch(HttpServletRequest request,
+                                 HttpServletResponse response) throws IOException, ServletException {
+                userFinder.forward(request, response);
+            }
+        };
+        final UserDomainObject newUser = new UserDomainObject();
+        DispatchCommand saveUserAndReturnCommand = new DispatchCommand() {
+            public void dispatch(HttpServletRequest request,
+                                 HttpServletResponse response) throws IOException, ServletException {
+                try {
+                    Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().addUser(newUser, Utility.getLoggedOnUser(request));
+                } catch ( UserAlreadyExistsException e ) {
+                    throw new ShouldNotBeThrownException(e);
+                }
+                returnCommand.dispatch(request, response);
+            }
+        };
+        UserEditorPage userEditorPage = new UserEditorPage(newUser, saveUserAndReturnCommand, returnCommand);
+        userEditorPage.forward(request, response);
     }
 
     private void listUsers( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {

@@ -41,7 +41,7 @@ public class TestDocumentMapper extends TestCase {
         oldDocument = createTextDocument(1001);
         textDocument = createTextDocument(1002);
         database = new MockDatabase();
-        ImcmsAuthenticatorAndUserAndRoleMapper userRegistry = new ImcmsAuthenticatorAndUserAndRoleMapper( null, null ) {
+        ImcmsAuthenticatorAndUserAndRoleMapper userRegistry = new ImcmsAuthenticatorAndUserAndRoleMapper( null, null) {
             public UserDomainObject getUser( int userId ) {
                 return user ;
             }
