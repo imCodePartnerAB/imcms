@@ -1,24 +1,23 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import imcode.server.Imcms;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.UserDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserAlreadyExistsException;
+import imcode.server.user.UserDomainObject;
 import imcode.util.HttpSessionUtils;
 import imcode.util.Utility;
-import imcode.util.ShouldNotBeThrownException;
+import imcode.util.LocalizedMessage;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
-
-import com.imcode.imcms.servlet.superadmin.UserEditorPage;
-import com.imcode.imcms.flow.DispatchCommand;
+import java.util.List;
 
 public class UserBrowser extends HttpServlet {
 
@@ -32,6 +31,7 @@ public class UserBrowser extends HttpServlet {
     public static final String REQUEST_PARAMETER__SELECT_USER_BUTTON = "selectUserButton";
     public static final String REQUEST_PARAMETER__ADD_USER = "addUser";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
+    private static final LocalizedMessage ERROR__USER_ALREADY_EXISTS = new LocalizedMessage("error/servlet/AdminUserProps/username_already_exists");
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
@@ -63,18 +63,20 @@ public class UserBrowser extends HttpServlet {
             }
         };
         final UserDomainObject newUser = new UserDomainObject();
+        final UserEditorPage userEditorPage = new UserEditorPage(newUser, null, returnCommand);
         DispatchCommand saveUserAndReturnCommand = new DispatchCommand() {
             public void dispatch(HttpServletRequest request,
                                  HttpServletResponse response) throws IOException, ServletException {
                 try {
                     Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().addUser(newUser, Utility.getLoggedOnUser(request));
+                    returnCommand.dispatch(request, response);
                 } catch ( UserAlreadyExistsException e ) {
-                    throw new ShouldNotBeThrownException(e);
+                    userEditorPage.setErrorMessage(ERROR__USER_ALREADY_EXISTS) ;
+                    userEditorPage.forward(request, response);
                 }
-                returnCommand.dispatch(request, response);
             }
         };
-        UserEditorPage userEditorPage = new UserEditorPage(newUser, saveUserAndReturnCommand, returnCommand);
+        userEditorPage.setOkCommand(saveUserAndReturnCommand) ;
         userEditorPage.forward(request, response);
     }
 
@@ -159,5 +161,4 @@ public class UserBrowser extends HttpServlet {
             request.getRequestDispatcher( "/imcms/" + userLanguage + JSP__USER_BROWSER ).forward( request, response );
         }
     }
-
 }

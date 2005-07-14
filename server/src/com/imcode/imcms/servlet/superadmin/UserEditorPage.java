@@ -284,6 +284,14 @@ public class UserEditorPage extends OkCancelPage {
         return allRoles;
     }
 
+    public void setErrorMessage(LocalizedMessage errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public void setOkCommand(DispatchCommand okCommand) {
+        this.okCommand = okCommand;
+    }
+
     private static class RoleToStringPairTransformer extends ToStringPairTransformer {
         protected String[] transformToStringPair(Object object) {
             RoleDomainObject role = (RoleDomainObject) object;

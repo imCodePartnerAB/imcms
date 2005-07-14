@@ -286,6 +286,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     public synchronized void addUser(UserDomainObject user,
                                      UserDomainObject currentUser) throws UserAlreadyExistsException {
+        if (null != getUser(user.getLoginName())) {
+            throw new UserAlreadyExistsException("A user with the name \""+user.getLoginName()+"\" already exists.");
+        }
         try {
             if ( user.isImcmsExternal() ) {
                 user.setPassword("");
