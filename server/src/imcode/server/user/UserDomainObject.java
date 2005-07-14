@@ -456,9 +456,6 @@ public class UserDomainObject implements Cloneable, Serializable {
         if ( !( o instanceof UserDomainObject ) ) {
             return false;
         }
-        if ( !super.equals( o ) ) {
-            return false;
-        }
 
         final UserDomainObject userDomainObject = (UserDomainObject)o;
 
