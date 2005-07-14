@@ -94,15 +94,25 @@ public class AdminUser extends HttpServlet {
                     doGet(request, response);
                 }
             };
-            DispatchCommand saveAndReturnCommand = new DispatchCommand() {
-                public void dispatch(HttpServletRequest request,
-                                     HttpServletResponse response) throws IOException, ServletException {
-                    Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(userToChange, Utility.getLoggedOnUser(request));
-                    returnCommand.dispatch(request, response);
-                }
-            };
+            DispatchCommand saveAndReturnCommand = new SaveUserAndReturnCommand(userToChange, returnCommand);
             UserEditorPage userEditorPage = new UserEditorPage(userToChange, saveAndReturnCommand, returnCommand);
             userEditorPage.forward(req, res);
+        }
+    }
+
+    public static class SaveUserAndReturnCommand implements DispatchCommand {
+        private final UserDomainObject userToChange;
+        private final DispatchCommand returnCommand;
+
+        public SaveUserAndReturnCommand(UserDomainObject userToChange, DispatchCommand returnCommand) {
+            this.userToChange = userToChange;
+            this.returnCommand = returnCommand;
+        }
+
+        public void dispatch(HttpServletRequest request,
+                             HttpServletResponse response) throws IOException, ServletException {
+            Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(userToChange, Utility.getLoggedOnUser(request));
+            returnCommand.dispatch(request, response);
         }
     }
 }

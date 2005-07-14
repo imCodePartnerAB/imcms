@@ -2,7 +2,12 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
+import com.imcode.imcms.servlet.superadmin.UserEditorPage;
+import com.imcode.imcms.servlet.superadmin.AdminUser;
+import com.imcode.imcms.flow.DispatchCommand;
 import imcode.util.Utility;
+import imcode.server.user.UserDomainObject;
+import imcode.server.Imcms;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -60,45 +65,43 @@ public class VerifyUser extends HttpServlet {
     }
 
     private void goToLoginSuccessfulPage(HttpServletRequest req,
-                                         HttpServletResponse res) throws IOException {
-        HttpSession session = req.getSession(true);
-        String nexturl = "StartDoc";
+                                         HttpServletResponse res) throws IOException, ServletException {
 
-        if ( session.getAttribute(SESSION_ATTRIBUTE__NEXT_META) != null ) {
-            nexturl = "GetDoc?meta_id=" + session.getAttribute(SESSION_ATTRIBUTE__NEXT_META);
-            session.removeAttribute(SESSION_ATTRIBUTE__NEXT_META);
-        } else if ( session.getAttribute(SESSION_ATTRIBUTE__NEXT_URL) != null ) {
-            nexturl = (String) session.getAttribute(SESSION_ATTRIBUTE__NEXT_URL);
-            session.removeAttribute(SESSION_ATTRIBUTE__NEXT_URL);
-        } else if ( req.getParameter(REQUEST_PARAMETER__NEXT_URL) != null ) {
-            nexturl = req.getParameter(REQUEST_PARAMETER__NEXT_URL);
-        } else if ( req.getParameter(REQUEST_PARAMETER__NEXT_META) != null ) {
-            nexturl = "GetDoc?meta_id=" + req.getParameter(REQUEST_PARAMETER__NEXT_META);
-        } else if ( session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET) != null ) {
-            nexturl = (String) session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
-            session.removeAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
-        }
-
-        res.sendRedirect(nexturl);
+        new GoToLoginSuccessfulPageCommand().dispatch(req, res);
     }
 
     private void goToEditUserPage(User user, HttpServletResponse res, String accessDeniedUrl,
-                                  HttpServletRequest req) throws IOException {
+                                  HttpServletRequest req) throws IOException, ServletException {
         if ( user.isDefaultUser() ) {
             res.sendRedirect(accessDeniedUrl);
         } else {
-            String nexturl = "StartDoc" ;
-            if ( req.getParameter(REQUEST_PARAMETER__NEXT_URL) != null ) {
-                nexturl = req.getParameter(REQUEST_PARAMETER__NEXT_URL);
-            } else if ( req.getParameter(REQUEST_PARAMETER__NEXT_META) != null ) {
-                nexturl = "GetDoc?meta_id=" + req.getParameter(REQUEST_PARAMETER__NEXT_META);
+            UserDomainObject internalUser = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUser(user.getId()) ;
+            DispatchCommand returnCommand = new GoToLoginSuccessfulPageCommand();
+            UserEditorPage userEditorPage = new UserEditorPage(internalUser, new AdminUser.SaveUserAndReturnCommand(internalUser, returnCommand), returnCommand);
+            userEditorPage.forward(req, res);
+        }
+    }
+
+    private static class GoToLoginSuccessfulPageCommand implements DispatchCommand {
+        public void dispatch(HttpServletRequest request,
+                             HttpServletResponse response) throws IOException, ServletException {
+            String nexturl = "StartDoc";
+            HttpSession session = request.getSession(true);
+            if ( session.getAttribute(SESSION_ATTRIBUTE__NEXT_META) != null ) {
+                nexturl = "GetDoc?meta_id=" + session.getAttribute(SESSION_ATTRIBUTE__NEXT_META);
+                session.removeAttribute(SESSION_ATTRIBUTE__NEXT_META);
+            } else if ( session.getAttribute(SESSION_ATTRIBUTE__NEXT_URL) != null ) {
+                nexturl = (String) session.getAttribute(SESSION_ATTRIBUTE__NEXT_URL);
+                session.removeAttribute(SESSION_ATTRIBUTE__NEXT_URL);
+            } else if ( request.getParameter(REQUEST_PARAMETER__NEXT_URL) != null ) {
+                nexturl = request.getParameter(REQUEST_PARAMETER__NEXT_URL);
+            } else if ( request.getParameter(REQUEST_PARAMETER__NEXT_META) != null ) {
+                nexturl = "GetDoc?meta_id=" + request.getParameter(REQUEST_PARAMETER__NEXT_META);
+            } else if ( session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET) != null ) {
+                nexturl = (String) session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
+                session.removeAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
             }
-
-            HttpSession session = req.getSession(true);
-            session.setAttribute("userToChange", "" + user.getId());
-            session.setAttribute(SESSION_ATTRIBUTE__NEXT_URL, nexturl);
-
-            res.sendRedirect("AdminUserProps?CHANGE_USER=true");
+            response.sendRedirect(nexturl);
         }
     }
 }

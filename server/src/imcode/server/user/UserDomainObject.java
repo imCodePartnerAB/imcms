@@ -685,12 +685,19 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean canEditRolesFor(UserDomainObject editedUser) {
-        return !equals(editedUser) && ( isSuperAdmin()
-                                        || isUserAdmin() );
+        return isSuperAdmin() || canEditAsUserAdmin(editedUser) && !equals(editedUser) ;
     }
 
     public void removeUserAdminRole(RoleDomainObject role) {
         userAdminRoles.remove(role) ;
+    }
+
+    public boolean canEdit(UserDomainObject editedUser) {
+        return equals(editedUser) || isSuperAdmin() || canEditAsUserAdmin(editedUser) ;
+    }
+
+    private boolean canEditAsUserAdmin(UserDomainObject editedUser) {
+        return isUserAdminOnly() && CollectionUtils.containsAny(editedUser.roles, userAdminRoles) ;
     }
 
     private static class PhoneNumberOfTypePredicate implements Predicate {

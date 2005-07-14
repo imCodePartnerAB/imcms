@@ -293,7 +293,7 @@ public class UserEditorPage extends OkCancelPage {
 
     public void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
-        if (!loggedOnUser.canEditRolesFor(editedUser)) {
+        if (!loggedOnUser.canEdit(editedUser)) {
             throw new ShouldHaveCheckedPermissionsEarlierException(new NoPermissionException("User "+loggedOnUser+" does not have the permission to edit "+editedUser));
         }
 
