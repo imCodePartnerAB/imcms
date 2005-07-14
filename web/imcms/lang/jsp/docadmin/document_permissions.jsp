@@ -74,6 +74,7 @@
                     for ( Iterator iterator = rolesMappedToPermissionSetIds.entrySet().iterator(); iterator.hasNext(); ) {
                         Map.Entry entry = (Map.Entry)iterator.next();
                         RoleDomainObject role = (RoleDomainObject)entry.getKey();
+                        role = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getRoleById(role.getId()) ;
                         int permissionSetId = ((Integer)entry.getValue()).intValue() ;
                         if (DocumentPermissionSetDomainObject.TYPE_ID__NONE == permissionSetId || role.equals( RoleDomainObject.SUPERADMIN )) {
                             continue ;
