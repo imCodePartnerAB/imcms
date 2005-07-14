@@ -269,7 +269,12 @@ public class UserEditorPage extends OkCancelPage {
 
     public String createUserAdminRolesHtmlOptionList() {
         RoleDomainObject[] allRoles = getAllRolesExceptUsersRole();
+        Set allRolesSet = new HashSet(Arrays.asList(allRoles)) ;
+        allRolesSet.remove(RoleDomainObject.SUPERADMIN) ;
+        allRolesSet.remove(RoleDomainObject.USERADMIN) ;
+        allRoles = (RoleDomainObject[]) allRolesSet.toArray(new RoleDomainObject[allRolesSet.size()]);
         RoleDomainObject[] usersUserAdminRoles = editedUser.getUserAdminRoles();
+
         return createRolesHtmlOptionList(allRoles, usersUserAdminRoles);
     }
 
