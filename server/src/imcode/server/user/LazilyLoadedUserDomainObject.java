@@ -3,12 +3,14 @@ package imcode.server.user;
 import imcode.server.Imcms;
 
 import java.util.Date;
+import java.util.Set;
 
 public class LazilyLoadedUserDomainObject extends UserDomainObject {
 
     private boolean attributesLoaded;
     private boolean phoneNumbersLoaded;
     private boolean rolesLoaded;
+    private boolean userAdminRolesLoaded;
 
     public LazilyLoadedUserDomainObject( int id ) {
         this(id, true) ;
@@ -52,6 +54,17 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
         }
     }
 
+    private void loadUserAdminRoles() {
+        if ( userAdminRolesLoaded ) {
+            return;
+        }
+        userAdminRolesLoaded = true;
+        if ( 0 != id ) {
+            ImcmsAuthenticatorAndUserAndRoleMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+            userMapper.initUserUserAdminRoles( this );
+        }
+    }
+
     public void addRole( RoleDomainObject role ) {
         loadRoles();
         super.addRole( role );
@@ -85,6 +98,21 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
     public Date getCreateDate() {
         loadAttributes();
         return super.getCreateDate();
+    }
+
+    public void addPhoneNumber(PhoneNumber number) {
+        loadPhoneNumbers();
+        super.addPhoneNumber(number);
+    }
+
+    public Set getPhoneNumbers() {
+        loadPhoneNumbers();
+        return super.getPhoneNumbers();
+    }
+
+    public void removePhoneNumber(PhoneNumber number) {
+        loadPhoneNumbers();
+        super.removePhoneNumber(number);
     }
 
     public String getEmailAddress() {
@@ -286,4 +314,15 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
         loadAttributes();
         super.setZip( zip );
     }
+
+    public RoleDomainObject[] getUserAdminRoles() {
+        loadUserAdminRoles() ;
+        return super.getUserAdminRoles();
+    }
+
+    public void setUserAdminRoles(RoleDomainObject[] userAdminRoles) {
+        loadUserAdminRoles();
+        super.setUserAdminRoles(userAdminRoles);
+    }
+
 }

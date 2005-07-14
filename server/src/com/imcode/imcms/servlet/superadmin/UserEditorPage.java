@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.api.NoPermissionException;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
@@ -9,17 +10,14 @@ import imcode.server.user.PhoneNumberType;
 import imcode.server.user.PhoneNumber;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.util.Utility;
-import imcode.util.Html;
-import imcode.util.LocalizedMessage;
-import imcode.util.ArraySet;
-import imcode.util.ToStringPairTransformer;
+import imcode.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.io.IOException;
@@ -43,6 +41,7 @@ public class UserEditorPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__ACTIVE = "active";
     public static final String REQUEST_PARAMETER__PASSWORD2 = "password2";
     public static final String REQUEST_PARAMETER__ROLE_IDS = "role_ids";
+    public static final String REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS = "user_admin_role_ids";
 
     public static final String REQUEST_PARAMETER__ADD_PHONE_NUMBER = "add_phone_number";
     public static final String REQUEST_PARAMETER__EDIT_PHONE_NUMBER = "edit_phone_number";
@@ -58,7 +57,6 @@ public class UserEditorPage extends OkCancelPage {
     private UserDomainObject editedUser;
     private PhoneNumber currentPhoneNumber = new PhoneNumber("", PhoneNumberType.OTHER);
     private LocalizedMessage errorMessage;
-    private ImcmsServices services;
     private static final int MAXIMUM_PASSWORD_LENGTH = 15;
     private static final int MINIMUM_PASSWORD_LENGTH = 4;
 
@@ -66,7 +64,6 @@ public class UserEditorPage extends OkCancelPage {
                           DispatchCommand cancelDispatchCommand) {
         super(okDispatchCommand, cancelDispatchCommand);
         this.editedUser = user;
-        services = Imcms.getServices();
     }
 
     protected void updateFromRequest(HttpServletRequest request) {
@@ -91,26 +88,45 @@ public class UserEditorPage extends OkCancelPage {
         user.setActive(null != request.getParameter(REQUEST_PARAMETER__ACTIVE));
 
         updateUserRolesFromRequest(user, request);
+        updateUserAdminRolesFromRequest(user, request);
     }
 
-    private void updateUserRolesFromRequest(UserDomainObject user, HttpServletRequest request) {
-        if ( Utility.getLoggedOnUser(request).isSuperAdmin() ) {
-            ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = services.getImcmsAuthenticatorAndUserAndRoleMapper();
-            String[] roleIdStrings = request.getParameterValues(REQUEST_PARAMETER__ROLE_IDS);
-            user.removeAllRoles();
+    private void updateUserAdminRolesFromRequest(UserDomainObject user, HttpServletRequest request) {
+        if ( Utility.getLoggedOnUser(request).isSuperAdmin() && user.isUserAdmin() ) {
+            user.setUserAdminRoles(getRolesFromRequestParameterValues(request, REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS));
+            user.removeUserAdminRole(RoleDomainObject.SUPERADMIN) ;
+            user.removeUserAdminRole(RoleDomainObject.USERADMIN) ;
+        }
+    }
+
+    private RoleDomainObject[] getRolesFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = getImcmsServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+        Set roles = new HashSet();
+        String[] roleIdStrings = request.getParameterValues(requestParameter);
+        if ( null != roleIdStrings ) {
             for ( int i = 0; i < roleIdStrings.length; i++ ) {
                 int roleId = Integer.parseInt(roleIdStrings[i]);
                 RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapper.getRoleById(roleId);
-                user.addRole(role);
+                roles.add(role);
             }
+        }
+        return (RoleDomainObject[]) roles.toArray(new RoleDomainObject[roles.size()]);
+    }
+
+    private ImcmsServices getImcmsServices() {
+        return Imcms.getServices() ;
+    }
+
+    private void updateUserRolesFromRequest(UserDomainObject user, HttpServletRequest request) {
+        if ( Utility.getLoggedOnUser(request).canEditRolesFor(user) ) {
+            user.setRoles(getRolesFromRequestParameterValues(request, REQUEST_PARAMETER__ROLE_IDS));
         }
     }
 
     private void updateUserPasswordFromRequest(UserDomainObject user, HttpServletRequest request) {
         String password1 = getPassword1FromRequest(request);
         if ( StringUtils.isNotBlank(password1) ) {
-            if ( password1.length() < MINIMUM_PASSWORD_LENGTH
-                 || password1.length() > MAXIMUM_PASSWORD_LENGTH ) {
+            if ( !passwordPassesLengthRequirements(password1) ) {
                 errorMessage = ERROR__PASSWORD_LENGTH;
             } else if ( !passwordsMatch(request) ) {
                 errorMessage = ERROR__PASSWORDS_DID_NOT_MATCH;
@@ -118,6 +134,11 @@ public class UserEditorPage extends OkCancelPage {
                 user.setPassword(password1);
             }
         }
+    }
+
+    private boolean passwordPassesLengthRequirements(String password1) {
+        return password1.length() >= MINIMUM_PASSWORD_LENGTH
+               && password1.length() <= MAXIMUM_PASSWORD_LENGTH;
     }
 
     public String getPath(HttpServletRequest request) {
@@ -155,7 +176,7 @@ public class UserEditorPage extends OkCancelPage {
                 errorMessage = ERROR__PASSWORD_LENGTH;
             } else {
                 super.dispatchOk(request, response);
-                return ;
+                return;
             }
         }
         forward(request, response);
@@ -202,7 +223,7 @@ public class UserEditorPage extends OkCancelPage {
 
     public String createLanguagesHtmlOptionList(UserDomainObject user,
                                                 UserDomainObject userToChange) {
-        return services.getLanguageMapper().createLanguagesOptionList(user, userToChange.getLanguageIso639_2());
+        return getImcmsServices().getLanguageMapper().createLanguagesOptionList(user, userToChange.getLanguageIso639_2());
     }
 
     public String createPhoneTypesHtmlOptionList(final UserDomainObject loggedOnUser, PhoneNumberType selectedType) {
@@ -235,15 +256,42 @@ public class UserEditorPage extends OkCancelPage {
         return errorMessage;
     }
 
-    public String createRolesHtmlOptionList() {
-        RoleDomainObject[] allRoles = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getAllRoles();
-        Arrays.sort(allRoles);
+    public String createRolesHtmlOptionList(HttpServletRequest request) {
+        UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request) ;
+        RoleDomainObject[] roles = loggedOnUser.isUserAdminOnly() ? loggedOnUser.getUserAdminRoles() : getAllRolesExceptUsersRole();
         RoleDomainObject[] usersRoles = editedUser.getRoles();
-        return Html.createOptionList(Arrays.asList(allRoles), new ArraySet(usersRoles), new ToStringPairTransformer() {
-            protected String[] transformToStringPair(Object object) {
-                RoleDomainObject role = (RoleDomainObject) object;
-                return new String[] { "" + role.getId(), role.getName() };
-            }
-        });
+        return createRolesHtmlOptionList(roles, usersRoles);
+    }
+
+    private String createRolesHtmlOptionList(RoleDomainObject[] allRoles, RoleDomainObject[] usersRoles) {
+        return Html.createOptionList(Arrays.asList(allRoles), new ArraySet(usersRoles), new RoleToStringPairTransformer());
+    }
+
+    public String createUserAdminRolesHtmlOptionList() {
+        RoleDomainObject[] allRoles = getAllRolesExceptUsersRole();
+        RoleDomainObject[] usersUserAdminRoles = editedUser.getUserAdminRoles();
+        return createRolesHtmlOptionList(allRoles, usersUserAdminRoles);
+    }
+
+    private RoleDomainObject[] getAllRolesExceptUsersRole() {
+        RoleDomainObject[] allRoles = getImcmsServices().getImcmsAuthenticatorAndUserAndRoleMapper().getAllRolesExceptUsersRole();
+        Arrays.sort(allRoles);
+        return allRoles;
+    }
+
+    private static class RoleToStringPairTransformer extends ToStringPairTransformer {
+        protected String[] transformToStringPair(Object object) {
+            RoleDomainObject role = (RoleDomainObject) object;
+            return new String[] { "" + role.getId(), role.getName() };
+        }
+    }
+
+    public void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
+        if (!loggedOnUser.canEditRolesFor(editedUser)) {
+            throw new ShouldHaveCheckedPermissionsEarlierException(new NoPermissionException("User "+loggedOnUser+" does not have the permission to edit "+editedUser));
+        }
+
+        super.forward(request, response);
     }
 }

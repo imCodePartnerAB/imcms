@@ -1,7 +1,9 @@
-<%@ page import="com.imcode.imcms.flow.*"%><%@ page import="imcode.server.user.UserDomainObject"%>
-<%@ page import="org.apache.commons.lang.StringEscapeUtils"%><%@ page import="com.imcode.imcms.servlet.superadmin.UserEditorPage"%>
-<%@ page import="imcode.util.Utility"%><%@ page import="java.text.SimpleDateFormat"%>
-<%@ page import="imcode.util.DateConstants"%><%@ page import="imcode.util.LocalizedMessage"%><%
+<%@ page import="com.imcode.imcms.flow.OkCancelPage"%><%@ page  import="com.imcode.imcms.flow.Page"%>
+<%@ page import="com.imcode.imcms.servlet.superadmin.UserEditorPage"%><%@ page import="imcode.server.user.UserDomainObject"%>
+<%@ page import="imcode.util.DateConstants"%><%@  page import="imcode.util.LocalizedMessage"%>
+<%@ page import="imcode.util.Utility"%><%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
+<%@ page import="java.text.SimpleDateFormat"%>
+<%
     UserEditorPage userEditorPage = (UserEditorPage) Page.fromRequest(request);
     UserDomainObject editedUser = userEditorPage.getEditedUser() ;
     UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
@@ -17,10 +19,6 @@ function evalPrepareAdd() {
 	// Lets check that those fields which are mandatory
 	var valFieldsOk = true;
 	if( document.forms[0].login_name.value == "" ) valFieldsOk = false
-	//if( document.forms[0].password1.value == "" ) valFieldsOk = false
-	//if( document.forms[0].password2.value == "" ) valFieldsOk = false
-	if( document.forms[0].first_name.value == "" ) valFieldsOk = false
-	if( document.forms[0].last_name.value == "" ) valFieldsOk = false
 
 	if(!valFieldsOk) {
 		var msg = "<? templates/sv/AdminUserResp.htm/2/1 ?>"
@@ -37,31 +35,16 @@ function evalPrepareAdd() {
 		return false
 	}
 
-	// ( only neded for ns4)
-	if ( document.forms[0].useradmin_roles ){
-		var index = document.forms[0].useradmin_roles.selectedIndex;
-		if ( index > -1 ){
-			var list = document.forms[0].roles;
-			for ( i = 0 ; i < list.length ; i++ ){
-				if ( list.options[i].text == "Useradmin"  &&  !list.options[i].selected ){
-					var msg = "<? templates/sv/AdminUserResp.htm/2/5 ?>\n";
-					msg += "<? templates/sv/AdminUserResp.htm/2/6 ?>" ;
-					alert(msg);
-				}
-			}
-		}
-	}
-
 	return true
 }
 
 function activateUseradmin_roles(){
-	if ( document.forms[0].useradmin_roles ){
-		var list = document.forms[0].roles;
-		document.forms[0].useradmin_roles.disabled = true;
+	if ( document.forms[0].<%= UserEditorPage.REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS %> ){
+		var list = document.forms[0].<%= UserEditorPage.REQUEST_PARAMETER__ROLE_IDS %>;
+		document.forms[0].<%= UserEditorPage.REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS %>.disabled = true;
 		for ( i = 0 ; i < list.length ; i++ ){
 			if ( list.options[i].text == "Useradmin"  && list.options[i].selected ){
-				document.forms[0].useradmin_roles.disabled = false;
+				document.forms[0].<%= UserEditorPage.REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS %>.disabled = false;
 			}
 		}
 	}
@@ -71,7 +54,7 @@ function activateUseradmin_roles(){
 </script>
 
 </head>
-<body bgcolor="#FFFFFF" onLoad="focusField(0,'login_name'); activateUseradmin_roles(); return true">
+<body bgcolor="#FFFFFF" onLoad="focusField(0,'<%= UserEditorPage.REQUEST_PARAMETER__LOGIN_NAME %>'); activateUseradmin_roles(); return true">
 
 
 #gui_outer_start()
@@ -204,7 +187,7 @@ function activateUseradmin_roles(){
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><input type="checkbox" name="active" value="#ACTIVE#" <% if (editedUser.isActive()) { %>checked<% } %>></td>
+		<td><input type="checkbox" name="active" value="1" <% if (editedUser.isActive()) { %>checked<% } %>></td>
 		<td class="imcmsAdmText" nowrap>&nbsp;
             <% if (null != editedUser.getCreateDate()) { %>
                 &nbsp; <? templates/sv/AdminUserResp_superadmin_part.htm/12 ?> &nbsp; <%= new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING).format(editedUser.getCreateDate()) %>
@@ -213,6 +196,7 @@ function activateUseradmin_roles(){
 	</tr>
 	</table></td>
 </tr>
+<% if (loggedOnUser.canEditRolesFor(editedUser)) { %>
 <tr>
 	<td colspan="2">&nbsp;<br>#gui_heading( "<? templates/sv/AdminUserResp_superadmin_part.htm/3/1 ?>" )</td>
 </tr>
@@ -224,15 +208,15 @@ function activateUseradmin_roles(){
 	<tr valign="top">
 		<td>
 		<select name="<%= UserEditorPage.REQUEST_PARAMETER__ROLE_IDS %>" size="5" multiple onchange="activateUseradmin_roles(); return true;">
-		    <%= userEditorPage.createRolesHtmlOptionList() %>
+		    <%= userEditorPage.createRolesHtmlOptionList(request) %>
 		</select></td>
         <% if (loggedOnUser.isSuperAdmin()) { %>
             <td>&nbsp;</td>
             <td class="imcmsAdmText" nowrap><? templates/sv/AdminUserResp_superadmin_part.htm/8 ?></td>
             <td>&nbsp;</td>
             <td>
-            <select name="useradmin_roles" size="5" multiple>
-            #ROLES_MENU_USERADMIN#
+            <select name="<%= UserEditorPage.REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS %>" size="5" multiple>
+                <%= userEditorPage.createUserAdminRolesHtmlOptionList() %>
             </select></td>
         <% } %>
     </tr>
@@ -245,6 +229,7 @@ function activateUseradmin_roles(){
     </tr>
 	</table></td>
 </tr>
+<% } %>
 <tr>
 	<td colspan="2">#gui_hr( "blue" )</td>
 </tr>

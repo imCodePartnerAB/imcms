@@ -4,10 +4,7 @@ import imcode.server.LanguageMapper;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
 import imcode.server.db.DatabaseConnection;
-import imcode.server.db.commands.CompositeDatabaseCommand;
-import imcode.server.db.commands.DeleteWhereColumnEqualsDatabaseCommand;
-import imcode.server.db.commands.InsertIntoTableDatabaseCommand;
-import imcode.server.db.commands.TransactionDatabaseCommand;
+import imcode.server.db.commands.*;
 import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.db.exceptions.IntegrityConstraintViolationException;
 import imcode.server.db.exceptions.StringTruncationException;
@@ -16,6 +13,7 @@ import imcode.util.Utility;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.collections.Transformer;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -31,7 +29,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     private static final int USER_EXTERN_ID = 2;
 
-    private Database database;
+    private final Database database;
     private static final String SQL_SELECT_USERS = "SELECT user_id, login_name, login_password, first_name, last_name, "
                                                    + "title, company, address, city, zip, country, county_council, "
                                                    + "email, language, active, "
@@ -40,11 +38,14 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     public static final String SQL_ROLES_COLUMNS = "roles.role_id, roles.role_name, roles.admin_role, roles.permissions";
     private static final String SQL_SELECT_ALL_ROLES = "SELECT " + SQL_ROLES_COLUMNS + " FROM roles";
+    private static final String SQL_SELECT_ALL_ROLES_EXCEPT_USERS_ROLE = SQL_SELECT_ALL_ROLES + " WHERE roles.role_id != "+RoleDomainObject.USERS_ID ;
+
     public static final String SQL_SELECT_ROLE_BY_NAME = SQL_SELECT_ALL_ROLES + " WHERE role_name = ?";
     private static final String SQL_SELECT_ROLE_BY_ID = SQL_SELECT_ALL_ROLES + " WHERE role_id = ?";
 
     public static final String SQL_INSERT_INTO_ROLES = "INSERT INTO roles (role_name, permissions, admin_role) VALUES(?,?,0)";
     private LanguageMapper languageMapper;
+    private static final String TABLE__USERADMIN_ROLE_CROSSREF = "useradmin_role_crossref";
 
     public ImcmsAuthenticatorAndUserAndRoleMapper(Database database,
                                                   LanguageMapper languageMapper) {
@@ -192,6 +193,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     public void saveUser(UserDomainObject user, UserDomainObject currentUser) {
+        UserDomainObject oldUser = getUser(user.getId()) ;
+
         String[] params = {
                 user.getLoginName(),
                 null == user.getPassword() ? "" : user.getPassword(),
@@ -232,11 +235,53 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             throw new UnhandledException(e);
         }
 
-        if ( !user.equals(currentUser) ) {
-            sqlUpdateUserRoles(user);
-        }
+        updateUserRoles(user, oldUser, currentUser);
         removePhoneNumbers(user);
         addPhoneNumbers(user);
+    }
+
+    private void updateUserRoles(UserDomainObject newUser, UserDomainObject oldUser, UserDomainObject loggedInUser) {
+        if ( !newUser.equals(loggedInUser) ) {
+            Set newUserRoles = new HashSet(Arrays.asList(newUser.getRoles())) ;
+            if (null != loggedInUser && loggedInUser.isUserAdminOnly()) {
+                Set loggedInUserUserAdminRoles = new HashSet(Arrays.asList(loggedInUser.getUserAdminRoles())) ;
+                newUserRoles.retainAll(loggedInUserUserAdminRoles) ;
+                if (null != oldUser) {
+                    Set oldUserRoles = new HashSet(Arrays.asList(oldUser.getRoles()));
+                    oldUserRoles.removeAll(loggedInUserUserAdminRoles) ;
+                    newUserRoles.addAll(oldUserRoles) ;
+                }
+            }
+            newUserRoles.add(RoleDomainObject.USERS);
+            CompositeDatabaseCommand updateUserRolesCommand = new CompositeDatabaseCommand(new DeleteWhereColumnEqualsDatabaseCommand("user_roles_crossref", "user_id", new Integer(newUser.getId())));
+            for ( Iterator iterator = newUserRoles.iterator(); iterator.hasNext(); ) {
+                RoleDomainObject role = (RoleDomainObject) iterator.next();
+                updateUserRolesCommand.add(new InsertIntoTableDatabaseCommand("user_roles_crossref", new String[][] {
+                        {"user_id", ""+newUser.getId()},
+                        {"role_id", ""+role.getId()}
+                }));
+            }
+            database.executeCommand(updateUserRolesCommand);
+            if (null == loggedInUser || loggedInUser.isSuperAdmin()) {
+                sqlUpdateUserUserAdminRoles(newUser);
+            }
+        }
+    }
+
+    private void sqlUpdateUserUserAdminRoles(UserDomainObject user) {
+        DeleteWhereColumnEqualsDatabaseCommand deleteAllUserAdminRolesForUserCommand = new DeleteWhereColumnEqualsDatabaseCommand(TABLE__USERADMIN_ROLE_CROSSREF, "user_id",
+                                                                                                                                  ""
+                                                                                                                                  + user.getId());
+        CompositeDatabaseCommand updateUserAdminRolesCommand = new CompositeDatabaseCommand(deleteAllUserAdminRolesForUserCommand);
+        RoleDomainObject[] userAdminRoles = user.getUserAdminRoles() ;
+        for ( int i = 0; i < userAdminRoles.length; i++ ) {
+            RoleDomainObject userAdminRole = userAdminRoles[i];
+            updateUserAdminRolesCommand.add(new InsertIntoTableDatabaseCommand(TABLE__USERADMIN_ROLE_CROSSREF, new String[][] {
+                { "user_id", ""+user.getId() },
+                { "role_id", ""+userAdminRole.getId() }
+            }));
+        }
+        database.executeCommand(updateUserAdminRolesCommand) ;
     }
 
     public synchronized void addUser(UserDomainObject user,
@@ -266,9 +311,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             int newIntUserId = newUserId.intValue();
             user.setId(newIntUserId);
 
-            if ( !user.equals(currentUser) ) {
-                sqlAddRolesToUser(user.getRoles(), user);
-            }
+            updateUserRoles(user, null, currentUser);
             addPhoneNumbers(user);
         } catch ( IntegrityConstraintViolationException e ) {
             throw new UserAlreadyExistsException(e);
@@ -287,26 +330,17 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     private void addPhoneNumbers(UserDomainObject newUser) {
-        final int PHONE_TYPE_OTHER_PHONE = 0;
-        final int PHONE_TYPE_HOME_PHONE = 1;
-        final int PHONE_TYPE_WORK_PHONE = 2;
-        final int PHONE_TYPE_WORK_MOBILE = 3;
-        final int PHONE_TYPE_FAX_PHONE = 4;
-        if ( newUser.getHomePhone().length() > 0 ) {
-            addPhoneNumber(newUser.getId(), newUser.getHomePhone(), PHONE_TYPE_HOME_PHONE);
+        CompositeDatabaseCommand addPhoneNumbersCommand = new CompositeDatabaseCommand();
+        Set phoneNumbers = newUser.getPhoneNumbers();
+        for ( Iterator iterator = phoneNumbers.iterator(); iterator.hasNext(); ) {
+            PhoneNumber phoneNumber = (PhoneNumber) iterator.next();
+            addPhoneNumbersCommand.add(new InsertIntoTableDatabaseCommand("phones", new String[][]{
+                    { "user_id", ""+newUser.getId() },
+                    { "number", phoneNumber.getNumber() },
+                    { "phonetype_id", ""+phoneNumber.getType().getId() }
+            }));
         }
-        if ( newUser.getWorkPhone().length() > 0 ) {
-            addPhoneNumber(newUser.getId(), newUser.getWorkPhone(), PHONE_TYPE_WORK_PHONE);
-        }
-        if ( newUser.getMobilePhone().length() > 0 ) {
-            addPhoneNumber(newUser.getId(), newUser.getMobilePhone(), PHONE_TYPE_WORK_MOBILE);
-        }
-        if ( newUser.getFaxPhone().length() > 0 ) {
-            addPhoneNumber(newUser.getId(), newUser.getFaxPhone(), PHONE_TYPE_FAX_PHONE);
-        }
-        if ( newUser.getOtherPhone().length() > 0 ) {
-            addPhoneNumber(newUser.getId(), newUser.getOtherPhone(), PHONE_TYPE_OTHER_PHONE);
-        }
+        database.executeCommand(addPhoneNumbersCommand) ;
     }
 
     /** @deprecated  */
@@ -359,15 +393,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     public UserDomainObject[] getUsers(boolean includeUserExtern, boolean includeInactiveUsers) {
         String[][] allUsersSqlResult = sqlSelectAllUsers(includeUserExtern, includeInactiveUsers);
         return getUsersFromSqlRows(allUsersSqlResult);
-    }
-
-    private void sqlRemoveAllRoles(UserDomainObject user) {
-        try {
-            database.executeUpdateQuery("DELETE FROM user_roles_crossref WHERE user_id = ?", new Object[] {
-                    new Integer(user.getId()) });
-        } catch ( DatabaseException e ) {
-            throw new UnhandledException(e);
-        }
     }
 
     public UserDomainObject[] getAllUsersWithRole(RoleDomainObject role) {
@@ -465,8 +490,16 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     public RoleDomainObject[] getAllRoles() {
+        return getRoles(SQL_SELECT_ALL_ROLES);
+    }
+
+    public RoleDomainObject[] getAllRolesExceptUsersRole() {
+        return getRoles(SQL_SELECT_ALL_ROLES_EXCEPT_USERS_ROLE);
+    }
+
+    private RoleDomainObject[] getRoles(String rolesSql) {
         try {
-            String[][] sqlRows = database.execute2dArrayQuery(SQL_SELECT_ALL_ROLES, new String[0]);
+            String[][] sqlRows = database.execute2dArrayQuery(rolesSql, new String[0]);
             RoleDomainObject[] roles = new RoleDomainObject[sqlRows.length];
             for ( int i = 0; i < sqlRows.length; i++ ) {
                 roles[i] = getRoleFromSqlResult(sqlRows[i]);
@@ -506,20 +539,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             role.addUnionOfPermissionIdsToRole(unionOfRolePermissionIds);
         }
         return role;
-    }
-
-    public void sqlUpdateUserRoles(UserDomainObject tempUser) {
-        tempUser.addRole(RoleDomainObject.USERS);
-        RoleDomainObject[] userRoles = tempUser.getRoles();
-        sqlRemoveAllRoles(tempUser);
-        sqlAddRolesToUser(userRoles, tempUser);
-    }
-
-    private void sqlAddRolesToUser(RoleDomainObject[] userRoles, UserDomainObject user) {
-        for ( int i = 0; i < userRoles.length; i++ ) {
-            RoleDomainObject userRole = userRoles[i];
-            sqlAddRoleToUser(userRole, user);
-        }
     }
 
     public UserDomainObject[] getAllUsers() {
@@ -568,6 +587,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         user.setRoles(getRolesForUser(user));
     }
 
+    public void initUserUserAdminRoles(UserDomainObject user) {
+        user.setUserAdminRoles(getUserAdminRolesForUser(user)) ;
+    }
+
     public void saveRole(RoleDomainObject role) throws NameTooLongException, RoleAlreadyExistsException {
         if ( 0 == role.getId() ) {
             addRole(role);
@@ -597,8 +620,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             List phoneNumbers = new ArrayList();
             for ( int i = 0; i < phoneNumberData.length; i++ ) {
                 String[] row = phoneNumberData[i];
-                String phoneNumberString = row[1];
-                int phoneTypeId = Integer.parseInt(row[2]);
+                String phoneNumberString = row[0];
+                int phoneTypeId = Integer.parseInt(row[1]);
                 PhoneNumberType phoneNumberType = PhoneNumberType.getPhoneNumberTypeById(phoneTypeId);
                 PhoneNumber phoneNumber = new PhoneNumber(phoneNumberString, phoneNumberType);
                 phoneNumbers.add(phoneNumber);
@@ -609,14 +632,12 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         }
     }
 
-    public RoleDomainObject[] getUseradminPermissibleRoles(UserDomainObject loggedOnUser) {
+    public RoleDomainObject[] getUserAdminRolesForUser(UserDomainObject loggedOnUser) {
         String[] roleIds;
         try {
-            roleIds = database.executeArrayQuery("SELECT role_id FROM roles\n"
-                                                 + "WHERE roles.role_id IN\n"
-                                                 + "( SELECT role_id\n"
+            roleIds = database.executeArrayQuery("SELECT role_id\n"
                                                  + "FROM useradmin_role_crossref\n"
-                                                 + "WHERE user_id = ? )", new String[] { "" + loggedOnUser.getId() });
+                                                 + "WHERE user_id = ?", new String[] { "" + loggedOnUser.getId() });
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }
@@ -632,4 +653,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         return getUser(UserDomainObject.DEFAULT_USER_ID);
     }
 
+    private static class RoleDomainObjectToIdTransformer implements Transformer {
+        public Object transform(Object object) {
+            return new Integer(((RoleDomainObject)object).getId()) ;
+        }
+    }
 }

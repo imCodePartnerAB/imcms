@@ -22,7 +22,7 @@ public class PhoneNumberType implements Serializable {
     private final int id;
     private final LocalizedMessage name;
 
-    public PhoneNumberType(int id, LocalizedMessage name) {
+    private PhoneNumberType(int id, LocalizedMessage name) {
         this.id = id;
         this.name = name;
     }

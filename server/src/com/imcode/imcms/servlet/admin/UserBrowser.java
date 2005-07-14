@@ -36,7 +36,9 @@ public class UserBrowser extends HttpServlet {
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
         UserFinder userFinder = (UserFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
-        if ( null != request.getParameter( REQUEST_PARAMETER__SHOW_USERS_BUTTON ) ) {
+        if ( null == userFinder ) {
+            Utility.redirectToStartDocument(request, response);
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__SHOW_USERS_BUTTON ) ) {
             listUsers( request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__SELECT_USER_BUTTON ) ) {
             UserDomainObject selectedUser = getSelectedUserFromRequest( request );
@@ -97,9 +99,9 @@ public class UserBrowser extends HttpServlet {
         return userBrowserPage;
     }
 
-    private UserDomainObject[] getUsersWithUseradminPermissibleRoles(ImcmsAuthenticatorAndUserAndRoleMapper userMapperAndRole, UserDomainObject loggedOnUser, UserDomainObject[] users) {
+    private UserDomainObject[] getUsersWithUseradminPermissibleRoles(ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper, UserDomainObject loggedOnUser, UserDomainObject[] users) {
         List userList = new ArrayList();
-        RoleDomainObject[] useradminPermissibleRoles = userMapperAndRole.getUseradminPermissibleRoles( loggedOnUser );
+        RoleDomainObject[] useradminPermissibleRoles = userAndRoleMapper.getUserAdminRolesForUser( loggedOnUser );
         for( int i=0; i < users.length; i++){
             for( int k=0; k < useradminPermissibleRoles.length; k++){
                 if( users[i].hasRole( useradminPermissibleRoles[k] ) ){
@@ -107,8 +109,7 @@ public class UserBrowser extends HttpServlet {
                 }
             }
         }
-        users = (UserDomainObject[])userList.toArray(new UserDomainObject[userList.size()]);
-        return users;
+        return (UserDomainObject[])userList.toArray(new UserDomainObject[userList.size()]);
     }
 
     private UserDomainObject getSelectedUserFromRequest( HttpServletRequest request ) {
@@ -118,8 +119,7 @@ public class UserBrowser extends HttpServlet {
             return null;
         }
         int userId = Integer.parseInt( userIdStr );
-        UserDomainObject user = userMapperAndRole.getUser( userId );
-        return user;
+        return userMapperAndRole.getUser( userId );
     }
 
     public static class UserBrowserPage {

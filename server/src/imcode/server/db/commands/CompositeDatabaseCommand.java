@@ -10,8 +10,18 @@ public class CompositeDatabaseCommand extends TransactionDatabaseCommand {
 
     private final List databaseCommands = new ArrayList();
 
+    public CompositeDatabaseCommand() {}
+
     public CompositeDatabaseCommand( DatabaseCommand[] databaseCommands ) {
         this.databaseCommands.addAll( Arrays.asList( databaseCommands ) );
+    }
+
+    public CompositeDatabaseCommand(DatabaseCommand databaseCommand) {
+        add(databaseCommand);
+    }
+
+    public void add(DatabaseCommand databaseCommand) {
+        databaseCommands.add(databaseCommand);
     }
 
     public Object executeInTransaction( DatabaseConnection connection ) throws DatabaseException {
@@ -21,5 +31,7 @@ public class CompositeDatabaseCommand extends TransactionDatabaseCommand {
         }
         return null;
     }
+
+
 
 }

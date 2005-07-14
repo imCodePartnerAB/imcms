@@ -10,12 +10,8 @@ public class InsertIntoTableDatabaseCommand implements DatabaseCommand {
     private String[] columnNames;
     private String[] columnValues;
 
-    public InsertIntoTableDatabaseCommand(String tableName) {
-        this.tableName = tableName;
-    }
-
     public InsertIntoTableDatabaseCommand(String tableName, String[][] columnNamesAndValues) {
-        this(tableName) ;
+        this.tableName = tableName;
         columnNames = new String[columnNamesAndValues.length] ;
         columnValues = new String[columnNamesAndValues.length] ;
         for ( int i = 0; i < columnNamesAndValues.length; i++ ) {

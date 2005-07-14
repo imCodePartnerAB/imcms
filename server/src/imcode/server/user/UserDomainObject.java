@@ -1,13 +1,17 @@
 package imcode.server.user;
 
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.TemplateGroupDomainObject;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.functors.NotPredicate;
 
-import java.util.*;
 import java.io.Serializable;
+import java.util.*;
 
 public class UserDomainObject implements Cloneable, Serializable {
 
@@ -36,17 +40,13 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     private boolean imcmsExternal = false;
 
-    private String workPhone = "";
-    private String mobilePhone = "";
-    private String homePhone = "";
-    private String faxPhone = "";
-    private String otherPhone = "";
-
     private Set phoneNumbers = new HashSet();
 
-    Set roles = createRolesSet();
+    Set roles = createRolesSetWithUserRole();
+    protected Set userAdminRoles = new HashSet() ; 
 
-    private HashSet createRolesSet() {
+
+    private HashSet createRolesSetWithUserRole() {
         HashSet roles = new HashSet();
         roles.add( RoleDomainObject.USERS );
         return roles;
@@ -57,6 +57,7 @@ public class UserDomainObject implements Cloneable, Serializable {
             UserDomainObject clone = (UserDomainObject) super.clone();
             clone.roles = new HashSet(roles);
             clone.phoneNumbers = new HashSet(phoneNumbers);
+            clone.userAdminRoles = new HashSet(userAdminRoles);
             return clone;
         } catch ( CloneNotSupportedException e ) {
             throw new UnhandledException(e);
@@ -259,72 +260,105 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     /**
      * Get the users workphone
+     * @deprecated
      */
     public String getWorkPhone() {
-        return this.workPhone;
+        return getFirstPhoneNumberOfTypeAsString(PhoneNumberType.WORK);
+    }
+
+    private String getFirstPhoneNumberOfTypeAsString(PhoneNumberType phoneNumberType) {
+        PhoneNumber firstPhoneNumberOfType = getFirstPhoneNumberOfType(phoneNumberType);
+        String number = null ;
+        if (null != firstPhoneNumberOfType) {
+            number = firstPhoneNumberOfType.getNumber();
+        }
+        return number;
+    }
+
+    private PhoneNumber getFirstPhoneNumberOfType(PhoneNumberType phoneNumberType) {
+        Collection phoneNumbersOfType = getPhoneNumbersOfType(phoneNumberType);
+        Iterator iterator = phoneNumbersOfType.iterator() ;
+        if (iterator.hasNext()) {
+            return (PhoneNumber) iterator.next() ;
+        }
+        return null ;
+    }
+
+    private Collection getPhoneNumbersOfType(final PhoneNumberType phoneNumberType) {
+        return CollectionUtils.select(phoneNumbers, new PhoneNumberOfTypePredicate(phoneNumberType));
     }
 
     /**
      * Set the users workphone
+     * @deprecated
      */
     public void setWorkPhone( String workphone ) {
-        this.workPhone = workphone;
+        replacePhoneNumbersOfType(workphone, PhoneNumberType.WORK);
+    }
+
+    private void replacePhoneNumbersOfType(String number, PhoneNumberType type) {
+        removePhoneNumbersOfType(type);
+        addPhoneNumber( new PhoneNumber(number, type));
+    }
+
+    private void removePhoneNumbersOfType(PhoneNumberType phoneNumberType) {
+        CollectionUtils.filter(phoneNumbers, new NotPredicate(new PhoneNumberOfTypePredicate(phoneNumberType)));
     }
 
     /**
      * Get the users mobilephone
      */
     public String getMobilePhone() {
-        return this.mobilePhone;
+        return getFirstPhoneNumberOfTypeAsString(PhoneNumberType.MOBILE) ;
     }
 
     /**
      * Set the users mobilephone
      */
     public void setMobilePhone( String mobilephone ) {
-        this.mobilePhone = mobilephone;
+        replacePhoneNumbersOfType(mobilephone, PhoneNumberType.MOBILE);
     }
 
     /**
      * Get the users homephone
      */
     public String getHomePhone() {
-        return this.homePhone;
+        return getFirstPhoneNumberOfTypeAsString(PhoneNumberType.HOME);
     }
 
     /**
      * Set the users homepohne
      */
     public void setHomePhone( String homephone ) {
-        this.homePhone = homephone;
+        replacePhoneNumbersOfType(homephone, PhoneNumberType.HOME);
     }
 
     /**
      * Get the users faxphone
      */
     public String getFaxPhone() {
-        return this.faxPhone;
+        return getFirstPhoneNumberOfTypeAsString(PhoneNumberType.FAX);
     }
 
     /**
      * Set the users faxpohne
      */
     public void setFaxPhone( String faxphone ) {
-        this.faxPhone = faxphone;
+        replacePhoneNumbersOfType(faxphone, PhoneNumberType.FAX);
     }
 
     /**
      * Get the users otherphone
      */
     public String getOtherPhone() {
-        return this.otherPhone;
+        return getFirstPhoneNumberOfTypeAsString(PhoneNumberType.OTHER);
     }
 
     /**
      * Set the users otherpohne
      */
     public void setOtherPhone( String otherphone ) {
-        this.otherPhone = otherphone;
+        replacePhoneNumbersOfType(otherphone, PhoneNumberType.OTHER);
     }
 
     /**
@@ -523,11 +557,10 @@ public class UserDomainObject implements Cloneable, Serializable {
                                            == currentPermissionSetId;
         boolean canDefineRestrictedTwoForDocument = canDefineRestrictedTwoFor( document );
 
-        boolean canDo = userIsSuperAdminOrHasAtLeastTheWantedPermissionSet
-                        && userIsSuperAdminOrHasAtLeastTheCurrentPermissionSet
-                        && ( !changingRestrictedTwo || !userHasAtLeastRestrictedOne
-                             || canDefineRestrictedTwoForDocument );
-        return canDo;
+        return userIsSuperAdminOrHasAtLeastTheWantedPermissionSet
+               && userIsSuperAdminOrHasAtLeastTheCurrentPermissionSet
+               && ( !changingRestrictedTwo || !userHasAtLeastRestrictedOne
+                    || canDefineRestrictedTwoForDocument );
 
     }
 
@@ -585,8 +618,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean canAddDocumentToAnyMenu( DocumentDomainObject document ) {
-        boolean canAddDocumentToAnyMenu = canEdit(document) || document.isLinkableByOtherUsers();
-        return canAddDocumentToAnyMenu;
+        return canEdit(document) || document.isLinkableByOtherUsers();
     }
 
     public boolean canSearchFor( DocumentDomainObject document ) {
@@ -636,7 +668,41 @@ public class UserDomainObject implements Cloneable, Serializable {
         return Collections.unmodifiableSet(phoneNumbers);
     }
 
-    public void removeAllRoles() {
-        roles.clear();
+    public RoleDomainObject[] getUserAdminRoles() {
+        return (RoleDomainObject[]) userAdminRoles.toArray(new RoleDomainObject[userAdminRoles.size()]);
+    }
+
+    public void setUserAdminRoles(RoleDomainObject[] userAdminRoles) {
+        this.userAdminRoles = new HashSet(Arrays.asList(userAdminRoles));
+    }
+
+    public void addUserAdminRole(RoleDomainObject role) {
+        userAdminRoles.add(role) ;
+    }
+
+    public boolean isUserAdminOnly() {
+        return isUserAdmin() && !isSuperAdmin() ;
+    }
+
+    public boolean canEditRolesFor(UserDomainObject editedUser) {
+        return !equals(editedUser) && ( isSuperAdmin()
+                                        || isUserAdmin() );
+    }
+
+    public void removeUserAdminRole(RoleDomainObject role) {
+        userAdminRoles.remove(role) ;
+    }
+
+    private static class PhoneNumberOfTypePredicate implements Predicate {
+        private final PhoneNumberType phoneNumberType;
+
+        public PhoneNumberOfTypePredicate(PhoneNumberType phoneNumberType) {
+            this.phoneNumberType = phoneNumberType;
+        }
+
+        public boolean evaluate(Object object) {
+            PhoneNumber phoneNumber = (PhoneNumber) object ;
+            return phoneNumber.getType().equals(phoneNumberType) ;
+        }
     }
 }
