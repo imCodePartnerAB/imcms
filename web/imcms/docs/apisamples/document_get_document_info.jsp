@@ -23,6 +23,13 @@ Publication start datetime: <%=document.getPublicationStartDatetime()%>
 Archived datetime: <%=document.getArchivedDatetime()%>
 Publication end datetime: <%=document.getPublicationEndDatetime()%>
 Visible in menu for unauthorized users: <%= document.isVisibleInMenusForUnauthorizedUsers() %>
+<%
+    String disableSearch="OFF";
+    if(document.isSearchDisabled()) {
+        disableSearch = "ON";}
+
+    %>
+Property "DisableSearch" is: <%= disableSearch %>
 Sections:
 <%
      Section[] sections = document.getSections();
