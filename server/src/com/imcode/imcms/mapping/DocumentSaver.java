@@ -342,7 +342,7 @@ class DocumentSaver {
 
     private void addKeyword(String keyword) {
         String[] params = new String[]{keyword};
-        documentMapper.getDatabase().executeUpdateQuery("INSERT INTO classification VALUES(?)", params);
+        documentMapper.getDatabase().executeUpdateQuery("INSERT INTO classification (code) VALUES(?)", params);
     }
 
     private void addSectionToDocument(int metaId, int sectionId) {
