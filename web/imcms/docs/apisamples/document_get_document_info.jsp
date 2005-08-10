@@ -23,6 +23,7 @@ Publication start datetime: <%=document.getPublicationStartDatetime()%>
 Archived datetime: <%=document.getArchivedDatetime()%>
 Publication end datetime: <%=document.getPublicationEndDatetime()%>
 Visible in menu for unauthorized users: <%= document.isVisibleInMenusForUnauthorizedUsers() %>
+Shared with other administrators: <%= document.isLinkableByOtherUsers() %>
 <%
     String disableSearch="OFF";
     if(document.isSearchDisabled()) {
