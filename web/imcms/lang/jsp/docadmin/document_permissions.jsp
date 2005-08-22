@@ -1,16 +1,21 @@
-<%@ page import="imcode.server.document.DocumentDomainObject,
-                 imcode.server.user.RoleDomainObject,
+<%@ page import="com.imcode.imcms.flow.DocumentPermissionsPage,
+                 com.imcode.imcms.flow.EditDocumentInformationPageFlow,
+                 com.imcode.imcms.flow.Page,
+                 com.imcode.imcms.flow.PageFlow,
                  imcode.server.Imcms,
-                 java.util.*,
-                 imcode.server.user.UserDomainObject,
-                 imcode.util.Utility,
-                 imcode.util.Html,
+                 imcode.server.document.DocumentDomainObject,
                  imcode.server.document.DocumentPermissionSetDomainObject,
-                 imcode.util.HttpSessionUtils,
-                 com.imcode.imcms.flow.*,
                  imcode.server.document.TemplateDomainObject,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
-                 com.imcode.imcms.flow.Page"%>
+                 imcode.server.user.RoleDomainObject,
+                 imcode.server.user.UserDomainObject,
+                 imcode.util.Html,
+                 imcode.util.Utility"%>
+<%@ page import="java.util.Arrays"%>
+<%@ page import="java.util.Iterator"%>
+<%@ page import="java.util.Map"%>
+<%@ page import="java.util.SortedSet"%>
+<%@ page import="java.util.TreeSet"%>
 <%@page contentType="text/html"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%!
     String formatRolePermissionRadioButton( int radioButtonPermissionSetId, UserDomainObject user, int permissionSetId,
                                             RoleDomainObject role,
@@ -213,7 +218,7 @@
             </table></td>
         </tr>
     </table>
-<form>
+</form>
 #gui_bottom()
 #gui_outer_end()
 <%

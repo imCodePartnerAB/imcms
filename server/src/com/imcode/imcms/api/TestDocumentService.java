@@ -1,10 +1,10 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
 import imcode.server.db.impl.MockDatabase;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
@@ -44,7 +44,7 @@ public class TestDocumentService extends TestCase {
             fail() ;
         } catch( NoPermissionException e ) {}
         user.addRole( new Role( RoleDomainObject.SUPERADMIN ) );
-        database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "insert.*categories.*IDENTITY"), "1" );
+        database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "categories" ), new Integer(1) );
         documentService.saveCategory(category);
         database.verifyExpectedSqlCalls();
 

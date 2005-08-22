@@ -8,14 +8,14 @@ import org.apache.commons.lang.StringUtils;
 public class InsertIntoTableDatabaseCommand implements DatabaseCommand {
     private String tableName;
     private String[] columnNames;
-    private String[] columnValues;
+    private Object[] columnValues;
 
-    public InsertIntoTableDatabaseCommand(String tableName, String[][] columnNamesAndValues) {
+    public InsertIntoTableDatabaseCommand(String tableName, Object[][] columnNamesAndValues) {
         this.tableName = tableName;
         columnNames = new String[columnNamesAndValues.length] ;
-        columnValues = new String[columnNamesAndValues.length] ;
+        columnValues = new Object[columnNamesAndValues.length] ;
         for ( int i = 0; i < columnNamesAndValues.length; i++ ) {
-            columnNames[i] = columnNamesAndValues[i][0] ;
+            columnNames[i] = (String) columnNamesAndValues[i][0] ;
             columnValues[i] = columnNamesAndValues[i][1] ;
         }
     }

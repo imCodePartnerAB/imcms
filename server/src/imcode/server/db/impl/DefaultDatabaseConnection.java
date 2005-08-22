@@ -2,15 +2,15 @@ package imcode.server.db.impl;
 
 import imcode.server.db.DatabaseConnection;
 import imcode.server.db.ProcedureExecutor;
-import imcode.server.db.handlers.FlatStringArrayResultSetHandler;
-import imcode.server.db.handlers.MultiStringArrayResultSetHandler;
-import imcode.server.db.handlers.SingleStringResultSetHandler;
-import imcode.server.db.commands.QueryDatabaseCommand;
 import imcode.server.db.exceptions.DatabaseException;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DefaultDatabaseConnection implements DatabaseConnection {
 
@@ -33,7 +33,7 @@ public class DefaultDatabaseConnection implements DatabaseConnection {
         }
     }
 
-    public Number executeUpdateAndGetGeneratedKey(String sql, String[] parameters) throws DatabaseException {
+    public Number executeUpdateAndGetGeneratedKey(String sql, Object[] parameters) throws DatabaseException {
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             try {
@@ -57,7 +57,7 @@ public class DefaultDatabaseConnection implements DatabaseConnection {
         }
     }
 
-    public int executeUpdateProcedure(String procedure, String[] parameters) throws DatabaseException {
+    public int executeUpdateProcedure(String procedure, Object[] parameters) throws DatabaseException {
         try {
             return procedureExecutor.executeUpdateProcedure(connection, procedure, parameters);
         } catch (SQLException e) {
@@ -65,13 +65,13 @@ public class DefaultDatabaseConnection implements DatabaseConnection {
         }
     }
 
-    static void setPreparedStatementParameters(PreparedStatement preparedStatement, String[] parameters) throws SQLException {
+    static void setPreparedStatementParameters(PreparedStatement preparedStatement, Object[] parameters) throws SQLException {
         for (int i = 0; i < parameters.length; i++) {
-            preparedStatement.setString(i + 1, parameters[i]);
+            preparedStatement.setObject(i + 1, parameters[i]);
         }
     }
 
-    public Object executeQuery(String sqlQuery, String[] parameters,
+    public Object executeQuery(String sqlQuery, Object[] parameters,
                                ResultSetHandler resultSetHandler) throws DatabaseException {
         try {
             return queryRunner.query(connection, sqlQuery, parameters, resultSetHandler);
@@ -80,7 +80,7 @@ public class DefaultDatabaseConnection implements DatabaseConnection {
         }
     }
 
-    public Object executeProcedure(String procedure, String[] parameters, ResultSetHandler resultSetHandler) throws DatabaseException {
+    public Object executeProcedure(String procedure, Object[] parameters, ResultSetHandler resultSetHandler) throws DatabaseException {
         try {
             return procedureExecutor.executeProcedure(connection, procedure, parameters, resultSetHandler);
         } catch (SQLException e) {

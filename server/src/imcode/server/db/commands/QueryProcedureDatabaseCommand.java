@@ -8,12 +8,12 @@ public class QueryProcedureDatabaseCommand extends ProcedureDatabaseCommand {
 
     private final ResultSetHandler resultSetHandler;
 
-    public QueryProcedureDatabaseCommand( String procedure, String[] params, ResultSetHandler resultSetHandler ) {
-        super(procedure, params) ;
+    public QueryProcedureDatabaseCommand( String procedure, Object[] parameters, ResultSetHandler resultSetHandler ) {
+        super(procedure, parameters) ;
         this.resultSetHandler = resultSetHandler;
     }
 
     public Object executeOn( DatabaseConnection connection ) throws DatabaseException {
-        return connection.executeProcedure( procedure, params, resultSetHandler );
+        return connection.executeProcedure( procedure, parameters, resultSetHandler );
     }
 }

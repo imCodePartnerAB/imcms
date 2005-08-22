@@ -13,7 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,33 +32,33 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
     }
 
     public int executeUpdateProcedure( Connection connection, String procedureName,
-                                       String[] params ) throws SQLException {
+                                       Object[] parameters ) throws SQLException {
         Procedure procedure = getProcedure( procedureName );
-        Object[] parameters = getParametersForProcedure( procedure, params );
+        Object[] parametersAtCorrectIndices = getParametersAtCorrectIndicesForProcedure( procedure, parameters );
         String body = procedure.getBody();
         log.debug( "Calling procedure " + procedureName + " with body " + body + " and parameters "
-                   + ArrayUtils.toString( parameters ) );
-        return queryRunner.update( connection, body, parameters );
+                   + ArrayUtils.toString( parametersAtCorrectIndices ) );
+        return queryRunner.update( connection, body, parametersAtCorrectIndices );
     }
 
-    public Object executeProcedure( Connection connection, String procedureName, String[] params,
+    public Object executeProcedure( Connection connection, String procedureName, Object[] params,
                                     ResultSetHandler resultSetHandler ) throws SQLException {
         Procedure procedure = getProcedure( procedureName );
-        Object[] parameters = getParametersForProcedure( procedure, params );
+        Object[] parametersAtCorrectIndices = getParametersAtCorrectIndicesForProcedure( procedure, params );
         String body = procedure.getBody();
         log.debug( "Calling procedure " + procedureName + " with body " + body + " and parameters "
-                   + ArrayUtils.toString( parameters ) );
-        return queryRunner.query( connection, body, parameters, resultSetHandler );
+                   + ArrayUtils.toString( parametersAtCorrectIndices ) );
+        return queryRunner.query( connection, body, parametersAtCorrectIndices, resultSetHandler );
     }
 
-    private Object[] getParametersForProcedure( Procedure procedure, String[] params ) {
+    private Object[] getParametersAtCorrectIndicesForProcedure( Procedure procedure, Object[] parameters ) {
         int[] parameterIndices = procedure.getParameterIndices();
-        Object[] parameters = new String[parameterIndices.length];
+        Object[] parametersAtCorrectIndices = new String[parameterIndices.length];
         for ( int i = 0; i < parameterIndices.length; i++ ) {
             int parameterIndex = parameterIndices[i];
-            parameters[i] = params[parameterIndex];
+            parametersAtCorrectIndices[i] = parameters[parameterIndex];
         }
-        return parameters;
+        return parametersAtCorrectIndices;
     }
 
     private Procedure getProcedure( String wantedProcedure ) {
@@ -101,9 +104,8 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
     }
 
     private File getFile( String wantedProcedure ) {
-        File procedureFile = FileUtility.getFileFromWebappRelativePath( "WEB-INF/sql/sprocs/"
-                                                                        + wantedProcedure.toLowerCase() + ".prc" );
-        return procedureFile;
+        return FileUtility.getFileFromWebappRelativePath( "WEB-INF/sql/sprocs/"
+                                                          + wantedProcedure.toLowerCase() + ".prc" );
     }
 
     private Map getParameterNameToIndexMapParsedFromHeader( Pattern parameterPattern, String headerParameters ) {

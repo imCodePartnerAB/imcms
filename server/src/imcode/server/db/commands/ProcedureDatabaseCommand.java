@@ -6,16 +6,16 @@ import org.apache.commons.lang.ArrayUtils;
 public abstract class ProcedureDatabaseCommand implements DatabaseCommand {
 
     final String procedure;
-    final String[] params;
+    final Object[] parameters;
 
-    protected ProcedureDatabaseCommand( String procedure, String[] params ) {
+    protected ProcedureDatabaseCommand( String procedure, Object[] parameters ) {
 
         this.procedure = procedure;
-        this.params = params;
+        this.parameters = parameters;
     }
 
     public String toString() {
-        return "procedure "+procedure+" "+ArrayUtils.toString( params ) ;
+        return "procedure "+procedure+" "+ArrayUtils.toString( parameters ) ;
     }
 
 }

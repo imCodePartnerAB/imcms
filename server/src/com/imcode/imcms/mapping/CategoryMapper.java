@@ -1,15 +1,13 @@
 package com.imcode.imcms.mapping;
 
-import imcode.server.db.Database;
-import imcode.server.db.DatabaseCommand;
-import imcode.server.db.DatabaseConnection;
+import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import imcode.server.db.ConvenienceDatabaseConnection;
-import imcode.server.db.exceptions.DatabaseException;
+import imcode.server.db.Database;
+import imcode.server.db.commands.InsertIntoTableDatabaseCommand;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
-import com.imcode.imcms.api.CategoryAlreadyExistsException;
 
 public class CategoryMapper {
     private Database database;
@@ -66,8 +64,7 @@ public class CategoryMapper {
 
         CategoryTypeDomainObject[] categoryTypes = new CategoryTypeDomainObject[sqlResult.length];
         for ( int i = 0; i < categoryTypes.length; i++ ) {
-            CategoryTypeDomainObject categoryType = createCategoryTypeFromSqlResult( sqlResult[i], 0 );
-            categoryTypes[i] = categoryType;
+            categoryTypes[i] = createCategoryTypeFromSqlResult( sqlResult[i], 0 );
         }
 
         return categoryTypes;
@@ -144,14 +141,11 @@ public class CategoryMapper {
 
     public CategoryTypeDomainObject addCategoryTypeToDb(final CategoryTypeDomainObject categoryType
     ) {
-        DatabaseCommand addCategoryTypeCommand = new DatabaseCommand() {
-            public Object executeOn(DatabaseConnection connection) throws DatabaseException {
-                String sqlstr = "insert into category_types (name, max_choices, inherited) values(?,?,?)";
-                String[] params = new String[]{categoryType.getName(), categoryType.getMaxChoices() + "", (categoryType.isInherited() ? "1" : "0")};
-                return connection.executeUpdateAndGetGeneratedKey(sqlstr, params) ;
-            }
-        };
-        Number newId = (Number) database.executeCommand(addCategoryTypeCommand) ;
+        Number newId = (Number) database.executeCommand(new InsertIntoTableDatabaseCommand("category_types", new Object[][] {
+                { "name", categoryType.getName() },
+                { "max_choices", new Integer(categoryType.getMaxChoices()) },
+                { "inherited", new Integer(categoryType.isInherited() ? 1 : 0) }
+        })) ;
         return getCategoryTypeById(newId.intValue());
     }
 
@@ -165,13 +159,13 @@ public class CategoryMapper {
     }
 
     public CategoryDomainObject addCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
-        String sqlstr = "insert into categories  (category_type_id, name, description, image) values(?,?,?,?) SELECT @@IDENTITY";
-        String[] params = new String[]{
-            category.getType().getId() + "", category.getName(),
-            category.getDescription(), category.getImageUrl()
-        };
-        String newId = database.executeStringQuery(sqlstr, params);
-        int categoryId = Integer.parseInt(newId);
+        Number newId = (Number) database.executeCommand(new InsertIntoTableDatabaseCommand("categories", new Object[][] {
+                { "category_type_id", new Integer(category.getType().getId()) },
+                { "name", category.getName() },
+                { "description", category.getDescription() },
+                { "image", category.getImageUrl() }
+        })) ;
+        int categoryId = newId.intValue();
         category.setId(categoryId);
         return getCategoryById(categoryId);
     }
@@ -211,9 +205,8 @@ public class CategoryMapper {
 
         String sqlstr = "select meta_id from document_categories where category_id = ? ";
         String[] params = new String[]{category.getId() + ""};
-        String[] res = database.executeArrayQuery(sqlstr, params);
 
-        return res;
+        return database.executeArrayQuery(sqlstr, params);
     }
 
     private void removeAllCategoriesFromDocument(DocumentDomainObject document) {
@@ -232,8 +225,7 @@ public class CategoryMapper {
         String typeName = sqlRow[offset+1];
         int maxChoices = Integer.parseInt( sqlRow[offset+2] );
         boolean inherited = 0 != Integer.parseInt( sqlRow[offset+3] ) ;
-        CategoryTypeDomainObject categoryTypeDomainObject = new CategoryTypeDomainObject( categoryTypeId, typeName, maxChoices, inherited );
-        return categoryTypeDomainObject;
+        return new CategoryTypeDomainObject( categoryTypeId, typeName, maxChoices, inherited );
     }
 
     void checkMaxDocumentCategoriesOfType(DocumentDomainObject document)

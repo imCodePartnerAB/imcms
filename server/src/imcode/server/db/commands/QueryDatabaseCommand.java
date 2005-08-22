@@ -9,10 +9,10 @@ import org.apache.commons.lang.ArrayUtils;
 public class QueryDatabaseCommand implements DatabaseCommand {
 
     private final String sql;
-    private final String[] parameters;
+    private final Object[] parameters;
     private final ResultSetHandler resultSetHandler;
 
-    public QueryDatabaseCommand( String sql, String[] parameters, ResultSetHandler resultSetHandler ) {
+    public QueryDatabaseCommand( String sql, Object[] parameters, ResultSetHandler resultSetHandler ) {
         this.sql = sql;
         this.parameters = parameters;
         this.resultSetHandler = resultSetHandler;

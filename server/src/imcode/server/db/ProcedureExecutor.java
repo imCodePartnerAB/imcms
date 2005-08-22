@@ -7,8 +7,8 @@ import java.sql.SQLException;
 
 public interface ProcedureExecutor {
 
-    int executeUpdateProcedure( Connection connection, String procedure, String[] params ) throws SQLException;
+    int executeUpdateProcedure( Connection connection, String procedure, Object[] parameters ) throws SQLException;
 
-    Object executeProcedure( Connection connection, String procedure, String[] params,
+    Object executeProcedure( Connection connection, String procedure, Object[] parameters,
                              ResultSetHandler resultSetHandler ) throws SQLException;
 }

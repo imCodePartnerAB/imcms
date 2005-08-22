@@ -2,9 +2,9 @@ package imcode.server.db.impl;
 
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
+import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.db.handlers.FlatStringArrayResultSetHandler;
 import imcode.server.db.handlers.MultiStringArrayResultSetHandler;
-import imcode.server.db.exceptions.DatabaseException;
 import junit.framework.Assert;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -24,57 +24,57 @@ public class MockDatabase implements Database {
     private List sqlCalls = new ArrayList();
     private List expectedSqlCalls = new ArrayList();
 
-    public String[] executeArrayProcedure(String procedure, String[] params) {
-        String[] result = (String[]) getResultForSqlCall(procedure, params);
+    public String[] executeArrayProcedure(String procedure, Object[] parameters) {
+        String[] result = (String[]) getResultForSqlCall(procedure, parameters);
         if (null == result) {
             return new String[0];
         }
         return result;
     }
 
-    public int executeUpdateProcedure(String procedure, String[] params) {
-        getResultForSqlCall(procedure, params);
+    public int executeUpdateProcedure(String procedure, Object[] parameters) {
+        getResultForSqlCall(procedure, parameters);
         return 0;
     }
 
-    public int executeUpdateQuery(String sqlStr, Object[] params) {
-        getResultForSqlCall(sqlStr, params);
+    public int executeUpdateQuery(String sqlStr, Object[] parameters) {
+        getResultForSqlCall(sqlStr, parameters);
         return 0;
     }
 
-    public String executeStringProcedure(String procedure, String[] params) {
-        return (String) getResultForSqlCall(procedure, params);
+    public String executeStringProcedure(String procedure, Object[] parameters) {
+        return (String) getResultForSqlCall(procedure, parameters);
     }
 
-    public String[][] execute2dArrayProcedure(String procedure, String[] params) {
-        String[][] result = (String[][]) getResultForSqlCall(procedure, params);
+    public String[][] execute2dArrayProcedure(String procedure, Object[] parameters) {
+        String[][] result = (String[][]) getResultForSqlCall(procedure, parameters);
         if (null == result) {
             result = new String[0][0];
         }
         return result;
     }
 
-    public String[] executeArrayQuery(String sqlStr, String[] params) {
-        String[] result = (String[]) getResultForSqlCall(sqlStr, params);
+    public String[] executeArrayQuery(String sqlStr, Object[] parameters) {
+        String[] result = (String[]) getResultForSqlCall(sqlStr, parameters);
         if (null == result) {
             result = new String[0];
         }
         return result;
     }
 
-    public String executeStringQuery(String sqlStr, String[] params) {
-        return (String) getResultForSqlCall(sqlStr, params);
+    public String executeStringQuery(String sqlStr, Object[] parameters) {
+        return (String) getResultForSqlCall(sqlStr, parameters);
     }
 
-    public String[][] execute2dArrayQuery(String sqlstr, String[] params) {
-        String[][] result = (String[][]) getResultForSqlCall(sqlstr, params);
+    public String[][] execute2dArrayQuery(String sqlstr, Object[] parameters) {
+        String[][] result = (String[][]) getResultForSqlCall(sqlstr, parameters);
         if (null == result) {
             result = new String[0][0];
         }
         return result;
     }
 
-    public Object executeQuery(String sqlQuery, String[] parameters, ResultSetHandler resultSetHandler) {
+    public Object executeQuery(String sqlQuery, Object[] parameters, ResultSetHandler resultSetHandler) {
         Object result = getResultForSqlCall(sqlQuery, parameters);
         if (null == result) {
             if (resultSetHandler instanceof FlatStringArrayResultSetHandler) {

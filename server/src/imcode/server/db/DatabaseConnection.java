@@ -9,14 +9,14 @@ public interface DatabaseConnection {
 
     int executeUpdate( String sql, Object[] parameters ) throws DatabaseException;
 
-    Number executeUpdateAndGetGeneratedKey( String sql, String[] parameters ) throws DatabaseException;
+    Number executeUpdateAndGetGeneratedKey( String sql, Object[] parameters ) throws DatabaseException;
 
-    int executeUpdateProcedure( String procedure, String[] parameters ) throws DatabaseException;
+    int executeUpdateProcedure( String procedure, Object[] parameters ) throws DatabaseException;
 
-    Object executeQuery( String sqlQuery, String[] parameters,
+    Object executeQuery( String sqlQuery, Object[] parameters,
                                  ResultSetHandler resultSetHandler ) throws DatabaseException;
 
-    Object executeProcedure( String procedure, String[] params, ResultSetHandler resultSetHandler ) throws DatabaseException;
+    Object executeProcedure( String procedure, Object[] parameters, ResultSetHandler resultSetHandler ) throws DatabaseException;
 
     Connection getConnection();
 }

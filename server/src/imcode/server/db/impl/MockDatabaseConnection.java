@@ -1,7 +1,6 @@
 package imcode.server.db.impl;
 
 import imcode.server.db.DatabaseConnection;
-import imcode.server.db.exceptions.DatabaseException;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.NotImplementedException;
 
@@ -15,20 +14,20 @@ public class MockDatabaseConnection implements DatabaseConnection {
         this.database = mockDatabase ;
     }
 
-    public Number executeUpdateAndGetGeneratedKey( String sql, String[] parameters ) {
+    public Number executeUpdateAndGetGeneratedKey( String sql, Object[] parameters ) {
         return (Number)database.getResultForSqlCall( sql, parameters ) ;
     }
 
-    public int executeUpdateProcedure( String procedure, String[] parameters ) {
+    public int executeUpdateProcedure( String procedure, Object[] parameters ) {
         return database.executeUpdateProcedure( procedure, parameters );
     }
 
-    public Object executeQuery( String sqlQuery, String[] parameters,
+    public Object executeQuery( String sqlQuery, Object[] parameters,
                                 ResultSetHandler resultSetHandler ) {
         return database.executeQuery(sqlQuery, parameters, resultSetHandler) ;
     }
 
-    public Object executeProcedure( String procedure, String[] params, ResultSetHandler resultSetHandler ) {
+    public Object executeProcedure( String procedure, Object[] parameters, ResultSetHandler resultSetHandler ) {
         throw new NotImplementedException( MockDatabaseConnection.class ) ;
     }
 
