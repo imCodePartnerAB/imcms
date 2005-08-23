@@ -1,20 +1,29 @@
 package imcode.server;
 
-import imcode.server.db.Database;
-import imcode.server.document.*;
-import com.imcode.imcms.mapping.DatabaseDocumentGetter;
-import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DatabaseDocumentGetter;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
+import imcode.server.db.Database;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.TemplateMapper;
 import imcode.server.document.index.AutorebuildingDirectoryIndex;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
-import imcode.util.*;
+import imcode.util.Clock;
+import imcode.util.DateConstants;
+import imcode.util.FileCache;
+import imcode.util.Parser;
+import imcode.util.Prefs;
 import imcode.util.io.FileUtility;
 import imcode.util.net.SMTP;
-import org.apache.commons.beanutils.*;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.Converter;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -24,10 +33,16 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import java.beans.PropertyDescriptor;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.text.*;
+import java.text.Collator;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 final public class DefaultImcmsServices implements ImcmsServices {
@@ -451,13 +466,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     /**
-     * Return  templatehome.
-     */
-    public File getTemplatePath() {
-        return config.getTemplatePath();
-    }
-
-    /**
      * Set session counter.
      */
     public synchronized void setSessionCounter( int value ) {
@@ -502,166 +510,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
         }
     }
 
-    public int saveTemplate( String name, String file_name, byte[] template, boolean overwrite, String lang_prefix ) {
-        String sqlStr;
-        // check if template exists
-        sqlStr = "select template_id from templates where simple_name = ?";
-        String templateId = getDatabase().executeStringQuery( sqlStr, new String[] {name} );
-        if ( null == templateId ) {
-
-            // get new template_id
-            sqlStr = "select max(template_id) + 1 from templates\n";
-            templateId = getDatabase().executeStringQuery( sqlStr, new String[0] );
-
-            sqlStr = "insert into templates values (?,?,?,?,0,0,0)";
-            getDatabase().executeUpdateQuery( sqlStr, new String[] {templateId, file_name, name,
-                                                                                      lang_prefix} );
-        } else { //update
-            if ( !overwrite ) {
-                return -1;
-            }
-
-            sqlStr = "update templates set template_name = ? where template_id = ?";
-            getDatabase().executeUpdateQuery( sqlStr, new String[] {file_name, templateId} );
-        }
-
-        File f = new File( config.getTemplatePath(), "text/" + templateId + ".html" );
-
-        try {
-            FileOutputStream fw = new FileOutputStream( f );
-            fw.write( template );
-            fw.flush();
-            fw.close();
-
-        } catch ( IOException e ) {
-            return -2;
-        }
-
-        //  0 = OK
-        // -1 = file exist
-        // -2 = write error
-        return 0;
-    }
-
-    /**
-     * get demo template
-     */
-    public Object[] getDemoTemplate( int template_id ) throws IOException {
-        //String str = "" ;
-        StringBuffer str = new StringBuffer();
-        BufferedReader fr = null;
-        String suffix = null;
-        String[] suffixList =
-                {"jpg", "jpeg", "gif", "png", "html", "htm"};
-
-        for ( int i = 0; i < suffixList.length; i++ ) { // Looking for a template with one of six suffixes
-            File fileObj = new File( config.getTemplatePath(), "/text/demo/" + template_id + "." + suffixList[i] );
-            long date = 0;
-            long fileDate = fileObj.lastModified();
-            if ( fileObj.exists() && fileDate > date ) {
-                // if a template was not properly removed, the template
-                // with the most recens modified-date is returned
-                try {
-                    fr = new BufferedReader( new InputStreamReader( new FileInputStream( fileObj ), "8859_1" ) );
-                    suffix = suffixList[i];
-                } catch ( IOException e ) {
-                    return null; //Could not read
-                }
-            } // end IF
-        } // end FOR
-
-        char[] buffer = new char[4096];
-        try {
-            int read;
-            while ( ( read = fr.read( buffer, 0, 4096 ) ) != -1 ) {
-                str.append( buffer, 0, read );
-            }
-            fr.close();
-        } catch ( IOException e ) {
-            return null;
-        } catch ( NullPointerException e ) {
-            return null;
-        }
-
-        return new Object[]{suffix, str.toString().getBytes( "8859_1" )}; //return the buffer
-    }
-
-    /**
-     * get template
-     */
-    public String getTemplateData( int template_id ) throws IOException {
-        return fileCache.getCachedFileString( new File( config.getTemplatePath(), "/text/" + template_id + ".html" ) );
-    }
-
-    /**
-     * save demo template
-     */
-    public void saveDemoTemplate( int template_id, byte[] data, String suffix ) throws IOException {
-
-        deleteDemoTemplate( template_id );
-
-        FileOutputStream fw = new FileOutputStream( config.getTemplatePath() + "/text/demo/" + template_id + "."
-                                                    + suffix );
-        fw.write( data );
-        fw.flush();
-        fw.close();
-    }
-
-    /**
-     * get server date
-     */
     public Date getCurrentDate() {
         return new Date();
     }
 
-    private final static FileFilter DEMOTEMPLATEFILTER = new FileFilter() {
-        public boolean accept( File file ) {
-            return file.length() > 0;
-        }
-    };
-
-    // get demotemplates
-    public String[] getDemoTemplateIds() {
-        File demoDir = new File( config.getTemplatePath() + "/text/demo/" );
-
-        File[] file_list = demoDir.listFiles( DEMOTEMPLATEFILTER );
-
-        String[] name_list = new String[file_list.length];
-
-        if ( file_list != null ) {
-            for ( int i = 0; i < name_list.length; i++ ) {
-                String filename = file_list[i].getName();
-                int dot = filename.indexOf( "." );
-                name_list[i] = dot > -1 ? filename.substring( 0, dot ) : filename;
-            }
-        } else {
-            return new String[0];
-
-        }
-
-        return name_list;
-
-    }
-
-    // delete demotemplate
-    public void deleteDemoTemplate( int template_id ) throws IOException {
-
-        File demoTemplateDirectory = new File( new File( config.getTemplatePath(), "text" ), "demo" );
-        File[] demoTemplates = demoTemplateDirectory.listFiles();
-        for ( int i = 0; i < demoTemplates.length; i++ ) {
-            File demoTemplate = demoTemplates[i];
-            String demoTemplateFileName = demoTemplate.getName();
-            if ( demoTemplateFileName.startsWith( template_id + "." ) ) {
-                if ( !demoTemplate.delete() ) {
-                    throw new IOException( "fail to deleate" );
-                }
-            }
-        }
-    }
-
-    /**
-     * Fetch the systemdata from the db
-     */
     private SystemData getSystemDataFromDb() {
 
         SystemData sd = new SystemData();
@@ -756,6 +608,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public LanguageMapper getLanguageMapper() {
         return this.languageMapper ;
+    }
+
+    public FileCache getFileCache() {
+        return fileCache ;
     }
 
     private static class WebappRelativeFileConverter implements Converter {

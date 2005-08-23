@@ -210,9 +210,9 @@ public class MockDatabase implements Database {
     public static class UpdateTableSqlCallPredicate extends SqlCallPredicate {
 
         private String tableName;
-        private String parameter;
+        private Object parameter;
 
-        public UpdateTableSqlCallPredicate(String tableName, String parameter) {
+        public UpdateTableSqlCallPredicate(String tableName, Object parameter) {
             this.tableName = tableName;
             this.parameter = parameter;
         }

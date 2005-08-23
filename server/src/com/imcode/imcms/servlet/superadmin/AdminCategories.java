@@ -1,12 +1,14 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.admin.ImageBrowser;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.*;
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.CategoryTypeDomainObject;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
@@ -61,7 +63,6 @@ public class AdminCategories extends HttpServlet {
             String header = "Error in AdminCategories. ";
             Properties langproperties = service.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-            this.log(header + "- user is not an administrator");
             Administrator.printErrorMessage(req, res, header, msg);
             return;
         }

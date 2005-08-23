@@ -1,10 +1,11 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
@@ -19,8 +20,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.imcode.imcms.mapping.DocumentMapper;
 
 /**
  * Save data from editwindow.
@@ -122,7 +121,7 @@ public class SaveInPage extends HttpServlet {
                 out.write( htmlStr );
                 return;
             }
-            Object[] temp = services.getDemoTemplate( requestedTemplate.getId() );
+            Object[] temp = services.getTemplateMapper().getDemoTemplate( requestedTemplate.getId() );
             if ( temp != null ) {
                 String demoTemplateName = requestedTemplate.getId() + "." + temp[0];
                 // Set content-type depending on type of demo-template.

@@ -1,13 +1,14 @@
 package imcode.server;
 
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.db.Database;
 import imcode.server.db.impl.MockDatabase;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.util.FileCache;
 import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -16,7 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.text.Collator;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
 
 public class MockImcmsServices implements ImcmsServices {
 
@@ -71,49 +74,14 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    // get templatehome
-    public String getTemplateData( int template_id ) throws IOException {
-        return null;
-    }
-
-    // get templatehome
-    public File getTemplatePath() {
-        return null;
-    }
-
     // get doctype
     public int getDocType( int meta_id ) {
         return 0;
     }
 
-    // save template to disk
-    public int saveTemplate( String name, String file_name, byte[] data, boolean overwrite, String lang_prefix ) {
-        return 0;
-    }
-
-    // get demo template data
-    public Object[] getDemoTemplate( int template_id ) throws IOException {
-        return new Object[0];
-    }
-
-    // save demo template
-    public void saveDemoTemplate( int template_id, byte[] data, String suffix ) throws IOException {
-
-    }
-
     // get server date
     public Date getCurrentDate() {
         return null;
-    }
-
-    // get demotemplates
-    public String[] getDemoTemplateIds() {
-        return new String[0];
-    }
-
-    // delete demotemplate
-    public void deleteDemoTemplate( int template_id ) throws IOException {
-
     }
 
     public SystemData getSystemData() {
@@ -190,6 +158,10 @@ public class MockImcmsServices implements ImcmsServices {
 
     public LanguageMapper getLanguageMapper() {
         return languageMapper;
+    }
+
+    public FileCache getFileCache() {
+        return null ;
     }
 
     public KeyStore getKeyStore() {

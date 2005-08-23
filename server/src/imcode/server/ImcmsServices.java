@@ -1,13 +1,14 @@
 package imcode.server ;
 
-import imcode.server.db.Database;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import imcode.server.db.Database;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Clock;
+import imcode.util.FileCache;
 import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -16,7 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.text.Collator;
-import java.util.*;
+import java.util.Date;
+import java.util.Properties;
 
 public interface ImcmsServices extends Clock {
 
@@ -49,40 +51,12 @@ public interface ImcmsServices extends Clock {
                                                  String directory )
 	;
 
-    // get templatehome
-    String getTemplateData(int template_id)
-    throws IOException ;
-
-    // get templatehome
-    File getTemplatePath()
-	;
-
     // get doctype
     int getDocType(int meta_id)
     ;
 
-    // save template to disk
-     int saveTemplate(String name,String file_name,byte[] data,boolean overwrite,String lang_prefix)
-    ;
-
-    // get demo template data
-    Object[] getDemoTemplate(int template_id)
-	throws IOException ;
-
-    // save demo template
-    void saveDemoTemplate(int template_id,byte [] data, String suffix) throws IOException
-    ;
-
     // get server date
     Date getCurrentDate()
-    ;
-
-    // get demotemplates
-    String[] getDemoTemplateIds()
-    ;
-
-    // delete demotemplate
-    void deleteDemoTemplate(int template_id) throws IOException
     ;
 
     SystemData getSystemData()  ;
@@ -124,4 +98,6 @@ public interface ImcmsServices extends Clock {
     CategoryMapper getCategoryMapper();
 
     LanguageMapper getLanguageMapper();
+
+    FileCache getFileCache();
 }

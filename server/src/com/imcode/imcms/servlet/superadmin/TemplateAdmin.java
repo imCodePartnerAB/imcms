@@ -2,7 +2,10 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.TemplateDomainObject;
+import imcode.server.document.TemplateGroupDomainObject;
+import imcode.server.document.TemplateMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 import imcode.util.Utility;
@@ -298,7 +301,7 @@ public class TemplateAdmin extends HttpServlet {
         vec.add( "#docs#" );
         vec.add( createHtmlOptionListOfDocumentsUsingTemplate( imcref, template, user ) );
         vec.add( "#templates#" );
-        vec.add( templateMapper.createHtmlOptionListOfTemplates( templateMapper.createHtmlOptionListOfAllTemplatesExceptOne( template ), null ) );
+        vec.add( templateMapper.createHtmlOptionListOfTemplates( templateMapper.getArrayOfAllTemplatesExceptOne( template ), null ) );
 
         htmlStr = imcref.getAdminTemplate( TEMPLATE_DELETE_WARNING, user, vec );
         return htmlStr;

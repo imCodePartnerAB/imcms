@@ -1,21 +1,21 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.flow.DocumentPageFlow;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
-import imcode.server.db.impl.MockDatabase;
 import imcode.server.db.commands.CompositeDatabaseCommand;
-import imcode.server.db.commands.DeleteWhereColumnEqualsDatabaseCommand;
+import imcode.server.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
 import imcode.server.db.commands.UpdateDatabaseCommand;
+import imcode.server.db.impl.MockDatabase;
+import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
-import imcode.server.document.*;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Clock;
@@ -29,8 +29,6 @@ import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.*;
 
 public class DefaultDocumentMapper implements DocumentMapper {
@@ -301,28 +299,28 @@ public class DefaultDocumentMapper implements DocumentMapper {
         final String metaIdStr = "" + document.getId();
         final String metaIdColumn = "meta_id";
         DatabaseCommand composite = new CompositeDatabaseCommand(new DatabaseCommand[]{
-            new DeleteWhereColumnEqualsDatabaseCommand("document_categories", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("meta_classification", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("childs", "to_meta_id", metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("document_categories", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("meta_classification", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("childs", "to_meta_id", metaIdStr),
             new UpdateDatabaseCommand("DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?)", new String[]{metaIdStr}),
-            new DeleteWhereColumnEqualsDatabaseCommand("menus", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("text_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("texts", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("images", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("roles_rights", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("user_rights", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("url_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("browser_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("fileupload_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("frameset_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("new_doc_permission_sets_ex", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("new_doc_permission_sets", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("doc_permission_sets_ex", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("doc_permission_sets", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("includes", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("includes", "included_meta_id", metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("meta_section", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnEqualsDatabaseCommand("meta", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("menus", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("text_docs", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("texts", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("images", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("roles_rights", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("user_rights", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("url_docs", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("browser_docs", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("fileupload_docs", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("frameset_docs", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("new_doc_permission_sets_ex", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("new_doc_permission_sets", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("doc_permission_sets_ex", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("doc_permission_sets", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("includes", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("includes", "included_meta_id", metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("meta_section", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("meta", metaIdColumn, metaIdStr),
         });
         return composite;
     }

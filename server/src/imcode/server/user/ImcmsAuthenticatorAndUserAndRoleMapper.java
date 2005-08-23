@@ -4,16 +4,19 @@ import imcode.server.LanguageMapper;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
 import imcode.server.db.DatabaseConnection;
-import imcode.server.db.commands.*;
+import imcode.server.db.commands.CompositeDatabaseCommand;
+import imcode.server.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
+import imcode.server.db.commands.InsertIntoTableDatabaseCommand;
+import imcode.server.db.commands.TransactionDatabaseCommand;
 import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.db.exceptions.IntegrityConstraintViolationException;
 import imcode.server.db.exceptions.StringTruncationException;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
+import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.collections.Transformer;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -253,7 +256,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 }
             }
             newUserRoles.add(RoleDomainObject.USERS);
-            CompositeDatabaseCommand updateUserRolesCommand = new CompositeDatabaseCommand(new DeleteWhereColumnEqualsDatabaseCommand("user_roles_crossref", "user_id", new Integer(newUser.getId())));
+            CompositeDatabaseCommand updateUserRolesCommand = new CompositeDatabaseCommand(new DeleteWhereColumnsEqualDatabaseCommand("user_roles_crossref", "user_id", new Integer(newUser.getId())));
             for ( Iterator iterator = newUserRoles.iterator(); iterator.hasNext(); ) {
                 RoleDomainObject role = (RoleDomainObject) iterator.next();
                 updateUserRolesCommand.add(new InsertIntoTableDatabaseCommand("user_roles_crossref", new String[][] {
@@ -269,7 +272,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     private void sqlUpdateUserUserAdminRoles(UserDomainObject user) {
-        DeleteWhereColumnEqualsDatabaseCommand deleteAllUserAdminRolesForUserCommand = new DeleteWhereColumnEqualsDatabaseCommand(TABLE__USERADMIN_ROLE_CROSSREF, "user_id",
+        DeleteWhereColumnsEqualDatabaseCommand deleteAllUserAdminRolesForUserCommand = new DeleteWhereColumnsEqualDatabaseCommand(TABLE__USERADMIN_ROLE_CROSSREF, "user_id",
                                                                                                                                   ""
                                                                                                                                   + user.getId());
         CompositeDatabaseCommand updateUserAdminRolesCommand = new CompositeDatabaseCommand(deleteAllUserAdminRolesForUserCommand);
@@ -482,9 +485,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         }
         try {
             DatabaseCommand databaseCommand = new CompositeDatabaseCommand(new DatabaseCommand[] {
-                    new DeleteWhereColumnEqualsDatabaseCommand("roles_rights", "role_id", "" + role.getId()),
-                    new DeleteWhereColumnEqualsDatabaseCommand("user_roles_crossref", "role_id", "" + role.getId()),
-                    new DeleteWhereColumnEqualsDatabaseCommand("roles", "role_id", "" + role.getId()),
+                    new DeleteWhereColumnsEqualDatabaseCommand("roles_rights", "role_id", "" + role.getId()),
+                    new DeleteWhereColumnsEqualDatabaseCommand("user_roles_crossref", "role_id", "" + role.getId()),
+                    new DeleteWhereColumnsEqualDatabaseCommand("roles", "role_id", "" + role.getId()),
             });
             database.executeCommand(databaseCommand);
         } catch ( DatabaseException e ) {

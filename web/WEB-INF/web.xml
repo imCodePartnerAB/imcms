@@ -209,11 +209,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.SendMailServlet</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.SendMailServlet</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.StartDoc</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.StartDoc</servlet-class>
     </servlet>
@@ -451,11 +446,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.SearchDocuments</servlet-name>
         <url-pattern>/servlet/SearchDocuments</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.SendMailServlet</servlet-name>
-        <url-pattern>/servlet/SendMailServlet</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

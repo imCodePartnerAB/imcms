@@ -1,11 +1,11 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.util.HumanReadable;
+import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
-import imcode.util.MultipartFormdataParser;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
@@ -15,7 +15,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -43,16 +42,11 @@ public class FileAdmin extends HttpServlet {
         File dir2 = null;
 
         File[] roots = getRoots();
-        switch ( roots.length ) {
-            default:
-                dir1 = roots[0];
+        if (roots.length > 0) {
+            dir1 = roots[0];
+            if (roots.length > 1) {
                 dir2 = roots[1];
-                break;
-            case 1:
-                dir1 = roots[0];
-                dir2 = dir1;
-                break;
-            case 0:
+            }
         }
 
         outputFileAdmin( res, user, dir1, dir2 );
@@ -81,7 +75,7 @@ public class FileAdmin extends HttpServlet {
 
         Utility.setNoCache( res );
 
-        MultipartFormdataParser mp = getMultiPartFormDataParserForRequest( req );
+        MultipartHttpServletRequest mp = new MultipartHttpServletRequest(req);
 
         if ( mp.getParameter( "cancel" ) != null ) {
             res.sendRedirect( "AdminManager" );
@@ -117,61 +111,37 @@ public class FileAdmin extends HttpServlet {
         } else if ( mp.getParameter( "change2" ) != null ) {	//UserDomainObject wants to change dir2
             dir2 = changeDir( files2, dir2, roots );
         } else if ( mp.getParameter( "mkdir1" ) != null ) {
-            File destDir = dir1;
-            outputHasBeenHandled = makeDirectory( name, destDir, dir1, dir2, res, user, imcref );
+            outputHasBeenHandled = makeDirectory( name, dir1, dir1, dir2, res, user, imcref );
         } else if ( mp.getParameter( "mkdir2" ) != null ) {
-            File destDir = dir2;
-            outputHasBeenHandled = makeDirectory( name, destDir, dir1, dir2, res, user, imcref );
+            outputHasBeenHandled = makeDirectory( name, dir2, dir1, dir2, res, user, imcref );
         } else if ( mp.getParameter( "delete1" ) != null ) {
-            File dir = dir1;
-            String[] files = files1;
-            outputHasBeenHandled = delete( dir, files, dir1, dir2, res, user, imcref );
+            outputHasBeenHandled = delete( dir1, files1, dir1, dir2, res, user, imcref );
         } else if ( mp.getParameter( "delete2" ) != null ) {
-            File dir = dir2;
-            String[] files = files2;
-            outputHasBeenHandled = delete( dir, files, dir1, dir2, res, user, imcref );
+            outputHasBeenHandled = delete( dir2, files2, dir1, dir2, res, user, imcref );
         } else if ( mp.getParameter( "deleteok" ) != null ) {
             deleteOk( mp, roots );
         } else if ( mp.getParameter( "upload1" ) != null ) {
-            File destDir = dir1;
-            outputHasBeenHandled = upload( mp, destDir, dir1, dir2, res, user, imcref );
+            outputHasBeenHandled = upload( mp, dir1, dir1, dir2, res, user, imcref );
         } else if ( mp.getParameter( "upload2" ) != null ) {
-            File destDir = dir2;
-            outputHasBeenHandled = upload( mp, destDir, dir1, dir2, res, user, imcref );
+            outputHasBeenHandled = upload( mp, dir2, dir1, dir2, res, user, imcref );
         } else if ( mp.getParameter( "download1" ) != null ) {
             outputHasBeenHandled = download( files1, dir1, res );
         } else if ( mp.getParameter( "download2" ) != null ) {
             outputHasBeenHandled = download( files2, dir2, res );
         } else if ( mp.getParameter( "rename1" ) != null ) {
-            File dir = dir1;
-            String[] files = files1;
-            outputHasBeenHandled = rename( files, name, dir, dir1, dir2, res, user, imcref );
+            outputHasBeenHandled = rename( files1, name, dir1, dir1, dir2, res, user, imcref );
         } else if ( mp.getParameter( "rename2" ) != null ) {
-            File dir = dir2;
-            String[] files = files2;
-            outputHasBeenHandled = rename( files, name, dir, dir1, dir2, res, user, imcref );
+            outputHasBeenHandled = rename( files2, name, dir2, dir1, dir2, res, user, imcref );
         } else if ( mp.getParameter( "copy1" ) != null ) {
-            File sourceDir = dir1;
-            File destDir = dir2;
-            String[] files = files1;
-            outputHasBeenHandled = copy( files, sourceDir, destDir, dir1, dir2, res, user, imcref );
+            outputHasBeenHandled = copy( files1, dir1, dir2, dir1, dir2, res, user, imcref );
         } else if ( mp.getParameter( "copy2" ) != null ) {
-            File sourceDir = dir2;
-            File destDir = dir1;
-            String[] files = files2;
-            outputHasBeenHandled = copy( files, sourceDir, destDir, dir1, dir2, res, user, imcref );
+            outputHasBeenHandled = copy( files2, dir2, dir1, dir1, dir2, res, user, imcref );
         } else if ( mp.getParameter( "copyok" ) != null ) {
             copyOk( mp, roots );
         } else if ( mp.getParameter( "move1" ) != null ) {
-            File sourceDir = dir1;
-            File destDir = dir2;
-            String[] files = files1;
-            outputHasBeenHandled = move( files, sourceDir, destDir, dir1, dir2, res, user, imcref );
+            outputHasBeenHandled = move( files1, dir1, dir2, dir1, dir2, res, user, imcref );
         } else if ( mp.getParameter( "move2" ) != null ) {
-            File sourceDir = dir2;
-            File destDir = dir1;
-            String[] files = files2;
-            outputHasBeenHandled = move( files, sourceDir, destDir, dir1, dir2, res, user, imcref );
+            outputHasBeenHandled = move( files2, dir2, dir1, dir1, dir2, res, user, imcref );
         } else if ( mp.getParameter( "moveok" ) != null ) {
             moveOk( mp, roots );
         }
@@ -195,8 +165,7 @@ public class FileAdmin extends HttpServlet {
                 }
             }
         }
-        File[] roots = (File[])rootList.toArray( new File[rootList.size()] );
-        return roots;
+        return (File[])rootList.toArray( new File[rootList.size()] );
     }
 
     private boolean move( String[] files, File sourceDir, File destDir, File dir1, File dir2, HttpServletResponse res,
@@ -343,7 +312,7 @@ public class FileAdmin extends HttpServlet {
         return handledOutput;
     }
 
-    private boolean upload( MultipartFormdataParser mp, File destDir, File dir1, File dir2, HttpServletResponse res,
+    private boolean upload( MultipartHttpServletRequest mp, File destDir, File dir1, File dir2, HttpServletResponse res,
                             UserDomainObject user, ImcmsServices imcref ) throws IOException {
         boolean handledOutput = false;
         String fileContents = mp.getParameter( "file" );
@@ -352,7 +321,7 @@ public class FileAdmin extends HttpServlet {
             handledOutput = true;
             return handledOutput;
         }
-        String filename = ( new File( mp.getFilename( "file" ) ) ).getName();
+        String filename = mp.getParameterFileItem( "file" ).getName() ;
         File file = new File( destDir, filename );
         File uniqueFile = findUniqueFilename( file );
         if ( file.equals( uniqueFile ) || file.renameTo( uniqueFile ) ) {
@@ -372,37 +341,25 @@ public class FileAdmin extends HttpServlet {
         return handledOutput;
     }
 
-    private MultipartFormdataParser getMultiPartFormDataParserForRequest( HttpServletRequest req ) throws IOException {
-        int length = req.getContentLength();
-        ServletInputStream in = req.getInputStream();
-        byte[] buffer = new byte[length];
-        int bytes_read = 0;
-        while ( bytes_read < length ) {
-            bytes_read += in.read( buffer, bytes_read, length - bytes_read );
-        }
-        String contentType = req.getContentType();
-        MultipartFormdataParser mp = new MultipartFormdataParser( buffer, contentType );
-        return mp;
-    }
-
     private void outputFileAdmin( HttpServletResponse res, UserDomainObject user, File dir1, File dir2 )
             throws IOException {
         Utility.setDefaultHtmlContentType( res );
         res.getOutputStream().print( parseFileAdmin( user, dir1, dir2 ) );
     }
 
-    static File findUniqueFilename( File file ) {
+    static File findUniqueFilename(File file) {
+        File uniqueFile = file;
         String filenameWithoutSuffix;
         int counter = 1;
         String previousSuffix = "";
-        while ( file.exists() ) {
-            filenameWithoutSuffix = StringUtils.substringBeforeLast( file.getName(), previousSuffix );
+        while ( uniqueFile.exists() ) {
+            filenameWithoutSuffix = StringUtils.substringBeforeLast(uniqueFile.getName(), previousSuffix);
             String suffix = "." + counter;
             counter++;
-            file = new File( file.getParentFile(), filenameWithoutSuffix + suffix );
+            uniqueFile = new File(uniqueFile.getParentFile(), filenameWithoutSuffix + suffix);
             previousSuffix = suffix;
         }
-        return file;
+        return uniqueFile;
     }
 
     private void outputMoveOverwriteWarning( String option_list, File sourceDir, File destDir,
@@ -514,7 +471,7 @@ public class FileAdmin extends HttpServlet {
         out.print( imcref.getAdminTemplate( "FileAdminNameBlank.html", user, vec ) );
     }
 
-    private void moveOk( MultipartFormdataParser mp, File[] roots ) throws IOException {
+    private void moveOk( HttpServletRequest mp, File[] roots ) throws IOException {
         String src = mp.getParameter( "source" );
         String dst = mp.getParameter( "dest" );
         String files = mp.getParameter( "files" );
@@ -539,7 +496,7 @@ public class FileAdmin extends HttpServlet {
         }
     }
 
-    private void copyOk( MultipartFormdataParser mp, File[] roots ) throws IOException {
+    private void copyOk( HttpServletRequest mp, File[] roots ) throws IOException {
         String src = mp.getParameter( "source" );
         String dst = mp.getParameter( "dest" );
         String files = mp.getParameter( "files" );
@@ -562,7 +519,7 @@ public class FileAdmin extends HttpServlet {
         }
     }
 
-    private void deleteOk( MultipartFormdataParser mp, File[] roots ) throws IOException {
+    private void deleteOk( HttpServletRequest mp, File[] roots ) throws IOException {
         String files, path;
         if ( ( files = mp.getParameter( "files" ) ) != null && ( path = mp.getParameter( "source" ) ) != null ) {
             StringTokenizer st = new StringTokenizer( files, ":;" );

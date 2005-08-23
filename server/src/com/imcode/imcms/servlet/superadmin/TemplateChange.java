@@ -2,7 +2,10 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.TemplateDomainObject;
+import imcode.server.document.TemplateGroupDomainObject;
+import imcode.server.document.TemplateMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -219,11 +222,12 @@ public class TemplateChange extends HttpServlet {
     private void downloadTemplate( HttpServletRequest req, ImcmsServices imcref, HttpServletResponse res,
                                    ServletOutputStream out ) throws IOException {
         int template_id = Integer.parseInt( req.getParameter( "template" ) );
-        String filename = imcref.getTemplateMapper().getTemplateById( template_id ).getFileName();
+        TemplateMapper templateMapper = imcref.getTemplateMapper();
+        String filename = templateMapper.getTemplateById( template_id ).getFileName();
         if ( filename == null ) {
             filename = "";
         }
-        byte[] file = imcref.getTemplateData( template_id ).getBytes();
+        byte[] file = templateMapper.getTemplateData( template_id ).getBytes();
         res.setContentType( "application/octet-stream; name=\"" + filename + "\"" );
         res.setContentLength( file.length );
         res.setHeader( "Content-Disposition", "attachment; filename=\"" + filename + "\";" );

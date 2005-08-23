@@ -2,16 +2,16 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.db.commands.DeleteWhereColumnEqualsDatabaseCommand;
+import imcode.server.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Vector;
@@ -216,8 +216,8 @@ public class AdminSection extends HttpServlet {
     }//end doPost()
 
     private void deleteSection( ImcmsServices imcref, String del_section ) {
-        imcref.getDatabase().executeCommand(new DeleteWhereColumnEqualsDatabaseCommand( "meta_section", "section_id", del_section) ) ;
-        imcref.getDatabase().executeCommand(new DeleteWhereColumnEqualsDatabaseCommand( "sections", "section_id", del_section) ) ;
+        imcref.getDatabase().executeCommand(new DeleteWhereColumnsEqualDatabaseCommand( "meta_section", "section_id", del_section) ) ;
+        imcref.getDatabase().executeCommand(new DeleteWhereColumnsEqualDatabaseCommand( "sections", "section_id", del_section) ) ;
     }
 
     //method that creates an option list of all the sections in db

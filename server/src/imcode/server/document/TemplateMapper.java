@@ -1,14 +1,18 @@
 package imcode.server.document;
 
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.io.CopyUtils;
 import org.apache.commons.lang.ArrayUtils;
 
-import java.io.File;
-import java.util.*;
-
-import com.imcode.imcms.mapping.DocumentMapper;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class TemplateMapper {
 
@@ -29,7 +33,7 @@ public class TemplateMapper {
         database.executeUpdateQuery( sqlStr, new String[]{"" + templateGroup.getId(), "" + template.getId()} );
     }
 
-    public TemplateDomainObject[] createHtmlOptionListOfAllTemplatesExceptOne( TemplateDomainObject template ) {
+    public TemplateDomainObject[] getArrayOfAllTemplatesExceptOne( TemplateDomainObject template ) {
         TemplateDomainObject[] allTemplates = getAllTemplates();
         List allTemplatesExceptOne = new ArrayList( allTemplates.length - 1 );
         for ( int i = 0; i < allTemplates.length; i++ ) {
@@ -37,9 +41,8 @@ public class TemplateMapper {
                 allTemplatesExceptOne.add( allTemplates[i] );
             }
         }
-        TemplateDomainObject[] arrayOfAllTemplatesExceptOne = (TemplateDomainObject[])allTemplatesExceptOne.toArray(
+        return (TemplateDomainObject[])allTemplatesExceptOne.toArray(
                 new TemplateDomainObject[allTemplatesExceptOne.size()] );
-        return arrayOfAllTemplatesExceptOne;
     }
 
     public String createHtmlOptionListOfTemplateGroups( TemplateGroupDomainObject selectedTemplateGroup ) {
@@ -62,7 +65,7 @@ public class TemplateMapper {
     public String createHtmlOptionListOfTemplates( TemplateDomainObject[] templates,
                                                    TemplateDomainObject selectedTemplate ) {
         Set demoTemplateIds = new HashSet();
-        demoTemplateIds.addAll( Arrays.asList( services.getDemoTemplateIds() ) );
+        demoTemplateIds.addAll( Arrays.asList( getDemoTemplateIds() ) );
         String temps = "";
         for ( int i = 0; i < templates.length; i++ ) {
             TemplateDomainObject template = templates[i];
@@ -111,7 +114,7 @@ public class TemplateMapper {
         database.executeUpdateQuery( sqlStr, new String[]{"" + template.getId()} );
 
         // test if template exists and delete it
-        File f = new File( services.getTemplatePath() + "/text/" + template.getId() + ".html" );
+        File f = new File( services.getConfig().getTemplatePath() + "/text/" + template.getId() + ".html" );
         if ( f.exists() ) {
             f.delete();
         }
@@ -145,8 +148,7 @@ public class TemplateMapper {
                 "SELECT COUNT(meta_id)" + " FROM text_docs" + " WHERE template_id = ?", new String[]{
                     "" + template.getId()
                 } );
-        int countOfDocumentsUsingTemplate = Integer.parseInt( queryResult );
-        return countOfDocumentsUsingTemplate;
+        return Integer.parseInt( queryResult );
     }
 
     public DocumentDomainObject[] getDocumentsUsingTemplate( TemplateDomainObject template ) {
@@ -245,8 +247,7 @@ public class TemplateMapper {
         int templateId = Integer.parseInt( sqlResultRow[0] );
         String templateName = sqlResultRow[1];
         String simpleName = sqlResultRow[2];
-        TemplateDomainObject result = new TemplateDomainObject( templateId, templateName, simpleName );
-        return result;
+        return new TemplateDomainObject( templateId, templateName, simpleName );
     }
 
     private TemplateGroupDomainObject createTemplateGroupFromSqlResultRow( String[] sqlResultRow ) {
@@ -256,9 +257,8 @@ public class TemplateMapper {
 
         int templateGroupId = Integer.parseInt( sqlResultRow[0] );
         String templateGroupName = sqlResultRow[1];
-        TemplateGroupDomainObject templateGroupDomainObject = new TemplateGroupDomainObject( templateGroupId,
-                                                                                             templateGroupName );
-        return templateGroupDomainObject;
+        return new TemplateGroupDomainObject( templateGroupId,
+                                              templateGroupName );
     }
 
     private TemplateGroupDomainObject[] createTemplateGroupsFromSqlResult( String[][] sprocResult ) {
@@ -288,4 +288,142 @@ public class TemplateMapper {
         return ArrayUtils.contains( getTemplatesInGroup( templateGroup ), template ) ;
     }
 
+    public void saveDemoTemplate( int template_id, InputStream data, String suffix ) throws IOException {
+
+        deleteDemoTemplate( template_id );
+
+        FileOutputStream fw = new FileOutputStream( services.getConfig().getTemplatePath() + "/text/demo/" + template_id + "."
+                                                    + suffix );
+        CopyUtils.copy(data, fw) ;
+        fw.flush();
+        fw.close();
+    }
+
+    public void deleteDemoTemplate( int template_id ) throws IOException {
+
+        File demoTemplateDirectory = new File( new File( services.getConfig().getTemplatePath(), "text" ), "demo" );
+        File[] demoTemplates = demoTemplateDirectory.listFiles();
+        for ( int i = 0; i < demoTemplates.length; i++ ) {
+            File demoTemplate = demoTemplates[i];
+            String demoTemplateFileName = demoTemplate.getName();
+            if ( demoTemplateFileName.startsWith( template_id + "." ) ) {
+                if ( !demoTemplate.delete() ) {
+                    throw new IOException( "fail to deleate" );
+                }
+            }
+        }
+    }
+
+    public int saveTemplate( String name, String file_name, InputStream templateData, boolean overwrite, String lang_prefix ) {
+        String sqlStr;
+        // check if template exists
+        sqlStr = "select template_id from templates where simple_name = ?";
+        String templateId = database.executeStringQuery( sqlStr, new String[] {name} );
+        if ( null == templateId ) {
+
+            // get new template_id
+            sqlStr = "select max(template_id) + 1 from templates\n";
+            templateId = database.executeStringQuery( sqlStr, new String[0] );
+
+            sqlStr = "insert into templates values (?,?,?,?,0,0,0)";
+            database.executeUpdateQuery( sqlStr, new String[] {templateId, file_name, name,
+                    lang_prefix} );
+        } else { //update
+            if ( !overwrite ) {
+                return -1;
+            }
+
+            sqlStr = "update templates set template_name = ? where template_id = ?";
+            database.executeUpdateQuery( sqlStr, new String[] {file_name, templateId} );
+        }
+
+        File f = new File( services.getConfig().getTemplatePath(), "text/" + templateId + ".html" );
+
+        try {
+            FileOutputStream fw = new FileOutputStream( f );
+            CopyUtils.copy(templateData, fw);
+            fw.flush();
+            fw.close();
+
+        } catch ( IOException e ) {
+            return -2;
+        }
+
+        //  0 = OK
+        // -1 = file exist
+        // -2 = write error
+        return 0;
+    }
+
+    public Object[] getDemoTemplate( int template_id ) throws IOException {
+        StringBuffer str = new StringBuffer();
+        BufferedReader fr = null;
+        String suffix = null;
+        String[] suffixList =
+                {"jpg", "jpeg", "gif", "png", "html", "htm"};
+
+        for ( int i = 0; i < suffixList.length; i++ ) { // Looking for a template with one of six suffixes
+            File fileObj = new File( services.getConfig().getTemplatePath(), "/text/demo/" + template_id + "." + suffixList[i] );
+            long date = 0;
+            long fileDate = fileObj.lastModified();
+            if ( fileObj.exists() && fileDate > date ) {
+                // if a template was not properly removed, the template
+                // with the most recens modified-date is returned
+                try {
+                    fr = new BufferedReader( new InputStreamReader( new FileInputStream( fileObj ), "8859_1" ) );
+                    suffix = suffixList[i];
+                } catch ( IOException e ) {
+                    return null; //Could not read
+                }
+            } // end IF
+        } // end FOR
+
+        char[] buffer = new char[4096];
+        try {
+            int read;
+            while ( ( read = fr.read( buffer, 0, 4096 ) ) != -1 ) {
+                str.append( buffer, 0, read );
+            }
+            fr.close();
+        } catch ( IOException e ) {
+            return null;
+        } catch ( NullPointerException e ) {
+            return null;
+        }
+
+        return new Object[]{suffix, str.toString().getBytes( "8859_1" )}; //return the buffer
+    }
+
+    public String[] getDemoTemplateIds() {
+        File demoDir = new File( services.getConfig().getTemplatePath() + "/text/demo/" );
+
+        File[] file_list = demoDir.listFiles( new NonEmptyFileFilter() );
+
+        String[] name_list = new String[file_list.length];
+
+        if ( file_list != null ) {
+            for ( int i = 0; i < name_list.length; i++ ) {
+                String filename = file_list[i].getName();
+                int dot = filename.indexOf( "." );
+                name_list[i] = dot > -1 ? filename.substring( 0, dot ) : filename;
+            }
+        } else {
+            return new String[0];
+
+        }
+
+        return name_list;
+
+    }
+
+    public String getTemplateData( int template_id ) throws IOException {
+        return services.getFileCache().getCachedFileString( new File( services.getConfig().getTemplatePath(), "/text/" + template_id + ".html" ) );
+    }
+
+    private static class NonEmptyFileFilter implements FileFilter {
+
+        public boolean accept( File file ) {
+            return file.length() > 0;
+        }
+    }
 }

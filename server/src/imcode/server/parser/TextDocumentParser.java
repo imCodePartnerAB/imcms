@@ -4,11 +4,15 @@ import com.imcode.imcms.api.TextDocumentViewing;
 import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.*;
+import imcode.server.document.TemplateDomainObject;
+import imcode.server.document.TemplateGroupDomainObject;
+import imcode.server.document.TemplateMapper;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Html;
+import imcode.util.ShouldNotBeThrownException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -109,8 +113,7 @@ public class TextDocumentParser {
             }
         }
 
-        String templateContents = service.getTemplateData( documentTemplateId );
-        return templateContents;
+        return service.getTemplateMapper().getTemplateData( documentTemplateId );
     }
 
     private String applyEmphasis( DocumentRequest documentRequest, UserDomainObject user, String string,
@@ -221,22 +224,22 @@ public class TextDocumentParser {
         return changeTemplateUi;
     }
 
-    private String emphasizeString( String str, String[] emp, Substitution emphasize_substitution,
-                                    PatternMatcher patMat ) {
+    private String emphasizeString(String string, String[] emp, Substitution emphasize_substitution,
+                                   PatternMatcher patMat) {
+        String emphasizedString = string;
 
         Perl5Compiler empCompiler = new Perl5Compiler();
         // for each string to emphasize
         for ( int i = 0; i < emp.length; ++i ) {
             try {
-                Pattern empPattern = empCompiler.compile( "(" + Perl5Compiler.quotemeta( emp[i] ) + ")", Perl5Compiler.CASE_INSENSITIVE_MASK );
-                str = org.apache.oro.text.regex.Util.substitute( patMat, empPattern, emphasize_substitution, str, org.apache.oro.text.regex.Util.SUBSTITUTE_ALL );
+                Pattern empPattern = empCompiler.compile(
+                        "(" + Perl5Compiler.quotemeta(emp[i]) + ")", Perl5Compiler.CASE_INSENSITIVE_MASK);
+                emphasizedString = Util.substitute(patMat, empPattern, emphasize_substitution, emphasizedString, Util.SUBSTITUTE_ALL);
             } catch ( MalformedPatternException ex ) {
-                log.warn( "Dynamic Pattern-compilation failed in DefaultImcmsServices.emphasizeString(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '"
-                          + emp[i]
-                          + "'", ex );
+                throw new ShouldNotBeThrownException(ex);
             }
         }
-        return str;
+        return emphasizedString;
     }
 
 }
