@@ -1,6 +1,9 @@
 package imcode.util.io;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class FileInputStreamSource implements InputStreamSource {
 
@@ -20,6 +23,23 @@ public class FileInputStreamSource implements InputStreamSource {
 
     public File getFile() {
         return file;
+    }
+
+    public boolean equals(Object o) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+
+        final FileInputStreamSource that = (FileInputStreamSource) o;
+
+        return file.equals(that.file);
+    }
+
+    public int hashCode() {
+        return file.hashCode();
     }
 
 }

@@ -2,17 +2,16 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
-import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.user.UserDomainObject;
+import imcode.server.document.UrlDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 
 public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
-    public DocumentCreatingVisitor( UserDomainObject user, Database database, ImcmsServices services ) {
-        super( user, database, services );
+    public DocumentCreatingVisitor(Database database, ImcmsServices services) {
+        super(database, services );
     }
 
     public void visitHtmlDocument( HtmlDocumentDomainObject document ) {

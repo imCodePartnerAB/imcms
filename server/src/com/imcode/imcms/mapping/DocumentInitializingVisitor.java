@@ -3,8 +3,8 @@ package com.imcode.imcms.mapping;
 import imcode.server.ImcmsServices;
 import imcode.server.db.ConvenienceDatabaseConnection;
 import imcode.server.db.exceptions.DatabaseException;
-import imcode.server.document.textdocument.*;
 import imcode.server.document.*;
+import imcode.server.document.textdocument.*;
 import imcode.util.io.FileInputStreamSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -61,7 +61,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
             file.setFilename( sqlRow[1] );
             file.setMimeType( sqlRow[2] );
             file.setCreatedAsImage( 0 != Integer.parseInt( sqlRow[3] ) );
-            File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocument( document.getId(), fileId );
+            File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile( document.getId(), fileId );
             if ( !fileForFileDocument.exists() ) {
                 File oldlyNamedFileForFileDocument = new File( fileForFileDocument.getParentFile(), fileForFileDocument.getName()
                                                                                                     + "_se" );

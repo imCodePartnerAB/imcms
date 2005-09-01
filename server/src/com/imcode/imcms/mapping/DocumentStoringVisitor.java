@@ -5,12 +5,10 @@ import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseConnection;
 import imcode.server.db.commands.TransactionDatabaseCommand;
-import imcode.server.document.textdocument.*;
-import com.imcode.imcms.mapping.ConnectionDocumentGetter;
+import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.BrowserDocumentDomainObject;
-import imcode.server.user.UserDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.FileUtility;
 import imcode.util.io.InputStreamSource;
@@ -34,7 +32,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     private static final int FILE_BUFFER_LENGTH = 2048;
     private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
 
-    public DocumentStoringVisitor( UserDomainObject user, Database database, ImcmsServices services ) {
+    public DocumentStoringVisitor(Database database, ImcmsServices services) {
         this.database = database ;
         this.services = services ;
     }
@@ -54,13 +52,13 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 return;
             }
 
-            File file = getFileForFileDocument( fileDocumentId, fileId );
-            boolean sameFileOnDisk = inputStreamSource instanceof FileInputStreamSource
-                                     && ( (FileInputStreamSource)inputStreamSource ).getFile().equals( file )
-                                     && file.exists() ;
+            File file = getFileForFileDocumentFile( fileDocumentId, fileId );
+
+            boolean sameFileOnDisk = file.exists() && inputStreamSource.equals(new FileInputStreamSource(file)) ;
             if ( sameFileOnDisk ) {
                 return;
             }
+
             byte[] buffer = new byte[FILE_BUFFER_LENGTH];
             final OutputStream out = new FileOutputStream(file);
             try {
@@ -76,7 +74,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     }
 
-    public static File getFileForFileDocument( int fileDocumentId, String fileId ) {
+    public static File getFileForFileDocumentFile( int fileDocumentId, String fileId ) {
         File filePath = Imcms.getServices().getConfig().getFilePath();
         String filename = "" + fileDocumentId ;
         if (StringUtils.isNotBlank( fileId )) {

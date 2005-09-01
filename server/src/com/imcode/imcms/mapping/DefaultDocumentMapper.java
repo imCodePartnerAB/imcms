@@ -565,7 +565,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
         }
 
         public boolean accept(File file, int fileDocumentId, String fileId) {
-            boolean correctFileForFileDocumentFile = file.equals(DocumentSavingVisitor.getFileForFileDocument(fileDocumentId, fileId));
+            boolean correctFileForFileDocumentFile = file.equals(DocumentSavingVisitor.getFileForFileDocumentFile(fileDocumentId, fileId));
             boolean fileDocumentHasFile = null != fileDocument.getFile(fileId);
             return super.accept(file, fileDocumentId, fileId)
                     && (!correctFileForFileDocumentFile || !fileDocumentHasFile);

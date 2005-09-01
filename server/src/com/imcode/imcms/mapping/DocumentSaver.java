@@ -1,23 +1,22 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.api.Document;
+import imcode.server.db.commands.InsertIntoTableDatabaseCommand;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.SectionDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.user.UserDomainObject;
 import imcode.server.user.RoleDomainObject;
-import imcode.server.db.commands.InsertIntoTableDatabaseCommand;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.StringUtils;
-import com.imcode.imcms.api.Document;
 
 class DocumentSaver {
 
@@ -56,7 +55,7 @@ class DocumentSaver {
                 documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, oldDocument);
             }
 
-            document.accept(new DocumentSavingVisitor(user, oldDocument, documentMapper.getDatabase(), documentMapper.getImcmsServices()));
+            document.accept(new DocumentSavingVisitor(oldDocument, documentMapper.getDatabase(), documentMapper.getImcmsServices()));
         } finally {
             documentMapper.invalidateDocument(document);
         }
@@ -168,7 +167,7 @@ class DocumentSaver {
 
         documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
 
-        document.accept(new DocumentCreatingVisitor(user, documentMapper.getDatabase(), documentMapper.getImcmsServices()));
+        document.accept(new DocumentCreatingVisitor(documentMapper.getDatabase(), documentMapper.getImcmsServices()));
 
         documentMapper.invalidateDocument(document);
     }

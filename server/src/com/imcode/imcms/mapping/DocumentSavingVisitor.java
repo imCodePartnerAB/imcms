@@ -2,21 +2,20 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import com.imcode.imcms.mapping.DocumentStoringVisitor;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
-import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.user.UserDomainObject;
+import imcode.server.document.UrlDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     private DocumentDomainObject oldDocument;
 
-    public DocumentSavingVisitor(UserDomainObject user, DocumentDomainObject documentInDatabase, Database database, ImcmsServices services) {
-        super( user, database, services );
+    public DocumentSavingVisitor(DocumentDomainObject documentInDatabase, Database database,
+                                 ImcmsServices services) {
+        super(database, services );
         this.oldDocument = documentInDatabase;
     }
 
