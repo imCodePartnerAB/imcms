@@ -80,22 +80,24 @@
                         Map.Entry entry = (Map.Entry)iterator.next();
                         RoleDomainObject role = (RoleDomainObject)entry.getKey();
                         role = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getRoleById(role.getId()) ;
-                        int permissionSetId = ((Integer)entry.getValue()).intValue() ;
-                        if (DocumentPermissionSetDomainObject.TYPE_ID__NONE == permissionSetId || role.equals( RoleDomainObject.SUPERADMIN )) {
-                            continue ;
+                        if (null != role) {
+                            int permissionSetId = ((Integer)entry.getValue()).intValue() ;
+                            if (DocumentPermissionSetDomainObject.TYPE_ID__NONE == permissionSetId || role.equals( RoleDomainObject.SUPERADMIN )) {
+                                continue ;
+                            }
+                            allRoles.remove( role ) ;
+                            %>
+                            <tr align="center">
+                                <td height="22" class="imcmsAdmText" align="left"><% if (user.hasRole( role )) { %>*<% } else { %>&nbsp;<% } %></td>
+                                <td class="imcmsAdmText" align="left"><%= role.getName() %></td>
+                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__NONE, user, permissionSetId, role, document ) %></td>
+                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__READ, user, permissionSetId, role, document ) %></td>
+                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, user, permissionSetId, role, document ) %></td>
+                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, user, permissionSetId, role, document ) %></td>
+                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__FULL, user, permissionSetId, role, document ) %></td>
+                            </tr>
+                            <%
                         }
-                        allRoles.remove( role ) ;
-                        %>
-                        <tr align="center">
-                            <td height="22" class="imcmsAdmText" align="left"><% if (user.hasRole( role )) { %>*<% } else { %>&nbsp;<% } %></td>
-                            <td class="imcmsAdmText" align="left"><%= role.getName() %></td>
-                            <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__NONE, user, permissionSetId, role, document ) %></td>
-                            <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__READ, user, permissionSetId, role, document ) %></td>
-                            <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, user, permissionSetId, role, document ) %></td>
-                            <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, user, permissionSetId, role, document ) %></td>
-                            <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__FULL, user, permissionSetId, role, document ) %></td>
-                        </tr>
-                        <%
                     } %>
                 </table>
             </td>
