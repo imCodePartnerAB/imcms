@@ -1,7 +1,12 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.*;
-import imcode.server.document.*;
+import imcode.server.document.BrowserDocumentDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.HtmlDocumentDomainObject;
+import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -10,11 +15,15 @@ import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.*;
-import java.io.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
-
-import com.imcode.imcms.mapping.DocumentMapper;
 
 public class GetDoc extends HttpServlet {
 
@@ -145,13 +154,13 @@ public class GetDoc extends HttpServlet {
             if ( br_id == null ) {
                 br_id = "";
             }
-            String tmp = imcref.getDatabase().executeStringQuery( "select top 1 to_meta_id\n"
+            String destinationMetaId = imcref.getDatabase().executeStringQuery( "select to_meta_id\n"
                                                                   + "from browser_docs\n"
                                                                   + "join browsers on browsers.browser_id = browser_docs.browser_id\n"
                                                                   + "where meta_id = ? and ? like user_agent order by value desc",
                                                                   new String[]{"" + meta_id, br_id} );
-            if ( tmp != null && ( !"".equals( tmp ) ) ) {
-                meta_id = Integer.parseInt( tmp );
+            if ( destinationMetaId != null && ( !"".equals( destinationMetaId ) ) ) {
+                meta_id = Integer.parseInt( destinationMetaId );
             } else {
                 Map browserDocumentIdMap = ( (BrowserDocumentDomainObject)document ).getBrowserDocumentIdMap();
                 meta_id = ( (Integer)browserDocumentIdMap.get( BrowserDocumentDomainObject.Browser.DEFAULT ) ).intValue();
