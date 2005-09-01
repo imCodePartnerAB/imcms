@@ -7,8 +7,8 @@ import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.IndexException;
 import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -20,7 +20,7 @@ import org.apache.lucene.search.Query;
 import java.io.Serializable;
 import java.util.Collection;
 
-public class TestDocumentMapper extends TestCase {
+public class TestDefaultDocumentMapper extends TestCase {
 
     private DefaultDocumentMapper documentMapper;
     private MockDatabase database;
@@ -29,7 +29,7 @@ public class TestDocumentMapper extends TestCase {
     private RoleDomainObject userRole;
     private TextDocumentDomainObject textDocument;
     private TextDocumentDomainObject oldDocument;
-    private TestDocumentMapper.MockDocumentIndex documentIndex;
+    private TestDefaultDocumentMapper.MockDocumentIndex documentIndex;
 
     protected void setUp() throws Exception {
         BasicConfigurator.configure(new NullAppender());
@@ -237,6 +237,49 @@ public class TestDocumentMapper extends TestCase {
 
     private void assertNotEmpty(Collection collection) {
         assertFalse(collection.isEmpty());
+    }
+
+    public void testSetTemplateForNewTextDocument() throws Exception {
+        TemplateDomainObject template1 = new TemplateDomainObject(1, "Template1", "Template1");
+        TemplateDomainObject template2 = new TemplateDomainObject(2, "Template2", "Template2");
+        TemplateDomainObject template3 = new TemplateDomainObject(2, "Template3", "Template3");
+        TemplateDomainObject template4 = new TemplateDomainObject(2, "Template4", "Template4");
+        oldDocument.setTemplate(template1);
+        TextDocumentPermissionSetDomainObject permissionSetForNewR1 = (TextDocumentPermissionSetDomainObject) oldDocument.getPermissionSetForRestrictedOneForNewDocuments();
+        permissionSetForNewR1.setDefaultTemplate(template3);
+        TextDocumentPermissionSetDomainObject permissionSetForR1 = (TextDocumentPermissionSetDomainObject) oldDocument.getPermissionSetForRestrictedOne();
+        permissionSetForR1.setAllowedDocumentTypeIds(new int[]{DocumentTypeDomainObject.TEXT_ID});
+        TextDocumentPermissionSetDomainObject permissionSetForNewR2 = (TextDocumentPermissionSetDomainObject) oldDocument.getPermissionSetForRestrictedTwoForNewDocuments();
+        permissionSetForNewR2.setDefaultTemplate(template4);
+        TextDocumentPermissionSetDomainObject permissionSetForR2 = (TextDocumentPermissionSetDomainObject) oldDocument.getPermissionSetForRestrictedTwo();
+        permissionSetForR2.setAllowedDocumentTypeIds(new int[]{DocumentTypeDomainObject.TEXT_ID});
+
+        TextDocumentDomainObject newDocument ;
+
+        oldDocument.setPermissionSetIdForRole(userRole, DocumentPermissionSetDomainObject.TYPE_ID__FULL);
+        newDocument = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID,oldDocument,user) ;
+        assertEquals(oldDocument.getTemplate(), newDocument.getTemplate() ) ;
+        assertEquals(template1, newDocument.getTemplate()) ;
+
+        oldDocument.setDefaultTemplate(template2);
+        newDocument = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID,oldDocument,user) ;
+        assertEquals(template2, newDocument.getTemplate()) ;
+
+        oldDocument.setPermissionSetIdForRole(userRole, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1);
+        newDocument = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID,oldDocument,user) ;
+        assertEquals(template3, newDocument.getTemplate());
+
+        permissionSetForNewR1.setDefaultTemplate(null);
+        newDocument = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID,oldDocument,user) ;
+        assertEquals(template2, newDocument.getTemplate());
+
+        oldDocument.setPermissionSetIdForRole(userRole, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2);
+        newDocument = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID,oldDocument,user) ;
+        assertEquals(template4, newDocument.getTemplate());
+
+        permissionSetForNewR2.setDefaultTemplate(null);
+        newDocument = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID,oldDocument,user) ;
+        assertEquals(template2, newDocument.getTemplate());
     }
 
     public class MockDocumentIndex implements DocumentIndex {

@@ -3,9 +3,9 @@ package imcode.server.document;
 import java.io.Serializable;
 
 public class TemplateDomainObject implements Comparable, Serializable {
-    private int id;
-    private String name;
-    private String fileName;
+    private final int id;
+    private final String name;
+    private final String fileName;
 
     public TemplateDomainObject( int id, String template_name, String simple_name ) {
         this.id = id;
@@ -26,17 +26,21 @@ public class TemplateDomainObject implements Comparable, Serializable {
     }
 
     public boolean equals( Object o ) {
-        if( this == o )
+        if ( this == o ) {
             return true;
-        if( !(o instanceof TemplateDomainObject) )
+        }
+        if ( !( o instanceof TemplateDomainObject ) ) {
             return false;
+        }
 
         final TemplateDomainObject templateDomainObject = (TemplateDomainObject)o;
 
-        if( id != templateDomainObject.id )
+        if ( id != templateDomainObject.id ) {
             return false;
-        if( name != null ? !name.equals( templateDomainObject.name ) : templateDomainObject.name != null )
+        }
+        if ( name != null ? !name.equals(templateDomainObject.name) : templateDomainObject.name != null ) {
             return false;
+        }
 
         return true;
     }
@@ -50,6 +54,10 @@ public class TemplateDomainObject implements Comparable, Serializable {
 
     public int compareTo( Object o ) {
         return name.compareToIgnoreCase( ((TemplateDomainObject)o).name ) ;
+    }
+
+    public String toString() {
+        return "(template "+id+" \""+name+"\" \""+fileName+"\")" ;
     }
 
 }

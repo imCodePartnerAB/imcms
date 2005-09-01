@@ -134,7 +134,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
         return newDocument;
     }
 
-    private void setTemplateForNewTextDocument( TextDocumentDomainObject newTextDocument, UserDomainObject user,
+    void setTemplateForNewTextDocument( TextDocumentDomainObject newTextDocument, UserDomainObject user,
                                                 final DocumentDomainObject parent ) {
         int permissionSetId = user.getPermissionSetIdFor( parent );
         TemplateDomainObject template = null;
@@ -142,7 +142,8 @@ public class DefaultDocumentMapper implements DocumentMapper {
             template = ( (TextDocumentPermissionSetDomainObject)newTextDocument.getPermissionSetForRestrictedOneForNewDocuments() ).getDefaultTemplate();
         } else if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == permissionSetId ) {
             template = ( (TextDocumentPermissionSetDomainObject)newTextDocument.getPermissionSetForRestrictedTwoForNewDocuments() ).getDefaultTemplate();
-        } else if ( parent instanceof TextDocumentDomainObject ) {
+        }
+        if ( null == template && parent instanceof TextDocumentDomainObject ) {
             template = ( (TextDocumentDomainObject)parent ).getDefaultTemplate();
         }
         if ( null != template ) {
