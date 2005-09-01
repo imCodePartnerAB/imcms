@@ -1,4 +1,4 @@
-	<table name="texts">
+    <table name="texts">
         <column name="meta_id" required="true" type="INTEGER" />
         <column name="name" required="true" type="INTEGER" />
         <column name="text" required="true" type="CLOB" />

@@ -1,4 +1,4 @@
-	<table name="user_rights">
+    <table name="user_rights">
         <column name="user_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="permission_id" primaryKey="true" required="true" type="TINYINT" />

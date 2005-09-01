@@ -1,4 +1,4 @@
-	<table name="mime_types">
+    <table name="mime_types">
         <column name="mime_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="mime_name" required="true" size="50" type="VARCHAR" />
         <column name="mime" required="true" size="50" type="VARCHAR" />

@@ -1,4 +1,4 @@
-	<table name="meta">
+    <table name="meta">
         <column autoIncrement="true" name="meta_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="doc_type" required="true" type="INTEGER" />
         <column name="meta_headline" required="true" size="255" type="VARCHAR" />

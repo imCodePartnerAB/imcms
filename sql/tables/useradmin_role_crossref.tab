@@ -1,4 +1,4 @@
-	<table name="useradmin_role_crossref">
+    <table name="useradmin_role_crossref">
         <column name="user_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="role_id" primaryKey="true" required="true" type="INTEGER" />
         <foreign-key foreignTable="roles">

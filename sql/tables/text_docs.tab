@@ -1,4 +1,4 @@
-	<table name="text_docs">
+    <table name="text_docs">
         <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="template_id" required="true" type="INTEGER" />
         <column default="1" name="group_id" required="true" type="INTEGER" />

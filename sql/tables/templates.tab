@@ -1,4 +1,4 @@
-	<table name="templates">
+    <table name="templates">
         <column name="template_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="template_name" required="true" size="80" type="VARCHAR" />
         <column name="simple_name" required="true" size="80" type="VARCHAR" />
@@ -6,7 +6,7 @@
         <column name="no_of_txt" type="INTEGER" required="false" />
         <column name="no_of_img" type="INTEGER" required="false" />
         <column name="no_of_url" type="INTEGER" required="false" />
-        <unique>
+        <unique name="UQ_template__simple_name__lang_prefix">
             <unique-column name="simple_name"/>
             <unique-column name="lang_prefix"/>
         </unique>

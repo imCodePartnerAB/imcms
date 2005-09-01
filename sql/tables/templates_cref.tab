@@ -1,4 +1,4 @@
-	<table name="templates_cref">
+    <table name="templates_cref">
         <column name="group_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="template_id" primaryKey="true" required="true" type="INTEGER" />
         <foreign-key foreignTable="templategroups">

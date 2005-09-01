@@ -1,4 +1,4 @@
-	<table name="meta_classification">
+    <table name="meta_classification">
         <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="class_id" primaryKey="true" required="true" type="INTEGER" />
         <foreign-key foreignTable="meta">

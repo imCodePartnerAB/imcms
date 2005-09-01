@@ -1,4 +1,4 @@
-	<table name="images">
+    <table name="images">
         <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="width" required="true" type="INTEGER" />
         <column name="height" required="true" type="INTEGER" />
