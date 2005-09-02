@@ -1,16 +1,13 @@
 package imcode.server.document;
 
-import imcode.server.db.MockDatabase;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.IndexException;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.user.UserDomainObject;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
+import imcode.server.db.MockDatabase;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
-import org.apache.lucene.search.Query;
 
 import java.io.Serializable;
 
@@ -47,7 +44,7 @@ public class TestDocumentMapper extends TestCase {
                 return null ;
             }
         }) ;
-        documentMapper = new DocumentMapper( services, database, userRegistry, new DocumentPermissionSetMapper( database, services ), new TestDocumentMapper.MockDocumentIndex(), null, new Config() );
+        documentMapper = new DocumentMapper( services, database, userRegistry, new DocumentPermissionSetMapper( database, services ), new MockDocumentIndex(), null, new Config() );
     }
 
     public void testNotSerializable() {
@@ -135,7 +132,7 @@ public class TestDocumentMapper extends TestCase {
         String[] textDocsResultRow = new String[] { "1","1","1","1","1" } ;
         database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "FROM text_docs"), textDocsResultRow );
         assertNotNull( documentMapper.getDocument( textDocument.getId() ) ) ;
-        documentMapper.deleteDocument( textDocument, user );
+        documentMapper.deleteDocument( textDocument );
         database.addExpectedSqlCall( new MockDatabase.ProcedureSqlCallPredicate( DocumentMapper.SPROC_GET_DOCUMENT_INFO ), new String[0] );
         assertNull( documentMapper.getDocument( textDocument.getId() ) ) ;
     }
@@ -162,19 +159,4 @@ public class TestDocumentMapper extends TestCase {
         documentMapper.saveNewDocument( document, user );
     }
 
-    public class MockDocumentIndex implements DocumentIndex {
-
-        public void indexDocument( DocumentDomainObject document ) throws IndexException {
-        }
-
-        public void removeDocument( DocumentDomainObject document ) throws IndexException {
-        }
-
-        public DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IndexException {
-            return new DocumentDomainObject[0];
-        }
-
-        public void rebuild() {
-        }
-    }
 }

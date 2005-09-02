@@ -2,8 +2,8 @@ package imcode.server.parser;
 
 import com.imcode.imcms.api.TextDocumentViewing;
 import imcode.server.DocumentRequest;
-import imcode.server.ImcmsServices;
 import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -59,36 +59,41 @@ public class TextDocumentParser {
 
     public String parsePage( ParserParameters parserParameters, int includelevel ) throws IOException {
         TextDocumentViewing viewing = new TextDocumentViewing( parserParameters );
-        TextDocumentViewing.putInRequest( viewing );
+        TextDocumentViewing previousViewing = TextDocumentViewing.putInRequest( viewing );
+        try {
+            DocumentRequest documentRequest = parserParameters.getDocumentRequest();
 
-        DocumentRequest documentRequest = parserParameters.getDocumentRequest();
+            TextDocumentDomainObject document = (TextDocumentDomainObject)documentRequest.getDocument();
+            UserDomainObject user = documentRequest.getUser();
 
-        TextDocumentDomainObject document = (TextDocumentDomainObject)documentRequest.getDocument();
-        UserDomainObject user = documentRequest.getUser();
+            String template = getTemplate( document, parserParameters );
 
-        String template = getTemplate( document, parserParameters );
+            Perl5Matcher patMat = new Perl5Matcher();
 
-        Perl5Matcher patMat = new Perl5Matcher();
+            SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING );
 
-        SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING );
+            final String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
 
-        final String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
+            Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, viewing.isEditingTemplate(), parserParameters );
+            MapSubstitution hashtagsubstitution = new MapSubstitution( hashTags, true );
+            TagParser tagParser = new TagParser( this, parserParameters, includelevel, viewing );
 
-        Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, viewing.isEditingTemplate(), parserParameters );
-        MapSubstitution hashtagsubstitution = new MapSubstitution( hashTags, true );
-        TagParser tagParser = new TagParser( this, parserParameters, includelevel, viewing );
+            String tagsReplaced = tagParser.replaceTags( patMat, template, false);
+            tagsReplaced = Util.substitute( patMat, HASHTAG_PATTERN, hashtagsubstitution, tagsReplaced, Util.SUBSTITUTE_ALL );
 
-        String tagsReplaced = tagParser.replaceTags(patMat, template) ;
-        tagsReplaced = Util.substitute( patMat, HASHTAG_PATTERN, hashtagsubstitution, tagsReplaced, Util.SUBSTITUTE_ALL );
-
-        String emphasizedAndTagsReplaced = applyEmphasis( documentRequest, user, tagsReplaced, patMat );
-        return Util.substitute( patMat, HTML_TAG_HTML_PATTERN, new Substitution() {
-            public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
-                                            PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
-                                            Pattern pattern ) {
-                stringBuffer.append( imcmsMessage ).append( matchResult.group( 0 ) );
+            String emphasizedAndTagsReplaced = applyEmphasis( documentRequest, user, tagsReplaced, patMat );
+            return Util.substitute( patMat, HTML_TAG_HTML_PATTERN, new Substitution() {
+                public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
+                                                PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
+                                                Pattern pattern ) {
+                    stringBuffer.append( imcmsMessage ).append( matchResult.group( 0 ) );
+                }
+            }, emphasizedAndTagsReplaced );
+        } finally {
+            if (null != previousViewing) {
+                TextDocumentViewing.putInRequest( previousViewing ) ;
             }
-        }, emphasizedAndTagsReplaced );
+        }
     }
 
     private String getTemplate( TextDocumentDomainObject document, ParserParameters parserParameters ) throws IOException {

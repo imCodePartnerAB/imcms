@@ -5,9 +5,9 @@ import imcode.server.db.Database;
 import imcode.server.db.DatabaseConnection;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
-import imcode.util.FileInputStreamSource;
-import imcode.util.FileUtility;
-import imcode.util.InputStreamSource;
+import imcode.util.io.FileInputStreamSource;
+import imcode.util.io.FileUtility;
+import imcode.util.io.InputStreamSource;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringUtils;
@@ -269,7 +269,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     private static int sqlImageUpdateQuery(String sqlStr, ImageDomainObject image, int meta_id, int img_no) {
-        ImageDomainObject.ImageSource imageSource = image.getSource();
+        ImageSource imageSource = image.getSource();
         return Imcms.getServices().sqlUpdateQuery(sqlStr, new String[]{
             imageSource.toStorageString(),
             "" + image.getWidth(),

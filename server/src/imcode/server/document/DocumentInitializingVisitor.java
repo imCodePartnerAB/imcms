@@ -3,7 +3,7 @@ package imcode.server.document;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.document.textdocument.*;
-import imcode.util.FileInputStreamSource;
+import imcode.util.io.FileInputStreamSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -183,18 +183,21 @@ class DocumentInitializingVisitor extends DocumentVisitor {
 
         image.setName( sqlResult[1] );
         if ( StringUtils.isNotBlank( imageSource ) ) {
-            if ( ImageDomainObject.ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {
+            if ( ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {
                 try {
                     int fileDocumentId = Integer.parseInt( imageSource );
                     DocumentMapper documentMapper = service.getDocumentMapper();
-                    image.setSource( new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( documentMapper.getDocument( fileDocumentId ) ) ) );
+                    DocumentDomainObject document = documentMapper.getDocument( fileDocumentId );
+                    if (null != document) {
+                        image.setSource( new FileDocumentImageSource( documentMapper.getDocumentReference( document ) ) );
+                    }
                 } catch ( NumberFormatException nfe ) {
                     log.warn( "Non-numeric document-id \"" + imageSource + "\" for image in database." );
                 } catch ( ClassCastException cce ) {
                     log.warn( "Non-file-document-id \"" + imageSource + "\" for image in database." );
                 }
-            } else if ( ImageDomainObject.ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH == imageType ) {
-                image.setSource( new ImageDomainObject.ImagesPathRelativePathImageSource( imageSource ) );
+            } else if ( ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH == imageType ) {
+                image.setSource( new ImagesPathRelativePathImageSource( imageSource ) );
             }
         }
 

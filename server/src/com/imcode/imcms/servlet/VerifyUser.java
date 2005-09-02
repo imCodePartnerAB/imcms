@@ -1,146 +1,105 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
-import imcode.server.user.UserDomainObject;
+import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.api.User;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.IOException;
 
-/**
- * Verify a user.
- */
 public class VerifyUser extends HttpServlet {
 
-    public static final String REQUEST_PARAMETER__TARGET = "next_url";
+    private static final String SESSION_ATTRIBUTE__NEXT_URL = "next_url";
+    public static final String REQUEST_PARAMETER__NEXT_URL = SESSION_ATTRIBUTE__NEXT_URL;
+    private static final String REQUEST_PARAMETER__NEXT_META = "next_meta";
+    private static final String SESSION_ATTRIBUTE__NEXT_META = "next_meta";
+    private static final String REQUEST_PARAMETER__LOGIN_FAILED_URL = "access_denied_url";
+    private static final String SESSION_ATTRIBUTE__LOGIN_TARGET = "login.target";
 
-    /**
-     * doGet()
-     */
-
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        doPost( req, res );
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        doPost(req, res);
     }
-    /** end of doGet() */
 
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        Utility.setDefaultHtmlContentType(res);
 
-    /**
-     * doPost()
-     */
-    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        Utility.setDefaultHtmlContentType( res );
+        String name = req.getParameter("name");
+        String passwd = req.getParameter("passwd");
+        String accessDeniedUrl = req.getContextPath() + "/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2()
+                                 + "/login/access_denied.jsp" ;
 
-        String name = req.getParameter( "name" );
-        String passwd = req.getParameter( "passwd" );
-        String accessDeniedUrl = req.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( req ).getLanguageIso639_2()+"/login/access_denied.jsp" ;
-        String nexturl;
+        ContentManagementSystem cms = ContentManagementSystem.login(req, name, passwd);
 
-        // Check the name and password for validity
-        ImcmsServices imcref = Imcms.getServices();
-        UserDomainObject user = imcref.verifyUser( name, passwd );
-
-        // Get session
-        HttpSession session = req.getSession( true );
-
-        // if we don't have got any user from DefaultImcmsServices lets check out next url for redirect
-        if ( user == null ) {
-
-            nexturl = accessDeniedUrl;
-
-            // lets set session next_meta if we have got any from request, we will use it later when
-            // login is successfull
-            if ( req.getParameter( "next_meta" ) != null ) {
-                session.setAttribute( "next_meta", req.getParameter( "next_meta" ) );
-            }
-
-            // or lets set session next_url if we have got any from request, we will use it later when
-            // login is successfull
-            else if ( req.getParameter( "next_url" ) != null ) {
-                session.setAttribute( "next_url", req.getParameter( "next_url" ) );
-            }
-
-            // lets get different access_denied url instead of the default url
-            if ( req.getParameter( "access_denied_url" ) != null ) {
-                nexturl = req.getParameter( "access_denied_url" );
-            }
-            res.sendRedirect( nexturl );
-            return;
-
-        } else { // we have a valid user
-
-            // Valid login.  Make a note in the session.
-            session.setAttribute( "logon.isDone", user );
-
-            user.setLoginType( "verify" );
-
-            // Lets now find out nexturl to redirect the user
-            nexturl = "StartDoc";  // default value
-
-            // if user have pushed button "Ändra" from login page
-            if ( req.getParameter( "Ändra" ) != null ) {
-
-                // don't allow "user" "user" ( User Extern ) id=2 to be changed
-                if(user.isDefaultUser()){
-                    res.sendRedirect( accessDeniedUrl );
-                    return;
-                }
-                //if next_url was passed
-                if ( req.getParameter( "next_url" ) != null ) {
-                    nexturl = req.getParameter( "next_url" );
-                }
-                //or if next_meta was passed
-                else if ( req.getParameter( "next_meta" ) != null ) {
-                    nexturl = "GetDoc?meta_id=" + req.getParameter( "next_meta" );
-                }
-
-                session.setAttribute( "userToChange", "" + user.getId() );
-                session.setAttribute( "next_url", nexturl );
-
-                res.sendRedirect( "AdminUserProps?CHANGE_USER=true" );
-                return;
-
+        if ( null != cms ) {
+            if ( req.getParameter("Ändra") != null ) {
+                goToEditUserPage(cms.getCurrentUser(), res, accessDeniedUrl, req);
             } else {
-
-                // lets check if we have got a next_meta by session
-                if ( session.getAttribute( "next_meta" ) != null ) {
-                    nexturl = "GetDoc?meta_id=" + session.getAttribute( "next_meta" );
-                    session.removeAttribute( "next_meta" );
-                }
-
-                // or if we have got next_url by session
-                else if ( session.getAttribute( "next_url" ) != null ) {
-                    nexturl = (String)session.getAttribute( "next_url" );
-                    session.removeAttribute( "next_url" );
-                }
-                // or if we have got next_url from request object
-                else if ( req.getParameter( REQUEST_PARAMETER__TARGET ) != null ) {
-                    nexturl = req.getParameter( REQUEST_PARAMETER__TARGET );
-                }
-                //or if we have got next_meta from request object
-                else if ( req.getParameter( "next_meta" ) != null ) {
-                    nexturl = "GetDoc?meta_id=" + req.getParameter( "next_meta" );
-                }
-
-                // or try redirecting the client to the page he first tried to access
-                else if ( session.getAttribute( "login.target" ) != null ) {
-                    nexturl = (String)session.getAttribute( "login.target" );
-                    session.removeAttribute( "login.target" );
-                    // Couldn't redirect to the target.  Redirect to the site's home page.
-                } else {
-                    nexturl = "StartDoc";
-                }
-
-                res.sendRedirect( nexturl );
-                return;
-
+                goToLoginSuccessfulPage(req, res);
             }
+        } else {
+            goToLoginFailedPage(req, accessDeniedUrl, res);
+        }
+    }
+
+    private void goToLoginFailedPage(HttpServletRequest req, String accessDeniedUrl,
+                                      HttpServletResponse res) throws IOException {
+        HttpSession session = req.getSession(true);
+
+        String nexturl = accessDeniedUrl ;
+
+        if ( req.getParameter(REQUEST_PARAMETER__NEXT_META) != null ) {
+            session.setAttribute(SESSION_ATTRIBUTE__NEXT_META, req.getParameter(REQUEST_PARAMETER__NEXT_META));
+        } else if ( req.getParameter(REQUEST_PARAMETER__NEXT_URL) != null ) {
+            session.setAttribute(SESSION_ATTRIBUTE__NEXT_URL, req.getParameter(REQUEST_PARAMETER__NEXT_URL));
+        }
+        if ( req.getParameter(REQUEST_PARAMETER__LOGIN_FAILED_URL) != null ) {
+            nexturl = req.getParameter(REQUEST_PARAMETER__LOGIN_FAILED_URL);
+        }
+        res.sendRedirect(nexturl);
+    }
+
+    private void goToLoginSuccessfulPage(HttpServletRequest req,
+                                         HttpServletResponse res) throws IOException {
+        HttpSession session = req.getSession(true);
+        String nexturl = "StartDoc";
+
+        if ( session.getAttribute(SESSION_ATTRIBUTE__NEXT_META) != null ) {
+            nexturl = "GetDoc?meta_id=" + session.getAttribute(SESSION_ATTRIBUTE__NEXT_META);
+            session.removeAttribute(SESSION_ATTRIBUTE__NEXT_META);
+        } else if ( session.getAttribute(SESSION_ATTRIBUTE__NEXT_URL) != null ) {
+            nexturl = (String) session.getAttribute(SESSION_ATTRIBUTE__NEXT_URL);
+            session.removeAttribute(SESSION_ATTRIBUTE__NEXT_URL);
+        } else if ( req.getParameter(REQUEST_PARAMETER__NEXT_URL) != null ) {
+            nexturl = req.getParameter(REQUEST_PARAMETER__NEXT_URL);
+        } else if ( req.getParameter(REQUEST_PARAMETER__NEXT_META) != null ) {
+            nexturl = "GetDoc?meta_id=" + req.getParameter(REQUEST_PARAMETER__NEXT_META);
+        } else if ( session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET) != null ) {
+            nexturl = (String) session.getAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
+            session.removeAttribute(SESSION_ATTRIBUTE__LOGIN_TARGET);
         }
 
+        res.sendRedirect(nexturl);
+    }
+
+    private void goToEditUserPage(User user, HttpServletResponse res, String accessDeniedUrl,
+                                  HttpServletRequest req) throws IOException {
+        if ( user.isDefaultUser() ) {
+            res.sendRedirect(accessDeniedUrl);
+        } else {
+            String nexturl = "StartDoc" ;
+            if ( req.getParameter(REQUEST_PARAMETER__NEXT_URL) != null ) {
+                nexturl = req.getParameter(REQUEST_PARAMETER__NEXT_URL);
+            } else if ( req.getParameter(REQUEST_PARAMETER__NEXT_META) != null ) {
+                nexturl = "GetDoc?meta_id=" + req.getParameter(REQUEST_PARAMETER__NEXT_META);
+            }
+
+            HttpSession session = req.getSession(true);
+            session.setAttribute("userToChange", "" + user.getId());
+            session.setAttribute(SESSION_ATTRIBUTE__NEXT_URL, nexturl);
+
+            res.sendRedirect("AdminUserProps?CHANGE_USER=true");
+        }
     }
 }
 

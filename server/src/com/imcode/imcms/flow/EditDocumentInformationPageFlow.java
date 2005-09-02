@@ -241,7 +241,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
     }
 
-    private static String[] parseKeywords( String keywordsString ) {
+    public static String[] parseKeywords( String keywordsString ) {
         List keywords = new ArrayList();
         StringBuffer currentKeyword = new StringBuffer();
         boolean insideString = false;

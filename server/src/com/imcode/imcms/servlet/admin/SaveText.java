@@ -28,7 +28,7 @@ public final class SaveText extends HttpServlet {
         int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( imcref.checkDocAdminRights( meta_id, user, imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS )
-             && req.getParameter( "ok" ) != null ) {
+             && req.getParameter( "cancel" ) == null ) {
             // get text_no
             int txt_no = Integer.parseInt( req.getParameter( "txt_no" ) );
 
@@ -48,6 +48,11 @@ public final class SaveText extends HttpServlet {
             TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id );
 
             saveText( documentMapper, text, document, txt_no, text_type, imcref, meta_id, user );
+
+            if (null != req.getParameter( "save" )) {
+                res.sendRedirect( "ChangeText?meta_id="+meta_id+"&txt="+txt_no );
+                return ;
+            }
         }
 
         res.sendRedirect( "AdminDoc?meta_id=" + meta_id + "&flags="

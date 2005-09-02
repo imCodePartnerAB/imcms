@@ -1,4 +1,4 @@
-package imcode.util;
+package imcode.util.io;
 
 import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
@@ -9,17 +9,24 @@ import java.io.IOException;
 public class TestFileUtility extends TestCase {
 
     private File rootDir;
-    private File subDir;
+    private File subDir1;
+    private File subDir2;
     private File subSubDir;
 
     public void setUp() throws Exception {
         rootDir = new File( "test" );
         FileUtils.deleteDirectory( rootDir );
         FileUtils.forceMkdir( rootDir );
-        subDir = new File( rootDir, "subdir" );
-        FileUtils.forceMkdir( subDir );
-        subSubDir = new File( subDir, "subsubdir" );
+        subDir1 = new File( rootDir, "subdir1" );
+        FileUtils.forceMkdir( subDir1 );
+        subDir2 = new File( rootDir, "subdir2" );
+        FileUtils.forceMkdir( subDir2 );
+        subSubDir = new File( subDir1, "subsubdir" );
         FileUtils.forceMkdir( subSubDir );
+    }
+
+    protected void tearDown() throws Exception {
+        FileUtils.forceDelete(rootDir);
     }
 
     public void testUnescapeFilename() throws Exception {
@@ -40,16 +47,24 @@ public class TestFileUtility extends TestCase {
     public void testDirectoryIsAncestorOfOrEqualTo() throws IOException {
         assertTrue( FileUtility.directoryIsAncestorOfOrEqualTo( rootDir, subSubDir ) );
         assertTrue( FileUtility.directoryIsAncestorOfOrEqualTo( rootDir, rootDir ) );
-        assertFalse( FileUtility.directoryIsAncestorOfOrEqualTo( subDir, rootDir ) );
-        assertFalse( FileUtility.directoryIsAncestorOfOrEqualTo( subSubDir, subDir ) );
+        assertFalse( FileUtility.directoryIsAncestorOfOrEqualTo( subDir1, rootDir ) );
+        assertFalse( FileUtility.directoryIsAncestorOfOrEqualTo( subSubDir, subDir1 ) );
     }
 
     public void testRelativizeFile() throws Exception {
         File relativeFile = FileUtility.relativizeFile( rootDir, subSubDir );
         assertFalse( FileUtility.directoryIsAncestorOfOrEqualTo( rootDir, relativeFile ) );
-        assertFalse( FileUtility.directoryIsAncestorOfOrEqualTo( subDir, relativeFile ) );
-        assertEquals( subDir.getName(), relativeFile.getParentFile().getName() );
+        assertFalse( FileUtility.directoryIsAncestorOfOrEqualTo( subDir1, relativeFile ) );
+        assertEquals( subDir1.getName(), relativeFile.getParentFile().getName() );
         assertNull( relativeFile.getParentFile().getParentFile() );
+    }
+
+    public void testBackupRename() throws IOException {
+        assertTrue(subDir1.exists());
+        assertTrue(subDir2.exists());
+        FileUtility.backupRename(subDir1,subDir2);
+        assertFalse(subDir1.exists());
+        assertTrue(subDir2.exists());
     }
 
 

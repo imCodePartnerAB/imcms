@@ -1,0 +1,34 @@
+package com.imcode.imcms.api;
+
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
+import junit.framework.TestCase;
+
+import java.util.Iterator;
+import java.util.Map;
+
+
+public class TestDocument extends TestCase{
+
+    public void testGetAllRolesMappedToPermissions() throws NoPermissionException {
+        final MockContentManagementSystem contentManagementSystem = new MockContentManagementSystem();
+        contentManagementSystem.setCurrentInternalUser(new UserDomainObject());
+        final TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
+        textDocument.setPermissionSetIdForRole(RoleDomainObject.USERADMIN, 0);
+        textDocument.setPermissionSetIdForRole(RoleDomainObject.USERS, 0);
+        textDocument.setPermissionSetIdForRole(new RoleDomainObject(3, "test", 0), 0);
+        Document doc = new TextDocument(textDocument, contentManagementSystem);
+
+        final Map allRolesMappedToPermissions = doc.getAllRolesMappedToPermissions();
+        final Iterator iterator = allRolesMappedToPermissions.keySet().iterator();
+        String roleName = (String) iterator.next();
+        assertEquals(RoleDomainObject.USERADMIN.getName(), roleName);
+        roleName = (String) iterator.next();
+        assertEquals("Users", roleName);
+        roleName = (String) iterator.next();
+        assertEquals("test", roleName);
+
+    }
+
+}

@@ -1,8 +1,11 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.util.HumanReadable;
+import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
+import imcode.util.io.FileUtility;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
@@ -18,9 +21,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import com.imcode.util.MultipartHttpServletRequest;
-import com.imcode.util.HumanReadable;
 
 /**
  * Browse images in image-directory.
@@ -147,7 +147,7 @@ public class ImageBrowse extends HttpServlet {
             directoriesOptionList = Html.createOptionList( imageDirectories, currentDirectoryRelativeToImageRootParent, new Transformer() {
                 public Object transform( Object input ) {
                     File file = (File)input;
-                    return new String[]{file.getPath(), FileUtility.relativeFileToString( file )};
+                    return new String[]{FileUtility.relativeFileToString(file), FileUtility.relativeFileToString(file)};
                 }
             } );
             return directoriesOptionList;
@@ -168,7 +168,7 @@ public class ImageBrowse extends HttpServlet {
                     File file = (File)input;
 	                  String formattedFileSize = HumanReadable.getHumanReadableByteSize( file.length() ) ;
                     return new String[]{
-                        FileUtility.relativizeFile( imagesRoot, file ).getPath(), file.getName() + "\t[" + formattedFileSize + "]"
+                        FileUtility.relativeFileToString(FileUtility.relativizeFile( imagesRoot, file )), file.getName() + "\t[" + formattedFileSize + "]"
                     };
                 }
             } );

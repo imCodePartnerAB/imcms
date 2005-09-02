@@ -11,16 +11,14 @@ import imcode.util.DateConstants;
 import imcode.util.Html;
 import imcode.util.Utility;
 
-import javax.servlet.ServletException;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Vector;
+import java.util.*;
 
 public class AddDoc extends HttpServlet {
 
@@ -30,20 +28,20 @@ public class AddDoc extends HttpServlet {
     public static final String REQUEST_PARAMETER__NEW_TEMPLATE = "defaulttemplate" ;
 
     public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        int parentMenuIndex = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__MENU_INDEX ) );
+        Integer parentMenuIndex = getParentMenuIndexFromRequest(request);
         int parentId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__PARENT_DOCUMENT_ID ) );
         int documentTypeId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__DOCUMENT_TYPE_ID ) );
 
         if ( 0 == documentTypeId ) {
-            addExistingDocPage( parentId, parentMenuIndex, request, response );
+            addExistingDocPage( parentId, parentMenuIndex.intValue(), request, response );
         } else {
 
             ImcmsServices services = Imcms.getServices();
             DocumentMapper documentMapper = services.getDocumentMapper();
 
             DocumentDomainObject parentDocument = documentMapper.getDocument( parentId );
-            DocumentPageFlow.SaveDocumentCommand saveNewDocumentAndAddToMenuCommand = new SaveNewDocumentAndAddToMenuCommand( (TextDocumentDomainObject)parentDocument, parentMenuIndex );
-            DispatchCommand dispatchToMenuEditCommand = new DispatchToMenuEditCommand( (TextDocumentDomainObject)parentDocument, parentMenuIndex );
+            SaveNewDocumentAndAddToMenuCommand saveNewDocumentAndAddToMenuCommand = new SaveNewDocumentAndAddToMenuCommand( (TextDocumentDomainObject)parentDocument, parentMenuIndex );
+            DispatchCommand dispatchCommand = createDispatchCommand(parentMenuIndex, parentDocument, saveNewDocumentAndAddToMenuCommand);
 
             String templateName = request.getParameter( REQUEST_PARAMETER__NEW_TEMPLATE );
             TemplateDomainObject template = null ;
@@ -51,17 +49,32 @@ public class AddDoc extends HttpServlet {
                 template = services.getTemplateMapper().getTemplateByName( templateName );
             }
 
-            DocumentCreator documentCreator = new DocumentCreator(saveNewDocumentAndAddToMenuCommand,dispatchToMenuEditCommand,getServletContext());
+            DocumentCreator documentCreator = new DocumentCreator(saveNewDocumentAndAddToMenuCommand,dispatchCommand,getServletContext());
             documentCreator.setTemplate(template) ;
             documentCreator.createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument, request, response );
         }
+    }
+
+    private Integer getParentMenuIndexFromRequest(HttpServletRequest request) {
+        String parentMenuIndexString = request.getParameter(REQUEST_PARAMETER__MENU_INDEX);
+        Integer parentMenuIndex = null != parentMenuIndexString ? Integer.valueOf(parentMenuIndexString) : null;
+        return parentMenuIndex;
+    }
+
+    private DispatchCommand createDispatchCommand(Integer parentMenuIndex, DocumentDomainObject parentDocument,
+                                                  final SaveNewDocumentAndAddToMenuCommand saveNewDocumentAndAddToMenuCommand) {
+        if (null != parentMenuIndex) {
+            return new RedirectToMenuEditDispatchCommand( (TextDocumentDomainObject)parentDocument, parentMenuIndex.intValue() );
+        }
+
+        return new RedirectToNewSavedDocumentDispatchCommand(saveNewDocumentAndAddToMenuCommand);
     }
 
     private void addExistingDocPage( int meta_id, int doc_menu_no,
                                         HttpServletRequest request, HttpServletResponse response ) throws IOException {
         response.setContentType( "text/html" );
 
-        Vector vec = new Vector();
+        List vec = new ArrayList();
         vec.add( "#meta_id#" );
         vec.add( "" + meta_id );
         vec.add( "#doc_menu_no#" );
@@ -118,15 +131,14 @@ public class AddDoc extends HttpServlet {
         }
         // Lets parse the html page which consists of the add an existing doc
         response.getWriter().write( imcref.getAdminTemplate( "existing_doc.html", user, vec ) );
-        return;
     }
 
-    private static class DispatchToMenuEditCommand implements DispatchCommand {
+    private static class RedirectToMenuEditDispatchCommand implements DispatchCommand {
 
         private TextDocumentDomainObject parentDocument;
         private int parentMenuIndex;
 
-        DispatchToMenuEditCommand( TextDocumentDomainObject parentDocument, int parentMenuIndex ) {
+        RedirectToMenuEditDispatchCommand( TextDocumentDomainObject parentDocument, int parentMenuIndex ) {
             this.parentDocument = parentDocument;
             this.parentMenuIndex = parentMenuIndex;
         }
@@ -140,21 +152,27 @@ public class AddDoc extends HttpServlet {
     private static class SaveNewDocumentAndAddToMenuCommand implements CreateDocumentPageFlow.SaveDocumentCommand {
 
         private TextDocumentDomainObject parentDocument;
-        private int parentMenuIndex;
-        private boolean saved;
+        private Integer parentMenuIndex;
+        private DocumentDomainObject savedDocument;
 
-        SaveNewDocumentAndAddToMenuCommand( TextDocumentDomainObject parentDocument, int parentMenuIndex ) {
+        SaveNewDocumentAndAddToMenuCommand( TextDocumentDomainObject parentDocument, Integer parentMenuIndex ) {
             this.parentDocument = parentDocument;
             this.parentMenuIndex = parentMenuIndex;
         }
 
         public synchronized void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
-            if ( !saved ) {
-                saved = true ;
+            if ( null == savedDocument ) {
                 final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
                 documentMapper.saveNewDocument( document, user );
-                documentMapper.addToMenu( parentDocument, parentMenuIndex, document, user );
+                this.savedDocument = document ;
+                if (null != parentMenuIndex) {
+                    documentMapper.addToMenu( parentDocument, parentMenuIndex.intValue(), document, user );
+                }
             }
+        }
+
+        public synchronized DocumentDomainObject getSavedDocument() {
+            return savedDocument;
         }
     }
 
@@ -206,4 +224,18 @@ public class AddDoc extends HttpServlet {
         }
     }
 
+    private static class RedirectToNewSavedDocumentDispatchCommand implements DispatchCommand {
+
+        private final SaveNewDocumentAndAddToMenuCommand saveNewDocumentAndAddToMenuCommand;
+
+        RedirectToNewSavedDocumentDispatchCommand(SaveNewDocumentAndAddToMenuCommand saveNewDocumentAndAddToMenuCommand) {
+            this.saveNewDocumentAndAddToMenuCommand = saveNewDocumentAndAddToMenuCommand;
+        }
+
+        public void dispatch(HttpServletRequest request,
+                             HttpServletResponse response) throws IOException {
+            DocumentDomainObject savedDocument = saveNewDocumentAndAddToMenuCommand.getSavedDocument();
+            response.sendRedirect(Utility.getAbsolutePathToDocument(request,savedDocument)) ;
+        }
+    }
 }

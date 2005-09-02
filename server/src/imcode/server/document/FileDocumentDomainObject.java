@@ -1,15 +1,15 @@
 package imcode.server.document;
 
-import imcode.util.InputStreamSource;
 import imcode.util.Utility;
-import imcode.util.LocalizedMessage;
+import imcode.util.io.ExceptionFreeInputStreamSource;
+import imcode.util.io.InputStreamSource;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.UnhandledException;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.Serializable;
 
 public class FileDocumentDomainObject extends DocumentDomainObject {
 
@@ -159,7 +159,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         }
 
         public InputStreamSource getInputStreamSource() {
-            return inputStreamSource;
+            return new ExceptionFreeInputStreamSource(inputStreamSource);
         }
 
         public void setCreatedAsImage( boolean createdAsImage ) {
@@ -181,5 +181,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         protected Object clone() throws CloneNotSupportedException {
             return super.clone();
         }
+
     }
+
 }
