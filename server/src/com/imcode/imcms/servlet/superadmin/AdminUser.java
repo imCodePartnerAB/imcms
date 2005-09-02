@@ -12,9 +12,9 @@ import org.apache.log4j.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -36,7 +36,7 @@ public class AdminUser extends HttpServlet {
             Properties langproperties = imcref.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             log.debug(header + "- user is not an administrator");
-            Administrator.printErrorMessage(req, res, header, msg);
+            AdminRoles.printErrorMessage(req, res, header, msg);
             return;
         }
 
@@ -86,7 +86,7 @@ public class AdminUser extends HttpServlet {
             Properties langproperties = Imcms.getServices().getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/AdminUser/user_have_no_permission") + "<br>";
             log.debug(header + "- user have no permission to edit user values");
-            Administrator.printErrorMessage(req, res, header, msg);
+            AdminRoles.printErrorMessage(req, res, header, msg);
         } else {
             final DispatchCommand returnCommand = new DispatchCommand() {
                 public void dispatch(HttpServletRequest request,

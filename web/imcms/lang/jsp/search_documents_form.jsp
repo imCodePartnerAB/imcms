@@ -1,19 +1,24 @@
-<%@ page import="com.imcode.imcms.servlet.SearchDocumentsPage,
-                 org.apache.commons.lang.StringEscapeUtils,
-                 org.apache.commons.lang.StringUtils,
-                 java.util.Arrays,
+<%@ page import="com.imcode.imcms.flow.Page,
+                 com.imcode.imcms.servlet.SearchDocumentsPage,
                  imcode.server.Imcms,
-                 imcode.server.document.SectionDomainObject,
-                 com.imcode.imcms.flow.Page,
                  imcode.server.document.DocumentDomainObject,
-                 org.apache.commons.lang.ArrayUtils,
-                 java.util.Set,
+                 imcode.server.document.DocumentTypeDomainObject,
+                 imcode.server.document.SectionDomainObject,
                  imcode.server.user.UserDomainObject,
-                 imcode.util.*"%>
+                 imcode.util.Html,
+                 imcode.util.LocalizedMessage,
+                 imcode.util.ToDoubleObjectStringPairTransformer,
+                 imcode.util.Utility,
+                 org.apache.commons.lang.ArrayUtils"%>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
+<%@ page import="org.apache.commons.lang.StringUtils"%>
+<%@ page import="java.util.Arrays"%>
+<%@ page import="java.util.Set"%>
 <%
     SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage) Page.fromRequest(request) ;
     int documentsPerPage = searchDocumentsPage.getDocumentsPerPage() ;
     String[] phases = searchDocumentsPage.getPhases() ;
+    int[] documentTypeIds = searchDocumentsPage.getDocumentTypeIds();
     UserDomainObject user = Utility.getLoggedOnUser( request );
     String IMG_PATH  = request.getContextPath()+"/imcms/"+user.getLanguageIso639_2()+"/images/admin/" ;
 %>
@@ -80,6 +85,30 @@
                         %><td><input id="phase_<%= phase %>" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__PHASE %>" value="<%= phase %>"
                         <%= ArrayUtils.contains( phases, "" + phase ) ? "checked" : "" %> ></td>
                         <td><label for="phase_<%= phase %>"><%= new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager_search.jsp/phase/" + phase ).toLocalizedString( request ) %></label></td><%
+                    }
+                %>
+            </tr>
+            </table></td>
+        </tr>
+        <tr>
+            <td height="24"><? web/imcms/lang/jsp/admin/admin_manager.jsp/21 ?></td>
+
+            <td colspan="3">
+            <table border="0" cellspacing="0" cellpadding="2">
+            <tr>
+                <%
+                    DocumentTypeDomainObject[] documentTypes = new DocumentTypeDomainObject[] {
+                        DocumentTypeDomainObject.TEXT,
+                        DocumentTypeDomainObject.FILE,
+                        DocumentTypeDomainObject.URL,
+                        DocumentTypeDomainObject.HTML,
+                        DocumentTypeDomainObject.BROWSER
+                    };
+                    for ( int i = 0; i < documentTypes.length; i++ ) {
+                        DocumentTypeDomainObject documentType = documentTypes[i] ;
+                        %><td><input id="type_<%= documentType.getId() %>" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__DOCUMENT_TYPE_ID %>" value="<%= documentType.getId() %>"
+                        <%= ArrayUtils.contains( documentTypeIds, documentType.getId() ) ? "checked" : "" %> ></td>
+                        <td><label for="type_<%= documentType.getId() %>"><%= documentType.getName().toLocalizedString( request ) %></label></td><%
                     }
                 %>
             </tr>

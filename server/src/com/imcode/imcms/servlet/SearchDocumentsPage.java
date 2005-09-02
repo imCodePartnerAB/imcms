@@ -1,11 +1,14 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.flow.*;
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
+import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.flow.Page;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.superadmin.AdminManager;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.SectionDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
@@ -20,7 +23,10 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.RangeQuery;
+import org.apache.lucene.search.TermQuery;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +52,7 @@ public class SearchDocumentsPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__END_DATE = "end_date";
     public static final String REQUEST_PARAMETER__SORT_ORDER = "sort_order";
     public static final String REQUEST_PARAMETER__PHASE = "phase";
+    public static final String REQUEST_PARAMETER__DOCUMENT_TYPE_ID = "document_type_id";
 
     private static final int DEFAULT_DOCUMENTS_PER_PAGE = 10;
     private final static Logger log = Logger.getLogger( SearchDocumentsPage.class.getName() );
@@ -53,6 +60,7 @@ public class SearchDocumentsPage extends OkCancelPage {
     private String queryString;
     private Set sections = new HashSet();
     private String[] phases;
+    private int[] documentTypeIds;
     private String userDocumentsRestriction;
     private String dateTypeRestriction;
     private Date startDate;
@@ -95,7 +103,8 @@ public class SearchDocumentsPage extends OkCancelPage {
         firstDocumentIndex = Math.max( 0, NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX ) ) );
 
         boolean gotNewFirstDocumentIndex = Utility.parameterIsSet( request, REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX );
-        if ( !gotNewFirstDocumentIndex ) {
+        boolean notBrowsingResultList = !gotNewFirstDocumentIndex;
+        if ( notBrowsingResultList ) {
             try {
                 sections.clear();
                 int[] sectionIds = Utility.getParameterInts( request, REQUEST_PARAMETER__SECTION_ID );
@@ -108,7 +117,11 @@ public class SearchDocumentsPage extends OkCancelPage {
             }
 
             phases = Utility.getParameterValues( request, REQUEST_PARAMETER__PHASE );
+
+            documentTypeIds = Utility.getParameterInts(request, REQUEST_PARAMETER__DOCUMENT_TYPE_ID);
         }
+
+
 
         String userDocumentsRestrictionParameter = request.getParameter( REQUEST_PARAMETER__USER_RESTRICTION );
         if ( null != userDocumentsRestrictionParameter ) {
@@ -184,11 +197,21 @@ public class SearchDocumentsPage extends OkCancelPage {
         BooleanQuery phaseQueries = new BooleanQuery();
         for ( int i = 0; i < phases.length; i++ ) {
             String phase = phases[i];
-            Query phaseQuery = new TermQuery( new Term( DocumentIndex.FIELD__PHASE, "" + phase ) );
+            Query phaseQuery = new TermQuery( new Term( DocumentIndex.FIELD__PHASE, phase ) );
             phaseQueries.add( phaseQuery, false, false );
         }
         if ( phases.length > 0 ) {
             newQuery.add( phaseQueries, true, false );
+        }
+
+        BooleanQuery documentTypeQueries = new BooleanQuery();
+        for ( int i = 0; i < documentTypeIds.length; i++ ) {
+            int documentTypeId = documentTypeIds[i];
+            Query documentTypeQuery = new TermQuery( new Term(DocumentIndex.FIELD__DOC_TYPE_ID, ""+documentTypeId)) ;
+            documentTypeQueries.add( documentTypeQuery, false, false );
+        }
+        if ( documentTypeIds.length > 0 ) {
+            newQuery.add( documentTypeQueries, true, false ) ;
         }
 
         if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER.equals( userDocumentsRestriction ) ) {
@@ -363,4 +386,7 @@ public class SearchDocumentsPage extends OkCancelPage {
         return userDocumentsRestriction;
     }
 
+    public int[] getDocumentTypeIds() {
+        return documentTypeIds;
+    }
 }

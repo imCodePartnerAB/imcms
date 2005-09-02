@@ -6,17 +6,18 @@ import imcode.server.db.Database;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.*;
 import imcode.util.Html;
-import imcode.util.Utility;
 import imcode.util.ToStringPairTransformer;
+import imcode.util.Utility;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -57,7 +58,7 @@ public class AdminRoles extends HttpServlet {
             Properties langproperties = imcref.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             log.debug(header + "- user is not an administrator");
-            Administrator.printErrorMessage(req, res, header, msg);
+            printErrorMessage(req, res, header, msg);
             return;
         }
 
@@ -76,14 +77,14 @@ public class AdminRoles extends HttpServlet {
             String opt = Html.createOptionList(rolesV, Arrays.asList(new String[] { "" }));
             vm.put("ROLES_MENU", opt);
 
-            Administrator.sendHtml(req, res, vm, HTML_ADMIN_ROLES);
+            sendHtml(req, res, vm, HTML_ADMIN_ROLES);
 
             return;
 
         }
         // *************** GENERATE THE ADMIN ROLE PAGE *****************
         Map vm = new HashMap();
-        Administrator.sendHtml(req, res, vm, HTML_TEMPLATE);
+        sendHtml(req, res, vm, HTML_TEMPLATE);
 
     } // End doGet
 
@@ -104,7 +105,7 @@ public class AdminRoles extends HttpServlet {
             Properties langproperties = imcref.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             log.debug(header + "- user is not an administrator");
-            Administrator.printErrorMessage(req, res, header, msg);
+            printErrorMessage(req, res, header, msg);
             return;
         }
 
@@ -120,7 +121,7 @@ public class AdminRoles extends HttpServlet {
             String opt = Html.createOptionList(rolesV, "");
             vm.put("ROLES_MENU", opt);
 
-            Administrator.sendHtml(req, res, vm, HTML_ADMIN_ROLES);
+            sendHtml(req, res, vm, HTML_ADMIN_ROLES);
 
             return;
         } else if ( req.getParameter( "VIEW_ADMIN_ROLE_BELONGINGS" ) != null ) {
@@ -153,7 +154,7 @@ public class AdminRoles extends HttpServlet {
             Map vm = new HashMap();
             vm.put("ROLE_PERMISSIONS", permissionComponent);
 
-            Administrator.sendHtml(req, res, vm, HTML_ADD_ROLE);
+            sendHtml(req, res, vm, HTML_ADD_ROLE);
 
             return;
         } else if ( req.getParameter( "VIEW_RENAME_ROLE" ) != null ) {
@@ -163,7 +164,7 @@ public class AdminRoles extends HttpServlet {
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_missing") + "<BR>";
                 log.debug("Error in rename roles, no role selected for rename");
-                Administrator.printErrorMessage(req, res, header, msg);
+                printErrorMessage(req, res, header, msg);
                 return;
             }
             int roleId = Integer.parseInt(roleIdStr);
@@ -172,7 +173,7 @@ public class AdminRoles extends HttpServlet {
             Map vm = new HashMap();
             vm.put("CURRENT_ROLE_ID", roleIdStr);
             vm.put("CURRENT_ROLE_NAME", "" + role.getName());
-            Administrator.sendHtml(req, res, vm, HTML_RENAME_ROLE);
+            sendHtml(req, res, vm, HTML_RENAME_ROLE);
             return;
         } else if ( req.getParameter( "VIEW_EDIT_ROLE" ) != null ) {
 
@@ -182,7 +183,7 @@ public class AdminRoles extends HttpServlet {
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/role_missing") + "<br>";
                 log.debug(header + "- select the role to be changed");
-                Administrator.printErrorMessage(req, res, header, msg);
+                printErrorMessage(req, res, header, msg);
                 return;
             }
 
@@ -191,7 +192,7 @@ public class AdminRoles extends HttpServlet {
                 String header = "Error in AdminRoles, edit role";
                 String msg = "" + "<BR>";
                 log.debug("Error in checking roles: Trying to look att superadmin permissions");
-                Administrator.printErrorMessage(req, res, header, msg);
+                printErrorMessage(req, res, header, msg);
                 return;
             }
 
@@ -216,19 +217,19 @@ public class AdminRoles extends HttpServlet {
             vm.put("CURRENT_ROLE_NAME", role.getName());
             vm.put("CURRENT_ROLE_ID", roleIdStr);
             vm.put("ROLE_PERMISSIONS", permissionComponent);
-            Administrator.sendHtml(req, res, vm, HTML_EDIT_ROLE);
+            sendHtml(req, res, vm, HTML_EDIT_ROLE);
 
             return;
         } else if ( req.getParameter( "ADD_NEW_ROLE" ) != null ) {
 
             // Lets get the parameters from html page and validate them
             Properties params = this.getAddRoleParameters( req );
-            if ( Administrator.propertyValuesContainEmptyStrings( params ) ) {
+            if ( params.values().contains("") ) {
                 String header = "Error in AdminRoles ";
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/new_rolename_missing") + "<br>";
                 log.debug(header + "- new rolename missing");
-                Administrator.printErrorMessage(req, res, header, msg);
+                printErrorMessage(req, res, header, msg);
                 return;
             }
 
@@ -239,7 +240,7 @@ public class AdminRoles extends HttpServlet {
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_already_exists") + "<br>";
                 log.debug(header + "- role name already exists");
-                Administrator.printErrorMessage(req, res, header, msg);
+                printErrorMessage(req, res, header, msg);
                 return;
             }
 
@@ -262,12 +263,12 @@ public class AdminRoles extends HttpServlet {
 
             // Lets get the parameters from html page and validate them
             Properties params = this.getRenameRoleParameters( req );
-            if ( Administrator.propertyValuesContainEmptyStrings( params ) ) {
+            if ( params.values().contains("") ) {
                 String header = "Error in AdminRoles, rename role ";
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/new_rolename_missing") + "<br>";
                 log.debug(header + "- new role name is missing");
-                Administrator.printErrorMessage(req, res, header, msg);
+                printErrorMessage(req, res, header, msg);
                 return;
             }
 
@@ -285,7 +286,7 @@ public class AdminRoles extends HttpServlet {
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_already_exists") + "<br>";
                 log.debug(header + "- rolename already exists");
-                Administrator.printErrorMessage(req, res, header, msg);
+                printErrorMessage(req, res, header, msg);
                 return;
             }
             this.doGet( req, res );
@@ -301,12 +302,12 @@ public class AdminRoles extends HttpServlet {
 
             // Lets get the parameters from html page and validate them
             Properties params = this.getDeleteRoleParameters( req );
-            if ( Administrator.propertyValuesContainEmptyStrings( params ) ) {
+            if ( params.values().contains("") ) {
                 String header = "Error in AdminRoles ";
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                 log.debug(header + "- no role was selected for delete");
-                Administrator.printErrorMessage(req, res, header, msg);
+                printErrorMessage(req, res, header, msg);
                 return;
             }
 
@@ -346,7 +347,7 @@ public class AdminRoles extends HttpServlet {
                 vm.put("USER_COUNT", "" + affectedUsers.size());
                 vm.put("ROLE_COUNT", "" + affectedDocumentsCount);
                 vm.put("CURRENT_ROLE_ID", params.get("ROLE_ID"));
-                Administrator.sendHtml(req, res, vm, HTML_DELETE_ROLE_1);
+                sendHtml(req, res, vm, HTML_DELETE_ROLE_1);
                 return;
             } else {
 
@@ -359,12 +360,12 @@ public class AdminRoles extends HttpServlet {
         if ( req.getParameter( "WARN_DELETE_ROLE" ) != null || warnDelRole == true ) {
             // Lets get the parameters from html page and validate them
             Properties params = this.getDeleteRoleParameters(req);
-            if ( Administrator.propertyValuesContainEmptyStrings(params) ) {
+            if ( params.values().contains("") ) {
                 String header = "Error in AdminRoles, delete ";
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                 log.debug(header + "- no role was selected for delete");
-                Administrator.printErrorMessage(req, res, header, msg);
+                printErrorMessage(req, res, header, msg);
 
                 return;
             }
@@ -372,7 +373,7 @@ public class AdminRoles extends HttpServlet {
             // Lets generate the last warning html page
             Map vm = new HashMap();
             vm.put("CURRENT_ROLE_ID", params.get("ROLE_ID"));
-            Administrator.sendHtml(req, res, vm, HTML_DELETE_ROLE_2);
+            sendHtml(req, res, vm, HTML_DELETE_ROLE_2);
             return;
         }
 
@@ -381,12 +382,12 @@ public class AdminRoles extends HttpServlet {
 
             // Lets get the parameters from html page and validate them
             Properties params = this.getDeleteRoleParameters( req );
-            if ( Administrator.propertyValuesContainEmptyStrings( params ) ) {
+            if ( params.values().contains("") ) {
                 String header = "Error in AdminRoles, delete";
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                 log.debug(header + "- no role was selected for delete");
-                Administrator.printErrorMessage(req, res, header, msg);
+                printErrorMessage(req, res, header, msg);
 
                 return;
             }
@@ -408,12 +409,12 @@ public class AdminRoles extends HttpServlet {
             Properties params = getEditRoleParameters( req );
             String[] checkedPermissions = req.getParameterValues( "PERMISSION_CHECKBOX" );
 
-            if ( Administrator.propertyValuesContainEmptyStrings( params ) ) {
+            if ( params.values().contains("") ) {
                 String header = "Error in AdminRoles ";
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                 log.debug(header + "- no role was selected for delete");
-                Administrator.printErrorMessage(req, res, header, msg);
+                printErrorMessage(req, res, header, msg);
                 return;
             }
 
@@ -523,7 +524,7 @@ public class AdminRoles extends HttpServlet {
                 vm.put("PERMISSION_CHECKED", "") ;
             }
 
-            String rowString = Administrator.createHtml( req, vm, HTML_EDIT_ROLE_TABLE_ROW );
+            String rowString = createHtml( req, vm, HTML_EDIT_ROLE_TABLE_ROW );
 
             permissionTableRows.append( rowString );
 
@@ -533,7 +534,7 @@ public class AdminRoles extends HttpServlet {
         Map vmTable = new HashMap();
         vmTable.put("PERMISSION_ROWS", permissionTableRows.toString()) ;
 
-        return Administrator.createHtml( req, vmTable, HTML_EDIT_ROLE_TABLE );
+        return createHtml( req, vmTable, HTML_EDIT_ROLE_TABLE );
     }
 
     private int collectPermissionsState( String[] checkedPermissions ) {
@@ -554,5 +555,55 @@ public class AdminRoles extends HttpServlet {
             }
         }
         return permissionValue;
+    }
+
+    public static void printErrorMessage(HttpServletRequest req, HttpServletResponse res, String header, String msg
+    ) throws IOException {
+        List tagsAndData = new ArrayList();
+        tagsAndData.add("#ERROR_HEADER#");
+        tagsAndData.add(header);
+        tagsAndData.add("#ERROR_MESSAGE#");
+        tagsAndData.add(msg);
+
+        String fileName = "AdminError.htm";
+
+        // Lets get the path to the admin templates folder
+        ImcmsServices imcref = Imcms.getServices();
+        UserDomainObject user = Utility.getLoggedOnUser(req);
+
+        String html = imcref.getAdminTemplate(fileName, user, tagsAndData);
+        Utility.setDefaultHtmlContentType(res);
+        res.getWriter().println(html);
+    }
+
+    static String createHtml(HttpServletRequest req,
+                             Map vm, String htmlFile) throws IOException {
+
+        ImcmsServices imcref = Imcms.getServices();
+        UserDomainObject user = Utility.getLoggedOnUser(req);
+
+        vm.put("SERVLET_URL", "");
+        vm.put("SERVLET_URL2", "");
+
+        List tagsAndData1 = new ArrayList(vm.size() * 2);
+        for ( Iterator tagsIterator = vm.entrySet().iterator(); tagsIterator.hasNext(); ) {
+            Map.Entry entry = (Map.Entry) tagsIterator.next();
+            tagsAndData1.add("#" + entry.getKey() + "#");
+            tagsAndData1.add(entry.getValue());
+        }
+        List tagsAndData = tagsAndData1;
+
+        String html = imcref.getAdminTemplate(htmlFile, user, tagsAndData);
+        return html;
+    }
+
+    public static void sendHtml(HttpServletRequest req, HttpServletResponse res,
+                                Map vm, String htmlFile) throws IOException {
+
+        String str = createHtml(req, vm, htmlFile);
+
+        PrintWriter out = res.getWriter();
+        Utility.setDefaultHtmlContentType(res);
+        out.println(str);
     }
 }

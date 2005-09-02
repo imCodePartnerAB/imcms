@@ -17,17 +17,21 @@ import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
+import imcode.util.SettingsAccessor;
 import imcode.util.Utility;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
 import java.io.IOException;
-import java.util.Properties;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Vector;
 
 /**
  * Takes care of administration of users by roles.
@@ -64,6 +68,7 @@ public class AdminRoleBelongings extends HttpServlet {
     private static final String HTML_ADMIN_ROLE_BELONGING = "AdminRoleBelongings.html";
     private static final String HTML_ADMIN_ROLE_BELONGING_EDIT = "AdminRoleBelongings_edit.html";
     private static final String HTML_ADMIN_ROLE_BELONGING_ACTIVATE = "AdminRoleBelongings_activate.html";
+    private static final String TEMPLATE_ERROR = "Error.html";
 
     /**
      * The GET method creates the html page when this side has been
@@ -88,7 +93,7 @@ public class AdminRoleBelongings extends HttpServlet {
         Map vm = new HashMap();
         vm.put("ROLES_MENU", optionList);
 
-        Administrator.sendHtml(req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING);
+        AdminRoles.sendHtml(req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING);
     }
 
     /** POST */
@@ -108,7 +113,7 @@ public class AdminRoleBelongings extends HttpServlet {
             Properties langproperties = imcref.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             log.debug(header + "- user is not an administrator");
-            Administrator.printErrorMessage(req, res, header, msg);
+            AdminRoles.printErrorMessage(req, res, header, msg);
             return;
         }
 
@@ -131,7 +136,7 @@ public class AdminRoleBelongings extends HttpServlet {
             if ( roleId == null ) {
 
                 // no role choisen
-                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 100, res);
+                sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 100, res);
 
                 return;
             }
@@ -161,7 +166,7 @@ public class AdminRoleBelongings extends HttpServlet {
             vm.put("USER_MENU", userOptionListTag);
             vm.put("ROLES_MENU", roleOptionList);
 
-            Administrator.sendHtml(req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING_EDIT);
+            AdminRoles.sendHtml(req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING_EDIT);
 
             return;
         }
@@ -174,7 +179,7 @@ public class AdminRoleBelongings extends HttpServlet {
             if ( roleId == null ) {
 
                 // no role choisen
-                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 100, res);
+                sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 100, res);
 
                 return;
             }
@@ -188,7 +193,7 @@ public class AdminRoleBelongings extends HttpServlet {
             vm.put("CURENT_ROLE_NAME", curentRoleName);
             vm.put("USER_MENU", userOptionListTag);
 
-            Administrator.sendHtml(req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING_ACTIVATE);
+            AdminRoles.sendHtml(req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING_ACTIVATE);
 
             return;
         }
@@ -201,7 +206,7 @@ public class AdminRoleBelongings extends HttpServlet {
             if ( curentRoleId == null || userIds == null ) {
 
                 // no role choisen or/and no users
-                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 101, res);
+                sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 101, res);
                 return;
             }
 
@@ -220,7 +225,7 @@ public class AdminRoleBelongings extends HttpServlet {
             if ( roleId == null || userIds == null ) {
 
                 // no role choisen or/and no users
-                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 102, res);
+                sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 102, res);
                 return;
             }
 
@@ -240,7 +245,7 @@ public class AdminRoleBelongings extends HttpServlet {
 
             if ( roleId == null || userIds == null || curentRoleId == null ) {
                 // no role choisen or/and no users
-                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 102, res);
+                sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 102, res);
 
                 return;
             }
@@ -261,7 +266,7 @@ public class AdminRoleBelongings extends HttpServlet {
 
             if ( userIds == null ) {
                 // no user choisen
-                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 101, res);
+                sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 101, res);
                 return;
             }
 
@@ -278,7 +283,7 @@ public class AdminRoleBelongings extends HttpServlet {
 
             if ( userIds == null ) {
                 // no user choisen
-                Administrator.sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 101, res);
+                sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 101, res);
                 return;
             }
 
@@ -383,5 +388,45 @@ public class AdminRoleBelongings extends HttpServlet {
 
         String sqlD = "ChangeUserActiveStatus";
         imcref.getDatabase().executeUpdateProcedure( sqlD, new String[] {userId, state} );
+    }
+
+    /**
+     * send error message
+     *
+     * @param user
+     * @param errorCode is the code to loock upp in ErrMsg.ini file
+     */
+    private void sendErrorMessage(ImcmsServices imcref, String eMailServerMaster,
+                                           UserDomainObject user, String errorHeader,
+                                           int errorCode, HttpServletResponse response) throws IOException {
+
+        String errorMessage = "";
+        try {
+            // Lets get the error code
+            SettingsAccessor setObj = new SettingsAccessor("errmsg.ini", user, "admin");
+            setObj.setDelimiter("=");
+            setObj.loadSettings();
+            errorMessage = setObj.getSetting("" + errorCode);
+            if ( errorMessage == null ) {
+                errorMessage = "Missing Errorcode";
+            }
+
+        } catch ( Exception e ) {
+            throw new UnhandledException(e);
+        }
+
+        Utility.setDefaultHtmlContentType(response);
+        ServletOutputStream out = response.getOutputStream();
+
+        Vector tagParsList = new Vector();
+
+        tagParsList.add("#ERROR_HEADER#");
+        tagParsList.add(errorHeader);
+        tagParsList.add("#ERROR_MESSAGE#");
+        tagParsList.add(errorMessage);
+        tagParsList.add("#EMAIL_SERVER_MASTER#");
+        tagParsList.add(eMailServerMaster);
+
+        out.print(imcref.getAdminTemplate(TEMPLATE_ERROR, user, tagParsList));
     }
 }

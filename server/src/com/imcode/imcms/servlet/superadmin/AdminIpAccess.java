@@ -8,10 +8,10 @@ import imcode.util.Utility;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.util.*;
 
@@ -58,13 +58,13 @@ public class AdminIpAccess extends HttpServlet {
                 vmRec.put(tags.get(i), aRecV.get(i));
             }
             vmRec.put("RECORD_COUNTER", "" + counter);
-            recs += Administrator.createHtml(req, vmRec, HTML_IP_SNIPPET);
+            recs += AdminRoles.createHtml(req, vmRec, HTML_IP_SNIPPET);
         }
 
         // Lets generate the html page
         Map vm = new HashMap();
         vm.put("ALL_IP_ACCESSES", recs);
-        Administrator.sendHtml(req, res, vm, HTML_TEMPLATE);
+        AdminRoles.sendHtml(req, res, vm, HTML_TEMPLATE);
     }
 
     public void doPost( HttpServletRequest req, HttpServletResponse res )
@@ -78,7 +78,7 @@ public class AdminIpAccess extends HttpServlet {
             Properties langproperties = imcref.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             log.debug(header + "- user is not an administrator");
-            Administrator.printErrorMessage(req, res, header, msg);
+            AdminRoles.printErrorMessage(req, res, header, msg);
             return;
         }
 
@@ -91,7 +91,7 @@ public class AdminIpAccess extends HttpServlet {
             // Lets generate the html page
             Map vm = new HashMap();
             vm.put("USERS_LIST", usersOption);
-            Administrator.sendHtml(req, res, vm, ADD_IP_TEMPLATE);
+            AdminRoles.sendHtml(req, res, vm, ADD_IP_TEMPLATE);
             return;
         }
 
@@ -175,13 +175,13 @@ public class AdminIpAccess extends HttpServlet {
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminIpAccess/no_session") + "<br>";
                 log.debug(header + "- session could not be created");
-                Administrator.printErrorMessage(req, res, header, msg);
+                AdminRoles.printErrorMessage(req, res, header, msg);
                 return;
             }
 
             // Lets generate the last warning html page
             Map vm = new HashMap();
-            Administrator.sendHtml(req, res, vm, WARN_DEL_IP_TEMPLATE);
+            AdminRoles.sendHtml(req, res, vm, WARN_DEL_IP_TEMPLATE);
             return;
         }
 
@@ -208,7 +208,7 @@ public class AdminIpAccess extends HttpServlet {
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminIpAccess/no_session") + "<br>";
                 log.debug(header + "- session could not be created");
-                Administrator.printErrorMessage(req, res, header, msg);
+                AdminRoles.printErrorMessage(req, res, header, msg);
                 return;
             }
             doGet( req, res );
@@ -256,12 +256,12 @@ public class AdminIpAccess extends HttpServlet {
 
     private Properties validateParameters( Properties aPropObj, HttpServletRequest req, HttpServletResponse res, ImcmsServices imcref, UserDomainObject user ) throws IOException {
 
-        if ( Administrator.propertyValuesContainEmptyStrings(aPropObj) ) {
+        if ( aPropObj.values().contains("") ) {
             String header = "Error in AdminIpAccess, assertNoEmptyStringsInPropertyValues.";
             Properties langproperties = imcref.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/AdminIpAccess/vaidate_form_parameters") + "<br>";
             log.debug(header + "- values is missing for some parameters");
-            Administrator.printErrorMessage(req, res, header, msg);
+            AdminRoles.printErrorMessage(req, res, header, msg);
             return null;
         }
         return aPropObj;

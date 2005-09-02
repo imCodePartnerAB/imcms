@@ -1,18 +1,24 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import java.io.*;
-import java.util.*;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
-import java.text.DateFormat;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.server.*;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.DateConstants;
+import imcode.util.Utility;
 import org.apache.log4j.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 
 
@@ -41,7 +47,7 @@ public class AdminCounter extends HttpServlet {
             Properties langproperties = imcref.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<BR>";
             log.debug(header + "- user is not an administrator");
-            Administrator.printErrorMessage(req, res, header, msg);
+            AdminRoles.printErrorMessage(req, res, header, msg);
             return;
         }
 
@@ -114,7 +120,7 @@ public class AdminCounter extends HttpServlet {
         vm.put("CURRENT_DATE_VALUE", dateFormat.format(currentDate));
         vm.put("NEW_DATE_VALUE", newDateStr);
         vm.put("ERRORMSG", errormsg);
-        Administrator.sendHtml(req, res, vm, HTML_TEMPLATE);
+        AdminRoles.sendHtml(req, res, vm, HTML_TEMPLATE);
 
     } // End of doPost
 

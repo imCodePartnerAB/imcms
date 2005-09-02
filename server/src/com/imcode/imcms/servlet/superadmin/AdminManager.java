@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.DocumentPageFlow;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.SearchDocumentsPage;
@@ -15,10 +16,9 @@ import imcode.server.document.DocumentComparator;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.NoPermissionToCreateDocumentException;
 import imcode.server.document.NoPermissionToEditDocumentException;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
@@ -30,12 +30,16 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 public class AdminManager extends HttpServlet {
 
@@ -566,8 +570,6 @@ public class AdminManager extends HttpServlet {
             url += "ListDocuments";
         } else if ( whichButton.equalsIgnoreCase( "FileAdmin" ) ) {
             url += "FileAdmin";
-        } else if ( whichButton.equalsIgnoreCase( "AdminListDocs" ) ) {
-            url += "AdminListDocs";
         } else if ( whichButton.equalsIgnoreCase( "AdminSection" ) ) {
             url += "AdminSection";
         } else if ( whichButton.equalsIgnoreCase( "AdminCategories" ) ) {

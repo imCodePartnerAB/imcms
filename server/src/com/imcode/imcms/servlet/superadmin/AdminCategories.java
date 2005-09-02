@@ -63,7 +63,7 @@ public class AdminCategories extends HttpServlet {
             String header = "Error in AdminCategories. ";
             Properties langproperties = service.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-            Administrator.printErrorMessage(req, res, header, msg);
+            AdminRoles.printErrorMessage(req, res, header, msg);
             return;
         }
 

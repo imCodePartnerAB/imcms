@@ -1,21 +1,21 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
 import java.io.IOException;
-import java.util.Properties;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 public class AdminDeleteDoc extends HttpServlet {
 
@@ -39,12 +39,12 @@ public class AdminDeleteDoc extends HttpServlet {
             Properties langproperties = imcref.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             log.debug(header + "- user is not an administrator");
-            Administrator.printErrorMessage(req, res, header, msg);
+            AdminRoles.printErrorMessage(req, res, header, msg);
             return;
         }
 
         Map vm = new HashMap();
-        Administrator.sendHtml(req, res, vm, HTML_TEMPLATE);
+        AdminRoles.sendHtml(req, res, vm, HTML_TEMPLATE);
 
     }
 
@@ -60,7 +60,7 @@ public class AdminDeleteDoc extends HttpServlet {
             Properties langproperties = imcref.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             log.debug(header + "- user is not an administrator");
-            Administrator.printErrorMessage(req, res, header, msg);
+            AdminRoles.printErrorMessage(req, res, header, msg);
             return;
         }
 
@@ -75,7 +75,7 @@ public class AdminDeleteDoc extends HttpServlet {
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_valid_metaid") + "<br>";
                 log.debug(header + "- no valid metaid");
-                Administrator.printErrorMessage(req, res, header, msg);
+                AdminRoles.printErrorMessage(req, res, header, msg);
                 return;
             }
 
@@ -91,7 +91,7 @@ public class AdminDeleteDoc extends HttpServlet {
                 String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_metaid_in_db") + "( " + metaId
                              + " ) <br>";
                 log.debug(header + "- metaid could not be found in db");
-                Administrator.printErrorMessage(req, res, header, msg);
+                AdminRoles.printErrorMessage(req, res, header, msg);
                 return;
             }
 
@@ -141,7 +141,7 @@ public class AdminDeleteDoc extends HttpServlet {
 
     private boolean validateParameters(Properties params) {
 
-        if ( Administrator.propertyValuesContainEmptyStrings(params) ) return false;
+        if ( params.values().contains("") ) return false;
         try {
             Integer.parseInt(params.getProperty("DEL_META_ID"));
         } catch (NumberFormatException e) {

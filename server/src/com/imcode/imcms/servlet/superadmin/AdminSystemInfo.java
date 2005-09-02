@@ -8,13 +8,13 @@ import imcode.util.Utility;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
 import java.io.IOException;
-import java.util.Properties;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 public class AdminSystemInfo extends HttpServlet {
 
@@ -52,7 +52,7 @@ public class AdminSystemInfo extends HttpServlet {
         vm.put("SERVER_MASTER", serverMaster);
         vm.put("SERVER_MASTER_EMAIL", serverMasterEmail);
 
-        Administrator.sendHtml(req, res, vm, HTML_TEMPLATE);
+        AdminRoles.sendHtml(req, res, vm, HTML_TEMPLATE);
     } // End doGet
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
@@ -67,7 +67,7 @@ public class AdminSystemInfo extends HttpServlet {
             Properties langproperties = imcref.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             log.debug(header + "- user is not an administrator");
-            Administrator.printErrorMessage(req, res, header, msg);
+            AdminRoles.printErrorMessage(req, res, header, msg);
             return;
         }
 
@@ -115,7 +115,7 @@ public class AdminSystemInfo extends HttpServlet {
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters")
                              + "<br>";
-                Administrator.printErrorMessage(req, res, header, msg);
+                AdminRoles.printErrorMessage(req, res, header, msg);
                 return;
             }
 
@@ -143,7 +143,7 @@ public class AdminSystemInfo extends HttpServlet {
                 Properties langproperties = imcref.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters")
                              + "<br>";
-                Administrator.printErrorMessage(req, res, header, msg);
+                AdminRoles.printErrorMessage(req, res, header, msg);
                 return;
             }
 

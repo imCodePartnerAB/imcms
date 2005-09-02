@@ -190,30 +190,30 @@ public class TestDefaultDocumentMapper extends TestCase {
         TextDocumentDomainObject oldDocument = createTextDocument(1001);
 
         addedDocument.setLinkableByOtherUsers(true);
-        testDocumentsAddedWithPermission(document, null, user);
+        assertDocumentsAddedWithPermission(document, null, user);
 
         addedDocument.setLinkableByOtherUsers(false);
-        testDocumentsAddedWithoutPermission(document, null, user);
+        assertDocumentsAddedWithoutPermission(document, null, user);
 
-        testDocumentsAddedWithoutPermission(document, oldDocument, user);
+        assertDocumentsAddedWithoutPermission(document, oldDocument, user);
 
         addedDocument.setLinkableByOtherUsers(true);
-        testDocumentsAddedWithPermission(document, oldDocument, user);
+        assertDocumentsAddedWithPermission(document, oldDocument, user);
 
         addedDocument.setLinkableByOtherUsers(false);
-        testDocumentsAddedWithoutPermission(document, oldDocument, user);
+        assertDocumentsAddedWithoutPermission(document, oldDocument, user);
 
         addedDocument.setPermissionSetIdForRole(RoleDomainObject.USERS, DocumentPermissionSetDomainObject.TYPE_ID__FULL);
-        testDocumentsAddedWithPermission(document, oldDocument, user);
+        assertDocumentsAddedWithPermission(document, oldDocument, user);
 
         addedDocument.setPermissionSetIdForRole(RoleDomainObject.USERS, DocumentPermissionSetDomainObject.TYPE_ID__NONE);
-        testDocumentsAddedWithoutPermission(document, oldDocument, user);
+        assertDocumentsAddedWithoutPermission(document, oldDocument, user);
 
         user.addRole(RoleDomainObject.SUPERADMIN);
-        testDocumentsAddedWithPermission(document, oldDocument, user);
+        assertDocumentsAddedWithPermission(document, oldDocument, user);
 
         user.removeRole(RoleDomainObject.SUPERADMIN);
-        testDocumentsAddedWithoutPermission(document, oldDocument, user);
+        assertDocumentsAddedWithoutPermission(document, oldDocument, user);
 
         try {
             documentMapper.getDocumentSaver().checkDocumentsAddedWithoutPermission(document, oldDocument, user);
@@ -221,13 +221,13 @@ public class TestDefaultDocumentMapper extends TestCase {
         } catch( NoPermissionToAddDocumentToMenuException e) {}
     }
 
-    private void testDocumentsAddedWithPermission(TextDocumentDomainObject document,
-                                                  TextDocumentDomainObject oldDocument, UserDomainObject user) {
+    private void assertDocumentsAddedWithPermission(TextDocumentDomainObject document,
+                                                    TextDocumentDomainObject oldDocument, UserDomainObject user) {
         assertEmpty(documentMapper.getDocumentSaver().getDocumentsAddedWithoutPermission(document, oldDocument, user));
     }
 
-    private void testDocumentsAddedWithoutPermission(TextDocumentDomainObject document,
-                                                     TextDocumentDomainObject oldDocument, UserDomainObject user) {
+    private void assertDocumentsAddedWithoutPermission(TextDocumentDomainObject document,
+                                                       TextDocumentDomainObject oldDocument, UserDomainObject user) {
         assertNotEmpty(documentMapper.getDocumentSaver().getDocumentsAddedWithoutPermission(document, oldDocument, user));
     }
 

@@ -59,16 +59,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.Administrator</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.Administrator</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminListDocs</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminListDocs</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminManager</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminManager</servlet-class>
     </servlet>
@@ -291,16 +281,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminIpAccess</servlet-name>
         <url-pattern>/servlet/AdminIpAccess</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.Administrator</servlet-name>
-        <url-pattern>/servlet/Administrator</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminListDocs</servlet-name>
-        <url-pattern>/servlet/AdminListDocs</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
