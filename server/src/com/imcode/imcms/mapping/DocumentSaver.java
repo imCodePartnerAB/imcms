@@ -184,28 +184,30 @@ class DocumentSaver {
 
     void updateDocumentRolePermissions(DocumentDomainObject document, UserDomainObject user,
                                        DocumentDomainObject oldDocument) {
-        RoleIdToDocumentPermissionSetTypeMappings roleIdsMappedtoDocumentPermissionSetTypes = new RoleIdToDocumentPermissionSetTypeMappings();
+        RoleIdToDocumentPermissionSetTypeMappings mappings = new RoleIdToDocumentPermissionSetTypeMappings();
 
         if (null != oldDocument) {
-            RoleIdToDocumentPermissionSetTypeMappings.Mapping[] roleIdsMappedToPermissionsForOldDocument = oldDocument.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings();
-            for ( int i = 0; i < roleIdsMappedToPermissionsForOldDocument.length; i++ ) {
-                RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = roleIdsMappedToPermissionsForOldDocument[i];
-                roleIdsMappedtoDocumentPermissionSetTypes.setPermissionSetTypeForRole(mapping.getRoleId(), DocumentPermissionSetTypeDomainObject.NONE);
+            RoleIdToDocumentPermissionSetTypeMappings.Mapping[] oldDocumentMappings = oldDocument.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings();
+            for ( int i = 0; i < oldDocumentMappings.length; i++ ) {
+                RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = oldDocumentMappings[i];
+                mappings.setPermissionSetTypeForRole(mapping.getRoleId(), DocumentPermissionSetTypeDomainObject.NONE);
             }
         }
+
         RoleIdToDocumentPermissionSetTypeMappings.Mapping[] documentMappings = document.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings() ;
         for ( int i = 0; i < documentMappings.length; i++ ) {
             RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = documentMappings[i];
-            roleIdsMappedtoDocumentPermissionSetTypes.setPermissionSetTypeForRole(mapping.getRoleId(), mapping.getDocumentPermissionSetType());
+            mappings.setPermissionSetTypeForRole(mapping.getRoleId(), mapping.getDocumentPermissionSetType());
         }
-        RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappings = roleIdsMappedtoDocumentPermissionSetTypes.getMappings();
-        for ( int i = 0; i < mappings.length; i++ ) {
-            RoleIdToDocumentPermissionSetTypeMappings.Mapping entry = mappings[i];
-            RoleId roleId = entry.getRoleId();
-            DocumentPermissionSetTypeDomainObject documentPermissionSetType = entry.getDocumentPermissionSetType();
+
+        RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappingsArray = mappings.getMappings();
+        for ( int i = 0; i < mappingsArray.length; i++ ) {
+            RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = mappingsArray[i];
+            RoleId roleId = mapping.getRoleId();
+            DocumentPermissionSetTypeDomainObject documentPermissionSetType = mapping.getDocumentPermissionSetType();
 
             if (null == oldDocument
-                || user.canSetPermissionSetIdForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument)) {
+                || user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument)) {
                 String[] params1 = new String[]{"" + roleId,
                                                 "" + document.getId()};
                 documentMapper.getDatabase().executeUpdateQuery(DefaultDocumentMapper.SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID, params1);

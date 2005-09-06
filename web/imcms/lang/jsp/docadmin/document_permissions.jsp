@@ -26,7 +26,7 @@
         boolean checked = documentPermissionSetType == radioButtonDocumentPermissionSetType;
         String name = "role_" + roleId.intValue();
         String value = "" + radioButtonDocumentPermissionSetType;
-        if (user.canSetPermissionSetIdForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document )) {
+        if (user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document )) {
             return Html.radio(name, value, checked ) ;
         } else {
             return checked ? Html.hidden( name, value )+"X" : "O" ;

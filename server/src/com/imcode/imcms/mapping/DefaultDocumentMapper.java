@@ -136,7 +136,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
     void setTemplateForNewTextDocument( TextDocumentDomainObject newTextDocument, UserDomainObject user,
                                                 final DocumentDomainObject parent ) {
-        DocumentPermissionSetTypeDomainObject documentPermissionSetType = user.getPermissionSetTypeFor( parent );
+        DocumentPermissionSetTypeDomainObject documentPermissionSetType = user.getDocumentPermissionSetTypeFor( parent );
         TemplateDomainObject template = null;
         if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(documentPermissionSetType) ) {
             template = ( (TextDocumentPermissionSetDomainObject)newTextDocument.getPermissionSetForRestrictedOneForNewDocuments() ).getDefaultTemplate();

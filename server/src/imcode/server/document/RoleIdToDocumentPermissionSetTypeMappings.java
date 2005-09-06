@@ -24,7 +24,7 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Cloneable {
     }
 
     public void setPermissionSetTypeForRole(RoleId roleId, DocumentPermissionSetTypeDomainObject documentPermissionSetType) {
-        if ( null == documentPermissionSetType || documentPermissionSetType.equals(DocumentPermissionSetTypeDomainObject.NONE) ) {
+        if ( null == documentPermissionSetType ) {
             map.remove(roleId) ;
         } else {
             map.put(roleId, documentPermissionSetType) ;
@@ -51,8 +51,8 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Cloneable {
 
     public static class Mapping {
 
-        private RoleId roleId;
-        private DocumentPermissionSetTypeDomainObject documentPermissionSetType;
+        private final RoleId roleId;
+        private final DocumentPermissionSetTypeDomainObject documentPermissionSetType;
 
         public Mapping(RoleId roleId,
                        DocumentPermissionSetTypeDomainObject documentPermissionSetType) {
@@ -66,6 +66,24 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Cloneable {
 
         public RoleId getRoleId() {
             return roleId;
+        }
+
+        public boolean equals(Object o) {
+            if ( this == o ) {
+                return true;
+            }
+            if ( o == null || getClass() != o.getClass() ) {
+                return false;
+            }
+
+            final Mapping mapping = (Mapping) o;
+
+            return roleId.equals(mapping.roleId);
+
+        }
+
+        public int hashCode() {
+            return roleId.hashCode();
         }
     }
 }

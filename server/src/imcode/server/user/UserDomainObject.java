@@ -551,8 +551,8 @@ public class UserDomainObject implements Cloneable, Serializable {
         return getPermissionSetFor( document ).getEditPermissions();
     }
 
-    public boolean canSetPermissionSetIdForRoleIdOnDocument( DocumentPermissionSetTypeDomainObject documentPermissionSetType, RoleId roleId,
-                                                             DocumentDomainObject document ) {
+    public boolean canSetDocumentPermissionSetTypeForRoleIdOnDocument( DocumentPermissionSetTypeDomainObject documentPermissionSetType, RoleId roleId,
+                                                                       DocumentDomainObject document ) {
         if ( !canEditPermissionsFor( document ) ) {
             return false;
         }
@@ -578,7 +578,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public DocumentPermissionSetDomainObject getPermissionSetFor( DocumentDomainObject document ) {
-        DocumentPermissionSetTypeDomainObject permissionSetId = getPermissionSetTypeFor( document );
+        DocumentPermissionSetTypeDomainObject permissionSetId = getDocumentPermissionSetTypeFor( document );
         if ( DocumentPermissionSetTypeDomainObject.FULL.equals(permissionSetId) ) {
             return DocumentPermissionSetDomainObject.FULL;
         } else if ( DocumentPermissionSetTypeDomainObject.READ.equals(permissionSetId) ) {
@@ -592,7 +592,7 @@ public class UserDomainObject implements Cloneable, Serializable {
         }
     }
 
-    public DocumentPermissionSetTypeDomainObject getPermissionSetTypeFor( DocumentDomainObject document ) {
+    public DocumentPermissionSetTypeDomainObject getDocumentPermissionSetTypeFor( DocumentDomainObject document ) {
         if ( null == document ) {
             return DocumentPermissionSetTypeDomainObject.NONE;
         }
@@ -600,10 +600,10 @@ public class UserDomainObject implements Cloneable, Serializable {
             return DocumentPermissionSetTypeDomainObject.FULL;
         }
         RoleIdToDocumentPermissionSetTypeMappings roleIdsMappedToDocumentPermissionSetTypes = document.getRoleIdsMappedToDocumentPermissionSetTypes() ;
-        RoleId[] usersRoleReferences = getRoleIds();
+        RoleId[] usersRoleIds = getRoleIds();
         DocumentPermissionSetTypeDomainObject mostPrivilegedPermissionSetIdFoundYet = DocumentPermissionSetTypeDomainObject.NONE;
-        for ( int i = 0; i < usersRoleReferences.length; i++ ) {
-            RoleId roleId = usersRoleReferences[i];
+        for ( int i = 0; i < usersRoleIds.length; i++ ) {
+            RoleId roleId = usersRoleIds[i];
             DocumentPermissionSetTypeDomainObject documentPermissionSetType = roleIdsMappedToDocumentPermissionSetTypes.getPermissionSetTypeForRole( roleId );
             if ( documentPermissionSetType.isMorePrivilegedThan(mostPrivilegedPermissionSetIdFoundYet) ) {
                 mostPrivilegedPermissionSetIdFoundYet = documentPermissionSetType ;
@@ -617,7 +617,8 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public boolean hasAtLeastPermissionSetIdOn( DocumentPermissionSetTypeDomainObject leastPrivilegedPermissionSetIdWanted,
                                                 DocumentDomainObject document ) {
-        return getPermissionSetTypeFor( document ).isAtLeastAsPrivilegedAs(leastPrivilegedPermissionSetIdWanted);
+        DocumentPermissionSetTypeDomainObject usersDocumentPermissionSetType = getDocumentPermissionSetTypeFor(document);
+        return usersDocumentPermissionSetType.isAtLeastAsPrivilegedAs(leastPrivilegedPermissionSetIdWanted);
     }
 
     public boolean canAddDocumentToAnyMenu( DocumentDomainObject document ) {
