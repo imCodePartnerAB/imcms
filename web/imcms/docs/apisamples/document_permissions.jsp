@@ -24,19 +24,19 @@ They can be set differently for different pages (and for new pages created from 
 %>
 <p>
 Every document has a mapping of permissions to roles.<br>
-This is a map of the format (RoleName,DocumentPermissionSet)
+This is a map of the format (Role, DocumentPermissionSet)
 </p>
 <p>Permissions mappings for document <%= documentId %>:</p>
 <p>
 <%
-    Map permissionsMap = document.getAllRolesMappedToPermissions();
+    Map permissionsMap = document.getRolesMappedToPermissions();
     Set roles = permissionsMap.keySet();
     Iterator roleIterator = roles.iterator();
     %><ul><%
     while( roleIterator.hasNext() ) {
-        String roleName = (String)roleIterator.next();
-        DocumentPermissionSet documentPermission = (DocumentPermissionSet)permissionsMap.get( roleName );%>
-        <li>The role "<%=roleName%>" has permission "<%= documentPermission.toString() %>"</li><%
+        Role role = (Role)roleIterator.next();
+        DocumentPermissionSet documentPermission = (DocumentPermissionSet)permissionsMap.get( role );%>
+        <li>The role "<%=role.getName()%>" has permission "<%= documentPermission.toString() %>"</li><%
     }
     %></ul><%
 %>

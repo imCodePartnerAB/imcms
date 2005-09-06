@@ -1771,7 +1771,7 @@ HTMLArea.prototype._editorEvent = function(ev) {
 			if (typeof plugin.onKeyPress == "function") plugin.onKeyPress(ev);
 		}
 	}
-	if (keyEvent && ev.ctrlKey) {
+	if (keyEvent && ev.ctrlKey && !ev.altKey) {
 		var sel = null;
 		var range = null;
 		var key = String.fromCharCode(HTMLArea.is_ie ? ev.keyCode : ev.charCode).toLowerCase();

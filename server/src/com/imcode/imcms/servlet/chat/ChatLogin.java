@@ -5,6 +5,7 @@ import imcode.external.chat.*;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -199,7 +200,7 @@ public class ChatLogin extends ChatBase {
             user = allowUser( userName, password, imcref );
             user.put( "history", oldUser.get( "history" ) );
 
-            session.setAttribute( "logon.isDone", user );
+            Utility.makeUserLoggedIn(req, user);
             chatAlias = user.getLoginName();
         }
 

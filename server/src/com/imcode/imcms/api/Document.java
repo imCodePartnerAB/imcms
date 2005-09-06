@@ -1,6 +1,6 @@
 package com.imcode.imcms.api;
 
-import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
+import com.imcode.util.ChainableReversibleNullComparator;
 import imcode.server.document.*;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -37,9 +37,26 @@ public class Document {
     }
 
     /**
+     * @deprecated Use {@link #getRolesMappedToPermissions()}.
      * @return map of rolename String -> DocumentPermissionSet instances.
      */
     public Map getAllRolesMappedToPermissions() throws NoPermissionException {
+
+        Map roleNamesMappedToPermissions = new HashMap();
+        final Map rolesMappedToPermissions = getRolesMappedToPermissions();
+        for (Iterator iterator = rolesMappedToPermissions.entrySet().iterator(); iterator.hasNext();) {
+            Map.Entry entry = (Map.Entry) iterator.next();
+            final Role role = (Role) entry.getKey();
+            final DocumentPermissionSet documentPermissionSet = (DocumentPermissionSet) entry.getValue();
+            roleNamesMappedToPermissions.put(role.getName(), documentPermissionSet  );
+        }
+        return roleNamesMappedToPermissions;
+    }
+
+    /**
+     * @return map of roles Role -> DocumentPermissionSet instances.
+     */
+    public Map getRolesMappedToPermissions() throws NoPermissionException {
         getSecurityChecker().hasEditPermission( this );
 
         Map rolesMappedToPermissionSetIds = internalDocument.getRolesMappedToPermissionSetIds();
@@ -47,21 +64,20 @@ public class Document {
         Map result = new HashMap();
         for ( Iterator it = rolesMappedToPermissionSetIds.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry rolePermissionTuple = (Map.Entry)it.next();
-            RoleDomainObject role = (RoleDomainObject)rolePermissionTuple.getKey();
+            RoleDomainObject role =  (RoleDomainObject)rolePermissionTuple.getKey() ;
             int permissionType = ( (Integer)rolePermissionTuple.getValue() ).intValue();
             switch ( permissionType ) {
                 case DocumentPermissionSetDomainObject.TYPE_ID__FULL:
-                    result.put( role.getName(), DocumentPermissionSetDomainObject.FULL );
+                    result.put( role, DocumentPermissionSetDomainObject.FULL );
                     break;
                 case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1:
                 case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2:
-                    result.put( role.getName(),
-                                getDocumentPermissionSetMapper().getRestrictedPermissionSet( internalDocument,
+                    result.put( role,  getDocumentPermissionSetMapper().getRestrictedPermissionSet( internalDocument,
                                                                                                 permissionType,
                                                                                                 false ) );
                     break;
                 case DocumentPermissionSetDomainObject.TYPE_ID__READ:
-                    result.put( role.getName(), DocumentPermissionSetDomainObject.READ );
+                    result.put( role, DocumentPermissionSetDomainObject.READ );
                     break;
                 case DocumentPermissionSetDomainObject.TYPE_ID__NONE:
                     break;
@@ -84,10 +100,10 @@ public class Document {
         Set keys = rolesMappedToPermissionsIds.keySet();
         Iterator keyIterator = keys.iterator();
         while ( keyIterator.hasNext() ) {
-            String roleName = (String)keyIterator.next();
-            DocumentPermissionSetDomainObject documentPermissionSetDO = (DocumentPermissionSetDomainObject)rolesMappedToPermissionsIds.get( roleName );
+            RoleDomainObject role = (RoleDomainObject)keyIterator.next();
+            DocumentPermissionSetDomainObject documentPermissionSetDO = (DocumentPermissionSetDomainObject)rolesMappedToPermissionsIds.get( role );
             DocumentPermissionSet documentPermissionSet = new DocumentPermissionSet( documentPermissionSetDO );
-            result.put( roleName, documentPermissionSet );
+            result.put( new Role(role), documentPermissionSet );
         }
         return result;
     }
@@ -117,32 +133,35 @@ public class Document {
         return internalDocument.hashCode();
     }
 
+    public Set getKeywords() {
+        return new HashSet(Arrays.asList(internalDocument.getKeywords()));
+    }
+
+    public void setKeywords(Set keywords) {
+        internalDocument.setKeywords((String[]) keywords.toArray(new String[keywords.size()]));
+    }
+
     public DocumentPermissionSet getPermissionSetRestrictedOne() throws NoPermissionException {
-        getSecurityChecker().hasEditPermission( this );
         DocumentPermissionSetDomainObject restrictedOne = getDocumentPermissionSetMapper().getPermissionSetRestrictedOne( internalDocument );
         DocumentPermissionSet result = new DocumentPermissionSet( restrictedOne );
         return result;
     }
 
     public DocumentPermissionSet getPermissionSetRestrictedTwo() throws NoPermissionException {
-        getSecurityChecker().hasEditPermission( this );
         DocumentPermissionSetDomainObject restrictedTwo = getDocumentPermissionSetMapper().getPermissionSetRestrictedTwo( internalDocument );
         DocumentPermissionSet result = new DocumentPermissionSet( restrictedTwo );
         return result;
     }
 
     public String getHeadline() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         return internalDocument.getHeadline();
     }
 
     public String getMenuText() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         return internalDocument.getMenuText();
     }
 
     public String getMenuImageURL() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         return internalDocument.getMenuImage();
     }
 
@@ -162,7 +181,6 @@ public class Document {
     }
 
     public User getCreator() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         return new User( internalDocument.getCreator() );
     }
 
@@ -172,7 +190,6 @@ public class Document {
     }
 
     public Language getLanguage() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         return Language.getLanguageByISO639_2( internalDocument.getLanguageIso639_2() );
     }
 
@@ -197,7 +214,6 @@ public class Document {
      * @throws NoPermissionException
      */
     public Category[] getCategories() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategories();
         return getCategoryArrayFromCategoryDomainObjectArray( categoryDomainObjects );
     }
@@ -246,13 +262,11 @@ public class Document {
      * @throws NoPermissionException
      */
     public Category[] getCategoriesOfType( CategoryType categoryType ) throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategoriesOfType( categoryType.getInternal() );
         return getCategoryArrayFromCategoryDomainObjectArray( categoryDomainObjects );
     }
 
     public User getPublisher() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         UserDomainObject publisher = internalDocument.getPublisher();
         if ( null != publisher ) {
             return new User( publisher );
@@ -262,7 +276,6 @@ public class Document {
     }
 
     public String getTarget() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         return internalDocument.getTarget();
     }
 
@@ -274,7 +287,6 @@ public class Document {
     }
 
     public Date getPublicationStartDatetime() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         return internalDocument.getPublicationStartDatetime();
     }
 
@@ -291,7 +303,6 @@ public class Document {
     }
 
     public Date getArchivedDatetime() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         return internalDocument.getArchivedDatetime();
     }
 
@@ -310,7 +321,6 @@ public class Document {
      * @throws NoPermissionException
      */
     public Section[] getSections() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         SectionDomainObject[] sectionDomainObjects = internalDocument.getSections();
         Section[] sections = new Section[sectionDomainObjects.length];
         for ( int i = 0; i < sectionDomainObjects.length; i++ ) {
@@ -331,7 +341,6 @@ public class Document {
     }
 
     public Date getModifiedDatetime() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         return internalDocument.getModifiedDatetime();
     }
 
@@ -341,7 +350,6 @@ public class Document {
     }
 
     public Date getCreatedDatetime() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         return internalDocument.getCreatedDatetime();
     }
 
@@ -366,12 +374,10 @@ public class Document {
     }
 
     public Date getPublicationEndDatetime() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         return internalDocument.getPublicationEndDatetime();
     }
 
     public int getStatus() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         return internalDocument.getStatus();
     }
 
@@ -381,7 +387,6 @@ public class Document {
     }
 
     public boolean isVisibleInMenusForUnauthorizedUsers() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         return internalDocument.isVisibleInMenusForUnauthorizedUsers();
     }
 
@@ -421,7 +426,7 @@ public class Document {
         protected abstract int compareDocuments( Document d1, Document d2 ) throws NoPermissionException;
 
         public final static Comparator ID = new Comparator() {
-            protected int compareDocuments( Document d1, Document d2 ) throws NoPermissionException {
+            protected int compareDocuments( Document d1, Document d2 ) {
                 return d1.getId() - d2.getId();
             }
         };

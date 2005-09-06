@@ -3,6 +3,7 @@ package com.imcode.imcms.api;
 import imcode.server.document.*;
 import imcode.server.document.index.IndexException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.UserDomainObject;
 
 public class DocumentService {
 
@@ -163,7 +164,8 @@ public class DocumentService {
     public CategoryType createNewCategoryType( String name, int maxChoices ) throws NoPermissionException, CategoryTypeAlreadyExistsException {
         getSecurityChecker().isSuperAdmin();
         if ( getDocumentMapper().isUniqueCategoryTypeName( name ) ) {
-            CategoryTypeDomainObject newCategoryTypeDO = getDocumentMapper().addCategoryTypeToDb( name, maxChoices );
+            CategoryTypeDomainObject newCategoryTypeDO = new CategoryTypeDomainObject( 0, name, maxChoices, false );
+            newCategoryTypeDO = getDocumentMapper().addCategoryTypeToDb( newCategoryTypeDO );
             return new CategoryType( newCategoryTypeDO );
         } else {
             throw new CategoryTypeAlreadyExistsException( "A category with name " + name + " already exists." );
@@ -222,6 +224,15 @@ public class DocumentService {
         } catch ( IndexException e ) {
             throw new SearchException( e );
         }
+    }
+
+    public void deleteDocument( Document document ) throws NoPermissionException {
+        UserDomainObject internalUser = contentManagementSystem.getCurrentUser().getInternal();
+        if (!internalUser.isSuperAdmin()) {
+            throw new NoPermissionException("User must be superadmin to delete documents.") ;
+        }
+
+        getDocumentMapper().deleteDocument(document.getInternal());
     }
 
     private DocumentMapper getDocumentMapper() {

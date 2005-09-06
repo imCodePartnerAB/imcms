@@ -445,6 +445,15 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return lifeCyclePhase ;
     }
 
+    public void removeNonInheritedCategories() {
+        for ( Iterator iterator = attributes.categories.iterator(); iterator.hasNext(); ) {
+            CategoryDomainObject category = (CategoryDomainObject)iterator.next();
+            if (!category.getType().isInherited()) {
+                iterator.remove();
+            }
+        }
+    }
+
     public static class Attributes implements Cloneable, Serializable {
 
         private Date archivedDatetime;

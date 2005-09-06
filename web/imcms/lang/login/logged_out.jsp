@@ -1,3 +1,5 @@
+<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<vel:velocity>
 <html>
 <head>
 <title><? templates/login/logged_out.html/1 ?></title>
@@ -57,3 +59,4 @@ if (document.forms[1]) {
 
 </body>
 </html>
+</vel:velocity>

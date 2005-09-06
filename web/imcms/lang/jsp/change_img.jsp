@@ -1,20 +1,18 @@
 <%@ page
 
-  import="imcode.server.document.textdocument.ImageDomainObject,
-          com.imcode.imcms.servlet.admin.ChangeImage,
+  import="com.imcode.imcms.servlet.admin.ChangeImage,
           org.apache.commons.lang.StringUtils,
           imcode.server.Imcms,
           org.apache.commons.lang.StringEscapeUtils,
-          imcode.server.document.textdocument.TextDocumentDomainObject,
           org.apache.commons.lang.ObjectUtils,
           imcode.util.Utility,
           imcode.util.Html,
-          org.apache.commons.collections.Transformer,
           imcode.server.user.UserDomainObject,
           imcode.util.ImcmsImageUtils,
           com.imcode.util.ImageSize,
           com.imcode.util.ImageSize,
-          imcode.server.document.*"
+          imcode.server.document.*,
+          imcode.server.document.textdocument.*"
 
 	contentType="text/html"
 
@@ -260,11 +258,11 @@ function checkLinkOnBlur() {<%
 			<div id="previewDiv"><%= (image != null && !image.isEmpty()) ? ImcmsImageUtils.getImageHtmlTag( image, request ) : "" %></div></td>
 		</tr><%
 			if (!fromEditor) {
-				ImageDomainObject.ImageSource imageSource = image.getSource();
-				if ( imageSource instanceof ImageDomainObject.FileDocumentImageSource) { %>
+				ImageSource imageSource = image.getSource();
+				if ( imageSource instanceof FileDocumentImageSource) { %>
 		<tr>
 			<td colspan="2" align="center"><%
-					ImageDomainObject.FileDocumentImageSource fileDocumentImageSource = (ImageDomainObject.FileDocumentImageSource)imageSource ;
+					FileDocumentImageSource fileDocumentImageSource = (FileDocumentImageSource)imageSource ;
 					FileDocumentDomainObject imageFileDocument = fileDocumentImageSource.getFileDocument() ; %>
 			 <%= Html.getAdminButtons( Utility.getLoggedOnUser(request), imageFileDocument, request, response ) %></td>
 		</tr><%

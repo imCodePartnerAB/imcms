@@ -1,17 +1,19 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.util.*;
-
-import imcode.external.diverse.*;
-import imcode.server.*;
-import imcode.server.document.DocumentMapper;
+import imcode.external.diverse.VariableManager;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Properties;
 
 public class AdminDeleteDoc extends Administrator {
 
@@ -92,7 +94,7 @@ public class AdminDeleteDoc extends Administrator {
             // Ok, Lets delete the meta id
             DocumentMapper documentMapper = imcref.getDocumentMapper();
             DocumentDomainObject document = documentMapper.getDocument( metaId ) ;
-            documentMapper.deleteDocument( document, user);
+            documentMapper.deleteDocument( document );
             imcref.updateMainLog( "Document  " + "[" + document.getId() +
                     "] ALL deleted by user: [" + user.getFullName() + "]" );
 

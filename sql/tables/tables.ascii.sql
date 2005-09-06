@@ -239,7 +239,8 @@ GO
 CREATE TABLE [dbo].[category_types] (
 	[category_type_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[name] [varchar] (50) NOT NULL ,
-	[max_choices] [int] NOT NULL
+	[max_choices] [int] NOT NULL ,
+    [inherited] [bit] NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -780,7 +781,11 @@ ALTER TABLE [dbo].[category_types] WITH NOCHECK ADD
 	 PRIMARY KEY  CLUSTERED
 	(
 		[category_type_id]
-	)  ON [PRIMARY]
+	)  ON [PRIMARY] ,
+    CONSTRAINT [UQ__category_types__name] UNIQUE  NONCLUSTERED
+    (
+        [name]
+    )  ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[childs] WITH NOCHECK ADD

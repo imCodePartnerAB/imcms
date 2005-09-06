@@ -3,8 +3,8 @@ package com.imcode.imcms.servlet.admin;
 import com.imcode.imcms.flow.*;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.superadmin.AdminManager;
-import com.imcode.util.ImageSize;
 import com.imcode.util.HumanReadable;
+import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
@@ -12,10 +12,12 @@ import imcode.server.document.*;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
-import imcode.util.*;
+import imcode.util.ImcmsImageUtils;
+import imcode.util.LocalizedMessage;
+import imcode.util.Utility;
+import imcode.util.io.InputStreamSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.lucene.index.Term;
@@ -117,7 +119,7 @@ public class ChangeImage extends HttpServlet {
                     fileDocument.setHeadline( file.getFilename() );
                     fileDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
                     documentMapper.saveNewDocument( document, user );
-                    image.setSourceAndClearSize( new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( fileDocument ) ) );
+                    image.setSourceAndClearSize( new FileDocumentImageSource( documentMapper.getDocumentReference( fileDocument ) ) );
                 }
             }
         };
@@ -141,7 +143,7 @@ public class ChangeImage extends HttpServlet {
         } );
         imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
             public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                image.setSourceAndClearSize( new ImageDomainObject.ImagesPathRelativePathImageSource( imageUrl ) );
+                image.setSourceAndClearSize( new ImagesPathRelativePathImageSource( imageUrl ) );
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
         } );
@@ -163,7 +165,7 @@ public class ChangeImage extends HttpServlet {
                                         HttpServletResponse response ) throws IOException, ServletException {
                 FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)documentFound;
                 if ( null != imageFileDocument ) {
-                    image.setSourceAndClearSize( new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( imageFileDocument ) ) );
+                    image.setSourceAndClearSize( new FileDocumentImageSource( documentMapper.getDocumentReference( imageFileDocument ) ) );
                 }
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
@@ -213,7 +215,7 @@ public class ChangeImage extends HttpServlet {
         } catch ( NumberFormatException ignored ) {
         }
         String imageUrl = req.getParameter( REQUEST_PARAMETER__IMAGE_URL );
-        ImageDomainObject.ImageSource imageSource = ImcmsImageUtils.createImageSourceFromString( imageUrl );
+        ImageSource imageSource = ImcmsImageUtils.createImageSourceFromString( imageUrl );
 
         image.setSource( imageSource );
         image.setName( req.getParameter( REQUEST_PARAMETER__IMAGE_NAME ).trim() );

@@ -120,7 +120,7 @@ class DirectoryIndex implements DocumentIndex {
         return new IndexWriter( directory, new AnalyzerImpl(), createIndex );
     }
 
-    void indexAllDocuments() throws IOException {
+    private void indexAllDocuments() throws IOException {
         IndexWriter indexWriter = createIndexWriter( true );
         try {
             indexAllDocumentsToIndexWriter( indexWriter );
@@ -176,7 +176,7 @@ class DirectoryIndex implements DocumentIndex {
         long time = indexingStopWatch.getTime();
         String humanReadableTime = HumanReadable.getHumanReadableTimeSpan( time ) ;
         long timePerDocument = time/numberOfDocuments ;
-        log.info( "Completed index of " + numberOfDocuments + " documents in " + humanReadableTime+". "+timePerDocument+"ms per document." );
+        log.info( "Indexed " + numberOfDocuments + " documents in " + humanReadableTime+". "+timePerDocument+"ms per document." );
     }
 
     private void optimizeIndex( IndexWriter indexWriter ) throws IOException {

@@ -36,6 +36,10 @@ public class TestUserService extends TestCase {
         userService = new UserService(contentManagementSystem);
     }
 
+    public void testGetUser() throws NoPermissionException {
+        assertNull(userService.getUser("noone")) ;
+    }
+
     public void testNewUserCanHaveRoles() throws SaveException, NoPermissionException {
 
         internalUser.addRole( RoleDomainObject.SUPERADMIN );
