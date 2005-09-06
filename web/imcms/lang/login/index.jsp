@@ -1,4 +1,8 @@
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%
+    String next_meta = request.getParameter("next_meta");
+    String next_url = request.getParameter("next_url");
+%>
 <vel:velocity>
 <html>
 <head>
@@ -42,7 +46,13 @@
 	<td colspan="2" align="center">
 	<table border="0" cellspacing="0" cellpadding="1">
 	<form action="$contextPath/servlet/VerifyUser" method="post">
-	<tr>
+    <%
+    if( null != next_meta )  { %>
+    <input type="hidden" name="next_meta" value="<%=next_meta%>">
+    <%}else if( null != next_url ) { %>
+    <input type="hidden" name="next_url" value="<%=next_url%>">
+	<%}%>
+    <tr>
 		<td><span class="imcmsAdmText"><? templates/login/index.html/5 ?></span></td>
 		<td>&nbsp;</td>
 		<td><input type="text" name="name" size="15" style="width:180"></td>
