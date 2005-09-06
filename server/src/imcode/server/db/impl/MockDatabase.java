@@ -110,7 +110,7 @@ public class MockDatabase implements Database {
         });
     }
 
-    public void verifyExpectedSqlCalls() {
+    public void assertExpectedSqlCalls() {
         if (!expectedSqlCalls.isEmpty()) {
             Assert.fail("Remaining expected sql calls: " + expectedSqlCalls.toString());
         }

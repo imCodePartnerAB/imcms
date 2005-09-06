@@ -1,7 +1,7 @@
 package imcode.server.document;
 
-import imcode.server.ImcmsServices;
 import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
+import imcode.server.ImcmsServices;
 
 import java.io.Serializable;
 
@@ -16,7 +16,7 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
     public static final DocumentPermission EDIT_INCLUDES = new DocumentPermission( "editIncludes" ) ;
     public static final DocumentPermission EDIT_IMAGES = new DocumentPermission( "editImages" );
 
-    public TextDocumentPermissionSetDomainObject( int typeId ) {
+    public TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject typeId ) {
         super( typeId );
     }
 

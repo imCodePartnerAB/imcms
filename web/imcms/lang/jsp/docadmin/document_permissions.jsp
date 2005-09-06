@@ -4,26 +4,29 @@
                  com.imcode.imcms.flow.PageFlow,
                  imcode.server.Imcms,
                  imcode.server.document.DocumentDomainObject,
-                 imcode.server.document.DocumentPermissionSetDomainObject,
+                 imcode.server.document.DocumentPermissionSetTypeDomainObject,
+                 imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings,
                  imcode.server.document.TemplateDomainObject,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  imcode.server.user.RoleDomainObject,
-                 imcode.server.user.UserDomainObject,
-                 imcode.util.Html,
-                 imcode.util.Utility"%>
+                 imcode.server.user.RoleId"%>
+<%@ page import="imcode.server.user.UserDomainObject"%>
+<%@ page import="imcode.util.Html"%>
+<%@ page import="imcode.util.Utility"%>
+<%@ page import="org.apache.commons.collections.CollectionUtils"%>
+<%@ page import="org.apache.commons.collections.Predicate"%>
 <%@ page import="java.util.Arrays"%>
 <%@ page import="java.util.Iterator"%>
-<%@ page import="java.util.Map"%>
 <%@ page import="java.util.SortedSet"%>
 <%@ page import="java.util.TreeSet"%>
 <%@page contentType="text/html"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%!
-    String formatRolePermissionRadioButton( int radioButtonPermissionSetId, UserDomainObject user, int permissionSetId,
-                                            RoleDomainObject role,
+    String formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject radioButtonDocumentPermissionSetType, UserDomainObject user, DocumentPermissionSetTypeDomainObject documentPermissionSetType,
+                                            RoleId roleId,
                                             DocumentDomainObject document ) {
-        boolean checked = permissionSetId == radioButtonPermissionSetId;
-        String name = "role_" + role.getId();
-        String value = "" + radioButtonPermissionSetId;
-        if (user.canSetPermissionSetIdForRoleOnDocument( radioButtonPermissionSetId, role, document )) {
+        boolean checked = documentPermissionSetType == radioButtonDocumentPermissionSetType;
+        String name = "role_" + roleId.intValue();
+        String value = "" + radioButtonDocumentPermissionSetType;
+        if (user.canSetPermissionSetIdForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document )) {
             return Html.radio(name, value, checked ) ;
         } else {
             return checked ? Html.hidden( name, value )+"X" : "O" ;
@@ -38,14 +41,14 @@
 <html>
 <head>
 <title><? templates/sv/docinfo/change_meta_rights.html/1 ?></title>
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css.jsp">
 </head>
 <body bgcolor="#FFFFFF">
 
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )
 
-<form method="POST" action="PageDispatcher">
+<form method="POST" action="<%= request.getContextPath() %>/servlet/PageDispatcher">
 <%= Page.htmlHidden( request ) %>
     <table border="0" cellspacing="0" cellpadding="0">
         <tr>
@@ -74,27 +77,33 @@
                 </tr>
                 <%
                     SortedSet allRoles = new TreeSet(Arrays.asList(Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getAllRoles())) ;
-                    allRoles.remove( RoleDomainObject.SUPERADMIN ) ;
-                    Map rolesMappedToPermissionSetIds = document.getRolesMappedToPermissionSetIds() ;
-                    for ( Iterator iterator = rolesMappedToPermissionSetIds.entrySet().iterator(); iterator.hasNext(); ) {
-                        Map.Entry entry = (Map.Entry)iterator.next();
-                        RoleDomainObject role = (RoleDomainObject)entry.getKey();
-                        role = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getRoleById(role.getId()) ;
-                        if (null != role) {
-                            int permissionSetId = ((Integer)entry.getValue()).intValue() ;
-                            if (DocumentPermissionSetDomainObject.TYPE_ID__NONE == permissionSetId || role.equals( RoleDomainObject.SUPERADMIN )) {
+                    CollectionUtils.filter(allRoles, new Predicate() {
+                        public boolean evaluate(Object object) {
+                            RoleDomainObject role = (RoleDomainObject) object ;
+                            return !RoleId.SUPERADMIN.equals(role.getId()) ;
+                        }
+                    });
+                    RoleIdToDocumentPermissionSetTypeMappings roleIdsMappedToDocumentPermissionSetTypessionSetTypes = document.getRoleIdsMappedToDocumentPermissionSetTypes() ;
+                    RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappings = roleIdsMappedToDocumentPermissionSetTypessionSetTypes.getMappings();
+                    for ( int i = 0; i < mappings.length; i++ ) {
+                        RoleIdToDocumentPermissionSetTypeMappings.Mapping entry = mappings[i];
+                        RoleId roleId = entry.getRoleId();
+                        RoleDomainObject role = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getRole(roleId) ;
+                        if (null != role ) {
+                            DocumentPermissionSetTypeDomainObject documentPermissionSetType = entry.getDocumentPermissionSetType() ;
+                            if ( DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType) || RoleId.SUPERADMIN.equals(roleId) ) {
                                 continue ;
                             }
                             allRoles.remove( role ) ;
                             %>
                             <tr align="center">
-                                <td height="22" class="imcmsAdmText" align="left"><% if (user.hasRole( role )) { %>*<% } else { %>&nbsp;<% } %></td>
+                                <td height="22" class="imcmsAdmText" align="left"><% if (user.hasRoleId( roleId )) { %>*<% } else { %>&nbsp;<% } %></td>
                                 <td class="imcmsAdmText" align="left"><%= role.getName() %></td>
-                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__NONE, user, permissionSetId, role, document ) %></td>
-                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__READ, user, permissionSetId, role, document ) %></td>
-                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, user, permissionSetId, role, document ) %></td>
-                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, user, permissionSetId, role, document ) %></td>
-                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__FULL, user, permissionSetId, role, document ) %></td>
+                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject.NONE, user, documentPermissionSetType, roleId, document ) %></td>
+                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject.READ, user, documentPermissionSetType, roleId, document ) %></td>
+                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject.RESTRICTED_2, user, documentPermissionSetType, roleId, document ) %></td>
+                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject.RESTRICTED_1, user, documentPermissionSetType, roleId, document ) %></td>
+                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject.FULL, user, documentPermissionSetType, roleId, document ) %></td>
                             </tr>
                             <%
                         }

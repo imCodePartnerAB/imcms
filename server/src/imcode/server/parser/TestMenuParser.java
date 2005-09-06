@@ -1,9 +1,9 @@
 package imcode.server.parser;
 
 import com.imcode.imcms.api.Document;
-import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 
@@ -15,16 +15,17 @@ public class TestMenuParser extends TestCase {
     private MockParserParameters parserParameters;
     private UserDomainObject user ;
     private TextDocumentDomainObject textDocument ;
-    private RoleDomainObject editRole;
+    private RoleId editRole;
     private static final int MENU_INDEX = 1;
 
     protected void setUp() throws Exception {
+        super.setUp();
         user = new UserDomainObject();
         textDocument = new TextDocumentDomainObject();
-        editRole = new RoleDomainObject( "Editrole" );
-        textDocument.setPermissionSetIdForRole( editRole, DocumentPermissionSetDomainObject.TYPE_ID__FULL );
-        parserParameters = new MockParserParameters( null );
-        menuParser = new MenuParser( parserParameters );
+        editRole = new RoleId(3);
+        textDocument.setDocumentPermissionSetTypeForRoleId(editRole, DocumentPermissionSetTypeDomainObject.FULL);
+        parserParameters = new MockParserParameters(null);
+        menuParser = new MenuParser(parserParameters);
     }
 
     public void testUserCantSeeUnpublishedDocumentInMenuWithoutPermissions() throws Exception {
@@ -38,12 +39,12 @@ public class TestMenuParser extends TestCase {
     }
 
     public void testUserCantSeeUnpublishedDocumentInMenuWithPermissions() {
-        textDocument.setPermissionSetIdForRole( RoleDomainObject.USERS, DocumentPermissionSetDomainObject.TYPE_ID__READ );
+        textDocument.setDocumentPermissionSetTypeForRoleId( RoleId.USERS, DocumentPermissionSetTypeDomainObject.READ );
         assertCanNotSeeDocumentInMenu();
     }
 
     public void testUserCanSeePublishedDocumentInMenuWithPermissions() {
-        textDocument.setPermissionSetIdForRole( RoleDomainObject.USERS, DocumentPermissionSetDomainObject.TYPE_ID__READ );
+        textDocument.setDocumentPermissionSetTypeForRoleId( RoleId.USERS, DocumentPermissionSetTypeDomainObject.READ );
         textDocument.setPublicationStartDatetime( new Date( 0 ) );
         assertCanNotSeeDocumentInMenu();
         textDocument.setPublicationStatus( Document.PublicationStatus.APPROVED );
@@ -51,19 +52,19 @@ public class TestMenuParser extends TestCase {
     }
 
     public void testAdminCantSeeUnpublishedDocumentWhenInMenuModeButNotEditingMenu() {
-        user.addRole( editRole );
+        user.addRoleId( editRole );
         parserParameters.setMenuMode( true );
         assertCanNotSeeDocumentInMenu();
     }
 
     public void testAdminCantSeeUnpublishedDocumentWhenNotInMenuModeButEditingMenu() {
-        user.addRole( editRole );
+        user.addRoleId( editRole );
         parserParameters.setEditingMenuIndex( new Integer( MENU_INDEX ) );
         assertCanNotSeeDocumentInMenu();
     }
 
     public void testAdminCanSeeUnpublishedDocumentWhenEditing() {
-        user.addRole( editRole );
+        user.addRoleId( editRole );
         parserParameters.setEditingMenuIndex( new Integer( MENU_INDEX ) );
         parserParameters.setMenuMode(true) ;
         assertCanSeeDocumentInMenu();

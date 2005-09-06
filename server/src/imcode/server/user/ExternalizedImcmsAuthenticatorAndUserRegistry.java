@@ -101,7 +101,7 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
         addExternalRolesToUser( externalUser );
 
         if ( null != imcmsUser ) {
-            externalUser.setRoles( imcmsUser.getRoles() );
+            externalUser.setRoleIds( imcmsUser.getRoleIds() );
             imcmsAuthenticatorAndUserMapperAndRole.saveUser( loginName, externalUser, null );
         } else {
             try {
@@ -123,7 +123,7 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
                 externalRole = imcmsAuthenticatorAndUserMapperAndRole.addRole( externalRoleName );
             }
             if ( !externalRole.isAdminRole() ) {
-                user.addRole( externalRole );
+                user.addRoleId(externalRole.getId());
             }
         }
     }
@@ -145,15 +145,13 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
     private String[] mergeAndDeleteDuplicates( String[] imcmsRoleNames, String[] externalRoleNames ) {
         HashSet roleNames = new HashSet( Arrays.asList( imcmsRoleNames ) );
         roleNames.addAll( Arrays.asList( externalRoleNames ) );
-        String[] result = (String[])roleNames.toArray( new String[imcmsRoleNames.length + externalRoleNames.length] );
-        return result;
+        return (String[])roleNames.toArray( new String[roleNames.size()] );
     }
 
     public String[] getAllRoleNames() {
         String[] imcmsRoleNames = imcmsAuthenticatorAndUserMapperAndRole.getAllRoleNames();
         String[] externalRoleNames = externalUserRegistry.getAllRoleNames();
-        String[] result = mergeAndDeleteDuplicates( imcmsRoleNames, externalRoleNames );
-        return result;
+        return mergeAndDeleteDuplicates( imcmsRoleNames, externalRoleNames );
     }
 
 }

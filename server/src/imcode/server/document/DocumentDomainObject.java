@@ -1,17 +1,15 @@
 package imcode.server.document;
 
+import com.imcode.imcms.api.Document;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;
-import org.apache.commons.collections.map.TypedMap;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.*;
-
-import com.imcode.imcms.api.Document;
 
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
@@ -22,10 +20,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     protected DocumentDomainObject() {
         attributes = new Attributes();
-        attributes.permissionSetForRestrictedOne = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
-        attributes.permissionSetForRestrictedTwo = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 );
-        attributes.permissionSetForRestrictedOneForNewDocuments = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
-        attributes.permissionSetForRestrictedTwoForNewDocuments = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 );
+        attributes.permissionSetForRestrictedOne = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_1 );
+        attributes.permissionSetForRestrictedTwo = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_2 );
+        attributes.permissionSetForRestrictedOneForNewDocuments = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_1 );
+        attributes.permissionSetForRestrictedTwoForNewDocuments = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_2 );
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -184,13 +182,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.publisher = user;
     }
 
-    public Map getRolesMappedToPermissionSetIds() {
-        return Collections.unmodifiableMap( attributes.rolesMappedToDocumentPermissionSetIds );
+    public RoleIdToDocumentPermissionSetTypeMappings getRoleIdsMappedToDocumentPermissionSetTypes() {
+        return (RoleIdToDocumentPermissionSetTypeMappings)attributes.roleIdToDocumentPermissionSetTypeMappings.clone();
     }
 
-    public void setRolesMappedToPermissionSetIds( Map rolesMappedToPermissionSetIds ) {
-        attributes.rolesMappedToDocumentPermissionSetIds = TypedMap.decorate( new HashMap(), RoleDomainObject.class, Integer.class );
-        attributes.rolesMappedToDocumentPermissionSetIds.putAll( rolesMappedToPermissionSetIds );
+    public void setRoleIdsMappedToDocumentPermissionSetTypes( RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings ) {
+        attributes.roleIdToDocumentPermissionSetTypeMappings = (RoleIdToDocumentPermissionSetTypeMappings) roleIdToDocumentPermissionSetTypeMappings.clone();
     }
 
     public SectionDomainObject[] getSections() {
@@ -339,17 +336,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.categories.remove( category );
     }
 
-    public void setPermissionSetIdForRole( RoleDomainObject role, int permissionSetId ) {
-        attributes.rolesMappedToDocumentPermissionSetIds.put( role, new Integer( permissionSetId ) );
+    public void setDocumentPermissionSetTypeForRoleId( RoleId roleId, DocumentPermissionSetTypeDomainObject permissionSetType ) {
+        attributes.roleIdToDocumentPermissionSetTypeMappings.setPermissionSetTypeForRole(roleId, permissionSetType) ;
     }
 
-    public int getPermissionSetIdForRole( RoleDomainObject role ) {
-        int permissionSetId = DocumentPermissionSetDomainObject.TYPE_ID__NONE;
-        Integer permissionSetIdInteger = (Integer)attributes.rolesMappedToDocumentPermissionSetIds.get( role );
-        if ( null != permissionSetIdInteger ) {
-            permissionSetId = permissionSetIdInteger.intValue();
-        }
-        return permissionSetId;
+    public DocumentPermissionSetTypeDomainObject getDocumentPermissionSetTypeForRoleId( RoleId roleId ) {
+        return attributes.roleIdToDocumentPermissionSetTypeMappings.getPermissionSetTypeForRole( roleId );
     }
 
     private boolean isPublishedAtTime( Date date ) {
@@ -462,14 +454,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private DocumentPermissionSetDomainObject permissionSetForRestrictedOneForNewDocuments ;
         private DocumentPermissionSetDomainObject permissionSetForRestrictedTwoForNewDocuments ;
 
-        private Map rolesMappedToDocumentPermissionSetIds = new HashMap();
+        private RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
 
         public Object clone() throws CloneNotSupportedException {
             Attributes clone = (Attributes)super.clone();
             clone.keywords = new HashSet( keywords );
             clone.sections = new HashSet( sections );
             clone.categories = new HashSet( categories );
-            clone.rolesMappedToDocumentPermissionSetIds = new HashMap( rolesMappedToDocumentPermissionSetIds );
+            clone.roleIdToDocumentPermissionSetTypeMappings = (RoleIdToDocumentPermissionSetTypeMappings) roleIdToDocumentPermissionSetTypeMappings.clone();
             return clone;
         }
 

@@ -6,6 +6,7 @@ import imcode.server.db.Database;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Clock;
 import imcode.util.FileCache;
@@ -100,4 +101,6 @@ public interface ImcmsServices extends Clock {
     LanguageMapper getLanguageMapper();
 
     FileCache getFileCache();
+
+    RoleGetter getRoleGetter();
 }

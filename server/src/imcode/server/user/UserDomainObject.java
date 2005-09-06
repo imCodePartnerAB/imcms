@@ -1,14 +1,12 @@
 package imcode.server.user;
 
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetDomainObject;
-import imcode.server.document.TemplateGroupDomainObject;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.UnhandledException;
+import imcode.server.Imcms;
+import imcode.server.document.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.NotPredicate;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.UnhandledException;
 
 import java.io.Serializable;
 import java.util.*;
@@ -40,24 +38,30 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     private boolean imcmsExternal = false;
 
-    private Set phoneNumbers = new HashSet();
+    private HashSet phoneNumbers = new HashSet();
 
-    Set roles = createRolesSetWithUserRole();
-    protected Set userAdminRoles = new HashSet() ; 
+    RoleIds roleIds = createRolesSetWithUserRole();
+    protected RoleIds userAdminRoleIds = new RoleIds();
 
+    public UserDomainObject() {
+    }
 
-    private HashSet createRolesSetWithUserRole() {
-        HashSet roles = new HashSet();
-        roles.add( RoleDomainObject.USERS );
-        return roles;
+    public UserDomainObject(int id) {
+        this.id = id;
+    }
+
+    private RoleIds createRolesSetWithUserRole() {
+        RoleIds newRoleIds = new RoleIds();
+        newRoleIds.add( RoleId.USERS );
+        return newRoleIds;
     }
 
     public Object clone() {
         try {
             UserDomainObject clone = (UserDomainObject) super.clone();
-            clone.roles = new HashSet(roles);
-            clone.phoneNumbers = new HashSet(phoneNumbers);
-            clone.userAdminRoles = new HashSet(userAdminRoles);
+            clone.roleIds = (RoleIds) roleIds.clone();
+            clone.userAdminRoleIds = (RoleIds) userAdminRoleIds.clone();
+            clone.phoneNumbers = (HashSet) phoneNumbers.clone();
             return clone;
         } catch ( CloneNotSupportedException e ) {
             throw new UnhandledException(e);
@@ -284,19 +288,19 @@ public class UserDomainObject implements Cloneable, Serializable {
         return null ;
     }
 
-    private Collection getPhoneNumbersOfType(final PhoneNumberType phoneNumberType) {
-        return CollectionUtils.select(phoneNumbers, new PhoneNumberOfTypePredicate(phoneNumberType));
+    public Set getPhoneNumbersOfType(final PhoneNumberType phoneNumberType) {
+        return new HashSet(CollectionUtils.select(phoneNumbers, new PhoneNumberOfTypePredicate(phoneNumberType)));
     }
 
     /**
      * Set the users workphone
-     * @deprecated
+     * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
     public void setWorkPhone( String workphone ) {
         replacePhoneNumbersOfType(workphone, PhoneNumberType.WORK);
     }
 
-    private void replacePhoneNumbersOfType(String number, PhoneNumberType type) {
+    public void replacePhoneNumbersOfType(String number, PhoneNumberType type) {
         removePhoneNumbersOfType(type);
         addPhoneNumber( new PhoneNumber(number, type));
     }
@@ -307,6 +311,7 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     /**
      * Get the users mobilephone
+     * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
     public String getMobilePhone() {
         return getFirstPhoneNumberOfTypeAsString(PhoneNumberType.MOBILE) ;
@@ -314,6 +319,7 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     /**
      * Set the users mobilephone
+     * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
     public void setMobilePhone( String mobilephone ) {
         replacePhoneNumbersOfType(mobilephone, PhoneNumberType.MOBILE);
@@ -321,13 +327,15 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     /**
      * Get the users homephone
+     * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
     public String getHomePhone() {
         return getFirstPhoneNumberOfTypeAsString(PhoneNumberType.HOME);
     }
 
     /**
-     * Set the users homepohne
+     * Set the users homephone
+     * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
     public void setHomePhone( String homephone ) {
         replacePhoneNumbersOfType(homephone, PhoneNumberType.HOME);
@@ -335,6 +343,7 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     /**
      * Get the users faxphone
+     * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
     public String getFaxPhone() {
         return getFirstPhoneNumberOfTypeAsString(PhoneNumberType.FAX);
@@ -342,6 +351,7 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     /**
      * Set the users faxpohne
+     * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
     public void setFaxPhone( String faxphone ) {
         replacePhoneNumbersOfType(faxphone, PhoneNumberType.FAX);
@@ -349,6 +359,7 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     /**
      * Get the users otherphone
+     * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
     public String getOtherPhone() {
         return getFirstPhoneNumberOfTypeAsString(PhoneNumberType.OTHER);
@@ -356,6 +367,7 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     /**
      * Set the users otherpohne
+     * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
     public void setOtherPhone( String otherphone ) {
         replacePhoneNumbersOfType(otherphone, PhoneNumberType.OTHER);
@@ -426,27 +438,27 @@ public class UserDomainObject implements Cloneable, Serializable {
         this.imcmsExternal = external;
     }
 
-    public void addRole( RoleDomainObject role ) {
-        roles.add( role );
+    public void addRoleId( RoleId role ) {
+        roleIds.add( role );
     }
 
-    public void removeRole( RoleDomainObject role ) {
-        if ( !RoleDomainObject.USERS.equals( role ) ) {
-            roles.remove( role );
+    public void removeRoleId( RoleId roleId ) {
+        if ( !RoleId.USERS.equals( roleId ) ) {
+            roleIds.remove( roleId );
         }
     }
 
-    public void setRoles( RoleDomainObject[] rolesForUser ) {
-        this.roles = new HashSet( Arrays.asList( rolesForUser ) );
-        roles.add( RoleDomainObject.USERS );
+    public void setRoleIds( RoleId[] roleIds ) {
+        this.roleIds = new RoleIds(roleIds) ;
+        this.roleIds.add( RoleId.USERS );
     }
 
-    public boolean hasRole( RoleDomainObject role ) {
-        return this.roles.contains( role );
+    public boolean hasRoleId( RoleId roleId ) {
+        return this.roleIds.contains( roleId );
     }
 
-    public RoleDomainObject[] getRoles() {
-        return (RoleDomainObject[])roles.toArray( new RoleDomainObject[roles.size()] );
+    public RoleId[] getRoleIds() {
+        return roleIds.toArray() ;
     }
 
     public boolean equals( Object o ) {
@@ -472,23 +484,23 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean isSuperAdmin() {
-        return hasRole( RoleDomainObject.SUPERADMIN );
+        return hasRoleId( RoleId.SUPERADMIN );
     }
 
     public boolean isUserAdmin() {
-        return hasRole( RoleDomainObject.USERADMIN );
+        return hasRoleId( RoleId.USERADMIN );
     }
 
     public boolean canEdit( DocumentDomainObject document ) {
-        return hasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, document );
+        return hasAtLeastPermissionSetIdOn( DocumentPermissionSetTypeDomainObject.RESTRICTED_2, document );
     }
 
     public boolean canAccess( DocumentDomainObject document ) {
-        return hasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__READ, document );
+        return hasAtLeastPermissionSetIdOn( DocumentPermissionSetTypeDomainObject.READ, document );
     }
 
     public boolean isSuperAdminOrHasFullPermissionOn( DocumentDomainObject document ) {
-        return isSuperAdminOrHasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__FULL, document );
+        return isSuperAdminOrHasAtLeastPermissionSetIdOn( DocumentPermissionSetTypeDomainObject.FULL, document );
     }
 
     public boolean canDefineRestrictedOneFor( DocumentDomainObject document ) {
@@ -507,7 +519,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     private boolean hasAtLeastRestrictedOnePermissionOn( DocumentDomainObject document ) {
-        return hasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, document );
+        return hasAtLeastPermissionSetIdOn( DocumentPermissionSetTypeDomainObject.RESTRICTED_1, document );
     }
 
     public String toString() {
@@ -531,27 +543,25 @@ public class UserDomainObject implements Cloneable, Serializable {
         return currentContextPath;
     }
 
-    public boolean isSuperAdminOrHasAtLeastPermissionSetIdOn( int permissionSetId, DocumentDomainObject document ) {
-        return isSuperAdmin() || hasAtLeastPermissionSetIdOn( permissionSetId, document );
+    public boolean isSuperAdminOrHasAtLeastPermissionSetIdOn( DocumentPermissionSetTypeDomainObject documentPermissionSetType, DocumentDomainObject document ) {
+        return isSuperAdmin() || hasAtLeastPermissionSetIdOn( documentPermissionSetType, document );
     }
 
     public boolean canEditPermissionsFor( DocumentDomainObject document ) {
         return getPermissionSetFor( document ).getEditPermissions();
     }
 
-    public boolean canSetPermissionSetIdForRoleOnDocument( int permissionSetId, RoleDomainObject role,
-                                                           DocumentDomainObject document ) {
+    public boolean canSetPermissionSetIdForRoleIdOnDocument( DocumentPermissionSetTypeDomainObject documentPermissionSetType, RoleId roleId,
+                                                             DocumentDomainObject document ) {
         if ( !canEditPermissionsFor( document ) ) {
             return false;
         }
-        int currentPermissionSetId = document.getPermissionSetIdForRole( role );
-        boolean userIsSuperAdminOrHasAtLeastTheCurrentPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn( currentPermissionSetId, document );
-        boolean userIsSuperAdminOrHasAtLeastTheWantedPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn( permissionSetId, document );
+        DocumentPermissionSetTypeDomainObject currentPermissionSetType = document.getDocumentPermissionSetTypeForRoleId( roleId );
+        boolean userIsSuperAdminOrHasAtLeastTheCurrentPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn( currentPermissionSetType, document );
+        boolean userIsSuperAdminOrHasAtLeastTheWantedPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn( documentPermissionSetType, document );
         boolean userHasAtLeastRestrictedOne = hasAtLeastRestrictedOnePermissionOn( document );
-        boolean changingRestrictedTwo = DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
-                                        == permissionSetId
-                                        || DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
-                                           == currentPermissionSetId;
+        boolean changingRestrictedTwo = DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSetType)
+                                        || DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(currentPermissionSetType);
         boolean canDefineRestrictedTwoForDocument = canDefineRestrictedTwoFor( document );
 
         return userIsSuperAdminOrHasAtLeastTheWantedPermissionSet
@@ -568,39 +578,36 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public DocumentPermissionSetDomainObject getPermissionSetFor( DocumentDomainObject document ) {
-        int permissionSetId = getPermissionSetIdFor( document );
-        switch ( permissionSetId ) {
-            case DocumentPermissionSetDomainObject.TYPE_ID__FULL:
-                return DocumentPermissionSetDomainObject.FULL;
-            case DocumentPermissionSetDomainObject.TYPE_ID__READ:
-                return DocumentPermissionSetDomainObject.READ;
-            case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1:
-                return document.getPermissionSetForRestrictedOne();
-            case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2:
-                return document.getPermissionSetForRestrictedTwo();
-            case DocumentPermissionSetDomainObject.TYPE_ID__NONE:
-                return DocumentPermissionSetDomainObject.NONE;
-            default:
-                return null;
+        DocumentPermissionSetTypeDomainObject permissionSetId = getPermissionSetTypeFor( document );
+        if ( DocumentPermissionSetTypeDomainObject.FULL.equals(permissionSetId) ) {
+            return DocumentPermissionSetDomainObject.FULL;
+        } else if ( DocumentPermissionSetTypeDomainObject.READ.equals(permissionSetId) ) {
+            return DocumentPermissionSetDomainObject.READ;
+        } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(permissionSetId) ) {
+            return document.getPermissionSetForRestrictedOne();
+        } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(permissionSetId) ) {
+            return document.getPermissionSetForRestrictedTwo();
+        } else {
+            return DocumentPermissionSetDomainObject.NONE;
         }
     }
 
-    public int getPermissionSetIdFor( DocumentDomainObject document ) {
+    public DocumentPermissionSetTypeDomainObject getPermissionSetTypeFor( DocumentDomainObject document ) {
         if ( null == document ) {
-            return DocumentPermissionSetDomainObject.TYPE_ID__NONE;
+            return DocumentPermissionSetTypeDomainObject.NONE;
         }
         if ( isSuperAdmin() ) {
-            return DocumentPermissionSetDomainObject.TYPE_ID__FULL;
+            return DocumentPermissionSetTypeDomainObject.FULL;
         }
-        Map rolesMappedToPermissionSetIds = document.getRolesMappedToPermissionSetIds();
-        RoleDomainObject[] usersRoles = getRoles();
-        int mostPrivilegedPermissionSetIdFoundYet = DocumentPermissionSetDomainObject.TYPE_ID__NONE;
-        for ( int i = 0; i < usersRoles.length; i++ ) {
-            RoleDomainObject usersRole = usersRoles[i];
-            Integer permissionSetId = (Integer)rolesMappedToPermissionSetIds.get( usersRole );
-            if ( null != permissionSetId && permissionSetId.intValue() < mostPrivilegedPermissionSetIdFoundYet ) {
-                mostPrivilegedPermissionSetIdFoundYet = permissionSetId.intValue();
-                if ( DocumentPermissionSetDomainObject.TYPE_ID__FULL == mostPrivilegedPermissionSetIdFoundYet ) {
+        RoleIdToDocumentPermissionSetTypeMappings roleIdsMappedToDocumentPermissionSetTypes = document.getRoleIdsMappedToDocumentPermissionSetTypes() ;
+        RoleId[] usersRoleReferences = getRoleIds();
+        DocumentPermissionSetTypeDomainObject mostPrivilegedPermissionSetIdFoundYet = DocumentPermissionSetTypeDomainObject.NONE;
+        for ( int i = 0; i < usersRoleReferences.length; i++ ) {
+            RoleId roleId = usersRoleReferences[i];
+            DocumentPermissionSetTypeDomainObject documentPermissionSetType = roleIdsMappedToDocumentPermissionSetTypes.getPermissionSetTypeForRole( roleId );
+            if ( documentPermissionSetType.isMorePrivilegedThan(mostPrivilegedPermissionSetIdFoundYet) ) {
+                mostPrivilegedPermissionSetIdFoundYet = documentPermissionSetType ;
+                if ( DocumentPermissionSetTypeDomainObject.FULL.equals(mostPrivilegedPermissionSetIdFoundYet) ) {
                     break;
                 }
             }
@@ -608,10 +615,9 @@ public class UserDomainObject implements Cloneable, Serializable {
         return mostPrivilegedPermissionSetIdFoundYet;
     }
 
-    public boolean hasAtLeastPermissionSetIdOn( int leastPrivilegedPermissionSetIdWanted,
+    public boolean hasAtLeastPermissionSetIdOn( DocumentPermissionSetTypeDomainObject leastPrivilegedPermissionSetIdWanted,
                                                 DocumentDomainObject document ) {
-        return getPermissionSetIdFor( document )
-               <= leastPrivilegedPermissionSetIdWanted;
+        return getPermissionSetTypeFor( document ).isAtLeastAsPrivilegedAs(leastPrivilegedPermissionSetIdWanted);
     }
 
     public boolean canAddDocumentToAnyMenu( DocumentDomainObject document ) {
@@ -644,9 +650,11 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean hasRoleWithPermission( RolePermissionDomainObject rolePermission ) {
-        for ( Iterator iterator = roles.iterator(); iterator.hasNext(); ) {
-            RoleDomainObject role = (RoleDomainObject)iterator.next();
-            if ( role.hasPermission( rolePermission ) ) {
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+        RoleId[] roleReferencesArray = this.roleIds.toArray();
+        for ( int i = 0; i < roleReferencesArray.length; i++ ) {
+            RoleId roleId = roleReferencesArray[i];
+            if ( imcmsAuthenticatorAndUserAndRoleMapper.getRole(roleId).hasPermission( rolePermission ) ) {
                 return true;
             }
         }
@@ -665,16 +673,16 @@ public class UserDomainObject implements Cloneable, Serializable {
         return Collections.unmodifiableSet(phoneNumbers);
     }
 
-    public RoleDomainObject[] getUserAdminRoles() {
-        return (RoleDomainObject[]) userAdminRoles.toArray(new RoleDomainObject[userAdminRoles.size()]);
+    public RoleId[] getUserAdminRoleIds() {
+        return userAdminRoleIds.toArray();
     }
 
-    public void setUserAdminRoles(RoleDomainObject[] userAdminRoles) {
-        this.userAdminRoles = new HashSet(Arrays.asList(userAdminRoles));
+    public void setUserAdminRolesIds(RoleId[] userAdminRoleReferences) {
+        this.userAdminRoleIds = new RoleIds(userAdminRoleReferences);
     }
 
-    public void addUserAdminRole(RoleDomainObject role) {
-        userAdminRoles.add(role) ;
+    public void addUserAdminRoleReference(RoleId roleId) {
+        userAdminRoleIds.add(roleId) ;
     }
 
     public boolean isUserAdminOnly() {
@@ -685,8 +693,8 @@ public class UserDomainObject implements Cloneable, Serializable {
         return isSuperAdmin() || canEditAsUserAdmin(editedUser) && !equals(editedUser) ;
     }
 
-    public void removeUserAdminRole(RoleDomainObject role) {
-        userAdminRoles.remove(role) ;
+    public void removeUserAdminRoleId(RoleId role) {
+        userAdminRoleIds.remove(role) ;
     }
 
     public boolean canEdit(UserDomainObject editedUser) {
@@ -694,13 +702,13 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     private boolean canEditAsUserAdmin(UserDomainObject editedUser) {
-        return isUserAdminOnly() && CollectionUtils.containsAny(editedUser.roles, userAdminRoles) ;
+        return isUserAdminOnly() && CollectionUtils.containsAny(editedUser.roleIds.asSet(), userAdminRoleIds.asSet()) ;
     }
 
     private static class PhoneNumberOfTypePredicate implements Predicate {
         private final PhoneNumberType phoneNumberType;
 
-        public PhoneNumberOfTypePredicate(PhoneNumberType phoneNumberType) {
+        PhoneNumberOfTypePredicate(PhoneNumberType phoneNumberType) {
             this.phoneNumberType = phoneNumberType;
         }
 

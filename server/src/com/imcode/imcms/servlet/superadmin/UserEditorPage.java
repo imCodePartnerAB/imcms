@@ -1,28 +1,27 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.imcms.api.NoPermissionException;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
-import com.imcode.imcms.api.NoPermissionException;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.user.UserDomainObject;
-import imcode.server.user.PhoneNumberType;
 import imcode.server.user.PhoneNumber;
+import imcode.server.user.PhoneNumberType;
 import imcode.server.user.RoleDomainObject;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
 import imcode.util.*;
+import org.apache.commons.lang.StringUtils;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.io.IOException;
-
-import org.apache.commons.lang.StringUtils;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UserEditorPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__LOGIN_NAME = "login_name";
@@ -93,24 +92,22 @@ public class UserEditorPage extends OkCancelPage {
 
     private void updateUserAdminRolesFromRequest(UserDomainObject user, HttpServletRequest request) {
         if ( Utility.getLoggedOnUser(request).isSuperAdmin() && user.isUserAdmin() ) {
-            user.setUserAdminRoles(getRolesFromRequestParameterValues(request, REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS));
-            user.removeUserAdminRole(RoleDomainObject.SUPERADMIN) ;
-            user.removeUserAdminRole(RoleDomainObject.USERADMIN) ;
+            user.setUserAdminRolesIds(getRoleIdsFromRequestParameterValues(request, REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS));
+            user.removeUserAdminRoleId(RoleId.SUPERADMIN) ;
+            user.removeUserAdminRoleId(RoleId.USERADMIN) ;
         }
     }
 
-    private RoleDomainObject[] getRolesFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
-        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = getImcmsServices().getImcmsAuthenticatorAndUserAndRoleMapper();
-        Set roles = new HashSet();
+    private RoleId[] getRoleIdsFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
+        Set roleIds = new HashSet();
         String[] roleIdStrings = request.getParameterValues(requestParameter);
         if ( null != roleIdStrings ) {
             for ( int i = 0; i < roleIdStrings.length; i++ ) {
-                int roleId = Integer.parseInt(roleIdStrings[i]);
-                RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapper.getRoleById(roleId);
-                roles.add(role);
+                RoleId roleId = new RoleId(Integer.parseInt(roleIdStrings[i]));
+                roleIds.add(roleId);
             }
         }
-        return (RoleDomainObject[]) roles.toArray(new RoleDomainObject[roles.size()]);
+        return (RoleId[]) roleIds.toArray(new RoleId[roleIds.size()]);
     }
 
     private ImcmsServices getImcmsServices() {
@@ -119,7 +116,7 @@ public class UserEditorPage extends OkCancelPage {
 
     private void updateUserRolesFromRequest(UserDomainObject user, HttpServletRequest request) {
         if ( Utility.getLoggedOnUser(request).canEditRolesFor(user) ) {
-            user.setRoles(getRolesFromRequestParameterValues(request, REQUEST_PARAMETER__ROLE_IDS));
+            user.setRoleIds(getRoleIdsFromRequestParameterValues(request, REQUEST_PARAMETER__ROLE_IDS));
         }
     }
 
@@ -258,9 +255,17 @@ public class UserEditorPage extends OkCancelPage {
 
     public String createRolesHtmlOptionList(HttpServletRequest request) {
         UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request) ;
-        RoleDomainObject[] roles = loggedOnUser.isUserAdminOnly() ? loggedOnUser.getUserAdminRoles() : getAllRolesExceptUsersRole();
-        RoleDomainObject[] usersRoles = editedUser.getRoles();
+        RoleDomainObject[] roles = loggedOnUser.isUserAdminOnly() ? getRoles(loggedOnUser.getUserAdminRoleIds()) : getAllRolesExceptUsersRole();
+        RoleDomainObject[] usersRoles = getRoles(editedUser.getRoleIds());
         return createRolesHtmlOptionList(roles, usersRoles);
+    }
+
+    private RoleDomainObject[] getRoles(RoleId[] roleIds) {
+        RoleDomainObject[] roles = new RoleDomainObject[roleIds.length];
+        for ( int i = 0; i < roleIds.length; i++ ) {
+            roles[i] = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getRole(roleIds[i]) ;
+        }
+        return roles ;
     }
 
     private String createRolesHtmlOptionList(RoleDomainObject[] allRoles, RoleDomainObject[] usersRoles) {
@@ -270,10 +275,10 @@ public class UserEditorPage extends OkCancelPage {
     public String createUserAdminRolesHtmlOptionList() {
         RoleDomainObject[] allRoles = getAllRolesExceptUsersRole();
         Set allRolesSet = new HashSet(Arrays.asList(allRoles)) ;
-        allRolesSet.remove(RoleDomainObject.SUPERADMIN) ;
-        allRolesSet.remove(RoleDomainObject.USERADMIN) ;
+        allRolesSet.remove(RoleId.SUPERADMIN) ;
+        allRolesSet.remove(RoleId.USERADMIN) ;
         allRoles = (RoleDomainObject[]) allRolesSet.toArray(new RoleDomainObject[allRolesSet.size()]);
-        RoleDomainObject[] usersUserAdminRoles = editedUser.getUserAdminRoles();
+        RoleDomainObject[] usersUserAdminRoles = getRoles(editedUser.getUserAdminRoleIds());
 
         return createRolesHtmlOptionList(allRoles, usersUserAdminRoles);
     }

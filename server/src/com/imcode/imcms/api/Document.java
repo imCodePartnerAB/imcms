@@ -1,11 +1,10 @@
 package com.imcode.imcms.api;
 
 import com.imcode.util.ChainableReversibleNullComparator;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetDomainObject;
-import imcode.server.document.SectionDomainObject;
+import imcode.server.document.*;
 import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleGetter;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.apache.log4j.Logger;
 
@@ -47,31 +46,26 @@ public class Document implements Serializable {
      * @return map of roles Role -> DocumentPermissionSet instances.
      */
     public Map getRolesMappedToPermissions() {
-        Map rolesMappedToPermissionSetIds = internalDocument.getRolesMappedToPermissionSetIds();
+        RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = internalDocument.getRoleIdsMappedToDocumentPermissionSetTypes();
 
         Map result = new HashMap();
-        for ( Iterator it = rolesMappedToPermissionSetIds.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry rolePermissionTuple = (Map.Entry)it.next();
-            RoleDomainObject role =  (RoleDomainObject)rolePermissionTuple.getKey() ;
-            int permissionType = ( (Integer)rolePermissionTuple.getValue() ).intValue();
-            switch ( permissionType ) {
-                case DocumentPermissionSetDomainObject.TYPE_ID__FULL:
-                    result.put( role, DocumentPermissionSetDomainObject.FULL );
-                    break;
-                case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1:
-                    result.put( role.getName(), internalDocument.getPermissionSetForRestrictedOne()) ;
-                    break;
-                case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2:
-                    result.put( role.getName(), internalDocument.getPermissionSetForRestrictedTwo()) ;
-                    break;
-                case DocumentPermissionSetDomainObject.TYPE_ID__READ:
-                    result.put( role, DocumentPermissionSetDomainObject.READ );
-                    break;
-                case DocumentPermissionSetDomainObject.TYPE_ID__NONE:
-                    break;
-                default:
-                    log.warn( "A missing mapping in DocumentPermissionSetMapper" );
-                    break;
+        RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappings = roleIdToDocumentPermissionSetTypeMappings.getMappings();
+        RoleGetter roleGetter = contentManagementSystem.getInternal().getRoleGetter();
+        for ( int i = 0; i < mappings.length; i++ ) {
+            RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = mappings[i];
+            RoleId roleId = mapping.getRoleId();
+            RoleDomainObject role = roleGetter.getRole(roleId) ;
+            DocumentPermissionSetTypeDomainObject documentPermissionSetType = mapping.getDocumentPermissionSetType();
+            if ( DocumentPermissionSetTypeDomainObject.FULL.equals(documentPermissionSetType) ) {
+                result.put(role, DocumentPermissionSetDomainObject.FULL);
+            } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(documentPermissionSetType) ) {
+                result.put(role, internalDocument.getPermissionSetForRestrictedOne());
+            } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSetType) ) {
+                result.put(role, internalDocument.getPermissionSetForRestrictedTwo());
+            } else if ( DocumentPermissionSetTypeDomainObject.READ.equals(documentPermissionSetType) ) {
+                result.put(role, DocumentPermissionSetDomainObject.READ);
+            } else if ( !DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType) ) {
+                log.warn("A missing mapping in DocumentPermissionSetMapper");
             }
         }
 
@@ -132,14 +126,12 @@ public class Document implements Serializable {
 
     public DocumentPermissionSet getPermissionSetRestrictedOne() {
         DocumentPermissionSetDomainObject restrictedOne = internalDocument.getPermissionSetForRestrictedOne() ;
-        DocumentPermissionSet result = new DocumentPermissionSet( restrictedOne );
-        return result;
+        return new DocumentPermissionSet( restrictedOne );
     }
 
     public DocumentPermissionSet getPermissionSetRestrictedTwo() {
         DocumentPermissionSetDomainObject restrictedTwo = internalDocument.getPermissionSetForRestrictedTwo() ;
-        DocumentPermissionSet result = new DocumentPermissionSet( restrictedTwo );
-        return result;
+        return new DocumentPermissionSet( restrictedTwo );
     }
 
     public String getHeadline() {
@@ -206,19 +198,35 @@ public class Document implements Serializable {
 
     /**
         @param permissionSetId One of the constants in {@link DocumentPermissionSet}.
+        @deprecated Use {@link #setPermissionSetTypeForRole(Role, DocumentPermissionSetType)}
         @since 2.0
      **/
     public void setPermissionSetIdForRole( Role role, int permissionSetId ) {
         if ( null != role ) {
-            internalDocument.setPermissionSetIdForRole( role.getInternal(), permissionSetId );
+            internalDocument.setDocumentPermissionSetTypeForRoleId(role.getInternal().getId(), DocumentPermissionSetTypeDomainObject.fromInt(permissionSetId));
         }
     }
 
     /**
+        @since 3.0
+     */
+    public void setPermissionSetTypeForRole( Role role, DocumentPermissionSetType documentPermissionSetType ) {
+        internalDocument.setDocumentPermissionSetTypeForRoleId(role.getInternal().getId(), documentPermissionSetType.getInternal());
+    }
+
+    /**
+     *   @deprecated Use {@link #getPermissionSetTypeForRole(Role)}
          @since 2.0
      */
     public int getPermissionSetIdForRole( Role role ) {
-        return internalDocument.getPermissionSetIdForRole( role.getInternal() );
+        return internalDocument.getDocumentPermissionSetTypeForRoleId(role.getInternal().getId()).getId();
+    }
+
+    /**
+        @since 3.0
+    */
+    public DocumentPermissionSetType getPermissionSetTypeForRole( Role role ) {
+        return new DocumentPermissionSetType(internalDocument.getDocumentPermissionSetTypeForRoleId(role.getInternal().getId())) ;
     }
 
     /**
@@ -347,6 +355,9 @@ public class Document implements Serializable {
         internalDocument.setPublicationStatus(publicationStatus) ;
     }
 
+    /**
+        @since 3.0
+     */
     public static class PublicationStatus {
         public static final PublicationStatus NEW = new PublicationStatus(STATUS_NEW);
         public static final PublicationStatus APPROVED = new PublicationStatus(STATUS_PUBLICATION_APPROVED);
@@ -406,7 +417,9 @@ public class Document implements Serializable {
             try {
                 return compareDocuments( d1, d2 );
             } catch ( NullPointerException npe ) {
-                throw new NullPointerException( "Tried sorting on null fields! You need to call .nullsFirst() or .nullsLast() on your Comparator." );
+                NullPointerException nullPointerException = new NullPointerException("Tried sorting on null fields! You need to call .nullsFirst() or .nullsLast() on your Comparator.");
+                nullPointerException.initCause(npe);
+                throw nullPointerException;
             }
         }
 

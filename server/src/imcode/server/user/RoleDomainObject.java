@@ -8,10 +8,6 @@ import java.util.Set;
 
 public class RoleDomainObject implements Serializable, Comparable {
 
-    public final static RoleDomainObject SUPERADMIN = new ImmutableRoleDomainObject( 0, "Superadmin", 1 );
-    public final static RoleDomainObject USERADMIN = new ImmutableRoleDomainObject( 1, "Useradmin", 2 );
-    public final static RoleDomainObject USERS = new ImmutableRoleDomainObject( 2, "Users", 0 );
-
     public final static RolePermissionDomainObject PASSWORD_MAIL_PERMISSION = new RolePermissionDomainObject( 1, new LocalizedMessage( "role_permission/password_by_email/description" ) ) ;
     public static final RolePermissionDomainObject ADMIN_PAGES_PERMISSION = new RolePermissionDomainObject( 4, new LocalizedMessage( "role_permission/admin_pages_access/desciption" ) );
 
@@ -20,30 +16,27 @@ public class RoleDomainObject implements Serializable, Comparable {
         ADMIN_PAGES_PERMISSION,
     };
 
-    private int id;
+    private RoleId id;
     private String name;
     private int adminRoleId;
     private Set permissions = new HashSet() ;
 
-    public static final int SUPERADMIN_ID = SUPERADMIN.getId() ;
-    public static final int USERADMIN_ID = USERADMIN.getId() ;
-    public static final int USERS_ID = USERS.getId() ;
 
     public RoleDomainObject( String name ) {
-        this(0,name,0) ;
+        this(new RoleId(0), name,0) ;
     }
 
-    public RoleDomainObject( int roleId, String roleName, int adminRoleId ) {
+    public RoleDomainObject( RoleId roleId, String roleName, int adminRoleId ) {
         this.id = roleId;
         this.name = roleName;
         this.adminRoleId = adminRoleId;
     }
 
-    public void setId( int id ) {
+    public void setId( RoleId id ) {
         this.id = id;
     }
 
-    public int getId() {
+    public RoleId getId() {
         return id;
     }
 
@@ -77,7 +70,7 @@ public class RoleDomainObject implements Serializable, Comparable {
             return -adminRoleId;
         }
 
-        return id;
+        return id.intValue();
     }
 
     public String toString() {

@@ -5,7 +5,8 @@ import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
 import imcode.server.db.impl.MockDatabase;
-import imcode.server.user.RoleDomainObject;
+import imcode.server.user.MockRoleGetter;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 
@@ -14,16 +15,17 @@ public class TestDocumentService extends TestCase {
     private DocumentService documentService;
     private MockDatabase database;
     private User user;
-    private DefaultDocumentMapper documentMapper;
+    private MockImcmsServices imcmsServices;
 
     public void setUp() throws Exception {
         super.setUp();
         MockContentManagementSystem contentManagementSystem = new MockContentManagementSystem();
         user = new User(new UserDomainObject());
         contentManagementSystem.setCurrentUser( user );
-        MockImcmsServices imcmsServices = new MockImcmsServices();
+        imcmsServices = new MockImcmsServices();
+        imcmsServices.setRoleGetter(new MockRoleGetter());
         database = new MockDatabase();
-        documentMapper = new DefaultDocumentMapper(imcmsServices, database, null, null,null,null,new Config(), new CategoryMapper(database));
+        DefaultDocumentMapper documentMapper = new DefaultDocumentMapper(imcmsServices, database, null, null, null, null, new Config(), new CategoryMapper(database));
         imcmsServices.setDocumentMapper(documentMapper) ;
         imcmsServices.setCategoryMapper(new CategoryMapper(database));
         contentManagementSystem.setInternal( imcmsServices );
@@ -43,15 +45,15 @@ public class TestDocumentService extends TestCase {
             documentService.saveCategory(category);
             fail() ;
         } catch( NoPermissionException e ) {}
-        user.addRole( new Role( RoleDomainObject.SUPERADMIN ) );
+        user.addRole( new Role( imcmsServices.getRoleGetter().getRole(RoleId.SUPERADMIN) ) );
         database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "categories" ), new Integer(1) );
         documentService.saveCategory(category);
-        database.verifyExpectedSqlCalls();
+        database.assertExpectedSqlCalls();
 
         String[] categoryResult = new String[] { "1", category.getName(), category.getDescription(), category.getImage() };
         database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate(CategoryMapper.SQL_GET_CATEGORY), categoryResult );
         documentService.saveCategory( category );
-        database.verifyExpectedSqlCalls();
+        database.assertExpectedSqlCalls();
 
         database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate(CategoryMapper.SQL_GET_CATEGORY), categoryResult );
         Category otherCategory = new Category( categoryName, categoryType );
@@ -60,7 +62,7 @@ public class TestDocumentService extends TestCase {
             fail() ;
         } catch ( CategoryAlreadyExistsException e ) {
         }
-        database.verifyExpectedSqlCalls();
+        database.assertExpectedSqlCalls();
 
         String otherName = "other name";
         category.setName( otherName );

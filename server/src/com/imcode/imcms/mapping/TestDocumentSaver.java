@@ -1,14 +1,14 @@
 package com.imcode.imcms.mapping;
 
-import junit.framework.TestCase;
-import com.imcode.imcms.api.SaveException;
 import com.imcode.imcms.api.NoPermissionException;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.*;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.user.UserDomainObject;
+import com.imcode.imcms.api.SaveException;
 import imcode.server.db.impl.MockDatabase;
+import imcode.server.document.*;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
 import imcode.util.SystemClock;
+import junit.framework.TestCase;
 
 public class TestDocumentSaver extends TestCase {
     private DefaultDocumentMapper documentMapper;
@@ -43,7 +43,7 @@ public class TestDocumentSaver extends TestCase {
             fail("Expected exception.") ;
         } catch ( NoPermissionToEditDocumentException e) {
         }
-        oldDocument.setPermissionSetIdForRole(RoleDomainObject.USERS, DocumentPermissionSetDomainObject.TYPE_ID__FULL);
+        oldDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERS, DocumentPermissionSetTypeDomainObject.FULL);
         documentSaver.saveDocument(document, oldDocument, new UserDomainObject());
     }
 

@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
-import imcode.server.user.RoleDomainObject;
+import imcode.server.Imcms;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 
 public class User {
@@ -90,7 +91,7 @@ public class User {
      * @since 2.0
      */
     public boolean hasRole(Role role) {
-        return internalUser.hasRole( role.getInternal() ) ;
+        return internalUser.hasRoleId(role.getInternal().getId()) ;
     }
 
     public boolean isDefaultUser() {
@@ -130,10 +131,10 @@ public class User {
      * @since 2.0
      */
     public Role[] getRoles() {
-        RoleDomainObject[] roleDOs = internalUser.getRoles();
+        RoleId[] roleDOs = internalUser.getRoleIds();
         Role[] roles = new Role[roleDOs.length];
         for ( int i = 0; i < roleDOs.length; i++ ) {
-            roles[i] = new Role(roleDOs[i]);
+            roles[i] = new Role(Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getRole(roleDOs[i]));
         }
         return roles ;
     }
@@ -142,25 +143,25 @@ public class User {
      * @since 2.0
      */
     public void setRoles(Role[] roles) {
-        RoleDomainObject[] roleDOs = new RoleDomainObject[roles.length];
+        RoleId[] roleIds = new RoleId[roles.length];
         for ( int i = 0; i < roles.length; i++ ) {
-            roleDOs[i] = roles[i].getInternal();
+            roleIds[i] = roles[i].getInternal().getId();
         }
-        internalUser.setRoles( roleDOs );
+        internalUser.setRoleIds( roleIds );
     }
 
     /**
      * @since 2.0
      */
     public void addRole(Role role) {
-        internalUser.addRole( role.getInternal() );
+        internalUser.addRoleId(role.getInternal().getId());
     }
 
     /**
      * @since 2.0
      */
     public void removeRole(Role role) {
-        internalUser.removeRole( role.getInternal() ) ;
+        internalUser.removeRoleId(role.getInternal().getId()) ;
     }
 
     public void setActive( boolean active ) {

@@ -1,15 +1,17 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.api.Document;
 import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
 import imcode.server.db.ConvenienceDatabaseConnection;
 import imcode.server.db.DatabaseConnection;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentId;
-import imcode.server.document.SectionDomainObject;
 import imcode.server.document.DocumentGetter;
+import imcode.server.document.DocumentId;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.SectionDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ArraySet;
 import imcode.util.DateConstants;
@@ -20,8 +22,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
-
-import com.imcode.imcms.api.Document;
 
 public class ConnectionDocumentGetter implements DocumentGetter {
     private ConvenienceDatabaseConnection connection;
@@ -157,10 +157,10 @@ public class ConnectionDocumentGetter implements DocumentGetter {
                                                                 + "WHERE rr.role_id = roles.role_id AND rr.meta_id = ?", parameters);
 
         for (int i = 0; i < sprocResult.length; ++i) {
-            RoleDomainObject role = userAndRoleMapper.getRoleFromSqlResult(sprocResult[i]);
-
-            int rolePermissionSetId = Integer.parseInt(sprocResult[i][4]);
-            document.setPermissionSetIdForRole(role, rolePermissionSetId);
+            RoleId roleId = new RoleId(Integer.parseInt(sprocResult[i][0]));
+            int rolePermissionSetTypeId = Integer.parseInt(sprocResult[i][4]);
+            DocumentPermissionSetTypeDomainObject documentPermissionSetType = DocumentPermissionSetTypeDomainObject.fromInt(rolePermissionSetTypeId);
+            document.setDocumentPermissionSetTypeForRoleId(roleId, documentPermissionSetType);
         }
 
     }

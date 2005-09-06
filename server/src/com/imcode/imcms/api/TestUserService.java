@@ -1,10 +1,11 @@
 package com.imcode.imcms.api;
 
-import imcode.server.MockImcmsServices;
 import imcode.server.LanguageMapper;
+import imcode.server.MockImcmsServices;
 import imcode.server.db.impl.MockDatabase;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.RoleDomainObject;
+import imcode.server.user.MockRoleGetter;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 
@@ -12,19 +13,18 @@ public class TestUserService extends TestCase {
 
     private UserService userService ;
     private MockContentManagementSystem contentManagementSystem;
-    private MockImcmsServices mockImcmsServices;
     private MockDatabase database;
     private UserDomainObject internalUser;
 
     private static int HIGHEST_USER_ID = 3 ;
+    private MockImcmsServices mockImcmsServices;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         contentManagementSystem = new MockContentManagementSystem();
 
-        internalUser = new UserDomainObject();
-        internalUser.setId( HIGHEST_USER_ID );
+        internalUser = new UserDomainObject(HIGHEST_USER_ID);
         contentManagementSystem.setCurrentUser( new User( internalUser ) );
 
         mockImcmsServices = new MockImcmsServices();
@@ -34,7 +34,7 @@ public class TestUserService extends TestCase {
         ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( database, null);
         mockImcmsServices.setImcmsAuthenticatorAndUserAndRoleMapper( imcmsAuthenticatorAndUserAndRoleMapper );
         contentManagementSystem.setInternal(mockImcmsServices) ;
-
+        mockImcmsServices.setRoleGetter(new MockRoleGetter());
         userService = new UserService(contentManagementSystem);
     }
 
@@ -44,30 +44,29 @@ public class TestUserService extends TestCase {
 
     public void testNewUserCanHaveRoles() throws SaveException, NoPermissionException {
 
-        internalUser.addRole( RoleDomainObject.SUPERADMIN );
+        internalUser.addRoleId( RoleId.SUPERADMIN );
         database.addExpectedSqlCall(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("users", "test"), new Integer(HIGHEST_USER_ID+1)) ;
 
         User user = userService.createNewUser( "test", "test" );
-        user.addRole( new Role( RoleDomainObject.SUPERADMIN ) );
+        user.addRole( new Role( mockImcmsServices.getRoleGetter().getRole(RoleId.SUPERADMIN) ) );
         userService.saveUser( user );
 
-        database.verifyExpectedSqlCalls() ;
+        database.assertExpectedSqlCalls() ;
         database.assertCalled( new MockDatabase.MatchesRegexSqlCallPredicate( "role" ) ) ;
     }
 
     public void testNonAdminCantCreateUser() throws SaveException {
         User user = userService.createNewUser( "test", "test" ) ;
-        user.addRole( new Role( RoleDomainObject.SUPERADMIN ));
+        user.addRole( new Role( mockImcmsServices.getRoleGetter().getRole(RoleId.SUPERADMIN) ));
         try {
             userService.saveUser( user );
             fail() ;
         } catch( NoPermissionException ex ) {}
-        database.verifyExpectedSqlCalls();
+        database.assertExpectedSqlCalls();
     }
 
     public void testNonAdminCantEditOtherUsers() throws SaveException {
-        UserDomainObject otherInternalUser = new UserDomainObject();
-        otherInternalUser.setId( HIGHEST_USER_ID + 1 );
+        UserDomainObject otherInternalUser = new UserDomainObject(HIGHEST_USER_ID + 1);
         User otherUser = new User( otherInternalUser );
         try {
             userService.saveUser( otherUser );
@@ -76,7 +75,7 @@ public class TestUserService extends TestCase {
     }
 
     public void testUserCanEditSelf() throws SaveException, NoPermissionException {
-        internalUser.addRole( RoleDomainObject.SUPERADMIN );
+        internalUser.addRoleId( RoleId.SUPERADMIN );
         String loginName = "loginName";
         String firstName = "firstName";
 
@@ -103,12 +102,12 @@ public class TestUserService extends TestCase {
     }
 
     public void testCreateNewRole() throws SaveException, NoPermissionException {
-        internalUser.addRole( RoleDomainObject.SUPERADMIN );
+        internalUser.addRoleId( RoleId.SUPERADMIN );
         database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( ImcmsAuthenticatorAndUserAndRoleMapper.SQL_INSERT_INTO_ROLES ), new Integer(3) );
         String roleName = "test role";
         Role newRole = userService.createNewRole( roleName ) ;
         userService.saveRole( newRole );
-        database.verifyExpectedSqlCalls();
+        database.assertExpectedSqlCalls();
         database.assertCalled( new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate( "roles", roleName ) );
     }
 

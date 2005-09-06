@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 
 public class TestDocumentPermissionSetDomainObject extends TestCase {
 
-    DocumentPermissionSetDomainObject documentPermissionSet = new DocumentPermissionSetDomainObject( 1 ) {
+    DocumentPermissionSetDomainObject documentPermissionSet = new DocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_1) {
         public void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
                           int permissionBits, boolean forNewDocuments ) {
         }

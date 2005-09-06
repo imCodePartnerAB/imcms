@@ -4,12 +4,12 @@ import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import imcode.server.Imcms;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserAlreadyExistsException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.HttpSessionUtils;
-import imcode.util.Utility;
 import imcode.util.LocalizedMessage;
+import imcode.util.Utility;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -103,10 +103,10 @@ public class UserBrowser extends HttpServlet {
 
     private UserDomainObject[] getUsersWithUseradminPermissibleRoles(ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper, UserDomainObject loggedOnUser, UserDomainObject[] users) {
         List userList = new ArrayList();
-        RoleDomainObject[] useradminPermissibleRoles = userAndRoleMapper.getUserAdminRolesForUser( loggedOnUser );
+        RoleId[] useradminPermissibleRoles = userAndRoleMapper.getUserAdminRolesReferencesForUser( loggedOnUser );
         for( int i=0; i < users.length; i++){
             for( int k=0; k < useradminPermissibleRoles.length; k++){
-                if( users[i].hasRole( useradminPermissibleRoles[k] ) ){
+                if( users[i].hasRoleId( useradminPermissibleRoles[k] ) ){
                     userList.add(users[i]);
                 }
             }

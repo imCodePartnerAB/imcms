@@ -1,22 +1,21 @@
 package imcode.server.document.textdocument;
 
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DatabaseDocumentGetter;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
 import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.DocumentDomainObject;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import imcode.server.document.DocumentReference;
 import imcode.server.document.DocumentId;
-import com.imcode.imcms.mapping.DatabaseDocumentGetter;
-import com.imcode.imcms.mapping.CategoryMapper;
-import imcode.server.user.RoleDomainObject;
+import imcode.server.document.DocumentReference;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
-
-import java.util.List;
-
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.varia.NullAppender;
+
+import java.util.List;
 
 public class TestMenuDomainObject extends TestCase {
 
@@ -27,7 +26,7 @@ public class TestMenuDomainObject extends TestCase {
         super.setUp();
         BasicConfigurator.configure(new NullAppender());
         user = new UserDomainObject();
-        user.addRole( RoleDomainObject.SUPERADMIN );
+        user.addRoleId( RoleId.SUPERADMIN );
         this.menu = new MenuDomainObject() ;
         MockDatabase database = new MockDatabase();
         final MockImcmsServices services = new MockImcmsServices();

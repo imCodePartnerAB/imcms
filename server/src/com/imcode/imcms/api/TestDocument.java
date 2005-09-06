@@ -1,31 +1,38 @@
 package com.imcode.imcms.api;
 
+import imcode.server.MockImcmsServices;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.user.RoleDomainObject;
+import imcode.server.user.MockRoleGetter;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
-
-import java.util.*;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class TestDocument extends TestCase{
 
     public void testGetAllRolesMappedToPermissions() {
         final MockContentManagementSystem contentManagementSystem = new MockContentManagementSystem();
         contentManagementSystem.setCurrentInternalUser(new UserDomainObject());
+        MockImcmsServices imcmsServices = new MockImcmsServices();
+        contentManagementSystem.setInternal(imcmsServices);
+        imcmsServices.setRoleGetter(new MockRoleGetter()) ;
         final TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
-        textDocument.setPermissionSetIdForRole(RoleDomainObject.USERADMIN, 0);
-        textDocument.setPermissionSetIdForRole(RoleDomainObject.USERS, 0);
-        textDocument.setPermissionSetIdForRole(new RoleDomainObject(3, "test", 0), 0);
+        textDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERADMIN, DocumentPermissionSetTypeDomainObject.FULL);
+        textDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERS, DocumentPermissionSetTypeDomainObject.FULL);
+        textDocument.setDocumentPermissionSetTypeForRoleId(new RoleId(3), DocumentPermissionSetTypeDomainObject.FULL);
         Document doc = new TextDocument(textDocument, contentManagementSystem);
 
         final Map allRolesMappedToPermissions = doc.getRolesMappedToPermissions();
         Set roles = allRolesMappedToPermissions.keySet();
-        assertTrue(CollectionUtils.exists(roles, new RoleNameEqualsPredicate(RoleDomainObject.USERADMIN.getName()))) ;
-        assertTrue(CollectionUtils.exists(roles, new RoleNameEqualsPredicate(RoleDomainObject.USERS.getName()))) ;
-        assertTrue(CollectionUtils.exists(roles, new RoleNameEqualsPredicate("test"))) ;
+        assertTrue(CollectionUtils.exists(roles, new RoleIdEqualsPredicate(RoleId.USERADMIN))) ;
+        assertTrue(CollectionUtils.exists(roles, new RoleIdEqualsPredicate(RoleId.USERS))) ;
+        assertTrue(CollectionUtils.exists(roles, new RoleIdEqualsPredicate(new RoleId(3)))) ;
     }
 
     public void testSearchDisabled() {
@@ -57,15 +64,16 @@ public class TestDocument extends TestCase{
         assertFalse(documentDO.isLinkableByOtherUsers()) ;
     }
 
-    private static class RoleNameEqualsPredicate implements Predicate {
-        private final String roleName;
+    private static class RoleIdEqualsPredicate implements Predicate {
+        private final RoleId roleId;
 
-        public RoleNameEqualsPredicate(String roleName) {
-            this.roleName = roleName;
+        RoleIdEqualsPredicate(RoleId roleName) {
+            this.roleId = roleName;
         }
 
         public boolean evaluate(Object o) {
-            return ((Role)o).getName().equals(roleName) ;
+            return ((Role)o).getId() == roleId.intValue() ;
         }
     }
+
 }

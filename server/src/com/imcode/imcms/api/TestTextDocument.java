@@ -1,16 +1,18 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentGetter;
+import imcode.server.document.DocumentId;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.DocumentReference;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 
@@ -22,8 +24,8 @@ public class TestTextDocument extends TestCase {
     private UserDomainObject internalUser;
     private TextDocumentDomainObject textDocumentDO;
     private TextDocumentDomainObject otherTextDocumentDO;
-    private RoleDomainObject readRole;
-    private RoleDomainObject editRole;
+    private RoleId readRole;
+    private RoleId editRole;
     private TextDocument textDocument;
     private MockContentManagementSystem contentManagementSystem;
     private TextDocument otherTextDocument;
@@ -32,12 +34,12 @@ public class TestTextDocument extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         internalUser = new UserDomainObject();
-        readRole = new RoleDomainObject( 3, "Read", 0 );
-        editRole = new RoleDomainObject( 4, "Edit", 0 );
+        readRole = new RoleId( 3);
+        editRole = new RoleId( 4);
         textDocumentDO = new TextDocumentDomainObject();
         textDocumentDO.setId( 1001 );
-        textDocumentDO.setPermissionSetIdForRole( readRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
-        textDocumentDO.setPermissionSetIdForRole( editRole, DocumentPermissionSetDomainObject.TYPE_ID__FULL );
+        textDocumentDO.setDocumentPermissionSetTypeForRoleId( readRole, DocumentPermissionSetTypeDomainObject.READ );
+        textDocumentDO.setDocumentPermissionSetTypeForRoleId( editRole, DocumentPermissionSetTypeDomainObject.FULL );
         otherTextDocumentDO = new TextDocumentDomainObject();
         otherTextDocumentDO.setId( 1002 );
         otherTextDocumentDO.setLinkableByOtherUsers( true );
@@ -60,21 +62,21 @@ public class TestTextDocument extends TestCase {
     }
 
     public void testMenuGetDocumentsAndMenuItems() {
-        internalUser.addRole( editRole );
-        otherTextDocumentDO.setPermissionSetIdForRole( editRole, DocumentPermissionSetDomainObject.TYPE_ID__FULL );
+        internalUser.addRoleId( editRole );
+        otherTextDocumentDO.setDocumentPermissionSetTypeForRoleId( editRole, DocumentPermissionSetTypeDomainObject.FULL );
         assertGettersReturnDocuments();
     }
 
     public void testMenuGetVisible() {
-        internalUser.addRole( readRole );
-        otherTextDocumentDO.setPermissionSetIdForRole( readRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
+        internalUser.addRoleId( readRole );
+        otherTextDocumentDO.setDocumentPermissionSetTypeForRoleId( readRole, DocumentPermissionSetTypeDomainObject.READ );
         publish(otherTextDocumentDO);
         assertGetVisibleReturnDocuments();
     }
 
     public void testMenuGetVisibleWithArchived() {
-        internalUser.addRole( readRole );
-        otherTextDocumentDO.setPermissionSetIdForRole( readRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
+        internalUser.addRoleId( readRole );
+        otherTextDocumentDO.setDocumentPermissionSetTypeForRoleId( readRole, DocumentPermissionSetTypeDomainObject.READ );
         publish(otherTextDocumentDO);
         otherTextDocumentDO.setArchivedDatetime( new Date( 0 ) );
         assertGetVisibleDoNotReturnDocuments();
@@ -85,13 +87,13 @@ public class TestTextDocument extends TestCase {
     }
 
     public void testMenuGetVisibleWithRole() {
-        internalUser.addRole( readRole );
+        internalUser.addRoleId( readRole );
         assertGetVisibleDoNotReturnDocuments();
     }
 
     public void testMenuGetVisibleWithRoleAndPermission() {
-        internalUser.addRole( readRole );
-        otherTextDocumentDO.setPermissionSetIdForRole( readRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
+        internalUser.addRoleId( readRole );
+        otherTextDocumentDO.setDocumentPermissionSetTypeForRoleId( readRole, DocumentPermissionSetTypeDomainObject.READ );
         assertGetVisibleDoNotReturnDocuments();
     }
 
@@ -154,9 +156,9 @@ public class TestTextDocument extends TestCase {
         imcmsServices.setDocumentMapper( documentMapper );
         menu.addDocument( otherTextDocument );
         assertEquals(0, menu.getDocuments().length) ;
-        otherTextDocumentDO.setPermissionSetIdForRole(readRole, DocumentPermissionSet.READ);
+        otherTextDocumentDO.setDocumentPermissionSetTypeForRoleId(readRole, DocumentPermissionSetTypeDomainObject.READ);
         assertEquals(0, menu.getDocuments().length) ;
-        internalUser.addRole(readRole);
+        internalUser.addRoleId(readRole);
         assertEquals(0, menu.getDocuments().length) ;
         publish(otherTextDocument) ;
         assertEquals(1, menu.getDocuments().length) ;

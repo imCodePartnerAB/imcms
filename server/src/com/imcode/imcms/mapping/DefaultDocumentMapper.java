@@ -136,11 +136,11 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
     void setTemplateForNewTextDocument( TextDocumentDomainObject newTextDocument, UserDomainObject user,
                                                 final DocumentDomainObject parent ) {
-        int permissionSetId = user.getPermissionSetIdFor( parent );
+        DocumentPermissionSetTypeDomainObject documentPermissionSetType = user.getPermissionSetTypeFor( parent );
         TemplateDomainObject template = null;
-        if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == permissionSetId ) {
+        if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(documentPermissionSetType) ) {
             template = ( (TextDocumentPermissionSetDomainObject)newTextDocument.getPermissionSetForRestrictedOneForNewDocuments() ).getDefaultTemplate();
-        } else if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == permissionSetId ) {
+        } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSetType) ) {
             template = ( (TextDocumentPermissionSetDomainObject)newTextDocument.getPermissionSetForRestrictedTwoForNewDocuments() ).getDefaultTemplate();
         }
         if ( null == template && parent instanceof TextDocumentDomainObject ) {
@@ -241,15 +241,13 @@ public class DefaultDocumentMapper implements DocumentMapper {
     public String[][] getAllMimeTypesWithDescriptions(UserDomainObject user) {
         String sqlStr = "SELECT mime, mime_name FROM mime_types WHERE lang_prefix = ? AND mime_id > 0 ORDER BY mime_id";
         String[] parameters = new String[]{user.getLanguageIso639_2()};
-        String[][] mimeTypes = getDatabase().execute2dArrayQuery(sqlStr, parameters);
-        return mimeTypes;
+        return getDatabase().execute2dArrayQuery(sqlStr, parameters);
     }
 
     public String[] getAllMimeTypes() {
         String sqlStr = "SELECT mime FROM mime_types WHERE mime_id > 0 ORDER BY mime_id";
         String[] params = new String[]{};
-        String[] mimeTypes = getDatabase().executeArrayQuery(sqlStr, params);
-        return mimeTypes;
+        return getDatabase().executeArrayQuery(sqlStr, params);
     }
 
     public void addToMenu(TextDocumentDomainObject parentDocument, int parentMenuIndex,
@@ -276,16 +274,14 @@ public class DefaultDocumentMapper implements DocumentMapper {
         String sqlStr = "SELECT browser_id, name, value FROM browsers WHERE browser_id = ?";
         String[] params = new String[]{"" + browserIdToGet};
         String[] sqlRow = getDatabase().executeArrayQuery(sqlStr, params);
-        BrowserDocumentDomainObject.Browser browser = createBrowserFromSqlRow(sqlRow);
-        return browser;
+        return createBrowserFromSqlRow(sqlRow);
     }
 
     protected BrowserDocumentDomainObject.Browser createBrowserFromSqlRow(String[] sqlRow) {
         int browserId = Integer.parseInt(sqlRow[0]);
         String browserName = sqlRow[1];
         int browserSpecificity = Integer.parseInt(sqlRow[2]);
-        BrowserDocumentDomainObject.Browser browser = new BrowserDocumentDomainObject.Browser(browserId, browserName, browserSpecificity);
-        return browser;
+        return new BrowserDocumentDomainObject.Browser(browserId, browserName, browserSpecificity);
     }
 
     public void deleteDocument(final DocumentDomainObject document, UserDomainObject user) {
@@ -299,7 +295,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
     private DatabaseCommand createDeleteDocumentCommand(final DocumentDomainObject document) {
         final String metaIdStr = "" + document.getId();
         final String metaIdColumn = "meta_id";
-        DatabaseCommand composite = new CompositeDatabaseCommand(new DatabaseCommand[]{
+        return new CompositeDatabaseCommand(new DatabaseCommand[]{
             new DeleteWhereColumnsEqualDatabaseCommand("document_categories", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("meta_classification", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("childs", "to_meta_id", metaIdStr),
@@ -323,7 +319,6 @@ public class DefaultDocumentMapper implements DocumentMapper {
             new DeleteWhereColumnsEqualDatabaseCommand("meta_section", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("meta", metaIdColumn, metaIdStr),
         });
-        return composite;
     }
 
     public Map getAllDocumentTypeIdsAndNamesInUsersLanguage(UserDomainObject user) {

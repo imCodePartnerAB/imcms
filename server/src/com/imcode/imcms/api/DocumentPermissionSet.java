@@ -1,17 +1,23 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.DocumentPermissionSetDomainObject;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.Imcms;
+import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.TemplateGroupDomainObject;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 
 public class DocumentPermissionSet {
 
-    public final static int FULL = DocumentPermissionSetDomainObject.TYPE_ID__FULL;
-    public final static int RESTRICTED_1 = DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1;
-    public final static int RESTRICTED_2 = DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2;
-    public final static int READ = DocumentPermissionSetDomainObject.TYPE_ID__READ;
-    public final static int NONE = DocumentPermissionSetDomainObject.TYPE_ID__NONE;
+    /** @deprecated Use {@link DocumentPermissionSetType#FULL} */
+    public final static int FULL = DocumentPermissionSetTypeDomainObject.FULL.getId();
+    /** @deprecated Use {@link DocumentPermissionSetType#RESTRICTED_1} */
+    public final static int RESTRICTED_1 = DocumentPermissionSetTypeDomainObject.RESTRICTED_1.getId();
+    /** @deprecated Use {@link DocumentPermissionSetType#RESTRICTED_2} */
+    public final static int RESTRICTED_2 = DocumentPermissionSetTypeDomainObject.RESTRICTED_2.getId();
+    /** @deprecated Use {@link DocumentPermissionSetType#READ} */
+    public final static int READ = DocumentPermissionSetTypeDomainObject.READ.getId();
+    /** @deprecated Use {@link DocumentPermissionSetType#NONE} */
+    public final static int NONE = DocumentPermissionSetTypeDomainObject.NONE.getId();
 
     private DocumentPermissionSetDomainObject internalDocPermSet;
 
@@ -19,8 +25,11 @@ public class DocumentPermissionSet {
         this.internalDocPermSet = internalDocPermSet;
     }
 
+    /**
+     * @deprecated No replacement, don't use. Will be removed in 4.0 or later. 
+     */
     public String getType() {
-        return internalDocPermSet.getType();
+        return internalDocPermSet.getTypeName();
     }
 
     public String toString() {

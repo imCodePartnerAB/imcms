@@ -66,7 +66,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "LDAP";
     private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "LDAP";
 
-    private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserMapperAndRole;
+    private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
     private ExternalizedImcmsAuthenticatorAndUserRegistry externalizedImcmsAuthAndMapper = null;
     private DefaultDocumentMapper documentMapper;
     private TemplateMapper templateMapper;
@@ -233,9 +233,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
             log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
             log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
         }
-        imcmsAuthenticatorAndUserMapperAndRole = new ImcmsAuthenticatorAndUserAndRoleMapper( this.getDatabase(), languageMapper);
+        imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( this.getDatabase(), languageMapper);
         externalizedImcmsAuthAndMapper =
-        new ExternalizedImcmsAuthenticatorAndUserRegistry( imcmsAuthenticatorAndUserMapperAndRole, externalAuthenticator,
+        new ExternalizedImcmsAuthenticatorAndUserRegistry( imcmsAuthenticatorAndUserAndRoleMapper, externalAuthenticator,
                                                            externalUserAndRoleRegistry, getLanguageMapper().getDefaultLanguage() );
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
     }
@@ -362,7 +362,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
-        return imcmsAuthenticatorAndUserMapperAndRole;
+        return imcmsAuthenticatorAndUserAndRoleMapper;
     }
 
     /**
@@ -612,6 +612,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public FileCache getFileCache() {
         return fileCache ;
+    }
+
+    public RoleGetter getRoleGetter() {
+        return imcmsAuthenticatorAndUserAndRoleMapper;
     }
 
     private static class WebappRelativeFileConverter implements Converter {

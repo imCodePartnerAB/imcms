@@ -2,7 +2,7 @@ package com.imcode.imcms.api;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -84,7 +84,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
             throw new NoPermissionException("Class "+clazz.getName()+" is not signed by certificates in keystore.") ;
         }
         DefaultContentManagementSystem cms = DefaultContentManagementSystem.create( service, (UserDomainObject)currentUser.clone() );
-        cms.currentUser.addRole( RoleDomainObject.SUPERADMIN );
+        cms.currentUser.addRoleId( RoleId.SUPERADMIN );
         runnable.runWith( cms );
         cms.currentUser = null;
     }

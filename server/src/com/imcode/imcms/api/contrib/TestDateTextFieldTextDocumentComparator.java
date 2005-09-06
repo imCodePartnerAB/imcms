@@ -1,17 +1,19 @@
 package com.imcode.imcms.api.contrib;
 
-import com.imcode.imcms.api.*;
-import junit.framework.TestCase;
-import imcode.server.MockImcmsServices;
-import imcode.server.Config;
-import imcode.server.user.UserDomainObject;
-import imcode.server.user.RoleDomainObject;
+import com.imcode.imcms.api.DocumentService;
+import com.imcode.imcms.api.MockContentManagementSystem;
+import com.imcode.imcms.api.TextDocument;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DatabaseDocumentGetter;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import imcode.server.Config;
+import imcode.server.MockImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentId;
-import com.imcode.imcms.mapping.DatabaseDocumentGetter;
-import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
+import junit.framework.TestCase;
 
 public class TestDateTextFieldTextDocumentComparator extends TestCase {
 
@@ -25,7 +27,7 @@ public class TestDateTextFieldTextDocumentComparator extends TestCase {
         this.comparator = new DateTextFieldTextDocumentComparator( TEXT_FIELD_INDEX ) ;
         MockContentManagementSystem contentManagementSystem = new MockContentManagementSystem();
         UserDomainObject internalUser = new UserDomainObject();
-        internalUser.addRole( RoleDomainObject.SUPERADMIN );
+        internalUser.addRoleId( RoleId.SUPERADMIN );
         contentManagementSystem.setCurrentInternalUser( internalUser );
         MockImcmsServices imcmsServices = new MockImcmsServices();
         imcmsServices.setDocumentMapper( new DefaultDocumentMapper( imcmsServices, null, new DatabaseDocumentGetter(null, imcmsServices), null, null, null, new Config(), new CategoryMapper(null)) {

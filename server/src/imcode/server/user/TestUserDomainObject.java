@@ -1,9 +1,9 @@
 package imcode.server.user;
 
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import junit.framework.TestCase;
 import org.apache.commons.lang.ArrayUtils;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetDomainObject;
 
 public class TestUserDomainObject extends TestCase {
 
@@ -16,35 +16,35 @@ public class TestUserDomainObject extends TestCase {
 
     public void testClone() {
         UserDomainObject clone = (UserDomainObject)user.clone() ;
-        assertNotSame( "Roles cloned", clone.roles, user.roles);
-        assertNotSame( "Useradmin roles cloned", clone.userAdminRoles, user.userAdminRoles);
+        assertNotSame( "Roles cloned", clone.roleIds, user.roleIds);
+        assertNotSame( "Useradmin roles cloned", clone.userAdminRoleIds, user.userAdminRoleIds);
     }
 
     public void testUserAlwaysHasUsersRole() {
-        assertTrue(user.hasRole( RoleDomainObject.USERS )) ;
-        assertTrue(ArrayUtils.contains( user.getRoles(), RoleDomainObject.USERS ) ) ;
-        user.removeRole( RoleDomainObject.USERS );
-        assertTrue( user.hasRole( RoleDomainObject.USERS ) );
-        assertTrue( ArrayUtils.contains( user.getRoles(), RoleDomainObject.USERS ) );
-        user.setRoles( new RoleDomainObject[0] );
-        assertTrue( user.hasRole( RoleDomainObject.USERS ) );
-        assertTrue( ArrayUtils.contains( user.getRoles(), RoleDomainObject.USERS ) );
+        assertTrue(user.hasRoleId( RoleId.USERS )) ;
+        assertTrue(ArrayUtils.contains( user.getRoleIds(), RoleId.USERS ) ) ;
+        user.removeRoleId( RoleId.USERS );
+        assertTrue( user.hasRoleId( RoleId.USERS ) );
+        assertTrue( ArrayUtils.contains( user.getRoleIds(), RoleId.USERS ) );
+        user.setRoleIds( new RoleId[0] );
+        assertTrue( user.hasRoleId( RoleId.USERS ) );
+        assertTrue( ArrayUtils.contains( user.getRoleIds(), RoleId.USERS ) );
     }
 
     public void testCanAddDocumentToAnyMenu() {
         TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
         assertFalse(user.canAddDocumentToAnyMenu( textDocument )) ;
-        RoleDomainObject readRole = new RoleDomainObject( "read" );
-        textDocument.setPermissionSetIdForRole( readRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
-        user.addRole( readRole );
+        RoleId readRole = new RoleId( 3);
+        textDocument.setDocumentPermissionSetTypeForRoleId( readRole, DocumentPermissionSetTypeDomainObject.READ );
+        user.addRoleId( readRole );
         assertFalse(user.canAddDocumentToAnyMenu( textDocument )) ;
         textDocument.setLinkableByOtherUsers( true );
         assertTrue(user.canAddDocumentToAnyMenu( textDocument )) ;
         textDocument.setLinkableByOtherUsers( false );
         assertFalse(user.canAddDocumentToAnyMenu( textDocument )) ;
-        RoleDomainObject editRole = new RoleDomainObject( "edit" );
-        textDocument.setPermissionSetIdForRole( editRole, DocumentPermissionSetDomainObject.TYPE_ID__FULL );
-        user.addRole( editRole );
+        RoleId editRole = new RoleId( 4);
+        textDocument.setDocumentPermissionSetTypeForRoleId( editRole, DocumentPermissionSetTypeDomainObject.FULL );
+        user.addRoleId( editRole );
         assertTrue(user.canAddDocumentToAnyMenu( textDocument )) ;
     }
 

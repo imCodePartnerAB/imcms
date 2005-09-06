@@ -414,3 +414,7 @@ GO
 COMMIT
 
 -- 2005-07-01 Lennart Å - Issue 3072, Increasing the size for system data value to varchar 1000.
+
+DROP PROCEDURE AddUserRole
+
+-- 2005-09-05 Kreiger

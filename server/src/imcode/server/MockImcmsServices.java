@@ -7,6 +7,7 @@ import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FileCache;
 import imcode.util.net.SMTP;
@@ -31,6 +32,7 @@ public class MockImcmsServices implements ImcmsServices {
     private DefaultDocumentMapper documentMapper;
     private CategoryMapper categoryMapper;
     private LanguageMapper languageMapper = new LanguageMapper(null, null);
+    private RoleGetter roleGetter;
 
     public UserDomainObject verifyUser( String login, String password ) {
         return null;
@@ -164,6 +166,10 @@ public class MockImcmsServices implements ImcmsServices {
         return null ;
     }
 
+    public RoleGetter getRoleGetter() {
+        return roleGetter ;
+    }
+
     public KeyStore getKeyStore() {
         return keyStore;
     }
@@ -195,5 +201,9 @@ public class MockImcmsServices implements ImcmsServices {
 
     public void setLanguageMapper(LanguageMapper languageMapper) {
         this.languageMapper = languageMapper;
+    }
+
+    public void setRoleGetter(RoleGetter roleGetter) {
+        this.roleGetter = roleGetter;
     }
 }

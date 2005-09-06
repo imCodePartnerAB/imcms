@@ -1,7 +1,7 @@
 package imcode.server.document;
 
-import imcode.server.ImcmsServices;
 import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
+import imcode.server.ImcmsServices;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -9,25 +9,19 @@ import java.util.Set;
 
 public class DocumentPermissionSetDomainObject implements Serializable {
 
-    public static final int TYPE_ID__FULL = 0;
-    public static final int TYPE_ID__RESTRICTED_1 = 1;
-    public static final int TYPE_ID__RESTRICTED_2 = 2;
-    public static final int TYPE_ID__READ = 3;
-    public static final int TYPE_ID__NONE = 4;
-
-    public static final DocumentPermissionSetDomainObject NONE = new TextDocumentPermissionSetDomainObject( TYPE_ID__NONE ) {
+    public static final DocumentPermissionSetDomainObject NONE = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.NONE ) {
         public boolean hasPermission( DocumentPermission permission ) {
             return false;
         }
     };
 
-    public static final DocumentPermissionSetDomainObject READ = new TextDocumentPermissionSetDomainObject( TYPE_ID__READ ) {
+    public static final DocumentPermissionSetDomainObject READ = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.READ ) {
         public boolean hasPermission( DocumentPermission permission ) {
             return false;
         }
     };
 
-    public static final DocumentPermissionSetDomainObject FULL = new TextDocumentPermissionSetDomainObject( TYPE_ID__FULL ) {
+    public static final DocumentPermissionSetDomainObject FULL = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.FULL ) {
         public TemplateGroupDomainObject[] getAllowedTemplateGroups( ImcmsServices services ) {
             return services.getTemplateMapper().getAllTemplateGroups();
         }
@@ -49,17 +43,14 @@ public class DocumentPermissionSetDomainObject implements Serializable {
     private static final String PERMISSION_SET_NAME__READ = "Read";
     private static final String PERMISSION_SET_NAME__NONE = "None";
 
-    private int typeId;
+    private DocumentPermissionSetTypeDomainObject type;
 
     private Set permissions = new HashSet();
     static final DocumentPermission EDIT_DOCUMENT_INFORMATION = new DocumentPermission( "editDocumentInformation" );
     static final DocumentPermission EDIT_PERMISSIONS = new DocumentPermission( "editPermissions" );
 
-    public DocumentPermissionSetDomainObject( int typeId ) {
-        if ( TYPE_ID__FULL > typeId || TYPE_ID__NONE < typeId ) {
-            throw new IllegalArgumentException( "Invalid typeId: " + typeId );
-        }
-        this.typeId = typeId;
+    public DocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject typeId ) {
+        this.type = typeId;
     }
 
     void setPermission( DocumentPermission permission, boolean b ) {
@@ -74,47 +65,38 @@ public class DocumentPermissionSetDomainObject implements Serializable {
         return permissions.contains( permission );
     }
 
-    public int getTypeId() {
-        return typeId;
+    public DocumentPermissionSetTypeDomainObject getType() {
+        return type;
     }
 
-    public String getType() {
-        return getName( typeId );
+    public String getTypeName() {
+        return getName( type );
     }
 
-    private static String getName( int userPermissionSetId ) {
+    private static String getName( DocumentPermissionSetTypeDomainObject userPermissionSetId ) {
         String result ;
-        switch ( userPermissionSetId ) {
-        case TYPE_ID__FULL:
-               result = PERMISSION_SET_NAME__FULL;
-               break;
-        case TYPE_ID__RESTRICTED_1:
-               result = PERMISSION_SET_NAME__RESTRICTED_1;
-               break;
-        case TYPE_ID__RESTRICTED_2:
-               result = PERMISSION_SET_NAME__RESTRICTED_2;
-               break;
-        case TYPE_ID__READ:
-               result = PERMISSION_SET_NAME__READ;
-               break;
-        default:
-               result = PERMISSION_SET_NAME__NONE;
-               break;
+        if ( DocumentPermissionSetTypeDomainObject.FULL.equals(userPermissionSetId) ) {
+            result = PERMISSION_SET_NAME__FULL;
+        } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(userPermissionSetId) ) {
+            result = PERMISSION_SET_NAME__RESTRICTED_1;
+        } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(userPermissionSetId) ) {
+            result = PERMISSION_SET_NAME__RESTRICTED_2;
+        } else if ( DocumentPermissionSetTypeDomainObject.READ.equals(userPermissionSetId) ) {
+            result = PERMISSION_SET_NAME__READ;
+        } else {
+            result = PERMISSION_SET_NAME__NONE;
         }
         return result;
     }
 
     public String toString() {
         StringBuffer buff = new StringBuffer();
-        buff.append( getType() );
-        switch ( typeId ) {
-        case TYPE_ID__RESTRICTED_1:
-        case TYPE_ID__RESTRICTED_2:
-             buff.append( " (" )
-                     .append( "editDocumentInformation=" + getEditDocumentInformation() + ", " )
-                     .append( "editPermissions=" + getEditPermissions() + ", " )
-                     .append( ")" );
-             break;
+        buff.append(getTypeName());
+        if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(type) || DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(type) ) {
+            buff.append(" (")
+                    .append("editDocumentInformation=" + getEditDocumentInformation() + ", ")
+                    .append("editPermissions=" + getEditPermissions() + ", ")
+                    .append(")");
         }
         return buff.toString();
     }
@@ -147,4 +129,5 @@ public class DocumentPermissionSetDomainObject implements Serializable {
     public void setEdit( boolean edit ) {
         setPermission( EDIT, edit );
     }
+
 }

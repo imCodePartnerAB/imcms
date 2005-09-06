@@ -62,7 +62,7 @@ public class AdminSystemInfo extends HttpServlet {
 
         // Lets check if the user is an admin, otherwise throw him out.
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if (user.isSuperAdmin() == false) {
+        if ( !user.isSuperAdmin() ) {
             String header = "Error in AdminSystemInfo. ";
             Properties langproperties = imcref.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
@@ -90,7 +90,7 @@ public class AdminSystemInfo extends HttpServlet {
         if (req.getParameter("SetSystemMsg") != null) {
 
             // Lets get the parameters from html page and validate them
-            String sysMsg = (req.getParameter("SYSTEM_MESSAGE") == null) ? "" : (req.getParameter("SYSTEM_MESSAGE"));
+            String sysMsg = req.getParameter("SYSTEM_MESSAGE") == null ? "" : req.getParameter("SYSTEM_MESSAGE");
 
             imcode.server.SystemData sysData = imcref.getSystemData();
             sysData.setSystemMessage(sysMsg);
@@ -106,8 +106,8 @@ public class AdminSystemInfo extends HttpServlet {
         if (req.getParameter("SetServerMasterInfo") != null) {
 
             // Lets get the parameters from html page and validate them
-            String serverMaster = (req.getParameter("SERVER_MASTER") == null) ? "" : (req.getParameter("SERVER_MASTER"));
-            String serverMasterEmail = (req.getParameter("SERVER_MASTER_EMAIL") == null) ? "" : (req.getParameter("SERVER_MASTER_EMAIL"));
+            String serverMaster = req.getParameter("SERVER_MASTER") == null ? "" : req.getParameter("SERVER_MASTER");
+            String serverMasterEmail = req.getParameter("SERVER_MASTER_EMAIL") == null ? "" : req.getParameter("SERVER_MASTER_EMAIL");
 
             // Lets validate the parameters
             if (serverMaster.equalsIgnoreCase("") || !Utility.isValidEmail( serverMasterEmail )) {
@@ -134,8 +134,8 @@ public class AdminSystemInfo extends HttpServlet {
         if (req.getParameter("SetWebMasterInfo") != null) {
 
             // Lets get the parameters from html page and validate them
-            String webMaster = (req.getParameter("WEB_MASTER") == null) ? "" : (req.getParameter("WEB_MASTER"));
-            String webMasterEmail = (req.getParameter("WEB_MASTER_EMAIL") == null) ? "" : (req.getParameter("WEB_MASTER_EMAIL"));
+            String webMaster = req.getParameter("WEB_MASTER") == null ? "" : req.getParameter("WEB_MASTER");
+            String webMasterEmail = req.getParameter("WEB_MASTER_EMAIL") == null ? "" : req.getParameter("WEB_MASTER_EMAIL");
 
             // Lets validate the parameters
             if (webMaster.equalsIgnoreCase("") || !Utility.isValidEmail( webMasterEmail )) {
@@ -159,7 +159,6 @@ public class AdminSystemInfo extends HttpServlet {
         }
         if (req.getParameter("Cancel") != null) {
             res.sendRedirect("AdminManager");
-            return;
         }
 
     } // end HTTP POST

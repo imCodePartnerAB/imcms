@@ -1,17 +1,18 @@
-<%@ page import="imcode.server.Imcms,
+<%@ page import="com.imcode.imcms.flow.DocumentPermissionSetPage,
+                 com.imcode.imcms.flow.OkCancelPage,
+                 com.imcode.imcms.flow.Page,
+                 imcode.server.Imcms,
+                 imcode.server.ImcmsServices,
+                 imcode.server.document.DocumentPermissionSetDomainObject,
+                 imcode.server.document.TemplateDomainObject,
+                 imcode.server.document.TemplateGroupDomainObject,
+                 imcode.server.document.TextDocumentPermissionSetDomainObject,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
                  org.apache.commons.lang.ArrayUtils,
                  org.apache.commons.lang.StringEscapeUtils,
-                 imcode.server.document.*,
-                 java.util.Map,
-                 java.util.Iterator,
-                 imcode.util.HttpSessionUtils,
-                 imcode.server.document.textdocument.TextDocumentDomainObject,
-                 com.imcode.imcms.flow.Page,
-                 com.imcode.imcms.flow.OkCancelPage,
-                 com.imcode.imcms.flow.*,
-                 imcode.server.ImcmsServices"%>
+                 java.util.Iterator"%>
+<%@ page import="java.util.Map"%>
 <%@page contentType="text/html"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%
     DocumentPermissionSetPage documentPermissionSetPage = (DocumentPermissionSetPage)Page.fromRequest(request) ;
     DocumentPermissionSetDomainObject documentPermissionSet = documentPermissionSetPage.getDocumentPermissionSet() ;
@@ -30,8 +31,8 @@
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )
 
-<table border="0" cellspacing="0" cellpadding="0">
 <form method="POST" action="PageDispatcher">
+<table border="0" cellspacing="0" cellpadding="0">
 <%= Page.htmlHidden( request ) %>
 <tr>
 	<td><input type="submit" class="imcmsFormBtn" name="<%= OkCancelPage.REQUEST_PARAMETER__CANCEL %>" value="<? global/cancel ?>"></td>
@@ -45,9 +46,9 @@
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <tr>
 <% if (documentPermissionSetPage.isForNew()) { %>
-	<td colspan="3">#gui_heading( "<? templates/sv/permissions/define_permissions.html/permissions_for_restricted ?> <%= documentPermissionSet.getTypeId() %> <? templates/sv/permissions/define_permissions.html/permissions_for_restricted/new ?>" )</td>
+	<td colspan="3">#gui_heading( "<? templates/sv/permissions/define_permissions.html/permissions_for_restricted ?> <%= documentPermissionSet.getType() %> <? templates/sv/permissions/define_permissions.html/permissions_for_restricted/new ?>" )</td>
 <% } else { %>
-	<td colspan="3">#gui_heading( "<? templates/sv/permissions/define_permissions.html/permissions_for_restricted ?> <%= documentPermissionSet.getTypeId() %> <? templates/sv/permissions/define_permissions.html/permissions_for_restricted/this ?>" )</td>
+	<td colspan="3">#gui_heading( "<? templates/sv/permissions/define_permissions.html/permissions_for_restricted ?> <%= documentPermissionSet.getType() %> <? templates/sv/permissions/define_permissions.html/permissions_for_restricted/this ?>" )</td>
 <% } %>
 </tr>
 <tr>
@@ -150,8 +151,8 @@
 	</tr>
 	</table></td>
 </tr>
-</form>
 </table>
+</form>
 #gui_bottom()
 #gui_outer_end()
 

@@ -2,7 +2,7 @@ package imcode.server.document;
 
 public class DocumentReference extends DocumentId {
 
-    private transient DocumentGetter documentGetter;
+    private final transient DocumentGetter documentGetter;
 
     public DocumentReference( int documentId, DocumentGetter documentGetter ) {
         super(documentId) ;

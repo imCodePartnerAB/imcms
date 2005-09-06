@@ -1,7 +1,5 @@
 package com.imcode.imcms.api;
 
-import imcode.server.user.RoleDomainObject;
-
 class SecurityChecker {
 
     private ContentManagementSystem contentManagementSystem;
@@ -16,7 +14,7 @@ class SecurityChecker {
 
     void isSuperAdmin() throws NoPermissionException {
         if( !getCurrentUser().isSuperAdmin() ) {
-            throw new NoPermissionException( "User is not " + RoleDomainObject.SUPERADMIN.getName() );
+            throw new NoPermissionException( "User is not superadmin." );
         }
     }
 
@@ -40,7 +38,7 @@ class SecurityChecker {
 
     void isSuperAdminOrSameUser(User user) throws NoPermissionException {
         if (!getCurrentUser().isSuperAdmin() && !user.equals( getCurrentUser() )) {
-            throw new NoPermissionException( "Must be the same user or " + RoleDomainObject.SUPERADMIN.getName() );
+            throw new NoPermissionException( "Must be the same user or superadmin." );
         }
     }
 

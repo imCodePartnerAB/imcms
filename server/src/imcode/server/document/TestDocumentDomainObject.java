@@ -1,11 +1,10 @@
 package imcode.server.document;
 
-import imcode.server.user.RoleDomainObject;
+import com.imcode.imcms.api.Document;
+import imcode.server.user.RoleId;
 import junit.framework.TestCase;
 
 import java.util.Date;
-
-import com.imcode.imcms.api.Document;
 
 public class TestDocumentDomainObject extends TestCase {
 
@@ -23,12 +22,12 @@ public class TestDocumentDomainObject extends TestCase {
     }
 
     public void testDeepCloneRoles() throws CloneNotSupportedException {
-        RoleDomainObject role = RoleDomainObject.SUPERADMIN;
-        assertEquals( document.getPermissionSetIdForRole(role), DocumentPermissionSetDomainObject.TYPE_ID__NONE );
+        RoleId roleId = RoleId.SUPERADMIN;
+        assertEquals( document.getDocumentPermissionSetTypeForRoleId(roleId), DocumentPermissionSetTypeDomainObject.NONE );
         DocumentDomainObject clone = (DocumentDomainObject)document.clone() ;
-        clone.setPermissionSetIdForRole( role, DocumentPermissionSetDomainObject.TYPE_ID__FULL );
-        assertEquals( clone.getPermissionSetIdForRole( role ), DocumentPermissionSetDomainObject.TYPE_ID__FULL );
-        assertEquals( document.getPermissionSetIdForRole( role ), DocumentPermissionSetDomainObject.TYPE_ID__NONE );
+        clone.setDocumentPermissionSetTypeForRoleId( roleId, DocumentPermissionSetTypeDomainObject.FULL );
+        assertEquals( clone.getDocumentPermissionSetTypeForRoleId( roleId ), DocumentPermissionSetTypeDomainObject.FULL );
+        assertEquals( document.getDocumentPermissionSetTypeForRoleId( roleId ), DocumentPermissionSetTypeDomainObject.NONE );
     }
 
     public void testGetPublicationStatus() throws Exception {
