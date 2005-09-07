@@ -9,6 +9,7 @@ import imcode.server.document.DocumentDomainObject;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.api.Document;
+import com.imcode.util.KeywordsParser;
 import imcode.server.document.SectionDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
@@ -229,7 +230,8 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         document.setLinkableByOtherUsers( linkableByOtherUsers );
 
         String keywordsString = request.getParameter( REQUEST_PARAMETER__KEYWORDS );
-        String[] keywords = parseKeywords( keywordsString );
+        KeywordsParser keywordsParser = new KeywordsParser();
+        String[] keywords =  keywordsParser.parseKeywords( keywordsString );
         document.setKeywords( new ArraySet(keywords) );
 
         boolean searchDisabled = "1".equals( request.getParameter( REQUEST_PARAMETER__SEARCH_DISABLED ) );

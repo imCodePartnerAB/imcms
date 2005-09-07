@@ -26,7 +26,8 @@
             java.text.DateFormat,
             java.text.SimpleDateFormat,
             java.util.*,
-            java.util.regex.Pattern"
+            java.util.regex.Pattern,
+            com.imcode.util.KeywordsParser"
 
 %><%@ page import="imcode.util.ToStringPairTransformer"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
@@ -444,17 +445,14 @@ function checkFocus() {
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/35 ?></td>
 		<td class="imcmsAdmText"><%
-		Set documentKeywords = document.getKeywords(); String[] keywords = (String[])documentKeywords.toArray(new String[documentKeywords.size()]);
+		Set documentKeywords = document.getKeywords();
+        String[] keywords = (String[])documentKeywords.toArray(new String[documentKeywords.size()]);
 		Collator collator = service.getDefaultLanguageCollator() ;
 		Arrays.sort(keywords,collator) ;
-		for ( int i = 0; i < keywords.length; i++ ) {
-			if (Pattern.compile("[^\\p{L}\\d]").matcher(keywords[i]).find()) {
-				keywords[i] = '"'+keywords[i]+'"' ;
-			}
-		}
+        KeywordsParser keywordsParser = new KeywordsParser();    
 		%>
 		<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS %>" size="48" maxlength="200" style="width: 100%"
-		value="<%= StringEscapeUtils.escapeHtml( StringUtils.join( keywords, ", " ) ) %>"><br>
+		value="<%= keywordsParser.formatKeywords(keywords)%>"><br>
 		<span class="imcmsAdmDim"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/keywords_explanation ?></span><br>
 		<input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SEARCH_DISABLED %>" value="1" <%
 		if (document.isSearchDisabled()) {
