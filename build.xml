@@ -302,19 +302,21 @@
 
     <target name="ddl.xml" depends="init,taskdef-cat">
 
-        <concat destfile="${tmp}/ddl.xml">
-            <header>&lt;database defaultIdMethod="native"&gt;</header>
+        <concat destfile="${sql}/ddl.xml">
+            <header>&lt;database defaultIdMethod="native" name="imcms"&gt;&#10;</header>
             <fileset dir="sql/tables" includes="*.tab"/>
-            <footer>&lt;/database&gt;</footer>
+            <footer>&lt;/database&gt;&#10;</footer>
         </concat>
 
     </target>
 
     <target name="ddl.sql" depends="init,ddl.xml">
-        <taskdef name="ddl" classname="org.apache.commons.sql.task.DDLTask" classpathref="libraries"/>
+        <taskdef name="ddl2db" classname="org.apache.ddlutils.task.DdlToDatabaseTask" classpathref="libraries"/>
         <mkdir dir="${tmp}"/>
-        <ddl xmlfile="${tmp}/ddl.xml" output="${tmp}/ddl.sql"
-             targetdatabase="${db-target}" dodrops="false"/>
+
+        <ddl2db schemafile="${sql}/ddl.xml" databasetype="${db-target}">
+             <writeschemasqltofile outputfile="${tmp}/ddl.sql" alterdatabase="false" droptablesfirst="false"/> 
+        </ddl2db>
     </target>
 
     <target name="jspc" depends="init,classes">
@@ -362,8 +364,6 @@
         </cat>
 
         <replace file="${tmp}/imcms.sql" token="-- ${db-target}"/>
-
-        <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="libraries"/>
 
         <copy file="sql/create_db.sql" tofile="${create-sql}" filtering="true"/>
 
