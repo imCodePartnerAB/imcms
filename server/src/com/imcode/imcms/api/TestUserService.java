@@ -75,7 +75,6 @@ public class TestUserService extends TestCase {
     }
 
     public void testUserCanEditSelf() throws SaveException, NoPermissionException {
-        internalUser.addRoleId( RoleId.SUPERADMIN );
         String loginName = "loginName";
         String firstName = "firstName";
 
@@ -99,6 +98,10 @@ public class TestUserService extends TestCase {
         database.assertNotCalled( "Old first name set.", new MockDatabase.UpdateTableSqlCallPredicate( "users", firstName ) );
         database.assertCalled( "New first name not set.", new MockDatabase.UpdateTableSqlCallPredicate( "users", newFirstName ) );
         database.assertNotCalled( "User can not change own roles.", new MockDatabase.MatchesRegexSqlCallPredicate( "role" ) );
+
+        internalUser.addRoleId( RoleId.SUPERADMIN );
+        userService.saveUser( user );
+        database.assertCalled( "Superadmin can change own roles.", new MockDatabase.MatchesRegexSqlCallPredicate( "role" ) );
     }
 
     public void testCreateNewRole() throws SaveException, NoPermissionException {

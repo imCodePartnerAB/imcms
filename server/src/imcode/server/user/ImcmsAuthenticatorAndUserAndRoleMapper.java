@@ -232,7 +232,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     private void updateUserRoles(UserDomainObject newUser, UserDomainObject oldUser, UserDomainObject loggedInUser) {
-        if ( !newUser.equals(loggedInUser) ) {
+        if ( !newUser.equals(loggedInUser) || loggedInUser.isSuperAdmin() ) {
             Set newUserRoles = new HashSet(Arrays.asList(newUser.getRoleIds()));
             if ( null != loggedInUser && loggedInUser.isUserAdminOnly() ) {
                 Set loggedInUserUserAdminRoles = new HashSet(Arrays.asList(loggedInUser.getUserAdminRoleIds()));
