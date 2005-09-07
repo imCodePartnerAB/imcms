@@ -418,3 +418,8 @@ COMMIT
 DROP PROCEDURE AddUserRole
 
 -- 2005-09-05 Kreiger
+
+DROP PROCEDURE ServerMasterSet
+DROP PROCEDURE WebMasterSet
+
+-- 2005-09-07 Kreiger

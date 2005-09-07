@@ -5,6 +5,7 @@ import com.imcode.imcms.mapping.DatabaseDocumentGetter;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
 import imcode.server.db.Database;
+import imcode.server.db.commands.UpdateDatabaseCommand;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.TemplateMapper;
@@ -549,11 +550,11 @@ final public class DefaultImcmsServices implements ImcmsServices {
         sqlParams = new String[]{"" + sd.getStartDocument()};
         getDatabase().executeUpdateProcedure( "StartDocSet", sqlParams );
 
-        sqlParams = new String[]{sd.getWebMaster(), sd.getWebMasterAddress()};
-        getDatabase().executeUpdateProcedure( "WebMasterSet", sqlParams );
+        database.executeCommand(new UpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 4", new Object[] {sd.getServerMaster()})) ;
+        database.executeCommand(new UpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 5", new Object[] {sd.getServerMasterAddress()})) ;
 
-        sqlParams = new String[]{sd.getServerMaster(), sd.getServerMasterAddress()};
-        getDatabase().executeUpdateProcedure( "ServerMasterSet", sqlParams );
+        database.executeCommand(new UpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 6", new Object[] {sd.getWebMaster()})) ;
+        database.executeCommand(new UpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 7", new Object[] {sd.getWebMasterAddress()})) ;
 
         sqlParams = new String[]{sd.getSystemMessage()};
         getDatabase().executeUpdateProcedure( "SystemMessageSet", sqlParams );
