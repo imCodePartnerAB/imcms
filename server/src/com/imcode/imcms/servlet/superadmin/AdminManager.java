@@ -153,31 +153,36 @@ public class AdminManager extends HttpServlet {
         DocumentIndex index = documentMapper.getDocumentIndex();
 
         Query query = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, loggedOnUser.getId() + "" ) );
-        DocumentDomainObject[] documentsFound = index.search( query, loggedOnUser );
 
-        AdminManagerSubreport newDocumentsSubreport = createNewDocumentsSubreport( documentsFound );
-        AdminManagerSubreport modifiedDocumentsSubreport = createModifiedDocumentsSubreport( documentsFound );
-        AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = createDocumentsArchivedWithinOneWeekSubreport( documentsFound );
-        AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = createDocumentsUnpublishedWithinOneWeekSubreport( documentsFound );
-        AdminManagerSubreport documentsUnmodifiedForSixMonthsSubreport = createDocumentsUnmodifiedForSixMonthsSubreport( documentsFound );
+        DocumentDomainObject[] documentsFound = new DocumentDomainObject[] {} ;
+        if ( !tabToShow.equals( PARAMETER_VALUE__SHOW_CREATE ) ) {
+            documentsFound = index.search( query, loggedOnUser );
+        }
 
-        AdminManagerSubreport[] subreports = {
-            newDocumentsSubreport,
-            modifiedDocumentsSubreport,
-            documentsArchivedWithinOneWeekSubreport,
-            documentsUnpublishedWithinOneWeekSubreport,
-            documentsUnmodifiedForSixMonthsSubreport,
-        };
-        for ( int i = 0; i < subreports.length; i++ ) {
-            AdminManagerSubreport subreport = subreports[i];
-            String newSortOrder = request.getParameter( subreport.getName() + "_sortorder" );
-            if ( null != newSortOrder ) {
-                subreport.setSortorder( newSortOrder );
-            }
-            Collections.sort( subreport.getDocuments(), getComparator( subreport.getSortorder() ) );
-            boolean expanded = Utility.parameterIsSet( request, subreport.getName() + "_expand" )
-                               && !Utility.parameterIsSet( request, subreport.getName() + "_unexpand" );
-            subreport.setExpanded( expanded );
+        AdminManagerSubreport newDocumentsSubreport = new AdminManagerSubreport();
+        AdminManagerSubreport modifiedDocumentsSubreport = new AdminManagerSubreport();
+        AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = new AdminManagerSubreport();
+        AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = new AdminManagerSubreport();
+        AdminManagerSubreport documentsUnmodifiedForSixMonthsSubreport = new AdminManagerSubreport();
+
+
+        if ( tabToShow.equals(PARAMETER_VALUE__SHOW_RECENT) || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY) ) {
+            newDocumentsSubreport = createNewDocumentsSubreport( documentsFound );
+            SortAndSetExpandedSubreport(newDocumentsSubreport, request);
+
+            modifiedDocumentsSubreport = createModifiedDocumentsSubreport( documentsFound );
+            SortAndSetExpandedSubreport(modifiedDocumentsSubreport, request);
+        }
+
+        if ( tabToShow.equals(PARAMETER_VALUE__SHOW_REMINDERS) || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY) ) {
+            documentsArchivedWithinOneWeekSubreport = createDocumentsArchivedWithinOneWeekSubreport( documentsFound );
+            SortAndSetExpandedSubreport(documentsArchivedWithinOneWeekSubreport, request);
+
+            documentsUnpublishedWithinOneWeekSubreport = createDocumentsUnpublishedWithinOneWeekSubreport( documentsFound );
+            SortAndSetExpandedSubreport(documentsUnpublishedWithinOneWeekSubreport, request);
+
+            documentsUnmodifiedForSixMonthsSubreport = createDocumentsUnmodifiedForSixMonthsSubreport( documentsFound );
+            SortAndSetExpandedSubreport(documentsUnmodifiedForSixMonthsSubreport, request);
         }
 
         AdminManagerPage adminManagerPage = null;
@@ -253,9 +258,23 @@ public class AdminManager extends HttpServlet {
             adminManagerPage = searchAdminManagerPage;
         }
 
-        adminManagerPage.setErrorMessage( errorMessage );
+        adminManagerPage.setErrorMessage( errorMessage  );
         adminManagerPage.setHtmlAdminPart( "".equals( html_admin_part ) ? null : html_admin_part );
         adminManagerPage.forward( request, response, loggedOnUser );
+    }
+
+    private void SortAndSetExpandedSubreport (AdminManagerSubreport subreport, HttpServletRequest request ) {
+
+            String newSortOrder = request.getParameter( subreport.getName() + "_sortorder" );
+            if ( null != newSortOrder ) {
+                subreport.setSortorder( newSortOrder );
+            }
+            Collections.sort( subreport.getDocuments(), getComparator( subreport.getSortorder() ) );
+            boolean expanded = Utility.parameterIsSet( request, subreport.getName() + "_expand" )
+                               && !Utility.parameterIsSet( request, subreport.getName() + "_unexpand" );
+            subreport.setExpanded( expanded );
+
+
     }
 
     private AdminManagerSubreport createModifiedDocumentsSubreport( DocumentDomainObject[] documentsFound ) {
