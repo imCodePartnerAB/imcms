@@ -8,12 +8,14 @@
                  java.util.*,
                  imcode.server.document.*,
                  com.imcode.imcms.servlet.beans.Tab,
-                 org.apache.commons.lang.StringEscapeUtils"%>
+                 org.apache.commons.lang.StringEscapeUtils,
+                 imcode.util.jscalendar.JSCalendar"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
     AdminManager.AdminManagerPage adminManagerPage = (AdminManager.AdminManagerPage) request.getAttribute(AdminManager.AdminManagerPage.REQUEST_ATTRIBUTE__PAGE) ;
     String imagesPath  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
+    JSCalendar jsCalendar = adminManagerPage.getJSCalendar(request);
 %>
 
 <%@ include file="gui_tabs.jsp" %>
@@ -38,6 +40,7 @@
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<%= jsCalendar.getHeadTagScripts()%>
 
 </head>
 <body id="body" onLoad="focusField(1,'AdminTask')">

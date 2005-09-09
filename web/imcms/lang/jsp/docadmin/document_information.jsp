@@ -27,9 +27,11 @@
             java.text.SimpleDateFormat,
             java.util.*,
             java.util.regex.Pattern,
-            com.imcode.util.KeywordsParser"
+            com.imcode.util.KeywordsParser,
+            imcode.util.jscalendar.JSCalendar"
 
-%><%@ page import="imcode.util.ToStringPairTransformer"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
+%><%@ page import="imcode.util.ToStringPairTransformer"%>
+<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     final ImcmsServices service = Imcms.getServices();
@@ -43,6 +45,9 @@
     EditDocumentInformationPageFlow.DocumentInformationPage documentInformationPage = EditDocumentInformationPageFlow.DocumentInformationPage.fromRequest(request) ;
     DocumentDomainObject document = documentInformationPage.getDocument() ;
     boolean adminButtonsHidden = creatingNewDocument || documentInformationPage.isAdminButtonsHidden() ;
+
+    JSCalendar jsCalendar = new JSCalendar( Utility.getLoggedOnUser(request).getLanguageIso639_2(), request ) ;
+    String calendarButtonTitle = "<? web/imcms/lang/jscalendar/show_calendar_button ?>";
 
 %><%!
 
@@ -73,7 +78,7 @@ String formatTime(Date time) {
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
-
+<%= jsCalendar.getHeadTagScripts() %>
 <script language="JavaScript">
 <!--
 var selFocused = false ;
@@ -225,12 +230,13 @@ function checkFocus() {
 			} else { %>
 			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_was_published_at ?><%
 			} %></td>
-			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_DATE %>" size="11" maxlength="10" style="width: 7em;"
+			<td><input type="text" id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_DATE %>" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_DATE %>" size="11" maxlength="10" style="width: 7em;"
 			value="<%= StringEscapeUtils.escapeHtml( formatDate(publicationStartDatetime) ) %>"></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1007 ?></td>
-			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_TIME %>" size="5" maxlength="5" style="width: 4em;"
+			<td><input type="text" id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_TIME %>" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_TIME %>" size="5" maxlength="5" style="width: 4em;"
 			value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getPublicationStartDatetime()) ) %>"></td>
-			<td>&nbsp;(<%= Utility.formatHtmlDatetime( publicationStartDatetime ) %>)&nbsp;&nbsp;</td>
+			<td><%= jsCalendar.getInstance(EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_DATE,
+			    EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_TIME).getButton(calendarButtonTitle) %>&nbsp;(<%= Utility.formatHtmlDatetime( publicationStartDatetime ) %>)&nbsp;&nbsp;</td>
 			<td><input type="button" id="nowBtn0" value="&laquo;&nbsp;<? global/Now ?>" class="imcmsFormBtnSmall" style="width:40px; visibility:hidden;" onClick="setNow('<%=
 			EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_DATE %>','<%=
 			EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_TIME %>');"></td>
@@ -243,12 +249,13 @@ function checkFocus() {
 			} else { %>
 			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_was_archived_at ?><%
 			} %></td>
-			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_DATE %>" size="11" maxlength="10" style="width: 7em;"
+			<td><input type="text" id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_DATE %>" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_DATE %>" size="11" maxlength="10" style="width: 7em;"
 			value="<%= StringEscapeUtils.escapeHtml( formatDate(archivedDatetime) ) %>"></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
-			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_TIME %>" size="5" maxlength="5" style="width: 4em;"
+			<td><input type="text" id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_TIME %>" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_TIME %>" size="5" maxlength="5" style="width: 4em;"
 			value="<%= StringEscapeUtils.escapeHtml( formatTime(archivedDatetime) ) %>"></td>
-			<td>&nbsp;(<%= Utility.formatHtmlDatetime( archivedDatetime ) %>)&nbsp;&nbsp;</td>
+			<td><%= jsCalendar.getInstance(EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_DATE,
+			    EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_TIME).getButton(calendarButtonTitle) %>&nbsp;(<%= Utility.formatHtmlDatetime( archivedDatetime ) %>)&nbsp;&nbsp;</td>
 			<td><input type="button" id="nowBtn1" value="&laquo;&nbsp;<? global/Now ?>" class="imcmsFormBtnSmall" style="width:40px; visibility:hidden;" onClick="setNow('<%=
 			EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_DATE %>','<%=
 			EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_TIME %>');"></td>
@@ -261,12 +268,13 @@ function checkFocus() {
 			} else { %>
 			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_ceased_to_be_published_at ?><%
 			} %>&nbsp;</td>
-			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_DATE %>" size="11" maxlength="10" style="width: 7em;"
+			<td><input type="text" id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_DATE %>" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_DATE %>" size="11" maxlength="10" style="width: 7em;"
 			value="<%= StringEscapeUtils.escapeHtml( formatDate(publicationEndDatetime) ) %>"></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
-			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_TIME %>" size="5" maxlength="5" style="width: 4em;"
+			<td><input type="text" id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_TIME %>" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_TIME %>" size="5" maxlength="5" style="width: 4em;"
 			value="<%= StringEscapeUtils.escapeHtml( formatTime(publicationEndDatetime) ) %>"></td>
-			<td>&nbsp;(<%= Utility.formatHtmlDatetime( publicationEndDatetime ) %>)&nbsp;&nbsp;</td>
+			<td><%= jsCalendar.getInstance(EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_DATE,
+                    EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_TIME).getButton(calendarButtonTitle) %>&nbsp;(<%= Utility.formatHtmlDatetime( publicationEndDatetime ) %>)&nbsp;&nbsp;</td>
 			<td><input type="button" id="nowBtn2" value="&laquo;&nbsp;<? global/Now ?>" class="imcmsFormBtnSmall" style="width:40px; visibility:hidden;" onClick="setNow('<%=
 			EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_DATE %>','<%=
 			EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_TIME %>');"></td>
@@ -449,7 +457,7 @@ function checkFocus() {
         String[] keywords = (String[])documentKeywords.toArray(new String[documentKeywords.size()]);
 		Collator collator = service.getDefaultLanguageCollator() ;
 		Arrays.sort(keywords,collator) ;
-        KeywordsParser keywordsParser = new KeywordsParser();    
+        KeywordsParser keywordsParser = new KeywordsParser();
 		%>
 		<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS %>" size="48" maxlength="200" style="width: 100%"
 		value="<%= keywordsParser.formatKeywords(keywords)%>"><br>
@@ -506,12 +514,13 @@ function checkFocus() {
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_DATE %>" size="11" maxlength="10" style="width: 7em;"
+			<td><input type="text" id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_DATE %>" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_DATE %>" size="11" maxlength="10" style="width: 7em;"
 			value="<%= formatDate( document.getCreatedDatetime() ) %>"></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/time ?></td>
-			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_TIME %>" size="5" maxlength="5" style="width: 4em;"
+			<td><input type="text" id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_TIME %>" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_TIME %>" size="5" maxlength="5" style="width: 4em;"
 			value="<%= formatTime( document.getCreatedDatetime() ) %>"></td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/created_by ?>
+			<td class="imcmsAdmText"><%= jsCalendar.getInstance(EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_DATE,
+			                             EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_TIME).getButton(calendarButtonTitle) %>&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/created_by ?>
 			<%= Utility.formatUser(document.getCreator()) %>&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER %>" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/select_creator_button ?>"></td>
 		</tr>
 		</table></td>
@@ -521,11 +530,13 @@ function checkFocus() {
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_DATE %>" size="11" maxlength="10" style="width: 7em;"
+			<td><input type="text" id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_DATE %>" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_DATE %>" size="11" maxlength="10" style="width: 7em;"
 			value="<%= formatDate( document.getModifiedDatetime() ) %>"></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/time ?></td>
-			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_TIME %>" size="5" maxlength="5" style="width: 4em;"
+			<td><input type="text" id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_TIME %>" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_TIME %>" size="5" maxlength="5" style="width: 4em;"
 			value="<%= formatTime( document.getModifiedDatetime() ) %>"></td>
+            <td><%= jsCalendar.getInstance(EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_DATE,
+			                               EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_TIME).getButton(calendarButtonTitle) %></td>
 		</tr>
 		</table></td>
 	</tr><%

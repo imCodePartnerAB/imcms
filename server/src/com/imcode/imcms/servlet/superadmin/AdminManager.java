@@ -22,6 +22,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
+import imcode.util.jscalendar.JSCalendar;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -457,6 +458,7 @@ public class AdminManager extends HttpServlet {
         String tabName;
         List subreports = new ArrayList();
         String htmlAdminPart;
+        JSCalendar jsCalendar;
         public static final String REQUEST_ATTRIBUTE__PAGE = "ampage";
 
         private LocalizedMessage errorMessage;
@@ -509,6 +511,10 @@ public class AdminManager extends HttpServlet {
 
         public void setErrorMessage( LocalizedMessage errorMessage ) {
             this.errorMessage = errorMessage;
+        }
+
+        public JSCalendar getJSCalendar(HttpServletRequest request) {
+            return new JSCalendar( Utility.getLoggedOnUser(request).getLanguageIso639_2(), request ) ;
         }
 
     }

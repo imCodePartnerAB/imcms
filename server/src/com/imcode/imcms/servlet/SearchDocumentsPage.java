@@ -14,6 +14,7 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
+import imcode.util.jscalendar.JSCalendar;
 import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.lang.StringUtils;
@@ -84,6 +85,8 @@ public class SearchDocumentsPage extends OkCancelPage {
     public static final String DATE_TYPE__CREATED = "created";
     public static final String DATE_TYPE__ARCHIVED = "archived";
     public static final String DATE_TYPE__MODIFIED = "modified";
+
+    JSCalendar jsCalendar; 
 
     public SearchDocumentsPage() {
         super( null, null );
@@ -388,5 +391,8 @@ public class SearchDocumentsPage extends OkCancelPage {
 
     public int[] getDocumentTypeIds() {
         return documentTypeIds;
+    }
+    public JSCalendar getJSCalender (HttpServletRequest request) {
+        return new JSCalendar( Utility.getLoggedOnUser(request).getLanguageIso639_2(), request ) ;
     }
 }

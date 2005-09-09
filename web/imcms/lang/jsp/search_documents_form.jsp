@@ -9,7 +9,8 @@
                  imcode.util.LocalizedMessage,
                  imcode.util.ToDoubleObjectStringPairTransformer,
                  imcode.util.Utility,
-                 org.apache.commons.lang.ArrayUtils"%>
+                 org.apache.commons.lang.ArrayUtils,
+                 imcode.util.jscalendar.JSCalendar"%>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@ page import="org.apache.commons.lang.StringUtils"%>
 <%@ page import="java.util.Arrays"%>
@@ -21,6 +22,9 @@
     int[] documentTypeIds = searchDocumentsPage.getDocumentTypeIds();
     UserDomainObject user = Utility.getLoggedOnUser( request );
     String IMG_PATH  = request.getContextPath()+"/imcms/"+user.getLanguageIso639_2()+"/images/admin/" ;
+    JSCalendar jsCalendar = searchDocumentsPage.getJSCalender(request);
+    String calendarButtonTitle = "<? web/imcms/lang/jscalendar/show_calendar_button ?>";
+
 %>
     <%= Page.htmlHidden(request) %>
     <table border="0" cellspacing="0" cellpadding="2" width="656">
@@ -141,9 +145,11 @@
             <td colspan="3">
             <table border="0" cellspacing="0" cellpadding="0">
             <tr>
-                <td><input type="text" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__START_DATE %>" value="<%= searchDocumentsPage.getFormattedStartDate() %>" size="10" maxlength="10" style="width:7em"></td>
+                <td><input type="text" id="<%= SearchDocumentsPage.REQUEST_PARAMETER__START_DATE %>" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__START_DATE %>" value="<%= searchDocumentsPage.getFormattedStartDate() %>" size="10" maxlength="10" style="width:7em">
+                <%= jsCalendar.getInstance(SearchDocumentsPage.REQUEST_PARAMETER__START_DATE, null).getButton(calendarButtonTitle) %>
                 <td nowrap>&nbsp; &nbsp; - &nbsp; &nbsp;</td>
-                <td><input type="text" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__END_DATE %>" value="<%= searchDocumentsPage.getFormattedEndDate() %>" size="10" maxlength="10" style="width:7em"></td>
+                <td><input type="text" id="<%= SearchDocumentsPage.REQUEST_PARAMETER__END_DATE %>" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__END_DATE %>" value="<%= searchDocumentsPage.getFormattedEndDate() %>" size="10" maxlength="10" style="width:7em">
+                <%= jsCalendar.getInstance(SearchDocumentsPage.REQUEST_PARAMETER__END_DATE, null).getButton(calendarButtonTitle) %></td>
                 <td>&nbsp; &nbsp; (<? web/imcms/lang/jsp/admin/admin_manager_search.jsp/9 ?>)</td>
             </tr>
             </table></td>

@@ -1,11 +1,15 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils,
                  com.imcode.imcms.servlet.DocumentFinder,
                  com.imcode.imcms.servlet.SearchDocumentsPage,
-                 com.imcode.imcms.flow.Page"%>
+                 com.imcode.imcms.flow.Page,
+                 imcode.util.jscalendar.JSCalendar,
+                 imcode.util.Utility"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage) Page.fromRequest(request) ;
     DocumentFinder documentFinder = searchDocumentsPage.getDocumentFinder() ;
+    JSCalendar jsCalendar = searchDocumentsPage.getJSCalender(request);
+
 %>
 <vel:velocity>
 <html>
@@ -14,6 +18,7 @@
 
 <link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css.jsp" type="text/css">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<%= jsCalendar.getHeadTagScripts() %>
 
 </head>
 
