@@ -155,7 +155,8 @@ public class AdminManager extends HttpServlet {
         Query query = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, loggedOnUser.getId() + "" ) );
 
         DocumentDomainObject[] documentsFound = new DocumentDomainObject[] {} ;
-        if ( !tabToShow.equals( PARAMETER_VALUE__SHOW_CREATE ) ) {
+        if ( tabToShow.equals( PARAMETER_VALUE__SHOW_RECENT ) || tabToShow.equals(PARAMETER_VALUE__SHOW_REMINDERS)
+                                                                || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY) ) {
             documentsFound = index.search( query, loggedOnUser );
         }
 
