@@ -460,7 +460,7 @@ function checkFocus() {
         KeywordsParser keywordsParser = new KeywordsParser();
 		%>
 		<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS %>" size="48" maxlength="200" style="width: 100%"
-		value="<%= keywordsParser.formatKeywords(keywords)%>"><br>
+		value="<%= StringEscapeUtils.escapeHtml( keywordsParser.formatKeywords(keywords) )%>"><br>
 		<span class="imcmsAdmDim"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/keywords_explanation ?></span><br>
 		<input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SEARCH_DISABLED %>" value="1" <%
 		if (document.isSearchDisabled()) {
