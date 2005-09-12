@@ -2,9 +2,11 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
+import imcode.util.jscalendar.JSCalendar;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -12,20 +14,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
+
 
 
 
 public class AdminCounter extends HttpServlet {
 
-    private final static Logger log = Logger.getLogger( AdminCounter.class.getName() );
-    private final static String HTML_TEMPLATE = "AdminCounter.htm";
+    private final static Logger mainLog = Logger.getLogger( ImcmsConstants.MAIN_LOG );
+    private final static String JSP_TEMPLATE = "admin_session_counter.jsp";
 
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -38,32 +40,21 @@ public class AdminCounter extends HttpServlet {
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        // Lets validate the session
+
         ImcmsServices imcref = Imcms.getServices();
 
-        UserDomainObject user = Utility.getLoggedOnUser(req);
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !user.isSuperAdmin() ) {
-            String header = "Error in AdminCounter.";
-            Properties langproperties = imcref.getLanguageProperties(user);
-            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<BR>";
-            log.debug(header + "- user is not an administrator");
-            AdminRoles.printErrorMessage(req, res, header, msg);
+            Utility.forwardToLogin( req, res );
             return;
         }
 
-        // ***** RETURN TO ADMIN MANAGER *****
-        if ( req.getParameter("CancelCounter") != null ) {
-            res.sendRedirect("AdminManager");
-            return;
-        }
 
         // ***** SET COUNTER *****
         if ( req.getParameter("setSessionCounter") != null ) {
-            // Lets get the parameter and validate it
-            Properties props = this.getParameters(req);
-            String userVal = props.getProperty("COUNTER_VALUE");
-            //this.log("The user values was: " + userVal) ;
+            String userVal = (req.getParameter("counter_value") == null) ? "" : (req.getParameter("counter_value"));
             int theUserInt = 0;
+            String oldCounterValue = "" + imcref.getSessionCounter();
 
             boolean ok = true;
             try {
@@ -76,20 +67,21 @@ public class AdminCounter extends HttpServlet {
                 ok = false;
             }
 
-            if ( ok ) imcref.setSessionCounter(theUserInt);
+            if ( ok ) {
+                imcref.setSessionCounter(theUserInt);
+                mainLog.info("Session counter value updated by user: " + user.getLoginName() + ", new value = " + theUserInt + ", old value = " + oldCounterValue );
+            }
 
         }
 
         // ***** SET COUNTER DATE *****
 
-        // Lets get the servers startdate
         String errormsg = "";
-        Date currentDate = imcref.getSessionCounterDate();
         DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
+        Date currentDate = imcref.getSessionCounterDate();
         String newDateStr = dateFormat.format(currentDate);
 
         if ( req.getParameter("setDate") != null ) {
-            // Lets get the parameter and validate it
 
             String dateStr = req.getParameter("date_value");
 
@@ -102,6 +94,7 @@ public class AdminCounter extends HttpServlet {
                     newDateStr = dateStr;
                 } else {
                     imcref.setSessionCounterDate(date);
+                    mainLog.info("Session counter startdate value updated by user: " + user.getLoginName() + ", new date = " + newDateStr + ", old date = " + dateFormat.format(currentDate));
                 }
 
             } catch ( ParseException pe ) {
@@ -112,31 +105,66 @@ public class AdminCounter extends HttpServlet {
         }
 
         String counterValue = "" + imcref.getSessionCounter();
-        currentDate = imcref.getSessionCounterDate();
 
-        // Lets generate the html page
-        Map vm = new HashMap();
-        vm.put("COUNTER_VALUE", counterValue);
-        vm.put("CURRENT_DATE_VALUE", dateFormat.format(currentDate));
-        vm.put("NEW_DATE_VALUE", newDateStr);
-        vm.put("ERRORMSG", errormsg);
-        AdminRoles.sendHtml(req, res, vm, HTML_TEMPLATE);
+        AdminSessionCounterPage adminSessionCounterPage = new AdminSessionCounterPage();
+        adminSessionCounterPage.setCounterValue(Integer.parseInt(counterValue));
+        adminSessionCounterPage.setNewDateStr(newDateStr);
+        adminSessionCounterPage.setErrormsg(errormsg);
 
-    } // End of doPost
+        adminSessionCounterPage.forward( req, res, user );
 
-
-    /**
-     * Collects the parameters from the request object
-     */
-
-    private Properties getParameters(HttpServletRequest req) {
-
-        Properties reqParams = new Properties();
-        // Lets get the parameters we know we are supposed to get from the request object
-        String counterVal = (req.getParameter("counter_value") == null) ? "" : (req.getParameter("counter_value"));
-        reqParams.setProperty("COUNTER_VALUE", counterVal);
-
-        return reqParams;
     }
 
-} // End of class
+
+    public static class AdminSessionCounterPage implements Serializable {
+
+        public static final String REQUEST_ATTRIBUTE__PAGE = "sessioncounterpage";
+        public static final String REQUEST_PARAMETER__COUNTER_VALUE= "counter_value";
+        public static final String REQUEST_PARAMETER__DATE_VALUE= "date_value";
+
+        private int counterValue ;
+        private String newDateStr ;
+        private String errormsg;
+        JSCalendar jsCalendar;
+
+
+        public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
+            putInRequest( request );
+            String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP_TEMPLATE;
+            request.getRequestDispatcher( forwardPath ).forward( request, response );
+        }
+
+        public void putInRequest( HttpServletRequest request ) {
+            request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
+        }
+
+        public int getCounterValue() {
+            return counterValue;
+        }
+
+        public void setCounterValue(int counterValue) {
+            this.counterValue = counterValue;
+        }
+
+        public String getNewDateStr() {
+            return newDateStr;
+        }
+
+        public void setNewDateStr(String newDateStr) {
+            this.newDateStr = newDateStr;
+        }
+
+        public void setErrormsg(String errormsg) {
+            this.errormsg = errormsg;
+        }
+
+        public String getErrormsg() {
+            return errormsg;
+        }
+
+        public JSCalendar getJSCalendar(HttpServletRequest request) {
+            return new JSCalendar( Utility.getLoggedOnUser(request).getLanguageIso639_2(), request ) ;
+        }
+     }
+
+}
