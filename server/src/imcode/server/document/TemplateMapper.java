@@ -247,7 +247,7 @@ public class TemplateMapper {
         int templateId = Integer.parseInt( sqlResultRow[0] );
         String templateName = sqlResultRow[1];
         String simpleName = sqlResultRow[2];
-        return new TemplateDomainObject( templateId, templateName, simpleName );
+        return new TemplateDomainObject( templateId, simpleName, templateName);
     }
 
     private TemplateGroupDomainObject createTemplateGroupFromSqlResultRow( String[] sqlResultRow ) {

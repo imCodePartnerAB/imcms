@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
@@ -22,15 +23,12 @@ import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-import com.imcode.imcms.mapping.DocumentMapper;
 
 public class SaveInclude extends HttpServlet {
 
-    private final static DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSS " );
-
-    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, java.io.IOException {
+    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         ImcmsServices imcref = Imcms.getServices();
 
         Utility.setDefaultHtmlContentType( res );
@@ -57,10 +55,11 @@ public class SaveInclude extends HttpServlet {
             if ( included_meta_id != null && include_id != null ) {
                 included_meta_id = included_meta_id.trim();
                 include_id = include_id.trim();
+                DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSS " );
                 if ( "".equals(included_meta_id) ) {
                     document.removeInclude(Integer.parseInt(include_id));
                     documentMapper.saveDocument(document, user);
-                    imcref.updateMainLog(dateFormat.format(new java.util.Date()) + "Include nr [" + include_id + "] on ["
+                    imcref.updateMainLog(dateFormat.format(new Date()) + "Include nr [" + include_id + "] on ["
                                          + meta_id_str
                                          + "] removed by user: ["
                                          + user.getFullName()
@@ -82,7 +81,7 @@ public class SaveInclude extends HttpServlet {
                         if ( user.canAddDocumentToAnyMenu(includedDocument) ) {
                             document.setInclude(Integer.parseInt(include_id), includedDocument.getId());
                             documentMapper.saveDocument(document, user);
-                            imcref.updateMainLog(dateFormat.format(new java.util.Date()) + "Include nr [" + include_id
+                            imcref.updateMainLog(dateFormat.format(new Date()) + "Include nr [" + include_id
                                                  + "] on ["
                                                  + meta_id_str
                                                  + "] changed to ["

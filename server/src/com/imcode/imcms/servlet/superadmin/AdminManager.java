@@ -170,21 +170,21 @@ public class AdminManager extends HttpServlet {
 
         if ( tabToShow.equals(PARAMETER_VALUE__SHOW_RECENT) || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY) ) {
             newDocumentsSubreport = createNewDocumentsSubreport( documentsFound );
-            SortAndSetExpandedSubreport(newDocumentsSubreport, request);
+            sortAndSetExpandedSubreport(newDocumentsSubreport, request);
 
             modifiedDocumentsSubreport = createModifiedDocumentsSubreport( documentsFound );
-            SortAndSetExpandedSubreport(modifiedDocumentsSubreport, request);
+            sortAndSetExpandedSubreport(modifiedDocumentsSubreport, request);
         }
 
         if ( tabToShow.equals(PARAMETER_VALUE__SHOW_REMINDERS) || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY) ) {
             documentsArchivedWithinOneWeekSubreport = createDocumentsArchivedWithinOneWeekSubreport( documentsFound );
-            SortAndSetExpandedSubreport(documentsArchivedWithinOneWeekSubreport, request);
+            sortAndSetExpandedSubreport(documentsArchivedWithinOneWeekSubreport, request);
 
             documentsUnpublishedWithinOneWeekSubreport = createDocumentsUnpublishedWithinOneWeekSubreport( documentsFound );
-            SortAndSetExpandedSubreport(documentsUnpublishedWithinOneWeekSubreport, request);
+            sortAndSetExpandedSubreport(documentsUnpublishedWithinOneWeekSubreport, request);
 
             documentsUnmodifiedForSixMonthsSubreport = createDocumentsUnmodifiedForSixMonthsSubreport( documentsFound );
-            SortAndSetExpandedSubreport(documentsUnmodifiedForSixMonthsSubreport, request);
+            sortAndSetExpandedSubreport(documentsUnmodifiedForSixMonthsSubreport, request);
         }
 
         AdminManagerPage adminManagerPage = null;
@@ -265,7 +265,7 @@ public class AdminManager extends HttpServlet {
         adminManagerPage.forward( request, response, loggedOnUser );
     }
 
-    private void SortAndSetExpandedSubreport (AdminManagerSubreport subreport, HttpServletRequest request ) {
+    private void sortAndSetExpandedSubreport (AdminManagerSubreport subreport, HttpServletRequest request ) {
 
             String newSortOrder = request.getParameter( subreport.getName() + "_sortorder" );
             if ( null != newSortOrder ) {

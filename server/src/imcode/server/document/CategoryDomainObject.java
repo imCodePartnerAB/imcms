@@ -2,9 +2,7 @@ package imcode.server.document;
 
 import java.io.Serializable;
 
-/**
- * @author kreiger
- */
+/** @author kreiger */
 public class CategoryDomainObject implements Comparable, Serializable {
 
     private String name;
@@ -13,11 +11,11 @@ public class CategoryDomainObject implements Comparable, Serializable {
     private String description = "";
     private String imageUrl = "";
 
-    public CategoryDomainObject(int id, String name, String description, String image, CategoryTypeDomainObject type) {
+    public CategoryDomainObject(int id, String name, String description, String imageUrl, CategoryTypeDomainObject type) {
         this.description = description;
         this.type = type;
         this.name = name;
-        this.imageUrl = image;
+        this.imageUrl = imageUrl;
         this.id = id;
     }
 
@@ -34,12 +32,16 @@ public class CategoryDomainObject implements Comparable, Serializable {
     }
 
     public String toString() {
-        return type+": "+name ;
+        return type + ": " + name;
     }
 
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CategoryDomainObject)) return false;
+        if ( this == o ) {
+            return true;
+        }
+        if ( !( o instanceof CategoryDomainObject ) ) {
+            return false;
+        }
 
         final CategoryDomainObject categoryDomainObject = (CategoryDomainObject) o;
 
@@ -52,15 +54,15 @@ public class CategoryDomainObject implements Comparable, Serializable {
     }
 
     public String getDescription() {
-        return description ;
+        return description;
     }
 
-     public String getImageUrl() {
+    public String getImageUrl() {
         return imageUrl;
     }
 
-    public int compareTo( Object o ) {
-        return name.compareToIgnoreCase( ( (CategoryDomainObject) o ).name ) ;
+    public int compareTo(Object o) {
+        return name.compareToIgnoreCase(( (CategoryDomainObject) o ).name);
     }
 
     public void setName(String name) {
@@ -79,7 +81,7 @@ public class CategoryDomainObject implements Comparable, Serializable {
         this.type = type;
     }
 
-    public void setId( int id ) {
+    public void setId(int id) {
         this.id = id;
     }
 }

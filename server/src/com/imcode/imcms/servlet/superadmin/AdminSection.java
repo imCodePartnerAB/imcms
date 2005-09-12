@@ -228,8 +228,9 @@ public class AdminSection extends HttpServlet {
         if (arr != null) {
             for (int i = 0; i < arr.length; i++) {
                 if (not_id != null) {
-                    if (not_id.equals(arr[i][0]))
+                    if (not_id.equals(arr[i][0])) {
                         continue;
+                    }
                 }
                 Vector vec = new Vector();
                 vec.add("#section_id#");

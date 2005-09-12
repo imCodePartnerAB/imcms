@@ -35,16 +35,11 @@ public class AdminDeleteDoc extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
         if ( !user.isSuperAdmin() ) {
-            String header = "Error in AdminCounter.";
-            Properties langproperties = imcref.getLanguageProperties(user);
-            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-            log.debug(header + "- user is not an administrator");
-            AdminRoles.printErrorMessage(req, res, header, msg);
-            return;
+            AdminIpAccess.printNonAdminError(imcref, user, req, res, getClass());
+        } else {
+            Map vm = new HashMap();
+            AdminRoles.sendHtml(req, res, vm, HTML_TEMPLATE);
         }
-
-        Map vm = new HashMap();
-        AdminRoles.sendHtml(req, res, vm, HTML_TEMPLATE);
 
     }
 
@@ -55,69 +50,56 @@ public class AdminDeleteDoc extends HttpServlet {
         // Lets check if the user is an admin, otherwise throw him out.
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if (user.isSuperAdmin() == false) {
-            String header = "Error in AdminCounter.";
-            Properties langproperties = imcref.getLanguageProperties(user);
-            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-            log.debug(header + "- user is not an administrator");
-            AdminRoles.printErrorMessage(req, res, header, msg);
-            return;
-        }
+        if ( !user.isSuperAdmin() ) {
+            AdminIpAccess.printNonAdminError(imcref, user, req, res, getClass());
+        } else {
+            if ( req.getParameter("DELETE_DOC") != null ) {
 
-        // ******* DELETE DOC **********
+                // Lets get the parameters from html page and validate them
+                Properties params = getParameters(req);
+                if ( !validateParameters(params) ) {
+                    String header = "Error in AdminDeleteDoc.";
+                    Properties langproperties = imcref.getLanguageProperties(user);
+                    String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_valid_metaid") + "<br>";
+                    log.debug(header + "- no valid metaid");
+                    AdminRoles.printErrorMessage(req, res, header, msg);
+                    return;
+                }
 
-        if (req.getParameter("DELETE_DOC") != null) {
+                // OK, Lets check that the metaid were gonna delete exists in db
+                int metaId = Integer.parseInt(params.getProperty("DEL_META_ID"));
+                String foundMetaId = imcref.getDatabase().executeStringProcedure("FindMetaId", new String[] { ""
+                                                                                                              + metaId });
+                log.debug("FoundMetaId: " + foundMetaId);
 
-            // Lets get the parameters from html page and validate them
-            Properties params = this.getParameters(req);
-            if (this.validateParameters(params) == false) {
-                String header = "Error in AdminDeleteDoc.";
-                Properties langproperties = imcref.getLanguageProperties(user);
-                String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_valid_metaid") + "<br>";
-                log.debug(header + "- no valid metaid");
-                AdminRoles.printErrorMessage(req, res, header, msg);
-                return;
+                if ( foundMetaId == null ) {
+                    String header = "Error in AdminDeleteDoc. ";
+                    Properties langproperties = imcref.getLanguageProperties(user);
+                    String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_metaid_in_db") + "( "
+                                 + metaId
+                                 + " ) <br>";
+                    log.debug(header + "- metaid could not be found in db");
+                    AdminRoles.printErrorMessage(req, res, header, msg);
+                    return;
+                }
+
+                // Ok, Lets delete the meta id
+                DefaultDocumentMapper documentMapper = imcref.getDefaultDocumentMapper();
+                DocumentDomainObject document = documentMapper.getDocument(metaId);
+                documentMapper.deleteDocument(document, user);
+                imcref.updateMainLog("Document  " + "[" + document.getId() +
+                                     "] ALL deleted by user: [" + user.getFullName() + "]");
+
+                doGet(req, res);
+                //this.goAdminUsers(req, res) ;
+            } else if ( req.getParameter("GO_BACK") != null ) {
+                String url = "AdminManager";
+                res.sendRedirect(url);
+            } else {
+                log.debug("Unidentified argument was sent!");
+                doGet(req, res);
             }
-
-            // OK, Lets check that the metaid were gonna delete exists in db
-            int metaId = Integer.parseInt(params.getProperty("DEL_META_ID"));
-            String foundMetaId = imcref.getDatabase().executeStringProcedure( "FindMetaId", new String[] {""
-                                                                                                          + metaId} );
-            log.debug("FoundMetaId: " + foundMetaId);
-
-            if (foundMetaId == null) {
-                String header = "Error in AdminDeleteDoc. ";
-                Properties langproperties = imcref.getLanguageProperties(user);
-                String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_metaid_in_db") + "( " + metaId
-                             + " ) <br>";
-                log.debug(header + "- metaid could not be found in db");
-                AdminRoles.printErrorMessage(req, res, header, msg);
-                return;
-            }
-
-            // Ok, Lets delete the meta id
-            DefaultDocumentMapper documentMapper = imcref.getDefaultDocumentMapper();
-            DocumentDomainObject document = documentMapper.getDocument( metaId ) ;
-            documentMapper.deleteDocument( document, user);
-            imcref.updateMainLog( "Document  " + "[" + document.getId() +
-                                  "] ALL deleted by user: [" + user.getFullName() + "]" );
-
-            this.doGet(req, res);
-            //this.goAdminUsers(req, res) ;
-            return;
         }
-
-        // ******** GO_BACK TO THE MENY ***************
-        if (req.getParameter("GO_BACK") != null) {
-            String url = "AdminManager";
-            res.sendRedirect(url);
-            return;
-        }
-
-        // ******** UNIDENTIFIED ARGUMENT TO SERVER ********
-        log.debug("Unidentified argument was sent!");
-        doGet(req, res);
-        return;
     } // end HTTP POST
 
     /**
@@ -128,7 +110,7 @@ public class AdminDeleteDoc extends HttpServlet {
 
         Properties params = new Properties();
         // Lets get the parameters we know we are supposed to get from the request object
-        String del_meta_id = (req.getParameter("delete_meta_id") == null) ? "" : (req.getParameter("delete_meta_id"));
+        String del_meta_id = req.getParameter("delete_meta_id") == null ? "" : req.getParameter("delete_meta_id");
 
         params.setProperty("DEL_META_ID", del_meta_id);
 
@@ -141,7 +123,9 @@ public class AdminDeleteDoc extends HttpServlet {
 
     private boolean validateParameters(Properties params) {
 
-        if ( params.values().contains("") ) return false;
+        if ( params.values().contains("") ) { 
+            return false;
+        }
         try {
             Integer.parseInt(params.getProperty("DEL_META_ID"));
         } catch (NumberFormatException e) {

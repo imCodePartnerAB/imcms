@@ -4,9 +4,9 @@ import imcode.server.document.TemplateGroupDomainObject;
 
 public class TemplateGroup {
 
-    private TemplateGroupDomainObject internalTemplateGroup;
+    private final TemplateGroupDomainObject internalTemplateGroup;
 
-    public TemplateGroup( TemplateGroupDomainObject internal ) {
+    public TemplateGroup(TemplateGroupDomainObject internal) {
         internalTemplateGroup = internal;
     }
 
@@ -19,24 +19,24 @@ public class TemplateGroup {
     }
 
     TemplateGroupDomainObject getInternal() {
-        return internalTemplateGroup ;
+        return internalTemplateGroup;
     }
 
-    public boolean equals( Object o ) {
-        if( this == o )
+    public boolean equals(Object o) {
+        if ( this == o ) {
             return true;
-        if( !(o instanceof TemplateGroup) )
+        }
+        if ( !( o instanceof TemplateGroup ) ) {
             return false;
+        }
 
-        final TemplateGroup templateGroup = (TemplateGroup)o;
+        final TemplateGroup templateGroup = (TemplateGroup) o;
 
-        if( internalTemplateGroup != null ? !internalTemplateGroup.equals( templateGroup.internalTemplateGroup ) : templateGroup.internalTemplateGroup != null )
-            return false;
+        return internalTemplateGroup.equals(templateGroup.internalTemplateGroup) ;
 
-        return true;
     }
 
     public int hashCode() {
-        return (internalTemplateGroup != null ? internalTemplateGroup.hashCode() : 0);
+        return internalTemplateGroup.hashCode() ;
     }
 }

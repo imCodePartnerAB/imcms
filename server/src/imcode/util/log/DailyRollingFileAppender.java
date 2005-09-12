@@ -1,17 +1,17 @@
 package imcode.util.log ;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Calendar;
-import java.util.TimeZone;
-import java.util.Locale;
-import java.io.*;
-
-import org.apache.log4j.helpers.LogLog;
-import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
+import org.apache.log4j.helpers.LogLog;
+import org.apache.log4j.spi.LoggingEvent;
+
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
     Complete ripoff of org.apache.log4j.DailyRollingFileAppender in log4j 1.2.8,
@@ -62,7 +62,7 @@ public class DailyRollingFileAppender extends FileAppender {
     int checkPeriod = TOP_OF_TROUBLE;
 
     // The gmtTimeZone is used only in computeCheckPeriod() method.
-    private static final TimeZone gmtTimeZone = TimeZone.getTimeZone( "GMT" );
+    private static final TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone( "GMT" );
 
 
     /**
@@ -155,13 +155,13 @@ public class DailyRollingFileAppender extends FileAppender {
     // GMT (the epoch).
 
     private int computeCheckPeriod() {
-        RollingCalendar rollingCalendar = new RollingCalendar( gmtTimeZone, Locale.ENGLISH );
+        RollingCalendar rollingCalendar = new RollingCalendar( GMT_TIME_ZONE, Locale.ENGLISH );
         // set sate to 1970-01-01 00:00:00 GMT
         Date epoch = new Date( 0 );
         if ( datePattern != null ) {
             for ( int i = TOP_OF_MINUTE; i <= TOP_OF_MONTH; i++ ) {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat( datePattern );
-                simpleDateFormat.setTimeZone( gmtTimeZone ); // do all date formatting in GMT
+                simpleDateFormat.setTimeZone( GMT_TIME_ZONE ); // do all date formatting in GMT
                 String r0 = simpleDateFormat.format( epoch );
                 rollingCalendar.setType( i );
                 Date next = new Date( rollingCalendar.getNextCheckMillis( epoch ) );

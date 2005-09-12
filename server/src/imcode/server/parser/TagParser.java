@@ -2,13 +2,24 @@ package imcode.server.parser;
 
 import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
-import imcode.server.*;
+import imcode.server.DocumentRequest;
+import imcode.server.ImcmsServices;
+import imcode.server.LanguageMapper;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.SectionDomainObject;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.FileDocumentImageSource;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.*;
+import imcode.util.DateConstants;
+import imcode.util.FileCache;
+import imcode.util.Html;
+import imcode.util.ImcmsImageUtils;
+import imcode.util.Utility;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -18,20 +29,30 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
-import java.io.*;
-import java.net.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.*;
 
 class TagParser {
 
-    private static Pattern HTML_PREBODY_PATTERN = null;
-    private static Pattern HTML_POSTBODY_PATTERN = null;
-    private static Pattern IMCMS_TAG_PATTERN = null;
-    private static Pattern IMCMS_END_TAG_PATTERN = null;
-    private static Pattern ATTRIBUTES_PATTERN;
+    private static Pattern htmlPrebodyPattern;
+    private static Pattern htmlPostbodyPattern;
+    private static Pattern imcmsTagPattern;
+    private static Pattern imcmsEndTagPattern;
+    private static Pattern attributesPattern;
 
-    private final static Logger log = Logger.getLogger( TagParser.class.getName() );
+    private final static Logger log = Logger.getLogger(TagParser.class.getName());
 
     private FileCache fileCache = new FileCache();
 
@@ -40,23 +61,23 @@ class TagParser {
 
         try {
 
-            HTML_PREBODY_PATTERN = patComp.compile( "^.*?<[Bb][Oo][Dd][Yy].*?>", Perl5Compiler.SINGLELINE_MASK
-                                                                                 | Perl5Compiler.READ_ONLY_MASK );
-            HTML_POSTBODY_PATTERN = patComp.compile( "<\\/[Bb][Oo][Dd][Yy]>.*$", Perl5Compiler.SINGLELINE_MASK
-                                                                                 | Perl5Compiler.READ_ONLY_MASK );
-            IMCMS_TAG_PATTERN = patComp.compile( "<\\?imcms:(\\w+)\\b(.*?)\\s*\\?>", Perl5Compiler.SINGLELINE_MASK
-                                                                              | Perl5Compiler.READ_ONLY_MASK );
-            IMCMS_END_TAG_PATTERN = patComp.compile( "<\\?/imcms:(\\w+)\\s*\\?>", Perl5Compiler.SINGLELINE_MASK
-                                                                                  | Perl5Compiler.READ_ONLY_MASK );
-            ATTRIBUTES_PATTERN = patComp.compile( "\\s+(\\w+)\\s*=\\s*([\"'])(.*?)\\2", Perl5Compiler.SINGLELINE_MASK
-                                                                                                | Perl5Compiler.READ_ONLY_MASK );
+            htmlPrebodyPattern = patComp.compile("^.*?<[Bb][Oo][Dd][Yy].*?>", Perl5Compiler.SINGLELINE_MASK
+                                                                              | Perl5Compiler.READ_ONLY_MASK);
+            htmlPostbodyPattern = patComp.compile("<\\/[Bb][Oo][Dd][Yy]>.*$", Perl5Compiler.SINGLELINE_MASK
+                                                                              | Perl5Compiler.READ_ONLY_MASK);
+            imcmsTagPattern = patComp.compile("<\\?imcms:(\\w+)\\b(.*?)\\s*\\?>", Perl5Compiler.SINGLELINE_MASK
+                                                                                  | Perl5Compiler.READ_ONLY_MASK);
+            imcmsEndTagPattern = patComp.compile("<\\?/imcms:(\\w+)\\s*\\?>", Perl5Compiler.SINGLELINE_MASK
+                                                                              | Perl5Compiler.READ_ONLY_MASK);
+            attributesPattern = patComp.compile("\\s+(\\w+)\\s*=\\s*([\"'])(.*?)\\2", Perl5Compiler.SINGLELINE_MASK
+                                                                                      | Perl5Compiler.READ_ONLY_MASK);
         } catch ( MalformedPatternException ignored ) {
             // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
-            log.fatal( "Danger, Will Robinson!", ignored );
+            log.fatal("Danger, Will Robinson!", ignored);
         }
     }
 
-    private final Substitution NULL_SUBSTITUTION = new StringSubstitution( "" );
+    private final static Substitution NULL_SUBSTITUTION = new StringSubstitution("");
 
     private TextDocumentParser textDocParser;
 
@@ -79,13 +100,13 @@ class TagParser {
 
     private TextDocumentViewing viewing;
 
-    TagParser( TextDocumentParser textdocparser, ParserParameters parserParameters,
-               int includelevel,
-               TextDocumentViewing viewing ) {
+    TagParser(TextDocumentParser textdocparser, ParserParameters parserParameters,
+              int includelevel,
+              TextDocumentViewing viewing) {
         this.textDocParser = textdocparser;
         this.parserParameters = parserParameters;
         this.documentRequest = parserParameters.getDocumentRequest();
-        this.document = (TextDocumentDomainObject)documentRequest.getDocument();
+        this.document = (TextDocumentDomainObject) documentRequest.getDocument();
         this.service = documentRequest.getServices();
 
         this.includeMode = viewing.isEditingIncludes();
@@ -95,52 +116,46 @@ class TagParser {
         this.textMap = document.getTexts();
 
         this.imageMode = viewing.isEditingImages();
-        this.imageMap = getImageMap( document, imageMode, documentRequest );
+        this.imageMap = getImageMap(document, imageMode, documentRequest);
 
-        this.viewing = viewing ;
+        this.viewing = viewing;
 
     }
 
-    private static Map getImageMap( TextDocumentDomainObject document, boolean imageMode,
-                             DocumentRequest documentRequest ) {
+    private static Map getImageMap(TextDocumentDomainObject document, boolean imageMode,
+                                   DocumentRequest documentRequest) {
         Map images = document.getImages();
         Map imageMap = new HashMap();
         for ( Iterator iterator = images.keySet().iterator(); iterator.hasNext(); ) {
-            Integer imageIndex = (Integer)iterator.next();
-            ImageDomainObject image = (ImageDomainObject)images.get( imageIndex );
+            Integer imageIndex = (Integer) iterator.next();
+            ImageDomainObject image = (ImageDomainObject) images.get(imageIndex);
             ImageSource imageSource = image.getSource();
             if ( !( imageSource instanceof FileDocumentImageSource )
                  || imageMode
-                 || documentRequest.getUser().canAccess( ( (FileDocumentImageSource)imageSource ).getFileDocument() ) ) {
-                imageMap.put( imageIndex, ImcmsImageUtils.getImageHtmlTag( image, documentRequest.getHttpServletRequest() ) );
+                 || documentRequest.getUser().canAccess(( (FileDocumentImageSource) imageSource ).getFileDocument()) ) {
+                imageMap.put(imageIndex, ImcmsImageUtils.getImageHtmlTag(image, documentRequest.getHttpServletRequest()));
             }
         }
         return imageMap;
     }
 
-    /**
-     * Handle a <?imcms:metaid?> tag.
-     */
+    /** Handle a <?imcms:metaid?> tag. */
     private String tagMetaId() {
         return "" + document.getId();
     }
 
-    /**
-     * Handle a <?imcms:section?> tag.
-     */
-    private String tagSection( Properties attributes ) {
-        return tagSections( attributes );
+    /** Handle a <?imcms:section?> tag. */
+    private String tagSection(Properties attributes) {
+        return tagSections(attributes);
     }
 
-    /**
-     * Handle a <?imcms:section?> tag.
-     */
-    private String tagSections( Properties attributes ) {
+    /** Handle a <?imcms:section?> tag. */
+    private String tagSections(Properties attributes) {
         SectionDomainObject[] section = document.getSections();
 
-        String separator = attributes.getProperty( "separator", "," );
+        String separator = attributes.getProperty("separator", ",");
 
-        return StringUtils.join( section, separator );
+        return StringUtils.join(section, separator);
     }
 
     /**
@@ -149,41 +164,45 @@ class TagParser {
      * @param attributes The attributes of the include tag
      * @param patMat     A pattern matcher.
      */
-    private String tagInclude( Properties attributes, PatternMatcher patMat ) {
-        if (shouldOutputNothingAccordingToMode(attributes, includeMode)) {
-            return "" ;
+    private String tagInclude(Properties attributes, PatternMatcher patMat) {
+        if ( shouldOutputNothingAccordingToMode(attributes, includeMode) ) {
+            return "";
         }
 
-        int no ;
+        int no;
         String attributevalue;
 
-        if ( null != ( attributevalue = attributes.getProperty( "no" ) ) ) {	    // If we have the attribute no="number"...
+        if ( null
+             != ( attributevalue = attributes.getProperty("no") ) ) {        // If we have the attribute no="number"...
             // Set the number of this include-tag
             try {
-                no = Integer.parseInt( attributevalue.trim() ); // Then set the number wanted
+                no = Integer.parseInt(attributevalue.trim()); // Then set the number wanted
                 implicitIncludeNumber = no + 1;
             } catch ( NumberFormatException ex ) {
                 return "<!-- imcms:include no failed: " + ex + " -->";
             }
-        } else if ( null != ( attributevalue = attributes.getProperty( "path" ) ) ) {
-            return includePath( attributevalue );
-        } else if ( null != ( attributevalue = attributes.getProperty( "file" ) ) ) { // If we have the attribute file="filename"...
-            return includeFile( attributevalue, patMat );
-        } else if ( null != ( attributevalue = attributes.getProperty( "document" ) ) ) { // If we have the attribute document="meta-id"
-            return includeDocument( attributevalue, attributes, patMat );
-        } else if ( null != ( attributevalue = attributes.getProperty( "url" ) ) ) { // If we have an attribute of the form url="url:url"
-            return includeUrl( attributevalue, attributes );
+        } else if ( null != ( attributevalue = attributes.getProperty("path") ) ) {
+            return includePath(attributevalue);
+        } else if ( null
+                    != ( attributevalue = attributes.getProperty("file") ) ) { // If we have the attribute file="filename"...
+            return includeFile(attributevalue, patMat);
+        } else if ( null
+                    != ( attributevalue = attributes.getProperty("document") ) ) { // If we have the attribute document="meta-id"
+            return includeDocument(attributevalue, attributes, patMat);
+        } else if ( null
+                    != ( attributevalue = attributes.getProperty("url") ) ) { // If we have an attribute of the form url="url:url"
+            return includeUrl(attributevalue, attributes);
         } else { // If we have none of the attributes no, file, url, or document
             no = implicitIncludeNumber++; // Implicitly use the next number.
         }
-        return includeEditing( attributes, no, patMat );
+        return includeEditing(attributes, no, patMat);
     }
 
-    private String includePath( String path ) {
+    private String includePath(String path) {
         HttpServletRequest request = documentRequest.getHttpServletRequest();
-        HttpServletRequestWrapper metaIdHeaderHttpServletRequest = new TagParser.MetaIdHeaderHttpServletRequest( request, document.getId() );
+        HttpServletRequestWrapper metaIdHeaderHttpServletRequest = new TagParser.MetaIdHeaderHttpServletRequest(request, document.getId());
         try {
-            return Utility.getContents( path, metaIdHeaderHttpServletRequest, documentRequest.getHttpServletResponse() );
+            return Utility.getContents(path, metaIdHeaderHttpServletRequest, documentRequest.getHttpServletResponse());
         } catch ( ServletException ex ) {
             return "<!-- imcms:include path failed: " + ex + " -->";
         } catch ( IOException ex ) {
@@ -191,31 +210,32 @@ class TagParser {
         }
     }
 
-    private String includeEditing( Properties attributes, int no, PatternMatcher patMat ) {
+    private String includeEditing(Properties attributes, int no, PatternMatcher patMat) {
         try {
-            String label = getLabel( attributes );
-            Integer includedDocumentId = document.getIncludedDocumentId( no );
+            String label = getLabel(attributes);
+            Integer includedDocumentId = document.getIncludedDocumentId(no);
             if ( includeMode ) {
                 HttpServletRequest request = documentRequest.getHttpServletRequest();
                 HttpServletResponse response = documentRequest.getHttpServletResponse();
                 UserDomainObject user = documentRequest.getUser();
                 try {
-                    request.setAttribute( "includingDocument", document );
-                    request.setAttribute( "includedDocumentId", includedDocumentId );
-                    request.setAttribute( "label", label );
-                    request.setAttribute( "includeIndex", new Integer( no ));
-                    return Utility.getContents( "/imcms/"+user.getLanguageIso639_2()+"/jsp/docadmin/text/edit_include.jsp",request, response ) ;
+                    request.setAttribute("includingDocument", document);
+                    request.setAttribute("includedDocumentId", includedDocumentId);
+                    request.setAttribute("label", label);
+                    request.setAttribute("includeIndex", new Integer(no));
+                    return Utility.getContents("/imcms/" + user.getLanguageIso639_2()
+                                               + "/jsp/docadmin/text/edit_include.jsp", request, response);
                 } catch ( Exception e ) {
-                    throw new UnhandledException( e );
+                    throw new UnhandledException(e);
                 }
             } else if ( includeLevel > 0 ) {
                 if ( null == includedDocumentId ) {
                     return "";
                 }
-                ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters( parserParameters, includedDocumentId.intValue(), attributes );
-                String documentStr = textDocParser.parsePage( includedDocumentParserParameters, includeLevel - 1 );
-                documentStr = Util.substitute( patMat, HTML_PREBODY_PATTERN, NULL_SUBSTITUTION, documentStr );
-                documentStr = Util.substitute( patMat, HTML_POSTBODY_PATTERN, NULL_SUBSTITUTION, documentStr );
+                ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters(parserParameters, includedDocumentId.intValue(), attributes);
+                String documentStr = textDocParser.parsePage(includedDocumentParserParameters, includeLevel - 1);
+                documentStr = Util.substitute(patMat, htmlPrebodyPattern, NULL_SUBSTITUTION, documentStr);
+                documentStr = Util.substitute(patMat, htmlPostbodyPattern, NULL_SUBSTITUTION, documentStr);
                 return documentStr;
             } else {
                 return "<!-- imcms:include failed: max include-level reached. -->";
@@ -225,64 +245,71 @@ class TagParser {
         }
     }
 
-    private String includeUrl( String attribute, Properties attributes ) {
-        String urlStr = attribute ;
+    private String includeUrl(String attribute, Properties attributes) {
+        String urlStr = attribute;
         try {
-            String commaSeparatedNamesOfParametersToSend = attributes.getProperty( "sendparameters" );
+            String commaSeparatedNamesOfParametersToSend = attributes.getProperty("sendparameters");
 
-            urlStr += -1 == urlStr.indexOf( '?' ) ? "?" : "&";
-            Set parameterNamesToSend = createSetFromCommaSeparatedString( commaSeparatedNamesOfParametersToSend );
-            urlStr += createQueryStringFromRequest( documentRequest.getHttpServletRequest(), parameterNamesToSend );
+            urlStr += -1 == urlStr.indexOf('?') ? "?" : "&";
+            Set parameterNamesToSend = createSetFromCommaSeparatedString(commaSeparatedNamesOfParametersToSend);
+            urlStr += createQueryStringFromRequest(documentRequest.getHttpServletRequest(), parameterNamesToSend);
 
-            if ( urlStr.startsWith( "/" ) ) {  // lets add hostname if we got a relative path
+            if ( urlStr.startsWith("/") ) {  // lets add hostname if we got a relative path
                 urlStr = documentRequest.getHttpServletRequest().getScheme()
                          + "://" + documentRequest.getHttpServletRequest().getServerName()
                          + ':'
                          + documentRequest.getHttpServletRequest().getServerPort()
                          + urlStr;
             }
-            URL url = new URL( urlStr );
+            URL url = new URL(urlStr);
             String urlProtocol = url.getProtocol();
-            if ( "file".equalsIgnoreCase( urlProtocol ) ) { // Make sure we don't have to defend against file://urls...
+            if ( "file".equalsIgnoreCase(urlProtocol) ) { // Make sure we don't have to defend against file://urls...
                 return "<!-- imcms:include url failed: file-url not allowed -->";
             }
             String sessionId = documentRequest.getHttpServletRequest().getSession().getId();
             URLConnection urlConnection = url.openConnection();
-            urlConnection.setRequestProperty( "User-Agent",
-                                              documentRequest.getHttpServletRequest().getHeader( "User-agent" ) );
-            if ( null != attributes.getProperty( "sendsessionid" ) ) {
-                urlConnection.addRequestProperty( "Cookie", ImcmsSetupFilter.JSESSIONID_COOKIE_NAME + "="
-                                                            + sessionId );
+            urlConnection.setRequestProperty("User-Agent",
+                                             documentRequest.getHttpServletRequest().getHeader("User-agent"));
+            if ( null != attributes.getProperty("sendsessionid") ) {
+                urlConnection.addRequestProperty("Cookie", ImcmsSetupFilter.JSESSIONID_COOKIE_NAME + "="
+                                                           + sessionId);
             }
-            if ( null != attributes.getProperty( "sendcookies" ) ) {
+            if ( null != attributes.getProperty("sendcookies") ) {
                 Cookie[] requestCookies = documentRequest.getHttpServletRequest().getCookies();
                 for ( int i = 0; requestCookies != null && i < requestCookies.length; ++i ) {
                     Cookie theCookie = requestCookies[i];
-                    if ( !ImcmsSetupFilter.JSESSIONID_COOKIE_NAME.equals( theCookie.getName() ) ) {
-                        urlConnection.addRequestProperty( "Cookie", theCookie.getName() + "="
-                                                                    + theCookie.getValue() );
+                    if ( !ImcmsSetupFilter.JSESSIONID_COOKIE_NAME.equals(theCookie.getName()) ) {
+                        urlConnection.addRequestProperty("Cookie", theCookie.getName() + "="
+                                                                   + theCookie.getValue());
                     }
                 }
             }
-            if ( null != attributes.getProperty( "sendmetaid" ) ) {
-                urlConnection.setRequestProperty( "X-Meta-Id", "" + document.getId() );
+            if ( null != attributes.getProperty("sendmetaid") ) {
+                urlConnection.setRequestProperty("X-Meta-Id", "" + document.getId());
             }
 
             InputStream connectionInputStream = urlConnection.getInputStream();
             String contentType = urlConnection.getContentType();
-            String contentEncoding = StringUtils.substringAfter( contentType, "charset=" );
-            if ( "".equals( contentEncoding ) ) {
+            String contentEncoding = StringUtils.substringAfter(contentType, "charset=");
+            if ( "".equals(contentEncoding) ) {
                 contentEncoding = WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252;
             }
-            InputStreamReader urlInput = new InputStreamReader( connectionInputStream, contentEncoding );
-            int charsRead ;
-            final int URL_BUFFER_LEN = 16384;
-            char[] buffer = new char[URL_BUFFER_LEN];
-            StringBuffer urlResult = new StringBuffer();
-            while ( -1 != ( charsRead = urlInput.read( buffer, 0, URL_BUFFER_LEN ) ) ) {
-                urlResult.append( buffer, 0, charsRead );
+            InputStreamReader urlInput = null;
+            try {
+                urlInput = new InputStreamReader(connectionInputStream, contentEncoding);
+                int charsRead;
+                final int URL_BUFFER_LEN = 16384;
+                char[] buffer = new char[URL_BUFFER_LEN];
+                StringBuffer urlResult = new StringBuffer();
+                while ( -1 != ( charsRead = urlInput.read(buffer, 0, URL_BUFFER_LEN) ) ) {
+                    urlResult.append(buffer, 0, charsRead);
+                }
+                return urlResult.toString();
+            } finally {
+                if ( null != urlInput ) {
+                    urlInput.close();
+                }
             }
-            return urlResult.toString();
         } catch ( MalformedURLException ex ) {
             return "<!-- imcms:include url failed: " + ex + " -->";
         } catch ( IOException ex ) {
@@ -292,14 +319,14 @@ class TagParser {
         }
     }
 
-    private String includeDocument( String attributevalue, Properties attributes, PatternMatcher patMat ) {
+    private String includeDocument(String attributevalue, Properties attributes, PatternMatcher patMat) {
         try {
             if ( includeLevel > 0 ) {
-                int included_meta_id = Integer.parseInt( attributevalue );
-                ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters( parserParameters, included_meta_id, attributes );
-                String documentStr = textDocParser.parsePage( includedDocumentParserParameters, includeLevel - 1 );
-                documentStr = Util.substitute( patMat, HTML_PREBODY_PATTERN, NULL_SUBSTITUTION, documentStr );
-                documentStr = Util.substitute( patMat, HTML_POSTBODY_PATTERN, NULL_SUBSTITUTION, documentStr );
+                int included_meta_id = Integer.parseInt(attributevalue);
+                ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters(parserParameters, included_meta_id, attributes);
+                String documentStr = textDocParser.parsePage(includedDocumentParserParameters, includeLevel - 1);
+                documentStr = Util.substitute(patMat, htmlPrebodyPattern, NULL_SUBSTITUTION, documentStr);
+                documentStr = Util.substitute(patMat, htmlPostbodyPattern, NULL_SUBSTITUTION, documentStr);
                 return documentStr;
             }
         } catch ( NumberFormatException ex ) {
@@ -314,55 +341,55 @@ class TagParser {
 
     private String includeFile(String attributevalue, PatternMatcher patMat) {// Fetch a file from the disk
         try {
-            return replaceTags( patMat, fileCache.getCachedFileString( new File( service.getIncludePath(), attributevalue ) ), false); // Get a file from the include directory
+            return replaceTags(patMat, fileCache.getCachedFileString(new File(service.getIncludePath(), attributevalue)), false); // Get a file from the include directory
         } catch ( IOException ex ) {
             return "<!-- imcms:include file failed: " + ex + " -->";
         }
     }
 
-    private ParserParameters createIncludedDocumentParserParameters( ParserParameters parserParameters,
-                                                                     int included_meta_id, Properties attributes ) {
+    private ParserParameters createIncludedDocumentParserParameters(ParserParameters parserParameters,
+                                                                    int included_meta_id, Properties attributes) {
         ParserParameters includedParserParameters = null;
         try {
-            includedParserParameters = (ParserParameters)parserParameters.clone();
-            includedParserParameters.setTemplate( attributes.getProperty( "template" ) );
-            includedParserParameters.setParameter( attributes.getProperty( "param" ) );
-            includedParserParameters.getDocumentRequest().setDocument( service.getDefaultDocumentMapper().getDocument( included_meta_id ) );
-            includedParserParameters.getDocumentRequest().setReferrer( document );
-            includedParserParameters.setFlags( 0 );
-            includedParserParameters.setAdminButtonsVisible( false ) ;
+            includedParserParameters = (ParserParameters) parserParameters.clone();
+            includedParserParameters.setTemplate(attributes.getProperty("template"));
+            includedParserParameters.setParameter(attributes.getProperty("param"));
+            includedParserParameters.getDocumentRequest().setDocument(service.getDefaultDocumentMapper().getDocument(included_meta_id));
+            includedParserParameters.getDocumentRequest().setReferrer(document);
+            includedParserParameters.setFlags(0);
+            includedParserParameters.setAdminButtonsVisible(false);
         } catch ( CloneNotSupportedException e ) {
             // ignored, supported
         }
         return includedParserParameters;
     }
 
-    private String createQueryStringFromRequest( HttpServletRequest httpServletRequest, Set parameterNamesToSend ) {
+    private String createQueryStringFromRequest(HttpServletRequest httpServletRequest, Set parameterNamesToSend) {
         List parameterNameValuePairs = new ArrayList();
         Enumeration parameterNames = httpServletRequest.getParameterNames();
         while ( parameterNames.hasMoreElements() ) {
-            String parameterName = (String)parameterNames.nextElement();
-            if ( null == parameterNamesToSend || parameterNamesToSend.contains( parameterName ) ) {
-                String[] parameterValues = httpServletRequest.getParameterValues( parameterName );
+            String parameterName = (String) parameterNames.nextElement();
+            if ( null == parameterNamesToSend || parameterNamesToSend.contains(parameterName) ) {
+                String[] parameterValues = httpServletRequest.getParameterValues(parameterName);
                 for ( int i = 0; i < parameterValues.length; i++ ) {
                     String parameterValue = parameterValues[i];
-                    parameterNameValuePairs.add( URLEncoder.encode( parameterName ) + '='
-                                                 + URLEncoder.encode( parameterValue ) );
+                    parameterNameValuePairs.add(URLEncoder.encode(parameterName) + '='
+                                                + URLEncoder.encode(parameterValue));
                 }
             }
         }
-        return StringUtils.join( parameterNameValuePairs.iterator(), '&' );
+        return StringUtils.join(parameterNameValuePairs.iterator(), '&');
     }
 
-    private Set createSetFromCommaSeparatedString( String commaSeparatedNames ) {
+    private Set createSetFromCommaSeparatedString(String commaSeparatedNames) {
         if ( null == commaSeparatedNames ) {
             return null;
         }
-        StringTokenizer commaAndWhitespaceSeparatedTokenizer = new StringTokenizer( commaSeparatedNames, ", \t\r\n" );
+        StringTokenizer commaAndWhitespaceSeparatedTokenizer = new StringTokenizer(commaSeparatedNames, ", \t\r\n");
         Set names = new HashSet();
         while ( commaAndWhitespaceSeparatedTokenizer.hasMoreTokens() ) {
             String parameterName = commaAndWhitespaceSeparatedTokenizer.nextToken();
-            names.add( parameterName );
+            names.add(parameterName);
         }
         return names;
     }
@@ -381,88 +408,87 @@ class TagParser {
      * @param patMat
      */
     private String tagText(Properties attributes, PatternMatcher patMat) {
-        if ( shouldOutputNothingAccordingToMode( attributes, textMode ) ) {
+        if ( shouldOutputNothingAccordingToMode(attributes, textMode) ) {
             return "";
         }
         // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
-        String noStr = attributes.getProperty( "no" );
+        String noStr = attributes.getProperty("no");
         int no;
-        TextDomainObject text ;
+        TextDomainObject text;
         if ( null == noStr ) {
             no = implicitTextNumber++;
-            text = (TextDomainObject)textMap.get( new Integer( no ) );
+            text = (TextDomainObject) textMap.get(new Integer(no));
         } else {
             noStr = noStr.trim();
-            no = Integer.parseInt( noStr );
-            text = (TextDomainObject)textMap.get( new Integer( no ) );
+            no = Integer.parseInt(noStr);
+            text = (TextDomainObject) textMap.get(new Integer(no));
             implicitTextNumber = no + 1;
         }
-        String result = "" ;
+        String result = "";
         if ( text != null ) {
             result = text.toHtmlString();
-            if (text.getType() == TextDomainObject.TEXT_TYPE_HTML) {
-                result = replaceTags(patMat, result, true) ;
+            if ( text.getType() == TextDomainObject.TEXT_TYPE_HTML ) {
+                result = replaceTags(patMat, result, true);
             }
         }
 
         if ( textMode ) {
-            HttpServletRequest request = documentRequest.getHttpServletRequest() ;
+            HttpServletRequest request = documentRequest.getHttpServletRequest();
             HttpServletResponse response = documentRequest.getHttpServletResponse();
-            String formatsAttribute = attributes.getProperty( "formats", "" ) ;
-            String[] formats = null != formatsAttribute ? formatsAttribute.split( "\\W+" ) : null ;
-            request.setAttribute( "document", documentRequest.getDocument());
-            request.setAttribute( "textIndex", new Integer( no ));
-            String label = getLabel( attributes );
-            request.setAttribute( "label", label);
-            request.setAttribute( "content", result );
-            request.setAttribute( "formats", formats );
-            request.setAttribute( "rows", attributes.getProperty( "rows" ) );
+            String formatsAttribute = attributes.getProperty("formats", "");
+            String[] formats = null != formatsAttribute ? formatsAttribute.split("\\W+") : null;
+            request.setAttribute("document", documentRequest.getDocument());
+            request.setAttribute("textIndex", new Integer(no));
+            String label = getLabel(attributes);
+            request.setAttribute("label", label);
+            request.setAttribute("content", result);
+            request.setAttribute("formats", formats);
+            request.setAttribute("rows", attributes.getProperty("rows"));
 
             try {
-                result = Utility.getContents( "/imcms/"+documentRequest.getUser().getLanguageIso639_2()+"/jsp/docadmin/text/edit_text.jsp", request, response ) ;
+                result = Utility.getContents("/imcms/" + documentRequest.getUser().getLanguageIso639_2()
+                                             + "/jsp/docadmin/text/edit_text.jsp", request, response);
             } catch ( ServletException e ) {
-                throw new UnhandledException( e );
+                throw new UnhandledException(e);
             } catch ( IOException e ) {
-                throw new UnhandledException( e );
+                throw new UnhandledException(e);
             }
         }
 
         return result;
     }
 
-    private boolean shouldOutputNothingAccordingToMode( Properties attributes, boolean mode ) {
-        String modeAttribute = attributes.getProperty( "mode" );
-        return StringUtils.isNotBlank( modeAttribute )
-             && ( mode && "read".startsWith( modeAttribute ) // With mode="read", we don't want anything in textMode.
-                  || !mode && "write".startsWith( modeAttribute )// With mode="write", we don't want anything unless we're in textMode.
-                );
+    private boolean shouldOutputNothingAccordingToMode(Properties attributes, boolean mode) {
+        String modeAttribute = attributes.getProperty("mode");
+        return StringUtils.isNotBlank(modeAttribute)
+               && ( mode && "read".startsWith(modeAttribute) // With mode="read", we don't want anything in textMode.
+                    || !mode
+                       && "write".startsWith(modeAttribute)// With mode="write", we don't want anything unless we're in textMode.
+        );
     }
 
-    private String getLabel( Properties attributes ) {
-        return attributes.getProperty( "label", "" ).replaceAll( "\\s+", " " );
+    private String getLabel(Properties attributes) {
+        return attributes.getProperty("label", "").replaceAll("\\s+", " ");
     }
 
-    private String[] getLabelTags( Properties attributes, int no,
-                                   String finalresult ) {
-        String label = getLabel( attributes );
+    private String[] getLabelTags(Properties attributes, int no,
+                                  String finalresult) {
+        String label = getLabel(attributes);
         String label_urlparam = "";
-        if ( !"".equals( label ) ) {
-            label_urlparam = removeHtmlTagsAndUrlEncode( label );
+        if ( !"".equals(label) ) {
+            label_urlparam = removeHtmlTagsAndUrlEncode(label);
         }
-        return new String[]{
-            "#meta_id#", String.valueOf( document.getId() ),
-            "#content_id#", "" + no,
-            "#content#", finalresult,
-            "#label_url#", label_urlparam,
-            "#label#", label
+        return new String[] {
+                "#meta_id#", String.valueOf(document.getId()),
+                "#content_id#", "" + no,
+                "#content#", finalresult,
+                "#label_url#", label_urlparam,
+                "#label#", label
         };
     }
 
-    private String removeHtmlTagsAndUrlEncode( String label ) {
-        String label_urlparam;
-        label_urlparam = Html.removeTags( label );
-        label_urlparam = URLEncoder.encode( label_urlparam );
-        return label_urlparam;
+    private String removeHtmlTagsAndUrlEncode(String label) {
+        return URLEncoder.encode(Html.removeTags(label));
     }
 
     /**
@@ -470,21 +496,21 @@ class TagParser {
      *
      * @param attributes The attributes of the image tag
      */
-    private String tagImage( Properties attributes ) {
-        if ( shouldOutputNothingAccordingToMode( attributes, imageMode ) ) {
+    private String tagImage(Properties attributes) {
+        if ( shouldOutputNothingAccordingToMode(attributes, imageMode) ) {
             return "";
         }
         // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
-        String noStr = attributes.getProperty( "no" );
+        String noStr = attributes.getProperty("no");
         int no;
-        String result = null;
+        String result;
         if ( null == noStr ) {
             no = implicitImageNumber++;
-            result = (String)imageMap.get( new Integer( no ) );
+            result = (String) imageMap.get(new Integer(no));
         } else {
             noStr = noStr.trim();
-            no = Integer.parseInt( noStr );
-            result = (String)imageMap.get( new Integer( no ) );
+            no = Integer.parseInt(noStr);
+            result = (String) imageMap.get(new Integer(no));
             implicitImageNumber = no + 1;
         }
         if ( result == null ) {
@@ -493,15 +519,15 @@ class TagParser {
 
         String finalresult = result;
         if ( imageMode ) {
-            String[] replace_tags = getLabelTags( attributes, no, finalresult );
+            String[] replace_tags = getLabelTags(attributes, no, finalresult);
             String admin_template_file;
-            if ( "".equals( result ) ) { // no data in the db-field.
+            if ( "".equals(result) ) { // no data in the db-field.
                 admin_template_file = "textdoc/admin_no_image.frag";
             } else {               // data in the db-field.
                 admin_template_file = "textdoc/admin_image.frag";
             }
 
-            finalresult = service.getAdminTemplate( admin_template_file, documentRequest.getUser(), Arrays.asList( replace_tags ) );
+            finalresult = service.getAdminTemplate(admin_template_file, documentRequest.getUser(), Arrays.asList(replace_tags));
         }
 
         return finalresult;
@@ -515,25 +541,25 @@ class TagParser {
      *                   type attribute defines what date to get they can bee
      *                   now, created, modified, activated, archived
      */
-    private String tagDatetime( Properties attributes ) {
-        String format = attributes.getProperty( "format" ) == null
-                        ? DateConstants.DATETIME_NO_SECONDS_FORMAT_STRING : attributes.getProperty( "format" );
-        String type = attributes.getProperty( "type" );
-        String lang = attributes.getProperty( "lang" );
+    private String tagDatetime(Properties attributes) {
+        String format = attributes.getProperty("format") == null
+                        ? DateConstants.DATETIME_NO_SECONDS_FORMAT_STRING : attributes.getProperty("format");
+        String type = attributes.getProperty("type");
+        String lang = attributes.getProperty("lang");
 
         Date date;
 
         if ( type != null ) {
             type = type.toLowerCase();
-            if ( "now".startsWith( type ) ) {
+            if ( "now".startsWith(type) ) {
                 date = new Date();
-            } else if ( "created".startsWith( type ) ) {
+            } else if ( "created".startsWith(type) ) {
                 date = document.getCreatedDatetime();
-            } else if ( "modified".startsWith( type ) ) {
+            } else if ( "modified".startsWith(type) ) {
                 date = document.getModifiedDatetime();
-            } else if ( "archived".startsWith( type ) ) {
+            } else if ( "archived".startsWith(type) ) {
                 date = document.getArchivedDatetime();
-            } else if ( "activated".startsWith( type ) ) {
+            } else if ( "activated".startsWith(type) ) {
                 date = document.getPublicationStartDatetime();
             } else {
                 return "<!-- <?imcms:datetime ... type=\"" + type + "\" is empty, wrong or does not exist! -->";
@@ -544,33 +570,31 @@ class TagParser {
 
         java.text.SimpleDateFormat formatter;
         if ( lang == null ) {
-            formatter = new java.text.SimpleDateFormat( format );
+            formatter = new java.text.SimpleDateFormat(format);
         } else {
-            formatter = new java.text.SimpleDateFormat( format, new Locale( lang, "" ) );
+            formatter = new java.text.SimpleDateFormat(format, new Locale(lang, ""));
         }
 
         try {
             if ( null == date ) {
                 return ""; // There was no date of the requested type (activated/archived?)
             } else {
-                return formatter.format( date );
+                return formatter.format(date);
             }
         } catch ( IllegalArgumentException ex ) {
             return "<!-- imcms:datetime failed: " + ex.getMessage() + " -->";
         }
     }
 
-    /**
-     * Handle a <?imcms:user who='...' get='xxxxxxx'?> tag.
-     */
-    private String tagUser( Properties attributes ) {
+    /** Handle a <?imcms:user who='...' get='xxxxxxx'?> tag. */
+    private String tagUser(Properties attributes) {
 
         UserDomainObject user;
-        String who = attributes.getProperty( "who" );
+        String who = attributes.getProperty("who");
 
-        if ( null != who && "creator".equalsIgnoreCase( who ) ) {
+        if ( null != who && "creator".equalsIgnoreCase(who) ) {
             user = documentRequest.getDocument().getCreator();
-        } else if ( null != who && "publisher".equalsIgnoreCase( who ) ) {
+        } else if ( null != who && "publisher".equalsIgnoreCase(who) ) {
             user = documentRequest.getDocument().getPublisher();
             if ( null == user ) {
                 return "";
@@ -580,30 +604,30 @@ class TagParser {
         }
 
         String result = "";
-        String get = attributes.getProperty( "get" );
+        String get = attributes.getProperty("get");
 
-        if ( get != null && !"".equals( get ) ) {
-            if ( "name".equalsIgnoreCase( get ) ) {
+        if ( get != null && !"".equals(get) ) {
+            if ( "name".equalsIgnoreCase(get) ) {
                 result = user.getFullName();
-            } else if ( "firstname".equalsIgnoreCase( get ) ) {
+            } else if ( "firstname".equalsIgnoreCase(get) ) {
                 result = user.getFirstName();
-            } else if ( "lastname".equalsIgnoreCase( get ) ) {
+            } else if ( "lastname".equalsIgnoreCase(get) ) {
                 result = user.getLastName();
-            } else if ( "company".equalsIgnoreCase( get ) ) {
+            } else if ( "company".equalsIgnoreCase(get) ) {
                 result = user.getCompany();
-            } else if ( "address".equalsIgnoreCase( get ) ) {
+            } else if ( "address".equalsIgnoreCase(get) ) {
                 result = user.getAddress();
-            } else if ( "zip".equalsIgnoreCase( get ) ) {
+            } else if ( "zip".equalsIgnoreCase(get) ) {
                 result = user.getZip();
-            } else if ( "city".equalsIgnoreCase( get ) ) {
+            } else if ( "city".equalsIgnoreCase(get) ) {
                 result = user.getCity();
-            } else if ( "workphone".equalsIgnoreCase( get ) ) {
+            } else if ( "workphone".equalsIgnoreCase(get) ) {
                 result = user.getWorkPhone();
-            } else if ( "mobilephone".equalsIgnoreCase( get ) ) {
+            } else if ( "mobilephone".equalsIgnoreCase(get) ) {
                 result = user.getMobilePhone();
-            } else if ( "homephone".equalsIgnoreCase( get ) ) {
+            } else if ( "homephone".equalsIgnoreCase(get) ) {
                 result = user.getHomePhone();
-            } else if ( "email".equalsIgnoreCase( get ) ) {
+            } else if ( "email".equalsIgnoreCase(get) ) {
                 result = user.getEmailAddress();
             }
         }
@@ -611,15 +635,15 @@ class TagParser {
         return result;
     }
 
-    private String tagCategories( Properties attributes ) {
-        String categoryTypeName = attributes.getProperty( "type" );
+    private String tagCategories(Properties attributes) {
+        String categoryTypeName = attributes.getProperty("type");
         CategoryDomainObject[] categories;
-        final String shouldOutputDescription = attributes.getProperty( "outputdescription" );
+        final String shouldOutputDescription = attributes.getProperty("outputdescription");
         if ( null == categoryTypeName ) {
             categories = document.getCategories();
         } else {
-            CategoryTypeDomainObject categoryType = service.getCategoryMapper().getCategoryType( categoryTypeName );
-            final CategoryDomainObject[] categoriesOfType = document.getCategoriesOfType( categoryType );
+            CategoryTypeDomainObject categoryType = service.getCategoryMapper().getCategoryType(categoryTypeName);
+            final CategoryDomainObject[] categoriesOfType = document.getCategoriesOfType(categoryType);
             categories = categoriesOfType;
         }
         String[] categoryStrings = new String[categories.length];
@@ -629,22 +653,22 @@ class TagParser {
             if ( null == categoryTypeName ) {
                 categoryString = category.getType() + ": " + categoryString;
             }
-            if ( "only".equalsIgnoreCase( shouldOutputDescription ) ) {
+            if ( "only".equalsIgnoreCase(shouldOutputDescription) ) {
                 categoryString = category.getDescription();
-            } else if ( "true".equalsIgnoreCase( shouldOutputDescription ) ) {
+            } else if ( "true".equalsIgnoreCase(shouldOutputDescription) ) {
                 categoryString += " - " + category.getDescription();
             }
             categoryStrings[i] = categoryString;
         }
-        String separator = attributes.getProperty( "separator", "," );
-        return StringUtils.join( categoryStrings, separator );
+        String separator = attributes.getProperty("separator", ",");
+        return StringUtils.join(categoryStrings, separator);
     }
 
-    private String tagLanguage( Properties attributes ) {
-        String representation = attributes.getProperty( "representation" );
+    private String tagLanguage(Properties attributes) {
+        String representation = attributes.getProperty("representation");
         if ( null == representation ) {
-            return service.getLanguageMapper().getCurrentLanguageNameInUsersLanguage( documentRequest.getUser(), document.getLanguageIso639_2() );
-        } else if ( LanguageMapper.ISO639_2.equalsIgnoreCase( representation ) ) {
+            return service.getLanguageMapper().getCurrentLanguageNameInUsersLanguage(documentRequest.getUser(), document.getLanguageIso639_2());
+        } else if ( LanguageMapper.ISO639_2.equalsIgnoreCase(representation) ) {
             return document.getLanguageIso639_2();
         } else {
             return "<!-- <?imcms:language ... representation=\"" + representation
@@ -654,31 +678,31 @@ class TagParser {
 
     private String singleTag(String tagname, Properties attributes, String entireMatch,
                              PatternMatcher patMat, boolean insideText) {
-        String tagResult = entireMatch ;
+        String tagResult = entireMatch;
 
-        if ( "contextpath".equals( tagname ) ) {
+        if ( "contextpath".equals(tagname) ) {
             tagResult = tagContextPath();
-        } else if (!insideText) {
-            if ( "text".equals( tagname ) ) {
-                tagResult = tagText( attributes, patMat );
-            } else if ( "image".equals( tagname ) ) {
-                tagResult = tagImage( attributes );
-            } else if ( "include".equals( tagname ) ) {
-                tagResult = tagInclude( attributes, patMat );
-            } else if ( "metaid".equals( tagname ) ) {
+        } else if ( !insideText ) {
+            if ( "text".equals(tagname) ) {
+                tagResult = tagText(attributes, patMat);
+            } else if ( "image".equals(tagname) ) {
+                tagResult = tagImage(attributes);
+            } else if ( "include".equals(tagname) ) {
+                tagResult = tagInclude(attributes, patMat);
+            } else if ( "metaid".equals(tagname) ) {
                 tagResult = tagMetaId();
-            } else if ( "datetime".equals( tagname ) ) {
-                tagResult = tagDatetime( attributes );
-            } else if ( "section".equals( tagname ) ) {
-                tagResult = tagSection( attributes );
-            } else if ( "sections".equals( tagname ) ) {
-                tagResult = tagSections( attributes );
-            } else if ( "user".equals( tagname ) ) {
-                tagResult = tagUser( attributes );
-            } else if ( "documentlanguage".equals( tagname ) ) {
-                tagResult = tagLanguage( attributes );
-            } else if ( "documentcategories".equals( tagname ) ) {
-                tagResult = tagCategories( attributes );
+            } else if ( "datetime".equals(tagname) ) {
+                tagResult = tagDatetime(attributes);
+            } else if ( "section".equals(tagname) ) {
+                tagResult = tagSection(attributes);
+            } else if ( "sections".equals(tagname) ) {
+                tagResult = tagSections(attributes);
+            } else if ( "user".equals(tagname) ) {
+                tagResult = tagUser(attributes);
+            } else if ( "documentlanguage".equals(tagname) ) {
+                tagResult = tagLanguage(attributes);
+            } else if ( "documentcategories".equals(tagname) ) {
+                tagResult = tagCategories(attributes);
             }
         }
 
@@ -690,96 +714,97 @@ class TagParser {
     }
 
     public String replaceTags(PatternMatcher patMat, String template, boolean insideText) {
-        StringBuffer result = new StringBuffer() ;
-        PatternMatcherInput input = new PatternMatcherInput( template );
+        StringBuffer result = new StringBuffer();
+        PatternMatcherInput input = new PatternMatcherInput(template);
         int lastMatchEndOffset = 0;
-        while (patMat.contains( input, IMCMS_TAG_PATTERN )) {
-            result.append(input.substring(lastMatchEndOffset, input.getMatchBeginOffset() )) ;
+        while ( patMat.contains(input, imcmsTagPattern) ) {
+            result.append(input.substring(lastMatchEndOffset, input.getMatchBeginOffset()));
 
             MatchResult matres = patMat.getMatch();
-            String entireTag = matres.group( 0 );
-            String tagName = matres.group( 1 );
-            String tagattributes = matres.group( 2 );
-            Properties attributes = parseAttributes( tagattributes, patMat, documentRequest.getHttpServletRequest() );
+            String entireTag = matres.group(0);
+            String tagName = matres.group(1);
+            String tagattributes = matres.group(2);
+            Properties attributes = parseAttributes(tagattributes, patMat, documentRequest.getHttpServletRequest());
 
-            String tagResult = entireTag ;
+            String tagResult = entireTag;
 
-            if ("menu".equals( tagName ) || "velocity".equals( tagName )) {
-                tagResult = findEndTag( tagName, attributes, tagResult, patMat, input );
+            if ( "menu".equals(tagName) || "velocity".equals(tagName) ) {
+                tagResult = findEndTag(tagName, attributes, tagResult, patMat, input);
             } else {
-                tagResult = singleTag( tagName, attributes, entireTag, patMat, insideText );
+                tagResult = singleTag(tagName, attributes, entireTag, patMat, insideText);
             }
-            addResultWithPrePost( result, tagResult, attributes );
+            addResultWithPrePost(result, tagResult, attributes);
             lastMatchEndOffset = input.getCurrentOffset();
         }
-        result.append(template.substring( lastMatchEndOffset ));
+        result.append(template.substring(lastMatchEndOffset));
 
-        return result.toString() ;
+        return result.toString();
     }
 
-    private String findEndTag( String tagName, Properties attributes, String entireTag, PatternMatcher patMat,
-                               PatternMatcherInput input ) {
-        String tagResult = entireTag ;
-        PatternMatcherInput endTagInput = new PatternMatcherInput( input.getBuffer(), input.getMatchEndOffset(), input.getEndOffset()-input.getMatchEndOffset() ) ;
-        while (patMat.contains( endTagInput, IMCMS_END_TAG_PATTERN)) {
-            String endTagName = patMat.getMatch().group( 1 );
-            if (endTagName.equals( tagName )) {
-                String elementContent = endTagInput.preMatch() ;
-                input.setCurrentOffset( endTagInput.getMatchEndOffset() );
-                tagResult = blockTag( tagName, attributes, elementContent, patMat ) ;
-                break ;
+    private String findEndTag(String tagName, Properties attributes, String entireTag, PatternMatcher patMat,
+                              PatternMatcherInput input) {
+        String tagResult = entireTag;
+        PatternMatcherInput endTagInput = new PatternMatcherInput(input.getBuffer(), input.getMatchEndOffset(),
+                                                                  input.getEndOffset() - input.getMatchEndOffset());
+        while ( patMat.contains(endTagInput, imcmsEndTagPattern) ) {
+            String endTagName = patMat.getMatch().group(1);
+            if ( endTagName.equals(tagName) ) {
+                String elementContent = endTagInput.preMatch();
+                input.setCurrentOffset(endTagInput.getMatchEndOffset());
+                tagResult = blockTag(tagName, attributes, elementContent, patMat);
+                break;
             }
         }
         return tagResult;
     }
 
-    private void addResultWithPrePost( StringBuffer result, String tagResult, Properties attributes ) {
+    private void addResultWithPrePost(StringBuffer result, String tagResult, Properties attributes) {
         if ( tagResult.length() > 0 ) {
-            String preAttribute = attributes.getProperty( "pre" );
+            String preAttribute = attributes.getProperty("pre");
             if ( preAttribute != null ) {
-                result.append(preAttribute) ;
+                result.append(preAttribute);
             }
-            result.append( tagResult );
-            String postAttribute = attributes.getProperty( "post" );
+            result.append(tagResult);
+            String postAttribute = attributes.getProperty("post");
             if ( postAttribute != null ) {
-                result.append(postAttribute) ;
+                result.append(postAttribute);
             }
         }
     }
 
-    String blockTag( String tagname, Properties attributes, String content,
-                PatternMatcher patternMatcher ) {
+    String blockTag(String tagname, Properties attributes, String content,
+                    PatternMatcher patternMatcher) {
         String result = content;
-        if ( "menu".equals( tagname ) ) {
-            result = tagMenu( attributes, content, patternMatcher );
-        } else if ( "velocity".equals( tagname ) ) {
-            result = tagVelocity( content );
+        if ( "menu".equals(tagname) ) {
+            result = tagMenu(attributes, content, patternMatcher);
+        } else if ( "velocity".equals(tagname) ) {
+            result = tagVelocity(content);
         }
         return result;
     }
 
-    private String tagMenu( Properties attributes, String content, PatternMatcher patternMatcher ) {
+    private String tagMenu(Properties attributes, String content, PatternMatcher patternMatcher) {
         String result;
-        MenuParser menuParser = new MenuParser( parserParameters );
-        result = menuParser.tag( attributes, content, patternMatcher, this );
+        MenuParser menuParser = new MenuParser(parserParameters);
+        result = menuParser.tag(attributes, content, patternMatcher, this);
         return result;
     }
 
-    private String tagVelocity( String content ) {
+    private String tagVelocity(String content) {
         String result;
-        VelocityEngine velocityEngine = service.getVelocityEngine( parserParameters.getDocumentRequest().getUser() ) ;
+        VelocityEngine velocityEngine = service.getVelocityEngine(parserParameters.getDocumentRequest().getUser());
         VelocityContext velocityContext = new VelocityContext();
-        velocityContext.put( "request", parserParameters.getDocumentRequest().getHttpServletRequest() );
-        velocityContext.put( "response", parserParameters.getDocumentRequest().getHttpServletResponse() );
-        velocityContext.put( "viewing", viewing ) ;
-        velocityContext.put( "document", viewing.getTextDocument() ) ;
-        velocityContext.put( "util", new VelocityTagUtil()) ;
+        velocityContext.put("request", parserParameters.getDocumentRequest().getHttpServletRequest());
+        velocityContext.put("response", parserParameters.getDocumentRequest().getHttpServletResponse());
+        velocityContext.put("viewing", viewing);
+        velocityContext.put("document", viewing.getTextDocument());
+        velocityContext.put("util", new VelocityTagUtil());
         StringWriter stringWriter = new StringWriter();
         try {
             velocityEngine.init();
-            velocityEngine.evaluate( velocityContext, stringWriter, null, content );
+            velocityEngine.evaluate(velocityContext, stringWriter, null, content);
         } catch ( Exception e ) {
-            throw new UnhandledException( e );
+            throw new UnhandledException(e);
         }
         result = stringWriter.toString();
         return result;
@@ -789,33 +814,31 @@ class TagParser {
 
         private int metaId;
 
-        public MetaIdHeaderHttpServletRequest( HttpServletRequest request, int metaId ) {
+        public MetaIdHeaderHttpServletRequest(HttpServletRequest request, int metaId) {
             super(request);
             this.metaId = metaId;
         }
 
-        public String getHeader( String headerName ) {
-            if ("x-meta-id".equalsIgnoreCase( headerName )) {
-                return ""+metaId ;
+        public String getHeader(String headerName) {
+            if ( "x-meta-id".equalsIgnoreCase(headerName) ) {
+                return "" + metaId;
             }
-            return super.getHeader( headerName ) ;
+            return super.getHeader(headerName);
         }
     }
 
-    /**
-     * Take a String of attributes, as may be found inside a tag, (name="...", and so on...) and transform it into a Properties.
-     */
-    public Properties parseAttributes( String attributes_string, PatternMatcher patternMatcher,
-                                              HttpServletRequest request ) {
+    /** Take a String of attributes, as may be found inside a tag, (name="...", and so on...) and transform it into a Properties. */
+    public Properties parseAttributes(String attributes_string, PatternMatcher patternMatcher,
+                                      HttpServletRequest request) {
         Properties attributes = new Properties();
 
-        PatternMatcherInput attributes_input = new PatternMatcherInput( attributes_string );
-        while ( patternMatcher.contains( attributes_input, ATTRIBUTES_PATTERN ) ) {
+        PatternMatcherInput attributes_input = new PatternMatcherInput(attributes_string);
+        while ( patternMatcher.contains(attributes_input, attributesPattern) ) {
             MatchResult attribute_matres = patternMatcher.getMatch();
-            String escapedValue = attribute_matres.group( 3 );
-            String value = StringEscapeUtils.unescapeHtml( escapedValue );
-            value = tagVelocity(value) ;
-            attributes.setProperty( attribute_matres.group( 1 ), value );
+            String escapedValue = attribute_matres.group(3);
+            String value = StringEscapeUtils.unescapeHtml(escapedValue);
+            value = tagVelocity(value);
+            attributes.setProperty(attribute_matres.group(1), value);
         }
 
         return attributes;
@@ -824,7 +847,7 @@ class TagParser {
     public static class VelocityTagUtil {
 
         public String escapeHtml(String s) {
-            return StringEscapeUtils.escapeHtml(s) ;
+            return StringEscapeUtils.escapeHtml(s);
         }
     }
 }

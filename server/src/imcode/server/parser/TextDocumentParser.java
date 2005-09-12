@@ -28,20 +28,20 @@ public class TextDocumentParser {
 
     private final static Logger log = Logger.getLogger( TextDocumentParser.class );
 
-    static Pattern HASHTAG_PATTERN = null;
-    private static Pattern HTML_TAG_PATTERN = null;
-    private static Pattern HTML_TAG_HTML_PATTERN = null;
+    static Pattern hashtagPattern;
+    private static Pattern htmlTagPattern;
+    private static Pattern htmlTagHtmlPattern;
 
     static {
         Perl5Compiler patComp = new Perl5Compiler();
         try {
             // OK, so this pattern is simple, ugly, and prone to give a lot of errors.
             // Very good. Very good. Know something? NO SOUP FOR YOU!
-            HTML_TAG_PATTERN = patComp.compile( "<[^>]+?>", Perl5Compiler.READ_ONLY_MASK );
+            htmlTagPattern = patComp.compile( "<[^>]+?>", Perl5Compiler.READ_ONLY_MASK );
 
-            HTML_TAG_HTML_PATTERN = patComp.compile( "<[hH][tT][mM][lL]\\s*>", Perl5Compiler.READ_ONLY_MASK );
+            htmlTagHtmlPattern = patComp.compile( "<[hH][tT][mM][lL]\\s*>", Perl5Compiler.READ_ONLY_MASK );
 
-            HASHTAG_PATTERN = patComp.compile( "#[^ #\"<>&;\\t\\r\\n]+#", Perl5Compiler.READ_ONLY_MASK );
+            hashtagPattern = patComp.compile( "#[^ #\"<>&;\\t\\r\\n]+#", Perl5Compiler.READ_ONLY_MASK );
         } catch ( MalformedPatternException ignored ) {
             // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
             log.fatal( "Bad pattern.", ignored );
@@ -50,8 +50,8 @@ public class TextDocumentParser {
 
     private ImcmsServices service;
 
-    public TextDocumentParser( ImcmsServices serverobject ) {
-        this.service = serverobject;
+    public TextDocumentParser( ImcmsServices service ) {
+        this.service = service;
     }
 
     public String parsePage( ParserParameters paramsToParse ) throws IOException {
@@ -83,10 +83,10 @@ public class TextDocumentParser {
             TagParser tagParser = new TagParser( this, parserParameters, includelevel, viewing );
 
             String tagsReplaced = tagParser.replaceTags( patMat, template, false);
-            tagsReplaced = Util.substitute( patMat, HASHTAG_PATTERN, hashtagsubstitution, tagsReplaced, Util.SUBSTITUTE_ALL );
+            tagsReplaced = Util.substitute( patMat, hashtagPattern, hashtagsubstitution, tagsReplaced, Util.SUBSTITUTE_ALL );
 
             String emphasizedAndTagsReplaced = applyEmphasis( documentRequest, user, tagsReplaced, patMat );
-            return Util.substitute( patMat, HTML_TAG_HTML_PATTERN, new Substitution() {
+            return Util.substitute( patMat, htmlTagHtmlPattern, new Substitution() {
                 public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
                                                 PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
                                                 Pattern pattern ) {
@@ -128,7 +128,7 @@ public class TextDocumentParser {
             int current_html_offset;
             String non_html_tag_string;
             String html_tag_string;
-            while ( patMat.contains( emp_input, HTML_TAG_PATTERN ) ) {
+            while ( patMat.contains( emp_input, htmlTagPattern ) ) {
                 current_html_offset = emp_input.getMatchBeginOffset();
                 non_html_tag_string = result.substring( last_html_offset, current_html_offset );
                 last_html_offset = emp_input.getMatchEndOffset();

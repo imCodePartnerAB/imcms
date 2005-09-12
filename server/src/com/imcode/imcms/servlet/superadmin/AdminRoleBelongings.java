@@ -134,41 +134,36 @@ public class AdminRoleBelongings extends HttpServlet {
             String roleId = req.getParameter("ROLE_ID");
 
             if ( roleId == null ) {
-
-                // no role choisen
                 sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 100, res);
+            } else {
+                String userOptionListTag = getUserOptionListTag(roleId, imcref);
 
-                return;
+                // Lets get all ROLES from DB
+
+                String curentRoleId = roleId;
+                try {
+                    Integer.parseInt(curentRoleId);
+                } catch ( NumberFormatException e ) {
+                    curentRoleId = "0";
+                }
+
+                String[][] roleQueryResult = imcref.getDatabase().execute2dArrayProcedure("RoleGetAllApartFromRole", new String[] {
+                        curentRoleId
+                });
+
+                String roleOptionList = createListOfOptions(roleQueryResult);
+                String curentRoleName = getRoleName(roleId, imcref);
+
+                // Lets generate the html page
+                Map vm = new HashMap();
+                vm.put("CURENT_ROLE_ID", roleId);
+                vm.put("CURENT_ROLE_NAME", curentRoleName);
+                vm.put("USER_MENU", userOptionListTag);
+                vm.put("ROLES_MENU", roleOptionList);
+
+                AdminRoles.sendHtml(req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING_EDIT);
+
             }
-
-            String userOptionListTag = getUserOptionListTag(roleId, imcref);
-
-            // Lets get all ROLES from DB
-
-            String curentRoleId = roleId;
-            try {
-                Integer.parseInt(curentRoleId);
-            } catch ( NumberFormatException e ) {
-                curentRoleId = "0";
-            }
-
-            String[][] roleQueryResult = imcref.getDatabase().execute2dArrayProcedure("RoleGetAllApartFromRole", new String[] {
-                    curentRoleId
-            });
-
-            String roleOptionList = createListOfOptions(roleQueryResult);
-            String curentRoleName = getRoleName(roleId, imcref);
-
-            // Lets generate the html page
-            Map vm = new HashMap();
-            vm.put("CURENT_ROLE_ID", roleId);
-            vm.put("CURENT_ROLE_NAME", curentRoleName);
-            vm.put("USER_MENU", userOptionListTag);
-            vm.put("ROLES_MENU", roleOptionList);
-
-            AdminRoles.sendHtml(req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING_EDIT);
-
-            return;
         }
 
         // *************** GENERATE THE USER DE/ACTIVATE TO ROLE PAGE *****************
@@ -177,25 +172,19 @@ public class AdminRoleBelongings extends HttpServlet {
             String roleId = req.getParameter("ROLE_ID");
 
             if ( roleId == null ) {
-
-                // no role choisen
                 sendErrorMessage(imcref, eMailServerMaster, user, errorHeader, 100, res);
+            } else {
+                String userOptionListTag = getUserOptionListTag(roleId, imcref);
+                String curentRoleName = getRoleName(roleId, imcref);
 
-                return;
+                //Lets generate the html page
+                Map vm = new HashMap();
+                vm.put("CURENT_ROLE_ID", roleId);
+                vm.put("CURENT_ROLE_NAME", curentRoleName);
+                vm.put("USER_MENU", userOptionListTag);
+
+                AdminRoles.sendHtml(req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING_ACTIVATE);
             }
-
-            String userOptionListTag = getUserOptionListTag(roleId, imcref);
-            String curentRoleName = getRoleName(roleId, imcref);
-
-            //Lets generate the html page
-            Map vm = new HashMap();
-            vm.put("CURENT_ROLE_ID", roleId);
-            vm.put("CURENT_ROLE_NAME", curentRoleName);
-            vm.put("USER_MENU", userOptionListTag);
-
-            AdminRoles.sendHtml(req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING_ACTIVATE);
-
-            return;
         }
 
         // *************** REMOVE ROLE FROM USERS  **********

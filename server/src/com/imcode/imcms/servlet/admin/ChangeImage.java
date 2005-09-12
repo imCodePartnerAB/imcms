@@ -1,6 +1,13 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.flow.*;
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.flow.CreateDocumentPageFlow;
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.DocumentPageFlow;
+import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
+import com.imcode.imcms.flow.EditFileDocumentPageFlow;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.superadmin.AdminManager;
 import com.imcode.util.HumanReadable;
@@ -9,9 +16,6 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.api.Document;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;
@@ -19,14 +23,17 @@ import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.LocalizedMessage;
-import imcode.util.Utility;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
+import imcode.util.Utility;
 import imcode.util.io.InputStreamSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.WildcardQuery;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,7 +41,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class ChangeImage extends HttpServlet {
     public final static String REQUEST_PARAMETER__IMAGE_URL = "imageref";
@@ -61,7 +71,9 @@ public class ChangeImage extends HttpServlet {
     public static final String REQUEST_PARAMETER__LINK_TARGET = EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET;
 
     private final static String[] IMAGE_MIME_TYPES = new String[] { "image/jpeg", "image/png", "image/gif" };
-    static final LocalizedMessage ERROR_MESSAGE___ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images");
+
+    static final LocalizedMessage ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images");
+
     private static final Query QUERY__IMAGE_FILE_DOCUMENTS = createImageFileDocumentsQuery();
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -113,7 +125,7 @@ public class ChangeImage extends HttpServlet {
                                 HttpServletResponse response) throws IOException, ServletException {
         try {
             FileDocumentDomainObject fileDocument = (FileDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.FILE_ID, document, user);
-            final EditFileDocumentPageFlow.ArrayMimeTypeRestriction mimeTypeRestriction = new EditFileDocumentPageFlow.ArrayMimeTypeRestriction(IMAGE_MIME_TYPES, ERROR_MESSAGE___ONLY_ALLOWED_TO_UPLOAD_IMAGES);
+            final EditFileDocumentPageFlow.ArrayMimeTypeRestriction mimeTypeRestriction = new EditFileDocumentPageFlow.ArrayMimeTypeRestriction(IMAGE_MIME_TYPES, ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES);
             DocumentPageFlow.SaveDocumentCommand saveNewImageFileDocument = new CreateDocumentPageFlow.SaveDocumentCommand() {
                 public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException {
                     FileDocumentDomainObject fileDocument = (FileDocumentDomainObject) document;

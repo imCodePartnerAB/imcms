@@ -27,6 +27,7 @@ public class FileAdmin extends HttpServlet {
     private final static Logger log = Logger.getLogger( "FileAdmin" );
     private static final int BUFFER_SIZE = 65536;
     private static final String ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING = "FileAdminCopyOverwriteWarning.html";
+    private static final String ADMIN_TEMPLATE_FILE_ADMIN_MOVE_OVERWRITE_WARNING = "FileAdminMoveOverwriteWarning.html";
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
@@ -365,27 +366,18 @@ public class FileAdmin extends HttpServlet {
     private void outputMoveOverwriteWarning( String option_list, File sourceDir, File destDir,
                                              String file_list, File dir1, File dir2, HttpServletResponse res,
                                              UserDomainObject user, ImcmsServices imcref ) throws IOException {
-        List vec = new ArrayList();
-        vec.add( "#filelist#" );
-        vec.add( option_list );
-        vec.add( "#source#" );
-        vec.add( sourceDir.getCanonicalPath() );
-        vec.add( "#dest#" );
-        vec.add( destDir.getCanonicalPath() );
-        vec.add( "#files#" );
-        vec.add( file_list );
-        vec.add( "#dir1#" );
-        vec.add( dir1.getCanonicalPath() );
-        vec.add( "#dir2#" );
-        vec.add( dir2.getCanonicalPath() );
-        Utility.setDefaultHtmlContentType( res );
-        ServletOutputStream out = res.getOutputStream();
-        out.print( imcref.getAdminTemplate( "FileAdminMoveOverwriteWarning.html", user, vec ) );
+        outputWarning(option_list, sourceDir, destDir, file_list, dir1, dir2, res, imcref, ADMIN_TEMPLATE_FILE_ADMIN_MOVE_OVERWRITE_WARNING, user);
     }
 
     private void ouputCopyOverwriteWarning( String option_list, File sourceDir, File destDir,
                                             String file_list, File dir1, File dir2, HttpServletResponse res,
                                             UserDomainObject user, ImcmsServices imcref ) throws IOException {
+        outputWarning(option_list, sourceDir, destDir, file_list, dir1, dir2, res, imcref, ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING, user);
+    }
+
+    private void outputWarning(String option_list, File sourceDir, File destDir, String file_list, File dir1, File dir2,
+                               HttpServletResponse res, ImcmsServices imcref, String template,
+                               UserDomainObject user) throws IOException {
         List vec = new ArrayList();
         vec.add( "#filelist#" );
         vec.add( option_list );
@@ -401,7 +393,7 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir2.getCanonicalPath() );
         Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
-        out.print( imcref.getAdminTemplate( ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING, user, vec ) );
+        out.print( imcref.getAdminTemplate( template, user, vec ) );
     }
 
     private void outputFileExistedAndTheOriginalWasRenamedNotice( File dir1, File dir2, String newFilename,
@@ -471,7 +463,26 @@ public class FileAdmin extends HttpServlet {
         out.print( imcref.getAdminTemplate( "FileAdminNameBlank.html", user, vec ) );
     }
 
+    private interface FromSourceFileToDestinationFileCommand {
+        void execute(File source, File destination) throws IOException;
+    }
+
     private void moveOk( HttpServletRequest mp, File[] roots ) throws IOException {
+        fromSourceToDestination(mp, roots, new FromSourceFileToDestinationFileCommand() {
+            public void execute(File source, File dest) throws IOException {
+                dest.getParentFile().mkdirs();
+                if ( source.isFile() ) {
+                    FileUtils.copyFile( source, dest );
+                }
+                if ( source.length() == dest.length() ) {
+                    FileUtils.forceDelete( source );
+                }
+            }
+        });
+    }
+
+    private void fromSourceToDestination(HttpServletRequest mp, File[] roots,
+                                         FromSourceFileToDestinationFileCommand command) throws IOException {
         String src = mp.getParameter( "source" );
         String dst = mp.getParameter( "dest" );
         String files = mp.getParameter( "files" );
@@ -484,39 +495,22 @@ public class FileAdmin extends HttpServlet {
                     String foo = st.nextToken();
                     File source = new File( srcdir, foo );
                     File dest = new File( dstdir, foo );
-                    dest.getParentFile().mkdirs();
-                    if ( source.isFile() ) {
-                        FileUtils.copyFile( source, dest );
-                    }
-                    if ( source.length() == dest.length() ) {
-                        FileUtils.forceDelete( source );
-                    }
+                    command.execute(source, dest);
                 }
             }
         }
     }
 
     private void copyOk( HttpServletRequest mp, File[] roots ) throws IOException {
-        String src = mp.getParameter( "source" );
-        String dst = mp.getParameter( "dest" );
-        String files = mp.getParameter( "files" );
-        if ( src != null && dst != null && files != null ) {
-            File srcdir = new File( src );
-            File dstdir = new File( dst );
-            if ( isUnderRoot( srcdir, roots ) && isUnderRoot( dstdir, roots ) ) {
-                StringTokenizer st = new StringTokenizer( files, ":;" );
-                while ( st.hasMoreTokens() ) {
-                    String foo = st.nextToken();
-                    File source = new File( srcdir, foo );
-                    File dest = new File( dstdir, foo );
-                    if ( source.isDirectory() ) {
-                        dest.mkdir();
-                        continue;
-                    }
-                    FileUtils.copyFile( source, dest );
+        fromSourceToDestination(mp, roots, new FromSourceFileToDestinationFileCommand() {
+            public void execute(File source, File destination) throws IOException {
+                if ( source.isDirectory() ) {
+                    destination.mkdir();
+                } else {
+                    FileUtils.copyFile( source, destination );
                 }
             }
-        }
+        });
     }
 
     private void deleteOk( HttpServletRequest mp, File[] roots ) throws IOException {

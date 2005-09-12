@@ -16,12 +16,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Properties;
 
 public class AdminUser extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( AdminUser.class.getName() );
-    private String CHANGE_EXTERNAL_USER_URL = "/jsp/changeexternaluser.jsp";
+    private final static String CHANGE_EXTERNAL_USER_URL = "/jsp/changeexternaluser.jsp";
     private static final LocalizedMessage BUTTON_TEXT__EDIT_USER = new LocalizedMessage( "templates/sv/AdminChangeUser.htm/2006" );
     private static final LocalizedMessage HEADLINE__EDIT_USER = new LocalizedMessage( "templates/sv/AdminChangeUser.htm/4/1" );
 
@@ -68,9 +69,9 @@ public class AdminUser extends HttpServlet {
             redirectChangeUser( req, res, user, userToChange );
         } else {
             String queryString = "?"
-                                 + java.net.URLEncoder.encode( WebAppGlobalConstants.USER_LOGIN_NAME_PARAMETER_NAME, "UTF-8" )
+                                 + URLEncoder.encode( WebAppGlobalConstants.USER_LOGIN_NAME_PARAMETER_NAME, "UTF-8" )
                                  + "="
-                                 + java.net.URLEncoder.encode( userToChange.getLoginName(), "UTF-8" );
+                                 + URLEncoder.encode( userToChange.getLoginName(), "UTF-8" );
             RequestDispatcher rd = req.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2()
                                                              + CHANGE_EXTERNAL_USER_URL
                                                              + queryString );

@@ -273,7 +273,17 @@
         </checksumfiles>
     </target>
 
-    <target name="classes" depends="init">
+    <target name="checkstyle" depends="init">
+
+        <taskdef resource="checkstyletask.properties" classpathref="libraries"/>
+        
+        <checkstyle config="docs/checkstyle.xml">
+            <fileset dir="server/src" includes="**/*.java"/>
+        </checkstyle>
+        
+    </target>
+
+    <target name="classes" depends="init,checkstyle">
 
         <mkdir dir="${classes}"/>
 

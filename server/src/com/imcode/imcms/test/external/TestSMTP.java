@@ -14,7 +14,7 @@ public class TestSMTP extends TestCase {
     private static final String TEST_MAIL = "There should be an empty line below\n" + "\n" +
                                             "There should be a single dot below\n" + ".\n";
     private SMTP smtp;
-    private String TEST_SUBJECT = "JUnit-testing SMTP.java";
+    private final static String TEST_SUBJECT = "JUnit-testing SMTP.java";
 
     public void setUp() throws Exception {
         super.setUp();

@@ -16,7 +16,7 @@ public class TestUserService extends TestCase {
     private MockDatabase database;
     private UserDomainObject internalUser;
 
-    private static int HIGHEST_USER_ID = 3 ;
+    private final static int HIGHEST_USER_ID = 3 ;
     private MockImcmsServices mockImcmsServices;
 
     protected void setUp() throws Exception {

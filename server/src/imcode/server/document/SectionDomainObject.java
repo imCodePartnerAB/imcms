@@ -1,46 +1,15 @@
 package imcode.server.document;
 
-import java.io.Serializable;
+import imcode.util.IdNamePair;
 
-public class SectionDomainObject implements Comparable, Serializable {
-
-    private int id ;
-    private String name ;
+public class SectionDomainObject extends IdNamePair {
 
     public SectionDomainObject( int id, String name ) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
+        super(id, name);
     }
 
     public String toString() {
         return getName() ;
-    }
-
-    public boolean equals( Object o ) {
-        if ( this == o ) return true;
-        if ( !( o instanceof SectionDomainObject ) ) return false;
-
-        final SectionDomainObject sectionDomainObject = (SectionDomainObject)o;
-
-        if ( id != sectionDomainObject.id ) return false;
-
-        return true;
-    }
-
-    public int hashCode() {
-        return id;
-    }
-
-    public int compareTo( Object o ) {
-        return name.compareToIgnoreCase( ((SectionDomainObject)o).name ) ;
     }
 
 }

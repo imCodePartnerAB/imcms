@@ -1,10 +1,9 @@
 package imcode.server.user;
 
+import imcode.util.IdLocalizedNamePair;
 import imcode.util.LocalizedMessage;
 
-import java.io.Serializable;
-
-public class PhoneNumberType implements Serializable {
+public class PhoneNumberType extends IdLocalizedNamePair {
     public final static PhoneNumberType OTHER = new PhoneNumberType(0, new LocalizedMessage("phone_type/name/other"));
     public final static PhoneNumberType HOME = new PhoneNumberType(1, new LocalizedMessage("phone_type/name/home"));
     public final static PhoneNumberType WORK = new PhoneNumberType(2, new LocalizedMessage("phone_type/name/work"));
@@ -19,20 +18,8 @@ public class PhoneNumberType implements Serializable {
             FAX,
     };
 
-    private final int id;
-    private final LocalizedMessage name;
-
     private PhoneNumberType(int id, LocalizedMessage name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public LocalizedMessage getName() {
-        return name;
+        super(id, name);
     }
 
     public static PhoneNumberType[] getAllPhoneNumberTypes() {
@@ -43,21 +30,4 @@ public class PhoneNumberType implements Serializable {
         return ALL_PHONE_TYPES[phoneTypeId] ;
     }
 
-    public boolean equals(Object o) {
-        if ( this == o ) {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() ) {
-            return false;
-        }
-
-        final PhoneNumberType that = (PhoneNumberType) o;
-
-        return id == that.id;
-
-    }
-
-    public int hashCode() {
-        return id;
-    }
 }

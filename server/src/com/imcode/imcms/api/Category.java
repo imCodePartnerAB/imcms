@@ -7,7 +7,7 @@ import imcode.server.document.CategoryDomainObject;
  */
 public class Category implements Comparable {
 
-    private CategoryDomainObject internalCategory ;
+    private final CategoryDomainObject internalCategory ;
 
     public Category( String name, CategoryType categoryType ) {
         this.internalCategory = new CategoryDomainObject( 0, name, "","", categoryType.getInternal() );
@@ -30,14 +30,17 @@ public class Category implements Comparable {
     }
 
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Category)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Category)) {
+            return false;
+        }
 
         final Category category = (Category) o;
 
-        if (!internalCategory.equals(category.internalCategory)) return false;
+        return internalCategory.equals(category.internalCategory);
 
-        return true;
     }
 
     public int hashCode() {

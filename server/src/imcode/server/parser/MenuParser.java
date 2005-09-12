@@ -25,11 +25,15 @@ import org.apache.oro.text.regex.Substitution;
 
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 
 class MenuParser {
 
-    private Substitution NULLSUBSTITUTION = new StringSubstitution( "" );
+    private final static Substitution NULLSUBSTITUTION = new StringSubstitution( "" );
 
     private int[] implicitMenus = {1};
     private ParserParameters parserParameters;
@@ -309,7 +313,7 @@ class MenuParser {
     private void parseMenuItem( StringBuffer result, String template, Substitution substitution,
                                 PatternMatcher patMat, TagParser tagParser ) {
         String tagsReplaced = tagParser.replaceTags( patMat, template, false) ;
-        result.append( org.apache.oro.text.regex.Util.substitute( patMat, TextDocumentParser.HASHTAG_PATTERN, substitution,
+        result.append( org.apache.oro.text.regex.Util.substitute( patMat, TextDocumentParser.hashtagPattern, substitution,
                                                                   tagsReplaced,
                                                                   org.apache.oro.text.regex.Util.SUBSTITUTE_ALL ) );
     }

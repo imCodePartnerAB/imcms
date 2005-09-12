@@ -39,7 +39,7 @@ public class ImageBrowse extends HttpServlet {
     public static final String REQUEST_PARAMETER__UPLOAD_BUTTON = "upload";
     public static final String REQUEST_PARAMETER__FILE = "file";
 
-    private static final LocalizedMessage ERROR_MESSAGE___FILE_EXISTS = new LocalizedMessage( "error/servlet/images/image_file_exists" );
+    private static final LocalizedMessage ERROR_MESSAGE__FILE_EXISTS = new LocalizedMessage( "error/servlet/images/image_file_exists" );
 
     public void doPost( HttpServletRequest req, HttpServletResponse response ) throws IOException, ServletException {
         MultipartHttpServletRequest request = new MultipartHttpServletRequest( req );
@@ -95,9 +95,9 @@ public class ImageBrowse extends HttpServlet {
             boolean underImagesRoot = FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, destinationFile.getParentFile() );
             boolean hasImageExtension = new ImageExtensionFilenameFilter().accept( destinationFile, destinationFile.getName() );
             if (!hasImageExtension) {
-                page.setErrorMessage(ChangeImage.ERROR_MESSAGE___ONLY_ALLOWED_TO_UPLOAD_IMAGES) ;
+                page.setErrorMessage(ChangeImage.ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES) ;
             } else if ( destinationFile.exists() ) {
-                page.setErrorMessage(ERROR_MESSAGE___FILE_EXISTS) ;
+                page.setErrorMessage(ERROR_MESSAGE__FILE_EXISTS) ;
             } else if ( underImagesRoot ) {
                 try {
                     fileItem.write( destinationFile );

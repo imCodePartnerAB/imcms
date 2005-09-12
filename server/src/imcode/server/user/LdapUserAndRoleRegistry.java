@@ -9,7 +9,11 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
 import javax.naming.*;
-import javax.naming.directory.*;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -72,7 +76,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
 
     private Properties userPropertyNameToLdapAttributeNameMap = new Properties();
 
-    private final static Map defaultUserPropertyNameToLdapAttributeNameMap = ArrayUtils.toMap( new String[][]{
+    private final static Map DEFAULT_USER_PROPERTY_NAME_TO_LDAP_ATTRIBUTE_NAME_MAP = ArrayUtils.toMap( new String[][]{
         {"LoginName", INETORGPERSON_USER_IDENTITY},
         {"FirstName", INETORGPERSON_GIVEN_NAME},
         {"LastName", PERSON_SURNAME},
@@ -154,7 +158,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     }
 
     private void initLdapUserAttributesMap( Properties ldapUserAttributes ) throws LdapInitException {
-        userPropertyNameToLdapAttributeNameMap.putAll( defaultUserPropertyNameToLdapAttributeNameMap );
+        userPropertyNameToLdapAttributeNameMap.putAll( DEFAULT_USER_PROPERTY_NAME_TO_LDAP_ATTRIBUTE_NAME_MAP );
         userPropertyNameToLdapAttributeNameMap.putAll( ldapUserAttributes );
         Set badUserAttributes = new TreeSet( userPropertyNameToLdapAttributeNameMap.keySet() );
         String[] capitalizedSettableUserPropertyNames = getCapitalizedSettableBeanPropertyNames( UserDomainObject.class );

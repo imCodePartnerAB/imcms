@@ -7,12 +7,12 @@ import java.util.LinkedList;
 
 class NodeList extends LinkedList {
 
-    private static Pattern ELEMENT_PATTERN;
+    private static Pattern elementPattern;
 
     static {
         try {
             Perl5Compiler patternCompiler = new Perl5Compiler();
-            ELEMENT_PATTERN = patternCompiler.compile( "<\\?imcms:(\\w+)\\b(.*?)\\s*\\?>(.*?)<\\?\\/imcms:\\1\\s*\\?>", Perl5Compiler.SINGLELINE_MASK
+            elementPattern = patternCompiler.compile( "<\\?imcms:(\\w+)\\b(.*?)\\s*\\?>(.*?)<\\?\\/imcms:\\1\\s*\\?>", Perl5Compiler.SINGLELINE_MASK
                                                                                                                     | Perl5Compiler.READ_ONLY_MASK );
         } catch ( MalformedPatternException ignored ) {
             // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
@@ -26,7 +26,7 @@ class NodeList extends LinkedList {
         PatternMatcher patternMatcher = new Perl5Matcher();
         PatternMatcherInput input = new PatternMatcherInput( data );
         int lastEndOffset = 0;
-        while ( patternMatcher.contains( input, ELEMENT_PATTERN ) ) {
+        while ( patternMatcher.contains( input, elementPattern ) ) {
             MatchResult matchResult = patternMatcher.getMatch();
             if ( matchResult.beginOffset( 0 ) > lastEndOffset ) { // If the part before the first child element has a length longer than 0...
                 add( new SimpleText( data.substring( lastEndOffset, matchResult.beginOffset( 0 ) ) ) ); // ... put it in a text node.

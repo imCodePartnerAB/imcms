@@ -171,7 +171,7 @@ public class TestDefaultDocumentMapper extends TestCase {
     public void testCreateTextDocument() throws NoPermissionToAddDocumentToMenuException, NoPermissionToCreateDocumentException {
         user.addRoleId( RoleId.SUPERADMIN );
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.TEXT_ID, textDocument, user );
-        document.setTemplate( new TemplateDomainObject( 1, "test", "test" ) );
+        document.setTemplate( new TemplateDomainObject( 1, "test", "test") );
         database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "meta" ), new Integer(1002));
         documentMapper.saveNewDocument( document, user );
         database.assertExpectedSqlCalls();

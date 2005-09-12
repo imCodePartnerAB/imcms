@@ -2,12 +2,13 @@ package imcode.server.user;
 
 import imcode.util.ShouldNotBeThrownException;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class RoleIds implements Cloneable {
+public class RoleIds implements Cloneable, Serializable {
 
     HashSet set = new HashSet();
 
