@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -68,7 +69,8 @@ public class AdminSection extends HttpServlet {
         if (req.getParameter("add_section") != null) {
 
             String new_section_name = req.getParameter("new_section_name") == null ? "" : req.getParameter("new_section_name").trim();
-            String[][] section_arr = section_arr = imcref.getDatabase().execute2dArrayProcedure( "SectionGetAllCount", new String[0] );
+            final Object[] parameters2 = new String[0];
+            String[][] section_arr = section_arr = DatabaseUtils.execute2dStringArrayProcedure(imcref.getDatabase(), "SectionGetAllCount", parameters2);
 
             //now we needs a list of the created ones in db
             Vector vec = new Vector();
@@ -88,8 +90,10 @@ public class AdminSection extends HttpServlet {
 
                 //ok we have a new name lets save it to db, but only if it's not exists in db
                 if(!section_exists){
-                    imcref.getDatabase().executeUpdateProcedure( "SectionAdd", new String[] {new_section_name} );
-                    section_arr = section_arr = imcref.getDatabase().execute2dArrayProcedure( "SectionGetAllCount", new String[0] );
+                    final Object[] parameters = new String[] {new_section_name};
+                    DatabaseUtils.executeUpdateProcedure(imcref.getDatabase(), "SectionAdd", parameters);
+                    final Object[] parameters1 = new String[0];
+                    section_arr = section_arr = DatabaseUtils.execute2dStringArrayProcedure(imcref.getDatabase(), "SectionGetAllCount", parameters1);
                 }
             }
 
@@ -109,12 +113,14 @@ public class AdminSection extends HttpServlet {
             String section_id = req.getParameter("section_list") == null ? "-1" : req.getParameter("section_list");
             if ((!new_section.equals("")) && (!section_id.equals("-1"))) {
                 //ok we have a new name lets save it to db, but only if it's not exists in db
-                imcref.getDatabase().executeUpdateProcedure( "SectionChangeName", new String[] {section_id,
-                                                                                                new_section} );
+                final Object[] parameters = new String[] {section_id,
+                                                                                                new_section};
+                DatabaseUtils.executeUpdateProcedure(imcref.getDatabase(), "SectionChangeName", parameters);
             }
 
             //now we needs a list of the created ones in db
-            String[][] section_arr = imcref.getDatabase().execute2dArrayProcedure( "SectionGetAllCount", new String[0] );
+            final Object[] parameters1 = new String[0];
+            String[][] section_arr = DatabaseUtils.execute2dStringArrayProcedure(imcref.getDatabase(), "SectionGetAllCount", parameters1);
             Vector vec = new Vector();
             vec.add("#section_list#");
             vec.add(createOptionList(section_arr, user, null));
@@ -144,8 +150,9 @@ public class AdminSection extends HttpServlet {
             if (new_sections.equals("-1")) {
                 deleteSection( imcref, del_section );
             } else {
-                imcref.getDatabase().executeUpdateQuery( "update meta_section set section_id = ? where section_id = ?", new String[] {new_sections,
-                                                                                            del_section});
+                final Object[] parameters = new String[] {new_sections,
+                                                                                            del_section};
+                DatabaseUtils.executeUpdate(imcref.getDatabase(), "update meta_section set section_id = ? where section_id = ?", parameters);
                 deleteSection( imcref, del_section );
             }
         }
@@ -156,7 +163,8 @@ public class AdminSection extends HttpServlet {
             String section_id = req.getParameter("section_list") == null ? "-1" : req.getParameter("section_list");
             if (!section_id.equals("-1")) {
                 //ok we have a request for delete lets see if there is any docs connected to that section_id
-                String doc_nrs = imcref.getDatabase().executeStringProcedure( "SectionCount", new String[] {section_id} );
+                final Object[] parameters = new String[] {section_id};
+                String doc_nrs = DatabaseUtils.executeStringProcedure(imcref.getDatabase(), "SectionCount", parameters);
                 int doc_int = 0;
                 if (doc_nrs != null) {
                     try {
@@ -169,7 +177,8 @@ public class AdminSection extends HttpServlet {
 
                 if (doc_int > 0) {
                     //ok we have documents connected to that section id so lets get a page to handle that
-                    String[][] section_arr = imcref.getDatabase().execute2dArrayProcedure( "SectionGetAllCount", new String[0] );
+                    final Object[] parameters1 = new String[0];
+                    String[][] section_arr = DatabaseUtils.execute2dStringArrayProcedure(imcref.getDatabase(), "SectionGetAllCount", parameters1);
                     Vector vec = new Vector();
                     vec.add("#section_list#");
                     vec.add(createOptionList(section_arr, user, section_id));
@@ -188,7 +197,8 @@ public class AdminSection extends HttpServlet {
 
             if (!got_confirm_page) {
                 //now we needs a list of the created ones in db
-                String[][] section_arr = imcref.getDatabase().execute2dArrayProcedure( "SectionGetAllCount", new String[0] );
+                final Object[] parameters = new String[0];
+                String[][] section_arr = DatabaseUtils.execute2dStringArrayProcedure(imcref.getDatabase(), "SectionGetAllCount", parameters);
                 Vector vec = new Vector();
                 vec.add("#section_list#");
                 vec.add(createOptionList(section_arr, user, null));

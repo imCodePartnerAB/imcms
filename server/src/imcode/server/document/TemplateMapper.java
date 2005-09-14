@@ -3,6 +3,7 @@ package imcode.server.document;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.io.CopyUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -30,7 +31,8 @@ public class TemplateMapper {
 
     public void addTemplateToGroup( TemplateDomainObject template, TemplateGroupDomainObject templateGroup ) {
         String sqlStr = "INSERT INTO templates_cref (group_id,template_id) VALUES(?,?)";
-        database.executeUpdateQuery( sqlStr, new String[]{"" + templateGroup.getId(), "" + template.getId()} );
+        final Object[] parameters = new String[]{"" + templateGroup.getId(), "" + template.getId()};
+        DatabaseUtils.executeUpdate(database, sqlStr, parameters);
     }
 
     public TemplateDomainObject[] getArrayOfAllTemplatesExceptOne( TemplateDomainObject template ) {
@@ -107,11 +109,13 @@ public class TemplateMapper {
     public void deleteTemplate( TemplateDomainObject template ) {
 
         String sqlStr = "delete from templates_cref where template_id = ?";
-        database.executeUpdateQuery( sqlStr, new String[]{"" + template.getId()} );
+        final Object[] parameters1 = new String[]{"" + template.getId()};
+        DatabaseUtils.executeUpdate(database, sqlStr, parameters1);
 
         // delete from database
         sqlStr = "delete from templates where template_id = ?";
-        database.executeUpdateQuery( sqlStr, new String[]{"" + template.getId()} );
+        final Object[] parameters = new String[]{"" + template.getId()};
+        DatabaseUtils.executeUpdate(database, sqlStr, parameters);
 
         // test if template exists and delete it
         File f = new File( services.getConfig().getTemplatePath() + "/text/" + template.getId() + ".html" );
@@ -121,12 +125,15 @@ public class TemplateMapper {
     }
 
     public void deleteTemplateGroup( int grp_id ) {
-        database.executeUpdateQuery( "delete from templates_cref where group_id = ?", new String[]{"" + grp_id} );
-        database.executeUpdateQuery( "delete from templategroups where group_id = ?", new String[]{"" + grp_id} );
+        final Object[] parameters1 = new String[]{"" + grp_id};
+        DatabaseUtils.executeUpdate(database, "delete from templates_cref where group_id = ?", parameters1);
+        final Object[] parameters = new String[]{"" + grp_id};
+        DatabaseUtils.executeUpdate(database, "delete from templategroups where group_id = ?", parameters);
     }
 
     public TemplateGroupDomainObject[] getAllTemplateGroups() {
-        String[][] sprocResult = database.execute2dArrayProcedure( SPROC_GET_TEMPLATE_GROUPS, new String[]{} );
+        final Object[] parameters = new String[]{};
+        String[][] sprocResult = DatabaseUtils.execute2dStringArrayProcedure(database, SPROC_GET_TEMPLATE_GROUPS, parameters);
         return createTemplateGroupsFromSqlResult( sprocResult );
     }
 
@@ -138,23 +145,24 @@ public class TemplateMapper {
 
     public TemplateDomainObject[] getAllTemplates() {
         String sqlStr = "select template_id,template_name,simple_name from templates order by simple_name";
-        String[][] queryResult = database.execute2dArrayQuery( sqlStr, new String[0] );
+        final Object[] parameters = new String[0];
+        String[][] queryResult = DatabaseUtils.execute2dStringArrayQuery(database, sqlStr, parameters);
 
         return createTemplatesFromSqlResult( queryResult );
     }
 
     private int getCountOfDocumentsUsingTemplate( TemplateDomainObject template ) {
-        String queryResult = database.executeStringQuery(
-                "SELECT COUNT(meta_id)" + " FROM text_docs" + " WHERE template_id = ?", new String[]{
-                    "" + template.getId()
-                } );
+        final Object[] parameters = new String[]{
+            "" + template.getId()
+        };
+        String queryResult = DatabaseUtils.executeStringQuery(database, "SELECT COUNT(meta_id)" + " FROM text_docs"
+                                                                        + " WHERE template_id = ?", parameters);
         return Integer.parseInt( queryResult );
     }
 
     public DocumentDomainObject[] getDocumentsUsingTemplate( TemplateDomainObject template ) {
-        String[][] temp = database.execute2dArrayQuery(
-                "select td.meta_id, meta_headline from text_docs td join meta m on td.meta_id = m.meta_id where template_id = ? order by td.meta_id",
-                new String[]{"" + template.getId()} );
+        final Object[] parameters = new String[]{"" + template.getId()};
+        String[][] temp = DatabaseUtils.execute2dStringArrayQuery(database, "select td.meta_id, meta_headline from text_docs td join meta m on td.meta_id = m.meta_id where template_id = ? order by td.meta_id", parameters);
         DocumentMapper documentMapper = services.getDefaultDocumentMapper();
         DocumentDomainObject[] documents = new DocumentDomainObject[temp.length];
         for ( int i = 0; i < documents.length; i++ ) {
@@ -166,33 +174,37 @@ public class TemplateMapper {
 
     public TemplateDomainObject getTemplateById( int template_id ) {
         String sqlStr = "select template_id,template_name,simple_name from templates where template_id = ?";
-        String[] queryResult = database.executeArrayQuery( sqlStr, new String[]{"" + template_id} );
+        final Object[] parameters = new String[]{"" + template_id};
+        String[] queryResult = DatabaseUtils.executeStringArrayQuery(database, sqlStr, parameters);
 
         return createTemplateFromSqlResultRow( queryResult );
     }
 
     public TemplateDomainObject getTemplateByName( String templateSimpleName ) {
         String sqlStr = "select template_id,template_name,simple_name from templates where simple_name = ?";
-        String[] queryResult = database.executeArrayQuery( sqlStr, new String[]{templateSimpleName} );
+        final Object[] parameters = new String[]{templateSimpleName};
+        String[] queryResult = DatabaseUtils.executeStringArrayQuery(database, sqlStr, parameters);
 
         return createTemplateFromSqlResultRow( queryResult );
     }
 
     public TemplateGroupDomainObject getTemplateGroupById( int templateGroupId ) {
         String sqlStr = "SELECT group_id,group_name FROM templategroups WHERE group_id = ?";
-        String[] queryResult = database.executeArrayQuery( sqlStr, new String[]{"" + templateGroupId} );
+        final Object[] parameters = new String[]{"" + templateGroupId};
+        String[] queryResult = DatabaseUtils.executeStringArrayQuery(database, sqlStr, parameters);
 
         return createTemplateGroupFromSqlResultRow( queryResult );
     }
 
     public TemplateGroupDomainObject getTemplateGroupByName( String name ) {
-        String[] sqlResultRow = database.executeArrayQuery(
-                "select group_id, group_name from templategroups where group_name = ?", new String[]{name} );
+        final Object[] parameters = new String[]{name};
+        String[] sqlResultRow = DatabaseUtils.executeStringArrayQuery(database, "select group_id, group_name from templategroups where group_name = ?", parameters);
         return createTemplateGroupFromSqlResultRow( sqlResultRow );
     }
 
     public TemplateDomainObject[] getTemplatesInGroup( TemplateGroupDomainObject templateGroup ) {
-        String[][] templateData = database.execute2dArrayProcedure( SPROC_GET_TEMPLATES_IN_GROUP, new String[]{"" + templateGroup.getId()} );
+        final Object[] parameters = new String[]{"" + templateGroup.getId()};
+        String[][] templateData = DatabaseUtils.execute2dStringArrayProcedure(database, SPROC_GET_TEMPLATES_IN_GROUP, parameters);
         TemplateDomainObject[] templates = new TemplateDomainObject[templateData.length];
         for ( int i = 0; i < templateData.length; i++ ) {
             int templateId = Integer.parseInt( templateData[i][0] );
@@ -212,32 +224,36 @@ public class TemplateMapper {
 
     public void removeTemplateFromGroup( TemplateDomainObject template, TemplateGroupDomainObject templateGroup ) {
         String sqlStr = "DELETE FROM templates_cref WHERE group_id = ? AND template_id = ?";
-        database.executeUpdateQuery( sqlStr, new String[]{"" + templateGroup.getId(), "" + template.getId()} );
+        final Object[] parameters = new String[]{"" + templateGroup.getId(), "" + template.getId()};
+        DatabaseUtils.executeUpdate(database, sqlStr, parameters);
     }
 
     public void renameTemplate( TemplateDomainObject template, String newNameForTemplate ) {
         String sqlStr = "UPDATE templates SET simple_name = ? WHERE template_id = ?";
-        database.executeUpdateQuery( sqlStr, new String[]{newNameForTemplate, "" + template.getId()} );
+        final Object[] parameters = new String[]{newNameForTemplate, "" + template.getId()};
+        DatabaseUtils.executeUpdate(database, sqlStr, parameters);
     }
 
     public void renameTemplateGroup( TemplateGroupDomainObject templateGroup, String newName ) {
         String sqlStr = "update templategroups\n"
                         + "set group_name = ?\n"
                         + "where group_id = ?\n";
-        database.executeUpdateQuery( sqlStr, new String[]{newName, "" + templateGroup.getId()} );
+        final Object[] parameters = new String[]{newName, "" + templateGroup.getId()};
+        DatabaseUtils.executeUpdate(database, sqlStr, parameters);
     }
 
     public void replaceAllUsagesOfTemplate( TemplateDomainObject template, TemplateDomainObject newTemplate ) {
         if ( null != template && null != newTemplate ) {
             String sqlStr = "update text_docs set template_id = ? where template_id = ?";
-            database.executeUpdateQuery( sqlStr, new String[]{"" + newTemplate.getId(), "" + template.getId()} );
+            final Object[] parameters = new String[]{"" + newTemplate.getId(), "" + template.getId()};
+            DatabaseUtils.executeUpdate(database, sqlStr, parameters);
         }
     }
 
     private static String[][] sprocGetTemplateGroupsForUser( Database service, UserDomainObject user,
                                                              int meta_id ) {
-        return service.execute2dArrayProcedure( SPROC_GET_TEMPLATE_GROUPS_FOR_USER,
-                                                new String[]{String.valueOf( meta_id ), String.valueOf( user.getId() )} );
+        final Object[] parameters = new String[]{String.valueOf( meta_id ), String.valueOf( user.getId() )};
+        return DatabaseUtils.execute2dStringArrayProcedure(service, SPROC_GET_TEMPLATE_GROUPS_FOR_USER, parameters);
     }
 
     private TemplateDomainObject createTemplateFromSqlResultRow( String[] sqlResultRow ) {
@@ -278,9 +294,10 @@ public class TemplateMapper {
     }
 
     public void createTemplateGroup( String name ) {
-        database.executeUpdateQuery( "declare @new_id int\n"
-                                     + "select @new_id = max(group_id)+1 from templategroups\n"
-                                     + "insert into templategroups values(@new_id,?)", new String[]{name} );
+        final Object[] parameters = new String[]{name};
+        DatabaseUtils.executeUpdate(database, "declare @new_id int\n"
+                                              + "select @new_id = max(group_id)+1 from templategroups\n"
+                                              + "insert into templategroups values(@new_id,?)", parameters);
     }
 
     public boolean templateGroupContainsTemplate( TemplateGroupDomainObject templateGroup,
@@ -318,23 +335,27 @@ public class TemplateMapper {
         String sqlStr;
         // check if template exists
         sqlStr = "select template_id from templates where simple_name = ?";
-        String templateId = database.executeStringQuery( sqlStr, new String[] {name} );
+        final Object[] parameters1 = new String[] {name};
+        String templateId = DatabaseUtils.executeStringQuery(database, sqlStr, parameters1);
         if ( null == templateId ) {
 
             // get new template_id
             sqlStr = "select max(template_id) + 1 from templates\n";
-            templateId = database.executeStringQuery( sqlStr, new String[0] );
+            final Object[] parameters = new String[0];
+            templateId = DatabaseUtils.executeStringQuery(database, sqlStr, parameters);
 
             sqlStr = "insert into templates values (?,?,?,?,0,0,0)";
-            database.executeUpdateQuery( sqlStr, new String[] {templateId, file_name, name,
-                    lang_prefix} );
+            final Object[] parameters2 = new String[] {templateId, file_name, name,
+                    lang_prefix};
+            DatabaseUtils.executeUpdate(database, sqlStr, parameters2);
         } else { //update
             if ( !overwrite ) {
                 return -1;
             }
 
             sqlStr = "update templates set template_name = ? where template_id = ?";
-            database.executeUpdateQuery( sqlStr, new String[] {file_name, templateId} );
+            final Object[] parameters = new String[] {file_name, templateId};
+            DatabaseUtils.executeUpdate(database, sqlStr, parameters);
         }
 
         File f = new File( services.getConfig().getTemplatePath(), "text/" + templateId + ".html" );

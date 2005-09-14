@@ -4,6 +4,7 @@ import imcode.server.LanguageMapper;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
 import imcode.server.db.DatabaseConnection;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.db.commands.CompositeDatabaseCommand;
 import imcode.server.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
 import imcode.server.db.commands.InsertIntoTableDatabaseCommand;
@@ -80,9 +81,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     private String[] sqlSelectUserByName(String loginName) {
-        return database.executeArrayQuery(SQL_SELECT_USERS
-                                          + " WHERE login_name = ?",
-                                          new String[] { loginName.trim() });
+        final Object[] parameters = new String[] { loginName.trim() };
+        return DatabaseUtils.executeStringArrayQuery(database, SQL_SELECT_USERS
+                                                               + " WHERE login_name = ?", parameters);
     }
 
     private UserDomainObject getUserFromSqlRow(String[] sqlResult) {
@@ -125,7 +126,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             String sqlStr = SQL_SELECT_ALL_ROLES + ", user_roles_crossref"
                             + " WHERE user_roles_crossref.role_id = roles.role_id"
                             + " AND user_roles_crossref.user_id = ?";
-            String[][] sqlResult = database.execute2dArrayQuery(sqlStr, new String[] { "" + user.getId() });
+            final Object[] parameters = new String[] { "" + user.getId() };
+            String[][] sqlResult = DatabaseUtils.execute2dStringArrayQuery(database, sqlStr, parameters);
             RoleId[] roleReferences = new RoleId[sqlResult.length];
             for ( int i = 0; i < sqlResult.length; i++ ) {
                 String[] sqlRow = sqlResult[i];
@@ -159,7 +161,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             sqlStr += " WHERE " + StringUtils.join(whereTests.iterator(), " AND ");
         }
         try {
-            return database.execute2dArrayQuery(sqlStr, new String[0]);
+            final Object[] parameters = new String[0];
+            return DatabaseUtils.execute2dStringArrayQuery(database, sqlStr, parameters);
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }
@@ -170,7 +173,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                         + " WHERE user_id = ?";
 
         try {
-            return database.executeArrayQuery(sqlStr, new String[] { "" + userId });
+            final Object[] parameters = new String[] { "" + userId };
+            return DatabaseUtils.executeStringArrayQuery(database, sqlStr, parameters);
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }
@@ -205,23 +209,23 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 "" + user.getId(),
         };
         try {
-            database.executeUpdateQuery("UPDATE users \n"
-                                        + "SET login_name = ?,\n"
-                                        + "login_password = ?,\n"
-                                        + "first_name = ?,\n"
-                                        + "last_name = ?,\n"
-                                        + "title = ?,\n"
-                                        + "company = ?,\n"
-                                        + "address =  ?,\n"
-                                        + "city = ?,\n"
-                                        + "zip = ?,\n"
-                                        + "country = ?,\n"
-                                        + "county_council = ?,\n"
-                                        + "email = ?,\n"
-                                        + "external = ?,\n"
-                                        + "active = ?,\n"
-                                        + "language = ?\n"
-                                        + "WHERE user_id = ?", params);
+            DatabaseUtils.executeUpdate(database, "UPDATE users \n"
+                                                  + "SET login_name = ?,\n"
+                                                  + "login_password = ?,\n"
+                                                  + "first_name = ?,\n"
+                                                  + "last_name = ?,\n"
+                                                  + "title = ?,\n"
+                                                  + "company = ?,\n"
+                                                  + "address =  ?,\n"
+                                                  + "city = ?,\n"
+                                                  + "zip = ?,\n"
+                                                  + "country = ?,\n"
+                                                  + "county_council = ?,\n"
+                                                  + "email = ?,\n"
+                                                  + "external = ?,\n"
+                                                  + "active = ?,\n"
+                                                  + "language = ?\n"
+                                                  + "WHERE user_id = ?", params);
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }
@@ -318,7 +322,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private void removePhoneNumbers(UserDomainObject newUser) {
         String[] sprocParameters = new String[] { String.valueOf(newUser.getId()) };
         try {
-            database.executeUpdateProcedure(SPROC_DEL_PHONE_NR, sprocParameters);
+            DatabaseUtils.executeUpdateProcedure(database, SPROC_DEL_PHONE_NR, sprocParameters);
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }
@@ -341,7 +345,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     /** @deprecated  */
     public String[] getRoleNames(UserDomainObject user) {
         try {
-            return database.executeArrayProcedure(SPROC_GET_USER_ROLES, new String[] { "" + user.getId() });
+            final Object[] parameters = new String[] { "" + user.getId() };
+            return DatabaseUtils.executeStringArrayProcedure(database, SPROC_GET_USER_ROLES, parameters);
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }
@@ -349,7 +354,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     public String[] getAllRoleNames() {
         try {
-            String[] roleNamesMinusUsers = database.executeArrayProcedure(SPROC_GET_ALL_ROLES, new String[] { });
+            final Object[] parameters = new String[] { };
+            String[] roleNamesMinusUsers = DatabaseUtils.executeStringArrayProcedure(database, SPROC_GET_ALL_ROLES, parameters);
 
             Set roleNamesSet = new HashSet();
             for ( int i = 0; i < roleNamesMinusUsers.length; i += 2 ) {
@@ -385,8 +391,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             if ( null == role ) {
                 return new UserDomainObject[] { };
             }
-            String[] usersWithRole = database.executeArrayProcedure(SPROC_GET_USERS_WHO_BELONGS_TO_ROLE,
-                                                                    new String[] { "" + role.getId() });
+            final Object[] parameters = new String[] { "" + role.getId() };
+            String[] usersWithRole = DatabaseUtils.executeStringArrayProcedure(database, SPROC_GET_USERS_WHO_BELONGS_TO_ROLE, parameters);
             UserDomainObject[] result = new UserDomainObject[usersWithRole.length / 2];
 
             for ( int i = 0; i < result.length; i++ ) {
@@ -484,7 +490,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     private RoleDomainObject[] getRoles(String rolesSql) {
         try {
-            String[][] sqlRows = database.execute2dArrayQuery(rolesSql, new String[0]);
+            final Object[] parameters = new String[0];
+            String[][] sqlRows = DatabaseUtils.execute2dStringArrayQuery(database, rolesSql, parameters);
             RoleDomainObject[] roles = new RoleDomainObject[sqlRows.length];
             for ( int i = 0; i < sqlRows.length; i++ ) {
                 roles[i] = getRoleFromSqlResult(sqlRows[i]);
@@ -497,7 +504,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     public RoleDomainObject getRoleById(int roleId) {
         try {
-            String[] sqlResult = database.executeArrayQuery(SQL_SELECT_ROLE_BY_ID, new String[] { "" + roleId });
+            final Object[] parameters = new String[] { "" + roleId };
+            String[] sqlResult = DatabaseUtils.executeStringArrayQuery(database, SQL_SELECT_ROLE_BY_ID, parameters);
             return getRoleFromSqlResult(sqlResult);
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
@@ -506,7 +514,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     public RoleDomainObject getRoleByName(String wantedRoleName) {
         try {
-            String[] sqlResult = database.executeArrayQuery(SQL_SELECT_ROLE_BY_NAME, new String[] { wantedRoleName });
+            final Object[] parameters = new String[] { wantedRoleName };
+            String[] sqlResult = DatabaseUtils.executeStringArrayQuery(database, SQL_SELECT_ROLE_BY_NAME, parameters);
             return getRoleFromSqlResult(sqlResult);
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
@@ -539,7 +548,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             }
             sql += " ORDER BY last_name, first_name";
             String like = namePrefix + "%";
-            String[][] sqlRows = database.execute2dArrayQuery(sql, new String[] { like, like, like });
+            final Object[] parameters = new String[] { like, like, like };
+            String[][] sqlRows = DatabaseUtils.execute2dStringArrayQuery(database, sql, parameters);
             return getUsersFromSqlRows(sqlRows);
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
@@ -583,9 +593,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private void saveExistingRole(RoleDomainObject role) {
         int unionOfRolePermissionIds = getUnionOfRolePermissionIds(role);
         try {
-            database.executeUpdateQuery("UPDATE roles SET role_name = ?, permissions = ? WHERE role_id = ?", new String[] {
+            final Object[] parameters = new String[] {
                     role.getName(),
-                    "" + unionOfRolePermissionIds, "" + role.getId() });
+                    "" + unionOfRolePermissionIds, "" + role.getId() };
+            DatabaseUtils.executeUpdate(database, "UPDATE roles SET role_name = ?, permissions = ? WHERE role_id = ?", parameters);
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }
@@ -593,11 +604,11 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     public PhoneNumber[] getUserPhoneNumbers(int userToChangeId) {
         try {
-            String[][] phoneNumberData = database.execute2dArrayQuery(
-                    "SELECT   phones.number, phones.phonetype_id\n"
-                    + "FROM   phones\n"
-                    + "WHERE  phones.user_id = ?", new String[] {
-                    "" + userToChangeId });
+            final Object[] parameters = new String[] {
+            "" + userToChangeId };
+            String[][] phoneNumberData = DatabaseUtils.execute2dStringArrayQuery(database, "SELECT   phones.number, phones.phonetype_id\n"
+                                                                                           + "FROM   phones\n"
+                                                                                           + "WHERE  phones.user_id = ?", parameters);
             List phoneNumbers = new ArrayList();
             for ( int i = 0; i < phoneNumberData.length; i++ ) {
                 String[] row = phoneNumberData[i];
@@ -615,10 +626,11 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     public RoleId[] getUserAdminRolesReferencesForUser(UserDomainObject loggedOnUser) {
         try {
-            String[] roleIds = database.executeArrayQuery("SELECT role_id\n"
-                                                          + "FROM useradmin_role_crossref\n"
-                                                          + "WHERE user_id = ?", new String[] {
-                    "" + loggedOnUser.getId() });
+            final Object[] parameters = new String[] {
+            "" + loggedOnUser.getId() };
+            String[] roleIds = DatabaseUtils.executeStringArrayQuery(database, "SELECT role_id\n"
+                                                                               + "FROM useradmin_role_crossref\n"
+                                                                               + "WHERE user_id = ?", parameters);
 
             List useradminPermissibleRolesList = new ArrayList(roleIds.length);
             for ( int i = 0; i < roleIds.length; i++ ) {

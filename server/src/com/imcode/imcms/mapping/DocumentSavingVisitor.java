@@ -2,6 +2,7 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
@@ -21,12 +22,14 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     public void visitHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
         String sqlStr = "UPDATE frameset_docs SET frame_set = ? WHERE meta_id = ?";
-        database.executeUpdateQuery( sqlStr, new String[]{htmlDocument.getHtml(), "" + htmlDocument.getId()} );
+        final Object[] parameters = new String[]{htmlDocument.getHtml(), "" + htmlDocument.getId()};
+        DatabaseUtils.executeUpdate(database, sqlStr, parameters);
     }
 
     public void visitUrlDocument( UrlDocumentDomainObject urlDocument ) {
         String sqlStr = "UPDATE url_docs SET url_ref = ? WHERE meta_id = ?";
-        database.executeUpdateQuery( sqlStr, new String[]{urlDocument.getUrl(), "" + urlDocument.getId()} );
+        final Object[] parameters = new String[]{urlDocument.getUrl(), "" + urlDocument.getId()};
+        DatabaseUtils.executeUpdate(database, sqlStr, parameters);
     }
 
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
@@ -40,14 +43,15 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         int templateGroupId = textDocument.getTemplateGroupId();
         int templateId = template.getId();
 
-        database.executeUpdateQuery( sqlStr, new String[]{
+        final Object[] parameters = new String[]{
             "" + templateId,
             "" + templateGroupId,
             (null != defaultTemplate ? "" + defaultTemplate.getId() : null),
             null != defaultTemplateForRestricted1 ? "" + defaultTemplateForRestricted1.getId() : "-1",
             null != defaultTemplateForRestricted2 ? "" + defaultTemplateForRestricted2.getId() : "-1",
             "" + textDocument.getId()
-        } );
+        };
+        DatabaseUtils.executeUpdate(database, sqlStr, parameters);
 
         updateTextDocumentTexts( textDocument );
         updateTextDocumentImages( textDocument );

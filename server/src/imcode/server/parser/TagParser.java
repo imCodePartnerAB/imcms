@@ -642,7 +642,7 @@ class TagParser {
         if ( null == categoryTypeName ) {
             categories = document.getCategories();
         } else {
-            CategoryTypeDomainObject categoryType = service.getCategoryMapper().getCategoryType(categoryTypeName);
+            CategoryTypeDomainObject categoryType = service.getCategoryMapper().getCategoryTypeByName(categoryTypeName);
             final CategoryDomainObject[] categoriesOfType = document.getCategoriesOfType(categoryType);
             categories = categoriesOfType;
         }

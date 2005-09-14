@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.*;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
@@ -154,11 +155,11 @@ public class GetDoc extends HttpServlet {
             if ( br_id == null ) {
                 br_id = "";
             }
-            String destinationMetaId = imcref.getDatabase().executeStringQuery( "select to_meta_id\n"
-                                                                  + "from browser_docs\n"
-                                                                  + "join browsers on browsers.browser_id = browser_docs.browser_id\n"
-                                                                  + "where meta_id = ? and ? like user_agent order by value desc",
-                                                                  new String[]{"" + meta_id, br_id} );
+            final Object[] parameters = new String[]{"" + meta_id, br_id};
+            String destinationMetaId = DatabaseUtils.executeStringQuery(imcref.getDatabase(), "select to_meta_id\n"
+                                                                                              + "from browser_docs\n"
+                                                                                              + "join browsers on browsers.browser_id = browser_docs.browser_id\n"
+                                                                                              + "where meta_id = ? and ? like user_agent order by value desc", parameters);
             if ( destinationMetaId != null && ( !"".equals( destinationMetaId ) ) ) {
                 meta_id = Integer.parseInt( destinationMetaId );
             } else {
@@ -172,7 +173,7 @@ public class GetDoc extends HttpServlet {
             return null;
         } else if ( document instanceof HtmlDocumentDomainObject ) {
             Utility.setDefaultHtmlContentType( res );
-            String html_str_temp = imcref.isFramesetDoc( meta_id );
+            String html_str_temp = imcref.getHtmlDocumentData( meta_id );
             if ( html_str_temp == null ) {
                 throw new RuntimeException( "Null-frameset encountered." );
             }

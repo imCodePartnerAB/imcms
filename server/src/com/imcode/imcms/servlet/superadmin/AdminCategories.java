@@ -130,7 +130,7 @@ public class AdminCategories extends HttpServlet {
             boolean nameWasChanged = !req.getParameter( PARAMETER__OLD_NAME ).toLowerCase().equals( req.getParameter( PARAMETER__NAME ).toLowerCase() );
             CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, categoryMapper );
             if ( nameWasChanged ) {
-                nameIsUnique = null == categoryMapper.getCategory( categoryTypeToAddTo, req.getParameter( PARAMETER__NAME ) );
+                nameIsUnique = null == categoryMapper.getCategoryByTypeAndName( categoryTypeToAddTo, req.getParameter( PARAMETER__NAME ) );
             }
             if ( nameIsUnique ) {
                 setCategoryFromRequest( category, req, categoryMapper );

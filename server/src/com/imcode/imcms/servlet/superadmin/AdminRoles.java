@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.superadmin;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.*;
 import imcode.util.Html;
@@ -67,7 +68,8 @@ public class AdminRoles extends HttpServlet {
              || req.getParameter("CANCEL_ROLE") != null ) {
 
             // Lets get all ROLES from DB
-            String[] rolesArr = imcref.getDatabase().executeArrayProcedure("RoleAdminGetAll", new String[0]);
+            final Object[] parameters = new String[0];
+            String[] rolesArr = DatabaseUtils.executeStringArrayProcedure(imcref.getDatabase(), "RoleAdminGetAll", parameters);
             List rolesV = new ArrayList(Arrays.asList(rolesArr));
 
 
@@ -104,7 +106,8 @@ public class AdminRoles extends HttpServlet {
         } else {// *************** GENERATE THE ADMINISTRATE ROLES PAGE *****************
             if ( req.getParameter("VIEW_ADMIN_ROLES") != null ) {
                 // Lets get all ROLES from DB
-                String[] rolesArr = database.executeArrayProcedure("RoleAdminGetAll", new String[0]);
+                final Object[] parameters = new String[0];
+                String[] rolesArr = DatabaseUtils.executeStringArrayProcedure(database, "RoleAdminGetAll", parameters);
                 Vector rolesV = new Vector(Arrays.asList(rolesArr));
 
 
@@ -416,8 +419,9 @@ public class AdminRoles extends HttpServlet {
                 int permissionValue = collectPermissionsState(checkedPermissions);
 
                 // lets update
-                database.executeUpdateProcedure("RoleUpdatePermissions", new String[] { params.getProperty("ROLE_ID"),
-                        "" + permissionValue });
+                final Object[] parameters = new String[] { params.getProperty("ROLE_ID"),
+                        "" + permissionValue };
+                DatabaseUtils.executeUpdateProcedure(database, "RoleUpdatePermissions", parameters);
 
                 this.doGet(req, res);
             }

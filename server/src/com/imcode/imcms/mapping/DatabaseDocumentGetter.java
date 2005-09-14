@@ -1,13 +1,13 @@
 package com.imcode.imcms.mapping;
 
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentGetter;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentId;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
 import imcode.server.db.DatabaseConnection;
 import imcode.server.db.exceptions.DatabaseException;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentGetter;
+import imcode.server.document.DocumentId;
 
 public class DatabaseDocumentGetter implements DocumentGetter {
     private Database database;
@@ -20,15 +20,14 @@ public class DatabaseDocumentGetter implements DocumentGetter {
 
     public DocumentDomainObject getDocument(final DocumentId metaId) {
         DatabaseCommand getDocumentDatabaseCommand = new DocumentGetterDatabaseCommand(metaId);
-        DocumentDomainObject document = (DocumentDomainObject) database.executeCommand(getDocumentDatabaseCommand) ;
-        return document;
+        return (DocumentDomainObject) database.executeCommand(getDocumentDatabaseCommand);
     }
 
 
     private class DocumentGetterDatabaseCommand implements DatabaseCommand {
         private final DocumentId documentId;
 
-        public DocumentGetterDatabaseCommand(DocumentId documentId) {
+        DocumentGetterDatabaseCommand(DocumentId documentId) {
             this.documentId = documentId;
         }
 

@@ -1,6 +1,8 @@
 package imcode.server.document;
 
-public class DocumentPermissionSetTypeDomainObject {
+import java.io.Serializable;
+
+public class DocumentPermissionSetTypeDomainObject implements Serializable {
 
     public static final DocumentPermissionSetTypeDomainObject FULL = new DocumentPermissionSetTypeDomainObject(0);
     public static final DocumentPermissionSetTypeDomainObject RESTRICTED_1 = new DocumentPermissionSetTypeDomainObject(1);

@@ -3,8 +3,8 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.api.Document;
 import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
-import imcode.server.db.ConvenienceDatabaseConnection;
 import imcode.server.db.DatabaseConnection;
+import imcode.server.db.DatabaseConnectionUtils;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentGetter;
 import imcode.server.document.DocumentId;
@@ -24,13 +24,13 @@ import java.util.Date;
 import java.util.Set;
 
 public class ConnectionDocumentGetter implements DocumentGetter {
-    private ConvenienceDatabaseConnection connection;
+    private DatabaseConnection connection;
     private ImcmsServices services;
     private ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper;
     Logger log = Logger.getLogger(ConnectionDocumentGetter.class) ;
 
     public ConnectionDocumentGetter(DatabaseConnection connection, ImcmsServices services) {
-        this.connection = new ConvenienceDatabaseConnection(connection);
+        this.connection = connection;
         this.services = services ;
         this.userAndRoleMapper = services.getImcmsAuthenticatorAndUserAndRoleMapper() ;
     }
@@ -44,7 +44,8 @@ public class ConnectionDocumentGetter implements DocumentGetter {
         if (0 != result.length) {
             document = getDocumentFromSqlResultRow(result);
             initDocumentAttributes(connection,document);
-            CategoryMapper.initDocumentCategories(connection,document);
+            CategoryMapper categoryMapper = services.getCategoryMapper();
+            categoryMapper.initDocumentCategories(connection,document);
             initRolesMappedToDocumentPermissionSetIds(connection,document);
 
             document.accept(new DocumentInitializingVisitor(connection, services));
@@ -53,9 +54,9 @@ public class ConnectionDocumentGetter implements DocumentGetter {
 
     }
 
-    private String[] sprocGetDocumentInfo(ConvenienceDatabaseConnection connection, int metaId) {
+    private String[] sprocGetDocumentInfo(DatabaseConnection connection, int metaId) {
         String[] params = new String[]{String.valueOf(metaId)};
-        return connection.executeArrayQuery(DefaultDocumentMapper.SQL_GET_DOCUMENT, params);
+        return DatabaseConnectionUtils.executeStringArrayQuery(connection, DefaultDocumentMapper.SQL_GET_DOCUMENT, params);
     }
 
     private DocumentDomainObject getDocumentFromSqlResultRow(String[] result) {
@@ -107,7 +108,7 @@ public class ConnectionDocumentGetter implements DocumentGetter {
         return services.getDefaultDocumentMapper().getDocumentPermissionSetMapper();
     }
 
-    public void initDocumentAttributes(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {
+    public void initDocumentAttributes(DatabaseConnection connection, DocumentDomainObject document) {
 
         document.setSections(getSections(connection,document.getId()));
 
@@ -121,21 +122,21 @@ public class ConnectionDocumentGetter implements DocumentGetter {
 
     }
 
-    private Set getKeywords(ConvenienceDatabaseConnection connection, int meta_id) {
+    private Set getKeywords(DatabaseConnection connection, int meta_id) {
         String sqlStr;
         sqlStr =
         "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = ?";
         String[] params = new String[]{"" + meta_id};
-        final String[] keywords = connection.executeArrayQuery(sqlStr, params);
+        final String[] keywords = DatabaseConnectionUtils.executeStringArrayQuery(connection, sqlStr, params);
         return new ArraySet(keywords);
     }
 
     /**
      * @return the sections for a document, empty array if there is none.
      */
-    private SectionDomainObject[] getSections(ConvenienceDatabaseConnection connection, int meta_id) {
+    private SectionDomainObject[] getSections(DatabaseConnection connection, int meta_id) {
         String[] parameters = new String[]{String.valueOf(meta_id)};
-        String[][] sectionData = connection.execute2dArrayQuery(DefaultDocumentMapper.SQL_GET_SECTIONS_FOR_DOCUMENT, parameters);
+        String[][] sectionData = DatabaseConnectionUtils.execute2dStringArrayQuery(connection, DefaultDocumentMapper.SQL_GET_SECTIONS_FOR_DOCUMENT, parameters);
 
         SectionDomainObject[] sections = new SectionDomainObject[sectionData.length];
 
@@ -147,14 +148,15 @@ public class ConnectionDocumentGetter implements DocumentGetter {
         return sections;
     }
 
-    public void initRolesMappedToDocumentPermissionSetIds(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {
+    public void initRolesMappedToDocumentPermissionSetIds(DatabaseConnection connection, DocumentDomainObject document) {
 
         String[] parameters = new String[]{"" + document.getId()};
-        String[][] sprocResult = connection.execute2dArrayQuery("SELECT "
-                                                                + ImcmsAuthenticatorAndUserAndRoleMapper.SQL_ROLES_COLUMNS
-                                                                + ", rr.set_id\n"
-                                                                + "FROM  roles, roles_rights AS rr\n"
-                                                                + "WHERE rr.role_id = roles.role_id AND rr.meta_id = ?", parameters);
+        String[][] sprocResult = DatabaseConnectionUtils.execute2dStringArrayQuery(connection, "SELECT "
+                                                                                               + ImcmsAuthenticatorAndUserAndRoleMapper
+                .SQL_ROLES_COLUMNS
+                                                                                               + ", rr.set_id\n"
+                                                                                               + "FROM  roles, roles_rights AS rr\n"
+                                                                                               + "WHERE rr.role_id = roles.role_id AND rr.meta_id = ?", parameters);
 
         for (int i = 0; i < sprocResult.length; ++i) {
             RoleId roleId = new RoleId(Integer.parseInt(sprocResult[i][0]));

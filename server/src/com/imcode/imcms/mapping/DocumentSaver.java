@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.db.commands.InsertIntoTableDatabaseCommand;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -122,7 +123,7 @@ class DocumentSaver {
         sqlStr.append(" where meta_id = ?");
         sqlUpdateValues.add("" + document.getId());
         String[] params = (String[]) sqlUpdateValues.toArray(new String[sqlUpdateValues.size()]);
-        documentMapper.getDatabase().executeUpdateQuery(sqlStr.toString(), params);
+        DatabaseUtils.executeUpdate(documentMapper.getDatabase(), sqlStr.toString(), params);
     }
 
     private int convertPublicationStatusToInt(Document.PublicationStatus publicationStatus) {
@@ -210,11 +211,11 @@ class DocumentSaver {
                 || user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument)) {
                 String[] params1 = new String[]{"" + roleId,
                                                 "" + document.getId()};
-                documentMapper.getDatabase().executeUpdateQuery(DefaultDocumentMapper.SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID, params1);
+                DatabaseUtils.executeUpdate(documentMapper.getDatabase(), DefaultDocumentMapper.SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID, params1);
                 if ( !DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType) ) {
                     String[] params = new String[]{
                         "" + roleId.intValue(), "" + document.getId(), "" + documentPermissionSetType };
-                    documentMapper.getDatabase().executeUpdateQuery(DefaultDocumentMapper.SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID, params);
+                    DatabaseUtils.executeUpdate(documentMapper.getDatabase(), DefaultDocumentMapper.SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID, params);
                 }
             }
         }
@@ -340,35 +341,35 @@ class DocumentSaver {
     private void deleteKeywordsFromDocument(int meta_id) {
         String sqlDeleteKeywordsFromDocument = "DELETE FROM meta_classification WHERE meta_id = ?";
         String[] params = new String[]{"" + meta_id};
-        documentMapper.getDatabase().executeUpdateQuery(sqlDeleteKeywordsFromDocument, params);
+        DatabaseUtils.executeUpdate(documentMapper.getDatabase(), sqlDeleteKeywordsFromDocument, params);
     }
 
     private void deleteUnusedKeywords() {
         String[] params = new String[0];
-        documentMapper.getDatabase().executeUpdateQuery("DELETE FROM classification WHERE class_id NOT IN (SELECT class_id FROM meta_classification)", params);
+        DatabaseUtils.executeUpdate(documentMapper.getDatabase(), "DELETE FROM classification WHERE class_id NOT IN (SELECT class_id FROM meta_classification)", params);
     }
 
     private void addKeyword(String keyword) {
         String[] params = new String[]{keyword};
-        documentMapper.getDatabase().executeUpdateQuery("INSERT INTO classification (code) VALUES(?)", params);
+        DatabaseUtils.executeUpdate(documentMapper.getDatabase(), "INSERT INTO classification (code) VALUES(?)", params);
     }
 
     private void addSectionToDocument(int metaId, int sectionId) {
         String[] params = new String[]{"" + metaId, "" + sectionId};
-        documentMapper.getDatabase().executeUpdateQuery("INSERT INTO meta_section VALUES(?,?)", params);
+        DatabaseUtils.executeUpdate(documentMapper.getDatabase(), "INSERT INTO meta_section VALUES(?,?)", params);
     }
 
     private void removeAllSectionsFromDocument(int metaId) {
         String[] params = new String[]{"" + metaId};
-        documentMapper.getDatabase().executeUpdateQuery("DELETE FROM meta_section WHERE meta_id = ?", params);
+        DatabaseUtils.executeUpdate(documentMapper.getDatabase(), "DELETE FROM meta_section WHERE meta_id = ?", params);
     }
 
     private void addExistingKeywordToDocument(int meta_id, String keyword) {
         String[] params1 = new String[]{
             keyword
         };
-        int keywordId = Integer.parseInt(documentMapper.getDatabase().executeStringQuery("SELECT class_id FROM classification WHERE code = ?", params1));
+        int keywordId = Integer.parseInt(DatabaseUtils.executeStringQuery(documentMapper.getDatabase(), "SELECT class_id FROM classification WHERE code = ?", params1));
         String[] params = new String[]{"" + meta_id, "" + keywordId};
-        documentMapper.getDatabase().executeUpdateQuery("INSERT INTO meta_classification (meta_id, class_id) VALUES(?,?)", params);
+        DatabaseUtils.executeUpdate(documentMapper.getDatabase(), "INSERT INTO meta_classification (meta_id, class_id) VALUES(?,?)", params);
     }
 }

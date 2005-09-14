@@ -27,7 +27,7 @@ public class DocumentService {
      *
      * @param documentId The id number of the document requested, also somtimes known as "meta_id"
      * @return The document The type is usually a subclass to document, if there exist one.
-     * @throws com.imcode.imcms.api.NoPermissionException
+     * @throws NoPermissionException
      *          If the current user dosen't have the rights to read this document.
      */
     public Document getDocument( int documentId ) throws NoPermissionException {
@@ -43,7 +43,7 @@ public class DocumentService {
     /**
      * @param documentId The id number of the document requested, also known as "meta_id"
      * @return The document
-     * @throws com.imcode.imcms.api.NoPermissionException
+     * @throws NoPermissionException
      *          If the current user dosen't have the rights to read this document.
      */
     public TextDocument getTextDocument( int documentId ) throws NoPermissionException {
@@ -53,7 +53,7 @@ public class DocumentService {
     /**
      * @param documentId The id number of the document requested, also known as "meta_id"
      * @return The document
-     * @throws com.imcode.imcms.api.NoPermissionException
+     * @throws NoPermissionException
      *          If the current user dosen't have the rights to read this document.
      */
     public UrlDocument getUrlDocument( int documentId ) throws NoPermissionException {
@@ -93,7 +93,7 @@ public class DocumentService {
     }
 
     public Category getCategory( CategoryType categoryType, String categoryName ) {
-        final CategoryDomainObject category = getCategoryMapper().getCategory( categoryType.getInternal(), categoryName );
+        final CategoryDomainObject category = getCategoryMapper().getCategoryByTypeAndName( categoryType.getInternal(), categoryName );
         if ( null != category ) {
             return new Category( category );
         } else {
@@ -120,7 +120,7 @@ public class DocumentService {
     }
 
     public CategoryType getCategoryType( String categoryTypeName ) {
-        final CategoryTypeDomainObject categoryType = getCategoryMapper().getCategoryType( categoryTypeName );
+        final CategoryTypeDomainObject categoryType = getCategoryMapper().getCategoryTypeByName( categoryTypeName );
         return returnCategoryTypeAPIObjectOrNull( categoryType );
     }
 
@@ -143,7 +143,6 @@ public class DocumentService {
     }
 
     public CategoryType[] getAllCategoryTypes() {
-        // Allow everyone to get a CategoryType. No security check.
         CategoryTypeDomainObject[] categoryTypeDomainObjects = getCategoryMapper().getAllCategoryTypes();
         CategoryType[] categoryTypes = new CategoryType[categoryTypeDomainObjects.length];
         for ( int i = 0; i < categoryTypeDomainObjects.length; i++ ) {
@@ -220,8 +219,7 @@ public class DocumentService {
     public org.w3c.dom.Document getXmlDomForDocument( Document document ) {
         XmlDocumentBuilder xmlDocumentBuilder = new XmlDocumentBuilder();
         xmlDocumentBuilder.addDocument( document.getInternal() );
-        org.w3c.dom.Document xmlDocument = xmlDocumentBuilder.getXmlDocument();
-        return xmlDocument;
+        return xmlDocumentBuilder.getXmlDocument();
     }
 
     public void saveCategory( Category category ) throws NoPermissionException, CategoryAlreadyExistsException {
@@ -251,7 +249,7 @@ public class DocumentService {
         }
 
         protected void visitOtherDocument( DocumentDomainObject otherDocument ) {
-            this.document = new Document( otherDocument, contentManagementSystem );
+            document = new Document( otherDocument, contentManagementSystem );
         }
 
         public Document getDocument() {

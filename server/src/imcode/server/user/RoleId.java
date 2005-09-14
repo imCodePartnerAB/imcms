@@ -1,6 +1,8 @@
 package imcode.server.user;
 
-public class RoleId {
+import java.io.Serializable;
+
+public class RoleId implements Serializable {
 
     public static final int SUPERADMIN_ID = 0 ;
     public static final int USERADMIN_ID = 1 ;

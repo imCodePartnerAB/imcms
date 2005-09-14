@@ -1,7 +1,8 @@
 package imcode.server;
 
-import imcode.server.user.UserDomainObject;
 import imcode.server.db.Database;
+import imcode.server.db.DatabaseUtils;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -147,8 +148,9 @@ public class LanguageMapper {
     }
 
     private List getListOfLanguageKeysAndNamesInUsersLanguage(UserDomainObject user) {
-        String[][] languages = database.execute2dArrayQuery("select lang_prefix, user_prefix, language from languages where user_prefix = ?", new String[] {
-                user.getLanguageIso639_2() });
+        final Object[] parameters = new String[] {
+                user.getLanguageIso639_2() };
+        String[][] languages = DatabaseUtils.execute2dStringArrayQuery(database, "select lang_prefix, user_prefix, language from languages where user_prefix = ?", parameters);
         List languagesInOptionList = new ArrayList();
         for ( int i = 0; i < languages.length; i++ ) {
             String langStr = languages[i][0];

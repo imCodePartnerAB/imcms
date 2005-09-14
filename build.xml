@@ -178,7 +178,6 @@
             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
             <transaction src="${sql}/imcms${versionfilesuffix}-${defaultlanguage}.sql"/>
         </sql>
-
     </target>
 
     <target name="database-drop" depends="init,drop-sql">

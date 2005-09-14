@@ -13,6 +13,7 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -85,7 +86,8 @@ public class AdminRoleBelongings extends HttpServlet {
         }
 
         // Lets get all ROLES from DB
-        String[][] queryResult = imcref.getDatabase().execute2dArrayProcedure("RoleAdminGetAll", new String[0]);
+        final Object[] parameters = new String[0];
+        String[][] queryResult = DatabaseUtils.execute2dStringArrayProcedure(imcref.getDatabase(), "RoleAdminGetAll", parameters);
 
         // Lets generate the html page
         String optionList = createListOfOptions(queryResult);
@@ -147,9 +149,10 @@ public class AdminRoleBelongings extends HttpServlet {
                     curentRoleId = "0";
                 }
 
-                String[][] roleQueryResult = imcref.getDatabase().execute2dArrayProcedure("RoleGetAllApartFromRole", new String[] {
+                final Object[] parameters = new String[] {
                         curentRoleId
-                });
+                };
+                String[][] roleQueryResult = DatabaseUtils.execute2dStringArrayProcedure(imcref.getDatabase(), "RoleGetAllApartFromRole", parameters);
 
                 String roleOptionList = createListOfOptions(roleQueryResult);
                 String curentRoleName = getRoleName(roleId, imcref);
@@ -332,12 +335,14 @@ public class AdminRoleBelongings extends HttpServlet {
     private void addUserToRole( String userId, String roleId, ImcmsServices imcref ) {
         // lets be certain that the update process works ( avoid error then row alredy exist )
         removeUserFromRole( userId, roleId, imcref );
-        imcref.getDatabase().executeUpdateProcedure( "AddUserRole", new String[] {userId, roleId} );
+        final Object[] parameters = new String[] {userId, roleId};
+        DatabaseUtils.executeUpdateProcedure(imcref.getDatabase(), "AddUserRole", parameters);
     }
 
     private void removeUserFromRole( String userId, String roleId, ImcmsServices imcref ) {
-        imcref.getDatabase().executeUpdateProcedure( "RemoveUserFromRole", new String[] {userId,
-                                                                                        roleId} );
+        final Object[] parameters = new String[] {userId,
+                                                                                        roleId};
+        DatabaseUtils.executeUpdateProcedure(imcref.getDatabase(), "RemoveUserFromRole", parameters);
     }
 
     private String getUserOptionListTag( String roleId, ImcmsServices imcref ) {
@@ -376,7 +381,8 @@ public class AdminRoleBelongings extends HttpServlet {
     private void setUsersActive( String userId, String state, ImcmsServices imcref ) {
 
         String sqlD = "ChangeUserActiveStatus";
-        imcref.getDatabase().executeUpdateProcedure( sqlD, new String[] {userId, state} );
+        final Object[] parameters = new String[] {userId, state};
+        DatabaseUtils.executeUpdateProcedure(imcref.getDatabase(), sqlD, parameters);
     }
 
     /**

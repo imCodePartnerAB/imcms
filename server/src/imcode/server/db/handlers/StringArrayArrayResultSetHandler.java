@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultiStringArrayResultSetHandler implements ResultSetHandler {
+public class StringArrayArrayResultSetHandler implements ResultSetHandler {
 
     public Object handle( ResultSet resultSet ) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();

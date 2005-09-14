@@ -3,6 +3,7 @@ package com.imcode.imcms.mapping;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
 import imcode.server.db.impl.MockDatabase;
+import imcode.server.db.impl.MockResultSet;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.IndexException;
@@ -19,6 +20,7 @@ import org.apache.log4j.varia.NullAppender;
 import org.apache.lucene.search.Query;
 
 import java.io.Serializable;
+import java.sql.ResultSet;
 import java.util.Collection;
 
 public class TestDefaultDocumentMapper extends TestCase {
@@ -31,6 +33,7 @@ public class TestDefaultDocumentMapper extends TestCase {
     private TextDocumentDomainObject textDocument;
     private TextDocumentDomainObject oldDocument;
     private TestDefaultDocumentMapper.MockDocumentIndex documentIndex;
+    private static final Integer ONE = new Integer(1);
 
     protected void setUp() throws Exception {
         BasicConfigurator.configure(new NullAppender());
@@ -56,8 +59,10 @@ public class TestDefaultDocumentMapper extends TestCase {
             }
         }) ;
         documentIndex = new MockDocumentIndex();
-        documentMapper = new DefaultDocumentMapper( services, database, new DatabaseDocumentGetter(database, services), new DocumentPermissionSetMapper( database, services ), documentIndex, null, new Config(), new CategoryMapper(database));
+        CategoryMapper categoryMapper = new CategoryMapper(database);
+        documentMapper = new DefaultDocumentMapper( services, database, new DatabaseDocumentGetter(database, services), new DocumentPermissionSetMapper( database, services ), documentIndex, null, new Config(), categoryMapper);
         services.setDocumentMapper(documentMapper);
+        services.setCategoryMapper(categoryMapper);
     }
 
     private TextDocumentDomainObject createTextDocument(int documentId) {
@@ -152,18 +157,27 @@ public class TestDefaultDocumentMapper extends TestCase {
     }
 
     public void testDeleteDocument() {
-        String[] documentResultRow = new String[19];
-        documentResultRow[0] = ""+textDocument.getId() ;
-        documentResultRow[1] = ""+textDocument.getDocumentTypeId() ;
-        documentResultRow[5] = ""+user.getId() ;
-        documentResultRow[16] = ""+textDocument.getPublicationStatus() ;
-        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( DefaultDocumentMapper.SQL_GET_DOCUMENT ), documentResultRow );
-        String[] textDocsResultRow = new String[] { "1","1","1","1","1" } ;
+        Object[][] documentResultRows = new Object[1][19];
+        documentResultRows[0][0] = ""+textDocument.getId() ;
+        documentResultRows[0][1] = ""+textDocument.getDocumentTypeId() ;
+        documentResultRows[0][5] = ""+user.getId() ;
+        documentResultRows[0][16] = ""+textDocument.getPublicationStatus() ;
+        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( DefaultDocumentMapper.SQL_GET_DOCUMENT ), new MockResultSet(documentResultRows) );
+        ResultSet textDocsResultRow = new MockResultSet(new Object[][] { { ONE, ONE, ONE, ONE, ONE } } ) ;
         database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "FROM text_docs"), textDocsResultRow );
         assertNotNull( documentMapper.getDocument( textDocument.getId() ) ) ;
         documentMapper.deleteDocument( textDocument, user );
-        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( DefaultDocumentMapper.SQL_GET_DOCUMENT ), new String[0] );
-        assertNull( documentMapper.getDocument( textDocument.getId() ) ) ;
+        database.assertCalledInOrder(new MockDatabase.SqlCallPredicate[] {
+                                    new MockDatabase.DeleteFromTableSqlCallPredicate("text_docs"),
+                                    new MockDatabase.DeleteFromTableSqlCallPredicate("meta")});
+        database.assertCalledInOrder(new MockDatabase.SqlCallPredicate[] {
+                new MockDatabase.DeleteFromTableSqlCallPredicate("texts"),
+                new MockDatabase.DeleteFromTableSqlCallPredicate("meta")});
+        database.assertCalledInOrder(new MockDatabase.SqlCallPredicate[] {
+                new MockDatabase.DeleteFromTableSqlCallPredicate("childs"),
+                new MockDatabase.DeleteFromTableSqlCallPredicate("childs"),
+                new MockDatabase.DeleteFromTableSqlCallPredicate("menus"),
+                new MockDatabase.DeleteFromTableSqlCallPredicate("meta")});
         assertTrue(documentIndex.removeDocumentCalled) ;
         assertFalse(documentIndex.indexDocumentCalled) ;
     }
@@ -325,4 +339,5 @@ public class TestDefaultDocumentMapper extends TestCase {
             return document ;
         }
     }
+
 }

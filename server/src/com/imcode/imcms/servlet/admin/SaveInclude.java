@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.admin;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
@@ -68,7 +69,8 @@ public class SaveInclude extends HttpServlet {
                     try {
                         int included_meta_id_int = Integer.parseInt(included_meta_id);
 
-                        String[] docTypeStrArr = imcref.getDatabase().executeArrayProcedure("GetDocType", new String[] { included_meta_id });
+                        final Object[] parameters = new String[] { included_meta_id };
+                        String[] docTypeStrArr = DatabaseUtils.executeStringArrayProcedure(imcref.getDatabase(), "GetDocType", parameters);
                         int docType = Integer.parseInt(docTypeStrArr[0]);
                         if ( null == docTypeStrArr || 0 == docTypeStrArr.length
                              || DocumentTypeDomainObject.TEXT_ID != docType ) {

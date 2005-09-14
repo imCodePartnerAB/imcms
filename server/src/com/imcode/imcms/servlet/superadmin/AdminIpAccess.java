@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
@@ -37,7 +38,8 @@ public class AdminIpAccess extends HttpServlet {
 
         // ********** GENERATE THE IP-ACCESS PAGE *********
         // Lets get all IP-accesses from DB
-        String[][] multi = imcref.getDatabase().execute2dArrayProcedure("IPAccessesGetAll", new String[0]);
+        final Object[] parameters = new String[0];
+        String[][] multi = DatabaseUtils.execute2dStringArrayProcedure(imcref.getDatabase(), "IPAccessesGetAll", parameters);
 
         // Lets build the variables for each record
         List tags = new ArrayList();
@@ -98,9 +100,10 @@ public class AdminIpAccess extends HttpServlet {
                     return;
                 }
 
-                imcref.getDatabase().executeUpdateProcedure("IPAccessAdd", new String[] { params.getProperty("USER_ID"),
+                final Object[] parameters = new String[] { params.getProperty("USER_ID"),
                         params.getProperty("IP_START"),
-                        params.getProperty("IP_END") });
+                        params.getProperty("IP_END") };
+                DatabaseUtils.executeUpdateProcedure(imcref.getDatabase(), "IPAccessAdd", parameters);
                 res.sendRedirect("AdminIpAccess?action=start");
             } else if ( req.getParameter("RESAVE_IP_ACCESS") != null ) {
 
@@ -122,10 +125,11 @@ public class AdminIpAccess extends HttpServlet {
 
                         long ipEndInt = Utility.ipStringToLong(ipEnd);
 
-                        imcref.getDatabase().executeUpdateProcedure("IPAccessUpdate", new String[] { ipAccessId,
+                        final Object[] parameters = new String[] { ipAccessId,
                                 ipUserId,
                                 "" + ipStartInt,
-                                "" + ipEndInt });
+                                "" + ipEndInt };
+                        DatabaseUtils.executeUpdateProcedure(imcref.getDatabase(), "IPAccessUpdate", parameters);
                     }
                 }
 
@@ -166,7 +170,8 @@ public class AdminIpAccess extends HttpServlet {
                             String tmpId = "IP.IP_ACCESS_ID_" + deleteIds[i];
                             String[] tmpArr = (String[]) session.getAttribute(tmpId);
                             String ipAccessId = tmpArr[0];
-                            imcref.getDatabase().executeUpdateProcedure("IPAccessDelete", new String[] { ipAccessId });
+                            final Object[] parameters = new String[] { ipAccessId };
+                            DatabaseUtils.executeUpdateProcedure(imcref.getDatabase(), "IPAccessDelete", parameters);
                         }
                     }
                 } else {

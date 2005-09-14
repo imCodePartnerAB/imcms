@@ -5,6 +5,7 @@ import com.imcode.imcms.mapping.DatabaseDocumentGetter;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
 import imcode.server.db.Database;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.db.commands.UpdateDatabaseCommand;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
@@ -185,7 +186,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private Date getSessionCounterDateFromDb() {
         try {
             DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
-            return dateFormat.parse( getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 2", new String[0] ) );
+            final Object[] parameters = new String[0];
+            return dateFormat.parse( DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE type_id = 2", parameters) );
         } catch ( ParseException ex ) {
             log.fatal( "Failed to get SessionCounterDate from db.", ex );
             throw new UnhandledException( ex );
@@ -193,7 +195,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private int getSessionCounterFromDb() {
-        return Integer.parseInt( getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 1", new String[0] ) );
+        final Object[] parameters = new String[0];
+        return Integer.parseInt( DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE type_id = 1", parameters) );
     }
 
     private void initDocumentMapper() {
@@ -276,8 +279,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public synchronized void incrementSessionCounter() {
         sessionCounter++ ;
-        getDatabase().executeUpdateQuery( "UPDATE sys_data SET value = ? WHERE type_id = 1", new String[] {""
-                                                                                                           + sessionCounter} );
+        final Object[] parameters = new String[] {""
+                                                  + sessionCounter};
+        DatabaseUtils.executeUpdate(getDatabase(), "UPDATE sys_data SET value = ? WHERE type_id = 1", parameters);
     }
 
     private UserAndRoleRegistry initExternalUserAndRoleMapper( String externalUserAndRoleMapperName,
@@ -339,12 +343,13 @@ final public class DefaultImcmsServices implements ImcmsServices {
         mainLog.info( event );
     }
 
-    public String isFramesetDoc( int meta_id ) {
+    public String getHtmlDocumentData( int meta_id ) {
 
         String htmlStr = null;
         if ( DocumentTypeDomainObject.HTML_ID == getDocType( meta_id ) ) {
             String sqlStr = "select frame_set from frameset_docs where meta_id = ?";
-            htmlStr = getDatabase().executeStringQuery( sqlStr, new String[] {"" + meta_id} );
+            final Object[] parameters = new String[] {"" + meta_id};
+            htmlStr = DatabaseUtils.executeStringQuery(getDatabase(), sqlStr, parameters);
         }
         return htmlStr;
 
@@ -475,8 +480,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void setSessionCounterInDb( int value ) {
-        getDatabase().executeUpdateProcedure( "SetSessionCounterValue", new String[] {""
-                                                                                      + value} );
+        final Object[] parameters = new String[] {""
+                                                  + value};
+        DatabaseUtils.executeUpdateProcedure(getDatabase(), "SetSessionCounterValue", parameters);
     }
 
     /**
@@ -489,7 +495,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private void setSessionCounterDateInDb( Date date ) {
         DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
-        getDatabase().executeUpdateProcedure( "SetSessionCounterDate", new String[] {dateFormat.format( date )} );
+        final Object[] parameters = new String[] {dateFormat.format( date )};
+        DatabaseUtils.executeUpdateProcedure(getDatabase(), "SetSessionCounterDate", parameters);
     }
 
     /**
@@ -519,22 +526,28 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
         SystemData sd = new SystemData();
 
-        String startDocument = getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE sys_id = 0", new String[0] );
+        final Object[] parameters5 = new String[0];
+        String startDocument = DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE sys_id = 0", parameters5);
         sd.setStartDocument( startDocument == null ? DEFAULT_STARTDOCUMENT : Integer.parseInt( startDocument ) );
 
-        String systemMessage = getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 3", new String[0] );
+        final Object[] parameters4 = new String[0];
+        String systemMessage = DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE type_id = 3", parameters4);
         sd.setSystemMessage( systemMessage );
 
-        String serverMasterName = getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 4", new String[0] );
+        final Object[] parameters3 = new String[0];
+        String serverMasterName = DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE type_id = 4", parameters3);
         sd.setServerMaster( serverMasterName );
 
-        String serverMasterAddress = getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 5", new String[0] );
+        final Object[] parameters2 = new String[0];
+        String serverMasterAddress = DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE type_id = 5", parameters2);
         sd.setServerMasterAddress( serverMasterAddress );
 
-        String webMasterName = getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 6", new String[0] );
+        final Object[] parameters1 = new String[0];
+        String webMasterName = DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE type_id = 6", parameters1);
         sd.setWebMaster( webMasterName );
 
-        String webMasterAddress = getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 7", new String[0] );
+        final Object[] parameters = new String[0];
+        String webMasterAddress = DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE type_id = 7", parameters);
         sd.setWebMasterAddress( webMasterAddress );
 
         return sd;
@@ -548,7 +561,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         String[] sqlParams;
 
         sqlParams = new String[]{"" + sd.getStartDocument()};
-        getDatabase().executeUpdateProcedure( "StartDocSet", sqlParams );
+        DatabaseUtils.executeUpdateProcedure(getDatabase(), "StartDocSet", sqlParams);
 
         database.executeCommand(new UpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 4", new Object[] {sd.getServerMaster()})) ;
         database.executeCommand(new UpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 5", new Object[] {sd.getServerMasterAddress()})) ;
@@ -557,7 +570,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         database.executeCommand(new UpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 7", new Object[] {sd.getWebMasterAddress()})) ;
 
         sqlParams = new String[]{sd.getSystemMessage()};
-        getDatabase().executeUpdateProcedure( "SystemMessageSet", sqlParams );
+        DatabaseUtils.executeUpdateProcedure(getDatabase(), "SystemMessageSet", sqlParams);
 
         /* Update the local copy last, so we stay aware of any database errors */
         this.sysData = sd;
@@ -568,7 +581,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * the array consists of pairs of id:, value. Suitable for parsing into select boxes etc.
      */
     public String[][] getAllDocumentTypes( String langPrefixStr ) {
-        return getDatabase().execute2dArrayProcedure( "GetDocTypes", new String[] {langPrefixStr} );
+        final Object[] parameters = new String[] {langPrefixStr};
+        return DatabaseUtils.execute2dStringArrayProcedure(getDatabase(), "GetDocTypes", parameters);
     }
 
     public Properties getLanguageProperties( UserDomainObject user ) {

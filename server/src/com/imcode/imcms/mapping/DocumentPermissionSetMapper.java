@@ -2,9 +2,10 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.db.ConvenienceDatabaseConnection;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseConnection;
+import imcode.server.db.DatabaseConnectionUtils;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.db.commands.TransactionDatabaseCommand;
 import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.document.DocumentDomainObject;
@@ -65,7 +66,7 @@ public class DocumentPermissionSetMapper {
         this.services = services;
     }
 
-    public DocumentPermissionSetDomainObject getRestrictedPermissionSet(ConvenienceDatabaseConnection connection, DocumentDomainObject document,
+    public DocumentPermissionSetDomainObject getRestrictedPermissionSet(DatabaseConnection connection, DocumentDomainObject document,
                                                                         DocumentPermissionSetTypeDomainObject documentPermissionSetType,
                                                                         boolean forNewDocuments) {
         DocumentPermissionSetDomainObject documentPermissionSet;
@@ -79,15 +80,16 @@ public class DocumentPermissionSetMapper {
         return documentPermissionSet;
     }
 
-    private void setDocumentPermissionSetBitsFromDb(ConvenienceDatabaseConnection connection, DocumentDomainObject document,
+    private void setDocumentPermissionSetBitsFromDb(DatabaseConnection connection, DocumentDomainObject document,
                                                     DocumentPermissionSetDomainObject documentPermissionSet,
                                                     boolean forNewDocuments) {
         String table = getPermissionsTable( forNewDocuments );
         String sqlStr = "SELECT permission_id FROM " + table + " WHERE meta_id = ? AND set_id = ?";
-        String permissionBitsString = connection.executeStringQuery( sqlStr, new String[]{
+        String[] parameters = new String[]{
                                                                             String.valueOf( document.getId() ),
                                                                             String.valueOf( documentPermissionSet.getType() )
-                                                                    } );
+                                                                    };
+        String permissionBitsString = DatabaseConnectionUtils.executeStringQuery(connection, sqlStr, parameters);
         int permissionBits = 0;
         if ( null != permissionBitsString ) {
             permissionBits = Integer.parseInt( permissionBitsString );
@@ -103,19 +105,19 @@ public class DocumentPermissionSetMapper {
         return table;
     }
 
-    public DocumentPermissionSetDomainObject getPermissionSetRestrictedOne(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {
+    public DocumentPermissionSetDomainObject getPermissionSetRestrictedOne(DatabaseConnection connection, DocumentDomainObject document) {
         return getRestrictedPermissionSet( connection, document, DocumentPermissionSetTypeDomainObject.RESTRICTED_1, false );
     }
 
-    public DocumentPermissionSetDomainObject getPermissionSetRestrictedTwo(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {
+    public DocumentPermissionSetDomainObject getPermissionSetRestrictedTwo(DatabaseConnection connection, DocumentDomainObject document) {
         return getRestrictedPermissionSet(connection, document, DocumentPermissionSetTypeDomainObject.RESTRICTED_2, false );
     }
 
-    public DocumentPermissionSetDomainObject getPermissionSetRestrictedOneForNewDocuments(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {
+    public DocumentPermissionSetDomainObject getPermissionSetRestrictedOneForNewDocuments(DatabaseConnection connection, DocumentDomainObject document) {
         return getRestrictedPermissionSet(connection, document, DocumentPermissionSetTypeDomainObject.RESTRICTED_1, true );
     }
 
-    public DocumentPermissionSetDomainObject getPermissionSetRestrictedTwoForNewDocuments(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {
+    public DocumentPermissionSetDomainObject getPermissionSetRestrictedTwoForNewDocuments(DatabaseConnection connection, DocumentDomainObject document) {
         return getRestrictedPermissionSet(connection, document, DocumentPermissionSetTypeDomainObject.RESTRICTED_2, true );
     }
 
@@ -195,11 +197,12 @@ public class DocumentPermissionSetMapper {
                                                  + ",?)";
         for ( int i = 0; i < allowedTemplateGroups.length; i++ ) {
             TemplateGroupDomainObject allowedTemplateGroup = allowedTemplateGroups[i];
-            database.executeUpdateQuery( sqlInsertAllowedTemplateGroupId, new String[]{
+            final Object[] parameters = new String[]{
                                                      "" + document.getId(), "" + textDocumentPermissionSet.getType(),
                                                      ""
                                                      + allowedTemplateGroup.getId()
-                                             } );
+                                             };
+            DatabaseUtils.executeUpdate(database, sqlInsertAllowedTemplateGroupId, parameters);
         }
     }
 
@@ -227,11 +230,12 @@ public class DocumentPermissionSetMapper {
                                                   + ",?)";
         for ( int i = 0; i < allowedDocumentTypeIds.length; i++ ) {
             int creatableDocumentTypeId = allowedDocumentTypeIds[i];
-            database.executeUpdateQuery( sqlInsertCreatableDocumentTypeId, new String[]{
+            final Object[] parameters = new String[]{
                                                      "" + document.getId(), "" + textDocumentPermissionSet.getType(),
                                                      ""
                                                      + creatableDocumentTypeId
-                                             } );
+                                             };
+            DatabaseUtils.executeUpdate(database, sqlInsertCreatableDocumentTypeId, parameters);
         }
     }
 
@@ -275,10 +279,11 @@ public class DocumentPermissionSetMapper {
         String sqlStr = SQL_SELECT_PERMISSON_DATA__PREFIX + table
                         + " WHERE meta_id = ? AND set_id = ? AND permission_id = "
                         + ImcmsConstants.PERM_CREATE_DOCUMENT;
-        String[] documentTypeIdStrings = database.executeArrayQuery( sqlStr, new String[]{
+        final Object[] parameters = new String[]{
                                                                             "" + metaId,
                                                                             "" + documentPermissionSet.getType()
-                                                                    } );
+                                                                    };
+        String[] documentTypeIdStrings = DatabaseUtils.executeStringArrayQuery(database, sqlStr, parameters);
         int[] documentTypeIds = new int[documentTypeIdStrings.length];
         for ( int i = 0; i < documentTypeIdStrings.length; i++ ) {
             documentTypeIds[i] = Integer.parseInt( documentTypeIdStrings[i] );
@@ -294,7 +299,7 @@ public class DocumentPermissionSetMapper {
                 };
         String sproc = forNewDocuments
                         ? SQL_GET_TEMPLATE_GROUPS_WITH_NEW_PERMISSIONS : SQL_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS;
-        String[][] sprocResult = database.execute2dArrayQuery( sproc, params );
+        String[][] sprocResult = DatabaseUtils.execute2dStringArrayQuery(database, sproc, params);
         List templateGroups = new ArrayList();
         for ( int i = 0; i < sprocResult.length; i++ ) {
             int groupId = Integer.parseInt( sprocResult[i][0] );

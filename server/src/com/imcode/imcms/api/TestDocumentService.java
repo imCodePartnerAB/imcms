@@ -5,10 +5,13 @@ import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
 import imcode.server.db.impl.MockDatabase;
+import imcode.server.db.impl.MockResultSet;
 import imcode.server.user.MockRoleGetter;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
+
+import java.sql.ResultSet;
 
 public class TestDocumentService extends TestCase {
 
@@ -29,11 +32,11 @@ public class TestDocumentService extends TestCase {
         imcmsServices.setDocumentMapper(documentMapper) ;
         imcmsServices.setCategoryMapper(new CategoryMapper(database));
         contentManagementSystem.setInternal( imcmsServices );
-        this.documentService = new DocumentService(contentManagementSystem) ;
+        documentService = new DocumentService(contentManagementSystem) ;
     }
 
     public void testSaveCategory() throws CategoryAlreadyExistsException, NoPermissionException {
-        String[][] allCategoryTypesResult = new String[][] { { "1", "test", "0", "0" } };
+        ResultSet allCategoryTypesResult = new MockResultSet(new Object[][] { { new Integer(1), "test", new Integer(0), new Integer(0) } });
         database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "SELECT category_types.category_type_id"), allCategoryTypesResult );
         CategoryType categoryType = documentService.getAllCategoryTypes()[0] ;
         assertEquals( false, categoryType.isInherited()) ;
@@ -50,12 +53,8 @@ public class TestDocumentService extends TestCase {
         documentService.saveCategory(category);
         database.assertExpectedSqlCalls();
 
-        String[] categoryResult = new String[] { "1", category.getName(), category.getDescription(), category.getImage() };
-        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate(CategoryMapper.SQL_GET_CATEGORY), categoryResult );
-        documentService.saveCategory( category );
-        database.assertExpectedSqlCalls();
-
-        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate(CategoryMapper.SQL_GET_CATEGORY), categoryResult );
+        ResultSet categoryResult = new MockResultSet(new Object[][] { { new Integer(1), category.getName(), category.getDescription(), category.getImage(), new Integer(categoryType.getId()), categoryType.getName(), new Integer(categoryType.getInternal().getMaxChoices()), new Integer(categoryType.isInherited() ? 1 : 0)}});
+        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate(CategoryMapper.SQL__GET_CATEGORY_BY_NAME_AND_CATEGORY_TYPE_ID), categoryResult );
         Category otherCategory = new Category( categoryName, categoryType );
         try {
             documentService.saveCategory( otherCategory );

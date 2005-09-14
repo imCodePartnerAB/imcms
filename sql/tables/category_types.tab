@@ -2,5 +2,5 @@
         <column autoIncrement="true" name="category_type_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="name" required="true" size="50" type="VARCHAR" />
         <column default="0" name="max_choices" required="true" type="INTEGER" />
-        <column name="inherited" required="true" size="1" type="SMALLINT" />
+        <column name="inherited" required="true" type="BIT" />
     </table>

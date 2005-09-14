@@ -3,8 +3,6 @@ package imcode.server.db.impl;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
 import imcode.server.db.exceptions.DatabaseException;
-import imcode.server.db.handlers.FlatStringArrayResultSetHandler;
-import imcode.server.db.handlers.MultiStringArrayResultSetHandler;
 import junit.framework.Assert;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -12,8 +10,11 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -23,14 +24,6 @@ public class MockDatabase implements Database {
 
     private List sqlCalls = new ArrayList();
     private List expectedSqlCalls = new ArrayList();
-
-    public String[] executeArrayProcedure(String procedure, Object[] parameters) {
-        String[] result = (String[]) getResultForSqlCall(procedure, parameters);
-        if (null == result) {
-            return new String[0];
-        }
-        return result;
-    }
 
     public int executeUpdateProcedure(String procedure, Object[] parameters) {
         getResultForSqlCall(procedure, parameters);
@@ -42,48 +35,17 @@ public class MockDatabase implements Database {
         return 0;
     }
 
-    public String executeStringProcedure(String procedure, Object[] parameters) {
-        return (String) getResultForSqlCall(procedure, parameters);
-    }
-
-    public String[][] execute2dArrayProcedure(String procedure, Object[] parameters) {
-        String[][] result = (String[][]) getResultForSqlCall(procedure, parameters);
-        if (null == result) {
-            result = new String[0][0];
-        }
-        return result;
-    }
-
-    public String[] executeArrayQuery(String sqlStr, Object[] parameters) {
-        String[] result = (String[]) getResultForSqlCall(sqlStr, parameters);
-        if (null == result) {
-            result = new String[0];
-        }
-        return result;
-    }
-
-    public String executeStringQuery(String sqlStr, Object[] parameters) {
-        return (String) getResultForSqlCall(sqlStr, parameters);
-    }
-
-    public String[][] execute2dArrayQuery(String sqlstr, Object[] parameters) {
-        String[][] result = (String[][]) getResultForSqlCall(sqlstr, parameters);
-        if (null == result) {
-            result = new String[0][0];
-        }
-        return result;
-    }
 
     public Object executeQuery(String sqlQuery, Object[] parameters, ResultSetHandler resultSetHandler) {
-        Object result = getResultForSqlCall(sqlQuery, parameters);
-        if (null == result) {
-            if (resultSetHandler instanceof FlatStringArrayResultSetHandler) {
-                result = new String[0] ;
-            } else if (resultSetHandler instanceof MultiStringArrayResultSetHandler) {
-                result = new String[0][0] ;
-            }
+        ResultSet resultSet = (ResultSet) getResultForSqlCall(sqlQuery, parameters);
+        if (null == resultSet ) {
+            resultSet = new MockResultSet(new Object[0][]) ;
         }
-        return result ;
+        try {
+            return resultSetHandler.handle(resultSet) ;
+        } catch ( SQLException e ) {
+            throw DatabaseException.fromSQLException("", e);
+        }
     }
 
     public Object executeCommand(DatabaseCommand databaseCommand) throws DatabaseException {
@@ -163,6 +125,26 @@ public class MockDatabase implements Database {
         assertCalled(null, predicate);
     }
 
+    public void assertCalledInOrder(SqlCallPredicate[] sqlCallPredicates) {
+        int sqlCallPredicatesIndex = 0 ;
+        for ( Iterator iterator = sqlCalls.iterator(); iterator.hasNext(); ) {
+            SqlCall sqlCall = (SqlCall) iterator.next();
+            if (sqlCallPredicates[sqlCallPredicatesIndex].evaluateSqlCall(sqlCall)) {
+                sqlCallPredicatesIndex++ ;
+                if (sqlCallPredicatesIndex == sqlCallPredicates.length) {
+                    break ;
+                }
+            }
+        }
+        if (sqlCallPredicatesIndex < sqlCallPredicates.length) {
+            String failureMessage = "Expected sql call \"" + sqlCallPredicates[sqlCallPredicatesIndex].getFailureMessage()+"\"";
+            if (sqlCallPredicatesIndex > 0) {
+                failureMessage += " after sql call \""+sqlCallPredicates[sqlCallPredicatesIndex-1]+"\"" ;
+            }
+            Assert.fail(failureMessage) ;
+        }
+    }
+
     public void assertCalled(String message, SqlCallPredicate predicate) {
         if (!called(predicate)) {
             String messagePrefix = null == message ? "" : message + " ";
@@ -194,7 +176,7 @@ public class MockDatabase implements Database {
 
     public abstract static class SqlCallPredicate implements Predicate {
 
-        public boolean evaluate(Object object) {
+        public final boolean evaluate(Object object) {
             return evaluateSqlCall((MockDatabase.SqlCall) object);
         }
 
@@ -218,7 +200,7 @@ public class MockDatabase implements Database {
         }
 
         boolean evaluateSqlCall(MockDatabase.SqlCall sqlCall) {
-            boolean stringMatchesUpdateTableName = Pattern.compile("^update\\s+" + tableName).matcher(sqlCall.getString().toLowerCase()).find();
+            boolean stringMatchesUpdateTableName = Pattern.compile("^update\\s+\\b" + tableName+"\\b").matcher(sqlCall.getString().toLowerCase()).find();
             boolean parametersContainsParameter = ArrayUtils.contains(sqlCall.getParameters(), parameter);
             return stringMatchesUpdateTableName && parametersContainsParameter;
         }
@@ -239,12 +221,11 @@ public class MockDatabase implements Database {
         boolean evaluateSqlCall(SqlCall sqlCall) {
             Pattern pattern = Pattern.compile("^insert\\s+(?:into\\s+)?" + tableName, Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(sqlCall.getString());
-            boolean result = matcher.find();
-            return result;
+            return matcher.find();
         }
 
         String getFailureMessage() {
-            return "insert into table \"" + tableName + "\"";
+            return "insert into table " + tableName ;
         }
     }
 
@@ -277,8 +258,7 @@ public class MockDatabase implements Database {
         boolean evaluateSqlCall(MockDatabase.SqlCall sqlCall) {
             Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(sqlCall.getString());
-            boolean result = matcher.find();
-            return result;
+            return matcher.find();
         }
 
         String getFailureMessage() {
@@ -324,9 +304,9 @@ public class MockDatabase implements Database {
 
         private String[] parameters;
 
-        public EqualsWithParametersSqlCallPredicate(String sql, String[] params) {
+        public EqualsWithParametersSqlCallPredicate(String sql, String[] parameters) {
             super(sql);
-            this.parameters = params;
+            this.parameters = parameters;
         }
 
         boolean evaluateSqlCall(SqlCall sqlCall) {
@@ -338,4 +318,23 @@ public class MockDatabase implements Database {
         }
     }
 
+    public static class DeleteFromTableSqlCallPredicate extends SqlCallPredicate {
+
+        private String tableName;
+
+        public DeleteFromTableSqlCallPredicate(String tableName) {
+            this.tableName = tableName;
+        }
+
+        boolean evaluateSqlCall(SqlCall sqlCall) {
+            Pattern pattern = Pattern.compile("^delete\\s+from\\s+\\b" + tableName+"\\b", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(sqlCall.getString());
+            return matcher.find();
+        }
+
+        String getFailureMessage() {
+            return "delete from "+tableName;
+        }
+
+    }
 }

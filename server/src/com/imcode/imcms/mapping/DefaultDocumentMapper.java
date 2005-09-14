@@ -7,10 +7,10 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.db.commands.CompositeDatabaseCommand;
 import imcode.server.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
 import imcode.server.db.commands.UpdateDatabaseCommand;
-import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
@@ -163,7 +163,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
     public SectionDomainObject[] getAllSections() {
         String[] parameters = new String[0];
-        String[][] sqlRows = getDatabase().execute2dArrayQuery(SQL_GET_ALL_SECTIONS, parameters);
+        String[][] sqlRows = DatabaseUtils.execute2dStringArrayQuery(getDatabase(), SQL_GET_ALL_SECTIONS, parameters);
         SectionDomainObject[] allSections = new SectionDomainObject[sqlRows.length];
         for (int i = 0; i < sqlRows.length; i++) {
             int sectionId = Integer.parseInt(sqlRows[i][0]);
@@ -188,7 +188,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
     public SectionDomainObject getSectionById(int sectionId) {
         String[] params = new String[]{"" + sectionId};
-        String sectionName = getDatabase().executeStringQuery("SELECT section_name FROM sections WHERE section_id = ?", params);
+        String sectionName = DatabaseUtils.executeStringQuery(getDatabase(), "SELECT section_name FROM sections WHERE section_id = ?", params);
         if (null == sectionName) {
             return null;
         }
@@ -197,7 +197,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
     public SectionDomainObject getSectionByName(String name) {
         String[] params = new String[]{name};
-        String[] sectionSqlRow = getDatabase().executeArrayQuery("SELECT section_id, section_name FROM sections WHERE section_name = ?", params);
+        String[] sectionSqlRow = DatabaseUtils.executeStringArrayQuery(getDatabase(), "SELECT section_id, section_name FROM sections WHERE section_name = ?", params);
         if (0 == sectionSqlRow.length) {
             return null;
         }
@@ -235,19 +235,19 @@ public class DefaultDocumentMapper implements DocumentMapper {
     public String[][] getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
         String sqlStr = "SELECT meta_id,menu_index FROM childs, menus WHERE menus.menu_id = childs.menu_id AND to_meta_id = ?";
         String[] parameters = new String[]{"" + document.getId()};
-        return getDatabase().execute2dArrayQuery(sqlStr, parameters);
+        return DatabaseUtils.execute2dStringArrayQuery(getDatabase(), sqlStr, parameters);
     }
 
     public String[][] getAllMimeTypesWithDescriptions(UserDomainObject user) {
         String sqlStr = "SELECT mime, mime_name FROM mime_types WHERE lang_prefix = ? AND mime_id > 0 ORDER BY mime_id";
         String[] parameters = new String[]{user.getLanguageIso639_2()};
-        return getDatabase().execute2dArrayQuery(sqlStr, parameters);
+        return DatabaseUtils.execute2dStringArrayQuery(getDatabase(), sqlStr, parameters);
     }
 
     public String[] getAllMimeTypes() {
         String sqlStr = "SELECT mime FROM mime_types WHERE mime_id > 0 ORDER BY mime_id";
         String[] params = new String[]{};
-        return getDatabase().executeArrayQuery(sqlStr, params);
+        return DatabaseUtils.executeStringArrayQuery(getDatabase(), sqlStr, params);
     }
 
     public void addToMenu(TextDocumentDomainObject parentDocument, int parentMenuIndex,
@@ -259,7 +259,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
     public BrowserDocumentDomainObject.Browser[] getAllBrowsers() {
         String sqlStr = "SELECT browser_id, name, value FROM browsers WHERE browser_id != 0";
         String[] parameters = new String[0];
-        String[][] sqlResult = getDatabase().execute2dArrayQuery(sqlStr, parameters);
+        String[][] sqlResult = DatabaseUtils.execute2dStringArrayQuery(getDatabase(), sqlStr, parameters);
         List browsers = new ArrayList();
         for (int i = 0; i < sqlResult.length; i++) {
             browsers.add(createBrowserFromSqlRow(sqlResult[i]));
@@ -273,7 +273,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
         }
         String sqlStr = "SELECT browser_id, name, value FROM browsers WHERE browser_id = ?";
         String[] params = new String[]{"" + browserIdToGet};
-        String[] sqlRow = getDatabase().executeArrayQuery(sqlStr, params);
+        String[] sqlRow = DatabaseUtils.executeStringArrayQuery(getDatabase(), sqlStr, params);
         return createBrowserFromSqlRow(sqlRow);
     }
 
@@ -325,7 +325,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
         String[] parameters = new String[]{
             user.getLanguageIso639_2()
         };
-        String[][] rows = getDatabase().execute2dArrayQuery("SELECT doc_type, type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type", parameters);
+        String[][] rows = DatabaseUtils.execute2dStringArrayQuery(getDatabase(), "SELECT doc_type, type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type", parameters);
         Map allDocumentTypeIdsAndNamesInUsersLanguage = new TreeMap();
         for (int i = 0; i < rows.length; i++) {
             String[] row = rows[i];
@@ -339,7 +339,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
     public TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingDocument(DocumentDomainObject document) {
         String sqlSelectMenus = "SELECT meta_id, menu_index FROM menus, childs WHERE menus.menu_id = childs.menu_id AND childs.to_meta_id = ? ORDER BY meta_id, menu_index";
         String[] parameters = new String[]{"" + document.getId()};
-        String[][] sqlRows = getDatabase().execute2dArrayQuery(sqlSelectMenus, parameters);
+        String[][] sqlRows = DatabaseUtils.execute2dStringArrayQuery(getDatabase(), sqlSelectMenus, parameters);
         TextDocumentMenuIndexPair[] documentMenuPairs = new TextDocumentMenuIndexPair[sqlRows.length];
         for (int i = 0; i < sqlRows.length; i++) {
             String[] sqlRow = sqlRows[i];
@@ -361,7 +361,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
             "" + idRange.getMinimumInteger(),
             "" + idRange.getMaximumInteger()
         };
-        String[] documentIdStrings = getDatabase().executeArrayQuery(sqlSelectIds, params);
+        String[] documentIdStrings = DatabaseUtils.executeStringArrayQuery(getDatabase(), sqlSelectIds, params);
         int[] documentIds = new int[documentIdStrings.length];
         for (int i = 0; i < documentIdStrings.length; i++) {
             documentIds[i] = Integer.parseInt(documentIdStrings[i]);
@@ -371,7 +371,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
     public int[] getAllDocumentIds() {
         String[] params = new String[0];
-        String[] documentIdStrings = getDatabase().executeArrayQuery("SELECT meta_id FROM meta ORDER BY meta_id", params);
+        String[] documentIdStrings = DatabaseUtils.executeStringArrayQuery(getDatabase(), "SELECT meta_id FROM meta ORDER BY meta_id", params);
         int[] documentIds = new int[documentIdStrings.length];
         for (int i = 0; i < documentIdStrings.length; i++) {
             documentIds[i] = Integer.parseInt(documentIdStrings[i]);
@@ -401,12 +401,12 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
     public int getLowestDocumentId() {
         String[] params = new String[0];
-        return Integer.parseInt(getDatabase().executeStringQuery("SELECT MIN(meta_id) FROM meta", params));
+        return Integer.parseInt(DatabaseUtils.executeStringQuery(getDatabase(), "SELECT MIN(meta_id) FROM meta", params));
     }
 
     public int getHighestDocumentId() {
         String[] params = new String[0];
-        return Integer.parseInt(getDatabase().executeStringQuery("SELECT MAX(meta_id) FROM meta", params));
+        return Integer.parseInt(DatabaseUtils.executeStringQuery(getDatabase(), "SELECT MAX(meta_id) FROM meta", params));
     }
 
     public void copyDocument(DocumentDomainObject selectedChild,
@@ -419,7 +419,8 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
     public List getDocumentsWithPermissionsForRole(RoleDomainObject role) {
         String sqlStr = "SELECT meta_id FROM roles_rights WHERE role_id = ? ORDER BY meta_id";
-        String[] documentIdStrings = getDatabase().executeArrayQuery(sqlStr, new String[]{"" + role.getId()});
+        final Object[] parameters = new String[]{"" + role.getId()};
+        String[] documentIdStrings = DatabaseUtils.executeStringArrayQuery(getDatabase(), sqlStr, parameters);
         final int[] documentIds = Utility.convertStringArrayToIntArray(documentIdStrings);
         return new AbstractList() {
             public Object get(int index) {
@@ -460,7 +461,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
     String[] getAllKeywords() {
         String[] params = new String[0];
-        return getDatabase().executeArrayQuery("SELECT code FROM classification", params);
+        return DatabaseUtils.executeStringArrayQuery(getDatabase(), "SELECT code FROM classification", params);
     }
 
     public void setCategoryMapper(CategoryMapper categoryMapper) {
@@ -471,7 +472,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
         this.clock = clock;
     }
 
-    public void setDatabase(MockDatabase database) {
+    public void setDatabase(Database database) {
         this.database = database;
     }
 

@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseConnection;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.db.commands.TransactionDatabaseCommand;
 import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.document.DocumentVisitor;
@@ -162,7 +163,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     private void deleteTextDocumentIncludes(TextDocumentDomainObject textDocument) {
         String sqlDeleteDocumentIncludes = "DELETE FROM includes WHERE meta_id = ?";
-        database.executeUpdateQuery(sqlDeleteDocumentIncludes, new String[]{"" + textDocument.getId()});
+        final Object[] parameters = new String[]{"" + textDocument.getId()};
+        DatabaseUtils.executeUpdate(database, sqlDeleteDocumentIncludes, parameters);
     }
 
     private void insertTextDocumentImages(TextDocumentDomainObject textDocument) {
@@ -176,7 +178,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     private void deleteTextDocumentImages(TextDocumentDomainObject textDocument) {
         String sqlDeleteImages = "DELETE FROM images WHERE meta_id = ?";
-        database.executeUpdateQuery(sqlDeleteImages, new String[]{"" + textDocument.getId()});
+        final Object[] parameters = new String[]{"" + textDocument.getId()};
+        DatabaseUtils.executeUpdate(database, sqlDeleteImages, parameters);
     }
 
     private void insertTextDocumentTexts(TextDocumentDomainObject textDocument) {
@@ -189,14 +192,16 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     private void sqlInsertText(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
-        database.executeUpdateQuery("INSERT INTO texts (meta_id, name, text, type) VALUES(?,?,?,?)", new String[]{
+        final Object[] parameters = new String[]{
             "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType()
-        });
+        };
+        DatabaseUtils.executeUpdate(database, "INSERT INTO texts (meta_id, name, text, type) VALUES(?,?,?,?)", parameters);
     }
 
     private void deleteTextDocumentTexts(TextDocumentDomainObject textDocument) {
         String sqlDeleteTexts = "DELETE FROM texts WHERE meta_id = ?";
-        database.executeUpdateQuery(sqlDeleteTexts, new String[]{"" + textDocument.getId()});
+        final Object[] parameters = new String[]{"" + textDocument.getId()};
+        DatabaseUtils.executeUpdate(database, sqlDeleteTexts, parameters);
     }
 
     private void insertTextDocumentMenuItems(DatabaseConnection connection, MenuDomainObject menu, ImcmsServices services) {
@@ -240,9 +245,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     private void sqlInsertTextDocumentInclude(TextDocumentDomainObject textDocument, Integer includeIndex,
                                               Integer includedDocumentId) {
-        database.executeUpdateQuery("INSERT INTO includes (meta_id, include_id, included_meta_id) VALUES(?,?,?)", new String[]{
+        final Object[] parameters = new String[]{
             "" + textDocument.getId(), "" + includeIndex, "" + includedDocumentId
-        });
+        };
+        DatabaseUtils.executeUpdate(database, "INSERT INTO includes (meta_id, include_id, included_meta_id) VALUES(?,?,?)", parameters);
     }
 
     public static void saveDocumentImage(int meta_id, int img_no, ImageDomainObject image) {
@@ -274,7 +280,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     private static int sqlImageUpdateQuery(String sqlStr, ImageDomainObject image, int meta_id, int img_no) {
         ImageSource imageSource = image.getSource();
-        return Imcms.getServices().getDatabase().executeUpdateQuery( sqlStr, new String[] {
+        final Object[] parameters = new String[] {
             imageSource.toStorageString(),
             "" + image.getWidth(),
             "" + image.getHeight(),
@@ -290,14 +296,16 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             "" + imageSource.getTypeId(),
             "" + meta_id,
             "" + img_no,
-        });
+        };
+        return DatabaseUtils.executeUpdate(Imcms.getServices().getDatabase(), sqlStr, parameters);
     }
 
     public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
         Map fileDocumentFiles = fileDocument.getFiles();
 
         String sqlDelete = "DELETE FROM fileupload_docs WHERE meta_id = ?";
-        database.executeUpdateQuery(sqlDelete, new String[]{"" + fileDocument.getId()});
+        final Object[] parameters1 = new String[]{"" + fileDocument.getId()};
+        DatabaseUtils.executeUpdate(database, sqlDelete, parameters1);
 
         for ( Iterator iterator = fileDocumentFiles.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
@@ -310,7 +318,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             }
             String sqlInsert = "INSERT INTO fileupload_docs (meta_id, variant_name, filename, mime, created_as_image, default_variant) VALUES(?,?,?,?,?,?)";
             boolean isDefaultFile = fileId.equals( fileDocument.getDefaultFileId());
-            database.executeUpdateQuery( sqlInsert, new String[]{""+ fileDocument.getId(), fileId, filename, fileDocumentFile.getMimeType(), fileDocumentFile.isCreatedAsImage() ? "1" : "0", isDefaultFile ? "1" : "0"} );
+            final Object[] parameters = new String[]{""+ fileDocument.getId(), fileId, filename, fileDocumentFile.getMimeType(), fileDocumentFile.isCreatedAsImage() ? "1" : "0", isDefaultFile ? "1" : "0"};
+            DatabaseUtils.executeUpdate(database, sqlInsert, parameters);
             saveFileDocumentFile( fileDocument.getId(), fileDocumentFile, fileId );
         }
         DefaultDocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;
@@ -344,7 +353,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     private void deleteBrowserDocument( BrowserDocumentDomainObject browserDocument ) {
         String sqlStr = "DELETE FROM browser_docs WHERE meta_id = ?";
-        database.executeUpdateQuery( sqlStr, new String[]{"" + browserDocument.getId()} );
+        final Object[] parameters = new String[]{"" + browserDocument.getId()};
+        DatabaseUtils.executeUpdate(database, sqlStr, parameters);
     }
 
     public void saveNewBrowserDocument( BrowserDocumentDomainObject document ) {
@@ -356,9 +366,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         for ( Iterator iterator = browserDocumentMap.keySet().iterator(); iterator.hasNext(); ) {
             BrowserDocumentDomainObject.Browser browser = (BrowserDocumentDomainObject.Browser)iterator.next();
             Integer metaIdForBrowser = (Integer)browserDocumentMap.get( browser );
-            database.executeUpdateQuery( sqlBrowserDocsInsertStr, new String[]{
+            final Object[] parameters = new String[]{
                 "" + document.getId(), "" + metaIdForBrowser, "" + browser.getId()
-            } );
+            };
+            DatabaseUtils.executeUpdate(database, sqlBrowserDocsInsertStr, parameters);
         }
     }
 

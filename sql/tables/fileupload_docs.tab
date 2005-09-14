@@ -4,5 +4,5 @@
         <column name="filename" required="true" size="255" type="VARCHAR" />
         <column name="mime" required="true" size="50" type="VARCHAR" />
         <column name="created_as_image" required="true" type="INTEGER" />
-        <column default="0" name="default_variant" required="true" size="1" type="SMALLINT" />
+        <column default="0" name="default_variant" required="true" type="BIT" />
     </table>

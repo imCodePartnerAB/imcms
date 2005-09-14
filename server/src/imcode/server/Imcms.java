@@ -38,8 +38,7 @@ public class Imcms {
         dataSource = createDataSource( serverprops );
         QueryRunner queryRunner = new QueryRunner( dataSource );
         Database database = new DefaultDatabase( queryRunner, new DefaultProcedureExecutor(queryRunner) );
-        DefaultImcmsServices services = new DefaultImcmsServices( database, serverprops );
-        return services ;
+        return new DefaultImcmsServices( database, serverprops ) ;
     }
 
     public synchronized static DataSource getApiDataSource() {

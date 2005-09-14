@@ -30,7 +30,7 @@ public interface ImcmsServices extends Clock {
     String parsePage( ParserParameters paramsToParse ) throws IOException ;
 
     /** @deprecated Use {@link imcode.server.document.HtmlDocumentDomainObject#getHtml()} instead. **/
-    String isFramesetDoc( int meta_id )
+    String getHtmlDocumentData( int meta_id )
 	;
 
     void incrementSessionCounter();

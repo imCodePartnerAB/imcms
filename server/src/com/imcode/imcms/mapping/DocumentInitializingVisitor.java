@@ -1,16 +1,21 @@
 package com.imcode.imcms.mapping;
 
 import imcode.server.ImcmsServices;
-import imcode.server.db.ConvenienceDatabaseConnection;
+import imcode.server.db.DatabaseConnection;
+import imcode.server.db.DatabaseConnectionUtils;
+import imcode.server.db.commands.QueryDatabaseCommand;
 import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
 import imcode.util.io.FileInputStreamSource;
+import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,9 +26,10 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     private final static String IMAGE_SQL_COLUMNS = "name,image_name,imgurl,width,height,border,v_space,h_space,target,align,alt_text,low_scr,linkurl,type";
 
     private ImcmsServices service;
-    private ConvenienceDatabaseConnection connection ;
+    private DatabaseConnection connection ;
+    private static final String SQL__SELECT_FILE_DOCUMENT_FILES = "SELECT variant_name, filename, mime, created_as_image, default_variant FROM fileupload_docs WHERE meta_id = ? ORDER BY default_variant DESC, variant_name";
 
-    DocumentInitializingVisitor(ConvenienceDatabaseConnection connection, ImcmsServices services) {
+    DocumentInitializingVisitor(DatabaseConnection connection, ImcmsServices services) {
         this.service = services;
         this.connection = connection;
     }
@@ -32,7 +38,8 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         String sqlStr = "SELECT to_meta_id, browser_id FROM browser_docs WHERE meta_id = ?";
         String[][] sqlResult ;
         try {
-            sqlResult = connection.execute2dArrayQuery( sqlStr, new String[]{"" + document.getId()} );
+            String[] parameters = new String[]{"" + document.getId()};
+            sqlResult = DatabaseConnectionUtils.execute2dStringArrayQuery(connection, sqlStr, parameters);
         } catch ( DatabaseException e ) {
             throw new UnhandledException( e );
         }
@@ -45,44 +52,41 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         }
     }
 
-    public void visitFileDocument( FileDocumentDomainObject document ) {
-        String[][] sqlResult ;
-        try {
-            sqlResult = connection.execute2dArrayQuery( "SELECT variant_name, filename, mime, created_as_image, default_variant FROM fileupload_docs WHERE meta_id = ? ORDER BY default_variant DESC, variant_name",
-                                                          new String[]{"" + document.getId()} );
-        } catch ( DatabaseException e ) {
-            throw new UnhandledException( e );
-        }
-        for ( int i = 0; i < sqlResult.length; i++ ) {
-            String[] sqlRow = sqlResult[i];
-
-            String fileId = sqlRow[0];
-            FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
-            file.setFilename( sqlRow[1] );
-            file.setMimeType( sqlRow[2] );
-            file.setCreatedAsImage( 0 != Integer.parseInt( sqlRow[3] ) );
-            File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile( document.getId(), fileId );
-            if ( !fileForFileDocument.exists() ) {
-                File oldlyNamedFileForFileDocument = new File( fileForFileDocument.getParentFile(), fileForFileDocument.getName()
-                                                                                                    + "_se" );
-                if ( oldlyNamedFileForFileDocument.exists() ) {
-                    fileForFileDocument = oldlyNamedFileForFileDocument;
+    public void visitFileDocument( final FileDocumentDomainObject document ) {
+        new QueryDatabaseCommand(SQL__SELECT_FILE_DOCUMENT_FILES, new String[] { "" + document.getId() }, new ResultSetHandler() {
+            public Object handle(ResultSet resultSet) throws SQLException {
+                while (resultSet.next()) {
+                    String fileId = resultSet.getString(1);
+                    FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
+                    file.setFilename( resultSet.getString(2) );
+                    file.setMimeType( resultSet.getString(3) );
+                    file.setCreatedAsImage( 0 != resultSet.getInt(4) );
+                    File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile( document.getId(), fileId );
+                    if ( !fileForFileDocument.exists() ) {
+                        File oldlyNamedFileForFileDocument = new File( fileForFileDocument.getParentFile(), fileForFileDocument.getName()
+                                                                                                            + "_se" );
+                        if ( oldlyNamedFileForFileDocument.exists() ) {
+                            fileForFileDocument = oldlyNamedFileForFileDocument;
+                        }
+                    }
+                    file.setInputStreamSource( new FileInputStreamSource( fileForFileDocument ) );
+                    document.addFile( fileId, file );
+                    boolean isDefaultFile = 0 != resultSet.getInt(5);
+                    if ( isDefaultFile ) {
+                        document.setDefaultFileId( fileId );
+                    }
                 }
+                return null ;
             }
-            file.setInputStreamSource( new FileInputStreamSource( fileForFileDocument ) );
-            document.addFile( fileId, file );
-            boolean isDefaultFile = 0 != Integer.parseInt( sqlRow[4] );
-            if ( isDefaultFile ) {
-                document.setDefaultFileId( fileId );
-            }
-        }
+        }).executeOn(connection);
     }
 
     public void visitHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
         String sqlStr = "SELECT frame_set FROM frameset_docs WHERE meta_id = ?";
         String html ;
         try {
-            html = connection.executeStringQuery( sqlStr, new String[]{"" + htmlDocument.getId()} );
+            String[] parameters = new String[]{"" + htmlDocument.getId()};
+            html = DatabaseConnectionUtils.executeStringQuery(connection, sqlStr, parameters);
         } catch ( DatabaseException e ) {
             throw new UnhandledException( e );
         }
@@ -92,8 +96,8 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     public void visitUrlDocument( UrlDocumentDomainObject document ) {
         String url ;
         try {
-            url = connection.executeStringQuery( "SELECT url_ref FROM url_docs WHERE meta_id = ?",
-                                              new String[]{"" + document.getId()} );
+            String[] parameters = new String[]{"" + document.getId()};
+            url = DatabaseConnectionUtils.executeStringQuery(connection, "SELECT url_ref FROM url_docs WHERE meta_id = ?", parameters);
         } catch ( DatabaseException e ) {
             throw new UnhandledException( e );
         }
@@ -103,8 +107,8 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     public void visitTextDocument( TextDocumentDomainObject document ) {
         String[] sqlResult ;
         try {
-            sqlResult = connection.executeArrayQuery( "SELECT template_id, group_id, default_template_1, default_template_2, default_template FROM text_docs WHERE meta_id = ?",
-                                                   new String[]{String.valueOf( document.getId() )} );
+            final String[] parameters = new String[]{String.valueOf( document.getId() )};
+            sqlResult = DatabaseConnectionUtils.executeStringArrayQuery(connection, "SELECT template_id, group_id, default_template_1, default_template_2, default_template FROM text_docs WHERE meta_id = ?", parameters);
         } catch ( DatabaseException e ) {
             throw new UnhandledException( e );
         }
@@ -142,7 +146,8 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         String sqlSelectDocumentMenus = "SELECT menus.menu_id, menu_index, sort_order, to_meta_id, manual_sort_order, tree_sort_index FROM menus,childs WHERE menus.menu_id = childs.menu_id AND meta_id = ? ORDER BY menu_index";
         String[][] sqlRows ;
         try {
-            sqlRows = connection.execute2dArrayQuery( sqlSelectDocumentMenus, new String[]{"" + document.getId()} );
+            String[] parameters = new String[]{"" + document.getId()};
+            sqlRows = DatabaseConnectionUtils.execute2dStringArrayQuery(connection, sqlSelectDocumentMenus, parameters);
         } catch ( DatabaseException e ) {
             throw new UnhandledException( e );
         }
@@ -171,9 +176,10 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         String sqlSelectDocumentIncludes = "SELECT include_id, included_meta_id FROM includes WHERE meta_id = ?";
         String[][] documentIncludesSqlResult ;
         try {
-            documentIncludesSqlResult = connection.execute2dArrayQuery( sqlSelectDocumentIncludes, new String[]{
+            String[] parameters = new String[]{
                 "" + document.getId()
-            } );
+            };
+            documentIncludesSqlResult = DatabaseConnectionUtils.execute2dStringArrayQuery(connection, sqlSelectDocumentIncludes, parameters);
         } catch ( DatabaseException e ) {
             throw new UnhandledException( e );
         }
@@ -193,7 +199,8 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         String sqlSelectTexts = "SELECT name, text, type FROM texts WHERE meta_id = ?";
         String[][] sqlTextsResult ;
         try {
-            sqlTextsResult = connection.execute2dArrayQuery( sqlSelectTexts, new String[]{"" + document.getId()} );
+            String[] parameters = new String[]{"" + document.getId()};
+            sqlTextsResult = DatabaseConnectionUtils.execute2dStringArrayQuery(connection, sqlSelectTexts, parameters);
         } catch ( DatabaseException e ) {
             throw new UnhandledException( e );
         }
@@ -209,9 +216,10 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     private Map getDocumentImages( DocumentDomainObject document ) {
         String[][] imageRows ;
         try {
-            imageRows = connection.execute2dArrayQuery( "select " + IMAGE_SQL_COLUMNS + " from images\n"
-                                                          + "where meta_id = ?",
-                                                          new String[]{"" + document.getId()} );
+            String[] parameters = new String[]{"" + document.getId()};
+            imageRows = DatabaseConnectionUtils.execute2dStringArrayQuery(connection,
+                                                                          "select " + IMAGE_SQL_COLUMNS + " from images\n"
+                                                                          + "where meta_id = ?", parameters);
         } catch ( DatabaseException e ) {
             throw new UnhandledException( e );
         }

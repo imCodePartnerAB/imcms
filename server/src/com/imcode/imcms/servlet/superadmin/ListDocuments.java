@@ -1,8 +1,9 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.math.IntRange;
@@ -53,11 +54,13 @@ public class ListDocuments extends HttpServlet {
     }
 
     private int getMaxDocumentId( ImcmsServices imcref ) {
-        return Integer.parseInt( imcref.getDatabase().executeStringQuery( "select max(meta_id) from meta", new String[0] ) );
+        final Object[] parameters = new String[0];
+        return Integer.parseInt( DatabaseUtils.executeStringQuery(imcref.getDatabase(), "select max(meta_id) from meta", parameters) );
     }
 
     private int getMinDocumentId( ImcmsServices imcref ) {
-        return Integer.parseInt( imcref.getDatabase().executeStringQuery( "select min(meta_id) from meta", new String[0] ) );
+        final Object[] parameters = new String[0];
+        return Integer.parseInt( DatabaseUtils.executeStringQuery(imcref.getDatabase(), "select min(meta_id) from meta", parameters) );
     }
 
     public static class FormData {

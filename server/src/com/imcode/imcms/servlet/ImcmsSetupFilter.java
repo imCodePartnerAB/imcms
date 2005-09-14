@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
@@ -9,7 +10,10 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.NDC;
 
 import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class ImcmsSetupFilter implements Filter {
@@ -103,7 +107,8 @@ public class ImcmsSetupFilter implements Filter {
         sqlStr += "and ip_accesses.ip_end >= ?\n";
         sqlStr += "order by ip_access_id desc";
 
-        String user_data[] = imcref.getDatabase().executeArrayQuery( sqlStr, new String[]{"" + ip, "" + ip} );
+        final Object[] parameters = new String[]{"" + ip, "" + ip};
+        String user_data[] = DatabaseUtils.executeStringArrayQuery(imcref.getDatabase(), sqlStr, parameters);
 
         if ( user_data.length > 0 ) {
             user = imcref.verifyUser( user_data[0], user_data[1] );

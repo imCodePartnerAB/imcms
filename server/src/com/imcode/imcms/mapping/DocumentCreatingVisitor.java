@@ -2,6 +2,7 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
+import imcode.server.db.DatabaseUtils;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
@@ -19,9 +20,10 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
         String sqlUrlDocsInsertStr = makeSqlInsertString( "frameset_docs", htmlDocumentColumns );
 
-        database.executeUpdateQuery( sqlUrlDocsInsertStr, new String[] {
+        final Object[] parameters = new String[] {
                                              "" + document.getId(), document.getHtml()
-                                             } );
+                                             };
+        DatabaseUtils.executeUpdate(database, sqlUrlDocsInsertStr, parameters);
     }
 
     public void visitUrlDocument( UrlDocumentDomainObject document ) {
@@ -29,9 +31,10 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
         String sqlUrlDocsInsertStr = DocumentStoringVisitor.makeSqlInsertString( "url_docs", urlDocumentColumns );
 
-        database.executeUpdateQuery( sqlUrlDocsInsertStr, new String[] {
+        final Object[] parameters = new String[] {
                                              "" + document.getId(), "", "", document.getUrl(), "", ""
-                                             } );
+                                             };
+        DatabaseUtils.executeUpdate(database, sqlUrlDocsInsertStr, parameters);
     }
 
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
@@ -43,17 +46,17 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         int templateId = textDocumentTemplate.getId();
         int templateGroupId = textDocument.getTemplateGroupId();
         int textDocumentId = textDocument.getId();
-        database.executeUpdateQuery( sqlTextDocsInsertStr,
-                                     new String[] {
-                                             "" + textDocumentId,
-                                             "" + templateId,
-                                             "" + templateGroupId,
-                                             null != defaultTemplate ? "" + defaultTemplate.getId() : null,
-                                             null != defaultTemplateForRestricted1
-                                             ? "" + defaultTemplateForRestricted1.getId() : "-1",
-                                             null != defaultTemplateForRestricted2
-                                             ? "" + defaultTemplateForRestricted2.getId() : "-1",
-                                             } );
+        final Object[] parameters = new String[] {
+                "" + textDocumentId,
+                "" + templateId,
+                "" + templateGroupId,
+                null != defaultTemplate ? "" + defaultTemplate.getId() : null,
+                null != defaultTemplateForRestricted1
+                ? "" + defaultTemplateForRestricted1.getId() : "-1",
+                null != defaultTemplateForRestricted2
+                ? "" + defaultTemplateForRestricted2.getId() : "-1",
+                };
+        DatabaseUtils.executeUpdate(database, sqlTextDocsInsertStr, parameters);
         updateTextDocumentTexts( textDocument );
         updateTextDocumentImages( textDocument );
         updateTextDocumentIncludes( textDocument );
