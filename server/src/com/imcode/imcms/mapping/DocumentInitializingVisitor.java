@@ -1,10 +1,10 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.db.DatabaseConnection;
+import com.imcode.db.DatabaseException;
+import com.imcode.db.commands.SqlQueryDatabaseCommand;
+import com.imcode.imcms.db.DatabaseConnectionUtils;
 import imcode.server.ImcmsServices;
-import imcode.server.db.DatabaseConnection;
-import imcode.server.db.DatabaseConnectionUtils;
-import imcode.server.db.commands.QueryDatabaseCommand;
-import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
 import imcode.util.io.FileInputStreamSource;
@@ -53,7 +53,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     }
 
     public void visitFileDocument( final FileDocumentDomainObject document ) {
-        new QueryDatabaseCommand(SQL__SELECT_FILE_DOCUMENT_FILES, new String[] { "" + document.getId() }, new ResultSetHandler() {
+        new SqlQueryDatabaseCommand(SQL__SELECT_FILE_DOCUMENT_FILES, new String[] { "" + document.getId() }, new ResultSetHandler() {
             public Object handle(ResultSet resultSet) throws SQLException {
                 while (resultSet.next()) {
                     String fileId = resultSet.getString(1);

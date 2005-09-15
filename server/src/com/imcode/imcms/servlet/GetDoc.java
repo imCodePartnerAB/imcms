@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.*;
-import imcode.server.db.DatabaseUtils;
 import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;

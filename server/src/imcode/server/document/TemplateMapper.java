@@ -1,9 +1,10 @@
 package imcode.server.document;
 
+import com.imcode.db.Database;
+import com.imcode.imcms.db.DatabaseUtils;
+import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.ImcmsServices;
-import imcode.server.db.Database;
-import imcode.server.db.DatabaseUtils;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.io.CopyUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -133,13 +134,13 @@ public class TemplateMapper {
 
     public TemplateGroupDomainObject[] getAllTemplateGroups() {
         final Object[] parameters = new String[]{};
-        String[][] sprocResult = DatabaseUtils.execute2dStringArrayProcedure(database, SPROC_GET_TEMPLATE_GROUPS, parameters);
+        String[][] sprocResult = (String[][]) services.getProcedureExecutor().executeProcedure(SPROC_GET_TEMPLATE_GROUPS, parameters, new StringArrayArrayResultSetHandler());
         return createTemplateGroupsFromSqlResult( sprocResult );
     }
 
     public TemplateGroupDomainObject[] getAllTemplateGroupsAvailableForUserOnDocument( UserDomainObject user,
                                                                                        int metaId ) {
-        String[][] sprocResult = sprocGetTemplateGroupsForUser( database, user, metaId );
+        String[][] sprocResult = sprocGetTemplateGroupsForUser(user, metaId );
         return createTemplateGroupsFromSqlResult( sprocResult );
     }
 
@@ -204,7 +205,7 @@ public class TemplateMapper {
 
     public TemplateDomainObject[] getTemplatesInGroup( TemplateGroupDomainObject templateGroup ) {
         final Object[] parameters = new String[]{"" + templateGroup.getId()};
-        String[][] templateData = DatabaseUtils.execute2dStringArrayProcedure(database, SPROC_GET_TEMPLATES_IN_GROUP, parameters);
+        String[][] templateData = (String[][]) services.getProcedureExecutor().executeProcedure(SPROC_GET_TEMPLATES_IN_GROUP, parameters, new StringArrayArrayResultSetHandler());
         TemplateDomainObject[] templates = new TemplateDomainObject[templateData.length];
         for ( int i = 0; i < templateData.length; i++ ) {
             int templateId = Integer.parseInt( templateData[i][0] );
@@ -250,10 +251,10 @@ public class TemplateMapper {
         }
     }
 
-    private static String[][] sprocGetTemplateGroupsForUser( Database service, UserDomainObject user,
-                                                             int meta_id ) {
+    private String[][] sprocGetTemplateGroupsForUser(UserDomainObject user,
+                                                     int meta_id) {
         final Object[] parameters = new String[]{String.valueOf( meta_id ), String.valueOf( user.getId() )};
-        return DatabaseUtils.execute2dStringArrayProcedure(service, SPROC_GET_TEMPLATE_GROUPS_FOR_USER, parameters);
+        return (String[][]) services.getProcedureExecutor().executeProcedure(SPROC_GET_TEMPLATE_GROUPS_FOR_USER, parameters, new StringArrayArrayResultSetHandler());
     }
 
     private TemplateDomainObject createTemplateFromSqlResultRow( String[] sqlResultRow ) {

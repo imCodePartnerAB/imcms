@@ -1,9 +1,9 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.db.Database;
+import com.imcode.imcms.db.StringArrayResultSetHandler;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.db.Database;
-import imcode.server.db.DatabaseUtils;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.*;
 import imcode.util.Html;
@@ -69,7 +69,7 @@ public class AdminRoles extends HttpServlet {
 
             // Lets get all ROLES from DB
             final Object[] parameters = new String[0];
-            String[] rolesArr = DatabaseUtils.executeStringArrayProcedure(imcref.getDatabase(), "RoleAdminGetAll", parameters);
+            String[] rolesArr = (String[]) imcref.getProcedureExecutor().executeProcedure("RoleAdminGetAll", parameters, new StringArrayResultSetHandler());
             List rolesV = new ArrayList(Arrays.asList(rolesArr));
 
 
@@ -107,7 +107,7 @@ public class AdminRoles extends HttpServlet {
             if ( req.getParameter("VIEW_ADMIN_ROLES") != null ) {
                 // Lets get all ROLES from DB
                 final Object[] parameters = new String[0];
-                String[] rolesArr = DatabaseUtils.executeStringArrayProcedure(database, "RoleAdminGetAll", parameters);
+                String[] rolesArr = (String[]) imcref.getProcedureExecutor().executeProcedure("RoleAdminGetAll", parameters, new StringArrayResultSetHandler());
                 Vector rolesV = new Vector(Arrays.asList(rolesArr));
 
 
@@ -421,7 +421,7 @@ public class AdminRoles extends HttpServlet {
                 // lets update
                 final Object[] parameters = new String[] { params.getProperty("ROLE_ID"),
                         "" + permissionValue };
-                DatabaseUtils.executeUpdateProcedure(database, "RoleUpdatePermissions", parameters);
+                imcref.getProcedureExecutor().executeUpdateProcedure("RoleUpdatePermissions", parameters);
 
                 this.doGet(req, res);
             }

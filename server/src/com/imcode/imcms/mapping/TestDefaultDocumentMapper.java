@@ -1,9 +1,9 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.db.mock.MockDatabase;
+import com.imcode.db.mock.MockResultSet;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
-import imcode.server.db.impl.MockDatabase;
-import imcode.server.db.impl.MockResultSet;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.IndexException;
@@ -45,7 +45,9 @@ public class TestDefaultDocumentMapper extends TestCase {
         oldDocument = createTextDocument(1001);
         textDocument = createTextDocument(1002);
         database = new MockDatabase();
-        ImcmsAuthenticatorAndUserAndRoleMapper userRegistry = new ImcmsAuthenticatorAndUserAndRoleMapper( null, null) {
+        MockImcmsServices mockImcmsServices = new MockImcmsServices();
+        mockImcmsServices.setDatabase(database);
+        ImcmsAuthenticatorAndUserAndRoleMapper userRegistry = new ImcmsAuthenticatorAndUserAndRoleMapper(mockImcmsServices) {
             public UserDomainObject getUser( int userId ) {
                 return user ;
             }

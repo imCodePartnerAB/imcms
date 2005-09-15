@@ -1,11 +1,7 @@
 package imcode.server;
 
-import imcode.server.db.Database;
-import imcode.server.db.impl.DefaultDatabase;
-import imcode.server.db.impl.DefaultProcedureExecutor;
 import imcode.util.Prefs;
 import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
@@ -19,7 +15,7 @@ import java.util.Properties;
 public class Imcms {
 
     private static final String SERVER_PROPERTIES_FILENAME = "server.properties";
-    private final static Logger log = Logger.getLogger( imcode.server.Imcms.class.getName() );
+    private final static Logger log = Logger.getLogger( Imcms.class.getName() );
     private static ImcmsServices services ;
     private static BasicDataSource apiDataSource ;
     private static BasicDataSource dataSource;
@@ -36,9 +32,7 @@ public class Imcms {
     private synchronized static ImcmsServices createServices() {
         Properties serverprops = getServerProperties();
         dataSource = createDataSource( serverprops );
-        QueryRunner queryRunner = new QueryRunner( dataSource );
-        Database database = new DefaultDatabase( queryRunner, new DefaultProcedureExecutor(queryRunner) );
-        return new DefaultImcmsServices( database, serverprops ) ;
+        return new DefaultImcmsServices( dataSource, serverprops ) ;
     }
 
     public synchronized static DataSource getApiDataSource() {
@@ -104,6 +98,7 @@ public class Imcms {
 
             basicDataSource.setMaxActive( maxConnectionCount );
             basicDataSource.setMaxIdle( maxConnectionCount );
+            basicDataSource.setDefaultAutoCommit(true);
 
             logDatabaseVersion(basicDataSource);
 

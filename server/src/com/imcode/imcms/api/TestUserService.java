@@ -1,13 +1,16 @@
 package com.imcode.imcms.api;
 
+import com.imcode.db.DatabaseException;
+import com.imcode.db.mock.MockDatabase;
+import com.imcode.imcms.db.ProcedureExecutor;
 import imcode.server.LanguageMapper;
 import imcode.server.MockImcmsServices;
-import imcode.server.db.impl.MockDatabase;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.MockRoleGetter;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
+import org.apache.commons.dbutils.ResultSetHandler;
 
 public class TestUserService extends TestCase {
 
@@ -31,7 +34,8 @@ public class TestUserService extends TestCase {
         database = new MockDatabase();
         mockImcmsServices.setDatabase( database );
         mockImcmsServices.setLanguageMapper(new LanguageMapper(database, "eng")) ;
-        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( database, null);
+        mockImcmsServices.setProcedureExecutor(new MockProcedureExecutor(database));
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( mockImcmsServices );
         mockImcmsServices.setImcmsAuthenticatorAndUserAndRoleMapper( imcmsAuthenticatorAndUserAndRoleMapper );
         contentManagementSystem.setInternal(mockImcmsServices) ;
         mockImcmsServices.setRoleGetter(new MockRoleGetter());
@@ -129,4 +133,20 @@ public class TestUserService extends TestCase {
         assertNull( userService.getRole( 1 ) ) ;
     }
 
+    public static  class MockProcedureExecutor implements ProcedureExecutor {
+
+        private MockDatabase database;
+
+        public MockProcedureExecutor(MockDatabase database) {
+            this.database = database ;
+        }
+
+        public int executeUpdateProcedure(String procedureName, Object[] parameters) throws DatabaseException {
+            return database.executeUpdate(procedureName, parameters) ;
+        }
+
+        public Object executeProcedure(String procedureName, Object[] params, ResultSetHandler resultSetHandler) {
+            return database.executeQuery(procedureName, params, resultSetHandler);
+        }
+    }
 }

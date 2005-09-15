@@ -1,14 +1,14 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.db.Database;
+import com.imcode.db.DatabaseConnection;
+import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
+import com.imcode.db.commands.SqlQueryDatabaseCommand;
+import com.imcode.db.commands.UpdateTableWhereColumnEqualsDatabaseCommand;
+import com.imcode.db.handlers.ObjectArrayResultSetHandler;
+import com.imcode.db.handlers.ObjectFromRowFactory;
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
-import imcode.server.db.Database;
-import imcode.server.db.DatabaseConnection;
-import imcode.server.db.DatabaseUtils;
-import imcode.server.db.ObjectFromRowFactory;
-import imcode.server.db.commands.InsertIntoTableDatabaseCommand;
-import imcode.server.db.commands.QueryDatabaseCommand;
-import imcode.server.db.commands.UpdateTableWhereColumnEqualsDatabaseCommand;
-import imcode.server.db.handlers.ObjectArrayResultSetHandler;
+import com.imcode.imcms.db.DatabaseUtils;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
@@ -219,7 +219,7 @@ public class CategoryMapper {
 
     private CategoryDomainObject[] getDocumentCategories(DocumentDomainObject document,
                                                          DatabaseConnection connection) {
-        Object result = new QueryDatabaseCommand(SQL__GET_DOCUMENT_CATEGORIES, new String[] {
+        Object result = new SqlQueryDatabaseCommand(SQL__GET_DOCUMENT_CATEGORIES, new String[] {
                 "" + document.getId() }, new ObjectArrayResultSetHandler(new CategoryFromRowFactory())).executeOn(connection);
         return (CategoryDomainObject[]) result;
     }

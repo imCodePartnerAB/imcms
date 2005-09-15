@@ -1,11 +1,11 @@
 package com.imcode.imcms.api;
 
+import com.imcode.db.mock.MockDatabase;
+import com.imcode.db.mock.MockResultSet;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
-import imcode.server.db.impl.MockDatabase;
-import imcode.server.db.impl.MockResultSet;
 import imcode.server.user.MockRoleGetter;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;

@@ -1,10 +1,10 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.db.Database;
+import com.imcode.db.DatabaseCommand;
+import com.imcode.db.DatabaseConnection;
+import com.imcode.db.DatabaseException;
 import imcode.server.ImcmsServices;
-import imcode.server.db.Database;
-import imcode.server.db.DatabaseCommand;
-import imcode.server.db.DatabaseConnection;
-import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentGetter;
 import imcode.server.document.DocumentId;

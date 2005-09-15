@@ -1,9 +1,10 @@
 package imcode.server;
 
+import com.imcode.db.Database;
+import com.imcode.db.mock.MockDatabase;
+import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import imcode.server.db.Database;
-import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -33,6 +34,7 @@ public class MockImcmsServices implements ImcmsServices {
     private CategoryMapper categoryMapper;
     private LanguageMapper languageMapper = new LanguageMapper(null, null);
     private RoleGetter roleGetter;
+    private ProcedureExecutor procedureExecutor;
 
     public UserDomainObject verifyUser( String login, String password ) {
         return null;
@@ -170,6 +172,10 @@ public class MockImcmsServices implements ImcmsServices {
         return roleGetter ;
     }
 
+    public ProcedureExecutor getProcedureExecutor() {
+        return procedureExecutor;
+    }
+
     public KeyStore getKeyStore() {
         return keyStore;
     }
@@ -205,5 +211,9 @@ public class MockImcmsServices implements ImcmsServices {
 
     public void setRoleGetter(RoleGetter roleGetter) {
         this.roleGetter = roleGetter;
+    }
+
+    public void setProcedureExecutor(ProcedureExecutor procedureExecutor) {
+        this.procedureExecutor = procedureExecutor;
     }
 }

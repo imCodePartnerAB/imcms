@@ -1,9 +1,11 @@
-package imcode.server.db.impl;
+package com.imcode.imcms.db;
 
-import imcode.server.db.ProcedureExecutor;
+import com.imcode.db.Database;
+import com.imcode.db.DatabaseException;
+import com.imcode.db.commands.SqlQueryDatabaseCommand;
+import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import imcode.util.FileCache;
 import imcode.util.io.FileUtility;
-import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -11,8 +13,6 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,33 +22,33 @@ import java.util.regex.Pattern;
 
 public class DefaultProcedureExecutor implements ProcedureExecutor {
 
-    private QueryRunner queryRunner;
+    private final Database database;
     private FileCache fileCache = new FileCache();
     private Map procedureCache = new HashMap();
     private final static Logger log = Logger.getLogger( DefaultProcedureExecutor.class.getName() );
 
-    public DefaultProcedureExecutor( QueryRunner queryRunner ) {
-        this.queryRunner = queryRunner;
+    public DefaultProcedureExecutor( Database database ) {
+        this.database = database;
     }
 
-    public int executeUpdateProcedure( Connection connection, String procedureName,
-                                       Object[] parameters ) throws SQLException {
+    public int executeUpdateProcedure(String procedureName,
+                                      Object[] parameters) throws DatabaseException {
         Procedure procedure = getProcedure( procedureName );
         Object[] parametersAtCorrectIndices = getParametersAtCorrectIndicesForProcedure( procedure, parameters );
         String body = procedure.getBody();
         log.debug( "Calling procedure " + procedureName + " with body " + body + " and parameters "
                    + ArrayUtils.toString( parametersAtCorrectIndices ) );
-        return queryRunner.update( connection, body, parametersAtCorrectIndices );
+        return ((Integer)database.executeCommand(new SqlUpdateDatabaseCommand(body, parametersAtCorrectIndices))).intValue() ;
     }
 
-    public Object executeProcedure( Connection connection, String procedureName, Object[] params,
-                                    ResultSetHandler resultSetHandler ) throws SQLException {
+    public Object executeProcedure(String procedureName, Object[] params,
+                                   ResultSetHandler resultSetHandler) {
         Procedure procedure = getProcedure( procedureName );
         Object[] parametersAtCorrectIndices = getParametersAtCorrectIndicesForProcedure( procedure, params );
         String body = procedure.getBody();
         log.debug( "Calling procedure " + procedureName + " with body " + body + " and parameters "
                    + ArrayUtils.toString( parametersAtCorrectIndices ) );
-        return queryRunner.query( connection, body, parametersAtCorrectIndices, resultSetHandler );
+        return database.executeCommand(new SqlQueryDatabaseCommand(body, parametersAtCorrectIndices, resultSetHandler)) ;
     }
 
     private Object[] getParametersAtCorrectIndicesForProcedure( Procedure procedure, Object[] parameters ) {
@@ -67,18 +67,17 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         Procedure procedure = (Procedure)procedureCache.get( procedureName );
         String procedureContents = fileCache.getCachedFileStringIfRecent( file );
         if ( null == procedureContents ) {
-            procedureContents = loadFile( file );
+            String procedureContents1 = loadFile(file);
             log.debug("Loading procedure "+procedureName) ;
-            procedure = prepareProcedure( procedureContents, procedureName );
+            procedure = prepareProcedure(procedureContents1, procedureName );
             procedureCache.put( procedureName, procedure ) ;
         }
         return procedure;
     }
 
     Procedure prepareProcedure( String procedureContents, String procedureName ) {
-        Procedure procedure;
         Pattern headerPattern = Pattern.compile( "CREATE\\s+PROCEDURE\\s+\\S+\\s+(.*)\\bAS\\s+", Pattern.CASE_INSENSITIVE
-                                                                                                  | Pattern.DOTALL );
+                                                                                                 | Pattern.DOTALL );
         Matcher headerMatcher = headerPattern.matcher( procedureContents );
         if ( !headerMatcher.find() ) {
             throw new RuntimeException( "Failed to parse procedure " + procedureName + ": " + procedureContents );
@@ -91,8 +90,7 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         List parameterIndices = new ArrayList();
         String bodyWithParametersReplaced = replaceVariablesInBodyAndAddIndicesToList( parameterPattern, body, parameterNameToIndexMap, parameterIndices, procedureName );
         int[] parameterIndicesArray = ArrayUtils.toPrimitive( (Integer[])parameterIndices.toArray( new Integer[parameterIndices.size()] ) );
-        procedure = new Procedure( bodyWithParametersReplaced, parameterIndicesArray );
-        return procedure;
+        return new Procedure(bodyWithParametersReplaced, parameterIndicesArray);
     }
 
     private String loadFile( File file ) {
@@ -155,5 +153,4 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
             return sql;
         }
     }
-
 }

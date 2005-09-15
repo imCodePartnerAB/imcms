@@ -1,10 +1,10 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.db.DatabaseConnection;
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.db.DatabaseConnectionUtils;
 import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
-import imcode.server.db.DatabaseConnection;
-import imcode.server.db.DatabaseConnectionUtils;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentGetter;
 import imcode.server.document.DocumentId;

@@ -1,8 +1,8 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.db.Database;
+import com.imcode.imcms.db.DatabaseUtils;
 import imcode.server.ImcmsServices;
-import imcode.server.db.Database;
-import imcode.server.db.DatabaseUtils;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;

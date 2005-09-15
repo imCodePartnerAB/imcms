@@ -1,9 +1,10 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.db.handlers.ObjectFromFirstRowResultSetHandler;
+import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.db.DatabaseUtils;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -71,7 +72,7 @@ public class AdminDeleteDoc extends HttpServlet {
                 int metaId = Integer.parseInt(params.getProperty("DEL_META_ID"));
                 final Object[] parameters = new String[] { ""
                                                            + metaId };
-                String foundMetaId = DatabaseUtils.executeStringProcedure(imcref.getDatabase(), "FindMetaId", parameters);
+                String foundMetaId = (String) imcref.getProcedureExecutor().executeProcedure("FindMetaId", parameters, new ObjectFromFirstRowResultSetHandler(new StringFromRowFactory()));
                 log.debug("FoundMetaId: " + foundMetaId);
 
                 if ( foundMetaId == null ) {

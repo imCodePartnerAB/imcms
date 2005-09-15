@@ -1,15 +1,15 @@
 package com.imcode.imcms.flow;
 
+import com.imcode.db.Database;
+import com.imcode.db.mock.MockDatabase;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DatabaseDocumentGetter;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
 import com.imcode.test.mock.MockHttpServletRequest;
 import imcode.server.Config;
 import imcode.server.ImcmsServices;
-import imcode.server.db.Database;
-import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.BrowserDocumentDomainObject;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
-import com.imcode.imcms.mapping.DatabaseDocumentGetter;
-import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.index.DocumentIndex;
 import imcode.util.Clock;
 import junit.framework.TestCase;

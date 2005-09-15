@@ -1,8 +1,8 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.db.mock.MockDatabase;
 import com.imcode.imcms.api.NoPermissionException;
 import com.imcode.imcms.api.SaveException;
-import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;

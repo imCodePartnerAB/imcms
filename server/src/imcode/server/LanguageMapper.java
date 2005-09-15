@@ -1,7 +1,7 @@
 package imcode.server;
 
-import imcode.server.db.Database;
-import imcode.server.db.DatabaseUtils;
+import com.imcode.db.Database;
+import com.imcode.imcms.db.DatabaseUtils;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import org.apache.commons.lang.StringUtils;

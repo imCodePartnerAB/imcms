@@ -1,11 +1,11 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.db.Database;
+import com.imcode.db.DatabaseConnection;
+import com.imcode.db.commands.TransactionDatabaseCommand;
+import com.imcode.imcms.db.DatabaseUtils;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.db.Database;
-import imcode.server.db.DatabaseConnection;
-import imcode.server.db.DatabaseUtils;
-import imcode.server.db.commands.TransactionDatabaseCommand;
 import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;

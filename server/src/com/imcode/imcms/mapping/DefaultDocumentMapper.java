@@ -1,16 +1,16 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.db.Database;
+import com.imcode.db.DatabaseCommand;
+import com.imcode.db.commands.CompositeDatabaseCommand;
+import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
+import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.db.Database;
-import imcode.server.db.DatabaseCommand;
-import imcode.server.db.DatabaseUtils;
-import imcode.server.db.commands.CompositeDatabaseCommand;
-import imcode.server.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
-import imcode.server.db.commands.UpdateDatabaseCommand;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
@@ -299,7 +299,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
             new DeleteWhereColumnsEqualDatabaseCommand("document_categories", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("meta_classification", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("childs", "to_meta_id", metaIdStr),
-            new UpdateDatabaseCommand("DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?)", new String[]{metaIdStr}),
+            new SqlUpdateDatabaseCommand("DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?)", new String[]{metaIdStr}),
             new DeleteWhereColumnsEqualDatabaseCommand("menus", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("text_docs", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("texts", metaIdColumn, metaIdStr),

@@ -1,13 +1,13 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.db.Database;
+import com.imcode.db.DatabaseConnection;
+import com.imcode.db.DatabaseException;
+import com.imcode.db.commands.TransactionDatabaseCommand;
+import com.imcode.imcms.db.DatabaseConnectionUtils;
+import com.imcode.imcms.db.DatabaseUtils;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.db.Database;
-import imcode.server.db.DatabaseConnection;
-import imcode.server.db.DatabaseConnectionUtils;
-import imcode.server.db.DatabaseUtils;
-import imcode.server.db.commands.TransactionDatabaseCommand;
-import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;

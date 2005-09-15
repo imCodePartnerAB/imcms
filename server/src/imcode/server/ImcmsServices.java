@@ -1,8 +1,9 @@
 package imcode.server ;
 
+import com.imcode.db.Database;
+import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import imcode.server.db.Database;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -103,4 +104,6 @@ public interface ImcmsServices extends Clock {
     FileCache getFileCache();
 
     RoleGetter getRoleGetter();
+
+    ProcedureExecutor getProcedureExecutor();
 }

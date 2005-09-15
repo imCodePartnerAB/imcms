@@ -1,7 +1,7 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.db.mock.MockDatabase;
 import imcode.server.MockImcmsServices;
-import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;

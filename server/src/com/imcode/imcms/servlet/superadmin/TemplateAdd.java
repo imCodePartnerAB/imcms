@@ -1,9 +1,9 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.db.DatabaseUtils;
 import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.document.TemplateMapper;

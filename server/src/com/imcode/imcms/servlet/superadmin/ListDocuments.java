@@ -1,9 +1,9 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.db.DatabaseUtils;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.math.IntRange;

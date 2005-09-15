@@ -1,11 +1,11 @@
 package imcode.server.document.textdocument;
 
+import com.imcode.db.mock.MockDatabase;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DatabaseDocumentGetter;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
-import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentId;
 import imcode.server.document.DocumentReference;

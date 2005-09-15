@@ -1,8 +1,8 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 import com.imcode.imcms.api.Document;
-import imcode.server.db.DatabaseUtils;
-import imcode.server.db.commands.InsertIntoTableDatabaseCommand;
+import com.imcode.imcms.db.DatabaseUtils;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.NoPermissionToEditDocumentException;

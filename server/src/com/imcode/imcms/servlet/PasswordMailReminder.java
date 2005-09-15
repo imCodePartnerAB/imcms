@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.db.DatabaseUtils;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.db.DatabaseUtils;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.net.SMTP;

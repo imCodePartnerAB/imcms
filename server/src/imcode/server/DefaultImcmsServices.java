@@ -1,12 +1,16 @@
 package imcode.server;
 
+import com.imcode.db.Database;
+import com.imcode.db.DatasourceDatabase;
+import com.imcode.db.commands.SqlUpdateDatabaseCommand;
+import com.imcode.imcms.db.DatabaseUtils;
+import com.imcode.imcms.db.DefaultProcedureExecutor;
+import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DatabaseDocumentGetter;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
-import imcode.server.db.Database;
-import imcode.server.db.DatabaseUtils;
-import imcode.server.db.commands.UpdateDatabaseCommand;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.TemplateMapper;
@@ -34,6 +38,7 @@ import org.apache.log4j.NDC;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
+import javax.sql.DataSource;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.FileInputStream;
@@ -69,7 +74,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "LDAP";
 
     private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
-    private ExternalizedImcmsAuthenticatorAndUserRegistry externalizedImcmsAuthAndMapper = null;
+    private ExternalizedImcmsAuthenticatorAndUserRegistry externalizedImcmsAuthAndMapper;
     private DefaultDocumentMapper documentMapper;
     private TemplateMapper templateMapper;
     private Map languagePropertiesMap = new HashMap();
@@ -78,6 +83,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private Map velocityEngines = new TreeMap();
     private CategoryMapper categoryMapper;
     private LanguageMapper languageMapper;
+    private ProcedureExecutor procedureExecutor;
 
     static {
         mainLog.info( "Main log started." );
@@ -86,14 +92,15 @@ final public class DefaultImcmsServices implements ImcmsServices {
     /**
      * Contructs an DefaultImcmsServices object.
      */
-    public DefaultImcmsServices( Database database, Properties props ) {
-        this.database = database;
+    public DefaultImcmsServices(DataSource dataSource, Properties props) {
+        database = new DatasourceDatabase(dataSource);
+        procedureExecutor = new DefaultProcedureExecutor(database);
         initConfig( props );
         initKeyStore();
         initSysData();
         initSessionCounter();
         languageMapper = new LanguageMapper(database, config.getDefaultLanguage());
-        categoryMapper = new CategoryMapper(this.getDatabase());
+        categoryMapper = new CategoryMapper(getDatabase());
         initAuthenticatorsAndUserAndRoleMappers( props );
         initDocumentMapper();
         initTemplateMapper();
@@ -237,7 +244,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
             log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
         }
-        imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( this.getDatabase(), languageMapper);
+        imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper(this);
         externalizedImcmsAuthAndMapper =
         new ExternalizedImcmsAuthenticatorAndUserRegistry( imcmsAuthenticatorAndUserAndRoleMapper, externalAuthenticator,
                                                            externalUserAndRoleRegistry, getLanguageMapper().getDefaultLanguage() );
@@ -482,7 +489,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private void setSessionCounterInDb( int value ) {
         final Object[] parameters = new String[] {""
                                                   + value};
-        DatabaseUtils.executeUpdateProcedure(getDatabase(), "SetSessionCounterValue", parameters);
+        getProcedureExecutor().executeUpdateProcedure("SetSessionCounterValue", parameters);
     }
 
     /**
@@ -496,7 +503,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private void setSessionCounterDateInDb( Date date ) {
         DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
         final Object[] parameters = new String[] {dateFormat.format( date )};
-        DatabaseUtils.executeUpdateProcedure(getDatabase(), "SetSessionCounterDate", parameters);
+        getProcedureExecutor().executeUpdateProcedure("SetSessionCounterDate", parameters);
     }
 
     /**
@@ -561,16 +568,16 @@ final public class DefaultImcmsServices implements ImcmsServices {
         String[] sqlParams;
 
         sqlParams = new String[]{"" + sd.getStartDocument()};
-        DatabaseUtils.executeUpdateProcedure(getDatabase(), "StartDocSet", sqlParams);
+        getProcedureExecutor().executeUpdateProcedure("StartDocSet", sqlParams);
 
-        database.executeCommand(new UpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 4", new Object[] {sd.getServerMaster()})) ;
-        database.executeCommand(new UpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 5", new Object[] {sd.getServerMasterAddress()})) ;
+        database.executeCommand(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 4", new Object[] {sd.getServerMaster()})) ;
+        database.executeCommand(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 5", new Object[] {sd.getServerMasterAddress()})) ;
 
-        database.executeCommand(new UpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 6", new Object[] {sd.getWebMaster()})) ;
-        database.executeCommand(new UpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 7", new Object[] {sd.getWebMasterAddress()})) ;
+        database.executeCommand(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 6", new Object[] {sd.getWebMaster()})) ;
+        database.executeCommand(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 7", new Object[] {sd.getWebMasterAddress()})) ;
 
         sqlParams = new String[]{sd.getSystemMessage()};
-        DatabaseUtils.executeUpdateProcedure(getDatabase(), "SystemMessageSet", sqlParams);
+        getProcedureExecutor().executeUpdateProcedure("SystemMessageSet", sqlParams);
 
         /* Update the local copy last, so we stay aware of any database errors */
         this.sysData = sd;
@@ -582,7 +589,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      */
     public String[][] getAllDocumentTypes( String langPrefixStr ) {
         final Object[] parameters = new String[] {langPrefixStr};
-        return DatabaseUtils.execute2dStringArrayProcedure(getDatabase(), "GetDocTypes", parameters);
+        return (String[][]) getProcedureExecutor().executeProcedure("GetDocTypes", parameters, new StringArrayArrayResultSetHandler());
     }
 
     public Properties getLanguageProperties( UserDomainObject user ) {
@@ -631,6 +638,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public RoleGetter getRoleGetter() {
         return imcmsAuthenticatorAndUserAndRoleMapper;
+    }
+
+    public ProcedureExecutor getProcedureExecutor() {
+        return procedureExecutor;
     }
 
     private static class WebappRelativeFileConverter implements Converter {
