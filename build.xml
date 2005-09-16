@@ -288,7 +288,8 @@
 
         <javac srcdir="server/src" destdir="${classes}"
             debug="${debug}" optimize="${optimize}" deprecation="${deprecation}"
-            source="1.4" target="1.4">
+            source="1.4" target="1.4"
+            encoding="iso-8859-1">
 
             <exclude name="**/Test*.java" unless="junit-available"/>
             <exclude name="**/*TestCase.java" unless="junit-available"/>
