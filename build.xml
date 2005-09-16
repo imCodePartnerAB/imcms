@@ -69,6 +69,8 @@
         <path refid="libraries"/>
     </path>
 
+    <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="libraries"/>
+
     <!-- Distribution targets -->
 
     <target name="dist" depends="bindist,srcdist" description="Build all binary and source distributions."/>
@@ -97,12 +99,12 @@
         </tar>
     </target>
 
-    <target name="bindist-war" depends="build,check-webappname">
+    <target name="bindist-war" depends="build">
         <mkdir dir="${dist}"/>
         <war warfile="${war}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
     </target>
 
-    <target name="bindist-jar" depends="classes,check-webappname">
+    <target name="bindist-jar" depends="classes">
         <mkdir dir="${dist}"/>
         <jar destfile="${bindist-api-jar}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>
         <jar destfile="${bindist-util-jar}" basedir="${classes}" includes="com/imcode/util/**"/>
@@ -110,7 +112,7 @@
 
     <target name="srcdist" depends="srcdist-zip,srcdist-tgz" description="Build all source distributions."/>
 
-    <target name="srcdist-zip" depends="init,check-webappname">
+    <target name="srcdist-zip" depends="init">
         <mkdir dir="${dist}"/>
         <!-- <zip> will for some reason throw an IllegalArgumentException if the file exists.-->
         <delete file="${srcdist-zip}"/>
@@ -119,7 +121,7 @@
         </zip>
     </target>
 
-    <target name="srcdist-tgz" depends="init,check-webappname">
+    <target name="srcdist-tgz" depends="init">
         <mkdir dir="${dist}"/>
         <dependset>
             <srcfileset file="${srcincludes}"/>
@@ -172,18 +174,23 @@
     <target name="database-create" depends="init,sql">
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
-            userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" src="${create-sql}"/>
-
+             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
+            CREATE DATABASE ${db-name}
+        </sql>
+        
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
-            <transaction src="${sql}/imcms${versionfilesuffix}-${defaultlanguage}.sql"/>
+            <transaction src="${sql}/imcms${versionfilesuffix}-${defaultlanguage}-${db-target}.sql"/>
         </sql>
+
     </target>
 
-    <target name="database-drop" depends="init,drop-sql">
+    <target name="database-drop" depends="init">
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
-            userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" src="${drop-sql}"/>
+             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
+            DROP DATABASE ${db-name}
+        </sql>
 
     </target>
 
@@ -195,7 +202,7 @@
         </copy>
     </target>
 
-    <target name="jar" depends="check-webappname,classes">
+    <target name="jar" depends="classes">
         <mkdir dir="${lib}"/>
         <jar destfile="${jar}" basedir="${classes}"/>
     </target>
@@ -219,7 +226,7 @@
         </junit>
     </target>
 
-    <target name="uninstall" depends="init-version-properties,check-deployroot,check-webappname" description="Removes the installed files from the deployroot, including the war-file.">
+    <target name="uninstall" depends="init-version-properties,check-deployroot" description="Removes the installed files from the deployroot, including the war-file.">
         <delete dir="${webapproot}"/>
         <delete file="${deployroot}/${warfilename}"/>
     </target>
@@ -310,7 +317,7 @@
 
     </target>
 
-    <target name="ddl.xml" depends="init,taskdef-cat">
+    <target name="ddl.xml" depends="init">
 
         <concat destfile="${sql}/ddl.xml">
             <header>&lt;database defaultIdMethod="native" name="imcms"&gt;&#10;</header>
@@ -318,15 +325,6 @@
             <footer>&lt;/database&gt;&#10;</footer>
         </concat>
 
-    </target>
-
-    <target name="ddl.sql" depends="init,ddl.xml">
-        <taskdef name="ddl2db" classname="org.apache.ddlutils.task.DdlToDatabaseTask" classpathref="libraries"/>
-        <mkdir dir="${tmp}"/>
-
-        <ddl2db schemafile="${sql}/ddl.xml" databasetype="${db-target}">
-             <writeschemasqltofile outputfile="${tmp}/ddl.sql" alterdatabase="false" droptablesfirst="false"/> 
-        </ddl2db>
     </target>
 
     <target name="jspc" depends="init,classes">
@@ -363,20 +361,42 @@
 
     </target>
 
-    <target name="sql" depends="init,check-webappname,ddl.sql,drop-sql,taskdef-cat" description="Concatenates the SQL-scripts into one large script.">
+    <target name="sql" depends="init,ddl.xml" description="Concatenates the SQL-scripts into one large script.">
 
         <mkdir dir="${tmp}"/>
 
-        <cat destfile="${tmp}/imcms.sql" orderby="path" filtering="true">
-            <fileset file="${tmp}/ddl.sql"/>
-            <fileset file="sql/data/types.sql"/>
-            <fileset file="sql/data/newdb.sql"/>
-        </cat>
+        <taskdef name="ddl2db" classname="org.apache.ddlutils.task.DdlToDatabaseTask" classpathref="libraries"/>
+        <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="libraries"/>
 
-        <replace file="${tmp}/imcms.sql" token="-- ${db-target}"/>
-
-        <copy file="sql/create_db.sql" tofile="${create-sql}" filtering="true"/>
-
+        <for list="mssql,mysql" param="database">                
+            <sequential>
+                <for list="swe,eng" param="language">
+                    <sequential>
+                        <ddl2db schemafile="${sql}/ddl.xml" databasetype="@{database}">
+                             <writeschemasqltofile outputfile="${tmp}/@{database}-ddl.sql" alterdatabase="false" droptablesfirst="false"/> 
+                        </ddl2db>
+                        
+                        <concat destfile="${tmp}/imcms${versionfilesuffix}-@{language}-@{database}.sql">
+                            <fileset file="${tmp}/@{database}-ddl.sql"/>
+                            <fileset file="sql/data/types.sql"/>
+                            <fileset file="sql/data/newdb.sql"/>
+                        </concat>
+                
+                        <replaceregexp file="${tmp}/imcms${versionfilesuffix}-@{language}-@{database}.sql" match="^-- @{database} " replace="" flags="gm"/>
+                        <replaceregexp file="${tmp}/imcms${versionfilesuffix}-@{language}-@{database}.sql" match="^-- \w+ (.*?)$" replace="" flags="gm"/>
+                        
+                        <imtranslate bundle="imcms" bundlelanguage="@{language}"
+                                     starttoken="&lt;? " endtoken=" ?&gt;"
+                                     todir="${sql}" filtering="true">
+                            <fileset file="${tmp}/imcms${versionfilesuffix}-@{language}-@{database}.sql"/>
+                        </imtranslate>
+               
+                        <copy file="${sql}/imcms${versionfilesuffix}-@{language}-@{database}.sql" todir="${dist}"/>
+                    </sequential>
+                </for>
+            </sequential>
+        </for>
+        
         <copy todir="${sql-diff}">
             <fileset dir="sql/diff" includes="diff-*.sql"/>
         </copy>
@@ -384,29 +404,6 @@
         <copy todir="${sql-sprocs}">
             <fileset dir="sql/sprocs" includes="*.prc"/>
         </copy>
-
-        <antcall target="sql-lang">
-            <param name="buildlanguage" value="swe"/>
-        </antcall>
-
-        <antcall target="sql-lang">
-            <param name="buildlanguage" value="eng"/>
-        </antcall>
-
-    </target>
-
-    <target name="sql-lang" depends="init">
-
-        <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="libraries"/>
-
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-            starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${sql}" filtering="true">
-            <fileset file="${tmp}/imcms.sql"/>
-        </imtranslate>
-
-        <copy file="${sql}/imcms.sql" tofile="${dist}/imcms${versionfilesuffix}-${buildlanguage}.sql"/>
-        <move file="${sql}/imcms.sql" tofile="${sql}/imcms${versionfilesuffix}-${buildlanguage}.sql"/>
 
     </target>
 
@@ -518,7 +515,6 @@
 
     <target name="init-version-properties">
 
-        <taskdef name="propertyregex" classname="net.sf.antcontrib.property.RegexTask" classpathref="libraries"/>
         <propertyregex property="version"
             input="${cvsname}"
             regexp=".Name: v(.*) ."
@@ -557,8 +553,6 @@
         <property name="jar" value="${lib}/imcms${versionfilesuffix}.jar"/>
 
         <property name="sprocs-sql" value="${sql}/imcms-sprocs${versionfilesuffix}.sql"/>
-        <property name="create-sql" value="${sql}/create_db${versionfilesuffix}.sql"/>
-        <property name="drop-sql" value="${sql}/drop_db${versionfilesuffix}.sql"/>
 
         <property name="bindist-api-jar" value="${dist}/imcms${versionfilesuffix}-api.jar"/>
         <property name="bindist-util-jar" value="${dist}/imcms${versionfilesuffix}-util.jar"/>
@@ -650,16 +644,6 @@
                 publicId="-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
                 location="javax/servlet/resources/web-app_2_3.dtd"/>
         </xmlvalidate>
-    </target>
-
-    <target name="check-webappname" description="Checks that webappname is set." unless="webappname">
-
-        <fail message="Set 'webappname' in '${build.properties}'!"/>
-
-    </target>
-
-    <target name="taskdef-cat">
-        <taskdef name="cat" classname="com.imcode.ant.tasks.Cat" classpathref="libraries"/>
     </target>
 
 </project>

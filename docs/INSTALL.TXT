@@ -8,7 +8,7 @@ Prerequisites:
     * Install Apache Tomcat 4 or later,
       or another servlet-api 2.3 (or later) compatible servlet engine.
 
-    * Install Microsoft SQL Server 2000.
+    * Install Microsoft SQL Server 2000, or MySQL 4.1 or later.
 
 
 Building:
@@ -28,34 +28,21 @@ Installing imCMS:
 
 Setting up the database:
 
-    * Create a new empty database with your preferred collation.
-      We use the collation "Finnish_Swedish_CI_AS" for swedish installations.
-      This can be done with the SQL statement
+    * Create a new database on your database server and run one of the sql scripts in
+      "tomcat/webapps/imcms/WEB-INF/sql/", as appropriate for your type of database server
+      and your preferred default language.
 
-          CREATE DATABASE [<databasename>] COLLATE Finnish_Swedish_CI_AS
+      For details with setting up a Microsoft SQL Server database, see the file INSTALL_MSSQL.TXT.
 
-      where <databasename> is the name you want for your database.
-      See "tomcat/webapps/imcms/WEB-INF/sql/create_db-<version>.sql" for a simple script to use.
+    Example:
 
-    * To set up the imCMS-database run the sql script
-      run "tomcat/webapps/imcms/WEB-INF/sql/imcms-<version>-<language>.sql" on the empty database,
-      where <language> is your preferred default language.
+        On MySQL something like the following might be appropriate:
 
-    Note:   To run sql scripts, we recommend that you use the "SQL Query Analyzer" ("isqlw"), included with
-            Microsoft SQL Server, or the "osql" utility included with Microsoft Desktop Engine (MSDE).
-            To use osql, something like
-
-                osql /S <servername> /d <databasename> /U <login> /P <password> /i <scriptfile>
-
-            should probably work. See Microsoft's documentation for details.
-
-            If you are trying to run a script containing non-ASCII characters, it should be noted that the
-            osql utility might corrupt these unless ODBC is configured correctly.
-            This isn't much of a problem though. These corrupt characters will just look a little funny,
-            and can be fixed manually after installation.
-            (To get technical, the script is in "iso-8859-1" encoding,
-            but osql reads it as if it was a dos codepage, like "CP850" or "CP437", depending on local setup.)
-
+            mysql -u <user> -p -e "create database imcms"
+            mysql -u <user> -p imcms < imcms-<version>-<language>-mysql.sql
+           
+        See the MySQL documentation for details.
+  
 
 Setting up imCMS:
 
