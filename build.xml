@@ -258,7 +258,9 @@
     <!-- Component targets used in build -->
 
     <target name="apidocs">
-        <javadoc sourcepath="server/src/" destdir="${apidocs}" windowtitle="imCMS API" classpathref="libraries">
+        <javadoc sourcepath="server/src/" destdir="${apidocs}"
+                 windowtitle="imCMS API" classpathref="libraries"
+                 encoding="iso-8859-1">
             <fileset dir="server/src/" defaultexcludes="yes">
                 <include name="com/imcode/imcms/api/**"/>
                 <include name="com/imcode/util/**"/>
@@ -387,7 +389,7 @@
                         
                         <imtranslate bundle="imcms" bundlelanguage="@{language}"
                                      starttoken="&lt;? " endtoken=" ?&gt;"
-                                     todir="${sql}" filtering="true">
+                                     todir="${sql}" filtering="true" encoding="iso-8859-1">
                             <fileset file="${tmp}/imcms${versionfilesuffix}-@{language}-@{database}.sql"/>
                         </imtranslate>
                
@@ -470,13 +472,13 @@
         <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="libraries"/>
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${templates}/${buildlanguage}" filtering="true">
+            todir="${templates}/${buildlanguage}" filtering="true" encoding="iso-8859-1">
             <fileset dir="web/WEB-INF/templates/lang"/>
         </imtranslate>
 
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${imcms}/${buildlanguage}" filtering="true">
+            todir="${imcms}/${buildlanguage}" filtering="true" encoding="iso-8859-1">
             <fileset dir="web/imcms/lang" excludes="${imagespattern}"/>
         </imtranslate>
 
