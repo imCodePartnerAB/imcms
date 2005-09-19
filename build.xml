@@ -68,8 +68,20 @@
         <pathelement path="${classes}"/>
         <path refid="libraries"/>
     </path>
+    
+    <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="libraries"/>
+    <taskdef name="checksumfiles" classname="com.imcode.ant.tasks.ChecksumFiles" classpathref="libraries"/>
+    <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask" classpathref="libraries"/>
+
+    <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
 
     <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="libraries"/>
+    <taskdef name="install" classname="org.apache.catalina.ant.InstallTask" classpathref="libraries"/>
+    <taskdef name="remove" classname="org.apache.catalina.ant.RemoveTask" classpathref="libraries"/>
+    <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" classpathref="libraries"/>
+    <taskdef resource="checkstyletask.properties" classpathref="libraries"/>
+    <taskdef classname="org.apache.jasper.JspC" name="jasper2" classpathref="libraries"/>
+    <taskdef name="ddl2db" classname="org.apache.ddlutils.task.DdlToDatabaseTask" classpathref="libraries"/>
 
     <!-- Distribution targets -->
 
@@ -238,19 +250,16 @@
     <!-- Tomcat targets -->
 
     <target name="tomcat-deploy" description="Deploy in running instance of tomcat">
-        <taskdef name="install" classname="org.apache.catalina.ant.InstallTask" classpathref="libraries"/>
         <install url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
            path="/${webappname}" war="file:${tomcat-deployroot-local-directory}/${webappname}"/>
     </target>
 
     <target name="tomcat-undeploy" description="Remove build in running instance of tomcat">
-        <taskdef name="remove" classname="org.apache.catalina.ant.RemoveTask" classpathref="libraries"/>
         <remove url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
             path="/${webappname}"/>
     </target>
 
     <target name="tomcat-reload" description="Reloads the webapp in tomcat">
-        <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" classpathref="libraries"/>
         <reload url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
             path="/${webappname}"/>
     </target>
@@ -275,7 +284,6 @@
     </target>
 
     <target name="checksumsfile">
-        <taskdef name="checksumfiles" classname="com.imcode.ant.tasks.ChecksumFiles" classpathref="libraries"/>
         <checksumfiles destfile="${checksumsfile}" digest="MD5" append="true">
             <fileset dir="${build}"/>
         </checksumfiles>
@@ -283,8 +291,6 @@
 
     <target name="checkstyle" depends="init">
 
-        <taskdef resource="checkstyletask.properties" classpathref="libraries"/>
-        
         <checkstyle config="docs/checkstyle.xml">
             <fileset dir="server/src" includes="**/*.java"/>
         </checkstyle>
@@ -330,7 +336,6 @@
     </target>
 
     <target name="jspc" depends="init,classes">
-        <taskdef classname="org.apache.jasper.JspC" name="jasper2" classpathref="libraries"/>
 
         <jasper2
                 validateXml="false"
@@ -366,9 +371,6 @@
     <target name="sql" depends="init,ddl.xml" description="Concatenates the SQL-scripts into one large script.">
 
         <mkdir dir="${tmp}"/>
-
-        <taskdef name="ddl2db" classname="org.apache.ddlutils.task.DdlToDatabaseTask" classpathref="libraries"/>
-        <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="libraries"/>
 
         <for list="mssql,mysql" param="database">                
             <sequential>
@@ -469,7 +471,6 @@
 
     <target name="web-lang" depends="init">
 
-        <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="libraries"/>
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${templates}/${buildlanguage}" filtering="true" encoding="iso-8859-1">
