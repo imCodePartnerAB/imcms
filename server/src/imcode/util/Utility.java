@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.w3c.dom.Document;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -175,15 +176,18 @@ public class Utility {
 
     public static String getContents( String path, HttpServletRequest request,
                                 HttpServletResponse response ) throws ServletException, IOException {
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher( path );
+        if ( null == requestDispatcher ) {
+            throw new ServletException( "No RequestDispatcher for path \"" + path + "\". Maybe the path doesn't exist?" );
+        }
+
         HttpServletResponseWrapper collectingHttpServletResponse = new CollectingHttpServletResponse( response );
-        request.getRequestDispatcher( path ).include( request, collectingHttpServletResponse );
+        requestDispatcher.include( request, collectingHttpServletResponse );
         return collectingHttpServletResponse.toString();
     }
 
     public static String formatDate( Date oneWeekAgo ) {
-        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
-        String formattedDate = dateFormat.format( oneWeekAgo );
-        return formattedDate;
+        return new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING ).format( oneWeekAgo );
     }
 
     public static String formatUser( UserDomainObject user ) {
@@ -249,16 +253,14 @@ public class Utility {
         calendar.setTime( fieldValue );
         calendar.set( Calendar.MILLISECOND, 0 );
         calendar.set( Calendar.SECOND, 0 );
-        Date truncatedDate = calendar.getTime();
-        return truncatedDate;
+        return calendar.getTime();
     }
 
     public static String getRequestURLWithoutPath( HttpServletRequest request ) {
         String requestUrl = request.getRequestURL().toString();
         int requestUrlStartOfHost = requestUrl.indexOf( "://" ) + 3;
         int requestUrlStartOfPath = requestUrl.indexOf( '/', requestUrlStartOfHost );
-        String requestUrlWithoutPath = StringUtils.left( requestUrl, requestUrlStartOfPath );
-        return requestUrlWithoutPath;
+        return StringUtils.left( requestUrl, requestUrlStartOfPath );
     }
 
     public static boolean throwableContainsMessageContaining( Throwable t, String s ) {
