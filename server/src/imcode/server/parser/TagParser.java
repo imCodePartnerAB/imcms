@@ -4,9 +4,7 @@ import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.*;
 import imcode.server.document.*;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -108,11 +106,11 @@ class TagParser {
         for ( Iterator iterator = images.keySet().iterator(); iterator.hasNext(); ) {
             Integer imageIndex = (Integer)iterator.next();
             ImageDomainObject image = (ImageDomainObject)images.get( imageIndex );
-            ImageDomainObject.ImageSource imageSource = image.getSource();
+            ImageSource imageSource = image.getSource();
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-            if ( !( imageSource instanceof ImageDomainObject.FileDocumentImageSource )
+            if ( !( imageSource instanceof FileDocumentImageSource )
                  || imageMode
-                 || documentRequest.getUser().canAccess( ( (ImageDomainObject.FileDocumentImageSource)imageSource ).getFileDocument() ) ) {
+                 || documentRequest.getUser().canAccess( ( (FileDocumentImageSource)imageSource ).getFileDocument() ) ) {
                 imageMap.put( imageIndex, ImcmsImageUtils.getImageHtmlTag( image, documentRequest.getHttpServletRequest() ) );
             }
         }

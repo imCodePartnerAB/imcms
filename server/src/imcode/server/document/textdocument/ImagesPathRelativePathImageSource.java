@@ -2,9 +2,9 @@ package imcode.server.document.textdocument;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.util.io.FileInputStreamSource;
-import imcode.util.io.FileUtility;
-import imcode.util.io.InputStreamSource;
+import imcode.util.FileInputStreamSource;
+import imcode.util.FileUtility;
+import imcode.util.InputStreamSource;
 
 import java.io.File;
 import java.util.Date;
@@ -13,7 +13,7 @@ public class ImagesPathRelativePathImageSource extends ImageSource {
     private String relativePath;
 
     public ImagesPathRelativePathImageSource( String relativePath ) {
-        this.relativePath = relativePath.replace('\\','/');
+        this.relativePath = relativePath;
     }
 
     public InputStreamSource getInputStreamSource( ) {

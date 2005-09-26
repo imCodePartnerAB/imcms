@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <changesets>
 
+<changeset version="2.2.1">
+
+    <changes for="users">
+        <change>
+            <p>
+                 Fixed a NullPointerException when trying to view a textpage containing a
+                 filedocument-image that had been deleted.
+            </p>
+            <bug id="3125"/>
+        </change>
+    </changes>
+
+</changeset>
+
+
 <changeset version="2.2.0">
 
     <changes for="users">

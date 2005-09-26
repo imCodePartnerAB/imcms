@@ -18,13 +18,13 @@ import javax.servlet.http.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.cert.Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.cert.Certificate;
 
 public class Utility {
 
@@ -166,11 +166,21 @@ public class Utility {
     }
 
     public static String getAbsolutePathToDocument(HttpServletRequest request, DocumentDomainObject document) {
+        if (null == document) {
+            return null ;
+        }
+        return request.getContextPath() + getContextRelativePathToDocument( document ) ;
+    }
+
+    public static String getContextRelativePathToDocument( DocumentDomainObject document ) {
+        if (null == document) {
+            return null ;
+        }
         String documentPathPrefix = Imcms.getServices().getConfig().getDocumentPathPrefix() ;
         if (StringUtils.isBlank( documentPathPrefix )) {
             documentPathPrefix = "/servlet/GetDoc?meta_id=" ;
         }
-        return request.getContextPath() + documentPathPrefix + document.getId() ;
+        return documentPathPrefix + document.getId( );
     }
 
     public static String formatHtmlDatetime( Date datetime ) {
