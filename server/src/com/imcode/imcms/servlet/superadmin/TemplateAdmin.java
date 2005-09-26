@@ -7,6 +7,7 @@ import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.util.LocalizedMessage;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import org.apache.commons.collections.iterators.ArrayIterator;
@@ -80,7 +81,7 @@ public class TemplateAdmin extends HttpServlet {
         } else if ( req.getParameter( "delete_template" ) != null ) {
             htmlStr = createDeleteTemplateDialog( templateMapper, user, lang, imcref );
         } else if ( req.getParameter( "rename_template" ) != null ) {
-            htmlStr = createRenameTemplateDialog( lang, imcref, templateMapper, user );
+            htmlStr = createRenameTemplateDialog( lang, imcref, templateMapper, user, null);
         } else if ( req.getParameter( "get_template" ) != null ) {
             htmlStr = createDownloadTemplateDialog( lang, imcref, templateMapper, user );
         } else if ( req.getParameter( "edit_template" ) != null ) {
@@ -152,15 +153,15 @@ public class TemplateAdmin extends HttpServlet {
         return imcref.getAdminTemplate("template_get.html", user, vec);
     }
 
-    private String createRenameTemplateDialog( String lang, ImcmsServices imcref, TemplateMapper templateMapper,
-                                               UserDomainObject user ) {
+    static String createRenameTemplateDialog(String lang, ImcmsServices imcref, TemplateMapper templateMapper,
+                                             UserDomainObject user, LocalizedMessage error) {
         List vec = new ArrayList();
         vec.add( "#language#" );
         vec.add( lang );
-        TemplateDomainObject[] templates = imcref.getTemplateMapper().getAllTemplates();
-        String temps = templateMapper.createHtmlOptionListOfTemplates( templates, null );
         vec.add( "#templates#" );
-        vec.add( temps );
+        vec.add( templateMapper.createHtmlOptionListOfTemplates( imcref.getTemplateMapper().getAllTemplates(), null ) );
+        vec.add( "#error#" );
+        vec.add( null == error ? "" : error.toLocalizedString(user)) ;
         return imcref.getAdminTemplate(ADMIN_TEMPLATE_RENAME, user, vec);
     }
 

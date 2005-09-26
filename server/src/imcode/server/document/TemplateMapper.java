@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import com.imcode.db.Database;
+import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
@@ -27,8 +28,8 @@ public class TemplateMapper {
     private ImcmsServices services;
 
     public TemplateMapper( ImcmsServices service ) {
-        this.database = service.getDatabase();
-        this.services = service ;
+        database = service.getDatabase();
+        services = service ;
     }
 
     public void addTemplateToGroup( TemplateDomainObject template, TemplateGroupDomainObject templateGroup ) {
@@ -87,8 +88,7 @@ public class TemplateMapper {
     }
 
     public String createHtmlOptionListOfTemplatesWithDocumentCount( UserDomainObject user ) {
-        String htmlStr;
-        htmlStr = "";
+        String htmlStr = "";
         TemplateMapper templateMapper = services.getTemplateMapper();
         TemplateDomainObject[] templates = templateMapper.getAllTemplates();
         for ( int i = 0; i < templates.length; i++ ) {
@@ -110,14 +110,12 @@ public class TemplateMapper {
      */
     public void deleteTemplate( TemplateDomainObject template ) {
 
-        String sqlStr = "delete from templates_cref where template_id = ?";
         final Object[] parameters1 = new String[]{"" + template.getId()};
-        DatabaseUtils.executeUpdate(database, sqlStr, parameters1);
+        DatabaseUtils.executeUpdate(database, "delete from templates_cref where template_id = ?", parameters1);
 
         // delete from database
-        sqlStr = "delete from templates where template_id = ?";
         final Object[] parameters = new String[]{"" + template.getId()};
-        DatabaseUtils.executeUpdate(database, sqlStr, parameters);
+        DatabaseUtils.executeUpdate(database, "delete from templates where template_id = ?", parameters);
 
         // test if template exists and delete it
         File f = new File( services.getConfig().getTemplatePath() + "/text/" + template.getId() + ".html" );
@@ -230,10 +228,15 @@ public class TemplateMapper {
         DatabaseUtils.executeUpdate(database, sqlStr, parameters);
     }
 
-    public void renameTemplate( TemplateDomainObject template, String newNameForTemplate ) {
-        String sqlStr = "UPDATE templates SET simple_name = ? WHERE template_id = ?";
-        final Object[] parameters = new String[]{newNameForTemplate, "" + template.getId()};
-        DatabaseUtils.executeUpdate(database, sqlStr, parameters);
+    public boolean renameTemplate( TemplateDomainObject template, String newNameForTemplate ) {
+        try {
+            String sqlStr = "UPDATE templates SET simple_name = ? WHERE template_id = ?";
+            Object[] parameters = new String[]{newNameForTemplate, "" + template.getId()};
+            DatabaseUtils.executeUpdate(database, sqlStr, parameters);
+            return true ;
+        } catch ( DatabaseException e ) {
+            return false ;
+        }
     }
 
     public void renameTemplateGroup( TemplateGroupDomainObject templateGroup, String newName ) {
@@ -333,30 +336,26 @@ public class TemplateMapper {
     }
 
     public int saveTemplate( String name, String file_name, InputStream templateData, boolean overwrite, String lang_prefix ) {
-        String sqlStr;
         // check if template exists
-        sqlStr = "select template_id from templates where simple_name = ?";
+        String sqlStr = "select template_id from templates where simple_name = ?";
         final Object[] parameters1 = new String[] {name};
         String templateId = DatabaseUtils.executeStringQuery(database, sqlStr, parameters1);
         if ( null == templateId ) {
 
             // get new template_id
-            sqlStr = "select max(template_id) + 1 from templates\n";
             final Object[] parameters = new String[0];
-            templateId = DatabaseUtils.executeStringQuery(database, sqlStr, parameters);
+            templateId = DatabaseUtils.executeStringQuery(database, "select max(template_id) + 1 from templates\n", parameters);
 
-            sqlStr = "insert into templates values (?,?,?,?,0,0,0)";
             final Object[] parameters2 = new String[] {templateId, file_name, name,
                     lang_prefix};
-            DatabaseUtils.executeUpdate(database, sqlStr, parameters2);
+            DatabaseUtils.executeUpdate(database, "insert into templates values (?,?,?,?,0,0,0)", parameters2);
         } else { //update
             if ( !overwrite ) {
                 return -1;
             }
 
-            sqlStr = "update templates set template_name = ? where template_id = ?";
             final Object[] parameters = new String[] {file_name, templateId};
-            DatabaseUtils.executeUpdate(database, sqlStr, parameters);
+            DatabaseUtils.executeUpdate(database, "update templates set template_name = ? where template_id = ?", parameters);
         }
 
         File f = new File( services.getConfig().getTemplatePath(), "text/" + templateId + ".html" );
@@ -400,9 +399,9 @@ public class TemplateMapper {
             } // end IF
         } // end FOR
 
-        char[] buffer = new char[4096];
         try {
             int read;
+            char[] buffer = new char[4096];
             while ( ( read = fr.read( buffer, 0, 4096 ) ) != -1 ) {
                 str.append( buffer, 0, read );
             }

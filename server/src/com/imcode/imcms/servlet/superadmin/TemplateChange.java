@@ -7,6 +7,7 @@ import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -20,70 +21,76 @@ import java.util.List;
 
 public class TemplateChange extends HttpServlet {
 
-    public void service( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    private final static LocalizedMessage ERROR__TEMPLATE_NAME_TAKEN = new LocalizedMessage("error/template_with_name_exists");
+
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
+
+    public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
         ImcmsServices imcref = Imcms.getServices();
-        UserDomainObject user = Utility.getLoggedOnUser( req );
+        UserDomainObject user = Utility.getLoggedOnUser( request );
         if ( !user.isSuperAdmin() ) {
-            Utility.redirectToStartDocument( req, res );
+            Utility.redirectToStartDocument( request, response );
             return;
         }
 
-        Utility.setDefaultHtmlContentType( res );
+        Utility.setDefaultHtmlContentType( response );
 
         TemplateMapper templateMapper = imcref.getTemplateMapper();
-        ServletOutputStream out = res.getOutputStream();
         String htmlStr = null;
-        String lang = req.getParameter( "language" );
-        if ( req.getParameter( "cancel" ) != null ) {
-            res.sendRedirect( "TemplateAdmin" );
-        } else if ( req.getParameter( "template_get" ) != null ) {
-            downloadTemplate( req, imcref, res, out );
-        } else if ( req.getParameter( "template_delete_cancel" ) != null ) {
+        String lang = request.getParameter( "language" );
+        if ( request.getParameter( "cancel" ) != null ) {
+            response.sendRedirect( "TemplateAdmin" );
+        } else if ( request.getParameter( "template_get" ) != null ) {
+            downloadTemplate( request, imcref, response);
+        } else if ( request.getParameter( "template_delete_cancel" ) != null ) {
             htmlStr = TemplateAdmin.createDeleteTemplateDialog( templateMapper, user, lang, imcref ) ;
-        } else if ( req.getParameter( "template_delete" ) != null ) {
-            deleteTemplate( req, imcref );
+        } else if ( request.getParameter( "template_delete" ) != null ) {
+            deleteTemplate( request, imcref );
             htmlStr = TemplateAdmin.createDeleteTemplateDialog( templateMapper, user, lang, imcref ) ;
-        } else if ( req.getParameter( "assign" ) != null ) {
-            htmlStr = addTemplatesToGroup( req, templateMapper, lang, user, imcref );
-        } else if ( req.getParameter( "deassign" ) != null ) {
-            htmlStr = removeTemplatesFromGroup( req, templateMapper, lang, user, imcref );
-        } else if ( req.getParameter( "show_assigned" ) != null ) {
-            int templateGroupId = Integer.parseInt( req.getParameter( "templategroup" ) );
+        } else if ( request.getParameter( "assign" ) != null ) {
+            htmlStr = addTemplatesToGroup( request, templateMapper, lang, user, imcref );
+        } else if ( request.getParameter( "deassign" ) != null ) {
+            htmlStr = removeTemplatesFromGroup( request, templateMapper, lang, user, imcref );
+        } else if ( request.getParameter( "show_assigned" ) != null ) {
+            int templateGroupId = Integer.parseInt( request.getParameter( "templategroup" ) );
             TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById( templateGroupId );
             htmlStr =
                     TemplateAdmin.createAssignTemplatesToGroupDialog( templateMapper, templateGroup, lang, user,
                                                                       imcref );
-        } else if ( req.getParameter( "template_rename" ) != null ) {
-            htmlStr = renameTemplate( req, templateMapper, lang, imcref, user );
-        } else if ( req.getParameter( "template_delete_check" ) != null ) {
-            htmlStr = deleteTemplateAfterCheckingUsage( req, imcref, lang, user );
-        } else if ( req.getParameter( "group_delete_check" ) != null ) {
-            htmlStr = deleteTemplateGroupAfterCheckingUsage( req, imcref, user );
-        } else if ( req.getParameter( "group_delete" ) != null ) {
-            deleteTemplateGroup( req, imcref );
+        } else if ( request.getParameter( "template_rename" ) != null ) {
+            htmlStr = renameTemplate( request, templateMapper, lang, imcref, user );
+        } else if ( request.getParameter( "template_delete_check" ) != null ) {
+            htmlStr = deleteTemplateAfterCheckingUsage( request, imcref, lang, user );
+        } else if ( request.getParameter( "group_delete_check" ) != null ) {
+            htmlStr = deleteTemplateGroupAfterCheckingUsage( request, imcref, user );
+        } else if ( request.getParameter( "group_delete" ) != null ) {
+            deleteTemplateGroup( request, imcref );
             htmlStr = TemplateAdmin.createDeleteTemplateGroupDialog( templateMapper, imcref, user );
-        } else if ( req.getParameter( "group_delete_cancel" ) != null ) {
+        } else if ( request.getParameter( "group_delete_cancel" ) != null ) {
             htmlStr = TemplateAdmin.createDeleteTemplateGroupDialog( templateMapper, imcref, user );
-        } else if ( req.getParameter( "group_add" ) != null ) {
-            htmlStr = addTemplateGroup( req, imcref, user );
-        } else if ( req.getParameter( "group_rename" ) != null ) {
-            htmlStr = renameTemplateGroup( req, imcref, user, lang );
-        } else if ( req.getParameter( "list_templates_docs" ) != null ) {
-            htmlStr = listDocumentsUsingTemplate( req, imcref, lang, user );
-        } else if ( req.getParameter( "show_doc" ) != null ) {
-            htmlStr = showDocument( req, res, imcref, lang, htmlStr, user );
+        } else if ( request.getParameter( "group_add" ) != null ) {
+            htmlStr = addTemplateGroup( request, imcref, user );
+        } else if ( request.getParameter( "group_rename" ) != null ) {
+            htmlStr = renameTemplateGroup( request, imcref, user, lang );
+        } else if ( request.getParameter( "list_templates_docs" ) != null ) {
+            htmlStr = listDocumentsUsingTemplate( request, imcref, lang, user );
+        } else if ( request.getParameter( "show_doc" ) != null ) {
+            htmlStr = showDocument( request, response, imcref, lang, user );
         }
 
         if ( null != htmlStr ) {
-            out.print( htmlStr );
+            response.getOutputStream().print( htmlStr );
         }
     }
 
     private String addTemplateGroup( HttpServletRequest req, ImcmsServices imcref, UserDomainObject user ) {
         String htmlStr;
         String name = req.getParameter( "name" );
-        if ( name == null || name.equals( "" ) ) {
+        if ( name == null || "".equals(name) ) {
             htmlStr = createAddNameEmptyErrorDialog( imcref, user );
         } else {
             TemplateGroupDomainObject templateGroup = imcref.getTemplateMapper().getTemplateGroupByName(name) ;
@@ -99,7 +106,6 @@ public class TemplateChange extends HttpServlet {
 
     private String addTemplatesToGroup( HttpServletRequest req, TemplateMapper templateMapper, String lang,
                                         UserDomainObject user, ImcmsServices imcref ) {
-        String htmlStr;
         int grp_id = Integer.parseInt( req.getParameter( "group_id" ) );
         String[] templatesToAssign = req.getParameterValues( "unassigned" );
         TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById( grp_id );
@@ -108,15 +114,11 @@ public class TemplateChange extends HttpServlet {
             TemplateDomainObject templateToAssign = templateMapper.getTemplateById( templateId );
             templateMapper.addTemplateToGroup( templateToAssign, templateGroup );
         }
-        htmlStr =
-                TemplateAdmin.createAssignTemplatesToGroupDialog( templateMapper, templateGroup, lang, user, imcref );
-        return htmlStr;
+        return TemplateAdmin.createAssignTemplatesToGroupDialog(templateMapper, templateGroup, lang, user, imcref);
     }
 
     private String createAddNameEmptyErrorDialog( ImcmsServices imcref, UserDomainObject user ) {
-        String htmlStr;
-        htmlStr = imcref.getAdminTemplate( "templategroup_add_name_blank.html", user, null );
-        return htmlStr;
+        return imcref.getAdminTemplate("templategroup_add_name_blank.html", user, null);
     }
 
     private String createDocumentsUsingTemplateDialog( ImcmsServices imcref, UserDomainObject user,
@@ -130,35 +132,18 @@ public class TemplateChange extends HttpServlet {
         }
         vec2.add( "#language#" );
         vec2.add( lang );
-        String htmlStr = imcref.getAdminTemplate( "template_list.html", user, vec2 );
-        return htmlStr;
+        return imcref.getAdminTemplate( "template_list.html", user, vec2 );
     }
 
     private String createRenameNameEmptyErrorDialog( String lang, ImcmsServices imcref, UserDomainObject user ) {
-        String htmlStr;
         List vec = new ArrayList();
         vec.add( "#language#" );
         vec.add( lang );
-        htmlStr = imcref.getAdminTemplate( "template_rename_name_blank.html", user, vec );
-        return htmlStr;
-    }
-
-    private String createRenameTemplateDialog( String lang, TemplateMapper templateMapper, ImcmsServices imcref,
-                                               UserDomainObject user ) {
-        String htmlStr;
-        List vec = new ArrayList();
-        vec.add( "#language#" );
-        vec.add( lang );
-        vec.add( "#templates#" );
-        vec.add( templateMapper.createHtmlOptionListOfTemplates( templateMapper.getAllTemplates(), null ) );
-        htmlStr = imcref.getAdminTemplate( "template_rename.html", user, vec );
-        return htmlStr;
+        return imcref.getAdminTemplate("template_rename_name_blank.html", user, vec);
     }
 
     private String createTemplateGroupExistsErrorDialog( ImcmsServices imcref, UserDomainObject user ) {
-        String htmlStr;
-        htmlStr = imcref.getAdminTemplate( "templategroup_add_exists.html", user, null );
-        return htmlStr;
+        return imcref.getAdminTemplate("templategroup_add_exists.html", user, null);
     }
 
     private void deleteTemplate( HttpServletRequest req, ImcmsServices imcref ) {
@@ -195,7 +180,6 @@ public class TemplateChange extends HttpServlet {
 
     private String deleteTemplateGroupAfterCheckingUsage( HttpServletRequest req, ImcmsServices imcref,
                                                           UserDomainObject user ) {
-        String htmlStr;
         int templateGroupId = Integer.parseInt( req.getParameter( "templategroup" ) );
         TemplateMapper templateMapper = imcref.getTemplateMapper();
         TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById( templateGroupId );
@@ -206,6 +190,7 @@ public class TemplateChange extends HttpServlet {
                 existsDocumentUsingTemplateInTemplateGroup = true;
             }
         }
+        String htmlStr;
 
         if ( templatesInGroup.length > 0 ) {
             htmlStr = TemplateAdmin.createDeleteNonEmptyTemplateGroupWarningDialog( templatesInGroup, templateGroupId, imcref, user );
@@ -219,8 +204,8 @@ public class TemplateChange extends HttpServlet {
         return htmlStr;
     }
 
-    private void downloadTemplate( HttpServletRequest req, ImcmsServices imcref, HttpServletResponse res,
-                                   ServletOutputStream out ) throws IOException {
+    private void downloadTemplate(HttpServletRequest req, ImcmsServices imcref, HttpServletResponse res
+    ) throws IOException {
         int template_id = Integer.parseInt( req.getParameter( "template" ) );
         TemplateMapper templateMapper = imcref.getTemplateMapper();
         String filename = templateMapper.getTemplateById( template_id ).getFileName();
@@ -231,6 +216,7 @@ public class TemplateChange extends HttpServlet {
         res.setContentType( "application/octet-stream; name=\"" + filename + "\"" );
         res.setContentLength( file.length );
         res.setHeader( "Content-Disposition", "attachment; filename=\"" + filename + "\";" );
+        ServletOutputStream out = res.getOutputStream();
         out.write( file );
         out.flush();
     }
@@ -244,7 +230,6 @@ public class TemplateChange extends HttpServlet {
 
     private String removeTemplatesFromGroup( HttpServletRequest req, TemplateMapper templateMapper, String lang,
                                              UserDomainObject user, ImcmsServices imcref ) {
-        String htmlStr;
         int grp_id = Integer.parseInt( req.getParameter( "group_id" ) );
         String[] templatesToUnassign = req.getParameterValues( "assigned" );
         TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById( grp_id );
@@ -253,9 +238,7 @@ public class TemplateChange extends HttpServlet {
             TemplateDomainObject templateToUnassign = templateMapper.getTemplateById( templateId );
             templateMapper.removeTemplateFromGroup( templateToUnassign, templateGroup );
         }
-        htmlStr =
-                TemplateAdmin.createAssignTemplatesToGroupDialog( templateMapper, templateGroup, lang, user, imcref );
-        return htmlStr;
+        return TemplateAdmin.createAssignTemplatesToGroupDialog(templateMapper, templateGroup, lang, user, imcref);
     }
 
     private String renameTemplate( HttpServletRequest req, TemplateMapper templateMapper, String lang,
@@ -267,8 +250,11 @@ public class TemplateChange extends HttpServlet {
         if ( newNameForTemplate == null || "".equals( newNameForTemplate ) ) {
             htmlStr = createRenameNameEmptyErrorDialog( lang, imcref, user );
         } else {
-            templateMapper.renameTemplate( template, newNameForTemplate );
-            htmlStr = createRenameTemplateDialog( lang, templateMapper, imcref, user );
+            LocalizedMessage error = null ;
+            if (!templateMapper.renameTemplate( template, newNameForTemplate )) {
+                error = ERROR__TEMPLATE_NAME_TAKEN;
+            }
+            htmlStr = TemplateAdmin.createRenameTemplateDialog(lang, imcref, templateMapper, user, error);
         }
         return htmlStr;
     }
@@ -278,7 +264,7 @@ public class TemplateChange extends HttpServlet {
         String htmlStr;
         int grp_id = Integer.parseInt( req.getParameter( "templategroup" ) );
         String name = req.getParameter( "name" );
-        if ( name == null || name.equals( "" ) ) {
+        if ( name == null || "".equals(name) ) {
             htmlStr = createRenameNameEmptyErrorDialog( lang, imcref, user );
         } else {
             TemplateMapper templateMapper = imcref.getTemplateMapper();
@@ -289,9 +275,10 @@ public class TemplateChange extends HttpServlet {
         return htmlStr;
     }
 
-    private String showDocument( HttpServletRequest req, HttpServletResponse res, ImcmsServices imcref,
-                                 String lang, String htmlStr, UserDomainObject user ) throws IOException {
+    private String showDocument(HttpServletRequest req, HttpServletResponse res, ImcmsServices imcref,
+                                String lang, UserDomainObject user) throws IOException {
         String meta_id = req.getParameter( "templates_doc" );
+        String htmlStr = null ;
         if ( meta_id != null ) {
             res.sendRedirect( "AdminDoc?meta_id=" + meta_id );
         } else {
