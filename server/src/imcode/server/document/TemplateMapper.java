@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import com.imcode.db.Database;
+import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -295,10 +296,9 @@ public class TemplateMapper {
     }
 
     public void createTemplateGroup( String name ) {
-        final Object[] parameters = new String[]{name};
-        DatabaseUtils.executeUpdate(database, "declare @new_id int\n"
-                                              + "select @new_id = max(group_id)+1 from templategroups\n"
-                                              + "insert into templategroups values(@new_id,?)", parameters);
+        database.executeCommand(new InsertIntoTableDatabaseCommand("templategroups", new Object[][] {
+                { "group_name", name },
+        })) ;
     }
 
     public boolean templateGroupContainsTemplate( TemplateGroupDomainObject templateGroup,

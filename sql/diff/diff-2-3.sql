@@ -423,3 +423,57 @@ DROP PROCEDURE ServerMasterSet
 DROP PROCEDURE WebMasterSet
 
 -- 2005-09-07 Kreiger
+
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+CREATE TABLE dbo.Tmp_templategroups
+        (
+        group_id int NOT NULL IDENTITY (1, 1),
+        group_name varchar(50) NOT NULL
+        )  ON [PRIMARY]
+GO
+SET IDENTITY_INSERT dbo.Tmp_templategroups ON
+GO
+IF EXISTS(SELECT * FROM dbo.templategroups)
+         EXEC('INSERT INTO dbo.Tmp_templategroups (group_id, group_name)
+                SELECT group_id, group_name FROM dbo.templategroups TABLOCKX')
+GO
+SET IDENTITY_INSERT dbo.Tmp_templategroups OFF
+GO
+ALTER TABLE dbo.templates_cref
+        DROP CONSTRAINT templates_cref_FK_group_id_templategroups
+GO
+DROP TABLE dbo.templategroups
+GO
+EXECUTE sp_rename N'dbo.Tmp_templategroups', N'templategroups', 'OBJECT'
+GO
+ALTER TABLE dbo.templategroups ADD CONSTRAINT
+        PK__templategroups PRIMARY KEY CLUSTERED
+        (
+        group_id
+        ) ON [PRIMARY]
+
+GO
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.templates_cref WITH NOCHECK ADD CONSTRAINT
+        templates_cref_FK_group_id_templategroups FOREIGN KEY
+        (
+        group_id
+        ) REFERENCES dbo.templategroups
+        (
+        group_id
+        )
+GO
+COMMIT
+
+-- 2005-09-26 Kreiger - Issue 3383 
