@@ -61,6 +61,7 @@
     <path id="libraries">
         <fileset dir="lib">
             <include name="**/*.jar"/>
+            <exclude name="commons-logging*.jar"/>
         </fileset>
     </path>
 
@@ -73,15 +74,26 @@
     <taskdef name="checksumfiles" classname="com.imcode.ant.tasks.ChecksumFiles" classpathref="libraries"/>
     <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask" classpathref="libraries"/>
 
-    <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
-
     <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="libraries"/>
     <taskdef name="install" classname="org.apache.catalina.ant.InstallTask" classpathref="libraries"/>
     <taskdef name="remove" classname="org.apache.catalina.ant.RemoveTask" classpathref="libraries"/>
     <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" classpathref="libraries"/>
-    <taskdef resource="checkstyletask.properties" classpathref="libraries"/>
     <taskdef classname="org.apache.jasper.JspC" name="jasper2" classpathref="libraries"/>
-    <taskdef name="ddl2db" classname="org.apache.ddlutils.task.DdlToDatabaseTask" classpathref="libraries"/>
+
+    <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
+
+    <taskdef resource="checkstyletask.properties">
+        <classpath>
+            <path refid="libraries"/>
+            <fileset dir="lib" includes="commons-logging*.jar"/>
+        </classpath>
+    </taskdef>
+    <taskdef name="ddl2db" classname="org.apache.ddlutils.task.DdlToDatabaseTask">
+        <classpath>
+            <path refid="libraries"/>
+            <fileset dir="lib" includes="commons-logging*.jar"/>
+        </classpath>
+    </taskdef>
 
     <!-- Distribution targets -->
 
@@ -111,15 +123,14 @@
         </tar>
     </target>
 
-    <target name="bindist-war" depends="build">
+    <target name="bindist-war" depends="build,sql,apidocs,versionfile,checksumsfile">
         <mkdir dir="${dist}"/>
         <war warfile="${war}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
     </target>
 
-    <target name="bindist-jar" depends="classes">
+    <target name="bindist-jar" depends="test">
         <mkdir dir="${dist}"/>
         <jar destfile="${bindist-api-jar}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>
-        <jar destfile="${bindist-util-jar}" basedir="${classes}" includes="com/imcode/util/**"/>
     </target>
 
     <target name="srcdist" depends="srcdist-zip,srcdist-tgz" description="Build all source distributions."/>
@@ -150,21 +161,21 @@
         <property name="srcdist-zip-check" value="${tmp}/srcdist-zip-check"/>
         <unzip src="${srcdist-zip}" dest="${srcdist-zip-check}"/>
         <copy file="${srcdist-zip-check}/imcms${versionfilesuffix}/build.properties.template" tofile="${srcdist-zip-check}/imcms${versionfilesuffix}/build.properties"/>
-        <ant dir="${srcdist-zip-check}/imcms${versionfilesuffix}"/>
+        <ant dir="${srcdist-zip-check}/imcms${versionfilesuffix}" target="dist"/>
     </target>
 
     <target name="distcheck-tgz" depends="srcdist-tgz">
         <property name="srcdist-tgz-check" value="${tmp}/srcdist-tgz-check"/>
         <untar src="${srcdist-tgz}" dest="${srcdist-tgz-check}" compression="gzip"/>
         <copy file="${srcdist-tgz-check}/imcms${versionfilesuffix}/build.properties.template" tofile="${srcdist-tgz-check}/imcms${versionfilesuffix}/build.properties"/>
-        <ant dir="${srcdist-tgz-check}/imcms${versionfilesuffix}"/>
+        <ant dir="${srcdist-tgz-check}/imcms${versionfilesuffix}" target="dist"/>
     </target>
 
     <!-- Development targets -->
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-       depends="init,test,sql,web,libraries,conf,versionfile,apidocs,checksumsfile,jar"
+       depends="init,web,test,libraries,conf,jar"
        description="Builds everything."/>
 
     <target name="clean" description="Deletes everything for a fresh start.">
@@ -219,7 +230,7 @@
         <jar destfile="${jar}" basedir="${classes}"/>
     </target>
 
-    <target name="test" depends="classes,check-junit-task-available" description="Runs JUnit-tests.">
+    <target name="test" depends="check-junit-task-available,classes,checkstyle" description="Runs JUnit-tests.">
 
         <junit haltonfailure="yes" haltonerror="yes">
             <classpath refid="classes-and-libraries"/>
@@ -297,7 +308,7 @@
         
     </target>
 
-    <target name="classes" depends="init,checkstyle">
+    <target name="classes" depends="init">
 
         <mkdir dir="${classes}"/>
 
