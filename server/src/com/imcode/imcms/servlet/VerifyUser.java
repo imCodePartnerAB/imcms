@@ -2,26 +2,35 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
-import com.imcode.imcms.servlet.superadmin.UserEditorPage;
-import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.flow.DispatchCommand;
-import imcode.util.Utility;
-import imcode.server.user.UserDomainObject;
+import com.imcode.imcms.servlet.superadmin.AdminUser;
+import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
+import imcode.util.LocalizedMessage;
+import imcode.util.Utility;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class VerifyUser extends HttpServlet {
 
     private static final String SESSION_ATTRIBUTE__NEXT_URL = "next_url";
     public static final String REQUEST_PARAMETER__NEXT_URL = SESSION_ATTRIBUTE__NEXT_URL;
-    private static final String REQUEST_PARAMETER__NEXT_META = "next_meta";
+    public static final String REQUEST_PARAMETER__NEXT_META = "next_meta";
     private static final String SESSION_ATTRIBUTE__NEXT_META = "next_meta";
-    private static final String REQUEST_PARAMETER__LOGIN_FAILED_URL = "access_denied_url";
     private static final String SESSION_ATTRIBUTE__LOGIN_TARGET = "login.target";
+    public static final String REQUEST_PARAMETER__EDIT_USER = "edit_user";
+    public static final String REQUEST_PARAMETER__USERNAME = "name";
+    public static final String REQUEST_PARAMETER__PASSWORD = "passwd";
+    public static final String REQUEST_ATTRIBUTE__ERROR = "error";
 
+    private final static LocalizedMessage ERROR__LOGIN_FAILED = new LocalizedMessage("templates/login/access_denied.html/4");
+    
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         doPost(req, res);
     }
@@ -29,39 +38,27 @@ public class VerifyUser extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         Utility.setDefaultHtmlContentType(res);
 
-        String name = req.getParameter("name");
-        String passwd = req.getParameter("passwd");
-        String accessDeniedUrl = req.getContextPath() + "/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2()
-                                 + "/login/access_denied.jsp" ;
+        String name = req.getParameter(REQUEST_PARAMETER__USERNAME);
+        String passwd = req.getParameter(REQUEST_PARAMETER__PASSWORD);
 
         ContentManagementSystem cms = ContentManagementSystem.login(req, name, passwd);
 
         if ( null != cms ) {
-            if ( req.getParameter("Ändra") != null ) {
-                goToEditUserPage(cms.getCurrentUser(), res, accessDeniedUrl, req);
+            User currentUser = cms.getCurrentUser();
+            if ( req.getParameter(REQUEST_PARAMETER__EDIT_USER) != null && !currentUser.isDefaultUser() ) {
+                goToEditUserPage(currentUser, res, req);
             } else {
                 goToLoginSuccessfulPage(req, res);
             }
         } else {
-            goToLoginFailedPage(req, accessDeniedUrl, res);
+            goToLoginFailedPage(req, res);
         }
     }
 
-    private void goToLoginFailedPage(HttpServletRequest req, String accessDeniedUrl,
-                                      HttpServletResponse res) throws IOException {
-        HttpSession session = req.getSession(true);
-
-        String nexturl = accessDeniedUrl ;
-
-        if ( req.getParameter(REQUEST_PARAMETER__NEXT_META) != null ) {
-            session.setAttribute(SESSION_ATTRIBUTE__NEXT_META, req.getParameter(REQUEST_PARAMETER__NEXT_META));
-        } else if ( req.getParameter(REQUEST_PARAMETER__NEXT_URL) != null ) {
-            session.setAttribute(SESSION_ATTRIBUTE__NEXT_URL, req.getParameter(REQUEST_PARAMETER__NEXT_URL));
-        }
-        if ( req.getParameter(REQUEST_PARAMETER__LOGIN_FAILED_URL) != null ) {
-            nexturl = req.getParameter(REQUEST_PARAMETER__LOGIN_FAILED_URL);
-        }
-        res.sendRedirect(nexturl);
+    private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
+        req.getRequestDispatcher("/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2()
+                                 + "/login/index.jsp").forward(req, res);
     }
 
     private void goToLoginSuccessfulPage(HttpServletRequest req,
@@ -70,16 +67,11 @@ public class VerifyUser extends HttpServlet {
         new GoToLoginSuccessfulPageCommand().dispatch(req, res);
     }
 
-    private void goToEditUserPage(User user, HttpServletResponse res, String accessDeniedUrl,
-                                  HttpServletRequest req) throws IOException, ServletException {
-        if ( user.isDefaultUser() ) {
-            res.sendRedirect(accessDeniedUrl);
-        } else {
-            UserDomainObject internalUser = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUser(user.getId()) ;
-            DispatchCommand returnCommand = new GoToLoginSuccessfulPageCommand();
-            UserEditorPage userEditorPage = new UserEditorPage(internalUser, new AdminUser.SaveUserAndReturnCommand(internalUser, returnCommand), returnCommand);
-            userEditorPage.forward(req, res);
-        }
+    private void goToEditUserPage(User user, HttpServletResponse res, HttpServletRequest req) throws IOException, ServletException {
+        UserDomainObject internalUser = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUser(user.getId()) ;
+        DispatchCommand returnCommand = new GoToLoginSuccessfulPageCommand();
+        UserEditorPage userEditorPage = new UserEditorPage(internalUser, new AdminUser.SaveUserAndReturnCommand(internalUser, returnCommand), returnCommand);
+        userEditorPage.forward(req, res);
     }
 
     private static class GoToLoginSuccessfulPageCommand implements DispatchCommand {

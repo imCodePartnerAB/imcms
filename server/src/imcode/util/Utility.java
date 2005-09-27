@@ -54,6 +54,8 @@ public class Utility {
     private final static String NO_PERMISSION_URL = "no_permission.jsp";
     private final static String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
 
+    private final static LocalizedMessage ERROR__NO_PERMISSION = new LocalizedMessage("templates/login/no_permission.html/4");
+    
     private Utility() {
 
     }
@@ -90,8 +92,7 @@ public class Utility {
 
     public static UserDomainObject getLoggedOnUser( HttpServletRequest req ) {
         HttpSession session = req.getSession( true );
-        UserDomainObject user = (UserDomainObject)session.getAttribute( WebAppGlobalConstants.LOGGED_IN_USER );
-        return user;
+        return (UserDomainObject)session.getAttribute( WebAppGlobalConstants.LOGGED_IN_USER );
     }
 
     public static int compareDatesWithNullFirst( Date date1, Date date2 ) {
@@ -232,9 +233,10 @@ public class Utility {
         if (null != queryString) {
             loginTarget.append( "?" ).append( queryString );
         }
-        String noPermissionPage = "/imcms/" + user.getLanguageIso639_2() + "/login/" + NO_PERMISSION_URL+"?"+VerifyUser.REQUEST_PARAMETER__NEXT_URL+"="+URLEncoder.encode( loginTarget.toString() );
+
         response.setStatus( HttpServletResponse.SC_FORBIDDEN );
-        request.getRequestDispatcher( noPermissionPage ).forward( request,response );
+        request.setAttribute( VerifyUser.REQUEST_ATTRIBUTE__ERROR, ERROR__NO_PERMISSION );
+        request.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2() + "/login/index.jsp?"+VerifyUser.REQUEST_PARAMETER__NEXT_URL+"="+URLEncoder.encode( loginTarget.toString() ) ).forward( request,response );
     }
 
     public static String[] getParameterValues( HttpServletRequest request, String parameterName ) {
