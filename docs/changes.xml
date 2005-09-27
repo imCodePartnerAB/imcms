@@ -11,10 +11,48 @@
             </p>
             <bug id="3125"/>
         </change>
+        <change>
+            <p>
+                Change value for relative imagepath to use "/" instead of "\" to prevent broken images.
+            </p>
+            <bug id="2922"/>
+        </change>
+        <change>
+            <p>
+                Add text -None- as the first option in category_types of type singelchoice in document information page.
+                Fixed bug when showing category discription, unescapeHtml for request paramater category_type_name.
+            </p>
+            <bug id="2345"/>
+        </change>
+    </changes>
+    
+    <changes for="API-using developers">
+        <change>
+            <p>
+                Load faxPhone and otherPhone when initiate a User object.
+             </p>
+             <bug id="3418"/>
+         </change>
+    </changes>
+
+    <changes for="administrators">
+        <change>
+            <p>
+                Synchronize accesses to the LRUMap, fixed the problem with NullPointerException when document cache is full.
+            </p>
+            <bug id="2923"/>
+        </change>
+        <change>
+            <p>
+                Don't log to main log when user "User" logs in.
+                Adding file rolling for main and error logs.
+                Set default rolling date pattern to 'yyyy-MM' for access, main and error logs.
+            </p>
+            <bug id="2494"/>
+        </change>
     </changes>
 
 </changeset>
-
 
 <changeset version="2.2.0">
 

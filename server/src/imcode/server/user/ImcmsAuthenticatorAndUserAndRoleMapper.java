@@ -465,6 +465,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         String workPhone = "";
         String mobilePhone = "";
         String homePhone = "";
+        String faxPhone = "";
+        String otherPhone = "";
 
         if ( phoneNbr != null ) {
             for ( int i = 0; i < phoneNbr.length; i++ ) {
@@ -474,12 +476,18 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
                     mobilePhone = phoneNbr[i][1];
                 } else if ( "1".equals( phoneNbr[i][3] ) ) {
                     homePhone = phoneNbr[i][1];
+                } else if ( "4".equals( phoneNbr[i][3] ) ) {
+                    faxPhone = phoneNbr[i][1];
+                } else if ( "0".equals( phoneNbr[i][3] ) ) {
+                    otherPhone = phoneNbr[i][1];
                 }
             }
         }
         user.setWorkPhone( workPhone );
         user.setMobilePhone( mobilePhone );
         user.setHomePhone( homePhone );
+        user.setFaxPhone( faxPhone );
+        user.setOtherPhone( otherPhone );
     }
 
     public void initUserAttributes( UserDomainObject user ) {

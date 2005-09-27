@@ -147,7 +147,7 @@ public class ImageBrowse extends HttpServlet {
             directoriesOptionList = Html.createOptionList( imageDirectories, currentDirectoryRelativeToImageRootParent, new Transformer() {
                 public Object transform( Object input ) {
                     File file = (File)input;
-                    return new String[]{file.getPath(), FileUtility.relativeFileToString( file )};
+                    return new String[]{FileUtility.relativeFileToString(file), FileUtility.relativeFileToString(file)};
                 }
             } );
             return directoriesOptionList;
@@ -168,7 +168,7 @@ public class ImageBrowse extends HttpServlet {
                     File file = (File)input;
 	                  String formattedFileSize = HumanReadable.getHumanReadableByteSize( file.length() ) ;
                     return new String[]{
-                        FileUtility.relativizeFile( imagesRoot, file ).getPath(), file.getName() + "\t[" + formattedFileSize + "]"
+                        FileUtility.relativeFileToString(FileUtility.relativizeFile( imagesRoot, file )), file.getName() + "\t[" + formattedFileSize + "]"
                     };
                 }
             } );

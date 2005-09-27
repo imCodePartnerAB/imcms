@@ -80,7 +80,7 @@ public class DocumentMapper {
         this.documentPermissionSetMapper = documentPermissionSetMapper;
         this.documentIndex = documentIndex;
         int documentCacheMaxSize = config.getDocumentCacheMaxSize() ;
-        documentCache = new DocumentCache( new LRUMap( documentCacheMaxSize ), this );
+        documentCache = new DocumentCache( Collections.synchronizedMap( new LRUMap( documentCacheMaxSize ) ), this );
     }
 
     public DocumentDomainObject createDocumentOfTypeFromParent( int documentTypeId, final DocumentDomainObject parent,

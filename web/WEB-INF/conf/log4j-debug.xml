@@ -13,24 +13,25 @@
     <!-- The accesslog (logs usermovements) -->
     <appender name="ACCESS" class="imcode.util.log.DailyRollingFileAppender">
         <param name="File" value="${com.imcode.imcms.path}/WEB-INF/logs/access.log"/>
-        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="DatePattern" value="'.'yyyy-MM"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern"
-                value="%d{ISO8601} %m%n"/>
+            <param name="ConversionPattern" value="%d{ISO8601} %m%n"/>
         </layout>
     </appender>
 
     <!-- The mainlog (captures edits and changes) -->
-    <appender name="MAIN" class="org.apache.log4j.FileAppender">
+    <appender name="MAIN" class="imcode.util.log.DailyRollingFileAppender">
         <param name="File" value="${com.imcode.imcms.path}/WEB-INF/logs/main.log"/>
+        <param name="DatePattern" value="'.'yyyy-MM"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{ISO8601} %-5p %m%n"/>
         </layout>
     </appender>
 
     <!-- The errorlog (captures everything that doesn't go to one of the above. -->
-    <appender name="ERROR" class="org.apache.log4j.FileAppender">
+    <appender name="ERROR" class="imcode.util.log.DailyRollingFileAppender">
         <param name="File" value="${com.imcode.imcms.path}/WEB-INF/logs/error.log"/>
+        <param name="DatePattern" value="'.'yyyy-MM"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{ISO8601} %-5p %c %x - %m%n"/>
         </layout>

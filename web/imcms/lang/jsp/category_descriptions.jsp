@@ -1,13 +1,14 @@
 <%@ page
 	
-	import="com.imcode.imcms.api.*"
+	import="com.imcode.imcms.api.*,
+            org.apache.commons.lang.StringEscapeUtils"
   errorPage="no_category_type_by_that_name.jsp"
-	
+
 %><%
 
 ContentManagementSystem imcms   = ContentManagementSystem.fromRequest(request) ;
 DocumentService documentService = imcms.getDocumentService();
-String categoryTypeName         = request.getParameter("category_type_name") ;
+String categoryTypeName         = StringEscapeUtils.unescapeHtml( request.getParameter("category_type_name") ) ;
 CategoryType categoryType       = documentService.getCategoryType(categoryTypeName);
 Category[] categories           = documentService.getAllCategoriesOfType(categoryType) ;
 
