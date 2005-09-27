@@ -269,7 +269,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     private static int sqlImageUpdateQuery(String sqlStr, ImageDomainObject image, int meta_id, int img_no) {
-        ImageDomainObject.ImageSource imageSource = image.getSource();
+        ImageSource imageSource = image.getSource();
         return Imcms.getServices().sqlUpdateQuery(sqlStr, new String[]{
             imageSource.toStorageString(),
             "" + image.getWidth(),

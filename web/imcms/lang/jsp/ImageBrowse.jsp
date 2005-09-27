@@ -29,7 +29,6 @@ boolean fromEditor = (request.getParameter("editor_image") != null && request.ge
 		%> style="overflow:auto;" scroll="auto"<%
 	} %>>
 
-
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
 <%
