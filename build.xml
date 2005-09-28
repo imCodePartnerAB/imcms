@@ -232,7 +232,7 @@
 
     <target name="test" depends="check-junit-task-available,classes,checkstyle" description="Runs JUnit-tests.">
 
-        <junit haltonfailure="yes" haltonerror="yes">
+        <junit haltonfailure="yes" haltonerror="yes" fork="yes" dir="${basedir}" forkmode="once">
             <classpath refid="classes-and-libraries"/>
 
             <formatter usefile="false" type="plain"/>
@@ -351,7 +351,7 @@
         <jasper2
                 validateXml="false"
                 verbose="9"
-                uriroot="web"
+                uriroot="${basedir}/web"
                 webXmlFragment="${tmp}/generated_web.xml"
                 outputDir="${tmp}/jsp"
                 classpath="${classes}"/>
