@@ -4,14 +4,13 @@ import imcode.util.Utility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
 
 import javax.activation.DataSource;
-import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.io.IOException;
-import java.net.ProtocolException;
 import java.util.Arrays;
 
 /**
@@ -45,7 +44,7 @@ public class SMTP {
             email.setHostName( host );
             email.setSmtpPort( port );
             email.send();
-        } catch( MessagingException e ) {
+        } catch ( EmailException e ) {
             if (Utility.throwableContainsMessageContaining( e, "no object DCH")) {
                 throw new UnhandledException( "\"no object DCH\" Likely cause: the activation jar-file cannot see the mail jar-file. Different ClassLoaders?", e ) ;
             } else {
@@ -61,7 +60,7 @@ public class SMTP {
         public Mail( String fromAddress ) {
             try {
                 mail.setFrom( fromAddress );
-            } catch ( MessagingException e ) {
+            } catch ( EmailException e ) {
                 throw new UnhandledException( e );
             }
         }
@@ -72,7 +71,7 @@ public class SMTP {
                 setToAddresses( toAddresses );
                 mail.setSubject( subject );
                 mail.setMsg( body );
-            } catch ( MessagingException e ) {
+            } catch ( EmailException e ) {
                 throw new UnhandledException( e );
             }
         }
@@ -80,7 +79,7 @@ public class SMTP {
         public void setBccAddresses( String[] bccAddresses ) {
             try {
                 mail.setBcc( CollectionUtils.collect( Arrays.asList( bccAddresses ), new StringToInternetAddressTransformer() ) );
-            } catch ( MessagingException e ) {
+            } catch ( EmailException e ) {
                 throw new UnhandledException( e );
             }
         }
@@ -88,7 +87,7 @@ public class SMTP {
         public void setBody( String body ) {
             try {
                 mail.setMsg( body );
-            } catch ( MessagingException e ) {
+            } catch ( EmailException e ) {
                 throw new UnhandledException( e );
             }
         }
@@ -96,7 +95,7 @@ public class SMTP {
         public void setCcAddresses( String[] ccAddresses ) {
             try {
                 mail.setCc( CollectionUtils.collect( Arrays.asList( ccAddresses ), new StringToInternetAddressTransformer() ) );
-            } catch ( MessagingException e ) {
+            } catch ( EmailException e ) {
                 throw new UnhandledException( e );
             }
         }
@@ -108,7 +107,7 @@ public class SMTP {
         public void setToAddresses( String[] toAddresses ) {
             try {
                 mail.setTo( CollectionUtils.collect( Arrays.asList( toAddresses ), new StringToInternetAddressTransformer() ) );
-            } catch ( MessagingException e ) {
+            } catch ( EmailException e ) {
                 throw new UnhandledException( e );
             }
         }
@@ -119,7 +118,7 @@ public class SMTP {
                     DataSource attachment = attachments[i];
                     mail.attach( attachment, attachment.getName(), "" );
                 }
-            } catch ( MessagingException e ) {
+            } catch ( EmailException e ) {
                 throw new UnhandledException( e );
             }
         }
