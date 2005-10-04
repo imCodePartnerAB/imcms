@@ -638,4 +638,25 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     public RoleDomainObject getRole(RoleId roleId) {
         return getRoleById(roleId.intValue()) ;
     }
+
+    public UserDomainObject getUserByIpAddress(String ipAddress) {
+
+        long ip = Utility.ipStringToLong( ipAddress );
+
+        String sqlStr = "select users.user_id from users,ip_accesses"
+                        + " where users.user_id = ip_accesses.user_id"
+                        + " and ip_accesses.ip_start <= ?"
+                        + " and ip_accesses.ip_end >= ?";
+
+        String userIdString = DatabaseUtils.executeStringQuery(services.getDatabase(), sqlStr, new String[]{"" + ip, "" + ip});
+
+        if ( null != userIdString ) {
+            return getUser(Integer.parseInt(userIdString));
+        }
+        return null;
+    }
+
+    public UserDomainObject verifyUserByIp(String remoteAddr) {
+        return null;
+    }
 }

@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.db.DatabaseUtils;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
@@ -32,9 +31,9 @@ public class ImcmsSetupFilter implements Filter {
         }
 
         UserDomainObject user = Utility.getLoggedOnUser(httpServletRequest) ;
-        if ( user == null ) {
-            String ip = request.getRemoteAddr();
-            user = getUserUserOrIpLoggedInUser( ip );
+        if ( null == user ) {
+            user = service.verifyUserByIpOrDefault(request.getRemoteAddr()) ;
+            assert user.isActive() ;
             Utility.makeUserLoggedIn(httpServletRequest, user);
         }
 
@@ -87,36 +86,6 @@ public class ImcmsSetupFilter implements Filter {
     }
 
     public void destroy() {
-    }
-
-    /**
-     * Ip login  - check if user exist in ip-table
-     */
-    private static UserDomainObject getUserUserOrIpLoggedInUser( String remote_ip ) {
-        ImcmsServices imcref = Imcms.getServices();
-        UserDomainObject user;
-
-        long ip = Utility.ipStringToLong( remote_ip );
-
-        // Todo: Remove this sql-abomination!
-        String sqlStr;
-        sqlStr = "select distinct login_name,login_password,ip_access_id from users,user_roles_crossref,ip_accesses\n";
-        sqlStr += "where user_roles_crossref.user_id = ip_accesses.user_id\n";
-        sqlStr += "and users.user_id = user_roles_crossref.user_id\n";
-        sqlStr += "and ip_accesses.ip_start <= ?\n";
-        sqlStr += "and ip_accesses.ip_end >= ?\n";
-        sqlStr += "order by ip_access_id desc";
-
-        final Object[] parameters = new String[]{"" + ip, "" + ip};
-        String user_data[] = DatabaseUtils.executeStringArrayQuery(imcref.getDatabase(), sqlStr, parameters);
-
-        if ( user_data.length > 0 ) {
-            user = imcref.verifyUser( user_data[0], user_data[1] );
-        } else {
-            user = Utility.getDefaultUser();
-        }
-
-        return user;
     }
 
 }

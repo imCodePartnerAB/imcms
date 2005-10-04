@@ -176,6 +176,10 @@ public class MockImcmsServices implements ImcmsServices {
         return procedureExecutor;
     }
 
+    public UserDomainObject verifyUserByIpOrDefault(String remoteAddr) {
+        return null;
+    }
+
     public KeyStore getKeyStore() {
         return keyStore;
     }

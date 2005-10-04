@@ -36,9 +36,13 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         Procedure procedure = getProcedure( procedureName );
         Object[] parametersAtCorrectIndices = getParametersAtCorrectIndicesForProcedure( procedure, parameters );
         String body = procedure.getBody();
-        log.debug( "Calling procedure " + procedureName + " with body " + body + " and parameters "
-                   + ArrayUtils.toString( parametersAtCorrectIndices ) );
+        logProcedureCall(procedureName, body, parametersAtCorrectIndices);
         return ((Integer)database.executeCommand(new SqlUpdateDatabaseCommand(body, parametersAtCorrectIndices))).intValue() ;
+    }
+
+    private void logProcedureCall(String procedureName, String body, Object[] parametersAtCorrectIndices) {
+        log.trace( "Calling procedure " + procedureName + " with parameters "
+                   + ArrayUtils.toString( parametersAtCorrectIndices ) + " and body " + body );
     }
 
     public Object executeProcedure(String procedureName, Object[] params,
@@ -46,8 +50,7 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         Procedure procedure = getProcedure( procedureName );
         Object[] parametersAtCorrectIndices = getParametersAtCorrectIndicesForProcedure( procedure, params );
         String body = procedure.getBody();
-        log.debug( "Calling procedure " + procedureName + " with body " + body + " and parameters "
-                   + ArrayUtils.toString( parametersAtCorrectIndices ) );
+        logProcedureCall(procedureName, body, parametersAtCorrectIndices);
         return database.executeCommand(new SqlQueryDatabaseCommand(body, parametersAtCorrectIndices, resultSetHandler)) ;
     }
 

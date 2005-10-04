@@ -123,7 +123,7 @@
         </tar>
     </target>
 
-    <target name="bindist-war" depends="build,sql,apidocs,versionfile,checksumsfile">
+    <target name="bindist-war" depends="build,ddl,apidocs,versionfile,checksumsfile">
         <mkdir dir="${dist}"/>
         <war warfile="${war}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
     </target>
@@ -175,7 +175,7 @@
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-       depends="init,web,test,libraries,conf,jar"
+       depends="init,web,test,libraries,conf,sql,jar"
        description="Builds everything."/>
 
     <target name="clean" description="Deletes everything for a fresh start.">
@@ -194,7 +194,7 @@
             userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${sql-diff}/${db-diff-file}"/>
     </target>
 
-    <target name="database-create" depends="init,sql">
+    <target name="database-create" depends="init,ddl">
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
              userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
@@ -379,7 +379,7 @@
 
     </target>
 
-    <target name="sql" depends="init,ddl.xml" description="Concatenates the SQL-scripts into one large script.">
+    <target name="ddl" depends="init,ddl.xml" description="Concatenates the SQL-scripts into one large script.">
 
         <mkdir dir="${tmp}"/>
 
@@ -412,6 +412,10 @@
             </sequential>
         </for>
         
+    </target>
+
+    <target name="sql">
+    
         <copy todir="${sql-diff}">
             <fileset dir="sql/diff" includes="diff-*.sql"/>
         </copy>

@@ -84,7 +84,7 @@
 
     <!-- Set up the errorlog with priority 'debug' -->
     <root>
-        <priority value="debug"/>
+        <priority value="trace"/>
         <appender-ref ref="ERROR"/>
         <appender-ref ref="SOCKET"/>
     </root>

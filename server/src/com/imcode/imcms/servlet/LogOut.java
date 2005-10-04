@@ -13,9 +13,9 @@ public class LogOut extends HttpServlet {
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         String language = Utility.getLoggedOnUser(req).getLanguageIso639_2();
 
-        Utility.makeUserLoggedInAsDefaultUser(req);
-
         req.setAttribute("language", language);
         req.getRequestDispatcher("/login/logged_out.jsp").forward(req, res);
+
+        Utility.makeUserLoggedOut(req);
     }
 }

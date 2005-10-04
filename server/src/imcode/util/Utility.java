@@ -27,7 +27,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-import javax.servlet.http.HttpSession;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -91,8 +90,7 @@ public class Utility {
     }
 
     public static UserDomainObject getLoggedOnUser( HttpServletRequest req ) {
-        HttpSession session = req.getSession( true );
-        return (UserDomainObject)session.getAttribute( WebAppGlobalConstants.LOGGED_IN_USER );
+        return (UserDomainObject)req.getSession().getAttribute( WebAppGlobalConstants.LOGGED_IN_USER );
     }
 
     public static int compareDatesWithNullFirst( Date date1, Date date2 ) {
@@ -384,16 +382,14 @@ public class Utility {
 
     public static void makeUserLoggedIn(HttpServletRequest req, UserDomainObject user) {
         req.getSession().setAttribute(WebAppGlobalConstants.LOGGED_IN_USER, user);
-        // FIXME: Ugly hack to get the contextpath into DefaultImcmsServices.getVelocityContext()
-        user.setCurrentContextPath( req.getContextPath() );
+        if (null != user) {
+            // FIXME: Ugly hack to get the contextpath into DefaultImcmsServices.getVelocityContext()
+            user.setCurrentContextPath( req.getContextPath() );
+        }
     }
 
-    public static UserDomainObject getDefaultUser() {
-        return Imcms.getServices().verifyUser( "User", "user" );
-    }
-
-    public static void makeUserLoggedInAsDefaultUser(HttpServletRequest req) {
-        makeUserLoggedIn(req, getDefaultUser());
+    public static void makeUserLoggedOut(HttpServletRequest req) {
+        req.getSession().removeAttribute(WebAppGlobalConstants.LOGGED_IN_USER);
     }
 
     public static ContentManagementSystem initRequestWithApi(ServletRequest request, UserDomainObject currentUser) {

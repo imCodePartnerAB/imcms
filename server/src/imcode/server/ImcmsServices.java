@@ -106,4 +106,6 @@ public interface ImcmsServices extends Clock {
     RoleGetter getRoleGetter();
 
     ProcedureExecutor getProcedureExecutor();
+
+    UserDomainObject verifyUserByIpOrDefault(String remoteAddr);
 }
