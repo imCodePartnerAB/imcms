@@ -37,8 +37,8 @@ function initEditor() {
 		'body { background-color:#ffffff; color:#000000; font: x-small verdana,sans-serif }';
 	
 	editor.config.toolbar = [
-		[ "copy", "cut", "paste", "separator",
-		"space", "undo", "redo", "separator",
+		[ "copy", "cut", "paste", "separator",<% /*
+		"space", "undo", "redo", "separator",*/ %>
 		"bold", "italic", "underline", "separator", "subscript", "superscript", "separator",
 		"justifyleft", "justifycenter", "justifyright", "justifyfull", "separator",
 		"insertorderedlist", "insertunorderedlist", "outdent", "indent", "separator",
