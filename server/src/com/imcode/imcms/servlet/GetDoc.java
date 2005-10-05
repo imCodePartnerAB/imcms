@@ -24,6 +24,7 @@ import javax.servlet.http.HttpSession;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketException;
 import java.util.*;
 
 public class GetDoc extends HttpServlet {
@@ -91,8 +92,6 @@ public class GetDoc extends HttpServlet {
             return getDocumentDoesNotExistPage( res, user );
         }
 
-        DocumentRequest documentRequest;
-        Revisits revisits;
         String referrer = req.getHeader( HTTP_HEADER_REFERRER );
         DocumentDomainObject referringDocument = null;
         Perl5Util perlrx = new Perl5Util();
@@ -101,18 +100,18 @@ public class GetDoc extends HttpServlet {
             referringDocument = documentMapper.getDocument( referring_meta_id );
         }
 
-        documentRequest = new DocumentRequest( imcref, user, document, referringDocument, req, res );
+        DocumentRequest documentRequest = new DocumentRequest(imcref, user, document, referringDocument, req, res);
         documentRequest.setEmphasize( req.getParameterValues( "emp" ) );
 
         Cookie[] cookies = req.getCookies();
-        Hashtable cookieHash = new Hashtable();
+        HashMap cookieHash = new HashMap();
 
         for ( int i = 0; cookies != null && i < cookies.length; ++i ) {
             Cookie currentCookie = cookies[i];
             cookieHash.put( currentCookie.getName(), currentCookie.getValue() );
         }
 
-        revisits = new Revisits();
+        Revisits revisits = new Revisits();
 
         if ( cookieHash.get( "imVisits" ) == null ) {
             Date now = new Date();
@@ -129,10 +128,6 @@ public class GetDoc extends HttpServlet {
         }
         documentRequest.setRevisits( revisits );
 
-        // FIXME: One of the places that need fixing. Number one, we should put the no-permission-page
-        // among the templates for the default-language. Number two, we should use just one function for
-        // checking permissions. Number three, since the user obviously has logged in, give him the page in his own language!
-
         if ( !user.canAccess( document ) ) {
             Utility.forwardToLogin( req, res );
             return null;
@@ -140,6 +135,7 @@ public class GetDoc extends HttpServlet {
 
         if ( !document.isPublished() && !user.canEdit( document ) ) {
             res.setStatus( HttpServletResponse.SC_FORBIDDEN );
+            Utility.setDefaultHtmlContentType(res);
             return imcref.getAdminTemplate( NO_ACTIVE_DOCUMENT_URL, user, null );
         }
 
@@ -160,27 +156,27 @@ public class GetDoc extends HttpServlet {
                                                                                               + "from browser_docs\n"
                                                                                               + "join browsers on browsers.browser_id = browser_docs.browser_id\n"
                                                                                               + "where meta_id = ? and ? like user_agent order by value desc", parameters);
-            if ( destinationMetaId != null && ( !"".equals( destinationMetaId ) ) ) {
-                meta_id = Integer.parseInt( destinationMetaId );
+            int toMetaId ;
+            if ( destinationMetaId != null && !"".equals(destinationMetaId) ) {
+                toMetaId = Integer.parseInt( destinationMetaId );
             } else {
                 Map browserDocumentIdMap = ( (BrowserDocumentDomainObject)document ).getBrowserDocumentIdMap();
-                meta_id = ( (Integer)browserDocumentIdMap.get( BrowserDocumentDomainObject.Browser.DEFAULT ) ).intValue();
+                toMetaId = ( (Integer)browserDocumentIdMap.get( BrowserDocumentDomainObject.Browser.DEFAULT ) ).intValue();
             }
 
-            res.sendRedirect( "GetDoc?meta_id=" + meta_id );
+            res.sendRedirect( "GetDoc?meta_id=" + toMetaId );
             // Log to accesslog
             trackLog.info( documentRequest );
             return null;
         } else if ( document instanceof HtmlDocumentDomainObject ) {
             Utility.setDefaultHtmlContentType( res );
-            String html_str_temp = imcref.getHtmlDocumentData( meta_id );
-            if ( html_str_temp == null ) {
+            String htmlDocumentData = imcref.getHtmlDocumentData( meta_id );
+            if ( htmlDocumentData == null ) {
                 throw new RuntimeException( "Null-frameset encountered." );
             }
-            String htmlStr = html_str_temp;
             // Log to accesslog
             trackLog.info( documentRequest );
-            return htmlStr;
+            return htmlDocumentData;
         } else if ( document instanceof FileDocumentDomainObject ) {
             String fileId = req.getParameter( REQUEST_PARAMETER__FILE_ID );
             FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
@@ -208,7 +204,7 @@ public class GetDoc extends HttpServlet {
                 while ( -1 != ( bytes_read = fr.read( buffer ) ) ) {
                     out.write( buffer, 0, bytes_read );
                 }
-            } catch ( java.net.SocketException ex ) {
+            } catch ( SocketException ex ) {
                 log.debug( "Exception occured", ex );
             }
             fr.close();
@@ -226,8 +222,7 @@ public class GetDoc extends HttpServlet {
             paramsToParser.setParameter( req.getParameter( "param" ) );
             // Log to accesslog
             trackLog.info( documentRequest );
-            String result = imcref.parsePage( paramsToParser );
-            return result;
+            return imcref.parsePage( paramsToParser );
         }
     }
 
@@ -239,6 +234,7 @@ public class GetDoc extends HttpServlet {
         vec.add( "#EMAIL_SERVER_MASTER#" );
         vec.add( eMailServerMaster );
         res.setStatus( HttpServletResponse.SC_NOT_FOUND );
+        Utility.setDefaultHtmlContentType(res);
         return imcref.getAdminTemplate( NO_PAGE_URL, user, vec );
     }
 
