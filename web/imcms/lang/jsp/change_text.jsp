@@ -127,7 +127,7 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 		<td align="right">
 		<input tabindex="2" type="SUBMIT" class="imcmsFormBtn" name="ok" value="  <? templates/sv/change_text.html/2006 ?>  ">
 		<input tabindex="3" type="SUBMIT" class="imcmsFormBtn" name="save" value="  <? templates/sv/change_text.html/save ?>  ">
-		<input tabindex="4" type="RESET" class="imcmsFormBtn" value="<? templates/sv/change_text.html/2007 ?>">
+		<input tabindex="4" type="RESET" class="imcmsFormBtn" value="<? templates/sv/change_text.html/2007 ?>" onClick="return checkReset();">
 		<input tabindex="5" type="SUBMIT" class="imcmsFormBtn" name="cancel" value=" <? templates/sv/change_text.html/2008 ?> "></td>
 	</tr>
 	</table></td>
@@ -164,6 +164,25 @@ function setEditorSize() {
 	}
 }
 setEditorSize() ;
+
+function checkReset() {<%
+	if (isHtmlAreaSupported && showModeEditor) { %>
+		var f = document.forms[0] ;
+		var iChecked = f.format_type[2].checked ? 2 : f.format_type[1].checked ? 1 : 0 ;
+		if (editor && f.format_type.length == 3 && f.format_type[2].checked) { // is in editor-mode
+			showHideHtmlArea(false) ;
+			f.reset() ;
+			showHideHtmlArea(true) ;
+			f.format_type[iChecked].checked = true ;
+			return false ;
+		} else {
+			f.reset() ;
+			f.format_type[iChecked].checked = true ;
+			return false ;
+		}<%
+	} %>
+	return true ;
+}
 
 function checkMode() {
 	var f = document.forms[0] ;<%
