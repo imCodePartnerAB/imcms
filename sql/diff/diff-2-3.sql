@@ -477,3 +477,23 @@ GO
 COMMIT
 
 -- 2005-09-26 Kreiger - Issue 3383 
+
+DROP PROCEDURE adduseradminpermissibleroles
+DROP PROCEDURE checkadminrights
+DROP PROCEDURE deleteuseradminpermissibleroles
+DROP PROCEDURE deluserroles
+DROP PROCEDURE getallusers
+DROP PROCEDURE getdoctypeswithpermissions
+DROP PROCEDURE getlangprefix
+DROP PROCEDURE getlangprefixfromid
+DROP PROCEDURE getpermissionset
+DROP PROCEDURE gettemplateid
+DROP PROCEDURE gettext
+DROP PROCEDURE gettexts
+DROP PROCEDURE getuseradminpermissibleroles
+DROP PROCEDURE getuserrolesids
+DROP PROCEDURE listdocsbydate
+DROP PROCEDURE rolecount
+DROP PROCEDURE setinclude
+
+-- 2005-09-05 Kreiger
