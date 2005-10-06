@@ -5,11 +5,12 @@ import imcode.util.ShouldNotBeThrownException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RoleIdToDocumentPermissionSetTypeMappings implements Cloneable {
+public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, Cloneable {
 
     HashMap map = new HashMap() ;
 

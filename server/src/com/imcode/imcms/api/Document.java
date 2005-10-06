@@ -20,7 +20,7 @@ public class Document implements Serializable {
     private final DocumentDomainObject internalDocument;
     ContentManagementSystem contentManagementSystem;
 
-    private final static Logger log = Logger.getLogger( com.imcode.imcms.api.Document.class.getName() );
+    private final static Logger log = Logger.getLogger( Document.class.getName() );
 
     /** @deprecated Use {@link Document.PublicationStatus#NEW} instead. */
     public static final int STATUS_NEW = 0;
@@ -358,7 +358,7 @@ public class Document implements Serializable {
     /**
         @since 3.0
      */
-    public static class PublicationStatus {
+    public static class PublicationStatus implements Serializable {
         public static final PublicationStatus NEW = new PublicationStatus(STATUS_NEW);
         public static final PublicationStatus APPROVED = new PublicationStatus(STATUS_PUBLICATION_APPROVED);
         public static final PublicationStatus DISAPPROVED = new PublicationStatus(STATUS_PUBLICATION_DISAPPROVED);
@@ -390,7 +390,7 @@ public class Document implements Serializable {
         }
     }
 
-    public static class LifeCyclePhase {
+    public static class LifeCyclePhase implements Serializable {
         public static final LifeCyclePhase NEW = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.NEW);
         public static final LifeCyclePhase DISAPPROVED = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.DISAPPROVED);
         public static final LifeCyclePhase PUBLISHED = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.PUBLISHED);

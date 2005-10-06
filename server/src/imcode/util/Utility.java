@@ -9,7 +9,9 @@ import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
+import org.apache.commons.collections.Factory;
 import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.SetUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.iterators.ObjectArrayIterator;
@@ -317,6 +319,18 @@ public class Utility {
         } catch ( ParseException pe) {
             return null;
         }
+    }
+
+    public static Object findMatch(Factory factory, Predicate predicate) {
+        Object unique;
+        do {
+            unique = factory.create();
+        } while ( !predicate.evaluate( unique ) );
+        return unique;
+    }
+
+    public static String numberToAlphaNumerics(long identityHashCode) {
+        return Long.toString(identityHashCode,Character.MAX_RADIX);
     }
 
     private static class ObjectPairToMapEntryTransformer implements Transformer {

@@ -1,14 +1,14 @@
 package com.imcode.imcms.flow;
 
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.Imcms;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.util.CounterStringFactory;
 import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
 import imcode.util.io.InputStreamSource;
-import org.apache.commons.collections.Factory;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.fileupload.FileItem;
@@ -22,7 +22,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
@@ -109,7 +113,7 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
             } else {
                 file.setMimeType( mimeType );
                 if ( isNewFile ) {
-                    String newFileId = (String)findUnique( new UniqueFileIdPredicate( fileDocument ), new CounterStringFactory(fileDocument.getFiles().size()+1) );
+                    String newFileId = (String)Utility.findMatch(new CounterStringFactory(fileDocument.getFiles().size()+1), new UniqueFileIdPredicate( fileDocument ));
                     selectedFileId = newFileId ;
                     unfinishedNewFile = null ;
                 }
@@ -143,14 +147,6 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
             }
         }
         return selectedFileId;
-    }
-
-    private Object findUnique( Predicate uniquePredicate, Factory factory ) {
-        Object unique;
-        do {
-            unique = factory.create();
-        } while ( !uniquePredicate.evaluate( unique ) );
-        return unique;
     }
 
     private void setFileDocumentMimeTypeIfAllowed( FileDocumentDomainObject.FileDocumentFile file,
@@ -364,19 +360,6 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 
         public boolean evaluate( Object object ) {
             return null == fileDocument.getFile( (String)object );
-        }
-    }
-
-    private static class CounterStringFactory implements Factory {
-
-        int counter = 1;
-
-        CounterStringFactory( int counterStartValue ) {
-            counter = counterStartValue ;
-        }
-
-        public Object create() {
-            return "" + counter++;
         }
     }
 

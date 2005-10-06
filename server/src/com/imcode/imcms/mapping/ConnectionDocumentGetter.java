@@ -36,7 +36,7 @@ public class ConnectionDocumentGetter implements DocumentGetter {
     }
 
     public DocumentDomainObject getDocument(DocumentId documentId) {
-        log.debug("Getting document " + documentId + " from db.");
+        log.trace("Getting document " + documentId + " from db.");
 
         String[] result = sprocGetDocumentInfo(connection, documentId.intValue());
 

@@ -1,77 +1,68 @@
 package imcode.server.document.index;
 
 import imcode.server.document.DocumentDomainObject;
+import imcode.util.CounterStringFactory;
 import imcode.util.ShouldNotBeThrownException;
-import org.apache.commons.io.FileUtils;
+import imcode.util.Utility;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.apache.lucene.index.IndexReader;
 
 import java.io.File;
-import java.io.IOException;
 
 public class BackgroundIndexBuilder {
-    private final static Logger log = Logger.getLogger(BackgroundIndexBuilder.class.getName());
+    private final static Logger log = Logger.getLogger(BackgroundIndexBuilder.class);
 
-    private final File indexDirectory;
+    private final File indexParentDirectory;
+    private final AutorebuildingDirectoryIndex autorebuildingDirectoryIndex;
 
     private IndexBuildingThread indexBuildingThread;
-    private File newIndexDirectory;
-    private long previousIndexDirectoryLastModified;
-    private long previousNewIndexDirectoryLastModified;
+    private long previousIndexParentDirectoryLastModified;
 
-    public BackgroundIndexBuilder(File indexDirectory) {
-        this.indexDirectory = indexDirectory;
-        this.newIndexDirectory = getDirectoryForNewIndex(indexDirectory);
-        previousIndexDirectoryLastModified = indexDirectory.lastModified() ;
+    public BackgroundIndexBuilder(File indexParentDirectory, AutorebuildingDirectoryIndex autorebuildingDirectoryIndex) {
+        this.indexParentDirectory = indexParentDirectory;
+        this.autorebuildingDirectoryIndex = autorebuildingDirectoryIndex;
+        indexParentDirectory.setLastModified(System.currentTimeMillis()) ;
+        previousIndexParentDirectoryLastModified = indexParentDirectory.lastModified() ;
     }
 
     public synchronized void start() {
         try {
-            NDC.push(ClassUtils.getShortClassName(getClass())+" "+Integer.toString(System.identityHashCode(this),Character.MAX_RADIX));
+            NDC.push(ClassUtils.getShortClassName(getClass())+"-"+Utility.numberToAlphaNumerics(System.identityHashCode(this)));
 
-            if ( null == indexBuildingThread || !indexBuildingThread.isAlive() ) {
-                indexBuildingThread = new IndexBuildingThread(this);
-            } else {
+            log.info("Starting index rebuild.");
+            
+            if (previousIndexParentDirectoryLastModified != 0 ) {
+                long lastModified = indexParentDirectory.lastModified();
+                if (lastModified > previousIndexParentDirectoryLastModified ) {
+                    log.trace("Expected last modified "+previousIndexParentDirectoryLastModified+" but got "+lastModified);
+                    log.debug("Another process modified index directory. Aborting.") ;
+                    rememberParentDirectoryLastModified();
+                    throw new AlreadyRebuildingIndexException() ;
+                }
+            }
+
+            touchIndexParentDirectory();
+
+            if ( null != indexBuildingThread && indexBuildingThread.isAlive() ) {
                 log.debug("Ignoring request to build new index. Already in progress.");
                 return;
             }
 
-            if (previousIndexDirectoryLastModified != 0 && indexDirectory.lastModified() != previousIndexDirectoryLastModified ) {
-                log.debug("Other process modified index directory. Aborting.") ;
-                throw new AlreadyIndexingException() ;
-            }
-
-            if ( newIndexDirectory.mkdir() ) {
-                resetPreviousNewIndexDirectoryLastModified();
-            } else if ( newIndexDirectory.exists() ) {
-                if ( 0 == previousNewIndexDirectoryLastModified ) {
-                    log.debug("New index directory already exists. Will abort next time.");
-                    rememberNewIndexDirectoryLastModified();
-                    return;
-                } else {
-                    if ( newIndexDirectory.lastModified() != previousNewIndexDirectoryLastModified ) {
-                        log.info("New index directory existed previously, and has been modified by other process. Aborting.");
-                        rememberNewIndexDirectoryLastModified();
-                        throw new AlreadyIndexingException();
-                    } else {
-                        log.debug("Deleting new index directory which existed on previous indexing and is probably stale.");
-                        try {
-                            FileUtils.deleteDirectory(newIndexDirectory);
-                            rememberNewIndexDirectoryLastModified();
-                        } catch ( IOException e ) {
-                            log.warn("Failed to delete probably stale new index directory.");
-                        }
-                    }
-                }
-            } else {
+            File indexDirectory = getNewIndexDirectory(indexParentDirectory);
+            if ( !indexDirectory.mkdirs() ) {
                 log.warn("Failed to create new index directory. Will try again next time.");
                 return;
             }
 
+            log.debug("Created directory "+indexDirectory);
+            
+            rememberParentDirectoryLastModified();
+
             try {
-                log.debug("Starting indexing thread.") ;
+                log.debug("Starting index rebuild thread.") ;
+                indexBuildingThread = new IndexBuildingThread(this, indexDirectory);
                 indexBuildingThread.start();
             } catch ( IllegalThreadStateException itse ) {
                 throw new ShouldNotBeThrownException(itse);
@@ -81,48 +72,55 @@ public class BackgroundIndexBuilder {
         }
     }
 
-    private void resetPreviousNewIndexDirectoryLastModified() {
-        previousNewIndexDirectoryLastModified = 0;
+    private void touchIndexParentDirectory() {
+        indexParentDirectory.setLastModified(System.currentTimeMillis()) ;
     }
 
-    private void rememberNewIndexDirectoryLastModified() {
-        previousNewIndexDirectoryLastModified = newIndexDirectory.lastModified();
-    }
-
-    private boolean isIndexing() {
-        return null != indexBuildingThread;
-    }
-
-    public void addDocument(DocumentDomainObject document) {
-        if ( isIndexing() ) {
+    public synchronized void addDocument(DocumentDomainObject document) {
+        if ( null != indexBuildingThread ) {
             indexBuildingThread.addDocument(document);
         }
     }
 
-    public void removeDocument(DocumentDomainObject document) {
-        if ( isIndexing() ) {
+    public synchronized void removeDocument(DocumentDomainObject document) {
+        if ( null != indexBuildingThread ) {
             indexBuildingThread.removeDocument(document);
         }
     }
 
-    private File getDirectoryForNewIndex(File indexDirectory) {
-        File newIndexDirectory = indexDirectory;
-        if ( IndexReader.indexExists(newIndexDirectory) ) {
-            newIndexDirectory = new File(newIndexDirectory.getParentFile(), newIndexDirectory.getName()
-                                                                            + ".new");
+    private static File getNewIndexDirectory(File indexParentDirectory) {
+        return (File) Utility.findMatch(new CounterFileFactory(indexParentDirectory), new UniqueFilePredicate()) ;
+    }
+
+    public synchronized void notifyRebuildComplete(DefaultDirectoryIndex newIndex) {
+        autorebuildingDirectoryIndex.notifyRebuildComplete(newIndex) ;
+        rememberParentDirectoryLastModified();
+    }
+
+    private void rememberParentDirectoryLastModified() {
+        previousIndexParentDirectoryLastModified = indexParentDirectory.lastModified() ;
+    }
+
+    private static class CounterFileFactory extends CounterStringFactory {
+
+        private File parentDirectory;
+
+        CounterFileFactory(File parentDirectory) {
+            super(1) ;
+            this.parentDirectory = parentDirectory;
         }
-        return newIndexDirectory;
+
+        public Object create() {
+            return new File(parentDirectory, (String) super.create());
+        }
+
     }
 
-    public File getNewIndexDirectory() {
-        return newIndexDirectory;
-    }
+    private static class UniqueFilePredicate implements Predicate {
 
-    public File getIndexDirectory() {
-        return indexDirectory;
-    }
-
-    public void notifyIndexingDone() {
-        previousIndexDirectoryLastModified = indexDirectory.lastModified() ;
+        public boolean evaluate(Object object) {
+            File file = (File) object;
+            return !file.exists();
+        }
     }
 }

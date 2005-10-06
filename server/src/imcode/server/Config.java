@@ -17,7 +17,7 @@ public class Config {
     private String defaultLanguage;
     private String sessionCookieDomain;
     private String fileAdminRootPaths;
-    private int indexingSchedulePeriodInMinutes = 0 ;
+    private float indexingSchedulePeriodInMinutes = 0 ;
     private String documentPathPrefix;
     private int documentCacheMaxSize = 100 ;
     private String keyStorePath ;
@@ -110,11 +110,11 @@ public class Config {
         this.fileAdminRootPaths = fileAdminRootPaths;
     }
 
-    public int getIndexingSchedulePeriodInMinutes() {
+    public float getIndexingSchedulePeriodInMinutes() {
         return indexingSchedulePeriodInMinutes;
     }
 
-    public void setIndexingSchedulePeriodInMinutes( int indexingSchedulePeriodInMinutes ) {
+    public void setIndexingSchedulePeriodInMinutes( float indexingSchedulePeriodInMinutes ) {
         this.indexingSchedulePeriodInMinutes = indexingSchedulePeriodInMinutes;
     }
 
