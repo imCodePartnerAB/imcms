@@ -44,13 +44,13 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
 
         if ( isSchedulingIndexRebuilds() ) {
-            log.info("First index rebuild scheduled at " + formatDatetime(startIndexRebuildScheduling(indexModifiedTime)));
+            log.info("First index rebuild scheduled at " + formatDatetime(restartIndexRebuildScheduling(indexModifiedTime)));
         } else {
             log.info("Scheduling of index rebuilds is disabled.");
         }
     }
 
-    private synchronized Date startIndexRebuildScheduling(long indexModifiedTime) {
+    private synchronized Date restartIndexRebuildScheduling(long indexModifiedTime) {
         if ( !isSchedulingIndexRebuilds() ) {
             return null ;
         }
@@ -59,16 +59,23 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         if ( nextTime.getTime() < time ) {
             nextTime.setTime(time);
         }
+        restartIndexRebuildScheduling(nextTime);
+        return nextTime;
+    }
+
+    private synchronized void restartIndexRebuildScheduling(Date nextTime) {
         if (null != currentIndexRebuildTimerTask) {
             currentIndexRebuildTimerTask.cancel() ;
+            log.trace("Canceled existing index rebuild timer task.") ;
         }
         try {
+            log.debug("Restarting scheduling of index rebuilds. First rebuild at "+formatDatetime(nextTime)+".") ;
+            backgroundIndexBuilder.touchIndexParentDirectory();
             currentIndexRebuildTimerTask = new IndexRebuildTimerTask(indexRebuildSchedulePeriodInMilliseconds, backgroundIndexBuilder);
             scheduledIndexRebuildTimer.scheduleAtFixedRate(currentIndexRebuildTimerTask, nextTime, indexRebuildSchedulePeriodInMilliseconds);
         } catch ( IllegalStateException ise ) {
             log.error("Failed to start index rebuild scheduling.", ise);
         }
-        return nextTime;
     }
 
     private boolean isSchedulingIndexRebuilds() {
@@ -159,16 +166,15 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
 
     private void rebuildBecauseOfError(String message, IndexException ex) {
         log.error(message, ex);
-        try {
-            startIndexRebuildScheduling(0) ;
-            rebuild() ;
-        } catch (AlreadyRebuildingIndexException arie) {
-            log.debug("Already rebuilding index.") ;
-        }
+        rebuild();
     }
 
     public void rebuild() {
-        backgroundIndexBuilder.start();
+        if (isSchedulingIndexRebuilds()) {
+            restartIndexRebuildScheduling(new Date()) ;
+        } else {
+            backgroundIndexBuilder.start();
+        }
     }
 
     void notifyRebuildComplete(DirectoryIndex newIndex) {

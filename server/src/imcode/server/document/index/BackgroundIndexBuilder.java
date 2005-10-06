@@ -31,18 +31,6 @@ public class BackgroundIndexBuilder {
         try {
             NDC.push(ClassUtils.getShortClassName(getClass())+"-"+Utility.numberToAlphaNumerics(System.identityHashCode(this)));
 
-            log.info("Starting index rebuild.");
-            
-            if (previousIndexParentDirectoryLastModified != 0 ) {
-                long lastModified = indexParentDirectory.lastModified();
-                if (lastModified > previousIndexParentDirectoryLastModified ) {
-                    log.trace("Expected last modified "+previousIndexParentDirectoryLastModified+" but got "+lastModified);
-                    log.debug("Another process modified index directory. Aborting.") ;
-                    rememberParentDirectoryLastModified();
-                    throw new AlreadyRebuildingIndexException() ;
-                }
-            }
-
             touchIndexParentDirectory();
 
             if ( null != indexBuildingThread && indexBuildingThread.isAlive() ) {
@@ -58,7 +46,7 @@ public class BackgroundIndexBuilder {
 
             log.debug("Created directory "+indexDirectory);
             
-            rememberParentDirectoryLastModified();
+            rememberIndexParentDirectoryLastModified();
 
             try {
                 log.debug("Starting index rebuild thread.") ;
@@ -72,8 +60,21 @@ public class BackgroundIndexBuilder {
         }
     }
 
-    private void touchIndexParentDirectory() {
+    boolean otherProcessModifiedIndexDirectory() {
+        if (previousIndexParentDirectoryLastModified != 0 ) {
+            long lastModified = indexParentDirectory.lastModified();
+            if (lastModified > previousIndexParentDirectoryLastModified ) {
+                log.trace("Expected last modified "+previousIndexParentDirectoryLastModified+" but got "+lastModified);
+                rememberIndexParentDirectoryLastModified();
+                return true ;
+            }
+        }
+        return false ;
+    }
+
+    void touchIndexParentDirectory() {
         indexParentDirectory.setLastModified(System.currentTimeMillis()) ;
+        rememberIndexParentDirectoryLastModified();
     }
 
     public synchronized void addDocument(DocumentDomainObject document) {
@@ -94,10 +95,10 @@ public class BackgroundIndexBuilder {
 
     public synchronized void notifyRebuildComplete(DefaultDirectoryIndex newIndex) {
         rebuildingDirectoryIndex.notifyRebuildComplete(newIndex) ;
-        rememberParentDirectoryLastModified();
+        rememberIndexParentDirectoryLastModified();
     }
 
-    private void rememberParentDirectoryLastModified() {
+    private void rememberIndexParentDirectoryLastModified() {
         previousIndexParentDirectoryLastModified = indexParentDirectory.lastModified() ;
     }
 

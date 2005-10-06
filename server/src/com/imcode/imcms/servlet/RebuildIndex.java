@@ -1,7 +1,6 @@
 package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
-import imcode.server.document.index.AlreadyRebuildingIndexException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -22,11 +21,7 @@ public class RebuildIndex extends HttpServlet {
             return;
         }
 
-        try {
-            Imcms.getServices().getDefaultDocumentMapper().getDocumentIndex().rebuild() ;
-            res.getOutputStream().println( "Started rebuild of index." );
-        } catch( AlreadyRebuildingIndexException arie ) {
-            res.getOutputStream().println( "Already rebuilding index." );
-        }
+        Imcms.getServices().getDefaultDocumentMapper().getDocumentIndex().rebuild() ;
+        res.getOutputStream().println( "Started rebuild of index." );
     }
 }
