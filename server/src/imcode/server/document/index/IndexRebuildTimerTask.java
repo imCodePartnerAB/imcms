@@ -26,11 +26,12 @@ class IndexRebuildTimerTask extends TimerTask {
         } catch ( AlreadyRebuildingIndexException aie ) {
             log.debug("Index rebuild already in progress. Aborting.");
             cancel() ;
+            return ;
         } catch ( Exception e ) {
             log.warn("Caught exception during scheduled index rebuild.", e);
         }
         Date nextTime = new Date(scheduledExecutionTime() + indexRebuildSchedulePeriodInMilliseconds);
-        log.info("Next index rebuild scheduled at " + AutorebuildingDirectoryIndex.formatDatetime(nextTime));
+        log.info("Next index rebuild scheduled at " + RebuildingDirectoryIndex.formatDatetime(nextTime));
     }
 
 }

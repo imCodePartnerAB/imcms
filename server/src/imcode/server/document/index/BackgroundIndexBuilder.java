@@ -15,14 +15,14 @@ public class BackgroundIndexBuilder {
     private final static Logger log = Logger.getLogger(BackgroundIndexBuilder.class);
 
     private final File indexParentDirectory;
-    private final AutorebuildingDirectoryIndex autorebuildingDirectoryIndex;
+    private final RebuildingDirectoryIndex rebuildingDirectoryIndex;
 
     private IndexBuildingThread indexBuildingThread;
     private long previousIndexParentDirectoryLastModified;
 
-    public BackgroundIndexBuilder(File indexParentDirectory, AutorebuildingDirectoryIndex autorebuildingDirectoryIndex) {
+    public BackgroundIndexBuilder(File indexParentDirectory, RebuildingDirectoryIndex rebuildingDirectoryIndex) {
         this.indexParentDirectory = indexParentDirectory;
-        this.autorebuildingDirectoryIndex = autorebuildingDirectoryIndex;
+        this.rebuildingDirectoryIndex = rebuildingDirectoryIndex;
         indexParentDirectory.setLastModified(System.currentTimeMillis()) ;
         previousIndexParentDirectoryLastModified = indexParentDirectory.lastModified() ;
     }
@@ -93,7 +93,7 @@ public class BackgroundIndexBuilder {
     }
 
     public synchronized void notifyRebuildComplete(DefaultDirectoryIndex newIndex) {
-        autorebuildingDirectoryIndex.notifyRebuildComplete(newIndex) ;
+        rebuildingDirectoryIndex.notifyRebuildComplete(newIndex) ;
         rememberParentDirectoryLastModified();
     }
 

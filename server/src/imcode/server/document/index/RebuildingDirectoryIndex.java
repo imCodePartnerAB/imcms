@@ -19,9 +19,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Timer;
 
-public class AutorebuildingDirectoryIndex implements DocumentIndex {
+public class RebuildingDirectoryIndex implements DocumentIndex {
 
-    private final static Logger log = Logger.getLogger(AutorebuildingDirectoryIndex.class.getName());
+    private final static Logger log = Logger.getLogger(RebuildingDirectoryIndex.class.getName());
 
     private final BackgroundIndexBuilder backgroundIndexBuilder;
     private final long indexRebuildSchedulePeriodInMilliseconds;
@@ -30,7 +30,7 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
     
     private DirectoryIndex index = new NullDirectoryIndex();
 
-    public AutorebuildingDirectoryIndex(File indexParentDirectory, float indexRebuildSchedulePeriodInMinutes) {
+    public RebuildingDirectoryIndex(File indexParentDirectory, float indexRebuildSchedulePeriodInMinutes) {
         indexRebuildSchedulePeriodInMilliseconds = (long) ( indexRebuildSchedulePeriodInMinutes * DateUtils.MILLIS_IN_MINUTE );
         backgroundIndexBuilder = new BackgroundIndexBuilder(indexParentDirectory, this);
         
@@ -43,14 +43,17 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
             rebuildBecauseOfError("No existing index.", null);
         }
 
-        if ( indexRebuildSchedulePeriodInMilliseconds <= 0 ) {
-            log.info("Scheduling of index rebuilds is disabled.");
-        } else {
+        if ( isSchedulingIndexRebuilds() ) {
             log.info("First index rebuild scheduled at " + formatDatetime(startIndexRebuildScheduling(indexModifiedTime)));
+        } else {
+            log.info("Scheduling of index rebuilds is disabled.");
         }
     }
 
     private synchronized Date startIndexRebuildScheduling(long indexModifiedTime) {
+        if ( !isSchedulingIndexRebuilds() ) {
+            return null ;
+        }
         long time = System.currentTimeMillis();
         Date nextTime = new Date(indexModifiedTime + indexRebuildSchedulePeriodInMilliseconds);
         if ( nextTime.getTime() < time ) {
@@ -66,6 +69,10 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
             log.error("Failed to start index rebuild scheduling.", ise);
         }
         return nextTime;
+    }
+
+    private boolean isSchedulingIndexRebuilds() {
+        return indexRebuildSchedulePeriodInMilliseconds > 0;
     }
 
     static File findLatestIndexDirectory(File indexParentDirectory) {
@@ -155,8 +162,8 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
         try {
             startIndexRebuildScheduling(0) ;
             rebuild() ;
-        } catch(AlreadyRebuildingIndexException arie) {
-            log.debug("Already indexing.") ;
+        } catch (AlreadyRebuildingIndexException arie) {
+            log.debug("Already rebuilding index.") ;
         }
     }
 

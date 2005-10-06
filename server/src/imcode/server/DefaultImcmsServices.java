@@ -14,8 +14,8 @@ import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.AutorebuildingDirectoryIndex;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.RebuildingDirectoryIndex;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
@@ -206,7 +206,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private void initDocumentMapper() {
         File indexDirectory = new File(getRealContextPath(), "WEB-INF/index");
-        DocumentIndex documentIndex = new AutorebuildingDirectoryIndex(indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes());
+        DocumentIndex documentIndex = new RebuildingDirectoryIndex(indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes());
         documentMapper = new DefaultDocumentMapper(this, this.getDatabase(), new DatabaseDocumentGetter(this.getDatabase(), this), new DocumentPermissionSetMapper(database, this), documentIndex, this.getClock(), this.getConfig(), categoryMapper);
     }
 
