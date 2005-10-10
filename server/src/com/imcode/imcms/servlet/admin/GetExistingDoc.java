@@ -1,27 +1,31 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.ConcurrentDocumentModificationException;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.RangeQuery;
+import org.apache.lucene.search.TermQuery;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -138,11 +142,19 @@ public class GetExistingDoc extends HttpServlet {
             log.debug( "Query: " + query );
             DocumentDomainObject[] searchResultDocuments = index.search( query, user );
 
-            boolean onlyOneDocumentFound = 1 == searchResultDocuments.length;
-
-            if ( onlyOneDocumentFound ) {
+            if ( 0 == searchResultDocuments.length ) {
+                if ( StringUtils.isNumeric(searchString) ) {
+                    int documentId = Integer.parseInt(searchString) ;
+                    DocumentDomainObject document = documentMapper.getDocument(documentId);
+                    if (canAddToMenu(user, parentDocument, document)) {
+                        addDocumentToMenu(document, parentDocument, menuIndex, user);
+                        redirectBackToMenu( res, parentDocument, menuIndex );
+                        return ;
+                    }
+                }
+            } else if ( 1 == searchResultDocuments.length ) {
                 DocumentDomainObject onlyDocumentFound = searchResultDocuments[0];
-                if ( searchString.equals( "" + onlyDocumentFound.getId() ) ) {
+                if ( searchString.equals( "" + onlyDocumentFound.getId() ) && canAddToMenu(user, parentDocument, onlyDocumentFound) ) {
                     addDocumentToMenu( onlyDocumentFound, parentDocument, menuIndex, user );
                     redirectBackToMenu( res, parentDocument, menuIndex );
                     return;
@@ -152,7 +164,7 @@ public class GetExistingDoc extends HttpServlet {
                                      dateFormat, endDate, docTypes, sortBy, sortOrderV, out );
 
         } else {
-            addDocumentsFromRequestToMenu( user, req, imcref, parentDocument, menuIndex, res );
+            addDocumentsFromRequestToMenu( user, req, imcref, parentDocument, menuIndex);
             redirectBackToMenu( res, parentDocument, menuIndex );
         }
     }
@@ -187,9 +199,9 @@ public class GetExistingDoc extends HttpServlet {
 
     }
 
-    private void addDocumentsFromRequestToMenu( UserDomainObject user, HttpServletRequest req,
-                                                ImcmsServices imcref, TextDocumentDomainObject parentDocument,
-                                                int menuIndex, HttpServletResponse res ) throws IOException {
+    private void addDocumentsFromRequestToMenu(UserDomainObject user, HttpServletRequest req,
+                                               ImcmsServices imcref, TextDocumentDomainObject parentDocument,
+                                               int menuIndex) {
         req.getSession().setAttribute( "flags", new Integer( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) );
 
         // get the seleced existing docs
@@ -227,11 +239,8 @@ public class GetExistingDoc extends HttpServlet {
 
     private void addDocumentToMenu( DocumentDomainObject document, TextDocumentDomainObject parentDocument,
                                     int menuIndex, UserDomainObject user ) {
-        Set allowedDocumentTypeIds = getUsersAllowedDocumentTypeIdsOnDocument( user, parentDocument ) ;
         DefaultDocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
-        boolean sharePermission = user.canAddDocumentToAnyMenu( document );
-        boolean canAddToMenu = allowedDocumentTypeIds.contains( new Integer( document.getDocumentTypeId() ) )
-                               && sharePermission;
+        boolean canAddToMenu = canAddToMenu(user, parentDocument, document);
         if ( canAddToMenu ) {
             final MenuDomainObject parentMenu = parentDocument.getMenu( menuIndex );
             parentMenu.addMenuItem( new MenuItemDomainObject( documentMapper.getDocumentReference( document ) ) );
@@ -243,6 +252,13 @@ public class GetExistingDoc extends HttpServlet {
                 throw new ConcurrentDocumentModificationException(e);
             }
         }
+    }
+
+    private boolean canAddToMenu(UserDomainObject user, TextDocumentDomainObject parentDocument,
+                                 DocumentDomainObject document) {
+        Set allowedDocumentTypeIds = getUsersAllowedDocumentTypeIdsOnDocument( user, parentDocument ) ;
+        boolean sharePermission = user.canAddDocumentToAnyMenu( document );
+        return sharePermission && allowedDocumentTypeIds.contains(new Integer(document.getDocumentTypeId()));
     }
 
     private void createSearchResultsPage( ImcmsServices imcref, imcode.server.user.UserDomainObject user,
