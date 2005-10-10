@@ -61,8 +61,8 @@ public class RoleDomainObject implements Serializable, Comparable {
         if ( isAdminRole() || roleDomainObject.isAdminRole() ) {
             return adminRoleId == roleDomainObject.adminRoleId;
         }
-
-        return id == roleDomainObject.id;
+        
+        return id.equals(roleDomainObject.id);
     }
 
     public int hashCode() {

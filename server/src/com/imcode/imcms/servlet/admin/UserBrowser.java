@@ -91,8 +91,8 @@ public class UserBrowser extends HttpServlet {
         boolean includeInactiveUsers = null != request.getParameter( REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS );
         String searchString = request.getParameter( REQUEST_PARAMETER__SEARCH_STRING );
         UserDomainObject[] users = userMapperAndRole.findUsersByNamePrefix( searchString, includeInactiveUsers );
-        if (loggedOnUser.isUserAdmin()){
-            users = getUsersWithUseradminPermissibleRoles(userMapperAndRole, loggedOnUser, users);
+        if (loggedOnUser.isUserAdminAndCanEditAtLeastOneRole()){
+            users = getUsersWithUseradminPermissibleRoles(loggedOnUser, users);
         }
         UserBrowserPage userBrowserPage = new UserBrowserPage();
         userBrowserPage.setSearchString( searchString );
@@ -101,13 +101,14 @@ public class UserBrowser extends HttpServlet {
         return userBrowserPage;
     }
 
-    private UserDomainObject[] getUsersWithUseradminPermissibleRoles(ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper, UserDomainObject loggedOnUser, UserDomainObject[] users) {
+    private UserDomainObject[] getUsersWithUseradminPermissibleRoles(UserDomainObject loggedOnUser, UserDomainObject[] users) {
         List userList = new ArrayList();
-        RoleId[] useradminPermissibleRoles = userAndRoleMapper.getUserAdminRolesReferencesForUser( loggedOnUser );
+        RoleId[] useradminPermissibleRoles = loggedOnUser.getUserAdminRoleIds();
         for( int i=0; i < users.length; i++){
             for( int k=0; k < useradminPermissibleRoles.length; k++){
                 if( users[i].hasRoleId( useradminPermissibleRoles[k] ) ){
                     userList.add(users[i]);
+                    break ;
                 }
             }
         }

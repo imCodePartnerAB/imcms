@@ -1,9 +1,9 @@
-<%@ page import="com.imcode.imcms.servlet.admin.UserFinder,
-                 com.imcode.imcms.servlet.admin.UserBrowser,
-                 org.apache.commons.lang.StringEscapeUtils,
-                 imcode.util.HttpSessionUtils,
+<%@ page import="com.imcode.imcms.servlet.admin.UserBrowser,
+                 com.imcode.imcms.servlet.admin.UserFinder,
                  imcode.server.user.UserDomainObject,
+                 imcode.util.HttpSessionUtils,
                  imcode.util.Utility,
+                 org.apache.commons.lang.StringEscapeUtils,
                  org.apache.commons.lang.StringUtils"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
@@ -91,7 +91,7 @@
                 style="width:10em">
             <%
                 UserDomainObject user = Utility.getLoggedOnUser(request);
-                if (userFinder.isUsersAddable() && (user.isSuperAdmin() || user.isUserAdmin())) { %>
+                if (userFinder.isUsersAddable() && (user.isSuperAdmin() || user.isUserAdminAndCanEditAtLeastOneRole())) { %>
                     <div><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"></div>
                     <input type="submit" class="imcmsFormBtnSmall"
                         name="<%= UserBrowser.REQUEST_PARAMETER__ADD_USER %>"

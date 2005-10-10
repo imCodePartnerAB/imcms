@@ -36,10 +36,10 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     private TemplateGroupDomainObject templateGroup;
 
-    private boolean imcmsExternal = false;
+    private boolean imcmsExternal ;
 
     private HashSet phoneNumbers = new HashSet();
-
+    
     RoleIds roleIds = createRolesSetWithUserRole();
     protected RoleIds userAdminRoleIds = new RoleIds();
 
@@ -77,7 +77,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      * get user-id
      */
     public int getId() {
-        return this.id;
+        return id;
     }
 
     /**
@@ -91,7 +91,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      * get login name (username)
      */
     public String getLoginName() {
-        return this.loginName;
+        return loginName;
     }
 
     /**
@@ -105,7 +105,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      * get password
      */
     public String getPassword() {
-        return this.password;
+        return password;
     }
 
     /**
@@ -126,7 +126,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      * get first name
      */
     public String getFirstName() {
-        return this.firstName;
+        return firstName;
     }
 
     /**
@@ -140,7 +140,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      * get last name
      */
     public String getLastName() {
-        return this.lastName;
+        return lastName;
     }
 
     /**
@@ -161,7 +161,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      * get title
      */
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
     /**
@@ -175,7 +175,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      * get company
      */
     public String getCompany() {
-        return this.company;
+        return company;
     }
 
     /**
@@ -189,7 +189,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      * get address
      */
     public String getAddress() {
-        return this.address;
+        return address;
     }
 
     /**
@@ -203,7 +203,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      * get city
      */
     public String getCity() {
-        return this.city;
+        return city;
     }
 
     /**
@@ -217,7 +217,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      * get zip
      */
     public String getZip() {
-        return this.zip;
+        return zip;
     }
 
     /**
@@ -231,7 +231,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      * get country
      */
     public String getCountry() {
-        return this.country;
+        return country;
     }
 
     /**
@@ -245,14 +245,14 @@ public class UserDomainObject implements Cloneable, Serializable {
      * get county_council
      */
     public String getDistrict() {
-        return this.district;
+        return district;
     }
 
     /**
      * Return the users e-mail address
      */
     public String getEmailAddress() {
-        return this.emailAddress;
+        return emailAddress;
     }
 
     /**
@@ -384,7 +384,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      * Check whether the user is allowed to log in
      */
     public boolean isActive() {
-        return this.active;
+        return active;
     }
 
     /**
@@ -392,21 +392,21 @@ public class UserDomainObject implements Cloneable, Serializable {
      * @param createDate
      */
     public void setCreateDate( Date createDate ) {
-        this.createDate = createDate;
+        this.createDate = (Date) createDate.clone();
     }
 
     /**
      * get create_date
      */
     public Date getCreateDate() {
-        return this.createDate;
+        return (Date) ( null == createDate ? null : createDate.clone() ) ;
     }
 
     /**
      * set template group
      */
-    public void setTemplateGroup( TemplateGroupDomainObject template_group ) {
-        this.templateGroup = template_group;
+    public void setTemplateGroup( TemplateGroupDomainObject templateGroup ) {
+        this.templateGroup = templateGroup;
     }
 
     /**
@@ -420,7 +420,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      * Return the users language
      */
     public String getLanguageIso639_2() {
-        return this.languageIso639_2;
+        return languageIso639_2;
     }
 
     /**
@@ -431,11 +431,11 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean isImcmsExternal() {
-        return this.imcmsExternal;
+        return imcmsExternal;
     }
 
-    public void setImcmsExternal( boolean external ) {
-        this.imcmsExternal = external;
+    public void setImcmsExternal( boolean imcmsExternal ) {
+        this.imcmsExternal = imcmsExternal;
     }
 
     public void addRoleId( RoleId role ) {
@@ -454,7 +454,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean hasRoleId( RoleId roleId ) {
-        return this.roleIds.contains( roleId );
+        return roleIds.contains( roleId );
     }
 
     public RoleId[] getRoleIds() {
@@ -487,8 +487,8 @@ public class UserDomainObject implements Cloneable, Serializable {
         return hasRoleId( RoleId.SUPERADMIN );
     }
 
-    public boolean isUserAdmin() {
-        return hasRoleId( RoleId.USERADMIN );
+    public boolean isUserAdminAndCanEditAtLeastOneRole() {
+        return isUserAdmin() && !userAdminRoleIds.isEmpty() ;
     }
 
     public boolean canEdit( DocumentDomainObject document ) {
@@ -647,12 +647,12 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public boolean canAccessAdminPages() {
         RolePermissionDomainObject rolePermissionToAccessAdminPages = RoleDomainObject.ADMIN_PAGES_PERMISSION;
-        return isSuperAdmin() || isUserAdmin() || hasRoleWithPermission( rolePermissionToAccessAdminPages );
+        return isSuperAdmin() || isUserAdminAndCanEditAtLeastOneRole() || hasRoleWithPermission( rolePermissionToAccessAdminPages );
     }
 
     public boolean hasRoleWithPermission( RolePermissionDomainObject rolePermission ) {
         ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
-        RoleId[] roleReferencesArray = this.roleIds.toArray();
+        RoleId[] roleReferencesArray = roleIds.toArray();
         for ( int i = 0; i < roleReferencesArray.length; i++ ) {
             RoleId roleId = roleReferencesArray[i];
             if ( imcmsAuthenticatorAndUserAndRoleMapper.getRole(roleId).hasPermission( rolePermission ) ) {
@@ -679,14 +679,14 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public void setUserAdminRolesIds(RoleId[] userAdminRoleReferences) {
-        this.userAdminRoleIds = new RoleIds(userAdminRoleReferences);
+        userAdminRoleIds = new RoleIds(userAdminRoleReferences);
     }
 
     public void addUserAdminRoleReference(RoleId roleId) {
         userAdminRoleIds.add(roleId) ;
     }
 
-    public boolean isUserAdminOnly() {
+    public boolean isUserAdminAndNotSuperAdmin() {
         return isUserAdmin() && !isSuperAdmin() ;
     }
 
@@ -702,8 +702,20 @@ public class UserDomainObject implements Cloneable, Serializable {
         return equals(editedUser) || isSuperAdmin() || canEditAsUserAdmin(editedUser) ;
     }
 
-    private boolean canEditAsUserAdmin(UserDomainObject editedUser) {
-        return isUserAdminOnly() && CollectionUtils.containsAny(editedUser.roleIds.asSet(), userAdminRoleIds.asSet()) ;
+    public boolean canEditAsUserAdmin(UserDomainObject editedUser) {
+        return isUserAdminAndNotSuperAdmin() && (editedUser.isNew() || canEditRolesAccordingToUserAdminRoles(editedUser) ) ;
+    }
+
+    public boolean canEditRolesAccordingToUserAdminRoles(UserDomainObject editedUser) {
+        return CollectionUtils.containsAny(editedUser.roleIds.asSet(), userAdminRoleIds.asSet());
+    }
+
+    public boolean isUserAdmin() {
+        return hasRoleId( RoleId.USERADMIN ) ;
+    }
+
+    public boolean isNew() {
+        return 0 == id;
     }
 
     private static class PhoneNumberOfTypePredicate implements Predicate {

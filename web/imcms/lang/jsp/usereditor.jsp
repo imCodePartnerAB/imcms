@@ -196,7 +196,7 @@ function activateUseradmin_roles(){
 	</tr>
 	</table></td>
 </tr>
-<% if (loggedOnUser.canEditRolesFor(editedUser)) { %>
+<% if (loggedOnUser.canEditRolesFor(userEditorPage.getUneditedUser())) { %>
 <tr>
 	<td colspan="2">&nbsp;<br>#gui_heading( "<? templates/sv/AdminUserResp_superadmin_part.htm/3/1 ?>" )</td>
 </tr>

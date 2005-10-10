@@ -79,7 +79,7 @@ public class AdminManager extends HttpServlet {
         if ( null != whichButton ) {
 
             String url = getAdminTaskUrl( whichButton );
-            if ( !user.isSuperAdmin() && !user.isUserAdmin() ) {
+            if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() ) {
                 Utility.forwardToLogin( request, response );
                 return;
             }
@@ -147,7 +147,7 @@ public class AdminManager extends HttpServlet {
 
         if ( loggedOnUser.isSuperAdmin() ) {
             html_admin_part = service.getAdminTemplate( HTML_ADMINTASK, loggedOnUser, null ); // if superadmin
-        } else if ( loggedOnUser.isUserAdmin() ) { //if user is useradmin
+        } else if ( loggedOnUser.isUserAdminAndCanEditAtLeastOneRole() ) { //if user is useradmin
             html_admin_part = service.getAdminTemplate( HTML_USERADMINTASK, loggedOnUser, null ); //if useradmin
         }
 

@@ -11,6 +11,8 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,53 +55,61 @@ public class UserEditorPage extends OkCancelPage {
 
     private static final LocalizedMessage ERROR__PASSWORDS_DID_NOT_MATCH = new LocalizedMessage("error/passwords_did_not_match");
     private static final LocalizedMessage ERROR__PASSWORD_LENGTH = new LocalizedMessage("error/password_length");
+    private static final LocalizedMessage ERROR__EDITED_USER_MUST_HAVE_AT_LEAST_ONE_ROLE = new LocalizedMessage("error/user_must_have_at_least_one_role");
 
     private UserDomainObject editedUser;
+    private UserDomainObject uneditedUser;
     private PhoneNumber currentPhoneNumber = new PhoneNumber("", PhoneNumberType.OTHER);
     private LocalizedMessage errorMessage;
     private static final int MAXIMUM_PASSWORD_LENGTH = 15;
     private static final int MINIMUM_PASSWORD_LENGTH = 4;
-
+    
     public UserEditorPage(UserDomainObject user, DispatchCommand okDispatchCommand,
                           DispatchCommand cancelDispatchCommand) {
         super(okDispatchCommand, cancelDispatchCommand);
-        this.editedUser = user;
+        editedUser = user;
+        uneditedUser = (UserDomainObject) user.clone() ;
     }
 
     protected void updateFromRequest(HttpServletRequest request) {
-        updateUserFromRequest(editedUser, request);
+        updateUserFromRequest(request);
     }
 
-    private void updateUserFromRequest(UserDomainObject user, HttpServletRequest request) {
+    private void updateUserFromRequest(HttpServletRequest request) {
         errorMessage = null;
-        updateUserPasswordFromRequest(user, request);
-        user.setLoginName(request.getParameter(REQUEST_PARAMETER__LOGIN_NAME));
-        user.setFirstName(request.getParameter(REQUEST_PARAMETER__FIRST_NAME));
-        user.setLastName(request.getParameter(REQUEST_PARAMETER__LAST_NAME));
-        user.setTitle(request.getParameter(REQUEST_PARAMETER__TITLE));
-        user.setCompany(request.getParameter(REQUEST_PARAMETER__COMPANY));
-        user.setAddress(request.getParameter(REQUEST_PARAMETER__ADDRESS));
-        user.setCity(request.getParameter(REQUEST_PARAMETER__CITY));
-        user.setZip(request.getParameter(REQUEST_PARAMETER__ZIP));
-        user.setCountry(request.getParameter(REQUEST_PARAMETER__COUNTRY));
-        user.setDistrict(request.getParameter(REQUEST_PARAMETER__DISTRICT));
-        user.setEmailAddress(request.getParameter(REQUEST_PARAMETER__EMAIL));
-        user.setLanguageIso639_2(request.getParameter(REQUEST_PARAMETER__LANGUAGE));
-        user.setActive(null != request.getParameter(REQUEST_PARAMETER__ACTIVE));
+        updateUserPasswordFromRequest(editedUser, request);
+        editedUser.setLoginName(request.getParameter(REQUEST_PARAMETER__LOGIN_NAME));
+        editedUser.setFirstName(request.getParameter(REQUEST_PARAMETER__FIRST_NAME));
+        editedUser.setLastName(request.getParameter(REQUEST_PARAMETER__LAST_NAME));
+        editedUser.setTitle(request.getParameter(REQUEST_PARAMETER__TITLE));
+        editedUser.setCompany(request.getParameter(REQUEST_PARAMETER__COMPANY));
+        editedUser.setAddress(request.getParameter(REQUEST_PARAMETER__ADDRESS));
+        editedUser.setCity(request.getParameter(REQUEST_PARAMETER__CITY));
+        editedUser.setZip(request.getParameter(REQUEST_PARAMETER__ZIP));
+        editedUser.setCountry(request.getParameter(REQUEST_PARAMETER__COUNTRY));
+        editedUser.setDistrict(request.getParameter(REQUEST_PARAMETER__DISTRICT));
+        editedUser.setEmailAddress(request.getParameter(REQUEST_PARAMETER__EMAIL));
+        editedUser.setLanguageIso639_2(request.getParameter(REQUEST_PARAMETER__LANGUAGE));
+        editedUser.setActive(null != request.getParameter(REQUEST_PARAMETER__ACTIVE));
 
-        updateUserRolesFromRequest(user, request);
-        updateUserAdminRolesFromRequest(user, request);
+        updateUserRolesFromRequest(request);
+        updateUserAdminRolesFromRequest(request);
     }
 
-    private void updateUserAdminRolesFromRequest(UserDomainObject user, HttpServletRequest request) {
-        if ( Utility.getLoggedOnUser(request).isSuperAdmin() && user.isUserAdmin() ) {
-            user.setUserAdminRolesIds(getRoleIdsFromRequestParameterValues(request, REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS));
-            user.removeUserAdminRoleId(RoleId.SUPERADMIN) ;
-            user.removeUserAdminRoleId(RoleId.USERADMIN) ;
+    private void updateUserAdminRolesFromRequest(HttpServletRequest request) {
+        if ( Utility.getLoggedOnUser(request).isSuperAdmin() && editedUser.isUserAdmin() ) {
+            editedUser.setUserAdminRolesIds(getRoleIdsFromRequestParameterValues(request, REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS));
+            editedUser.removeUserAdminRoleId(RoleId.SUPERADMIN) ;
+            editedUser.removeUserAdminRoleId(RoleId.USERADMIN) ;
         }
     }
 
     private RoleId[] getRoleIdsFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
+        Set roleIds = getRoleIdsSetFromRequestParameterValues(request, requestParameter);
+        return (RoleId[]) roleIds.toArray(new RoleId[roleIds.size()]);
+    }
+
+    private Set getRoleIdsSetFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
         Set roleIds = new HashSet();
         String[] roleIdStrings = request.getParameterValues(requestParameter);
         if ( null != roleIdStrings ) {
@@ -107,16 +118,30 @@ public class UserEditorPage extends OkCancelPage {
                 roleIds.add(roleId);
             }
         }
-        return (RoleId[]) roleIds.toArray(new RoleId[roleIds.size()]);
+        return roleIds;
     }
 
     private ImcmsServices getImcmsServices() {
         return Imcms.getServices() ;
     }
 
-    private void updateUserRolesFromRequest(UserDomainObject user, HttpServletRequest request) {
-        if ( Utility.getLoggedOnUser(request).canEditRolesFor(user) ) {
-            user.setRoleIds(getRoleIdsFromRequestParameterValues(request, REQUEST_PARAMETER__ROLE_IDS));
+    private void updateUserRolesFromRequest(HttpServletRequest request) {
+        UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
+        if ( loggedOnUser.canEditRolesFor(uneditedUser) ) {
+            Set roleIdsSetFromRequest = getRoleIdsSetFromRequestParameterValues(request, REQUEST_PARAMETER__ROLE_IDS);
+            RoleId[] userRoleIdsArray ;
+            if (loggedOnUser.isUserAdmin()) {
+                List userAdminRoleIds = Arrays.asList(loggedOnUser.getUserAdminRoleIds());
+                roleIdsSetFromRequest.retainAll(userAdminRoleIds) ;
+
+                Set userRoleIds = new HashSet(Arrays.asList(editedUser.getRoleIds())) ;
+                userRoleIds.removeAll(userAdminRoleIds) ;
+                userRoleIds.addAll(roleIdsSetFromRequest) ;
+                userRoleIdsArray = (RoleId[]) userRoleIds.toArray(new RoleId[userRoleIds.size()]);
+            } else {
+                userRoleIdsArray = (RoleId[]) roleIdsSetFromRequest.toArray(new RoleId[roleIdsSetFromRequest.size()]);
+            }
+            editedUser.setRoleIds(userRoleIdsArray);
         }
     }
 
@@ -172,8 +197,15 @@ public class UserEditorPage extends OkCancelPage {
             if ( StringUtils.isBlank(editedUser.getPassword()) ) {
                 errorMessage = ERROR__PASSWORD_LENGTH;
             } else {
-                super.dispatchOk(request, response);
-                return;
+                boolean editedUserHasOnlyTheUsersRole = 1 == editedUser.getRoleIds().length;
+                UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
+                if (editedUserHasOnlyTheUsersRole || loggedOnUser.isUserAdminAndNotSuperAdmin()
+                                                     && !loggedOnUser.canEditRolesAccordingToUserAdminRoles(editedUser) ) {
+                    errorMessage = ERROR__EDITED_USER_MUST_HAVE_AT_LEAST_ONE_ROLE ;
+                } else {
+                    super.dispatchOk(request, response);
+                    return;
+                }
             }
         }
         forward(request, response);
@@ -255,7 +287,7 @@ public class UserEditorPage extends OkCancelPage {
 
     public String createRolesHtmlOptionList(HttpServletRequest request) {
         UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request) ;
-        RoleDomainObject[] roles = loggedOnUser.isUserAdminOnly() ? getRoles(loggedOnUser.getUserAdminRoleIds()) : getAllRolesExceptUsersRole();
+        RoleDomainObject[] roles = loggedOnUser.isUserAdminAndNotSuperAdmin() ? getRoles(loggedOnUser.getUserAdminRoleIds()) : getAllRolesExceptUsersRole();
         RoleDomainObject[] usersRoles = getRoles(editedUser.getRoleIds());
         return createRolesHtmlOptionList(roles, usersRoles);
     }
@@ -275,12 +307,16 @@ public class UserEditorPage extends OkCancelPage {
     public String createUserAdminRolesHtmlOptionList() {
         RoleDomainObject[] allRoles = getAllRolesExceptUsersRole();
         Set allRolesSet = new HashSet(Arrays.asList(allRoles)) ;
-        allRolesSet.remove(RoleId.SUPERADMIN) ;
-        allRolesSet.remove(RoleId.USERADMIN) ;
-        allRoles = (RoleDomainObject[]) allRolesSet.toArray(new RoleDomainObject[allRolesSet.size()]);
+        CollectionUtils.filter(allRolesSet, new Predicate() {
+            public boolean evaluate(Object o) {
+                RoleId roleId = ( (RoleDomainObject) o ).getId();
+                return !(roleId.equals(RoleId.SUPERADMIN) || roleId.equals(RoleId.USERADMIN)) ; 
+            }
+        });
+        RoleDomainObject[] allUserAdminRoles = (RoleDomainObject[]) allRolesSet.toArray(new RoleDomainObject[allRolesSet.size()]);
         RoleDomainObject[] usersUserAdminRoles = getRoles(editedUser.getUserAdminRoleIds());
 
-        return createRolesHtmlOptionList(allRoles, usersUserAdminRoles);
+        return createRolesHtmlOptionList(allUserAdminRoles, usersUserAdminRoles);
     }
 
     private RoleDomainObject[] getAllRolesExceptUsersRole() {
@@ -297,6 +333,10 @@ public class UserEditorPage extends OkCancelPage {
         this.okCommand = okCommand;
     }
 
+    public UserDomainObject getUneditedUser() {
+        return uneditedUser;
+    }
+
     private static class RoleToStringPairTransformer extends ToStringPairTransformer {
         protected String[] transformToStringPair(Object object) {
             RoleDomainObject role = (RoleDomainObject) object;
@@ -306,7 +346,7 @@ public class UserEditorPage extends OkCancelPage {
 
     public void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
-        if (!loggedOnUser.canEdit(editedUser)) {
+        if (!uneditedUser.isNew() && !loggedOnUser.canEdit(uneditedUser)) {
             throw new ShouldHaveCheckedPermissionsEarlierException(new NoPermissionException("User "+loggedOnUser+" does not have the permission to edit "+editedUser));
         }
 

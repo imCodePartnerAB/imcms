@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class RoleIds implements Cloneable, Serializable {
 
-    HashSet set = new HashSet();
+    private HashSet set = new HashSet();
 
     public RoleIds() {
     }
@@ -47,5 +47,9 @@ public class RoleIds implements Cloneable, Serializable {
 
     public Set asSet() {
         return Collections.unmodifiableSet(set) ;
+    }
+
+    public boolean isEmpty() {
+        return set.isEmpty() ;
     }
 }

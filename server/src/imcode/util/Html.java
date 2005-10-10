@@ -174,7 +174,7 @@ public class Html {
      */
     public static String getAdminButtons( UserDomainObject user, DocumentDomainObject document, HttpServletRequest request,
                                           HttpServletResponse response ) {
-        if ( null == document || !( user.canEdit( document ) || user.isUserAdmin() || user.canAccessAdminPages() ) ) {
+        if ( null == document || !( user.canEdit( document ) || user.isUserAdminAndCanEditAtLeastOneRole() || user.canAccessAdminPages() ) ) {
             return "";
         }
 

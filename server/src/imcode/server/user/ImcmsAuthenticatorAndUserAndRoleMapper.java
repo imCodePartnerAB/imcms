@@ -228,7 +228,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private void updateUserRoles(UserDomainObject newUser, UserDomainObject oldUser, UserDomainObject loggedInUser) {
         if ( !newUser.equals(loggedInUser) || loggedInUser.isSuperAdmin() ) {
             Set newUserRoles = new HashSet(Arrays.asList(newUser.getRoleIds()));
-            if ( null != loggedInUser && loggedInUser.isUserAdminOnly() ) {
+            if ( null != loggedInUser && loggedInUser.isUserAdminAndNotSuperAdmin() ) {
                 Set loggedInUserUserAdminRoles = new HashSet(Arrays.asList(loggedInUser.getUserAdminRoleIds()));
                 newUserRoles.retainAll(loggedInUserUserAdminRoles);
                 if ( null != oldUser ) {
@@ -613,7 +613,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         }
     }
 
-    public RoleId[] getUserAdminRolesReferencesForUser(UserDomainObject loggedOnUser) {
+    private RoleId[] getUserAdminRolesReferencesForUser(UserDomainObject loggedOnUser) {
         try {
             final Object[] parameters = new String[] {
             "" + loggedOnUser.getId() };

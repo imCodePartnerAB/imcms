@@ -32,7 +32,7 @@ public class AdminUser extends HttpServlet {
         final UserDomainObject user = Utility.getLoggedOnUser( req );
 
         // Lets verify that the user is an admin, otherwise throw him out.
-        if ( !user.isSuperAdmin() && !user.isUserAdmin() ) {
+        if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() ) {
             String header = "Error in AdminUser.";
             Properties langproperties = imcref.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
@@ -82,7 +82,7 @@ public class AdminUser extends HttpServlet {
     private void redirectChangeUser( HttpServletRequest req, HttpServletResponse res, UserDomainObject user,
                                      final UserDomainObject userToChange ) throws IOException, ServletException {
 
-        if ( !user.isSuperAdmin() && !user.isUserAdmin() && !userToChange.equals( user ) ) {
+        if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() && !userToChange.equals( user ) ) {
             String header = "Error in AdminUser, change user.";
             Properties langproperties = Imcms.getServices().getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/AdminUser/user_have_no_permission") + "<br>";
