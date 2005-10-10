@@ -24,19 +24,18 @@ public class ContextListener implements ServletContextListener {
 
         configureLogging(servletContext, realPathToWebApp, configPath);
 
-        kickstartImcms();
+        Imcms.start();
+        
         Logger log = Logger.getLogger(ContextListener.class);
         log.info("imCMS initialized.");
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         Logger log = Logger.getLogger(ContextListener.class);
-        log.info("Servlet context destroyed. Shutting down logging.");
+        log.debug("Stopping imCMS.");
+        Imcms.stop();
+        log.debug("Shutting down logging.");
         LogManager.shutdown();
-    }
-
-    private void kickstartImcms() {
-        Imcms.getServices();
     }
 
     private void configureLogging(ServletContext servletContext, File root, File configPath) {
