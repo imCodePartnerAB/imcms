@@ -587,8 +587,6 @@
     <target name="init-global-filters"
         depends="check-build-properties,init-version-properties">
 
-        <filter token="rooturl" value="${rooturl}"/>
-
         <filter token="defaultlanguage" value="${defaultlanguage}"/>
 
         <filter token="documentationwebappurl" value="http://${documentation-host}/${versionnumber}"/>
