@@ -281,42 +281,38 @@ function getFile(iside) {
 	return theVal;
 }
 
-function setSelectedFolder(iside) {
-	if (moz) {
-		var f = document.forms[0];
-		switch (iside) {
-			case 1:
-				for (var i = 0; i < f.files1.length; i++) {
-					if (f.files1.options[i].text == f.dir1.value) {
-						f.files1.options[i].style.backgroundColor = "#FFFF99"; // the Dir
-					} else  if (f.dir1.value.substring(0,f.files1.options[i].text.length) == f.files1.options[i].text.substring(0,f.files1.options[i].text.length) && f.files1.options[i].text.indexOf("\\") != -1) {
-						f.files1.options[i].style.backgroundColor = "#FFFFCC"; // a subDir
-					}
-				}
-			break;
-			case 2:
-				for (var i = 0; i < f.files2.length; i++) {
-					if (f.files2.options[i].text == f.dir2.value) {
-						f.files2.options[i].style.backgroundColor = "#FFFF99"; // the Dir
-					} else  if (f.dir2.value.substring(0,f.files2.options[i].text.length) == f.files2.options[i].text.substring(0,f.files2.options[i].text.length) && f.files2.options[i].text.indexOf("\\") != -1) {
-						f.files2.options[i].style.backgroundColor = "#FFFFCC"; // a subDir
-					}
-				}
-			break;
-		}
-	}
+function setSelectedFolders() {
+    var f = document.forms[0];
+    for (var i = 0; i < f.files1.length; i++) {
+        var option = f.files1.options[i] ; 
+        var dir = f.dir1.value ;
+        if (option.value == dir) {
+            option.style.backgroundColor = "#FFFF99"; // the Dir
+        } else if ( dir.length > option.value.length && dir.substring(0, option.value.length) == option.value ) {
+            option.style.backgroundColor = "#FFFFDD"; // a subDir
+        }
+    }
+    for (var i = 0; i < f.files2.length; i++) {
+        var option = f.files2.options[i] ; 
+        var dir = f.dir2.value ;
+        if (option.value == dir) {
+            option.style.backgroundColor = "#FFFF99"; // the Dir
+        } else if ( dir.length > option.value.length && dir.substring(0, option.value.length) == option.value ) {
+            option.style.backgroundColor = "#FFFFDD"; // a subDir
+        }
+    }
 }
 //-->
 </script>
 
 
 </head>
-<body bgcolor="#FFFFFF" onLoad="checkFileType(1,true); checkFileType(2,true); setSelectedFolder(1); setSelectedFolder(2);">
+<body bgcolor="#FFFFFF" onLoad="checkFileType(1,true); checkFileType(2,true); setSelectedFolders();">
 
 #gui_outer_start()
 #gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/5 ?>" )
-<table border="0" cellspacing="0" cellpadding="0" width="100%">
 <form method="post" action="FileAdmin" enctype="multipart/form-data">
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
 <input type="hidden" name="dir1" value="#dir1#">
 <input type="hidden" name="dir2" value="#dir2#">
 
@@ -344,7 +340,7 @@ function setSelectedFolder(iside) {
 		type="submit" name="change1" class="imcmsFormBtnSmall" height="22" value="<? templates/sv/FileAdmin.html/2001 ?>"></td>
 	</tr>
 	<tr>
-		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"></td>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2" alt=""></td>
 	</tr>
 	<tr>
 		<td align="right"><span class="imcmsAdmForm">
@@ -367,15 +363,15 @@ function setSelectedFolder(iside) {
 	</tr>
 	<tr>
 		<td colspan="2" align="center" class="small">
-		<img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/7 ?></td>
+		<img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6" alt=""><? templates/sv/FileAdmin.html/7 ?></td>
 	</tr>
 	<tr>
 		<td align="right"><input class="imcmsFormBtnSmall" height="22" type="submit" name="move2" value="<? templates/sv/FileAdmin.html/2004 ?>"></td>
-		<td><input class="imcmsFormBtnSmall" height="22" type="submit" name="move1" value="<? templates/sv/FileAdmin.html/2005 ?>"></td></td>
+		<td><input class="imcmsFormBtnSmall" height="22" type="submit" name="move1" value="<? templates/sv/FileAdmin.html/2005 ?>"></td>
 	</tr>
 	<tr>
 		<td colspan="2" align="center" class="small">
-		<img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/8 ?></td>
+		<img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6" alt=""><? templates/sv/FileAdmin.html/8 ?></td>
 	</tr>
 	<tr>
 		<td align="right"><input class="imcmsFormBtnSmall" height="22" type="submit" name="copy2" value="&nbsp;<? templates/sv/FileAdmin.html/2006 ?>&nbsp;"></td>
@@ -383,7 +379,7 @@ function setSelectedFolder(iside) {
 	</tr>
 	<tr>
 		<td colspan="2" align="center" class="small">
-		<img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/1002 ?></td>
+		<img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6" alt=""><? templates/sv/FileAdmin.html/1002 ?></td>
 	</tr>
 	<tr>
 		<td align="right"><input class="imcmsFormBtnSmall" height="22" type="submit" name="download1" value="&nbsp;<? templates/sv/FileAdmin.html/2008 ?>&nbsp;"></td>
@@ -391,7 +387,7 @@ function setSelectedFolder(iside) {
 	</tr>
 	<tr>
 		<td colspan="2" align="center" class="small">
-		<img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/9 ?></td>
+		<img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6" alt=""><? templates/sv/FileAdmin.html/9 ?></td>
 	</tr>
 	<tr>
 		<td align="right"><input class="imcmsFormBtnSmall" height="22" type="button" name="preview1" value="&nbsp;<? templates/sv/FileAdmin.html/2010 ?>&nbsp;" onClick="previewFile(1)"></td>
@@ -399,7 +395,7 @@ function setSelectedFolder(iside) {
 	</tr>
 	<tr>
 		<td colspan="2" align="center" class="small">
-		<img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/10 ?></td>
+		<img src="$contextPath/imcms/$language/images/admin/line_hr2.gif" width="50" height="6" alt=""><? templates/sv/FileAdmin.html/10 ?></td>
 	</tr>
 	<tr>
 		<td align="right"><input class="imcmsFormBtnSmall" height="22" type="button" name="edit1" value="&nbsp;<? templates/sv/FileAdmin.html/2012 ?>&nbsp;" onClick="editFile(1,0);"></td>
@@ -414,7 +410,7 @@ function setSelectedFolder(iside) {
 		class="imcmsFormBtnSmall" height="22" value="<? templates/sv/FileAdmin.html/2014 ?>"></td>
 	</tr>
 	<tr>
-		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"></td>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2" alt=""></td>
 	</tr>
 	<tr>
 		<td>
@@ -428,25 +424,12 @@ function setSelectedFolder(iside) {
 	</table></td>
 </tr>
 <tr>
-	<td colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="8"></td>
+	<td colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="8" alt=""></td>
 </tr>
 <tr>
   <td><input class="imcmsFormBtnSmall" height="22" style="width:90" type="submit" name="upload1" value="<? templates/sv/FileAdmin.html/2015 ?>"></td>
   <td colspan="4" align="center"><span class="imcmsAdmForm"><? templates/sv/FileAdmin.html/1003 ?>&nbsp;
-<script language="JavaScript">
-<!--
-if (gecko && !isMac) {
-	document.write("<input type=\"file\" name=\"file\" class=\"imcmsAdmForm\" size=\"60\" style=\"width:380\">");
-} else if (gecko && isMac) {
-	document.write("<input type=\"file\" name=\"file\" class=\"imcmsAdmForm\" size=\"50\">");
-} else if (ns) {
-	document.write("<input type=\"file\" name=\"file\" class=\"imcmsAdmForm\" size=\"20\">");
-} else {
-	document.write("<input type=\"file\" name=\"file\" class=\"imcmsAdmForm\" size=\"20\" style=\"width:380\">");
-}
-//-->
-</script>
-<noscript><input type="file" name="file" class="imcmsAdmForm" size="20"></noscript></span></td>
+    <input type="file" name="file" class="imcmsAdmForm" size="20"></span></td>
   <td align="right"><input class="imcmsFormBtnSmall" height="22" style="width:90" type="submit" name="upload2" value="<? templates/sv/FileAdmin.html/2016 ?>"></td>
 </tr>
 <tr>
@@ -456,7 +439,7 @@ if (gecko && !isMac) {
   <td align="left"><input
 	type="submit" name="rename1"class="imcmsFormBtnSmall" height="22" style="width:90"
 		value="<? templates/sv/FileAdmin.html/2017 ?>"><br><img
-	src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br><input
+	src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2" alt=""><br><input
 	type="submit" name="mkdir1" class="imcmsFormBtnSmall" height="22" style="width:90"
 		value="<? templates/sv/FileAdmin.html/2018 ?>"></td>
   <td colspan="4" align="center"><? templates/sv/FileAdmin.html/13 ?>
@@ -464,19 +447,19 @@ if (gecko && !isMac) {
   <td align="right"><input
 	type="submit" name="rename2" class="imcmsFormBtnSmall" height="22" style="width:90"
 		value="<? templates/sv/FileAdmin.html/2019 ?>"><br><img
-	src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br><input
+	src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2" alt=""><br><input
 	type="submit" name="mkdir2" class="imcmsFormBtnSmall" height="22" style="width:90"
 		value="<? templates/sv/FileAdmin.html/2020 ?>"></td>
 </tr>
 <tr>
-  <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="150" height="1"></td>
-  <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="180" height="1"></td>
-  <td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="80" height="1"></td>
-  <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="180" height="1"></td>
-  <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="150" height="1"></td>
+  <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="150" height="1" alt=""></td>
+  <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="180" height="1" alt=""></td>
+  <td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="80" height="1" alt=""></td>
+  <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="180" height="1" alt=""></td>
+  <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="150" height="1" alt=""></td>
 </tr>
-</form>
 </table>
+</form>
 #gui_bottom()
 #gui_outer_end()
 
@@ -495,7 +478,7 @@ wDir[2] = document.forms[0].dir2.value.replace(/\\\\/g, "/") ;
  * if supported and > 800 in screen resolution.
  */
 
-if (moz) {
+if (document.getElementById) {
 	if (parseInt(screen.width) > 800) {
 		document.getElementById("fileSel_1").style.width = 400;
 		document.getElementById("fileSel_2").style.width = 400;

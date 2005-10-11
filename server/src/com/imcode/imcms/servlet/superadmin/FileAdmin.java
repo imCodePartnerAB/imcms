@@ -11,6 +11,7 @@ import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.NotFileFilter;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -85,22 +86,14 @@ public class FileAdmin extends HttpServlet {
 
         File[] roots = getRoots();
 
-        File webappPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath() ;
-        String dir1Parameter = mp.getParameter( "dir1" );
-        File dir1 = new File( dir1Parameter );
-        if (!dir1.isAbsolute()) {
-            dir1 = new File( webappPath, dir1Parameter );
-        }
-        String dir2Parameter = mp.getParameter( "dir2" );
-        File dir2 = new File( dir2Parameter );
-        if (!dir2.isAbsolute()) {
-            dir2 = new File( webappPath, dir2Parameter );
-        }
+        File dir1 = getContextRelativeDirectoryFromRequest(mp, "dir1");
+        File dir2 = getContextRelativeDirectoryFromRequest(mp, "dir2");
 
         if ( !isUnderRoot( dir1, roots ) || !isUnderRoot( dir2, roots )) {
             doGet( req, res );
             return ;
         }
+        
         String[] files1 = mp.getParameterValues( "files1" );
         String[] files2 = mp.getParameterValues( "files2" );
         String name = mp.getParameter( "name" );
@@ -152,6 +145,12 @@ public class FileAdmin extends HttpServlet {
         }
     }
 
+    private File getContextRelativeDirectoryFromRequest(HttpServletRequest request, String parameter) throws IOException {
+        File webappPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath() ;
+        String dirParameter = request.getParameter( parameter );
+        return new File( webappPath, dirParameter ).getCanonicalFile();
+    }
+
     private File[] getRoots() {
         String rootpaths = Imcms.getServices().getConfig().getFileAdminRootPaths();
         List rootList = new ArrayList();
@@ -177,13 +176,12 @@ public class FileAdmin extends HttpServlet {
             File[] relativeSourceFileTree = makeRelativeFileList( sourceDir, sourceFileTree );
             StringBuffer optionList = new StringBuffer();
             StringBuffer fileList = new StringBuffer();
+            File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
             for ( int i = 0; i < relativeSourceFileTree.length; i++ ) {
                 File destFile = new File( destDir, relativeSourceFileTree[i].getPath() );
                 fileList.append( relativeSourceFileTree[i] ).append( File.pathSeparator );
                 if ( destFile.exists() ) {
-                    String optionString = destFile.getCanonicalPath() + ( destFile.isDirectory()
-                                                                          ? File.separator
-                                                                          : " [" + destFile.length() + "]" );
+                    String optionString = createWarningFileOptionString(destFile);
                     optionList.append( "<option>" ).append( optionString ).append( "</option>" );
                 }
             }
@@ -208,6 +206,13 @@ public class FileAdmin extends HttpServlet {
         return handledOutput;
     }
 
+    private String createWarningFileOptionString(File destFile) {
+        File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
+        return FileUtility.relativizeFile(webAppPath, destFile).getPath() + ( destFile.isDirectory()
+                                                                              ? File.separator
+                                                                              : " [" + destFile.length() + "]" );
+    }
+
     private boolean copy( String[] files, File sourceDir, File destDir, File dir1, File dir2, HttpServletResponse res,
                           UserDomainObject user, ImcmsServices imcref ) throws IOException {
         boolean handledOutput = false;
@@ -220,9 +225,7 @@ public class FileAdmin extends HttpServlet {
                 File destFile = new File( destDir, relativeSourceFileTree[i].getPath() );
                 fileList.append( relativeSourceFileTree[i] ).append( File.pathSeparator );
                 if ( destFile.exists() ) {
-                    String optionString = destFile.getCanonicalPath() + ( destFile.isDirectory()
-                                                                          ? File.separator
-                                                                          : " [" + destFile.length() + ']' );
+                    String optionString = createWarningFileOptionString(destFile);
                     optionList.append( "<option>" ).append( optionString ).append( "</option>" );
                 }
             }
@@ -271,8 +274,8 @@ public class FileAdmin extends HttpServlet {
                 res.setContentType( "application/octet-stream" );
                 res.setHeader( "Content-Disposition", "attachment; filename=\"" + file.getName() + '\"' );
                 BufferedInputStream fin = new BufferedInputStream( new FileInputStream( file ) );
-                byte[] buffer = new byte[BUFFER_SIZE];
                 res.setContentLength( fin.available() );
+                byte[] buffer = new byte[BUFFER_SIZE];
                 ServletOutputStream out = res.getOutputStream();
                 for ( int bytes_read; ( bytes_read = fin.read( buffer ) ) != -1; ) {
                     out.write( buffer, 0, bytes_read );
@@ -350,11 +353,10 @@ public class FileAdmin extends HttpServlet {
 
     static File findUniqueFilename(File file) {
         File uniqueFile = file;
-        String filenameWithoutSuffix;
         int counter = 1;
         String previousSuffix = "";
         while ( uniqueFile.exists() ) {
-            filenameWithoutSuffix = StringUtils.substringBeforeLast(uniqueFile.getName(), previousSuffix);
+            String filenameWithoutSuffix = StringUtils.substringBeforeLast(uniqueFile.getName(), previousSuffix);
             String suffix = "." + counter;
             counter++;
             uniqueFile = new File(uniqueFile.getParentFile(), filenameWithoutSuffix + suffix);
@@ -382,15 +384,15 @@ public class FileAdmin extends HttpServlet {
         vec.add( "#filelist#" );
         vec.add( option_list );
         vec.add( "#source#" );
-        vec.add( sourceDir.getCanonicalPath() );
+        vec.add( getContextRelativeAbsolutePathToDirectory(sourceDir) );
         vec.add( "#dest#" );
-        vec.add( destDir.getCanonicalPath() );
+        vec.add( getContextRelativeAbsolutePathToDirectory(destDir) );
         vec.add( "#files#" );
         vec.add( file_list );
         vec.add( "#dir1#" );
-        vec.add( dir1.getCanonicalPath() );
+        vec.add( getContextRelativeAbsolutePathToDirectory(dir1) );
         vec.add( "#dir2#" );
-        vec.add( dir2.getCanonicalPath() );
+        vec.add( getContextRelativeAbsolutePathToDirectory(dir2) );
         Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         out.print( imcref.getAdminTemplate( template, user, vec ) );
@@ -401,9 +403,9 @@ public class FileAdmin extends HttpServlet {
                                                                   ImcmsServices imcref ) throws IOException {
         List vec = new ArrayList();
         vec.add( "#dir1#" );
-        vec.add( dir1.getCanonicalPath() );
+        vec.add( getContextRelativeAbsolutePathToDirectory(dir1) );
         vec.add( "#dir2#" );
-        vec.add( dir2.getCanonicalPath() );
+        vec.add( getContextRelativeAbsolutePathToDirectory(dir2) );
         vec.add( "#filename#" );
         vec.add( newFilename );
         Utility.setDefaultHtmlContentType( res );
@@ -415,9 +417,9 @@ public class FileAdmin extends HttpServlet {
                                        ImcmsServices imcref ) throws IOException {
         List vec = new ArrayList();
         vec.add( "#dir1#" );
-        vec.add( dir1.getCanonicalPath() );
+        vec.add( getContextRelativeAbsolutePathToDirectory(dir1) );
         vec.add( "#dir2#" );
-        vec.add( dir2.getCanonicalPath() );
+        vec.add( getContextRelativeAbsolutePathToDirectory(dir2) );
         Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         out.print( imcref.getAdminTemplate( "FileAdminFileBlank.html", user, vec ) );
@@ -429,9 +431,7 @@ public class FileAdmin extends HttpServlet {
         StringBuffer optionlist = new StringBuffer();
         for ( int i = 0; i < filelist.length; i++ ) {
             File foo = new File( sourceDir, filelist[i].getPath() );
-            String bar = foo.getCanonicalPath() + ( foo.isDirectory()
-                                                    ? File.separator
-                                                    : " [" + foo.length() + "]" );
+            String bar = createWarningFileOptionString(foo);
             optionlist.append( "<option>" ).append( bar ).append( "</option>" );
             files.append( filelist[i] ).append( File.pathSeparator );
         }
@@ -439,13 +439,13 @@ public class FileAdmin extends HttpServlet {
         vec.add( "#filelist#" );
         vec.add( optionlist.toString() );
         vec.add( "#files#" );
-        vec.add( files.toString() );
+        vec.add( StringEscapeUtils.escapeHtml(files.toString()) );
         vec.add( "#source#" );
-        vec.add( sourceDir.getCanonicalPath() );
+        vec.add( getContextRelativeAbsolutePathToDirectory(sourceDir) );
         vec.add( "#dir1#" );
-        vec.add( dir1.getCanonicalPath() );
+        vec.add( getContextRelativeAbsolutePathToDirectory(dir1) );
         vec.add( "#dir2#" );
-        vec.add( dir2.getCanonicalPath() );
+        vec.add( getContextRelativeAbsolutePathToDirectory(dir2) );
         Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         out.print( imcref.getAdminTemplate( "FileAdminDeleteWarning.html", user, vec ) );
@@ -455,9 +455,9 @@ public class FileAdmin extends HttpServlet {
                                            ImcmsServices imcref ) throws IOException {
         List vec = new ArrayList();
         vec.add( "#dir1#" );
-        vec.add( dir1.getCanonicalPath() );
+        vec.add( getContextRelativeAbsolutePathToDirectory(dir1) );
         vec.add( "#dir2#" );
-        vec.add( dir2.getCanonicalPath() );
+        vec.add( getContextRelativeAbsolutePathToDirectory(dir2) );
         Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         out.print( imcref.getAdminTemplate( "FileAdminNameBlank.html", user, vec ) );
@@ -483,20 +483,16 @@ public class FileAdmin extends HttpServlet {
 
     private void fromSourceToDestination(HttpServletRequest mp, File[] roots,
                                          FromSourceFileToDestinationFileCommand command) throws IOException {
-        String src = mp.getParameter( "source" );
-        String dst = mp.getParameter( "dest" );
+        File srcdir = getContextRelativeDirectoryFromRequest(mp, "source" );
+        File dstdir = getContextRelativeDirectoryFromRequest(mp, "dest" );
         String files = mp.getParameter( "files" );
-        if ( src != null && dst != null && files != null ) {
-            File srcdir = new File( src );
-            File dstdir = new File( dst );
-            if ( isUnderRoot( srcdir, roots ) && isUnderRoot( dstdir, roots ) ) {
-                StringTokenizer st = new StringTokenizer( files, ":;" );
-                while ( st.hasMoreTokens() ) {
-                    String foo = st.nextToken();
-                    File source = new File( srcdir, foo );
-                    File dest = new File( dstdir, foo );
-                    command.execute(source, dest);
-                }
+        if ( isUnderRoot( srcdir, roots ) && isUnderRoot( dstdir, roots ) ) {
+            StringTokenizer st = new StringTokenizer( files, ":;" );
+            while ( st.hasMoreTokens() ) {
+                String foo = st.nextToken();
+                File source = new File( srcdir, foo );
+                File dest = new File( dstdir, foo );
+                command.execute(source, dest);
             }
         }
     }
@@ -514,8 +510,9 @@ public class FileAdmin extends HttpServlet {
     }
 
     private void deleteOk( HttpServletRequest mp, File[] roots ) throws IOException {
-        String files, path;
-        if ( ( files = mp.getParameter( "files" ) ) != null && ( path = mp.getParameter( "source" ) ) != null ) {
+        String files = mp.getParameter( "files" ) ;
+        File path = getContextRelativeDirectoryFromRequest(mp, "source") ;
+        if ( null != files && null != path ) {
             StringTokenizer st = new StringTokenizer( files, ":;" );
             while ( st.hasMoreTokens() ) {
                 File foo = new File( path, st.nextToken() );
@@ -526,20 +523,23 @@ public class FileAdmin extends HttpServlet {
         }
     }
 
-    private File changeDir( String[] files, File dir, File[] roots ) {
+    private File changeDir( String[] files, File dir, File[] roots ) throws IOException {
         File resultDir = dir;
         if ( files != null && files.length == 1 ) {	//Has the user chosen just one dir?
-            File newDir = new File( files[0] );
-            if ( !newDir.isAbsolute() ) {					//Is the dir one of the roots?
-                newDir = new File( dir, files[0] );		//No? Treat it like a relative path...
+            String filename = files[0];
+            if ( new File( filename ).isAbsolute() ) {
+                File newDir = new File( WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath(), filename) ;
+                if ( isUnderRoot( newDir, roots ) ) {
+                    resultDir = newDir;
+                }
+            } else {					//Is the dir one of the roots?
+                File newDir = new File( dir, filename );		//No? Treat it like a relative path...
                 if ( newDir.isDirectory() && isUnderRoot( newDir, roots ) ) {			//It IS a directory, i hope?
                     resultDir = newDir;
                 }
-            } else if ( isUnderRoot( newDir, roots ) ) {
-                resultDir = newDir;
             }
         }
-        return resultDir;
+        return resultDir.getCanonicalFile();
     }
 
     private File[] makeAbsoluteFileList( File parent, String[] filePaths ) {
@@ -577,8 +577,7 @@ public class FileAdmin extends HttpServlet {
         }
         File[] relativeFileList = new File[files.length];
         for ( int i = 0; i < files.length; i++ ) {
-            File file = files[i];
-            relativeFileList[i] = FileUtility.relativizeFile( relativeParentDir, file );
+            relativeFileList[i] = FileUtility.relativizeFile( relativeParentDir, files[i] );
         }
         return relativeFileList;
     }
@@ -617,10 +616,9 @@ public class FileAdmin extends HttpServlet {
 
         File[] rootlist = getRoots();
         List vec = new ArrayList();
-        File webappPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
         if ( fd1 != null ) {
             vec.add( "#dir1#" );
-            vec.add( getPathRelativeTo( fd1, webappPath ) + File.separator );
+            vec.add( getContextRelativeAbsolutePathToDirectory(fd1) );
             String optionlist = createDirectoryOptionList( rootlist, fd1 );
             vec.add( "#files1#" );
             vec.add( optionlist );
@@ -632,7 +630,7 @@ public class FileAdmin extends HttpServlet {
         }
         if ( fd2 != null ) {
             vec.add( "#dir2#" );
-            vec.add( getPathRelativeTo( fd2, webappPath ) + File.separator );
+            vec.add( getContextRelativeAbsolutePathToDirectory(fd2) );
             String optionlist = createDirectoryOptionList( rootlist, fd2 );
             vec.add( "#files2#" );
             vec.add( optionlist );
@@ -644,6 +642,11 @@ public class FileAdmin extends HttpServlet {
         }
 
         return imcref.getAdminTemplate( "FileAdmin.html", user, vec );
+    }
+
+    private String getContextRelativeAbsolutePathToDirectory(File dir) throws IOException {
+        File webappPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
+        return File.separator + getPathRelativeTo( dir, webappPath ) + File.separator;
     }
 
     private String getPathRelativeTo( File file, File root ) throws IOException {
@@ -658,38 +661,40 @@ public class FileAdmin extends HttpServlet {
 
     private String createDirectoryOptionList( File[] rootlist, File directory ) throws IOException {
         StringBuffer optionlist = new StringBuffer();
+        File webappPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
         for ( int i = 0; i < rootlist.length; i++ ) {
-            optionlist.append( getDirectoryOption( rootlist[i] ) );
+            String dirname = getPathRelativeTo( rootlist[i], webappPath ) ;
+            optionlist.append(getDirectoryOption(File.separator + dirname + File.separator, File.separator + dirname + File.separator) );
         }
         File parent = directory.getParentFile();
         if ( isUnderRoot( parent, rootlist )) {
-            optionlist.append( getDirectoryOption( parent, ".." ) );
+            optionlist.append(getDirectoryOption(".." + File.separator, ".." + File.separator) );
         }
         File[] dirlist = directory.listFiles( (FileFilter)DirectoryFileFilter.INSTANCE );
         Arrays.sort(dirlist, getFileComparator());
         for ( int i = 0; null != dirlist && i < dirlist.length; i++ ) {
-            optionlist.append( getDirectoryOption( dirlist[i],dirlist[i].getName() ));
+            optionlist.append(getDirectoryOption(dirlist[i].getName() + File.separator, dirlist[i].getName() + File.separator));
         }
         File[] filelist = directory.listFiles( (FileFilter)new NotFileFilter( DirectoryFileFilter.INSTANCE ) );
         Arrays.sort(filelist, getFileComparator());
 
         for ( int i = 0; null != filelist && i < filelist.length; i++ ) {
-
             String formatedFileSize = HumanReadable.getHumanReadableByteSize( filelist[i].length() );
-            String fileNameAndSize = filelist[i].getName() + " [" + formatedFileSize + "]";
-            optionlist.append( "<option value=\"" ).append( filelist[i].getName() ).append( "\">" ).append( fileNameAndSize ).append( "</option>" );
+            String filename = filelist[i].getName();
+            String fileNameAndSize = filename + " [" + formatedFileSize + "]";
+            optionlist.append("<option value=\"");
+            optionlist.append(StringEscapeUtils.escapeHtml(filename));
+            optionlist.append("\">");
+            optionlist.append(StringEscapeUtils.escapeHtml(fileNameAndSize));
+            optionlist.append("</option>");
         }
         return optionlist.toString();
     }
 
-    private String getDirectoryOption( File dir ) throws IOException {
-        File webappPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
-        String displayDir = getPathRelativeTo( dir, webappPath ) ;
-        return getDirectoryOption( dir, displayDir );
-    }
-
-    private String getDirectoryOption( File dir, String displayDir ) {
-        return "<option style=\"background-color:#f0f0f0\" value=\"" + dir + File.separator + "\">" +  displayDir + File.separator + "</option>";
+    private String getDirectoryOption(String value, String text) {
+        return "<option style=\"background-color:#f0f0f0\" value=\""
+               + StringEscapeUtils.escapeHtml(value) + "\">"
+               + StringEscapeUtils.escapeHtml(text) + "</option>";
     }
 
     private Comparator getFileComparator() {

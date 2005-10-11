@@ -10,29 +10,21 @@
 
 #gui_outer_start()
 #gui_head( "<? templates/sv/FileAdminDeleteWarning.html/1 ?>" )
-<table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="FileAdmin" enctype="multipart/form-data">
+<table border="0" cellspacing="0" cellpadding="0">
 <input type="HIDDEN" name="dir1" value="#dir1#">
 <input type="HIDDEN" name="dir2" value="#dir2#">
 <input type="HIDDEN" name="source" value="#source#">
-<input type="HIDDEN" name="dest" value="#dest#">
 <input type="HIDDEN" name="files" value="#files#">
 <tr> 
 	<td><input type="submit" class="imcmsFormBtn" name="no" value="<? global/back ?>"></td>
 	<td>&nbsp;</td>
 	<td><input type="button" class="imcmsFormBtn" value="<? global/help ?>" title="<? global/openthehelppage ?>" onClick="openHelpW(2)"></td>
 </tr>
-</form>
 </table>
 #gui_mid()
 
 <table border="0" cellspacing="0" cellpadding="0" width="500">
-<form method="post" action="FileAdmin" enctype="multipart/form-data">
-<input type="HIDDEN" name="dir1" value="#dir1#">
-<input type="HIDDEN" name="dir2" value="#dir2#">
-<input type="HIDDEN" name="source" value="#source#">
-<input type="HIDDEN" name="dest" value="#dest#">
-<input type="HIDDEN" name="files" value="#files#">
 <tr> 
 	<td>#gui_heading( "<? templates/sv/FileAdminDeleteWarning.html/3 ?>" )</td>
 </tr>
@@ -53,8 +45,8 @@
 	<input class="imcmsFormBtn" style="width:70" type="submit" name="deleteok" value="<? templates/sv/FileAdminDeleteWarning.html/2001 ?>">
 	<input class="imcmsFormBtn" style="width:70" type="submit" name="no" value="<? templates/sv/FileAdminDeleteWarning.html/2002 ?>"></td>
 </tr>
-</form>
 </table>
+</form>
 #gui_bottom()
 #gui_outer_end()
 
