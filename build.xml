@@ -400,6 +400,8 @@
                         <replaceregexp file="${tmp}/imcms${versionfilesuffix}-@{language}-@{database}.sql" match="^-- @{database} " replace="" flags="gm"/>
                         <replaceregexp file="${tmp}/imcms${versionfilesuffix}-@{language}-@{database}.sql" match="^-- \w+ (.*?)$" replace="" flags="gm"/>
                         
+                        <filter token="language" value="@{language}"/>
+                        
                         <imtranslate bundle="imcms" bundlelanguage="@{language}"
                                      starttoken="&lt;? " endtoken=" ?&gt;"
                                      todir="${sql}" filtering="true" encoding="iso-8859-1">

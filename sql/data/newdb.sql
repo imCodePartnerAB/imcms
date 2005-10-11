@@ -40,7 +40,7 @@ INSERT INTO user_roles_crossref VALUES(2,2);
 
 -- mssql SET IDENTITY_INSERT meta ON
 INSERT INTO meta (meta_id, doc_type, meta_headline,                meta_text, meta_image, owner_id, permissions, shared, show_meta, lang_prefix,         date_created,                    date_modified,                   disable_search, archived_datetime, target,  activate, status, publication_start_datetime,      publication_end_datetime)
- VALUES (1001,   2,        '<? sql/sql/newdb.sql/headline_1001 ?>',  '',        '',         1,        0,           0,      0,         '@defaultlanguage@',
+ VALUES (1001,   2,        '<? sql/sql/newdb.sql/headline_1001 ?>',  '',        '',         1,        0,           0,      0,         '@language@',
 -- mysql NOW()
 -- mssql GETDATE()
 ,
