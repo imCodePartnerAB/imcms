@@ -54,7 +54,9 @@ INSERT INTO meta (meta_id, doc_type, meta_headline,                meta_text, me
 
 INSERT INTO templates VALUES (1,'demo.html', 'demo', '<? sql/default_lang ?>', 1,1,1);
 
-INSERT INTO templategroups VALUES (0, 'normal');
+-- mssql SET IDENTITY_INSERT templategroups ON
+INSERT INTO templategroups (group_id, group_name) VALUES (0, 'normal');
+-- mssql SET IDENTITY_INSERT templategroups OFF
 
 INSERT INTO templates_cref VALUES(0,1);
 
