@@ -5,8 +5,6 @@ import com.imcode.db.mock.MockResultSet;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
 import imcode.server.document.*;
-import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.IndexException;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -17,7 +15,6 @@ import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.varia.NullAppender;
-import org.apache.lucene.search.Query;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
@@ -32,7 +29,7 @@ public class TestDefaultDocumentMapper extends TestCase {
     private RoleId userRole;
     private TextDocumentDomainObject textDocument;
     private TextDocumentDomainObject oldDocument;
-    private TestDefaultDocumentMapper.MockDocumentIndex documentIndex;
+    private MockDocumentIndex documentIndex;
     private static final Integer ONE = new Integer(1);
 
     protected void setUp() throws Exception {
@@ -180,8 +177,8 @@ public class TestDefaultDocumentMapper extends TestCase {
                 new MockDatabase.DeleteFromTableSqlCallPredicate("childs"),
                 new MockDatabase.DeleteFromTableSqlCallPredicate("menus"),
                 new MockDatabase.DeleteFromTableSqlCallPredicate("meta")});
-        assertTrue(documentIndex.removeDocumentCalled) ;
-        assertFalse(documentIndex.indexDocumentCalled) ;
+        assertTrue(documentIndex.isRemoveDocumentCalled()) ;
+        assertFalse(documentIndex.isIndexDocumentCalled()) ;
     }
 
     public void testCreateTextDocument() throws NoPermissionToAddDocumentToMenuException, NoPermissionToCreateDocumentException {
@@ -307,26 +304,6 @@ public class TestDefaultDocumentMapper extends TestCase {
         permissionSetForNewR2.setDefaultTemplate(null);
         newDocument = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, oldDocument, user);
         assertEquals(template2, newDocument.getTemplate());
-    }
-
-    public class MockDocumentIndex implements DocumentIndex {
-        private boolean indexDocumentCalled;
-        private boolean removeDocumentCalled;
-
-        public void indexDocument( DocumentDomainObject document ) throws IndexException {
-            this.indexDocumentCalled = true ;
-        }
-
-        public void removeDocument( DocumentDomainObject document ) throws IndexException {
-            this.removeDocumentCalled = true ;
-        }
-
-        public DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IndexException {
-            return new DocumentDomainObject[0];
-        }
-
-        public void rebuild() {
-        }
     }
 
     private static class MockDocumentReference extends DocumentReference {

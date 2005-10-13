@@ -4,8 +4,10 @@ import com.imcode.db.mock.MockDatabase;
 import com.imcode.db.mock.MockResultSet;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import com.imcode.imcms.mapping.MockDocumentIndex;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.MockRoleGetter;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
@@ -19,16 +21,17 @@ public class TestDocumentService extends TestCase {
     private MockDatabase database;
     private User user;
     private MockImcmsServices imcmsServices;
+    private MockContentManagementSystem contentManagementSystem;
 
     public void setUp() throws Exception {
         super.setUp();
-        MockContentManagementSystem contentManagementSystem = new MockContentManagementSystem();
+        contentManagementSystem = new MockContentManagementSystem();
         user = new User(new UserDomainObject());
         contentManagementSystem.setCurrentUser( user );
         imcmsServices = new MockImcmsServices();
         imcmsServices.setRoleGetter(new MockRoleGetter());
         database = new MockDatabase();
-        DefaultDocumentMapper documentMapper = new DefaultDocumentMapper(imcmsServices, database, null, null, null, null, new Config(), new CategoryMapper(database));
+        DefaultDocumentMapper documentMapper = new DefaultDocumentMapper(imcmsServices, database, null, null, new MockDocumentIndex(), null, new Config(), new CategoryMapper(database));
         imcmsServices.setDocumentMapper(documentMapper) ;
         imcmsServices.setCategoryMapper(new CategoryMapper(database));
         contentManagementSystem.setInternal( imcmsServices );
@@ -71,4 +74,18 @@ public class TestDocumentService extends TestCase {
         database.assertCalled( new MockDatabase.UpdateTableSqlCallPredicate( "categories", otherName ));
     }
 
+    public void testDeleteDocument() throws Exception {
+        TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
+        textDocument.setId(1001);
+        TextDocument document = new TextDocument(textDocument, contentManagementSystem);
+        
+        try {
+            documentService.deleteDocument(document);
+            fail("Expected NoPermissionException") ;
+        } catch(NoPermissionException e) {}
+        UserDomainObject admin = new UserDomainObject() ;
+        admin.addRoleId(RoleId.SUPERADMIN) ;
+        contentManagementSystem.setCurrentInternalUser(admin);
+        documentService.deleteDocument(document);
+    }
 }

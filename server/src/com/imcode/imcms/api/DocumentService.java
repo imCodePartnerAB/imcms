@@ -5,6 +5,7 @@ import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.document.*;
 import imcode.server.document.index.IndexException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.UserDomainObject;
 
 public class DocumentService {
 
@@ -225,6 +226,14 @@ public class DocumentService {
     public void saveCategory( Category category ) throws NoPermissionException, CategoryAlreadyExistsException {
         getSecurityChecker().isSuperAdmin();
         getCategoryMapper().saveCategory( category.getInternal() );
+    }
+
+     public void deleteDocument( Document document ) throws NoPermissionException {
+         UserDomainObject internalUser = contentManagementSystem.getCurrentUser().getInternal();
+         if (!internalUser.isSuperAdmin()) {
+             throw new NoPermissionException("User must be superadmin to delete documents.") ;
+         }
+         getDocumentMapper().deleteDocument(document.getInternal(), internalUser);
     }
 
     static class ApiWrappingDocumentVisitor extends DocumentVisitor {

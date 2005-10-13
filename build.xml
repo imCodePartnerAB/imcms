@@ -430,13 +430,9 @@
 
     </target>
 
-    <target name="versionfile">
-        <echo message="${version}" file="${versionfile}"/>
-    </target>
-
     <!-- Creates the directories and copies the files that are to be public. -->
     <target name="web"
-       depends="init,changes,jspc,versionfile"
+       depends="init,changes,jspc"
        description="Translates and copies the webfiles.">
 
         <dependset>
@@ -457,6 +453,8 @@
         <mkdir dir="${WEB-INF}/logs"/>
         <mkdir dir="${WEB-INF}/uploads"/>
 
+        <echo message="${version}" file="${versionfile}"/>
+        
         <copy todir="${webroot}" filtering="true">
             <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
         </copy>
