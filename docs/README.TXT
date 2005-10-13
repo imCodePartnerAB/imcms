@@ -9,7 +9,7 @@ For build instructions, see BUILD.TXT
 This version is tested on the following platforms and versions:
 
 Java
-This version is tested with JDK 1.4.
+This version is tested with JDK 1.5.
 Should also work on newer versions of Java.
 
 Webserver

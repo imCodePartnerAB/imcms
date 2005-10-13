@@ -121,7 +121,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
             public int compare(Object o1, Object o2) {
                 File f1 = (File) o1;
                 File f2 = (File) o2;
-                return Long.valueOf(f2.lastModified()).compareTo(Long.valueOf(f1.lastModified()));
+                return new Long(f2.lastModified()).compareTo(new Long(f1.lastModified()));
             }
         });
     }
