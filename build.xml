@@ -388,7 +388,9 @@
                 <for list="swe,eng" param="language">
                     <sequential>
                         <ddl2db schemafile="${sql}/ddl.xml" databasetype="@{database}">
-                             <writeschemasqltofile outputfile="${tmp}/@{database}-ddl.sql" alterdatabase="false" droptablesfirst="false"/> 
+                             <writeschemasqltofile outputfile="${tmp}/@{database}-ddl.sql" alterdatabase="false" dodrops="false">
+                                <parameter platforms="mysql" name="ENGINE" value="InnoDB"/>
+                             </writeschemasqltofile>
                         </ddl2db>
                         
                         <concat destfile="${tmp}/imcms${versionfilesuffix}-@{language}-@{database}.sql">
