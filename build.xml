@@ -123,7 +123,7 @@
         </tar>
     </target>
 
-    <target name="bindist-war" depends="build,ddl,apidocs,versionfile,checksumsfile">
+    <target name="bindist-war" depends="build,ddl,apidocs,checksumsfile">
         <mkdir dir="${dist}"/>
         <war warfile="${war}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
     </target>
@@ -339,9 +339,9 @@
     <target name="ddl.xml" depends="init">
 
         <concat destfile="${sql}/ddl.xml">
-            <header>&lt;database defaultIdMethod="native" name="imcms"&gt;&#10;</header>
+            <header>&lt;database defaultIdMethod="native" name="imcms"&gt;${line.separator}</header>
             <fileset dir="sql/tables" includes="*.tab"/>
-            <footer>&lt;/database&gt;&#10;</footer>
+            <footer>&lt;/database&gt;${line.separator}</footer>
         </concat>
 
     </target>
@@ -434,7 +434,7 @@
 
     <!-- Creates the directories and copies the files that are to be public. -->
     <target name="web"
-       depends="init,changes,jspc"
+       depends="init,changes,jspc,versionfile"
        description="Translates and copies the webfiles.">
 
         <dependset>
@@ -649,7 +649,7 @@
             The JUnit task is not available.
             Please add junit.jar to ant's classpath,
             for example by adding junit.jar to $ANT_HOME/lib.
-            &#10;
+
             If this is impossible, set the property "no-junit-task-available"
             in build.properties. Note that this means that tests cannot be run!
         </fail>
