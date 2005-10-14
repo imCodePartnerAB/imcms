@@ -15,8 +15,8 @@ public class DatabaseService {
     /**
      * Get a databaseconnection from the connectionpool.
      *
-     * <strong>IMPORTANT</strong>: Do not forget to make sure the connection is closed,
-     * otherwise it won't be returned to the pool.
+     * <strong>IMPORTANT</strong>: Do not forget to make sure that the connection is closed
+     * (inside a "finally" block!), otherwise it won't be returned to the pool.
      *
      * @return a {@link Connection} from the connectionpool.
      * @throws SQLException if there was a problem getting the connection.
