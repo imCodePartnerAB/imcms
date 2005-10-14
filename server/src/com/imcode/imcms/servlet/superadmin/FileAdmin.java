@@ -527,7 +527,7 @@ public class FileAdmin extends HttpServlet {
         File resultDir = dir;
         if ( files != null && files.length == 1 ) {	//Has the user chosen just one dir?
             String filename = files[0];
-            if ( new File( filename ).isAbsolute() ) {
+            if ( filename.startsWith(File.separator) ) {
                 File newDir = new File( WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath(), filename) ;
                 if ( isUnderRoot( newDir, roots ) ) {
                     resultDir = newDir;
