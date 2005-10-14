@@ -1008,7 +1008,8 @@ HTMLArea.loadStyle("htmlarea.css.jsp");
 // by Weeezl (user @ InteractiveTools forums).
 HTMLArea.prototype._wordClean = function() {
 	var D = this.getInnerHTML();
-	if (/class=\x22?Mso/gi.test(D)) {
+	//if (/class=\x22?Mso/gi.test(D)) {
+	if (true) {
 
 		// make one line
 		D = D.replace(/\r\n/g, ' ').
