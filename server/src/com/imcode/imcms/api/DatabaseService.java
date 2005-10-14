@@ -18,7 +18,7 @@ public class DatabaseService {
      * <strong>IMPORTANT</strong>: Do not forget to make sure the connection is closed,
      * otherwise it won't be returned to the pool.
      *
-     * @return a databaseconnection from the connectionpool.
+     * @return a {@link Connection} from the connectionpool.
      * @throws SQLException if there was a problem getting the connection.
      */
     public Connection getConnection() throws SQLException {
@@ -26,7 +26,9 @@ public class DatabaseService {
     }
     
     /**
-     * @return A {@link DataSource}.
+     * Get the underlying DataSource.
+     * 
+     * @return a {@link DataSource}.
      */
     public DataSource getDataSource() {
         return dataSource ;
