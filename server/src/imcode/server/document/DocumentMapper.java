@@ -14,6 +14,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 import org.apache.commons.collections.map.AbstractMapDecorator;
 import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
@@ -79,7 +80,7 @@ public class DocumentMapper {
         this.documentPermissionSetMapper = documentPermissionSetMapper;
         this.documentIndex = documentIndex;
         int documentCacheMaxSize = config.getDocumentCacheMaxSize() ;
-        documentCache = new DocumentCache( new LRUMap( documentCacheMaxSize ), this );
+        documentCache = new DocumentCache( Collections.synchronizedMap( new LRUMap( documentCacheMaxSize ) ), this );
     }
 
     public DocumentDomainObject createDocumentOfTypeFromParent( int documentTypeId, final DocumentDomainObject parent,
@@ -322,6 +323,9 @@ public class DocumentMapper {
     }
 
     public DocumentReference getDocumentReference( DocumentDomainObject document ) {
+        if (null == document) {
+            throw new NullArgumentException( "document" ) ;
+        }
         return getDocumentReference( document.getId() );
     }
 

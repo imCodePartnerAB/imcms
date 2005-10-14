@@ -1,9 +1,9 @@
 package com.imcode.imcms.api;
 
+import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
-import imcode.server.ImcmsServices;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
@@ -161,7 +161,7 @@ public class TextDocument extends Document {
         getSecurityChecker().hasEditPermission(this);
         ImageDomainObject internalImage = new ImageDomainObject();
 
-        internalImage.setSource( new ImageDomainObject.ImagesPathRelativePathImageSource( image_src ) );
+        internalImage.setSource( new ImagesPathRelativePathImageSource( image_src ) );
         internalImage.setName(image_name);  // html imagetag name
         internalImage.setWidth(width);
         internalImage.setHeight(heigth);

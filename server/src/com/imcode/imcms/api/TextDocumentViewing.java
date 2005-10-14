@@ -1,7 +1,7 @@
 package com.imcode.imcms.api;
 
-import imcode.server.parser.ParserParameters;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.parser.ParserParameters;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -63,8 +63,11 @@ public class TextDocumentViewing {
         return parserParameters.getEditingMenuIndex();
     }
 
-    public static void putInRequest( TextDocumentViewing viewing ) {
-        viewing.parserParameters.getDocumentRequest().getHttpServletRequest().setAttribute( REQUEST_ATTRIBUTE__VIEWING, viewing );
+    public static TextDocumentViewing putInRequest( TextDocumentViewing viewing ) {
+        HttpServletRequest httpServletRequest = viewing.parserParameters.getDocumentRequest().getHttpServletRequest();
+        TextDocumentViewing previousViewing = fromRequest( httpServletRequest );
+        httpServletRequest.setAttribute( REQUEST_ATTRIBUTE__VIEWING, viewing );
+        return previousViewing ;
     }
 
 }

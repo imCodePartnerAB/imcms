@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.ImageSource;
 import imcode.util.ImcmsImageUtils;
 
 public class Image {
@@ -108,7 +109,7 @@ public class Image {
     }
 
     public void setSrc( String src ) {   // image srcurl,  relative imageurl
-        ImageDomainObject.ImageSource imageSource = ImcmsImageUtils.createImageSourceFromString( src ) ;
+        ImageSource imageSource = ImcmsImageUtils.createImageSourceFromString( src ) ;
         internalImage.setSource( imageSource );
     }
 

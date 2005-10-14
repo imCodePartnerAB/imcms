@@ -5,7 +5,7 @@ import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -71,17 +71,17 @@ public class ImcmsImageUtils {
         return imageTagBuffer.toString();
     }
 
-    public static ImageDomainObject.ImageSource createImageSourceFromString( String imageUrl ) {
-        ImageDomainObject.ImageSource imageSource = null;
+    public static ImageSource createImageSourceFromString( String imageUrl ) {
+        ImageSource imageSource = null;
 
         try {
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             DocumentDomainObject document = documentMapper.getDocument( Integer.parseInt( imageUrl ) );
             if ( document instanceof FileDocumentDomainObject ) {
-                imageSource = new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( document ) );
+                imageSource = new FileDocumentImageSource( documentMapper.getDocumentReference( document ) );
             }
         } catch ( NumberFormatException nfe ) {
-            imageSource = new ImageDomainObject.ImagesPathRelativePathImageSource( imageUrl );
+            imageSource = new ImagesPathRelativePathImageSource( imageUrl );
         }
         return imageSource;
     }
