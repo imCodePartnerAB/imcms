@@ -49,15 +49,11 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
 
         final CategoryTypeDomainObject categoryTypeDomainObject = (CategoryTypeDomainObject) o;
 
-        if (!name.equals(categoryTypeDomainObject.name)) {
-            return false;
-        }
-
-        return true;
+        return id==categoryTypeDomainObject.id;
     }
 
     public int hashCode() {
-        return name.hashCode();
+        return id;
     }
 
     public String toString() {
