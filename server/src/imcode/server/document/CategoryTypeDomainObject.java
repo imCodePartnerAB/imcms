@@ -9,7 +9,7 @@ import java.io.Serializable;
  */
 public class CategoryTypeDomainObject implements Comparable, Serializable {
 
-    private int id;
+    private final int id;
     private String name ;
     private int maxChoices ;
     private boolean inherited;
@@ -59,12 +59,12 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
 
         final CategoryTypeDomainObject categoryTypeDomainObject = (CategoryTypeDomainObject) o;
 
-        return name.equals(categoryTypeDomainObject.name);
+        return id==categoryTypeDomainObject.id ;
 
     }
 
     public int hashCode() {
-        return name.hashCode();
+        return id;
     }
 
     public String toString() {
