@@ -1,7 +1,394 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <changesets>
 
+<changeset version="3.0.0">
+    
+    <changes importance="high" for="administrators">
+        <change>
+            <p>
+                Removed deprecated features "conference", "billboard", "chat", "shop", "poll", "qengine", "fortune".
+                Warning! If you are using these features, all data for them will be deleted in the upgrade!
+            </p>
+            <bug id="3347"/>            
+        </change>
+        <change>
+            <p>
+                imCMS may now also be run on MySQL.
+                In theory it may run on any DBMS which has a JDBC 3.0 compliant driver,
+                but this has not been tested.
+            </p>
+            <bug id="1288"/>
+        </change>
+    </changes>
 
+    <changes importance="high" for="site developers">
+        <change>
+            <p>
+                Many methods no longer throw <class>NoPermissionException</class>,
+                notably most accessors of <class>Document</class> and its subclasses.
+                Permissions are instead checked when saving the document.
+            </p>
+            <bug id="2980"/>
+        </change>
+    </changes>
+    
+    <changes for="users">
+        <change>
+            <p>
+                The text editor now runs the MS Word-code removal filter every time you paste.
+            </p>
+        </change>
+        <change>
+            <p>
+                Linking a document for which you had no permissions was impossible
+                regardless of whether the document was "linkableByOtherUsers".
+            </p>
+            <p>
+                This has been worked around so that you can add a document by entering its id,
+                if a search for that id doesn't match another document.
+            </p>
+            <bug id="3385"/>
+        </change>
+        <change>
+            <p>
+                The reset button in the text editor did not work.                
+            </p>
+            <bug id="3469"/>
+        </change>
+        <change>
+            <p>
+                Removed broken undo/redo support in the text editor until properly supported by upstream.
+            </p>
+            <bug id="3468"/>
+        </change>
+        <change>
+            <p>
+                Integrated jsCalendar (<url>http://www.dynarch.com/projects/calendar/</url>) for selecting datetimes.
+            </p>
+            <bug id="3442"/>
+        </change>
+        <change>
+            <p>
+                If a user with "restricted 1" or "restricted 2" permissions created a document,
+                the default "default template" was ignored.
+            </p>
+            <bug id="3409"/>
+        </change>
+        <change>
+            <p>
+                Added a new default tab "Create new" to "My pages",
+                which doesn't list documents, but allows creating new documents.
+            </p>
+            <bug id="2975"/>
+        </change>
+        <change>
+            <p>
+                The text editor ctrl-key combinations would ignore the alt-key.
+            </p>
+            <bug id="3094"/>
+        </change>
+        <change>
+            <p>
+                A non-numeric prefix in a tree menu sort key would cause an exception.
+            </p>
+            <bug id="2924"/>
+        </change>
+        <change>
+            <p>
+                Copying a document did not copy its menus.
+            </p>
+            <bug id="2992"/>
+        </change>
+        <change>
+            <p>
+                If a category type was changed it would not affect editing cached documents.
+            </p>
+            <bug id="3526"/>
+        </change>
+    </changes>
+
+    <changes for="administrators">
+        <change>
+            <p>
+                Accessing <path>/servlet/Version</path> now 
+                prints the versions of java, the servlet container, and the database along with the imCMS version.
+            </p>
+            <bug id="3519"/>
+        </change>
+        <change>
+            <p>
+                It was impossible to delete some directories in the file manager.
+            </p>
+            <bug id="3509"/>
+        </change>
+        <change>
+            <p>
+                Disconnect from database when the webapp is shut down.
+            </p>
+            <bug id="3511"/>
+        </change>
+        <change>
+            <p>
+                Pressing "Add" or "Remove" when assigning templates to template groups with no templates listed
+                would throw an exception.
+            </p>
+            <bug id="3479"/>
+        </change>
+        <change>
+            <p>
+                Refactored <path>login/access_denied.jsp</path> and <path>login/no_permission.jsp</path>
+                into <path>login/index.jsp</path>.
+            </p>
+            <bug id="3467"/>
+        </change>
+        <change>
+            <p>
+                Renaming templates to already existing name would throw an exception.
+            </p>
+            <bug id="3466"/>
+        </change>
+        <change>
+            <p>
+                Allow superadmin to edit his/her own roles.
+            </p>
+            <bug id="2935"/>
+        </change>
+        <change>
+            <p>
+                Removed "List new/modified documents", and moved its functionality to the search form.
+            </p>
+            <bug id="3421"/>
+        </change>
+        <change>
+            <p>
+                If a role was removed, editing permissions for a cached document with that role would throw an exception.
+            </p>
+            <bug id="3420"/>
+        </change>
+        <change>
+            <p>
+                Prevent multiple users from being created with the same name.
+            </p>
+            <bug id="3150"/>
+        </change>
+        <change>
+            <p>
+                Users with the useradmin role could edit any user under certain conditions.
+            </p>
+            <bug id="2757"/>
+        </change>
+        <change>
+            <p>
+                Scheduled indexing may now be disabled by setting <config>IndexingSchedulePeriodInMinutes</config>
+                in <path>server.properties</path> to <value>0</value>.
+            </p>
+            <bug id="3144"/>
+        </change>
+        <change>
+            <p>
+                Build index in subdirectories of <path>WEB-INF/index</path> instead of in <path>WEB-INF/index.new</path>. 
+            </p>
+            <bug id="3491"/>
+        </change>
+        <change>
+            <p>
+                For each reload of the webapp a new background indexing thread would be started,
+                leading to multiple concurrent indexings.
+                This has been worked around so that an indexing thread terminates
+                if it notices that the index has been changed.
+            </p>
+            <bug id="3155"/>
+        </change>
+        <change>
+            <p>
+                Some error pages were shown as html code.
+            </p>
+            <bug id="3501"/>
+        </change>
+        <change>
+            <p>
+                Fixed spurious NullPointerExceptions in "LRUMap.reuseMapping()" due to unsynchronized access.
+            </p>
+            <bug id="2923"/>
+        </change>
+        <change>
+            <p>
+                Documents were not removed from the index when deleted.
+            </p>
+            <bug id="3182"/>
+        </change>
+        <change>
+            <p>
+                Increased space for system message to 1000 characters.
+            </p>
+            <bug id="3072"/>            
+        </change>
+    </changes>
+    
+    <changes for="site developers">
+        <change>
+            <p>
+                Added the method <method>DatabaseService.getDataSource()</method>
+                for accessing the underlying DataSource.
+            </p>
+            <bug id="3527"/>
+        </change>
+        <change>
+            <p>
+                The login page now passes along parameters "next_meta" and "next_url",
+                either of which can be used to redirect the user after login.
+            </p>
+            <bug id="3433"/>
+        </change>
+        <change>
+            <p>
+                Added the following methods to <class>com.imcode.imcms.api.Document</class>:
+            </p>
+            <ul>
+                <li><method>Document.getKeywords()</method></li>
+                <li><method>Document.setKeywords(Set)</method></li>
+                <li><method>Document.isLinkableByOtherUsers()</method></li>
+                <li><method>Document.setLinkableByOtherUsers(boolean)</method></li>
+                <li><method>Document.isSearchDisabled()</method></li>
+                <li><method>Document.setSearchDisabled(boolean)</method></li>
+            </ul>
+            <bug id="2930"/>
+            <bug id="2931"/>
+            <bug id="2932"/>
+        </change>
+        <change>
+            <p>
+                Deprecated the method <method>TextDocument.MenuItem.getManualNumber()</method>,
+                and added the replacement methods <method>TextDocument.MenuItem.setSortKey(Integer)</method>
+                and <method>TextDocument.MenuItem.getSortKey()</method>.
+            </p>
+            <bug id="2927"/>
+        </change>
+        <change>
+            <p>
+                Added method <method>TextDocument.MenuItem.setTreeKey(TreeKey)</method>.
+            </p>
+            <bug id="2928"/>
+        </change>
+        <change>
+            <p>
+                Deprecated methods <method>Document.setStatus(int)</method> and <method>Document.getStatus()</method>.
+                Added the replacement methods <method>Document.setPublicationStatus(PublicationStatus)</method>
+                and <method>Document.getPublicationStatus()</method> and the class <class>Document.PublicationStatus</class>.
+            </p>
+            <bug id="3037"/>
+        </change>
+        <change>
+            <p>
+                Deprecated methods <method>Document.setPermissionSetIdForRole(Role,int)</method>
+                and <method>Document.getPermissionSetIdForRole(Role)</method>.
+                Added the replacement methods <method>Document.setPermissionSetTypeForRole(Role,DocumentPermissionSetType)</method>
+                and <method>Document.getPermissionSetTypeForRole(Role)</method>
+                and the class <class>DocumentPermissionSetType</class>.
+            </p>
+            <p>
+                Deprecated method <method>DocumentPermissionSet.getType()</method> with no replacement.
+            </p>
+            <bug id="3037"/>
+        </change>
+        <change>
+            <p>
+                Added method <method>DocumentService.deleteDocument(Document)</method>.
+            </p>
+            <bug id="3428"/>
+        </change>
+        <change>
+            <p>
+                Added method <method>UserService.getUser(int)</method>.
+            </p>
+            <bug id="2929"/>
+        </change>
+        <change>
+            <p>
+                You can now set the creator of a new Document.
+            </p>
+            <bug id="3012"/>
+        </change>
+        <change>
+            <p>
+                Added class <class>LuceneQuery</class> which allows using the Lucene API directly.
+            </p>
+            <bug id="2364"/>
+        </change>
+        <change>
+            <p>
+                Including a non-existent path using an include-tag would throw a <class>NullPointerException</class>.
+            </p>
+            <bug id="3490"/>
+        </change>
+    </changes>
+    
+    <changes for="developers">
+        <change>
+            <p>
+                SQL DDL is now generated from XML source using Apache DdlUtils.
+            </p>
+            <p>
+                SQL procedures previously stored in the database are now loaded from disk.
+                Many of them have been removed.
+            </p>
+            <bug id="1288"/>
+            <bug id="3436"/>
+        </change>
+        <change>
+            <p>
+                Refactored parts of the database layer into a separate library named imcode-db.
+            </p>
+            <bug id="3454"/>
+        </change>
+        <change>
+            <p>
+                Removed the tools classes and extracted libraries imcode-util and imcode-ant-tasks.
+            </p>
+            <bug id="3304"/>
+        </change>
+        <change>
+            <p>
+                A document is always fetched from the database inside of a transaction.
+            </p>
+            <bug id="3162"/>
+        </change>
+        <change>
+            <p>
+                JSPs are now compiled during the build to find errors.
+            </p>
+            <bug id="2089"/>
+        </change>
+        <change>
+            <p>
+                Checkstyle is run during the build to find style errors.
+            </p>
+            <bug id="3443"/>
+        </change>
+        <change>
+            <p>
+                Building with a platform default encoding other than iso-8859-1 would fail.
+            </p>
+            <bug id="3459"/>
+            <bug id="3462"/>
+        </change>
+        <change>
+            <p>
+                A <class>ServletContextListener</class> is used to start up, instead of a load-on-startup servlet.
+            </p>
+            <bug id="3510"/>
+        </change>
+        <change>
+            <p>
+                The links on the first welcome page will now be accurate regardless of context path.
+            </p>
+            <bug id="3514"/>
+        </change>
+    </changes>
+    
+</changeset>
+    
+    
 <changeset version="2a.0.0">
 
     <changes for="users">
@@ -20,7 +407,7 @@
         </change>
     </changes>
 
-    <changes for="API-using developers">
+    <changes for="site developers">
         <change>
             <p>
                 <method>UserService.getUser(String)</method> now returns null for non-existing users.
@@ -43,7 +430,7 @@
         </change>
     </changes>
 
-    <changes for="API-using developers">
+    <changes for="site developers">
          <change>
             <p>
                 When including other documents,
@@ -69,7 +456,7 @@
         </change>
     </changes>
 
-    <changes for="API-using developers">
+    <changes for="site developers">
         <change>
             <p>
                 There was a mistake made with the
@@ -194,7 +581,7 @@
         </change>
     </changes>
 
-    <changes for="API-using developers">
+    <changes for="site developers">
         <change>
             <p>
                 Added package <package>com.imcode.imcms.api.contrib</package>,
@@ -717,7 +1104,7 @@
         </change>
     </changes>
 
-    <changes for="API-using developers">
+    <changes for="site developers">
         <change>
             <p>
                 Created package <package>com.imcode.util</package> with generic non-imCMS-specific utilities:
@@ -1161,7 +1548,7 @@
             <bug id="2629"/>
         </change>
     </changes>
-    <changes for="API-using developers">
+    <changes for="site developers">
         <change>
             <p>
                 Category now implements Comparable. Compares by name, ignoring case.
@@ -1281,7 +1668,7 @@
     </changes>
 </changeset>
 <changeset version="1.10.3">
-    <changes for="API-using developers">
+    <changes for="site developers">
         <change>
             <p>
                 Added constants for use in search-strings:
@@ -1343,7 +1730,7 @@
     </changes>
 </changeset>
 <changeset version="1.10.2">
-    <changes for="API-using developers">
+    <changes for="site developers">
         <change>
             <p>
                 Added method Image.isEmpty() to determine whether an image is empty or not.
@@ -1538,7 +1925,7 @@
             <bug id="1886"/>
         </change>
     </changes>
-    <changes for="API-using developers">
+    <changes for="site developers">
         <change>
             <p>
                 Added methods TextDocument.getTextFields(), TextDocument.getImages(), and TextDocument.getIncludes()
@@ -1698,7 +2085,7 @@
             </p>
         </change>
     </changes>
-    <changes for="API-using developers">
+    <changes for="site developers">
         <change>
             <p>
                 Moved the apisamples from "/apisamples/" to "/imcms/docs/apisamples/".
