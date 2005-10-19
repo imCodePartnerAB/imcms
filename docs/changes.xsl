@@ -47,11 +47,11 @@
 
     <xsl:template match="change">
         <li class="change">
-            <xsl:for-each select="bug"><a name="bug_{@id}"/></xsl:for-each>
-            <xsl:apply-templates select="*[not(self::bug)]"/>
-            <xsl:if test="not(*[not(self::bug)][position() = last() and self::p]) and bug">
+            <xsl:for-each select="issue"><a name="issue_{@id}"/></xsl:for-each>
+            <xsl:apply-templates select="*[not(self::issue)]"/>
+            <xsl:if test="not(*[not(self::issue)][position() = last() and self::p]) and issue">
                 <p>
-                    (<xsl:for-each select="bug">
+                    (<xsl:for-each select="issue">
                          <xsl:apply-templates select="."/>
                          <xsl:if test="not(position()=last())">, </xsl:if>
                      </xsl:for-each>)
@@ -63,8 +63,8 @@
     <xsl:template match="p">
         <xsl:copy>
             <xsl:apply-templates/>
-            <xsl:if test="position() = last() and ../bug">
-                (<xsl:for-each select="../bug">
+            <xsl:if test="position() = last() and ../issue">
+                (<xsl:for-each select="../issue">
                      <xsl:apply-templates select="."/>
                      <xsl:if test="not(position()=last())">, </xsl:if>
                  </xsl:for-each>)
@@ -98,8 +98,8 @@
         <span class="{name()}">&lt;<xsl:apply-templates/>&gt;</span>
     </xsl:template>
 
-    <xsl:template match="bug">
-        <a class="bug" href="http://bugzilla.imcode.com/show_bug.cgi?id={@id}">Bug <xsl:value-of select="@id"/></a>
+    <xsl:template match="issue">
+        <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id={@id}">Issue <xsl:value-of select="@id"/></a>
     </xsl:template>
 
 </xsl:stylesheet>
