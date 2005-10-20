@@ -258,7 +258,7 @@ if (isHelpWin) { %>
 
 <vel:velocity>
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 </vel:velocity>
 
 <script language="JavaScript">

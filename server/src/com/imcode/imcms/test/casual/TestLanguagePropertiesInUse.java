@@ -85,7 +85,7 @@ public class TestLanguagePropertiesInUse extends TestCase {
         return canonicalFilePath + ':' + lineNumber + ": " + message + SystemUtils.LINE_SEPARATOR;
     }
 
-    private static class StringCollectingFileFilter implements FileFilter {
+    public static class StringCollectingFileFilter implements FileFilter {
 
         private Perl5Util perl5Util = new Perl5Util();
         private Set collectedStrings = new HashSet();

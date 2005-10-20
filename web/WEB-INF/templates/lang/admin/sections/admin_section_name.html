@@ -3,14 +3,14 @@
 <title><? templates/sv/sections/admin_section_name.html/1 ?></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body>
 
 #gui_outer_start()
 #gui_head( "<? templates/sv/sections/admin_section_name.html/1 ?>" )
-#gui_head_help_and_back_buttons( 95  "AdminSection" "" "" )
+#gui_head_help_and_back_buttons( "SectionSiteNameChange"  "AdminSection" "" "" )
 #gui_mid()
 
 <form method="post" action="AdminSection">

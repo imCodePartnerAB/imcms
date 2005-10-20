@@ -77,7 +77,7 @@ String formatTime(Date time) {
 <meta http-equiv="Cache-Control" content="no-cache">
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 <%= jsCalendar.getHeadTagScripts() %>
 <script language="JavaScript">
 <!--
@@ -117,7 +117,7 @@ function checkFocus() {
 	<td><input type="submit" name="<%= PageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2001 ?>"></td>
 	<td>&nbsp;</td>
 	<td><input type="button" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2002 ?>"
-	title="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(77)"></td>
+	title="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2003 ?>" class="imcmsFormBtn" onClick="openHelpW('PageInfoChange')"></td>
 </tr>
 </table>
 #gui_mid()

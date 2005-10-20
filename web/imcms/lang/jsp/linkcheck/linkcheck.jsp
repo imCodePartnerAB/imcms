@@ -17,7 +17,7 @@ String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
 
 %>
 <vel:velocity>
-#gui_start_of_page( "<? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading ?>" "AdminManager" "" "18" "" )
+#gui_start_of_page( "<? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading ?>" "AdminManager" "" "LinksValidate" "" )
 
 <form method="GET" action="LinkCheck">
 <table border="0" cellspacing="0" cellpadding="2" width="100%">

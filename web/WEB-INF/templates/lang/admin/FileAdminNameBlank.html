@@ -3,7 +3,7 @@
 <title><? templates/sv/FileAdminNameBlank.html/1 ?></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body onLoad="focusField(1, 'no')">
@@ -20,7 +20,7 @@
 <tr> 
 	<td><input type="submit" class="imcmsFormBtn" name="no" value="<? global/back ?>"></td>
 	<td>&nbsp;</td>
-	<td><input type="button" class="imcmsFormBtn" value="<? global/help ?>" title="<? global/openthehelppage ?>" onClick="openHelpW(2)"></td>
+	<td><input type="button" class="imcmsFormBtn" value="<? global/help ?>" title="<? global/openthehelppage ?>" onClick="openHelpW('FileManager')"></td>
 </tr>
 </form>
 </table>

@@ -12,7 +12,7 @@
 <head>
 <title><? templates/sv/AdminUserResp.htm/1 ?></title>
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 <script language="javascript">
 <!--
 function evalPrepareAdd() {
@@ -66,7 +66,7 @@ function activateUseradmin_roles(){
 <tr>
 	<td><input type="submit" class="imcmsFormBtn" name="<%= OkCancelPage.REQUEST_PARAMETER__CANCEL %>" value="<? templates/sv/AdminUserResp.htm/2001 ?>"></td>
 	<td>&nbsp;</td>
-    <td><input type="button" value="<? templates/sv/AdminUserResp.htm/2002 ?>" title="<? templates/sv/AdminUserResp.htm/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(71)"></td>
+    <td><input type="button" value="<? templates/sv/AdminUserResp.htm/2002 ?>" title="<? templates/sv/AdminUserResp.htm/2003 ?>" class="imcmsFormBtn" onClick="openHelpW('UserEdit')"></td>
 </tr>
 </table>
 #gui_mid()

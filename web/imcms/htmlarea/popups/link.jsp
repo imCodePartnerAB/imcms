@@ -229,7 +229,7 @@ function onCancel() {
 </script>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/swe/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/swe/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body class="imcmsAdmBgCont" style="border:0; margin:0" onLoad="Init();">

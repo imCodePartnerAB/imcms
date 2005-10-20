@@ -39,7 +39,7 @@
 <title><? web/imcms/lang/jsp/admin/admin_manager.jsp/6 ?></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 <%= jsCalendar.getHeadTagScripts()%>
 
 </head>
@@ -52,7 +52,7 @@
 #gui_head( "<? web/imcms/lang/jsp/admin/admin_manager.jsp/1 ?> - <%= adminManagerPage.getHeading().toLocalizedString( request ) %>" )
 <!-- /gui_head -->
 		<table border="0" cellspacing="0" cellpadding="0" width="656">
-		<tr>
+        <tr>
 			<td id="adm">
 			<table border="0" cellspacing="0" cellpadding="0">
 			<form method="post" action="AdminManager" name="AdminManager"><%
@@ -73,15 +73,10 @@
 			</form>
 			</table></td>
 			<form action="StartDoc">
-			<td colspan="2" align="right"><input type="submit"<%
-			%> class="imcmsFormBtnSmall"<%
-			%> value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/3 ?>">
-			&nbsp;&nbsp;<input type="button"<%
-			%> value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/4 ?>"<%
-			%> title="<? web/imcms/lang/jsp/admin/admin_manager.jsp/5 ?>"<%
-			%> class="imcmsFormBtnSmall"<%
-			%> onClick="openHelpW(28)"></td>
-		</form>
+			    <td colspan="2" align="right"><input type="submit" class="imcmsFormBtnSmall" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/3 ?>">&nbsp;&nbsp;
+                    <input type="button" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/4 ?>" title="<? web/imcms/lang/jsp/admin/admin_manager.jsp/5 ?>" 
+                        class="imcmsFormBtnSmall" onClick="openHelpW('MyPages')" ></td>
+		    </form>
 		</tr>
 		</table>
 #gui_mid_tabs1()

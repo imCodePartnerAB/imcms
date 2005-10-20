@@ -17,7 +17,7 @@
 <title><? templates/sv/search/search_documents.html/1 ?></title>
 
 <link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css.jsp" type="text/css">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 <%= jsCalendar.getHeadTagScripts() %>
 
 </head>
@@ -33,7 +33,7 @@
         <% if (documentFinder.isCancelable()) { %>
             <td><input class="imcmsFormBtn" type="submit" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/back ?>">&nbsp;</td>
         <% } %>
-        <td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW(101)"></td>
+        <td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW('MyPagesSearch')"></td>
     </tr>
 </table>
 

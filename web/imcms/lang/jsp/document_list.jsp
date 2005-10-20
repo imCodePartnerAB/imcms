@@ -16,7 +16,7 @@
 <% ListDocuments.FormData formData = (ListDocuments.FormData)request.getAttribute( ListDocuments.REQUEST_ATTRIBUTE__FORM_DATA ) ;%>
 <vel:velocity>
 
-#gui_start_of_page( "<? imcms/lang/jsp/document_list.jsp/title ?>" "AdminManager" "" "37" "" )
+#gui_start_of_page( "<? imcms/lang/jsp/document_list.jsp/title ?>" "AdminManager" "" "ListDocument" "" )
 
 <table border="0" cellspacing="0" cellpadding="2" width="680">
 <tr>

@@ -27,6 +27,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.Help</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.Help</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.AddDoc</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.AddDoc</servlet-class>
     </servlet>
@@ -245,6 +250,11 @@
         <servlet-name>com.imcode.imcms.servlet.XmlDoc</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.XmlDoc</servlet-class>
     </servlet>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.Help</servlet-name>
+        <url-pattern>/Help/*</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>RD</servlet-name>

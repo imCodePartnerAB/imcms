@@ -53,7 +53,7 @@ if (fromEditor) {
 <title><? templates/sv/change_img.html/1 ?></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script><%
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script><%
 
 if (fromEditor) { %>
 
@@ -234,7 +234,7 @@ function checkLinkOnBlur() {<%
 							%> onClick="return onCancel(); return false"<%
 						} %>></td>
             <td>&nbsp;</td>
-            <td><input type="button" value="<? templates/sv/change_img.html/2002 ?>" title="<? templates/sv/change_img.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(72)"></td>
+            <td><input type="button" value="<? templates/sv/change_img.html/2002 ?>" title="<? templates/sv/change_img.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW('ImageRestrictedAdd')"></td>
         </tr>
         </table></td>
         <td>&nbsp;</td>

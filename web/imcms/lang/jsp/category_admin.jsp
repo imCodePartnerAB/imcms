@@ -46,7 +46,7 @@ if (inDefaultMode) {
 <title><? templates/sv/AdminManager_adminTask_element.htm/17 ?></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body onLoad="focusField('main','template')">
@@ -59,7 +59,7 @@ if (inDefaultMode) {
 <tr>
 	<td>
 	<input type="submit" value="<? global/back ?>" title="<? global/back ?>" class="imcmsFormBtn">
-	<input type="button" value="<? global/help ?>" title="<? global/help ?>" class="imcmsFormBtn" onClick="openHelpW(124)"></td>
+	<input type="button" value="<? global/help ?>" title="<? global/help ?>" class="imcmsFormBtn" onClick="openHelpW('CategoryAdmin')"></td>
 </tr>
 </form>
 <tr>

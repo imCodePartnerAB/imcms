@@ -117,16 +117,15 @@ B { font-weight: bold; }
             %> alt="<? templates/sv/adminbuttons/superadminbutton.html/2001 ?>"<%
             %> title="<? templates/sv/adminbuttons/superadminbutton.html/2001 ?>" id="admBtnAdmin" border="0"></a><%
         }
-        %><a href="javascript:void(0)" onClick="openHelpW(1);return(false)" target="_blank"  id="admHrefHelp"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/help.gif"<%
+        %><a href="javascript:void(0)" onClick="openHelpW('HelpStart');return(false)" target="_blank"  id="admHrefHelp"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/help.gif"<%
             %> alt="<? templates/sv/adminbuttons/adminbuttons.html/2003 ?>"<%
             %> title="<? templates/sv/adminbuttons/adminbuttons.html/2003 ?>" id="admBtnHelp" border="0"></a></td>
 </tr>
 </table></div>
 <SCRIPT language=JavaScript>
 <!--
-function openHelpW(id){
-	var helpMetaId = parseInt(<? templates/helpDocumentationMetaIdStartIndex ?>) + id;
-	window.open("@documentationurl@/GetDoc?meta_id=" + helpMetaId,"help");
+function openHelpW(helpDocName){
+	window.open("@documentationurl@/Help?name=" + helpDocName + "&lang=$language","help");
 }
 //-->
 </SCRIPT>

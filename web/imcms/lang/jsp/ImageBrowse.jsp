@@ -21,7 +21,7 @@ boolean fromEditor = (request.getParameter("editor_image") != null && request.ge
 <title><? install/htdocs/sv/jsp/ImageBrowse.html/1 ?></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'text')"<%
@@ -43,7 +43,7 @@ boolean fromEditor = (request.getParameter("editor_image") != null && request.ge
 <tr>
 	<td><input type="Submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2001 ?>"></td>
 	<td>&nbsp;</td>
-    <td><input type="button" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2002 ?>" title="<? install/htdocs/sv/jsp/ImageBrowse.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(44)"></td>
+    <td><input type="button" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2002 ?>" title="<? install/htdocs/sv/jsp/ImageBrowse.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW('ImageArchive')"></td>
 </tr>
 </table>
 #gui_mid()

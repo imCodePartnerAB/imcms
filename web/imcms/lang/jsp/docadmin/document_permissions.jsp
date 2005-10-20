@@ -54,7 +54,7 @@
         <tr>
             <td><input type="submit" name="<%= PageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" class="imcmsFormBtn" value="<? templates/sv/docinfo/change_meta_rights.html/2001 ?>"></td>
             <td>&nbsp;</td>
-            <td><input type="button" value="<? templates/sv/docinfo/change_meta_rights.html/2002 ?>" title="<? templates/sv/docinfo/change_meta_rights.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(84)"></td>
+            <td><input type="button" value="<? templates/sv/docinfo/change_meta_rights.html/2002 ?>" title="<? templates/sv/docinfo/change_meta_rights.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW('Privileges')"></td>
         </tr>
     </table>
 #gui_mid()

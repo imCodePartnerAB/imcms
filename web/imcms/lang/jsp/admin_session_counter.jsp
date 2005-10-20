@@ -1,12 +1,12 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils,
                  imcode.util.jscalendar.JSCalendar,
                  com.imcode.imcms.servlet.superadmin.AdminCounter,
-                 com.imcode.imcms.servlet.SearchDocumentsPage"%>
+                 com.imcode.imcms.servlet.SearchDocumentsPage,
+                 imcode.util.Utility"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     AdminCounter.AdminSessionCounterPage adminSessionCounterPage = (AdminCounter.AdminSessionCounterPage)request.getAttribute(AdminCounter.AdminSessionCounterPage.REQUEST_ATTRIBUTE__PAGE);;
     JSCalendar jsCalendar = adminSessionCounterPage.getJSCalendar(request);
-    int imcmsHelpPage = 17;
     String calendarButtonTitle = "<? web/imcms/lang/jscalendar/show_calendar_button ?>";
 
 %>
@@ -16,7 +16,7 @@
 <title><? templates/sv/search/search_documents.html/1 ?></title>
 
 <link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css.jsp" type="text/css">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 <%= jsCalendar.getHeadTagScripts() %>
 
 </head>
@@ -30,7 +30,7 @@
     <form action="AdminManager">
     <tr>
         <td><input class="imcmsFormBtn" type="submit" name="<? global/back ?>" value="<? global/back ?>">&nbsp;</td>
-        <td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW(<%=imcmsHelpPage%>)"></td>
+        <td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW('SessionCounter')"></td>
     </tr>
     </form>
 </table>

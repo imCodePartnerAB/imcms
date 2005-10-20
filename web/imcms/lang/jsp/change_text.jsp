@@ -23,7 +23,7 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 <title><? templates/sv/change_text.html/1 ?></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" style="margin-bottom:0px;" onLoad="checkMode();<%=
@@ -67,7 +67,7 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 	</table></td>
 
 	<td align="right">
-	<input type="button" tabindex="12" value="<? templates/sv/change_text.html/2004 ?>" title="<? templates/sv/change_text.html/2005 ?>" class="imcmsFormBtn" onClick="openHelpW(36)"></td>
+	<input type="button" tabindex="12" value="<? templates/sv/change_text.html/2004 ?>" title="<? templates/sv/change_text.html/2005 ?>" class="imcmsFormBtn" onClick="openHelpW('EditText')"></td>
 
 </tr>
 </table>

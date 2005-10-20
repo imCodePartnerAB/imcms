@@ -17,7 +17,7 @@
 <head>
 <title><? install/htdocs/sv/jsp/docadmin/url_document.jsp/1 ?></title>
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'url_ref')">
@@ -28,7 +28,7 @@
 <tr>
 	<td><input type="submit" name="cancel" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/url_document.jsp/2001 ?>"></td>
 	<td>&nbsp;</td>
-	<td><input type="button" value="<? install/htdocs/sv/jsp/docadmin/url_document.jsp/2002 ?>" title="<? install/htdocs/sv/jsp/docadmin/url_document.jsp/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(82)"></td>
+	<td><input type="button" value="<? install/htdocs/sv/jsp/docadmin/url_document.jsp/2002 ?>" title="<? install/htdocs/sv/jsp/docadmin/url_document.jsp/2003 ?>" class="imcmsFormBtn" onClick="openHelpW('LinkExternal')"></td>
 </tr>
 </table>
 #gui_mid()

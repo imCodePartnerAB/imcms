@@ -16,10 +16,10 @@
 <title><? templates/sv/AdminManager_adminTask_element.htm/2 ?></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
-<body>
+<body onLoad="focusField(0,'<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>');">
 	#gui_outer_start()
 	#gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/2 ?>" )
     <table border="0" cellspacing="0" cellpadding="0">
@@ -27,7 +27,7 @@
 <tr>
 	<td><input type="submit"  class="imcmsFormBtn" name="<%= UserBrowser.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/back ?>"></td>
 	<td>&nbsp;</td>
-	<td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW(38)"></td>
+	<td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW('UserAdmin')"></td>
 </tr>
 </table>
 #gui_mid()

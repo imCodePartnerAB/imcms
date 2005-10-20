@@ -9,7 +9,7 @@
 
 
 <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css.jsp">
-<script src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'name')">
@@ -25,7 +25,7 @@
 		<td>&nbsp;</td>
 		<td><input type="button" class="imcmsFormBtn" style="width:115" value="<? templates/login/index.html/2002 ?>" onClick="top.location='<%= request.getContextPath() %>/servlet/PasswordMailReminder';"></td>
 		<td>&nbsp;</td>
-        <td><input type="button" value="<? templates/login/index.html/2003 ?>" title="<? templates/login/index.html/2004 ?>" class="imcmsFormBtn" onClick="openHelpW(54)"></td>
+        <td><input type="button" value="<? templates/login/index.html/2003 ?>" title="<? templates/login/index.html/2004 ?>" class="imcmsFormBtn" onClick="openHelpW('LogIn')"></td>
 	</tr>
 	</table></td>
 </tr>

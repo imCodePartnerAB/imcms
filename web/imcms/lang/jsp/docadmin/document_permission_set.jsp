@@ -24,6 +24,7 @@
 <title><? templates/sv/permissions/define_permissions.html/1 ?></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF">
@@ -37,7 +38,7 @@
 <tr>
 	<td><input type="submit" class="imcmsFormBtn" name="<%= OkCancelPage.REQUEST_PARAMETER__CANCEL %>" value="<? global/cancel ?>"></td>
 	<td>&nbsp;</td>
-    <td><input type="button" value="<? global/help ?>" class="imcmsFormBtn" onClick="openHelpW(41)"></td>
+    <td><input type="button" value="<? global/help ?>" class="imcmsFormBtn" onClick="openHelpW('PrivilegesLimited')"></td>
 </tr>
 </table>
 
