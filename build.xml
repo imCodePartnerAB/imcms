@@ -592,7 +592,7 @@
         <filter token="defaultlanguage" value="${defaultlanguage}"/>
 
         <filter token="documentationwebappurl" value="http://${documentation-host}/${versionnumber}"/>
-        <filter token="documentationurl" value="http://${documentation-host}/${versionnumber}/servlet"/>
+        <filter token="documentationurl" value="http://${documentation-host}/${versionnumber}"/>
 
         <filter token="db-driver" value="${db-driver}"/>
         <filter token="db-url" value="${db-url}"/>
