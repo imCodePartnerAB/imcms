@@ -19,6 +19,13 @@
             </p>
             <issue id="1288"/>
         </change>
+        <change>
+            <p>
+                The setting <config>LdapUserAttribute.CountyCouncil</config> in <path>server.properties</path>
+                has been replaced by <config>LdapUserAttribute.Province</config>.
+            </p>
+            <issue id="3537"/>
+        </change>
     </changes>
 
     <changes importance="high" for="site developers">
@@ -290,6 +297,15 @@
                 Deprecated method <method>DocumentPermissionSet.getType()</method> with no replacement.
             </p>
             <issue id="3037"/>
+        </change>
+        <change>
+            <p>
+                Deprecated methods <method>User.setCountyCouncil(String)</method>
+                and <method>User.getCountyCouncil()</method>.
+                Added the replacement methods <method>User.setProvince(String)</method>
+                and <method>User.getProvince()</method>.
+            </p>
+            <issue id="3537"/>
         </change>
         <change>
             <p>
