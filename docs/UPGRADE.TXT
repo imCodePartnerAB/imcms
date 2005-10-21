@@ -2,31 +2,20 @@ Upgrading imCMS:
 
 * First check CHANGES.HTML to see if there's anything you have to do that is not noted in this file.
 
-* If you have a version of imCMS older than 1.7.5,
-  you must delete any documents of the types "diagram" (101) or "calendar" (107).
-  They are no longer supported. The diff scripts will fail if this is not done.
-
 * Stop tomcat.
 
-* Backup the imCMS database.
+* Backup the imCMS database and the imCMS webapp directory ("tomcat/webapps/imcms")
 
-* Backup the imCMS webapp directory ("tomcat/webapps/imcms")
+* Remove the imCMS webapp directory and any corresponding war-file from "tomcat/webapps".
 
-* Remove the imCMS webapp directory from "tomcat/webapps".
-
-* Remove the old "imcms.war" file from "tomcat/webapps".
-
-* Install the new imCMS version according to "Installing imCMS" and
-  "Setting up imCMS" in file "INSTALL.TXT".
-
-* Run the sql diff scripts appropriate for your versions on the database.
+* Run the sql diff scripts appropriate for your imCMS versions on the database.
   They can be found in the directory "tomcat/webapps/imcms/WEB-INF/sql/diff".
-  For example, if you have version 1.8.3 installed and
-  want to upgrade to 1.9.0, you'll need to run the scripts "diff-1.8.3-1.8.4.sql" and "diff-1.8.4-1.9.0.sql".
+  For example, if you have version 2.2.0 installed and
+  want to upgrade to 3.0.0, you'll need to run the script "diff-2-3.sql".
 
-* Run the stored procedures sql script "tomcat/webapps/WEB-INF/sql/imcms-sprocs-<version>.sql" on the database.
+* Install the new imCMS version according to "INSTALL.TXT".
 
-* Restore any files or directories you our your users have added, from the backup.
+* Restore any files or directories you or your users have added, from the backup.
   You'll probably need to look at at least these directories:
     - /css
     - /images
@@ -34,7 +23,7 @@ Upgrading imCMS:
     - /jsp
     - /user
     - /WEB-INF/includes
-    - /WEB-INF/logs   (new log files will be created, restore only access.log files used to generate statistics)
+    - /WEB-INF/logs   (new log files will be created, you may restore only log files you need)
     - /WEB-INF/templates/text
     - /WEB-INF/uploads
   Note that this is not an exhaustive list.
@@ -43,8 +32,7 @@ Upgrading imCMS:
 
 * Make sure you did everything outlined as important in CHANGES.HTML.
 
-* If you want to make sure searches work properly, and don't want to wait for the automatic (usually daily) reindexing,
-  access "/servlet/RebuildIndex" as superadmin to rebuild the search index.
+* Access "/servlet/RebuildIndex" as superadmin to rebuild the search index.
 
 
 You're done!
