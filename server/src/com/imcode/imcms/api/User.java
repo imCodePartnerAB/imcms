@@ -55,8 +55,19 @@ public class User {
         return internalUser.getCountry();
     }
 
+    /**
+     * @deprecated Use {@link #getProvince()}. Will be removed in 4.0.
+     */
     public String getCountyCouncil() {
-        return internalUser.getDistrict();
+        return internalUser.getProvince();
+    }
+
+    public String getProvince() {
+        return internalUser.getProvince();
+    }
+
+    public void setProvince(String province) {
+        internalUser.setProvince(province);
     }
 
     public String getEmailAddress() {
@@ -184,8 +195,11 @@ public class User {
         internalUser.setCountry( country );
     }
 
+    /**
+     * @deprecated Use {@link #setProvince(String)}. Will be removed in 4.0.
+     */
     public void setCountyCouncil( String countyCouncil ) {
-        internalUser.setDistrict( countyCouncil );
+        internalUser.setProvince( countyCouncil );
     }
 
     public void setEmailAddress( String emailAddress ) {

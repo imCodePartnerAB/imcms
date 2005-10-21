@@ -85,7 +85,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
         {"Address", ORGANIZATIONALPERSON_STREET_ADRESS},
         {"City", INETORGPERSON_LOCALITY_NAME},
         {"Zip", ORGANIZATIONALPERSON_POSTAL_CODE},
-        {"CountyCouncil", ORGANIZATIONALPERSON_STATE_OR_PROVINCE_NAME},
+        {"Province", ORGANIZATIONALPERSON_STATE_OR_PROVINCE_NAME},
         {"EmailAddress", INETORGPERSON_MAIL},
         {"WorkPhone", PERSON_TELEPHONE_NUMBER},
         {"MobilePhone", INETORGPERSON_MOBILE},

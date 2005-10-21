@@ -1,11 +1,11 @@
-<%@ page import="java.util.*,
-                 javax.servlet.http.HttpServletResponse,
-                 javax.servlet.ServletException,
-                 java.io.IOException,
+<%@ page import="com.imcode.imcms.api.*,
                  imcode.server.WebAppGlobalConstants,
-                 com.imcode.imcms.api.*,
-                 imcode.util.Utility"
-%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"
+                 javax.servlet.http.HttpServletRequest,
+                 javax.servlet.http.HttpServletResponse,
+                 java.io.IOException,
+                 java.util.Arrays,
+                 java.util.HashSet"
+%><%@ page import="java.util.Iterator"%><%@ page import="java.util.Set"%><%@ page import="java.util.TreeSet"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"
 %><vel:velocity><%!
 
 private final static String ACTION_SAVE_USER       = "SAVE_USER" ;
@@ -136,7 +136,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 </tr>
 <tr>
 	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/15 ?></td>
-	<td><%= user.getCountyCouncil() %>&nbsp;</td>
+	<td><%= user.getProvince() %>&nbsp;</td>
 </tr>
 <tr>
 	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/16 ?></td>

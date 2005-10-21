@@ -1,4 +1,4 @@
-<%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
+<%@ page import="com.imcode.imcms.api.ContentManagementSystem" errorPage="error.jsp" %><%@ page import="com.imcode.imcms.api.User"%><%@ page import="com.imcode.imcms.api.UserService"%>
 
 <h2>Listing current users in the IMCMS system</h2>
 <%
@@ -12,7 +12,7 @@
         out.print( "getCity(): " + users[i].getCity() + "<br>");
         out.print( "getCompany(): " + users[i].getCompany() + "<br>");
         out.print( "getCountry(): " + users[i].getCountry() + "<br>");
-        out.print( "getCountyCouncil(): " + users[i].getCountyCouncil() + "<br>");
+        out.print( "getProvince(): " + users[i].getProvince() + "<br>");
         out.print( "getEmailAddress(): " + users[i].getEmailAddress() + "<br>");
         out.print( "getFirstName(): " + users[i].getFirstName() + "<br>");
         out.print( "getHomePhone(): " + users[i].getHomePhone() + "<br>");

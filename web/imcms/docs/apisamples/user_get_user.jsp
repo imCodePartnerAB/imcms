@@ -1,4 +1,4 @@
-<%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
+<%@ page import="com.imcode.imcms.api.ContentManagementSystem" errorPage="error.jsp" %><%@ page import="com.imcode.imcms.api.User"%><%@ page import="com.imcode.imcms.api.UserService"%>
 
 <h2>Listing attributes for user "admin" in the IMCMS system</h2>
 <%
@@ -12,7 +12,7 @@
     out.print( "getCity(): " + user.getCity() + "<br>");
     out.print( "getCompany(): " + user.getCompany() + "<br>");
     out.print( "getCountry(): " + user.getCountry() + "<br>");
-    out.print( "getCountyCouncil(): " + user.getCountyCouncil() + "<br>");
+    out.print( "getProvince(): " + user.getProvince() + "<br>");
     out.print( "getEmailAddress(): " + user.getEmailAddress() + "<br>");
     out.print( "getFirstName(): " + user.getFirstName() + "<br>");
     out.print( "getHomePhone(): " + user.getHomePhone() + "<br>");
@@ -35,7 +35,7 @@
     out.print( "getCity(): " + user.getCity() + "<br>");
     out.print( "getCompany(): " + user.getCompany() + "<br>");
     out.print( "getCountry(): " + user.getCountry() + "<br>");
-    out.print( "getCountyCouncil(): " + user.getCountyCouncil() + "<br>");
+    out.print( "getProvince(): " + user.getProvince() + "<br>");
     out.print( "getEmailAddress(): " + user.getEmailAddress() + "<br>");
     out.print( "getFirstName(): " + user.getFirstName() + "<br>");
     out.print( "getHomePhone(): " + user.getHomePhone() + "<br>");

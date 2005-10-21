@@ -104,7 +104,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         user.setCity(sqlResult[8]);
         user.setZip(sqlResult[9]);
         user.setCountry(sqlResult[10]);
-        user.setDistrict(sqlResult[11]);
+        user.setProvince(sqlResult[11]);
         user.setEmailAddress(sqlResult[12]);
         user.setLanguageIso639_2((String) ObjectUtils.defaultIfNull(sqlResult[13], services.getLanguageMapper().getDefaultLanguage()));
         user.setActive(0 != Integer.parseInt(sqlResult[14]));
@@ -191,7 +191,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 user.getCity(),
                 user.getZip(),
                 user.getCountry(),
-                user.getDistrict(),
+                user.getProvince(),
                 user.getEmailAddress(),
                 user.isImcmsExternal() ? "1" : "0",
                 user.isActive() ? "1" : "0",
@@ -290,7 +290,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                     { "city", user.getCity() },
                     { "zip", user.getZip() },
                     { "country", user.getCountry() },
-                    { "county_council", user.getDistrict() },
+                    { "county_council", user.getProvince() },
                     { "email", user.getEmailAddress() },
                     { "external", user.isImcmsExternal() ? "1" : "0" },
                     { "active", user.isActive() ? "1" : "0" },

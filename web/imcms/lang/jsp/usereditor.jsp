@@ -130,7 +130,7 @@ function activateUseradmin_roles(){
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/27 ?></td>
-	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__DISTRICT %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml(editedUser.getDistrict())%>"></td>
+	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__DISTRICT %>" size="25" maxlength="30" value="<%= StringEscapeUtils.escapeHtml(editedUser.getProvince())%>"></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/29 ?></td>

@@ -27,7 +27,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     private String city = "";
     private String zip = "";
     private String country = "";
-    private String district = "";
+    private String province = "";
     private String emailAddress = "";
     private boolean active = true;
     private Date createDate;
@@ -234,18 +234,12 @@ public class UserDomainObject implements Cloneable, Serializable {
         return country;
     }
 
-    /**
-     * set county_council
-     */
-    public void setDistrict( String district ) {
-        this.district = district;
+    public void setProvince( String province ) {
+        this.province = province;
     }
 
-    /**
-     * get county_council
-     */
-    public String getDistrict() {
-        return district;
+    public String getProvince() {
+        return province;
     }
 
     /**

@@ -87,7 +87,7 @@ public class UserEditorPage extends OkCancelPage {
         editedUser.setCity(request.getParameter(REQUEST_PARAMETER__CITY));
         editedUser.setZip(request.getParameter(REQUEST_PARAMETER__ZIP));
         editedUser.setCountry(request.getParameter(REQUEST_PARAMETER__COUNTRY));
-        editedUser.setDistrict(request.getParameter(REQUEST_PARAMETER__DISTRICT));
+        editedUser.setProvince(request.getParameter(REQUEST_PARAMETER__DISTRICT));
         editedUser.setEmailAddress(request.getParameter(REQUEST_PARAMETER__EMAIL));
         editedUser.setLanguageIso639_2(request.getParameter(REQUEST_PARAMETER__LANGUAGE));
         editedUser.setActive(null != request.getParameter(REQUEST_PARAMETER__ACTIVE));
