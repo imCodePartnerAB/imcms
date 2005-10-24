@@ -5,8 +5,16 @@ Prerequisites:
 
     * Install the Java Development Kit version 1.4 or later.
 
-    * Install Apache Ant 1.6 or later.
+    * Install Apache Ant 1.6.2 or later.
 
+    * Make sure that junit is available in ant's classpath,
+      for example by putting a junit jar file in $ANT_HOME/lib.
+      
+      If you cannot do this, you can disable tests by setting the property
+      "no-junit-task-available" in "build.properties".
+
+      JUnit cannot be distributed with imCMS due to licensing issues.
+      
 
 Building:
 
