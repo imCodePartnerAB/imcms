@@ -63,11 +63,16 @@ public class ConnectionDocumentGetter implements DocumentGetter {
         final int documentTypeId = Integer.parseInt(result[1]);
         DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
 
-        document.setId(Integer.parseInt(result[0]));
+        int documentId = Integer.parseInt(result[0]);
+        document.setId(documentId);
         document.setHeadline(result[2]);
         document.setMenuText(result[3]);
         document.setMenuImage(result[4]);
-        UserDomainObject creator = userAndRoleMapper.getUser(Integer.parseInt(result[5]));
+        int creatorId = Integer.parseInt(result[5]);
+        UserDomainObject creator = userAndRoleMapper.getUser(creatorId);
+        if (null == creator) {
+            log.error("Creator of document "+documentId+", user "+creatorId+" is non-existent. Missing foreign key in database?");
+        }
         document.setCreator(creator);
         document.setRestrictedOneMorePrivilegedThanRestrictedTwo(getBooleanFromSqlResultString(result[6]));
         document.setLinkableByOtherUsers(getBooleanFromSqlResultString(result[7]));
