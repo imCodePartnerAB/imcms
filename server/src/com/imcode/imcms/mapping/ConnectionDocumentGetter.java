@@ -71,7 +71,8 @@ public class ConnectionDocumentGetter implements DocumentGetter {
         int creatorId = Integer.parseInt(result[5]);
         UserDomainObject creator = userAndRoleMapper.getUser(creatorId);
         if (null == creator) {
-            log.error("Creator of document "+documentId+", user "+creatorId+" is non-existent. Missing foreign key in database?");
+            log.error("Creator of document "+documentId+", user "+creatorId+" is non-existent. Using default user. Missing foreign key in database?");
+            creator = userAndRoleMapper.getDefaultUser();
         }
         document.setCreator(creator);
         document.setRestrictedOneMorePrivilegedThanRestrictedTwo(getBooleanFromSqlResultString(result[6]));
