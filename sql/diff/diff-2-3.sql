@@ -322,6 +322,16 @@ DROP TABLE C_msg_type
 DROP TABLE C_selfreg_roles
 DROP TABLE C_templates
 
+DELETE FROM document_categories WHERE meta_id IN (SELECT meta_id FROM meta WHERE doc_type > 100)
+DELETE FROM meta_classification WHERE meta_id IN (SELECT meta_id FROM meta WHERE doc_type > 100)
+DELETE FROM childs WHERE to_meta_id IN (SELECT meta_id FROM meta WHERE doc_type > 100)
+DELETE FROM roles_rights WHERE meta_id IN (SELECT meta_id FROM meta WHERE doc_type > 100)
+DELETE FROM new_doc_permission_sets_ex WHERE meta_id IN (SELECT meta_id FROM meta WHERE doc_type > 100)
+DELETE FROM new_doc_permission_sets WHERE meta_id IN (SELECT meta_id FROM meta WHERE doc_type > 100)
+DELETE FROM doc_permission_sets_ex WHERE meta_id IN (SELECT meta_id FROM meta WHERE doc_type > 100)
+DELETE FROM doc_permission_sets WHERE meta_id IN (SELECT meta_id FROM meta WHERE doc_type > 100)
+DELETE FROM meta_section WHERE meta_id IN (SELECT meta_id FROM meta WHERE doc_type > 100)
+DELETE FROM meta WHERE doc_type > 100
 DELETE FROM doc_types WHERE doc_type > 100
 
 DROP TABLE poll_answers
