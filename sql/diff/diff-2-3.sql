@@ -539,3 +539,38 @@ DROP PROCEDURE rolecount
 DROP PROCEDURE setinclude
 
 -- 2005-09-05 Kreiger
+
+UPDATE meta SET owner_id = 2 WHERE owner_id NOT IN (SELECT user_id FROM users)
+GO
+
+IF 0 = (SELECT COUNT(foreignkeys.name)
+FROM    sysforeignkeys fk,
+    sysobjects tables,
+    sysobjects foreignkeys,
+    syscolumns columns
+WHERE   foreignkeys.id = fk.constid
+AND tables.id = fk.fkeyid
+AND tables.name = 'meta'
+AND columns.colid = fk.fkey
+AND columns.name = 'owner_id')
+BEGIN
+    ALTER TABLE meta ADD CONSTRAINT meta_FK_owner_id_users FOREIGN KEY (owner_id) REFERENCES users (user_id)
+END
+GO
+
+IF 0 = (SELECT COUNT(foreignkeys.name)
+FROM    sysforeignkeys fk,
+    sysobjects tables,
+    sysobjects foreignkeys,
+    syscolumns columns
+WHERE   foreignkeys.id = fk.constid
+AND tables.id = fk.fkeyid
+AND tables.name = 'meta'
+AND columns.colid = fk.fkey
+AND columns.name = 'publisher_id')
+BEGIN
+    ALTER TABLE meta ADD CONSTRAINT meta_FK_publisher_id_users FOREIGN KEY (publisher_id) REFERENCES users (user_id)
+END
+GO
+
+-- 2005-10-24 Kreiger - Issue 3458
