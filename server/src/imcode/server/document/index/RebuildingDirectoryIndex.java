@@ -165,7 +165,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
     }
 
     private void rebuildBecauseOfError(String message, IndexException ex) {
-        log.error(message, ex);
+        log.error(message+" Starting index rebuild.", ex);
         rebuild();
     }
 
