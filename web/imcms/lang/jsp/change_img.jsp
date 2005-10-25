@@ -234,7 +234,7 @@ function checkLinkOnBlur() {<%
 							%> onClick="return onCancel(); return false"<%
 						} %>></td>
             <td>&nbsp;</td>
-            <td><input type="button" value="<? templates/sv/change_img.html/2002 ?>" title="<? templates/sv/change_img.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW('ImageRestrictedAdd')"></td>
+            <td><input type="button" value="<? templates/sv/change_img.html/2002 ?>" title="<? templates/sv/change_img.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW('ImageAdmin')"></td>
         </tr>
         </table></td>
         <td>&nbsp;</td>
