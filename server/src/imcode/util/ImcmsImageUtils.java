@@ -1,15 +1,19 @@
 package imcode.util;
 
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.FileDocumentImageSource;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLEncoder;
 
 public class ImcmsImageUtils {
 
@@ -30,38 +34,37 @@ public class ImcmsImageUtils {
 
             String imageUrl = request.getContextPath()+image.getUrlPathRelativeToContextPath();
 
-            imageTagBuffer.append( "<img src=\"" + StringEscapeUtils.escapeHtml( imageUrl ) + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
+            imageTagBuffer.append("<img src=\"").append(StringEscapeUtils.escapeHtml(URLEncoder.encode(imageUrl).replaceAll("%2F", "/"))).append("\"");
 
             ImageSize displayImageSize = image.getDisplayImageSize();
 
             int width = displayImageSize.getWidth();
             int height = displayImageSize.getHeight();
             if ( 0 != width ) {
-                imageTagBuffer.append( " width=\"" + width + "\"" );
+                imageTagBuffer.append(" width=\"").append(width).append("\"");
             }
             if ( 0 != height ) {
-                imageTagBuffer.append( " height=\"" + height + "\"" );
+                imageTagBuffer.append(" height=\"").append(height).append("\"");
             }
-            imageTagBuffer.append( " border=\"" + image.getBorder() + "\"" );
+            imageTagBuffer.append(" border=\"").append(image.getBorder()).append("\"");
 
             if ( 0 != image.getVerticalSpace() ) {
-                imageTagBuffer.append( " vspace=\"" + image.getVerticalSpace() + "\"" );
+                imageTagBuffer.append(" vspace=\"").append(image.getVerticalSpace()).append("\"");
             }
             if ( 0 != image.getHorizontalSpace() ) {
-                imageTagBuffer.append( " hspace=\"" + image.getHorizontalSpace() + "\"" );
+                imageTagBuffer.append(" hspace=\"").append(image.getHorizontalSpace()).append("\"");
             }
             if ( StringUtils.isNotBlank( image.getName() ) ) {
-                imageTagBuffer.append( " name=\"" + StringEscapeUtils.escapeHtml( image.getName() ) + "\"" );
+                imageTagBuffer.append(" name=\"").append(StringEscapeUtils.escapeHtml(image.getName())).append("\"");
             }
             if ( StringUtils.isNotBlank( image.getAlternateText() ) ) {
-                imageTagBuffer.append( " alt=\"" + StringEscapeUtils.escapeHtml( image.getAlternateText() ) + "\"" );
+                imageTagBuffer.append(" alt=\"").append(StringEscapeUtils.escapeHtml(image.getAlternateText())).append("\"");
             }
             if ( StringUtils.isNotBlank( image.getLowResolutionUrl() ) ) {
-                imageTagBuffer.append( " lowsrc=\"" + StringEscapeUtils.escapeHtml( image.getLowResolutionUrl() )
-                                       + "\"" );
+                imageTagBuffer.append(" lowsrc=\"").append(StringEscapeUtils.escapeHtml(URLEncoder.encode(imageUrl).replaceAll("%2F", "/"))).append("\"");
             }
             if ( StringUtils.isNotBlank( image.getAlign() ) && !"none".equals( image.getAlign() ) ) {
-                imageTagBuffer.append( " align=\"" + StringEscapeUtils.escapeHtml( image.getAlign() ) + "\"" );
+                imageTagBuffer.append(" align=\"").append(StringEscapeUtils.escapeHtml(image.getAlign())).append("\"");
             }
             imageTagBuffer.append( ">" );
             if ( StringUtils.isNotBlank( image.getLinkUrl() ) ) {
