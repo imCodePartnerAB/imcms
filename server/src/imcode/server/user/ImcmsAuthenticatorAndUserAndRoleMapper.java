@@ -17,12 +17,15 @@ import imcode.util.Utility;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.log4j.Logger;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegistry, Authenticator, RoleGetter {
+
+    private final static Logger log = Logger.getLogger(ImcmsAuthenticatorAndUserAndRoleMapper.class);
 
     private static final String SPROC_GET_ALL_ROLES = "GetAllRoles";
     private static final String SPROC_GET_USER_ROLES = "GetUserRoles";
@@ -53,7 +56,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private final ImcmsServices services;
 
     public ImcmsAuthenticatorAndUserAndRoleMapper(ImcmsServices services) {
-        this.services = services ;
+        this.services = services;
     }
 
     public boolean authenticate(String loginName, String password) {
@@ -132,7 +135,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     private RoleId getRoleReferenceFromSqlResult(String[] sqlRow) {
-        return new RoleId(Integer.parseInt(sqlRow[0])) ;
+        return new RoleId(Integer.parseInt(sqlRow[0]));
     }
 
     /** @return An object representing the user with the given id. */
@@ -594,10 +597,11 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     public PhoneNumber[] getUserPhoneNumbers(int userToChangeId) {
         try {
             final Object[] parameters = new String[] {
-            "" + userToChangeId };
-            String[][] phoneNumberData = DatabaseUtils.execute2dStringArrayQuery(services.getDatabase(), "SELECT   phones.number, phones.phonetype_id\n"
-                                                                                                         + "FROM   phones\n"
-                                                                                                         + "WHERE  phones.user_id = ?", parameters);
+                    "" + userToChangeId };
+            String[][] phoneNumberData = DatabaseUtils.execute2dStringArrayQuery(services.getDatabase(),
+                                                                                 "SELECT   phones.number, phones.phonetype_id\n"
+                                                                                 + "FROM   phones\n"
+                                                                                 + "WHERE  phones.user_id = ?", parameters);
             List phoneNumbers = new ArrayList();
             for ( int i = 0; i < phoneNumberData.length; i++ ) {
                 String[] row = phoneNumberData[i];
@@ -616,7 +620,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private RoleId[] getUserAdminRolesReferencesForUser(UserDomainObject loggedOnUser) {
         try {
             final Object[] parameters = new String[] {
-            "" + loggedOnUser.getId() };
+                    "" + loggedOnUser.getId() };
             String[] roleIds = DatabaseUtils.executeStringArrayQuery(services.getDatabase(), "SELECT role_id\n"
                                                                                              + "FROM useradmin_role_crossref\n"
                                                                                              + "WHERE user_id = ?", parameters);
@@ -636,19 +640,26 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     public RoleDomainObject getRole(RoleId roleId) {
-        return getRoleById(roleId.intValue()) ;
+        return getRoleById(roleId.intValue());
     }
 
     public UserDomainObject getUserByIpAddress(String ipAddress) {
 
-        long ip = Utility.ipStringToLong( ipAddress );
+        long ip;
+        try {
+            ip = Utility.ipStringToLong(ipAddress);
+        } catch ( IllegalArgumentException nfe ) {
+            log.debug("Failed to parse ip address " + ipAddress);
+            return null;
+        }
 
         String sqlStr = "select users.user_id from users,ip_accesses"
                         + " where users.user_id = ip_accesses.user_id"
                         + " and ip_accesses.ip_start <= ?"
                         + " and ip_accesses.ip_end >= ?";
 
-        String userIdString = DatabaseUtils.executeStringQuery(services.getDatabase(), sqlStr, new String[]{"" + ip, "" + ip});
+        String userIdString = DatabaseUtils.executeStringQuery(services.getDatabase(), sqlStr, new String[] { "" + ip,
+                "" + ip });
 
         if ( null != userIdString ) {
             return getUser(Integer.parseInt(userIdString));

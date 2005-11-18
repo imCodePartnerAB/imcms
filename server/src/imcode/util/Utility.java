@@ -71,10 +71,15 @@ public class Utility {
 
     /**
      * Transforms a String containing an ip into a long.
+     * 
+     * @throws IllegalArgumentException if the input is not a valid IPv4 address.
      */
-    public static long ipStringToLong( String ip ) {
+    public static long ipStringToLong( String ip ) throws IllegalArgumentException {
         long ipInt = 0;
         StringTokenizer ipTok = new StringTokenizer( ip, "." );
+        if ( 4 != ipTok.countTokens() ) {
+            throw new IllegalArgumentException("Not a valid IPv4 address.") ;
+        }
         for ( int exp = 3; ipTok.hasMoreTokens(); --exp ) {
             int ipNum = Integer.parseInt( ipTok.nextToken() );
             ipInt += ipNum * Math.pow( 256, exp );
