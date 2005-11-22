@@ -37,7 +37,7 @@ class DocumentSaver {
             throw new NoPermissionToEditDocumentException("No permission to edit document "+oldDocument.getId()) ;
         }
 
-        checkDocumentForSave(document, user);
+        checkDocumentForSave(document, oldDocument, user);
 
         try {
             Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
@@ -149,7 +149,7 @@ class DocumentSaver {
             return; // TODO: More specific check needed. Throw exception ?
         }
 
-        checkDocumentForSave(document, user);
+        checkDocumentForSave(document, null, user);
 
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 
@@ -174,9 +174,10 @@ class DocumentSaver {
     }
 
     private void checkDocumentForSave(DocumentDomainObject document,
-                                      UserDomainObject user) throws NoPermissionToAddDocumentToMenuException {
-        if (document instanceof TextDocumentDomainObject ) {
-            checkDocumentsAddedWithoutPermission((TextDocumentDomainObject)document, null, user);
+                                      DocumentDomainObject oldDocument, UserDomainObject user
+    ) throws NoPermissionToAddDocumentToMenuException {
+        if (document instanceof TextDocumentDomainObject) {
+            checkDocumentsAddedWithoutPermission((TextDocumentDomainObject)document, (TextDocumentDomainObject) oldDocument, user);
         }
 
         documentMapper.getCategoryMapper().checkMaxDocumentCategoriesOfType(document);
