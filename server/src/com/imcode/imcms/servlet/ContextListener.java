@@ -24,10 +24,13 @@ public class ContextListener implements ServletContextListener {
 
         configureLogging(servletContext, realPathToWebApp, configPath);
 
-        Imcms.start();
-        
         Logger log = Logger.getLogger(ContextListener.class);
-        log.info("imCMS initialized.");
+        try {
+            Imcms.start();
+            log.info("imCMS initialized.");
+        } catch (RuntimeException e) {
+            log.fatal("Failed to initialize imCMS.",e);
+        }
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {

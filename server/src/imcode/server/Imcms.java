@@ -30,8 +30,12 @@ public class Imcms {
         return services;
     }
 
-    public static void start() {
-        services = createServices();
+    public static void start() throws StartupException {
+        try {
+            services = createServices();
+        } catch (Exception e) {
+            throw new Imcms.StartupException("imCMS could not be started. Please see the log file in WEB-INF/logs for details.", e);
+        }
     }
 
     private synchronized static ImcmsServices createServices() {
@@ -130,4 +134,10 @@ public class Imcms {
         }
     }
 
+    public static class StartupException extends RuntimeException {
+
+        public StartupException(String message, Exception e) {
+            super(message, e) ;
+        }
+    }
 }
