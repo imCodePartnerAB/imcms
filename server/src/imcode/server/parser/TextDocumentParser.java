@@ -39,7 +39,7 @@ public class TextDocumentParser {
             // Very good. Very good. Know something? NO SOUP FOR YOU!
             htmlTagPattern = patComp.compile( "<[^>]+?>", Perl5Compiler.READ_ONLY_MASK );
 
-            htmlTagHtmlPattern = patComp.compile( "<[hH][tT][mM][lL]\\s*>", Perl5Compiler.READ_ONLY_MASK );
+            htmlTagHtmlPattern = patComp.compile( "<[hH][tT][mM][lL]\\b", Perl5Compiler.READ_ONLY_MASK );
 
             hashtagPattern = patComp.compile( "#[^ #\"<>&;\\t\\r\\n]+#", Perl5Compiler.READ_ONLY_MASK );
         } catch ( MalformedPatternException ignored ) {
