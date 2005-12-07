@@ -65,6 +65,11 @@
         </fileset>
     </path>
 
+    <path id="libraries-with-commons-logging">
+        <path refid="libraries"/>
+        <fileset dir="lib" includes="commons-logging*.jar"/>
+    </path>
+
     <path id="classes-and-libraries">
         <pathelement path="${classes}"/>
         <path refid="libraries"/>
@@ -82,18 +87,8 @@
 
     <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
 
-    <taskdef resource="checkstyletask.properties">
-        <classpath>
-            <path refid="libraries"/>
-            <fileset dir="lib" includes="commons-logging*.jar"/>
-        </classpath>
-    </taskdef>
-    <taskdef name="ddl2db" classname="org.apache.ddlutils.task.DdlToDatabaseTask">
-        <classpath>
-            <path refid="libraries"/>
-            <fileset dir="lib" includes="commons-logging*.jar"/>
-        </classpath>
-    </taskdef>
+    <taskdef resource="checkstyletask.properties" classpathref="libraries-with-commons-logging"/>
+    <taskdef name="ddl2db" classname="org.apache.ddlutils.task.DdlToDatabaseTask"  classpathref="libraries-with-commons-logging"/>
 
     <!-- Distribution targets -->
 
@@ -320,7 +315,7 @@
             <exclude name="**/Test*.java" unless="junit-available"/>
             <exclude name="**/*TestCase.java" unless="junit-available"/>
 
-            <classpath refid="libraries"/>
+            <classpath refid="libraries-with-commons-logging"/>
 
         </javac>
 

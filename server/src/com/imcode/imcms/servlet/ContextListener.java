@@ -6,6 +6,7 @@ import imcode.util.Prefs;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -39,6 +40,7 @@ public class ContextListener implements ServletContextListener {
         Imcms.stop();
         log.debug("Shutting down logging.");
         LogManager.shutdown();
+        LogFactory.releaseAll();
     }
 
     private void configureLogging(ServletContext servletContext, File root, File configPath) {
