@@ -1,7 +1,7 @@
 .cvsignore
 docs/**
-lib/*.jar
-lib/noinstall/*.jar
+lib/*.*
+lib/noinstall/*.*
 server/**
 sql/**
 tools/**
