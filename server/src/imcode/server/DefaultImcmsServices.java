@@ -206,7 +206,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private void initDocumentMapper() {
         File indexDirectory = new File(getRealContextPath(), "WEB-INF/index");
-        DocumentIndex documentIndex = new RebuildingDirectoryIndex(indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes());
+        DocumentIndex documentIndex = new PhaseQueryFixingDocumentIndex(new RebuildingDirectoryIndex(indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes()));
         documentMapper = new DefaultDocumentMapper(this, this.getDatabase(), new DatabaseDocumentGetter(this.getDatabase(), this), new DocumentPermissionSetMapper(database, this), documentIndex, this.getClock(), this.getConfig(), categoryMapper);
     }
 
@@ -665,4 +665,5 @@ final public class DefaultImcmsServices implements ImcmsServices {
             return FileUtility.getFileFromWebappRelativePath((String) value);
         }
     }
+
 }

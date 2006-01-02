@@ -7,9 +7,11 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.LifeCyclePhase;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -123,16 +125,16 @@ public class Html {
     }
 
     private static final Object[][] STATUS_TEMPLATE_PAIRS = {
-        {DocumentDomainObject.LifeCyclePhase.NEW, "status/new.frag"},
-        {DocumentDomainObject.LifeCyclePhase.DISAPPROVED, "status/disapproved.frag"},
-        {DocumentDomainObject.LifeCyclePhase.PUBLISHED, "status/published.frag"},
-        {DocumentDomainObject.LifeCyclePhase.UNPUBLISHED, "status/unpublished.frag"},
-        {DocumentDomainObject.LifeCyclePhase.ARCHIVED, "status/archived.frag"},
-        {DocumentDomainObject.LifeCyclePhase.APPROVED, "status/approved.frag"},
+        { LifeCyclePhase.NEW, "status/new.frag"},
+        { LifeCyclePhase.DISAPPROVED, "status/disapproved.frag"},
+        { LifeCyclePhase.PUBLISHED, "status/published.frag"},
+        { LifeCyclePhase.UNPUBLISHED, "status/unpublished.frag"},
+        { LifeCyclePhase.ARCHIVED, "status/archived.frag"},
+        { LifeCyclePhase.APPROVED, "status/approved.frag"},
     };
 
     public static String getStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
-        DocumentDomainObject.LifeCyclePhase lifeCyclePhase = document.getLifeCyclePhase();
+        LifeCyclePhase lifeCyclePhase = document.getLifeCyclePhase();
         String statusIconTemplateName = null;
         for ( int i = 0; i < STATUS_TEMPLATE_PAIRS.length; i++ ) {
             Object[] statusTemplatePair = STATUS_TEMPLATE_PAIRS[i];
@@ -190,10 +192,8 @@ public class Html {
     }
 
     public static String removeTags( String html ) {
-        String label_urlparam;
-        org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util();
-        label_urlparam = perl5util.substitute( "s!<.+?>!!g", html );
-        return label_urlparam;
+        Perl5Util perl5util = new Perl5Util();
+        return perl5util.substitute("s!<.+?>!!g", html);
     }
 
     public static String createUsersOptionList( ImcmsServices imcref ) {

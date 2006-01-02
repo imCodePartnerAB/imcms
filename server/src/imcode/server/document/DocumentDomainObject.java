@@ -218,7 +218,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public boolean isArchived() {
-        return isArchivedAtTime( new Date() );
+        return hasBeenArchivedAtTime( new Date() );
     }
 
     public boolean isLinkableByOtherUsers() {
@@ -242,16 +242,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public boolean isActive() {
-        return isPublished() && !isArchived();
+        return isActiveAtTime(new Date());
     }
 
-    public boolean isNoLongerPublished() {
-        return isNoLongerPublishedAtTime( new Date() );
-    }
-
-    private boolean isNoLongerPublishedAtTime( Date date ) {
-        Date publicationEndDatetime = attributes.publicationEndDatetime;
-        return publicationEndDatetime != null && publicationEndDatetime.before( date );
+    private boolean isActiveAtTime(Date now) {
+        return isPublishedAtTime(now) && !hasBeenArchivedAtTime(now);
     }
 
     public boolean isSearchDisabled() {
@@ -319,9 +314,9 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return attributes.id;
     }
 
-    private boolean isArchivedAtTime( Date time ) {
-        Attributes documentProperties = this.attributes;
-        return documentProperties.archivedDatetime != null && documentProperties.archivedDatetime.before( time );
+    private boolean hasBeenArchivedAtTime( Date time ) {
+        Date archivedDatetime = this.attributes.archivedDatetime;
+        return archivedDatetime != null && archivedDatetime.before( time );
     }
 
     public void removeAllCategories() {
@@ -345,15 +340,19 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     private boolean isPublishedAtTime( Date date ) {
-        Attributes documentAttributes = this.attributes;
-        boolean publicationStartDatetimeIsNotNullAndInThePast = documentAttributes.publicationStartDatetime != null
-                                                                && documentAttributes.publicationStartDatetime.before( date );
-        boolean publicationEndDatetimeIsNullOrInTheFuture = documentAttributes.publicationEndDatetime == null
-                                                            || documentAttributes.publicationEndDatetime.after( date );
-        boolean statusIsApproved = Document.PublicationStatus.APPROVED.equals(documentAttributes.publicationStatus);
-        boolean isPublished = statusIsApproved && publicationStartDatetimeIsNotNullAndInThePast
-                              && publicationEndDatetimeIsNullOrInTheFuture;
-        return isPublished;
+        boolean statusIsApproved = Document.PublicationStatus.APPROVED.equals(getPublicationStatus());
+        return statusIsApproved && publicationHasStartedAtTime(date)
+               && !publicationHasEndedAtTime(date);
+    }
+
+    private boolean publicationHasStartedAtTime(Date date) {
+        Date publicationStartDatetime = attributes.publicationStartDatetime;
+        return publicationStartDatetime != null && publicationStartDatetime.before( date );
+    }
+
+    private boolean publicationHasEndedAtTime( Date date ) {
+        Date publicationEndDatetime = attributes.publicationEndDatetime;
+        return publicationEndDatetime != null && publicationEndDatetime.before( date );
     }
 
     public void setPermissionSetForRestrictedOne( DocumentPermissionSetDomainObject permissionSetForRestrictedOne ) {
@@ -397,20 +396,28 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public abstract void accept( DocumentVisitor documentVisitor );
 
     public LifeCyclePhase getLifeCyclePhase() {
-        DocumentDomainObject.LifeCyclePhase lifeCyclePhase;
+        return getLifeCyclePhaseAtTime(new Date());
+    }
+
+    LifeCyclePhase getLifeCyclePhaseAtTime(Date time) {
+        LifeCyclePhase lifeCyclePhase;
         Document.PublicationStatus publicationStatus = getPublicationStatus();
         if ( Document.PublicationStatus.NEW.equals(publicationStatus) ) {
             lifeCyclePhase = LifeCyclePhase.NEW;
         } else if ( Document.PublicationStatus.DISAPPROVED.equals(publicationStatus) ) {
             lifeCyclePhase = LifeCyclePhase.DISAPPROVED;
-        } else if ( isActive() ) {
-            lifeCyclePhase = LifeCyclePhase.PUBLISHED;
-        } else if ( isNoLongerPublished() ) {
-            lifeCyclePhase = LifeCyclePhase.UNPUBLISHED;
-        } else if ( isArchived() ) {
-            lifeCyclePhase = LifeCyclePhase.ARCHIVED;
         } else {
-            lifeCyclePhase = LifeCyclePhase.APPROVED;
+            if ( publicationHasEndedAtTime(time) ) {
+                lifeCyclePhase = LifeCyclePhase.UNPUBLISHED;
+            } else if ( publicationHasStartedAtTime(time) ) {
+                if ( hasBeenArchivedAtTime(time) ) {
+                    lifeCyclePhase = LifeCyclePhase.ARCHIVED;
+                } else {
+                    lifeCyclePhase = LifeCyclePhase.PUBLISHED;
+                }
+            } else {
+                lifeCyclePhase = LifeCyclePhase.APPROVED;
+            }
         }
         return lifeCyclePhase ;
     }
@@ -465,26 +472,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             return clone;
         }
 
-    }
-
-    public static class LifeCyclePhase {
-
-        public static final LifeCyclePhase NEW = new LifeCyclePhase("new");
-        public static final LifeCyclePhase DISAPPROVED = new LifeCyclePhase("disapproved");
-        public static final LifeCyclePhase PUBLISHED = new LifeCyclePhase("published");
-        public static final LifeCyclePhase UNPUBLISHED = new LifeCyclePhase("unpublished");
-        public static final LifeCyclePhase ARCHIVED = new LifeCyclePhase("archived");
-        public static final LifeCyclePhase APPROVED = new LifeCyclePhase("approved");
-
-        private final String name;
-
-        private LifeCyclePhase( String name ) {
-            this.name = name ;
-        }
-
-        public String toString() {
-            return name ;
-        }
     }
 
 }

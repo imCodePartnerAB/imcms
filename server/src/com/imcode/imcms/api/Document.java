@@ -391,16 +391,16 @@ public class Document implements Serializable {
     }
 
     public static class LifeCyclePhase implements Serializable {
-        public static final LifeCyclePhase NEW = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.NEW);
-        public static final LifeCyclePhase DISAPPROVED = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.DISAPPROVED);
-        public static final LifeCyclePhase PUBLISHED = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.PUBLISHED);
-        public static final LifeCyclePhase UNPUBLISHED = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.UNPUBLISHED);
-        public static final LifeCyclePhase ARCHIVED = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.ARCHIVED);
-        public static final LifeCyclePhase APPROVED = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.APPROVED);
+        public static final LifeCyclePhase NEW = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.NEW);
+        public static final LifeCyclePhase DISAPPROVED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.DISAPPROVED);
+        public static final LifeCyclePhase PUBLISHED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.PUBLISHED);
+        public static final LifeCyclePhase UNPUBLISHED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.UNPUBLISHED);
+        public static final LifeCyclePhase ARCHIVED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.ARCHIVED);
+        public static final LifeCyclePhase APPROVED = new LifeCyclePhase(imcode.server.document.LifeCyclePhase.APPROVED);
 
-        private DocumentDomainObject.LifeCyclePhase phase ;
+        private imcode.server.document.LifeCyclePhase phase ;
 
-        private LifeCyclePhase( DocumentDomainObject.LifeCyclePhase phase ) {
+        private LifeCyclePhase( imcode.server.document.LifeCyclePhase phase ) {
             this.phase = phase;
         }
 

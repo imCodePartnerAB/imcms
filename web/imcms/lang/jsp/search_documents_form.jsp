@@ -14,7 +14,7 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@ page import="org.apache.commons.lang.StringUtils"%>
 <%@ page import="java.util.Arrays"%>
-<%@ page import="java.util.Set"%>
+<%@ page import="java.util.Set"%><%@ page import="imcode.server.document.LifeCyclePhase"%>
 <%
     SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage) Page.fromRequest(request) ;
     int documentsPerPage = searchDocumentsPage.getDocumentsPerPage() ;
@@ -76,16 +76,16 @@
             <table border="0" cellspacing="0" cellpadding="2">
             <tr>
                 <%
-                    DocumentDomainObject.LifeCyclePhase[] allPhases = new DocumentDomainObject.LifeCyclePhase[] {
-                        DocumentDomainObject.LifeCyclePhase.NEW,
-                        DocumentDomainObject.LifeCyclePhase.DISAPPROVED,
-                        DocumentDomainObject.LifeCyclePhase.APPROVED,
-                        DocumentDomainObject.LifeCyclePhase.PUBLISHED,
-                        DocumentDomainObject.LifeCyclePhase.ARCHIVED,
-                        DocumentDomainObject.LifeCyclePhase.UNPUBLISHED
+                    LifeCyclePhase[] allPhases = new LifeCyclePhase[] {
+                        LifeCyclePhase.NEW,
+                        LifeCyclePhase.DISAPPROVED,
+                        LifeCyclePhase.APPROVED,
+                        LifeCyclePhase.PUBLISHED,
+                        LifeCyclePhase.ARCHIVED,
+                        LifeCyclePhase.UNPUBLISHED
                     };
                     for ( int i = 0; i < allPhases.length; i++ ) {
-                        DocumentDomainObject.LifeCyclePhase phase = allPhases[i];
+                        LifeCyclePhase phase = allPhases[i];
                         %><td><input id="phase_<%= phase %>" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__PHASE %>" value="<%= phase %>"
                         <%= ArrayUtils.contains( phases, "" + phase ) ? "checked" : "" %> ></td>
                         <td><label for="phase_<%= phase %>"><%= new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager_search.jsp/phase/" + phase ).toLocalizedString( request ) %></label></td><%

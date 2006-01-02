@@ -30,17 +30,36 @@ public class TestDocumentDomainObject extends TestCase {
         assertEquals( document.getDocumentPermissionSetTypeForRoleId( roleId ), DocumentPermissionSetTypeDomainObject.NONE );
     }
 
-    public void testGetPublicationStatus() throws Exception {
-        assertEquals( DocumentDomainObject.LifeCyclePhase.NEW, document.getLifeCyclePhase() ) ;
-        document.setPublicationStatus( Document.PublicationStatus.DISAPPROVED );
-        assertEquals( DocumentDomainObject.LifeCyclePhase.DISAPPROVED, document.getLifeCyclePhase() );
-        document.setPublicationStatus( Document.PublicationStatus.APPROVED );
-        assertEquals( DocumentDomainObject.LifeCyclePhase.APPROVED, document.getLifeCyclePhase() );
-        document.setPublicationStartDatetime( new Date( 0 ) );
-        assertEquals( DocumentDomainObject.LifeCyclePhase.PUBLISHED, document.getLifeCyclePhase() );
-        document.setArchivedDatetime( new Date( 0 ) );
-        assertEquals( DocumentDomainObject.LifeCyclePhase.ARCHIVED, document.getLifeCyclePhase() );
+    public void testGetLifeCyclePhaseAtTime() throws Exception {
+
+        assertLifeCyclePhase(LifeCyclePhase.NEW);
+
         document.setPublicationEndDatetime( new Date( 0 ) );
-        assertEquals( DocumentDomainObject.LifeCyclePhase.UNPUBLISHED, document.getLifeCyclePhase() );
+        assertLifeCyclePhase(LifeCyclePhase.NEW);
+
+        document.setPublicationStatus( Document.PublicationStatus.DISAPPROVED );
+        assertLifeCyclePhase(LifeCyclePhase.DISAPPROVED);
+
+        document.setPublicationStatus( Document.PublicationStatus.APPROVED );
+        assertLifeCyclePhase(LifeCyclePhase.UNPUBLISHED);
+
+        document.setPublicationEndDatetime( null );
+        assertLifeCyclePhase(LifeCyclePhase.APPROVED);
+
+        document.setArchivedDatetime( new Date( 0 ) );
+        assertLifeCyclePhase(LifeCyclePhase.APPROVED);
+
+        document.setPublicationStartDatetime( new Date( 0 ) );
+        assertLifeCyclePhase(LifeCyclePhase.ARCHIVED);
+
+        document.setArchivedDatetime( null );
+        assertLifeCyclePhase(LifeCyclePhase.PUBLISHED);
+
+        document.setPublicationEndDatetime( new Date( 0 ) );
+        assertLifeCyclePhase(LifeCyclePhase.UNPUBLISHED);
+    }
+
+    private void assertLifeCyclePhase(LifeCyclePhase lifeCyclePhase) {
+        assertEquals( lifeCyclePhase, document.getLifeCyclePhaseAtTime(new Date(1)) );
     }
 }

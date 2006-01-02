@@ -16,6 +16,7 @@ import imcode.server.document.DocumentComparator;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.NoPermissionToCreateDocumentException;
 import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.LifeCyclePhase;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -323,15 +324,15 @@ public class AdminManager extends HttpServlet {
 
     private AdminManagerSubreport createDocumentsUnmodifiedForSixMonthsSubreport(
             DocumentDomainObject[] documentsFound ) {
-        DocumentDomainObject.LifeCyclePhase[] phases = new DocumentDomainObject.LifeCyclePhase[]{
-            DocumentDomainObject.LifeCyclePhase.APPROVED, DocumentDomainObject.LifeCyclePhase.NEW,
-            DocumentDomainObject.LifeCyclePhase.PUBLISHED, DocumentDomainObject.LifeCyclePhase.ARCHIVED,
+        LifeCyclePhase[] phases = new LifeCyclePhase[]{
+            LifeCyclePhase.APPROVED, LifeCyclePhase.NEW,
+            LifeCyclePhase.PUBLISHED, LifeCyclePhase.ARCHIVED,
         };
         Date sixMonthsAgo = getDateSixMonthsAgo();
         List documentsUnchangedForSixMonths = new ArrayList();
         for ( int i = 0; i < documentsFound.length; i++ ) {
             DocumentDomainObject document = documentsFound[i];
-            DocumentDomainObject.LifeCyclePhase phase = document.getLifeCyclePhase();
+            LifeCyclePhase phase = document.getLifeCyclePhase();
             if ( ArrayUtils.contains( phases, phase ) && document.getModifiedDatetime().before( sixMonthsAgo ) ) {
                 documentsUnchangedForSixMonths.add( document );
             }
@@ -348,16 +349,16 @@ public class AdminManager extends HttpServlet {
     }
 
     private AdminManagerSubreport createDocumentsArchivedWithinOneWeekSubreport( DocumentDomainObject[] documentsFound ) {
-        DocumentDomainObject.LifeCyclePhase[] phases = new DocumentDomainObject.LifeCyclePhase[]{
-            DocumentDomainObject.LifeCyclePhase.APPROVED,
-            DocumentDomainObject.LifeCyclePhase.PUBLISHED
+        LifeCyclePhase[] phases = new LifeCyclePhase[]{
+            LifeCyclePhase.APPROVED,
+            LifeCyclePhase.PUBLISHED
         };
         List documentsArchivedWithinOneWeek = new ArrayList();
         Date lastMidnight = getDateLastMidnight();
         Date oneWeekAhead = getDateOneWeekAhead();
         for ( int i = 0; i < documentsFound.length; i++ ) {
             DocumentDomainObject document = documentsFound[i];
-            DocumentDomainObject.LifeCyclePhase phase = document.getLifeCyclePhase();
+            LifeCyclePhase phase = document.getLifeCyclePhase();
             Date archivedDatetime = document.getArchivedDatetime();
             if ( ArrayUtils.contains( phases, phase ) && null != archivedDatetime
                  && !archivedDatetime.before( lastMidnight )
@@ -377,16 +378,16 @@ public class AdminManager extends HttpServlet {
 
     private AdminManagerSubreport createDocumentsUnpublishedWithinOneWeekSubreport(
             DocumentDomainObject[] documentsFound ) {
-        DocumentDomainObject.LifeCyclePhase[] phases = new DocumentDomainObject.LifeCyclePhase[]{
-            DocumentDomainObject.LifeCyclePhase.APPROVED,
-            DocumentDomainObject.LifeCyclePhase.ARCHIVED, DocumentDomainObject.LifeCyclePhase.PUBLISHED
+        LifeCyclePhase[] phases = new LifeCyclePhase[]{
+            LifeCyclePhase.APPROVED,
+            LifeCyclePhase.ARCHIVED, LifeCyclePhase.PUBLISHED
         };
         Date lastMidnight = getDateLastMidnight();
         Date oneWeekAhead = getDateOneWeekAhead();
         List documentsUnpublishedWithinOneWeek = new ArrayList();
         for ( int i = 0; i < documentsFound.length; i++ ) {
             DocumentDomainObject document = documentsFound[i];
-            DocumentDomainObject.LifeCyclePhase phase = document.getLifeCyclePhase();
+            LifeCyclePhase phase = document.getLifeCyclePhase();
             Date publicationEndDatetime = document.getPublicationEndDatetime();
             if ( ArrayUtils.contains( phases, phase ) && null != publicationEndDatetime
                  && !publicationEndDatetime.before( lastMidnight )
@@ -406,7 +407,7 @@ public class AdminManager extends HttpServlet {
     }
 
     private String createDateSearchQueryString( String dateType, Date startDate, Date endDate,
-                                                DocumentDomainObject.LifeCyclePhase[] lifeCyclePhases ) {
+                                                LifeCyclePhase[] lifeCyclePhases ) {
         String result = SearchDocumentsPage.REQUEST_PARAMETER__DATE_TYPE + "="
                         + dateType;
 
@@ -426,7 +427,7 @@ public class AdminManager extends HttpServlet {
         }
         if ( null != lifeCyclePhases ) {
             for ( int i = 0; i < lifeCyclePhases.length; i++ ) {
-                DocumentDomainObject.LifeCyclePhase phase = lifeCyclePhases[i];
+                LifeCyclePhase phase = lifeCyclePhases[i];
                 result += "&" + SearchDocumentsPage.REQUEST_PARAMETER__PHASE + "=" + phase;
             }
         }
