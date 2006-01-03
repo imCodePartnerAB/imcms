@@ -1,6 +1,97 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <changesets>
 
+<changeset version="3.0.1">
+    
+    <changes for="users">
+        <change>
+            <p>
+                Image-paths are URL-encoded to fix problems with image-paths containing non-ASCII characters.
+            </p>
+            <issue id="3646"/>
+        </change>
+        <change>
+            <p>
+                Users with "restricted 1/2" permissions on a page could not save a text document
+                if it linked to documents the user couldn't link to.
+            </p>
+            <issue id="3773"/>
+        </change>
+        <change>
+            <p>
+                Searches on the "phase" field of a document, such as "phase:published" or "phase:new",
+                would search based on the time that the document was indexed, not the time of the search.
+                Such queries are now rewritten on the fly to fix this.
+            </p>
+            <issue id="3691"/>
+        </change>
+    </changes>
+    <changes for="administrators">
+        <change>
+            <p>
+                If there was an error while deploying, the deploy failed completely.
+                Now the deploy succeeds, and the error appears in the browser instead.
+            </p>
+            <issue id="3706"/>
+        </change>
+        <change>
+            <p>
+                Fixed a problem with default values in the SQL script for MySQL 5.
+            </p>
+            <issue id="3643"/>
+        </change>
+        <change>
+            <p>
+                Ignore IPv6 and other non IPv4-addresses instead of choking on them.
+            </p>
+            <issue id="3681"/>
+        </change>
+        <change>
+            <p>
+                Added MySQL sample to <path>server.properties</path>.
+            </p>
+            <issue id="3705"/>
+        </change>
+        <change>
+            <p>
+                The upgrade SQL script <path>diff-2-3.sql</path> did not work in some cases,
+                due to some foreign keys to the 'users' table changing name.
+            </p>
+            <issue id="3707"/>
+        </change>
+        <change>
+            <p>
+                The imCMS advertisement at the top of every page was not output when the <tag>html</tag> tag contained attributes.
+            </p>
+            <issue id="3778"/>
+        </change>
+        <change>
+            <p>
+                An attempt to reduce ThreadDeath errors with Tomcat has been done,
+                by providing only commons-logging-api and calling
+                <method>LogFactory.releaseAll()</method> on shutdown.
+            </p>
+            <issue id="3860"/>
+        </change>
+    </changes>
+    <changes for="developers">
+        <change>
+            <p>
+                Source is now included for our own libraries.
+            </p>
+            <issue id="3708"/>
+        </change>
+        <change>
+            <p>
+                The ddlutils and commons-betwixt libraries have been updated to newer non-released versions
+                from the Apache Subversion repository, so we don't have to keep the ddlutils version patched by us.
+            </p>
+            <issue id="3914"/>
+        </change>
+    </changes>
+    
+</changeset>    
+    
 <changeset version="3.0.0">
     
     <changes importance="high" for="administrators">
