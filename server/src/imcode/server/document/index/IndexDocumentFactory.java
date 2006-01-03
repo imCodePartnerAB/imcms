@@ -49,8 +49,6 @@ class IndexDocumentFactory {
 
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__STATUS, "" + document.getPublicationStatus() ) );
 
-        indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__PHASE, "" + document.getLifeCyclePhase() ) ) ;
-
         DefaultDocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
 
         try {
