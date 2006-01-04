@@ -11,7 +11,6 @@ class IndexRebuildTimerTask extends TimerTask {
 
     private final long indexRebuildSchedulePeriodInMilliseconds;
     private final BackgroundIndexBuilder backgroundIndexBuilder;
-    private boolean canceled;
 
     IndexRebuildTimerTask(long indexRebuildSchedulePeriodInMilliseconds,
                           BackgroundIndexBuilder backgroundIndexBuilder) {

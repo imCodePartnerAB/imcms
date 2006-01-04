@@ -3,9 +3,6 @@ package imcode.server.document.index;
 import imcode.server.Imcms;
 import imcode.server.document.*;
 import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -22,6 +19,7 @@ class IndexDocumentFactory {
     private final static Logger log = Logger.getLogger( IndexDocumentFactory.class.getName() );
 
     public Document createIndexDocument( DocumentDomainObject document ) {
+        log.trace("Indexing document "+document.getId());
         Document indexDocument = new Document();
 
         int documentId = document.getId();
@@ -98,7 +96,7 @@ class IndexDocumentFactory {
         }
     }
 
-    private static Field unStoredKeyword( String fieldName, String fieldValue ) {
+    static Field unStoredKeyword( String fieldName, String fieldValue ) {
         return new Field( fieldName, fieldValue.toLowerCase(), false, true, false );
     }
 
@@ -107,49 +105,4 @@ class IndexDocumentFactory {
         return new Field( fieldName, DateField.dateToString( truncatedDate ), false, true, false );
     }
 
-    private static class IndexDocumentAdaptingVisitor extends DocumentVisitor {
-
-        Document indexDocument;
-
-        private IndexDocumentAdaptingVisitor( Document indexDocument ) {
-            this.indexDocument = indexDocument;
-        }
-
-        public void visitTextDocument( TextDocumentDomainObject textDocument ) {
-            Iterator textsIterator = textDocument.getTexts().entrySet().iterator();
-            while ( textsIterator.hasNext() ) {
-                Map.Entry textEntry = (Map.Entry)textsIterator.next();
-                Integer textIndex = (Integer)textEntry.getKey();
-                TextDomainObject text = (TextDomainObject)textEntry.getValue();
-                indexDocument.add( Field.UnStored( DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText() ) ) ;
-                String htmlStrippedText = stripHtml(text) ;
-                indexDocument.add( Field.UnStored( DocumentIndex.FIELD__TEXT, htmlStrippedText ) );
-                indexDocument.add( Field.UnStored( DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText ) );
-            }
-
-            Iterator imagesIterator = textDocument.getImages().values().iterator();
-            while ( imagesIterator.hasNext() ) {
-                ImageDomainObject image = (ImageDomainObject)imagesIterator.next();
-                String imageLinkUrl = image.getLinkUrl();
-                if ( null != imageLinkUrl && imageLinkUrl.length() > 0 ) {
-                    indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl ) );
-                }
-            }
-        }
-
-        private String stripHtml( TextDomainObject text ) {
-            String string = text.getText() ;
-            if (TextDomainObject.TEXT_TYPE_HTML == text.getType()) {
-                string = string.replaceAll( "<[^>]+?>", "" ) ;
-            }
-            return string ;
-        }
-
-        public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
-            FileDocumentDomainObject.FileDocumentFile file = fileDocument.getDefaultFile();
-            if (null != file) {
-                indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__MIME_TYPE, file.getMimeType() ) );
-            }
-        }
-    }
 }
