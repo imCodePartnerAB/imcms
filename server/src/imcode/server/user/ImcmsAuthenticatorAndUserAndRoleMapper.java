@@ -534,13 +534,13 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     public UserDomainObject[] findUsersByNamePrefix(String namePrefix, boolean includeInactiveUsers) {
         try {
             String sql = SQL_SELECT_USERS + " WHERE user_id != " + USER_EXTERN_ID
-                         + " AND ( login_name LIKE ? OR first_name LIKE ? OR last_name LIKE ? )";
+                         + " AND ( login_name LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR title LIKE ? )";
             if ( !includeInactiveUsers ) {
                 sql += " AND active = 1";
             }
             sql += " ORDER BY last_name, first_name";
             String like = namePrefix + "%";
-            final Object[] parameters = new String[] { like, like, like };
+            final Object[] parameters = new String[] { like, like, like, like };
             String[][] sqlRows = DatabaseUtils.execute2dStringArrayQuery(services.getDatabase(), sql, parameters);
             return getUsersFromSqlRows(sqlRows);
         } catch ( DatabaseException e ) {
