@@ -222,11 +222,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.TestFileAdmin</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.TestFileAdmin</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.LinkCheck</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.LinkCheck</servlet-class>
     </servlet>
@@ -454,11 +449,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.TemplateChange</servlet-name>
         <url-pattern>/servlet/TemplateChange</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.TestFileAdmin</servlet-name>
-        <url-pattern>/servlet/TestFileAdmin</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
