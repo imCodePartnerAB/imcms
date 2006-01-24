@@ -337,7 +337,7 @@ public class UserEditorPage extends OkCancelPage {
         return uneditedUser;
     }
 
-    private static class RoleToStringPairTransformer extends ToStringPairTransformer {
+    public static class RoleToStringPairTransformer extends ToStringPairTransformer {
         protected String[] transformToStringPair(Object object) {
             RoleDomainObject role = (RoleDomainObject) object;
             return new String[] { "" + role.getId(), role.getName() };

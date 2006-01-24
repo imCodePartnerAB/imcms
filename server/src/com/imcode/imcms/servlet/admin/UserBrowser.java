@@ -3,10 +3,7 @@ package com.imcode.imcms.servlet.admin;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import imcode.server.Imcms;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.RoleId;
-import imcode.server.user.UserAlreadyExistsException;
-import imcode.server.user.UserDomainObject;
+import imcode.server.user.*;
 import imcode.util.HttpSessionUtils;
 import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
@@ -16,12 +13,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class UserBrowser extends HttpServlet {
 
     public static final String REQUEST_PARAMETER__USER_ID = "user_id";
+    public static final String REQUEST_PARAMETER__ROLE_ID = "role_id";
     public final static String REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE = "userBrowse";
     public static final String REQUEST_PARAMETER__SHOW_USERS_BUTTON = "showUsers";
     public static final String REQUEST_PARAMETER__SEARCH_STRING = "searchstring";
@@ -90,13 +87,34 @@ public class UserBrowser extends HttpServlet {
         ImcmsAuthenticatorAndUserAndRoleMapper userMapperAndRole = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         boolean includeInactiveUsers = null != request.getParameter( REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS );
         String searchString = request.getParameter( REQUEST_PARAMETER__SEARCH_STRING );
+        String[] selectedRoleIds = request.getParameter(REQUEST_PARAMETER__ROLE_ID) != null ? request.getParameterValues(REQUEST_PARAMETER__ROLE_ID) : new String[] {};
+        RoleDomainObject[] selectedRoles = selectedRoleIds.length > 0 ? new RoleDomainObject[selectedRoleIds.length] : new RoleDomainObject[0] ;
         UserDomainObject[] users = userMapperAndRole.findUsersByNamePrefix( searchString, includeInactiveUsers );
+        for (int i=0; i < selectedRoleIds.length; i++ ){
+            selectedRoles[i] = userMapperAndRole.getRoleById(Integer.parseInt(selectedRoleIds[i]));
+        }
+        if ( selectedRoles.length > 0 ) {
+            List usersList = new ArrayList();
+            for (int i=0; i < users.length; i++ ) {
+                boolean hasRole = false;
+                for (int k = 0; k < selectedRoles.length; k++) {
+                    hasRole = users[i].hasRoleId(selectedRoles[k].getId());
+                    if(hasRole){break;}
+                }
+                if(hasRole) { usersList.add(users[i]); }
+            }
+
+            users = (UserDomainObject[])usersList.toArray(new UserDomainObject[usersList.size()] );
+        }
+
         if (loggedOnUser.isUserAdminAndCanEditAtLeastOneRole()){
             users = getUsersWithUseradminPermissibleRoles(loggedOnUser, users);
         }
+
         UserBrowserPage userBrowserPage = new UserBrowserPage();
         userBrowserPage.setSearchString( searchString );
         userBrowserPage.setUsers( users );
+        userBrowserPage.setSelectedRoles(selectedRoles);
         userBrowserPage.setIncludeInactiveUsers( includeInactiveUsers );
         return userBrowserPage;
     }
@@ -129,6 +147,7 @@ public class UserBrowser extends HttpServlet {
 
         UserDomainObject[] users = new UserDomainObject[0];
         String searchString = "";
+        RoleDomainObject[] selectedRoles = new RoleDomainObject[] {};
         private boolean includeInactiveUsers;
 
         public String getSearchString() {
@@ -142,6 +161,14 @@ public class UserBrowser extends HttpServlet {
         public void setSearchString( String searchString ) {
             this.searchString = searchString;
         }
+
+        public void setSelectedRoles(RoleDomainObject[] selectedRoles) {
+            this.selectedRoles = selectedRoles;
+        }
+
+         public RoleDomainObject[] getSelectedRoles() {
+             return this.selectedRoles;
+         }
 
         public void setUsers( UserDomainObject[] users ) {
             this.users = users;
