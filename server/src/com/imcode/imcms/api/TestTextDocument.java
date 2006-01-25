@@ -1,14 +1,8 @@
 package com.imcode.imcms.api;
 
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import imcode.server.Config;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.MockImcmsServices;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentGetter;
-import imcode.server.document.DocumentId;
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
-import imcode.server.document.DocumentReference;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -44,9 +38,9 @@ public class TestTextDocument extends TestCase {
         otherTextDocumentDO.setId( 1002 );
         otherTextDocumentDO.setLinkableByOtherUsers( true );
         int menuIndex = 1;
-        DocumentReference documentReference = new MockDocumentReference( otherTextDocumentDO );
+        DocumentReference documentReference = new DirectDocumentReference( otherTextDocumentDO );
         MenuDomainObject menuDO = textDocumentDO.getMenu( menuIndex );
-        menuDO.addMenuItem( new MenuItemDomainObject( documentReference ) );
+        menuDO.addMenuItem( new MenuItemDomainObject(documentReference) );
         contentManagementSystem = new MockContentManagementSystem();
 
         imcmsServices = new MockImcmsServices();
@@ -144,16 +138,6 @@ public class TestTextDocument extends TestCase {
     }
 
     public void testAddRemoveDocument() throws DocumentAlreadyInMenuException {
-        DocumentGetter documentGetter = new DocumentGetter() {
-            public DocumentDomainObject getDocument(DocumentId documentId) {
-                if (documentId.intValue() == otherTextDocument.getId() ) {
-                    return otherTextDocument.getInternal() ;
-                }
-                return null ;
-            }
-        };
-        DefaultDocumentMapper documentMapper = new DefaultDocumentMapper(null,null,documentGetter,null,null,null,new Config(), new CategoryMapper(null));
-        imcmsServices.setDocumentMapper( documentMapper );
         menu.addDocument( otherTextDocument );
         assertEquals(0, menu.getDocuments().length) ;
         otherTextDocumentDO.setDocumentPermissionSetTypeForRoleId(readRole, DocumentPermissionSetTypeDomainObject.READ);
@@ -174,20 +158,6 @@ public class TestTextDocument extends TestCase {
     private void publish(DocumentDomainObject document) {
         document.setPublicationStatus( Document.PublicationStatus.APPROVED );
         document.setPublicationStartDatetime( new Date( 0 ) );
-    }
-
-    private static class MockDocumentReference extends DocumentReference {
-
-        private final DocumentDomainObject document;
-
-        MockDocumentReference( DocumentDomainObject document ) {
-            super( document.getId(), null );
-            this.document = document;
-        }
-
-        public DocumentDomainObject getDocument() {
-            return document ;
-        }
     }
 
 }

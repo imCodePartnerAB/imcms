@@ -1,11 +1,10 @@
 <%@ page contentType="text/html; charset=windows-1252" import="com.imcode.imcms.api.*,
-java.util.*,
-                 java.text.SimpleDateFormat,
-                 java.text.DateFormat,
-                                                               org.apache.commons.lang.StringUtils" errorPage="error.jsp" %><%
+org.apache.lucene.document.DateField,
+                 org.apache.lucene.index.Term,
+                 org.apache.lucene.search.BooleanQuery,
+                                                               org.apache.lucene.search.RangeQuery" errorPage="error.jsp" %><%@ page import="org.apache.lucene.search.Sort"%><%@ page import="org.apache.lucene.search.SortField"%><%@ page import="org.apache.lucene.search.TermQuery"%><%@ page import="java.util.Arrays"%><%@ page import="java.util.Calendar"%><%@ page import="java.util.Date"%><%
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService() ;
-    SearchQuery query ;
 %><html>
     <head>
         <title>Search Documents</title>
@@ -22,7 +21,7 @@ java.util.*,
             sorted in order of best hit.</h2>
         <ul>
         <%
-            query = new LuceneParsedQuery("test");
+            SearchQuery query = new LuceneParsedQuery("test");
             Document[] documents = documentService.search(query);
 
             if (0 == documents.length) { %>No hits.<% }
@@ -40,9 +39,9 @@ java.util.*,
         <h2>Search for documents in section "<%= section.getName() %>", sorted by headline and id.</h2>
         <ul>
         <%
-            query = new LuceneParsedQuery("section:"+section.getName());
+            query = new LuceneQuery(new TermQuery(new Term("section", section.getName())));
+            query.setSort(new Sort(new String[] { "meta_headline", "meta_id" }));
             documents = documentService.search(query);
-            Arrays.sort(documents, Document.Comparator.HEADLINE.chain( Document.Comparator.ID )) ;
 
             if (0 == documents.length) { %>No hits.<% }
             for ( int i = 0; i < documents.length; i++ ) {
@@ -56,9 +55,18 @@ java.util.*,
             and modified between 2004-01-01 and 2005-01-01, sorted by modified time, newest first.</h2>
         <ul>
         <%
-            query = new LuceneParsedQuery("+text1:test +modified_datetime:[2004-01-01 TO 2005-01-01]");
+            BooleanQuery luceneQuery = new BooleanQuery();
+            luceneQuery.add(new TermQuery(new Term("text1", "test")), true, false);
+            Calendar calendar = Calendar.getInstance();
+            calendar.clear();
+            calendar.set(2004,Calendar.JANUARY,1) ;
+            Date startDate = calendar.getTime() ;
+            calendar.set(2005, Calendar.JANUARY, 1) ;
+            Date endDate = calendar.getTime() ;
+            luceneQuery.add(new RangeQuery(new Term("modified_datetime", DateField.dateToString(startDate)), new Term("modified_datetime", DateField.dateToString(endDate)), false), true, false);
+            query = new LuceneQuery(luceneQuery);
+            query.setSort(new Sort("modified_datetime"));
             documents = documentService.search(query);
-            Arrays.sort(documents, Document.Comparator.MODIFIED_DATETIME.reversed()) ;
 
             if (0 == documents.length) { %>No hits.<% }
             for ( int i = 0; i < documents.length; i++ ) {
@@ -77,9 +85,9 @@ java.util.*,
                         sorted by published time.</h2>
                     <ul>
                     <%
-                    query = new LuceneParsedQuery("category_id:"+category.getId());
+                    query = new LuceneQuery(new TermQuery(new Term("category_id", ""+category.getId())));
+                    query.setSort(new Sort("publication_start_datetime"));
                     documents = documentService.search(query);
-                    Arrays.sort(documents, Document.Comparator.PUBLICATION_START_DATETIME.nullsFirst() ) ;
 
                     if (0 == documents.length) { %>No hits.<% }
                     for ( int i = 0; i < documents.length; i++ ) {
@@ -95,9 +103,9 @@ java.util.*,
             sorted by headline and archived date, later archived first.</h2>
         <ul>
         <%
-            query = new LuceneParsedQuery("parent_menu_id:1001_1");
+            query = new LuceneQuery(new TermQuery(new Term("parent_menu_id", "1001_1")));
+            query.setSort(new Sort(new SortField[] { new SortField("meta_headline"), new SortField("archived_datetime", true) }));
             documents = documentService.search(query);
-            Arrays.sort(documents, Document.Comparator.HEADLINE.chain(Document.Comparator.ARCHIVED_DATETIME.reversed().nullsFirst())) ;
 
             if (0 == documents.length) { %>No hits.<% }
             for ( int i = 0; i < documents.length; i++ ) {
@@ -110,9 +118,13 @@ java.util.*,
             sorted with oldest publication start date first.</h2>
         <ul>
         <%
-            Date now = new Date() ;
-            String todayDateString = new SimpleDateFormat("yyyy-MM-dd").format(now) ;
-            query = new LuceneParsedQuery("+status:"+Document.STATUS_NEW+" +publication_start_datetime:[0 TO "+todayDateString+"]") ;
+            luceneQuery = new BooleanQuery();
+            luceneQuery.add(new TermQuery(new Term("status", ""+Document.PublicationStatus.NEW)), true, false) ;
+            Term lowerTerm = new Term("publication_start_datetime", DateField.MIN_DATE_STRING());
+            Term upperTerm = new Term("publication_start_datetime", DateField.dateToString(new Date()));
+            luceneQuery.add(new RangeQuery(lowerTerm, upperTerm, false), true, false);
+            query = new LuceneQuery(luceneQuery) ;
+            query.setSort(new Sort("publication_start_datetime"));
             documents = documentService.search(query) ;
             Arrays.sort(documents, Document.Comparator.PUBLICATION_START_DATETIME) ;
 

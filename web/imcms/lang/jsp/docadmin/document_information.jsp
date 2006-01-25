@@ -30,12 +30,13 @@
             com.imcode.util.KeywordsParser,
             imcode.util.jscalendar.JSCalendar"
 
-%><%@ page import="imcode.util.ToStringPairTransformer"%>
+%><%@ page import="imcode.util.ToStringPairTransformer"%><%@ page import="imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     final ImcmsServices service = Imcms.getServices();
-    final DefaultDocumentMapper documentMapper = service.getDefaultDocumentMapper();
+    ImcmsAuthenticatorAndUserAndRoleMapper userMapper = service.getImcmsAuthenticatorAndUserAndRoleMapper();
+    final DocumentMapper documentMapper = service.getDocumentMapper();
     final CategoryMapper categoryMapper = service.getCategoryMapper();
 
     DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
@@ -319,8 +320,8 @@ function checkFocus() {
 
 		SectionDomainObject[] sections = documentMapper.getAllSections() ;
 		Arrays.sort(sections) ;
-		SectionDomainObject[] documentSections = document.getSections() ;
-
+		Set documentSectionIds = document.getSectionIds() ;
+        Set documentSections = documentMapper.getSections(documentSectionIds) ;
 	if (sections != null && sections.length > 0) { %>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/22 ?></td>
@@ -338,9 +339,9 @@ function checkFocus() {
 		</select>
 		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_section ?>
 		<%=
-		0 == documentSections.length
+		documentSections.isEmpty()
 		? "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/no_section ?>"
-		: StringUtils.join(documentSections, ", ")
+		: StringUtils.join(documentSections.iterator(), ", ")
 		%></td>
 	</tr>
 	<tr>
@@ -398,12 +399,11 @@ function checkFocus() {
 
 			boolean radioButton = categoryType.getMaxChoices() == 1;
 			String typeStr = radioButton?"radio":"checkbox";
-			CategoryDomainObject[] documentSelectedCategories = document.getCategoriesOfType(categoryType);
-			Set selectedValuesSet = new HashSet( Arrays.asList(documentSelectedCategories) );
+            Set documentCategoryIds = document.getCategoryIds();
 			CategoryDomainObject[] categories = categoryMapper.getAllCategoriesOfType(categoryType);
 			for (int k = 0; k < categories.length; k++) {
 				CategoryDomainObject category = categories[k];
-				boolean checked = selectedValuesSet.contains(category);
+				boolean checked = documentCategoryIds.contains(new Integer(category.getId()));
 				String checkedStr = checked?"checked":"";
 				boolean hasImage = !category.getImageUrl().equals("");
 				String imageStr = hasImage ? "<img style=\"max-width: 10em; max-height: 10em;\" src=\"" + category.getImageUrl() + "\"/>" : ""; %>
@@ -521,7 +521,7 @@ function checkFocus() {
 			value="<%= formatTime( document.getCreatedDatetime() ) %>"></td>
 			<td class="imcmsAdmText"><%= jsCalendar.getInstance(EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_DATE,
 			                             EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_TIME).getButton(calendarButtonTitle) %>&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/created_by ?>
-			<%= Utility.formatUser(document.getCreator()) %>&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER %>" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/select_creator_button ?>"></td>
+			<%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %>&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER %>" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/select_creator_button ?>"></td>
 		</tr>
 		</table></td>
 	</tr>
@@ -547,7 +547,8 @@ function checkFocus() {
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/42 ?></td>
 		<td class="imcmsAdmText">
-		<% UserDomainObject publisher = document.getPublisher() ; %>
+		<% Integer publisherId = document.getPublisherId();
+            UserDomainObject publisher = null == publisherId ? null : userMapper.getUser(publisherId.intValue()) ; %>
 		<%=
 		null == publisher
 		? "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/no_publisher ?>"

@@ -4,7 +4,6 @@ import com.imcode.imcms.flow.*;
 import com.imcode.imcms.servlet.GetDoc;
 import imcode.server.*;
 import imcode.server.document.*;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
@@ -36,7 +35,7 @@ public class AdminDoc extends HttpServlet {
         int metaId = Integer.parseInt( req.getParameter( PARAMETER__META_ID ) );
         int flags = Integer.parseInt( (String)ObjectUtils.defaultIfNull( req.getParameter( PARAMETER__DISPATCH_FLAGS ), "0" ) );
 
-        DocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( metaId );
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !user.canEdit( document )) {
@@ -64,7 +63,7 @@ public class AdminDoc extends HttpServlet {
 
     private PageFlow createFlow( DocumentDomainObject document, int flags, UserDomainObject user ) {
         RedirectToDocumentCommand returnCommand = new RedirectToDocumentCommand( document );
-        DefaultDocumentMapper.SaveEditedDocumentCommand saveDocumentCommand = new DefaultDocumentMapper.SaveEditedDocumentCommand();
+        DocumentMapper.SaveEditedDocumentCommand saveDocumentCommand = new DocumentMapper.SaveEditedDocumentCommand();
 
         PageFlow pageFlow = null;
         if ( ImcmsConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags && user.canEditDocumentInformationFor( document ) ) {
@@ -103,7 +102,7 @@ public class AdminDoc extends HttpServlet {
             history.push( meta_int );
         }
 
-        DocumentDomainObject document = imcref.getDefaultDocumentMapper().getDocument( meta_id );
+        DocumentDomainObject document = imcref.getDocumentMapper().getDocument( meta_id );
         if ( null == document ) {
             return GetDoc.getDocumentDoesNotExistPage( res, user );
         }

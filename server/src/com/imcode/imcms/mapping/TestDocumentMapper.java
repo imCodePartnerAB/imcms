@@ -2,27 +2,25 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.db.mock.MockDatabase;
 import com.imcode.db.mock.MockResultSet;
-import imcode.server.Config;
 import imcode.server.MockImcmsServices;
 import imcode.server.document.*;
-import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
+import imcode.util.IntegerSet;
 import junit.framework.TestCase;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.varia.NullAppender;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
-import java.util.Collection;
 
-public class TestDefaultDocumentMapper extends TestCase {
+public class TestDocumentMapper extends TestCase {
 
-    private DefaultDocumentMapper documentMapper;
+    private DocumentMapper documentMapper;
     private MockDatabase database;
     private UserDomainObject user;
     private RoleDomainObject testRole;
@@ -59,7 +57,8 @@ public class TestDefaultDocumentMapper extends TestCase {
         }) ;
         documentIndex = new MockDocumentIndex();
         CategoryMapper categoryMapper = new CategoryMapper(database);
-        documentMapper = new DefaultDocumentMapper( services, database, new DatabaseDocumentGetter(database, services), new DocumentPermissionSetMapper( database, services ), documentIndex, null, new Config(), categoryMapper);
+        documentMapper = new DocumentMapper( services, database);
+        documentMapper.setDocumentIndex(documentIndex);
         services.setDocumentMapper(documentMapper);
         services.setCategoryMapper(categoryMapper);
     }
@@ -71,7 +70,7 @@ public class TestDefaultDocumentMapper extends TestCase {
     }
 
     public void testNotSerializable() {
-        if ( DefaultDocumentMapper.class.isAssignableFrom( Serializable.class )) {
+        if ( DocumentMapper.class.isAssignableFrom( Serializable.class )) {
             fail("DocumentMapper must not be serializable so it can't be put in the session.") ;
         }
     }
@@ -87,12 +86,11 @@ public class TestDefaultDocumentMapper extends TestCase {
         textDocument.setRoleIdsMappedToDocumentPermissionSetTypes(oldDocument.getRoleIdsMappedToDocumentPermissionSetTypes());
         textDocument.setDocumentPermissionSetTypeForRoleId(testRole.getId(), DocumentPermissionSetTypeDomainObject.READ);
         DocumentPermissionSetDomainObject permissionSetForRestrictedOne = new DocumentPermissionSetDomainObject(DocumentPermissionSetTypeDomainObject.RESTRICTED_1) {
-            public void setFromBits(DocumentDomainObject document,
-                                    DocumentPermissionSetMapper documentPermissionSetMapper,
-                                    int permissionBits, boolean forNewDocuments) {
+            public void setFromBits(
+                    int permissionBits) {
             }
         };
-        oldDocument.setPermissionSetForRestrictedOne(permissionSetForRestrictedOne);
+        oldDocument.getPermissionSets().setRestricted1(permissionSetForRestrictedOne);
 
         permissionSetForRestrictedOne.setEditPermissions(false);
         documentMapper.getDocumentSaver().updateDocumentRolePermissions(textDocument, user, oldDocument);
@@ -104,7 +102,7 @@ public class TestDefaultDocumentMapper extends TestCase {
 
         textDocument.setDocumentPermissionSetTypeForRoleId(testRole.getId(), DocumentPermissionSetTypeDomainObject.RESTRICTED_1);
         documentMapper.getDocumentSaver().updateDocumentRolePermissions(textDocument, user, oldDocument);
-        database.assertCalled(new MockDatabase.EqualsSqlCallPredicate(DefaultDocumentMapper.SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID));
+        database.assertCalled(new MockDatabase.EqualsSqlCallPredicate(DocumentSaver.SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID));
     }
 
     public void testUpdateDocumentRolePermissionsWithFullPermission() throws Exception {
@@ -118,8 +116,8 @@ public class TestDefaultDocumentMapper extends TestCase {
     public void testUpdateDocumentRolePermissionsRemovesPermission() {
         oldDocument.setDocumentPermissionSetTypeForRoleId(userRole, DocumentPermissionSetTypeDomainObject.FULL);
         documentMapper.getDocumentSaver().updateDocumentRolePermissions(textDocument, user, oldDocument);
-        database.assertCalled(new MockDatabase.EqualsSqlCallPredicate(DefaultDocumentMapper.SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID));
-        database.assertNotCalled(new MockDatabase.EqualsWithParametersSqlCallPredicate(DefaultDocumentMapper.SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID,
+        database.assertCalled(new MockDatabase.EqualsSqlCallPredicate(DocumentSaver.SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID));
+        database.assertNotCalled(new MockDatabase.EqualsWithParametersSqlCallPredicate(DocumentSaver.SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID,
                                                                                        new String[] {
                                                                                                "" + userRole.intValue(),
                                                                                                ""
@@ -127,7 +125,7 @@ public class TestDefaultDocumentMapper extends TestCase {
                                                                                                ""
                                                                                                + DocumentPermissionSetTypeDomainObject
                                                                                                        .FULL }));
-        database.assertNotCalled(new MockDatabase.EqualsWithParametersSqlCallPredicate(DefaultDocumentMapper.SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID,
+        database.assertNotCalled(new MockDatabase.EqualsWithParametersSqlCallPredicate(DocumentSaver.SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID,
                                                                                        new String[] {
                                                                                                "" + userRole.intValue(),
                                                                                                ""
@@ -157,14 +155,15 @@ public class TestDefaultDocumentMapper extends TestCase {
 
     public void testDeleteDocument() {
         Object[][] documentResultRows = new Object[1][19];
-        documentResultRows[0][0] = ""+textDocument.getId() ;
-        documentResultRows[0][1] = ""+textDocument.getDocumentTypeId() ;
-        documentResultRows[0][5] = ""+user.getId() ;
-        documentResultRows[0][16] = ""+textDocument.getPublicationStatus() ;
-        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( DefaultDocumentMapper.SQL_GET_DOCUMENT ), new MockResultSet(documentResultRows) );
+        documentResultRows[0][0] = new Integer(textDocument.getId()) ;
+        documentResultRows[0][1] = new Integer(textDocument.getDocumentTypeId()) ;
+        documentResultRows[0][5] = new Integer(user.getId()) ;
+        documentResultRows[0][16] = new Integer(DocumentSaver.convertPublicationStatusToInt(textDocument.getPublicationStatus())) ;
+        database.addExpectedSqlCall( new MockDatabase.StartsWithSqlCallPredicate( DatabaseDocumentGetter.SQL_GET_DOCUMENTS ), new MockResultSet(documentResultRows) );
         ResultSet textDocsResultRow = new MockResultSet(new Object[][] { { ONE, ONE, ONE, ONE, ONE } } ) ;
         database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "FROM text_docs"), textDocsResultRow );
-        assertNotNull( documentMapper.getDocument( textDocument.getId() ) ) ;
+        DocumentDomainObject document = documentMapper.getDocument(textDocument.getId());
+        assertNotNull( document ) ;
         documentMapper.deleteDocument( textDocument, user );
         database.assertCalledInOrder(new MockDatabase.SqlCallPredicate[] {
                                     new MockDatabase.DeleteFromTableSqlCallPredicate("text_docs"),
@@ -184,7 +183,7 @@ public class TestDefaultDocumentMapper extends TestCase {
     public void testCreateTextDocument() throws NoPermissionToAddDocumentToMenuException, NoPermissionToCreateDocumentException {
         user.addRoleId( RoleId.SUPERADMIN );
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.TEXT_ID, textDocument, user );
-        document.setTemplate( new TemplateDomainObject( 1, "test", "test") );
+        document.setTemplateId( 1 );
         database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "meta" ), new Integer(1002));
         documentMapper.saveNewDocument( document, user );
         database.assertExpectedSqlCalls();
@@ -206,117 +205,44 @@ public class TestDefaultDocumentMapper extends TestCase {
         database.assertExpectedSqlCalls();
     }
 
-    public void testDocumentAddedWithoutPermission() {
-        UserDomainObject testedUser = new UserDomainObject();
-        TextDocumentDomainObject document = createTextDocument(1001);
-        TextDocumentDomainObject addedDocument = createTextDocument(1002);
-        document.getMenu(1).addMenuItem(new MenuItemDomainObject(new MockDocumentReference(addedDocument)));
-        oldDocument = createTextDocument(1001);
-
-        addedDocument.setLinkableByOtherUsers(true);
-        assertDocumentsAddedWithPermission(document, null, testedUser);
-
-        addedDocument.setLinkableByOtherUsers(false);
-        assertDocumentsAddedWithoutPermission(document, null, testedUser);
-
-        assertDocumentsAddedWithoutPermission(document, oldDocument, testedUser);
-
-        addedDocument.setLinkableByOtherUsers(true);
-        assertDocumentsAddedWithPermission(document, oldDocument, testedUser);
-
-        addedDocument.setLinkableByOtherUsers(false);
-        assertDocumentsAddedWithoutPermission(document, oldDocument, testedUser);
-
-        addedDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERS, DocumentPermissionSetTypeDomainObject.FULL);
-        assertDocumentsAddedWithPermission(document, oldDocument, testedUser);
-
-        addedDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERS, DocumentPermissionSetTypeDomainObject.NONE);
-        assertDocumentsAddedWithoutPermission(document, oldDocument, testedUser);
-
-        testedUser.addRoleId(RoleId.SUPERADMIN);
-        assertDocumentsAddedWithPermission(document, oldDocument, testedUser);
-
-        testedUser.removeRoleId(RoleId.SUPERADMIN);
-        assertDocumentsAddedWithoutPermission(document, oldDocument, testedUser);
-
-        try {
-            documentMapper.getDocumentSaver().checkDocumentsAddedWithoutPermission(document, oldDocument, testedUser);
-            fail("Expected exception.");
-        } catch ( NoPermissionToAddDocumentToMenuException e ) {}
-    }
-
-    private void assertDocumentsAddedWithPermission(TextDocumentDomainObject document,
-                                                    TextDocumentDomainObject oldDocument, UserDomainObject user) {
-        assertEmpty(documentMapper.getDocumentSaver().getDocumentsAddedWithoutPermission(document, oldDocument, user));
-    }
-
-    private void assertDocumentsAddedWithoutPermission(TextDocumentDomainObject document,
-                                                       TextDocumentDomainObject oldDocument, UserDomainObject user) {
-        assertNotEmpty(documentMapper.getDocumentSaver().getDocumentsAddedWithoutPermission(document, oldDocument, user));
-    }
-
-    private void assertEmpty(Collection collection) {
-        assertTrue(collection.isEmpty());
-    }
-
-    private void assertNotEmpty(Collection collection) {
-        assertFalse(collection.isEmpty());
-    }
 
     public void testSetTemplateForNewTextDocument() throws Exception {
-        TemplateDomainObject template1 = new TemplateDomainObject(1, "Template1", "Template1");
-        TemplateDomainObject template2 = new TemplateDomainObject(2, "Template2", "Template2");
-        TemplateDomainObject template3 = new TemplateDomainObject(2, "Template3", "Template3");
-        TemplateDomainObject template4 = new TemplateDomainObject(2, "Template4", "Template4");
-        oldDocument.setTemplate(template1);
-        TextDocumentPermissionSetDomainObject permissionSetForNewR1 = (TextDocumentPermissionSetDomainObject) oldDocument.getPermissionSetForRestrictedOneForNewDocuments();
-        permissionSetForNewR1.setDefaultTemplate(template3);
-        TextDocumentPermissionSetDomainObject permissionSetForR1 = (TextDocumentPermissionSetDomainObject) oldDocument.getPermissionSetForRestrictedOne();
-        permissionSetForR1.setAllowedDocumentTypeIds(new int[] { DocumentTypeDomainObject.TEXT_ID });
-        TextDocumentPermissionSetDomainObject permissionSetForNewR2 = (TextDocumentPermissionSetDomainObject) oldDocument.getPermissionSetForRestrictedTwoForNewDocuments();
-        permissionSetForNewR2.setDefaultTemplate(template4);
-        TextDocumentPermissionSetDomainObject permissionSetForR2 = (TextDocumentPermissionSetDomainObject) oldDocument.getPermissionSetForRestrictedTwo();
-        permissionSetForR2.setAllowedDocumentTypeIds(new int[] { DocumentTypeDomainObject.TEXT_ID });
-
-        TextDocumentDomainObject newDocument;
+        Integer templateId1 = new Integer(1);
+        Integer templateId2 = new Integer(2);
+        Integer templateId3 = new Integer(3);
+        Integer templateId4 = new Integer(4);
+        oldDocument.setTemplateId(templateId1.intValue());
+        oldDocument.setDefaultTemplateIdForRestricted1(templateId3);
+        TextDocumentPermissionSetDomainObject permissionSetForR1 = (TextDocumentPermissionSetDomainObject) oldDocument.getPermissionSets().getRestricted1();
+        permissionSetForR1.setAllowedDocumentTypeIds(new IntegerSet(DocumentTypeDomainObject.TEXT_ID));
+        oldDocument.setDefaultTemplateIdForRestricted2(templateId4);
+        TextDocumentPermissionSetDomainObject permissionSetForR2 = (TextDocumentPermissionSetDomainObject) oldDocument.getPermissionSets().getRestricted2();
+        permissionSetForR2.setAllowedDocumentTypeIds(new IntegerSet(DocumentTypeDomainObject.TEXT_ID));
 
         oldDocument.setDocumentPermissionSetTypeForRoleId(userRole, DocumentPermissionSetTypeDomainObject.FULL);
-        newDocument = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, oldDocument, user);
-        assertEquals(oldDocument.getTemplate(), newDocument.getTemplate());
-        assertEquals(template1, newDocument.getTemplate());
+        TextDocumentDomainObject newDocument = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, oldDocument, user);
+        assertEquals(oldDocument.getTemplateId(), newDocument.getTemplateId());
+        assertEquals(templateId1.intValue(), newDocument.getTemplateId());
 
-        oldDocument.setDefaultTemplate(template2);
+        oldDocument.setDefaultTemplateId(templateId2);
         newDocument = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, oldDocument, user);
-        assertEquals(template2, newDocument.getTemplate());
+        assertEquals(templateId2.intValue(), newDocument.getTemplateId());
 
         oldDocument.setDocumentPermissionSetTypeForRoleId(userRole, DocumentPermissionSetTypeDomainObject.RESTRICTED_1);
         newDocument = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, oldDocument, user);
-        assertEquals(template3, newDocument.getTemplate());
+        assertEquals(templateId3.intValue(), newDocument.getTemplateId());
 
-        permissionSetForNewR1.setDefaultTemplate(null);
+        oldDocument.setDefaultTemplateIdForRestricted1(null);
         newDocument = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, oldDocument, user);
-        assertEquals(template2, newDocument.getTemplate());
+        assertEquals(templateId2.intValue(), newDocument.getTemplateId());
 
         oldDocument.setDocumentPermissionSetTypeForRoleId(userRole, DocumentPermissionSetTypeDomainObject.RESTRICTED_2);
         newDocument = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, oldDocument, user);
-        assertEquals(template4, newDocument.getTemplate());
+        assertEquals(templateId4.intValue(), newDocument.getTemplateId());
 
-        permissionSetForNewR2.setDefaultTemplate(null);
+        oldDocument.setDefaultTemplateIdForRestricted2(null);
         newDocument = (TextDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, oldDocument, user);
-        assertEquals(template2, newDocument.getTemplate());
-    }
-
-    private static class MockDocumentReference extends DocumentReference {
-        private DocumentDomainObject document;
-
-        MockDocumentReference(DocumentDomainObject document) {
-            super(document.getId(), null);
-            this.document = document ;
-        }
-
-        public DocumentDomainObject getDocument() {
-            return document ;
-        }
+        assertEquals(templateId2.intValue(), newDocument.getTemplateId());
     }
 
 }

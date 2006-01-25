@@ -1,6 +1,6 @@
 package imcode.util;
 
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
@@ -78,7 +78,7 @@ public class ImcmsImageUtils {
         ImageSource imageSource = null;
 
         try {
-            DefaultDocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
+            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             DocumentDomainObject document = documentMapper.getDocument( Integer.parseInt( imageUrl ) );
             if ( document instanceof FileDocumentDomainObject ) {
                 imageSource = new FileDocumentImageSource( documentMapper.getDocumentReference( document ) );

@@ -12,6 +12,7 @@ import org.apache.commons.collections.SetUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +50,7 @@ public class DocumentFinder extends WebComponent {
 
     void forwardWithPage(HttpServletRequest request, HttpServletResponse response, SearchDocumentsPage page) throws IOException, ServletException {
         ImcmsServices service = Imcms.getServices();
-        DocumentIndex index = service.getDefaultDocumentMapper().getDocumentIndex();
+        DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
         BooleanQuery booleanQuery = new BooleanQuery();
         if ( null != page.getQuery() ) {
             booleanQuery.add( page.getQuery(), true, false );
@@ -58,9 +59,9 @@ public class DocumentFinder extends WebComponent {
             booleanQuery.add( restrictingQuery, true, false );
         }
         if ( booleanQuery.getClauses().length > 0 ) {
-            DocumentDomainObject[] documentsFound = index.search( booleanQuery, Utility.getLoggedOnUser( request ) );
+            List documentsFound = index.search( booleanQuery, null, Utility.getLoggedOnUser( request ) );
             if (null != documentComparator) {
-                Arrays.sort(documentsFound, documentComparator) ;
+                Collections.sort(documentsFound, documentComparator) ;
             }
             page.setDocumentsFound( documentsFound );
         }

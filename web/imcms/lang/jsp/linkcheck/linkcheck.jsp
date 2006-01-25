@@ -2,13 +2,12 @@
                  java.util.Iterator,
                  com.imcode.imcms.servlet.admin.AdminDoc,
                  imcode.server.ImcmsConstants,
-                 com.imcode.imcms.mapping.DocumentMapper,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
                  imcode.server.document.DocumentDomainObject,
                  com.imcode.imcms.servlet.superadmin.DocumentReferences,
                  imcode.util.Html,
-                 org.apache.commons.lang.StringEscapeUtils"%><%@ page import="com.imcode.imcms.mapping.DefaultDocumentMapper"%>
+                 org.apache.commons.lang.StringEscapeUtils"%><%@ page import="com.imcode.imcms.mapping.DocumentMapper"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
 LinkCheck.LinkCheckPage linkCheckPage = (LinkCheck.LinkCheckPage) request.getAttribute(LinkCheck.LinkCheckPage.REQUEST_ATTRIBUTE__PAGE) ;
@@ -85,7 +84,7 @@ if (doCheckLinks) {
 	<td><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td><%
 			if (link instanceof LinkCheck.UrlDocumentLink) {
 				LinkCheck.UrlDocumentLink urlDocumentLink = (LinkCheck.UrlDocumentLink)link ;
-				DefaultDocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument = urlDocumentLink.getDocumentMenuPairsContainingUrlDocument(); %>
+				DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument = urlDocumentLink.getDocumentMenuPairsContainingUrlDocument(); %>
 	<td><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/url_document ?></td>
 	<td><a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%=
 				document.getId() %>&<%=

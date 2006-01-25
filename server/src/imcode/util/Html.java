@@ -93,7 +93,7 @@ public class Html {
                                                                        DocumentDomainObject document, HttpServletRequest request) {
         CategoryDomainObject[] categories = categoryMapper.getAllCategoriesOfType( categoryType );
         Arrays.sort( categories );
-        CategoryDomainObject[] documentSelectedCategories = document.getCategoriesOfType( categoryType );
+        Set documentSelectedCategories = categoryMapper.getCategoriesOfType( categoryType, document.getCategoryIds() );
 
         ToStringPairTransformer categoryToStringPairTransformer = new ToStringPairTransformer() {
             protected String[] transformToStringPair(Object o) {

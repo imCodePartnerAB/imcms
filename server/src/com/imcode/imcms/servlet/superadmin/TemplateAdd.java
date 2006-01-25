@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.util.MultipartHttpServletRequest;
+import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.TemplateDomainObject;
@@ -123,7 +123,7 @@ public class TemplateAdd extends HttpServlet {
                 list = templateMapper.getDemoTemplateIds();
                 String[] temp;
                 final Object[] parameters = new String[] {language };
-                temp = DatabaseUtils.executeStringArrayQuery(imcref.getDatabase(), "select template_id, simple_name from templates where lang_prefix = ? order by simple_name", parameters);
+                temp = (String[]) imcref.getDatabase().execute(new SqlQueryCommand("select template_id, simple_name from templates where lang_prefix = ? order by simple_name", parameters, Utility.STRING_ARRAY_HANDLER));
                 List vec = new ArrayList();
                 vec.add( "#language#" );
                 vec.add( language );

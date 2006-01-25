@@ -124,7 +124,8 @@ public class Imcms {
             basicDataSource.setMaxActive(maxConnectionCount);
             basicDataSource.setMaxIdle(maxConnectionCount);
             basicDataSource.setDefaultAutoCommit(true);
-
+            basicDataSource.setPoolPreparedStatements(true);
+            
             logDatabaseVersion(basicDataSource);
 
             return basicDataSource;

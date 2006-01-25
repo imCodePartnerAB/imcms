@@ -1,13 +1,15 @@
 package imcode.server.document;
 
-import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
-import imcode.server.ImcmsServices;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.util.LazilyLoadedObject;
+import imcode.util.ShouldNotBeThrownException;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DocumentPermissionSetDomainObject implements Serializable {
+public class DocumentPermissionSetDomainObject implements Serializable, LazilyLoadedObject.Copyable, Cloneable {
 
     public static final DocumentPermissionSetDomainObject NONE = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.NONE ) {
         public boolean hasPermission( DocumentPermission permission ) {
@@ -22,12 +24,12 @@ public class DocumentPermissionSetDomainObject implements Serializable {
     };
 
     public static final DocumentPermissionSetDomainObject FULL = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.FULL ) {
-        public TemplateGroupDomainObject[] getAllowedTemplateGroups( ImcmsServices services ) {
-            return services.getTemplateMapper().getAllTemplateGroups();
+        public Set getAllowedTemplateGroupIds() {
+            return Imcms.getServices().getTemplateMapper().getAllTemplateGroupIds() ;
         }
 
-        public int[] getAllowedDocumentTypeIds() {
-            return DocumentTypeDomainObject.getAllDocumentTypeIds();
+        public Set getAllowedDocumentTypeIds() {
+            return DocumentTypeDomainObject.getAllDocumentTypeIdsSet();
         }
 
         public boolean hasPermission( DocumentPermission permission ) {
@@ -45,9 +47,13 @@ public class DocumentPermissionSetDomainObject implements Serializable {
 
     private DocumentPermissionSetTypeDomainObject type;
 
-    private Set permissions = new HashSet();
+    private HashSet permissions = new HashSet();
     static final DocumentPermission EDIT_DOCUMENT_INFORMATION = new DocumentPermission( "editDocumentInformation" );
     static final DocumentPermission EDIT_PERMISSIONS = new DocumentPermission( "editPermissions" );
+
+    public final static int EDIT_DOCINFO_PERMISSION_ID = ImcmsConstants.PERM_EDIT_DOCINFO;
+    public final static int EDIT_PERMISSIONS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_PERMISSIONS;
+    public final static int EDIT_DOCUMENT_PERMISSION_ID = ImcmsConstants.PERM_EDIT_DOCUMENT;
 
     public DocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject typeId ) {
         this.type = typeId;
@@ -117,9 +123,10 @@ public class DocumentPermissionSetDomainObject implements Serializable {
         setPermission( EDIT_PERMISSIONS, editPermissions );
     }
 
-    public void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
-                               int permissionBits, boolean forNewDocuments ) {
-        documentPermissionSetMapper.setDocumentPermissionSetFromBits( this, permissionBits ) ;
+    public void setFromBits(int permissionBits) {
+        setEditDocumentInformation(0 != ( permissionBits & EDIT_DOCINFO_PERMISSION_ID ));
+        setEditPermissions(0 != ( permissionBits & EDIT_PERMISSIONS_PERMISSION_ID ));
+        setEdit(0 != ( permissionBits & EDIT_DOCUMENT_PERMISSION_ID ));
     }
 
     public boolean getEdit() {
@@ -130,4 +137,21 @@ public class DocumentPermissionSetDomainObject implements Serializable {
         setPermission( EDIT, edit );
     }
 
+    public LazilyLoadedObject.Copyable copy() {
+        try {
+            return (LazilyLoadedObject.Copyable) clone() ;
+        } catch ( CloneNotSupportedException e ) {
+            throw new ShouldNotBeThrownException(e);
+        }
+    }
+
+    protected Object clone() throws CloneNotSupportedException {
+        DocumentPermissionSetDomainObject clone = (DocumentPermissionSetDomainObject) super.clone() ;
+        clone.permissions = (HashSet) permissions.clone();
+        return clone ;
+    }
+
+    public boolean isEmpty() {
+        return permissions.isEmpty();
+    }
 }

@@ -3,6 +3,9 @@ package imcode.server.document;
 import imcode.util.IdLocalizedNamePair;
 import imcode.util.LocalizedMessage;
 
+import java.util.Set;
+import java.util.HashSet;
+
 public class DocumentTypeDomainObject extends IdLocalizedNamePair {
 
     public static final int TEXT_ID = 2;
@@ -38,5 +41,15 @@ public class DocumentTypeDomainObject extends IdLocalizedNamePair {
             allDocumentTypeIds[i] = documentType.getId() ;
         }
         return allDocumentTypeIds ;
+    }
+
+    public static Set getAllDocumentTypeIdsSet() {
+        Set set = new HashSet() ;
+        int[] allDocumentTypeIds = getAllDocumentTypeIds();
+        for ( int i = 0; i < allDocumentTypeIds.length; i++ ) {
+            int documentTypeId = allDocumentTypeIds[i];
+            set.add(new Integer(documentTypeId)) ;
+        }
+        return set ;
     }
 }

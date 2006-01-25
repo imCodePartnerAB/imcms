@@ -9,15 +9,13 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Timer;
+import java.util.*;
 
 public class RebuildingDirectoryIndex implements DocumentIndex {
 
@@ -27,18 +25,19 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
     private final long indexRebuildSchedulePeriodInMilliseconds;
     private final Timer scheduledIndexRebuildTimer = new Timer(true);
     private IndexRebuildTimerTask currentIndexRebuildTimerTask ;
-    
+
     private DirectoryIndex index = new NullDirectoryIndex();
 
-    public RebuildingDirectoryIndex(File indexParentDirectory, float indexRebuildSchedulePeriodInMinutes) {
+    public RebuildingDirectoryIndex(File indexParentDirectory, float indexRebuildSchedulePeriodInMinutes,
+                                    IndexDocumentFactory indexDocumentFactory) {
         indexRebuildSchedulePeriodInMilliseconds = (long) ( indexRebuildSchedulePeriodInMinutes * DateUtils.MILLIS_IN_MINUTE );
-        backgroundIndexBuilder = new BackgroundIndexBuilder(indexParentDirectory, this);
-        
+        backgroundIndexBuilder = new BackgroundIndexBuilder(indexParentDirectory, this, indexDocumentFactory);
+
         File indexDirectory = findLatestIndexDirectory(indexParentDirectory);
         long indexModifiedTime = 0;
         if ( null != indexDirectory ) {
             indexModifiedTime = indexDirectory.lastModified();
-            index = new DefaultDirectoryIndex(indexDirectory);
+            index = new DefaultDirectoryIndex(indexDirectory, indexDocumentFactory);
         } else {
             rebuildBecauseOfError("No existing index.", null);
         }
@@ -150,17 +149,17 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
     }
 
-    public DocumentDomainObject[] search(Query query,
-                                         UserDomainObject searchingUser) throws IndexException {
+    public List search(Query query,
+                       Sort sort, UserDomainObject searchingUser) throws IndexException {
         try {
-            DocumentDomainObject[] documents = index.search(query, searchingUser);
+            List documents = index.search(query, sort, searchingUser);
             if ( index.isInconsistent() ) {
                 rebuildBecauseOfError("Index is inconsistent.", null);
             }
             return documents;
         } catch ( IndexException ex ) {
             rebuildBecauseOfError("Search failed.", ex);
-            return new DocumentDomainObject[0];
+            return Collections.EMPTY_LIST;
         }
     }
 
@@ -185,10 +184,6 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
     }
 
-    void notifyRebuildSchedulerDied() {
-        log.debug("Rebuild scheduler died.") ;
-    }
-
     private static class NullDirectoryIndex implements DirectoryIndex {
 
         public boolean isInconsistent() {
@@ -205,8 +200,8 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         public void removeDocument(DocumentDomainObject document) throws IndexException {
         }
 
-        public DocumentDomainObject[] search(Query query, UserDomainObject searchingUser) throws IndexException {
-            return new DocumentDomainObject[0];
+        public List search(Query query, Sort sort, UserDomainObject searchingUser) throws IndexException {
+            return Collections.EMPTY_LIST;
         }
 
         public void rebuild() throws IndexException {

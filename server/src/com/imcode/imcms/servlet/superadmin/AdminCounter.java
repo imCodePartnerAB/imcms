@@ -125,7 +125,6 @@ public class AdminCounter extends HttpServlet {
         private int counterValue ;
         private String newDateStr ;
         private String errormsg;
-        JSCalendar jsCalendar;
 
 
         public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {

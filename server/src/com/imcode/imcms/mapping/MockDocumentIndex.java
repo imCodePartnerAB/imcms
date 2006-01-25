@@ -5,6 +5,10 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.IndexException;
 import imcode.server.user.UserDomainObject;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
+
+import java.util.List;
+import java.util.Arrays;
 
 public class MockDocumentIndex implements DocumentIndex {
     private boolean indexDocumentCalled;
@@ -18,8 +22,8 @@ public class MockDocumentIndex implements DocumentIndex {
         this.removeDocumentCalled = true ;
     }
 
-    public DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IndexException {
-        return new DocumentDomainObject[0];
+    public List search(Query query, Sort sort, UserDomainObject searchingUser) throws IndexException {
+        return Arrays.asList(new DocumentDomainObject[0]);
     }
 
     public void rebuild() {

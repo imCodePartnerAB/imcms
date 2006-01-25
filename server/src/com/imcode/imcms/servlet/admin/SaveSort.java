@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
@@ -46,7 +46,7 @@ public class SaveSort extends HttpServlet {
 
         ImcmsServices imcref = Imcms.getServices();
         int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
-        DefaultDocumentMapper documentMapper = imcref.getDefaultDocumentMapper();
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
 
         TextDocumentPermissionSetDomainObject documentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );

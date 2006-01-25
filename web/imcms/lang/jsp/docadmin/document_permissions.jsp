@@ -18,7 +18,7 @@
 <%@ page import="java.util.Arrays"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.SortedSet"%>
-<%@ page import="java.util.TreeSet"%>
+<%@ page import="java.util.TreeSet"%><%@ page import="imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper"%>
 <%@page contentType="text/html"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%!
     String formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject radioButtonDocumentPermissionSetType, UserDomainObject user, DocumentPermissionSetTypeDomainObject documentPermissionSetType,
                                             RoleId roleId,
@@ -76,7 +76,8 @@
                     <td class="imcmsAdmText" width="15%"><? templates/sv/permissions/roles_rights_table_head.html/6 ?></td>
                 </tr>
                 <%
-                    SortedSet allRoles = new TreeSet(Arrays.asList(Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getAllRoles())) ;
+                    ImcmsAuthenticatorAndUserAndRoleMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+                    SortedSet allRoles = new TreeSet(Arrays.asList(userMapper.getAllRoles())) ;
                     CollectionUtils.filter(allRoles, new Predicate() {
                         public boolean evaluate(Object object) {
                             RoleDomainObject role = (RoleDomainObject) object ;
@@ -88,7 +89,7 @@
                     for ( int i = 0; i < mappings.length; i++ ) {
                         RoleIdToDocumentPermissionSetTypeMappings.Mapping entry = mappings[i];
                         RoleId roleId = entry.getRoleId();
-                        RoleDomainObject role = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getRole(roleId) ;
+                        RoleDomainObject role = userMapper.getRole(roleId) ;
                         if (null != role ) {
                             DocumentPermissionSetTypeDomainObject documentPermissionSetType = entry.getDocumentPermissionSetType() ;
                             if ( DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType) || RoleId.SUPERADMIN.equals(roleId) ) {
@@ -178,11 +179,11 @@
                     <select name="<%= DocumentPermissionsPage.REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID %>">
                         <option value=""><? templates/sv/docinfo/default_templates_1.html/2 ?></option>
                         <%
-                            TemplateDomainObject defaultTemplate = textDocument.getDefaultTemplate();
+                            Integer defaultTemplateId = textDocument.getDefaultTemplateId();
                             TemplateDomainObject[] allTemplates = Imcms.getServices().getTemplateMapper().getAllTemplates() ;
                             for ( int i = 0; i < allTemplates.length; i++ ) {
                                 TemplateDomainObject template = allTemplates[i];
-                                %><%= Html.option( ""+template.getId(), template.getName(), template.equals( defaultTemplate ))%><%
+                                %><%= Html.option( ""+template.getId(), template.getName(), defaultTemplateId != null && template.getId() == defaultTemplateId.intValue() )%><%
                             } %>
                     </select>
                 </td>
@@ -208,7 +209,7 @@
                 </tr>
                 </table>
                 </td>
-                <td class="imcmsAdmText" nowrap><? templates/sv/docinfo/change_meta_rights.html/1004 ?>&nbsp;<i><%= Utility.formatUser(document.getCreator()) %></i></td>
+                <td class="imcmsAdmText" nowrap><? templates/sv/docinfo/change_meta_rights.html/1004 ?>&nbsp;<i><%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %></i></td>
             </tr>
             </table></td>
         </tr>

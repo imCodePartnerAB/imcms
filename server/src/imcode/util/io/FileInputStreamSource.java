@@ -21,10 +21,6 @@ public class FileInputStreamSource implements InputStreamSource {
         return file.length() ;
     }
 
-    public File getFile() {
-        return file;
-    }
-
     public boolean equals(Object o) {
         if ( this == o ) {
             return true;

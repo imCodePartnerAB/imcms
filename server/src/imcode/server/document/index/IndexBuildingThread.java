@@ -20,18 +20,21 @@ class IndexBuildingThread extends Thread {
     private final File indexDirectory;
 
     private boolean indexing;
+    private IndexDocumentFactory indexDocumentFactory;
 
-    IndexBuildingThread(BackgroundIndexBuilder backgroundIndexBuilder, File indexDirectory) {
+    IndexBuildingThread(BackgroundIndexBuilder backgroundIndexBuilder, File indexDirectory,
+                        IndexDocumentFactory indexDocumentFactory) {
         this.indexDirectory = indexDirectory;
         this.backgroundIndexBuilder = backgroundIndexBuilder;
         setName(ClassUtils.getShortClassName(getClass())+"-"+getName());
         setPriority(Thread.MIN_PRIORITY);
         setDaemon(true);
+        this.indexDocumentFactory = indexDocumentFactory;
     }
 
     public void run() {
         NDC.push(Thread.currentThread().getName());
-        DefaultDirectoryIndex newIndex = new DefaultDirectoryIndex(indexDirectory) ;
+        DefaultDirectoryIndex newIndex = new DefaultDirectoryIndex(indexDirectory, indexDocumentFactory) ;
         try {
             synchronized ( this ) {
                 indexing = true ;

@@ -3,6 +3,10 @@ package imcode.util;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DefaultContentManagementSystem;
 import com.imcode.imcms.servlet.VerifyUser;
+import com.imcode.imcms.db.StringFromRowFactory;
+import com.imcode.imcms.db.StringArrayResultSetHandler;
+import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
+import com.imcode.db.handlers.SingleObjectHandler;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
@@ -19,6 +23,7 @@ import org.apache.commons.collections.iterators.TransformIterator;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.w3c.dom.Document;
@@ -52,11 +57,13 @@ public class Utility {
 
    private final static Logger log = Logger.getLogger( Utility.class.getName() );
 
-    private final static String NO_PERMISSION_URL = "no_permission.jsp";
     private final static String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
 
     private final static LocalizedMessage ERROR__NO_PERMISSION = new LocalizedMessage("templates/login/no_permission.html/4");
-    
+    public static final ResultSetHandler SINGLE_STRING_HANDLER = new SingleObjectHandler(new StringFromRowFactory());
+    public static final ResultSetHandler STRING_ARRAY_HANDLER = new StringArrayResultSetHandler();
+    public static final ResultSetHandler STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
+
     private Utility() {
 
     }
@@ -338,6 +345,10 @@ public class Utility {
         return Long.toString(identityHashCode,Character.MAX_RADIX);
     }
 
+    public static Integer getInteger(Object object) {
+        return null == object ? null : new Integer(( (Number) object ).intValue());
+    }
+
     private static class ObjectPairToMapEntryTransformer implements Transformer {
         public Object transform(Object input) {
             final Object[] pair = (Object[])input ;
@@ -423,4 +434,5 @@ public class Utility {
     public static ContentManagementSystem getContentManagementSystemFromRequest(ServletRequest request) {
         return (ContentManagementSystem)request.getAttribute( CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE );
     }
+
 }

@@ -1,20 +1,25 @@
 package imcode.server.document;
 
-import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
-import imcode.server.ImcmsServices;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-import java.io.Serializable;
+import imcode.server.ImcmsConstants;
 
-public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSetDomainObject implements Serializable {
+public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSetDomainObject {
 
-    private TemplateGroupDomainObject[] allowedTemplateGroups = new TemplateGroupDomainObject[0];
-    private int[] allowedDocumentTypeIds = new int[0];
-    private TemplateDomainObject defaultTemplate;
+    private HashSet allowedTemplateGroupIds = new HashSet();
+    private HashSet allowedDocumentTypeIds = new HashSet();
     public static final DocumentPermission EDIT_TEXTS = new DocumentPermission( "editTexts" );
     public static final DocumentPermission EDIT_MENUS = new DocumentPermission( "editMenus" );
     public static final DocumentPermission EDIT_TEMPLATE = new DocumentPermission( "editTemplates" );
     public static final DocumentPermission EDIT_INCLUDES = new DocumentPermission( "editIncludes" ) ;
     public static final DocumentPermission EDIT_IMAGES = new DocumentPermission( "editImages" );
+    public final static int EDIT_TEXT_DOCUMENT_TEXTS_PERMISSION_ID = EDIT_DOCUMENT_PERMISSION_ID;
+    public final static int EDIT_TEXT_DOCUMENT_IMAGES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES;
+    public final static int EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS;
+    public final static int EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE;
+    public final static int EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES;
 
     public TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject typeId ) {
         super( typeId );
@@ -60,32 +65,47 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
         setPermission( EDIT_IMAGES, editImages );
     }
 
-    public void setFromBits ( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
-                              int permissionBits, boolean forNewDocuments ) {
-        documentPermissionSetMapper.setTextDocumentPermissionSetFromBits( document, this, permissionBits, forNewDocuments );
+    public void setFromBits(int permissionBits) {
+        setEditDocumentInformation(0 != ( permissionBits & EDIT_DOCINFO_PERMISSION_ID ));
+        setEditPermissions(0 != ( permissionBits & EDIT_PERMISSIONS_PERMISSION_ID ));
+        setEdit(0 != ( permissionBits & EDIT_DOCUMENT_PERMISSION_ID ));
+        setEditTexts(0 != ( permissionBits & EDIT_TEXT_DOCUMENT_TEXTS_PERMISSION_ID ));
+        setEditImages(0 != ( permissionBits & EDIT_TEXT_DOCUMENT_IMAGES_PERMISSION_ID ));
+        setEditMenus(0 != ( permissionBits & EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID ));
+        setEditIncludes(0
+                        != ( permissionBits & EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID ));
+        setEditTemplates(0
+                         != ( permissionBits & EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID ));
     }
 
-    public void setAllowedTemplateGroups( TemplateGroupDomainObject[] allowedTemplateGroupNames ) {
-        this.allowedTemplateGroups = allowedTemplateGroupNames;
+    public void setAllowedTemplateGroupIds( Set allowedTemplateGroupIds ) {
+        this.allowedTemplateGroupIds = new HashSet(allowedTemplateGroupIds);
     }
 
-    public TemplateGroupDomainObject[] getAllowedTemplateGroups( ImcmsServices services ) {
-        return allowedTemplateGroups;
+    public Set getAllowedTemplateGroupIds() {
+        return Collections.unmodifiableSet(allowedTemplateGroupIds);
     }
 
-    public void setAllowedDocumentTypeIds( int[] allowedDocumentTypeIds ) {
-        this.allowedDocumentTypeIds = allowedDocumentTypeIds;
+    public void setAllowedDocumentTypeIds( Set allowedDocumentTypeIds ) {
+        this.allowedDocumentTypeIds = new HashSet(allowedDocumentTypeIds);
     }
 
-    public int[] getAllowedDocumentTypeIds() {
-        return allowedDocumentTypeIds;
+    public Set getAllowedDocumentTypeIds() {
+        return Collections.unmodifiableSet(allowedDocumentTypeIds);
     }
 
-    public void setDefaultTemplate( TemplateDomainObject defaultTemplate ) {
-        this.defaultTemplate = defaultTemplate;
+    public void addAllowedTemplateGroupId(int templateGroupId) {
+        allowedTemplateGroupIds.add(new Integer(templateGroupId)) ;
     }
 
-    public TemplateDomainObject getDefaultTemplate() {
-        return defaultTemplate;
+    public void addAllowedDocumentTypeId(int documentTypeId) {
+        allowedDocumentTypeIds.add(new Integer(documentTypeId)) ;
+    }
+
+    protected Object clone() throws CloneNotSupportedException {
+        TextDocumentPermissionSetDomainObject clone = (TextDocumentPermissionSetDomainObject) super.clone();
+        clone.allowedDocumentTypeIds = (HashSet) allowedDocumentTypeIds.clone();
+        clone.allowedTemplateGroupIds = (HashSet) allowedTemplateGroupIds.clone() ;
+        return clone;
     }
 }

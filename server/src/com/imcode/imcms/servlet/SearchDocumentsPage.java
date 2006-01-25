@@ -4,7 +4,6 @@ import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.flow.Page;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.superadmin.AdminManager;
 import imcode.server.Imcms;
@@ -68,7 +67,7 @@ public class SearchDocumentsPage extends OkCancelPage {
     private Date endDate;
     private String sortOrder;
 
-    private DocumentDomainObject[] documentsFound;
+    private List documentsFound;
     private int firstDocumentIndex;
     private int documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE;
     private DocumentDomainObject selectedDocument;
@@ -86,15 +85,13 @@ public class SearchDocumentsPage extends OkCancelPage {
     public static final String DATE_TYPE__ARCHIVED = "archived";
     public static final String DATE_TYPE__MODIFIED = "modified";
 
-    JSCalendar jsCalendar; 
-
     public SearchDocumentsPage() {
         super( null, null );
     }
 
     public void updateFromRequest( HttpServletRequest request ) {
 
-        DefaultDocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
         if ( documentFinder.isDocumentsSelectable() ) {
             try {
@@ -106,7 +103,7 @@ public class SearchDocumentsPage extends OkCancelPage {
         firstDocumentIndex = Math.max( 0, NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX ) ) );
 
         boolean gotNewFirstDocumentIndex = Utility.parameterIsSet( request, REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX );
-        boolean notBrowsingResultList = !gotNewFirstDocumentIndex;
+        boolean notBrowsingResultList = !gotNewFirstDocumentIndex || documentsFound == null ;
         if ( notBrowsingResultList ) {
             try {
                 sections.clear();
@@ -123,8 +120,6 @@ public class SearchDocumentsPage extends OkCancelPage {
 
             documentTypeIds = Utility.getParameterInts(request, REQUEST_PARAMETER__DOCUMENT_TYPE_ID);
         }
-
-
 
         String userDocumentsRestrictionParameter = request.getParameter( REQUEST_PARAMETER__USER_RESTRICTION );
         if ( null != userDocumentsRestrictionParameter ) {
@@ -269,7 +264,7 @@ public class SearchDocumentsPage extends OkCancelPage {
     protected void dispatchOther( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         DocumentDomainObject documentSelectedForEditing = null;
         try {
-            DocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
+            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             documentSelectedForEditing = documentMapper.getDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID ) ) );
         } catch ( NumberFormatException nfe ) {
         }
@@ -290,7 +285,7 @@ public class SearchDocumentsPage extends OkCancelPage {
                 documentFinder.forwardWithPage( request, response, SearchDocumentsPage.this );
             }
         };
-        EditDocumentInformationPageFlow editDocumentInformationPageFlow = new EditDocumentInformationPageFlow( documentSelectedForEditing, returnCommand, new DefaultDocumentMapper.SaveEditedDocumentCommand() );
+        EditDocumentInformationPageFlow editDocumentInformationPageFlow = new EditDocumentInformationPageFlow( documentSelectedForEditing, returnCommand, new DocumentMapper.SaveEditedDocumentCommand() );
         editDocumentInformationPageFlow.setAdminButtonsHidden( true );
         editDocumentInformationPageFlow.dispatch( request, response );
     }
@@ -320,11 +315,11 @@ public class SearchDocumentsPage extends OkCancelPage {
         return Collections.unmodifiableSet( sections );
     }
 
-    public DocumentDomainObject[] getDocumentsFound() {
+    public List getDocumentsFound() {
         return documentsFound;
     }
 
-    public void setDocumentsFound( DocumentDomainObject[] documentsFound ) {
+    public void setDocumentsFound( List documentsFound ) {
         this.documentsFound = documentsFound;
     }
 

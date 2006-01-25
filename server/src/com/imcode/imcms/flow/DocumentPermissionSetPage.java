@@ -1,9 +1,10 @@
 package com.imcode.imcms.flow;
 
 import imcode.server.document.*;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.server.Imcms;
 import imcode.util.Utility;
+import imcode.util.IntegerSet;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,16 +26,23 @@ public class DocumentPermissionSetPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__ALLOWED_TEMPLATE_GROUP_IDS = "allowedTemplateGroupIds";
     public static final String REQUEST_PARAMETER__EDIT_TEMPLATES = "editTemplates";
     public static final String REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID = "defaultTemplateId";
+    private DocumentDomainObject document;
 
-    public DocumentPermissionSetPage( DocumentPermissionSetDomainObject documentPermissionSet, boolean forNew,
-                                      DispatchCommand okDispatchCommand, DispatchCommand cancelDispatchCommand ) {
+    public DocumentPermissionSetPage(DocumentDomainObject document,
+                                     DocumentPermissionSetDomainObject documentPermissionSet, boolean forNew,
+                                     DispatchCommand okDispatchCommand, DispatchCommand cancelDispatchCommand) {
         super(okDispatchCommand, cancelDispatchCommand);
+        this.document = document ;
         this.documentPermissionSet = documentPermissionSet;
         this.forNew = forNew;
     }
 
     public DocumentPermissionSetDomainObject getDocumentPermissionSet() {
         return documentPermissionSet;
+    }
+
+    public DocumentDomainObject getDocument() {
+        return document;
     }
 
     protected void updateFromRequest( HttpServletRequest request ) {
@@ -47,20 +55,19 @@ public class DocumentPermissionSetPage extends OkCancelPage {
             textDocumentPermissionSet.setEditIncludes( Utility.parameterIsSet( request, REQUEST_PARAMETER__EDIT_INCLUDES) );
             textDocumentPermissionSet.setEditMenus( Utility.parameterIsSet( request, REQUEST_PARAMETER__EDIT_MENUS ) );
             textDocumentPermissionSet.setEditTemplates( Utility.parameterIsSet( request, REQUEST_PARAMETER__EDIT_TEMPLATES ) );
-            textDocumentPermissionSet.setAllowedDocumentTypeIds( Utility.getParameterInts( request, REQUEST_PARAMETER__ALLOWED_DOCUMENT_TYPE_IDS ) );
+            textDocumentPermissionSet.setAllowedDocumentTypeIds( new IntegerSet(Utility.getParameterInts(request, REQUEST_PARAMETER__ALLOWED_DOCUMENT_TYPE_IDS)) );
             int[] allowedTemplateGroupIds = Utility.getParameterInts( request, REQUEST_PARAMETER__ALLOWED_TEMPLATE_GROUP_IDS ) ;
-            TemplateGroupDomainObject[] allowedTemplateGroups = new TemplateGroupDomainObject[allowedTemplateGroupIds.length];
-            TemplateMapper templateMapper = Imcms.getServices().getTemplateMapper() ;
-            for ( int i = 0; i < allowedTemplateGroupIds.length; i++ ) {
-                allowedTemplateGroups[i] = templateMapper.getTemplateGroupById( allowedTemplateGroupIds[i] ) ;
-            }
-            textDocumentPermissionSet.setAllowedTemplateGroups( allowedTemplateGroups );
-            TemplateDomainObject defaultTemplate = null ;
+            textDocumentPermissionSet.setAllowedTemplateGroupIds( new IntegerSet(allowedTemplateGroupIds));
+            Integer defaultTemplateId = null;
             try {
-                int defaultTemplateId = Integer.parseInt(request.getParameter( REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID )) ;
-                defaultTemplate = templateMapper.getTemplateById( defaultTemplateId );
+                defaultTemplateId = Integer.valueOf(request.getParameter( REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID ));
             } catch( NumberFormatException ignored ) {}
-            textDocumentPermissionSet.setDefaultTemplate( defaultTemplate );
+            TextDocumentDomainObject textDocument = (TextDocumentDomainObject) document;
+            if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(textDocumentPermissionSet.getType())) {
+                textDocument.setDefaultTemplateIdForRestricted1( defaultTemplateId );
+            } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(textDocumentPermissionSet.getType())) {
+                textDocument.setDefaultTemplateIdForRestricted2( defaultTemplateId );
+            }
         } else {
             documentPermissionSet.setEdit( null != request.getParameter( REQUEST_PARAMETER__EDIT ));
         }
@@ -68,12 +75,12 @@ public class DocumentPermissionSetPage extends OkCancelPage {
 
     public String getPath(HttpServletRequest request) {
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        String path = EditDocumentPageFlow.URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2()
-                      + URL_I15D_PAGE__DOCUMENT_PERMISSION_SET;
-        return path;
+        return EditDocumentPageFlow.URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2()
+               + URL_I15D_PAGE__DOCUMENT_PERMISSION_SET;
     }
 
     public boolean isForNew() {
         return forNew;
     }
+
 }

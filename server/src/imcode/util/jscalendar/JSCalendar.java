@@ -12,7 +12,6 @@ public class JSCalendar {
 
     private static final String PATH_CALENDAR = "/imcms/jscalendar/" ;
 
-
     public JSCalendar( String langIso639_2, HttpServletRequest request ) {
         this.langIso639_2 = langIso639_2 ;
         this.request     = request ;

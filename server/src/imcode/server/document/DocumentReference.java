@@ -1,15 +1,36 @@
 package imcode.server.document;
 
-public class DocumentReference extends DocumentId {
+import java.io.Serializable;
 
-    private final transient DocumentGetter documentGetter;
+public abstract class DocumentReference implements Serializable {
 
-    public DocumentReference( int documentId, DocumentGetter documentGetter ) {
-        super(documentId) ;
-        this.documentGetter = documentGetter;
+    private final int documentId;
+
+    protected DocumentReference(int documentId) {
+        this.documentId = documentId;
     }
 
-    public DocumentDomainObject getDocument() {
-        return documentGetter.getDocument( this ) ;
+    public int getDocumentId() {
+        return documentId;
+    }
+
+    public abstract DocumentDomainObject getDocument() ;
+
+    public int hashCode() {
+        return documentId ;
+    }
+
+    public boolean equals(Object o) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+
+        final DocumentReference that = (DocumentReference) o;
+
+        return documentId == that.documentId;
+
     }
 }

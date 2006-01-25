@@ -21,7 +21,7 @@ public class RebuildIndex extends HttpServlet {
             return;
         }
 
-        Imcms.getServices().getDefaultDocumentMapper().getDocumentIndex().rebuild() ;
+        Imcms.getServices().getDocumentMapper().getDocumentIndex().rebuild() ;
         res.getOutputStream().println( "Started rebuild of index." );
     }
 }

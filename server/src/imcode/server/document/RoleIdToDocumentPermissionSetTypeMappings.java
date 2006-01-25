@@ -2,6 +2,7 @@ package imcode.server.document;
 
 import imcode.server.user.RoleId;
 import imcode.util.ShouldNotBeThrownException;
+import imcode.util.LazilyLoadedObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 
@@ -10,7 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, Cloneable {
+public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, Cloneable, LazilyLoadedObject.Copyable {
 
     HashMap map = new HashMap() ;
 
@@ -48,6 +49,10 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, 
             }
         });
         return (Mapping[]) pairs.toArray(new Mapping[pairs.size()]);
+    }
+
+    public LazilyLoadedObject.Copyable copy() {
+        return (LazilyLoadedObject.Copyable) clone() ;
     }
 
     public static class Mapping {

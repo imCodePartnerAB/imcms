@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
+import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.handlers.ObjectFromFirstRowResultSetHandler;
-import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import imcode.server.Imcms;
@@ -39,7 +39,7 @@ public class AdminSection extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser(req);
 
         //lets see if its a super admin we got otherwise get rid of him fast
-        if (user.isSuperAdmin() == false) {
+        if ( !user.isSuperAdmin() ) {
             log.debug("the user wasn't a administrator so lets get rid of him");
             res.sendRedirect("StartDoc");
             return;
@@ -95,8 +95,9 @@ public class AdminSection extends HttpServlet {
                 if(!section_exists){
                     final Object[] parameters = new String[] {new_section_name};
                     imcref.getProcedureExecutor().executeUpdateProcedure("SectionAdd", parameters);
+                    imcref.getDocumentMapper().initSections();
                     final Object[] parameters1 = new String[0];
-                    section_arr = section_arr = (String[][]) imcref.getProcedureExecutor().executeProcedure("SectionGetAllCount", parameters1, new StringArrayArrayResultSetHandler());
+                    section_arr = (String[][]) imcref.getProcedureExecutor().executeProcedure("SectionGetAllCount", parameters1, new StringArrayArrayResultSetHandler());
                 }
             }
 
@@ -119,6 +120,7 @@ public class AdminSection extends HttpServlet {
                 final Object[] parameters = new String[] {section_id,
                                                                                                 new_section};
                 imcref.getProcedureExecutor().executeUpdateProcedure("SectionChangeName", parameters);
+                imcref.getDocumentMapper().initSections();
             }
 
             //now we needs a list of the created ones in db
@@ -155,7 +157,7 @@ public class AdminSection extends HttpServlet {
             } else {
                 final Object[] parameters = new String[] {new_sections,
                                                                                             del_section};
-                DatabaseUtils.executeUpdate(imcref.getDatabase(), "update meta_section set section_id = ? where section_id = ?", parameters);
+                ((Integer)imcref.getDatabase().execute( new SqlUpdateCommand( "update meta_section set section_id = ? where section_id = ?", parameters ) )).intValue();
                 deleteSection( imcref, del_section );
             }
         }
@@ -229,8 +231,9 @@ public class AdminSection extends HttpServlet {
     }//end doPost()
 
     private void deleteSection( ImcmsServices imcref, String del_section ) {
-        imcref.getDatabase().executeCommand(new DeleteWhereColumnsEqualDatabaseCommand( "meta_section", "section_id", del_section) ) ;
-        imcref.getDatabase().executeCommand(new DeleteWhereColumnsEqualDatabaseCommand( "sections", "section_id", del_section) ) ;
+        imcref.getDatabase().execute(new DeleteWhereColumnsEqualDatabaseCommand( "meta_section", "section_id", del_section) ) ;
+        imcref.getDatabase().execute(new DeleteWhereColumnsEqualDatabaseCommand( "sections", "section_id", del_section) ) ;
+        imcref.getDocumentMapper().initSections();
     }
 
     //method that creates an option list of all the sections in db

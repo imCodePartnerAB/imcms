@@ -13,9 +13,6 @@ public interface ImcmsConstants {
     /** Permission to set permissions for a document. **/
     public final static int PERM_EDIT_PERMISSIONS        = (1 << 2) ; // 4
 
-    /** Permission to create child documents. **/
-    public final static int PERM_CREATE_DOCUMENT         = (1 << 3) ; // 8
-
 
     /* Permissions for restricted permission-sets 1 and 2, only applicable to non-text-documents. */
 

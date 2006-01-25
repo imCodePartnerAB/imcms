@@ -1,11 +1,9 @@
 package com.imcode.imcms.flow;
 
-import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
-import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
@@ -51,14 +49,14 @@ public class DocumentPermissionsPage extends OkCancelPage {
         boolean forNew = false;
         UserDomainObject user = Utility.getLoggedOnUser( request ) ;
         if ( Utility.parameterIsSet( request, "define_set_1" ) && user.canDefineRestrictedOneFor( document ) ) {
-            documentPermissionSet = document.getPermissionSetForRestrictedOne();
+            documentPermissionSet = document.getPermissionSets().getRestricted1();
         } else if ( Utility.parameterIsSet( request, "define_set_2" ) && user.canDefineRestrictedTwoFor( document ) ) {
-            documentPermissionSet = document.getPermissionSetForRestrictedTwo();
+            documentPermissionSet = document.getPermissionSets().getRestricted2();
         } else if ( Utility.parameterIsSet( request, "define_new_set_1" ) && user.canDefineRestrictedOneFor( document ) ) {
-            documentPermissionSet = document.getPermissionSetForRestrictedOneForNewDocuments();
+            documentPermissionSet = document.getPermissionSetsForNewDocuments().getRestricted1();
             forNew = true;
         } else if ( Utility.parameterIsSet( request, "define_new_set_2" ) && user.canDefineRestrictedTwoFor( document ) ) {
-            documentPermissionSet = document.getPermissionSetForRestrictedTwoForNewDocuments();
+            documentPermissionSet = document.getPermissionSetsForNewDocuments().getRestricted2();
             forNew = true;
         }
 
@@ -68,7 +66,7 @@ public class DocumentPermissionsPage extends OkCancelPage {
                     forward( request, response );
                 }
             };
-            DocumentPermissionSetPage documentPermissionSetPage = new DocumentPermissionSetPage( documentPermissionSet, forNew, returnCommand, returnCommand );
+            DocumentPermissionSetPage documentPermissionSetPage = new DocumentPermissionSetPage( this.document, documentPermissionSet, forNew, returnCommand, returnCommand );
             documentPermissionSetPage.forward(request, response);
         } else {
             forward( request, response );
@@ -83,14 +81,11 @@ public class DocumentPermissionsPage extends OkCancelPage {
 
         if ( document instanceof TextDocumentDomainObject ) {
             String defaultTemplateIdStr = request.getParameter( REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID );
-            TemplateDomainObject defaultTemplate = null;
-            if ( null != defaultTemplateIdStr ) {
-                try {
-                    int templateId = Integer.parseInt( defaultTemplateIdStr );
-                    defaultTemplate = Imcms.getServices().getTemplateMapper().getTemplateById( templateId );
-                } catch ( NumberFormatException ignored ) {}
-            }
-            ( (TextDocumentDomainObject)document ).setDefaultTemplate( defaultTemplate );
+            Integer templateId = null;
+            try {
+                templateId = Integer.valueOf( defaultTemplateIdStr );
+            } catch ( NumberFormatException ignored ) {}
+            ( (TextDocumentDomainObject)document ).setDefaultTemplateId( templateId );
         }
 
     }

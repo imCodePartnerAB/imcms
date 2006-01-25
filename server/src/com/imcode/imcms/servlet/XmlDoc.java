@@ -19,7 +19,7 @@ public class XmlDoc extends HttpServlet {
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         int documentId = Integer.parseInt( request.getParameter( "meta_id" ) );
 
-        DocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( documentId );
 
         if ( null == document ) {

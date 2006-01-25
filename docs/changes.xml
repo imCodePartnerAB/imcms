@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <changesets>
 
+<changeset version="3.1.0">
+    <changes for="users">
+        <change>
+            <p>
+                Performance has been improved, so searching for documents should be much faster.
+            </p>
+            <issue id="4135"/>
+        </change>
+    </changes>
+
+    <changes for="developers">
+        <change>
+            <p>
+                Documents are now lazily loaded,
+                so as to not retrieve more from the database than is needed.
+            </p>
+            <issue id="4135"/>
+        </change>
+    </changes>
+</changeset>    
+    
 <changeset version="3.0.1">
     
     <changes for="users">

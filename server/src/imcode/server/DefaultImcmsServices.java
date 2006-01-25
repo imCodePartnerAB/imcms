@@ -1,29 +1,28 @@
 package imcode.server;
 
 import com.imcode.db.Database;
-import com.imcode.db.DatasourceDatabase;
+import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.commands.SqlUpdateDatabaseCommand;
-import com.imcode.imcms.db.DatabaseUtils;
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DatabaseDocumentGetter;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.RebuildingDirectoryIndex;
+import imcode.server.document.index.IndexDocumentFactory;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
-import imcode.util.Clock;
 import imcode.util.DateConstants;
-import imcode.util.FileCache;
+import imcode.util.CachingFileLoader;
 import imcode.util.Parser;
 import imcode.util.Prefs;
+import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 import imcode.util.net.SMTP;
 import org.apache.commons.beanutils.BeanUtils;
@@ -64,7 +63,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private Date sessionCounterDate;
     private int sessionCounter = 0;
-    private FileCache fileCache = new FileCache();
+    private CachingFileLoader fileLoader = new CachingFileLoader();
 
     private final static Logger mainLog = Logger.getLogger(ImcmsConstants.MAIN_LOG);
 
@@ -75,13 +74,12 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
     private ExternalizedImcmsAuthenticatorAndUserRegistry externalizedImcmsAuthAndMapper;
-    private DefaultDocumentMapper documentMapper;
+    private DocumentMapper documentMapper;
     private TemplateMapper templateMapper;
     private Map languagePropertiesMap = new HashMap();
     private KeyStore keyStore;
 
     private Map velocityEngines = new TreeMap();
-    private CategoryMapper categoryMapper;
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
 
@@ -91,14 +89,13 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     /** Contructs an DefaultImcmsServices object. */
     public DefaultImcmsServices(DataSource dataSource, Properties props) {
-        database = new DatasourceDatabase(dataSource);
+        database = new DataSourceDatabase(dataSource);
         procedureExecutor = new DefaultProcedureExecutor(database);
         initConfig(props);
         initKeyStore();
         initSysData();
         initSessionCounter();
         languageMapper = new LanguageMapper(database, config.getDefaultLanguage());
-        categoryMapper = new CategoryMapper(getDatabase());
         initAuthenticatorsAndUserAndRoleMappers(props);
         initDocumentMapper();
         initTemplateMapper();
@@ -192,7 +189,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         try {
             DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
             final Object[] parameters = new String[0];
-            return dateFormat.parse(DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE type_id = 2", parameters));
+            return dateFormat.parse((String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 2", parameters, Utility.SINGLE_STRING_HANDLER)));
         } catch ( ParseException ex ) {
             log.fatal("Failed to get SessionCounterDate from db.", ex);
             throw new UnhandledException(ex);
@@ -201,13 +198,13 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private int getSessionCounterFromDb() {
         final Object[] parameters = new String[0];
-        return Integer.parseInt(DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE type_id = 1", parameters));
+        return Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 1", parameters, Utility.SINGLE_STRING_HANDLER)));
     }
 
     private void initDocumentMapper() {
         File indexDirectory = new File(getRealContextPath(), "WEB-INF/index");
-        DocumentIndex documentIndex = new PhaseQueryFixingDocumentIndex(new RebuildingDirectoryIndex(indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes()));
-        documentMapper = new DefaultDocumentMapper(this, this.getDatabase(), new DatabaseDocumentGetter(this.getDatabase(), this), new DocumentPermissionSetMapper(database, this), documentIndex, this.getClock(), this.getConfig(), categoryMapper);
+        documentMapper = new DocumentMapper(this, this.getDatabase());
+        documentMapper.setDocumentIndex(new PhaseQueryFixingDocumentIndex(new RebuildingDirectoryIndex(indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes(), new IndexDocumentFactory(getCategoryMapper())))) ;
     }
 
     private void initTemplateMapper() {
@@ -311,7 +308,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         sessionCounter++;
         final Object[] parameters = new String[] { ""
                                                    + sessionCounter };
-        DatabaseUtils.executeUpdate(getDatabase(), "UPDATE sys_data SET value = ? WHERE type_id = 1", parameters);
+        ((Integer)getDatabase().execute( new SqlUpdateCommand( "UPDATE sys_data SET value = ? WHERE type_id = 1", parameters ) )).intValue();
     }
 
     private UserAndRoleRegistry initExternalUserAndRoleMapper(String externalUserAndRoleMapperName,
@@ -379,13 +376,13 @@ final public class DefaultImcmsServices implements ImcmsServices {
         if ( DocumentTypeDomainObject.HTML_ID == getDocType(meta_id) ) {
             String sqlStr = "select frame_set from frameset_docs where meta_id = ?";
             final Object[] parameters = new String[] { "" + meta_id };
-            htmlStr = DatabaseUtils.executeStringQuery(getDatabase(), sqlStr, parameters);
+            htmlStr = (String) getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.SINGLE_STRING_HANDLER));
         }
         return htmlStr;
 
     }
 
-    public DefaultDocumentMapper getDefaultDocumentMapper() {
+    public DocumentMapper getDocumentMapper() {
         return documentMapper;
     }
 
@@ -485,10 +482,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return config;
     }
 
-    private Clock getClock() {
-        return this;
-    }
-
     public File getRealContextPath() {
         return WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
     }
@@ -536,36 +529,32 @@ final public class DefaultImcmsServices implements ImcmsServices {
         }
     }
 
-    public Date getCurrentDate() {
-        return new Date();
-    }
-
     private SystemData getSystemDataFromDb() {
 
         SystemData sd = new SystemData();
 
         final Object[] parameters5 = new String[0];
-        String startDocument = DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE sys_id = 0", parameters5);
+        String startDocument = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 0", parameters5, Utility.SINGLE_STRING_HANDLER));
         sd.setStartDocument(startDocument == null ? DEFAULT_STARTDOCUMENT : Integer.parseInt(startDocument));
 
         final Object[] parameters4 = new String[0];
-        String systemMessage = DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE type_id = 3", parameters4);
+        String systemMessage = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 3", parameters4, Utility.SINGLE_STRING_HANDLER));
         sd.setSystemMessage(systemMessage);
 
         final Object[] parameters3 = new String[0];
-        String serverMasterName = DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE type_id = 4", parameters3);
+        String serverMasterName = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 4", parameters3, Utility.SINGLE_STRING_HANDLER));
         sd.setServerMaster(serverMasterName);
 
         final Object[] parameters2 = new String[0];
-        String serverMasterAddress = DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE type_id = 5", parameters2);
+        String serverMasterAddress = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 5", parameters2, Utility.SINGLE_STRING_HANDLER));
         sd.setServerMasterAddress(serverMasterAddress);
 
         final Object[] parameters1 = new String[0];
-        String webMasterName = DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE type_id = 6", parameters1);
+        String webMasterName = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 6", parameters1, Utility.SINGLE_STRING_HANDLER));
         sd.setWebMaster(webMasterName);
 
         final Object[] parameters = new String[0];
-        String webMasterAddress = DatabaseUtils.executeStringQuery(getDatabase(), "SELECT value FROM sys_data WHERE type_id = 7", parameters);
+        String webMasterAddress = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 7", parameters, Utility.SINGLE_STRING_HANDLER));
         sd.setWebMasterAddress(webMasterAddress);
 
         return sd;
@@ -581,14 +570,14 @@ final public class DefaultImcmsServices implements ImcmsServices {
         sqlParams = new String[] { "" + sd.getStartDocument() };
         getProcedureExecutor().executeUpdateProcedure("StartDocSet", sqlParams);
 
-        database.executeCommand(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 4", new Object[] {
+        database.execute(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 4", new Object[] {
                 sd.getServerMaster() }));
-        database.executeCommand(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 5", new Object[] {
+        database.execute(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 5", new Object[] {
                 sd.getServerMasterAddress() }));
 
-        database.executeCommand(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 6", new Object[] {
+        database.execute(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 6", new Object[] {
                 sd.getWebMaster() }));
-        database.executeCommand(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 7", new Object[] {
+        database.execute(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 7", new Object[] {
                 sd.getWebMasterAddress() }));
 
         sqlParams = new String[] { sd.getSystemMessage() };
@@ -640,15 +629,15 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public CategoryMapper getCategoryMapper() {
-        return categoryMapper;
+        return documentMapper.getCategoryMapper();
     }
 
     public LanguageMapper getLanguageMapper() {
         return this.languageMapper;
     }
 
-    public FileCache getFileCache() {
-        return fileCache;
+    public CachingFileLoader getFileCache() {
+        return fileLoader;
     }
 
     public RoleGetter getRoleGetter() {

@@ -16,20 +16,16 @@ import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.iterators.FilterIterator;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.oro.text.regex.PatternMatcher;
 import org.apache.oro.text.regex.StringSubstitution;
 import org.apache.oro.text.regex.Substitution;
+import org.apache.oro.text.regex.Util;
 
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 class MenuParser {
 
@@ -68,13 +64,13 @@ class MenuParser {
         MenuDomainObject menu = getMenuByIndex( menuIndex );
 
         DocumentRequest documentRequest = parserParameters.getDocumentRequest();
-        MenuItemDomainObject[] menuItems = menu.getMenuItemsUserCanSee(documentRequest.getUser() ) ;
+        MenuItemDomainObject[] menuItemsUserCanSee = menu.getMenuItemsUserCanSee(documentRequest.getUser() ) ;
         ImcmsAuthenticatorAndUserAndRoleMapper userMapper = documentRequest.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         UserDomainObject defaultUser = userMapper.getDefaultUser() ;
         MenuItemDomainObject[] defaultUserMenuItems = menu.getPublishedMenuItemsUserCanSee( defaultUser );
         List parseTags = Arrays.asList( new String[]{
             "#menuindex#", "" + menuIndex,
-            "#menuitemcount#", ""+menuItems.length,
+            "#menuitemcount#", ""+menuItemsUserCanSee.length,
             "#defaultusermenuitemcount#", ""+defaultUserMenuItems.length,
             "#label#", menuattributes.getProperty( "label" ),
             "#flags#", "" + parserParameters.getFlags(),
@@ -101,7 +97,7 @@ class MenuParser {
 
         UserDomainObject user = parserParameters.getDocumentRequest().getUser();
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
-        int[] allowedDocumentTypeIds = permissionSet.getAllowedDocumentTypeIds();
+        Set allowedDocumentTypeIds = permissionSet.getAllowedDocumentTypeIds();
 
         final DocumentTypeDomainObject[] docTypeIdsOrder = {
             DocumentTypeDomainObject.TEXT,
@@ -116,7 +112,7 @@ class MenuParser {
         for ( int i = 0; i < docTypeIdsOrder.length; i++ ) {
             DocumentTypeDomainObject documentType = docTypeIdsOrder[i];
             int documentTypeId = documentType.getId();
-            if ( EXISTING_DOCTYPE_ID == documentTypeId || ArrayUtils.contains( allowedDocumentTypeIds, documentTypeId ) ) {
+            if ( EXISTING_DOCTYPE_ID == documentTypeId || allowedDocumentTypeIds.contains( new Integer(documentTypeId) ) ) {
                 String documentTypeName = documentType.getName().toLocalizedString( user ) ;
                 documentTypesHtmlOptionList.append( "<option value=\"" + documentTypeId + "\">" + documentTypeName
                                                     + "</option>" );
@@ -265,7 +261,7 @@ class MenuParser {
     }
 
     boolean userCanSeeDocumentInMenu( UserDomainObject user, DocumentDomainObject document,
-                                              final int menuIndex ) {
+                                      final int menuIndex ) {
         return user.canSeeDocumentInMenus( document ) || editingMenu( menuIndex ) && user.canSeeDocumentWhenEditingMenus( document ) ;
     }
 
@@ -313,9 +309,9 @@ class MenuParser {
     private void parseMenuItem( StringBuffer result, String template, Substitution substitution,
                                 PatternMatcher patMat, TagParser tagParser ) {
         String tagsReplaced = tagParser.replaceTags( patMat, template, false) ;
-        result.append( org.apache.oro.text.regex.Util.substitute( patMat, TextDocumentParser.hashtagPattern, substitution,
+        result.append( Util.substitute( patMat, TextDocumentParser.hashtagPattern, substitution,
                                                                   tagsReplaced,
-                                                                  org.apache.oro.text.regex.Util.SUBSTITUTE_ALL ) );
+                                                                  Util.SUBSTITUTE_ALL ) );
     }
 
     public String tag( Properties menuattributes, String menutemplate,

@@ -9,10 +9,10 @@
                  imcode.server.document.TextDocumentPermissionSetDomainObject,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
-                 org.apache.commons.lang.ArrayUtils,
                  org.apache.commons.lang.StringEscapeUtils,
-                 java.util.Iterator"%>
-<%@ page import="java.util.Map"%>
+                 java.util.Iterator,
+                 java.util.Map"%>
+<%@ page import="java.util.Set"%><%@ page import="imcode.server.document.DocumentPermissionSetTypeDomainObject"%><%@ page import="imcode.server.document.textdocument.TextDocumentDomainObject"%>
 <%@page contentType="text/html"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%
     DocumentPermissionSetPage documentPermissionSetPage = (DocumentPermissionSetPage)Page.fromRequest(request) ;
     DocumentPermissionSetDomainObject documentPermissionSet = documentPermissionSetPage.getDocumentPermissionSet() ;
@@ -82,13 +82,13 @@
             <select name="<%= DocumentPermissionSetPage.REQUEST_PARAMETER__ALLOWED_DOCUMENT_TYPE_IDS %>" size="6" multiple>
                 <%
     ImcmsServices services = Imcms.getServices();
-    int[] allowedDocumentTypeIds = textDocumentPermissionSet.getAllowedDocumentTypeIds() ;
-                    Map allDocumentTypes = services.getDefaultDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage( user ) ;
+    Set allowedDocumentTypeIds = textDocumentPermissionSet.getAllowedDocumentTypeIds() ;
+                    Map allDocumentTypes = services.getDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage( user ) ;
                     for ( Iterator iterator = allDocumentTypes.entrySet().iterator(); iterator.hasNext(); ) {
                         Map.Entry entry = (Map.Entry)iterator.next();
                         Integer documentTypeId = (Integer)entry.getKey();
                         String documentTypeName = (String)entry.getValue();
-                        boolean allowedDocumentType = ArrayUtils.contains( allowedDocumentTypeIds, documentTypeId.intValue() ) ;
+                        boolean allowedDocumentType = allowedDocumentTypeIds.contains(new Integer(documentTypeId.intValue())) ;
                         %><option value="<%= documentTypeId %>" <% if( allowedDocumentType ) { %>selected<% } %>><%= StringEscapeUtils.escapeHtml( documentTypeName ) %></option><%
                     }
                 %>
@@ -102,10 +102,10 @@
         <select name="<%= DocumentPermissionSetPage.REQUEST_PARAMETER__ALLOWED_TEMPLATE_GROUP_IDS %>" size="6" multiple>
             <%
                 TemplateGroupDomainObject[] allTemplateGroups = services.getTemplateMapper().getAllTemplateGroups() ;
-                TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups( services ) ;
+                Set allowedTemplateGroupIds = textDocumentPermissionSet.getAllowedTemplateGroupIds() ;
                 for ( int i = 0; i < allTemplateGroups.length; i++ ) {
                     TemplateGroupDomainObject templateGroup = allTemplateGroups[i];
-                    boolean allowedTemplateGroup = ArrayUtils.contains(allowedTemplateGroups, templateGroup) ;
+                    boolean allowedTemplateGroup = allowedTemplateGroupIds.contains(new Integer(templateGroup.getId())) ;
                     %><option value="<%= templateGroup.getId() %>" <% if( allowedTemplateGroup ) { %>selected<% } %>><%= templateGroup.getName() %></option><%
                 }
             %>
@@ -119,10 +119,16 @@
                     <option value=""><? templates/sv/docinfo/default_templates_1.html/2 ?></option>
                     <%
                         TemplateDomainObject[] allTemplates = services.getTemplateMapper().getAllTemplates() ;
-                        TemplateDomainObject defaultTemplate = textDocumentPermissionSet.getDefaultTemplate() ;
+                        TextDocumentDomainObject textDocument = (TextDocumentDomainObject) documentPermissionSetPage.getDocument();
+                        Integer defaultTemplateId = null ;
+                        if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(documentPermissionSet.getType())) {
+                            defaultTemplateId = textDocument.getDefaultTemplateIdForRestricted1();
+                        } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSet.getType())) {
+                            defaultTemplateId = textDocument.getDefaultTemplateIdForRestricted2();
+                        }
                         for ( int i = 0; i < allTemplates.length; i++ ) {
                             TemplateDomainObject template = allTemplates[i];
-                            boolean selected = template.equals( defaultTemplate ) ;
+                            boolean selected = null != defaultTemplateId && template.getId() == defaultTemplateId.intValue() ;
                             %><option value="<%= template.getId() %>" <% if (selected) { %>selected<% } %>><%= StringEscapeUtils.escapeHtml( template.getName() )%></option><%
                         }
                     %>

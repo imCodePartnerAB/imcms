@@ -8,10 +8,10 @@ use LWP::Simple ;
 use Term::ProgressBar ;
 
 my $AB                    = '/usr/sbin/ab' ;
-my $benchmark_seconds     = 10 ;
-my $min_concurrency       = 5 ;
-my $max_concurrency       = 5 ;
-my $concurrency_increment = 1 ;
+my $benchmark_seconds     = 20 ;
+my $min_concurrency       = 1 ;
+my $max_concurrency       = 7 ;
+my $concurrency_increment = 2 ;
 my $verbosity             = 1 ;
 my $benchmark_count_per_url = 1 + ( ($max_concurrency - $min_concurrency) / $concurrency_increment ) ;
 
@@ -63,7 +63,7 @@ foreach my $inputfile ( keys %inputfiles ) {
                 $progressbar->target
             ) ;
             $progressbar->update($benchmarks_run) ;
-            sleep 2 ;
+            sleep 1 ;
             my ($result, $mean_time_per_request, $requests_per_second, $complete_requests) =
               benchmark( $name, $dir, $url, $benchmark_seconds, $concurrency ) ;
 
@@ -71,7 +71,9 @@ foreach my $inputfile ( keys %inputfiles ) {
             print OUT $result, "\f\n" ;
             close OUT ;
 
-            open SUM, '>>', "$dir/summary" ;
+            my $summaryfile = "$dir/summary" ;
+            open SUM, '>>', $summaryfile ;
+            print SUM "# Name Concurrency Mean_time_per_request Requests_per_second\n" unless -s SUM ;
             print SUM
               "$name $concurrency $mean_time_per_request $requests_per_second\n"
               ;

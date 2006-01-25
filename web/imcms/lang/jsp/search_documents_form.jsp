@@ -36,7 +36,7 @@
             <td colspan="4"><img src="<%= IMG_PATH %>/1x1_cccccc.gif" width="100%" height="1" vspace="8"></td>
         </tr>
         <%
-            SectionDomainObject[] sections = Imcms.getServices().getDefaultDocumentMapper().getAllSections() ;
+            SectionDomainObject[] sections = Imcms.getServices().getDocumentMapper().getAllSections() ;
             if (sections.length > 0) {
         %>
             <tr>

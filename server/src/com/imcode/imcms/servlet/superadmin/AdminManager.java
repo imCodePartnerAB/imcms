@@ -2,7 +2,7 @@ package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.DocumentPageFlow;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.SearchDocumentsPage;
@@ -37,11 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class AdminManager extends HttpServlet {
 
@@ -96,7 +92,7 @@ public class AdminManager extends HttpServlet {
             return;
         }
 
-        final DefaultDocumentMapper documentMapper = service.getDefaultDocumentMapper();
+        final DocumentMapper documentMapper = service.getDocumentMapper();
         if ( Utility.parameterIsSet( request, REQUEST_PARAMETER__CREATE_NEW_DOCUMENT ) ) {
             try {
                 int parentId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID ) );
@@ -142,7 +138,7 @@ public class AdminManager extends HttpServlet {
     private void createAndShowAdminManagerPage(HttpServletRequest request, HttpServletResponse response, LocalizedMessage errorMessage, String tabToShow) throws IOException, ServletException {
         UserDomainObject loggedOnUser = Utility.getLoggedOnUser( request );
         ImcmsServices service = Imcms.getServices();
-        final DefaultDocumentMapper documentMapper = service.getDefaultDocumentMapper();
+        final DocumentMapper documentMapper = service.getDocumentMapper();
 
         String html_admin_part = "";
 
@@ -156,10 +152,10 @@ public class AdminManager extends HttpServlet {
 
         Query query = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, loggedOnUser.getId() + "" ) );
 
-        DocumentDomainObject[] documentsFound = new DocumentDomainObject[] {} ;
+        List documentsFound = Collections.EMPTY_LIST;
         if ( tabToShow.equals( PARAMETER_VALUE__SHOW_RECENT ) || tabToShow.equals(PARAMETER_VALUE__SHOW_REMINDERS)
-                                                                || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY) ) {
-            documentsFound = index.search( query, loggedOnUser );
+             || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY) ) {
+            documentsFound = index.search( query, null, loggedOnUser );
         }
 
         AdminManagerSubreport newDocumentsSubreport = new AdminManagerSubreport();
@@ -260,10 +256,11 @@ public class AdminManager extends HttpServlet {
             searchAdminManagerPage.setHeading( new LocalizedMessage( "global/Search" ) );
             adminManagerPage = searchAdminManagerPage;
         }
-
-        adminManagerPage.setErrorMessage( errorMessage  );
-        adminManagerPage.setHtmlAdminPart( "".equals( html_admin_part ) ? null : html_admin_part );
-        adminManagerPage.forward( request, response, loggedOnUser );
+        if (null != adminManagerPage) {
+            adminManagerPage.setErrorMessage( errorMessage  );
+            adminManagerPage.setHtmlAdminPart( "".equals( html_admin_part ) ? null : html_admin_part );
+            adminManagerPage.forward( request, response, loggedOnUser );
+        }
     }
 
     private void sortAndSetExpandedSubreport (AdminManagerSubreport subreport, HttpServletRequest request ) {
@@ -280,11 +277,11 @@ public class AdminManager extends HttpServlet {
 
     }
 
-    private AdminManagerSubreport createModifiedDocumentsSubreport( DocumentDomainObject[] documentsFound ) {
+    private AdminManagerSubreport createModifiedDocumentsSubreport( List documentsFound ) {
         List modifiedDocuments = new ArrayList();
         Date oneWeekAgo = getDateOneWeekAgo();
-        for ( int i = 0; i < documentsFound.length; i++ ) {
-            DocumentDomainObject document = documentsFound[i];
+        for ( Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
+            DocumentDomainObject document = (DocumentDomainObject) iterator.next();
             boolean createdInPastWeek = !document.getCreatedDatetime().before( oneWeekAgo );
             boolean modifiedInPastWeek = !document.getModifiedDatetime().before( oneWeekAgo );
             if ( modifiedInPastWeek && !createdInPastWeek ) {
@@ -301,12 +298,12 @@ public class AdminManager extends HttpServlet {
         return modifiedDocumentsSubreport;
     }
 
-    private AdminManagerSubreport createNewDocumentsSubreport( DocumentDomainObject[] documentsFound ) {
+    private AdminManagerSubreport createNewDocumentsSubreport( List documentsFound ) {
         List newDocuments = new ArrayList();
 
         Date oneWeekAgo = getDateOneWeekAgo();
-        for ( int i = 0; i < documentsFound.length; i++ ) {
-            DocumentDomainObject document = documentsFound[i];
+        for ( Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
+            DocumentDomainObject document = (DocumentDomainObject) iterator.next();
             boolean createdInPastWeek = !document.getCreatedDatetime().before( oneWeekAgo );
             if ( createdInPastWeek ) {
                 newDocuments.add( document );
@@ -323,15 +320,16 @@ public class AdminManager extends HttpServlet {
     }
 
     private AdminManagerSubreport createDocumentsUnmodifiedForSixMonthsSubreport(
-            DocumentDomainObject[] documentsFound ) {
+            List documentsFound ) {
         LifeCyclePhase[] phases = new LifeCyclePhase[]{
             LifeCyclePhase.APPROVED, LifeCyclePhase.NEW,
             LifeCyclePhase.PUBLISHED, LifeCyclePhase.ARCHIVED,
         };
         Date sixMonthsAgo = getDateSixMonthsAgo();
         List documentsUnchangedForSixMonths = new ArrayList();
-        for ( int i = 0; i < documentsFound.length; i++ ) {
-            DocumentDomainObject document = documentsFound[i];
+
+        for ( Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
+            DocumentDomainObject document = (DocumentDomainObject) iterator.next();
             LifeCyclePhase phase = document.getLifeCyclePhase();
             if ( ArrayUtils.contains( phases, phase ) && document.getModifiedDatetime().before( sixMonthsAgo ) ) {
                 documentsUnchangedForSixMonths.add( document );
@@ -348,7 +346,7 @@ public class AdminManager extends HttpServlet {
         return documentsUnchangedForSixMonthsSubreport;
     }
 
-    private AdminManagerSubreport createDocumentsArchivedWithinOneWeekSubreport( DocumentDomainObject[] documentsFound ) {
+    private AdminManagerSubreport createDocumentsArchivedWithinOneWeekSubreport( List documentsFound ) {
         LifeCyclePhase[] phases = new LifeCyclePhase[]{
             LifeCyclePhase.APPROVED,
             LifeCyclePhase.PUBLISHED
@@ -356,8 +354,8 @@ public class AdminManager extends HttpServlet {
         List documentsArchivedWithinOneWeek = new ArrayList();
         Date lastMidnight = getDateLastMidnight();
         Date oneWeekAhead = getDateOneWeekAhead();
-        for ( int i = 0; i < documentsFound.length; i++ ) {
-            DocumentDomainObject document = documentsFound[i];
+        for ( Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
+            DocumentDomainObject document = (DocumentDomainObject) iterator.next();
             LifeCyclePhase phase = document.getLifeCyclePhase();
             Date archivedDatetime = document.getArchivedDatetime();
             if ( ArrayUtils.contains( phases, phase ) && null != archivedDatetime
@@ -377,7 +375,7 @@ public class AdminManager extends HttpServlet {
     }
 
     private AdminManagerSubreport createDocumentsUnpublishedWithinOneWeekSubreport(
-            DocumentDomainObject[] documentsFound ) {
+            List documentsFound ) {
         LifeCyclePhase[] phases = new LifeCyclePhase[]{
             LifeCyclePhase.APPROVED,
             LifeCyclePhase.ARCHIVED, LifeCyclePhase.PUBLISHED
@@ -385,8 +383,8 @@ public class AdminManager extends HttpServlet {
         Date lastMidnight = getDateLastMidnight();
         Date oneWeekAhead = getDateOneWeekAhead();
         List documentsUnpublishedWithinOneWeek = new ArrayList();
-        for ( int i = 0; i < documentsFound.length; i++ ) {
-            DocumentDomainObject document = documentsFound[i];
+        for ( Iterator iterator = documentsFound.iterator(); iterator.hasNext(); ) {
+            DocumentDomainObject document = (DocumentDomainObject) iterator.next();
             LifeCyclePhase phase = document.getLifeCyclePhase();
             Date publicationEndDatetime = document.getPublicationEndDatetime();
             if ( ArrayUtils.contains( phases, phase ) && null != publicationEndDatetime
@@ -459,7 +457,6 @@ public class AdminManager extends HttpServlet {
         String tabName;
         List subreports = new ArrayList();
         String htmlAdminPart;
-        JSCalendar jsCalendar;
         public static final String REQUEST_ATTRIBUTE__PAGE = "ampage";
 
         private LocalizedMessage errorMessage;
@@ -609,7 +606,7 @@ public class AdminManager extends HttpServlet {
     private static class SaveNewDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
 
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException {
-            Imcms.getServices().getDefaultDocumentMapper().saveNewDocument( document, user );
+            Imcms.getServices().getDocumentMapper().saveNewDocument( document, user );
         }
     }
 

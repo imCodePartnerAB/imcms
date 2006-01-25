@@ -1,32 +1,53 @@
 package imcode.server.document.textdocument;
 
 import imcode.server.document.*;
+import imcode.util.LazilyLoadedObject;
 
 import java.util.*;
 
+import com.imcode.imcms.mapping.DocumentMenusMap;
+import org.apache.commons.lang.UnhandledException;
+
 public class TextDocumentDomainObject extends DocumentDomainObject {
 
-    private TemplateDomainObject template;
-    private int templateGroupId;
-    private TemplateDomainObject defaultTemplate;
-    private TreeMap texts = new TreeMap();
-    private TreeMap images = new TreeMap();
-    private TreeMap includes = new TreeMap();
-    private TreeMap menus = new TreeMap();
+    private LazilyLoadedObject texts = new LazilyLoadedObject(new CopyableHashMapLoader());
+    private LazilyLoadedObject images = new LazilyLoadedObject(new CopyableHashMapLoader());
+    private LazilyLoadedObject includes = new LazilyLoadedObject(new CopyableHashMapLoader());
+    private LazilyLoadedObject menus = new LazilyLoadedObject(new LazilyLoadedObject.Loader() {
+        public LazilyLoadedObject.Copyable load() {
+            return new DocumentMenusMap();
+        }
+    });
+    private LazilyLoadedObject templateIds = new LazilyLoadedObject(new LazilyLoadedObject.Loader() {
+        public LazilyLoadedObject.Copyable load() {
+            return new TemplateIds();
+        }
+    });
 
     public TextDocumentDomainObject() {
-        setPermissionSetForRestrictedOne(new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_1 )) ;
-        setPermissionSetForRestrictedTwo(new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_2 )) ;
-        setPermissionSetForRestrictedOneForNewDocuments(new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_1 )) ;
-        setPermissionSetForRestrictedTwoForNewDocuments(new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_2 )) ;
+        this(ID_NEW) ;
+    }
+
+    public TextDocumentDomainObject(int documentId) {
+        setId(documentId);
+    }
+
+    public void loadAllLazilyLoaded() {
+        super.loadAllLazilyLoaded();
+               
+        texts.load();
+        images.load();
+        includes.load();
+        menus.load();
+        templateIds.load();
     }
 
     public Object clone() throws CloneNotSupportedException {
         TextDocumentDomainObject clone = (TextDocumentDomainObject)super.clone();
-        clone.texts = (TreeMap)texts.clone();
-        clone.images = (TreeMap)images.clone();
-        clone.includes = (TreeMap)includes.clone();
-        clone.menus = deepCloneMenus() ;
+        clone.texts = (LazilyLoadedObject) texts.clone();
+        clone.images = (LazilyLoadedObject) images.clone();
+        clone.includes = (LazilyLoadedObject) includes.clone();
+        clone.menus = (LazilyLoadedObject) menus.clone() ;
         return clone;
     }
 
@@ -34,44 +55,42 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return DocumentTypeDomainObject.TEXT ;
     }
 
-    private TreeMap deepCloneMenus() throws CloneNotSupportedException {
-        TreeMap menusClone = new TreeMap() ;
-        for ( Iterator iterator = menus.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)iterator.next();
-            Integer menuIndex = (Integer)entry.getKey();
-            MenuDomainObject menu = (MenuDomainObject)entry.getValue();
-            menusClone.put(menuIndex, menu.clone()) ;
-        }
-        return menusClone ;
-    }
-
-    public Set getChildDocuments() {
+    public Set getChildDocumentIds() {
         Set childDocuments = new HashSet() ;
         for ( Iterator iterator = getMenus().values().iterator(); iterator.hasNext(); ) {
             MenuDomainObject menu = (MenuDomainObject)iterator.next();
             MenuItemDomainObject[] menuItems = menu.getMenuItems() ;
             for ( int i = 0; i < menuItems.length; i++ ) {
                 MenuItemDomainObject menuItem = menuItems[i];
-                childDocuments.add( menuItem.getDocument() ) ;
+                childDocuments.add( new Integer(menuItem.getDocumentId()) ) ;
             }
         }
         return childDocuments ;
     }
 
     public ImageDomainObject getImage( int imageIndex ) {
-        ImageDomainObject image = (ImageDomainObject)images.get( new Integer( imageIndex )) ;
+        ImageDomainObject image = (ImageDomainObject)getImagesMap().get( new Integer( imageIndex )) ;
         if (null == image) {
             image = new ImageDomainObject() ;
         }
         return image ;
     }
 
+    private Map getImagesMap() {
+        return (Map) images.get();
+    }
+
     public Integer getIncludedDocumentId( int includeIndex ) {
-        return (Integer)includes.get( new Integer( includeIndex ) );
+        return (Integer)getIncludesMap().get( new Integer( includeIndex ) );
+    }
+
+    private Map getIncludesMap() {
+        return (Map) includes.get();
     }
 
     public MenuDomainObject getMenu( int menuIndex ) {
-        MenuDomainObject menu = (MenuDomainObject)menus.get( new Integer( menuIndex ) );
+        Map menusMap = (Map) menus.get();
+        MenuDomainObject menu = (MenuDomainObject) menusMap.get( new Integer( menuIndex ) );
         if (null == menu) {
             menu = new MenuDomainObject() ;
             setMenu( menuIndex, menu );
@@ -80,7 +99,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public TextDomainObject getText( int textFieldIndex ) {
-        return (TextDomainObject)texts.get( new Integer( textFieldIndex ) );
+        return (TextDomainObject)getTextsMap().get( new Integer( textFieldIndex ) );
+    }
+
+    private Map getTextsMap() {
+        return (Map)texts.get();
     }
 
     public void accept( DocumentVisitor documentVisitor ) {
@@ -88,88 +111,193 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void removeAllImages() {
-        images.clear();
+        getImagesMap().clear();
     }
 
     public void removeAllIncludes() {
-        includes.clear();
+        getIncludesMap().clear();
     }
 
     public void removeAllMenus() {
-        menus.clear();
+        getMenusMap().clear();
+    }
+
+    private Map getMenusMap() {
+        return (Map) menus.get();
     }
 
     public void removeAllTexts() {
-        texts.clear();
+        getTextsMap().clear();
     }
 
     public void setInclude( int includeIndex, int includedDocumentId ) {
-        includes.put( new Integer( includeIndex ), new Integer( includedDocumentId ) );
+        getIncludesMap().put( new Integer( includeIndex ), new Integer( includedDocumentId ) );
     }
 
     public void setMenu( int menuIndex, MenuDomainObject menu ) {
-        menus.put( new Integer( menuIndex ), menu );
+        getMenusMap().put( new Integer( menuIndex ), menu );
     }
 
     public void setText( int textIndex, TextDomainObject text ) {
-        texts.put( new Integer( textIndex ), text );
+        getTextsMap().put( new Integer( textIndex ), text );
     }
 
     /**
      * @return Map<Integer, {@link ImageDomainObject} *
      */
     public Map getImages() {
-        return Collections.unmodifiableMap( images );
+        return Collections.unmodifiableMap( getImagesMap() );
     }
 
     public Map getIncludes() {
-        return Collections.unmodifiableMap( includes );
+        return Collections.unmodifiableMap( getIncludesMap() );
     }
 
     public Map getMenus() {
-        return Collections.unmodifiableMap( menus );
+        return Collections.unmodifiableMap( getMenusMap() );
     }
 
-    public TemplateDomainObject getTemplate() {
-        return template;
+    public int getTemplateId() {
+        return getTemplateIds().getTemplateId();
+    }
+
+    private TemplateIds getTemplateIds() {
+        return (TemplateIds) templateIds.get();
     }
 
     public int getTemplateGroupId() {
-        return templateGroupId;
+        return getTemplateIds().getTemplateGroupId();
     }
 
     /**
      * @return Map<Integer, {@link TextDomainObject}>
      */
     public Map getTexts() {
-        return Collections.unmodifiableMap( texts );
+        return Collections.unmodifiableMap( getTextsMap() );
     }
 
-    public void setImages( Map images ) {
-        this.images = new TreeMap(images);
-    }
-
-    public void setTemplate( TemplateDomainObject v ) {
-        this.template = v;
+    public void setTemplateId( int v ) {
+        getTemplateIds().setTemplateId(v);
     }
 
     public void setTemplateGroupId( int v ) {
-        this.templateGroupId = v;
+        getTemplateIds().setTemplateGroupId(v);
     }
 
     public void setImage( int imageIndex, ImageDomainObject image ) {
-        images.put( new Integer( imageIndex ), image ) ;
+        getImagesMap().put( new Integer( imageIndex ), image ) ;
     }
 
-    public TemplateDomainObject getDefaultTemplate() {
-        return defaultTemplate;
+    public Integer getDefaultTemplateId() {
+        return getTemplateIds().getDefaultTemplateId();
     }
 
-    public void setDefaultTemplate( TemplateDomainObject defaultTemplate ) {
-        this.defaultTemplate = defaultTemplate;
+    public void setDefaultTemplateId( Integer defaultTemplateId ) {
+        getTemplateIds().setDefaultTemplateId(defaultTemplateId);
     }
 
     public void removeInclude( int includeIndex ) {
-        includes.remove( new Integer( includeIndex )) ;
+        getIncludesMap().remove( new Integer( includeIndex )) ;
     }
+
+    public void setLazilyLoadedMenus(LazilyLoadedObject menus) {
+        this.menus = menus;
+    }
+
+    public void setLazilyLoadedImages(LazilyLoadedObject images) {
+        this.images = images ;
+    }
+
+    public void setLazilyLoadedIncludes(LazilyLoadedObject includes) {
+        this.includes = includes ;
+    }
+
+    public void setLazilyLoadedTexts(LazilyLoadedObject texts) {
+        this.texts = texts;
+    }
+
+    public Integer getDefaultTemplateIdForRestricted1() {
+        return getTemplateIds().getDefaultTemplateIdForRestricted1();
+    }
+
+    public Integer getDefaultTemplateIdForRestricted2() {
+        return getTemplateIds().getDefaultTemplateIdForRestricted2();
+    }
+
+    public void setDefaultTemplateIdForRestricted1(Integer defaultTemplateIdForRestricted1) {
+        getTemplateIds().setDefaultTemplateIdForRestricted1(defaultTemplateIdForRestricted1);
+    }
+
+    public void setDefaultTemplateIdForRestricted2(Integer defaultTemplateIdForRestricted2) {
+        getTemplateIds().setDefaultTemplateIdForRestricted2(defaultTemplateIdForRestricted2);
+    }
+
+    public void setLazilyLoadedTemplateIds(LazilyLoadedObject templateIds) {
+        this.templateIds = templateIds;
+    }
+
+    private static class CopyableHashMapLoader implements LazilyLoadedObject.Loader {
+
+        public LazilyLoadedObject.Copyable load() {
+            return new CopyableHashMap();
+        }
+    }
+
+    public static class TemplateIds implements LazilyLoadedObject.Copyable, Cloneable {
+        private int templateId;
+        private int templateGroupId;
+        private Integer defaultTemplateId;
+        private Integer defaultTemplateIdForRestricted1 ;
+        private Integer defaultTemplateIdForRestricted2 ;
+
+        public LazilyLoadedObject.Copyable copy() {
+            try {
+                return (LazilyLoadedObject.Copyable) super.clone();
+            } catch ( CloneNotSupportedException e ) {
+                throw new UnhandledException(e);
+            }
+        }
+
+        public int getTemplateId() {
+            return templateId;
+        }
+
+        public void setTemplateId(int templateId) {
+            this.templateId = templateId;
+        }
+
+        public int getTemplateGroupId() {
+            return templateGroupId;
+        }
+
+        public void setTemplateGroupId(int templateGroupId) {
+            this.templateGroupId = templateGroupId;
+        }
+
+        public Integer getDefaultTemplateId() {
+            return defaultTemplateId;
+        }
+
+        public void setDefaultTemplateId(Integer defaultTemplateId) {
+            this.defaultTemplateId = defaultTemplateId;
+        }
+
+        public Integer getDefaultTemplateIdForRestricted1() {
+            return defaultTemplateIdForRestricted1;
+        }
+
+        public void setDefaultTemplateIdForRestricted1(Integer defaultTemplateIdForRestricted1) {
+            this.defaultTemplateIdForRestricted1 = defaultTemplateIdForRestricted1;
+        }
+
+        public Integer getDefaultTemplateIdForRestricted2() {
+            return defaultTemplateIdForRestricted2;
+        }
+
+        public void setDefaultTemplateIdForRestricted2(Integer defaultTemplateIdForRestricted2) {
+            this.defaultTemplateIdForRestricted2 = defaultTemplateIdForRestricted2;
+        }
+    }
+
+
 }

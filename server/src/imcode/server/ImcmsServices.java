@@ -3,14 +3,13 @@ package imcode.server ;
 import com.imcode.db.Database;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Clock;
-import imcode.util.FileCache;
+import imcode.util.CachingFileLoader;
 import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -22,7 +21,7 @@ import java.text.Collator;
 import java.util.Date;
 import java.util.Properties;
 
-public interface ImcmsServices extends Clock {
+public interface ImcmsServices {
 
     /** Verify a Internet/Intranet user. Data from any SQL Database. **/
     UserDomainObject verifyUser(String login, String password)
@@ -57,10 +56,6 @@ public interface ImcmsServices extends Clock {
     int getDocType(int meta_id)
     ;
 
-    // get server date
-    Date getCurrentDate()
-    ;
-
     SystemData getSystemData()  ;
 
     void setSystemData(SystemData sd)  ;
@@ -73,7 +68,7 @@ public interface ImcmsServices extends Clock {
 
     void updateMainLog( String logMessage );
 
-    DefaultDocumentMapper getDefaultDocumentMapper();
+    DocumentMapper getDocumentMapper();
 
     ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper();
 
@@ -101,7 +96,7 @@ public interface ImcmsServices extends Clock {
 
     LanguageMapper getLanguageMapper();
 
-    FileCache getFileCache();
+    CachingFileLoader getFileCache();
 
     RoleGetter getRoleGetter();
 

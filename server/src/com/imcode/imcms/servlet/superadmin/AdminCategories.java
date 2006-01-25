@@ -91,7 +91,7 @@ public class AdminCategories extends HttpServlet {
         } else if ( null != req.getParameter( PARAMETER_MODE__EDIT_CATEGORY ) ) {
             adminCategoriesPage = editCategory( req, res, adminCategoriesPage, categoryMapper );
         } else if ( req.getParameter( PARAMETER_MODE__DELETE_CATEGORY ) != null ) {
-            deleteCategory( category, categoryType, req, adminCategoriesPage, categoryMapper, service.getDefaultDocumentMapper() );
+            deleteCategory( category, categoryType, req, adminCategoriesPage, categoryMapper, service.getDocumentMapper() );
         } else if ( null != req.getParameter( PARAMETER_MODE__VIEW_CATEGORY ) ) {
             viewCategory( categoryType, category, req, adminCategoriesPage );
         }

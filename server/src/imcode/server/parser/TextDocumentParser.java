@@ -2,7 +2,6 @@ package imcode.server.parser;
 
 import com.imcode.imcms.api.TextDocumentViewing;
 import imcode.server.DocumentRequest;
-import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.TemplateGroupDomainObject;
@@ -13,16 +12,14 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Html;
 import imcode.util.ShouldNotBeThrownException;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.regex.*;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class TextDocumentParser {
 
@@ -56,9 +53,16 @@ public class TextDocumentParser {
 
     public String parsePage( ParserParameters paramsToParse ) throws IOException {
         NDC.push( "parsePage" );
-        String page = parsePage( paramsToParse, 5 );
-        NDC.pop();
-        return page;
+        try {
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
+            String page = parsePage( paramsToParse, 5 );
+            stopWatch.stop();
+            log.trace("Parsing template took "+stopWatch.getTime()+"ms.");
+            return page;
+        } finally {
+            NDC.pop();
+        }
     }
 
     public String parsePage( ParserParameters parserParameters, int includelevel ) throws IOException {
@@ -101,8 +105,7 @@ public class TextDocumentParser {
     }
 
     private String getTemplate( TextDocumentDomainObject document, ParserParameters parserParameters ) throws IOException {
-        TemplateDomainObject documentTemplate = document.getTemplate();
-        int documentTemplateId = documentTemplate.getId();
+        int documentTemplateId = document.getTemplateId();
 
         String template_name = parserParameters.getTemplate();
         if ( template_name != null ) {
@@ -125,14 +128,12 @@ public class TextDocumentParser {
             StringBuffer result = new StringBuffer( string.length() ); // A StringBuffer to hold the result
             PatternMatcherInput emp_input = new PatternMatcherInput( string );    // A PatternMatcherInput to match on
             int last_html_offset = 0;
-            int current_html_offset;
             String non_html_tag_string;
-            String html_tag_string;
             while ( patMat.contains( emp_input, htmlTagPattern ) ) {
-                current_html_offset = emp_input.getMatchBeginOffset();
+                int current_html_offset = emp_input.getMatchBeginOffset();
                 non_html_tag_string = result.substring( last_html_offset, current_html_offset );
                 last_html_offset = emp_input.getMatchEndOffset();
-                html_tag_string = result.substring( current_html_offset, last_html_offset );
+                String html_tag_string = result.substring(current_html_offset, last_html_offset);
                 non_html_tag_string = emphasizeString( non_html_tag_string, emp, emphasize_substitution, patMat );
                 // for each string to emphasize
                 result.append( non_html_tag_string );
@@ -195,14 +196,17 @@ public class TextDocumentParser {
 
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
 
-            TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups( Imcms.getServices() );
+            Set allowedTemplateGroupIds = textDocumentPermissionSet.getAllowedTemplateGroupIds();
+            List allowedTemplateGroups = templateMapper.getTemplateGroups(allowedTemplateGroupIds);
             String templateGroupsHtmlOptionList = templateMapper.createHtmlOptionListOfTemplateGroups( allowedTemplateGroups, selectedTemplateGroup );
 
             TemplateDomainObject[] templates = new TemplateDomainObject[0];
-            if ( ArrayUtils.contains( allowedTemplateGroups, selectedTemplateGroup ) ) {
+            if ( allowedTemplateGroupIds.contains(new Integer(selectedTemplateGroup.getId()) ) ) {
                 templates = templateMapper.getTemplatesInGroup( selectedTemplateGroup );
             }
-            String templatesHtmlOptionList = templateMapper.createHtmlOptionListOfTemplates( templates, document.getTemplate() );
+            int templateId = document.getTemplateId();
+            TemplateDomainObject template = templateMapper.getTemplateById(templateId) ;
+            String templatesHtmlOptionList = templateMapper.createHtmlOptionListOfTemplates( templates, template );
 
             // Oh! I need a set of tags to be replaced in the templatefiles we'll load...
             List temptags = new ArrayList();
@@ -210,11 +214,11 @@ public class TextDocumentParser {
             temptags.add( "#getMetaId#" );
             temptags.add( "" + document.getId() );
             temptags.add( "#group#" );
-            temptags.add( selectedTemplateGroup != null ? selectedTemplateGroup.getName(): "" );
+            temptags.add( selectedTemplateGroup.getName() );
             temptags.add( "#getTemplateGroups#" );
             temptags.add( templateGroupsHtmlOptionList );
             temptags.add( "#simple_name#" );
-            temptags.add( document.getTemplate().getName() );
+            temptags.add( template.getName() );
             temptags.add( "#getTemplatesInGroup#" );
             temptags.add( templatesHtmlOptionList );
 

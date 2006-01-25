@@ -1,13 +1,11 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
+import com.imcode.db.commands.SqlUpdateDatabaseCommand;
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.db.DatabaseUtils;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetTypeDomainObject;
-import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
-import imcode.server.document.SectionDomainObject;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
@@ -22,12 +20,14 @@ import java.util.*;
 
 class DocumentSaver {
 
-    private final DefaultDocumentMapper documentMapper ;
+    private final DocumentMapper documentMapper ;
 
     private static final int META_HEADLINE_MAX_LENGTH = 255;
     private static final int META_TEXT_MAX_LENGTH = 1000;
+    public static final String SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID = "DELETE FROM roles_rights WHERE role_id = ? AND meta_id = ?";
+    public static final String SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID = "INSERT INTO roles_rights (role_id, meta_id, set_id) VALUES(?,?,?)";
 
-    DocumentSaver(DefaultDocumentMapper documentMapper) {
+    DocumentSaver(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
     }
 
@@ -39,6 +39,8 @@ class DocumentSaver {
 
         checkDocumentForSave(document, oldDocument, user);
 
+        document.loadAllLazilyLoaded();
+        
         try {
             Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
             Date modifiedDatetime = Utility.truncateDateToMinutePrecision(document.getModifiedDatetime());
@@ -67,7 +69,7 @@ class DocumentSaver {
                                               TextDocumentDomainObject oldTextDocument,
                                               final UserDomainObject user) throws NoPermissionToAddDocumentToMenuException
     {
-        Collection documentsAddedWithoutPermission = getDocumentsAddedWithoutPermission(textDocument, oldTextDocument, user);
+        Collection documentsAddedWithoutPermission = getDocumentsAddedWithoutPermission(textDocument, oldTextDocument, user, documentMapper);
         boolean documentsWereAddedWithoutPermission = !documentsAddedWithoutPermission.isEmpty();
         if (documentsWereAddedWithoutPermission ) {
             Collection documentIds = CollectionUtils.collect(documentsAddedWithoutPermission, new Transformer() {
@@ -105,15 +107,10 @@ class DocumentSaver {
         makeBooleanSqlUpdateClause("shared", document.isLinkableByOtherUsers(), sqlUpdateColumns, sqlUpdateValues);
         makeBooleanSqlUpdateClause("show_meta", document.isVisibleInMenusForUnauthorizedUsers(), sqlUpdateColumns, sqlUpdateValues);
         makeBooleanSqlUpdateClause("permissions", document.isRestrictedOneMorePrivilegedThanRestrictedTwo(), sqlUpdateColumns, sqlUpdateValues);
-        UserDomainObject publisher = document.getPublisher();
-        makeIntSqlUpdateClause("publisher_id", publisher == null ? null
-                                               : new Integer(publisher.getId()), sqlUpdateColumns,
+        makeIntSqlUpdateClause("publisher_id", document.getPublisherId(), sqlUpdateColumns,
                                                                                  sqlUpdateValues);
-        UserDomainObject creator = document.getCreator();
-        if (null != creator) {
-            makeIntSqlUpdateClause("owner_id", new Integer(creator.getId()), sqlUpdateColumns,
+        makeIntSqlUpdateClause("owner_id", new Integer(document.getCreatorId()), sqlUpdateColumns,
                                    sqlUpdateValues);
-        }
         Document.PublicationStatus publicationStatus = document.getPublicationStatus();
         int publicationStatusInt = convertPublicationStatusToInt(publicationStatus);
         makeIntSqlUpdateClause("status", new Integer(publicationStatusInt), sqlUpdateColumns, sqlUpdateValues);
@@ -122,10 +119,10 @@ class DocumentSaver {
         sqlStr.append(" where meta_id = ?");
         sqlUpdateValues.add("" + document.getId());
         String[] params = (String[]) sqlUpdateValues.toArray(new String[sqlUpdateValues.size()]);
-        DatabaseUtils.executeUpdate(documentMapper.getDatabase(), sqlStr.toString(), params);
+        ((Integer)documentMapper.getDatabase().execute( new SqlUpdateCommand( sqlStr.toString(), params ) )).intValue();
     }
 
-    private int convertPublicationStatusToInt(Document.PublicationStatus publicationStatus) {
+    static int convertPublicationStatusToInt(Document.PublicationStatus publicationStatus) {
         int publicationStatusInt = Document.STATUS_NEW;
         if ( Document.PublicationStatus.APPROVED.equals(publicationStatus) ) {
             publicationStatusInt = Document.STATUS_PUBLICATION_APPROVED ;
@@ -136,7 +133,7 @@ class DocumentSaver {
     }
 
     private void updateDocumentSectionsCategoriesKeywords(DocumentDomainObject document) {
-        updateDocumentSections(document.getId(), document.getSections());
+        updateDocumentSections(document.getId(), document.getSectionIds());
 
         documentMapper.getCategoryMapper().updateDocumentCategories(document);
 
@@ -151,13 +148,15 @@ class DocumentSaver {
 
         checkDocumentForSave(document, null, user);
 
+        document.loadAllLazilyLoaded();
+        
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 
         int newMetaId = sqlInsertIntoMeta(document);
 
         if (!user.isSuperAdminOrHasFullPermissionOn(document)) {
-            document.setPermissionSetForRestrictedOne(document.getPermissionSetForRestrictedOneForNewDocuments());
-            document.setPermissionSetForRestrictedTwo(document.getPermissionSetForRestrictedTwoForNewDocuments());
+            document.getPermissionSets().setRestricted1(document.getPermissionSetsForNewDocuments().getRestricted1());
+            document.getPermissionSets().setRestricted2(document.getPermissionSetsForNewDocuments().getRestricted2());
         }
 
         document.setId(newMetaId);
@@ -211,11 +210,11 @@ class DocumentSaver {
                 || user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument)) {
                 String[] params1 = new String[]{"" + roleId,
                                                 "" + document.getId()};
-                DatabaseUtils.executeUpdate(documentMapper.getDatabase(), DefaultDocumentMapper.SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID, params1);
+                ((Integer)documentMapper.getDatabase().execute( new SqlUpdateCommand( SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID, params1 ) )).intValue();
                 if ( !DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType) ) {
                     String[] params = new String[]{
                         "" + roleId.intValue(), "" + document.getId(), "" + documentPermissionSetType };
-                    DatabaseUtils.executeUpdate(documentMapper.getDatabase(), DefaultDocumentMapper.SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID, params);
+                    ((Integer)documentMapper.getDatabase().execute( new SqlUpdateCommand( SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID, params ) )).intValue();
                 }
             }
         }
@@ -254,12 +253,12 @@ class DocumentSaver {
 
     private int sqlInsertIntoMeta(DocumentDomainObject document) {
 
-        final Number documentId = (Number) documentMapper.getDatabase().executeCommand(new InsertIntoTableDatabaseCommand("meta", new String[][]{
+        final Number documentId = (Number) documentMapper.getDatabase().execute(new InsertIntoTableDatabaseCommand("meta", new String[][]{
             { "doc_type", document.getDocumentTypeId() + ""},
             { "meta_headline", document.getHeadline()},
             { "meta_text", document.getMenuText()},
             { "meta_image", document.getMenuImage()},
-            { "owner_id", document.getCreator().getId() + ""},
+            { "owner_id", document.getCreatorId() + ""},
             { "permissions", makeSqlStringFromBoolean(document.isRestrictedOneMorePrivilegedThanRestrictedTwo())},
             { "shared", makeSqlStringFromBoolean(document.isLinkableByOtherUsers())},
             { "show_meta", makeSqlStringFromBoolean(document.isVisibleInMenusForUnauthorizedUsers())},
@@ -270,7 +269,7 @@ class DocumentSaver {
             { "target", document.getTarget()},
             { "activate", "1"},
             { "archived_datetime", Utility.makeSqlStringFromDate(document.getArchivedDatetime())},
-            { "publisher_id", null != document.getPublisher() ? document.getPublisher().getId() + "" : null},
+            { "publisher_id", null != document.getPublisherId() ? document.getPublisherId() + "" : null},
             { "status", "" + document.getPublicationStatus()},
             { "publication_start_datetime", Utility.makeSqlStringFromDate(document.getPublicationStartDatetime())},
             { "publication_end_datetime", Utility.makeSqlStringFromDate(document.getPublicationEndDatetime())}
@@ -284,9 +283,10 @@ class DocumentSaver {
 
     Set getDocumentsAddedWithoutPermission(TextDocumentDomainObject textDocument,
                                            TextDocumentDomainObject oldTextDocument,
-                                           final UserDomainObject user) {
-        Set documentsAdded = getDocumentsAdded(textDocument, oldTextDocument);
-        Collection documentsAddedWithoutPermission = CollectionUtils.select(documentsAdded, new Predicate() {
+                                           final UserDomainObject user, DocumentGetter documentGetter) {
+        Set documentIdsAdded = getDocumentIdsAdded(textDocument, oldTextDocument);
+        List documents = documentGetter.getDocuments(documentIdsAdded);
+        Collection documentsAddedWithoutPermission = CollectionUtils.select(documents, new Predicate() {
             public boolean evaluate(Object object) {
                 return !user.canAddDocumentToAnyMenu((DocumentDomainObject) object) ;
             }
@@ -294,22 +294,22 @@ class DocumentSaver {
         return new HashSet(documentsAddedWithoutPermission);
     }
 
-    private Set getDocumentsAdded(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument
+    private Set getDocumentIdsAdded(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument
     ) {
-        Set documentsAdded;
+        Set documentIdsAdded;
         if (null != oldTextDocument) {
-            documentsAdded = getChildDocumentsDifference(textDocument, oldTextDocument);
+            documentIdsAdded = getChildDocumentIdsDifference(textDocument, oldTextDocument);
         } else {
-            documentsAdded = textDocument.getChildDocuments() ;
+            documentIdsAdded = textDocument.getChildDocumentIds() ;
         }
-        return documentsAdded;
+        return documentIdsAdded;
     }
 
-    private Set getChildDocumentsDifference(TextDocumentDomainObject minuend, TextDocumentDomainObject subtrahend) {
-        Set minuendChildDocuments = minuend.getChildDocuments() ;
-        Set subtrahendChildDocuments = subtrahend.getChildDocuments() ;
-        Set result = new HashSet(minuendChildDocuments) ;
-        result.removeAll(subtrahendChildDocuments) ;
+    private Set getChildDocumentIdsDifference(TextDocumentDomainObject minuend, TextDocumentDomainObject subtrahend) {
+        Set minuendChildDocumentIds = minuend.getChildDocumentIds() ;
+        Set subtrahendChildDocumentIds = subtrahend.getChildDocumentIds() ;
+        Set result = new HashSet(minuendChildDocumentIds) ;
+        result.removeAll(subtrahendChildDocumentIds) ;
         return result ;
     }
 
@@ -330,46 +330,46 @@ class DocumentSaver {
     }
 
     void updateDocumentSections(int metaId,
-                                SectionDomainObject[] sections) {
+                                Set sectionIds) {
         removeAllSectionsFromDocument(metaId);
-        for (int i = 0; null != sections && i < sections.length; i++) {
-            SectionDomainObject section = sections[i];
-            addSectionToDocument(metaId, section.getId());
+        for ( Iterator iterator = sectionIds.iterator(); iterator.hasNext(); ) {
+            Integer sectionId = (Integer) iterator.next();
+            addSectionIdToDocument(metaId, sectionId);
         }
+    }
+
+    private void addSectionIdToDocument(int metaId, Integer sectionId) {
+        Integer[] params = new Integer[]{new Integer(metaId), sectionId };
+        documentMapper.getDatabase().execute(new SqlUpdateDatabaseCommand("INSERT INTO meta_section VALUES(?,?)", params));
     }
 
     private void deleteKeywordsFromDocument(int meta_id) {
         String sqlDeleteKeywordsFromDocument = "DELETE FROM meta_classification WHERE meta_id = ?";
         String[] params = new String[]{"" + meta_id};
-        DatabaseUtils.executeUpdate(documentMapper.getDatabase(), sqlDeleteKeywordsFromDocument, params);
+        ((Integer)documentMapper.getDatabase().execute( new SqlUpdateCommand( sqlDeleteKeywordsFromDocument, params ) )).intValue();
     }
 
     private void deleteUnusedKeywords() {
         String[] params = new String[0];
-        DatabaseUtils.executeUpdate(documentMapper.getDatabase(), "DELETE FROM classification WHERE class_id NOT IN (SELECT class_id FROM meta_classification)", params);
+        ((Integer)documentMapper.getDatabase().execute( new SqlUpdateCommand( "DELETE FROM classification WHERE class_id NOT IN (SELECT class_id FROM meta_classification)", params ) )).intValue();
     }
 
     private void addKeyword(String keyword) {
         String[] params = new String[]{keyword};
-        DatabaseUtils.executeUpdate(documentMapper.getDatabase(), "INSERT INTO classification (code) VALUES(?)", params);
-    }
-
-    private void addSectionToDocument(int metaId, int sectionId) {
-        String[] params = new String[]{"" + metaId, "" + sectionId};
-        DatabaseUtils.executeUpdate(documentMapper.getDatabase(), "INSERT INTO meta_section VALUES(?,?)", params);
+        ((Integer)documentMapper.getDatabase().execute( new SqlUpdateCommand( "INSERT INTO classification (code) VALUES(?)", params ) )).intValue();
     }
 
     private void removeAllSectionsFromDocument(int metaId) {
         String[] params = new String[]{"" + metaId};
-        DatabaseUtils.executeUpdate(documentMapper.getDatabase(), "DELETE FROM meta_section WHERE meta_id = ?", params);
+        ((Integer)documentMapper.getDatabase().execute( new SqlUpdateCommand( "DELETE FROM meta_section WHERE meta_id = ?", params ) )).intValue();
     }
 
     private void addExistingKeywordToDocument(int meta_id, String keyword) {
         String[] params1 = new String[]{
             keyword
         };
-        int keywordId = Integer.parseInt(DatabaseUtils.executeStringQuery(documentMapper.getDatabase(), "SELECT class_id FROM classification WHERE code = ?", params1));
+        int keywordId = Integer.parseInt((String) documentMapper.getDatabase().execute(new SqlQueryCommand("SELECT class_id FROM classification WHERE code = ?", params1, Utility.SINGLE_STRING_HANDLER)));
         String[] params = new String[]{"" + meta_id, "" + keywordId};
-        DatabaseUtils.executeUpdate(documentMapper.getDatabase(), "INSERT INTO meta_classification (meta_id, class_id) VALUES(?,?)", params);
+        ((Integer)documentMapper.getDatabase().execute( new SqlUpdateCommand( "INSERT INTO meta_classification (meta_id, class_id) VALUES(?,?)", params ) )).intValue();
     }
 }

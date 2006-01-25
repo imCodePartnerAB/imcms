@@ -5,6 +5,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;
+import imcode.util.LazilyLoadedObject;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 
@@ -15,16 +16,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public static final int ID_NEW = 0;
 
-    protected Attributes attributes;
+    protected Attributes attributes = new Attributes();
     private static Logger log = Logger.getLogger( DocumentDomainObject.class );
-
-    protected DocumentDomainObject() {
-        attributes = new Attributes();
-        attributes.permissionSetForRestrictedOne = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_1 );
-        attributes.permissionSetForRestrictedTwo = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_2 );
-        attributes.permissionSetForRestrictedOneForNewDocuments = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_1 );
-        attributes.permissionSetForRestrictedTwoForNewDocuments = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_2 );
-    }
 
     public Object clone() throws CloneNotSupportedException {
         DocumentDomainObject clone = (DocumentDomainObject)super.clone();
@@ -70,8 +63,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.archivedDatetime = v;
     }
 
-    public CategoryDomainObject[] getCategories() {
-        return (CategoryDomainObject[])attributes.categories.toArray( new CategoryDomainObject[attributes.categories.size()] );
+    public Set getCategoryIds() {
+        return Collections.unmodifiableSet((Set) attributes.categoryIds.get()) ;
     }
 
     public Date getCreatedDatetime() {
@@ -82,12 +75,16 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.createdDatetime = v;
     }
 
-    public UserDomainObject getCreator() {
-        return attributes.creator;
+    public int getCreatorId() {
+        return attributes.creatorId;
+    }
+
+    public void setCreatorId( int creatorId ) {
+        attributes.creatorId = creatorId;
     }
 
     public void setCreator( UserDomainObject creator ) {
-        attributes.creator = creator;
+        setCreatorId(creator.getId());
     }
 
     public void setAttributes( Attributes attributes ) {
@@ -119,11 +116,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public Set getKeywords() {
-        return Collections.unmodifiableSet(attributes.keywords) ;
+        return Collections.unmodifiableSet((Set) attributes.keywords.get()) ;
     }
 
     public void setKeywords( Set keywords ) {
-        attributes.keywords = new HashSet( keywords );
+        attributes.keywords.set(new CopyableHashSet(keywords));
     }
 
     public String getLanguageIso639_2() {
@@ -174,28 +171,37 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.publicationStartDatetime = v;
     }
 
-    public UserDomainObject getPublisher() {
-        return attributes.publisher;
+    public Integer getPublisherId() {
+        return attributes.publisherId;
     }
 
     public void setPublisher( UserDomainObject user ) {
-        attributes.publisher = user;
+        setPublisherId(new Integer(user.getId())) ;
+    }
+
+    public void setPublisherId(Integer publisherId) {
+        attributes.publisherId = publisherId ;
     }
 
     public RoleIdToDocumentPermissionSetTypeMappings getRoleIdsMappedToDocumentPermissionSetTypes() {
-        return (RoleIdToDocumentPermissionSetTypeMappings)attributes.roleIdToDocumentPermissionSetTypeMappings.clone();
+        return (RoleIdToDocumentPermissionSetTypeMappings)getRolePermissionMappings().clone();
+    }
+
+    private RoleIdToDocumentPermissionSetTypeMappings getRolePermissionMappings() {
+        RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings = (RoleIdToDocumentPermissionSetTypeMappings) attributes.roleIdToDocumentPermissionSetTypeMappings.get();
+        return rolePermissionMappings;
     }
 
     public void setRoleIdsMappedToDocumentPermissionSetTypes( RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings ) {
-        attributes.roleIdToDocumentPermissionSetTypeMappings = (RoleIdToDocumentPermissionSetTypeMappings) roleIdToDocumentPermissionSetTypeMappings.clone();
+        attributes.roleIdToDocumentPermissionSetTypeMappings.set((LazilyLoadedObject.Copyable) roleIdToDocumentPermissionSetTypeMappings.clone());
     }
 
-    public SectionDomainObject[] getSections() {
-        return (SectionDomainObject[])attributes.sections.toArray( new SectionDomainObject[attributes.sections.size()] );
+    public Set getSectionIds() {
+        return Collections.unmodifiableSet((Set) attributes.sectionIds.get()) ;
     }
 
-    public void setSections( SectionDomainObject[] sections ) {
-        attributes.sections = new HashSet( Arrays.asList( sections ) );
+    public void setSectionIds( Set sectionIds ) {
+        attributes.sectionIds.set(new CopyableHashSet(sectionIds));
     }
 
     public Document.PublicationStatus getPublicationStatus() {
@@ -265,12 +271,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.visibleInMenusForUnauthorizedUsers = visibleInMenusForUnauthorizedUsers;
     }
 
-    public void addCategory( CategoryDomainObject category ) {
-        attributes.categories.add( category );
+    public void addCategoryId( int categoryId ) {
+        Set categoryIds = (Set) attributes.categoryIds.get();
+        categoryIds.add( new Integer(categoryId) );
     }
 
-    public void addSection( SectionDomainObject section ) {
-        attributes.sections.add( section );
+    public void addSectionId( int sectionId ) {
+        Set sectionIds = (Set) attributes.sectionIds.get();
+        sectionIds.add( new Integer(sectionId) );
     }
 
     public boolean equals( Object o ) {
@@ -285,19 +293,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
         return attributes.id == document.attributes.id;
 
-    }
-
-    public CategoryDomainObject[] getCategoriesOfType( CategoryTypeDomainObject type ) {
-        CategoryDomainObject[] categories = (CategoryDomainObject[])attributes.categories.toArray( new CategoryDomainObject[attributes.categories.size()] );
-        List categoriesOfType = new ArrayList();
-        for ( int i = 0; i < categories.length; i++ ) {
-            CategoryDomainObject category = categories[i];
-            if ( type.equals( category.getType() ) ) {
-                categoriesOfType.add( category );
-            }
-        }
-        final CategoryDomainObject[] arrayOfCategoriesOfType = new CategoryDomainObject[categoriesOfType.size()];
-        return (CategoryDomainObject[])categoriesOfType.toArray( arrayOfCategoriesOfType );
     }
 
     public abstract DocumentTypeDomainObject getDocumentType();
@@ -320,23 +315,24 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void removeAllCategories() {
-        attributes.categories.clear();
+        attributes.categoryIds.set(new CopyableHashSet());
     }
 
     public void removeAllSections() {
-        attributes.sections.clear();
+        attributes.sectionIds.set(new CopyableHashSet());
     }
 
-    public void removeCategory( CategoryDomainObject category ) {
-        attributes.categories.remove( category );
+    public void removeCategoryId( int categoryId ) {
+        Set categoryIds = (Set) attributes.categoryIds.get();
+        categoryIds.remove( new Integer(categoryId) );
     }
 
     public void setDocumentPermissionSetTypeForRoleId( RoleId roleId, DocumentPermissionSetTypeDomainObject permissionSetType ) {
-        attributes.roleIdToDocumentPermissionSetTypeMappings.setPermissionSetTypeForRole(roleId, permissionSetType) ;
+        getRolePermissionMappings().setPermissionSetTypeForRole(roleId, permissionSetType) ;
     }
 
     public DocumentPermissionSetTypeDomainObject getDocumentPermissionSetTypeForRoleId( RoleId roleId ) {
-        return attributes.roleIdToDocumentPermissionSetTypeMappings.getPermissionSetTypeForRole( roleId );
+        return getRolePermissionMappings().getPermissionSetTypeForRole( roleId );
     }
 
     private boolean isPublishedAtTime( Date date ) {
@@ -355,38 +351,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return publicationEndDatetime != null && publicationEndDatetime.before( date );
     }
 
-    public void setPermissionSetForRestrictedOne( DocumentPermissionSetDomainObject permissionSetForRestrictedOne ) {
-        this.attributes.permissionSetForRestrictedOne = permissionSetForRestrictedOne;
+    public DocumentPermissionSets getPermissionSets() {
+        return (DocumentPermissionSets) this.attributes.permissionSets.get();
     }
 
-    public void setPermissionSetForRestrictedTwo( DocumentPermissionSetDomainObject permissionSetForRestrictedTwo ) {
-        this.attributes.permissionSetForRestrictedTwo = permissionSetForRestrictedTwo;
-    }
-
-    public void setPermissionSetForRestrictedOneForNewDocuments(
-            DocumentPermissionSetDomainObject permissionSetForRestrictedOneForNewDocuments ) {
-        this.attributes.permissionSetForRestrictedOneForNewDocuments = permissionSetForRestrictedOneForNewDocuments;
-    }
-
-    public void setPermissionSetForRestrictedTwoForNewDocuments(
-            DocumentPermissionSetDomainObject permissionSetForRestrictedTwoForNewDocuments ) {
-        this.attributes.permissionSetForRestrictedTwoForNewDocuments = permissionSetForRestrictedTwoForNewDocuments;
-    }
-
-    public DocumentPermissionSetDomainObject getPermissionSetForRestrictedOne() {
-        return this.attributes.permissionSetForRestrictedOne;
-    }
-
-    public DocumentPermissionSetDomainObject getPermissionSetForRestrictedOneForNewDocuments() {
-        return this.attributes.permissionSetForRestrictedOneForNewDocuments;
-    }
-
-    public DocumentPermissionSetDomainObject getPermissionSetForRestrictedTwo() {
-        return this.attributes.permissionSetForRestrictedTwo;
-    }
-
-    public DocumentPermissionSetDomainObject getPermissionSetForRestrictedTwoForNewDocuments() {
-        return this.attributes.permissionSetForRestrictedTwoForNewDocuments;
+    public DocumentPermissionSets getPermissionSetsForNewDocuments() {
+        return (DocumentPermissionSets) this.attributes.permissionSetsForNewDocuments.get();
     }
 
     public Attributes getAttributes() {
@@ -423,7 +393,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void removeNonInheritedCategories() {
-        for ( Iterator iterator = attributes.categories.iterator(); iterator.hasNext(); ) {
+        Set categoryIds = (Set) attributes.categoryIds.get();
+        for ( Iterator iterator = categoryIds.iterator(); iterator.hasNext(); ) {
             CategoryDomainObject category = (CategoryDomainObject)iterator.next();
             if (!category.getType().isInherited()) {
                 iterator.remove();
@@ -431,12 +402,50 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         }
     }
 
+    public void setLazilyLoadedSectionIds(LazilyLoadedObject sectionIds) {
+        attributes.sectionIds = sectionIds ;
+    }
+
+    public void setLazilyLoadedKeywords(LazilyLoadedObject keywords) {
+        attributes.keywords = keywords ;
+    }
+
+    public void setLazilyLoadedCategoryIds(LazilyLoadedObject categoryIds) {
+        attributes.categoryIds = categoryIds;
+    }
+
+    public void setLazilyLoadedRoleIdsMappedToDocumentPermissionSetTypes(LazilyLoadedObject rolePermissionMappings) {
+        attributes.roleIdToDocumentPermissionSetTypeMappings = rolePermissionMappings ;
+    }
+
+    public void setLazilyLoadedPermissionSets(LazilyLoadedObject permissionSets) {
+        attributes.permissionSets = permissionSets ;
+    }
+
+    public void setLazilyLoadedPermissionSetsForNew(LazilyLoadedObject permissionSetsForNew) {
+        attributes.permissionSetsForNewDocuments = permissionSetsForNew;
+    }
+
+    public void loadAllLazilyLoaded() {
+        attributes.categoryIds.load();
+        attributes.sectionIds.load();
+        attributes.keywords.load();
+        attributes.permissionSets.load();
+        attributes.permissionSetsForNewDocuments.load();
+        attributes.roleIdToDocumentPermissionSetTypeMappings.load();
+    }
+
+
     public static class Attributes implements Cloneable, Serializable {
 
         private Date archivedDatetime;
+
         private Date createdDatetime;
-        private UserDomainObject creator;
+
+        private int creatorId;
+
         private String headline = "";
+
         private String image;
         private String languageIso639_2;
         private boolean linkableByOtherUsers;
@@ -447,31 +456,46 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private boolean restrictedOneMorePrivilegedThanRestrictedTwo;
         private Date publicationStartDatetime;
         private Date publicationEndDatetime;
-        private UserDomainObject publisher;
+        private Integer publisherId;
         private boolean searchDisabled;
         private Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
         private String target;
         private boolean visibleInMenusForUnauthorizedUsers;
 
-        private Set categories = new HashSet();
-        private Set keywords = new HashSet();
-        private Set sections = new HashSet();
-        private DocumentPermissionSetDomainObject permissionSetForRestrictedOne ;
-        private DocumentPermissionSetDomainObject permissionSetForRestrictedTwo ;
-        private DocumentPermissionSetDomainObject permissionSetForRestrictedOneForNewDocuments ;
-        private DocumentPermissionSetDomainObject permissionSetForRestrictedTwoForNewDocuments ;
+        private LazilyLoadedObject categoryIds = new LazilyLoadedObject(new CopyableHashSetLoader());
+        private LazilyLoadedObject keywords = new LazilyLoadedObject(new CopyableHashSetLoader());
+        private LazilyLoadedObject sectionIds = new LazilyLoadedObject(new CopyableHashSetLoader());
+        private LazilyLoadedObject permissionSets = new LazilyLoadedObject(new DocumentPermissionSetsLoader());
+        private LazilyLoadedObject permissionSetsForNewDocuments = new LazilyLoadedObject(new DocumentPermissionSetsLoader());
 
-        private RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
+        private LazilyLoadedObject roleIdToDocumentPermissionSetTypeMappings = new LazilyLoadedObject(new LazilyLoadedObject.Loader() {
+            public LazilyLoadedObject.Copyable load() {
+                return new RoleIdToDocumentPermissionSetTypeMappings();
+            }
+        });
 
         public Object clone() throws CloneNotSupportedException {
             Attributes clone = (Attributes)super.clone();
-            clone.keywords = new HashSet( keywords );
-            clone.sections = new HashSet( sections );
-            clone.categories = new HashSet( categories );
-            clone.roleIdToDocumentPermissionSetTypeMappings = (RoleIdToDocumentPermissionSetTypeMappings) roleIdToDocumentPermissionSetTypeMappings.clone();
+            clone.keywords = (LazilyLoadedObject) keywords.clone();
+            clone.sectionIds = (LazilyLoadedObject) sectionIds.clone();
+            clone.categoryIds = (LazilyLoadedObject) categoryIds.clone();
+            clone.roleIdToDocumentPermissionSetTypeMappings = (LazilyLoadedObject) roleIdToDocumentPermissionSetTypeMappings.clone();
             return clone;
         }
 
+        private static class CopyableHashSetLoader implements LazilyLoadedObject.Loader {
+
+            public LazilyLoadedObject.Copyable load() {
+                return new CopyableHashSet();
+            }
+        }
+
+        private static class DocumentPermissionSetsLoader implements LazilyLoadedObject.Loader {
+
+            public LazilyLoadedObject.Copyable load() {
+                return new DocumentPermissionSets() ;
+            }
+        }
     }
 
 }

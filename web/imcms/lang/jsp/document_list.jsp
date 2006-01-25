@@ -3,7 +3,6 @@
                  com.imcode.imcms.servlet.superadmin.DocumentReferences,
                  org.apache.commons.lang.StringEscapeUtils,
                  imcode.server.Imcms,
-                 com.imcode.imcms.mapping.DocumentMapper,
                  imcode.util.Utility,
                  imcode.server.user.UserDomainObject,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
@@ -11,7 +10,7 @@
                  java.net.URLEncoder,
                  org.apache.commons.lang.ObjectUtils,
                  imcode.util.Html,
-                 imcode.server.document.DocumentComparator"%><%@ page import="com.imcode.imcms.mapping.DefaultDocumentMapper"%>
+                 imcode.server.document.DocumentComparator"%><%@ page import="com.imcode.imcms.mapping.DocumentMapper"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <% ListDocuments.FormData formData = (ListDocuments.FormData)request.getAttribute( ListDocuments.REQUEST_ATTRIBUTE__FORM_DATA ) ;%>
 <vel:velocity>
@@ -53,13 +52,13 @@ if (null != formData.documentsIterator) { %>
 	<td>&nbsp; <b><? imcms/lang/jsp/document_list.jsp/heading_child_documents ?></b></td>
 </tr><%
 
-	DefaultDocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
+	DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 	UserDomainObject user = Utility.getLoggedOnUser(request);
 	Map documentTypes = documentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user) ;
 
 	while ( formData.documentsIterator.hasNext() ) {
 		DocumentDomainObject document = (DocumentDomainObject)formData.documentsIterator.next();
-		DefaultDocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingDocument = documentMapper.getDocumentMenuPairsContainingDocument( document ); %>
+		DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingDocument = documentMapper.getDocumentMenuPairsContainingDocument( document ); %>
 <tr>
 	<td colspan="5"><img src="$contextPath/imcms/$language/images/admin/1x1_cccccc.gif" width="100%" height="1"></td>
 </tr>
@@ -82,7 +81,7 @@ if (null != formData.documentsIterator) { %>
 	<td><%
 		if (document instanceof TextDocumentDomainObject) {
 			TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document ;
-			List childDocuments = new ArrayList(textDocument.getChildDocuments());
+			List childDocuments = documentMapper.getDocuments(textDocument.getChildDocumentIds());
 			if (!childDocuments.isEmpty()) { %>
 	<table border="0" cellpadding="2" cellspacing="0"><%
 				Collections.sort(childDocuments, DocumentComparator.ID) ;

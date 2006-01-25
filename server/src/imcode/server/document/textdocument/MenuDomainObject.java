@@ -2,8 +2,6 @@ package imcode.server.document.textdocument;
 
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.*;
-import imcode.server.document.DocumentGetter;
-import imcode.server.document.DocumentReference;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
@@ -94,37 +92,38 @@ public class MenuDomainObject implements Cloneable, Serializable {
     }
 
     public MenuItemDomainObject[] getMenuItems() {
-        MenuItemDomainObject[] menuItemsArray = getMenuItemsUnsorted(new MenuDomainObject.DocumentReferenceDocumentGetter());
+        Set menuItemsUnsorted = getMenuItemsUnsorted();
+        MenuItemDomainObject[] menuItemsArray = (MenuItemDomainObject[]) menuItemsUnsorted.toArray(new MenuItemDomainObject[menuItemsUnsorted.size()]);
         Arrays.sort( menuItemsArray, getMenuItemComparatorForSortOrder( sortOrder ) );
         return menuItemsArray;
     }
 
-    public MenuItemDomainObject[] getMenuItemsUnsorted(DocumentGetter documentGetter) {
-        HashMap menuItemsClone = (HashMap)menuItems.clone() ;
-        List menuItemsList = new ArrayList( menuItemsClone.size() ) ;
-        for ( Iterator iterator = menuItemsClone.values().iterator(); iterator.hasNext(); ) {
-            MenuItemDomainObject menuItem = (MenuItemDomainObject)iterator.next() ;
-            if (null != documentGetter.getDocument(menuItem.getDocumentReference())) {
-                menuItemsList.add(menuItem) ;
-            }
-        }
-        MenuItemDomainObject[] menuItemsArray = (MenuItemDomainObject[])menuItemsList.toArray( new MenuItemDomainObject[menuItemsList.size()] );
-        return menuItemsArray;
+    public Set getMenuItemsUnsorted() {
+        return new HashSet(menuItems.values());
     }
 
     public void addMenuItem( MenuItemDomainObject menuItem ) {
         if ( null == menuItem.getSortKey() ) {
-            Integer maxSortKey = getMaxSortKey();
-            Integer sortKey;
-            if ( null != maxSortKey ) {
-                sortKey = new Integer( maxSortKey.intValue() + DEFAULT_SORT_KEY_INCREMENT );
-            } else {
-                sortKey = new Integer( DEFAULT_SORT_KEY );
-            }
-            menuItem.setSortKey( sortKey );
+            generateSortKey(menuItem);
         }
+        if (null != menuItem.getDocument()) {
+            addMenuItemUnchecked(menuItem);
+        }
+    }
 
-        menuItems.put( new Integer(menuItem.getDocumentReference().intValue()), menuItem );
+    public void addMenuItemUnchecked(MenuItemDomainObject menuItem) {
+        menuItems.put( new Integer(menuItem.getDocumentId()), menuItem );
+    }
+
+    private void generateSortKey(MenuItemDomainObject menuItem) {
+        Integer maxSortKey = getMaxSortKey();
+        Integer sortKey;
+        if ( null != maxSortKey ) {
+            sortKey = new Integer( maxSortKey.intValue() + DEFAULT_SORT_KEY_INCREMENT );
+        } else {
+            sortKey = new Integer( DEFAULT_SORT_KEY );
+        }
+        menuItem.setSortKey(sortKey);
     }
 
     private Integer getMaxSortKey() {
@@ -181,23 +180,4 @@ public class MenuDomainObject implements Cloneable, Serializable {
         return sortOrder + menuItems.hashCode() ;
     }
 
-    public DocumentDomainObject[] getDocuments() {
-        MenuItemDomainObject[] menuItems = getMenuItems();
-        DocumentDomainObject[] documents = new DocumentDomainObject[menuItems.length];
-        for ( int i = 0; i < menuItems.length; i++ ) {
-            MenuItemDomainObject menuItem = menuItems[i];
-            documents[i] = menuItem.getDocument() ;
-        }
-        return documents ;
-    }
-
-    public class DocumentReferenceDocumentGetter implements DocumentGetter {
-        public DocumentDomainObject getDocument(DocumentId documentId) {
-            if (documentId instanceof DocumentReference) {
-                return ((DocumentReference)documentId).getDocument() ;
-            } else {
-                throw new UnsupportedOperationException("Only accepts document-references.");
-            }
-        }
-    }
 }

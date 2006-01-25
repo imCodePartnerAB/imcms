@@ -3,11 +3,14 @@ package imcode.util;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
-public class FileCache {
+public class CachingFileLoader {
 
     private final int fileCacheSize = 100;
     private Map fileCache = Collections.synchronizedMap( new LRUMap( fileCacheSize ) );

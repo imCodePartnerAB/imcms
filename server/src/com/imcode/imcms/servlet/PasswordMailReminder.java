@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.db.DatabaseUtils;
+import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
@@ -101,17 +101,17 @@ public class PasswordMailReminder extends HttpServlet {
             final Object[] parameters = new String[]{
             "" + PasswordMailReminder.PASSWORD_PERMISSION_ID, postedLoginName
             };
-            String[] queryResult = DatabaseUtils.executeStringArrayQuery(imcref.getDatabase(),
-                                                                         "select login_password, first_name, last_name, email, min(permissions & ?), lang_prefix \n"
-                                                                         + "from users u \n"
-                                                                         + "join lang_prefixes lp \n"
-                                                                         + "    on u.language = lp.lang_prefix\n"
-                                                                         + "join user_roles_crossref urc \n"
-                                                                         + "    on u.user_id = urc.user_id left \n"
-                                                                         + "join roles r \n"
-                                                                         + "    on r.role_id = urc.role_id\n"
-                                                                         + "where login_name = ?\n"
-                                                                         + "group by login_password, first_name, last_name, email, lang_prefix", parameters);
+            String[] queryResult = (String[]) imcref.getDatabase().execute(new SqlQueryCommand(
+                    "select login_password, first_name, last_name, email, min(permissions & ?), lang_prefix \n"
+                    + "from users u \n"
+                    + "join lang_prefixes lp \n"
+                    + "    on u.language = lp.lang_prefix\n"
+                    + "join user_roles_crossref urc \n"
+                    + "    on u.user_id = urc.user_id left \n"
+                    + "join roles r \n"
+                    + "    on r.role_id = urc.role_id\n"
+                    + "where login_name = ?\n"
+                    + "group by login_password, first_name, last_name, email, lang_prefix", parameters, Utility.STRING_ARRAY_HANDLER));
             UserDomainObject user = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUser( postedLoginName );
             user.setCurrentContextPath( req.getContextPath() );
             if ( ( queryResult != null ) && ( queryResult.length > 0 ) ) {

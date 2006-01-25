@@ -1,6 +1,5 @@
 <%@ page contentType="text/html"
-    import="com.imcode.imcms.mapping.DocumentMapper,
-          org.apache.commons.lang.StringEscapeUtils,
+    import="org.apache.commons.lang.StringEscapeUtils,
           imcode.server.Imcms,
           imcode.server.document.FileDocumentDomainObject,
           org.apache.commons.lang.ObjectUtils,
@@ -10,7 +9,7 @@
           java.util.*,
           com.imcode.imcms.servlet.GetDoc,
           com.imcode.util.HumanReadable"
-%><%@ page import="com.imcode.imcms.mapping.DefaultDocumentMapper"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+%><%@ page import="com.imcode.imcms.mapping.DocumentMapper"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
 <html>
 <head>
@@ -86,7 +85,7 @@ if (StringUtils.isNotBlank(selectedFile.getFilename())) {
 			<option value=""<% if (StringUtils.isBlank( selectedFile.getMimeType() ) ) { %> selected<% } %>>
 			<? install/htdocs/sv/jsp/docadmin/file_document.jsp/autodetect_or_fill_in_below ?></option><%
 
-    final DefaultDocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
+    final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
     String[][] mimeTypes = documentMapper.getAllMimeTypesWithDescriptions(Utility.getLoggedOnUser( request ));
     boolean documentMimeTypeFoundInDropDown = false ;
 

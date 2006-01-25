@@ -2,27 +2,31 @@ package imcode.server.parser;
 
 import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
+import com.imcode.imcms.mapping.SectionFromIdTransformer;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.util.CountingIterator;
 import imcode.server.DocumentRequest;
 import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
-import imcode.server.document.SectionDomainObject;
 import imcode.server.document.textdocument.FileDocumentImageSource;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.util.DateConstants;
-import imcode.util.FileCache;
+import imcode.util.CachingFileLoader;
 import imcode.util.Html;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.collections.iterators.TransformIterator;
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
 import org.apache.velocity.VelocityContext;
@@ -54,7 +58,7 @@ class TagParser {
 
     private final static Logger log = Logger.getLogger(TagParser.class.getName());
 
-    private FileCache fileCache = new FileCache();
+    private CachingFileLoader fileLoader = new CachingFileLoader();
 
     static {
         Perl5Compiler patComp = new Perl5Compiler();
@@ -151,11 +155,11 @@ class TagParser {
 
     /** Handle a <?imcms:section?> tag. */
     private String tagSections(Properties attributes) {
-        SectionDomainObject[] section = document.getSections();
-
+        Set sectionIds = document.getSectionIds();
+        Iterator sectionsIterator = new TransformIterator(sectionIds.iterator(), new SectionFromIdTransformer(service));
         String separator = attributes.getProperty("separator", ",");
 
-        return StringUtils.join(section, separator);
+        return StringUtils.join(sectionsIterator, separator);
     }
 
     /**
@@ -341,7 +345,7 @@ class TagParser {
 
     private String includeFile(String attributevalue, PatternMatcher patMat) {// Fetch a file from the disk
         try {
-            return replaceTags(patMat, fileCache.getCachedFileString(new File(service.getIncludePath(), attributevalue)), false); // Get a file from the include directory
+            return replaceTags(patMat, fileLoader.getCachedFileString(new File(service.getIncludePath(), attributevalue)), false); // Get a file from the include directory
         } catch ( IOException ex ) {
             return "<!-- imcms:include file failed: " + ex + " -->";
         }
@@ -354,7 +358,7 @@ class TagParser {
             includedParserParameters = (ParserParameters) parserParameters.clone();
             includedParserParameters.setTemplate(attributes.getProperty("template"));
             includedParserParameters.setParameter(attributes.getProperty("param"));
-            includedParserParameters.getDocumentRequest().setDocument(service.getDefaultDocumentMapper().getDocument(included_meta_id));
+            includedParserParameters.getDocumentRequest().setDocument(service.getDocumentMapper().getDocument(included_meta_id));
             includedParserParameters.getDocumentRequest().setReferrer(document);
             includedParserParameters.setFlags(0);
             includedParserParameters.setAdminButtonsVisible(false);
@@ -592,13 +596,15 @@ class TagParser {
         UserDomainObject user;
         String who = attributes.getProperty("who");
 
+        ImcmsAuthenticatorAndUserAndRoleMapper userMapper = service.getImcmsAuthenticatorAndUserAndRoleMapper();
         if ( null != who && "creator".equalsIgnoreCase(who) ) {
-            user = documentRequest.getDocument().getCreator();
+            user = userMapper.getUser(documentRequest.getDocument().getCreatorId());
         } else if ( null != who && "publisher".equalsIgnoreCase(who) ) {
-            user = documentRequest.getDocument().getPublisher();
-            if ( null == user ) {
-                return "";
+            Integer publisherId = documentRequest.getDocument().getPublisherId();
+            if (null == publisherId) {
+                return "" ;
             }
+            user = userMapper.getUser(publisherId.intValue()) ;
         } else {
             user = documentRequest.getUser();
         }
@@ -637,18 +643,18 @@ class TagParser {
 
     private String tagCategories(Properties attributes) {
         String categoryTypeName = attributes.getProperty("type");
-        CategoryDomainObject[] categories;
         final String shouldOutputDescription = attributes.getProperty("outputdescription");
+        CategoryMapper categoryMapper = service.getCategoryMapper();
+        Set categories ;
         if ( null == categoryTypeName ) {
-            categories = document.getCategories();
+            categories = categoryMapper.getCategories(document.getCategoryIds());
         } else {
-            CategoryTypeDomainObject categoryType = service.getCategoryMapper().getCategoryTypeByName(categoryTypeName);
-            final CategoryDomainObject[] categoriesOfType = document.getCategoriesOfType(categoryType);
-            categories = categoriesOfType;
+            CategoryTypeDomainObject categoryType = categoryMapper.getCategoryTypeByName(categoryTypeName);
+            categories = categoryMapper.getCategoriesOfType(categoryType, document.getCategoryIds());
         }
-        String[] categoryStrings = new String[categories.length];
-        for ( int i = 0; i < categories.length; i++ ) {
-            CategoryDomainObject category = categories[i];
+        String[] categoryStrings = new String[categories.size()];
+        for ( CountingIterator iterator = new CountingIterator(categories.iterator()); iterator.hasNext(); ) {
+            CategoryDomainObject category = (CategoryDomainObject) iterator.next();
             String categoryString = category.getName();
             if ( null == categoryTypeName ) {
                 categoryString = category.getType() + ": " + categoryString;
@@ -658,7 +664,7 @@ class TagParser {
             } else if ( "true".equalsIgnoreCase(shouldOutputDescription) ) {
                 categoryString += " - " + category.getDescription();
             }
-            categoryStrings[i] = categoryString;
+            categoryStrings[iterator.getCount()-1] = categoryString;
         }
         String separator = attributes.getProperty("separator", ",");
         return StringUtils.join(categoryStrings, separator);
@@ -784,14 +790,11 @@ class TagParser {
     }
 
     private String tagMenu(Properties attributes, String content, PatternMatcher patternMatcher) {
-        String result;
         MenuParser menuParser = new MenuParser(parserParameters);
-        result = menuParser.tag(attributes, content, patternMatcher, this);
-        return result;
+        return menuParser.tag(attributes, content, patternMatcher, this);
     }
 
     private String tagVelocity(String content) {
-        String result;
         VelocityEngine velocityEngine = service.getVelocityEngine(parserParameters.getDocumentRequest().getUser());
         VelocityContext velocityContext = new VelocityContext();
         velocityContext.put("request", parserParameters.getDocumentRequest().getHttpServletRequest());
@@ -806,8 +809,7 @@ class TagParser {
         } catch ( Exception e ) {
             throw new UnhandledException(e);
         }
-        result = stringWriter.toString();
-        return result;
+        return stringWriter.toString();
     }
 
     public class MetaIdHeaderHttpServletRequest extends HttpServletRequestWrapper {
@@ -850,4 +852,5 @@ class TagParser {
             return StringEscapeUtils.escapeHtml(s);
         }
     }
+
 }

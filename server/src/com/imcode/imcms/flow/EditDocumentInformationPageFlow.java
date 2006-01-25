@@ -4,13 +4,11 @@ import com.imcode.imcms.servlet.admin.ImageBrowser;
 import com.imcode.imcms.servlet.admin.UserFinder;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.api.Document;
 import com.imcode.util.KeywordsParser;
-import imcode.server.document.SectionDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 import org.apache.commons.lang.ObjectUtils;
@@ -170,7 +168,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
                                                                     HttpServletRequest request ) {
 
         final ImcmsServices service = Imcms.getServices();
-        final DefaultDocumentMapper documentMapper = service.getDefaultDocumentMapper();
+        final DocumentMapper documentMapper = service.getDocumentMapper();
         final CategoryMapper categoryMapper = service.getCategoryMapper();
 
         String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE );
@@ -204,8 +202,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         String[] sectionIds = request.getParameterValues( REQUEST_PARAMETER__SECTIONS );
         for ( int i = 0; null != sectionIds && i < sectionIds.length; i++ ) {
             int sectionId = Integer.parseInt( sectionIds[i] );
-            SectionDomainObject section = documentMapper.getSectionById( sectionId );
-            document.addSection( section );
+            document.addSectionId( sectionId );
         }
 
         String languageIso639_2 = request.getParameter( REQUEST_PARAMETER__LANGUAGE );
@@ -216,8 +213,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         for ( int i = 0; null != categoryIds && i < categoryIds.length; i++ ) {
             try {
                 int categoryId = Integer.parseInt( categoryIds[i] );
-                CategoryDomainObject category = categoryMapper.getCategoryById( categoryId );
-                document.addCategory( category );
+                document.addCategoryId( categoryId );
             } catch ( NumberFormatException ignored ) {
                 // OK, empty category id
             }
@@ -259,27 +255,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             publicationStatus = Document.PublicationStatus.DISAPPROVED;
         }
         return publicationStatus;
-    }
-
-    private static String[] parseKeywords( String keywordsString ) {
-        List keywords = new ArrayList();
-        StringBuffer currentKeyword = new StringBuffer();
-        boolean insideString = false;
-        for ( int i = 0; i < keywordsString.length(); ++i ) {
-            char c = keywordsString.charAt( i );
-            if ( '"' == c ) {
-                insideString = !insideString;
-            } else if ( Character.isLetterOrDigit( c ) || insideString ) {
-                currentKeyword.append( c );
-            } else if ( 0 < currentKeyword.length() ) {
-                keywords.add( currentKeyword.toString() );
-                currentKeyword.setLength( 0 );
-            }
-        }
-        if ( 0 < currentKeyword.length() ) {
-            keywords.add( currentKeyword.toString() );
-        }
-        return (String[])keywords.toArray( new String[keywords.size()] );
     }
 
     public static String getTargetFromRequest( HttpServletRequest request ) {

@@ -40,7 +40,7 @@ public class SaveInclude extends HttpServlet {
         int meta_id = Integer.parseInt( meta_id_str );
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        DocumentMapper documentMapper = imcref.getDefaultDocumentMapper();
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id );
 
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );

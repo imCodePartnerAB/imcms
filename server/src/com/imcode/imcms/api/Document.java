@@ -1,19 +1,16 @@
 package com.imcode.imcms.api;
 
 import com.imcode.util.ChainableReversibleNullComparator;
+import com.imcode.util.CountingIterator;
+import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.*;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.RoleId;
-import imcode.server.user.UserDomainObject;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Document implements Serializable {
 
@@ -59,9 +56,9 @@ public class Document implements Serializable {
             if ( DocumentPermissionSetTypeDomainObject.FULL.equals(documentPermissionSetType) ) {
                 result.put(role, DocumentPermissionSetDomainObject.FULL);
             } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(documentPermissionSetType) ) {
-                result.put(role, internalDocument.getPermissionSetForRestrictedOne());
+                result.put(role, internalDocument.getPermissionSets().getRestricted1());
             } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSetType) ) {
-                result.put(role, internalDocument.getPermissionSetForRestrictedTwo());
+                result.put(role, internalDocument.getPermissionSets().getRestricted2());
             } else if ( DocumentPermissionSetTypeDomainObject.READ.equals(documentPermissionSetType) ) {
                 result.put(role, DocumentPermissionSetDomainObject.READ);
             } else if ( !DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType) ) {
@@ -125,12 +122,12 @@ public class Document implements Serializable {
     }
 
     public DocumentPermissionSet getPermissionSetRestrictedOne() {
-        DocumentPermissionSetDomainObject restrictedOne = internalDocument.getPermissionSetForRestrictedOne() ;
+        DocumentPermissionSetDomainObject restrictedOne = internalDocument.getPermissionSets().getRestricted1() ;
         return new DocumentPermissionSet( restrictedOne );
     }
 
     public DocumentPermissionSet getPermissionSetRestrictedTwo() {
-        DocumentPermissionSetDomainObject restrictedTwo = internalDocument.getPermissionSetForRestrictedTwo() ;
+        DocumentPermissionSetDomainObject restrictedTwo = internalDocument.getPermissionSets().getRestricted2() ;
         return new DocumentPermissionSet( restrictedTwo );
     }
 
@@ -159,7 +156,8 @@ public class Document implements Serializable {
     }
 
     public User getCreator() {
-        return new User( internalDocument.getCreator() );
+        int creatorId = internalDocument.getCreatorId();
+        return contentManagementSystem.getUserService().getUser(creatorId) ;
     }
 
     public void setCreator( User creator ) {
@@ -171,18 +169,19 @@ public class Document implements Serializable {
     }
 
     public void addCategory( Category category ) {
-        internalDocument.addCategory( category.getInternal() );
+        internalDocument.addCategoryId( category.getId() );
     }
 
     public void removeCategory( Category category ) {
-        internalDocument.removeCategory( category.getInternal() );
+        internalDocument.removeCategoryId( category.getId() );
     }
 
     /**
      * @return An array of Categories, an empty if no one found.
      */
     public Category[] getCategories() {
-        CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategories();
+        Set categories = contentManagementSystem.getInternal().getCategoryMapper().getCategories(internalDocument.getCategoryIds());
+        CategoryDomainObject[] categoryDomainObjects = (CategoryDomainObject[]) categories.toArray(new CategoryDomainObject[categories.size()]);
         return getCategoryArrayFromCategoryDomainObjectArray( categoryDomainObjects );
     }
 
@@ -234,14 +233,16 @@ public class Document implements Serializable {
      * @return an array of Categories, empty array if no one found.
      */
     public Category[] getCategoriesOfType( CategoryType categoryType ) {
-        CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategoriesOfType( categoryType.getInternal() );
-        return getCategoryArrayFromCategoryDomainObjectArray( categoryDomainObjects );
+        CategoryMapper categoryMapper = contentManagementSystem.getInternal().getCategoryMapper();
+        Set categoriesOfType = categoryMapper.getCategoriesOfType(categoryType.getInternal(), internalDocument.getCategoryIds());
+        CategoryDomainObject[] categories = (CategoryDomainObject[]) categoriesOfType.toArray(new CategoryDomainObject[categoriesOfType.size()]);
+        return getCategoryArrayFromCategoryDomainObjectArray( categories );
     }
 
     public User getPublisher() {
-        UserDomainObject publisher = internalDocument.getPublisher();
-        if ( null != publisher ) {
-            return new User( publisher );
+        Integer publisherId = internalDocument.getPublisherId();
+        if ( null != publisherId ) {
+            return contentManagementSystem.getUserService().getUser(publisherId.intValue()) ;
         } else {
             return null;
         }
@@ -272,25 +273,27 @@ public class Document implements Serializable {
     }
 
     /**
-     * @return An array of Sections, an empty arrya if no one found.
+     * @return An array of Sections, an empty array if none found.
      */
     public Section[] getSections() {
-        SectionDomainObject[] sectionDomainObjects = internalDocument.getSections();
-        Section[] sections = new Section[sectionDomainObjects.length];
-        for ( int i = 0; i < sectionDomainObjects.length; i++ ) {
-            SectionDomainObject sectionDomainObject = sectionDomainObjects[i];
-            sections[i] = new Section( sectionDomainObject );
+        Set sectionIds = internalDocument.getSectionIds();
+        Section[] sections = new Section[sectionIds.size()];
+        DocumentService documentService = contentManagementSystem.getDocumentService();
+        for ( CountingIterator iterator = new CountingIterator(sectionIds.iterator()); iterator.hasNext(); ) {
+            Integer sectionId = (Integer) iterator.next();
+            sections[iterator.getCount() - 1] = documentService.getSection(sectionId.intValue()) ;
         }
         return sections;
     }
 
     public void setSections( Section[] sections ) {
-        SectionDomainObject[] internalSections = new SectionDomainObject[sections.length];
+        Set sectionIds = new HashSet();
         for ( int i = 0; i < sections.length; i++ ) {
             Section section = sections[i];
-            internalSections[i] = section.internalSection;
+            int sectionId = section.getId();
+            sectionIds.add(new Integer(sectionId)) ;
         }
-        internalDocument.setSections( internalSections );
+        internalDocument.setSectionIds( sectionIds );
     }
 
     public Date getModifiedDatetime() {
@@ -306,7 +309,7 @@ public class Document implements Serializable {
     }
 
     public void addSection( Section section ) {
-        internalDocument.addSection( section.internalSection );
+        internalDocument.addSectionId( section.getId() );
     }
 
     /** @deprecated Use {@link #setPublicationStatus} instead. */

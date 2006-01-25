@@ -1,45 +1,37 @@
 package com.imcode.imcms.mapping;
 
-import imcode.server.document.DocumentGetter;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentId;
+import imcode.util.ShouldNotBeThrownException;
 
-import java.util.Map;
-import java.lang.ref.SoftReference;
+import java.util.*;
 
-import org.apache.commons.lang.UnhandledException;
+public class CachingDocumentGetter extends DocumentGetterWrapper {
 
-class CachingDocumentGetter implements DocumentGetter {
-    private final DocumentGetter documentGetter;
-    private final Map documentCache;
+    private Map cache;
 
-    CachingDocumentGetter(DocumentGetter documentGetter, Map documentCache) {
-        this.documentGetter = documentGetter;
-        this.documentCache = documentCache ;
+    public CachingDocumentGetter(DocumentGetter documentGetter, Map cache) {
+        super(documentGetter);
+        this.cache = cache ;
     }
 
-    public DocumentDomainObject getDocument(DocumentId documentId) {
-        DocumentDomainObject result;
-        try {
-            DocumentDomainObject document = null ;
-            SoftReference[] documentSoftReferenceArray = (SoftReference[]) documentCache.get(documentId);
-            if (null != documentSoftReferenceArray && null != documentSoftReferenceArray[0]) {
-                document = (DocumentDomainObject) documentSoftReferenceArray[0].get();
-            }
+    public DocumentDomainObject getDocument(Integer documentId) {
+        DocumentDomainObject document = (DocumentDomainObject) cache.get(documentId) ;
+        if (null == document) {
+            document = super.getDocument(documentId) ;
             if (null == document) {
-                documentSoftReferenceArray = new SoftReference[1];
-                documentCache.put(documentId, documentSoftReferenceArray);
-                document = this.documentGetter.getDocument(documentId);
-                documentSoftReferenceArray[0] = new SoftReference(document);
+                return null ;
             }
-            if (null != document) {
-                document = (DocumentDomainObject) document.clone();
-            }
-            result = document;
-        } catch (CloneNotSupportedException e) {
-            throw new UnhandledException(e);
+            cache.put(documentId, document) ;
         }
-        return result;
+        try {
+            return (DocumentDomainObject) document.clone() ;
+        } catch ( CloneNotSupportedException e ) {
+            throw new ShouldNotBeThrownException(e);
+        }
     }
 
+    public List getDocuments(Collection documentIds) {
+        return super.getDocuments(documentIds) ;
+    }
+    
 }

@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.db.DatabaseUtils;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
@@ -43,7 +43,7 @@ public class ListDocuments extends HttpServlet {
 
         FormData formData = new FormData();
         formData.selectedRange = new IntRange( start, end ) ;
-        DefaultDocumentMapper documentMapper = imcref.getDefaultDocumentMapper() ;
+        DocumentMapper documentMapper = imcref.getDocumentMapper() ;
         if ( req.getParameter( PARAMETER_BUTTON__LIST ) != null ) {
             formData.documentsIterator = documentMapper.getDocumentsIterator(formData.selectedRange) ;
         }
@@ -55,12 +55,12 @@ public class ListDocuments extends HttpServlet {
 
     private int getMaxDocumentId( ImcmsServices imcref ) {
         final Object[] parameters = new String[0];
-        return Integer.parseInt( DatabaseUtils.executeStringQuery(imcref.getDatabase(), "select max(meta_id) from meta", parameters) );
+        return Integer.parseInt( (String) imcref.getDatabase().execute(new SqlQueryCommand("select max(meta_id) from meta", parameters, Utility.SINGLE_STRING_HANDLER)) );
     }
 
     private int getMinDocumentId( ImcmsServices imcref ) {
         final Object[] parameters = new String[0];
-        return Integer.parseInt( DatabaseUtils.executeStringQuery(imcref.getDatabase(), "select min(meta_id) from meta", parameters) );
+        return Integer.parseInt( (String) imcref.getDatabase().execute(new SqlQueryCommand("select min(meta_id) from meta", parameters, Utility.SINGLE_STRING_HANDLER)) );
     }
 
     public static class FormData {

@@ -19,12 +19,15 @@ public class BackgroundIndexBuilder {
 
     private IndexBuildingThread indexBuildingThread;
     private long previousIndexParentDirectoryLastModified;
+    private IndexDocumentFactory indexDocumentFactory;
 
-    public BackgroundIndexBuilder(File indexParentDirectory, RebuildingDirectoryIndex rebuildingDirectoryIndex) {
+    public BackgroundIndexBuilder(File indexParentDirectory, RebuildingDirectoryIndex rebuildingDirectoryIndex,
+                                  IndexDocumentFactory indexDocumentFactory) {
         this.indexParentDirectory = indexParentDirectory;
         this.rebuildingDirectoryIndex = rebuildingDirectoryIndex;
         indexParentDirectory.setLastModified(System.currentTimeMillis()) ;
         previousIndexParentDirectoryLastModified = indexParentDirectory.lastModified() ;
+        this.indexDocumentFactory = indexDocumentFactory;
     }
 
     public synchronized void start() {
@@ -50,7 +53,7 @@ public class BackgroundIndexBuilder {
 
             try {
                 log.debug("Starting index rebuild thread.") ;
-                indexBuildingThread = new IndexBuildingThread(this, indexDirectory);
+                indexBuildingThread = new IndexBuildingThread(this, indexDirectory, indexDocumentFactory);
                 indexBuildingThread.start();
             } catch ( IllegalThreadStateException itse ) {
                 throw new ShouldNotBeThrownException(itse);

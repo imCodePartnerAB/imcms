@@ -567,8 +567,8 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public boolean canCreateDocumentOfTypeIdFromParent( int documentTypeId, DocumentDomainObject parent ) {
         TextDocumentPermissionSetDomainObject documentPermissionSet = (TextDocumentPermissionSetDomainObject)getPermissionSetFor( parent );
-        int[] allowedDocumentTypeIds = documentPermissionSet.getAllowedDocumentTypeIds();
-        return ArrayUtils.contains( allowedDocumentTypeIds, documentTypeId );
+        Set allowedDocumentTypeIds = documentPermissionSet.getAllowedDocumentTypeIds();
+        return allowedDocumentTypeIds.contains(new Integer(documentTypeId) );
     }
 
     public DocumentPermissionSetDomainObject getPermissionSetFor( DocumentDomainObject document ) {
@@ -578,9 +578,9 @@ public class UserDomainObject implements Cloneable, Serializable {
         } else if ( DocumentPermissionSetTypeDomainObject.READ.equals(permissionSetId) ) {
             return DocumentPermissionSetDomainObject.READ;
         } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(permissionSetId) ) {
-            return document.getPermissionSetForRestrictedOne();
+            return document.getPermissionSets().getRestricted1();
         } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(permissionSetId) ) {
-            return document.getPermissionSetForRestrictedTwo();
+            return document.getPermissionSets().getRestricted2();
         } else {
             return DocumentPermissionSetDomainObject.NONE;
         }
@@ -616,7 +616,9 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean canAddDocumentToAnyMenu( DocumentDomainObject document ) {
-        return canEdit(document) || document.isLinkableByOtherUsers();
+        boolean canEdit = canEdit(document);
+        boolean linkableByOtherUsers = document.isLinkableByOtherUsers();
+        return canEdit || linkableByOtherUsers;
     }
 
     public boolean canSearchFor( DocumentDomainObject document ) {
@@ -674,10 +676,6 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public void setUserAdminRolesIds(RoleId[] userAdminRoleReferences) {
         userAdminRoleIds = new RoleIds(userAdminRoleReferences);
-    }
-
-    public void addUserAdminRoleReference(RoleId roleId) {
-        userAdminRoleIds.add(roleId) ;
     }
 
     public boolean isUserAdminAndNotSuperAdmin() {

@@ -2,18 +2,17 @@ package imcode.server.document.index;
 
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
-import java.io.IOException;
 
 class IndexDocumentAdaptingVisitor extends DocumentVisitor {
 

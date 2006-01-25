@@ -39,7 +39,7 @@ public class BackDoc extends HttpServlet {
     }
 
     private void redirectToDocumentId( HttpServletRequest request, HttpServletResponse response, int meta_id ) throws IOException {
-        DocumentDomainObject document = Imcms.getServices().getDefaultDocumentMapper().getDocument( meta_id ) ;
+        DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument( meta_id ) ;
         response.sendRedirect( Utility.getAbsolutePathToDocument( request, document ) );
     }
 

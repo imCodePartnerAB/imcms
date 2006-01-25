@@ -53,7 +53,7 @@ public class Version extends HttpServlet {
     }
 
     private String getDatabaseProductNameAndVersion() {
-        return (String) Imcms.getServices().getDatabase().executeCommand(new DatabaseCommand() {
+        return (String) Imcms.getServices().getDatabase().execute(new DatabaseCommand() {
             public Object executeOn(DatabaseConnection connection) throws DatabaseException {
                 try {
                     DatabaseMetaData metaData = connection.getConnection().getMetaData();

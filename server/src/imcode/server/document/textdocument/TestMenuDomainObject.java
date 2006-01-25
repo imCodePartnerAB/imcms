@@ -1,14 +1,8 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.db.mock.MockDatabase;
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DatabaseDocumentGetter;
-import com.imcode.imcms.mapping.DefaultDocumentMapper;
-import imcode.server.Config;
-import imcode.server.MockImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentId;
-import imcode.server.document.DocumentReference;
+import com.imcode.imcms.mapping.DocumentGetter;
+import imcode.server.document.GetterDocumentReference;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
@@ -16,6 +10,9 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.varia.NullAppender;
 
 import java.util.List;
+import java.util.Set;
+
+import com.imcode.imcms.mapping.MapDocumentGetter;
 
 public class TestMenuDomainObject extends TestCase {
 
@@ -27,31 +24,30 @@ public class TestMenuDomainObject extends TestCase {
         BasicConfigurator.configure(new NullAppender());
         user = new UserDomainObject();
         user.addRoleId( RoleId.SUPERADMIN );
-        this.menu = new MenuDomainObject() ;
-        MockDatabase database = new MockDatabase();
-        final MockImcmsServices services = new MockImcmsServices();
-        DefaultDocumentMapper documentMapper = new DefaultDocumentMapper( services, database, new DatabaseDocumentGetter(database, services), null, null, null, new Config(), new CategoryMapper(database)) {
-            public DocumentDomainObject getDocument( DocumentId metaId ) {
-                if (1002 == metaId.intValue()) {
-                    TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
-                    return textDocument;
-                } else {
-                    return super.getDocument( metaId ) ;
-                }
-            }
-        };
-        menu.addMenuItem( new MenuItemDomainObject( new DocumentReference(1001, documentMapper) ) );
-        menu.addMenuItem( new MenuItemDomainObject( new DocumentReference(1002, documentMapper) ) );
+        menu = new MenuDomainObject() ;
+        DocumentGetter documentGetter = new MapDocumentGetter(new DocumentDomainObject[] {
+                new TextDocumentDomainObject(1001),
+                new TextDocumentDomainObject(1002),
+                new TextDocumentDomainObject(1003),
+        }) ;
+        menu.addMenuItem( new MenuItemDomainObject(new GetterDocumentReference(1001, documentGetter)) );
+        menu.addMenuItem( new MenuItemDomainObject(new GetterDocumentReference(1002, documentGetter)) );
+        menu.addMenuItem( new MenuItemDomainObject(new GetterDocumentReference(1003, documentGetter)) );
+        menu.addMenuItem( new MenuItemDomainObject(new GetterDocumentReference(1004, documentGetter)) );
     }
 
     public void testGetMenuItems() {
         MenuItemDomainObject[] menuItems = menu.getMenuItems();
-        assertEquals( 1, menuItems.length ) ;
+        assertEquals( 3, menuItems.length ) ;
     }
 
     public void testGetMenuItemsVisibleToUser() {
         List menuItemsVisibleToUser = menu.getMenuItemsVisibleToUser( user );
-        assertEquals( 1, menuItemsVisibleToUser.size() ) ;
+        assertEquals( 3, menuItemsVisibleToUser.size() ) ;
     }
 
+    public void testGetMenuItemsUnsorted() throws Exception {
+        Set menuItems = menu.getMenuItemsUnsorted();
+        assertEquals( 3, menuItems.size() ) ;
+    }
 }

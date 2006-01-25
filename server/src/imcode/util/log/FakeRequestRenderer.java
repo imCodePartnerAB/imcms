@@ -2,15 +2,19 @@ package imcode.util.log;
 
 import imcode.server.DocumentRequest;
 import imcode.server.Revisits;
+import imcode.server.Imcms;
+import com.imcode.imcms.mapping.SectionFromIdTransformer;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
-import imcode.server.document.SectionDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.iterators.TransformIterator;
 import org.apache.log4j.or.ObjectRenderer;
 
 import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
+import java.util.Set;
+import java.util.Iterator;
 
 public class FakeRequestRenderer implements ObjectRenderer {
 
@@ -25,13 +29,12 @@ public class FakeRequestRenderer implements ObjectRenderer {
 
         DocumentDomainObject document = docReq.getDocument();
         DocumentDomainObject referrer = docReq.getReferrer();
-        Revisits revisits;
 
         StringBuffer result = new StringBuffer( docReq.getHttpServletRequest().getRemoteAddr() );
         result.append( ' ' ).append( docReq.getUser().getId() );
 
         result.append( " sessionID=" ).append( docReq.getHttpServletRequest().getSession().getId() );
-        revisits = docReq.getRevisits();
+        Revisits revisits = docReq.getRevisits();
 
         result.append( ";imVisits=" ).append( revisits.getRevisitsId() );
         if ( null != revisits.getRevisitsDate() ) {
@@ -46,15 +49,16 @@ public class FakeRequestRenderer implements ObjectRenderer {
 
     private String renderDocument( DocumentDomainObject document ) {
 
-        SectionDomainObject[] sections = document.getSections();
+        Set sectionIds = document.getSectionIds();
         int metaId = document.getId();
         int docType = document.getDocumentTypeId();
         String headline = document.getHeadline();
 
         StringBuffer result = new StringBuffer();
         result.append( '/' );
-        if ( 0 < sections.length ) {
-            result.append( lossyUrlEncode( StringUtils.join( sections, "," ) ) );
+        if ( !sectionIds.isEmpty() ) {
+            Iterator sectionsIterator = new TransformIterator(sectionIds.iterator(), new SectionFromIdTransformer(Imcms.getServices()));
+            result.append( lossyUrlEncode( StringUtils.join( sectionsIterator, "," ) ) );
         } else {
             result.append( '_' );
         }
@@ -66,7 +70,8 @@ public class FakeRequestRenderer implements ObjectRenderer {
         result.append( lossyUrlEncode( headline ) );
         result.append( '/' );
         if ( document instanceof TextDocumentDomainObject ) {
-            TemplateDomainObject template = ((TextDocumentDomainObject)document).getTemplate();
+            int templateId = ( (TextDocumentDomainObject) document ).getTemplateId();
+            TemplateDomainObject template = Imcms.getServices().getTemplateMapper().getTemplateById(templateId) ;
             result.append( lossyUrlEncode( template.getName() ) );
         }
         result.append( '/' );
@@ -74,7 +79,7 @@ public class FakeRequestRenderer implements ObjectRenderer {
         return result.toString();
     }
 
-    private final String lossyUrlEncode( String url ) {
+    private String lossyUrlEncode( String url ) {
         StringBuffer result = new StringBuffer();
         for ( int i = 0; i < url.length(); ++i ) {
             char c = url.charAt( i );
@@ -84,11 +89,10 @@ public class FakeRequestRenderer implements ObjectRenderer {
             } else if ( ',' == c || '.' == c || '-' == c || '_' == c ) {
                 // We explicitly allow some punctuation that are known safe url-characters.
                 // Everything else is likely to break somewhere, somehow.
-                // If you think you want to change this, know that you are fucking it up.
                 result.append( c );
-            } else if ( c < 32 || ( c >= 128 && c < 160 ) ) {
+            } else if ( c < 32 || c >= 128 && c < 160 ) {
                 // We strip control chars (including newlines and tabs),
-                // and characters not found in iso-8859-1.
+                // and unassigned characters in iso-8859-1.
             } else if ( c < 256 && Character.isLetterOrDigit( c ) ) {
                 // It's a letter or digit in iso-8859-1.
                 result.append( c );
@@ -96,9 +100,8 @@ public class FakeRequestRenderer implements ObjectRenderer {
                 try {
                     // Otherwise, url-encode it.
                     // Note that UTF-8 is the W3C-recommended standard.
-                    // If you think you want to change this, know that you are fucking it up.
                     result.append( URLEncoder.encode( "" + c, "UTF-8" ) );
-                } catch ( java.io.UnsupportedEncodingException uee ) {
+                } catch ( UnsupportedEncodingException uee ) {
                     // All JVMs are required to support UTF-8.
                 }
             }

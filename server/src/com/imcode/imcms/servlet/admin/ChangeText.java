@@ -30,7 +30,7 @@ public class ChangeText extends HttpServlet {
         Writer out = res.getWriter();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        DocumentMapper documentMapper = Imcms.getServices().getDefaultDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
 

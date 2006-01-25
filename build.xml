@@ -170,7 +170,7 @@
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-       depends="init,web,test,libraries,conf,sql,jar"
+       depends="init,web,test,checkstyle,libraries,conf,sql,jar"
        description="Builds everything."/>
 
     <target name="clean" description="Deletes everything for a fresh start.">
@@ -225,7 +225,7 @@
         <jar destfile="${jar}" basedir="${classes}"/>
     </target>
 
-    <target name="test" depends="check-junit-task-available,classes,checkstyle" description="Runs JUnit-tests.">
+    <target name="test" depends="check-junit-task-available,classes" description="Runs JUnit-tests.">
 
         <junit haltonfailure="yes" haltonerror="yes" fork="yes" dir="${basedir}" forkmode="once">
             <classpath refid="classes-and-libraries"/>

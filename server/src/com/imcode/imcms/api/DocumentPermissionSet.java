@@ -1,10 +1,14 @@
 package com.imcode.imcms.api;
 
+import com.imcode.util.CountingIterator;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
+
+import java.util.List;
+import java.util.Set;
 
 public class DocumentPermissionSet {
 
@@ -76,11 +80,12 @@ public class DocumentPermissionSet {
 
     public String[] getEditableTemplateGroupNames() {
         if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
-            TemplateGroupDomainObject[] internalTemplateGroups = ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getAllowedTemplateGroups( Imcms.getServices() );
-            String[] templateGroupNames = new String[internalTemplateGroups.length] ;
-            for ( int i = 0; i < internalTemplateGroups.length; i++ ) {
-                TemplateGroupDomainObject internalTemplateGroup = internalTemplateGroups[i];
-                templateGroupNames[i] = internalTemplateGroup.getName() ;
+            Set allowedTemplateGroupIds = ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getAllowedTemplateGroupIds();
+            List allowedTemplateGroups = Imcms.getServices().getTemplateMapper().getTemplateGroups(allowedTemplateGroupIds);
+            String[] templateGroupNames = new String[allowedTemplateGroupIds.size()] ;
+            for ( CountingIterator iterator = new CountingIterator(allowedTemplateGroups.iterator()); iterator.hasNext(); ) {
+                TemplateGroupDomainObject templateGroup = (TemplateGroupDomainObject) iterator.next();
+                templateGroupNames[iterator.getCount()-1] = templateGroup.getName() ;
             }
             return templateGroupNames ;
         }

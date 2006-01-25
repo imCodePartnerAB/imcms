@@ -30,7 +30,7 @@ public final class SaveText extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        DocumentMapper documentMapper = imcref.getDefaultDocumentMapper();
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id );
 
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
