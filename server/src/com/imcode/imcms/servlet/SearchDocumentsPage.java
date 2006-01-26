@@ -192,23 +192,23 @@ public class SearchDocumentsPage extends OkCancelPage {
             newQuery.add( sectionQueries, true, false );
         }
 
-        BooleanQuery phaseQueries = new BooleanQuery();
-        for ( int i = 0; i < phases.length; i++ ) {
-            String phase = phases[i];
-            Query phaseQuery = new TermQuery( new Term( DocumentIndex.FIELD__PHASE, phase ) );
-            phaseQueries.add( phaseQuery, false, false );
-        }
-        if ( phases.length > 0 ) {
+        if ( null != phases && phases.length > 0 ) {
+            BooleanQuery phaseQueries = new BooleanQuery();
+            for ( int i = 0; i < phases.length; i++ ) {
+                String phase = phases[i];
+                Query phaseQuery = new TermQuery( new Term( DocumentIndex.FIELD__PHASE, phase ) );
+                phaseQueries.add( phaseQuery, false, false );
+            }
             newQuery.add( phaseQueries, true, false );
         }
 
-        BooleanQuery documentTypeQueries = new BooleanQuery();
-        for ( int i = 0; i < documentTypeIds.length; i++ ) {
-            int documentTypeId = documentTypeIds[i];
-            Query documentTypeQuery = new TermQuery( new Term(DocumentIndex.FIELD__DOC_TYPE_ID, ""+documentTypeId)) ;
-            documentTypeQueries.add( documentTypeQuery, false, false );
-        }
-        if ( documentTypeIds.length > 0 ) {
+        if ( null != documentTypeIds && documentTypeIds.length > 0 ) {
+            BooleanQuery documentTypeQueries = new BooleanQuery();
+            for ( int i = 0; i < documentTypeIds.length; i++ ) {
+                int documentTypeId = documentTypeIds[i];
+                Query documentTypeQuery = new TermQuery( new Term(DocumentIndex.FIELD__DOC_TYPE_ID, ""+documentTypeId)) ;
+                documentTypeQueries.add( documentTypeQuery, false, false );
+            }
             newQuery.add( documentTypeQueries, true, false ) ;
         }
 
