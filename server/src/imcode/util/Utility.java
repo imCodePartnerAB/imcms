@@ -43,6 +43,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -347,6 +348,10 @@ public class Utility {
 
     public static Integer getInteger(Object object) {
         return null == object ? null : new Integer(( (Number) object ).intValue());
+    }
+
+    public static String escapeUrl(String imageUrl) {
+        return URLEncoder.encode(imageUrl).replaceAll("%2F", "/").replaceAll("\\+", "%20");
     }
 
     private static class ObjectPairToMapEntryTransformer implements Transformer {

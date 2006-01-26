@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URLEncoder;
 
 public class ImcmsImageUtils {
 
@@ -34,7 +33,7 @@ public class ImcmsImageUtils {
 
             String imageUrl = request.getContextPath()+image.getUrlPathRelativeToContextPath();
 
-            imageTagBuffer.append("<img src=\"").append(StringEscapeUtils.escapeHtml(URLEncoder.encode(imageUrl).replaceAll("%2F", "/"))).append("\"");
+            imageTagBuffer.append("<img src=\"").append(StringEscapeUtils.escapeHtml(Utility.escapeUrl(imageUrl))).append("\"");
 
             ImageSize displayImageSize = image.getDisplayImageSize();
 
@@ -61,7 +60,7 @@ public class ImcmsImageUtils {
                 imageTagBuffer.append(" alt=\"").append(StringEscapeUtils.escapeHtml(image.getAlternateText())).append("\"");
             }
             if ( StringUtils.isNotBlank( image.getLowResolutionUrl() ) ) {
-                imageTagBuffer.append(" lowsrc=\"").append(StringEscapeUtils.escapeHtml(URLEncoder.encode(imageUrl).replaceAll("%2F", "/"))).append("\"");
+                imageTagBuffer.append(" lowsrc=\"").append(StringEscapeUtils.escapeHtml(Utility.escapeUrl(request.getContextPath()+image.getLowResolutionUrl()))).append("\"");
             }
             if ( StringUtils.isNotBlank( image.getAlign() ) && !"none".equals( image.getAlign() ) ) {
                 imageTagBuffer.append(" align=\"").append(StringEscapeUtils.escapeHtml(image.getAlign())).append("\"");

@@ -4,10 +4,8 @@
                  com.imcode.imcms.servlet.admin.ImageBrowser,
                  imcode.util.HttpSessionUtils,
                  imcode.server.Imcms,
-                 com.imcode.imcms.servlet.admin.ChangeImage,
-                 imcode.util.Html,
-                 org.apache.commons.collections.Transformer,
-                 imcode.util.LocalizedMessage"%>
+                 imcode.util.LocalizedMessage,
+                 imcode.util.Utility"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
 boolean fromEditor = (request.getParameter("editor_image") != null && request.getParameter("editor_image").equals("true")) ;
@@ -128,7 +126,7 @@ boolean fromEditor = (request.getParameter("editor_image") != null && request.ge
 #gui_bottom()
 #gui_outer_end()
 <% if (null != imageBrowsePage.getImageUrl()) { %>
-<div align="center" id="previewDiv"><img src="<%= StringEscapeUtils.escapeHtml( request.getContextPath() + Imcms.getServices().getConfig().getImageUrl() + imageBrowsePage.getImageUrl() ) %>"></div>
+<div align="center" id="previewDiv"><img src="<%= StringEscapeUtils.escapeHtml( Utility.escapeUrl(request.getContextPath() + Imcms.getServices().getConfig().getImageUrl() + imageBrowsePage.getImageUrl() )) %>"></div>
 <% } %>
 
 <script language="JavaScript">
