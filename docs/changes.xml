@@ -5,9 +5,37 @@
     <changes for="users">
         <change>
             <p>
+                You can now search in PDF files, as well as in Microsoft Word, Excel, and Powerpoint files. 
+            </p>
+            <issue id="1855"/>
+        </change>
+        <change>
+            <p>
                 Performance has been improved, so searching for documents should be much faster.
             </p>
             <issue id="4135"/>
+        </change>
+        <change>
+            <p>
+                Fixed a NullPointerException when browsing search result, for example when searching for images.
+            </p>
+            <issue id="2926"/>
+        </change>
+        <change>
+            <p>
+                Fixed a problem with image filenames containing spaces.
+            </p>
+            <issue id="4148"/>
+        </change>
+    </changes>
+
+    <changes for="administrators">
+        <change>
+            <p>
+                You can now search for users by role, title, company, and email address.
+            </p>
+            <issue id="4140"/>
+            <issue id="4142"/>
         </change>
     </changes>
 
