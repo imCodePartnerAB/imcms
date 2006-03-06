@@ -68,18 +68,14 @@ public class SaveInclude extends HttpServlet {
                 } else {
                     try {
                         int included_meta_id_int = Integer.parseInt(included_meta_id);
+                        DocumentDomainObject includedDocument = documentMapper.getDocument(included_meta_id_int);
 
-                        final Object[] parameters = new String[] { included_meta_id };
-                        String[] docTypeStrArr = (String[]) imcref.getProcedureExecutor().executeProcedure("GetDocType", parameters, new StringArrayResultSetHandler());
-                        int docType = Integer.parseInt(docTypeStrArr[0]);
-                        if ( null == docTypeStrArr || 0 == docTypeStrArr.length
-                             || DocumentTypeDomainObject.TEXT_ID != docType ) {
+                        if ( null == includedDocument || !DocumentTypeDomainObject.TEXT.equals(includedDocument.getDocumentType()) ) {
                             sendBadId(imcref, out, meta_id, user);
                             return;
                         }
 
                         // Make sure the user has permission to share the included document
-                        DocumentDomainObject includedDocument = documentMapper.getDocument(included_meta_id_int);
                         if ( user.canAddDocumentToAnyMenu(includedDocument) ) {
                             document.setInclude(Integer.parseInt(include_id), includedDocument.getId());
                             documentMapper.saveDocument(document, user);
