@@ -130,7 +130,7 @@ public class UserEditorPage extends OkCancelPage {
         if ( loggedOnUser.canEditRolesFor(uneditedUser) ) {
             Set roleIdsSetFromRequest = getRoleIdsSetFromRequestParameterValues(request, REQUEST_PARAMETER__ROLE_IDS);
             RoleId[] userRoleIdsArray ;
-            if (loggedOnUser.isUserAdmin()) {
+            if (loggedOnUser.isUserAdminAndNotSuperAdmin()) {
                 List userAdminRoleIds = Arrays.asList(loggedOnUser.getUserAdminRoleIds());
                 roleIdsSetFromRequest.retainAll(userAdminRoleIds) ;
 
