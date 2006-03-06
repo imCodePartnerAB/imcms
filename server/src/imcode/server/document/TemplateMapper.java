@@ -145,7 +145,7 @@ public class TemplateMapper {
     }
 
     public Set getAllTemplateGroupIds() {
-        return (Set) database.execute(new SqlQueryCommand("SELECT template_id FROM templates", null, new CollectionHandler(new HashSet(), new TemplateIdRowTransformer()))) ;
+        return (Set) database.execute(new SqlQueryCommand("SELECT group_id FROM templategroups", null, new CollectionHandler(new HashSet(), new TemplateIdRowTransformer()))) ;
     }
 
     public TemplateDomainObject[] getAllTemplates() {

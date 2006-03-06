@@ -49,14 +49,14 @@ public class SaveInPage extends HttpServlet {
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( textDocument );
         Set allowedTemplateGroupIds = textDocumentPermissionSet.getAllowedTemplateGroupIds();
 
-        boolean requestedTemplateGroupIsAllowed = null == requestedTemplateGroup;
-        boolean requestedTemplateIsAllowed = null == requestedTemplate;
+        boolean requestedTemplateGroupIsAllowed = false;
+        boolean requestedTemplateIsAllowed = false;
         for ( Iterator iterator = allowedTemplateGroupIds.iterator(); iterator.hasNext(); ) {
             Integer allowedTemplateGroupId = (Integer) iterator.next();
-            if ( allowedTemplateGroupId.intValue()== requestedTemplateGroup.getId()) {
+            if ( null != requestedTemplateGroup && allowedTemplateGroupId.intValue()== requestedTemplateGroup.getId()) {
                 requestedTemplateGroupIsAllowed = true;
             }
-            if ( allowedTemplateGroupIds.contains(new Integer(requestedTemplate.getId()))) {
+            if ( null != requestedTemplate && allowedTemplateGroupIds.contains(new Integer(requestedTemplate.getId()))) {
                 requestedTemplateIsAllowed = true;
             }
         }
@@ -82,11 +82,7 @@ public class SaveInPage extends HttpServlet {
             req.getSession().setAttribute( "flags", new Integer( 0 ) );
 
             if ( requestedTemplate == null ) {
-                List vec = new ArrayList();
-                vec.add( "#meta_id#" );
-                vec.add( String.valueOf( documentId ) );
-                String htmlStr = services.getAdminTemplate( "inPage_admin_no_template.html", user, vec );
-                out.write( htmlStr );
+                errorNoTemplateSelected(documentId, services, user, out);
                 return;
             }
 
@@ -115,13 +111,9 @@ public class SaveInPage extends HttpServlet {
 
         } else if ( req.getParameter( "preview" ) != null ) {
             if ( requestedTemplate == null ) { // If the user didn't select a template
-                List vec = new ArrayList();
-                vec.add( "#meta_id#" );
-                vec.add( String.valueOf( documentId ) );
-                Utility.setDefaultHtmlContentType( res );
-                String htmlStr = services.getAdminTemplate( "inPage_admin_no_template.html", user, vec );
                 Writer out = res.getWriter();
-                out.write( htmlStr );
+                Utility.setDefaultHtmlContentType( res );
+                errorNoTemplateSelected(documentId, services, user, out);
                 return;
             }
             Object[] temp = services.getTemplateMapper().getDemoTemplate( requestedTemplate.getId() );
@@ -155,6 +147,15 @@ public class SaveInPage extends HttpServlet {
             }
 
         }
+    }
+
+    private void errorNoTemplateSelected(int documentId, ImcmsServices services, UserDomainObject user,
+                                         Writer out) throws IOException {
+        List vec = new ArrayList();
+        vec.add( "#meta_id#" );
+        vec.add( String.valueOf( documentId ) );
+        String htmlStr = services.getAdminTemplate( "inPage_admin_no_template.html", user, vec );
+        out.write( htmlStr );
     }
 
     private TemplateGroupDomainObject getRequestedTemplateGroup( HttpServletRequest req, TemplateMapper templateMapper ) {
