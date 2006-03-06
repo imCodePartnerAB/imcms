@@ -130,8 +130,3 @@ tomcat-admin-username = admin
 tomcat-admin-password =
 tomcat-webapp-manager-url = http://localhost:8080/manager
 tomcat-deployroot-local-directory =
-
-
-# If you want to include an addon under addons/ in the build, name the directory here.
-
-#addon =
