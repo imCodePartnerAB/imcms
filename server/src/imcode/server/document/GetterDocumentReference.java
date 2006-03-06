@@ -10,7 +10,6 @@ import com.imcode.imcms.mapping.DocumentGetter;
 public class GetterDocumentReference extends DocumentReference {
 
     private transient DocumentGetter documentGetter;
-    private DocumentDomainObject document ;
 
     public GetterDocumentReference( int documentId, DocumentGetter documentGetter ) {
         super(documentId) ;
@@ -18,10 +17,7 @@ public class GetterDocumentReference extends DocumentReference {
     }
 
     public DocumentDomainObject getDocument() {
-        if (null == document) {
-            document = documentGetter.getDocument( new Integer(getDocumentId()) ) ;
-        }
-        return document;
+        return documentGetter.getDocument( new Integer(getDocumentId()) ) ;
     }
 
     public void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
