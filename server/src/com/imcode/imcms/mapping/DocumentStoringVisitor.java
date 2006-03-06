@@ -56,7 +56,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
             File file = getFileForFileDocumentFile( fileDocumentId, fileId );
 
-            boolean sameFileOnDisk = file.exists() && inputStreamSource.equals(new FileInputStreamSource(file)) ;
+            FileInputStreamSource fileInputStreamSource = new FileInputStreamSource(file);
+            boolean sameFileOnDisk = file.exists() && inputStreamSource.equals(fileInputStreamSource) ;
             if ( sameFileOnDisk ) {
                 return;
             }
@@ -71,6 +72,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 out.close();
                 in.close();
             }
+            fileDocumentFile.setInputStreamSource(fileInputStreamSource);
         } catch (IOException e) {
             throw new UnhandledException(e);
         }
