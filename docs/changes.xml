@@ -27,6 +27,19 @@
             </p>
             <issue id="4148"/>
         </change>
+        <change>
+            <p>
+                Fixed an exception when entering an invalid text document id for an include.
+            </p>
+            <issue id="4212"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug where menus would cache their documents,
+                so changes to documents would not be visible in menus immediately.
+            </p>
+            <issue id="4092"/>
+        </change>
     </changes>
 
     <changes for="administrators">
@@ -37,6 +50,25 @@
             <issue id="4140"/>
             <issue id="4142"/>
         </change>
+        <change>
+            <p>
+                Made sure that temporary upload files are removed in a timely manner.
+            </p>
+            <issue id="4235"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug where a superadmin which was also useradmin couldn't edit all roles for a user.
+            </p>
+            <issue id="4117"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug where the file manager would fail to change directories if the webapp
+                was situated in a symlinked path.
+            </p>
+            <issue id="4278"/>
+        </change>
     </changes>
 
     <changes for="developers">
@@ -46,6 +78,12 @@
                 so as to not retrieve more from the database than is needed.
             </p>
             <issue id="4135"/>
+        </change>
+        <change>
+            <p>
+                Removed the unused <config>addon</config> property from <path>build.properties.template</path>.
+            </p>
+            <issue id="4233"/>
         </change>
     </changes>
 </changeset>    
