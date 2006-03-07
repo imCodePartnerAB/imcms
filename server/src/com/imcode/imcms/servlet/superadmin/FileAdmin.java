@@ -148,7 +148,7 @@ public class FileAdmin extends HttpServlet {
     private File getContextRelativeDirectoryFromRequest(HttpServletRequest request, String parameter) throws IOException {
         File webappPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath() ;
         String dirParameter = request.getParameter( parameter );
-        return new File( webappPath, dirParameter ).getCanonicalFile();
+        return new File( webappPath, dirParameter ).getAbsoluteFile();
     }
 
     private File[] getRoots() {
@@ -539,7 +539,7 @@ public class FileAdmin extends HttpServlet {
                 }
             }
         }
-        return resultDir.getCanonicalFile();
+        return resultDir.getAbsoluteFile();
     }
 
     private File[] makeAbsoluteFileList( File parent, String[] filePaths ) {
@@ -649,9 +649,9 @@ public class FileAdmin extends HttpServlet {
         return File.separator + getPathRelativeTo( dir, webappPath ) + File.separator;
     }
 
-    private String getPathRelativeTo( File file, File root ) throws IOException {
+    private String getPathRelativeTo( File file, File root ) {
         if ( !FileUtility.directoryIsAncestorOfOrEqualTo( root, file ) ) {
-            return file.getCanonicalPath();
+            return file.getAbsolutePath();
         }
         if ( file.equals( root ) ) {
             return "";
