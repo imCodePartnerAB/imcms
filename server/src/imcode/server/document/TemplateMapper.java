@@ -454,6 +454,18 @@ public class TemplateMapper {
         return allowedTemplateGroups;
     }
 
+    public boolean templateGroupContains(TemplateGroupDomainObject templateGroup,
+                                         TemplateDomainObject template) {
+        TemplateDomainObject[] templates = getTemplatesInGroup(templateGroup);
+        for ( int i = 0; i < templates.length; i++ ) {
+            TemplateDomainObject t = templates[i];
+            if (t.getId() == template.getId()) {
+                return true ;
+            }
+        }        
+        return false ;
+    }
+
     private static class NonEmptyFileFilter implements FileFilter {
 
         public boolean accept( File file ) {

@@ -22,7 +22,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.Iterator;
 
 /**
  * Save data from editwindow.
@@ -49,41 +48,24 @@ public class SaveInPage extends HttpServlet {
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( textDocument );
         Set allowedTemplateGroupIds = textDocumentPermissionSet.getAllowedTemplateGroupIds();
 
-        boolean requestedTemplateGroupIsAllowed = false;
-        boolean requestedTemplateIsAllowed = false;
-        for ( Iterator iterator = allowedTemplateGroupIds.iterator(); iterator.hasNext(); ) {
-            Integer allowedTemplateGroupId = (Integer) iterator.next();
-            if ( null != requestedTemplateGroup && allowedTemplateGroupId.intValue()== requestedTemplateGroup.getId()) {
-                requestedTemplateGroupIsAllowed = true;
-            }
-            if ( null != requestedTemplate && allowedTemplateGroupIds.contains(new Integer(requestedTemplate.getId()))) {
-                requestedTemplateIsAllowed = true;
-            }
-        }
-
         // Check if user has write rights
         if ( !textDocumentPermissionSet.getEditTemplates()
-             || !requestedTemplateIsAllowed
-             || !requestedTemplateGroupIsAllowed ) {	// Checking to see if user may edit this
-            Utility.setDefaultHtmlContentType( res );
-
-            String output = AdminDoc.adminDoc( documentId, user, req, res );
-            if ( output != null ) {
-                Writer out = res.getWriter();
-                out.write( output );
-            }
+             || null != requestedTemplateGroup && !allowedTemplateGroupIds.contains(new Integer(requestedTemplateGroup.getId()))) {
+            errorNoPermission(documentId, user, req, res);
             return;
         }
 
         if ( req.getParameter( "update" ) != null ) {
             Writer out = res.getWriter();
 
-            Utility.setDefaultHtmlContentType( res );
             req.getSession().setAttribute( "flags", new Integer( 0 ) );
 
             if ( requestedTemplate == null ) {
                 errorNoTemplateSelected(documentId, services, user, out);
                 return;
+            } else if (!templateMapper.templateGroupContains(requestedTemplateGroup, requestedTemplate)) {
+                errorNoPermission(documentId, user, req, res);
+                return ;
             }
 
             // save textdoc
@@ -103,6 +85,7 @@ public class SaveInPage extends HttpServlet {
                 throw new ConcurrentDocumentModificationException(e);
             }
 
+            Utility.setDefaultHtmlContentType( res );
             // return page
             String output = AdminDoc.adminDoc( documentId, user, req, res );
             if ( output != null ) {
@@ -146,6 +129,18 @@ public class SaveInPage extends HttpServlet {
                 out.write( output );
             }
 
+        }
+    }
+
+    private void errorNoPermission(int documentId, UserDomainObject user, HttpServletRequest req,
+                                   HttpServletResponse res
+    ) throws IOException, ServletException {
+        Utility.setDefaultHtmlContentType( res );
+
+        String output = AdminDoc.adminDoc( documentId, user, req, res );
+        if ( output != null ) {
+            Writer out = res.getWriter();
+            out.write( output );
         }
     }
 
