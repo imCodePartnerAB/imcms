@@ -538,7 +538,7 @@
             casesensitive="false"/>
         <propertyregex property="versionnumber"
             input="${version}"
-            regexp="(.*)-.*"
+            regexp="^(.*?)(-.*)?$"
             override="true"
             replace="\1"
             casesensitive="false"/>
