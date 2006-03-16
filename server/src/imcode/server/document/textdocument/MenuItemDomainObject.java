@@ -32,7 +32,9 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
 
         final MenuItemDomainObject otherMenuItem = (MenuItemDomainObject)o;
 
-        return documentReference == otherMenuItem.documentReference;
+        return sortKey.equals(otherMenuItem.sortKey)
+               && treeSortKey.equals(otherMenuItem.treeSortKey)
+               && documentReference.equals(otherMenuItem.documentReference);
     }
 
     public int hashCode() {
