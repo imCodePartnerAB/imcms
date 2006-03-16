@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <changesets>
 
+<changeset version="3.1.1">
+    <changes for="users">
+        <change>
+            <p>
+                Fixed missing version number in help links.
+            </p>
+            <issue id="4305" />
+        </change>
+        <change>
+            <p>
+                Fixed a bug which prevented sort keys for menuitems from being saved.
+            </p>
+            <issue id="4313" />
+        </change>
+    </changes>
+</changeset>
+    
 <changeset version="3.1.0">
     <changes for="users">
         <change>
