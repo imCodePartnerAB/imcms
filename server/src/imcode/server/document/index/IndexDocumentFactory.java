@@ -1,9 +1,12 @@
 package imcode.server.document.index;
 
-import imcode.server.Imcms;
-import imcode.server.document.*;
-import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import imcode.server.Imcms;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.CategoryTypeDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.SectionDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -13,7 +16,9 @@ import org.apache.lucene.document.Field;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Set;
 
 public class IndexDocumentFactory {
 
@@ -95,15 +100,15 @@ public class IndexDocumentFactory {
         if ( null != date ) {
             try {
                 indexDocument.add( unStoredKeyword( fieldName, date ) );
+                return ;
             } catch ( RuntimeException re ) {
                 DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING );
                 log.warn( "Failed to index datetime '" + dateFormat.format( date ) + "' in field '" + fieldName
                           + "' of document "
                           + documentId, re );
             }
-        } else {
-            indexDocument.add( unStoredKeyword( fieldName, DateField.MIN_DATE_STRING() ));
         }
+        indexDocument.add( unStoredKeyword( fieldName, "" ));
     }
 
     static Field unStoredKeyword( String fieldName, String fieldValue ) {
