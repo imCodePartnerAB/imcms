@@ -392,16 +392,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return lifeCyclePhase ;
     }
 
-    public void removeNonInheritedCategories() {
-        Set categoryIds = (Set) attributes.categoryIds.get();
-        for ( Iterator iterator = categoryIds.iterator(); iterator.hasNext(); ) {
-            CategoryDomainObject category = (CategoryDomainObject)iterator.next();
-            if (!category.getType().isInherited()) {
-                iterator.remove();
-            }
-        }
-    }
-
     public void setLazilyLoadedSectionIds(LazilyLoadedObject sectionIds) {
         attributes.sectionIds = sectionIds ;
     }

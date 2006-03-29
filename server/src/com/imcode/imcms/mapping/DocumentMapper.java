@@ -107,7 +107,7 @@ public class DocumentMapper implements DocumentGetter {
         newDocument.setMenuText( "" );
         newDocument.setMenuImage( "" );
         makeDocumentLookNew( newDocument, user );
-        newDocument.removeNonInheritedCategories() ;
+        removeNonInheritedCategories(newDocument) ;
         return newDocument;
     }
 
@@ -452,6 +452,16 @@ public class DocumentMapper implements DocumentGetter {
 
     public DocumentGetter getDocumentGetter() {
         return documentGetter;
+    }
+
+    private void removeNonInheritedCategories(DocumentDomainObject document) {
+        Set categories = getCategoryMapper().getCategories(document.getCategoryIds());
+        for ( Iterator iterator = categories.iterator(); iterator.hasNext(); ) {
+            CategoryDomainObject category = (CategoryDomainObject)iterator.next();
+            if (!category.getType().isInherited()) {
+                document.removeCategoryId(category.getId());
+            }
+        }
     }
 
     public static class TextDocumentMenuIndexPair {
