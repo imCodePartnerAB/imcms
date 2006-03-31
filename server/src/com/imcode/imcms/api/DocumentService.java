@@ -19,6 +19,9 @@ public class DocumentService {
 
     static Document wrapDocumentDomainObject(DocumentDomainObject document,
                                              ContentManagementSystem contentManagementSystem) {
+        if (null == document) {
+            return null ;
+        }
         ApiWrappingDocumentVisitor apiWrappingDocumentVisitor = new ApiWrappingDocumentVisitor(contentManagementSystem);
         document.accept(apiWrappingDocumentVisitor);
         return apiWrappingDocumentVisitor.getDocument();
@@ -194,15 +197,7 @@ public class DocumentService {
     public List getDocuments(SearchQuery query) throws SearchException {
         try {
             final List documentList = getDocumentMapper().getDocumentIndex().search(query.getQuery(), query.getSort(), contentManagementSystem.getCurrentUser().getInternal());
-            return new AbstractList() {
-                public Object get(int index) {
-                    DocumentDomainObject document = (DocumentDomainObject) documentList.get(index);
-                    return wrapDocumentDomainObject(document, contentManagementSystem);
-                }
-                public int size() {
-                    return documentList.size();
-                }
-            };
+            return new ApiDocumentWrappingList(documentList, contentManagementSystem);
         } catch ( RuntimeException e ) {
             throw new SearchException(e);
         }
@@ -270,4 +265,31 @@ public class DocumentService {
         }
     }
 
+    static class ApiDocumentWrappingList extends AbstractList {
+
+        private final List documentList;
+        private ContentManagementSystem contentManagementSystem;
+
+        ApiDocumentWrappingList(List documentList, ContentManagementSystem contentManagementSystem) {
+            this.documentList = documentList;
+            this.contentManagementSystem = contentManagementSystem;
+        }
+
+        public Object get(int index) {
+            DocumentDomainObject document = (DocumentDomainObject) documentList.get(index);
+            return wrapDocumentDomainObject(document, contentManagementSystem);
+        }
+
+        public int size() {
+            return documentList.size();
+        }
+
+        public Object remove(int index) {
+            return wrapDocumentDomainObject((DocumentDomainObject) documentList.remove(index), contentManagementSystem) ;
+        }
+
+        public Object set(int index, Object element) {
+            return wrapDocumentDomainObject((DocumentDomainObject) documentList.set(index, ((Document)element).getInternal()), contentManagementSystem) ;
+        }
+    }
 }

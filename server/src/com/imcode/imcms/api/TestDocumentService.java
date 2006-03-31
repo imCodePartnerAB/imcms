@@ -13,6 +13,8 @@ import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 
 import java.sql.ResultSet;
+import java.util.List;
+import java.util.ArrayList;
 
 public class TestDocumentService extends TestCase {
 
@@ -78,7 +80,7 @@ public class TestDocumentService extends TestCase {
         TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
         textDocument.setId(1001);
         TextDocument document = new TextDocument(textDocument, contentManagementSystem);
-        
+
         try {
             documentService.deleteDocument(document);
             fail("Expected NoPermissionException") ;
@@ -87,5 +89,17 @@ public class TestDocumentService extends TestCase {
         admin.addRoleId(RoleId.SUPERADMIN) ;
         contentManagementSystem.setCurrentInternalUser(admin);
         documentService.deleteDocument(document);
+    }
+
+    public void testApiWrappingList() {
+        List list = new ArrayList() ;
+        DocumentService.ApiDocumentWrappingList apiDocumentWrappingList = new DocumentService.ApiDocumentWrappingList(list, contentManagementSystem);
+        list.add(new TextDocumentDomainObject()) ;
+        assertNotNull(apiDocumentWrappingList.get(0)) ;
+        TextDocument document = new TextDocument(new TextDocumentDomainObject(), contentManagementSystem);
+        apiDocumentWrappingList.set(0, document) ;
+        assertNotNull(apiDocumentWrappingList.get(0)) ;
+        assertEquals(document, apiDocumentWrappingList.remove(0)) ;
+        assertTrue(list.isEmpty()) ;
     }
 }

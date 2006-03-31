@@ -1,11 +1,9 @@
 package imcode.util;
 
-import junit.framework.*;
-import imcode.util.CompositeList;
+import junit.framework.TestCase;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 public class TestCompositeList extends TestCase {
 
@@ -37,6 +35,19 @@ public class TestCompositeList extends TestCase {
         assertEquals(2, compositeList.size()) ;
         assertFalse(compositeList.isEmpty());
         assertTrue(compositeList.iterator().hasNext()) ;
+
+        compositeList.set(1, "baz") ;
+        
+        assertEquals(1, secondList.size()) ;
+        assertEquals("baz", secondList.get(0)) ;
+        
+        compositeList.remove(0) ;
+        assertTrue(firstList.isEmpty()) ;
+
+        compositeList.remove(0) ;
+        assertTrue(secondList.isEmpty()) ;
+
+        assertTrue(compositeList.isEmpty());
 
     }
 
