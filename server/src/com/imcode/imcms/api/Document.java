@@ -335,11 +335,11 @@ public class Document implements Serializable {
     }
 
     public void setVisibleInMenusForUnauthorizedUsers( boolean visibleInMenusForUnauthorizedUsers ) {
-        internalDocument.setVisibleInMenusForUnauthorizedUsers( visibleInMenusForUnauthorizedUsers );
+        internalDocument.setLinkedForUnauthorizedUsers( visibleInMenusForUnauthorizedUsers );
     }
 
     public boolean isVisibleInMenusForUnauthorizedUsers() {
-        return internalDocument.isVisibleInMenusForUnauthorizedUsers();
+        return internalDocument.isLinkedForUnauthorizedUsers();
     }
 
     public boolean isLinkableByOtherUsers() {

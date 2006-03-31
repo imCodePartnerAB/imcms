@@ -1,6 +1,5 @@
 package com.imcode.imcms.api;
 
-import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.MockImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.MenuDomainObject;
@@ -107,13 +106,13 @@ public class TestTextDocument extends TestCase {
     }
 
     public void testMenuGetVisibleWithVisibleInMenusForUnauthorizedUsers() {
-        otherTextDocumentDO.setVisibleInMenusForUnauthorizedUsers( true );
+        otherTextDocumentDO.setLinkedForUnauthorizedUsers( true );
         assertGetVisibleDoNotReturnDocuments();
     }
 
     public void testMenuGetVisibleWithPublishedAndVisibleInMenusForUnauthorizedUsers() {
         publish(otherTextDocumentDO);
-        otherTextDocumentDO.setVisibleInMenusForUnauthorizedUsers( true );
+        otherTextDocumentDO.setLinkedForUnauthorizedUsers( true );
         assertGetVisibleReturnDocuments();
     }
 

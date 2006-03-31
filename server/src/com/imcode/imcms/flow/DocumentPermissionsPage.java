@@ -77,7 +77,7 @@ public class DocumentPermissionsPage extends OkCancelPage {
         document.setRoleIdsMappedToDocumentPermissionSetTypes( getRoleIdsMappedToDocumentPermissionSetTypesFromRequest( request ) );
         document.setRestrictedOneMorePrivilegedThanRestrictedTwo( Utility.parameterIsSet( request, REQUEST_PARAMETER__RESTRICTED_ONE_MORE_PRIVILEGED_THAN_RESTRICTED_TWO ) );
         document.setLinkableByOtherUsers( Utility.parameterIsSet( request, EditDocumentInformationPageFlow.REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS ) );
-        document.setVisibleInMenusForUnauthorizedUsers( Utility.parameterIsSet( request, EditDocumentInformationPageFlow.REQUEST_PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS ) );
+        document.setLinkedForUnauthorizedUsers( Utility.parameterIsSet( request, EditDocumentInformationPageFlow.REQUEST_PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS ) );
 
         if ( document instanceof TextDocumentDomainObject ) {
             String defaultTemplateIdStr = request.getParameter( REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID );

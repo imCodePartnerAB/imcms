@@ -105,7 +105,7 @@ class DocumentSaver {
         makeStringSqlUpdateClause("lang_prefix", document.getLanguageIso639_2(), sqlUpdateColumns, sqlUpdateValues);
         makeBooleanSqlUpdateClause("disable_search", document.isSearchDisabled(), sqlUpdateColumns, sqlUpdateValues);
         makeBooleanSqlUpdateClause("shared", document.isLinkableByOtherUsers(), sqlUpdateColumns, sqlUpdateValues);
-        makeBooleanSqlUpdateClause("show_meta", document.isVisibleInMenusForUnauthorizedUsers(), sqlUpdateColumns, sqlUpdateValues);
+        makeBooleanSqlUpdateClause("show_meta", document.isLinkedForUnauthorizedUsers(), sqlUpdateColumns, sqlUpdateValues);
         makeBooleanSqlUpdateClause("permissions", document.isRestrictedOneMorePrivilegedThanRestrictedTwo(), sqlUpdateColumns, sqlUpdateValues);
         makeIntSqlUpdateClause("publisher_id", document.getPublisherId(), sqlUpdateColumns,
                                                                                  sqlUpdateValues);
@@ -261,7 +261,7 @@ class DocumentSaver {
             { "owner_id", document.getCreatorId() + ""},
             { "permissions", makeSqlStringFromBoolean(document.isRestrictedOneMorePrivilegedThanRestrictedTwo())},
             { "shared", makeSqlStringFromBoolean(document.isLinkableByOtherUsers())},
-            { "show_meta", makeSqlStringFromBoolean(document.isVisibleInMenusForUnauthorizedUsers())},
+            { "show_meta", makeSqlStringFromBoolean(document.isLinkedForUnauthorizedUsers())},
             { "lang_prefix", document.getLanguageIso639_2()},
             { "date_created", Utility.makeSqlStringFromDate(document.getCreatedDatetime()) },
             { "date_modified", Utility.makeSqlStringFromDate(document.getModifiedDatetime())},

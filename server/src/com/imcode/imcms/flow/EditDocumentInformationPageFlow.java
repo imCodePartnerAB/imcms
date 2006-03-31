@@ -220,7 +220,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         }
 
         boolean visibleInMenuForUnauthorizedUsers = "1".equals( request.getParameter( REQUEST_PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS ) );
-        document.setVisibleInMenusForUnauthorizedUsers( visibleInMenuForUnauthorizedUsers );
+        document.setLinkedForUnauthorizedUsers( visibleInMenuForUnauthorizedUsers );
 
         boolean linkableByOtherUsers = "1".equals( request.getParameter( REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS ) );
         document.setLinkableByOtherUsers( linkableByOtherUsers );

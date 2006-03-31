@@ -200,7 +200,7 @@
                 <td>
                 <table border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                    <td><input type="CHECKBOX" name="show_meta" value="1" <% if (document.isVisibleInMenusForUnauthorizedUsers()) {%>checked<% } %>></td>
+                    <td><input type="CHECKBOX" name="show_meta" value="1" <% if (document.isLinkedForUnauthorizedUsers()) {%>checked<% } %>></td>
                     <td class="imcmsAdmText">&nbsp;<? templates/global/pageinfo/ShowLinkToUnuthorizedUser ?></td>
                 </tr>
                 <tr>

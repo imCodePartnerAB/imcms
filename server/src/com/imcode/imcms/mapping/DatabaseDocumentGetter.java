@@ -112,7 +112,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
             document.setCreatorId(resultSet.getInt(6));
             document.setRestrictedOneMorePrivilegedThanRestrictedTwo(resultSet.getBoolean(7));
             document.setLinkableByOtherUsers(resultSet.getBoolean(8));
-            document.setVisibleInMenusForUnauthorizedUsers(resultSet.getBoolean(9));
+            document.setLinkedForUnauthorizedUsers(resultSet.getBoolean(9));
             document.setLanguageIso639_2(LanguageMapper.getAsIso639_2OrDefaultLanguage(resultSet.getString(10), services.getLanguageMapper().getDefaultLanguage()));
             document.setCreatedDatetime(resultSet.getTimestamp(11));
             Date modifiedDatetime = resultSet.getTimestamp(12);

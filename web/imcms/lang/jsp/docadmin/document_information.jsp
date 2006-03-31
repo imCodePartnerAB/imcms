@@ -433,7 +433,7 @@ function checkFocus() {
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td><input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS %>" value="1"<%
-			if (document.isVisibleInMenusForUnauthorizedUsers()) {
+			if (document.isLinkedForUnauthorizedUsers()) {
 				%> checked<%
 			} %>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/global/pageinfo/show_link_to_unauthorized_user ?></td>

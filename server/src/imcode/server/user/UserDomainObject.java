@@ -5,7 +5,6 @@ import imcode.server.document.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.NotPredicate;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.UnhandledException;
 
 import java.io.Serializable;
@@ -622,19 +621,19 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean canSearchFor( DocumentDomainObject document ) {
-        boolean searchingUserHasPermissionToFindDocument = false;
+        boolean canSearchForDocument = false;
         if ( document.isSearchDisabled() ) {
             if ( isSuperAdmin() ) {
-                searchingUserHasPermissionToFindDocument = true;
+                canSearchForDocument = true;
             }
         } else {
             if ( document.isPublished() ) {
-                searchingUserHasPermissionToFindDocument = canAccess( document );
+                canSearchForDocument = document.isLinkedForUnauthorizedUsers() || canAccess( document );
             } else {
-                searchingUserHasPermissionToFindDocument = canEdit( document );
+                canSearchForDocument = canEdit( document );
             }
         }
-        return searchingUserHasPermissionToFindDocument;
+        return canSearchForDocument;
     }
 
     public boolean canEditDocumentInformationFor( DocumentDomainObject document ) {
@@ -663,7 +662,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean canSeeDocumentWhenEditingMenus( DocumentDomainObject document ) {
-        return document.isVisibleInMenusForUnauthorizedUsers() || canAccess( document );
+        return document.isLinkedForUnauthorizedUsers() || canAccess( document );
     }
 
     public Set getPhoneNumbers() {

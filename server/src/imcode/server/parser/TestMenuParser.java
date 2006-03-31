@@ -77,7 +77,7 @@ public class TestMenuParser extends TestCase {
     }
 
     public void testUserCanSeePublishedDocumentsVisibleForUnauthorizedUsers() {
-        textDocument.setVisibleInMenusForUnauthorizedUsers( true );
+        textDocument.setLinkedForUnauthorizedUsers( true );
         assertCanNotSeeDocumentInMenu();
         textDocument.setPublicationStartDatetime( new Date( 0 ) );
         textDocument.setPublicationStatus( Document.PublicationStatus.APPROVED );

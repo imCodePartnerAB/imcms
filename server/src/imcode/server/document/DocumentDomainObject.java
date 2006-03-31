@@ -263,12 +263,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.searchDisabled = searchDisabled;
     }
 
-    public boolean isVisibleInMenusForUnauthorizedUsers() {
-        return attributes.visibleInMenusForUnauthorizedUsers;
+    public boolean isLinkedForUnauthorizedUsers() {
+        return attributes.linkedForUnauthorizedUsers;
     }
 
-    public void setVisibleInMenusForUnauthorizedUsers( boolean visibleInMenusForUnauthorizedUsers ) {
-        attributes.visibleInMenusForUnauthorizedUsers = visibleInMenusForUnauthorizedUsers;
+    public void setLinkedForUnauthorizedUsers( boolean linkedForUnauthorizedUsers ) {
+        attributes.linkedForUnauthorizedUsers = linkedForUnauthorizedUsers;
     }
 
     public void addCategoryId( int categoryId ) {
@@ -450,7 +450,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private boolean searchDisabled;
         private Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
         private String target;
-        private boolean visibleInMenusForUnauthorizedUsers;
+        private boolean linkedForUnauthorizedUsers;
 
         private LazilyLoadedObject categoryIds = new LazilyLoadedObject(new CopyableHashSetLoader());
         private LazilyLoadedObject keywords = new LazilyLoadedObject(new CopyableHashSetLoader());
