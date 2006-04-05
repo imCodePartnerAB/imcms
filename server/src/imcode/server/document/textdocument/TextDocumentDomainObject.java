@@ -1,12 +1,17 @@
 package imcode.server.document.textdocument;
 
-import imcode.server.document.*;
-import imcode.util.LazilyLoadedObject;
-
-import java.util.*;
-
 import com.imcode.imcms.mapping.DocumentMenusMap;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.DocumentVisitor;
+import imcode.util.LazilyLoadedObject;
 import org.apache.commons.lang.UnhandledException;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class TextDocumentDomainObject extends DocumentDomainObject {
 
@@ -48,6 +53,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         clone.images = (LazilyLoadedObject) images.clone();
         clone.includes = (LazilyLoadedObject) includes.clone();
         clone.menus = (LazilyLoadedObject) menus.clone() ;
+        clone.templateIds = (LazilyLoadedObject) templateIds.clone() ;
         return clone;
     }
 
@@ -251,8 +257,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         private Integer defaultTemplateIdForRestricted2 ;
 
         public LazilyLoadedObject.Copyable copy() {
+            return (LazilyLoadedObject.Copyable) clone() ;
+        }
+
+        public Object clone() {
             try {
-                return (LazilyLoadedObject.Copyable) super.clone();
+                return super.clone();
             } catch ( CloneNotSupportedException e ) {
                 throw new UnhandledException(e);
             }
