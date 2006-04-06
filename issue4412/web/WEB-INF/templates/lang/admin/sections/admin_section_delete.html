@@ -1,0 +1,40 @@
+<html>
+<head>
+<title><? global/remove ?> <? install/htdocs/sv/jsp/docadmin/document_information.jsp/22 ?></title>
+
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+
+</head>
+<body>
+
+#gui_outer_start()
+#gui_head( "<? global/remove ?> <? install/htdocs/sv/jsp/docadmin/document_information.jsp/22 ?>" )
+#gui_head_help_and_back_buttons( "SectionSiteDelete"  "AdminSection" "" "" )
+#gui_mid()
+
+<form method="post" action="AdminSection">
+<table border="0" cellspacing="0" cellpadding="2" width="320">
+<tr>
+	<td width="80"><? templates/sv/sections/admin_section_delete.html/3 ?></td>
+	<td width="240">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td>
+		<select name="section_list">
+			#section_list#
+		</select></td>
+		<td>&nbsp;&nbsp;</td>
+		<td><input type="submit" class="imcmsFormBtnSmall" name="delete_section" value="<? templates/sv/sections/admin_section_delete.html/2001 ?>"></td>
+	</tr>
+	</table></td>
+</tr>
+</table>
+</form>
+
+#gui_bottom()
+#gui_outer_end()
+
+</body>
+</html>
+

@@ -1,0 +1,22 @@
+    <table name="users">
+        <column name="user_id" autoIncrement="true" primaryKey="true" required="true" type="INTEGER" />
+        <column name="login_name" required="true" size="50" type="VARCHAR" />
+        <column name="login_password" required="true" size="15" type="VARCHAR" />
+        <column name="first_name" required="true" size="25" type="VARCHAR" />
+        <column name="last_name" required="true" size="30" type="VARCHAR" />
+        <column default="" name="title" required="true" size="30" type="VARCHAR" />
+        <column default="" name="company" required="true" size="30" type="VARCHAR" />
+        <column name="address" required="true" size="40" type="VARCHAR" />
+        <column name="city" required="true" size="30" type="VARCHAR" />
+        <column name="zip" required="true" size="15" type="VARCHAR" />
+        <column name="country" required="true" size="30" type="VARCHAR" />
+        <column name="county_council" required="true" size="30" type="VARCHAR" />
+        <column name="email" required="true" size="50" type="VARCHAR" />
+        <column name="external" required="true" type="INTEGER" />
+        <column default="1" name="active" required="true" type="INTEGER" />
+        <column name="create_date" required="true" type="TIMESTAMP" />
+        <column name="language" required="true" size="3" type="VARCHAR" />
+        <unique name="UQ__users__login_name">
+            <unique-column name="login_name"/>
+        </unique>
+    </table>

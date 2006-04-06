@@ -1,0 +1,24 @@
+#gui_start_of_page( "<? templates/sv/AdminRoleBelongings.html/1 ?>" "AdminRoleBelongings" "CANCEL" "RoleUserAdmin" "" )
+
+<table border="0" cellspacing="0" cellpadding="0" width="400">
+<form method="post" action="AdminRoleBelongings" name="UserInfo">
+<tr valign="top">
+	<td width="80" class="imcmsAdmText"><? templates/sv/AdminRoleBelongings.html/2 ?></td>
+	<td width="320" class="imcmsAdmText">
+	<select name="ROLE_ID" size="10">
+		<option value="ALL_USERS" selected><? templates/sv/AdminRoleBelongings.html/3 ?></option>
+		#ROLES_MENU#
+	</select></td>
+</tr>
+<tr>
+	<td colspan="2">#gui_hr( "blue" )</td>
+</tr>
+<tr>
+	<td colspan="2" align="right">
+	<input type="submit" name="VIEW_USER_BELONGING_ROLE" class="imcmsFormBtn" value="<? templates/sv/AdminRoleBelongings.html/4 ?>">
+	<input type="submit" name="VIEW_USER_ACTIVATE" class="imcmsFormBtn" value="<? templates/sv/AdminRoleBelongings.html/5 ?>">
+	<input type="submit" name="CANCEL" class="imcmsFormBtn" value="<? global/back ?>"></td>
+</tr>
+</form>
+</table>
+#gui_end_of_page()

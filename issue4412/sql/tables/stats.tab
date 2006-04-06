@@ -1,0 +1,4 @@
+    <table name="stats">
+        <column name="name" primaryKey="true" required="true" size="120" type="VARCHAR" />
+        <column name="num" required="true" type="INTEGER" />
+    </table>

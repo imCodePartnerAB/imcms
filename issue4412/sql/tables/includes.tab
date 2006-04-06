@@ -1,0 +1,11 @@
+    <table name="includes">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="include_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="included_meta_id" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="included_meta_id" />
+        </foreign-key>
+    </table>

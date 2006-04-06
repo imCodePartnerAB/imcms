@@ -1,0 +1,11 @@
+    <table name="doc_permission_sets">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="set_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="permission_id" required="true" type="INTEGER" />
+        <foreign-key foreignTable="permission_sets">
+            <reference foreign="set_id" local="set_id" />
+        </foreign-key>
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>

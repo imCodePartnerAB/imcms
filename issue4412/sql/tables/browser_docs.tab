@@ -1,0 +1,8 @@
+    <table name="browser_docs">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="to_meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column default="0" name="browser_id" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>

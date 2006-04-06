@@ -1,0 +1,13 @@
+    <table name="menus">
+        <column autoIncrement="true" name="menu_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="meta_id" required="true" type="INTEGER" />
+        <column name="menu_index" required="true" type="INTEGER" />
+        <column name="sort_order" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+        <unique name="UQ_menus__meta_id__menu_index">
+            <unique-column name="meta_id"/>
+            <unique-column name="menu_index"/>
+        </unique>
+    </table>

@@ -1,0 +1,5 @@
+    <table name="permissions">
+        <column name="permission_id" primaryKey="true" required="true" type="TINYINT" />
+        <column default="swe" name="lang_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" />
+        <column name="description" required="true" size="50" type="VARCHAR" />
+    </table>

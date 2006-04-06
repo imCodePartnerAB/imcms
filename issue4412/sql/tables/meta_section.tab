@@ -1,0 +1,10 @@
+    <table name="meta_section">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="section_id" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+        <foreign-key foreignTable="sections">
+            <reference foreign="section_id" local="section_id" />
+        </foreign-key>
+    </table>

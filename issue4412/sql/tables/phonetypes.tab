@@ -1,0 +1,8 @@
+    <table name="phonetypes">
+        <column name="phonetype_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="typename" required="true" size="12" type="VARCHAR" />
+        <column name="lang_id" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="lang_prefixes">
+            <reference foreign="lang_id" local="lang_id" />
+        </foreign-key>
+    </table>

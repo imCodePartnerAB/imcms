@@ -1,0 +1,7 @@
+    <table name="templategroups">
+        <column name="group_id" autoIncrement="true" primaryKey="true" required="true" type="INTEGER" />
+        <column name="group_name" required="true" size="50" type="VARCHAR" />
+        <unique name="UQ_templategroups__group_name">
+            <unique-column name="group_name"/>
+        </unique>
+    </table>

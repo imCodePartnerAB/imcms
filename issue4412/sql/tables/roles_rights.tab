@@ -1,0 +1,11 @@
+    <table name="roles_rights">
+        <column name="role_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="set_id" required="true" type="TINYINT" />
+        <foreign-key foreignTable="roles">
+            <reference foreign="role_id" local="role_id" />
+        </foreign-key>
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>

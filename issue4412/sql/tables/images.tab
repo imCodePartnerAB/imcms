@@ -1,0 +1,20 @@
+    <table name="images">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="width" required="true" type="INTEGER" />
+        <column name="height" required="true" type="INTEGER" />
+        <column name="border" required="true" type="INTEGER" />
+        <column name="v_space" required="true" type="INTEGER" />
+        <column name="h_space" required="true" type="INTEGER" />
+        <column name="name" primaryKey="true" required="true" type="INTEGER" />
+        <column name="image_name" required="true" size="40" type="VARCHAR" />
+        <column name="target" required="true" size="15" type="VARCHAR" />
+        <column name="align" required="true" size="15" type="VARCHAR" />
+        <column name="alt_text" required="true" size="255" type="VARCHAR" />
+        <column name="low_scr" required="true" size="255" type="VARCHAR" />
+        <column name="imgurl" required="true" size="255" type="VARCHAR" />
+        <column name="linkurl" required="true" size="255" type="VARCHAR" />
+        <column name="type" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>

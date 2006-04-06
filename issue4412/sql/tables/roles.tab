@@ -1,0 +1,9 @@
+    <table name="roles">
+        <column autoIncrement="true" name="role_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="role_name" required="true" size="60" type="VARCHAR" />
+        <column default="0" name="permissions" required="true" type="INTEGER" />
+        <column default="0" name="admin_role" required="true" type="INTEGER" />
+        <unique name="UQ_roles__role_name">
+            <unique-column name="role_name"/>
+        </unique>
+    </table>

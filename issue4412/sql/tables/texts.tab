@@ -1,0 +1,10 @@
+    <table name="texts">
+        <column name="meta_id" required="true" type="INTEGER" />
+        <column name="name" required="true" type="INTEGER" />
+        <column name="text" required="true" type="CLOB" />
+        <column name="type" type="INTEGER" required="false" />
+        <column autoIncrement="true" name="counter" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>

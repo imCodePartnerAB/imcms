@@ -1,0 +1,11 @@
+    <table name="user_rights">
+        <column name="user_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="permission_id" primaryKey="true" required="true" type="TINYINT" />
+        <foreign-key foreignTable="users">
+            <reference foreign="user_id" local="user_id" />
+        </foreign-key>
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>

@@ -1,0 +1,6 @@
+    <table name="ip_accesses">
+        <column autoIncrement="true" name="ip_access_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="user_id" required="true" type="INTEGER" />
+        <column name="ip_start" required="true" size="18" type="DECIMAL" />
+        <column name="ip_end" required="true" size="18" type="DECIMAL" />
+    </table>

@@ -1,0 +1,7 @@
+    <table name="frameset_docs">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="frame_set" type="CLOB" required="false" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>

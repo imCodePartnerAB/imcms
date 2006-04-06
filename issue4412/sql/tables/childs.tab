@@ -1,0 +1,12 @@
+    <table name="childs">
+        <column name="to_meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="manual_sort_order" required="true" type="INTEGER" />
+        <column default="" name="tree_sort_index" required="true" size="64" type="VARCHAR" />
+        <column name="menu_id" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="to_meta_id" />
+        </foreign-key>
+        <foreign-key foreignTable="menus">
+            <reference foreign="menu_id" local="menu_id" />
+        </foreign-key>
+    </table>

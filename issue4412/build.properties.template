@@ -1,0 +1,132 @@
+# This is the properties-file for building imCMS with ant.
+# You just have to fill in the blanks.
+# You shouldn't change any defaults unless you know what you are doing.
+
+
+# The deployment directory (parent of the webapp directory).
+# Do *not* use back-slashes ('\'). Use forward-slashes ('/').
+# You only need this if you want to use "ant install" and "ant install-war".
+
+deployroot =
+
+
+# The name of the webapp. Used for filenames and URIs.
+
+webappname = imcms
+
+
+# The deployed web application diretory
+
+webapproot = ${deployroot}/${webappname}
+
+
+# Database parameters
+
+db-host = localhost
+db-name = imcms
+db-user =
+db-pass =
+db-maxconnections = 20
+
+# For MSSQL
+db-target = mssql
+db-port = 1433
+db-driver = net.sourceforge.jtds.jdbc.Driver
+db-url-without-db-name = jdbc:jtds:sqlserver://${db-host}:${db-port}/;AppName=imCMS
+db-url = ${db-url-without-db-name};DatabaseName=${db-name}
+
+# For MySQL
+#db-target = mysql
+#db-port = 3306
+#db-driver = com.mysql.jdbc.Driver
+#db-url-without-db-name = jdbc:mysql://${db-host}:${db-port}/
+#db-url = ${db-url-without-db-name}${db-name}
+
+
+external-authenticator =
+external-user-and-role-registry =
+
+# LDAP-authentication-parameters
+
+ldap-url = ldap://localhost:389/CN=Users,DC=example,DC=com
+ldap-bind-dn =
+ldap-password =
+ldap-test-user =
+ldap-test-password =
+ldap-user-object-class = inetOrgPerson
+ldap-attribute-login-name = uid
+
+# For Microsoft Active Directory
+#ldap-user-object-class = user
+#ldap-attribute-login-name = sAMAccountName
+
+
+# The smtp-server used for sending mails.
+
+smtp-server =
+
+
+# The name and e-mail-address of the servermaster.
+
+servermaster-name  =
+servermaster-email =
+
+
+# The name and e-mail-address of the webmaster.
+# Defaults to the values for the servermaster.
+
+webmaster-name  = ${servermaster-name}
+webmaster-email = ${servermaster-email}
+
+
+# The default language to use when build the webapp ( swe | eng )
+
+defaultlanguage = eng
+
+
+# The root-URI of the webapp, relative to the server root-URI (/).
+
+rooturl = /${webappname}
+
+
+# The imCMS documents is usually on the imCMS public site, http://doc.imcms.net/
+# If you want to install a local server for handling (modifying) the documents
+# change this:
+
+documentation-host = doc.imcms.net
+
+
+# Whether the build should be optimized or not.
+
+optimize = on
+
+
+# Whether to leave debug info in or not.
+
+debug = on
+
+
+# Whether to compile with deprecation warnings on or not.
+
+deprecation = on
+
+
+# For JUnit-tests to work, you need to add junit.jar to the classpath of ant.
+# If this is impossible, uncomment the following property.
+# Note that this will prevent tests from running.
+
+#no-junit-task-available
+
+
+# Which log4j-config-file to use.
+# You might want to change this to log4j-debug.xml to turn on debug-logs.
+
+log4j-config = log4j-nodebug.xml
+
+
+# Tomcat settings for quick deployment during development
+
+tomcat-admin-username = admin
+tomcat-admin-password =
+tomcat-webapp-manager-url = http://localhost:8080/manager
+tomcat-deployroot-local-directory =

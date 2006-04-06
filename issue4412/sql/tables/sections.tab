@@ -1,0 +1,4 @@
+    <table name="sections">
+        <column autoIncrement="true" name="section_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="section_name" required="true" size="50" type="VARCHAR" />
+    </table>

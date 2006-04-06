@@ -1,0 +1,10 @@
+    <table name="categories">
+        <column autoIncrement="true" name="category_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="category_type_id" required="true" type="INTEGER" />
+        <column name="name" required="true" size="50" type="VARCHAR" />
+        <column name="description" size="500" type="VARCHAR" required="false" />
+        <column default="" name="image" required="true" size="255" type="VARCHAR" />
+        <foreign-key foreignTable="category_types">
+            <reference foreign="category_type_id" local="category_type_id" />
+        </foreign-key>
+    </table>
