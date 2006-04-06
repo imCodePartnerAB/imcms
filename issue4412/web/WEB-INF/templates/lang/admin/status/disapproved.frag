@@ -1,1 +1,0 @@
-<img src="$contextPath/imcms/$language/images/admin/status/disapproved.gif" border="0" alt="<? templates/sv/textdoc/status/disapproved.frag/description ?>" title="<? templates/sv/textdoc/status/disapproved.frag/description ?>" hspace="2">
