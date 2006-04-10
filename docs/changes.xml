@@ -5,57 +5,59 @@
     <changes for="users">
         <change>
             <p>
-                Fixed error when running api example "document_search.jsp"
-            </p>
-            <issue id="4415" />
-        </change>
-    </changes>
-    <changes for="administrators">
-        <change>
-            <p>
-                Fixed bug that made it not possible to create new documents if there was a category-type defined.
+                Fixed bug that made it impossible to create new documents if there was a category-type defined.
             </p>
             <issue id="4380" />
         </change>
         <change>
             <p>
-                Make option "linked for unauthorized users" work in searches as well as in menues.
+                Made option "linked for unauthorized users" work in searches as well as in menus.
             </p>
             <issue id="4385" />
         </change>
         <change>
             <p>
                 Fixed bug that caused template ids not to be cloned when cloning text documents.
-                This means that for example changing the template for a newly created text document also changes the template of the parent in the cache.
+                This means that for example changing the template for a newly created text document
+                also changes the template of the parent in the cache.
             </p>
             <issue id="4401" />
         </change>
     </changes>
-    <changes for="developers">
+    <changes for="site developers">
         <change>
             <p>
-                Fixed bug that excluded documents without an valid archived datetime from search result.
+                Fixed error when running api example "<path>document_search.jsp</path>"
+            </p>
+            <issue id="4415" />
+        </change>
+        <change>
+            <p>
+                Fixed bug that excluded documents without a valid archived datetime from search result.
             </p>
             <issue id="4352" />
         </change>
         <change>
             <p>
-                Make the list returned by DocumentService.getDocuments(SearchQuery) modifiable.
+                Made the list returned by <method>DocumentService.getDocuments(SearchQuery)</method> modifiable.
             </p>
             <issue id="4386" />
         </change>
         <change>
             <p>
+                Fixed bug when trying to sort search result on "meta_headline".
+                Added new non-tokenized field "meta_headline_keyword" to use for sorting on
+                document headlines.
+            </p>
+            <issue id="4415" />
+        </change>
+    </changes>
+    <changes for="developers">
+        <change>
+            <p>
                 Upgrade imcode-db to version 0.3.
             </p>
             <issue id="4389" />
-        </change>
-        <change>
-            <p>
-                Fixed bug when try to sort lucene queryresult on meta_headline. Add meta_headline as an unStoredKeyword ("meta_headline_keyword") when creating new DocumentIndex.
-                Use this field when sort on meta_headline in queryresult in a Lucene search query.
-            </p>
-            <issue id="4415" />
         </change>
     </changes>
 </changeset>
