@@ -1,8 +1,16 @@
-<%@ page contentType="text/html; charset=windows-1252" import="com.imcode.imcms.api.*,
-org.apache.lucene.document.DateField,
+<%@ page contentType="text/html; charset=windows-1252"
+         import="com.imcode.imcms.api.*,
+                 org.apache.lucene.document.DateField,
                  org.apache.lucene.index.Term,
                  org.apache.lucene.search.BooleanQuery,
-                                                               org.apache.lucene.search.RangeQuery" errorPage="error.jsp" %><%@ page import="org.apache.lucene.search.Sort"%><%@ page import="org.apache.lucene.search.SortField"%><%@ page import="org.apache.lucene.search.TermQuery"%><%@ page import="java.util.Arrays"%><%@ page import="java.util.Calendar"%><%@ page import="java.util.Date"%><%
+                 org.apache.lucene.search.RangeQuery,
+                 org.apache.lucene.search.Sort,
+                 org.apache.lucene.search.SortField,
+                 org.apache.lucene.search.TermQuery,
+                 java.util.Calendar,
+                 java.util.Date"
+         errorPage="error.jsp" %>
+<%
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService() ;
 %><html>
@@ -40,7 +48,7 @@ org.apache.lucene.document.DateField,
         <ul>
         <%
             query = new LuceneQuery(new TermQuery(new Term("section", section.getName())));
-            query.setSort(new Sort(new String[] { "meta_headline", "meta_id" }));
+            query.setSort(new Sort(new String[] { "meta_headline_keyword", "meta_id" }));
             documents = documentService.search(query);
 
             if (0 == documents.length) { %>No hits.<% }
@@ -104,7 +112,7 @@ org.apache.lucene.document.DateField,
         <ul>
         <%
             query = new LuceneQuery(new TermQuery(new Term("parent_menu_id", "1001_1")));
-            query.setSort(new Sort(new SortField[] { new SortField("meta_headline"), new SortField("archived_datetime", true) }));
+            query.setSort(new Sort(new SortField[] { new SortField("meta_headline_keyword"), new SortField("archived_datetime", true) }));
             documents = documentService.search(query);
 
             if (0 == documents.length) { %>No hits.<% }
@@ -126,7 +134,6 @@ org.apache.lucene.document.DateField,
             query = new LuceneQuery(luceneQuery) ;
             query.setSort(new Sort("publication_start_datetime"));
             documents = documentService.search(query) ;
-            Arrays.sort(documents, Document.Comparator.PUBLICATION_START_DATETIME) ;
 
             if (0 == documents.length) { %>No hits.<% }
             for ( int i = 0; i < documents.length; i++ ) {

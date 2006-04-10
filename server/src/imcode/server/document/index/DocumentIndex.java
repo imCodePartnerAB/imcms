@@ -24,6 +24,7 @@ public interface DocumentIndex {
     String FIELD__CATEGORY_TYPE_ID = "category_type_id";
     String FIELD__CREATED_DATETIME = "created_datetime";
     String FIELD__META_HEADLINE = "meta_headline";
+    String FIELD__META_HEADLINE_KEYWORD = "meta_headline_keyword";
     String FIELD__META_ID = "meta_id";
     String FIELD__META_TEXT = "meta_text";
     String FIELD__MODIFIED_DATETIME = "modified_datetime";
