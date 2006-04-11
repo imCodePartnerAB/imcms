@@ -43,6 +43,7 @@ public class SMTP {
         try {
             email.setHostName( host );
             email.setSmtpPort( port );
+            email.setCharset("UTF-8");
             email.send();
         } catch ( EmailException e ) {
             if (Utility.throwableContainsMessageContaining( e, "no object DCH")) {
