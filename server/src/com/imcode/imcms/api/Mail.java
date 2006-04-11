@@ -31,6 +31,10 @@ public class Mail {
     public void setBody( String body ) {
         internal.setBody( body );
     }
+    
+    public void setHtmlBody( String htmlBody ) {
+        internal.setHtmlBody( htmlBody );
+    }
 
     public void setCcAddresses( String[] ccAddresses ) {
         internal.setCcAddresses( ccAddresses );

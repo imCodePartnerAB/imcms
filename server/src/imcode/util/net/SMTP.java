@@ -5,7 +5,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.MultiPartEmail;
+import org.apache.commons.mail.HtmlEmail;
 
 import javax.activation.DataSource;
 import javax.mail.internet.AddressException;
@@ -38,7 +38,7 @@ public class SMTP {
 
     public void sendMail( Mail mail )
             throws IOException {
-        MultiPartEmail email = mail.getMail();
+        HtmlEmail email = mail.getMail();
 
         try {
             email.setHostName( host );
@@ -55,8 +55,9 @@ public class SMTP {
 
     public static class Mail {
 
-        MultiPartEmail mail = new MultiPartEmail();
-
+        private HtmlEmail mail = new HtmlEmail();
+        private String textBody ;
+        
         public Mail( String fromAddress ) {
             try {
                 mail.setFrom( fromAddress );
@@ -67,13 +68,9 @@ public class SMTP {
 
         public Mail( String fromAddress, String[] toAddresses, String subject, String body ) {
             this( fromAddress );
-            try {
-                setToAddresses( toAddresses );
-                mail.setSubject( subject );
-                mail.setMsg( body );
-            } catch ( EmailException e ) {
-                throw new UnhandledException( e );
-            }
+            setToAddresses( toAddresses );
+            setSubject( subject );
+            setBody( body );
         }
 
         public void setBccAddresses( String[] bccAddresses ) {
@@ -86,9 +83,21 @@ public class SMTP {
 
         public void setBody( String body ) {
             try {
-                mail.setMsg( body );
+                textBody = body ;
+                mail.setTextMsg( body );
             } catch ( EmailException e ) {
                 throw new UnhandledException( e );
+            }
+        }
+        
+        public void setHtmlBody( String htmlBody ) {
+            try {
+                mail.setHtmlMsg(htmlBody) ;
+                if (null == textBody) {
+                    setBody(htmlBody.replaceAll("<[^>]*>", ""));
+                }
+            } catch ( EmailException e ) {
+                throw new UnhandledException(e);
             }
         }
 
@@ -123,7 +132,7 @@ public class SMTP {
             }
         }
 
-        private MultiPartEmail getMail() {
+        private HtmlEmail getMail() {
             return mail;
         }
 

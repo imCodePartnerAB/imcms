@@ -86,4 +86,12 @@ public class TestSMTP extends TestCase {
         mail.setAttachments(dataSources);
         smtp.sendMail( mail );
     }
+    
+    public void testHtml() throws IOException {
+        SMTP.Mail mail = new SMTP.Mail( fromAddress );
+        mail.setSubject("HTML "+TEST_SUBJECT);
+        mail.setToAddresses(new String[]{toAddress});
+        mail.setHtmlBody("<html><body>This mail should have an <strong>HTML</strong> <em>alternative</em>.</body></html>");
+        smtp.sendMail( mail );
+    }
 }
