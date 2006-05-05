@@ -1,7 +1,6 @@
 package imcode.server.document.textdocument;
 
 import imcode.server.user.UserDomainObject;
-import imcode.server.document.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
@@ -99,7 +98,14 @@ public class MenuDomainObject implements Cloneable, Serializable {
     }
 
     public Set getMenuItemsUnsorted() {
-        return new HashSet(menuItems.values());
+        HashSet set = new HashSet();
+        for ( Iterator iterator = menuItems.values().iterator(); iterator.hasNext(); ) {
+            MenuItemDomainObject menuItem = (MenuItemDomainObject) iterator.next();
+            if (null != menuItem.getDocument()) {
+                set.add(menuItem) ;
+            }
+        }
+        return set;
     }
 
     public void addMenuItem( MenuItemDomainObject menuItem ) {

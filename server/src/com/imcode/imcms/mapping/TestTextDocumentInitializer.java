@@ -4,13 +4,11 @@ import com.imcode.db.mock.MockDatabase;
 import com.imcode.db.mock.MockResultSet;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
-import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class TestTextDocumentInitializer extends TestCase {
 
@@ -24,6 +22,7 @@ public class TestTextDocumentInitializer extends TestCase {
                                     new MockResultSet(new Object[][] { 
                                             { new Integer(1001), new Integer(1), new Integer(1), new Integer(1), new Integer(1002), new Integer(500), ""},
                                             { new Integer(1001), new Integer(1), new Integer(1), new Integer(1), new Integer(1003), new Integer(510), ""},
+                                            { new Integer(1001), new Integer(1), new Integer(1), new Integer(1), new Integer(1005), new Integer(500), ""},
                                             { new Integer(1001), new Integer(2), new Integer(2), new Integer(1), new Integer(1002), new Integer(500), ""},
                                     }));
 
@@ -43,6 +42,6 @@ public class TestTextDocumentInitializer extends TestCase {
 
         MenuDomainObject menu2 = textDocument.getMenu(2) ;
         assertEquals(1, menu2.getMenuItems().length) ;
-       
+        
     }
 }
