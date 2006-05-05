@@ -26,17 +26,11 @@
         out.println( errorMessage );
     }
 %>
-<? install/htdocs/sv/jsp/internalerrorpage.jsp/9 ?>
+<? install/htdocs/sv/jsp/internalerrorpage.jsp/exception ?>
 <%
     Throwable exceptionFromRequest = (Throwable)request.getAttribute("javax.servlet.error.exception");
     if( null != exceptionFromRequest ) {
         exceptionFromRequest.printStackTrace(new PrintWriter(out));
-    }
-%>
-<? install/htdocs/sv/jsp/internalerrorpage.jsp/10 ?>
-<%
-    if( null != exception ) {
-        exception.printStackTrace(new PrintWriter(out));
     }
 %>
 </pre>
