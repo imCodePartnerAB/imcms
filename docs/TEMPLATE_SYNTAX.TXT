@@ -53,9 +53,13 @@ Single tags
         Attributes:
             * no - The number of this text in the text document.
             * label - A small text describing the intended use for this text.
+            * rows - Indicate number of rows to use for the editor.
             * mode - Possible values:
                 - "write" - The content is only output if in "edit text" mode.
                 - "read" - The content is only output if not in "edit text" mode.
+            * formats - List of allowed formats in the editor. Possible values:
+                - "none" - Do not use the html-editor to input HTML.
+                - "text" - Use plain text, newlines converted to "<BR>" and html escaped on output.
 
 
     <?imcms:image?>
@@ -65,13 +69,9 @@ Single tags
         Attributes:
             * no - The number of this image in the text document.
             * label - A small text describing the intended use for this image.
-            * rows - Indicate number of rows to use for the editor.
             * mode - Possible values:
                 - "write" - The content is only output if in "edit image" mode.
                 - "read" - The content is only output if not in "edit image" mode.
-            * formats - List of allowed formats in the editor. Possible values:
-                - "none" - Do not use the html-editor to input HTML.
-                - "text" - Use plain text, newlines converted to "<BR>" and html escaped on output.
 
 
     <?imcms:include?>
