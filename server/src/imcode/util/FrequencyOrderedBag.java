@@ -8,8 +8,6 @@ import java.util.List;
 
 public class FrequencyOrderedBag {
 
-    private final FrequencyMap map;
-
     private List entries = new AbstractList() {
         private List list = new ArrayList();
 
@@ -43,6 +41,8 @@ public class FrequencyOrderedBag {
         }
     };
 
+    private final FrequencyMap map = new FrequencyMap(entries, 10);
+
     private AbstractList keys = new AbstractList() {
         public Object get(int index) {
             FrequencyMap.Entry entry = (FrequencyMap.Entry) entries.get(index);
@@ -53,10 +53,6 @@ public class FrequencyOrderedBag {
             return entries.size();
         }
     };
-
-    public FrequencyOrderedBag() {
-        map = new FrequencyMap(10);
-    }
 
     public int getFrequency(Object key) {
         return ( (Integer) map.get(key) ).intValue();
@@ -86,10 +82,13 @@ public class FrequencyOrderedBag {
         return ( (Integer) map.remove(key) ).intValue();
     }
 
-    private class FrequencyMap extends AbstractHashedMap {
+    private static class FrequencyMap extends AbstractHashedMap {
 
-        FrequencyMap(int i) {
+        private final List entries;
+
+        FrequencyMap(List entries, int i) {
             super(i);
+            this.entries = entries;
         }
 
         protected HashEntry createEntry(HashEntry next, int hashCode, Object key,
@@ -127,7 +126,7 @@ public class FrequencyOrderedBag {
         }
 
         private int getFrequencyAt(int index) {
-            FrequencyMap.Entry entry = (FrequencyMap.Entry) entries.get(index);
+            Entry entry = (Entry) entries.get(index);
             return entry.getFrequency();
         }
 
@@ -164,7 +163,7 @@ public class FrequencyOrderedBag {
             }
         }
 
-        private class Entry extends AbstractHashedMap.HashEntry {
+        private static class Entry extends AbstractHashedMap.HashEntry {
 
             private int index = -1;
 

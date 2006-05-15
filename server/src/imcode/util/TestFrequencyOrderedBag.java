@@ -1,7 +1,6 @@
 package imcode.util;
 
-import junit.framework.*;
-import imcode.util.FrequencyOrderedBag;
+import junit.framework.TestCase;
 
 import java.util.List;
 
