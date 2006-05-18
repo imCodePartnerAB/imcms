@@ -4,150 +4,73 @@ import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentTypeDomainObject;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
-import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.iterators.FilterIterator;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.oro.text.regex.PatternMatcher;
 import org.apache.oro.text.regex.StringSubstitution;
 import org.apache.oro.text.regex.Substitution;
 import org.apache.oro.text.regex.Util;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.io.Writer;
+import java.io.IOException;
 
-class MenuParser {
+public class MenuParser {
 
     private final static Substitution NULLSUBSTITUTION = new StringSubstitution( "" );
 
     private int[] implicitMenus = {1};
     private ParserParameters parserParameters;
-    private static final int EXISTING_DOCTYPE_ID = 0;
 
     MenuParser( ParserParameters parserParameters ) {
         this.parserParameters = parserParameters;
     }
 
-    private MenuDomainObject getMenuByIndex( int index ) {
-        MenuDomainObject menu = ((TextDocumentDomainObject)parserParameters.getDocumentRequest().getDocument()).getMenu( index );
-        if (null == menu) {
-            menu = new MenuDomainObject();
-        }
-        return menu;
-    }
-
-    private String getMenuModePrefix( int menuIndex, List parseTags ) {
-        ImcmsServices services = parserParameters.getDocumentRequest().getServices();
-        UserDomainObject user = parserParameters.getDocumentRequest().getUser();
-        Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
-        String result = services.getAdminTemplate( "textdoc/menulabel.frag", user, parseTags );
-        if ( null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex ) {
-            result += services.getAdminTemplate( "textdoc/add_doc.html", user, parseTags )
-                      +
-                      services.getAdminTemplate( "textdoc/sort_order.html", user, parseTags );
-        }
-        return result;
-    }
-
-    private List createParseTags( int menuIndex, Properties menuattributes ) {
-        MenuDomainObject menu = getMenuByIndex( menuIndex );
-
-        DocumentRequest documentRequest = parserParameters.getDocumentRequest();
-        MenuItemDomainObject[] menuItemsUserCanSee = menu.getMenuItemsUserCanSee(documentRequest.getUser() ) ;
-        ImcmsAuthenticatorAndUserAndRoleMapper userMapper = documentRequest.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
-        UserDomainObject defaultUser = userMapper.getDefaultUser() ;
-        MenuItemDomainObject[] defaultUserMenuItems = menu.getPublishedMenuItemsUserCanSee( defaultUser );
-        List parseTags = Arrays.asList( new String[]{
-            "#menuindex#", "" + menuIndex,
-            "#menuitemcount#", ""+menuItemsUserCanSee.length,
-            "#defaultusermenuitemcount#", ""+defaultUserMenuItems.length,
-            "#label#", menuattributes.getProperty( "label" ),
-            "#flags#", "" + parserParameters.getFlags(),
-            "#sortOrder" + ( null != menu ? menu.getSortOrder() : MenuDomainObject.MENU_SORT_ORDER__DEFAULT ) + "#", " selected",
-            "#doc_types#", createDocumentTypesOptionList(),
-            "#meta_id#", "" + documentRequest.getDocument().getId(),
-            "#defaulttemplate#", URLEncoder.encode( StringUtils.defaultString( menuattributes.getProperty( "defaulttemplate" ) ) )
-        } );
-        return parseTags;
-    }
-
-    private String getMenuModeSuffix( int menuIndex, List parseTags ) {
-        Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
-        ImcmsServices services = parserParameters.getDocumentRequest().getServices();
-        if ( null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex ) {
-            return services.getAdminTemplate( "textdoc/archive_del_button.html", parserParameters.getDocumentRequest().getUser(), null );
-        } else {
-            return services.getAdminTemplate( "textdoc/admin_menu.frag", parserParameters.getDocumentRequest().getUser(), parseTags );
-        }
-    }
-
-    private String createDocumentTypesOptionList() {
-        DocumentDomainObject document = parserParameters.getDocumentRequest().getDocument();
-
-        UserDomainObject user = parserParameters.getDocumentRequest().getUser();
-        TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
-        Set allowedDocumentTypeIds = permissionSet.getAllowedDocumentTypeIds();
-
-        final DocumentTypeDomainObject[] docTypeIdsOrder = {
-            DocumentTypeDomainObject.TEXT,
-            new DocumentTypeDomainObject( EXISTING_DOCTYPE_ID, new LocalizedMessage( "templates/sv/textdoc/existing_doc_name.html/1" ) ),
-            DocumentTypeDomainObject.URL,
-            DocumentTypeDomainObject.FILE,
-            DocumentTypeDomainObject.BROWSER,
-            DocumentTypeDomainObject.HTML,
-        };
-
-        StringBuffer documentTypesHtmlOptionList = new StringBuffer();
-        for ( int i = 0; i < docTypeIdsOrder.length; i++ ) {
-            DocumentTypeDomainObject documentType = docTypeIdsOrder[i];
-            int documentTypeId = documentType.getId();
-            if ( EXISTING_DOCTYPE_ID == documentTypeId || allowedDocumentTypeIds.contains( new Integer(documentTypeId) ) ) {
-                String documentTypeName = documentType.getName().toLocalizedString( user ) ;
-                documentTypesHtmlOptionList.append( "<option value=\"" + documentTypeId + "\">" + documentTypeName
-                                                    + "</option>" );
-            }
-        }
-
-        return documentTypesHtmlOptionList.toString();
-    }
-
-    private String parseMenuNode( int menuIndex, String menutemplate, Properties menuattributes,
-                                  PatternMatcher patMat, TagParser tagParser ) {
-        String modeAttribute = menuattributes.getProperty( "mode" );
+    private String parseMenuNode(int menuIndex, String menuTemplate, Properties menuAttributes,
+                                 PatternMatcher patMat, TagParser tagParser) {
+        String modeAttribute = menuAttributes.getProperty( "mode" );
         boolean modeIsRead = "read".equalsIgnoreCase( modeAttribute );
         boolean modeIsWrite = "write".equalsIgnoreCase( modeAttribute );
         boolean menuMode = parserParameters.isMenuMode();
         if ( menuMode && modeIsRead || !menuMode && modeIsWrite ) {
             return "";
         }
-        MenuDomainObject currentMenu = getMenuByIndex( menuIndex ); 	// Get the menu
-        StringBuffer result = new StringBuffer(); // Allocate a buffer for building our return-value in.
-        NodeList menuNodes = new NodeList( menutemplate, parserParameters.getDocumentRequest().getHttpServletRequest(), tagParser ); // Build a tree-structure of nodes in memory, which "only" needs to be traversed. (Vood)oo-magic.
-        nodeMenu( new SimpleElement( "menu", menuattributes, menuNodes ), result, currentMenu, patMat, menuIndex, tagParser ); // Create an artificial root-node of this tree. An "imcms:menu"-element.
-        if ( menuMode ) { // If in menuMode, make sure to include all the stuff from the proper admintemplates.
-            List parseTags = createParseTags( menuIndex, menuattributes );
-            result.append( getMenuModeSuffix( menuIndex, parseTags ) );
-            result.insert( 0, getMenuModePrefix( menuIndex, parseTags ) );
+        try {
+            DocumentRequest documentRequest = parserParameters.getDocumentRequest();
+            HttpServletRequest request = documentRequest.getHttpServletRequest();
+            request.setAttribute("tagParser", tagParser);
+            request.setAttribute("menuParser", this);
+            request.setAttribute("menuTemplate", menuTemplate) ;
+            request.setAttribute("parserParameters", parserParameters);
+            request.setAttribute("menuIndex", new Integer(menuIndex));
+            request.setAttribute("menuAttributes", menuAttributes);
+            return Utility.getContents("/imcms/"+documentRequest.getUser().getLanguageIso639_2()+"/jsp/docadmin/text/edit_menu.jsp",
+                                       request, documentRequest.getHttpServletResponse()) ;
+        } catch ( Exception e ) {
+            throw new UnhandledException(e);
         }
-        return result.toString();
     }
 
     /**
      * Handle an imcms:menu element.
      */
-    private void nodeMenu( Element menuNode, StringBuffer result, MenuDomainObject currentMenu,
-                           PatternMatcher patMat, int menuIndex, TagParser tagParser ) {
+    public void nodeMenu( Element menuNode, Writer result, MenuDomainObject currentMenu,
+                          PatternMatcher patMat, int menuIndex, TagParser tagParser ) throws IOException {
         if ( currentMenu == null || 0 == currentMenu.getMenuItems().length ) {
             return; // Don't output anything
         }
@@ -161,7 +84,7 @@ class MenuParser {
                 Node menuNodeChild = (Node)menuNodeChildrenIterator.next();
                 switch ( menuNodeChild.getNodeType() ) { // Check the type of the child-node.
                     case Node.TEXT_NODE: // A text-node
-                        result.append( tagParser.replaceTags( patMat,( (Text)menuNodeChild ).getContent(), false) ); // Append the contents to our result.
+                        result.write( tagParser.replaceTags( patMat,( (Text)menuNodeChild ).getContent(), false) ); // Append the contents to our result.
                         break;
                     case Node.ELEMENT_NODE: // An element-node
                         if ( "menuloop".equals( ( (Element)menuNodeChild ).getName() ) ) { // Is it an imcms:menuloop?
@@ -185,8 +108,8 @@ class MenuParser {
      * @param patMat         The patternmatcher used for pattern matching.
      * @param tagParser
      */
-    private void nodeMenuLoop( Element menuLoopNode, StringBuffer result, MenuDomainObject menu,
-                               Properties menuAttributes, PatternMatcher patMat, int menuIndex, TagParser tagParser ) {
+    private void nodeMenuLoop( Element menuLoopNode, Writer result, MenuDomainObject menu,
+                               Properties menuAttributes, PatternMatcher patMat, int menuIndex, TagParser tagParser ) throws IOException {
         if ( null == menu ) {
             return;
         }
@@ -210,10 +133,10 @@ class MenuParser {
 
     private void loopOverMenuItemsAndMenuItemTemplateElementsAndAddToResult( MenuDomainObject menu,
                                                                              final List menuLoopNodeChildren,
-                                                                             StringBuffer result,
+                                                                             Writer result,
                                                                              Properties menuAttributes,
                                                                              PatternMatcher patMat,
-                                                                             final int menuIndex, TagParser tagParser ) {
+                                                                             final int menuIndex, TagParser tagParser ) throws IOException {
         Iterator menuItemsIterator = new FilterIterator( Arrays.asList( menu.getMenuItems() ).iterator(), new Predicate() {
             public boolean evaluate( Object o ) {
                 DocumentDomainObject document = ( (MenuItemDomainObject)o ).getDocument();
@@ -241,7 +164,7 @@ class MenuParser {
                 Node menuLoopChild = (Node)menuLoopChildrenIterator.next();
                 switch ( menuLoopChild.getNodeType() ) { // Check the type of the child-node.
                     case Node.TEXT_NODE: // A text-node
-                        result.append( tagParser.replaceTags( patMat, ( (Text)menuLoopChild ).getContent(), false) ); // Append the contents to our result.
+                        result.write( tagParser.replaceTags( patMat, ( (Text)menuLoopChild ).getContent(), false) ); // Append the contents to our result.
                         break;
                     case Node.ELEMENT_NODE: // An element-node
                         if ( "menuitem".equals( ( (Element)menuLoopChild ).getName() ) ) { // Is it an imcms:menuitem?
@@ -275,9 +198,9 @@ class MenuParser {
      * @param patMat         The patternmatcher used for pattern matching.
      * @param tagParser
      */
-    private void nodeMenuItem( Element menuItemNode, StringBuffer result, MenuItemDomainObject menuItem,
+    private void nodeMenuItem( Element menuItemNode, Writer result, MenuItemDomainObject menuItem,
                                Properties menuAttributes, PatternMatcher patMat, int menuItemIndex,
-                               MenuDomainObject menu, int menuIndex, TagParser tagParser ) {
+                               MenuDomainObject menu, int menuIndex, TagParser tagParser ) throws IOException {
         Substitution menuItemSubstitution;
         if ( menuItem != null ) {
             Properties menuItemAttributes = new Properties( menuAttributes ); // Make a copy of the menuAttributes, so we don't override them permanently.
@@ -306,12 +229,12 @@ class MenuParser {
         }
     }
 
-    private void parseMenuItem( StringBuffer result, String template, Substitution substitution,
-                                PatternMatcher patMat, TagParser tagParser ) {
+    private void parseMenuItem( Writer result, String template, Substitution substitution,
+                                PatternMatcher patMat, TagParser tagParser ) throws IOException {
         String tagsReplaced = tagParser.replaceTags( patMat, template, false) ;
-        result.append( Util.substitute( patMat, TextDocumentParser.hashtagPattern, substitution,
-                                                                  tagsReplaced,
-                                                                  Util.SUBSTITUTE_ALL ) );
+        result.write( Util.substitute( patMat, TextDocumentParser.hashtagPattern, substitution,
+                                       tagsReplaced,
+                                       Util.SUBSTITUTE_ALL ) );
     }
 
     public String tag( Properties menuattributes, String menutemplate,

@@ -5,6 +5,7 @@ import imcode.server.Imcms;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
+import java.util.Properties;
 
 import org.apache.commons.lang.NullArgumentException;
 
@@ -25,7 +26,15 @@ public class LocalizedMessage implements Serializable {
     }
 
     public String toLocalizedString( UserDomainObject user ) {
-        return Imcms.getServices().getLanguageProperties( user ).getProperty( languageKey ) ;
+        return toLocalizedString(user.getLanguageIso639_2());
+    }
+
+    public String toLocalizedString(String languageIso639_2) {
+        return getLanguageProperties(languageIso639_2).getProperty( languageKey ) ;
+    }
+
+    private Properties getLanguageProperties(String languageIso639_2) {
+        return Imcms.getServices().getLanguageProperties( languageIso639_2 );
     }
 
     public boolean equals(Object o) {

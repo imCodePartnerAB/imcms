@@ -48,7 +48,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.*;
 
-class TagParser {
+public class TagParser {
 
     private static Pattern htmlPrebodyPattern;
     private static Pattern htmlPostbodyPattern;

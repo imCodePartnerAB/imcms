@@ -102,6 +102,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.ChangeMenu</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.ChangeMenu</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.ChangeText</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.ChangeText</servlet-class>
     </servlet>
@@ -324,6 +329,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.ChangeImage</servlet-name>
         <url-pattern>/servlet/ChangeImage</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.ChangeMenu</servlet-name>
+        <url-pattern>/servlet/ChangeMenu</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

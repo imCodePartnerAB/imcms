@@ -5,7 +5,7 @@ import org.apache.oro.text.regex.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedList;
 
-class NodeList extends LinkedList {
+public class NodeList extends LinkedList {
 
     private static Pattern elementPattern;
 
@@ -22,7 +22,7 @@ class NodeList extends LinkedList {
     /**
      * Parse a String of data into nodes. *
      */
-    NodeList( String data, HttpServletRequest request, TagParser tagParser ) {
+    public NodeList( String data, HttpServletRequest request, TagParser tagParser ) {
         PatternMatcher patternMatcher = new Perl5Matcher();
         PatternMatcherInput input = new PatternMatcherInput( data );
         int lastEndOffset = 0;

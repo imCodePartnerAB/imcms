@@ -13,5 +13,4 @@ Library 1.2//EN"
     <tag-class>imcode.util.VelocityTag</tag-class>
     <body-content>JSP</body-content>
   </tag>
-
 </taglib>

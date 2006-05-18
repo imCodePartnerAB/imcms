@@ -1,11 +1,10 @@
-<%@ page import="java.net.URLEncoder,
-                 org.apache.commons.lang.StringEscapeUtils,
-                 imcode.server.document.DocumentDomainObject,
-                 imcode.util.Html,
+<%@ page import="imcode.server.document.DocumentDomainObject,
                  imcode.server.user.UserDomainObject,
+                 imcode.util.Html,
                  imcode.util.Utility,
-                 org.apache.commons.lang.StringUtils,
-                 org.apache.commons.lang.math.NumberUtils"%><%
+                 org.apache.commons.lang.StringEscapeUtils,
+                 org.apache.commons.lang.math.NumberUtils,
+                 java.net.URLEncoder"%><%
 
     DocumentDomainObject document = (DocumentDomainObject)request.getAttribute( "document" ) ;
     Integer textIndex = (Integer)request.getAttribute( "textIndex" ) ;

@@ -598,6 +598,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public Properties getLanguageProperties(UserDomainObject user) {
         String languageIso639_2 = user.getLanguageIso639_2();
+        return getLanguageProperties(languageIso639_2);
+    }
+
+    public Properties getLanguageProperties(String languageIso639_2) {
         Properties languageProperties = (Properties) languagePropertiesMap.get(languageIso639_2);
         if ( null == languageProperties ) {
             String propertiesFilename = languageIso639_2 + ".properties";

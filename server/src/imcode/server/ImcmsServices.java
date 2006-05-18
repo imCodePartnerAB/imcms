@@ -103,4 +103,6 @@ public interface ImcmsServices {
     ProcedureExecutor getProcedureExecutor();
 
     UserDomainObject verifyUserByIpOrDefault(String remoteAddr);
+
+    Properties getLanguageProperties(String languageIso639_2);
 }

@@ -176,6 +176,10 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
+    public Properties getLanguageProperties(String languageIso639_2) {
+        return null;
+    }
+
     public KeyStore getKeyStore() {
         return keyStore;
     }
