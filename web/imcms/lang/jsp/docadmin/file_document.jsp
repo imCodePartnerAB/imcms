@@ -24,7 +24,7 @@
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
 <table border="0" cellspacing="0" cellpadding="0">
-<form method="POST" enctype="multipart/form-data" action="DocumentPageFlowDispatcher" charset>
+<form method="POST" enctype="multipart/form-data" action="DocumentPageFlowDispatcher">
 <input type="hidden" name="meta_id" value="#getMetaId#">
 <input type="hidden" name="new_meta_id" value="#new_meta_id#">
 <tr>

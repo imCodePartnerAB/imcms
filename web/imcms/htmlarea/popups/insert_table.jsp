@@ -1,12 +1,14 @@
 <%@ page
-	
+
 	import="java.util.Map,
-	        java.util.HashMap"
-	
-	contentType="text/html; charset=windows-1252"
-	
-%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"
-%><%@ include file="../_editor_settings.jsp"
+	        java.util.HashMap,
+	        imcode.server.WebAppGlobalConstants"
+
+	contentType="text/html"
+
+%><%	response.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING );%><%@
+		taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%@
+		include file="../_editor_settings.jsp"
 %><%!
 
 Map langMap = new HashMap() ;
@@ -164,9 +166,9 @@ function onCancel() {
 			</tr>
 			</table>
 		</fieldset></td>
-		
+
 		<td width="10">&nbsp;</td>
-		
+
 		<td>
 		<fieldset style="border: 1px solid #20568D; padding: 0px 5px;">
 			<legend class="imcmsAdmText" style="padding: 0px 5px"><%= lang("Spacing",user) %></legend>

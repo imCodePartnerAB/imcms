@@ -434,7 +434,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
                 variables = parseDocVariables;
             }
             StringWriter stringWriter = new StringWriter();
-            velocity.mergeTemplate(path, WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252, context, stringWriter);
+            velocity.mergeTemplate(path, WebAppGlobalConstants.DEFAULT_ENCODING, context, stringWriter);
             String result = stringWriter.toString();
             if ( null != variables ) {
                 result = Parser.parseDoc(result, (String[]) variables.toArray(new String[variables.size()]));

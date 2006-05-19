@@ -18,7 +18,7 @@ public class PageDispatcher extends HttpServlet {
     }
 
     public void doPost( HttpServletRequest r, HttpServletResponse response ) throws ServletException, IOException {
-        r.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
+        r.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING );
         MultipartHttpServletRequest request = new MultipartHttpServletRequest( r );
 
         Page page = Page.fromRequest(request) ;

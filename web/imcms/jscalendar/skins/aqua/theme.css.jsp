@@ -1,14 +1,10 @@
 <%@ page
-	
-	contentType="text/css; charset=windows-1252"
-	
-%><%
+ 		import="imcode.server.WebAppGlobalConstants"
 
+		contentType="text/css" %><%
 
-
-if (false) {
-	%><style type="text/css"><%
-} %>
+		response.setContentType( "text/css; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING);
+%>
 /* Distributed as part of The Coolest DHTML Calendar
    Author: Mihai Bazon, www.bazon.net/mishoo
    Copyright Dynarch.com 2005, www.dynarch.com
@@ -245,7 +241,3 @@ div.calendar { position: relative; }
 .calendar td.time span.active {
   background: url("active-bg.gif"); color: #fff;
 }
-<%
-if (false) {
-	%><style></style><%
-} %>

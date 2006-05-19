@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=windows-1252"
+<%@ page contentType="text/html"
     import="com.imcode.imcms.flow.CreateDocumentPageFlow,
             com.imcode.imcms.flow.DocumentPageFlow,
             com.imcode.imcms.flow.EditDocumentInformationPageFlow,
@@ -26,12 +26,14 @@
             java.text.DateFormat,
             java.text.SimpleDateFormat,
             java.util.*,
-            java.util.regex.Pattern,
             com.imcode.util.KeywordsParser,
-            imcode.util.jscalendar.JSCalendar"
+            imcode.util.jscalendar.JSCalendar"%><%
 
-%><%@ page import="imcode.util.ToStringPairTransformer"%><%@ page import="imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper"%>
-<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
+		response.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING );%><%@
+
+		page import="imcode.util.ToStringPairTransformer"%><%@
+		page import="imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper, imcode.server.WebAppGlobalConstants"%><%@
+		taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     final ImcmsServices service = Imcms.getServices();

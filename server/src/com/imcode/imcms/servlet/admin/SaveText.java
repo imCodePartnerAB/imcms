@@ -1,29 +1,28 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.ConcurrentDocumentModificationException;
+import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
+import imcode.util.Utility;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import com.imcode.imcms.mapping.DocumentMapper;
-
 public final class SaveText extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws IOException {
-        req.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
+        req.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING );
         Utility.setDefaultHtmlContentType( res );
 
         // Check if user has permission to be here

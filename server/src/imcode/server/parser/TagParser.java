@@ -296,7 +296,7 @@ public class TagParser {
             String contentType = urlConnection.getContentType();
             String contentEncoding = StringUtils.substringAfter(contentType, "charset=");
             if ( "".equals(contentEncoding) ) {
-                contentEncoding = WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252;
+                contentEncoding = WebAppGlobalConstants.DEFAULT_ENCODING;
             }
             InputStreamReader urlInput = null;
             try {

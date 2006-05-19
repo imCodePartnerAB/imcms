@@ -50,7 +50,7 @@ public class CollectingHttpServletResponse extends HttpServletResponseWrapper {
             printWriter.flush();
             stringWriter.flush();
             if (byteArrayOutputStream.size() > 0) {
-                return byteArrayOutputStream.toString(WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252) ;
+                return byteArrayOutputStream.toString(WebAppGlobalConstants.DEFAULT_ENCODING ) ;
             } else {
                 return stringWriter.toString();
             }

@@ -1,12 +1,7 @@
-<%@ page
-	
-	contentType="text/css; charset=windows-1252"
-	
-%><%@ include file="_editor_methods.jsp" %><%
-
-if (false) {
-	%><style><%
-} %>
+<%@ page import="imcode.server.WebAppGlobalConstants"
+		contentType="text/css" %><%
+		response.setContentType( "text/css; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING);
+%><%@ include file="_editor_methods.jsp" %>
 
 .htmlarea {
 	background: <%= htmlareaBg %>;
@@ -214,8 +209,3 @@ if (false) {
 }
 
 form { margin: 0px; border: none; }
-
-<%
-if (false) {
-	%></style><%
-} %>

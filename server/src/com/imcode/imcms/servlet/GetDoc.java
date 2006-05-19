@@ -70,7 +70,7 @@ public class GetDoc extends HttpServlet {
             long renderTime = stopWatch.getTime();
             log.trace("Rendering document " + meta_id + " took " + renderTime + "ms.");
             if ( tempstring != null ) {
-                byte[] tempbytes = tempstring.getBytes(WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252);
+                byte[] tempbytes = tempstring.getBytes(WebAppGlobalConstants.DEFAULT_ENCODING );
                 res.setContentLength(tempbytes.length);
                 res.getOutputStream().write(tempbytes);
             }

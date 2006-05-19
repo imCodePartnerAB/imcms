@@ -1,12 +1,14 @@
 <%@ page
-	
+
 	import="java.util.Map,
-	        java.util.HashMap"
-	
-	contentType="text/html; charset=windows-1252"
-	
-%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"
-%><%@ include file="../_editor_settings.jsp"
+	        java.util.HashMap,
+	        imcode.server.WebAppGlobalConstants"
+
+	contentType="text/html"
+
+%><%	response.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING );%><%@
+		taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%@
+		include file="../_editor_settings.jsp"
 %><%!
 
 Map langMap = new HashMap() ;

@@ -43,7 +43,6 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -121,7 +120,7 @@ public class Utility {
     }
 
     public static void setDefaultHtmlContentType( HttpServletResponse res ) {
-        res.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
+        res.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING );
     }
 
     public static void redirectToStartDocument( HttpServletRequest req, HttpServletResponse res ) throws IOException {

@@ -5,7 +5,7 @@ import java.io.File;
 public class WebAppGlobalConstants {
 
     public final static String USER_LOGIN_NAME_PARAMETER_NAME = "loginname";
-    public static final String DEFAULT_ENCODING_WINDOWS_1252 = "windows-1252";
+    public static final String DEFAULT_ENCODING = "UTF-8";
     public static final String LOGGED_IN_USER = "logon.isDone";
 
     private static WebAppGlobalConstants singletonInstance;

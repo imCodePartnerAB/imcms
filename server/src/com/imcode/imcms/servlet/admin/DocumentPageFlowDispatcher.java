@@ -5,7 +5,6 @@ import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import com.imcode.util.MultipartHttpServletRequest;
 import imcode.util.Utility;
 import org.apache.commons.lang.NotImplementedException;
 
@@ -22,7 +21,7 @@ public class DocumentPageFlowDispatcher extends HttpServlet {
     }
 
     public void doPost( HttpServletRequest r, HttpServletResponse response ) throws ServletException, IOException {
-        r.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
+        r.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING );
         MultipartHttpServletRequest request = new MultipartHttpServletRequest( r );
 
         UserDomainObject user = Utility.getLoggedOnUser( request );

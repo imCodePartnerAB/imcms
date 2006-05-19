@@ -1,13 +1,9 @@
 <%@ page
-  import="imcode.server.Imcms,
-          imcode.server.ImcmsServices,
-          com.imcode.imcms.api.DocumentService,
+  import="com.imcode.imcms.api.DocumentService,
           com.imcode.imcms.api.ContentManagementSystem,
           com.imcode.imcms.api.TextDocument,
-          java.io.File,
-          java.io.FilenameFilter,
-          java.util.*"
-  contentType="text/html; charset=windows-1252"
+          imcode.server.WebAppGlobalConstants"
+  contentType="text/html"
 
 %><%!
 /* *******************************************************************************************
@@ -31,7 +27,7 @@ public String getCookie ( String theName, HttpServletRequest req ) {
 public void setCookie ( String theName, String theValue, HttpServletResponse res ) {
 	Cookie cookie = null;
 	cookie = new Cookie(theName, theValue);
-	cookie.setMaxAge(60*60*24*365*1);
+	cookie.setMaxAge(60*60*24*365);
 	cookie.setPath("/");
 	res.addCookie(cookie);
 }
@@ -39,6 +35,7 @@ public void setCookie ( String theName, String theValue, HttpServletResponse res
 //if (debug) out.print(getCookie("DUMMY", request)) ;
 
 %><%
+response.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING );
 
 ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
 DocumentService documentService     = imcmsSystem.getDocumentService() ;
