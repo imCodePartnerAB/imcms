@@ -48,7 +48,7 @@ public class TestUserService extends TestCase {
 
     public void testNewUserCanHaveRoles() throws SaveException, NoPermissionException {
 
-        internalUser.addRoleId( RoleId.SUPERADMIN );
+        internalUser.addRoleId( RoleId.USERADMIN );
         database.addExpectedSqlCall(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("users", "test"), new Integer(HIGHEST_USER_ID+1)) ;
 
         User user = userService.createNewUser( "test", "test" );

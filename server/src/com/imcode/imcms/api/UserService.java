@@ -156,7 +156,7 @@ public class UserService {
         if (null == user) {
             return ;
         }
-        getSecurityChecker().isSuperAdminOrSameUser(user);
+        getSecurityChecker().canEditUser(user);
         try {
             ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = getMapper();
             if (0 == user.getId()) {
