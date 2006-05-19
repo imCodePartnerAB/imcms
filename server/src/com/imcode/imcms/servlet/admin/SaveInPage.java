@@ -86,11 +86,7 @@ public class SaveInPage extends HttpServlet {
             }
 
             Utility.setDefaultHtmlContentType( res );
-            // return page
-            String output = AdminDoc.adminDoc( documentId, user, req, res );
-            if ( output != null ) {
-                out.write( output );
-            }
+            AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
 
         } else if ( req.getParameter( "preview" ) != null ) {
             if ( requestedTemplate == null ) { // If the user didn't select a template
@@ -116,7 +112,6 @@ public class SaveInPage extends HttpServlet {
             }
         } else if ( req.getParameter( "change_group" ) != null ) {
             Utility.setDefaultHtmlContentType( res );
-            Writer out = res.getWriter();
 
             req.getSession().setAttribute( "flags", new Integer( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) );
 
@@ -124,10 +119,7 @@ public class SaveInPage extends HttpServlet {
                 user.setTemplateGroup( requestedTemplateGroup );
             }
 
-            String output = AdminDoc.adminDoc( documentId, user, req, res );
-            if ( output != null ) {
-                out.write( output );
-            }
+            AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
 
         }
     }
@@ -137,11 +129,7 @@ public class SaveInPage extends HttpServlet {
     ) throws IOException, ServletException {
         Utility.setDefaultHtmlContentType( res );
 
-        String output = AdminDoc.adminDoc( documentId, user, req, res );
-        if ( output != null ) {
-            Writer out = res.getWriter();
-            out.write( output );
-        }
+        AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
     }
 
     private void errorNoTemplateSelected(int documentId, ImcmsServices services, UserDomainObject user,

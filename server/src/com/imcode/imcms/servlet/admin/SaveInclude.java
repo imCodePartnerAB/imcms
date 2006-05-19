@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -98,10 +97,7 @@ public class SaveInclude extends HttpServlet {
                 }
             }
 
-            String tempstring = AdminDoc.adminDoc(meta_id, user, req, res);
-            if ( tempstring != null ) {
-                out.write(tempstring);
-            }
+            AdminDoc.adminDoc(meta_id, user, req, res, getServletContext());
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
         } catch ( NoPermissionToAddDocumentToMenuException e ) {

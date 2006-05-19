@@ -14,8 +14,11 @@ import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.security.KeyStore;
 import java.text.Collator;
 import java.util.Date;
@@ -27,11 +30,7 @@ public interface ImcmsServices {
     UserDomainObject verifyUser(String login, String password)
 	;
 
-    String parsePage( ParserParameters paramsToParse ) throws IOException ;
-
-    /** @deprecated Use {@link imcode.server.document.HtmlDocumentDomainObject#getHtml()} instead. **/
-    String getHtmlDocumentData( int meta_id )
-	;
+    void parsePage(ParserParameters paramsToParse, Writer out) throws IOException ;
 
     void incrementSessionCounter();
 

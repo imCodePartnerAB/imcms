@@ -11,7 +11,6 @@ import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.index.RebuildingDirectoryIndex;
 import imcode.server.document.index.IndexDocumentFactory;
@@ -38,11 +37,10 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import javax.sql.DataSource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.beans.PropertyDescriptor;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.text.Collator;
@@ -361,25 +359,13 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return instance;
     }
 
-    public String parsePage(ParserParameters paramsToParse)
+    public void parsePage(ParserParameters paramsToParse, Writer writer)
             throws IOException {
-        return textDocParser.parsePage(paramsToParse);
+        textDocParser.parsePage(paramsToParse, writer);
     }
 
     public void updateMainLog(String event) {
         mainLog.info(event);
-    }
-
-    public String getHtmlDocumentData(int meta_id) {
-
-        String htmlStr = null;
-        if ( DocumentTypeDomainObject.HTML_ID == getDocType(meta_id) ) {
-            String sqlStr = "select frame_set from frameset_docs where meta_id = ?";
-            final Object[] parameters = new String[] { "" + meta_id };
-            htmlStr = (String) getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.SINGLE_STRING_HANDLER));
-        }
-        return htmlStr;
-
     }
 
     public DocumentMapper getDocumentMapper() {

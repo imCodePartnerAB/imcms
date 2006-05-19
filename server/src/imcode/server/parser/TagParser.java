@@ -237,8 +237,9 @@ public class TagParser {
                     return "";
                 }
                 ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters(parserParameters, includedDocumentId.intValue(), attributes);
-                String documentStr = textDocParser.parsePage(includedDocumentParserParameters, includeLevel - 1);
-                documentStr = Util.substitute(patMat, htmlPrebodyPattern, NULL_SUBSTITUTION, documentStr);
+                StringWriter writer = new StringWriter();
+                textDocParser.parsePage(includedDocumentParserParameters, includeLevel - 1, writer);
+                String documentStr = Util.substitute(patMat, htmlPrebodyPattern, NULL_SUBSTITUTION, writer.toString());
                 documentStr = Util.substitute(patMat, htmlPostbodyPattern, NULL_SUBSTITUTION, documentStr);
                 return documentStr;
             } else {
@@ -328,8 +329,9 @@ public class TagParser {
             if ( includeLevel > 0 ) {
                 int included_meta_id = Integer.parseInt(attributevalue);
                 ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters(parserParameters, included_meta_id, attributes);
-                String documentStr = textDocParser.parsePage(includedDocumentParserParameters, includeLevel - 1);
-                documentStr = Util.substitute(patMat, htmlPrebodyPattern, NULL_SUBSTITUTION, documentStr);
+                StringWriter writer = new StringWriter();
+                textDocParser.parsePage(includedDocumentParserParameters, includeLevel - 1, writer);
+                String documentStr = Util.substitute(patMat, htmlPrebodyPattern, NULL_SUBSTITUTION, writer.toString());
                 documentStr = Util.substitute(patMat, htmlPostbodyPattern, NULL_SUBSTITUTION, documentStr);
                 return documentStr;
             }

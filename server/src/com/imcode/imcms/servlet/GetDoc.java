@@ -65,21 +65,16 @@ public class GetDoc extends HttpServlet {
         try {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
-            String tempstring = getDoc(meta_id, req, res);
+            getDoc(meta_id, req, res);
             stopWatch.stop();
             long renderTime = stopWatch.getTime();
             log.trace("Rendering document " + meta_id + " took " + renderTime + "ms.");
-            if ( tempstring != null ) {
-                byte[] tempbytes = tempstring.getBytes(WebAppGlobalConstants.DEFAULT_ENCODING );
-                res.setContentLength(tempbytes.length);
-                res.getOutputStream().write(tempbytes);
-            }
         } finally {
             NDC.pop();
         }
     }
 
-    public static String getDoc(int meta_id, HttpServletRequest req, HttpServletResponse res)
+    public static void getDoc(int meta_id, HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
         ImcmsServices imcref = Imcms.getServices();
 
@@ -100,7 +95,8 @@ public class GetDoc extends HttpServlet {
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument(meta_id);
         if ( null == document ) {
-            return getDocumentDoesNotExistPage(res, user);
+            outputDocumentDoesNotExistPage(res, user);
+            return ;
         }
 
         String referrer = req.getHeader(HTTP_HEADER_REFERRER);
@@ -141,13 +137,14 @@ public class GetDoc extends HttpServlet {
 
         if ( !user.canAccess(document) ) {
             Utility.forwardToLogin(req, res);
-            return null;
+            return;
         }
 
         if ( !document.isPublished() && !user.canEdit(document) ) {
             res.setStatus(HttpServletResponse.SC_FORBIDDEN);
             Utility.setDefaultHtmlContentType(res);
-            return imcref.getAdminTemplate(NO_ACTIVE_DOCUMENT_URL, user, null);
+            imcref.getAdminTemplate(NO_ACTIVE_DOCUMENT_URL, user, null);
+            return;
         }
 
         if ( document instanceof UrlDocumentDomainObject ) {
@@ -155,7 +152,7 @@ public class GetDoc extends HttpServlet {
             res.sendRedirect(url_ref);
             // Log to accesslog
             trackLog.info(documentRequest);
-            return null;
+            return ;
         } else if ( document instanceof BrowserDocumentDomainObject ) {
 
             String br_id = req.getHeader("User-Agent");
@@ -178,16 +175,12 @@ public class GetDoc extends HttpServlet {
             res.sendRedirect("GetDoc?meta_id=" + toMetaId);
             // Log to accesslog
             trackLog.info(documentRequest);
-            return null;
+            return ;
         } else if ( document instanceof HtmlDocumentDomainObject ) {
             Utility.setDefaultHtmlContentType(res);
-            String htmlDocumentData = imcref.getHtmlDocumentData(meta_id);
-            if ( htmlDocumentData == null ) {
-                throw new RuntimeException("Null-frameset encountered.");
-            }
-            // Log to accesslog
+            String htmlDocumentData = ((HtmlDocumentDomainObject)document).getHtml();
             trackLog.info(documentRequest);
-            return htmlDocumentData;
+            res.getWriter().write(htmlDocumentData);
         } else if ( document instanceof FileDocumentDomainObject ) {
             String fileId = req.getParameter(REQUEST_PARAMETER__FILE_ID);
             FileDocumentDomainObject fileDocument = (FileDocumentDomainObject) document;
@@ -198,7 +191,8 @@ public class GetDoc extends HttpServlet {
             try {
                 fr = new BufferedInputStream(file.getInputStreamSource().getInputStream());
             } catch ( IOException ex ) {
-                return getDocumentDoesNotExistPage(res, user);
+                outputDocumentDoesNotExistPage(res, user);
+                return ;
             }
             int len = fr.available();
             ServletOutputStream out = res.getOutputStream();
@@ -223,7 +217,6 @@ public class GetDoc extends HttpServlet {
             out.close();
             // Log to accesslog
             trackLog.info(documentRequest);
-            return null;
         } else {
             Utility.setDefaultHtmlContentType(res);
             user.setTemplateGroup(null);
@@ -233,11 +226,12 @@ public class GetDoc extends HttpServlet {
             paramsToParser.setParameter(req.getParameter("param"));
             // Log to accesslog
             trackLog.info(documentRequest);
-            return imcref.parsePage(paramsToParser);
+            imcref.parsePage(paramsToParser, res.getWriter());
         }
     }
 
-    public static String getDocumentDoesNotExistPage(HttpServletResponse res, UserDomainObject user) {
+    public static void outputDocumentDoesNotExistPage(HttpServletResponse res,
+                                                      UserDomainObject user) throws IOException {
         ImcmsServices imcref = Imcms.getServices();
         List vec = new ArrayList();
         SystemData sysData = imcref.getSystemData();
@@ -246,7 +240,7 @@ public class GetDoc extends HttpServlet {
         vec.add(eMailServerMaster);
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
         Utility.setDefaultHtmlContentType(res);
-        return imcref.getAdminTemplate(NO_PAGE_URL, user, vec);
+        res.getWriter().write(imcref.getAdminTemplate(NO_PAGE_URL, user, vec));
     }
 
 }

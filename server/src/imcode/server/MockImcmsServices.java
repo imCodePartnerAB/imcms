@@ -15,8 +15,11 @@ import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.security.KeyStore;
 import java.text.Collator;
 import java.util.Date;
@@ -41,12 +44,8 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public String parsePage( ParserParameters paramsToParse ) throws IOException {
-        return null;
-    }
-
-    public String getHtmlDocumentData( int meta_id ) {
-        return null;
+    public void parsePage(ParserParameters paramsToParse, Writer out) throws IOException {
+        
     }
 
     public void incrementSessionCounter() {

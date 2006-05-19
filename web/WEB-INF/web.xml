@@ -32,11 +32,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.AddDoc</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.AddDoc</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminCategories</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminCategories</servlet-class>
     </servlet>
@@ -192,11 +187,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveSort</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveSort</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveText</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.SaveText</servlet-class>
     </servlet>
@@ -259,11 +249,6 @@
     <servlet-mapping>
         <servlet-name>RD</servlet-name>
         <url-pattern>/RD/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.AddDoc</servlet-name>
-        <url-pattern>/servlet/AddDoc</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -424,11 +409,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveInPage</servlet-name>
         <url-pattern>/servlet/SaveInPage</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveSort</servlet-name>
-        <url-pattern>/servlet/SaveSort</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -27,8 +27,6 @@ public class ChangeText extends HttpServlet {
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         Utility.setDefaultHtmlContentType( res );
 
-        Writer out = res.getWriter();
-
         UserDomainObject user = Utility.getLoggedOnUser( req );
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
@@ -37,10 +35,7 @@ public class ChangeText extends HttpServlet {
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( textDocument );
 
         if ( !textDocumentPermissionSet.getEditTexts() ) {	// Checking to see if user may edit this
-            String output = AdminDoc.adminDoc( documentId, user, req, res );
-            if ( output != null ) {
-                out.write( output );
-            }
+            AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
             return;
         }
 

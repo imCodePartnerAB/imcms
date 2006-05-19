@@ -149,11 +149,11 @@ A.imLinkHelp    { font: bold 16px Arial, Tahoma,Verdana,sans-serif; color:#eeee0
 </form>
 
 <% } else if (menuMode) { %>
-<a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=<%= flags %>&editmenu=<%= menuIndex %>" class="imcms_label"
+<a href="<%= request.getContextPath() %>/servlet/ChangeMenu?documentId=<%= document.getId() %>&menuIndex=<%= menuIndex %>" class="imcms_label"
         ><%= label %> [<%= defaultUserMenuItems.length %>/<%= menuItemsUserCanSee.length %>]&nbsp;<%-- 
     --%><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/red.gif" border="0" alt="edit menu <%= menuIndex%>" align="bottom"></a>
 <%= content.toString() %>
-    <a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=<%= flags %>&editmenu=<%= menuIndex %>"
+    <a href="<%= request.getContextPath() %>/servlet/ChangeMenu?documentId=<%= document.getId() %>&menuIndex=<%= menuIndex %>"
             ><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/ico_txt.gif" border="0" alt="edit menu <%= menuIndex%>"></a>
 <% } else { %>
 <%= content.toString() %>

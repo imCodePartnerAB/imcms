@@ -1,16 +1,24 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.*;
-import com.imcode.imcms.servlet.GetDoc;
-import imcode.server.*;
-import imcode.server.document.*;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.servlet.GetDoc;
+import imcode.server.DocumentRequest;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
+import imcode.server.document.BrowserDocumentDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.HtmlDocumentDomainObject;
+import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.Html;
+import imcode.util.Utility;
 import org.apache.commons.lang.ObjectUtils;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -47,17 +55,10 @@ public class AdminDoc extends HttpServlet {
         if ( null != pageFlow && user.canEdit( document )) {
             pageFlow.dispatch( req, res );
         } else {
-
             Utility.setDefaultHtmlContentType( res );
             int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
 
-            String tempstring = AdminDoc.adminDoc( meta_id, user, req, res );
-
-            if ( tempstring != null ) {
-                byte[] tempbytes = tempstring.getBytes( WebAppGlobalConstants.DEFAULT_ENCODING );
-                res.setContentLength( tempbytes.length );
-                res.getOutputStream().write( tempbytes );
-            }
+            adminDoc( meta_id, user, req, res, getServletContext() );
         }
     }
 
@@ -82,14 +83,13 @@ public class AdminDoc extends HttpServlet {
         } else if ( document instanceof FileDocumentDomainObject
                     && ImcmsConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags ) {
             pageFlow = new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), returnCommand, saveDocumentCommand, null );
-
         }
         return pageFlow;
     }
 
-    public static String adminDoc( int meta_id, UserDomainObject user, HttpServletRequest req,
-                                   HttpServletResponse res ) throws IOException, ServletException {
-        ImcmsServices imcref = Imcms.getServices();
+    public static void adminDoc(int meta_id, UserDomainObject user, HttpServletRequest req,
+                                HttpServletResponse res, ServletContext servletContext) throws IOException, ServletException {
+        final ImcmsServices imcref = Imcms.getServices();
 
         HttpSession session = req.getSession();
         Stack history = (Stack)session.getAttribute( "history" );
@@ -104,7 +104,8 @@ public class AdminDoc extends HttpServlet {
 
         DocumentDomainObject document = imcref.getDocumentMapper().getDocument( meta_id );
         if ( null == document ) {
-            return GetDoc.getDocumentDoesNotExistPage( res, user );
+            GetDoc.outputDocumentDoesNotExistPage(res, user );
+            return ;
         }
 
         int doc_type = document.getDocumentTypeId();
@@ -124,23 +125,22 @@ public class AdminDoc extends HttpServlet {
                     vec.add( Html.getAdminButtons( user, document, req, res ) );
                     vec.add( "#doc_type_description#" );
                     vec.add( imcref.getAdminTemplate( "adminbuttons/adminbuttons" + doc_type + "_description.html", user, null ) );
-                    return imcref.getAdminTemplate( "docinfo.html", user, vec );
+                    Utility.setDefaultHtmlContentType(res);
+                    res.getWriter().write(imcref.getAdminTemplate( "docinfo.html", user, vec ));
+                    return ;
                 }
             }
         }
 
         if ( !user.canEdit( document ) ) {
-            return GetDoc.getDoc( meta_id, req, res );
+            GetDoc.getDoc( meta_id, req, res );
+            return ;
         }
 
         DocumentRequest documentRequest = new DocumentRequest( imcref, user, document, null, req, res );
-        ParserParameters parserParameters = new ParserParameters( documentRequest );
+        final ParserParameters parserParameters = new ParserParameters( documentRequest );
         parserParameters.setFlags( flags );
-        String editingMenuIndexStr = req.getParameter( "editmenu" );
-        if ( null != editingMenuIndexStr ) {
-            parserParameters.setEditingMenuIndex( Integer.valueOf( editingMenuIndexStr ) );
-        }
-        return imcref.parsePage( parserParameters );
+        imcref.parsePage( parserParameters, res.getWriter());
     }
 
     private static class RedirectToDocumentCommand implements DispatchCommand {

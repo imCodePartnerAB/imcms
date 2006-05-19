@@ -6,7 +6,7 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.SearchDocumentsPage;
-import com.imcode.imcms.servlet.admin.AddDoc;
+import com.imcode.imcms.servlet.admin.DocumentCreator;
 import com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean;
 import com.imcode.imcms.servlet.beans.AdminManagerSubreport;
 import com.imcode.util.ChainableReversibleNullComparator;
@@ -111,7 +111,7 @@ public class AdminManager extends HttpServlet {
                     DocumentPageFlow.SaveDocumentCommand saveNewDocumentCommand = new SaveNewDocumentCommand();
                     DispatchCommand returnCommand = new ShowRecentChangesPageCommand();
 
-                    AddDoc.DocumentCreator documentCreator = new AddDoc.DocumentCreator( saveNewDocumentCommand, returnCommand, getServletContext() );
+                    DocumentCreator documentCreator = new DocumentCreator( saveNewDocumentCommand, returnCommand, getServletContext() );
                     documentCreator.createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument, request, response );
                 }
             } catch ( NumberFormatException nfe ) {
