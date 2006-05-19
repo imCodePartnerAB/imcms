@@ -36,8 +36,8 @@ class SecurityChecker {
         }
     }
 
-    void isSuperAdminOrSameUser(User user) throws NoPermissionException {
-        if (!getCurrentUser().isSuperAdmin() && !user.equals( getCurrentUser() )) {
+    void canEditUser(User user) throws NoPermissionException {
+        if (!getCurrentUser().isUserAdmin() && !getCurrentUser().isSuperAdmin() && !user.equals( getCurrentUser() )) {
             throw new NoPermissionException( "Must be the same user or superadmin." );
         }
     }
