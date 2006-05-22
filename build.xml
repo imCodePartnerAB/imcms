@@ -385,6 +385,7 @@
                         <ddl2db schemafile="${sql}/ddl.xml" databasetype="@{database}">
                              <writeschemasqltofile outputfile="${tmp}/@{database}-ddl.sql" alterdatabase="false" dodrops="false">
                                 <parameter platforms="mysql" name="ENGINE" value="InnoDB"/>
+                                <parameter platforms="mysql" name="CHARACTER SET UTF8"/>
                              </writeschemasqltofile>
                         </ddl2db>
                         
