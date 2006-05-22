@@ -48,7 +48,7 @@ public class TestMenuParser extends TestCase {
         textDocument.setPublicationStartDatetime( new Date( 0 ) );
         assertCanNotSeeDocumentInMenu();
         textDocument.setPublicationStatus( Document.PublicationStatus.APPROVED );
-        assertCanSeeDocumentInMenu();
+        assertCanSeeDocumentInMenuWhenEditingMenu();
     }
 
     public void testAdminCantSeeUnpublishedDocumentWhenInMenuModeButNotEditingMenu() {
@@ -67,7 +67,7 @@ public class TestMenuParser extends TestCase {
         user.addRoleId( editRole );
         parserParameters.setEditingMenuIndex( new Integer( MENU_INDEX ) );
         parserParameters.setMenuMode(true) ;
-        assertCanSeeDocumentInMenu();
+        assertCanSeeDocumentInMenuWhenEditingMenu();
     }
 
     public void testUserCantSeeUnpublishedDocumentInMenuWhenEditing() throws Exception {
@@ -81,14 +81,14 @@ public class TestMenuParser extends TestCase {
         assertCanNotSeeDocumentInMenu();
         textDocument.setPublicationStartDatetime( new Date( 0 ) );
         textDocument.setPublicationStatus( Document.PublicationStatus.APPROVED );
-        assertCanSeeDocumentInMenu();
+        assertCanSeeDocumentInMenuWhenEditingMenu();
     }
 
     private void assertCanNotSeeDocumentInMenu() {
-        assertFalse( menuParser.userCanSeeDocumentInMenu( user, textDocument, MENU_INDEX ) );
+        assertFalse( user.canSeeDocumentInMenus(textDocument) );
     }
 
-    private void assertCanSeeDocumentInMenu() {
-        assertTrue( menuParser.userCanSeeDocumentInMenu( user, textDocument, MENU_INDEX ) );
+    private void assertCanSeeDocumentInMenuWhenEditingMenu() {
+        assertTrue( user.canSeeDocumentWhenEditingMenus(textDocument) );
     }
 }

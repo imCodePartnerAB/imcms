@@ -1,1 +1,0 @@
-<a href="$contextPath/servlet/AdminDoc?meta_id=#meta_id#&flags=#flags#&editmenu=#menuindex#"><img src="$contextPath/imcms/$language/images/admin/ico_txt.gif" border="0"></a>

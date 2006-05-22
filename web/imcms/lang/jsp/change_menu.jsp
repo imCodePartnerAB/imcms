@@ -6,18 +6,29 @@
     MenuItemDomainObject[] menuItemsUserCanSee = menu.getMenuItemsUserCanSee(user);
     TextDocumentDomainObject textDocument = menuEditPage.getTextDocument();
 
-%><html>
+%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld" %><vel:velocity><html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css.jsp">
+    </head>
     <body>
         <form action="<%= request.getContextPath() %>/servlet/PageDispatcher" method="POST">
             <%= Page.htmlHidden(request) %>
+
+        #gui_outer_start()
+        #gui_head( "<? global/imcms_administration ?>" )
+		<input type="submit" tabindex="10" value="<? global/back ?>" name="<%= OkCancelPage.REQUEST_PARAMETER__CANCEL %>" class="imcmsFormBtn">
+
+        #gui_mid()
+        
             <div>
+                <? templates/sv/textdoc/add_doc.html/2 ?>
                 <select name="<%= MenuEditPage.DOCUMENT_TYPE_ID %>">
                             <%
                                 TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( textDocument );
                                 final Set allowedDocumentTypeIds = permissionSet.getAllowedDocumentTypeIds();
                                 final List docTypeIdsOrder = new ArrayList(Arrays.asList(new IdLocalizedNamePair[] {
                                         DocumentTypeDomainObject.TEXT,
-                                        new IdLocalizedNamePair( 0, new LocalizedMessage( "templates/sv/textdoc/existing_doc_name.html/1" ) ),
+                                        new IdLocalizedNamePair( 0, new LocalizedMessage( "templates/sv/textdoc/existing_doc_name.html/internal_link" ) ),
                                         DocumentTypeDomainObject.URL,
                                         DocumentTypeDomainObject.FILE,
                                         DocumentTypeDomainObject.BROWSER,
@@ -32,8 +43,9 @@
                                 HtmlBuilder html = new HtmlBuilder(); %>
                                <%= html.options(docTypeIdsOrder, new IdLocalizedNamePairToOptionTransformer(user.getLanguageIso639_2())) %>
                 </select>
-                <input type="submit" name="<%= MenuEditPage.CREATE %>" value="Create">
+                <input type="submit" name="<%= MenuEditPage.CREATE %>" value="<? global/create ?>" class="imcmsFormBtnSmall">
             </div>
+            #gui_hr("cccccc")
             <div>
                 <select name="<%= MenuEditPage.SORT_ORDER %>">
                     <%= html.options(Arrays.asList(new IdLocalizedNamePair[] {
@@ -49,8 +61,10 @@
                             }
                         }) %>
                 </select>
-                <input type="submit" name="<%= MenuEditPage.SORT %>" value="Sort">
+                <input type="submit" name="<%= MenuEditPage.SORT %>" value="<? templates/sv/textdoc/archive_del_button.html/1 ?>" class="imcmsFormBtnSmall">
             </div>
+            #gui_hr("cccccc")
+            <div>
             <%
                 for ( MenuItemDomainObject menuItem : menuItemsUserCanSee ) {
                     DocumentDomainObject menuItemDocument = menuItem.getDocument();
@@ -79,15 +93,23 @@
                     <%
                 }
             %>
-            <div>
-                <input type="submit" name="<%= MenuEditPage.COPY %>" value="Copy">
-                <input type="submit" name="<%= MenuEditPage.ARCHIVE %>" value="Archive">
-                <input type="submit" name="<%= MenuEditPage.REMOVE %>" value="Remove">
             </div>
+            #gui_hr("cccccc")
             <div>
-                <input type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>" value="OK">
-                <input type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__CANCEL %>" value="Cancel">
+                <input type="submit" name="<%= MenuEditPage.COPY %>" value="<? templates/sv/textdoc/archive_del_button.html/2001 ?>" class="imcmsFormBtnSmall">
+                <input type="submit" name="<%= MenuEditPage.ARCHIVE %>" value="<? templates/sv/textdoc/archive_del_button.html/2002 ?>" class="imcmsFormBtnSmall">
+                <input type="submit" name="<%= MenuEditPage.REMOVE %>" value="<? templates/sv/textdoc/archive_del_button.html/2003 ?>" class="imcmsFormBtnSmall">
             </div>
-        </form>    
+            #gui_hr("cccccc")
+            <div style="text-align: right;">
+                <input type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>" value="<? global/OK ?>" class="imcmsFormBtn">
+                <input type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__CANCEL %>" value="<? global/cancel ?>" class="imcmsFormBtn">
+            </div>
+
+        #gui_bottom()
+        #gui_outer_end()
+
+        </form>
+
     </body>
-</html>
+</html></vel:velocity>

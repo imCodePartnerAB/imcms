@@ -7,7 +7,6 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Html;
 import imcode.util.Utility;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.iterators.FilterIterator;
@@ -42,7 +41,7 @@ public class MenuParser {
     }
 
     private String parseMenuNode(int menuIndex, String menuTemplate, Properties menuAttributes,
-                                 PatternMatcher patMat, TagParser tagParser) {
+                                 TagParser tagParser) {
         String modeAttribute = menuAttributes.getProperty( "mode" );
         boolean modeIsRead = "read".equalsIgnoreCase( modeAttribute );
         boolean modeIsWrite = "write".equalsIgnoreCase( modeAttribute );
@@ -76,7 +75,7 @@ public class MenuParser {
         }
         Properties menuAttributes = menuNode.getAttributes(); // Get the attributes from the imcms:menu-element. This will be passed down, to allow attributes of the imcms:menu-element to affect the menuitems.
         if ( menuNode.getChildElement( "menuloop" ) == null ) {
-            nodeMenuLoop( new SimpleElement( "menuloop", null, menuNode.getChildren() ), result, currentMenu, menuAttributes, patMat, menuIndex, tagParser ); // The imcms:menu contained no imcms:menuloop, so let's create one, passing the children from the imcms:menu
+            nodeMenuLoop( new SimpleElement( "menuloop", null, menuNode.getChildren() ), result, currentMenu, menuAttributes, patMat, tagParser ); // The imcms:menu contained no imcms:menuloop, so let's create one, passing the children from the imcms:menu
         } else {
             // The imcms:menu contained at least one imcms:menuloop.
             Iterator menuNodeChildrenIterator = menuNode.getChildren().iterator();
@@ -88,7 +87,7 @@ public class MenuParser {
                         break;
                     case Node.ELEMENT_NODE: // An element-node
                         if ( "menuloop".equals( ( (Element)menuNodeChild ).getName() ) ) { // Is it an imcms:menuloop?
-                            nodeMenuLoop( (Element)menuNodeChild, result, currentMenu, menuAttributes, patMat, menuIndex, tagParser );
+                            nodeMenuLoop( (Element)menuNodeChild, result, currentMenu, menuAttributes, patMat, tagParser );
                         } else {
                             result.append( tagParser.replaceTags( patMat, menuNodeChild.toString(), false) );  // No? Just append it (almost)verbatim.
                         }
@@ -108,8 +107,8 @@ public class MenuParser {
      * @param patMat         The patternmatcher used for pattern matching.
      * @param tagParser
      */
-    private void nodeMenuLoop( Element menuLoopNode, Writer result, MenuDomainObject menu,
-                               Properties menuAttributes, PatternMatcher patMat, int menuIndex, TagParser tagParser ) throws IOException {
+    private void nodeMenuLoop(Element menuLoopNode, Writer result, MenuDomainObject menu,
+                              Properties menuAttributes, PatternMatcher patMat, TagParser tagParser) throws IOException {
         if ( null == menu ) {
             return;
         }
@@ -121,27 +120,20 @@ public class MenuParser {
         }
         // The imcms:menuloop contained at least one imcms:menuitem.
         loopOverMenuItemsAndMenuItemTemplateElementsAndAddToResult( menu, menuLoopNodeChildren,
-                                                                    result, menuAttributes, patMat, menuIndex, tagParser );
+                                                                    result, menuAttributes, patMat, tagParser );
     }
 
-    private boolean editingMenu( int menuIndex ) {
-        Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
-        boolean editingThisMenu = null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex
-                                  && parserParameters.isMenuMode();
-        return editingThisMenu;
-    }
-
-    private void loopOverMenuItemsAndMenuItemTemplateElementsAndAddToResult( MenuDomainObject menu,
-                                                                             final List menuLoopNodeChildren,
-                                                                             Writer result,
-                                                                             Properties menuAttributes,
-                                                                             PatternMatcher patMat,
-                                                                             final int menuIndex, TagParser tagParser ) throws IOException {
+    private void loopOverMenuItemsAndMenuItemTemplateElementsAndAddToResult(MenuDomainObject menu,
+                                                                            final List menuLoopNodeChildren,
+                                                                            Writer result,
+                                                                            Properties menuAttributes,
+                                                                            PatternMatcher patMat,
+                                                                            TagParser tagParser) throws IOException {
         Iterator menuItemsIterator = new FilterIterator( Arrays.asList( menu.getMenuItems() ).iterator(), new Predicate() {
             public boolean evaluate( Object o ) {
                 DocumentDomainObject document = ( (MenuItemDomainObject)o ).getDocument();
                 UserDomainObject user = parserParameters.getDocumentRequest().getUser();
-                return userCanSeeDocumentInMenu( user, document, menuIndex );
+                return user.canSeeDocumentInMenus(document);
             }
         } );
 
@@ -172,7 +164,7 @@ public class MenuParser {
                                                             ? (MenuItemDomainObject)menuItemsIterator.next()
                                                             : null; // If there are more menuitems from the db, put the next in 'menuItem', otherwise put null.
                             nodeMenuItem( (Element)menuLoopChild, result, menuItem,
-                                          menuAttributes, patMat, menuItemIndex, menu, menuIndex, tagParser ); // Parse one menuitem.
+                                          menuAttributes, patMat, menuItemIndex, tagParser ); // Parse one menuitem.
                             menuItemIndex += menuItemIndexStep;
                         } else {
                             result.append( tagParser.replaceTags( patMat, menuLoopChild.toString(), false) );  // No? Just append the elements verbatim into the result.
@@ -181,11 +173,6 @@ public class MenuParser {
                 }
             }
         }
-    }
-
-    boolean userCanSeeDocumentInMenu( UserDomainObject user, DocumentDomainObject document,
-                                      final int menuIndex ) {
-        return user.canSeeDocumentInMenus( document ) || editingMenu( menuIndex ) && user.canSeeDocumentWhenEditingMenus( document ) ;
     }
 
     /**
@@ -198,14 +185,14 @@ public class MenuParser {
      * @param patMat         The patternmatcher used for pattern matching.
      * @param tagParser
      */
-    private void nodeMenuItem( Element menuItemNode, Writer result, MenuItemDomainObject menuItem,
-                               Properties menuAttributes, PatternMatcher patMat, int menuItemIndex,
-                               MenuDomainObject menu, int menuIndex, TagParser tagParser ) throws IOException {
+    private void nodeMenuItem(Element menuItemNode, Writer result, MenuItemDomainObject menuItem,
+                              Properties menuAttributes, PatternMatcher patMat, int menuItemIndex,
+                              TagParser tagParser) throws IOException {
         Substitution menuItemSubstitution;
         if ( menuItem != null ) {
             Properties menuItemAttributes = new Properties( menuAttributes ); // Make a copy of the menuAttributes, so we don't override them permanently.
             menuItemAttributes.putAll( menuItemNode.getAttributes() ); // Let all attributes of the menuItemNode override the attributes of the menu.
-            menuItemSubstitution = getMenuItemSubstitution( menu, menuItem, menuItemAttributes, menuItemIndex, menuIndex );
+            menuItemSubstitution = getMenuItemSubstitution(menuItem, menuItemAttributes, menuItemIndex);
         } else {
             menuItemSubstitution = NULLSUBSTITUTION;
         }
@@ -245,14 +232,14 @@ public class MenuParser {
         } catch ( NumberFormatException ex ) {
             menuIndex = implicitMenus[0]++;
         }
-        return parseMenuNode( menuIndex, menutemplate, menuattributes, patMat, tagParser );
+        return parseMenuNode( menuIndex, menutemplate, menuattributes, tagParser );
     }
 
     /**
      * Create a substitution for parsing this menuitem into a template with the correct tags.
      */
-    private Substitution getMenuItemSubstitution( MenuDomainObject menu, MenuItemDomainObject menuItem,
-                                                  Properties parameters, int menuItemIndex, int menuIndex ) {
+    private Substitution getMenuItemSubstitution(MenuItemDomainObject menuItem,
+                                                 Properties parameters, int menuItemIndex) {
 
         DocumentDomainObject document = menuItem.getDocument();
         DocumentRequest documentRequest = parserParameters.getDocumentRequest();
@@ -297,8 +284,6 @@ public class MenuParser {
         tags.setProperty( "#menuitemdatecreated#", createdDate );
         tags.setProperty( "#menuitemdatemodified#", modifiedDate );
 
-
-
         String template = parameters.getProperty( "template" );
         String href = Utility.getAbsolutePathToDocument( documentRequest.getHttpServletRequest(), document );
         if (null != template) {
@@ -320,50 +305,8 @@ public class MenuParser {
         tags.setProperty( "#menuitemlinkonly#", a_href );
         tags.setProperty( "#/menuitemlinkonly#", "</a>" );
 
-        boolean editingThisMenu = editingMenu( menuIndex );
-        if ( editingThisMenu ) {
-            final int sortOrder = menu.getSortOrder();
-            if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED == sortOrder
-                 || MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER == sortOrder ) {
-                String sortKey ;
-                String sortKeyTemplate ;
-                if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED == sortOrder ) {
-                    sortKey = "" + menuItem.getSortKey();
-                    sortKeyTemplate = "textdoc/admin_menuitem_manual_sortkey.frag";
-
-                } else {
-                    String key = menuItem.getTreeSortKey().toString();
-                    sortKey = key == null ? "" : key;
-                    sortKeyTemplate = "textdoc/admin_menuitem_treesortkey.frag";
-                }
-                List menuItemSortKeyTags = new ArrayList( 4 );
-                menuItemSortKeyTags.add( "#meta_id#" );
-                menuItemSortKeyTags.add( "" + document.getId() );
-                menuItemSortKeyTags.add( "#sortkey#" );
-                menuItemSortKeyTags.add( sortKey );
-
-                a_href = serverObject.getAdminTemplate( sortKeyTemplate, user, menuItemSortKeyTags )
-                         + a_href;
-            }
-
-            List menuItemCheckboxTags = new ArrayList( 2 );
-            menuItemCheckboxTags.add( "#meta_id#" );
-            menuItemCheckboxTags.add( "" + document.getId() );
-
-            a_href = serverObject.getAdminTemplate( "textdoc/admin_menuitem_checkbox.frag", user, menuItemCheckboxTags )
-                     + a_href;
-            a_href = Html.getLinkedStatusIconTemplate( menuItem.getDocument(), user, documentRequest.getHttpServletRequest() ) + a_href;
-        }
-
         tags.setProperty( "#menuitemlink#", a_href );
-        tags.setProperty( "#/menuitemlink#",
-                          editingThisMenu && user.canEdit( menuItem.getDocument() )
-                          ? "</a>"
-                            + serverObject.getAdminTemplate( "textdoc/admin_menuitem.frag", user, Arrays.asList( new String[]{
-                                "#meta_id#", ""
-                                             + document.getId()
-                            } ) )
-                          : "</a>" );
+        tags.setProperty( "#/menuitemlink#", "</a>" );
 
         return new MapSubstitution( tags, true );
     }
