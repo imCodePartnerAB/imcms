@@ -40,7 +40,7 @@ db-url = ${db-url-without-db-name};DatabaseName=${db-name}
 #db-port = 3306
 #db-driver = com.mysql.jdbc.Driver
 #db-url-without-db-name = jdbc:mysql://${db-host}:${db-port}/
-#db-url = ${db-url-without-db-name}${db-name}
+#db-url = ${db-url-without-db-name}${db-name}?characterEncoding=utf8
 
 
 external-authenticator =
