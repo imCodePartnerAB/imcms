@@ -3,10 +3,10 @@
         <column name="set_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="permission_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="permission_data" primaryKey="true" required="true" type="INTEGER" />
-        <foreign-key foreignTable="permission_sets">
+        <foreign-key name="ndpse_ps" foreignTable="permission_sets">
             <reference foreign="set_id" local="set_id" />
         </foreign-key>
-        <foreign-key foreignTable="new_doc_permission_sets">
+        <foreign-key name="ndpse_ndps" foreignTable="new_doc_permission_sets">
             <reference foreign="meta_id" local="meta_id" />
             <reference foreign="set_id" local="set_id" />
         </foreign-key>

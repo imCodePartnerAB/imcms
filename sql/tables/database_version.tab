@@ -1,0 +1,4 @@
+    <table name="database_version">
+        <column name="major" type="INTEGER" primaryKey="true" required="true"/>
+        <column name="minor" type="INTEGER" primaryKey="true" required="true"/>
+    </table>

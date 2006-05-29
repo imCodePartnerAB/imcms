@@ -4,7 +4,6 @@ import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.admin.UserFinder;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
@@ -25,6 +24,7 @@ public class AdminUser extends HttpServlet {
     private final static String CHANGE_EXTERNAL_USER_URL = "/jsp/changeexternaluser.jsp";
     private static final LocalizedMessage BUTTON_TEXT__EDIT_USER = new LocalizedMessage( "templates/sv/AdminChangeUser.htm/2006" );
     private static final LocalizedMessage HEADLINE__EDIT_USER = new LocalizedMessage( "templates/sv/AdminChangeUser.htm/4/1" );
+    public final static String USER_LOGIN_NAME_PARAMETER_NAME = "loginname";
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
@@ -69,7 +69,7 @@ public class AdminUser extends HttpServlet {
             redirectChangeUser( req, res, user, userToChange );
         } else {
             String queryString = "?"
-                                 + URLEncoder.encode( WebAppGlobalConstants.USER_LOGIN_NAME_PARAMETER_NAME, "UTF-8" )
+                                 + URLEncoder.encode( USER_LOGIN_NAME_PARAMETER_NAME, "UTF-8" )
                                  + "="
                                  + URLEncoder.encode( userToChange.getLoginName(), "UTF-8" );
             RequestDispatcher rd = req.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2()

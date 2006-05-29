@@ -1,8 +1,6 @@
 <%@ page
-		import="imcode.server.WebAppGlobalConstants"
-
 		contentType="text/html"%><%
-	response.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING );%><%@
+	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );%><%@
 		include file="_editor_settings.jsp"
 %>
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 3.2//EN">

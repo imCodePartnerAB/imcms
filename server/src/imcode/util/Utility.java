@@ -6,10 +6,12 @@ import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
+import com.imcode.imcms.db.UpgradeException;
+import com.imcode.imcms.db.SingleConnectionDataSource;
 import com.imcode.db.handlers.SingleObjectHandler;
+import com.imcode.db.DatabaseConnection;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
@@ -26,6 +28,9 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.apache.ddlutils.io.DatabaseIO;
+import org.apache.ddlutils.Platform;
+import org.apache.ddlutils.PlatformFactory;
 import org.w3c.dom.Document;
 
 import javax.servlet.RequestDispatcher;
@@ -43,6 +48,8 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
 import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -63,6 +70,7 @@ public class Utility {
     public static final ResultSetHandler SINGLE_STRING_HANDLER = new SingleObjectHandler(new StringFromRowFactory());
     public static final ResultSetHandler STRING_ARRAY_HANDLER = new StringArrayResultSetHandler();
     public static final ResultSetHandler STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
+    private static final String LOGGED_IN_USER = "logon.isDone";
 
     private Utility() {
 
@@ -104,7 +112,7 @@ public class Utility {
     }
 
     public static UserDomainObject getLoggedOnUser( HttpServletRequest req ) {
-        return (UserDomainObject)req.getSession().getAttribute( WebAppGlobalConstants.LOGGED_IN_USER );
+        return (UserDomainObject)req.getSession().getAttribute( LOGGED_IN_USER );
     }
 
     public static int compareDatesWithNullFirst( Date date1, Date date2 ) {
@@ -120,7 +128,7 @@ public class Utility {
     }
 
     public static void setDefaultHtmlContentType( HttpServletResponse res ) {
-        res.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING );
+        res.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );
     }
 
     public static void redirectToStartDocument( HttpServletRequest req, HttpServletResponse res ) throws IOException {
@@ -415,7 +423,7 @@ public class Utility {
     }
 
     public static void makeUserLoggedIn(HttpServletRequest req, UserDomainObject user) {
-        req.getSession().setAttribute(WebAppGlobalConstants.LOGGED_IN_USER, user);
+        req.getSession().setAttribute(LOGGED_IN_USER, user);
         if (null != user) {
             // FIXME: Ugly hack to get the contextpath into DefaultImcmsServices.getVelocityContext()
             user.setCurrentContextPath( req.getContextPath() );
@@ -423,7 +431,7 @@ public class Utility {
     }
 
     public static void makeUserLoggedOut(HttpServletRequest req) {
-        req.getSession().removeAttribute(WebAppGlobalConstants.LOGGED_IN_USER);
+        req.getSession().removeAttribute(LOGGED_IN_USER);
     }
 
     public static ContentManagementSystem initRequestWithApi(ServletRequest request, UserDomainObject currentUser) {

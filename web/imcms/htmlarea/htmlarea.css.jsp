@@ -1,6 +1,5 @@
-<%@ page import="imcode.server.WebAppGlobalConstants"
-		contentType="text/css" %><%
-		response.setContentType( "text/css; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING);
+<%@ page contentType="text/css" %><%
+		response.setContentType( "text/css; charset=" + Imcms.DEFAULT_ENCODING);
 %><%@ include file="_editor_methods.jsp" %>
 
 .htmlarea {

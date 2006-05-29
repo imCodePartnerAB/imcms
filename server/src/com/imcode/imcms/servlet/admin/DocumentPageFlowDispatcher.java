@@ -2,7 +2,7 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.util.MultipartHttpServletRequest;
-import imcode.server.WebAppGlobalConstants;
+import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -21,7 +21,7 @@ public class DocumentPageFlowDispatcher extends HttpServlet {
     }
 
     public void doPost( HttpServletRequest r, HttpServletResponse response ) throws ServletException, IOException {
-        r.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING );
+        r.setCharacterEncoding( Imcms.DEFAULT_ENCODING );
         MultipartHttpServletRequest request = new MultipartHttpServletRequest( r );
 
         UserDomainObject user = Utility.getLoggedOnUser( request );

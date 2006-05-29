@@ -1,8 +1,7 @@
 <%@ page
   import="com.imcode.imcms.api.DocumentService,
           com.imcode.imcms.api.ContentManagementSystem,
-          com.imcode.imcms.api.TextDocument,
-          imcode.server.WebAppGlobalConstants"
+          com.imcode.imcms.api.TextDocument,imcode.server.Imcms"
   contentType="text/html"
 
 %><%!
@@ -35,7 +34,7 @@ public void setCookie ( String theName, String theValue, HttpServletResponse res
 //if (debug) out.print(getCookie("DUMMY", request)) ;
 
 %><%
-response.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING );
+response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );
 
 ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
 DocumentService documentService     = imcmsSystem.getDocumentService() ;

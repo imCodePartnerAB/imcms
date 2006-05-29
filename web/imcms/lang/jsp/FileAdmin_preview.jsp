@@ -1,14 +1,14 @@
 <%@ page language="java"
 	
-	import="imcode.util.Utility,
-	        java.io.File,
+	import="imcode.server.Imcms,
+	        imcode.util.Utility,
 	        org.apache.oro.text.perl.Perl5Util,
-	        java.io.FileInputStream,
-	        java.io.InputStreamReader,
-	        java.io.BufferedReader,
-	        java.text.DecimalFormat,
+	        javax.imageio.ImageIO,
 	        java.awt.image.BufferedImage,
-	        javax.imageio.ImageIO"
+	        java.io.BufferedReader,
+	        java.io.File,
+	        java.io.FileInputStream,
+	        java.io.InputStreamReader, java.text.DecimalFormat"
 	
 %><%
 
@@ -55,7 +55,7 @@ if (request.getParameter("border") != null) {
 	hasBorder       = (session.getAttribute("border").equals("1")) ? true : false ;
 }
 
-File webRoot    = imcode.server.WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath() ;
+    File webRoot    = Imcms.getPath() ;
 File fn = new File(webRoot, file) ;
 
 /* Is image? */

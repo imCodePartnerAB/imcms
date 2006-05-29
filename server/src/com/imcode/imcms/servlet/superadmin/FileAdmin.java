@@ -4,7 +4,6 @@ import com.imcode.util.HumanReadable;
 import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
@@ -146,7 +145,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private File getContextRelativeDirectoryFromRequest(HttpServletRequest request, String parameter) throws IOException {
-        File webappPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath() ;
+        File webappPath = Imcms.getPath() ;
         String dirParameter = request.getParameter( parameter );
         return new File( webappPath, dirParameter ).getAbsoluteFile();
     }
@@ -175,16 +174,7 @@ public class FileAdmin extends HttpServlet {
             File[] sourceFileTree = makeFileTreeList( makeAbsoluteFileList( sourceDir, files ), false );
             File[] relativeSourceFileTree = makeRelativeFileList( sourceDir, sourceFileTree );
             StringBuffer optionList = new StringBuffer();
-            StringBuffer fileList = new StringBuffer();
-            File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
-            for ( int i = 0; i < relativeSourceFileTree.length; i++ ) {
-                File destFile = new File( destDir, relativeSourceFileTree[i].getPath() );
-                fileList.append( relativeSourceFileTree[i] ).append( File.pathSeparator );
-                if ( destFile.exists() ) {
-                    String optionString = createWarningFileOptionString(destFile);
-                    optionList.append( "<option>" ).append( optionString ).append( "</option>" );
-                }
-            }
+            StringBuffer fileList = buildWarningOptions(relativeSourceFileTree, destDir, optionList);
             if ( optionList.length() > 0 ) {
                 outputMoveOverwriteWarning( optionList.toString(), sourceDir, destDir, fileList.toString(), dir1, dir2, res, user, imcref );
                 handledOutput = true;
@@ -207,7 +197,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private String createWarningFileOptionString(File destFile) {
-        File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
+        File webAppPath = Imcms.getPath();
         return FileUtility.relativizeFile(webAppPath, destFile).getPath() + ( destFile.isDirectory()
                                                                               ? File.separator
                                                                               : " [" + destFile.length() + "]" );
@@ -220,15 +210,7 @@ public class FileAdmin extends HttpServlet {
             File[] sourceFileTree = makeFileTreeList( makeAbsoluteFileList( sourceDir, files ), true );
             File[] relativeSourceFileTree = makeRelativeFileList( sourceDir, sourceFileTree );
             StringBuffer optionList = new StringBuffer();
-            StringBuffer fileList = new StringBuffer();
-            for ( int i = 0; i < relativeSourceFileTree.length; i++ ) {
-                File destFile = new File( destDir, relativeSourceFileTree[i].getPath() );
-                fileList.append( relativeSourceFileTree[i] ).append( File.pathSeparator );
-                if ( destFile.exists() ) {
-                    String optionString = createWarningFileOptionString(destFile);
-                    optionList.append( "<option>" ).append( optionString ).append( "</option>" );
-                }
-            }
+            StringBuffer fileList = buildWarningOptions(relativeSourceFileTree, destDir, optionList);
             if ( optionList.length() > 0 ) {
                 ouputCopyOverwriteWarning( optionList.toString(), sourceDir, destDir, fileList.toString(), dir1, dir2, res, user, imcref );
                 handledOutput = true;
@@ -246,6 +228,19 @@ public class FileAdmin extends HttpServlet {
             }
         }
         return handledOutput;
+    }
+
+    private StringBuffer buildWarningOptions(File[] relativeSourceFileTree, File destDir, StringBuffer optionList) {
+        StringBuffer fileList = new StringBuffer();
+        for ( int i = 0; i < relativeSourceFileTree.length; i++ ) {
+            File destFile = new File( destDir, relativeSourceFileTree[i].getPath() );
+            fileList.append( relativeSourceFileTree[i] ).append( File.pathSeparator );
+            if ( destFile.exists() ) {
+                String optionString = createWarningFileOptionString(destFile);
+                optionList.append( "<option>" ).append( optionString ).append( "</option>" );
+            }
+        }
+        return fileList;
     }
 
     private boolean rename( String[] files, String name, File dir, File dir1, File dir2, HttpServletResponse res,
@@ -528,7 +523,7 @@ public class FileAdmin extends HttpServlet {
         if ( files != null && files.length == 1 ) {	//Has the user chosen just one dir?
             String filename = files[0];
             if ( filename.startsWith(File.separator) ) {
-                File newDir = new File( WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath(), filename) ;
+                File newDir = new File( Imcms.getPath(), filename) ;
                 if ( isUnderRoot( newDir, roots ) ) {
                     resultDir = newDir;
                 }
@@ -645,7 +640,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private String getContextRelativeAbsolutePathToDirectory(File dir) throws IOException {
-        File webappPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
+        File webappPath = Imcms.getPath();
         return File.separator + getPathRelativeTo( dir, webappPath ) + File.separator;
     }
 
@@ -661,7 +656,7 @@ public class FileAdmin extends HttpServlet {
 
     private String createDirectoryOptionList( File[] rootlist, File directory ) throws IOException {
         StringBuffer optionlist = new StringBuffer();
-        File webappPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
+        File webappPath = Imcms.getPath();
         for ( int i = 0; i < rootlist.length; i++ ) {
             String dirname = getPathRelativeTo( rootlist[i], webappPath ) ;
             optionlist.append(getDirectoryOption(File.separator + dirname + File.separator, File.separator + dirname + File.separator) );

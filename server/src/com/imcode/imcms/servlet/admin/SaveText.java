@@ -3,7 +3,6 @@ package com.imcode.imcms.servlet.admin;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
@@ -22,7 +21,7 @@ import java.io.IOException;
 public final class SaveText extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws IOException {
-        req.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING );
+        req.setCharacterEncoding( Imcms.DEFAULT_ENCODING );
         Utility.setDefaultHtmlContentType( res );
 
         // Check if user has permission to be here

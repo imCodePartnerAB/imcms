@@ -1,24 +1,38 @@
 package imcode.server;
 
+import com.imcode.db.*;
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.db.handlers.RowTransformer;
+import com.imcode.db.handlers.SingleObjectHandler;
+import com.imcode.imcms.db.DatabaseUpgrade;
+import com.imcode.imcms.db.DatabaseVersion;
+import com.imcode.imcms.db.StartupDatabaseUpgrade;
+import com.imcode.imcms.db.UpgradeException;
+import com.imcode.imcms.db.DatabaseUtils;
 import imcode.util.Prefs;
+import imcode.util.Utility;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
 import javax.sql.DataSource;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
 public class Imcms {
 
     private static final String SERVER_PROPERTIES_FILENAME = "server.properties";
-    private final static Logger log = Logger.getLogger(Imcms.class.getName());
+    public static final String DEFAULT_ENCODING = "UTF-8";
+
+    private final static Logger LOG = Logger.getLogger(Imcms.class.getName());
     private static ImcmsServices services;
     private static BasicDataSource apiDataSource;
     private static BasicDataSource dataSource;
+    private static File path;
 
     private Imcms() {
     }
@@ -30,25 +44,40 @@ public class Imcms {
         return services;
     }
 
+    public static void setPath(File path) {
+        Imcms.path = path;
+    }
+
+    public static File getPath() {
+        return path;
+    }
+
     public static void start() throws StartupException {
         try {
             services = createServices();
         } catch (Exception e) {
-            throw new Imcms.StartupException("imCMS could not be started. Please see the log file in WEB-INF/logs for details.", e);
+            throw new Imcms.StartupException("imCMS could not be started. Please see the LOG file in WEB-INF/logs for details.", e);
         }
     }
 
-    private synchronized static ImcmsServices createServices() {
+    private synchronized static ImcmsServices createServices() throws Exception {
         Properties serverprops = getServerProperties();
-        log.debug("Creating main DataSource.");
+        LOG.debug("Creating main DataSource.");
+        Database database = createDatabase(serverprops);
+        DatabaseUpgrade upgrade = new StartupDatabaseUpgrade(DatabaseUtils.getDdl());
+        upgrade.upgrade(database);
+        return new DefaultImcmsServices(database, serverprops);
+    }
+
+    private static Database createDatabase(Properties serverprops) {
         dataSource = createDataSource(serverprops);
-        return new DefaultImcmsServices(dataSource, serverprops);
+        return new DataSourceDatabase(dataSource);
     }
 
     public synchronized static DataSource getApiDataSource() {
         if ( null == apiDataSource ) {
             Properties serverprops = getServerProperties();
-            log.debug("Creating API DataSource.");
+            LOG.debug("Creating API DataSource.");
             apiDataSource = createDataSource(serverprops);
         }
         return apiDataSource;
@@ -58,7 +87,7 @@ public class Imcms {
         try {
             return Prefs.getProperties(SERVER_PROPERTIES_FILENAME);
         } catch ( IOException e ) {
-            log.fatal("Failed to initialize imCMS", e);
+            LOG.fatal("Failed to initialize imCMS", e);
             throw new UnhandledException(e);
         }
     }
@@ -71,10 +100,10 @@ public class Imcms {
         String password = props.getProperty("Password");
         int maxConnectionCount = Integer.parseInt(props.getProperty("MaxConnectionCount"));
 
-        log.debug("JdbcDriver = " + jdbcDriver);
-        log.debug("JdbcUrl = " + jdbcUrl);
-        log.debug("User = " + user);
-        log.debug("MaxConnectionCount = " + maxConnectionCount);
+        LOG.debug("JdbcDriver = " + jdbcDriver);
+        LOG.debug("JdbcUrl = " + jdbcUrl);
+        LOG.debug("User = " + user);
+        LOG.debug("MaxConnectionCount = " + maxConnectionCount);
 
         return createDataSource(jdbcDriver, jdbcUrl, user, password, maxConnectionCount);
     }
@@ -87,18 +116,18 @@ public class Imcms {
     public static void stop() {
         if ( null != apiDataSource ) {
             try {
-                log.debug("Closing API DataSource.");
+                LOG.debug("Closing API DataSource.");
                 apiDataSource.close();
             } catch ( SQLException e ) {
-                log.error(e, e);
+                LOG.error(e, e);
             }
         }
         if ( null != dataSource ) {
             try {
-                log.debug("Closing main DataSource.");
+                LOG.debug("Closing main DataSource.");
                 dataSource.close();
             } catch ( SQLException e ) {
-                log.error(e, e);
+                LOG.error(e, e);
             }
         }
         Prefs.flush();
@@ -107,7 +136,7 @@ public class Imcms {
     private static void logDatabaseVersion(BasicDataSource basicDataSource) throws SQLException {
         Connection connection = basicDataSource.getConnection();
         DatabaseMetaData metaData = connection.getMetaData();
-        log.info("Database product version = " + metaData.getDatabaseProductVersion());
+        LOG.info("Database product version = " + metaData.getDatabaseProductVersion());
         connection.close();
     }
 
@@ -125,12 +154,12 @@ public class Imcms {
             basicDataSource.setMaxIdle(maxConnectionCount);
             basicDataSource.setDefaultAutoCommit(true);
             basicDataSource.setPoolPreparedStatements(true);
-            
+
             logDatabaseVersion(basicDataSource);
 
             return basicDataSource;
         } catch ( Exception ex ) {
-            log.fatal("Failed to create connection pool. Url: " + jdbcUrl + " Driver: " + jdbcDriver, ex);
+            LOG.fatal("Failed to create connection pool. Url: " + jdbcUrl + " Driver: " + jdbcDriver, ex);
             throw new RuntimeException(ex);
         }
     }
@@ -141,4 +170,5 @@ public class Imcms {
             super(message, e) ;
         }
     }
+
 }

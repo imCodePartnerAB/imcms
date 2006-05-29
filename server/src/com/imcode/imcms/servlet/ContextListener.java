@@ -1,7 +1,6 @@
 package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
-import imcode.server.WebAppGlobalConstants;
 import imcode.util.Prefs;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -18,7 +17,6 @@ public class ContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         ServletContext servletContext = servletContextEvent.getServletContext();
         final File realPathToWebApp = new File(servletContext.getRealPath("/"));
-        WebAppGlobalConstants.init(realPathToWebApp);
 
         File configPath = new File(realPathToWebApp, "WEB-INF/conf");
         Prefs.setConfigPath(configPath);
@@ -27,7 +25,7 @@ public class ContextListener implements ServletContextListener {
 
         Logger log = Logger.getLogger(ContextListener.class);
         try {
-            Imcms.start();
+            Imcms.setPath(realPathToWebApp);
             log.info("imCMS initialized.");
         } catch (RuntimeException e) {
             log.fatal("Failed to initialize imCMS.",e);

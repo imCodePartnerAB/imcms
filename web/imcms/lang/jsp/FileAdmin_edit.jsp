@@ -3,7 +3,7 @@
 	import="imcode.util.Utility,
 	        org.apache.oro.text.perl.Perl5Util,
 	        java.io.*,
-            imcode.server.user.UserDomainObject"
+            imcode.server.user.UserDomainObject, imcode.server.Imcms"
 
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
@@ -66,7 +66,7 @@ String templName = request.getParameter("templName") ;
 
 /* split to "/path" and "filename.ext" */
 
-File webRoot    = imcode.server.WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath() ;
+    File webRoot    = Imcms.getPath() ;
 
 /* get full path */
 

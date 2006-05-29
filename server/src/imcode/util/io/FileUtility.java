@@ -13,6 +13,8 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.*;
 
+import imcode.server.Imcms;
+
 public class FileUtility {
 
     private FileUtility() {}
@@ -26,7 +28,7 @@ public class FileUtility {
         }
         File path = new File( pathString );
         if ( !path.isAbsolute() ) {
-            path = new File( imcode.server.WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath(), pathString );
+            path = new File( Imcms.getPath(), pathString );
         }
         return path;
     }

@@ -1,12 +1,11 @@
 <%@ page
 
 	import="java.util.Map,
-	        java.util.HashMap,
-	        imcode.server.WebAppGlobalConstants"
+	        java.util.HashMap"
 
 	contentType="text/html"
 
-%><%	response.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING );%><%@
+%><%	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );%><%@
 		taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%@
 		include file="../_editor_settings.jsp"
 %><%!

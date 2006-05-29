@@ -118,7 +118,7 @@
         </tar>
     </target>
 
-    <target name="bindist-war" depends="build,ddl,apidocs,checksumsfile">
+    <target name="bindist-war" depends="build,apidocs,checksumsfile">
         <mkdir dir="${dist}"/>
         <war warfile="${war}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
     </target>
@@ -170,7 +170,7 @@
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-       depends="init,web,test,checkstyle,libraries,conf,sql,jar"
+       depends="init,web,test,checkstyle,libraries,conf,ddl,sql,jar"
        description="Builds everything."/>
 
     <target name="clean" description="Deletes everything for a fresh start.">

@@ -1,10 +1,12 @@
 <%@ page contentType="text/html"
-    import="com.imcode.imcms.flow.CreateDocumentPageFlow,
+    import="com.imcode.imcms.api.Document,
+            com.imcode.imcms.flow.CreateDocumentPageFlow,
             com.imcode.imcms.flow.DocumentPageFlow,
             com.imcode.imcms.flow.EditDocumentInformationPageFlow,
             com.imcode.imcms.flow.PageFlow,
-            com.imcode.imcms.mapping.*,
-            com.imcode.imcms.api.Document,
+            com.imcode.imcms.mapping.CategoryMapper,
+            com.imcode.imcms.mapping.DocumentMapper,
+            com.imcode.util.KeywordsParser,
             imcode.server.Imcms,
             imcode.server.ImcmsServices,
             imcode.server.document.CategoryDomainObject,
@@ -12,27 +14,25 @@
             imcode.server.document.DocumentDomainObject,
             imcode.server.document.SectionDomainObject,
             imcode.server.document.textdocument.TextDocumentDomainObject,
+            imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper,
             imcode.server.user.UserDomainObject,
             imcode.util.DateConstants,
             imcode.util.Html,
             imcode.util.HttpSessionUtils,
+            imcode.util.ToStringPairTransformer,
             imcode.util.Utility,
+            imcode.util.jscalendar.JSCalendar,
             org.apache.commons.lang.ObjectUtils,
             org.apache.commons.lang.StringEscapeUtils,
             org.apache.commons.lang.StringUtils,
             javax.servlet.http.Cookie,
             java.net.URLEncoder,
-            java.text.Collator,
-            java.text.DateFormat,
-            java.text.SimpleDateFormat,
-            java.util.*,
-            com.imcode.util.KeywordsParser,
-            imcode.util.jscalendar.JSCalendar"%><%
+            java.text.Collator"%><%
 
-		response.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING );%><%@
+		response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );%><%@
 
-		page import="imcode.util.ToStringPairTransformer"%><%@
-		page import="imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper, imcode.server.WebAppGlobalConstants"%><%@
+		page import="java.text.DateFormat"%><%@
+		page import="java.text.SimpleDateFormat, java.util.Arrays, java.util.Date, java.util.Set"%><%@
 		taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;

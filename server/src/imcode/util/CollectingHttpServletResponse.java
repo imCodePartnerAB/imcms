@@ -1,6 +1,6 @@
 package imcode.util;
 
-import imcode.server.WebAppGlobalConstants;
+import imcode.server.Imcms;
 import org.apache.commons.lang.UnhandledException;
 
 import javax.servlet.ServletOutputStream;
@@ -50,7 +50,7 @@ public class CollectingHttpServletResponse extends HttpServletResponseWrapper {
             printWriter.flush();
             stringWriter.flush();
             if (byteArrayOutputStream.size() > 0) {
-                return byteArrayOutputStream.toString(WebAppGlobalConstants.DEFAULT_ENCODING ) ;
+                return byteArrayOutputStream.toString(Imcms.DEFAULT_ENCODING ) ;
             } else {
                 return stringWriter.toString();
             }

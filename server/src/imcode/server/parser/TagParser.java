@@ -8,7 +8,7 @@ import com.imcode.util.CountingIterator;
 import imcode.server.DocumentRequest;
 import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
-import imcode.server.WebAppGlobalConstants;
+import imcode.server.Imcms;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.textdocument.FileDocumentImageSource;
@@ -297,7 +297,7 @@ public class TagParser {
             String contentType = urlConnection.getContentType();
             String contentEncoding = StringUtils.substringAfter(contentType, "charset=");
             if ( "".equals(contentEncoding) ) {
-                contentEncoding = WebAppGlobalConstants.DEFAULT_ENCODING;
+                contentEncoding = Imcms.DEFAULT_ENCODING;
             }
             InputStreamReader urlInput = null;
             try {

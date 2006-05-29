@@ -1,5 +1,5 @@
 <%@ page import="com.imcode.imcms.api.*,
-                 imcode.server.WebAppGlobalConstants,
+                 com.imcode.imcms.servlet.superadmin.AdminUser,
                  javax.servlet.http.HttpServletRequest,
                  javax.servlet.http.HttpServletResponse,
                  java.io.IOException,
@@ -47,7 +47,7 @@ private static void updateUserRoles( HttpServletRequest request, UserService use
 ContentManagementSystem  imcms = ContentManagementSystem.fromRequest(request);
 UserService  userMapper = imcms.getUserService();
 
-String userLoginName = request.getParameter( WebAppGlobalConstants.USER_LOGIN_NAME_PARAMETER_NAME );
+String userLoginName = request.getParameter( AdminUser.USER_LOGIN_NAME_PARAMETER_NAME );
 User user = userMapper.getUser( userLoginName );
 
 if ( buttonPressed(request, ACTION_CANCEL) ) {
@@ -74,7 +74,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 #gui_head( "<? install/htdocs/sv/adminuser/changeexternaluser.jsp/1 ?>" )
 <form method="POST" action="$contextPath/imcms/$language/jsp/changeexternaluser.jsp">
 <table border="0" cellspacing="0" cellpadding="0">
-<input type="hidden" name="<%= WebAppGlobalConstants.USER_LOGIN_NAME_PARAMETER_NAME %>" value="<%= userLoginName %>">
+<input type="hidden" name="<%= AdminUser.USER_LOGIN_NAME_PARAMETER_NAME %>" value="<%= userLoginName %>">
 <tr>
 	<td><input type="submit" class="imcmsFormBtn" name="<%= ACTION_CANCEL %>" value="<? global/back ?>"></td>
 </tr>

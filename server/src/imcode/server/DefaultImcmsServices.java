@@ -1,7 +1,6 @@
 package imcode.server;
 
 import com.imcode.db.Database;
-import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
@@ -36,9 +35,6 @@ import org.apache.log4j.NDC;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import javax.sql.DataSource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.beans.PropertyDescriptor;
 import java.io.*;
 import java.security.GeneralSecurityException;
@@ -86,14 +82,14 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     /** Contructs an DefaultImcmsServices object. */
-    public DefaultImcmsServices(DataSource dataSource, Properties props) {
-        database = new DataSourceDatabase(dataSource);
-        procedureExecutor = new DefaultProcedureExecutor(database);
+    public DefaultImcmsServices(Database database, Properties props) {
+        this.database = database;
+        procedureExecutor = new DefaultProcedureExecutor(this.database);
         initConfig(props);
         initKeyStore();
         initSysData();
         initSessionCounter();
-        languageMapper = new LanguageMapper(database, config.getDefaultLanguage());
+        languageMapper = new LanguageMapper(this.database, config.getDefaultLanguage());
         initAuthenticatorsAndUserAndRoleMappers(props);
         initDocumentMapper();
         initTemplateMapper();
@@ -420,7 +416,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
                 variables = parseDocVariables;
             }
             StringWriter stringWriter = new StringWriter();
-            velocity.mergeTemplate(path, WebAppGlobalConstants.DEFAULT_ENCODING, context, stringWriter);
+            velocity.mergeTemplate(path, Imcms.DEFAULT_ENCODING, context, stringWriter);
             String result = stringWriter.toString();
             if ( null != variables ) {
                 result = Parser.parseDoc(result, (String[]) variables.toArray(new String[variables.size()]));
@@ -469,7 +465,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public File getRealContextPath() {
-        return WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
+        return Imcms.getPath();
     }
 
     public KeyStore getKeyStore() {

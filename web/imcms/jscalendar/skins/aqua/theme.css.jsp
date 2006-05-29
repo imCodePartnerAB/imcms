@@ -1,9 +1,9 @@
 <%@ page
- 		import="imcode.server.WebAppGlobalConstants"
+ 		import="imcode.server.Imcms"
 
 		contentType="text/css" %><%
 
-		response.setContentType( "text/css; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING);
+		response.setContentType( "text/css; charset=" + Imcms.DEFAULT_ENCODING);
 %>
 /* Distributed as part of The Coolest DHTML Calendar
    Author: Mihai Bazon, www.bazon.net/mishoo
