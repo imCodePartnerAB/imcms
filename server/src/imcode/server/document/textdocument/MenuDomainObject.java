@@ -19,6 +19,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
     public final static int MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED = 2;
     public final static int MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED = 3;
     public final static int MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER = 4;
+    public final static int MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED = 5;
     public final static int MENU_SORT_ORDER__DEFAULT = MENU_SORT_ORDER__BY_HEADLINE;
 
     public final static int DEFAULT_SORT_KEY = 500;
@@ -153,6 +154,8 @@ public class MenuDomainObject implements Cloneable, Serializable {
             comparator = MenuItemComparator.SORT_KEY.reversed().chain( comparator );
         } else if ( sortOrder == MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED ) {
             comparator = MenuItemComparator.MODIFIED_DATETIME.reversed().chain( comparator );
+        } else if ( sortOrder == MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED ) {
+            comparator = MenuItemComparator.PUBLISHED_DATETIME.reversed().chain( comparator ) ;
         }
         return comparator;
     }
@@ -162,6 +165,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
             case MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED:
             case MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER:
             case MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED:
+            case MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED:
             case MENU_SORT_ORDER__BY_HEADLINE:
                 this.sortOrder = sortOrder;
                 break;

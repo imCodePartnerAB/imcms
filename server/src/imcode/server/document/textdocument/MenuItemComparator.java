@@ -8,6 +8,7 @@ public abstract class MenuItemComparator extends ChainableReversibleNullComparat
     static final MenuItemComparator ID = new MenuItemDocumentComparator( DocumentComparator.ID );
     static final MenuItemComparator HEADLINE = new MenuItemDocumentComparator( DocumentComparator.HEADLINE );
     static final MenuItemComparator MODIFIED_DATETIME = new MenuItemDocumentComparator( DocumentComparator.MODIFIED_DATETIME );
+    static final MenuItemComparator PUBLISHED_DATETIME = new MenuItemDocumentComparator( DocumentComparator.PUBLICATION_START_DATETIME );
     static final MenuItemComparator SORT_KEY = new SortKeyComparator();
     static final MenuItemComparator TREE_SORT_KEY = new TreeSortKeyComparator();
 
