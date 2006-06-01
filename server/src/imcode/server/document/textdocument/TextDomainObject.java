@@ -92,7 +92,7 @@ public class TextDomainObject implements Serializable {
                 "\"", "&quot;",
                 "\r\n", "\n",
                 "\r", "\n",
-                "\n", "<BR>\n",
+                "\n", "<br />\n",
             };
             result = Parser.parseDoc( result, vp );
         }
