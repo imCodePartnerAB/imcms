@@ -49,6 +49,11 @@ public class ImcmsImageUtils {
                 imageTagBuffer.append(" class=\"").append(StringEscapeUtils.escapeHtml(classAttribute)).append("\"") ;
             }
 
+            String usemapAttribute = attributes.getProperty("usemap");
+            if (null != classAttribute) {
+                imageTagBuffer.append(" usemap=\"").append(StringEscapeUtils.escapeHtml(usemapAttribute)).append("\"") ;
+            }
+
             StringBuilder styleBuffer = new StringBuilder();
             
             styleBuffer.append("border-width: ").append(image.getBorder()).append("px;");

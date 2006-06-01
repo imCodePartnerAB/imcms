@@ -71,6 +71,7 @@ Single tags
             * label - A small text describing the intended use for this image.
             * class - Passes through to the result.
             * style - Passes through to the result.
+            * usemap - Passes through to the result.
             * mode - Possible values:
                 - "write" - The content is only output if in "edit image" mode.
                 - "read" - The content is only output if not in "edit image" mode.
