@@ -1,6 +1,10 @@
-<%@ page import="imcode.util.Utility,
-                 imcode.server.user.UserDomainObject"%>
+<%@ page import="imcode.server.user.UserDomainObject,
+                 imcode.util.Utility" %>
 <%
-    UserDomainObject user = Utility.getLoggedOnUser( request ) ;
-    request.getRequestDispatcher( "/imcms/"+user.getLanguageIso639_2()+"/jsp/internalerrorpage.jsp").forward( request, response );
+    UserDomainObject user = Utility.getLoggedOnUser(request);
+    String language = "eng";
+    if ( null != user ) {
+        language = user.getLanguageIso639_2();
+    }
+    request.getRequestDispatcher("/imcms/" + language + "/jsp/internalerrorpage.jsp").forward(request, response);
 %>
