@@ -95,7 +95,7 @@ public class TagParser {
 
     private Map imageMap;
     private boolean imageMode;
-    private int implicitImageNumber = 1;
+    private int implicitImageIndex = 1;
 
     private ImcmsServices service;
     private ParserParameters parserParameters;
@@ -120,27 +120,9 @@ public class TagParser {
         this.textMap = document.getTexts();
 
         this.imageMode = viewing.isEditingImages();
-        this.imageMap = getImageMap(document, imageMode, documentRequest);
 
         this.viewing = viewing;
 
-    }
-
-    private static Map getImageMap(TextDocumentDomainObject document, boolean imageMode,
-                                   DocumentRequest documentRequest) {
-        Map images = document.getImages();
-        Map imageMap = new HashMap();
-        for ( Iterator iterator = images.keySet().iterator(); iterator.hasNext(); ) {
-            Integer imageIndex = (Integer) iterator.next();
-            ImageDomainObject image = (ImageDomainObject) images.get(imageIndex);
-            ImageSource imageSource = image.getSource();
-            if ( !( imageSource instanceof FileDocumentImageSource )
-                 || imageMode
-                 || documentRequest.getUser().canAccess(( (FileDocumentImageSource) imageSource ).getFileDocument()) ) {
-                imageMap.put(imageIndex, ImcmsImageUtils.getImageHtmlTag(image, documentRequest.getHttpServletRequest()));
-            }
-        }
-        return imageMap;
     }
 
     /** Handle a <?imcms:metaid?> tag. */
@@ -204,7 +186,7 @@ public class TagParser {
 
     private String includePath(String path) {
         HttpServletRequest request = documentRequest.getHttpServletRequest();
-        HttpServletRequestWrapper metaIdHeaderHttpServletRequest = new TagParser.MetaIdHeaderHttpServletRequest(request, document.getId());
+        HttpServletRequestWrapper metaIdHeaderHttpServletRequest = new MetaIdHeaderHttpServletRequest(request, document.getId());
         try {
             return Utility.getContents(path, metaIdHeaderHttpServletRequest, documentRequest.getHttpServletResponse());
         } catch ( ServletException ex ) {
@@ -508,35 +490,36 @@ public class TagParser {
         }
         // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
         String noStr = attributes.getProperty("no");
-        int no;
-        String result;
+        int imageIndex;
         if ( null == noStr ) {
-            no = implicitImageNumber++;
-            result = (String) imageMap.get(new Integer(no));
+            imageIndex = implicitImageIndex++;
         } else {
             noStr = noStr.trim();
-            no = Integer.parseInt(noStr);
-            result = (String) imageMap.get(new Integer(no));
-            implicitImageNumber = no + 1;
+            imageIndex = Integer.parseInt(noStr);
+            implicitImageIndex = imageIndex + 1;
         }
-        if ( result == null ) {
-            result = "";
+        ImageDomainObject image = document.getImage(imageIndex) ;
+        ImageSource imageSource = image.getSource();
+        String imageTag = "" ;
+        if ( !( imageSource instanceof FileDocumentImageSource )
+             || imageMode
+             || documentRequest.getUser().canAccess(( (FileDocumentImageSource) imageSource ).getFileDocument()) ) {
+            imageTag = ImcmsImageUtils.getImageHtmlTag(image, documentRequest.getHttpServletRequest(), attributes);
         }
 
-        String finalresult = result;
         if ( imageMode ) {
-            String[] replace_tags = getLabelTags(attributes, no, finalresult);
+            String[] replace_tags = getLabelTags(attributes, imageIndex, imageTag);
             String admin_template_file;
-            if ( "".equals(result) ) { // no data in the db-field.
+            if ( "".equals(imageTag) ) { // no data in the db-field.
                 admin_template_file = "textdoc/admin_no_image.frag";
             } else {               // data in the db-field.
                 admin_template_file = "textdoc/admin_image.frag";
             }
 
-            finalresult = service.getAdminTemplate(admin_template_file, documentRequest.getUser(), Arrays.asList(replace_tags));
+            imageTag = service.getAdminTemplate(admin_template_file, documentRequest.getUser(), Arrays.asList(replace_tags));
         }
 
-        return finalresult;
+        return imageTag;
     }
 
     /**

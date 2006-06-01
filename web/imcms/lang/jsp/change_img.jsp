@@ -12,7 +12,7 @@
           com.imcode.util.ImageSize,
           com.imcode.util.ImageSize,
           imcode.server.document.*,
-          imcode.server.document.textdocument.*"
+          imcode.server.document.textdocument.*, java.util.Properties"
 
 	contentType="text/html"
 
@@ -255,7 +255,7 @@ function checkLinkOnBlur() {<%
 		if (fromEditor || (image != null && !image.isEmpty())) { %>
 		<tr>
 			<td colspan="2" align="center">
-			<div id="previewDiv"><%= (image != null && !image.isEmpty()) ? ImcmsImageUtils.getImageHtmlTag( image, request ) : "" %></div></td>
+			<div id="previewDiv"><%= (image != null && !image.isEmpty()) ? ImcmsImageUtils.getImageHtmlTag( image, request, new Properties()) : "" %></div></td>
 		</tr><%
 			if (!fromEditor) {
 				ImageSource imageSource = image.getSource();

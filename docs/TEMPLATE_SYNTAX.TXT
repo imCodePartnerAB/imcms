@@ -69,6 +69,8 @@ Single tags
         Attributes:
             * no - The number of this image in the text document.
             * label - A small text describing the intended use for this image.
+            * class - Passes through to the result.
+            * style - Passes through to the result.
             * mode - Possible values:
                 - "write" - The content is only output if in "edit image" mode.
                 - "read" - The content is only output if not in "edit image" mode.

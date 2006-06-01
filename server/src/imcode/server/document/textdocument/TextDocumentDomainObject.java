@@ -151,7 +151,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * @return Map<Integer, {@link ImageDomainObject} *
      */
-    public Map getImages() {
+    public Map<Integer, ImageDomainObject> getImages() {
         return Collections.unmodifiableMap( getImagesMap() );
     }
 

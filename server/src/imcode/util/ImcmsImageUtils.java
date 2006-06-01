@@ -13,13 +13,14 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Properties;
 
 public class ImcmsImageUtils {
 
     private ImcmsImageUtils() {
     }
 
-    public static String getImageHtmlTag( ImageDomainObject image, HttpServletRequest request ) {
+    public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes) {
         StringBuffer imageTagBuffer = new StringBuffer( 96 );
         if ( image.getSize() > 0) {
 
@@ -35,37 +36,51 @@ public class ImcmsImageUtils {
 
             imageTagBuffer.append("<img src=\"").append(StringEscapeUtils.escapeHtml(Utility.escapeUrl(imageUrl))).append("\"");
 
-            ImageSize displayImageSize = image.getDisplayImageSize();
-
-            int width = displayImageSize.getWidth();
-            int height = displayImageSize.getHeight();
-            if ( 0 != width ) {
-                imageTagBuffer.append(" width=\"").append(width).append("\"");
-            }
-            if ( 0 != height ) {
-                imageTagBuffer.append(" height=\"").append(height).append("\"");
-            }
-            imageTagBuffer.append(" border=\"").append(image.getBorder()).append("\"");
-
-            if ( 0 != image.getVerticalSpace() ) {
-                imageTagBuffer.append(" vspace=\"").append(image.getVerticalSpace()).append("\"");
-            }
-            if ( 0 != image.getHorizontalSpace() ) {
-                imageTagBuffer.append(" hspace=\"").append(image.getHorizontalSpace()).append("\"");
-            }
-            if ( StringUtils.isNotBlank( image.getName() ) ) {
-                imageTagBuffer.append(" name=\"").append(StringEscapeUtils.escapeHtml(image.getName())).append("\"");
-            }
             if ( StringUtils.isNotBlank( image.getAlternateText() ) ) {
                 imageTagBuffer.append(" alt=\"").append(StringEscapeUtils.escapeHtml(image.getAlternateText())).append("\"");
             }
-            if ( StringUtils.isNotBlank( image.getLowResolutionUrl() ) ) {
-                imageTagBuffer.append(" lowsrc=\"").append(StringEscapeUtils.escapeHtml(Utility.escapeUrl(request.getContextPath()+image.getLowResolutionUrl()))).append("\"");
+
+            if ( StringUtils.isNotBlank( image.getName() ) ) {
+                imageTagBuffer.append(" id=\"").append(StringEscapeUtils.escapeHtml(image.getName())).append("\"");
             }
+
+            String classAttribute = attributes.getProperty("class");
+            if (null != classAttribute) {
+                imageTagBuffer.append(" class=\"").append(StringEscapeUtils.escapeHtml(classAttribute)).append("\"") ;
+            }
+
+            StringBuilder styleBuffer = new StringBuilder();
+            
+            styleBuffer.append("border-width: ").append(image.getBorder()).append("px;");
+
+            ImageSize displayImageSize = image.getDisplayImageSize();
+            int width = displayImageSize.getWidth();
+            int height = displayImageSize.getHeight();
+            if ( 0 != width ) {
+                imageTagBuffer.append(" width=\"").append(width).append("\"") ;
+                styleBuffer.append(" width: ").append(width).append("px;");
+            }
+            if ( 0 != height ) {
+                imageTagBuffer.append(" height=\"").append(height).append("\"") ;
+                styleBuffer.append(" height: ").append(height).append("px;");
+            }
+
+            styleBuffer.append(" margin: ")
+                    .append(image.getVerticalSpace()).append("px ")
+                    .append(image.getHorizontalSpace()).append("px ") ;
+
             if ( StringUtils.isNotBlank( image.getAlign() ) && !"none".equals( image.getAlign() ) ) {
-                imageTagBuffer.append(" align=\"").append(StringEscapeUtils.escapeHtml(image.getAlign())).append("\"");
+                styleBuffer.append(" vertical-align: ").append(StringEscapeUtils.escapeHtml(image.getAlign())).append(";");
             }
-            imageTagBuffer.append( ">" );
+
+            String styleAttribute = attributes.getProperty("style");
+            if (null != styleAttribute) {
+                styleBuffer.append(" ").append(styleAttribute) ;
+            }
+
+            imageTagBuffer.append(" style=\"").append(StringEscapeUtils.escapeHtml(styleBuffer.toString())).append("\"") ;
+
+            imageTagBuffer.append( " />" );
             if ( StringUtils.isNotBlank( image.getLinkUrl() ) ) {
                 imageTagBuffer.append( "</a>" );
             }
