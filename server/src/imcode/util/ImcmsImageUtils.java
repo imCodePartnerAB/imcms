@@ -50,7 +50,7 @@ public class ImcmsImageUtils {
             }
 
             String usemapAttribute = attributes.getProperty("usemap");
-            if (null != classAttribute) {
+            if (null != usemapAttribute) {
                 imageTagBuffer.append(" usemap=\"").append(StringEscapeUtils.escapeHtml(usemapAttribute)).append("\"") ;
             }
 
