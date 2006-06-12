@@ -117,7 +117,7 @@ public class FrequencyOrderedBag {
             moveInPlace(frequencyEntry);
         }
 
-        private void moveInPlace(Entry frequencyEntry) {
+        private synchronized void moveInPlace(Entry frequencyEntry) {
             while ( frequencyEntry.index > 0 && frequencyEntry.getFrequency() >= getFrequencyAt( frequencyEntry.index - 1) ) {
                 int entryIndex = frequencyEntry.index;
                 int previousEntryIndex = entryIndex - 1;
