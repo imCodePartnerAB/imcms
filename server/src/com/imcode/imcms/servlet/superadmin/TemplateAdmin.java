@@ -47,9 +47,9 @@ public class TemplateAdmin extends HttpServlet {
             return;
         }
 
-        PrintWriter out = res.getWriter();
-
         Utility.setDefaultHtmlContentType( res );
+
+        PrintWriter out = res.getWriter();
 
         String htmlStr = imcref.getAdminTemplate( TEMPLATE_ADMIN, user, null );
         out.println( htmlStr );

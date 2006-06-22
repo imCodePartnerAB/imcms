@@ -63,8 +63,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.archivedDatetime = v;
     }
 
-    public Set getCategoryIds() {
-        return Collections.unmodifiableSet((Set) attributes.categoryIds.get()) ;
+    public Set<Integer> getCategoryIds() {
+        return Collections.unmodifiableSet((Set<Integer>) attributes.categoryIds.get()) ;
     }
 
     public Date getCreatedDatetime() {

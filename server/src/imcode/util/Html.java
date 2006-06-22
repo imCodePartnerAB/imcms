@@ -1,6 +1,7 @@
 package imcode.util;
 
 import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.admin.AdminDoc;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -109,7 +110,34 @@ public class Html {
         return categoryOptionList;
     }
 
-    public static String getLinkedStatusIconTemplate( DocumentDomainObject document, UserDomainObject user,
+	public static String createOptionListOfCategoriesOfTypeNotSelectedForDocument ( DocumentMapper documentMapper,
+                                                                        CategoryTypeDomainObject categoryType,
+                                                                        DocumentDomainObject document ) {
+        CategoryMapper categoryMapper = documentMapper.getCategoryMapper();
+        CategoryDomainObject[] categories = categoryMapper.getAllCategoriesOfType( categoryType );
+        Set documentSelectedCategories = categoryMapper.getCategoriesOfType( categoryType, document.getCategoryIds() );
+		Set notSelectedCategories = new HashSet(Arrays.asList(categories)) ;
+		notSelectedCategories.removeAll(documentSelectedCategories);
+
+		return createOptionListOfCategories(new TreeSet(notSelectedCategories), categoryType);
+    }
+
+	public static String createOptionListOfCategories(Collection categories, CategoryTypeDomainObject categoryType){
+        ToStringPairTransformer categoryToStringPairTransformer = new ToStringPairTransformer() {
+            protected String[] transformToStringPair(Object object) {
+                CategoryDomainObject category = (CategoryDomainObject)object;
+                return new String[]{"" + category.getId(), category.getName()};
+            }
+        };
+		String categoryOptionList = createOptionList( categories, Arrays.asList( new String[]{}  ), categoryToStringPairTransformer );
+
+		if ( 1 == categoryType.getMaxChoices() ) {
+			categoryOptionList = "<option></option>" + categoryOptionList;
+		}
+		return categoryOptionList;
+	}
+
+	public static String getLinkedStatusIconTemplate( DocumentDomainObject document, UserDomainObject user,
                                                       HttpServletRequest request ) {
         String statusIconTemplate = getStatusIconTemplate( document, user );
         if ( user.canEditDocumentInformationFor( document ) ) {
@@ -136,11 +164,10 @@ public class Html {
     public static String getStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
         LifeCyclePhase lifeCyclePhase = document.getLifeCyclePhase();
         String statusIconTemplateName = null;
-        for ( int i = 0; i < STATUS_TEMPLATE_PAIRS.length; i++ ) {
-            Object[] statusTemplatePair = STATUS_TEMPLATE_PAIRS[i];
-            if (lifeCyclePhase.equals( statusTemplatePair[0 ])) {
-                statusIconTemplateName = (String)statusTemplatePair[1] ;
-                break ;
+        for ( Object[] statusTemplatePair : STATUS_TEMPLATE_PAIRS ) {
+            if ( lifeCyclePhase.equals(statusTemplatePair[0]) ) {
+                statusIconTemplateName = (String) statusTemplatePair[1];
+                break;
             }
         }
         return Imcms.getServices().getAdminTemplate( statusIconTemplateName, user, null );

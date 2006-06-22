@@ -1,16 +1,21 @@
 package com.imcode.imcms.flow;
 
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.servlet.admin.ImageBrowser;
 import com.imcode.imcms.servlet.admin.UserFinder;
+import com.imcode.util.KeywordsParser;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.api.Document;
-import com.imcode.util.KeywordsParser;
 import imcode.server.user.UserDomainObject;
-import imcode.util.*;
+import imcode.util.ArraySet;
+import imcode.util.DateConstants;
+import imcode.util.HttpSessionUtils;
+import imcode.util.LocalizedMessage;
+import imcode.util.Utility;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.servlet.ServletException;
@@ -20,7 +25,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
+import java.util.TimeZone;
 
 public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
@@ -38,6 +46,10 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__PUBLICATION_END_TIME = "publication_end_time";
     public static final String REQUEST_PARAMETER__LANGUAGE = "lang_prefix";
     public static final String REQUEST_PARAMETER__CATEGORIES = "categories";
+	public static final String REQUEST_PARAMETER__CATEGORY_IDS_TO_REMOVE = "categories_to_remove";
+	public static final String REQUEST_PARAMETER__CATEGORY_IDS_TO_ADD = "categories_to_add";
+	public static final String REQUEST_PARAMETER__ADD_CATEGORY = "add_category";
+	public static final String REQUEST_PARAMETER__REMOVE_CATEGORY = "remove_category";
     public static final String REQUEST_PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS = "show_meta";
     public static final String REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS = "shared";
     public static final String REQUEST_PARAMETER__KEYWORDS = "classification";
@@ -82,6 +94,22 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             dispatchToCreatorUserBrowser( request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER ) ) {
             dispatchToImageBrowser( request, response );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__ADD_CATEGORY ) ) {
+            if ( null != request.getParameter( REQUEST_PARAMETER__CATEGORY_IDS_TO_ADD ) ){
+                String[] categoriesToAdd = request.getParameterValues(REQUEST_PARAMETER__CATEGORY_IDS_TO_ADD);
+                for ( String categoryIdToAdd : categoriesToAdd ) {
+                    document.addCategoryId(Integer.parseInt(categoryIdToAdd));
+                }
+            }
+            dispatchToFirstPage( request, response );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__REMOVE_CATEGORY ) ) {
+            if ( null != request.getParameter( REQUEST_PARAMETER__CATEGORY_IDS_TO_REMOVE ) ){
+                String[] categoriesToRemove = request.getParameterValues(REQUEST_PARAMETER__CATEGORY_IDS_TO_REMOVE);
+                for ( String categoryIdToRemove : categoriesToRemove ) {
+                    document.removeCategoryId(Integer.parseInt(categoryIdToRemove));
+                }
+            }
+            dispatchToFirstPage( request, response );
         }
     }
 
@@ -168,7 +196,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
                                                                     HttpServletRequest request ) {
 
         final ImcmsServices service = Imcms.getServices();
-        final DocumentMapper documentMapper = service.getDocumentMapper();
         final CategoryMapper categoryMapper = service.getCategoryMapper();
 
         String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE );
@@ -208,7 +235,20 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         String languageIso639_2 = request.getParameter( REQUEST_PARAMETER__LANGUAGE );
         document.setLanguageIso639_2( languageIso639_2 );
 
-        document.removeAllCategories();
+		//*** Remove all categories except multi without picture
+		CategoryTypeDomainObject[] categoryTypes = categoryMapper.getAllCategoryTypes() ;
+        for ( CategoryTypeDomainObject categoryType : categoryTypes ) {
+            boolean categoryTypeIsSingleChoice = 1 == categoryType.getMaxChoices();
+            boolean shouldRemoveCategoriesOfType = categoryTypeIsSingleChoice || categoryType.hasImages();
+            if ( shouldRemoveCategoriesOfType ) {
+                Set<Integer> categoryIds = document.getCategoryIds();
+                Set<CategoryDomainObject> categoriesOfType = categoryMapper.getCategoriesOfType(categoryType, categoryIds);
+                for ( CategoryDomainObject category : categoriesOfType ) {
+                    document.removeCategoryId(category.getId());
+                }
+            }
+        }
+
         String[] categoryIds = request.getParameterValues( REQUEST_PARAMETER__CATEGORIES );
         for ( int i = 0; null != categoryIds && i < categoryIds.length; i++ ) {
             try {
@@ -260,13 +300,13 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static String getTargetFromRequest( HttpServletRequest request ) {
         String[] possibleTargets = request.getParameterValues( REQUEST_PARAMETER__TARGET );
         String target = null;
-        for ( int i = 0; i < possibleTargets.length; i++ ) {
-            target = possibleTargets[i];
+        for ( String possibleTarget : possibleTargets ) {
+            target = possibleTarget;
             boolean targetIsPredefinedTarget
-                    = "_self".equalsIgnoreCase( target )
-                      || "_blank".equalsIgnoreCase( target )
-                      || "_parent".equalsIgnoreCase( target )
-                      || "_top".equalsIgnoreCase( target );
+                    = "_self".equalsIgnoreCase(target)
+                      || "_blank".equalsIgnoreCase(target)
+                      || "_parent".equalsIgnoreCase(target)
+                      || "_top".equalsIgnoreCase(target);
             if ( targetIsPredefinedTarget ) {
                 break;
             }

@@ -32,7 +32,7 @@
 		response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );%><%@
 
 		page import="java.text.DateFormat"%><%@
-		page import="java.text.SimpleDateFormat, java.util.Arrays, java.util.Date, java.util.Set"%><%@
+		page import="java.text.SimpleDateFormat, java.util.*"%><%@
 		taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
@@ -382,19 +382,37 @@ function checkFocus() {
 		<td class="imcmsAdmText"><%
 		for ( int i = 0; i < categoryTypes.length; i++ ) {
 			CategoryTypeDomainObject categoryType = categoryTypes[i] ;
-			if ( !categoryType.hasImages() ) { %>
+			if ( !categoryType.hasImages() ) {
+				if (1 != categoryType.getMaxChoices()) { %>
+		<div style="float: left; margin: auto 1em 1ex auto; border: 1px solid #ccc;text-align:center;">
+		<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%=
+			    URLEncoder.encode(StringEscapeUtils.escapeHtml( categoryType.getName() ),"UTF-8") %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
+		<table>
+			<tr>
+				<td valign="top"><select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORY_IDS_TO_ADD %>" style="color:#cccccc;" size="4" multiple>
+					<%= Html.createOptionListOfCategoriesOfTypeNotSelectedForDocument( documentMapper, categoryType, document) %>
+				</select></td>
+				<td valign="middle" align="center">
+					<input type="submit" name="<%=EditDocumentInformationPageFlow.REQUEST_PARAMETER__ADD_CATEGORY%>" class="imcmsFormBtnSmall" value="<? global/addToRight ?>" style="width:11ex; margin-bottom:3px;"><br>
+					<input type="submit" name="<%=EditDocumentInformationPageFlow.REQUEST_PARAMETER__REMOVE_CATEGORY%>" class="imcmsFormBtnSmall" value="<? global/removeToLeft ?>" style="width:11ex; margin-top:3px;">
+				</td>
+				<td valign="top"><select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORY_IDS_TO_REMOVE %>" size="4" multiple>
+					<% Set documentSelectedCategories = new TreeSet(categoryMapper.getCategoriesOfType( categoryType, document.getCategoryIds() ));%>
+					<%= Html.createOptionListOfCategories(documentSelectedCategories, categoryType) %>
+				</select></td>
+			</tr>
+		</table>
+		</div><%
+				} else {%>
 		<div style="float: left; margin: auto 1em 1ex auto;">
 		<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%=
 			    URLEncoder.encode(StringEscapeUtils.escapeHtml( categoryType.getName() ),"UTF-8") %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
-		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORIES %>"<% if (1 != categoryType.getMaxChoices()) { %> size="4" multiple<% } else { %> onFocus="selFocused = true;"<% } %>>
+		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORIES %>" onFocus="selFocused = true;">
 			<%= Html.createOptionListOfCategoriesOfTypeForDocument( categoryMapper, categoryType, document, request) %>
 		</select></div><%
-			}
-		}
-		for ( int i = 0; i < categoryTypes.length; i++ ) {
-			CategoryTypeDomainObject categoryType = categoryTypes[i] ;
-			if ( categoryType.hasImages() ) { %>
-		<div style="float: left; margin: auto 1em 1ex auto;">
+				}
+			} else { %>
+		<div style="float: left; margin: auto 1em 1ex auto; border: 1px solid #ccc;">
 			<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%=
 			    URLEncoder.encode(StringEscapeUtils.escapeHtml( categoryType.getName() ),"UTF-8") %>"
 			target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><%
@@ -421,14 +439,22 @@ function checkFocus() {
 			</table></td>
 		</tr>
 		</table><%
-				}
-			} %></div><%
-		} %></td>
+				} %></div><%
+			}
+		}
+		%></td>
 	</tr>
 	<tr>
 		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr><%
-	} %>
+	}
+
+	/* *******************************************************************************************
+	 *         SHARE                                                                             *
+	 ******************************************************************************************* */
+
+
+	%>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/32 ?></td>
 		<td class="imcmsAdmText">
