@@ -38,6 +38,7 @@ public class ImcmsImageUtils {
 
             if ( StringUtils.isNotBlank( image.getAlternateText() ) ) {
                 imageTagBuffer.append(" alt=\"").append(StringEscapeUtils.escapeHtml(image.getAlternateText())).append("\"");
+                imageTagBuffer.append(" title=\"").append(StringEscapeUtils.escapeHtml(image.getAlternateText())).append("\"");
             }
 
             if ( StringUtils.isNotBlank( image.getName() ) ) {
