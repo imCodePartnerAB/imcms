@@ -142,7 +142,9 @@
                 <td class="imcmsAdmText"><? templates/sv/permissions/set_1_button.html/1 ?></td>
                 <td>
                     <input type="submit" class="imcmsFormBtnSmall" name="define_set_1" value="<? templates/sv/permissions/set_1_button.html/2001 ?>">
-                    <input type="submit" class="imcmsFormBtnSmall" name="define_new_set_1" value="<? templates/sv/permissions/new_set_1_button.html/2001 ?>">
+                    <% if (document instanceof TextDocumentDomainObject) { %>
+                        <input type="submit" class="imcmsFormBtnSmall" name="define_new_set_1" value="<? templates/sv/permissions/new_set_1_button.html/2001 ?>">
+                    <% } %>
                 </td>
             </tr>
             <% if (user.canDefineRestrictedTwoFor(document)) { %>
@@ -152,7 +154,9 @@
                     </td>
                     <td>
                         <input type="submit" class="imcmsFormBtnSmall" name="define_set_2" value="<? templates/sv/permissions/set_2_button.html/2001 ?>">
-                        <input type="submit" class="imcmsFormBtnSmall" name="define_new_set_2" value="<? templates/sv/permissions/new_set_2_button.html/2001 ?>">
+                        <% if (document instanceof TextDocumentDomainObject) { %>
+                            <input type="submit" class="imcmsFormBtnSmall" name="define_new_set_2" value="<? templates/sv/permissions/new_set_2_button.html/2001 ?>">
+                        <% } %>
                     </td>
                 </tr>
             <% } %>
