@@ -3,7 +3,7 @@
 	import="java.util.Map,
 	        java.util.HashMap"
 
-	contentType="text/html"
+	contentType="text/html; charset=UTF-8"
 
 %><%	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );%><%@
 		taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%@

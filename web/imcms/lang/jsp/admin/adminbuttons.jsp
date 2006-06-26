@@ -1,8 +1,12 @@
-<%@ page contentType="text/html" import="imcode.server.user.UserDomainObject,
-                 imcode.util.Utility,
-                                         imcode.server.document.textdocument.TextDocumentDomainObject,
-                                         imcode.util.Html,
-                                         imcode.server.document.*"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel" %>
+<%@ page contentType="text/html; charset=UTF-8"
+         import="imcode.server.document.DocumentDomainObject,
+                 imcode.server.document.DocumentPermissionSetDomainObject,
+                 imcode.server.document.TextDocumentPermissionSetDomainObject,
+                 imcode.server.document.textdocument.TextDocumentDomainObject,
+                 imcode.server.user.UserDomainObject"%>
+<%@ page import="imcode.util.Html"%>
+<%@ page import="imcode.util.Utility"%>
+<%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel" %>
 <%
     UserDomainObject user = (UserDomainObject)request.getAttribute("user") ;
     DocumentDomainObject document = (DocumentDomainObject)request.getAttribute("document") ;

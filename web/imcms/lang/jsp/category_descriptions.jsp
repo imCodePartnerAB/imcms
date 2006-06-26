@@ -2,7 +2,8 @@
 	
 	import="com.imcode.imcms.api.*,
             org.apache.commons.lang.StringEscapeUtils"
-  errorPage="no_category_type_by_that_name.jsp"
+    errorPage="no_category_type_by_that_name.jsp"
+    contentType="text/html; charset=UTF-8"
 
 %><%
 

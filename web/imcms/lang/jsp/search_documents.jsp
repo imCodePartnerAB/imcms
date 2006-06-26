@@ -1,10 +1,10 @@
-<%@ page import="org.apache.commons.lang.StringEscapeUtils,
+<%@ page import="com.imcode.imcms.flow.Page,
                  com.imcode.imcms.servlet.DocumentFinder,
                  com.imcode.imcms.servlet.SearchDocumentsPage,
-                 com.imcode.imcms.flow.Page,
                  imcode.util.jscalendar.JSCalendar,
-                 imcode.util.Utility"%>
-<%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+                 org.apache.commons.lang.StringEscapeUtils"
+        contentType="text/html; charset=UTF-8" %>
+<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage) Page.fromRequest(request) ;
     DocumentFinder documentFinder = searchDocumentsPage.getDocumentFinder() ;

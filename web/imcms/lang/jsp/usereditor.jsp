@@ -3,6 +3,7 @@
 <%@ page import="imcode.util.DateConstants"%><%@  page import="imcode.util.LocalizedMessage"%>
 <%@ page import="imcode.util.Utility"%><%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@ page import="java.text.SimpleDateFormat"%>
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%
     UserEditorPage userEditorPage = (UserEditorPage) Page.fromRequest(request);
     UserDomainObject editedUser = userEditorPage.getEditedUser() ;

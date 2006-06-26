@@ -4,7 +4,8 @@
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
                  imcode.util.Html,
-                 com.imcode.imcms.flow.Page"%><%@ page import="java.util.List"%>
+                 com.imcode.imcms.flow.Page"
+        contentType="text/html; charset=UTF-8" %><%@ page import="java.util.List"%>
 <%
     SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage)Page.fromRequest(request);
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;

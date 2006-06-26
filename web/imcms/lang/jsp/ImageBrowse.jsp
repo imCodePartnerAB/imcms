@@ -5,7 +5,8 @@
                  imcode.util.HttpSessionUtils,
                  imcode.server.Imcms,
                  imcode.util.LocalizedMessage,
-                 imcode.util.Utility"%>
+                 imcode.util.Utility"
+        contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
 boolean fromEditor = (request.getParameter("editor_image") != null && request.getParameter("editor_image").equals("true")) ;

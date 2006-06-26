@@ -486,13 +486,13 @@
 
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${templates}/${buildlanguage}" filtering="true" encoding="iso-8859-1">
+            todir="${templates}/${buildlanguage}" filtering="true" encoding="utf-8">
             <fileset dir="web/WEB-INF/templates/lang"/>
         </imtranslate>
 
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${imcms}/${buildlanguage}" filtering="true" encoding="iso-8859-1">
+            todir="${imcms}/${buildlanguage}" filtering="true" encoding="utf-8">
             <fileset dir="web/imcms/lang" excludes="${imagespattern}"/>
         </imtranslate>
 

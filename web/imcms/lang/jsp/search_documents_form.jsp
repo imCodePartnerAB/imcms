@@ -1,20 +1,21 @@
 <%@ page import="com.imcode.imcms.flow.Page,
                  com.imcode.imcms.servlet.SearchDocumentsPage,
                  imcode.server.Imcms,
-                 imcode.server.document.DocumentDomainObject,
                  imcode.server.document.DocumentTypeDomainObject,
+                 imcode.server.document.LifeCyclePhase,
                  imcode.server.document.SectionDomainObject,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Html,
                  imcode.util.LocalizedMessage,
                  imcode.util.ToDoubleObjectStringPairTransformer,
                  imcode.util.Utility,
-                 org.apache.commons.lang.ArrayUtils,
-                 imcode.util.jscalendar.JSCalendar"%>
+                 imcode.util.jscalendar.JSCalendar,
+                 org.apache.commons.lang.ArrayUtils"%>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@ page import="org.apache.commons.lang.StringUtils"%>
 <%@ page import="java.util.Arrays"%>
-<%@ page import="java.util.Set"%><%@ page import="imcode.server.document.LifeCyclePhase"%>
+<%@ page import="java.util.Set"%>
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%
     SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage) Page.fromRequest(request) ;
     int documentsPerPage = searchDocumentsPage.getDocumentsPerPage() ;

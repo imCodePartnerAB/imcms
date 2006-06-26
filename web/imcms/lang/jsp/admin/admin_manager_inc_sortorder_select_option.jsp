@@ -1,3 +1,4 @@
+<%@page contentType="text/html; charset=UTF-8" %>
 <% String sort = (String)request.getAttribute( "SORT" ) ; %>
 <option value="MOD" <%= "MOD".equals( sort ) ? "selected" : "" %> ><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/sort_option1 ?>
 <option value="MODR" <%= "MODR".equals( sort ) ? "selected" : "" %> ><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/sort_option2 ?>

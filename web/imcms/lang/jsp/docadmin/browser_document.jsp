@@ -1,12 +1,13 @@
-<%@ page contentType="text/html" import="imcode.server.Imcms,
-                                         imcode.server.document.BrowserDocumentDomainObject,
-                                         org.apache.commons.lang.ObjectUtils,
-                                         org.apache.commons.lang.StringEscapeUtils,
-                                         java.util.*,
-                                         imcode.util.HttpSessionUtils,
-                                         com.imcode.imcms.flow.PageFlow,
-                                         com.imcode.imcms.flow.EditBrowserDocumentPageFlow,
-                                         com.imcode.imcms.flow.*"%>
+<%@ page contentType="text/html; charset=UTF-8"
+         import="imcode.server.Imcms,
+                 imcode.server.document.BrowserDocumentDomainObject,
+                 org.apache.commons.lang.ObjectUtils,
+                 org.apache.commons.lang.StringEscapeUtils,
+                 java.util.*,
+                 imcode.util.HttpSessionUtils,
+                 com.imcode.imcms.flow.PageFlow,
+                 com.imcode.imcms.flow.EditBrowserDocumentPageFlow,
+                 com.imcode.imcms.flow.*"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
 <html>

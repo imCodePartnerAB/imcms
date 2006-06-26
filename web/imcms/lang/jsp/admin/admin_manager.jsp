@@ -1,16 +1,10 @@
-<%@ page import="com.imcode.imcms.servlet.superadmin.AdminManager,
-                 imcode.util.Utility,
-                 java.text.DateFormat,
-                 java.text.SimpleDateFormat,
-                 imcode.util.DateConstants,
-                 imcode.server.Imcms,
-                 com.imcode.imcms.servlet.beans.AdminManagerSubreport,
-                 java.util.*,
-                 imcode.server.document.*,
-                 com.imcode.imcms.servlet.beans.Tab,
-                 org.apache.commons.lang.StringEscapeUtils,
-                 imcode.util.jscalendar.JSCalendar"%>
-<%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%@ page import="com.imcode.imcms.servlet.beans.AdminManagerSubreport,
+                 com.imcode.imcms.servlet.superadmin.AdminManager,
+                 imcode.server.document.DocumentTypeDomainObject,
+                 imcode.util.jscalendar.JSCalendar,
+                 java.util.Iterator,
+                 java.util.List"%>
+<%@page contentType="text/html; charset=UTF-8" %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
     AdminManager.AdminManagerPage adminManagerPage = (AdminManager.AdminManagerPage) request.getAttribute(AdminManager.AdminManagerPage.REQUEST_ATTRIBUTE__PAGE) ;

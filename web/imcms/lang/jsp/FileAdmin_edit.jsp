@@ -4,6 +4,7 @@
 	        org.apache.oro.text.perl.Perl5Util,
 	        java.io.*,
             imcode.server.user.UserDomainObject, imcode.server.Imcms"
+    contentType="text/html; charset=UTF-8"
 
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 

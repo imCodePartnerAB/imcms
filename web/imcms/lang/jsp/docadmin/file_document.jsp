@@ -1,4 +1,4 @@
-<%@ page contentType="text/html"
+<%@ page contentType="text/html; charset=UTF-8"
     import="org.apache.commons.lang.StringEscapeUtils,
           imcode.server.Imcms,
           imcode.server.document.FileDocumentDomainObject,
@@ -124,7 +124,7 @@ if (!documentMimeTypeFoundInDropDown) {
 			<td><? install/htdocs/sv/jsp/docadmin/file_document.jsp/target_label ?></td>
 			<td><%
 			request.setAttribute( "target", document.getTarget() );%>
-			<jsp:include page="target.jsp"/></td>
+			<jsp:include page="target.jsp" /></td>
 		</tr>
 		</table></td>
 	</tr>

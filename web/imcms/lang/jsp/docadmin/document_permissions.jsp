@@ -19,7 +19,7 @@
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.SortedSet"%>
 <%@ page import="java.util.TreeSet"%><%@ page import="imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper"%>
-<%@page contentType="text/html"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%!
+<%@page contentType="text/html; charset=UTF-8"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%!
     String formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject radioButtonDocumentPermissionSetType, UserDomainObject user, DocumentPermissionSetTypeDomainObject documentPermissionSetType,
                                             RoleId roleId,
                                             DocumentDomainObject document ) {

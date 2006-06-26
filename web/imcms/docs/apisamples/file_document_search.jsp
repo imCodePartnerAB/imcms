@@ -1,9 +1,10 @@
 <%@ page import="com.imcode.imcms.api.*,
-java.util.*,
-                 java.io.IOException,
-                 org.apache.commons.lang.UnhandledException,
-                 javax.imageio.ImageIO,
-                 java.awt.image.BufferedImage" %>
+            java.util.*,
+            java.io.IOException,
+            org.apache.commons.lang.UnhandledException,
+            javax.imageio.ImageIO,
+            java.awt.image.BufferedImage"
+        contentType="text/html; charset=UTF-8" %>
 <html>
     <head>
         <title></title>

@@ -2,7 +2,7 @@
                  java.util.Arrays,
                  java.io.FileFilter,
                  org.apache.commons.io.filefilter.*"%>
-<%@page contentType="text/html"%>
+<%@page contentType="text/html; charset=UTF-8"%>
 <html>
     <head>
         <title>Included documentation</title>

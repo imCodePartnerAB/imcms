@@ -1,5 +1,7 @@
-<%@ page import="com.imcode.imcms.servlet.superadmin.AdminCategories,
-                 imcode.server.document.CategoryTypeDomainObject"%><%
+<%@ page    import="com.imcode.imcms.servlet.superadmin.AdminCategories,
+                 imcode.server.document.CategoryTypeDomainObject"
+            contentType="text/html; charset=UTF-8"%>
+<%
     CategoryTypeDomainObject categoryTypeToEdit = (CategoryTypeDomainObject)request.getAttribute( "categoryType" ) ;
             %><tr>
                 <td width="110" height="24"><? global/Name ?></td>

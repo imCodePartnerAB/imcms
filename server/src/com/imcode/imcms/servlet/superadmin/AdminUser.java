@@ -30,6 +30,7 @@ public class AdminUser extends HttpServlet {
 
         ImcmsServices imcref = Imcms.getServices();
         final UserDomainObject user = Utility.getLoggedOnUser( req );
+        Utility.setDefaultHtmlContentType( res );
 
         // Lets verify that the user is an admin, otherwise throw him out.
         if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() ) {

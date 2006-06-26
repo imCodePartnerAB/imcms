@@ -1,13 +1,11 @@
-<%@ page import="com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher,
-                 imcode.server.document.DocumentDomainObject,
-                 org.apache.commons.lang.StringEscapeUtils,
-                 org.apache.commons.lang.ObjectUtils,
-                 imcode.server.document.UrlDocumentDomainObject,
-                 imcode.util.*,
+<%@ page import="com.imcode.imcms.flow.DocumentPageFlow,
+                 com.imcode.imcms.flow.EditDocumentPageFlow,
                  com.imcode.imcms.flow.EditUrlDocumentPageFlow,
-                 com.imcode.imcms.flow.DocumentPageFlow,
                  com.imcode.imcms.flow.PageFlow,
-                 com.imcode.imcms.flow.EditDocumentPageFlow" contentType="text/html"%>
+                 imcode.server.document.UrlDocumentDomainObject,
+                 imcode.util.HttpSessionUtils,
+                 org.apache.commons.lang.ObjectUtils,
+                 org.apache.commons.lang.StringEscapeUtils" contentType="text/html; charset=UTF-8"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
     DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
     UrlDocumentDomainObject document = (UrlDocumentDomainObject)httpFlow.getDocument() ;

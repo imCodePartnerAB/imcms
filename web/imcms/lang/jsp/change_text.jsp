@@ -5,11 +5,13 @@
 	        org.apache.commons.lang.StringEscapeUtils,
             org.apache.commons.lang.StringUtils"
 
-	contentType="text/html"
+
+
+    contentType="text/html; charset=UTF-8"
 
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"
 %><%
-
+	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );
 ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttribute(ChangeText.TextEditPage.REQUEST_ATTRIBUTE__PAGE);
 
 boolean imcmsModeHtml    = (textEditPage.getType() == TextDomainObject.TEXT_TYPE_HTML) ;

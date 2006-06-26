@@ -1,5 +1,4 @@
-<%@ page contentType="text/html"
-         import="com.imcode.imcms.api.*,
+<%@ page import="com.imcode.imcms.api.*,
                  imcode.server.Imcms,
                  org.apache.lucene.document.DateField,
                  org.apache.lucene.index.Term,
@@ -9,7 +8,10 @@
                  org.apache.lucene.search.SortField,
                  org.apache.lucene.search.TermQuery,
                  java.util.Calendar, java.util.Date"
-         errorPage="error.jsp" %><%
+         errorPage="error.jsp"
+
+         contentType="text/html; charset=UTF-8"%>
+<%
 	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING);
 	ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService() ;

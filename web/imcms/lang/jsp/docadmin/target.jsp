@@ -1,6 +1,7 @@
 <%@ page
 	
 	import="org.apache.commons.lang.StringEscapeUtils"
+    contentType="text/html; charset=UTF-8"    
 	
 %><%
 

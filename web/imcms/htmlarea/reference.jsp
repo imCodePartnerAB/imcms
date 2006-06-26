@@ -1,5 +1,5 @@
 <%@ page
-		contentType="text/html"%><%
+		contentType="text/html; charset=UTF-8"%><%
 	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );%><%@
 		include file="_editor_settings.jsp"
 %>

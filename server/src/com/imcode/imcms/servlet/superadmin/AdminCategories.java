@@ -59,6 +59,7 @@ public class AdminCategories extends HttpServlet {
         // Lets verify that the user who tries to add a new user is an admin
         ImcmsServices service = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
+        Utility.setDefaultHtmlContentType(res);
         if ( !user.isSuperAdmin() ) {
             String header = "Error in AdminCategories. ";
             Properties langproperties = service.getLanguageProperties(user);

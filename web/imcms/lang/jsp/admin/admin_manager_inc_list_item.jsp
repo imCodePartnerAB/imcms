@@ -1,4 +1,5 @@
-<%@ page import="org.apache.commons.lang.StringEscapeUtils,
+<%@ page contentType="text/html; charset=UTF-8"
+        import="org.apache.commons.lang.StringEscapeUtils,
                  imcode.server.document.DocumentDomainObject,
                  imcode.util.Utility,
                  imcode.util.Html,

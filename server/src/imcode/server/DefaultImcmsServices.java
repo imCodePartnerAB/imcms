@@ -433,6 +433,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         velocity.setProperty(VelocityEngine.VM_LIBRARY, languageIso639_2 + "/gui.vm");
         velocity.setProperty(VelocityEngine.VM_LIBRARY_AUTORELOAD, "true");
         velocity.setProperty(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem");
+        velocity.setProperty(VelocityEngine.INPUT_ENCODING, Imcms.DEFAULT_ENCODING);
         velocity.setProperty("runtime.log.logsystem.log4j.category", "org.apache.velocity");
         velocity.init();
         return velocity;

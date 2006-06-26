@@ -1,14 +1,14 @@
-<%@ page import="com.imcode.imcms.servlet.superadmin.LinkCheck,
-                 java.util.Iterator,
+<%@ page import="com.imcode.imcms.mapping.DocumentMapper,
                  com.imcode.imcms.servlet.admin.AdminDoc,
-                 imcode.server.ImcmsConstants,
-                 imcode.server.user.UserDomainObject,
-                 imcode.util.Utility,
-                 imcode.server.document.DocumentDomainObject,
                  com.imcode.imcms.servlet.superadmin.DocumentReferences,
+                 com.imcode.imcms.servlet.superadmin.LinkCheck,
+                 imcode.server.ImcmsConstants,
+                 imcode.server.document.DocumentDomainObject,
+                 imcode.server.user.UserDomainObject,
                  imcode.util.Html,
-                 org.apache.commons.lang.StringEscapeUtils"%><%@ page import="com.imcode.imcms.mapping.DocumentMapper"%>
-<%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
+                 imcode.util.Utility,
+                 org.apache.commons.lang.StringEscapeUtils"%><%@ page import="java.util.Iterator"%>
+<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
 LinkCheck.LinkCheckPage linkCheckPage = (LinkCheck.LinkCheckPage) request.getAttribute(LinkCheck.LinkCheckPage.REQUEST_ATTRIBUTE__PAGE) ;
 boolean doCheckLinks = linkCheckPage.isDoCheckLinks();
@@ -73,7 +73,7 @@ if (doCheckLinks) {
 	<td colspan="8"><vel:velocity>#gui_hr( "cccccc" )</vel:velocity></td>
 </tr><%
 		for (int i = 0; linksIterator.hasNext() && i < 10; ++i) {
-			out.flush();
+			response.flushBuffer();
 			LinkCheck.Link link = (LinkCheck.Link)linksIterator.next();
 			if ( (!link.isCheckable() || link.isOk()) && linkCheckPage.isBrokenOnly() ) {
 				--i ;
@@ -137,7 +137,7 @@ if (doCheckLinks) {
     <td align="center" colspan="3"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/uncheckable ?></td>
     <% } %>
 </tr><%
-			out.flush();
+			response.flushBuffer();
 		} %>
 </table><%
 	}

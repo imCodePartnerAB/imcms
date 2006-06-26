@@ -53,6 +53,7 @@ public class AdminRoles extends HttpServlet {
         // Lets verify that the user who tries to add a new user is an admin
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
+        Utility.setDefaultHtmlContentType(res);
         if ( user.isSuperAdmin() == false ) {
             String header = "Error in AdminRoles.";
             Properties langproperties = imcref.getLanguageProperties(user);
@@ -100,6 +101,7 @@ public class AdminRoles extends HttpServlet {
         Database database = imcref.getDatabase();
         ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         UserDomainObject user = Utility.getLoggedOnUser( req );
+        Utility.setDefaultHtmlContentType(res);
 
         if ( !user.isSuperAdmin() ) {
             AdminIpAccess.printNonAdminError(imcref, user, req, res, getClass());
@@ -586,9 +588,9 @@ public class AdminRoles extends HttpServlet {
                                 Map vm, String htmlFile) throws IOException {
 
         String str = createHtml(req, vm, htmlFile);
-
-        PrintWriter out = res.getWriter();
         Utility.setDefaultHtmlContentType(res);
+        PrintWriter out = res.getWriter();
+
         out.println(str);
     }
 }

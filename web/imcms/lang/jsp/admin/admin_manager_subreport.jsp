@@ -1,10 +1,9 @@
-<%@ page import="java.util.List,
+<%@ page import="imcode.server.document.DocumentDomainObject,
                  imcode.util.LocalizedMessage,
-                 imcode.server.document.DocumentDomainObject,
+                 imcode.util.Utility,
                  org.apache.commons.lang.StringEscapeUtils,
-                 com.imcode.imcms.servlet.superadmin.AdminManager,
-                 imcode.util.*"%>
-<%@page contentType="text/html"%>
+                 java.util.List"%>
+<%@page contentType="text/html; charset=UTF-8" %>
 <jsp:useBean id="subreport" scope="request" class="com.imcode.imcms.servlet.beans.AdminManagerSubreport"/>
 <%
     String imagesPath = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;

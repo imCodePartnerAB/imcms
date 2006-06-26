@@ -1,10 +1,6 @@
-<%@ page import="imcode.util.Utility,
-                 imcode.server.document.DocumentDomainObject,
-                 java.util.Date,
-                 java.text.DateFormat,
-                 java.text.SimpleDateFormat,
-                 imcode.util.DateConstants"%>
-<%@page contentType="text/html"%>
+<%@ page import="imcode.server.document.DocumentDomainObject,
+                 imcode.util.Utility"%>
+<%@page contentType="text/html; charset=UTF-8" %>
 <jsp:useBean id="expandableDatesBean" class="com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean" scope="request"/>
 <%
     String imagesPath  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;

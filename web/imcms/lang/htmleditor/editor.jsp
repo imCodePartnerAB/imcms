@@ -2,7 +2,7 @@
   import="com.imcode.imcms.api.DocumentService,
           com.imcode.imcms.api.ContentManagementSystem,
           com.imcode.imcms.api.TextDocument,imcode.server.Imcms"
-  contentType="text/html"
+  contentType="text/html; charset=UTF-8"
 
 %><%!
 /* *******************************************************************************************

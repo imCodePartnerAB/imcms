@@ -1,6 +1,7 @@
 <%@ page import="com.imcode.imcms.servlet.superadmin.AdminCategories,
                  imcode.server.document.CategoryDomainObject,
-                 imcode.server.document.CategoryTypeDomainObject"%>
+                 imcode.server.document.CategoryTypeDomainObject"
+        contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity><%
 

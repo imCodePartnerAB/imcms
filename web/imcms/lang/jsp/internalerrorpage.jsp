@@ -1,4 +1,5 @@
 <%@ page isErrorPage="true" import="java.io.*"%>
+<%@ page contentType="text/html; charset=UTF8"%>  
 <html>
 <head>
 <title><? install/htdocs/sv/jsp/internalerrorpage.jsp/1 ?></title>

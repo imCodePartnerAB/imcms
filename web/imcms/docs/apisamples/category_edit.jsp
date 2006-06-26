@@ -1,4 +1,5 @@
-<%@ page import="com.imcode.imcms.api.*"%>
+<%@ page import="com.imcode.imcms.api.*"
+        contentType="text/html; charset=UTF-8" %>
 <%
 
     ContentManagementSystem imcms = ContentManagementSystem.fromRequest( request );

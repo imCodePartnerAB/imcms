@@ -3,7 +3,7 @@
                  com.imcode.imcms.servlet.superadmin.AdminCounter,
                  com.imcode.imcms.servlet.SearchDocumentsPage,
                  imcode.util.Utility"%>
-<%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     AdminCounter.AdminSessionCounterPage adminSessionCounterPage = (AdminCounter.AdminSessionCounterPage)request.getAttribute(AdminCounter.AdminSessionCounterPage.REQUEST_ATTRIBUTE__PAGE);;
     JSCalendar jsCalendar = adminSessionCounterPage.getJSCalendar(request);

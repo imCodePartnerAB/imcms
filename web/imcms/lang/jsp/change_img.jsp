@@ -1,22 +1,25 @@
 <%@ page
 
   import="com.imcode.imcms.servlet.admin.ChangeImage,
-          org.apache.commons.lang.StringUtils,
+          com.imcode.util.ImageSize,
           imcode.server.Imcms,
-          org.apache.commons.lang.StringEscapeUtils,
-          org.apache.commons.lang.ObjectUtils,
-          imcode.util.Utility,
-          imcode.util.Html,
+          imcode.server.document.DocumentTypeDomainObject,
+          imcode.server.document.FileDocumentDomainObject,
+          imcode.server.document.textdocument.FileDocumentImageSource,
+          imcode.server.document.textdocument.ImageDomainObject,
+          imcode.server.document.textdocument.ImageSource,
+          imcode.server.document.textdocument.TextDocumentDomainObject,
           imcode.server.user.UserDomainObject,
+          imcode.util.Html,
           imcode.util.ImcmsImageUtils,
-          com.imcode.util.ImageSize,
-          com.imcode.util.ImageSize,
-          imcode.server.document.*,
-          imcode.server.document.textdocument.*, java.util.Properties"
+          imcode.util.Utility, org.apache.commons.lang.StringEscapeUtils"
 
-	contentType="text/html"
+	contentType="text/html; charset=UTF-8"
 
-%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
+%>
+<%@ page import="org.apache.commons.lang.StringUtils"%>
+<%@ page import="java.util.Properties"%>
+<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
 
 boolean fromEditor = (request.getParameter("editor_image") != null && request.getParameter("editor_image").equals("true")) ;

@@ -1,4 +1,4 @@
-<%@ page contentType="text/html"
+<%@ page contentType="text/html; charset=UTF-8"
     import="com.imcode.imcms.api.Document,
             com.imcode.imcms.flow.CreateDocumentPageFlow,
             com.imcode.imcms.flow.DocumentPageFlow,

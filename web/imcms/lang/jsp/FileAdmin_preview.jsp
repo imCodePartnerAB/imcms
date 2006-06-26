@@ -9,6 +9,7 @@
 	        java.io.File,
 	        java.io.FileInputStream,
 	        java.io.InputStreamReader, java.text.DecimalFormat"
+        contentType="text/html; charset=UTF-8"
 	
 %><%
 

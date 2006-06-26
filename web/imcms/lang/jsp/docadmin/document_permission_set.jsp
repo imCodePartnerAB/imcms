@@ -12,8 +12,10 @@
                  org.apache.commons.lang.StringEscapeUtils,
                  java.util.Iterator,
                  java.util.Map"%>
-<%@ page import="java.util.Set"%><%@ page import="imcode.server.document.DocumentPermissionSetTypeDomainObject"%><%@ page import="imcode.server.document.textdocument.TextDocumentDomainObject"%>
-<%@page contentType="text/html"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%
+<%@ page import="java.util.Set"%>
+<%@ page import="imcode.server.document.DocumentPermissionSetTypeDomainObject"%>
+<%@ page import="imcode.server.document.textdocument.TextDocumentDomainObject"%>
+<%@ page contentType="text/html; charset=UTF-8"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%
     DocumentPermissionSetPage documentPermissionSetPage = (DocumentPermissionSetPage)Page.fromRequest(request) ;
     DocumentPermissionSetDomainObject documentPermissionSet = documentPermissionSetPage.getDocumentPermissionSet() ;
     UserDomainObject user = Utility.getLoggedOnUser(request) ;

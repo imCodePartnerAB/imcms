@@ -71,6 +71,7 @@ public class AdminManager extends HttpServlet {
 
         ImcmsServices service = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( request );
+        Utility.setDefaultHtmlContentType( response );
 
         String whichButton = request.getParameter( "AdminTask" );
         if ( null != whichButton ) {
