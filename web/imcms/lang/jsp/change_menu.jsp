@@ -86,6 +86,9 @@
                             }
                         %><%= Html.getLinkedStatusIconTemplate( menuItem.getDocument(), user, request ) %> 
                         <input type="checkbox" name="<%= MenuEditPage.SELECTED %>" value="<%= menuItemDocument.getId() %>">
+                        <% if (menu.getSortOrder() == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER) {
+                            %><%= StringUtils.repeat("&nbsp;", menuItem.getTreeSortKey().getLevelCount()*2) %><%
+                        } %>
                         <a href="<%= request.getContextPath() %>/<%= menuItemDocument.getId() %>"><%= StringEscapeUtils.escapeHtml(headline) %></a>
                         <% if (user.canEdit(menuItemDocument)) {
                             %>&nbsp;<a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= menuItemDocument.getId() %>"><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/ico_txt.gif" border="0"></a><%
