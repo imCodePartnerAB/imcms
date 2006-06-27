@@ -38,7 +38,7 @@ Setting up the database:
 
         On MySQL something like the following might be appropriate:
 
-            mysql -u <user> -p -e "create database imcms"
+            mysql -u <user> -p -e "create database imcms CHARACTER SET utf8 COLLATE utf8_swedish_ci"
             mysql -u <user> -p imcms < imcms-<version>-<language>-mysql.sql
            
         See the MySQL documentation for details.
