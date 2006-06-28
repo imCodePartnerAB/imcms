@@ -1,4 +1,4 @@
-<%@ page contentType="text/css" %><%
+<%@ page contentType="text/css; charset=UTF-8" %><%
 		response.setContentType( "text/css; charset=" + Imcms.DEFAULT_ENCODING);
 %><%@ include file="_editor_methods.jsp" %>
 

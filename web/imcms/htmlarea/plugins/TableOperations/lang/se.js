@@ -26,26 +26,26 @@ TableOperations.I18N = {
 	"Center"                                        : "Centrerat",
 	"Char"                                          : "Bokstav",
 	"Collapsed borders"                             : "Kollapsade kantlinjer",
-	"Color"                                         : "Färg",
+	"Color"                                         : "FÃ¤rg",
 	"Description"                                   : "Beskrivning",
-	"FG Color"                                      : "Textfärg",
+	"FG Color"                                      : "TextfÃ¤rg",
 	"Float"                                         : "Flyta",
 	"Frames"                                        : "Rutor",
-	"Height"                                        : "Höjd",
-	"How many columns would you like to merge?"     : "Hur många kolumner vill du slå samman?",
-	"How many rows would you like to merge?"        : "Hur många rader vill du slå samman?",
+	"Height"                                        : "HÃ¶jd",
+	"How many columns would you like to merge?"     : "Hur mÃ¥nga kolumner vill du slÃ¥ samman?",
+	"How many rows would you like to merge?"        : "Hur mÃ¥nga rader vill du slÃ¥ samman?",
 	"Image URL"                                     : "Bild URL",
 	"Justify"                                       : "Marginaljustera",
 	"Layout"                                        : "Layout",
-	"Left"                                          : "Vänster",
+	"Left"                                          : "VÃ¤nster",
 	"Margin"                                        : "Margin",
 	"Middle"                                        : "Mitten",
 	"No rules"                                      : "Inga linjer",
 	"No sides"                                      : "Inga sidor",
 	"None"                                          : "Ingen",
 	"Padding"                                       : "Padding",
-	"Please click into some cell"                   : "Klicka i någon cell",
-	"Right"                                         : "Höger",
+	"Please click into some cell"                   : "Klicka i nÃ¥gon cell",
+	"Right"                                         : "HÃ¶ger",
 	"Row Properties"                                : "Rad Egenskaper",
 	"Rules will appear between all rows and columns": "Linjer syns mellan alla rader och kolumner",
 	"Rules will appear between columns only"        : "Linjer syns bara mellan kolumner",
@@ -56,16 +56,16 @@ TableOperations.I18N = {
 	"Summary"                                       : "Summering",
 	"TO-cell-delete"                                : "Ta bort cell",
 	"TO-cell-insert-after"                          : "Infoga cell efter",
-	"TO-cell-insert-before"                         : "Infoga cell före",
+	"TO-cell-insert-before"                         : "Infoga cell fÃ¶re",
 	"TO-cell-merge"                                 : "Sammanfoga celler",
 	"TO-cell-prop"                                  : "Cell egenskaper",
 	"TO-cell-split"                                 : "Dela cell",
 	"TO-col-delete"                                 : "Ta bort kolumn",
 	"TO-col-insert-after"                           : "Infoga kolumn efter",
-	"TO-col-insert-before"                          : "Infoga kolumn före",
+	"TO-col-insert-before"                          : "Infoga kolumn fÃ¶re",
 	"TO-col-split"                                  : "Dela kolumn",
 	"TO-row-delete"                                 : "Ta bort rad",
-	"TO-row-insert-above"                           : "Infoga rad före",
+	"TO-row-insert-above"                           : "Infoga rad fÃ¶re",
 	"TO-row-insert-under"                           : "Infoga rad efter",
 	"TO-row-prop"                                   : "Rad egenskaper",
 	"TO-row-split"                                  : "Dela rad",
@@ -79,7 +79,7 @@ TableOperations.I18N = {
 	"The top and bottom sides only"                 : "The top and bottom sides only",
 	"The top side only"                             : "The top side only",
 	"Top"                                           : "Topp",	
-	"Unset color"                                   : "Radera färg",
+	"Unset color"                                   : "Radera fÃ¤rg",
 	"Vertical align"                                : "Vertikal justering",
 	"Width"                                         : "Bredd",
 	"not-del-last-cell"                             : "HTMLArea cowardly refuses to delete the last cell in row.",
@@ -91,10 +91,10 @@ TableOperations.I18N = {
 
 /*
 Swedish characters:
-(å) &aring; = Ã¥
-(Å) &Aring; = ÃE
-(ä) &auml;  = Ã¤
-(Ä) &Auml;  = ÃD
-(ö) &ouml;  = Ã¶
-(Ö) &Ouml;  = ÃV
+(Ã¥) &aring; = Ã¥
+(Ã…) &Aring; = Ã…
+(Ã¤) &auml;  = Ã¤
+(Ã„) &Auml;  = Ã„
+(Ã¶) &ouml;  = Ã¶
+(Ã–) &Ouml;  = Ã–
 */

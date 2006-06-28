@@ -18,7 +18,7 @@ HTMLArea.I18N = {
 	// it will be used for automatically load plugin language.
 	lang: "en",
 
-	tooltips: {
+    tooltips: {
 		bold:           "Bold",
 		italic:         "Italic",
 		underline:      "Underline",

@@ -1,7 +1,9 @@
 <%@ page
-		contentType="text/html; charset=UTF-8"%><%
-	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );%><%@
-		include file="_editor_settings.jsp"
+	contentType="text/html; charset=UTF-8"%>
+<%@
+	include file="_editor_settings.jsp"
+%><%
+	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );
 %>
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 3.2//EN">
 <html>
@@ -84,7 +86,7 @@ padding: 5px; text-align: center; }
 
 <h2>Tangentbords-kortkommandon</h2>
 
-<p>Editorn möjliggör följande tangentbordskombinationer:</p>
+<p>Editorn mÃ¶jliggÃ¶r fÃ¶ljande tangentbordskombinationer:</p>
 
 
 
@@ -112,7 +114,7 @@ padding: 5px; text-align: center; }
 </tr>
 <tr>
 	<td>CTRL-L &nbsp;</td>
-	<td>Vänsterjusterat</td>
+	<td>VÃ¤nsterjusterat</td>
 </tr>
 <tr>
 	<td>CTRL-E &nbsp;</td>
@@ -120,7 +122,7 @@ padding: 5px; text-align: center; }
 </tr>
 <tr>
 	<td>CTRL-R &nbsp;</td>
-	<td>Högerjusterat</td>
+	<td>HÃ¶gerjusterat</td>
 </tr>
 <tr>
 	<td>CTRL-J &nbsp;</td>
@@ -159,7 +161,7 @@ padding: 5px; text-align: center; }
 </tr>
 <tr>
 	<td>CTRL-0 (noll) &nbsp;</td>
-	<td>Rensa innehåll inklistrat från Word</td>
+	<td>Rensa innehÃ¥ll inklistrat frÃ¥n Word</td>
 </tr>
 </table>
 </blockquote>

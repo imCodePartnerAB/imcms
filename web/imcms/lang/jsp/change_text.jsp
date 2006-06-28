@@ -5,8 +5,6 @@
 	        org.apache.commons.lang.StringEscapeUtils,
             org.apache.commons.lang.StringUtils"
 
-
-
     contentType="text/html; charset=UTF-8"
 
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"

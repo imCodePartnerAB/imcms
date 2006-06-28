@@ -32,10 +32,10 @@ langMap.put("Pixels"                                  , "Pixlar") ;
 langMap.put("Em"                                      , "Em") ;
 langMap.put("Layout"                                  , "Utseende") ;
 langMap.put("Alignment"                               , "Justering") ;
-langMap.put("Positioning of this table"               , "Positionering av tabellen i förhållande till annat innehåll") ;
+langMap.put("Positioning of this table"               , "Positionering av tabellen i fÃ¶rhÃ¥llande till annat innehÃ¥ll") ;
 langMap.put("Not set"                                 , "- Inget") ;
-langMap.put("Left"                                    , "Vänster") ;
-langMap.put("Right"                                   , "Höger") ;
+langMap.put("Left"                                    , "VÃ¤nster") ;
+langMap.put("Right"                                   , "HÃ¶ger") ;
 langMap.put("Texttop"                                 , "Texttopp") ;
 langMap.put("Absmiddle"                               , "Abs.Mitten") ;
 langMap.put("Baseline"                                , "Baslinje") ;
@@ -44,15 +44,15 @@ langMap.put("Bottom"                                  , "Botten") ;
 langMap.put("Middle"                                  , "Mitten") ;
 langMap.put("Top"                                     , "Topp") ;
 langMap.put("Border thickness"                        , "Ytterkantbredd") ;
-langMap.put("Leave empty for no border"               , "Lämna tom för ingen kant") ;
+langMap.put("Leave empty for no border"               , "LÃ¤mna tom fÃ¶r ingen kant") ;
 langMap.put("Spacing"                                 , "Marginaler") ;
 langMap.put("Cell spacing"                            , "Innerkantbredd") ;
-langMap.put("Space between adjacent cells"            , "Tjockleken på kantlinjen emellan cellerna") ;
+langMap.put("Space between adjacent cells"            , "Tjockleken pÃ¥ kantlinjen emellan cellerna") ;
 langMap.put("Cell padding"                            , "Cellmarginal") ;
-langMap.put("Space between content and border in cell", "Marginal mellan innehållet och kanten på cellen") ;
+langMap.put("Space between content and border in cell", "Marginal mellan innehÃ¥llet och kanten pÃ¥ cellen") ;
 langMap.put("Cancel"                                  , "Avbryt") ;
-langMap.put("You must enter a number of rows"         , "Du måste ange antal rader") ;
-langMap.put("You must enter a number of columns"      , "Du måste ange antal kolumner") ;
+langMap.put("You must enter a number of rows"         , "Du mÃ¥ste ange antal rader") ;
+langMap.put("You must enter a number of columns"      , "Du mÃ¥ste ange antal kolumner") ;
 
 %>
 <vel:velocity>

@@ -21,56 +21,56 @@ ContextMenu.I18N = {
 	"Copy"                                                  : "Kopiera",
 	"Paste"                                                 : "Klistra in",
 	"Image Properties"                                      : "Bild Egenskaper...",
-	"Modify Link"                                           : "Modifiera Länk...",
-	"Check Link"                                            : "Kontrollera Länk...",
-	"Remove Link"                                           : "Ta bort Länk...",
+	"Modify Link"                                           : "Modifiera LÃ¤nk...",
+	"Check Link"                                            : "Kontrollera LÃ¤nk...",
+	"Remove Link"                                           : "Ta bort LÃ¤nk...",
 	"Cell Properties"                                       : "Cell Egenskaper...",
 	"Row Properties"                                        : "Rad Egenskaper...",
-	"Insert Row Before"                                     : "Infoga Rad Före",
+	"Insert Row Before"                                     : "Infoga Rad FÃ¶re",
 	"Insert Row After"                                      : "Infoga Rad Efter",
 	"Delete Row"                                            : "Ta bort Rad",
 	"Table Properties"                                      : "Tabell Egenskaper...",
-	"Insert Column Before"                                  : "Infoga Kolumn Före",
+	"Insert Column Before"                                  : "Infoga Kolumn FÃ¶re",
 	"Insert Column After"                                   : "Infoga Kolumn Efter",
 	"Delete Column"                                         : "Ta bort Kolumn",
-	"Justify Left"                                          : "Vänsterjustera",
+	"Justify Left"                                          : "VÃ¤nsterjustera",
 	"Justify Center"                                        : "Centrera",
-	"Justify Right"                                         : "Högerjustera",
+	"Justify Right"                                         : "HÃ¶gerjustera",
 	"Justify Full"                                          : "Marginaljustera",
-	"Make link"                                             : "Skapa länk...",
+	"Make link"                                             : "Skapa lÃ¤nk...",
 	"Remove the"                                            : "Ta bort",
 	"Element"                                               : "Elementet...",
 
 	// Other labels (tooltips and alert/confirm box messages)
 
-	"Please confirm that you want to remove this element:"  : "Bekräfta borttagning av elementet:",
-	"Remove this node from the document"                    : "Ta bort denna nod från dokumentet",
-	"How did you get here? (Please report!)"                : "Hur kom du hit? (Rapportera gärna!)",
-	"Show the image properties dialog"                      : "Visa egenskaper för bilden",
-	"Modify URL"                                            : "Ändra URL",
-	"Current URL is"                                        : "Nuvarande URL är",
-	"Opens this link in a new window"                       : "Öppnar denna länk i nytt fönster",
-	"Please confirm that you want to unlink this element."  : "Bekräfta borttagning av länkningen",
-	"Link points to:"                                       : "Länk pekar på:",
-	"Unlink the current element"                            : "Avlänka detta element",
-	"Show the Table Cell Properties dialog"                 : "Visa Cell Egenskaper för Tabellen",
-	"Show the Table Row Properties dialog"                  : "Visa Rad Egenskaper för Tabellen",
-	"Insert a new row before the current one"               : "Lägg till en ny rad före denna",
-	"Insert a new row after the current one"                : "Lägg till en ny rad efter denna",
+	"Please confirm that you want to remove this element:"  : "BekrÃ¤fta borttagning av elementet:",
+	"Remove this node from the document"                    : "Ta bort denna nod frÃ¥n dokumentet",
+	"How did you get here? (Please report!)"                : "Hur kom du hit? (Rapportera gÃ¤rna!)",
+	"Show the image properties dialog"                      : "Visa egenskaper fÃ¶r bilden",
+	"Modify URL"                                            : "Ã„ndra URL",
+	"Current URL is"                                        : "Nuvarande URL Ã¤r",
+	"Opens this link in a new window"                       : "Ã–ppnar denna lÃ¤nk i nytt fÃ¶nster",
+	"Please confirm that you want to unlink this element."  : "BekrÃ¤fta borttagning av lÃ¤nkningen",
+	"Link points to:"                                       : "LÃ¤nk pekar pÃ¥:",
+	"Unlink the current element"                            : "AvlÃ¤nka detta element",
+	"Show the Table Cell Properties dialog"                 : "Visa Cell Egenskaper fÃ¶r Tabellen",
+	"Show the Table Row Properties dialog"                  : "Visa Rad Egenskaper fÃ¶r Tabellen",
+	"Insert a new row before the current one"               : "LÃ¤gg till en ny rad fÃ¶re denna",
+	"Insert a new row after the current one"                : "LÃ¤gg till en ny rad efter denna",
 	"Delete the current row"                                : "Ta bort denna rad",
-	"Show the Table Properties dialog"                      : "Visa Egenskaper för Tabellen",
-	"Insert a new column before the current one"            : "Lägg till en ny kolumn före denna",
-	"Insert a new column after the current one"             : "Lägg till en ny kolumn efter denna",
+	"Show the Table Properties dialog"                      : "Visa Egenskaper fÃ¶r Tabellen",
+	"Insert a new column before the current one"            : "LÃ¤gg till en ny kolumn fÃ¶re denna",
+	"Insert a new column after the current one"             : "LÃ¤gg till en ny kolumn efter denna",
 	"Delete the current column"                             : "Ta bort denna kolumn",
-	"Create a link"                                         : "Skapa en länk"
+	"Create a link"                                         : "Skapa en lÃ¤nk"
 };
 
 /*
 Swedish characters:
-(å) &aring; = Ã¥
-(Å) &Aring; = ÃE
-(ä) &auml;  = Ã¤
-(Ä) &Auml;  = ÃD
-(ö) &ouml;  = Ã¶
-(Ö) &Ouml;  = ÃV
+(Ã¥) &aring; = Ã¥
+(Ã…) &Aring; = Ã…
+(Ã¤) &auml;  = Ã¤
+(Ã„) &Auml;  = Ã„
+(Ã¶) &ouml;  = Ã¶
+(Ã–) &Ouml;  = Ã–
 */

@@ -23,34 +23,34 @@ HTMLArea.I18N = {
 		italic:         "Kursiv",
 		underline:      "Understruken",
 		strikethrough:  "Genomstruken",
-		subscript:      "Neds‰nkt",
-		superscript:    "Upphˆjd",
-		justifyleft:    "V‰nsterjustera",
+		subscript:      "Neds√§nkt",
+		superscript:    "Upph√∂jd",
+		justifyleft:    "V√§nsterjustera",
 		justifycenter:  "Centrera",
-		justifyright:   "Hˆgerjustera",
+		justifyright:   "H√∂gerjustera",
 		justifyfull:    "Marginaljustera",
 		orderedlist:    "Numrerade lista",
 		unorderedlist:  "Punktlista",
 		outdent:        "Minska indrag",
-		indent:         "÷ka indrag",
-		forecolor:      "Textf‰rg",
-		hilitecolor:    "Backgrundsf‰rg",
-		horizontalrule: "VÂgr‰t linje",
-		createlink:     "Infoga l‰nk",
-		insertimage:    "Infoga/‰ndra bild",
+		indent:         "√ñka indrag",
+		forecolor:      "Textf√§rg",
+		hilitecolor:    "Backgrundsf√§rg",
+		horizontalrule: "V√•gr√§t linje",
+		createlink:     "Infoga l√§nk",
+		insertimage:    "Infoga/√§ndra bild",
 		inserttable:    "Infoga tabell",
-		htmlmode:       "Visa k‰llkod",
-		popupeditor:    "Visa i eget fˆnster",
+		htmlmode:       "Visa k√§llkod",
+		popupeditor:    "Visa i eget f√∂nster",
 		about:          "Om denna editor",
-		showhelp:       "Hj‰lp",
+		showhelp:       "Hj√§lp",
 		textindicator:  "Nuvarande stil",
-		undo:           "≈ngra senaste ‰ndring",
-		redo:           "Gˆr om senaste ‰ndring",
+		undo:           "√Öngra senaste √§ndring",
+		redo:           "G√∂r om senaste √§ndring",
 		cut:            "Klipp ut",
 		copy:           "Kopiera",
 		paste:          "Klistra in",
-		lefttoright:    "Textriktning v‰nster till hˆger",
-		righttoleft:    "Textriktning hˆger till v‰nster",
+		lefttoright:    "Textriktning v√§nster till h√∂ger",
+		righttoleft:    "Textriktning h√∂ger till v√§nster",
 		killword:       "Rensa Word-kod"
 	},
 
@@ -60,41 +60,41 @@ HTMLArea.I18N = {
 	},
 
 	msg: {
-		"Path":         "Sˆkv‰g",
-		"TEXT_MODE":    "Du befinner dig i TEXT-l‰ge.  Anv‰nd knappen m‰rkt med [<>] fˆr att byta tillbaka till WYSIWYG.",
+		"Path":         "S√∂kv√§g",
+		"TEXT_MODE":    "Du befinner dig i TEXT-l√§ge.  Anv√§nd knappen m√§rkt med [<>] f√∂r att byta tillbaka till WYSIWYG.",
 		"Select_text_first": "Du m√•ste markera text innan du kan skapa en l√§nk",
-		
+
 		"IE-sucks-full-screen" :
 		// translate here
-		"PÂ grund av buggar i Internet Explorer sÂ brukar helsk‰rmsl‰get vÂlla problem om man anv‰nder " +
-		"denna browser.  De problem som brukar uppstÂ ‰r skr‰ptecken pÂ sk‰rmen, problem med vissa " +
-		"funktioner samt blandade krascher.  Om du anv‰nder Windows 95 eller 98 sÂ kommer du troligtvis " +
-		"att rÂka ut fˆr ett 'General Protection Fault' varpÂ du behˆver starta om din dator.\n\n" +
-		"Detta ‰r den officiella varningen.  Tryck pÂ Ok om du vill starta helsk‰rmsl‰get ‰ndÂ."
+		"P√• grund av buggar i Internet Explorer s√• brukar helsk√§rmsl√§get v√•lla problem om man anv√§nder " +
+		"denna browser.  De problem som brukar uppst√• √§r skr√§ptecken p√• sk√§rmen, problem med vissa " +
+		"funktioner samt blandade krascher.  Om du anv√§nder Windows 95 eller 98 s√• kommer du troligtvis " +
+		"att r√•ka ut f√∂r ett 'General Protection Fault' varp√• du beh√∂ver starta om din dator.\n\n" +
+		"Detta √§r den officiella varningen.  Tryck p√• Ok om du vill starta helsk√§rmsl√§get √§nd√•."
 	},
 
 	dialogs: {
 		"Cancel"                                            : "Avbryt",
-		"Insert/Modify Link"                                : "Infoga/‰ndra l‰nk",
-		"New window (_blank)"                               : "Nytt fˆnster (_blank)",
-		"None (use implicit)"                               : "Ingen (anv‰nd implicit)",
+		"Insert/Modify Link"                                : "Infoga/√§ndra l√§nk",
+		"New window (_blank)"                               : "Nytt f√∂nster (_blank)",
+		"None (use implicit)"                               : "Ingen (anv√§nd implicit)",
 		"OK"                                                : "OK",
 		"Other"                                             : "Annan",
 		"Same frame (_self)"                                : "Samma ram (_self)",
-		"Target:"                                           : "MÂl:",
+		"Target:"                                           : "M√•l:",
 		"Title (tooltip):"                                  : "Titel (tooltip):",
 		"Top frame (_top)"                                  : "Toppram (_top)",
 		"URL:"                                              : "URL:",
-		"You must enter the URL where this link points to"  : "Du mÂste ange en URL som den h‰r l‰nken ska peka pÂ"
+		"You must enter the URL where this link points to"  : "Du m√•ste ange en URL som den h√§r l√§nken ska peka p√•"
 	}
 };
 
 /*
 Swedish characters:
-(Â) &aring; = √•
-(≈) &Aring; = √E
-(‰) &auml;  = √§
-(ƒ) &Auml;  = √D
-(ˆ) &ouml;  = √∂
-(÷) &Ouml;  = √V
+(√•) &aring; = √•
+(√Ö) &Aring; = √Ö
+(√§) &auml;  = √§
+(√Ñ) &Auml;  = √Ñ
+(√∂) &ouml;  = √∂
+(√ñ) &Ouml;  = √ñ
 */

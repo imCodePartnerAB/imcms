@@ -23,22 +23,22 @@ private String lang( String string, User user ) {
 
 %><%
 
-langMap.put("Create/edit link"          , "Skapa/ändra länk") ;
+langMap.put("Create/edit link"          , "Skapa/Ã¤ndra lÃ¤nk") ;
 langMap.put("Write number"              , "Skriv nummer") ;
 langMap.put("Write the address"         , "Skriv adressen") ;
 langMap.put("Write anchor name"         , "Skriv ankarnamn") ;
-langMap.put("The old link"              , "Gamla länken") ;
-langMap.put("Linktype"                  , "Länktyp") ;
-langMap.put("Internal link (page-ID)"   , "Intern länk (meta_id)") ;
-langMap.put("External link or a path"   , "Annan webbsida eller en sökväg") ;
+langMap.put("The old link"              , "Gamla lÃ¤nken") ;
+langMap.put("Linktype"                  , "LÃ¤nktyp") ;
+langMap.put("Internal link (page-ID)"   , "Intern lÃ¤nk (meta_id)") ;
+langMap.put("External link or a path"   , "Annan webbsida eller en sÃ¶kvÃ¤g") ;
 langMap.put("Mail address"              , "Mailadress") ;
-langMap.put("FTP link"                  , "FTP länk") ;
+langMap.put("FTP link"                  , "FTP lÃ¤nk") ;
 langMap.put("URL/address/meta_id"       , "URL/adress/meta_id") ;
 langMap.put("Title/tooltip"             , "Titel/beskrivning") ;
-langMap.put("Show link in"              , "Visa länken i") ;
-langMap.put("Same window (default)"     , "Samma fönster (Standard)") ;
-langMap.put("New window"                , "Nytt fönster") ;
-langMap.put("Replace window (no frames)", "Hela fönstret (utan frames)") ;
+langMap.put("Show link in"              , "Visa lÃ¤nken i") ;
+langMap.put("Same window (default)"     , "Samma fÃ¶nster (Standard)") ;
+langMap.put("New window"                , "Nytt fÃ¶nster") ;
+langMap.put("Replace window (no frames)", "Hela fÃ¶nstret (utan frames)") ;
 langMap.put("Same frame"                , "Samma frame") ;
 langMap.put("Cancel"                    , "Avbryt") ;
 
