@@ -52,9 +52,9 @@
                     <%= html.options(Arrays.asList(new IdLocalizedNamePair[] {
                             new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_HEADLINE, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_headline")),
                             new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_manual_key")),
+                            new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_manual_tree_key")),
                             new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_modified_datetime")),
                             new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_published_datetime")),
-                            new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_manual_tree_key")),
                     }), new IdLocalizedNamePairToOptionTransformer(user.getLanguageIso639_2()),
                         new Predicate() {
                             public boolean evaluate(Object object) {
