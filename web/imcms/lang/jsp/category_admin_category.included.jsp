@@ -18,7 +18,7 @@ String subHeading = inDeleteCategoryMode ? "<? install/htdocs/sv/jsp/category_ad
             <td>
 						<table border="0" cellspacing="0" cellpadding="0">
 						<tr>
-							<td><input type="text" name="<%= AdminCategories.PARAMETER__NAME %>"<%= readonly ? " readonly" : "" %> size="30" maxlength="50" value="<%=
+							<td><input type="text" name="<%= AdminCategories.PARAMETER__NAME %>"<%= readonly ? " readonly" : "" %> size="50" maxlength="128" value="<%=
 							StringEscapeUtils.escapeHtml((String)ObjectUtils.defaultIfNull(categoryToEdit.getName(),""))
 							%>"></td><%
 							if (readonly) { %>

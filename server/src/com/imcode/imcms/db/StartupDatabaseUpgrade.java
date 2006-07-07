@@ -28,7 +28,8 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
     }
 
     DatabaseVersionUpgradePair[] upgrades = new DatabaseVersionUpgradePair[] {
-            new DatabaseVersionUpgradePair(4,1, new UnicodeUpgrade(ddl)) 
+            new DatabaseVersionUpgradePair(4,1, new UnicodeUpgrade(ddl)),  
+            new DatabaseVersionUpgradePair(4,2, new CategoryCategoryTypeNameSizeUpgrade(ddl))
     };
 
     public void upgrade(Database database) throws UpgradeException {

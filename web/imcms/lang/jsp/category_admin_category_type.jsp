@@ -5,7 +5,7 @@
     CategoryTypeDomainObject categoryTypeToEdit = (CategoryTypeDomainObject)request.getAttribute( "categoryType" ) ;
             %><tr>
                 <td width="110" height="24"><? global/Name ?></td>
-                <td><input type="text" name="name" size="30" maxlength="50" value="<%=categoryTypeToEdit.getName()%>"></td>
+                <td><input type="text" name="name" size="50" maxlength="128" value="<%=categoryTypeToEdit.getName()%>"></td>
             </tr>
             <tr>
                 <td>&nbsp;</td>
