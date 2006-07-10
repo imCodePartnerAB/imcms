@@ -4,6 +4,9 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.util.ImcmsImageUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Properties;
+
 public class Image {
 
     private ImageDomainObject internalImage;
@@ -127,5 +130,9 @@ public class Image {
 
     public String getSrc(String contextPath) { // image srcurl relative webapp ( /imcms/images/theimage.gif )
         return internalImage.getUrlPath( contextPath ) ;
+    }
+
+    public String toHtmlTag(HttpServletRequest request, Properties attributes) {
+        return ImcmsImageUtils.getImageHtmlTag(internalImage, request, attributes);
     }
 }
