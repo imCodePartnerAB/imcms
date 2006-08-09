@@ -984,7 +984,7 @@ HTMLArea.loadPlugin = function(pluginName) {
 						return l1 + "-" + l2.toLowerCase() + l3;
 					}).toLowerCase() + ".js";
 	var plugin_file = dir + "/" + plugin;
-	var plugin_lang = dir + "/lang/" + HTMLArea.I18N.lang + ".js";
+	var plugin_lang = dir + "/lang/" + _editor_lang + ".js";
 	HTMLArea._scripts.push(plugin_file, plugin_lang);
 	document.write("<script type='text/javascript' src='" + plugin_file + "'></script>");
 	document.write("<script type='text/javascript' src='" + plugin_lang + "'></script>");
