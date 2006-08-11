@@ -615,6 +615,9 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean canAddDocumentToAnyMenu( DocumentDomainObject document ) {
+        if (null == document) {
+            return false ;
+        }
         boolean canEdit = canEdit(document);
         boolean linkableByOtherUsers = document.isLinkableByOtherUsers();
         return canEdit || linkableByOtherUsers;
