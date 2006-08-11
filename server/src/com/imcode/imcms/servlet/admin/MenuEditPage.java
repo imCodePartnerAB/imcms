@@ -153,7 +153,7 @@ public class MenuEditPage extends OkCancelPage {
     }
     private void addExistingDocPage( int meta_id, int doc_menu_no,
                                      HttpServletRequest request, HttpServletResponse response ) throws IOException {
-        response.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType(response);
 
         List vec = new ArrayList();
         vec.add( "#meta_id#" );
