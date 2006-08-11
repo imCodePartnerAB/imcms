@@ -151,7 +151,7 @@ public class TextDocumentParser {
 
     private Properties getHashTags( UserDomainObject user, SimpleDateFormat datetimeFormatWithSeconds,
                                     TextDocumentDomainObject document,
-                                    boolean templatemode, ParserParameters parserParameters ) {
+                                    boolean templatemode, ParserParameters parserParameters ) throws IOException {
 
         Properties tags = new Properties();	// A properties object to hold the results from the db...
         // Put tags and corresponding data in Properties
@@ -185,7 +185,7 @@ public class TextDocumentParser {
     }
 
     private String createChangeTemplateUi( boolean templatemode, UserDomainObject user,
-                                           TextDocumentDomainObject document ) {
+                                           TextDocumentDomainObject document ) throws IOException {
         String changeTemplateUi = "";
         if ( templatemode ) {	//Templatemode! :)
 

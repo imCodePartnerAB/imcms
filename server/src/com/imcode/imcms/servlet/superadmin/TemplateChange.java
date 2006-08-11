@@ -105,7 +105,7 @@ public class TemplateChange extends HttpServlet {
     }
 
     private String addTemplatesToGroup(HttpServletRequest req, TemplateMapper templateMapper, String lang,
-                                       UserDomainObject user, ImcmsServices imcref) {
+                                       UserDomainObject user, ImcmsServices imcref) throws IOException {
         String groupIdParameter = req.getParameter("group_id");
         String[] templateIds = req.getParameterValues("unassigned");
         TemplateGroupDomainObject templateGroup = null;
@@ -122,7 +122,7 @@ public class TemplateChange extends HttpServlet {
     }
 
     private String removeTemplatesFromGroup(HttpServletRequest req, TemplateMapper templateMapper, String lang,
-                                            UserDomainObject user, ImcmsServices imcref) {
+                                            UserDomainObject user, ImcmsServices imcref) throws IOException {
         String groupIdParameter = req.getParameter("group_id");
         String[] templateIds = req.getParameterValues("unassigned");
         TemplateGroupDomainObject templateGroup = null;
@@ -177,7 +177,7 @@ public class TemplateChange extends HttpServlet {
     }
 
     private String deleteTemplateAfterCheckingUsage(HttpServletRequest req, ImcmsServices imcref, String lang,
-                                                    UserDomainObject user) {
+                                                    UserDomainObject user) throws IOException {
         String htmlStr;
         TemplateMapper templateMapper = imcref.getTemplateMapper();
         int template_id = Integer.parseInt(req.getParameter("template"));
@@ -248,7 +248,7 @@ public class TemplateChange extends HttpServlet {
     }
 
     private String renameTemplate(HttpServletRequest req, TemplateMapper templateMapper, String lang,
-                                  ImcmsServices imcref, UserDomainObject user) {
+                                  ImcmsServices imcref, UserDomainObject user) throws IOException {
         String htmlStr;
         int template_id = Integer.parseInt(req.getParameter("template"));
         TemplateDomainObject template = templateMapper.getTemplateById(template_id);
