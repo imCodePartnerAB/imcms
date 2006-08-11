@@ -13,6 +13,8 @@ import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.io.CopyUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.util.*;
@@ -69,7 +71,7 @@ public class TemplateMapper {
     }
 
     public String createHtmlOptionListOfTemplates( TemplateDomainObject[] templates,
-                                                   TemplateDomainObject selectedTemplate ) {
+                                                   TemplateDomainObject selectedTemplate ) throws IOException {
         Set demoTemplateIds = new HashSet();
         demoTemplateIds.addAll( Arrays.asList( getDemoTemplateIds() ) );
         String temps = "";
@@ -313,8 +315,7 @@ public class TemplateMapper {
 
         deleteDemoTemplate( template_id );
 
-        FileOutputStream fw = new FileOutputStream( services.getConfig().getTemplatePath() + "/text/demo/" + template_id + "."
-                                                    + suffix );
+        FileOutputStream fw = new FileOutputStream( new File(getDemoTemplateDirectory(), template_id + "." + suffix) );
         CopyUtils.copy(data, fw) ;
         fw.flush();
         fw.close();
@@ -322,17 +323,25 @@ public class TemplateMapper {
 
     public void deleteDemoTemplate( int template_id ) throws IOException {
 
-        File demoTemplateDirectory = new File( new File( services.getConfig().getTemplatePath(), "text" ), "demo" );
+        File demoTemplateDirectory = getDemoTemplateDirectory();
         File[] demoTemplates = demoTemplateDirectory.listFiles();
         for ( int i = 0; i < demoTemplates.length; i++ ) {
             File demoTemplate = demoTemplates[i];
             String demoTemplateFileName = demoTemplate.getName();
             if ( demoTemplateFileName.startsWith( template_id + "." ) ) {
                 if ( !demoTemplate.delete() ) {
-                    throw new IOException( "fail to deleate" );
+                    throw new IOException( "Failed to delete "+demoTemplate );
                 }
             }
         }
+    }
+
+    private File getDemoTemplateDirectory() throws IOException {
+        File demoTemplateDirectory = new File(new File(services.getConfig().getTemplatePath(), "text"), "demo");
+        if (!demoTemplateDirectory.isDirectory() && !demoTemplateDirectory.mkdirs()) {
+            throw new IOException("Could not create directory "+demoTemplateDirectory) ;
+        }
+        return demoTemplateDirectory;
     }
 
     public int saveTemplate( String name, String file_name, InputStream templateData, boolean overwrite, String lang_prefix ) {
@@ -384,7 +393,7 @@ public class TemplateMapper {
                 {"jpg", "jpeg", "gif", "png", "html", "htm"};
 
         for ( int i = 0; i < suffixList.length; i++ ) { // Looking for a template with one of six suffixes
-            File fileObj = new File( services.getConfig().getTemplatePath(), "/text/demo/" + template_id + "." + suffixList[i] );
+            File fileObj = new File(getDemoTemplateDirectory(), template_id + "." + suffixList[i] );
             long date = 0;
             long fileDate = fileObj.lastModified();
             if ( fileObj.exists() && fileDate > date ) {
@@ -415,22 +424,20 @@ public class TemplateMapper {
         return new Object[]{suffix, str.toString().getBytes( "8859_1" )}; //return the buffer
     }
 
-    public String[] getDemoTemplateIds() {
-        File demoDir = new File( services.getConfig().getTemplatePath() + "/text/demo/" );
+    public String[] getDemoTemplateIds() throws IOException {
+        File demoDir = getDemoTemplateDirectory() ;
 
         File[] file_list = demoDir.listFiles( new NonEmptyFileFilter() );
 
-        String[] name_list = new String[file_list.length];
-
-        if ( file_list != null ) {
-            for ( int i = 0; i < name_list.length; i++ ) {
-                String filename = file_list[i].getName();
-                int dot = filename.indexOf( "." );
-                name_list[i] = dot > -1 ? filename.substring( 0, dot ) : filename;
-            }
-        } else {
+        if ( file_list == null ) {
             return new String[0];
+        }
 
+        String[] name_list = new String[file_list.length];
+        for ( int i = 0; i < name_list.length; i++ ) {
+            String filename = file_list[i].getName();
+            int dot = filename.indexOf( "." );
+            name_list[i] = dot > -1 ? filename.substring( 0, dot ) : filename;
         }
 
         return name_list;

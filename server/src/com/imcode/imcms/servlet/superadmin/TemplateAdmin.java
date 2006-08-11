@@ -112,7 +112,7 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     private String createAssignTemplateGroupDialog( String lang, TemplateMapper templateMapper,
-                                                    UserDomainObject user, ImcmsServices imcref ) {
+                                                    UserDomainObject user, ImcmsServices imcref ) throws IOException {
         return createAssignTemplatesToGroupDialog( templateMapper, null, lang, user, imcref );
     }
 
@@ -130,7 +130,7 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     private String createEditTemplateDialog( String lang, ImcmsServices imcref, TemplateMapper templateMapper,
-                                             UserDomainObject user ) {
+                                             UserDomainObject user ) throws IOException {
         List vec = new ArrayList();
         vec.add( "#language#" );
         vec.add( lang );
@@ -142,7 +142,7 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     private String createDownloadTemplateDialog( String lang, ImcmsServices imcref,
-                                                 TemplateMapper templateMapper, UserDomainObject user ) {
+                                                 TemplateMapper templateMapper, UserDomainObject user ) throws IOException {
         List vec = new ArrayList();
         vec.add( "#language#" );
         vec.add( lang );
@@ -154,7 +154,7 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     static String createRenameTemplateDialog(String lang, ImcmsServices imcref, TemplateMapper templateMapper,
-                                             UserDomainObject user, LocalizedMessage error) {
+                                             UserDomainObject user, LocalizedMessage error) throws IOException {
         List vec = new ArrayList();
         vec.add( "#language#" );
         vec.add( lang );
@@ -177,7 +177,7 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     private String createUploadDemoTemplateDialog( String lang, TemplateMapper templateMapper,
-                                                   ImcmsServices imcref, UserDomainObject user ) {
+                                                   ImcmsServices imcref, UserDomainObject user ) throws IOException {
         List vec = new ArrayList();
         vec.add( "#language#" );
         vec.add( lang );
@@ -209,7 +209,7 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     static String createAssignTemplatesToGroupDialog( TemplateMapper templateMapper, TemplateGroupDomainObject currentTemplateGroup, String language,
-                                                      UserDomainObject user, ImcmsServices imcref ) {
+                                                      UserDomainObject user, ImcmsServices imcref ) throws IOException {
         List vec = new ArrayList();
 
         String htmlOptionListOfTemplateGroups = templateMapper.createHtmlOptionListOfTemplateGroups(
@@ -272,7 +272,7 @@ public class TemplateAdmin extends HttpServlet {
 
     static String createDeleteTemplateInUseWarningDialog( String lang, ImcmsServices imcref,
                                                       TemplateDomainObject template, UserDomainObject user,
-                                                      TemplateMapper templateMapper ) {
+                                                      TemplateMapper templateMapper ) throws IOException {
         List vec = new ArrayList();
         vec.add( "#language#" );
         vec.add( lang );
