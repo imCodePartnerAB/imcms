@@ -58,8 +58,6 @@ public class TagParser {
 
     private final static Logger log = Logger.getLogger(TagParser.class.getName());
 
-    private CachingFileLoader fileLoader = new CachingFileLoader();
-
     static {
         Perl5Compiler patComp = new Perl5Compiler();
 
@@ -329,7 +327,7 @@ public class TagParser {
 
     private String includeFile(String attributevalue, PatternMatcher patMat) {// Fetch a file from the disk
         try {
-            return replaceTags(patMat, fileLoader.getCachedFileString(new File(service.getIncludePath(), attributevalue)), false); // Get a file from the include directory
+            return replaceTags(patMat, service.getFileCache().getCachedFileString(new File(service.getIncludePath(), attributevalue)), false); // Get a file from the include directory
         } catch ( IOException ex ) {
             return "<!-- imcms:include file failed: " + ex + " -->";
         }

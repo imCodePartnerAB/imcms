@@ -5,7 +5,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 public class TestDefaultProcedureExecutor extends TestCase {
 
-    DefaultProcedureExecutor procedureExecutor = new DefaultProcedureExecutor(null);
+    DefaultProcedureExecutor procedureExecutor = new DefaultProcedureExecutor(null, null);
 
     public void testPrepareProcedure() throws Exception {
         String procedure = "CREATE PROCEDURE test @a INT, @b INT AS @b @a" ;

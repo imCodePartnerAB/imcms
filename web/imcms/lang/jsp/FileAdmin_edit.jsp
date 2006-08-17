@@ -8,6 +8,8 @@
 
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
+request.setCharacterEncoding("UTF-8");
+    
 UserDomainObject user = Utility.getLoggedOnUser( request );
 if (!user.isSuperAdmin()) {
     return ;
@@ -115,7 +117,7 @@ if (doSave) {
 		/*for (int i = 0; i < fuckedUpUmlingBack.length; i = i + 2) {
 			fileSrc = fileSrc.replaceAll(fuckedUpUmlingBack[i],fuckedUpUmlingBack[i+1]) ;
 		}*/
-		fileOut = new FileWriter(fn) ;
+		fileOut = new OutputStreamWriter(new FileOutputStream(fn), Imcms.DEFAULT_ENCODING) ;
 		fileOut.write(fileSrc) ;
 		isSaved = true ;
 	} catch (FileNotFoundException fnEx) {
@@ -136,7 +138,7 @@ String tempStr  = "";
 
 if (isEditable && !doSave) {
 
-	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fn))) ;
+	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fn), "UTF-8")) ;
 
 	fileSrc = "" ;
 	while ((fileLine = br.readLine()) != null) {

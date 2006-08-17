@@ -23,12 +23,13 @@ import java.util.regex.Pattern;
 public class DefaultProcedureExecutor implements ProcedureExecutor {
 
     private final Database database;
-    private CachingFileLoader fileLoader = new CachingFileLoader();
+    private final CachingFileLoader fileLoader;
     private Map procedureCache = new HashMap();
     private final static Logger log = Logger.getLogger( DefaultProcedureExecutor.class.getName() );
 
-    public DefaultProcedureExecutor( Database database ) {
+    public DefaultProcedureExecutor(Database database, CachingFileLoader fileLoader) {
         this.database = database;
+        this.fileLoader = fileLoader;
     }
 
     public int executeUpdateProcedure(String procedureName,

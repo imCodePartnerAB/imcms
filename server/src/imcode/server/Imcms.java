@@ -26,7 +26,9 @@ import java.util.Properties;
 public class Imcms {
 
     private static final String SERVER_PROPERTIES_FILENAME = "server.properties";
-    public static final String DEFAULT_ENCODING = "UTF-8";
+    public static final String ISO_8859_1_ENCODING = "ISO-8859-1";
+    public static final String UTF_8_ENCODING = "UTF-8";
+    public static final String DEFAULT_ENCODING = UTF_8_ENCODING;
 
     private final static Logger LOG = Logger.getLogger(Imcms.class.getName());
     private static ImcmsServices services;

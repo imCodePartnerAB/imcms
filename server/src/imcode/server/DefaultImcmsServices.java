@@ -84,7 +84,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     /** Contructs an DefaultImcmsServices object. */
     public DefaultImcmsServices(Database database, Properties props) {
         this.database = database;
-        procedureExecutor = new DefaultProcedureExecutor(this.database);
+        procedureExecutor = new DefaultProcedureExecutor(this.database, fileLoader);
         initConfig(props);
         initKeyStore();
         initSysData();
