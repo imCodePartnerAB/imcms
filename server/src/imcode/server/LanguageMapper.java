@@ -225,7 +225,7 @@ public class LanguageMapper {
         return defaultLanguage;
     }
 
-    public static class LanguageNotSupportedException extends Exception {
+    public static class LanguageNotSupportedException extends RuntimeException {
         private LanguageNotSupportedException(String message) {
             super(message);
         }

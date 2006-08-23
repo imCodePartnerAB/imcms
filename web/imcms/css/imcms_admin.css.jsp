@@ -31,9 +31,6 @@ if (isGecko) {
 	BORDER_COLOR_NORMAL   = "#466D96 #333333 #333333 #466D96" ;
 }
 
-if (false) {
-	%><style><% // Dummy - To get the right colors in the editor
-}
 /* *******************************************************************************************
  *         Tests                                                                             *
  ******************************************************************************************* */ %>
@@ -123,7 +120,6 @@ if (isNS) { %>
 	font: 11px Tahoma, Arial, sans-serif;
 	border: <%= isGecko ? 1 : 2 %>px outset #668DB6;
 	border-color: <%= BORDER_COLOR_NORMAL %>;
-	cursor:hand;
 	cursor:pointer;
 	padding: <%= isGecko ? 3 : 2 %> 8; }
 
@@ -133,7 +129,6 @@ if (isNS) { %>
 	font: 11px Tahoma, Arial, sans-serif;
 	border: <%= isGecko ? 1 : 2 %>px outset #668DB6;
 	border-color: <%= BORDER_COLOR_NORMAL_SUB %>;
-	cursor:hand;
 	cursor:pointer;
 	padding: <%= isGecko ? 3 : 2 %> 8; }
 
@@ -143,7 +138,6 @@ if (isNS) { %>
 	font: 11px Tahoma, Arial, sans-serif;
 	border: <%= isGecko ? 1 : 2 %>px inset #668DB6;
 	border-color: <%= BORDER_COLOR_NORMAL_ACT %>;
-	cursor:hand;
 	cursor:pointer;
 	padding: 3 8 1 8; }
 
@@ -153,7 +147,6 @@ if (isNS) { %>
 	font: 11px Tahoma, Arial, sans-serif;
 	border: <%= isGecko ? 1 : 2 %>px outset #DAE4EF;
 	border-color: <%= BORDER_COLOR_DISABLED %>;
-	cursor:hand;
 	cursor:pointer;
 	padding: <%= isGecko ? 3 : 2 %> 8; }
 
@@ -163,7 +156,6 @@ if (isNS) { %>
 	font: 11px Tahoma, Arial, sans-serif;
 	border: <%= isGecko ? 1 : 2 %>px outset #DAE4EF;
 	border-color: <%= BORDER_COLOR_DISABLED %>;
-	cursor:hand;
 	cursor:pointer;
 	padding: <%= isGecko ? 3 : 2 %> 8; }
 
@@ -175,7 +167,6 @@ if (isNS) { %>
 	font: 10px Tahoma, Arial, sans-serif;
 	border: <%= isGecko ? 1 : 2 %>px outset #668DB6;
 	border-color: <%= BORDER_COLOR_NORMAL %>;
-	cursor:hand;
 	cursor:pointer;
 	padding: <%= isGecko ? 1 : 0 %> 2; }
 
@@ -185,7 +176,6 @@ if (isNS) { %>
 	font: 10px Tahoma, Arial, sans-serif;
 	border: <%= isGecko ? 1 : 2 %>px outset #DAE4EF;
 	border-color: <%= BORDER_COLOR_DISABLED %>;
-	cursor:hand;
 	cursor:pointer;
 	padding: <%= isGecko ? 1 : 0 %> 2; }<%
 }
@@ -229,11 +219,4 @@ SPAN.NavBtnTextInact, SPAN.NavBtnTextInact A:link, SPAN.NavBtnTextInact A:visite
 }
 
 TD.NavBtnTextAct   { cursor: default; }
-TD.NavBtnTextInact { cursor: pointer; cursor: hand; }
-
-<%
-
-if (false) {
-	%></style><% // Dummy - To get the right colors in the editor
-}
-%>
+TD.NavBtnTextInact { cursor: pointer; }

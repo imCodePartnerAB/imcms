@@ -1,9 +1,6 @@
 <%@page contentType="text/javascript"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
-<vel:velocity><%
-if (true == false) {
-	%><script><%
-} %>
+<vel:velocity>
 
 /* *******************************************************************************************
  *         Browser sniffer                                                                   *
@@ -96,8 +93,5 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 	} else {
 		window.open(sUrl,sName,"resizable=" + iResize + ",menubar=0,scrollbars=" + iScroll + ",width=" + winW + ",height=" + winH);
 	}
-}<%
-if (true == false) {
-	%></script><%
-} %>
+}
 </vel:velocity>
