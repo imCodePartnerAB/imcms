@@ -17,11 +17,11 @@ public class XmlDocumentBuilder {
 
     private Document xmlDocument;
     private Element documentsElement;
-    private String contextpath;
+    private UserDomainObject currentUser;
 
 
-    public XmlDocumentBuilder(String contextpath) {
-        this.contextpath = contextpath ;
+    public XmlDocumentBuilder(UserDomainObject user) {
+        currentUser = user;
         try {
             xmlDocument = createXmlDocument();
             Element imcmsElement = xmlDocument.createElement( "imcms" );
@@ -40,8 +40,8 @@ public class XmlDocumentBuilder {
         return documentBuilder.newDocument();
     }
 
-    public void addDocument(DocumentDomainObject document, UserDomainObject currentUser) {
-        XmlBuildingDocumentVisitor documentVisitor = new XmlBuildingDocumentVisitor( xmlDocument, this.contextpath, currentUser);
+    public void addDocument(DocumentDomainObject document) {
+        XmlBuildingDocumentVisitor documentVisitor = new XmlBuildingDocumentVisitor( xmlDocument, currentUser);
         document.accept( documentVisitor );
         Element documentElement = documentVisitor.getDocumentElement();
         documentElement.setAttribute( "id", "" + document.getId() );
@@ -55,14 +55,13 @@ public class XmlDocumentBuilder {
     private static class XmlBuildingDocumentVisitor extends DocumentVisitor {
 
         private Document xmlDocument;
-        private Element documentElement;
-        private String contextpath;
         private UserDomainObject currentUser;
+        private Element documentElement;
 
-        XmlBuildingDocumentVisitor(Document xmlDocument, String contextpath, UserDomainObject currentUser) {
+
+        XmlBuildingDocumentVisitor(Document xmlDocument, UserDomainObject currentUser) {
             this.xmlDocument = xmlDocument ;
-            this.contextpath = contextpath ;
-            this.currentUser = currentUser ;
+            this.currentUser = currentUser;
         }
 
         public Element getDocumentElement() {
@@ -73,7 +72,7 @@ public class XmlDocumentBuilder {
             Element documentElement = xmlDocument.createElement( "textdocument" ) ;
             createTextElements( textDocument, documentElement );
             createImageElements( textDocument, documentElement );
-            createMenuElements( textDocument, documentElement, currentUser  );
+            createMenuElements( textDocument, documentElement );
 
             this.documentElement = documentElement ;
         }
@@ -112,44 +111,43 @@ public class XmlDocumentBuilder {
         private Element createImageElement(Integer imageIndex, ImageDomainObject image) {
             Element imageElement = xmlDocument.createElement( "image" );
             imageElement.setAttribute( "index", "" + imageIndex );
-            imageElement.setAttribute( "path", image.getUrlPath( this.contextpath )  );
+            imageElement.setAttribute( "path", image.getUrlPath( "" )  );
             return imageElement;
         }
 
-        private void createMenuElements( TextDocumentDomainObject textDocument, Element textDocumentElement, UserDomainObject currentUser) {
+        private void createMenuElements(TextDocumentDomainObject textDocument, Element textDocumentElement) {
             Map menus = textDocument.getMenus() ;
             for ( Iterator iterator = menus.entrySet().iterator(); iterator.hasNext(); ) {
                 Map.Entry entry = (Map.Entry)iterator.next();
                 Integer menuIndex = (Integer)entry.getKey();
                 MenuDomainObject menu = (MenuDomainObject)entry.getValue();
-                Element menuElement = createMenuElement( menuIndex, menu, currentUser );
+                Element menuElement = createMenuElement( menuIndex, menu);
                 textDocumentElement.appendChild( menuElement );
             }
         }
 
-        private Element createMenuElement( Integer menuIndex, MenuDomainObject menu, UserDomainObject currentUser ) {
+        private Element createMenuElement(Integer menuIndex, MenuDomainObject menu) {
             Element menuElement = xmlDocument.createElement( "menu" );
             menuElement.setAttribute( "index", "" + menuIndex );
-            createMenuItemElements(menu, menuElement, currentUser);
+            createMenuItemElements(menu, menuElement);
             return menuElement;
         }
 
-        private void createMenuItemElements( MenuDomainObject menu, Element menuElement, UserDomainObject currentUser ) {
+        private void createMenuItemElements(MenuDomainObject menu, Element menuElement) {
             MenuItemDomainObject[] menuItems = menu.getMenuItems() ;
             for (int i = 0; i < menuItems.length; i++) {
                 MenuItemDomainObject menuItem = menuItems[i];
                 DocumentDomainObject document = menuItem.getDocument();
                 if ( currentUser.canAccess(document) && document.isPublished() || currentUser.canEdit(document) ) {
-                    Element menuItemElement = createMenuItemElement( menuItem.getDocument(), menu, currentUser );
+                    Element menuItemElement = createMenuItemElement( menuItem.getDocument());
                     menuElement.appendChild( menuItemElement );
                 }
             }
         }
 
-        private Element createMenuItemElement( DocumentDomainObject document, MenuDomainObject menu, UserDomainObject currentUser ) {
+        private Element createMenuItemElement(DocumentDomainObject document) {
             Element menuItemElement = xmlDocument.createElement( "menuItem" );
             menuItemElement.setAttribute( "documentid", "" + document.getId() );
-            menuItemElement.setAttribute( "path", this.contextpath + "/" + document.getId());
             return menuItemElement;
         }
     }

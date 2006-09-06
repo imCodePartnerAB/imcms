@@ -29,8 +29,8 @@ public class XmlDoc extends HttpServlet {
         } else if (!currentUser.canAccess(document) || !document.isPublished() && !currentUser.canEdit(document) ) {
             response.sendError( HttpServletResponse.SC_FORBIDDEN ) ;
         } else {
-            XmlDocumentBuilder xmlDocumentBuilder = new XmlDocumentBuilder(request.getContextPath());
-            xmlDocumentBuilder.addDocument( document, currentUser);
+            XmlDocumentBuilder xmlDocumentBuilder = new XmlDocumentBuilder(currentUser);
+            xmlDocumentBuilder.addDocument( document);
             Document xmlDocument = xmlDocumentBuilder.getXmlDocument() ;
             Utility.outputXmlDocument( response, xmlDocument );
         }

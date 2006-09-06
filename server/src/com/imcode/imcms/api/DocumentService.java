@@ -216,9 +216,9 @@ public class DocumentService {
         return new LuceneParsedQuery(query);
     }
 
-    public org.w3c.dom.Document getXmlDomForDocument(Document document, String contextpath, UserDomainObject currentUser) {
-        XmlDocumentBuilder xmlDocumentBuilder = new XmlDocumentBuilder(contextpath);
-        xmlDocumentBuilder.addDocument(document.getInternal(), currentUser);
+    public org.w3c.dom.Document getXmlDomForDocument(Document document) {
+        XmlDocumentBuilder xmlDocumentBuilder = new XmlDocumentBuilder(contentManagementSystem.getCurrentUser().getInternal());
+        xmlDocumentBuilder.addDocument(document.getInternal());
         return xmlDocumentBuilder.getXmlDocument();
     }
 
