@@ -152,3 +152,4 @@ INSERT INTO phonetypes VALUES(1, 'Home', 2 );
 INSERT INTO phonetypes VALUES(2, 'Work', 2 );
 INSERT INTO phonetypes VALUES(3, 'Mobile', 2 );
 INSERT INTO phonetypes VALUES(4, 'Fax', 2 );
+

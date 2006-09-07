@@ -9,6 +9,7 @@ import imcode.server.user.*;
 import imcode.util.Html;
 import imcode.util.ToStringPairTransformer;
 import imcode.util.Utility;
+import imcode.util.LocalizedMessage;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
@@ -56,7 +57,7 @@ public class AdminRoles extends HttpServlet {
         Utility.setDefaultHtmlContentType(res);
         if ( user.isSuperAdmin() == false ) {
             String header = "Error in AdminRoles.";
-            Properties langproperties = imcref.getLanguageProperties(user);
+            Properties langproperties = LocalizedMessage.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             log.debug(header + "- user is not an administrator");
             printErrorMessage(req, res, header, msg);
@@ -158,7 +159,7 @@ public class AdminRoles extends HttpServlet {
                 String roleIdStr = req.getParameter("ROLE_ID");
                 if ( roleIdStr == null ) {
                     String header = "Roles error";
-                    Properties langproperties = imcref.getLanguageProperties(user);
+                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_missing") + "<BR>";
                     log.debug("Error in rename roles, no role selected for rename");
                     printErrorMessage(req, res, header, msg);
@@ -177,7 +178,7 @@ public class AdminRoles extends HttpServlet {
                 String roleIdStr = req.getParameter("ROLE_ID");
                 if ( roleIdStr == null ) {
                     String header = "Error in AdminRoles, edit role";
-                    Properties langproperties = imcref.getLanguageProperties(user);
+                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_missing") + "<br>";
                     log.debug(header + "- select the role to be changed");
                     printErrorMessage(req, res, header, msg);
@@ -223,7 +224,7 @@ public class AdminRoles extends HttpServlet {
                 Properties params = this.getAddRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles ";
-                    Properties langproperties = imcref.getLanguageProperties(user);
+                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/new_rolename_missing") + "<br>";
                     log.debug(header + "- new rolename missing");
                     printErrorMessage(req, res, header, msg);
@@ -234,7 +235,7 @@ public class AdminRoles extends HttpServlet {
                 String roleName = params.getProperty("ROLE_NAME");
                 if ( roleExists(userAndRoleMapper, roleName) ) {
                     String header = "Error in AdminRoles.";
-                    Properties langproperties = imcref.getLanguageProperties(user);
+                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_already_exists")
                                  + "<br>";
                     log.debug(header + "- role name already exists");
@@ -263,7 +264,7 @@ public class AdminRoles extends HttpServlet {
                 Properties params = this.getRenameRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles, rename role ";
-                    Properties langproperties = imcref.getLanguageProperties(user);
+                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/new_rolename_missing") + "<br>";
                     log.debug(header + "- new role name is missing");
                     printErrorMessage(req, res, header, msg);
@@ -281,7 +282,7 @@ public class AdminRoles extends HttpServlet {
                     throw new UnhandledException(e);
                 } catch ( RoleAlreadyExistsException e ) {
                     String header = "Error in AdminRoles.";
-                    Properties langproperties = imcref.getLanguageProperties(user);
+                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_already_exists")
                                  + "<br>";
                     log.debug(header + "- rolename already exists");
@@ -303,7 +304,7 @@ public class AdminRoles extends HttpServlet {
                 Properties params = this.getDeleteRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles ";
-                    Properties langproperties = imcref.getLanguageProperties(user);
+                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                     log.debug(header + "- no role was selected for delete");
                     printErrorMessage(req, res, header, msg);
@@ -362,7 +363,7 @@ public class AdminRoles extends HttpServlet {
                 Properties params = this.getDeleteRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles, delete ";
-                    Properties langproperties = imcref.getLanguageProperties(user);
+                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                     log.debug(header + "- no role was selected for delete");
                     printErrorMessage(req, res, header, msg);
@@ -384,7 +385,7 @@ public class AdminRoles extends HttpServlet {
                 Properties params = this.getDeleteRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles, delete";
-                    Properties langproperties = imcref.getLanguageProperties(user);
+                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                     log.debug(header + "- no role was selected for delete");
                     printErrorMessage(req, res, header, msg);
@@ -411,7 +412,7 @@ public class AdminRoles extends HttpServlet {
 
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles ";
-                    Properties langproperties = imcref.getLanguageProperties(user);
+                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                     log.debug(header + "- no role was selected for delete");
                     printErrorMessage(req, res, header, msg);

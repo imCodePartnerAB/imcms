@@ -16,7 +16,7 @@ public class DatabaseUtils {
     private DatabaseUtils() {
     }
 
-    public static Database getDdl() throws IOException {
+    public static Database getWantedDdl() throws IOException {
         return new DatabaseIO().read(new FileReader(new File(Imcms.getPath(), "WEB-INF/sql/ddl.xml")));
     }
 

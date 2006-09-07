@@ -4,53 +4,155 @@ import com.imcode.db.Database;
 import com.imcode.db.DatabaseCommand;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
-import com.imcode.db.SingleConnectionDatabase;
+import com.imcode.db.commands.CompositeDatabaseCommand;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.db.handlers.SingleObjectHandler;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.ddlutils.Platform;
-import org.apache.ddlutils.model.Table;
 import org.apache.ddlutils.platform.SqlBuilder;
+import org.apache.ddlutils.platform.CreationParameters;
+import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.regex.Pattern;
+import java.util.Locale;
+
+import imcode.util.LocalizedMessage;
 
 public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
 
     private static final String SQL_STATE__MISSING_TABLE = "42S02";
 
-    public StartupDatabaseUpgrade(org.apache.ddlutils.model.Database ddl) {
-        super(ddl) ;
-    }
+    private final static Logger LOG = Logger.getLogger(StartupDatabaseUpgrade.class);
 
     DatabaseVersionUpgradePair[] upgrades = new DatabaseVersionUpgradePair[] {
-            new DatabaseVersionUpgradePair(4,1, new UnicodeUpgrade(ddl)),  
-            new DatabaseVersionUpgradePair(4,2, new CategoryCategoryTypeNameSizeUpgrade(ddl))
+            new DatabaseVersionUpgradePair(4, 0, new CreateTableUpgrade(wantedDdl, "database_version")),
+            new DatabaseVersionUpgradePair(4, 1, new UnicodeUpgrade(wantedDdl)),
+            new DatabaseVersionUpgradePair(4, 2, new CompositeUpgrade(
+                    new ColumnSizeUpgrade(wantedDdl, "categories", "name", 128),
+                    new ColumnSizeUpgrade(wantedDdl, "category_types", "name", 128))
+            )
     };
+    private File scriptPath;
 
-    public void upgrade(Database database) throws UpgradeException {
+    public StartupDatabaseUpgrade(org.apache.ddlutils.model.Database ddl, File scriptPath) {
+        super(ddl);
+        this.scriptPath = scriptPath;
+    }
+
+    public void upgrade(Database database) throws DatabaseException {
         DatabaseVersion databaseVersion = getDatabaseVersion(database);
-        if (null == databaseVersion) {
-            database.execute(new InsertIntoTableDatabaseCommand("database_version", new Object[][] {
-                    { "major", new Integer(0) },
-                    { "minor", new Integer(0) }
-            }));
-            databaseVersion = getDatabaseVersion(database);
-        }
-        for ( DatabaseVersionUpgradePair versionUpgradePair : upgrades ) {
-            DatabaseVersion upgradeVersion = versionUpgradePair.getVersion();
-            if ( upgradeVersion.compareTo(databaseVersion) > 0 ) {
-                versionUpgradePair.getUpgrade().upgrade(database);
-                database.execute(new SqlUpdateCommand("UPDATE database_version SET major = ?, minor = ?", 
-                                                      new Object[] { 
-                                                              upgradeVersion.getMajorVersion(), 
-                                                              upgradeVersion.getMinorVersion()})) ;
+        if ( null == databaseVersion ) {
+            int tableCount = (Integer) database.execute(new DdlUtilsSqlBuilderCommand() {
+                protected Object executeSqlBuilder(DatabaseConnection databaseConnection,
+                                                   SqlBuilder sqlBuilder) {
+                    org.apache.ddlutils.model.Database database = sqlBuilder.getPlatform().readModelFromDatabase(databaseConnection.getConnection(), null);
+                    return new Integer(database.getTableCount());
+                }
+            });
+            if ( 0 == tableCount ) {
+                createDatabase(database);
+                return;
             }
+            databaseVersion = new DatabaseVersion(0,0);
         }
+        upgradeDatabase(databaseVersion, database);
+    }
+
+    private void upgradeDatabase(DatabaseVersion databaseVersion, Database database) {
+        LOG.info("Database is version "+databaseVersion) ;
+        if (getLastDatabaseVersion().compareTo(databaseVersion) > 0 ) {
+            for ( DatabaseVersionUpgradePair versionUpgradePair : upgrades ) {
+                DatabaseVersion upgradeVersion = versionUpgradePair.getVersion();
+                if ( upgradeVersion.compareTo(databaseVersion) > 0 ) {
+                    LOG.info("Upgrading database to version "+upgradeVersion);
+                    versionUpgradePair.getUpgrade().upgrade(database);
+                    setDatabaseVersion(database, upgradeVersion);
+                    databaseVersion = upgradeVersion ;
+                }
+            }
+            LOG.info("Database upgraded to version "+databaseVersion);
+        }
+    }
+
+    private void setDatabaseVersion(Database database, DatabaseVersion upgradeVersion) {
+        Integer rowsUpdated = (Integer) database.execute(new SqlUpdateCommand("UPDATE database_version SET major = ?, minor = ?",
+                                                                              new Object[] {
+                                                                                      upgradeVersion.getMajorVersion(),
+                                                                                      upgradeVersion.getMinorVersion() }));
+        if (0 == rowsUpdated) {
+            database.execute(new InsertIntoTableDatabaseCommand("database_version", new Object[][] {
+                    { "major", upgradeVersion.getMajorVersion() },
+                    { "minor", upgradeVersion.getMinorVersion() },
+            })) ;
+        }
+    }
+
+    private void createDatabase(Database database) {
+        DatabaseVersion lastDatabaseVersion = getLastDatabaseVersion();
+        database.execute(new CompositeDatabaseCommand(
+                new DatabaseCommand[] {
+                        new DdlUtilsPlatformCommand() {
+                            protected Object executePlatform(DatabaseConnection databaseConnection, Platform platform) {
+                                CreationParameters params = new CreationParameters();
+                                params.addParameter(null, "ENGINE", "InnoDB");
+                                params.addParameter(null, "CHARACTER SET", "UTF8");
+                                platform.createTables(wantedDdl, params, false, false);
+                                return null ;
+                            }
+                        },
+                        new DdlUtilsPlatformCommand() {
+                            protected Object executePlatform(DatabaseConnection databaseConnection,
+                                                             Platform platform) {
+                                String sql;
+                                try {
+                                    sql = getSqlScript("types.sql")
+                                          + getSqlScript("newdb.sql");
+                                } catch ( IOException e ) {
+                                    throw new RuntimeException(e);
+                                }
+                                sql = massageSql(platform, sql);
+                                platform.evaluateBatch(databaseConnection.getConnection(), sql, false) ;
+                                return null ;
+                            }
+                        },
+                        new InsertIntoTableDatabaseCommand("database_version", new Object[][] {
+                                { "major", lastDatabaseVersion.getMajorVersion() },
+                                { "minor", lastDatabaseVersion.getMinorVersion() },
+                        })
+                }
+        ));
+    }
+
+    private String massageSql(Platform platform, String sql) {
+        String platformName = platform.getName().toLowerCase();
+        sql = Pattern.compile(
+                "^-- " + platformName + " ", Pattern.MULTILINE).matcher(sql).replaceAll("");
+        sql = Pattern.compile("^-- \\w+ (.*?)\n", Pattern.MULTILINE).matcher(sql).replaceAll("");
+        String language = Locale.getDefault().getISO3Language() ;
+        if ( StringUtils.isBlank(language)) {
+            language = "eng" ;
+        }
+        sql = sql.replaceAll("@language@", language);
+        sql = sql.replaceAll("@headline@", new LocalizedMessage("start_document/headline").toLocalizedString(language)) ;
+        sql = sql.replaceAll("@text1@", new LocalizedMessage("start_document/text1").toLocalizedString(language)) ;
+        sql = sql.replaceAll("@text2@", new LocalizedMessage("start_document/text2").toLocalizedString(language)) ;
+        return sql;
+    }
+
+    private String getSqlScript(String scriptName) throws IOException {
+        File file = new File(scriptPath,scriptName);
+        return IOUtils.toString(new BufferedReader(new InputStreamReader(new FileInputStream(file))));
+    }
+
+    private DatabaseVersion getLastDatabaseVersion() {
+        return upgrades[upgrades.length - 1].getVersion();
     }
 
     private DatabaseVersion getDatabaseVersion(Database database) {
@@ -72,29 +174,7 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
                 if ( t instanceof SQLException ) {
                     for ( SQLException se = (SQLException) t; null != se; se = se.getNextException() ) {
                         if ( SQL_STATE__MISSING_TABLE.equals(se.getSQLState()) ) {
-                            database.execute(new DatabaseCommand() {
-                                public Object executeOn(
-                                        DatabaseConnection databaseConnection) throws DatabaseException {
-                                    Platform platform = DatabaseUtils.getPlatform(databaseConnection);
-                                    Table table = ddl.findTable("database_version");
-                                    if (null == table) {
-                                        throw new DatabaseException("database_version table missing from ddl", null) ;
-                                    }
-                                    SqlBuilder sqlBuilder = platform.getSqlBuilder();
-                                    StringWriter writer = new StringWriter();
-                                    sqlBuilder.setWriter(writer);
-                                    try {
-                                        sqlBuilder.createTable(ddl, table);
-                                    } catch ( IOException e ) {
-                                        throw new DatabaseException(null, e);
-                                    }
-                                    SingleConnectionDatabase db = new SingleConnectionDatabase(databaseConnection);
-                                    db.execute(new SqlUpdateCommand(writer.toString(), new Object[0]));
-                                    return null;
-
-                                }
-                            });
-                            return (DatabaseVersion) database.execute(sqlQueryCommand);
+                            return null;
                         }
                     }
                 }

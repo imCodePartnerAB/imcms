@@ -9,6 +9,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.LocalizedMessage;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -85,7 +86,7 @@ public class AdminSection extends HttpServlet {
                 for( int i=0; i < section_arr.length; i++){
                     if( new_section_name.equals( section_arr[i][1]) ){
                         section_exists = true;
-                        Properties langproperties = imcref.getLanguageProperties( user );
+                        Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                         errormsg = langproperties.getProperty("error/servlet/AdminSection/section_exists");
                         break;
                     }

@@ -20,6 +20,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.SettingsAccessor;
 import imcode.util.Utility;
+import imcode.util.LocalizedMessage;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
@@ -112,7 +113,7 @@ public class AdminRoleBelongings extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( user.isSuperAdmin() == false ) {
             String header = "Error in AdminRoleBelongings.";
-            Properties langproperties = imcref.getLanguageProperties(user);
+            Properties langproperties = LocalizedMessage.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             log.debug(header + "- user is not an administrator");
             AdminRoles.printErrorMessage(req, res, header, msg);

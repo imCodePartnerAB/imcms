@@ -16,11 +16,7 @@ import imcode.server.document.index.IndexDocumentFactory;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
-import imcode.util.DateConstants;
-import imcode.util.CachingFileLoader;
-import imcode.util.Parser;
-import imcode.util.Prefs;
-import imcode.util.Utility;
+import imcode.util.*;
 import imcode.util.io.FileUtility;
 import imcode.util.net.SMTP;
 import org.apache.commons.beanutils.BeanUtils;
@@ -70,7 +66,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private ExternalizedImcmsAuthenticatorAndUserRegistry externalizedImcmsAuthAndMapper;
     private DocumentMapper documentMapper;
     private TemplateMapper templateMapper;
-    private Map languagePropertiesMap = new HashMap();
     private KeyStore keyStore;
 
     private Map velocityEngines = new TreeMap();
@@ -577,26 +572,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     public String[][] getAllDocumentTypes(String langPrefixStr) {
         final Object[] parameters = new String[] { langPrefixStr };
         return (String[][]) getProcedureExecutor().executeProcedure("GetDocTypes", parameters, new StringArrayArrayResultSetHandler());
-    }
-
-    public Properties getLanguageProperties(UserDomainObject user) {
-        String languageIso639_2 = user.getLanguageIso639_2();
-        return getLanguageProperties(languageIso639_2);
-    }
-
-    public Properties getLanguageProperties(String languageIso639_2) {
-        Properties languageProperties = (Properties) languagePropertiesMap.get(languageIso639_2);
-        if ( null == languageProperties ) {
-            String propertiesFilename = languageIso639_2 + ".properties";
-            try {
-                languageProperties = Prefs.getProperties(propertiesFilename);
-                languagePropertiesMap.put(languageIso639_2, languageProperties);
-            } catch ( IOException e ) {
-                log.fatal("Failed to read language properties from " + propertiesFilename, e);
-                throw new UnhandledException(e);
-            }
-        }
-        return languageProperties;
     }
 
     public File getIncludePath() {

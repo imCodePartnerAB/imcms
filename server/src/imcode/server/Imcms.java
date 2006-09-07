@@ -1,16 +1,10 @@
 package imcode.server;
 
 import com.imcode.db.*;
-import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.handlers.RowTransformer;
-import com.imcode.db.handlers.SingleObjectHandler;
 import com.imcode.imcms.db.DatabaseUpgrade;
-import com.imcode.imcms.db.DatabaseVersion;
 import com.imcode.imcms.db.StartupDatabaseUpgrade;
-import com.imcode.imcms.db.UpgradeException;
 import com.imcode.imcms.db.DatabaseUtils;
 import imcode.util.Prefs;
-import imcode.util.Utility;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
@@ -19,7 +13,6 @@ import javax.sql.DataSource;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -58,7 +51,7 @@ public class Imcms {
         try {
             services = createServices();
         } catch (Exception e) {
-            throw new Imcms.StartupException("imCMS could not be started. Please see the LOG file in WEB-INF/logs for details.", e);
+            throw new StartupException("imCMS could not be started. Please see the log file in WEB-INF/logs/ for details.", e);
         }
     }
 
@@ -66,7 +59,7 @@ public class Imcms {
         Properties serverprops = getServerProperties();
         LOG.debug("Creating main DataSource.");
         Database database = createDatabase(serverprops);
-        DatabaseUpgrade upgrade = new StartupDatabaseUpgrade(DatabaseUtils.getDdl());
+        DatabaseUpgrade upgrade = new StartupDatabaseUpgrade(DatabaseUtils.getWantedDdl(), new File(getPath(),"WEB-INF/sql/"));
         upgrade.upgrade(database);
         return new DefaultImcmsServices(database, serverprops);
     }
@@ -160,9 +153,11 @@ public class Imcms {
             logDatabaseVersion(basicDataSource);
 
             return basicDataSource;
-        } catch ( Exception ex ) {
-            LOG.fatal("Failed to create connection pool. Url: " + jdbcUrl + " Driver: " + jdbcDriver, ex);
-            throw new RuntimeException(ex);
+        } catch ( SQLException ex ) {
+            String message = "Could not connect to database "+ jdbcUrl + " with driver " + jdbcDriver + ": "+ex.getMessage()+" Error code: "
+                             + ex.getErrorCode() + " SQL State: " + ex.getSQLState();
+            LOG.fatal(message, ex);
+            throw new RuntimeException(message, ex);
         }
     }
 

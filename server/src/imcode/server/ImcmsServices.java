@@ -10,12 +10,11 @@ import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
+import imcode.util.LocalizedMessage;
 import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -75,8 +74,6 @@ public interface ImcmsServices {
 
     SMTP getSMTP();
 
-    Properties getLanguageProperties(UserDomainObject user);
-
     File getIncludePath();
 
     Collator getDefaultLanguageCollator();
@@ -103,5 +100,4 @@ public interface ImcmsServices {
 
     UserDomainObject verifyUserByIpOrDefault(String remoteAddr);
 
-    Properties getLanguageProperties(String languageIso639_2);
 }

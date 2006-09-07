@@ -1,5 +1,10 @@
 package com.imcode.imcms.db;
 
-public class DatabaseNotSupportedException extends UpgradeException {
+import com.imcode.db.DatabaseException;
 
+public class DatabaseNotSupportedException extends DatabaseException {
+
+    public DatabaseNotSupportedException(String string, Throwable throwable) {
+        super(string, throwable);
+    }
 }

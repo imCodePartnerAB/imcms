@@ -15,8 +15,6 @@ import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -123,10 +121,6 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public Properties getLanguageProperties( UserDomainObject user ) {
-        return null;
-    }
-
     public File getIncludePath() {
         return null;
     }
@@ -172,10 +166,6 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public UserDomainObject verifyUserByIpOrDefault(String remoteAddr) {
-        return null;
-    }
-
-    public Properties getLanguageProperties(String languageIso639_2) {
         return null;
     }
 

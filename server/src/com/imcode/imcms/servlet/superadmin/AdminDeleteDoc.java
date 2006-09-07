@@ -8,6 +8,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.LocalizedMessage;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -61,7 +62,7 @@ public class AdminDeleteDoc extends HttpServlet {
                 Properties params = getParameters(req);
                 if ( !validateParameters(params) ) {
                     String header = "Error in AdminDeleteDoc.";
-                    Properties langproperties = imcref.getLanguageProperties(user);
+                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_valid_metaid") + "<br>";
                     log.debug(header + "- no valid metaid");
                     AdminRoles.printErrorMessage(req, res, header, msg);
@@ -77,7 +78,7 @@ public class AdminDeleteDoc extends HttpServlet {
 
                 if ( foundMetaId == null ) {
                     String header = "Error in AdminDeleteDoc. ";
-                    Properties langproperties = imcref.getLanguageProperties(user);
+                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_metaid_in_db") + "( "
                                  + metaId
                                  + " ) <br>";

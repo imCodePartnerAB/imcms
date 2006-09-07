@@ -49,4 +49,8 @@ public class DatabaseVersion implements Comparable {
     public int getMinorVersion() {
         return minorVersion;
     }
+
+    public String toString() {
+        return majorVersion+"."+minorVersion ;
+    }
 }

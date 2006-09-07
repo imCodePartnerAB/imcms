@@ -170,7 +170,7 @@
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-       depends="init,web,test,checkstyle,libraries,conf,ddl,sql,jar"
+       depends="init,web,test,checkstyle,libraries,conf,sql,jar"
        description="Builds everything."/>
 
     <target name="clean" description="Deletes everything for a fresh start.">
@@ -189,7 +189,7 @@
             userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${sql-diff}/${db-diff-file}"/>
     </target>
 
-    <target name="database-create" depends="init,ddl">
+    <target name="database-create" depends="init">
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
              userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
@@ -374,48 +374,13 @@
 
     </target>
 
-    <target name="ddl" depends="init,ddl.xml" description="Concatenates the SQL-scripts into one large script.">
-
-        <mkdir dir="${tmp}"/>
-
-        <for list="mssql,mysql" param="database">                
-            <sequential>
-                <for list="swe,eng" param="language">
-                    <sequential>
-                        <ddl2db schemafile="${sql}/ddl.xml" databasetype="@{database}">
-                             <writeschemasqltofile outputfile="${tmp}/@{database}-ddl.sql" alterdatabase="false" dodrops="false">
-                                <parameter platforms="mysql" name="ENGINE" value="InnoDB"/>
-                                <parameter platforms="mysql" name="CHARACTER SET UTF8"/>
-                             </writeschemasqltofile>
-                        </ddl2db>
-                        
-                        <concat destfile="${tmp}/imcms${versionfilesuffix}-@{language}-@{database}.sql">
-                            <fileset file="${tmp}/@{database}-ddl.sql"/>
-                            <fileset file="sql/data/types.sql"/>
-                            <fileset file="sql/data/newdb.sql"/>
-                        </concat>
-                
-                        <replaceregexp file="${tmp}/imcms${versionfilesuffix}-@{language}-@{database}.sql" match="^-- @{database} " replace="" flags="gm"/>
-                        <replaceregexp file="${tmp}/imcms${versionfilesuffix}-@{language}-@{database}.sql" match="^-- \w+ (.*?)$" replace="" flags="gm"/>
-                        
-                        <filter token="language" value="@{language}"/>
-                        
-                        <imtranslate bundle="imcms" bundlelanguage="@{language}"
-                                     starttoken="&lt;? " endtoken=" ?&gt;"
-                                     todir="${sql}" filtering="true" encoding="iso-8859-1">
-                            <fileset file="${tmp}/imcms${versionfilesuffix}-@{language}-@{database}.sql"/>
-                        </imtranslate>
-               
-                        <copy file="${sql}/imcms${versionfilesuffix}-@{language}-@{database}.sql" todir="${dist}"/>
-                    </sequential>
-                </for>
-            </sequential>
-        </for>
-        
-    </target>
-
     <target name="sql">
     
+        <copy todir="${sql}">
+            <fileset file="sql/data/types.sql"/>
+            <fileset file="sql/data/newdb.sql"/>
+        </copy>
+                        
         <copy todir="${sql-diff}">
             <fileset dir="sql/diff" includes="diff-*.sql"/>
         </copy>

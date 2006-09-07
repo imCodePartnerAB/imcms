@@ -18,32 +18,28 @@ abstract class DatabaseTypeSpecificUpgrade extends ImcmsDatabaseUpgrade {
         super(ddl);
     }
 
-    public void upgrade(final Database database) throws UpgradeException {
-        try {
-            String databaseName = (String) database.execute(new DatabaseCommand() {
-                public Object executeOn(DatabaseConnection databaseConnection) throws DatabaseException {
-                    final Connection connection = databaseConnection.getConnection();
-                    DataSource dataSource = new SingleConnectionDataSource(connection);
-                    PlatformUtils platformUtils = new PlatformUtils();
-                    return platformUtils.determineDatabaseType(dataSource);
-                }
-            });
-            if ( MSSqlPlatform.DATABASENAME.equals(databaseName)) {
-                upgradeMssql(database);
-            } else if ( MySqlPlatform.DATABASENAME.equals(databaseName) ) {
-                upgradeMysql(database);
-            } else {
-                upgradeOther(database);
+    public void upgrade(final Database database) throws DatabaseException {
+        String databaseName = (String) database.execute(new DatabaseCommand() {
+            public Object executeOn(DatabaseConnection databaseConnection) throws DatabaseException {
+                final Connection connection = databaseConnection.getConnection();
+                DataSource dataSource = new SingleConnectionDataSource(connection);
+                PlatformUtils platformUtils = new PlatformUtils();
+                return platformUtils.determineDatabaseType(dataSource);
             }
-        } catch (RuntimeException re) {
-            throw new UpgradeException(re) ;
+        });
+        if ( MSSqlPlatform.DATABASENAME.equals(databaseName) ) {
+            upgradeMssql(database);
+        } else if ( MySqlPlatform.DATABASENAME.equals(databaseName) ) {
+            upgradeMysql(database);
+        } else {
+            upgradeOther(database);
         }
     }
 
-    public abstract void upgradeOther(Database database) throws UpgradeException;
+    public abstract void upgradeOther(Database database) throws DatabaseException;
 
-    public abstract void upgradeMssql(Database database) throws UpgradeException;
+    public abstract void upgradeMssql(Database database) throws DatabaseException;
 
-    public abstract void upgradeMysql(Database database) throws UpgradeException;
+    public abstract void upgradeMysql(Database database) throws DatabaseException;
 
 }

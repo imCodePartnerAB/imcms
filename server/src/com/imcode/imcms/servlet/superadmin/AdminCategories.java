@@ -11,6 +11,7 @@ import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.LocalizedMessage;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
@@ -62,7 +63,7 @@ public class AdminCategories extends HttpServlet {
         Utility.setDefaultHtmlContentType(res);
         if ( !user.isSuperAdmin() ) {
             String header = "Error in AdminCategories. ";
-            Properties langproperties = service.getLanguageProperties(user);
+            Properties langproperties = LocalizedMessage.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             AdminRoles.printErrorMessage(req, res, header, msg);
             return;

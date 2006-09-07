@@ -5,6 +5,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.SystemData;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.LocalizedMessage;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -64,7 +65,7 @@ public class AdminSystemInfo extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !user.isSuperAdmin() ) {
             String header = "Error in AdminSystemInfo. ";
-            Properties langproperties = imcref.getLanguageProperties(user);
+            Properties langproperties = LocalizedMessage.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             log.debug(header + "- user is not an administrator");
             AdminRoles.printErrorMessage(req, res, header, msg);
@@ -112,7 +113,7 @@ public class AdminSystemInfo extends HttpServlet {
             // Lets validate the parameters
             if (serverMaster.equalsIgnoreCase("") || !Utility.isValidEmail( serverMasterEmail )) {
                 String header = "Error in AdminSystemInfo, servermaster info.";
-                Properties langproperties = imcref.getLanguageProperties(user);
+                Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters")
                              + "<br>";
                 AdminRoles.printErrorMessage(req, res, header, msg);
@@ -140,7 +141,7 @@ public class AdminSystemInfo extends HttpServlet {
             // Lets validate the parameters
             if (webMaster.equalsIgnoreCase("") || !Utility.isValidEmail( webMasterEmail )) {
                 String header = "Error in AdminSystemInfo, webmaster info.";
-                Properties langproperties = imcref.getLanguageProperties(user);
+                Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                 String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters")
                              + "<br>";
                 AdminRoles.printErrorMessage(req, res, header, msg);

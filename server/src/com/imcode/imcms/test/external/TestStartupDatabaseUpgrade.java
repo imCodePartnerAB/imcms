@@ -4,40 +4,59 @@ import junit.framework.*;
 import com.imcode.imcms.db.StartupDatabaseUpgrade;
 import com.imcode.imcms.db.ImcmsDatabaseUpgrade;
 import com.imcode.db.DataSourceDatabase;
+import com.imcode.db.DatabaseException;
+import com.imcode.db.commands.SqlUpdateCommand;
 import org.apache.ddlutils.model.Database;
 import org.apache.ddlutils.io.DatabaseIO;
 import org.apache.commons.io.CopyUtils;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.SimpleLayout;
 import imcode.server.Imcms;
 
 import java.io.*;
-import java.util.Properties;
 
 public class TestStartupDatabaseUpgrade extends TestCase {
 
-    public void testUpgrade() throws Exception {
-        Database ddl = new DatabaseIO().read(new StringReader(getDdlXml()));
-        ImcmsDatabaseUpgrade startupDatabaseUpgrade = new StartupDatabaseUpgrade(ddl);
-        startupDatabaseUpgrade.upgrade(getMysqlDatabase());
-        startupDatabaseUpgrade.upgrade(getMssqlDatabase());
-    }
-
-    private DataSourceDatabase getMysqlDatabase() {
+    public void testCreateMysql() throws Exception {
         String jdbcDriver = "com.mysql.jdbc.Driver";
-        String jdbcUrl = "jdbc:mysql://localhost:3306/imcms";
-        String jdbcUser = "";
+        String host = "localhost";
+        String baseUrl = "jdbc:mysql://" + host + ":3306/" ;
+        String jdbcUser = "root";
         String jdbcPassword = "";
-        return createDataSourceDatabase(jdbcDriver, jdbcUrl, jdbcUser, jdbcPassword);
+        String databaseName = "imcms";
+        DataSourceDatabase database = createDataSourceDatabase(jdbcDriver, baseUrl, jdbcUser, jdbcPassword);
+        dropDatabase(database, databaseName);
+        createDatabase(database, databaseName);
+        database = createDataSourceDatabase(jdbcDriver, baseUrl + databaseName, jdbcUser, jdbcPassword);
+        getDatabaseUpgrade().upgrade(database);
     }
 
-    private DataSourceDatabase getMssqlDatabase() {
+    public void testCreateMssql() throws Exception {
         String jdbcDriver = "net.sourceforge.jtds.jdbc.Driver";
-        String jdbcUrl = "jdbc:jtds:sqlserver://localhost:1433/imcms";
-        String jdbcUser = "";
+        String host = "localhost";
+        String baseUrl = "jdbc:jtds:sqlserver://" + host + ":1433/";
+        String jdbcUser = "sa";
         String jdbcPassword = "";
-        return createDataSourceDatabase(jdbcDriver, jdbcUrl, jdbcUser, jdbcPassword);
+        String databaseName = "imcms";
+        DataSourceDatabase database = createDataSourceDatabase(jdbcDriver, baseUrl, jdbcUser, jdbcPassword);
+        dropDatabase(database, databaseName);
+        createDatabase(database, databaseName);
+        database = createDataSourceDatabase(jdbcDriver, baseUrl + databaseName, jdbcUser, jdbcPassword);
+        getDatabaseUpgrade().upgrade(database);
+    }
+
+    private ImcmsDatabaseUpgrade getDatabaseUpgrade() throws IOException {
+        Database ddl = new DatabaseIO().read(new StringReader(getDdlXml()));
+        ImcmsDatabaseUpgrade startupDatabaseUpgrade = new StartupDatabaseUpgrade(ddl, new File(Imcms.getPath(),"sql/data"));
+        return startupDatabaseUpgrade;
+    }
+
+    private void createDatabase(DataSourceDatabase mssqlDatabase, String database) {
+        mssqlDatabase.execute(new SqlUpdateCommand("CREATE DATABASE "+database,null)) ;
+    }
+
+    private void dropDatabase(DataSourceDatabase mssqlDatabase, String databaseName) {
+        try {
+            mssqlDatabase.execute(new SqlUpdateCommand("DROP DATABASE "+databaseName,null)) ;
+        } catch( DatabaseException ignored ) {}
     }
 
     private DataSourceDatabase createDataSourceDatabase(String jdbcDriver, String jdbcUrl, String jdbcUser,

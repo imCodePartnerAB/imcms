@@ -4,9 +4,9 @@ import org.apache.ddlutils.model.Database;
 
 public abstract class ImcmsDatabaseUpgrade implements DatabaseUpgrade {
 
-    protected org.apache.ddlutils.model.Database ddl;
+    protected Database wantedDdl;
 
     protected ImcmsDatabaseUpgrade(Database ddl) {
-        this.ddl = ddl;
+        this.wantedDdl = ddl;
     }
 }
