@@ -12,11 +12,16 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -176,11 +181,15 @@ public class Utility {
         if (null == document) {
             return null ;
         }
+        return getContextRelativePathToDocumentWithId(document.getId());
+    }
+
+    public static String getContextRelativePathToDocumentWithId(int documentId) {
         String documentPathPrefix = Imcms.getServices().getConfig().getDocumentPathPrefix() ;
         if (StringUtils.isBlank( documentPathPrefix )) {
             documentPathPrefix = "/servlet/GetDoc?meta_id=" ;
         }
-        return documentPathPrefix + document.getId( );
+        return documentPathPrefix + documentId;
     }
 
     public static String formatHtmlDatetime( Date datetime ) {
@@ -262,5 +271,25 @@ public class Utility {
             }
         }
         return true ;
+    }
+
+    public static void outputXmlDocument( HttpServletResponse response, Document xmlDocument ) throws IOException {
+        response.setContentType( "text/xml; charset=UTF-8" );
+        writeXmlDocumentToStream( xmlDocument, response.getOutputStream() );
+    }
+
+    private static void writeXmlDocumentToStream( Document xmlDocument, OutputStream outputStream ) {
+        try {
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
+            StreamResult outputTarget = new StreamResult( outputStream );
+            DOMSource xmlSource = new DOMSource( xmlDocument );
+            transformer.transform( xmlSource, outputTarget );
+        } catch ( TransformerConfigurationException e ) {
+            throw new UnhandledException( e );
+        } catch ( TransformerException e ) {
+            throw new UnhandledException( e );
+        }
     }
 }

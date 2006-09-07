@@ -233,7 +233,7 @@ public class DocumentService {
     }
 
     public org.w3c.dom.Document getXmlDomForDocument( Document document ) {
-        XmlDocumentBuilder xmlDocumentBuilder = new XmlDocumentBuilder();
+        XmlDocumentBuilder xmlDocumentBuilder = new XmlDocumentBuilder(contentManagementSystem.getCurrentUser().getInternal());
         xmlDocumentBuilder.addDocument( document.getInternal() );
         org.w3c.dom.Document xmlDocument = xmlDocumentBuilder.getXmlDocument();
         return xmlDocument;
