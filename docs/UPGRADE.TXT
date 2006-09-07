@@ -8,10 +8,14 @@ Upgrading imCMS:
 
 * Remove the imCMS webapp directory and any corresponding war-file from "tomcat/webapps".
 
-* Run the sql diff scripts appropriate for your imCMS versions on the database.
+* If you have an imCMS version older than 3.0.0,
+  run the sql diff scripts appropriate for your imCMS versions on the database.
   They can be found in the directory "tomcat/webapps/imcms/WEB-INF/sql/diff".
   For example, if you have version 2.2.0 installed and
   want to upgrade to 3.0.0, you'll need to run the script "diff-2-3.sql".
+  
+  There is no sql diff script from version 3 to 4,
+  as the database will be automatically upgraded on startup.
 
 * Install the new imCMS version according to "INSTALL.TXT".
 
