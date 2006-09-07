@@ -258,7 +258,8 @@ public class TemplateMapper {
             String sqlStr = "update text_docs set template_id = ? where template_id = ?";
             final Object[] parameters = new String[]{"" + newTemplate.getId(), "" + template.getId()};
             ((Integer)database.execute( new SqlUpdateCommand( sqlStr, parameters ) )).intValue();
-            for ( DocumentDomainObject document : documentsUsingTemplate ) {
+            for ( int i = 0; i < documentsUsingTemplate.length; i++ ) {
+                DocumentDomainObject document = documentsUsingTemplate[i];
                 services.getDocumentMapper().invalidateDocument(document);
             }
         }
