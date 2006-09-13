@@ -291,7 +291,7 @@ public class TextDocument extends Document {
         }
 
         public void setSortKey( Integer sortKey ) {
-            internalMenuItem = new MenuItemDomainObject(internalMenuItem.getDocumentReference(), sortKey, internalMenuItem.getTreeSortKey());
+            internalMenuItem.setSortKey(sortKey);
         }
 
         public TreeKey getTreeKey() {
@@ -299,7 +299,7 @@ public class TextDocument extends Document {
         }
 
         public void setTreeKey(TreeKey treeKey) {
-            internalMenuItem = new MenuItemDomainObject(internalMenuItem.getDocumentReference(), internalMenuItem.getSortKey(), treeKey.internalTreeSortKey);
+            internalMenuItem.setTreeSortKey(treeKey.internalTreeSortKey);
         }
 
         public static class TreeKey {
