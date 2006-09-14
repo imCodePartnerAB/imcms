@@ -169,7 +169,7 @@ if (isImage) {
 		if (!size.equals("")) {
 			%><%= size %><%
 		} %>)<%
-	} %></div><img name="theImg" id="theImg" src="<%= request.getContextPath() + "/" + file %>"<%= border + zoom %>><%
+	} %></div><img name="theImg" id="theImg" src="<%= request.getContextPath() + file %>"<%= border + zoom %>><%
 } else {
 	%><%
 } %></div>
