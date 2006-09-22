@@ -1,1 +1,2 @@
-<% request.getRequestDispatcher( "/servlet/StartDoc" ).forward( request, response ); %>
+<%@taglib prefix="imcms" uri="/WEB-INF/imcms.tld"%>
+<imcms:contextpath/>

@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 import java.util.Properties;
 
 public class ImcmsImageUtils {
@@ -20,7 +21,7 @@ public class ImcmsImageUtils {
     private ImcmsImageUtils() {
     }
 
-    public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes) {
+    public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties providedAttributes) {
         StringBuffer imageTagBuffer = new StringBuffer( 96 );
         if ( image.getSize() > 0) {
 
@@ -43,16 +44,6 @@ public class ImcmsImageUtils {
 
             if ( StringUtils.isNotBlank( image.getName() ) ) {
                 imageTagBuffer.append(" id=\"").append(StringEscapeUtils.escapeHtml(image.getName())).append("\"");
-            }
-
-            String classAttribute = attributes.getProperty("class");
-            if (null != classAttribute) {
-                imageTagBuffer.append(" class=\"").append(StringEscapeUtils.escapeHtml(classAttribute)).append("\"") ;
-            }
-
-            String usemapAttribute = attributes.getProperty("usemap");
-            if (null != usemapAttribute) {
-                imageTagBuffer.append(" usemap=\"").append(StringEscapeUtils.escapeHtml(usemapAttribute)).append("\"") ;
             }
 
             StringBuilder styleBuffer = new StringBuilder();
@@ -79,11 +70,19 @@ public class ImcmsImageUtils {
                 styleBuffer.append(" vertical-align: ").append(StringEscapeUtils.escapeHtml(image.getAlign())).append(";");
             }
 
-            String styleAttribute = attributes.getProperty("style");
+            String styleAttribute = (String) providedAttributes.remove("style");
             if (null != styleAttribute) {
                 styleBuffer.append(" ").append(styleAttribute) ;
             }
-
+            Properties attributes = new Properties();
+            attributes.putAll(providedAttributes);
+            for ( Map.Entry<Object, Object> entry : attributes.entrySet() ) {
+                String attributeName = (String) entry.getKey();
+                String attributeValue = (String) entry.getValue();
+                if ( null != attributeValue ) {
+                    imageTagBuffer.append(" ").append(StringEscapeUtils.escapeHtml(attributeName)).append("=\"").append(StringEscapeUtils.escapeHtml(attributeValue)).append("\"");
+                }
+            }
             imageTagBuffer.append(" style=\"").append(StringEscapeUtils.escapeHtml(styleBuffer.toString())).append("\"") ;
 
             imageTagBuffer.append( " />" );
