@@ -1,24 +1,20 @@
 package imcode.util;
 
+import imcode.server.Imcms;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.io.CopyUtils;
-import org.apache.log4j.Logger;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CodingErrorAction;
-import java.nio.charset.CharacterCodingException;
-import java.nio.*;
-
-import imcode.server.Imcms;
 
 public class CachingFileLoader {
 
     private static final int FILE_CACHE_SIZE = 100;
-    private static final Logger LOG = Logger.getLogger(CachingFileLoader.class);
 
     private Map fileCache = Collections.synchronizedMap( new LRUMap( FILE_CACHE_SIZE ) );
 
@@ -42,31 +38,7 @@ public class CachingFileLoader {
     }
 
     private String decodeFile(File file, Charset charset, Charset fallbackCharset) throws IOException {
-        byte[] inputBytes = readFile(file);
-        LOG.trace("Read "+inputBytes.length+" bytes of "+file);
-        String result;
-        try {
-            result = createReportingDecoder(charset).decode(ByteBuffer.wrap(inputBytes)).toString();
-            logCharactersDecoded(inputBytes, result, charset, file);
-        } catch ( CharacterCodingException e1 ) {
-            try {
-                LOG.debug("Failed to decode file "+file+" using "+charset+", falling back to "+fallbackCharset+".") ;
-                result = createReportingDecoder(fallbackCharset).decode(ByteBuffer.wrap(inputBytes)).toString();
-                logCharactersDecoded(inputBytes, result, fallbackCharset, file);
-            } catch ( CharacterCodingException e2 ) {
-                LOG.warn("Failed to decode file "+file+" using "+charset +" and "+fallbackCharset +", using broken "+charset+" result.", e2);
-                result = charset.decode(ByteBuffer.wrap(inputBytes)).toString() ;
-            }
-        }
-        return result;
-    }
-
-    private void logCharactersDecoded(byte[] inputBytes, String result, Charset charset, File file) {
-        LOG.trace("Decoded "+inputBytes.length+" bytes using "+charset+" to "+result.length()+" characters of "+file) ;
-    }
-
-    private CharsetDecoder createReportingDecoder(Charset charset) {
-        return charset.newDecoder().onMalformedInput(CodingErrorAction.REPORT) ;
+        return new FallbackDecoder(charset, fallbackCharset).decodeBytes(readFile(file), "file "+file.toString());
     }
 
     private byte[] readFile(File file) throws IOException {

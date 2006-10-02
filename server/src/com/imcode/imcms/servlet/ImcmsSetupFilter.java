@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.QueryStringDecodingHttpServletRequestWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.NDC;
@@ -19,10 +20,16 @@ public class ImcmsSetupFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
 
-    public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
+    public void doFilter( ServletRequest r, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
+        r.setCharacterEncoding(Imcms.DEFAULT_ENCODING);
 
-        HttpServletRequest httpServletRequest = (HttpServletRequest)request;
-        HttpSession session = httpServletRequest.getSession();
+        HttpServletRequest request = (HttpServletRequest) r;
+        String method = request.getMethod();
+        if ("GET".equals(method) || "HEAD".equals(method)) {
+            request = new QueryStringDecodingHttpServletRequestWrapper(request);
+        }
+
+        HttpSession session = request.getSession();
 
         ImcmsServices service = Imcms.getServices();
         if ( session.isNew() ) {
@@ -30,28 +37,29 @@ public class ImcmsSetupFilter implements Filter {
             setDomainSessionCookie( response, session );
         }
 
-        UserDomainObject user = Utility.getLoggedOnUser(httpServletRequest) ;
+        UserDomainObject user = Utility.getLoggedOnUser(request) ;
         if ( null == user ) {
             user = service.verifyUserByIpOrDefault(request.getRemoteAddr()) ;
             assert user.isActive() ;
-            Utility.makeUserLoggedIn(httpServletRequest, user);
+            Utility.makeUserLoggedIn(request, user);
         }
 
         Utility.initRequestWithApi(request, user);
 
         NDC.setMaxDepth( 0 );
-        String contextPath = ( (HttpServletRequest)request ).getContextPath();
+        String contextPath = request.getContextPath();
         if ( !"".equals( contextPath ) ) {
             NDC.push( contextPath );
         }
-        NDC.push( StringUtils.substringAfterLast( ( (HttpServletRequest)request ).getRequestURI(), "/" ) );
+        NDC.push( StringUtils.substringAfterLast( request.getRequestURI(), "/" ) );
 
-        handleDocumentUri( httpServletRequest, service, request, response, chain );
+        handleDocumentUri(chain, request, response, service);
         NDC.setMaxDepth( 0 );
     }
 
-    private void handleDocumentUri( HttpServletRequest httpServletRequest, ImcmsServices service,
-                                    ServletRequest request, ServletResponse response, FilterChain chain ) throws ServletException, IOException {
+    private void handleDocumentUri(FilterChain chain, HttpServletRequest httpServletRequest, ServletResponse response,
+                                   ImcmsServices service
+    ) throws ServletException, IOException {
         String path = httpServletRequest.getRequestURI() ;
         path = StringUtils.substringAfter( path, httpServletRequest.getContextPath() ) ;
         String documentPathPrefix = service.getConfig().getDocumentPathPrefix() ;
@@ -64,10 +72,10 @@ public class ImcmsSetupFilter implements Filter {
                 int documentId = Integer.parseInt( documentIdString ) ;
                 GetDoc.output( documentId, httpServletRequest, (HttpServletResponse)response );
             } catch( NumberFormatException nfe ) {
-                chain.doFilter( request, response );
+                chain.doFilter( httpServletRequest, response );
             }
         } else {
-            chain.doFilter( request, response );
+            chain.doFilter( httpServletRequest, response );
         }
     }
 
