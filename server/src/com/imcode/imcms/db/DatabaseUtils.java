@@ -17,7 +17,9 @@ public class DatabaseUtils {
     }
 
     public static Database getWantedDdl() throws IOException {
-        return new DatabaseIO().read(new FileReader(new File(Imcms.getPath(), "WEB-INF/sql/ddl.xml")));
+        DatabaseIO io = new DatabaseIO();
+        io.setValidateXml(false);
+        return io.read(new FileReader(new File(Imcms.getPath(), "WEB-INF/sql/ddl.xml")));
     }
 
     public static Platform getPlatform(DatabaseConnection databaseConnection) {
