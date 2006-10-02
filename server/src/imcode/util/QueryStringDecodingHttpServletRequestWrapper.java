@@ -19,6 +19,7 @@ public class QueryStringDecodingHttpServletRequestWrapper extends HttpServletReq
     private FallbackDecoder decoder;
     private Pattern parameterBytePattern = Pattern.compile("%[0-9a-fA-F][0-9a-fA-F]|.", Pattern.DOTALL);
     private String previousForwardQueryString;
+    private String previousIncludeQueryString;
     private Map<String, String[]> parameterMap;
 
     public QueryStringDecodingHttpServletRequestWrapper(HttpServletRequest request) {
@@ -44,11 +45,15 @@ public class QueryStringDecodingHttpServletRequestWrapper extends HttpServletReq
 
     public Map<String, String[]> getParameterMap() {
         String forwardQueryString = (String) getAttribute("javax.servlet.forward.query_string");
+        String includeQueryString = (String) getAttribute("javax.servlet.include.query_string");
         boolean shouldBuildMap = null == parameterMap 
                                  || null == forwardQueryString ^ null == previousForwardQueryString 
-                                 || null != forwardQueryString && !forwardQueryString.equals(previousForwardQueryString);
+                                 || null != forwardQueryString && !forwardQueryString.equals(previousForwardQueryString)
+                                 || null == includeQueryString ^ null == previousIncludeQueryString
+                                 || null != includeQueryString && !includeQueryString.equals(previousIncludeQueryString);
         if (shouldBuildMap) {
             previousForwardQueryString = forwardQueryString ;
+            previousIncludeQueryString = includeQueryString ;
             parameterMap = buildParameterMap();
         }
         return Collections.unmodifiableMap(parameterMap);
@@ -57,6 +62,7 @@ public class QueryStringDecodingHttpServletRequestWrapper extends HttpServletReq
     private Map<String, String[]> buildParameterMap() {
         MultiHashMap result = new MultiHashMap();
         addQueryStringParameters(previousForwardQueryString, result);
+        addQueryStringParameters(previousIncludeQueryString, result);
         addQueryStringParameters(getQueryString(), result);
         return convertMultiMapToArrayMap(result);
     }
