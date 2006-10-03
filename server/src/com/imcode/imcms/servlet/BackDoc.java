@@ -3,6 +3,8 @@ package com.imcode.imcms.servlet;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -53,19 +55,15 @@ public class BackDoc extends HttpServlet {
             if ( useNextToLastTextDocument ) {
                 // pop the first value from the history stack and true it away
                 // because that is the current meta_id
-                int tmp_meta_id = ( (Integer)history.peek() ).intValue();			// Get the top value
-                boolean docTypeIsText = isTextDocument( imcref, tmp_meta_id );
-
-                if ( docTypeIsText ) {			// If we are on a text_doc,
-                    meta_id = ( (Integer)history.pop() ).intValue();			// Get the top value. If there are no more text_docs, we need to stay here.
+                int tmp_meta_id = ( (Integer)history.peek() ).intValue();	// Get the top value
+                if ( isTextDocument( imcref, tmp_meta_id ) ) {			    // If we are on a text_doc,
+                    meta_id = ( (Integer)history.pop() ).intValue();		// Get the top value. If there are no more text_docs, we need to stay here.
                 }
             }
 
             while ( !history.empty() ) {
                 int tmp_meta_id = ( (Integer)history.pop() ).intValue();			// Get the top value
-                boolean docTypeIsText = isTextDocument( imcref, tmp_meta_id );
-
-                if ( docTypeIsText ) {
+                if ( isTextDocument( imcref, tmp_meta_id ) ) {
                     meta_id = tmp_meta_id;
                     break;
                 }
@@ -75,10 +73,8 @@ public class BackDoc extends HttpServlet {
     }
 
     private static boolean isTextDocument( ImcmsServices imcref, int tmp_meta_id ) {
-        int doc_type;
-        doc_type = imcref.getDocType( tmp_meta_id );	// Get the doc_type
-
-        boolean docTypeIsText = doc_type == 1 || doc_type == 2;
-        return docTypeIsText;
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( tmp_meta_id );
+        return DocumentTypeDomainObject.TEXT == document.getDocumentType();
     }
 }

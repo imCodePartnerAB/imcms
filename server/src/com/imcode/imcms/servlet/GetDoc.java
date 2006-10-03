@@ -60,23 +60,21 @@ public class GetDoc extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
 
         HttpSession session = req.getSession( true );
-
         UserDomainObject user = Utility.getLoggedOnUser( req );
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( meta_id );
+
+        if ( null == document ) {
+            return getDocumentDoesNotExistPage( res, user );
+        }
         Stack history = (Stack)user.get( "history" );
         if ( history == null ) {
             history = new Stack();
             user.put( "history", history );
         }
 
-        Integer meta_int = new Integer( meta_id );
-        if ( history.empty() || !history.peek().equals( meta_int ) ) {
-            history.push( meta_int );
-        }
-
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument( meta_id );
-        if ( null == document ) {
-            return getDocumentDoesNotExistPage( res, user );
+        if ( isTextDocument(document) && (history.empty() || !history.peek().equals( new Integer(document.getId()) )) ) {
+            history.push( new Integer(document.getId()) );
         }
 
         DocumentRequest documentRequest;
@@ -243,6 +241,10 @@ public class GetDoc extends HttpServlet {
             String result = imcref.parsePage( paramsToParser );
             return result;
         }
+    }
+
+    private static boolean isTextDocument(DocumentDomainObject document) {
+        return DocumentTypeDomainObject.TEXT == document.getDocumentType();
     }
 
     public static String getDocumentDoesNotExistPage( HttpServletResponse res, UserDomainObject user ) {
