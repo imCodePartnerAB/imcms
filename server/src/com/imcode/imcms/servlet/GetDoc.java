@@ -3,11 +3,7 @@ package com.imcode.imcms.servlet;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.*;
-import imcode.server.document.BrowserDocumentDomainObject;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.HtmlDocumentDomainObject;
-import imcode.server.document.UrlDocumentDomainObject;
+import imcode.server.document.*;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -79,24 +75,24 @@ public class GetDoc extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
 
         HttpSession session = req.getSession(true);
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( meta_id );
 
-        UserDomainObject user = Utility.getLoggedOnUser(req);
+        if ( null == document ) {
+            outputDocumentDoesNotExistPage(res, user);
+            return ;
+        }
+
         Stack history = (Stack) req.getSession().getAttribute("history");
         if ( history == null ) {
             history = new Stack();
             req.getSession().setAttribute("history", history);
         }
 
-        Integer meta_int = new Integer(meta_id);
-        if ( history.empty() || !history.peek().equals(meta_int) ) {
+        Integer meta_int = new Integer(document.getId());
+        if ( isTextDocument(document) && ( history.empty() || !history.peek().equals(meta_int))) {
             history.push(meta_int);
-        }
-
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument(meta_id);
-        if ( null == document ) {
-            outputDocumentDoesNotExistPage(res, user);
-            return ;
         }
 
         String referrer = req.getHeader(HTTP_HEADER_REFERRER);
@@ -241,6 +237,10 @@ public class GetDoc extends HttpServlet {
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
         Utility.setDefaultHtmlContentType(res);
         res.getWriter().write(imcref.getAdminTemplate(NO_PAGE_URL, user, vec));
+    }
+
+    private static boolean isTextDocument(DocumentDomainObject document) {
+        return DocumentTypeDomainObject.TEXT == document.getDocumentType();
     }
 
 }
