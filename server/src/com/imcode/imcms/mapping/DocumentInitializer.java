@@ -13,11 +13,7 @@ import org.apache.commons.dbutils.ResultSetHandler;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class DocumentInitializer {
     private static final String SQL_GET_KEYWORDS = "SELECT mc.meta_id, c.code FROM classification c JOIN meta_classification mc ON mc.class_id = c.class_id WHERE mc.meta_id ";
@@ -43,19 +39,19 @@ public class DocumentInitializer {
     }
 
     void initDocuments(DocumentList documentList) {
-        final Map documentMap = documentList.getMap();
+        Set documentIds = documentList.getMap().keySet();
 
-        DocumentInitializingVisitor documentInitializingVisitor = new DocumentInitializingVisitor(documentMapper, documentMap.keySet(), documentMapper);
+        DocumentInitializingVisitor documentInitializingVisitor = new DocumentInitializingVisitor(documentMapper, documentIds, documentMapper);
         for ( Iterator iterator = documentList.iterator(); iterator.hasNext(); ) {
             final DocumentDomainObject document = (DocumentDomainObject) iterator.next();
             final Integer documentId = new Integer(document.getId()) ;
 
-            final LazilyLoadedObject permissionSets = new LazilyLoadedObject(new DocumentPermissionSetsLoader(documentMap.keySet(), false, documentId));
-            LazilyLoadedObject permissionSetsForNew = new LazilyLoadedObject(new DocumentPermissionSetsLoader(documentMap.keySet(), true, documentId));
-            LazilyLoadedObject rolePermissionMappings = new LazilyLoadedObject(new DocumentRolePermissionsLoader(documentMap.keySet(), documentId));
-            LazilyLoadedObject sectionIds = new LazilyLoadedObject(new DocumentSectionIdsLoader(documentMap.keySet(), documentId));
-            LazilyLoadedObject keywords = new LazilyLoadedObject(new DocumentKeywordsLoader(documentMap.keySet(), documentId));
-            LazilyLoadedObject categoryIds = new LazilyLoadedObject(new DocumentCategoryIdsLoader(documentMap.keySet(), documentId));
+            final LazilyLoadedObject permissionSets = new LazilyLoadedObject(new DocumentPermissionSetsLoader(documentIds, false, documentId));
+            LazilyLoadedObject permissionSetsForNew = new LazilyLoadedObject(new DocumentPermissionSetsLoader(documentIds, true, documentId));
+            LazilyLoadedObject rolePermissionMappings = new LazilyLoadedObject(new DocumentRolePermissionsLoader(documentIds, documentId));
+            LazilyLoadedObject sectionIds = new LazilyLoadedObject(new DocumentSectionIdsLoader(documentIds, documentId));
+            LazilyLoadedObject keywords = new LazilyLoadedObject(new DocumentKeywordsLoader(documentIds, documentId));
+            LazilyLoadedObject categoryIds = new LazilyLoadedObject(new DocumentCategoryIdsLoader(documentIds, documentId));
 
             document.setLazilyLoadedPermissionSets(permissionSets);
             document.setLazilyLoadedPermissionSetsForNew(permissionSetsForNew);
@@ -69,7 +65,7 @@ public class DocumentInitializer {
     }
 
 
-    static Integer[] appendInClause(StringBuffer sql, Collection documentIds) {
+    private static Integer[] appendInClause(StringBuffer sql, Collection documentIds) {
         sql.append("IN (");
         Integer[] documentIdsArray = new Integer[documentIds.size()];
         for ( CountingIterator iterator = new CountingIterator(documentIds.iterator()); iterator.hasNext(); ) {
@@ -109,9 +105,7 @@ public class DocumentInitializer {
                 return ;
             }
             documentsSectionIds = new MultiHashMap();
-            StringBuffer sql = new StringBuffer(SQL_GET_SECTION_IDS_FOR_DOCUMENT);
-            Integer[] parameters = appendInClause(sql, documentIds);
-            database.execute(new SqlQueryCommand(sql.toString(), parameters, new ResultSetHandler() {
+            executeWithAppendedIntegerInClause(DocumentInitializer.this.database, SQL_GET_SECTION_IDS_FOR_DOCUMENT, documentIds, new ResultSetHandler() {
                 public Object handle(ResultSet rs) throws SQLException {
                     while ( rs.next() ) {
                         int documentId = rs.getInt(1);
@@ -120,7 +114,7 @@ public class DocumentInitializer {
                     }
                     return null;
                 }
-            }));
+            });
         }
 
     }
@@ -149,9 +143,7 @@ public class DocumentInitializer {
                 return ;
             }
             documentsKeywords = new MultiHashMap();
-            StringBuffer sql = new StringBuffer(SQL_GET_KEYWORDS);
-            Integer[] parameters = appendInClause(sql, documentIds);
-            database.execute(new SqlQueryCommand(sql.toString(), parameters, new ResultSetHandler() {
+            executeWithAppendedIntegerInClause(DocumentInitializer.this.database, SQL_GET_KEYWORDS, documentIds, new ResultSetHandler() {
                 public Object handle(ResultSet rs) throws SQLException {
                     while ( rs.next() ) {
                         int documentId = rs.getInt(1);
@@ -160,7 +152,7 @@ public class DocumentInitializer {
                     }
                     return null;
                 }
-            }));
+            });
         }
     }
 
@@ -188,9 +180,7 @@ public class DocumentInitializer {
                 return ;
             }
             documentsCategoryIds = new MultiHashMap();
-            StringBuffer sql = new StringBuffer(CategoryMapper.SQL__GET_DOCUMENT_CATEGORIES);
-            Integer[] parameters = appendInClause(sql, documentIds);
-            database.execute(new SqlQueryCommand(sql.toString(), parameters, new ResultSetHandler() {
+            executeWithAppendedIntegerInClause(DocumentInitializer.this.database, CategoryMapper.SQL__GET_DOCUMENT_CATEGORIES, documentIds, new ResultSetHandler() {
                 public Object handle(ResultSet rs) throws SQLException {
                     while ( rs.next() ) {
                         int documentId = rs.getInt(1);
@@ -199,8 +189,20 @@ public class DocumentInitializer {
                     }
                     return null;
                 }
-            }));
+            });
         }
+
+    }
+
+    static void executeWithAppendedIntegerInClause(Database database, String sqlString, Collection documentIds,
+                                                   ResultSetHandler resultSetHandler
+    ) {
+        if (documentIds.isEmpty()) {
+            throw new IllegalArgumentException("documentIds is empty") ;
+        }
+        StringBuffer sql = new StringBuffer(sqlString);
+        Integer[] parameters = appendInClause(sql, documentIds);
+        database.execute(new SqlQueryCommand(sql.toString(), parameters, resultSetHandler));
     }
 
     private class DocumentRolePermissionsLoader implements LazilyLoadedObject.Loader {
@@ -209,7 +211,7 @@ public class DocumentInitializer {
         private final Integer documentId;
 
         DocumentRolePermissionsLoader(Collection documentIds,
-                                             Integer documentId) {
+                                      Integer documentId) {
             this.documentIds = documentIds;
             this.documentId = documentId;
         }
@@ -228,14 +230,11 @@ public class DocumentInitializer {
                 return;
             }
             documentsRolePermissionMappings = new HashMap();
-            
-            StringBuffer sql = new StringBuffer("SELECT "
-                                                + "meta_id, role_id, set_id\n"
-                                                + "FROM  roles_rights\n"
-                                                + "WHERE meta_id ");
-            Integer[] parameters = appendInClause(sql, documentIds);
 
-            database.execute(new SqlQueryCommand(sql.toString(), parameters, new ResultSetHandler() {
+            executeWithAppendedIntegerInClause(database, "SELECT "
+                                                         + "meta_id, role_id, set_id\n"
+                                                         + "FROM  roles_rights\n"
+                                                         + "WHERE meta_id ", documentIds, new ResultSetHandler() {
                 public Object handle(ResultSet rs) throws SQLException {
                     while ( rs.next() ) {
                         Integer documentId = new Integer(rs.getInt(1));
@@ -250,7 +249,7 @@ public class DocumentInitializer {
                     }
                     return null;
                 }
-            }));
+            });
 
         }
     }
@@ -288,13 +287,11 @@ public class DocumentInitializer {
         public void initDocumentsPermissionSets(final Collection documentIds, final Map documentsPermissionSets,
                                                 boolean forNew) {
 
-            StringBuffer sql = new StringBuffer(
-                    "SELECT d.meta_id, d.set_id, d.permission_id, de.permission_id, de.permission_data\n"
-                    + "FROM "+(forNew ? "new_": "")+"doc_permission_sets d\n"
-                    + "LEFT JOIN "+(forNew ? "new_": "")+"doc_permission_sets_ex de ON d.meta_id = de.meta_id AND d.set_id = de.set_id\n"
-                    + "WHERE d.meta_id ");
-            Integer[] parameters = appendInClause(sql, documentIds);
-            database.execute(new SqlQueryCommand(sql.toString(), parameters, new ResultSetHandler() {
+            executeWithAppendedIntegerInClause(DocumentInitializer.this.database,
+                                               "SELECT d.meta_id, d.set_id, d.permission_id, de.permission_id, de.permission_data\n"
+                                               + "FROM "+(forNew ? "new_": "")+"doc_permission_sets d\n"
+                                               + "LEFT JOIN "+(forNew ? "new_": "")+"doc_permission_sets_ex de ON d.meta_id = de.meta_id AND d.set_id = de.set_id\n"
+                                               + "WHERE d.meta_id ", documentIds, new ResultSetHandler() {
                 public Object handle(ResultSet resultSet) throws SQLException {
                     while ( resultSet.next() ) {
                         Integer documentId = new Integer(resultSet.getInt(1));
@@ -317,7 +314,7 @@ public class DocumentInitializer {
                     }
                     return null;
                 }
-            }));
+            });
         }
 
         private void setPermissionData(DocumentPermissionSetDomainObject permissionSet, Integer permissionId, Integer permissionData) {

@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
-import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.document.DirectDocumentReference;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.GetterDocumentReference;
@@ -22,7 +21,7 @@ import java.util.Set;
 
 public class TextDocumentInitializer {
 
-    private final static Logger log = Logger.getLogger(TextDocumentInitializer.class);
+    private final static Logger LOG = Logger.getLogger(TextDocumentInitializer.class);
 
     private final Collection documentIds;
     private final Database database;
@@ -70,11 +69,9 @@ public class TextDocumentInitializer {
         void initDocumentsMenuItems() {
             if ( null == documentsMenuItems ) {
                 documentsMenuItems = new HashMap();
-                StringBuffer sql = new StringBuffer(SQL_GET_MENU_ITEMS);
-                Integer[] parameters = DocumentInitializer.appendInClause(sql, documentIds);
                 final Set destinationDocumentIds = new HashSet();
                 final BatchDocumentGetter batchDocumentGetter = new BatchDocumentGetter(destinationDocumentIds, documentGetter);
-                database.execute(new SqlQueryCommand(sql.toString(), parameters, new ResultSetHandler() {
+                DocumentInitializer.executeWithAppendedIntegerInClause(database, SQL_GET_MENU_ITEMS, documentIds, new ResultSetHandler() {
                     public Object handle(ResultSet rs) throws SQLException {
                         while ( rs.next() ) {
                             int documentId = rs.getInt(1);
@@ -101,7 +98,7 @@ public class TextDocumentInitializer {
                         }
                         return null;
                     }
-                }));
+                });
             }
         }
     }
@@ -126,9 +123,7 @@ public class TextDocumentInitializer {
         private void initDocumentsIncludes() {
             if ( null == documentsIncludes ) {
                 documentsIncludes = new HashMap();
-                StringBuffer sql = new StringBuffer("SELECT meta_id, include_id, included_meta_id FROM includes WHERE meta_id ");
-                Integer[] parameters = DocumentInitializer.appendInClause(sql, documentIds);
-                database.execute(new SqlQueryCommand(sql.toString(), parameters, new ResultSetHandler() {
+                DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id, include_id, included_meta_id FROM includes WHERE meta_id ", documentIds, new ResultSetHandler() {
                     public Object handle(ResultSet rs) throws SQLException {
                         while ( rs.next() ) {
                             Integer documentId = new Integer(rs.getInt(1));
@@ -144,7 +139,7 @@ public class TextDocumentInitializer {
                         }
                         return null;
                     }
-                }));
+                });
             }
         }
 
@@ -170,12 +165,10 @@ public class TextDocumentInitializer {
         private void initDocumentsImages() {
             if ( null == documentsImages ) {
                 documentsImages = new HashMap();
-                StringBuffer sql = new StringBuffer("SELECT meta_id,name,image_name,imgurl,"
-                                                    + "width,height,border,v_space,h_space,"
-                                                    + "target,align,alt_text,low_scr,linkurl,type "
-                                                    + "FROM images WHERE meta_id ");
-                Integer[] parameters = DocumentInitializer.appendInClause(sql, documentIds);
-                database.execute(new SqlQueryCommand(sql.toString(), parameters, new ResultSetHandler() {
+                DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id,name,image_name,imgurl,"
+                                                                                 + "width,height,border,v_space,h_space,"
+                                                                                 + "target,align,alt_text,low_scr,linkurl,type "
+                                                                                 + "FROM images WHERE meta_id ", documentIds, new ResultSetHandler() {
                     public Object handle(ResultSet rs) throws SQLException {
                         while ( rs.next() ) {
                             Integer documentId = new Integer(rs.getInt(1));
@@ -210,9 +203,9 @@ public class TextDocumentInitializer {
                                             image.setSource(new FileDocumentImageSource(new DirectDocumentReference(document)));
                                         }
                                     } catch ( NumberFormatException nfe ) {
-                                        log.warn("Non-numeric document-id \"" + imageSource + "\" for image in database.");
+                                        LOG.warn("Non-numeric document-id \"" + imageSource + "\" for image in database.");
                                     } catch ( ClassCastException cce ) {
-                                        log.warn("Non-file-document-id \"" + imageSource + "\" for image in database.");
+                                        LOG.warn("Non-file-document-id \"" + imageSource + "\" for image in database.");
                                     }
                                 } else if ( ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH == imageType ) {
                                     image.setSource(new ImagesPathRelativePathImageSource(imageSource));
@@ -222,7 +215,7 @@ public class TextDocumentInitializer {
                         }
                         return null;
                     }
-                }));
+                });
             }
 
         }
@@ -248,9 +241,7 @@ public class TextDocumentInitializer {
         private void initDocumentsTexts() {
             if ( null == documentsTexts ) {
                 documentsTexts = new HashMap();
-                StringBuffer sql = new StringBuffer("SELECT meta_id, name, text, type FROM texts WHERE meta_id ");
-                Integer[] parameters = DocumentInitializer.appendInClause(sql, documentIds);
-                database.execute(new SqlQueryCommand(sql.toString(), parameters, new ResultSetHandler() {
+                DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id, name, text, type FROM texts WHERE meta_id ", documentIds, new ResultSetHandler() {
                     public Object handle(ResultSet rs) throws SQLException {
                         while ( rs.next() ) {
                             Integer documentId = new Integer(rs.getInt(1));
@@ -266,7 +257,7 @@ public class TextDocumentInitializer {
                         }
                         return null;
                     }
-                }));
+                });
             }
         }
 
@@ -292,9 +283,7 @@ public class TextDocumentInitializer {
         private void initDocumentsTemplateIds() {
             if ( null == documentsTemplateIds ) {
                 documentsTemplateIds = new HashMap();
-                StringBuffer sql = new StringBuffer("SELECT meta_id, template_id, group_id, default_template, default_template_1, default_template_2 FROM text_docs WHERE meta_id ");
-                Integer[] parameters = DocumentInitializer.appendInClause(sql, documentIds);
-                database.execute(new SqlQueryCommand(sql.toString(), parameters, new ResultSetHandler() {
+                DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id, template_id, group_id, default_template, default_template_1, default_template_2 FROM text_docs WHERE meta_id ", documentIds, new ResultSetHandler() {
                     public Object handle(ResultSet rs) throws SQLException {
                         while ( rs.next() ) {
                             Integer documentId = new Integer(rs.getInt(1));
@@ -316,7 +305,7 @@ public class TextDocumentInitializer {
                         }
                         return null;
                     }
-                }));
+                });
             }
         }
 

@@ -1,8 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
-import com.imcode.db.DatabaseCommand;
-import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
@@ -51,10 +49,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
             return Collections.EMPTY_LIST ;
         }
         LinkedHashMap documentMap = new LinkedHashMap();
-        StringBuffer sql = new StringBuffer(SQL_GET_DOCUMENTS);
-        Integer[] parameters = DocumentInitializer.appendInClause(sql, documentIds);
-        DatabaseCommand command = new SqlQueryCommand(sql.toString(), parameters, new CollectionHandler(new DocumentMapSet(documentMap), new DocumentFromRowFactory()));
-        database.execute(command);
+        DocumentInitializer.executeWithAppendedIntegerInClause(database, SQL_GET_DOCUMENTS, documentIds, new CollectionHandler(new DocumentMapSet(documentMap), new DocumentFromRowFactory()));
 
         DocumentList documentList = new DocumentList(documentMap);
 
