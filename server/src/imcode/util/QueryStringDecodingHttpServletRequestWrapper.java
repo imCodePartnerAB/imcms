@@ -90,7 +90,10 @@ public class QueryStringDecodingHttpServletRequestWrapper extends HttpServletReq
             }
             String[] nameAndValue = parameterPair.split("=", 2);
             String parameterName = decode(nameAndValue[0]);
-            String parameterValue = decode(nameAndValue[1]);
+            String parameterValue = "";
+            if (nameAndValue.length > 1) {
+                parameterValue = decode(nameAndValue[1]);
+            }
             localParameterMap.put(parameterName, parameterValue);
         }
         return localParameterMap ;
