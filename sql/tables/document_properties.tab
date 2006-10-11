@@ -1,0 +1,14 @@
+    <table name="document_properties">
+        <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="meta_id" required="true" type="INTEGER" />
+        <column name="key_name" required="true" size="255" type="VARCHAR" />
+        <column name="value" required="true" size="255" type="VARCHAR" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+        <unique name="UQ_document_properties__meta_id__key_name">
+            <unique-column name="meta_id"/>
+            <unique-column name="key_name"/>
+        </unique>
+    </table>
+    

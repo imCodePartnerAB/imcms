@@ -53,6 +53,8 @@ class DocumentSaver {
 
             updateDocumentSectionsCategoriesKeywords(document);
 
+            updateDocumnetProperties(document);
+
             if (user.canEditPermissionsFor(oldDocument)) {
                 updateDocumentRolePermissions(document, user, oldDocument);
 
@@ -162,6 +164,8 @@ class DocumentSaver {
         document.setId(newMetaId);
 
         updateDocumentSectionsCategoriesKeywords(document);
+
+        updateDocumnetProperties(document);
 
         updateDocumentRolePermissions(document, user, null);
 
@@ -327,6 +331,22 @@ class DocumentSaver {
             addExistingKeywordToDocument(meta_id, keyword);
         }
         deleteUnusedKeywords();
+    }
+
+    void updateDocumnetProperties( DocumentDomainObject document ) {
+        int meta_id = document.getId();
+        Map properties = (Map) document.getProperties();
+        deletePropertiesFromDocumnet(meta_id);
+        for (Iterator iterator = properties.keySet().iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            String[] params = new String[] {meta_id+"", key, (String) properties.get(key) } ;
+            ((Integer)documentMapper.getDatabase().execute( new SqlUpdateCommand( "INSERT INTO document_properties (meta_id, key_name, value) VALUES(?,?,?)", params ) )).intValue();
+        }
+    }
+
+    private void deletePropertiesFromDocumnet(int meta_id) {
+        String[] params = new String[] {meta_id + ""} ;
+        ((Integer)documentMapper.getDatabase().execute( new SqlUpdateCommand( "DELETE FROM document_properties WHERE meta_id = ?", params ) )).intValue();
     }
 
     void updateDocumentSections(int metaId,

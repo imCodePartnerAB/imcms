@@ -28,6 +28,7 @@ import imcode.util.io.FileUtility;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.File;
@@ -106,6 +107,7 @@ public class DocumentMapper implements DocumentGetter {
         newDocument.setHeadline( "" );
         newDocument.setMenuText( "" );
         newDocument.setMenuImage( "" );
+        newDocument.setProperties(new HashMap());
         makeDocumentLookNew( newDocument, user );
         removeNonInheritedCategories(newDocument) ;
         return newDocument;
@@ -279,6 +281,7 @@ public class DocumentMapper implements DocumentGetter {
             new DeleteWhereColumnsEqualDatabaseCommand("includes", "included_meta_id", metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("meta_section", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("meta", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("document_properties", metaIdColumn, metaIdStr),
         });
     }
 
@@ -338,6 +341,37 @@ public class DocumentMapper implements DocumentGetter {
             documentIds[i] = Integer.parseInt(documentIdStrings[i]);
         }
         return documentIds;
+    }
+
+    public Set getAllDocumentAlias() {
+        Set allDocumentAlias = new HashSet();
+        String[] allAlias = (String[]) getDatabase().execute(new SqlQueryCommand("SELECT value FROM document_properties where key = ? ORDER BY value", new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS}, Utility.STRING_ARRAY_HANDLER));
+        for (int i = 0; i < allAlias.length; i ++) {
+            allDocumentAlias.add(allAlias[i]) ;
+        }
+        return allDocumentAlias;
+    }
+
+    public DocumentDomainObject getDocumentFromId(String documentIdString) {
+        DocumentDomainObject document = null;
+        ImcmsServices service = Imcms.getServices();
+        final String SQL_GET_DOCUMENT_ID_FROM_PROPERTIES = "SELECT meta_id FROM document_properties WHERE key_name=? AND value=?";
+
+        if (null != documentIdString) {
+            if ( NumberUtils.isDigits( documentIdString ) ) {
+                document = service.getDocumentMapper().getDocument(new Integer(documentIdString));
+            }else{
+                String[] documentIds = (String[]) getDatabase().execute(
+                        new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
+                                new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdString },
+                                Utility.STRING_ARRAY_HANDLER));
+
+                if(documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {
+                    document = service.getDocumentMapper().getDocument(new Integer(documentIds[0]));
+                }
+            }
+        }
+        return document;
     }
 
     static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {

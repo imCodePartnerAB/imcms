@@ -188,9 +188,25 @@ function checkFocus() {
 			<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER%>"
 			value=" <? install/htdocs/global/pageinfo/browse ?> "></td>
 		</tr>
-		</table></td>
+        </table></td>
 	</tr>
-	<tr>
+    <tr>
+	    <td colspan="2">#gui_hr( 'cccccc' )</td>
+	</tr>
+    <tr>
+        <td class="imcmsAdmText" nowrap><? global/Page_alias ?></td>
+        <td>
+        <table border="0" cellspacing="0" cellpadding="0" width="100%">
+        <tr>
+            <td  align="right" width="85%"><%= "http://" + request.getServerName() + request.getContextPath() + "/" %>&nbsp;<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__DOCUMENT_ALIAS %>" size="40" maxlength="255" 
+            value="<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS), "" )) %>"></td>
+            <td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER%>"
+            value=" <? install/htdocs/global/pageinfo/browse ?> "></td>
+        </tr>
+        </table></td>
+    </tr>
+
+    <tr>
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="1"></td>
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="1"></td>
 	</tr>
@@ -573,7 +589,7 @@ function checkFocus() {
 		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/42 ?></td>
+		<td class="imcmsAdmText"><? global/Publisher ?></td>
 		<td class="imcmsAdmText">
 		<% Integer publisherId = document.getPublisherId();
             UserDomainObject publisher = null == publisherId ? null : userMapper.getUser(publisherId.intValue()) ; %>

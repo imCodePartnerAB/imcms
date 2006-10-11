@@ -2,6 +2,7 @@ package imcode.server.document;
 
 import com.imcode.imcms.api.Document;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.CopyableHashMap;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;
@@ -15,6 +16,7 @@ import java.util.*;
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public static final int ID_NEW = 0;
+    public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS = "imcms.document.alias";
 
     protected Attributes attributes = new Attributes();
     private static Logger log = Logger.getLogger( DocumentDomainObject.class );
@@ -121,6 +123,24 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public void setKeywords( Set keywords ) {
         attributes.keywords.set(new CopyableHashSet(keywords));
+    }
+
+    public void setProperties( Map properties ) {
+        attributes.properties.set(new CopyableHashMap(properties));
+    }
+
+    public Map<String, String> getProperties() {
+        return Collections.unmodifiableMap((Map<String, String>)attributes.properties.get()) ;
+    }
+
+    public String getProperty(String key) {
+        Map<String,String> properties = (Map<String, String>) attributes.properties.get();
+        return properties.get(key);
+    }
+
+    public void setProperty(String key, String value) {
+        Map<String, String> properties = (Map<String, String>) attributes.properties.get();
+        properties.put(key, value);
     }
 
     public String getLanguageIso639_2() {
@@ -400,6 +420,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.keywords = keywords ;
     }
 
+    public void setLazilyLoadedProperties(LazilyLoadedObject properties) {
+        attributes.properties = properties ;
+    }
+
     public void setLazilyLoadedCategoryIds(LazilyLoadedObject categoryIds) {
         attributes.categoryIds = categoryIds;
     }
@@ -423,6 +447,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.permissionSets.load();
         attributes.permissionSetsForNewDocuments.load();
         attributes.roleIdToDocumentPermissionSetTypeMappings.load();
+        attributes.properties.load();
     }
 
 
@@ -457,6 +482,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private LazilyLoadedObject sectionIds = new LazilyLoadedObject(new CopyableHashSetLoader());
         private LazilyLoadedObject permissionSets = new LazilyLoadedObject(new DocumentPermissionSetsLoader());
         private LazilyLoadedObject permissionSetsForNewDocuments = new LazilyLoadedObject(new DocumentPermissionSetsLoader());
+        private LazilyLoadedObject properties = new LazilyLoadedObject(new CopyableHashMapLoader());
 
         private LazilyLoadedObject roleIdToDocumentPermissionSetTypeMappings = new LazilyLoadedObject(new LazilyLoadedObject.Loader() {
             public LazilyLoadedObject.Copyable load() {
@@ -467,6 +493,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         public Object clone() throws CloneNotSupportedException {
             Attributes clone = (Attributes)super.clone();
             clone.keywords = (LazilyLoadedObject) keywords.clone();
+            clone.properties = (LazilyLoadedObject) properties.clone();
             clone.sectionIds = (LazilyLoadedObject) sectionIds.clone();
             clone.categoryIds = (LazilyLoadedObject) categoryIds.clone();
             clone.roleIdToDocumentPermissionSetTypeMappings = (LazilyLoadedObject) roleIdToDocumentPermissionSetTypeMappings.clone();
@@ -477,6 +504,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
             public LazilyLoadedObject.Copyable load() {
                 return new CopyableHashSet();
+            }
+        }
+
+        private static class CopyableHashMapLoader implements LazilyLoadedObject.Loader {
+
+            public LazilyLoadedObject.Copyable load() {
+                return new CopyableHashMap();
             }
         }
 

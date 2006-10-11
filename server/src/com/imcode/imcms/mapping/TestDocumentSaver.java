@@ -15,14 +15,16 @@ import junit.framework.TestCase;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.Date;
 
 public class TestDocumentSaver extends TestCase {
     private DocumentMapper documentMapper;
     private DocumentSaver documentSaver;
+    private MockDatabase database;
 
     protected void setUp() throws Exception {
         super.setUp();
-        MockDatabase database = new MockDatabase();
+        database = new MockDatabase();
         documentMapper = new DocumentMapper(new MockImcmsServices(), database) {
             public void invalidateDocument(DocumentDomainObject document) {
             }
@@ -61,37 +63,35 @@ public class TestDocumentSaver extends TestCase {
 
 
     public void testDocumentAddedWithoutPermission() {
-        TextDocumentDomainObject document1001 = createTextDocument(1001);
-        TextDocumentDomainObject document1002 = createTextDocument(1002);
+        TextDocumentDomainObject oldDocument = createTextDocument(1001);
+        TextDocumentDomainObject addedDocument = createTextDocument(1002);
         MapDocumentGetter documentGetter = new MapDocumentGetter(new DocumentDomainObject[] {
-                document1001,
-                document1002,
+                oldDocument,
+                addedDocument,
         });
         documentMapper.setDocumentGetter(documentGetter);
-        final TextDocumentDomainObject oldDocument = document1001;
-        final TextDocumentDomainObject addedDocument = document1002;
         UserDomainObject testedUser = new UserDomainObject();
         TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(1001);
         document.getMenu(1).addMenuItem(new MenuItemDomainObject(new DirectDocumentReference(addedDocument)));
 
-        document1002.setLinkableByOtherUsers(true);
+        addedDocument.setLinkableByOtherUsers(true);
         assertDocumentsAddedWithPermission(document, null, testedUser, documentGetter);
 
-        document1002.setLinkableByOtherUsers(false);
+        addedDocument.setLinkableByOtherUsers(false);
         assertDocumentsAddedWithoutPermission(document, null, testedUser, documentGetter);
 
         assertDocumentsAddedWithoutPermission(document, oldDocument, testedUser, documentGetter);
 
-        document1002.setLinkableByOtherUsers(true);
+        addedDocument.setLinkableByOtherUsers(true);
         assertDocumentsAddedWithPermission(document, oldDocument, testedUser, documentGetter);
 
-        document1002.setLinkableByOtherUsers(false);
+        addedDocument.setLinkableByOtherUsers(false);
         assertDocumentsAddedWithoutPermission(document, oldDocument, testedUser, documentGetter);
 
-        document1002.setDocumentPermissionSetTypeForRoleId(RoleId.USERS, DocumentPermissionSetTypeDomainObject.FULL);
+        addedDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERS, DocumentPermissionSetTypeDomainObject.FULL);
         assertDocumentsAddedWithPermission(document, oldDocument, testedUser, documentGetter);
 
-        document1002.setDocumentPermissionSetTypeForRoleId(RoleId.USERS, DocumentPermissionSetTypeDomainObject.NONE);
+        addedDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERS, DocumentPermissionSetTypeDomainObject.NONE);
         assertDocumentsAddedWithoutPermission(document, oldDocument, testedUser, documentGetter);
 
         testedUser.addRoleId(RoleId.SUPERADMIN);
@@ -105,6 +105,26 @@ public class TestDocumentSaver extends TestCase {
             fail("Expected exception.");
         } catch ( NoPermissionToAddDocumentToMenuException e ) {}
     }
+
+    public void testDocumentAddedWithPropertyAlias() {
+        UserDomainObject testedUser = new UserDomainObject();
+        testedUser.addRoleId(RoleId.SUPERADMIN);
+        TextDocumentDomainObject document = createTextDocument(1001);
+        MapDocumentGetter documentGetter = new MapDocumentGetter(new DocumentDomainObject[] {
+                document
+        });
+        documentMapper.setDocumentGetter(documentGetter);
+        document.setProperty("imcms.document.alias", "start");
+        try {
+            documentMapper.saveDocument(document, testedUser);
+        }catch(NoPermissionToEditDocumentException e ) {}
+         catch(NoPermissionToAddDocumentToMenuException e) {}
+        database.assertCalled(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("document_properties", "start"));
+        document = (TextDocumentDomainObject) documentMapper.getDocument(1001);
+        assertEquals(document.getProperty("imcms.document.alias"), "start");
+    }
+
+
 
     private void assertDocumentsAddedWithPermission(TextDocumentDomainObject document,
                                                     TextDocumentDomainObject oldDocument, UserDomainObject user,
@@ -131,7 +151,9 @@ public class TestDocumentSaver extends TestCase {
     private TextDocumentDomainObject createTextDocument(int documentId) {
         TextDocumentDomainObject newTextDocument = new TextDocumentDomainObject();
         newTextDocument.setId( documentId );
+        newTextDocument.setActualModifiedDatetime(new Date(0));
         return newTextDocument ;
     }
+
 
 }

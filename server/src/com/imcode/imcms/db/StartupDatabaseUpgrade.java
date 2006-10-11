@@ -37,7 +37,8 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
             new DatabaseVersionUpgradePair(4, 2, new CompositeUpgrade(
                     new ColumnSizeUpgrade(wantedDdl, "categories", "name", 128),
                     new ColumnSizeUpgrade(wantedDdl, "category_types", "name", 128))
-            )
+            ),
+            new DatabaseVersionUpgradePair(4, 3, new CreateTableUpgrade(wantedDdl, "document_properties")),
     };
     private File scriptPath;
 

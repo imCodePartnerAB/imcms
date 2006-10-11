@@ -5,6 +5,7 @@ import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.util.CountingIterator;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.*;
+import imcode.server.document.textdocument.CopyableHashMap;
 import imcode.server.user.RoleId;
 import imcode.util.LazilyLoadedObject;
 import imcode.util.Utility;
@@ -17,6 +18,7 @@ import java.util.*;
 
 public class DocumentInitializer {
     private static final String SQL_GET_KEYWORDS = "SELECT mc.meta_id, c.code FROM classification c JOIN meta_classification mc ON mc.class_id = c.class_id WHERE mc.meta_id ";
+    private static final String SQL_GET_DOCUMENT_PROPERTIES = "SELECT key_name, value FROM document_properties WHERE meta_id=?";
 
     private final DocumentMapper documentMapper;
     public static final String SQL_GET_SECTION_IDS_FOR_DOCUMENT = "SELECT ms.meta_id, ms.section_id\n"
@@ -29,6 +31,7 @@ public class DocumentInitializer {
     MultiHashMap documentsSectionIds ;
     MultiHashMap documentsKeywords ;
     MultiHashMap documentsCategoryIds ;
+    HashMap documentsProperties ;
     HashMap documentsRolePermissionMappings ;
     HashMap documentsPermissionSets ;
     HashMap documentsPermissionSetsForNew ;
@@ -52,6 +55,7 @@ public class DocumentInitializer {
             LazilyLoadedObject sectionIds = new LazilyLoadedObject(new DocumentSectionIdsLoader(documentIds, documentId));
             LazilyLoadedObject keywords = new LazilyLoadedObject(new DocumentKeywordsLoader(documentIds, documentId));
             LazilyLoadedObject categoryIds = new LazilyLoadedObject(new DocumentCategoryIdsLoader(documentIds, documentId));
+            LazilyLoadedObject properties = new LazilyLoadedObject(new DocumentPropertiesLoader(documentIds, documentId));
 
             document.setLazilyLoadedPermissionSets(permissionSets);
             document.setLazilyLoadedPermissionSetsForNew(permissionSetsForNew);
@@ -59,6 +63,7 @@ public class DocumentInitializer {
             document.setLazilyLoadedSectionIds(sectionIds);
             document.setLazilyLoadedKeywords(keywords);
             document.setLazilyLoadedCategoryIds(categoryIds);
+            document.setLazilyLoadedProperties(properties);
 
             document.accept(documentInitializingVisitor);
         }
@@ -155,6 +160,51 @@ public class DocumentInitializer {
             });
         }
     }
+
+    private class DocumentPropertiesLoader implements LazilyLoadedObject.Loader {
+
+        private final Collection documentIds;
+        private final Integer documentId ;
+
+        DocumentPropertiesLoader(Collection documentIds, Integer documentId) {
+            this.documentIds = documentIds;
+            this.documentId = documentId;
+        }
+
+        public LazilyLoadedObject.Copyable load() {
+            initDocumentsProperties(documentIds);
+            Map documentProperties = (HashMap) documentsProperties.get(documentId);
+            if ( null == documentProperties ) {
+                documentProperties = new HashMap();
+            }
+            return new CopyableHashMap(documentProperties);
+        }
+
+        private void initDocumentsProperties(Collection documentIds) {
+            if ( null != documentsProperties ) {
+                return ;
+            }
+            documentsProperties = new HashMap();
+            StringBuffer sql = new StringBuffer(SQL_GET_DOCUMENT_PROPERTIES);
+            for ( Iterator iterator = documentIds.iterator(); iterator.hasNext(); ) {
+                final Integer documentId = (Integer) iterator.next();
+                database.execute(new SqlQueryCommand(sql.toString(), new String[] {documentId+""}, new ResultSetHandler() {
+                    public Object handle(ResultSet rs) throws SQLException {
+                        Map properties = new HashMap(rs.getFetchSize());
+                        while ( rs.next() ) {
+                            String keyName = rs.getString(1);
+                            String value = rs.getString(2);
+                            properties.put(keyName, value);
+                        }
+                        documentsProperties.put(documentId, properties);
+                        return null;
+                    }
+                }));
+            }
+        }
+
+    }
+
 
     private class DocumentCategoryIdsLoader implements LazilyLoadedObject.Loader {
 

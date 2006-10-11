@@ -62,4 +62,16 @@ public class TestDocumentDomainObject extends TestCase {
     private void assertLifeCyclePhase(LifeCyclePhase lifeCyclePhase) {
         assertEquals( lifeCyclePhase, document.getLifeCyclePhaseAtTime(new Date(1)) );
     }
+
+    public void testGetDocumentProperties() throws Exception {
+
+        document.setProperty("imcms:document:alias", "test");
+        document.setProperty("imcms:document:foo", "baa");
+        document.setProperty("imcms:document:fide", "bla");
+        assertEquals(document.getProperty("imcms:document:alias"), "test");
+        assertEquals(document.getProperty("imcms:document:foo"), "baa");
+        assertNotSame(document.getProperty("imcms:document:fide"), "hide");
+        assertNull(document.getProperty("hej"));
+        assertTrue(document.getProperties().size()==3);
+    }
 }

@@ -213,7 +213,7 @@
                 </tr>
                 </table>
                 </td>
-                <td class="imcmsAdmText" nowrap><? templates/sv/docinfo/change_meta_rights.html/1004 ?>&nbsp;<i><%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %></i></td>
+                <td class="imcmsAdmText" nowrap><? global/Created_by ?>&nbsp;<i><%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %></i></td>
             </tr>
             </table></td>
         </tr>

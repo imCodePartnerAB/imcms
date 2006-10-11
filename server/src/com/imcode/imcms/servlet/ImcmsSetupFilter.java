@@ -2,18 +2,15 @@ package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.QueryStringDecodingHttpServletRequestWrapper;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.NDC;
 
 import javax.servlet.*;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.IOException;
 
 public class ImcmsSetupFilter implements Filter {
@@ -67,10 +64,12 @@ public class ImcmsSetupFilter implements Filter {
         if (StringUtils.isNotBlank( documentPathPrefix ) && path.startsWith( documentPathPrefix )) {
             documentIdString = path.substring( documentPathPrefix.length() );
         }
-        if (null != documentIdString && NumberUtils.isDigits( documentIdString )) {
+        HttpSession session = httpServletRequest.getSession();
+        boolean isResourcePath = null != session.getServletContext().getResourcePaths(path);
+        DocumentDomainObject document = !isResourcePath ? service.getDocumentMapper().getDocumentFromId(documentIdString) : null ;
+        if ( null != document ) {
             try {
-                int documentId = Integer.parseInt( documentIdString ) ;
-                GetDoc.output( documentId, httpServletRequest, (HttpServletResponse)response );
+                GetDoc.output( document.getId(), httpServletRequest, (HttpServletResponse)response );
             } catch( NumberFormatException nfe ) {
                 chain.doFilter( httpServletRequest, response );
             }

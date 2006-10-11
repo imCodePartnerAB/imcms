@@ -25,10 +25,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
 public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
@@ -37,6 +34,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__MENUTEXT = "menutext";
     public static final String REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS = "copy_headline_and_text_to_textfields";
     public static final String REQUEST_PARAMETER__IMAGE = "image";
+    public static final String REQUEST_PARAMETER__DOCUMENT_ALIAS = "document_alias";
     public static final String REQUEST_PARAMETER__PUBLICATION_START_DATE = "activated_date";
     public static final String REQUEST_PARAMETER__PUBLICATION_START_TIME = "activated_time";
     public static final String REQUEST_PARAMETER__ARCHIVED_DATE = "archived_date";
@@ -46,10 +44,10 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__PUBLICATION_END_TIME = "publication_end_time";
     public static final String REQUEST_PARAMETER__LANGUAGE = "lang_prefix";
     public static final String REQUEST_PARAMETER__CATEGORIES = "categories";
-	public static final String REQUEST_PARAMETER__CATEGORY_IDS_TO_REMOVE = "categories_to_remove";
-	public static final String REQUEST_PARAMETER__CATEGORY_IDS_TO_ADD = "categories_to_add";
-	public static final String REQUEST_PARAMETER__ADD_CATEGORY = "add_category";
-	public static final String REQUEST_PARAMETER__REMOVE_CATEGORY = "remove_category";
+    public static final String REQUEST_PARAMETER__CATEGORY_IDS_TO_REMOVE = "categories_to_remove";
+    public static final String REQUEST_PARAMETER__CATEGORY_IDS_TO_ADD = "categories_to_add";
+    public static final String REQUEST_PARAMETER__ADD_CATEGORY = "add_category";
+    public static final String REQUEST_PARAMETER__REMOVE_CATEGORY = "remove_category";
     public static final String REQUEST_PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS = "show_meta";
     public static final String REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS = "shared";
     public static final String REQUEST_PARAMETER__KEYWORDS = "classification";
@@ -235,8 +233,8 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         String languageIso639_2 = request.getParameter( REQUEST_PARAMETER__LANGUAGE );
         document.setLanguageIso639_2( languageIso639_2 );
 
-		//*** Remove all categories except multi without picture
-		CategoryTypeDomainObject[] categoryTypes = categoryMapper.getAllCategoryTypes() ;
+        //*** Remove all categories except multi without picture
+        CategoryTypeDomainObject[] categoryTypes = categoryMapper.getAllCategoryTypes() ;
         for ( CategoryTypeDomainObject categoryType : categoryTypes ) {
             boolean categoryTypeIsSingleChoice = 1 == categoryType.getMaxChoices();
             boolean shouldRemoveCategoriesOfType = categoryTypeIsSingleChoice || categoryType.hasImages();
@@ -269,6 +267,9 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         KeywordsParser keywordsParser = new KeywordsParser();
         String[] keywords =  keywordsParser.parseKeywords( keywordsString );
         document.setKeywords( new ArraySet(keywords) );
+        if ( null != request.getParameter(REQUEST_PARAMETER__DOCUMENT_ALIAS) ) {
+            document.setProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, request.getParameter(REQUEST_PARAMETER__DOCUMENT_ALIAS));
+        }
 
         boolean searchDisabled = "1".equals( request.getParameter( REQUEST_PARAMETER__SEARCH_DISABLED ) );
         document.setSearchDisabled( searchDisabled );
