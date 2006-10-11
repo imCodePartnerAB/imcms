@@ -199,7 +199,7 @@ function checkFocus() {
         <table border="0" cellspacing="0" cellpadding="0" width="100%">
         <tr>
             <td  align="right" width="85%"><%= "http://" + request.getServerName() + request.getContextPath() + "/" %>&nbsp;<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__DOCUMENT_ALIAS %>" size="40" maxlength="255" 
-            value="<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS), "" )) %>"></td>
+            value="<%= StringEscapeUtils.escapeHtml( document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) ) %>"></td>
             <td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER%>"
             value=" <? install/htdocs/global/pageinfo/browse ?> "></td>
         </tr>
