@@ -5,6 +5,9 @@ import imcode.server.user.NameTooLongException;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserService {
 
     private ContentManagementSystem contentManagementSystem;
@@ -30,6 +33,16 @@ public class UserService {
             result[i] = new User( internalUser );
         }
         return result;
+    }
+
+    public List<User> getUsersByRole(Role role) {
+        List<User> result = new ArrayList<User>();
+        for ( User user : getAllUsers() ) {
+            if ( user.hasRole(role) ) {
+                result.add(user);
+            }
+        }
+        return result ;        
     }
 
     /**
