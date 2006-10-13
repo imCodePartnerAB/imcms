@@ -19,11 +19,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Map;
 
 public class IndexDocumentFactory {
 
     private CategoryMapper categoryMapper ;
-    
+
     private final static Logger log = Logger.getLogger( IndexDocumentFactory.class.getName() );
 
     public IndexDocumentFactory(CategoryMapper categoryMapper) {
@@ -60,6 +61,10 @@ public class IndexDocumentFactory {
         addDateFieldToIndexDocument( documentId, indexDocument, DocumentIndex.FIELD__ARCHIVED_DATETIME, document.getArchivedDatetime() );
 
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__STATUS, "" + document.getPublicationStatus() ) );
+
+        for ( Map.Entry<String, String> entry : document.getProperties().entrySet() ) {
+            indexDocument.add(unStoredKeyword(entry.getKey(), entry.getValue()));
+        }
 
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
