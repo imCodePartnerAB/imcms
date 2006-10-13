@@ -1,6 +1,9 @@
 package com.imcode.imcms.api;
 
-import imcode.server.user.*;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.NameTooLongException;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
 
 public class UserService {
 
@@ -19,7 +22,6 @@ public class UserService {
     }
 
     public User[] getAllUsers() throws NoPermissionException {
-        getSecurityChecker().isSuperAdmin();
 
         UserDomainObject[] internalUsers = getMapper().getAllUsers();
         User[] result = new User[internalUsers.length];
