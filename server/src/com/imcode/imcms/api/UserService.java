@@ -7,6 +7,7 @@ import imcode.server.user.UserDomainObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 public class UserService {
 
@@ -35,14 +36,9 @@ public class UserService {
         return result;
     }
 
-    public List<User> getUsersByRole(Role role) {
-        List<User> result = new ArrayList<User>();
-        for ( User user : getAllUsers() ) {
-            if ( user.hasRole(role) ) {
-                result.add(user);
-            }
-        }
-        return result ;        
+    public List<User> getUsersWithRole(Role role) {
+        User[] allUsersWithRole = getAllUsersWithRole(role) ;
+        return new ArrayList<User>(Arrays.asList(allUsersWithRole)) ;
     }
 
     /**
