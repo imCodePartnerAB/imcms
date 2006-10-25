@@ -1,7 +1,7 @@
 <%@ page import="imcode.server.DocumentRequest, imcode.server.document.textdocument.MenuDomainObject, imcode.server.document.textdocument.MenuItemDomainObject, imcode.server.document.textdocument.TextDocumentDomainObject, imcode.server.parser.MenuParser, imcode.server.parser.NodeList, imcode.server.parser.ParserParameters, imcode.server.parser.SimpleElement, imcode.server.parser.TagParser, imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper, imcode.server.user.UserDomainObject, org.apache.oro.text.regex.Perl5Matcher, java.io.StringWriter, java.util.Properties"%><% 
     ParserParameters parserParameters = (ParserParameters) request.getAttribute("parserParameters") ;
     MenuParser menuParser = (MenuParser) request.getAttribute("menuParser") ;
-    int menuIndex = (Integer) request.getAttribute("menuIndex") ;
+    int menuIndex =  ((Integer) request.getAttribute("menuIndex") ).intValue() ;
     Properties menuAttributes = (Properties) request.getAttribute("menuAttributes") ;
     TagParser tagParser = (TagParser) request.getAttribute("tagParser") ;
     String menuTemplate = (String) request.getAttribute("menuTemplate") ;
