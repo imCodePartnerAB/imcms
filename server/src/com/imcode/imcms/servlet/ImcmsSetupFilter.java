@@ -5,7 +5,6 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import imcode.util.QueryStringDecodingHttpServletRequestWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.NDC;
 
@@ -21,10 +20,6 @@ public class ImcmsSetupFilter implements Filter {
         r.setCharacterEncoding(Imcms.DEFAULT_ENCODING);
 
         HttpServletRequest request = (HttpServletRequest) r;
-        String method = request.getMethod();
-        if ("GET".equals(method) || "HEAD".equals(method)) {
-            request = new QueryStringDecodingHttpServletRequestWrapper(request);
-        }
 
         HttpSession session = request.getSession();
 
