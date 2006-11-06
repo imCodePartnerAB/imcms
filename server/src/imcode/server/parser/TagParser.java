@@ -19,7 +19,6 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.util.DateConstants;
-import imcode.util.CachingFileLoader;
 import imcode.util.Html;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
@@ -93,7 +92,7 @@ public class TagParser {
 
     private Map imageMap;
     private boolean imageMode;
-    private int implicitImageIndex = 1;
+    private int[] implicitImageIndex = new int[] { 1 };
 
     private ImcmsServices service;
     private ParserParameters parserParameters;
@@ -444,7 +443,7 @@ public class TagParser {
         return result;
     }
 
-    private boolean shouldOutputNothingAccordingToMode(Properties attributes, boolean mode) {
+    private static boolean shouldOutputNothingAccordingToMode(Properties attributes, boolean mode) {
         String modeAttribute = attributes.getProperty("mode");
         return StringUtils.isNotBlank(modeAttribute)
                && ( mode && "read".startsWith(modeAttribute) // With mode="read", we don't want anything in textMode.
@@ -453,12 +452,12 @@ public class TagParser {
         );
     }
 
-    private String getLabel(Properties attributes) {
+    private static String getLabel(Properties attributes) {
         return attributes.getProperty("label", "").replaceAll("\\s+", " ");
     }
 
-    private String[] getLabelTags(Properties attributes, int no,
-                                  String finalresult) {
+    private static String[] getLabelTags(Properties attributes, int no,
+                                  String finalresult, TextDocumentDomainObject document) {
         String label = getLabel(attributes);
         String label_urlparam = "";
         if ( !"".equals(label) ) {
@@ -473,7 +472,7 @@ public class TagParser {
         };
     }
 
-    private String removeHtmlTagsAndUrlEncode(String label) {
+    private static String removeHtmlTagsAndUrlEncode(String label) {
         return URLEncoder.encode(Html.removeTags(label));
     }
 
@@ -483,6 +482,12 @@ public class TagParser {
      * @param attributes The attributes of the image tag
      */
     private String tagImage(Properties attributes) {
+        return tagImage(attributes, imageMode, implicitImageIndex, documentRequest.getUser(), document, documentRequest.getHttpServletRequest(), service);
+    }
+
+    public static String tagImage(Properties attributes, boolean imageMode, int[] implicitImageIndex,
+                           UserDomainObject user, TextDocumentDomainObject document,
+                           HttpServletRequest httpServletRequest, ImcmsServices service) {
         if ( shouldOutputNothingAccordingToMode(attributes, imageMode) ) {
             return "";
         }
@@ -490,23 +495,23 @@ public class TagParser {
         String noStr = attributes.getProperty("no");
         int imageIndex;
         if ( null == noStr ) {
-            imageIndex = implicitImageIndex++;
+            imageIndex = implicitImageIndex[0]++;
         } else {
             noStr = noStr.trim();
             imageIndex = Integer.parseInt(noStr);
-            implicitImageIndex = imageIndex + 1;
+            implicitImageIndex[0] = imageIndex + 1;
         }
         ImageDomainObject image = document.getImage(imageIndex) ;
         ImageSource imageSource = image.getSource();
         String imageTag = "" ;
         if ( !( imageSource instanceof FileDocumentImageSource )
              || imageMode
-             || documentRequest.getUser().canAccess(( (FileDocumentImageSource) imageSource ).getFileDocument()) ) {
-            imageTag = ImcmsImageUtils.getImageHtmlTag(image, documentRequest.getHttpServletRequest(), attributes);
+             || user.canAccess(( (FileDocumentImageSource) imageSource ).getFileDocument()) ) {
+            imageTag = ImcmsImageUtils.getImageHtmlTag(image, httpServletRequest, attributes);
         }
 
         if ( imageMode ) {
-            String[] replace_tags = getLabelTags(attributes, imageIndex, imageTag);
+            String[] replace_tags = getLabelTags(attributes, imageIndex, imageTag, document);
             String admin_template_file;
             if ( "".equals(imageTag) ) { // no data in the db-field.
                 admin_template_file = "textdoc/admin_no_image.frag";
@@ -514,7 +519,7 @@ public class TagParser {
                 admin_template_file = "textdoc/admin_image.frag";
             }
 
-            imageTag = service.getAdminTemplate(admin_template_file, documentRequest.getUser(), Arrays.asList(replace_tags));
+            imageTag = service.getAdminTemplate(admin_template_file, user, Arrays.asList(replace_tags));
         }
 
         return imageTag;

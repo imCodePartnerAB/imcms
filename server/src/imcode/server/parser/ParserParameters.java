@@ -4,6 +4,8 @@ import imcode.server.DocumentRequest;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class ParserParameters implements Cloneable {
 
     private String template;	//used to store the template if not default is wanted
@@ -12,6 +14,7 @@ public class ParserParameters implements Cloneable {
     private DocumentRequest documentRequest;
     private int flags;
     private boolean adminButtonsVisible = true ;
+    private final static String ATTRIBUTE_NAME = ParserParameters.class.getName();
 
     public ParserParameters( DocumentRequest documentRequest ) {
         this.documentRequest = documentRequest;
@@ -26,11 +29,11 @@ public class ParserParameters implements Cloneable {
     }
 
     public String getTemplate() {
-        return this.template;
+        return template;
     }
 
     public String getParameter() {
-        return this.param == null ? "" : this.param;
+        return param == null ? "" : param;
     }
 
     public Integer getEditingMenuIndex() {
@@ -98,5 +101,16 @@ public class ParserParameters implements Cloneable {
 
     public boolean isAnyMode() {
         return isTextMode() || isImageMode() || isMenuMode() || isIncludesMode() || isTemplateMode() ;
+    }
+
+    public static Object putInRequest(ParserParameters parserParameters) {
+        HttpServletRequest request = parserParameters.getDocumentRequest().getHttpServletRequest();
+        Object attribute = request.getAttribute(ATTRIBUTE_NAME);
+        request.setAttribute(ATTRIBUTE_NAME, parserParameters);
+        return attribute ;
+    }
+    
+    public static ParserParameters fromRequest(HttpServletRequest request) {
+        return (ParserParameters) request.getAttribute(ATTRIBUTE_NAME) ;
     }
 }

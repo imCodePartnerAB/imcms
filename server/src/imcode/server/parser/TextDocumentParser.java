@@ -70,6 +70,7 @@ public class TextDocumentParser {
                           int includelevel, Writer out) throws IOException {
         TextDocumentViewing viewing = new TextDocumentViewing( parserParameters );
         TextDocumentViewing previousViewing = TextDocumentViewing.putInRequest( viewing );
+        Object previousParameters = ParserParameters.putInRequest(parserParameters);
         try {
             DocumentRequest documentRequest = parserParameters.getDocumentRequest();
 
@@ -102,6 +103,9 @@ public class TextDocumentParser {
         } finally {
             if (null != previousViewing) {
                 TextDocumentViewing.putInRequest( previousViewing ) ;
+            }
+            if (null != previousParameters) {
+                ParserParameters.putInRequest(parserParameters) ;
             }
         }
     }

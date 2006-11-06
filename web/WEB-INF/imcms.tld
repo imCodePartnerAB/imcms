@@ -13,4 +13,33 @@ Library 1.2//EN"
     <tag-class>com.imcode.imcms.servlet.tags.ContextPathTag</tag-class>
     <body-content>empty</body-content>
   </tag>
+
+  <tag>
+    <name>image</name>
+    <tag-class>com.imcode.imcms.servlet.tags.ImageTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>no</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>id</name>
+    </attribute>
+    <attribute>
+        <name>label</name>
+    </attribute>
+    <attribute>
+        <name>styleClass</name>
+    </attribute>
+    <attribute>
+        <name>style</name>
+    </attribute>
+    <attribute>
+        <name>usemap</name>
+    </attribute>
+    <attribute>
+        <name>mode</name>
+    </attribute>
+  </tag>
 </taglib>

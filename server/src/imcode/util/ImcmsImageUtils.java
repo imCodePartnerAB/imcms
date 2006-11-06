@@ -41,8 +41,13 @@ public class ImcmsImageUtils {
                 imageTagBuffer.append(" title=\"").append(StringEscapeUtils.escapeHtml(image.getAlternateText())).append("\"");
             }
 
-            if ( StringUtils.isNotBlank( image.getName() ) ) {
-                imageTagBuffer.append(" id=\"").append(StringEscapeUtils.escapeHtml(image.getName())).append("\"");
+            String id = image.getName();
+            String idAttribute = attributes.getProperty("id");
+            if ( StringUtils.isNotBlank(idAttribute) ) {
+                id = idAttribute ;
+            }
+            if ( StringUtils.isNotBlank( id ) ) {
+                imageTagBuffer.append(" id=\"").append(StringEscapeUtils.escapeHtml(id)).append("\"");
             }
 
             String classAttribute = attributes.getProperty("class");
