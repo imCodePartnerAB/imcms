@@ -23,12 +23,12 @@ import imcode.util.Clock;
 import imcode.util.LazilyLoadedObject;
 import imcode.util.SystemClock;
 import imcode.util.Utility;
-import imcode.util.LfuMap;
 import imcode.util.io.FileUtility;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.File;
@@ -61,7 +61,7 @@ public class DocumentMapper implements DocumentGetter {
         this.database = database;
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
-        documentCache = new LfuMap(new HashMap(), documentCacheMaxSize) ;
+        documentCache = Collections.synchronizedMap(new LRUMap(documentCacheMaxSize)) ;
         setDocumentGetter(new FragmentingDocumentGetter(new DatabaseDocumentGetter(database, services)));
         this.documentPermissionSetMapper = new DocumentPermissionSetMapper(database);
         this.categoryMapper = new CategoryMapper(database);
