@@ -6,7 +6,9 @@
 
     <!-- Read in 'build.properties' and set the properties therein. -->
     <!-- Those properties are used as bases for later properties in this file. -->
-    <property name="build.properties" value="build.properties"/>
+    <available file="build.properties" property="build.properties-available" />
+    <available file="build.properties" property="build.properties" value="build.properties"/>
+    <property name="build.properties" value="build.properties.template" />
     <property file="${build.properties}"/>
 
     <!-- The current version of imCMS. -->
@@ -481,7 +483,7 @@
 
     <!-- Init targets -->
 
-    <target name="init" depends="init-version-properties,init-global-filters" description="Handy target for everything else to depend on.">
+    <target name="init" depends="copy-build.properties,init-version-properties,init-global-filters" description="Handy target for everything else to depend on.">
 
         <record name="${basedir}/build.log"/>
 
@@ -490,6 +492,11 @@
         <available classname="junit.framework.Test" classpathref="libraries" property="junit-available"/>
     </target>
 
+    <target name="copy-build.properties" unless="build.properties-available">
+        <copy file="build.properties.template" tofile="build.properties"/>
+    </target>
+
+    
     <target name="init-version-properties">
 
         <propertyregex property="version"
@@ -569,12 +576,12 @@
     <target name="check-build-properties" unless="build-properties-up-to-date">
 
         <uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
-            <srcfiles dir="${basedir}" includes="${build.properties}.template"/>
+            <srcfiles dir="${basedir}" includes="build.properties.template"/>
         </uptodate>
 
         <fail unless="build-properties-up-to-date">
-            '${build.properties}.template' is newer than '${build.properties}'. (See docs/INSTALL.TXT for details.)
-            Copy '${build.properties}.template' to '${build.properties}' and edit it!
+            'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT for details.)
+            Copy 'build.properties.template' to 'build.properties' and edit it!
         </fail>
 
     </target>

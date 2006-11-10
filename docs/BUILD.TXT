@@ -18,7 +18,8 @@ Prerequisites:
 
 Building:
 
-    * Copy "build.properties.template" to "build.properties".
+    * Copy "build.properties.template" to "build.properties"
+      (if "build.properties" does not already exist).
       Edit "build.properties" and insert the proper values
       for your deployroot, your database connection,
       your imCMS-preferences, and your build-preferences.
