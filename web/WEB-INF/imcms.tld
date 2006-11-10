@@ -25,21 +25,27 @@ Library 1.2//EN"
     </attribute>
     <attribute>
         <name>id</name>
+        <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
         <name>label</name>
+        <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
         <name>styleClass</name>
+        <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
         <name>style</name>
+        <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
         <name>usemap</name>
+        <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
         <name>mode</name>
+        <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
 </taglib>
