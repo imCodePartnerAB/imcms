@@ -29,6 +29,12 @@ public class ImcmsSetupFilter implements Filter {
             setDomainSessionCookie( response, session );
         }
 
+        String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
+        String method = request.getMethod();
+        if ( null != workaroundUriEncoding && ( "GET".equals(method) || "HEAD".equals(method) ) ) {
+            request = new UriEncodingWorkaroundWrapper(request, workaroundUriEncoding);
+        }
+
         UserDomainObject user = Utility.getLoggedOnUser(request) ;
         if ( null == user ) {
             user = service.verifyUserByIpOrDefault(request.getRemoteAddr()) ;

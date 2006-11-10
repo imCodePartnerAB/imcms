@@ -22,16 +22,19 @@ public class FallbackDecoder {
 
     public String decodeBytes(byte[] inputBytes,
                               String sourceName) {
+        if ( 0 == inputBytes.length ) {
+            return "" ;
+        }
         String result;
         try {
             result = createReportingDecoder(charset).decode(ByteBuffer.wrap(inputBytes)).toString();
             logCharactersDecoded(inputBytes, result, charset, sourceName);
         } catch ( CharacterCodingException e1 ) {
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug("Failed to decode " + sourceName + " using " + charset + ", falling back to "
+                          + fallbackCharset + ".");
+            }
             try {
-                if ( LOG.isDebugEnabled() ) {
-                    LOG.debug("Failed to decode " + sourceName + " using " + charset + ", falling back to "
-                             + fallbackCharset + ".");
-                }
                 result = createReportingDecoder(fallbackCharset).decode(ByteBuffer.wrap(inputBytes)).toString();
                 logCharactersDecoded(inputBytes, result, fallbackCharset, sourceName);
             } catch ( CharacterCodingException e2 ) {
