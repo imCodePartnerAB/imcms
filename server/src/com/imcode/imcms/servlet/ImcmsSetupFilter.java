@@ -30,8 +30,7 @@ public class ImcmsSetupFilter implements Filter {
         }
 
         String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
-        String method = request.getMethod();
-        if ( null != workaroundUriEncoding && ( "GET".equals(method) || "HEAD".equals(method) ) ) {
+        if ( null != workaroundUriEncoding ) {
             request = new UriEncodingWorkaroundWrapper(request, workaroundUriEncoding);
         }
 

@@ -15,53 +15,60 @@ class UriEncodingWorkaroundWrapper extends HttpServletRequestWrapper {
 
     private FallbackDecoder decoder;
     private String encoding ; 
-
+    private boolean redecodeParameters ;
     UriEncodingWorkaroundWrapper(HttpServletRequest request, String encoding) {
         super(request);
         this.encoding = encoding;
         decoder = new FallbackDecoder(Charset.forName(Imcms.DEFAULT_ENCODING),
                                       Charset.forName(encoding));
+        String method = getMethod();
+        redecodeParameters = "GET".equals(method) || "HEAD".equals(method) ;
     }
 
     public String getPathInfo() {
-        return redecode(super.getPathInfo());
+        String pathInfo = super.getPathInfo();
+        return redecode(pathInfo, "path-info "+pathInfo);
     }
 
     public String getParameter(String parameterName) {
-        return redecode(super.getParameter(parameterName));
+        String parameterValue = super.getParameter(parameterName);
+        return redecodeParameters ? redecode(parameterValue, "parameter "+parameterName) : parameterValue;
     }
 
-    public String[] getParameterValues(String string) {
-        String[] parameterValues = super.getParameterValues(string);
-        return redecode(parameterValues);
+    public String[] getParameterValues(String parameterName) {
+        String[] parameterValues = super.getParameterValues(parameterName);
+        return redecodeParameters ? redecode(parameterValues, "parameter "+parameterName) : parameterValues;
     }
 
     public Map getParameterMap() {
         Map<String, String[]> parameterMap = super.getParameterMap();
-        Map<String, String[]> result = new HashMap<String, String[]>();
-        for ( Map.Entry<String, String[]> entry : parameterMap.entrySet() ) {
-            result.put(entry.getKey(), redecode(entry.getValue())) ;
+        if (redecodeParameters) {
+            Map<String, String[]> result = new HashMap<String, String[]>();
+            for ( Map.Entry<String, String[]> entry : parameterMap.entrySet() ) {
+                result.put(entry.getKey(), redecode(entry.getValue(), entry.getKey())) ;
+            }
+            parameterMap = result ;
         }
-        return result ;
+        return parameterMap ;
     }
 
-    private String[] redecode(String[] strings) {
-        if (null == strings) {
+    private String[] redecode(String[] parameterValues, String parameterName) {
+        if (null == parameterValues ) {
             return null ;
         }
-        String[] result = new String[strings.length];
-        for ( int i = 0; i < strings.length; i++ ) {
-            result[i] = redecode(strings[i]);
+        String[] result = new String[parameterValues.length];
+        for ( int i = 0; i < parameterValues.length; i++ ) {
+            result[i] = redecode(parameterValues[i], parameterName);
         }
         return result;
     }
 
-    private String redecode(String string) {
-        if (null == string) {
+    private String redecode(String parameterValue, String parameterName) {
+        if (null == parameterValue ) {
             return null ;
         }
         try {
-            return decoder.decodeBytes(string.getBytes(encoding), string) ;
+            return decoder.decodeBytes(parameterValue.getBytes(encoding), parameterName) ;
         } catch ( UnsupportedEncodingException e ) {
             throw new UnhandledException(e);
         }
