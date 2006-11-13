@@ -31,7 +31,7 @@ public class CachingFileLoader {
     private String decodeFile(File file) throws IOException {
         Charset utf8Charset = Charset.forName(Imcms.UTF_8_ENCODING);
         Charset fallbackCharset = Charset.defaultCharset();
-        if (fallbackCharset.equals(utf8Charset)) {
+        if (fallbackCharset.equals(utf8Charset) || fallbackCharset.equals(Charset.forName(Imcms.ASCII_ENCODING))) {
             fallbackCharset = Charset.forName(Imcms.ISO_8859_1_ENCODING) ;
         }
         return decodeFile(file, utf8Charset, fallbackCharset);
