@@ -87,9 +87,9 @@ public class TextDocumentParser {
 
             Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, viewing.isEditingTemplate(), parserParameters );
             MapSubstitution hashtagsubstitution = new MapSubstitution( hashTags, true );
-            TagParser tagParser = new TagParser( this, parserParameters, includelevel, viewing );
+            TagParser tagParser = new TagParser( this, parserParameters, includelevel);
 
-            String tagsReplaced = tagParser.replaceTags( patMat, template, false);
+            String tagsReplaced = tagParser.replaceTags(template, false);
             tagsReplaced = Util.substitute( patMat, hashtagPattern, hashtagsubstitution, tagsReplaced, Util.SUBSTITUTE_ALL );
 
             String emphasizedAndTagsReplaced = applyEmphasis( documentRequest, user, tagsReplaced, patMat );

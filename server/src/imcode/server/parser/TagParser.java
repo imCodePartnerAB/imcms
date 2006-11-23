@@ -86,11 +86,9 @@ public class TagParser {
     private int includeLevel;
     private int implicitIncludeNumber = 1;
 
-    private Map textMap;
     private boolean textMode;
     private int implicitTextNumber = 1;
 
-    private Map imageMap;
     private boolean imageMode;
     private int[] implicitImageIndex = new int[] { 1 };
 
@@ -101,24 +99,22 @@ public class TagParser {
 
     private TextDocumentViewing viewing;
 
-    TagParser(TextDocumentParser textdocparser, ParserParameters parserParameters,
-              int includelevel,
-              TextDocumentViewing viewing) {
+    public TagParser(TextDocumentParser textdocparser, ParserParameters parserParameters,
+                     int includelevel) {
         this.textDocParser = textdocparser;
         this.parserParameters = parserParameters;
         this.documentRequest = parserParameters.getDocumentRequest();
         this.document = (TextDocumentDomainObject) documentRequest.getDocument();
         this.service = documentRequest.getServices();
 
-        this.includeMode = viewing.isEditingIncludes();
+        this.includeMode = parserParameters.isIncludesMode() ;
         this.includeLevel = includelevel;
 
-        this.textMode = viewing.isEditingTexts();
-        this.textMap = document.getTexts();
+        this.textMode = parserParameters.isTextMode();
 
-        this.imageMode = viewing.isEditingImages();
+        this.imageMode = parserParameters.isImageMode();
 
-        this.viewing = viewing;
+        this.viewing = new TextDocumentViewing(parserParameters);
 
     }
 
@@ -326,7 +322,7 @@ public class TagParser {
 
     private String includeFile(String attributevalue, PatternMatcher patMat) {// Fetch a file from the disk
         try {
-            return replaceTags(patMat, service.getFileCache().getCachedFileString(new File(service.getIncludePath(), attributevalue)), false); // Get a file from the include directory
+            return replaceTags(service.getFileCache().getCachedFileString(new File(service.getIncludePath(), attributevalue)), false); // Get a file from the include directory
         } catch ( IOException ex ) {
             return "<!-- imcms:include file failed: " + ex + " -->";
         }
@@ -390,9 +386,8 @@ public class TagParser {
      *                   - filter
      *                   - formats
      *                   - rows
-     * @param patMat
      */
-    private String tagText(Properties attributes, PatternMatcher patMat) {
+    public String tagText(Properties attributes) {
         if ( shouldOutputNothingAccordingToMode(attributes, textMode) ) {
             return "";
         }
@@ -402,18 +397,18 @@ public class TagParser {
         TextDomainObject text;
         if ( null == noStr ) {
             no = implicitTextNumber++;
-            text = (TextDomainObject) textMap.get(new Integer(no));
+            text = (TextDomainObject) document.getText(no);
         } else {
             noStr = noStr.trim();
             no = Integer.parseInt(noStr);
-            text = (TextDomainObject) textMap.get(new Integer(no));
+            text = (TextDomainObject) document.getText(no);
             implicitTextNumber = no + 1;
         }
         String result = "";
         if ( text != null ) {
             result = text.toHtmlString();
             if ( text.getType() == TextDomainObject.TEXT_TYPE_HTML ) {
-                result = replaceTags(patMat, result, true);
+                result = replaceTags(result, true);
             }
         }
 
@@ -481,7 +476,7 @@ public class TagParser {
      *
      * @param attributes The attributes of the image tag
      */
-    private String tagImage(Properties attributes) {
+    public String tagImage(Properties attributes) {
         return tagImage(attributes, imageMode, implicitImageIndex, documentRequest.getUser(), document, documentRequest.getHttpServletRequest(), service);
     }
 
@@ -678,7 +673,7 @@ public class TagParser {
             tagResult = tagContextPath();
         } else if ( !insideText ) {
             if ( "text".equals(tagname) ) {
-                tagResult = tagText(attributes, patMat);
+                tagResult = tagText(attributes);
             } else if ( "image".equals(tagname) ) {
                 tagResult = tagImage(attributes);
             } else if ( "include".equals(tagname) ) {
@@ -707,10 +702,11 @@ public class TagParser {
         return documentRequest.getHttpServletRequest().getContextPath();
     }
 
-    public String replaceTags(PatternMatcher patMat, String template, boolean insideText) {
+    public String replaceTags(String template, boolean insideText) {
         StringBuffer result = new StringBuffer();
         PatternMatcherInput input = new PatternMatcherInput(template);
         int lastMatchEndOffset = 0;
+        PatternMatcher patMat = new Perl5Matcher();
         while ( patMat.contains(input, imcmsTagPattern) ) {
             result.append(input.substring(lastMatchEndOffset, input.getMatchBeginOffset()));
 

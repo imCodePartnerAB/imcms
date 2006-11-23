@@ -83,13 +83,13 @@ public class MenuParser {
                 Node menuNodeChild = (Node)menuNodeChildrenIterator.next();
                 switch ( menuNodeChild.getNodeType() ) { // Check the type of the child-node.
                     case Node.TEXT_NODE: // A text-node
-                        result.write( tagParser.replaceTags( patMat,( (Text)menuNodeChild ).getContent(), false) ); // Append the contents to our result.
+                        result.write( tagParser.replaceTags(( (Text)menuNodeChild ).getContent(), false) ); // Append the contents to our result.
                         break;
                     case Node.ELEMENT_NODE: // An element-node
                         if ( "menuloop".equals( ( (Element)menuNodeChild ).getName() ) ) { // Is it an imcms:menuloop?
                             nodeMenuLoop( (Element)menuNodeChild, result, currentMenu, menuAttributes, patMat, tagParser );
                         } else {
-                            result.append( tagParser.replaceTags( patMat, menuNodeChild.toString(), false) );  // No? Just append it (almost)verbatim.
+                            result.append( tagParser.replaceTags(menuNodeChild.toString(), false) );  // No? Just append it (almost)verbatim.
                         }
                         break;
                 }
@@ -156,7 +156,7 @@ public class MenuParser {
                 Node menuLoopChild = (Node)menuLoopChildrenIterator.next();
                 switch ( menuLoopChild.getNodeType() ) { // Check the type of the child-node.
                     case Node.TEXT_NODE: // A text-node
-                        result.write( tagParser.replaceTags( patMat, ( (Text)menuLoopChild ).getContent(), false) ); // Append the contents to our result.
+                        result.write( tagParser.replaceTags(( (Text)menuLoopChild ).getContent(), false) ); // Append the contents to our result.
                         break;
                     case Node.ELEMENT_NODE: // An element-node
                         if ( "menuitem".equals( ( (Element)menuLoopChild ).getName() ) ) { // Is it an imcms:menuitem?
@@ -167,7 +167,7 @@ public class MenuParser {
                                           menuAttributes, patMat, menuItemIndex, tagParser ); // Parse one menuitem.
                             menuItemIndex += menuItemIndexStep;
                         } else {
-                            result.append( tagParser.replaceTags( patMat, menuLoopChild.toString(), false) );  // No? Just append the elements verbatim into the result.
+                            result.append( tagParser.replaceTags(menuLoopChild.toString(), false) );  // No? Just append the elements verbatim into the result.
                         }
                         break;
                 }
@@ -218,7 +218,7 @@ public class MenuParser {
 
     private void parseMenuItem( Writer result, String template, Substitution substitution,
                                 PatternMatcher patMat, TagParser tagParser ) throws IOException {
-        String tagsReplaced = tagParser.replaceTags( patMat, template, false) ;
+        String tagsReplaced = tagParser.replaceTags(template, false) ;
         result.write( Util.substitute( patMat, TextDocumentParser.hashtagPattern, substitution,
                                        tagsReplaced,
                                        Util.SUBSTITUTE_ALL ) );
