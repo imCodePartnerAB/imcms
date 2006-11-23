@@ -10,10 +10,14 @@ public class LuceneParsedQuery extends SearchQuery {
 
     public LuceneParsedQuery( String queryString ) throws BadQueryException {
         try {
-            query = new DefaultQueryParser().parse( queryString );
+            query = parse(queryString);
         } catch ( ParseException e ) {
             throw new BadQueryException( queryString, e );
         }
+    }
+
+    public static Query parse(String queryString) throws ParseException {
+        return new DefaultQueryParser().parse( queryString );
     }
 
     Query getQuery() {
