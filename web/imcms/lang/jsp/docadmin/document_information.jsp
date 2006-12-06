@@ -405,7 +405,7 @@ function checkFocus() {
 			    URLEncoder.encode(StringEscapeUtils.escapeHtml( categoryType.getName() ),"UTF-8") %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
 		<table>
 			<tr>
-				<td valign="top"><select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORY_IDS_TO_ADD %>" style="color:#cccccc;" size="4" multiple>
+				<td valign="top"><select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORY_IDS_TO_ADD %>" size="4" multiple>
 					<%= Html.createOptionListOfCategoriesOfTypeNotSelectedForDocument( documentMapper, categoryType, document) %>
 				</select></td>
 				<td valign="middle" align="center">
