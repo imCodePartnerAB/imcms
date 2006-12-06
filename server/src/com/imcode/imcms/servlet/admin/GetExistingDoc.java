@@ -1,15 +1,14 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.flow.Page;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
@@ -35,7 +34,7 @@ import java.util.*;
 
 public class GetExistingDoc extends HttpServlet {
 
-    private final static Logger log = Logger.getLogger( GetExistingDoc.class.getName() );
+    private final static Logger LOG = Logger.getLogger( GetExistingDoc.class.getName() );
     private static final String ONE_SEARCH_HIT = "existing_doc_hit.html";
     private static final String SEARCH_RESULTS = "existing_doc_res.html";
     private static final String ADMIN_TEMPLATE_EXISTING_DOC = "existing_doc.html";
@@ -66,10 +65,9 @@ public class GetExistingDoc extends HttpServlet {
         int menuIndex = Integer.parseInt( req.getParameter( "doc_menu_no" ) );
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
+        MenuEditPage menuEditPage = (MenuEditPage) Page.fromRequest(req);
         if ( req.getParameter( "cancel" ) != null || req.getParameter( "cancel.x" ) != null ) {
-            res.sendRedirect( "AdminDoc?meta_id=" + parentDocument.getId() + "&flags="
-                              + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + menuIndex );
-            return;
+            menuEditPage.forward(req, res);
         } else if ( req.getParameter( "search" ) != null || req.getParameter( "search.x" ) != null ) {
             // SEARCH
             // Lets do a search among existing documents.
@@ -80,16 +78,15 @@ public class GetExistingDoc extends HttpServlet {
             String searchPrep = req.getParameter( "search_prep" );
             try {
                 if ( "or".equalsIgnoreCase( searchPrep ) ) {
-                    addStringToQuery( index, searchString, query );
+                    addStringToQuery(searchString, query );
                 } else {
                     String[] searchStrings = searchString.split( "\\s+" );
-                    for ( int i = 0; i < searchStrings.length; i++ ) {
-                        String string = searchStrings[i];
-                        addStringToQuery( index, string, query );
+                    for ( String string : searchStrings ) {
+                        addStringToQuery(string, query);
                     }
                 }
             } catch ( org.apache.lucene.queryParser.ParseException pe ) {
-                log.debug( "Bad query: " + searchString, pe );
+                LOG.debug( "Bad query: " + searchString, pe );
             }
 
             String[] docTypes = req.getParameterValues( "doc_type" );
@@ -97,12 +94,12 @@ public class GetExistingDoc extends HttpServlet {
 
             DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
             Date startDate = null;
-            Date endDate = null;
             try {
                 String startDateString = req.getParameter( "start_date" );
                 startDate = dateFormat.parse( startDateString );
             } catch ( ParseException ignored ) {
             }
+            Date endDate = null;
             try {
                 String endDateString = req.getParameter( "end_date" );
                 endDate = dateFormat.parse( endDateString );
@@ -134,7 +131,7 @@ public class GetExistingDoc extends HttpServlet {
                 sortOrderV.add( ((LocalizedMessage)SORT_ORDERS_ARRAY[i][1]).toLocalizedString( user ) );
             }
 
-            log.debug( "Query: " + query );
+            LOG.debug( "Query: " + query );
             List searchResultDocuments = index.search( query, null, user );
 
             if ( 0 == searchResultDocuments.size() ) {
@@ -142,25 +139,25 @@ public class GetExistingDoc extends HttpServlet {
                     int documentId = Integer.parseInt(searchString) ;
                     DocumentDomainObject document = documentMapper.getDocument(documentId);
                     if (canAddToMenu(user, parentDocument, document)) {
-                        addDocumentToMenu(document, parentDocument, menuIndex, user);
-                        redirectBackToMenu( res, parentDocument, menuIndex );
+                        addDocumentToMenu(document, parentDocument, user, menuEditPage);
+                        redirectBackToMenu( req, res, menuEditPage );
                         return ;
                     }
                 }
             } else if ( 1 == searchResultDocuments.size() ) {
                 DocumentDomainObject onlyDocumentFound = (DocumentDomainObject) searchResultDocuments.get(0);
                 if ( searchString.equals( "" + onlyDocumentFound.getId() ) && canAddToMenu(user, parentDocument, onlyDocumentFound) ) {
-                    addDocumentToMenu( onlyDocumentFound, parentDocument, menuIndex, user );
-                    redirectBackToMenu( res, parentDocument, menuIndex );
+                    addDocumentToMenu( onlyDocumentFound, parentDocument, user, menuEditPage);
+                    redirectBackToMenu( req, res, menuEditPage );
                     return;
                 }
             }
             createSearchResultsPage( imcref, user, langPrefix, searchResultDocuments, parentDocument, menuIndex, req, startDate,
-                                     dateFormat, endDate, docTypes, sortBy, sortOrderV, out );
+                                     dateFormat, endDate, docTypes, sortBy, sortOrderV, out, menuEditPage);
 
         } else {
-            addDocumentsFromRequestToMenu( user, req, imcref, parentDocument, menuIndex);
-            redirectBackToMenu( res, parentDocument, menuIndex );
+            addDocumentsFromRequestToMenu( user, req, imcref, parentDocument, menuEditPage);
+            redirectBackToMenu( req, res, menuEditPage );
         }
     }
 
@@ -196,7 +193,7 @@ public class GetExistingDoc extends HttpServlet {
 
     private void addDocumentsFromRequestToMenu(UserDomainObject user, HttpServletRequest req,
                                                ImcmsServices imcref, TextDocumentDomainObject parentDocument,
-                                               int menuIndex) {
+                                               MenuEditPage menuEditPage) {
         req.getSession().setAttribute( "flags", new Integer( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) );
 
         // get the seleced existing docs
@@ -208,37 +205,26 @@ public class GetExistingDoc extends HttpServlet {
         DocumentMapper documentMapper = imcref.getDocumentMapper();
 
         // Lets loop through all the selected existsing meta ids and add them to the current menu
-        for ( int m = 0; m < values.length; m++ ) {
-            int existingDocumentId = Integer.parseInt( values[m] );
+        for ( String value : values ) {
+            int existingDocumentId = Integer.parseInt(value);
 
-            DocumentDomainObject existingDocument = documentMapper.getDocument( existingDocumentId );
+            DocumentDomainObject existingDocument = documentMapper.getDocument(existingDocumentId);
             // Add the document in menu if user is admin for the document OR the document is shared.
-            addDocumentToMenu( existingDocument, parentDocument, menuIndex, user );
+            addDocumentToMenu(existingDocument, parentDocument, user, menuEditPage);
 
         }
     }
 
-    private void redirectBackToMenu( HttpServletResponse res, TextDocumentDomainObject parentDocument, int menuIndex ) throws IOException {
-        res.sendRedirect( "AdminDoc?meta_id=" + parentDocument.getId() + "&flags="
-                          + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU
-                          + "&editmenu="
-                          + menuIndex );
+    private void redirectBackToMenu(HttpServletRequest req, HttpServletResponse res,
+                                    MenuEditPage page) throws IOException, ServletException {
+        page.forward(req, res);
     }
 
-    private void addDocumentToMenu( DocumentDomainObject document, TextDocumentDomainObject parentDocument,
-                                    int menuIndex, UserDomainObject user ) {
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+    private void addDocumentToMenu(DocumentDomainObject document, TextDocumentDomainObject parentDocument,
+                                   UserDomainObject user, MenuEditPage menuEditPage) {
         boolean canAddToMenu = canAddToMenu(user, parentDocument, document);
         if ( canAddToMenu ) {
-            final MenuDomainObject parentMenu = parentDocument.getMenu( menuIndex );
-            parentMenu.addMenuItem( new MenuItemDomainObject(new DirectDocumentReference(document)) );
-            try {
-                documentMapper.saveDocument( parentDocument, user );
-            } catch ( NoPermissionToEditDocumentException e ) {
-                throw new ShouldHaveCheckedPermissionsEarlierException(e);
-            } catch ( NoPermissionToAddDocumentToMenuException e ) {
-                throw new ConcurrentDocumentModificationException(e);
-            }
+            menuEditPage.getMenu().addMenuItem( new MenuItemDomainObject(new DirectDocumentReference(document)) );
         }
     }
 
@@ -249,15 +235,15 @@ public class GetExistingDoc extends HttpServlet {
         return sharePermission && allowedDocumentTypeIds.contains(new Integer(document.getDocumentTypeId()));
     }
 
-    private void createSearchResultsPage( ImcmsServices imcref, imcode.server.user.UserDomainObject user,
-                                          String langPrefix, List searchResultDocuments, TextDocumentDomainObject parentDocument,
-                                          int doc_menu_no, HttpServletRequest req, Date startDate,
-                                          DateFormat dateFormat, Date endDate, String[] docTypes, String sortBy,
-                                          List sortOrderV, Writer out ) throws IOException {
+    private void createSearchResultsPage(ImcmsServices imcref, UserDomainObject user,
+                                         String langPrefix, List searchResultDocuments,
+                                         TextDocumentDomainObject parentDocument,
+                                         int doc_menu_no, HttpServletRequest req, Date startDate,
+                                         DateFormat dateFormat, Date endDate, String[] docTypes, String sortBy,
+                                         List sortOrderV, Writer out, MenuEditPage page) throws IOException {
         Comparator searchResultsComparator = new DocumentDomainObjectComparator( sortBy );
         Collections.sort( searchResultDocuments, searchResultsComparator );
 
-        StringBuffer searchResults;
         List outVector = new ArrayList();
 
         // Lets get the resultpage fragment used for an result
@@ -265,10 +251,10 @@ public class GetExistingDoc extends HttpServlet {
 
         // Lets get all document types and put them in a hashTable
         String[][] allDocTypesArray = imcref.getAllDocumentTypes( langPrefix );
-        Map allDocTypesHash = convertToSet( allDocTypesArray );
+        Map allDocTypesHash = convertToMap( allDocTypesArray );
 
         // Lets parse the searchresults
-        searchResults = parseSearchResults( oneRecHtmlSrc, searchResultDocuments, allDocTypesHash );
+        StringBuffer searchResults = parseSearchResults(oneRecHtmlSrc, searchResultDocuments, allDocTypesHash);
 
         // Lets get the surrounding resultpage fragment used for all the result
         // and parse all the results into this summarize html template for all the results
@@ -282,6 +268,8 @@ public class GetExistingDoc extends HttpServlet {
         outVector.add( "" + parentDocument.getId() );
         outVector.add( "#doc_menu_no#" );
         outVector.add( "" + doc_menu_no );
+        outVector.add( "#page#" );
+        outVector.add( page.getSessionAttributeName() );
 
         // Lets get the searchstring and add it to the page
         outVector.add( "#searchstring#" );
@@ -303,17 +291,17 @@ public class GetExistingDoc extends HttpServlet {
             // and select those again in the page to send back to the user.
             // First, put them in an hashtable for easy access.
             Map selectedDocTypes = new HashMap( docTypes.length );
-            for ( int i = 0; i < docTypes.length; i++ ) {
-                selectedDocTypes.put( docTypes[i], docTypes[i] );
+            for ( String docType : docTypes ) {
+                selectedDocTypes.put(docType, docType);
             }
 
             // Lets get all possible values of for the documenttypes from database
-            for ( int i = 0; i < allDocTypesArray.length; i++ ) {
-                outVector.add( "#checked_" + allDocTypesArray[i][0] + "#" );
-                if ( selectedDocTypes.containsKey( allDocTypesArray[i][0] ) ) {
-                    outVector.add( "checked" );
+            for ( String[] docType : allDocTypesArray ) {
+                outVector.add("#checked_" + docType[0] + "#");
+                if ( selectedDocTypes.containsKey(docType[0]) ) {
+                    outVector.add("checked");
                 } else {
-                    outVector.add( "" );
+                    outVector.add("");
                 }
             }
 
@@ -327,19 +315,19 @@ public class GetExistingDoc extends HttpServlet {
         }
 
         Set selectedIncludeDocs = new HashSet( includeDocs.length );
-        for ( int i = 0; i < includeDocs.length; i++ ) {
-            selectedIncludeDocs.add( includeDocs[i] );
+        for ( String includeDoc : includeDocs ) {
+            selectedIncludeDocs.add(includeDoc);
         }
 
         // Lets create an array with all possible values.
         // in this case just changed resp. created
         String[] allPossibleIncludeDocsValues = {"created", "changed"};
-        for ( int i = 0; i < allPossibleIncludeDocsValues.length; i++ ) {
-            outVector.add( "#include_check_" + allPossibleIncludeDocsValues[i] + "#" );
-            if ( selectedIncludeDocs.contains( allPossibleIncludeDocsValues[i] ) ) {
-                outVector.add( "checked" );
+        for ( String allPossibleIncludeDocsValue : allPossibleIncludeDocsValues ) {
+            outVector.add("#include_check_" + allPossibleIncludeDocsValue + "#");
+            if ( selectedIncludeDocs.contains(allPossibleIncludeDocsValue) ) {
+                outVector.add("checked");
             } else {
-                outVector.add( "" );
+                outVector.add("");
             }
         }
 
@@ -350,19 +338,19 @@ public class GetExistingDoc extends HttpServlet {
             searchPrepArr = new String[0];
         }
 
-        Hashtable selectedsearchPrep = new Hashtable( searchPrepArr.length );
-        for ( int i = 0; i < searchPrepArr.length; i++ ) {
-            selectedsearchPrep.put( searchPrepArr[i], searchPrepArr[i] );
+        Map selectedsearchPrep = new HashMap( searchPrepArr.length );
+        for ( String aSearchPrepArr : searchPrepArr ) {
+            selectedsearchPrep.put(aSearchPrepArr, aSearchPrepArr);
         }
         // Lets create an array with all possible values.
         // in this case just changed resp. created
         String[] allPossibleSearchPreps = {"and", "or"};
-        for ( int i = 0; i < allPossibleSearchPreps.length; i++ ) {
-            outVector.add( "#search_prep_check_" + allPossibleSearchPreps[i] + "#" );
-            if ( selectedsearchPrep.containsKey( allPossibleSearchPreps[i] ) ) {
-                outVector.add( "checked" );
+        for ( String allPossibleSearchPrep : allPossibleSearchPreps ) {
+            outVector.add("#search_prep_check_" + allPossibleSearchPrep + "#");
+            if ( selectedsearchPrep.containsKey(allPossibleSearchPrep) ) {
+                outVector.add("checked");
             } else {
-                outVector.add( "" );
+                outVector.add("");
             }
         }
 
@@ -377,7 +365,6 @@ public class GetExistingDoc extends HttpServlet {
         // htmlOut = imcref.replaceTagsInStringWithData( htmlOut, outVector);
         String htmlOut = imcref.getAdminTemplate( ADMIN_TEMPLATE_EXISTING_DOC, user, outVector );
         out.write( htmlOut );
-        return;
     }
 
     private void addDocTypesToQuery( String[] docTypes, BooleanQuery query ) {
@@ -421,7 +408,7 @@ public class GetExistingDoc extends HttpServlet {
         return calendar.getTime();
     }
 
-    private void addStringToQuery( final DocumentIndex index, String string, BooleanQuery query )
+    private void addStringToQuery(String string, BooleanQuery query)
             throws org.apache.lucene.queryParser.ParseException {
         Query textQuery = new DefaultQueryParser().parse( string );
         query.add( textQuery, true, false );
@@ -434,11 +421,11 @@ public class GetExistingDoc extends HttpServlet {
      * array will be the value.
      */
 
-    private static Hashtable convertToSet( String[][] arr ) {
+    private static Map convertToMap( String[][] arr ) {
 
-        Hashtable h = new Hashtable();
-        for ( int i = 0; i < arr.length; i++ ) {
-            h.put( arr[i][0], arr[i][1] );
+        Map h = new HashMap();
+        for ( String[] anArr : arr ) {
+            h.put(anArr[0], anArr[1]);
         }
         return h;
     }
@@ -449,26 +436,25 @@ public class GetExistingDoc extends HttpServlet {
      */
 
     private static StringBuffer parseSearchResults( String oneRecHtmlSrc,
-                                                    List searchResultDocuments, Map docTypesHash ) {
+                                                    List<DocumentDomainObject> searchResultDocuments, Map docTypesHash ) {
         StringBuffer searchResults = new StringBuffer( 1024 );
 
-        for ( Iterator iterator = searchResultDocuments.iterator(); iterator.hasNext(); ) {
-            DocumentDomainObject document = (DocumentDomainObject) iterator.next();
+        for ( DocumentDomainObject document : searchResultDocuments ) {
 
-            DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING );
+            DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING);
             String[] data = {
-                "#meta_id#", String.valueOf( document.getId() ),
-                "#doc_type#", (String)docTypesHash.get( "" + document.getDocumentTypeId() ),
-                "#meta_headline#", document.getHeadline(),
-                "#meta_text#", document.getMenuText(),
-                "#date_created#", formatDate( dateFormat, document.getCreatedDatetime() ),
-                "#date_modified#", formatDate( dateFormat, document.getModifiedDatetime() ),
-                "#date_activated#", formatDate( dateFormat, document.getPublicationStartDatetime() ),
-                "#date_archived#", formatDate( dateFormat, document.getArchivedDatetime() ),
-                "#archive#", document.isArchived() ? "1" : "0",
+                    "#meta_id#", String.valueOf(document.getId()),
+                    "#doc_type#", (String) docTypesHash.get("" + document.getDocumentTypeId()),
+                    "#meta_headline#", document.getHeadline(),
+                    "#meta_text#", document.getMenuText(),
+                    "#date_created#", formatDate(dateFormat, document.getCreatedDatetime()),
+                    "#date_modified#", formatDate(dateFormat, document.getModifiedDatetime()),
+                    "#date_activated#", formatDate(dateFormat, document.getPublicationStartDatetime()),
+                    "#date_archived#", formatDate(dateFormat, document.getArchivedDatetime()),
+                    "#archive#", document.isArchived() ? "1" : "0",
             };
 
-            searchResults.append( Parser.parseDoc( oneRecHtmlSrc, data ) );
+            searchResults.append(Parser.parseDoc(oneRecHtmlSrc, data));
         }
         return searchResults;
     }

@@ -160,6 +160,8 @@ public class MenuEditPage extends OkCancelPage {
         vec.add( "" + meta_id );
         vec.add( "#doc_menu_no#" );
         vec.add( "" + doc_menu_no );
+        vec.add( "#page#" );
+        vec.add( getSessionAttributeName() ) ;
 
         // Lets get todays date
         SimpleDateFormat formatter = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );

@@ -1,15 +1,17 @@
-#gui_start_of_page( "<? templates/sv/existing_doc.html/1 ?>" "GetExistingDoc?meta_id_value=#meta_id#&doc_menu_no=#doc_menu_no#" "cancel" "LinkInternal" "" )
+#gui_start_of_page( "<? templates/sv/existing_doc.html/1 ?>" "GetExistingDoc?meta_id_value=#meta_id#&doc_menu_no=#doc_menu_no#&page=#page#" "cancel" "LinkInternal" "" )
 
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="post" action="GetExistingDoc">
 <input type="HIDDEN" name="meta_id_value" value="#meta_id#">
 <input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
+<input type="HIDDEN" name="page" value="#page#">
 </form>
 </table><br><table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="post" action="GetExistingDoc">
 <input type="HIDDEN" name="meta_id_value" value="#meta_id#">
 <input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
+<input type="HIDDEN" name="page" value="#page#">
 <tr>
 	<td colspan="2">#gui_heading( "<? templates/sv/existing_doc.html/5/1 ?>" )</td>
 </tr>
