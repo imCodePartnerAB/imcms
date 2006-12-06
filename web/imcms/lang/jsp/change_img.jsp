@@ -162,7 +162,10 @@ function changeLinkType(idx) {<%
 	} else if (re.test(val)) {
 		url.value = val.replace(re, "$1") ;
 		rad[0].checked = 1 ;
-	}<%
+	} else {
+        rad[idx].checked = 1 ;
+    }
+    <%
 	} %>
 }
 
