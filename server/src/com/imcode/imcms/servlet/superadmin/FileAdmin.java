@@ -314,21 +314,23 @@ public class FileAdmin extends HttpServlet {
     private boolean upload( MultipartHttpServletRequest mp, File destDir, File dir1, File dir2, HttpServletResponse res,
                             UserDomainObject user, ImcmsServices imcref ) throws IOException {
         boolean handledOutput = false;
-        String fileContents = mp.getParameter( "file" );
-        if ( fileContents == null || fileContents.length() < 1 ) {
+        MultipartHttpServletRequest.DataSourceFileItem parameterFileItem = mp.getParameterFileItem("file");
+        if ( parameterFileItem == null || parameterFileItem.getSize() < 1 ) {
             outputBlankFileError( dir1, dir2, res, user, imcref );
             handledOutput = true;
             return handledOutput;
         }
-        String filename = mp.getParameterFileItem( "file" ).getName() ;
+        String filename = parameterFileItem.getName() ;
         File file = new File( destDir, filename );
         File uniqueFile = findUniqueFilename( file );
         if ( file.equals( uniqueFile ) || file.renameTo( uniqueFile ) ) {
-            FileOutputStream fout = new FileOutputStream( file );
-            byte[] bytes = fileContents.getBytes( "8859_1" );
-            fout.write( bytes );
-            fout.flush();
-            fout.close();
+            try {
+                parameterFileItem.write(file);
+            } catch ( Exception e ) {
+                IOException ioException = new IOException("Failed to write file.");
+                ioException.initCause(e) ;
+                throw ioException ;
+            }
             if ( !file.equals( uniqueFile ) ) {
                 outputFileExistedAndTheOriginalWasRenamedNotice( dir1, dir2, uniqueFile.getName(), res, user, imcref );
                 handledOutput = true;
