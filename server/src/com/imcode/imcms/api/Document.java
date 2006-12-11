@@ -83,6 +83,21 @@ public class Document implements Serializable {
         return result;
     }
 
+    /** Whether the document is archived. **/
+    public boolean isArchived() {
+        return internalDocument.isArchived();
+    }
+
+    /** Whether the document is published and not archived. **/
+    public boolean isActive() {
+        return internalDocument.isActive();
+    }
+
+    /** Whether the document is published. **/
+    public boolean isPublished() {
+        return internalDocument.isPublished();
+    }
+
     public boolean isSearchDisabled() {
         return internalDocument.isSearchDisabled();
     }
