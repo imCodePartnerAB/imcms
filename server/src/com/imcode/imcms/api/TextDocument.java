@@ -424,13 +424,25 @@ public class TextDocument extends Document {
         }
 
         /**
-         * @return The menuitems in this menu.
+         * @return The menuitems in this menu that the user can see or edit, excluding archived documents.
          */
         public MenuItem[] getMenuItems() {
             final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
             return getMenuItems( new DocumentPredicate() {
                 public boolean evaluateDocument( DocumentDomainObject document ) {
                     return user.canSeeDocumentInMenus( document ) || user.canEdit( document ) ;
+                }
+            } ) ;
+        }
+
+        /**
+         * @return The menuitems in this menu that the user can see or edit, including archived documents.
+         */
+        public MenuItem[] getPublishedMenuItems() {
+            final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
+            return getMenuItems( new DocumentPredicate() {
+                public boolean evaluateDocument( DocumentDomainObject document ) {
+                    return document.isPublished() && user.canSeeDocumentWhenEditingMenus( document ) ;
                 }
             } ) ;
         }
