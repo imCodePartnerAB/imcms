@@ -87,7 +87,7 @@ public class ImageBrowse extends HttpServlet {
         page.forward(request,response) ;
     }
 
-    private static void upload( HttpServletRequest request, File selectedDirectory, ImageBrowserPage page ) {
+    private static void upload( HttpServletRequest request, File selectedDirectory, ImageBrowserPage page ) throws IOException {
         File imagesRoot = Imcms.getServices().getConfig().getImagePath();
         FileItem fileItem = ( (MultipartHttpServletRequest)request ).getParameterFileItem( REQUEST_PARAMETER__FILE );
         if ( null != fileItem ) {

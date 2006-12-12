@@ -24,7 +24,7 @@ import java.util.*;
 
 public class FileAdmin extends HttpServlet {
 
-    private final static Logger log = Logger.getLogger( "FileAdmin" );
+    private final static Logger LOG = Logger.getLogger( "FileAdmin" );
     private static final int BUFFER_SIZE = 65536;
     private static final String ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING = "FileAdminCopyOverwriteWarning.html";
     private static final String ADMIN_TEMPLATE_FILE_ADMIN_MOVE_OVERWRITE_WARNING = "FileAdminMoveOverwriteWarning.html";
@@ -56,7 +56,7 @@ public class FileAdmin extends HttpServlet {
     /**
      * Check to see if the path is a child to one of the rootpaths
      */
-    private boolean isUnderRoot( File path, File[] roots ) {
+    private boolean isUnderRoot( File path, File[] roots ) throws IOException {
         for ( int i = 0; i < roots.length; i++ ) {
             if ( FileUtility.directoryIsAncestorOfOrEqualTo( roots[i], path ) ) {
                 return true;
@@ -147,7 +147,7 @@ public class FileAdmin extends HttpServlet {
     private File getContextRelativeDirectoryFromRequest(HttpServletRequest request, String parameter) throws IOException {
         File webappPath = Imcms.getPath() ;
         String dirParameter = request.getParameter( parameter );
-        return new File( webappPath, dirParameter ).getAbsoluteFile();
+        return new File( webappPath, dirParameter ).getCanonicalFile();
     }
 
     private File[] getRoots() {
@@ -278,7 +278,7 @@ public class FileAdmin extends HttpServlet {
                 handledOutput = true;
             } catch ( FileNotFoundException ex ) {
                 // FIXME: Error dialog?
-                log.debug( "Download failed", ex );
+                LOG.debug( "Download failed", ex );
             }
         }
         return handledOutput;
@@ -525,18 +525,18 @@ public class FileAdmin extends HttpServlet {
         if ( files != null && files.length == 1 ) {	//Has the user chosen just one dir?
             String filename = files[0];
             if ( filename.startsWith(File.separator) ) {
-                File newDir = new File( Imcms.getPath(), filename) ;
-                if ( isUnderRoot( newDir, roots ) ) {
-                    resultDir = newDir;
-                }
+                resultDir = new File( Imcms.getPath(), filename) ;
             } else {					//Is the dir one of the roots?
                 File newDir = new File( dir, filename );		//No? Treat it like a relative path...
-                if ( newDir.isDirectory() && isUnderRoot( newDir, roots ) ) {			//It IS a directory, i hope?
+                if ( newDir.isDirectory() ) {			//It IS a directory, i hope?
                     resultDir = newDir;
                 }
             }
         }
-        return resultDir.getAbsoluteFile();
+        if (!isUnderRoot(resultDir, roots)) {
+            return dir ;
+        }
+        return resultDir.getCanonicalFile();
     }
 
     private File[] makeAbsoluteFileList( File parent, String[] filePaths ) {
@@ -646,7 +646,7 @@ public class FileAdmin extends HttpServlet {
         return File.separator + getPathRelativeTo( dir, webappPath ) + File.separator;
     }
 
-    private String getPathRelativeTo( File file, File root ) {
+    private String getPathRelativeTo( File file, File root ) throws IOException {
         if ( !FileUtility.directoryIsAncestorOfOrEqualTo( root, file ) ) {
             return file.getAbsolutePath();
         }
@@ -663,7 +663,7 @@ public class FileAdmin extends HttpServlet {
             String dirname = getPathRelativeTo( rootlist[i], webappPath ) ;
             optionlist.append(getDirectoryOption(File.separator + dirname + File.separator, File.separator + dirname + File.separator) );
         }
-        File parent = directory.getParentFile();
+        File parent = directory.getCanonicalFile().getParentFile();
         if ( isUnderRoot( parent, rootlist )) {
             optionlist.append(getDirectoryOption(".." + File.separator, ".." + File.separator) );
         }

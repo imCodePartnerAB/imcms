@@ -47,8 +47,9 @@ public class FileUtility {
         return relativeFile;
     }
 
-    public static boolean directoryIsAncestorOfOrEqualTo( File dir, File file ) {
-        for ( File currentFile = file; null != currentFile; currentFile = currentFile.getParentFile() ) {
+    public static boolean directoryIsAncestorOfOrEqualTo( File dir, File file ) throws IOException {
+        dir = dir.getCanonicalFile() ;
+        for ( File currentFile = file.getCanonicalFile(); null != currentFile; currentFile = currentFile.getParentFile() ) {
             if ( currentFile.equals( dir ) ) {
                 return true;
             }
