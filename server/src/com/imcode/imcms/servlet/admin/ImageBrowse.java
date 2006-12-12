@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class ImageBrowse extends HttpServlet {
 
-    private final static Logger log = Logger.getLogger( ImageBrowse.class.getName() );
+    private final static Logger LOG = Logger.getLogger( ImageBrowse.class.getName() );
 
     private static final String JSP__IMAGE_BROWSE = "ImageBrowse.jsp";
     public static final String REQUEST_PARAMETER__OK_BUTTON = "ImageBrowse.button.ok";
@@ -107,7 +107,7 @@ public class ImageBrowse extends HttpServlet {
                                                   + ". Possible permissions problem?", e );
                 }
             } else {
-                log.info( "User " + Utility.getLoggedOnUser( request ) + " was denied uploading to file "
+                LOG.info( "User " + Utility.getLoggedOnUser( request ) + " was denied uploading to file "
                           + destinationFile );
             }
         }
@@ -136,7 +136,7 @@ public class ImageBrowse extends HttpServlet {
             this.label = label;
         }
 
-        public String getDirectoriesOptionList() {
+        public String getDirectoriesOptionList() throws IOException {
             final File imagesRoot = Imcms.getServices().getConfig().getImagePath();
             Collection imageDirectories = Utility.collectImageDirectories();
 
@@ -149,7 +149,7 @@ public class ImageBrowse extends HttpServlet {
             });
         }
 
-        public String getImagesOptionList() {
+        public String getImagesOptionList() throws IOException {
             final File imagesRoot = Imcms.getServices().getConfig().getImagePath();
             if ( null != currentImage ) {
                 imageUrl = FileUtility.relativeFileToString( FileUtility.relativizeFile( imagesRoot, currentImage ) );
@@ -163,10 +163,14 @@ public class ImageBrowse extends HttpServlet {
                 public String[] transformToStringPair(Object input) {
                     File file = (File) input;
                     String formattedFileSize = HumanReadable.getHumanReadableByteSize(file.length());
-                    return new String[] {
-                            FileUtility.relativeFileToString(FileUtility.relativizeFile(imagesRoot, file)),
-                            file.getName() + "\t[" + formattedFileSize + "]"
-                    };
+                    try {
+                        return new String[] {
+                                FileUtility.relativeFileToString(FileUtility.relativizeFile(imagesRoot, file)),
+                                file.getName() + "\t[" + formattedFileSize + "]"
+                        };
+                    } catch ( IOException e ) {
+                        throw new RuntimeException(e);
+                    }
                 }
             });
         }

@@ -196,7 +196,7 @@ public class FileAdmin extends HttpServlet {
         return handledOutput;
     }
 
-    private String createWarningFileOptionString(File destFile) {
+    private String createWarningFileOptionString(File destFile) throws IOException {
         File webAppPath = Imcms.getPath();
         return FileUtility.relativizeFile(webAppPath, destFile).getPath() + ( destFile.isDirectory()
                                                                               ? File.separator
@@ -230,7 +230,7 @@ public class FileAdmin extends HttpServlet {
         return handledOutput;
     }
 
-    private StringBuffer buildWarningOptions(File[] relativeSourceFileTree, File destDir, StringBuffer optionList) {
+    private StringBuffer buildWarningOptions(File[] relativeSourceFileTree, File destDir, StringBuffer optionList) throws IOException {
         StringBuffer fileList = new StringBuffer();
         for ( int i = 0; i < relativeSourceFileTree.length; i++ ) {
             File destFile = new File( destDir, relativeSourceFileTree[i].getPath() );
@@ -568,7 +568,7 @@ public class FileAdmin extends HttpServlet {
     /**
      * Takes a list of files that share a common parent, orphans them, and returns them in an array.
      */
-    private File[] makeRelativeFileList( File relativeParentDir, File[] files ) {
+    private File[] makeRelativeFileList( File relativeParentDir, File[] files ) throws IOException {
         if ( files == null || relativeParentDir == null ) {
             return null;
         }
@@ -642,11 +642,12 @@ public class FileAdmin extends HttpServlet {
     }
 
     private String getContextRelativeAbsolutePathToDirectory(File dir) throws IOException {
-        File webappPath = Imcms.getPath();
-        return File.separator + getPathRelativeTo( dir, webappPath ) + File.separator;
+        return File.separator + getPathRelativeTo(Imcms.getPath(), dir) + File.separator;
     }
 
-    private String getPathRelativeTo( File file, File root ) throws IOException {
+    private String getPathRelativeTo(File root, File file) throws IOException {
+        root = root.getCanonicalFile() ;
+        file = file.getCanonicalFile() ;
         if ( !FileUtility.directoryIsAncestorOfOrEqualTo( root, file ) ) {
             return file.getAbsolutePath();
         }
@@ -660,7 +661,7 @@ public class FileAdmin extends HttpServlet {
         StringBuffer optionlist = new StringBuffer();
         File webappPath = Imcms.getPath();
         for ( int i = 0; i < rootlist.length; i++ ) {
-            String dirname = getPathRelativeTo( rootlist[i], webappPath ) ;
+            String dirname = getPathRelativeTo(webappPath, rootlist[i]) ;
             optionlist.append(getDirectoryOption(File.separator + dirname + File.separator, File.separator + dirname + File.separator) );
         }
         File parent = directory.getCanonicalFile().getParentFile();

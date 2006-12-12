@@ -33,9 +33,10 @@ public class FileUtility {
         return path;
     }
 
-    public static File relativizeFile( File ancestorDirectory, File file ) {
+    public static File relativizeFile( File ancestorDirectory, File file ) throws IOException {
+        File currentParent = file.getCanonicalFile();
+        ancestorDirectory = ancestorDirectory.getCanonicalFile();
         LinkedList fileParents = new LinkedList();
-        File currentParent = file;
         while ( !currentParent.equals( ancestorDirectory ) ) {
             fileParents.addFirst( currentParent.getName() );
             currentParent = currentParent.getParentFile();
@@ -148,7 +149,11 @@ public class FileUtility {
         }
 
         public Object transform( Object input ) {
-            return relativizeFile( directory, (File)input );
+            try {
+                return relativizeFile( directory, (File)input );
+            } catch ( IOException e ) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -156,7 +161,7 @@ public class FileUtility {
 
         public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
                                         PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
-                                        org.apache.oro.text.regex.Pattern pattern ) {
+                                        Pattern pattern ) {
             String hex = matchResult.group( 1 ) ;
             char c = (char)Integer.parseInt( hex, 16 ) ;
             stringBuffer.append( c ) ;
