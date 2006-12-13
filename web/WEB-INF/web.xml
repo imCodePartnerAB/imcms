@@ -62,11 +62,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRoleBelongings</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminRoleBelongings</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRoles</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminRoles</servlet-class>
     </servlet>
@@ -279,11 +274,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminManager</servlet-name>
         <url-pattern>/servlet/AdminManager</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRoleBelongings</servlet-name>
-        <url-pattern>/servlet/AdminRoleBelongings</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

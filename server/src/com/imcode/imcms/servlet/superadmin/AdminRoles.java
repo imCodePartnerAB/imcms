@@ -1,15 +1,14 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.db.Database;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.*;
 import imcode.util.Html;
+import imcode.util.LocalizedMessage;
 import imcode.util.ToStringPairTransformer;
 import imcode.util.Utility;
-import imcode.util.LocalizedMessage;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
@@ -21,20 +20,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
-/**
- * Comments. This servlet will need the following stored procedures in the db
- * - RoleFindName
- * - RoleDelete
- * - RoleGetPermissionsFromRole
- * - RoleGetPermissionsByLanguage
- * - RoleUpdatePermissions
- * - GetLangPrefixFromId
- */
 public class AdminRoles extends HttpServlet {
 
-    private final static Logger log = Logger.getLogger( AdminRoles.class.getName() );
+    private final static Logger LOG = Logger.getLogger( AdminRoles.class.getName() );
 
-    private final static String HTML_TEMPLATE = "AdminRoles.htm";
     private final static String HTML_ADMIN_ROLES = "AdminRoles_roles.htm";
     private final static String HTML_ADD_ROLE = "AdminRoles_Add.htm";
     private final static String HTML_RENAME_ROLE = "AdminRoles_Rename.htm";
@@ -55,39 +44,24 @@ public class AdminRoles extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
         Utility.setDefaultHtmlContentType(res);
-        if ( user.isSuperAdmin() == false ) {
+        if ( !user.isSuperAdmin() ) {
             String header = "Error in AdminRoles.";
             Properties langproperties = LocalizedMessage.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-            log.debug(header + "- user is not an administrator");
+            LOG.debug(header + "- user is not an administrator");
             printErrorMessage(req, res, header, msg);
             return;
         }
 
-        // fast fix, then role page was moved down one page
-        if ( req.getParameter("ADD_NEW_ROLE") != null || req.getParameter("RENAME_ROLE") != null
-             || req.getParameter("DELETE_ROLE") != null || req.getParameter("UPDATE_ROLE_PERMISSIONS") != null
-             || req.getParameter("CANCEL_ROLE") != null ) {
+        final Object[] parameters = new String[0];
+        String[] rolesArr = (String[]) imcref.getProcedureExecutor().executeProcedure("RoleAdminGetAll", parameters, new StringArrayResultSetHandler());
+        List rolesV = new ArrayList(Arrays.asList(rolesArr));
 
-            // Lets get all ROLES from DB
-            final Object[] parameters = new String[0];
-            String[] rolesArr = (String[]) imcref.getProcedureExecutor().executeProcedure("RoleAdminGetAll", parameters, new StringArrayResultSetHandler());
-            List rolesV = new ArrayList(Arrays.asList(rolesArr));
-
-
-            // Lets generate the html page
-            Map vm = new HashMap();
-            String opt = Html.createOptionList(rolesV, Arrays.asList(new String[] { "" }));
-            vm.put("ROLES_MENU", opt);
-
-            sendHtml(req, res, vm, HTML_ADMIN_ROLES);
-
-            return;
-
-        }
-        // *************** GENERATE THE ADMIN ROLE PAGE *****************
         Map vm = new HashMap();
-        sendHtml(req, res, vm, HTML_TEMPLATE);
+        String opt = Html.createOptionList(rolesV, Arrays.asList(new String[] { "" }));
+        vm.put("ROLES_MENU", opt);
+
+        sendHtml(req, res, vm, HTML_ADMIN_ROLES);
 
     } // End doGet
 
@@ -99,7 +73,6 @@ public class AdminRoles extends HttpServlet {
 
         // Lets check if the user is an admin, otherwise throw him out.
         ImcmsServices imcref = Imcms.getServices();
-        Database database = imcref.getDatabase();
         ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         Utility.setDefaultHtmlContentType(res);
@@ -111,7 +84,7 @@ public class AdminRoles extends HttpServlet {
                 // Lets get all ROLES from DB
                 final Object[] parameters = new String[0];
                 String[] rolesArr = (String[]) imcref.getProcedureExecutor().executeProcedure("RoleAdminGetAll", parameters, new StringArrayResultSetHandler());
-                Vector rolesV = new Vector(Arrays.asList(rolesArr));
+                List rolesV = Arrays.asList(rolesArr);
 
 
                 // Lets generate the html page
@@ -122,17 +95,11 @@ public class AdminRoles extends HttpServlet {
                 sendHtml(req, res, vm, HTML_ADMIN_ROLES);
 
                 return;
-            } else if ( req.getParameter("VIEW_ADMIN_ROLE_BELONGINGS") != null ) {
-                res.sendRedirect("AdminRoleBelongings");
-                return;
-            } else if ( req.getParameter("CANCEL") != null ) {
+            } else if ( req.getParameter("CANCEL") != null || req.getParameter("CANCEL_ROLE_ADMIN") != null ) {
                 res.sendRedirect("AdminManager");
                 return;
             } else if ( req.getParameter("CANCEL_ROLE") != null ) {
-                this.doGet(req, res);
-                return;
-            } else if ( req.getParameter("CANCEL_ROLE_ADMIN") != null ) {
-                this.doGet(req, res);
+                doGet(req, res);
                 return;
             } else if ( req.getParameter("VIEW_ADD_NEW_ROLE") != null ) {
 
@@ -158,11 +125,10 @@ public class AdminRoles extends HttpServlet {
             } else if ( req.getParameter("VIEW_RENAME_ROLE") != null ) {
                 String roleIdStr = req.getParameter("ROLE_ID");
                 if ( roleIdStr == null ) {
-                    String header = "Roles error";
                     Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_missing") + "<BR>";
-                    log.debug("Error in rename roles, no role selected for rename");
-                    printErrorMessage(req, res, header, msg);
+                    LOG.debug("Error in rename roles, no role selected for rename");
+                    printErrorMessage(req, res, "Roles error", msg);
                     return;
                 }
                 int roleId = Integer.parseInt(roleIdStr);
@@ -180,17 +146,15 @@ public class AdminRoles extends HttpServlet {
                     String header = "Error in AdminRoles, edit role";
                     Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_missing") + "<br>";
-                    log.debug(header + "- select the role to be changed");
+                    LOG.debug(header + "- select the role to be changed");
                     printErrorMessage(req, res, header, msg);
                     return;
                 }
 
                 // dont list superadmin permissions
                 if ( roleIdStr.equals("0") ) {
-                    String header = "Error in AdminRoles, edit role";
-                    String msg = "" + "<BR>";
-                    log.debug("Error in checking roles: Trying to look att superadmin permissions");
-                    printErrorMessage(req, res, header, msg);
+                    LOG.debug("Error in checking roles: Trying to look att superadmin permissions");
+                    printErrorMessage(req, res, "Error in AdminRoles, edit role", "<BR>");
                     return;
                 }
 
@@ -221,12 +185,12 @@ public class AdminRoles extends HttpServlet {
             } else if ( req.getParameter("ADD_NEW_ROLE") != null ) {
 
                 // Lets get the parameters from html page and validate them
-                Properties params = this.getAddRoleParameters(req);
+                Properties params = getAddRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles ";
                     Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/new_rolename_missing") + "<br>";
-                    log.debug(header + "- new rolename missing");
+                    LOG.debug(header + "- new rolename missing");
                     printErrorMessage(req, res, header, msg);
                     return;
                 }
@@ -238,7 +202,7 @@ public class AdminRoles extends HttpServlet {
                     Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_already_exists")
                                  + "<br>";
-                    log.debug(header + "- role name already exists");
+                    LOG.debug(header + "- role name already exists");
                     printErrorMessage(req, res, header, msg);
                     return;
                 }
@@ -255,18 +219,18 @@ public class AdminRoles extends HttpServlet {
                 } catch ( UserAndRoleRegistryException e ) {
                     throw new UnhandledException(e);
                 }
-                this.doGet(req, res);
+                doGet(req, res);
 
                 return;
             } else if ( req.getParameter("RENAME_ROLE") != null ) {
 
                 // Lets get the parameters from html page and validate them
-                Properties params = this.getRenameRoleParameters(req);
+                Properties params = getRenameRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles, rename role ";
                     Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/new_rolename_missing") + "<br>";
-                    log.debug(header + "- new role name is missing");
+                    LOG.debug(header + "- new role name is missing");
                     printErrorMessage(req, res, header, msg);
                     return;
                 }
@@ -285,11 +249,11 @@ public class AdminRoles extends HttpServlet {
                     Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_already_exists")
                                  + "<br>";
-                    log.debug(header + "- rolename already exists");
+                    LOG.debug(header + "- rolename already exists");
                     printErrorMessage(req, res, header, msg);
                     return;
                 }
-                this.doGet(req, res);
+                doGet(req, res);
 
                 return;
             }
@@ -301,12 +265,12 @@ public class AdminRoles extends HttpServlet {
             if ( req.getParameter("VIEW_DELETE_ROLE") != null ) {
 
                 // Lets get the parameters from html page and validate them
-                Properties params = this.getDeleteRoleParameters(req);
+                Properties params = getDeleteRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles ";
                     Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
-                    log.debug(header + "- no role was selected for delete");
+                    LOG.debug(header + "- no role was selected for delete");
                     printErrorMessage(req, res, header, msg);
                     return;
                 }
@@ -347,7 +311,7 @@ public class AdminRoles extends HttpServlet {
                     vm.put("USER_ID_LIST", users);
                     vm.put("USER_COUNT", "" + affectedUsers.size());
                     vm.put("ROLE_COUNT", "" + affectedDocumentsCount);
-                    vm.put("CURRENT_ROLE_ID", params.get("ROLE_ID"));
+                    vm.put("CURRENT_ROLE_ID", params.getProperty("ROLE_ID"));
                     sendHtml(req, res, vm, HTML_DELETE_ROLE_1);
                     return;
                 } else {
@@ -358,14 +322,14 @@ public class AdminRoles extends HttpServlet {
             }
 
             // *************** GENERATE THE LAST DELETE ROLE WARNING PAGE  **********
-            if ( req.getParameter("WARN_DELETE_ROLE") != null || warnDelRole == true ) {
+            if ( req.getParameter("WARN_DELETE_ROLE") != null || warnDelRole ) {
                 // Lets get the parameters from html page and validate them
-                Properties params = this.getDeleteRoleParameters(req);
+                Properties params = getDeleteRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles, delete ";
                     Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
-                    log.debug(header + "- no role was selected for delete");
+                    LOG.debug(header + "- no role was selected for delete");
                     printErrorMessage(req, res, header, msg);
 
                     return;
@@ -373,7 +337,7 @@ public class AdminRoles extends HttpServlet {
 
                 // Lets generate the last warning html page
                 Map vm = new HashMap();
-                vm.put("CURRENT_ROLE_ID", params.get("ROLE_ID"));
+                vm.put("CURRENT_ROLE_ID", params.getProperty("ROLE_ID"));
                 sendHtml(req, res, vm, HTML_DELETE_ROLE_2);
                 return;
             }
@@ -382,12 +346,12 @@ public class AdminRoles extends HttpServlet {
             if ( req.getParameter("DELETE_ROLE") != null ) {
 
                 // Lets get the parameters from html page and validate them
-                Properties params = this.getDeleteRoleParameters(req);
+                Properties params = getDeleteRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles, delete";
                     Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
-                    log.debug(header + "- no role was selected for delete");
+                    LOG.debug(header + "- no role was selected for delete");
                     printErrorMessage(req, res, header, msg);
 
                     return;
@@ -398,7 +362,7 @@ public class AdminRoles extends HttpServlet {
                 RoleDomainObject role = userAndRoleMapper.getRoleById(roleId);
                 userAndRoleMapper.deleteRole(role);
 
-                this.doGet(req, res);
+                doGet(req, res);
 
                 return;
             }
@@ -414,7 +378,7 @@ public class AdminRoles extends HttpServlet {
                     String header = "Error in AdminRoles ";
                     Properties langproperties = LocalizedMessage.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
-                    log.debug(header + "- no role was selected for delete");
+                    LOG.debug(header + "- no role was selected for delete");
                     printErrorMessage(req, res, header, msg);
                     return;
                 }
@@ -426,7 +390,7 @@ public class AdminRoles extends HttpServlet {
                         "" + permissionValue };
                 imcref.getProcedureExecutor().executeUpdateProcedure("RoleUpdatePermissions", parameters);
 
-                this.doGet(req, res);
+                doGet(req, res);
             }
         }
 
@@ -442,7 +406,7 @@ public class AdminRoles extends HttpServlet {
 
     private Properties getAddRoleParameters( HttpServletRequest req ) {
         Properties roleInfoP = new Properties();
-        String roleInfo = ( req.getParameter( "ROLE_NAME" ) == null ) ? "" : ( req.getParameter( "ROLE_NAME" ) );
+        String roleInfo = req.getParameter("ROLE_NAME") != null ? ( req.getParameter("ROLE_NAME") ) : "";
         roleInfoP.setProperty( "ROLE_NAME", roleInfo );
         return roleInfoP;
     }
@@ -453,8 +417,8 @@ public class AdminRoles extends HttpServlet {
 
     private Properties getRenameRoleParameters( HttpServletRequest req ) {
         Properties roleInfoP = new Properties();
-        String roleId = ( req.getParameter( "ROLE_ID" ) == null ) ? "" : ( req.getParameter( "ROLE_ID" ) );
-        String roleInfo = ( req.getParameter( "ROLE_NAME" ) == null ) ? "" : ( req.getParameter( "ROLE_NAME" ) );
+        String roleId = req.getParameter("ROLE_ID") != null ? req.getParameter("ROLE_ID") : "";
+        String roleInfo = !( req.getParameter("ROLE_NAME") == null ) ? req.getParameter("ROLE_NAME") : "";
         roleInfoP.setProperty( "ROLE_ID", roleId );
         roleInfoP.setProperty( "ROLE_NAME", roleInfo );
         return roleInfoP;
@@ -466,7 +430,7 @@ public class AdminRoles extends HttpServlet {
 
     private Properties getDeleteRoleParameters( HttpServletRequest req ) {
         Properties roleInfoP = new Properties();
-        String roleInfo = ( req.getParameter( "ROLE_ID" ) == null ) ? "" : ( req.getParameter( "ROLE_ID" ) );
+        String roleInfo = req.getParameter("ROLE_ID") != null ? req.getParameter("ROLE_ID") : "";
         roleInfoP.setProperty( "ROLE_ID", roleInfo );
         return roleInfoP;
     }
@@ -477,17 +441,16 @@ public class AdminRoles extends HttpServlet {
     private Properties getEditRoleParameters( HttpServletRequest req ) {
         Properties roleInfoP = new Properties();
 
-        String roleInfo = ( req.getParameter( "ROLE_ID" ) == null ) ? "" : ( req.getParameter( "ROLE_ID" ) );
+        String roleInfo = req.getParameter("ROLE_ID") == null ? "" : req.getParameter("ROLE_ID");
 
-        roleInfoP.put( "ROLE_ID", roleInfo );
+        roleInfoP.setProperty( "ROLE_ID", roleInfo );
 
         return roleInfoP;
     }
 
     /* create permissions tag */
     private String createPermissionComponent( HttpServletRequest req,
-                                              String[][] permissionList )
-            throws IOException {
+                                              String[][] permissionList ) {
 
         /* create rows of permission */
         StringBuffer permissionTableRows = new StringBuffer();
@@ -496,25 +459,25 @@ public class AdminRoles extends HttpServlet {
          * lets create permission as a component
          * element: 0 = value, 1 = permission_id, 2 = description
          */
-        for ( int i = 0; i < permissionList.length; i++ ) {
+        for ( String[] aPermissionList : permissionList ) {
 
-            String permissionId = permissionList[i][1];
-            String description = permissionList[i][2];
-            boolean isChecked = !( permissionList[i][0].equals( "0" ) );
+            String permissionId = aPermissionList[1];
+            String description = aPermissionList[2];
+            boolean isChecked = !aPermissionList[0].equals("0");
 
             Map vm = new HashMap();
-            vm.put("PERMISSION_DESCRIPTION", description) ;
-            vm.put("PERMISSON_ID", permissionId) ;
+            vm.put("PERMISSION_DESCRIPTION", description);
+            vm.put("PERMISSON_ID", permissionId);
 
             if ( isChecked ) {
-                vm.put("PERMISSION_CHECKED", "checked") ;
+                vm.put("PERMISSION_CHECKED", "checked");
             } else {
-                vm.put("PERMISSION_CHECKED", "") ;
+                vm.put("PERMISSION_CHECKED", "");
             }
 
-            String rowString = createHtml( req, vm, HTML_EDIT_ROLE_TABLE_ROW );
+            String rowString = createHtml(req, vm, HTML_EDIT_ROLE_TABLE_ROW);
 
-            permissionTableRows.append( rowString );
+            permissionTableRows.append(rowString);
 
         }
 
@@ -530,13 +493,13 @@ public class AdminRoles extends HttpServlet {
 
         if ( checkedPermissions != null ) {
 
-            for ( int i = 0; i < checkedPermissions.length; i++ ) {
+            for ( String checkedPermission : checkedPermissions ) {
                 int permissionId = 0;
 
                 try {
-                    permissionId = Integer.parseInt( checkedPermissions[i] );
+                    permissionId = Integer.parseInt(checkedPermission);
                 } catch ( NumberFormatException e ) {
-                    log.debug( "Error in checking roles: NumberFormatException" );
+                    LOG.debug("Error in checking roles: NumberFormatException");
                 }
 
                 permissionValue |= permissionId;
@@ -565,7 +528,7 @@ public class AdminRoles extends HttpServlet {
     }
 
     static String createHtml(HttpServletRequest req,
-                             Map vm, String htmlFile) throws IOException {
+                             Map vm, String htmlFile) {
 
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
@@ -574,15 +537,12 @@ public class AdminRoles extends HttpServlet {
         vm.put("SERVLET_URL2", "");
 
         List tagsAndData1 = new ArrayList(vm.size() * 2);
-        for ( Iterator tagsIterator = vm.entrySet().iterator(); tagsIterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) tagsIterator.next();
-            tagsAndData1.add("#" + entry.getKey() + "#");
-            tagsAndData1.add(entry.getValue());
+        for ( Map.Entry<String, String> entry1 : (Iterable<Map.Entry<String, String>>) vm.entrySet() ) {
+            tagsAndData1.add("#" + entry1.getKey() + "#");
+            tagsAndData1.add(entry1.getValue());
         }
-        List tagsAndData = tagsAndData1;
 
-        String html = imcref.getAdminTemplate(htmlFile, user, tagsAndData);
-        return html;
+        return imcref.getAdminTemplate(htmlFile, user, tagsAndData1);
     }
 
     public static void sendHtml(HttpServletRequest req, HttpServletResponse res,
