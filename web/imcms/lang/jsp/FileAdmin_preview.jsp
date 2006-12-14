@@ -8,7 +8,7 @@
 	        java.io.BufferedReader,
 	        java.io.File,
 	        java.io.FileInputStream,
-	        java.io.InputStreamReader, java.text.DecimalFormat"
+	        java.io.InputStreamReader, java.text.DecimalFormat, org.apache.commons.lang.StringEscapeUtils, java.io.IOException"
         contentType="text/html; charset=UTF-8"
 	
 %><%
@@ -143,7 +143,7 @@ try {
 if (frame.equalsIgnoreCase("MAIN")) { %>
 <html>
 <head>
-<title></title>
+<title><%= StringEscapeUtils.escapeHtml(file) %></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
@@ -154,22 +154,25 @@ if (frame.equalsIgnoreCase("MAIN")) { %>
 <div align="center"><%
 
 if (isImage) {
-    BufferedImage image = ImageIO.read( fn );
-	%><div class="imcmsAdmText" style="padding: 5 0 <%
-	if (hasBorder) {
-		%>5<%
-	} else {
-		%>6<%
-	} %> 0; color:#666666;">&quot;<%= file.replaceAll("\\\\","/") %>&quot;<%
-	if (image.getWidth() > 0 && image.getHeight() > 0 && !size.equals("")) {
-		%> (<%
-		if (image.getWidth() > 0 && image.getHeight() > 0) {
-			%><%= image.getWidth() + "x" + image.getHeight() %><%
-		}
-		if (!size.equals("")) {
-			%><%= size %><%
-		} %>)<%
-	} %></div><img name="theImg" id="theImg" src="<%= request.getContextPath() + file %>"<%= border + zoom %>><%
+    try {
+        BufferedImage image = ImageIO.read( fn );
+        %><div class="imcmsAdmText" style="padding: 5 0 <%
+        if (hasBorder) {
+            %>5<%
+        } else {
+            %>6<%
+        } %> 0; color:#666666;">&quot;<%= file.replaceAll("\\\\","/") %>&quot;<%
+        if (image.getWidth() > 0 && image.getHeight() > 0 && !size.equals("")) {
+            %> (<%
+            if (image.getWidth() > 0 && image.getHeight() > 0) {
+                %><%= image.getWidth() + "x" + image.getHeight() %><%
+            }
+            if (!size.equals("")) {
+                %><%= size %><%
+            } %>)<%
+        } %></div><%
+    } catch( IOException ignored ) {}
+    %><img name="theImg" id="theImg" src="<%= request.getContextPath() + Utility.escapeUrl(file) %>"<%= border + zoom %>><%
 } else {
 	%><%
 } %></div>
@@ -184,7 +187,7 @@ if (isImage) {
 } else if (frame.equalsIgnoreCase("TOP")) { %>
 <html>
 <head>
-<title></title>
+<title><%= StringEscapeUtils.escapeHtml(file) %></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
@@ -286,7 +289,7 @@ function findIt(str) {
 	<table border="0" cellspacing="0" cellpadding="0">
 	<form action="<%= thisPage %>" target="main">
 	<input type="hidden" name="frame" value="main">
-	<input type="hidden" name="file" value="<%= file %>">
+	<input type="hidden" name="file" value="<%= Utility.escapeUrl(file) %>">
 	<tr>
 		<td class="imcmsAdmText"><span class="imcmsAdmText" style="color:#ffffff;">| &nbsp; <%
 		if (hasDocumentAll) { %><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/16 ?></span>&nbsp;</span></td>
@@ -304,8 +307,8 @@ function findIt(str) {
 		</select></td>
 		<td><span class="imcmsAdmText" style="color:#ffffff;"> &nbsp; | &nbsp; <%
 		} %><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/1 ?>
-		<a href="<%= thisPage %>?frame=main&file=<%= file %>&border=1" target="main" style="color:#ffffff;"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/2 ?></a> /
-		<a href="<%= thisPage %>?frame=main&file=<%= file %>&border=0" target="main" style="color:#ffffff;"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/3 ?></a> &nbsp; | &nbsp;
+		<a href="<%= thisPage %>?frame=main&file=<%= Utility.escapeUrl(file) %>&border=1" target="main" style="color:#ffffff;"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/2 ?></a> /
+		<a href="<%= thisPage %>?frame=main&file=<%= Utility.escapeUrl(file) %>&border=0" target="main" style="color:#ffffff;"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/3 ?></a> &nbsp; | &nbsp;
 		<a href="javascript: closeIt();" style="color:#ffffff;"><b><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/4 ?></b></a> &nbsp; | &nbsp;</span></td>
 	</tr>
 	</form>
@@ -331,14 +334,14 @@ function findIt(str) {
 	%>
 <html>
 <head>
-<title><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/26 ?></title>
+<title><%= StringEscapeUtils.escapeHtml(file) %></title>
 
 </head>
 	<%
 	if (isStat) { /* Statistics Report (HTML page) */ %>
 <frameset rows="35,*" border="0" framespacing="0" frameborder="NO" style="border:0">
-	<frame name="topframe" src="<%= thisPage %>?frame=top&isStat=1&file=<%= file %>" marginwidth="0" marginheight="0" frameborder="NO" scrolling="NO" noresize>
-	<frame name="main" src="<%= thisPage %>?frame=main&isStat=1&file=<%= file %>" marginwidth="10" marginheight="10" frameborder="NO" scrolling="AUTO" noresize>
+	<frame name="topframe" src="<%= thisPage %>?frame=top&isStat=1&file=<%= Utility.escapeUrl(file) %>" marginwidth="0" marginheight="0" frameborder="NO" scrolling="NO" noresize>
+	<frame name="main" src="<%= thisPage %>?frame=main&isStat=1&file=<%= Utility.escapeUrl(file) %>" marginwidth="10" marginheight="10" frameborder="NO" scrolling="AUTO" noresize>
 	<noframes>
 	<body bgcolor="#FFFFFF" text="#000000">
 	</body>
@@ -349,8 +352,8 @@ function findIt(str) {
 
 		%>
 <frameset rows="35,*" border="0" framespacing="0" frameborder="NO" style="border:0">
-	<frame name="topframe" src="<%= thisPage %>?frame=top&file=<%= file %>" marginwidth="0" marginheight="0" frameborder="NO" scrolling="NO" noresize>
-	<frame name="main" src="<%= thisPage %>?frame=main&file=<%= file %>" marginwidth="0" marginheight="0" frameborder="NO" scrolling="AUTO" noresize>
+	<frame name="topframe" src="<%= thisPage %>?frame=top&file=<%= Utility.escapeUrl(file) %>" marginwidth="0" marginheight="0" frameborder="NO" scrolling="NO" noresize>
+	<frame name="main" src="<%= thisPage %>?frame=main&file=<%= Utility.escapeUrl(file) %>" marginwidth="0" marginheight="0" frameborder="NO" scrolling="AUTO" noresize>
 	<noframes>
 	<body bgcolor="#FFFFFF" text="#000000">
 	</body>
