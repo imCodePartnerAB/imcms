@@ -497,6 +497,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             clone.sectionIds = (LazilyLoadedObject) sectionIds.clone();
             clone.categoryIds = (LazilyLoadedObject) categoryIds.clone();
             clone.roleIdToDocumentPermissionSetTypeMappings = (LazilyLoadedObject) roleIdToDocumentPermissionSetTypeMappings.clone();
+            clone.permissionSets = (LazilyLoadedObject) permissionSets.clone() ;
+            clone.permissionSetsForNewDocuments = (LazilyLoadedObject) permissionSetsForNewDocuments.clone() ;
             return clone;
         }
 

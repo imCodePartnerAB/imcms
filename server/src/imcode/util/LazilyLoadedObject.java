@@ -46,8 +46,8 @@ public class LazilyLoadedObject implements Serializable, Cloneable {
         loader = null ;
     }
 
-    public interface Loader extends Serializable {
-        Copyable load() ;
+    public interface Loader<E extends Copyable> extends Serializable {
+        E load() ;
     }
 
     public interface Copyable extends Serializable {

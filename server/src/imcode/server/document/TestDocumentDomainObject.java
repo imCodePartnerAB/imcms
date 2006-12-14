@@ -29,6 +29,21 @@ public class TestDocumentDomainObject extends TestCase {
         assertEquals( clone.getDocumentPermissionSetTypeForRoleId( roleId ), DocumentPermissionSetTypeDomainObject.FULL );
         assertEquals( document.getDocumentPermissionSetTypeForRoleId( roleId ), DocumentPermissionSetTypeDomainObject.NONE );
     }
+    
+    public void testDeepClonePermissionSets() throws CloneNotSupportedException {
+        assertFalse(document.getPermissionSets().getRestricted1().getEditDocumentInformation()) ;
+
+        DocumentDomainObject clone = (DocumentDomainObject)document.clone() ;
+        assertNotSame(document.attributes, clone.attributes) ;
+        assertNotSame(document.getPermissionSets(), clone.getPermissionSets());
+        assertNotSame(document.getPermissionSets().getRestricted1(), clone.getPermissionSets().getRestricted1());
+        
+        assertFalse(clone.getPermissionSets().getRestricted1().getEditDocumentInformation()) ;
+
+        clone.getPermissionSets().getRestricted1().setEditDocumentInformation(true);
+        assertTrue(clone.getPermissionSets().getRestricted1().getEditDocumentInformation()) ;
+        assertFalse(document.getPermissionSets().getRestricted1().getEditDocumentInformation()) ;
+    }
 
     public void testGetLifeCyclePhaseAtTime() throws Exception {
 

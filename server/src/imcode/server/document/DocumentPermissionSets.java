@@ -34,8 +34,10 @@ public class DocumentPermissionSets implements Serializable, Cloneable, LazilyLo
 
     public Object clone() throws CloneNotSupportedException {
         DocumentPermissionSets clone = (DocumentPermissionSets) super.clone();
-        clone.permissionSets[0] = (DocumentPermissionSetDomainObject) permissionSets[0].clone();
-        clone.permissionSets[1] = (DocumentPermissionSetDomainObject) permissionSets[1].clone();
+        clone.permissionSets = new DocumentPermissionSetDomainObject[] {
+                (DocumentPermissionSetDomainObject) permissionSets[0].clone(),
+                (DocumentPermissionSetDomainObject) permissionSets[1].clone()
+        };
         return clone ;
     }
 
