@@ -147,7 +147,7 @@ public class TestDocumentMapper extends TestCase {
         browserDocument.setBrowserDocumentId(BrowserDocumentDomainObject.Browser.DEFAULT, 1001);
         browserDocument.setCreator(new UserDomainObject(0));
         database.addExpectedSqlCall(new MockDatabase.InsertIntoTableSqlCallPredicate("meta"), new Integer(1002));
-        documentMapper.saveNewDocument(browserDocument, user);
+        documentMapper.saveNewDocument(browserDocument, user, false);
         database.assertExpectedSqlCalls();
         database.assertCallCount(1, new MockDatabase.InsertIntoTableSqlCallPredicate("browser_docs"));
         assertEquals(1002, browserDocument.getId());
@@ -185,7 +185,7 @@ public class TestDocumentMapper extends TestCase {
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.TEXT_ID, textDocument, user );
         document.setTemplateId( 1 );
         database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "meta" ), new Integer(1002));
-        documentMapper.saveNewDocument( document, user );
+        documentMapper.saveNewDocument( document, user, false);
         database.assertExpectedSqlCalls();
     }
 
@@ -193,7 +193,7 @@ public class TestDocumentMapper extends TestCase {
         user.addRoleId( RoleId.SUPERADMIN );
         DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.HTML_ID, textDocument, user );
         database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "meta" ), new Integer(1002));
-        documentMapper.saveNewDocument( document, user );
+        documentMapper.saveNewDocument( document, user, false);
         database.assertExpectedSqlCalls();
     }
 
@@ -201,7 +201,7 @@ public class TestDocumentMapper extends TestCase {
         user.addRoleId( RoleId.SUPERADMIN );
         DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.URL_ID, textDocument, user );
         database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "meta" ), new Integer(1002));
-        documentMapper.saveNewDocument( document, user );
+        documentMapper.saveNewDocument( document, user, false);
         database.assertExpectedSqlCalls();
     }
 

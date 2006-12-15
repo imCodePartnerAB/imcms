@@ -232,7 +232,7 @@ public class MenuEditPage extends OkCancelPage {
         {
             if ( null == savedDocument ) {
                 final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-                documentMapper.saveNewDocument( document, user );
+                documentMapper.saveNewDocument( document, user, false);
                 this.savedDocument = document ;
                 if (null != parentMenuIndex) {
                     MenuDomainObject menu = parentDocument.getMenu(parentMenuIndex.intValue());

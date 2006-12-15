@@ -175,10 +175,10 @@ public class DocumentMapper implements DocumentGetter {
         return sectionsSet.getSectionByName(name) ;
     }
 
-    public void saveNewDocument(DocumentDomainObject document, UserDomainObject user)
+    public void saveNewDocument(DocumentDomainObject document, UserDomainObject user, boolean copying)
             throws MaxCategoryDomainObjectsOfTypeExceededException, NoPermissionToAddDocumentToMenuException {
 
-        documentSaver.saveNewDocument(user, document);
+        documentSaver.saveNewDocument(user, document, copying);
 
     }
 
@@ -409,7 +409,7 @@ public class DocumentMapper implements DocumentGetter {
         String copyHeadlineSuffix = imcmsServices.getAdminTemplate(COPY_HEADLINE_SUFFIX_TEMPLATE, user, null);
         selectedChild.setHeadline(selectedChild.getHeadline() + copyHeadlineSuffix);
         makeDocumentLookNew(selectedChild, user);
-        saveNewDocument(selectedChild, user);
+        saveNewDocument(selectedChild, user, true);
     }
 
     public List getDocumentsWithPermissionsForRole(RoleDomainObject role) {

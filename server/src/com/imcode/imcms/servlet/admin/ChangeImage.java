@@ -137,7 +137,7 @@ public class ChangeImage extends HttpServlet {
                     if ( null != file ) {
                         fileDocument.setHeadline(file.getFilename());
                         fileDocument.setPublicationStatus(Document.PublicationStatus.APPROVED);
-                        documentMapper.saveNewDocument(document, user);
+                        documentMapper.saveNewDocument(document, user, false);
                         image.setSourceAndClearSize(new FileDocumentImageSource(documentMapper.getDocumentReference(fileDocument)));
                     }
                 }

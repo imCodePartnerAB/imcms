@@ -37,7 +37,7 @@ class DocumentSaver {
             throw new NoPermissionToEditDocumentException("No permission to edit document "+oldDocument.getId()) ;
         }
 
-        checkDocumentForSave(document, oldDocument, user);
+        checkDocumentForSave(document, oldDocument, user, false);
 
         document.loadAllLazilyLoaded();
         
@@ -53,7 +53,7 @@ class DocumentSaver {
 
             updateDocumentSectionsCategoriesKeywords(document);
 
-            updateDocumnetProperties(document);
+            updateDocumentProperties(document);
 
             if (user.canEditPermissionsFor(oldDocument)) {
                 updateDocumentRolePermissions(document, user, oldDocument);
@@ -143,12 +143,12 @@ class DocumentSaver {
     }
 
     void saveNewDocument(UserDomainObject user,
-                         DocumentDomainObject document) throws NoPermissionToAddDocumentToMenuException {
+                         DocumentDomainObject document, boolean copying) throws NoPermissionToAddDocumentToMenuException {
         if (!user.canEdit(document)) {
             return; // TODO: More specific check needed. Throw exception ?
         }
 
-        checkDocumentForSave(document, null, user);
+        checkDocumentForSave(document, null, user, copying);
 
         document.loadAllLazilyLoaded();
         
@@ -156,7 +156,8 @@ class DocumentSaver {
 
         int newMetaId = sqlInsertIntoMeta(document);
 
-        if (!user.isSuperAdminOrHasFullPermissionOn(document)) {
+        boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(document) && !copying;
+        if (inheritRestrictedPermissions) {
             document.getPermissionSets().setRestricted1(document.getPermissionSetsForNewDocuments().getRestricted1());
             document.getPermissionSets().setRestricted2(document.getPermissionSetsForNewDocuments().getRestricted2());
         }
@@ -165,7 +166,7 @@ class DocumentSaver {
 
         updateDocumentSectionsCategoriesKeywords(document);
 
-        updateDocumnetProperties(document);
+        updateDocumentProperties(document);
 
         updateDocumentRolePermissions(document, user, null);
 
@@ -177,9 +178,8 @@ class DocumentSaver {
     }
 
     private void checkDocumentForSave(DocumentDomainObject document,
-                                      DocumentDomainObject oldDocument, UserDomainObject user
-    ) throws NoPermissionToAddDocumentToMenuException {
-        if (document instanceof TextDocumentDomainObject) {
+                                      DocumentDomainObject oldDocument, UserDomainObject user, boolean copying) throws NoPermissionToAddDocumentToMenuException {
+        if ( !copying && document instanceof TextDocumentDomainObject ) {
             checkDocumentsAddedWithoutPermission((TextDocumentDomainObject)document, (TextDocumentDomainObject) oldDocument, user);
         }
 
@@ -333,7 +333,7 @@ class DocumentSaver {
         deleteUnusedKeywords();
     }
 
-    void updateDocumnetProperties( DocumentDomainObject document ) {
+    void updateDocumentProperties( DocumentDomainObject document ) {
         int meta_id = document.getId();
         Map properties = (Map) document.getProperties();
         deletePropertiesFromDocumnet(meta_id);
