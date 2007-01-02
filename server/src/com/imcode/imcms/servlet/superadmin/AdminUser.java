@@ -28,7 +28,6 @@ public class AdminUser extends HttpServlet {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        ImcmsServices imcref = Imcms.getServices();
         final UserDomainObject user = Utility.getLoggedOnUser( req );
         Utility.setDefaultHtmlContentType( res );
 

@@ -55,6 +55,7 @@ public class UserEditorPage extends OkCancelPage {
 
     private static final LocalizedMessage ERROR__PASSWORDS_DID_NOT_MATCH = new LocalizedMessage("error/passwords_did_not_match");
     private static final LocalizedMessage ERROR__PASSWORD_LENGTH = new LocalizedMessage("error/password_length");
+    private static final LocalizedMessage ERROR__PASSWORD_TOO_WEAK = new LocalizedMessage("error/password_too_weak");
     private static final LocalizedMessage ERROR__EDITED_USER_MUST_HAVE_AT_LEAST_ONE_ROLE = new LocalizedMessage("error/user_must_have_at_least_one_role");
 
     private UserDomainObject editedUser;
@@ -63,7 +64,7 @@ public class UserEditorPage extends OkCancelPage {
     private LocalizedMessage errorMessage;
     private static final int MAXIMUM_PASSWORD_LENGTH = 15;
     private static final int MINIMUM_PASSWORD_LENGTH = 4;
-    
+
     public UserEditorPage(UserDomainObject user, DispatchCommand okDispatchCommand,
                           DispatchCommand cancelDispatchCommand) {
         super(okDispatchCommand, cancelDispatchCommand);
@@ -77,7 +78,6 @@ public class UserEditorPage extends OkCancelPage {
 
     private void updateUserFromRequest(HttpServletRequest request) {
         errorMessage = null;
-        updateUserPasswordFromRequest(editedUser, request);
         editedUser.setLoginName(request.getParameter(REQUEST_PARAMETER__LOGIN_NAME));
         editedUser.setFirstName(request.getParameter(REQUEST_PARAMETER__FIRST_NAME));
         editedUser.setLastName(request.getParameter(REQUEST_PARAMETER__LAST_NAME));
@@ -91,6 +91,8 @@ public class UserEditorPage extends OkCancelPage {
         editedUser.setEmailAddress(request.getParameter(REQUEST_PARAMETER__EMAIL));
         editedUser.setLanguageIso639_2(request.getParameter(REQUEST_PARAMETER__LANGUAGE));
         editedUser.setActive(null != request.getParameter(REQUEST_PARAMETER__ACTIVE));
+
+        updateUserPasswordFromRequest(editedUser, request);
 
         updateUserRolesFromRequest(request);
         updateUserAdminRolesFromRequest(request);
@@ -152,6 +154,8 @@ public class UserEditorPage extends OkCancelPage {
                 errorMessage = ERROR__PASSWORD_LENGTH;
             } else if ( !passwordsMatch(request) ) {
                 errorMessage = ERROR__PASSWORDS_DID_NOT_MATCH;
+            } else if ( !user.isDefaultUser() && password1.equalsIgnoreCase(user.getLoginName()) ) {
+                errorMessage = ERROR__PASSWORD_TOO_WEAK ;
             } else {
                 user.setPassword(password1);
             }
