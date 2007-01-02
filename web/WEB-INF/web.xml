@@ -477,6 +477,76 @@
         <mime-type>application/vnd.ms-excel</mime-type>
     </mime-mapping>
 
+    <mime-mapping>
+        <extension>odt</extension>
+        <mime-type>application/vnd.oasis.opendocument.text</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>ott</extension>
+        <mime-type>application/vnd.oasis.opendocument.text-template</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>oth</extension>
+        <mime-type>application/vnd.oasis.opendocument.text-web</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>odm</extension>
+        <mime-type>application/vnd.oasis.opendocument.text-master</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>odg</extension>
+        <mime-type>application/vnd.oasis.opendocument.graphics</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>otg</extension>
+        <mime-type>application/vnd.oasis.opendocument.graphics-template</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>odp</extension>
+        <mime-type>application/vnd.oasis.opendocument.presentation</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>otp</extension>
+        <mime-type>application/vnd.oasis.opendocument.presentation-template</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>ods</extension>
+        <mime-type>application/vnd.oasis.opendocument.spreadsheet</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>ots</extension>
+        <mime-type>application/vnd.oasis.opendocument.spreadsheet-template</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>odc</extension>
+        <mime-type>application/vnd.oasis.opendocument.chart</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>odf</extension>
+        <mime-type>application/vnd.oasis.opendocument.formula</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>odb</extension>
+        <mime-type>application/vnd.oasis.opendocument.database</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>odi</extension>
+        <mime-type>application/vnd.oasis.opendocument.image</mime-type>
+    </mime-mapping>
+
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
         <welcome-file>index.htm</welcome-file>
