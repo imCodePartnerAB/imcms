@@ -220,7 +220,12 @@ public class Utility {
         if (null == document) {
             return null ;
         }
-        return getContextRelativePathToDocumentWithId(document.getId());
+        if (document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) != null  ) {
+            return getContextRelativePathToDocumentWithAlias(document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
+
+        }else  {
+            return getContextRelativePathToDocumentWithId(document.getId());
+        }
     }
 
     public static String getContextRelativePathToDocumentWithId(int documentId) {
@@ -229,6 +234,14 @@ public class Utility {
             documentPathPrefix = "/servlet/GetDoc?meta_id=" ;
         }
         return documentPathPrefix + documentId;
+    }
+
+    public static String getContextRelativePathToDocumentWithAlias(String alias) {
+        String documentPathPrefix = Imcms.getServices().getConfig().getDocumentPathPrefix() ;
+        if (StringUtils.isBlank( documentPathPrefix )) {
+            documentPathPrefix = "/" ;
+        }
+        return documentPathPrefix + alias;
     }
 
     public static String formatHtmlDatetime( Date datetime ) {

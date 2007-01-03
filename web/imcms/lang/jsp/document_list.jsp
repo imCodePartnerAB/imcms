@@ -45,7 +45,8 @@ if (null != formData.documentsIterator) { %>
 
 <table border="0" cellspacing="0" cellpadding="2" width="680">
 <tr>
-	<td><b><? web/imcms/lang/jsp/heading_status ?>&nbsp;</b></td>
+    <td><b><? global/Page_alias ?>&nbsp;</b></td>
+    <td><b><? web/imcms/lang/jsp/heading_status ?>&nbsp;</b></td>
 	<td><b><? web/imcms/lang/jsp/heading_type ?></b></td>
 	<td><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
 	<td><b><? web/imcms/lang/jsp/heading_references ?></b></td>
@@ -60,10 +61,15 @@ if (null != formData.documentsIterator) { %>
 		DocumentDomainObject document = (DocumentDomainObject)formData.documentsIterator.next();
 		DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingDocument = documentMapper.getDocumentMenuPairsContainingDocument( document ); %>
 <tr>
-	<td colspan="5"><img src="$contextPath/imcms/$language/images/admin/1x1_cccccc.gif" width="100%" height="1"></td>
+	<td colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1_cccccc.gif" width="100%" height="1"></td>
 </tr>
-<tr valign="top">
-	<td align="center"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
+<tr valign="top"><%String alias = document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+                   if ( alias != null ) { %>
+    <td><a name="alias" href="$contextPath/<%= document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) %>"><%= StringEscapeUtils.escapeHtml(document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)) %></a></td>
+    <% }else { %>
+    <td>&nbsp;</td> <%}%>
+    <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+        <%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
 	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
 	<%= StringEscapeUtils.escapeHtml((String)documentTypes.get(new Integer( document.getDocumentTypeId() )))%>&nbsp;</td>
 	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
@@ -100,11 +106,11 @@ if (null != formData.documentsIterator) { %>
 </tr><%
 	} %>
 <tr>
-	<td colspan="5">#gui_hr( "blue" )</td>
+	<td colspan="6">#gui_hr( "blue" )</td>
 </tr>
 <form method="get" action="AdminManager">
 <tr>
-	<td colspan="5" align="right"><input type="submit" class="imcmsFormBtn" name="" value="<? global/cancel ?>"></td>
+	<td colspan="6" align="right"><input type="submit" class="imcmsFormBtn" name="" value="<? global/cancel ?>"></td>
 </tr>
 </form>
 </table><%

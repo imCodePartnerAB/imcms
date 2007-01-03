@@ -98,6 +98,11 @@ public class IndexDocumentFactory {
             indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId ) );
         }
 
+        Map<String, String> documentProperties = document.getProperties();
+        for (Map.Entry<String, String> propertyEntry : documentProperties.entrySet()) {
+            indexDocument.add( Field.Keyword( DocumentIndex.FIELD__PROPERTY_PREFIX +propertyEntry.getKey(), "" + propertyEntry.getValue() ) );
+        }
+
         return indexDocument;
     }
 

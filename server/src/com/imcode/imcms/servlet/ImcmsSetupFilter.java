@@ -68,7 +68,10 @@ public class ImcmsSetupFilter implements Filter {
         String documentPathPrefix = service.getConfig().getDocumentPathPrefix() ;
         String documentIdString = null ;
         if (StringUtils.isNotBlank( documentPathPrefix ) && path.startsWith( documentPathPrefix )) {
-            documentIdString = path.substring( documentPathPrefix.length() );
+            documentIdString = path.substring( documentPathPrefix.length());
+            if (documentIdString.endsWith( documentPathPrefix ) ) {
+                documentIdString = documentIdString.substring(0,documentIdString.length()-1);
+            }
         }
         HttpSession session = httpServletRequest.getSession();
         boolean isResourcePath = null != session.getServletContext().getResourcePaths(path);

@@ -57,10 +57,11 @@ if (doCheckLinks) {
 	while ( linksIterator.hasNext() ) { %>
 <table border="0" cellspacing="2" cellpadding="2" width="100%">
 <tr>
-	<td colspan="8"><vel:velocity><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="15"></vel:velocity></td>
+	<td colspan="9"><vel:velocity><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="15"></vel:velocity></td>
 </tr>
 <tr>
-	<td style="width: 50px"><b><? web/imcms/lang/jsp/heading_status ?></b></td>
+    <td><b><? global/Page_alias ?>&nbsp;</b></td>
+    <td style="width: 50px"><b><? web/imcms/lang/jsp/heading_status ?></b></td>
 	<td style="width: 70px"><b><? web/imcms/lang/jsp/heading_type ?></b></td>
 	<td><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
 	<td><b><? web/imcms/lang/jsp/heading_references ?></b></td>
@@ -70,7 +71,7 @@ if (doCheckLinks) {
 	<td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_ok ?></b></td>
 </tr>
 <tr>
-	<td colspan="8"><vel:velocity>#gui_hr( "cccccc" )</vel:velocity></td>
+	<td colspan="9"><vel:velocity>#gui_hr( "cccccc" )</vel:velocity></td>
 </tr><%
 		for (int i = 0; linksIterator.hasNext() && i < 10; ++i) {
 			response.flushBuffer();
@@ -80,13 +81,17 @@ if (doCheckLinks) {
 				continue;
 			}
 			DocumentDomainObject document = link.getDocument() ; %>
-<tr>
-	<td><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td><%
+<tr><%String alias = document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+    if ( alias != null ) { %>
+    <td><a name="alias" href="<%= request.getContextPath() + "/" + document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) %>"><%= StringEscapeUtils.escapeHtml(document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)) %></a></td>
+    <% }else { %>
+    <td>&nbsp;</td> <%}%>
+    <td nowrap><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td><%
 			if (link instanceof LinkCheck.UrlDocumentLink) {
 				LinkCheck.UrlDocumentLink urlDocumentLink = (LinkCheck.UrlDocumentLink)link ;
 				DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument = urlDocumentLink.getDocumentMenuPairsContainingUrlDocument(); %>
-	<td><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/url_document ?></td>
-	<td><a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%=
+	<td nowrap><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/url_document ?></td>
+	<td nowrap><a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%=
 				document.getId() %>&<%=
 				AdminDoc.PARAMETER__DISPATCH_FLAGS%>=<%=
 				ImcmsConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT %>"><%=
