@@ -16,24 +16,24 @@
             imcode.server.document.textdocument.TextDocumentDomainObject,
             imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper,
             imcode.server.user.UserDomainObject,
-            imcode.util.DateConstants,
-            imcode.util.Html,
-            imcode.util.HttpSessionUtils,
-            imcode.util.ToStringPairTransformer,
-            imcode.util.Utility,
+            imcode.util.*,
             imcode.util.jscalendar.JSCalendar,
             org.apache.commons.lang.ObjectUtils,
             org.apache.commons.lang.StringEscapeUtils,
             org.apache.commons.lang.StringUtils,
             javax.servlet.http.Cookie,
             java.net.URLEncoder,
-            java.text.Collator"%><%
+            java.text.Collator,
+            java.text.DateFormat,
+            java.text.SimpleDateFormat,
+            java.util.Arrays,
+            java.util.Date,
+            java.util.Set,
+            java.util.TreeSet"%>
 
-		response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );%><%@
+<%@	taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
-		page import="java.text.DateFormat"%><%@
-		page import="java.text.SimpleDateFormat, java.util.*"%><%@
-		taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
+	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );
 
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     final ImcmsServices service = Imcms.getServices();
@@ -192,16 +192,20 @@ function checkFocus() {
 	</tr>
     <tr>
 	    <td colspan="2">#gui_hr( 'cccccc' )</td>
-	</tr>
+	</tr><% if( !documentInformationPage.getErrors().isEmpty() &&
+            documentInformationPage.getErrors().contains(EditDocumentInformationPageFlow.ALIAS_ERROR_MESSAGE)  ) {%>
+    <tr>
+        <td colspan="2" class="error"><span style='color:red'><%= EditDocumentInformationPageFlow.ALIAS_ERROR_MESSAGE.toLocalizedString(user) %></span></td>
+    </tr><%}%>
     <tr>
         <td class="imcmsAdmText" nowrap><? global/Page_alias ?></td>
         <td>
         <table border="0" cellspacing="0" cellpadding="0" width="100%">
         <tr>
-            <td  align="right" width="85%"><%= "http://" + request.getServerName() + request.getContextPath() + "/" %>&nbsp;<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__DOCUMENT_ALIAS %>" size="40" maxlength="255" 
-            value="<%= StringEscapeUtils.escapeHtml( document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) ) %>"></td>
-            <td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER%>"
-            value=" <? install/htdocs/global/pageinfo/browse ?> "></td>
+            <td  align="right" width="85%"><%= "http://" + request.getServerName() + request.getContextPath() + "/" %>&nbsp;<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__DOCUMENT_ALIAS %>" size="40" maxlength="255"
+            value="<%= ObjectUtils.defaultIfNull( StringEscapeUtils.escapeHtml( document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) ), "" ) %>"></td>
+            <td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_ALIAS_LIST %>"
+            value=" <? global/view ?> "></td>
         </tr>
         </table></td>
     </tr>

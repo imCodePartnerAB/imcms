@@ -42,6 +42,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -51,6 +52,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class Utility {
 
@@ -188,7 +190,7 @@ public class Utility {
     }
 
     public static String getContents( String path, HttpServletRequest request,
-                                HttpServletResponse response ) throws ServletException, IOException {
+                                      HttpServletResponse response ) throws ServletException, IOException {
         RequestDispatcher requestDispatcher = request.getRequestDispatcher( path );
         if ( null == requestDispatcher ) {
             throw new ServletException( "No RequestDispatcher for path \"" + path + "\". Maybe the path doesn't exist?" );
@@ -437,6 +439,25 @@ public class Utility {
 
     public static ContentManagementSystem getContentManagementSystemFromRequest(ServletRequest request) {
         return (ContentManagementSystem)request.getAttribute( CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE );
+    }
+
+    public static String fallbackUrlDecode(String input, FallbackDecoder fallbackDecoder) {
+        Pattern p = Pattern.compile("%[0-9a-zA-Z]{2}|.", Pattern.DOTALL);
+        Matcher matcher = p.matcher(input);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        while(matcher.find()) {
+            String match = matcher.group();
+            if (match.length() == 1) {
+                char c = match.charAt(0);
+                if (c < 256) {
+                    out.write(c) ;
+                } 
+            } else {
+                int byteValue = Integer.parseInt(match.substring(1), 16);
+                out.write(byteValue);
+            }
+        }
+        return fallbackDecoder.decodeBytes(out.toByteArray(), null) ;
     }
 
 }

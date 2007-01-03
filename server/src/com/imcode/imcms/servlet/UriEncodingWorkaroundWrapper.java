@@ -1,26 +1,19 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.Imcms;
 import imcode.util.FallbackDecoder;
-import org.apache.commons.lang.UnhandledException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
 class UriEncodingWorkaroundWrapper extends HttpServletRequestWrapper {
 
     private FallbackDecoder decoder;
-    private String encoding ; 
     private boolean redecodeParameters ;
-    UriEncodingWorkaroundWrapper(HttpServletRequest request, String encoding) {
+    UriEncodingWorkaroundWrapper(HttpServletRequest request, FallbackDecoder fallbackDecoder) {
         super(request);
-        this.encoding = encoding;
-        decoder = new FallbackDecoder(Charset.forName(Imcms.DEFAULT_ENCODING),
-                                      Charset.forName(encoding));
+        decoder = fallbackDecoder;
         String method = getMethod();
         redecodeParameters = "GET".equals(method) || "HEAD".equals(method) ;
     }
@@ -67,10 +60,6 @@ class UriEncodingWorkaroundWrapper extends HttpServletRequestWrapper {
         if (null == parameterValue ) {
             return null ;
         }
-        try {
-            return decoder.decodeBytes(parameterValue.getBytes(encoding), parameterName) ;
-        } catch ( UnsupportedEncodingException e ) {
-            throw new UnhandledException(e);
-        }
+        return decoder.decodeBytes(decoder.getFallbackCharset().encode(parameterValue).array(), parameterName) ;
     }
 }

@@ -5,12 +5,17 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.FallbackDecoder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.NDC;
 
 import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 public class ImcmsSetupFilter implements Filter {
 
@@ -30,8 +35,10 @@ public class ImcmsSetupFilter implements Filter {
         }
 
         String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
+        FallbackDecoder fallbackDecoder = new FallbackDecoder(Charset.forName(Imcms.DEFAULT_ENCODING),
+                Charset.forName(workaroundUriEncoding));
         if ( null != workaroundUriEncoding ) {
-            request = new UriEncodingWorkaroundWrapper(request, workaroundUriEncoding);
+            request = new UriEncodingWorkaroundWrapper(request, fallbackDecoder);
         }
 
         UserDomainObject user = Utility.getLoggedOnUser(request) ;
@@ -50,14 +57,13 @@ public class ImcmsSetupFilter implements Filter {
         }
         NDC.push( StringUtils.substringAfterLast( request.getRequestURI(), "/" ) );
 
-        handleDocumentUri(chain, request, response, service);
+        handleDocumentUri(chain, request, response, service, fallbackDecoder);
         NDC.setMaxDepth( 0 );
     }
 
     private void handleDocumentUri(FilterChain chain, HttpServletRequest httpServletRequest, ServletResponse response,
-                                   ImcmsServices service
-    ) throws ServletException, IOException {
-        String path = httpServletRequest.getRequestURI() ;
+                                   ImcmsServices service, FallbackDecoder fallbackDecoder) throws ServletException, IOException {
+        String path = Utility.fallbackUrlDecode(httpServletRequest.getRequestURI(), fallbackDecoder) ;
         path = StringUtils.substringAfter( path, httpServletRequest.getContextPath() ) ;
         String documentPathPrefix = service.getConfig().getDocumentPathPrefix() ;
         String documentIdString = null ;

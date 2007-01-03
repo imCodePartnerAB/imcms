@@ -143,6 +143,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         properties.put(key, value);
     }
 
+    public void removeProperty(String key) {
+        Map<String, String> properties = (Map<String, String>) attributes.properties.get();
+        properties.remove(key);
+    }
+
     public String getLanguageIso639_2() {
         return attributes.languageIso639_2;
     }

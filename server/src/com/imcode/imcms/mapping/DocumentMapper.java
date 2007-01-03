@@ -343,11 +343,11 @@ public class DocumentMapper implements DocumentGetter {
         return documentIds;
     }
 
-    public Set getAllDocumentAlias() {
-        Set allDocumentAlias = new HashSet();
-        String[] allAlias = (String[]) getDatabase().execute(new SqlQueryCommand("SELECT value FROM document_properties where key = ? ORDER BY value", new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS}, Utility.STRING_ARRAY_HANDLER));
+    public Set<String> getAllDocumentAlias() {
+        Set<String> allDocumentAlias = new HashSet<String>();
+        String[] allAlias = (String[]) getDatabase().execute(new SqlQueryCommand("SELECT value FROM document_properties where key_name = ? ORDER BY value", new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS}, Utility.STRING_ARRAY_HANDLER));
         for (int i = 0; i < allAlias.length; i ++) {
-            allDocumentAlias.add(allAlias[i]) ;
+            allDocumentAlias.add(allAlias[i].toLowerCase()) ;
         }
         return allDocumentAlias;
     }
@@ -363,7 +363,7 @@ public class DocumentMapper implements DocumentGetter {
             }else{
                 String[] documentIds = (String[]) getDatabase().execute(
                         new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
-                                new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdString },
+                                new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdString.toLowerCase() },
                                 Utility.STRING_ARRAY_HANDLER));
 
                 if(documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {

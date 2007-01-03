@@ -52,4 +52,7 @@ public class FallbackDecoder {
         return charset.newDecoder().onMalformedInput(CodingErrorAction.REPORT) ;
     }
 
+    public Charset getFallbackCharset() {
+        return fallbackCharset;
+    }
 }

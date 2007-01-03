@@ -2,7 +2,9 @@ package com.imcode.imcms.flow;
 
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.admin.ImageBrowser;
+import com.imcode.imcms.servlet.admin.ListDocumentAliasPage;
 import com.imcode.imcms.servlet.admin.UserFinder;
 import com.imcode.util.KeywordsParser;
 import imcode.server.Imcms;
@@ -11,11 +13,7 @@ import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.ArraySet;
-import imcode.util.DateConstants;
-import imcode.util.HttpSessionUtils;
-import imcode.util.LocalizedMessage;
-import imcode.util.Utility;
+import imcode.util.*;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.servlet.ServletException;
@@ -61,6 +59,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__GO_TO_PUBLISHER_BROWSER = "browseForPublisher";
     public static final String REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER = "browseForCreator";
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER = "browseForMenuImage";
+    public static final String REQUEST_PARAMETER__GO_TO_ALIAS_LIST = "listDocumentAlias";
     public static final String PAGE__DOCUMENT_INFORMATION = "document_information";
 
     public static final String REQUEST_PARAMETER__STATUS__NEW = "new";
@@ -70,6 +69,9 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     private static final LocalizedMessage BUTTON_TEXT__SELECT_USER = new LocalizedMessage( "templates/sv/AdminChangeUser.htm/2007" );
     private static final LocalizedMessage HEADLINE__SELECT_CREATOR = new LocalizedMessage( "server/src/com/imcode/imcms/flow/EditDocumentInformationPageFlow/select_creator_headline" );
     private static final LocalizedMessage HEADLINE__SELECT_PUBLISHER = new LocalizedMessage( "server/src/com/imcode/imcms/flow/EditDocumentInformationPageFlow/select_publisher_headline" );
+    public static final LocalizedMessage ALIAS_ERROR_MESSAGE   = new LocalizedMessage("server/src/com/imcode/imcms/flow/EditDocumentInformationPageFlow/alias_error__already_exist_message");
+
+    private Set<LocalizedMessage> errors = new HashSet();
 
     private boolean adminButtonsHidden;
 
@@ -85,13 +87,15 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     }
 
     private void dispatchFromDocumentInformation( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        setDocumentAttributesFromRequestParameters( document, request );
+        setDocumentAttributesFromRequestParameters( document, request, errors);
         if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_PUBLISHER_BROWSER ) ) {
             dispatchToPublisherUserBrowser( request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER ) ) {
             dispatchToCreatorUserBrowser( request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER ) ) {
             dispatchToImageBrowser( request, response );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_ALIAS_LIST ) ) {
+           dispatchToAliasList( request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__ADD_CATEGORY ) ) {
             if ( null != request.getParameter( REQUEST_PARAMETER__CATEGORY_IDS_TO_ADD ) ){
                 String[] categoriesToAdd = request.getParameterValues(REQUEST_PARAMETER__CATEGORY_IDS_TO_ADD);
@@ -128,6 +132,17 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             }
         } );
         imageBrowser.forward( request, response );
+    }
+
+    private void dispatchToAliasList( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+        final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
+        DispatchCommand cancelCommand = new DispatchCommand() {
+            public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+                request.setAttribute(REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName);
+                dispatchToFirstPage(request, response);
+            }
+        };
+        new ListDocumentAliasPage(null, cancelCommand, request ).forward(request, response);
     }
 
     private void dispatchToPublisherUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
@@ -178,23 +193,26 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     }
 
     private void dispatchToDocumentInformationPage( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        DocumentInformationPage documentInformationPage = new DocumentInformationPage(getDocument(), adminButtonsHidden);
+        DocumentInformationPage documentInformationPage = new DocumentInformationPage(getDocument(), adminButtonsHidden, errors);
         documentInformationPage.forward( request, response );
     }
 
-    protected void dispatchOkFromEditPage( HttpServletRequest request, HttpServletResponse response ) throws IOException {
-        dispatchOkFromDocumentInformation( request );
+    protected void dispatchOkFromEditPage( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+        dispatchOkFromDocumentInformation( request, response );
     }
 
-    private void dispatchOkFromDocumentInformation( HttpServletRequest request ) {
-        setDocumentAttributesFromRequestParameters( document, request );
+    private void dispatchOkFromDocumentInformation(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        setDocumentAttributesFromRequestParameters( document, request, errors);
+        if (!errors.isEmpty()) {
+            dispatchToDocumentInformationPage(request, response);
+        }
     }
 
-    private static void setDocumentAttributesFromRequestParameters( DocumentDomainObject document,
-                                                                    HttpServletRequest request ) {
+    private static void setDocumentAttributesFromRequestParameters(DocumentDomainObject document, HttpServletRequest request, Set errors) {
 
         final ImcmsServices service = Imcms.getServices();
         final CategoryMapper categoryMapper = service.getCategoryMapper();
+        final DocumentMapper documentMapper = service.getDocumentMapper();
 
         String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE );
         document.setHeadline( headline );
@@ -268,7 +286,21 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         String[] keywords =  keywordsParser.parseKeywords( keywordsString );
         document.setKeywords( new ArraySet(keywords) );
         if ( null != request.getParameter(REQUEST_PARAMETER__DOCUMENT_ALIAS) ) {
-            document.setProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, request.getParameter(REQUEST_PARAMETER__DOCUMENT_ALIAS));
+            errors.remove(ALIAS_ERROR_MESSAGE);
+            String oldAlias = document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+            String newAlias = request.getParameter(REQUEST_PARAMETER__DOCUMENT_ALIAS).trim().replaceAll("[%?]", "");
+            if(oldAlias==null || !newAlias.equals(oldAlias.toLowerCase()) && newAlias.length()>0){
+                Set<String> allAlias = documentMapper.getAllDocumentAlias();
+                if (allAlias.contains(newAlias.toLowerCase())) {
+                    errors.add(ALIAS_ERROR_MESSAGE);
+                    newAlias = oldAlias;
+                }
+            }
+            if(newAlias.length()>0){
+                document.setProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, newAlias);
+            }else{
+                document.removeProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+            }
         }
 
         boolean searchDisabled = "1".equals( request.getParameter( REQUEST_PARAMETER__SEARCH_DISABLED ) );
@@ -355,10 +387,12 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         private static final String REQUEST_ATTRIBUTE__DOCUMENT_INFORMATION_PAGE = "documentInformationPage";
         private DocumentDomainObject document;
         private boolean adminButtonsHidden;
+        private Set errors;
 
-        public DocumentInformationPage( DocumentDomainObject document, boolean adminButtonsHidden ) {
+        public DocumentInformationPage( DocumentDomainObject document, boolean adminButtonsHidden, Set errors ) {
             this.document = document;
             this.adminButtonsHidden = adminButtonsHidden;
+            this.errors = errors;
         }
 
         public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
@@ -377,6 +411,10 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
         public boolean isAdminButtonsHidden() {
             return adminButtonsHidden;
+        }
+
+        public Set getErrors() {
+            return errors;
         }
     }
 }
