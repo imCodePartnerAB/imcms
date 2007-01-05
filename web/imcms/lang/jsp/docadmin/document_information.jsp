@@ -193,9 +193,13 @@ function checkFocus() {
     <tr>
 	    <td colspan="2">#gui_hr( 'cccccc' )</td>
 	</tr><% if( !documentInformationPage.getErrors().isEmpty() &&
-            documentInformationPage.getErrors().contains(EditDocumentInformationPageFlow.ALIAS_ERROR_MESSAGE)  ) {%>
+            documentInformationPage.getErrors().contains(EditDocumentInformationPageFlow.ALIAS_ERROR__ALREADY_EXIST) ) {%>
     <tr>
-        <td colspan="2" class="error"><span style='color:red'><%= EditDocumentInformationPageFlow.ALIAS_ERROR_MESSAGE.toLocalizedString(user) %></span></td>
+        <td colspan="2" class="error"><span style='color:red'><%= EditDocumentInformationPageFlow.ALIAS_ERROR__ALREADY_EXIST.toLocalizedString(user) %></span></td>
+    </tr><%} else if( !documentInformationPage.getErrors().isEmpty() &&
+            documentInformationPage.getErrors().contains(EditDocumentInformationPageFlow.ALIAS_ERROR__USED_BY_SYSTEM) ) {%>
+    <tr>
+        <td colspan="2" class="error"><span style='color:red'><%= EditDocumentInformationPageFlow.ALIAS_ERROR__USED_BY_SYSTEM.toLocalizedString(user) %></span></td>
     </tr><%}%>
     <tr>
         <td class="imcmsAdmText" nowrap><? global/Page_alias ?></td>

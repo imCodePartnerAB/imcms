@@ -20,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -69,7 +70,8 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     private static final LocalizedMessage BUTTON_TEXT__SELECT_USER = new LocalizedMessage( "templates/sv/AdminChangeUser.htm/2007" );
     private static final LocalizedMessage HEADLINE__SELECT_CREATOR = new LocalizedMessage( "server/src/com/imcode/imcms/flow/EditDocumentInformationPageFlow/select_creator_headline" );
     private static final LocalizedMessage HEADLINE__SELECT_PUBLISHER = new LocalizedMessage( "server/src/com/imcode/imcms/flow/EditDocumentInformationPageFlow/select_publisher_headline" );
-    public static final LocalizedMessage ALIAS_ERROR_MESSAGE   = new LocalizedMessage("server/src/com/imcode/imcms/flow/EditDocumentInformationPageFlow/alias_error__already_exist_message");
+    public static final LocalizedMessage ALIAS_ERROR__ALREADY_EXIST   = new LocalizedMessage("server/src/com/imcode/imcms/flow/EditDocumentInformationPageFlow/alias_error__already_exist_message");
+    public static final LocalizedMessage ALIAS_ERROR__USED_BY_SYSTEM   = new LocalizedMessage("server/src/com/imcode/imcms/flow/EditDocumentInformationPageFlow/alias_error__used_by_system_message");
 
     private Set<LocalizedMessage> errors = new HashSet();
 
@@ -286,13 +288,18 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         String[] keywords =  keywordsParser.parseKeywords( keywordsString );
         document.setKeywords( new ArraySet(keywords) );
         if ( null != request.getParameter(REQUEST_PARAMETER__DOCUMENT_ALIAS) ) {
-            errors.remove(ALIAS_ERROR_MESSAGE);
+            errors.remove(ALIAS_ERROR__ALREADY_EXIST);
+            errors.remove(ALIAS_ERROR__USED_BY_SYSTEM);
             String oldAlias = document.getAlias();
             String newAlias = request.getParameter(REQUEST_PARAMETER__DOCUMENT_ALIAS).trim().replaceAll("[%?]", "");
             if(oldAlias==null || !newAlias.equals(oldAlias.toLowerCase()) && newAlias.length()>0){
                 Set<String> allAlias = documentMapper.getAllDocumentAlias();
+                File path = new File( Imcms.getPath(), newAlias );
                 if (allAlias.contains(newAlias.toLowerCase())) {
-                    errors.add(ALIAS_ERROR_MESSAGE);
+                    errors.add(ALIAS_ERROR__ALREADY_EXIST) ;
+                    newAlias = oldAlias;
+                }else if (path.exists()) {
+                    errors.add(ALIAS_ERROR__USED_BY_SYSTEM) ;
                     newAlias = oldAlias;
                 }
             }
