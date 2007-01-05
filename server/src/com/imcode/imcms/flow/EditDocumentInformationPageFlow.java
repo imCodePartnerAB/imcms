@@ -287,7 +287,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         document.setKeywords( new ArraySet(keywords) );
         if ( null != request.getParameter(REQUEST_PARAMETER__DOCUMENT_ALIAS) ) {
             errors.remove(ALIAS_ERROR_MESSAGE);
-            String oldAlias = document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+            String oldAlias = document.getAlias();
             String newAlias = request.getParameter(REQUEST_PARAMETER__DOCUMENT_ALIAS).trim().replaceAll("[%?]", "");
             if(oldAlias==null || !newAlias.equals(oldAlias.toLowerCase()) && newAlias.length()>0){
                 Set<String> allAlias = documentMapper.getAllDocumentAlias();

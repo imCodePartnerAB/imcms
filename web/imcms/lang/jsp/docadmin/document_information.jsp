@@ -203,7 +203,7 @@ function checkFocus() {
         <table border="0" cellspacing="0" cellpadding="0" width="100%">
         <tr>
             <td  align="right" width="85%"><%= "http://" + request.getServerName() + request.getContextPath() + "/" %>&nbsp;<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__DOCUMENT_ALIAS %>" size="40" maxlength="255"
-            value="<%= ObjectUtils.defaultIfNull( StringEscapeUtils.escapeHtml( document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) ), "" ) %>"></td>
+            value="<%= ObjectUtils.defaultIfNull( StringEscapeUtils.escapeHtml( document.getAlias() ), "" ) %>"></td>
             <td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_ALIAS_LIST %>"
             value=" <? global/view ?> "></td>
         </tr>

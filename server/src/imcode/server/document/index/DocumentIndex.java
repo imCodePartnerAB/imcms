@@ -38,6 +38,7 @@ public interface DocumentIndex {
     String FIELD__CREATOR_ID = "creator_id";
     String FIELD__PUBLISHER_ID = "publisher_id";
     String FIELD__PROPERTY_PREFIX = "property.";
+    String FIELD__ALIAS = "alias";
 
     void indexDocument( DocumentDomainObject document ) throws IndexException ;
 

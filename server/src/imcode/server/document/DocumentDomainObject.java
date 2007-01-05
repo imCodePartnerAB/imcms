@@ -455,6 +455,9 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.properties.load();
     }
 
+    public String getAlias() {
+        return getProperty(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+    }
 
     public static class Attributes implements Cloneable, Serializable {
 

@@ -13,7 +13,8 @@ public class DefaultQueryParser implements QueryParser {
                                                 DocumentIndex.FIELD__META_HEADLINE,
                                                 DocumentIndex.FIELD__META_TEXT,
                                                 DocumentIndex.FIELD__TEXT,
-                                                DocumentIndex.FIELD__KEYWORD
+                                                DocumentIndex.FIELD__KEYWORD,
+                                                DocumentIndex.FIELD__ALIAS
                                             },
                                             new AnalyzerImpl() );
     }

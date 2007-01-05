@@ -220,8 +220,8 @@ public class Utility {
         if (null == document) {
             return null ;
         }
-        if (document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) != null  ) {
-            return getContextRelativePathToDocumentWithAlias(document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
+        if (document.getAlias() != null  ) {
+            return getContextRelativePathToDocumentWithAlias(document.getAlias());
 
         }else  {
             return getContextRelativePathToDocumentWithId(document.getId());

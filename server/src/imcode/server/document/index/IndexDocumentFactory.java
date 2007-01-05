@@ -98,9 +98,13 @@ public class IndexDocumentFactory {
             indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId ) );
         }
 
+        if (document.getAlias() != null ) {
+            indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__ALIAS, document.getAlias()));
+        }
+
         Map<String, String> documentProperties = document.getProperties();
         for (Map.Entry<String, String> propertyEntry : documentProperties.entrySet()) {
-            indexDocument.add( Field.Keyword( DocumentIndex.FIELD__PROPERTY_PREFIX +propertyEntry.getKey(), "" + propertyEntry.getValue() ) );
+            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__PROPERTY_PREFIX +propertyEntry.getKey(), "" + propertyEntry.getValue() ) );
         }
 
         return indexDocument;

@@ -63,9 +63,9 @@ if (null != formData.documentsIterator) { %>
 <tr>
 	<td colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1_cccccc.gif" width="100%" height="1"></td>
 </tr>
-<tr valign="top"><%String alias = document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+<tr valign="top"><%String alias = document.getAlias();
                    if ( alias != null ) { %>
-    <td><a name="alias" href="$contextPath/<%= document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) %>"><%= StringEscapeUtils.escapeHtml(document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)) %></a></td>
+    <td><a name="alias" href="$contextPath/<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml(document.getAlias()) %></a></td>
     <% }else { %>
     <td>&nbsp;</td> <%}%>
     <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>

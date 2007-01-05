@@ -1,11 +1,13 @@
 
 	<tr>
-		<td colspan="7">#gui_hr( "cccccc" )</td>
+		<td colspan="9">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr valign="top">
-		<td><input type="checkbox" name="existing_meta_id" value="#meta_id#"></td>
-		<td class="imcmsAdmTextSmall"><a href="$contextPath/servlet/GetDoc?meta_id=#meta_id#" target="_blank">#meta_id#</a></td>
-		<td class="imcmsAdmTextSmall"><a href="$contextPath/servlet/GetDoc?meta_id=#meta_id#" target="_blank">#meta_headline#</a></td>
+		<td><input type="checkbox" name="existing_meta_id" value="#meta_id#" title="#page_ref#"></td>
+        <td class="imcmsAdmTextSmall"><a href="$contextPath/#page_ref#" target="_blank" title="#page_ref#">#alias#</a></td>
+        <td class="imcmsAdmTextSmall">#status#</td>
+        <td class="imcmsAdmTextSmall"><a href="$contextPath/#page_ref#" target="_blank" title="#page_ref#">#meta_id#</a></td>
+		<td class="imcmsAdmTextSmall"><a href="$contextPath/#page_ref#" target="_blank" title="#page_ref#">#meta_headline#</a></td>
 		<td class="imcmsAdmTextSmall">#meta_text#</td>
 		<td class="imcmsAdmTextSmall">#doc_type#</td>
 		<td class="imcmsAdmTextSmall">#date_created#</td>

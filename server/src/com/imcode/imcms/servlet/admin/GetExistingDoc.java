@@ -13,6 +13,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
@@ -254,7 +255,7 @@ public class GetExistingDoc extends HttpServlet {
         Map allDocTypesHash = convertToMap( allDocTypesArray );
 
         // Lets parse the searchresults
-        StringBuffer searchResults = parseSearchResults(oneRecHtmlSrc, searchResultDocuments, allDocTypesHash);
+        StringBuffer searchResults = parseSearchResults(oneRecHtmlSrc, searchResultDocuments, allDocTypesHash, user, req);
 
         // Lets get the surrounding resultpage fragment used for all the result
         // and parse all the results into this summarize html template for all the results
@@ -435,17 +436,22 @@ public class GetExistingDoc extends HttpServlet {
      * Parses all the searchhits and returns an StringBuffer
      */
 
-    private static StringBuffer parseSearchResults( String oneRecHtmlSrc,
-                                                    List<DocumentDomainObject> searchResultDocuments, Map docTypesHash ) {
+    private static StringBuffer parseSearchResults(String oneRecHtmlSrc,
+                                                   List<DocumentDomainObject> searchResultDocuments, Map docTypesHash, UserDomainObject user, HttpServletRequest request) {
         StringBuffer searchResults = new StringBuffer( 1024 );
 
         for ( DocumentDomainObject document : searchResultDocuments ) {
 
             DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING);
+            String alias = document.getAlias();
+            int meta_id = document.getId();
             String[] data = {
-                    "#meta_id#", String.valueOf(document.getId()),
+                    "#alias#", alias  ,
+                    "#meta_id#", meta_id+"",
+                    "#page_ref#", (String) ObjectUtils.defaultIfNull(alias, meta_id) ,
+                    "#status#", Html.getStatusIconTemplate(document, user),
                     "#doc_type#", (String) docTypesHash.get("" + document.getDocumentTypeId()),
-                    "#meta_headline#", document.getHeadline(),
+                    "#meta_headline#", document.getHeadline() ,
                     "#meta_text#", document.getMenuText(),
                     "#date_created#", formatDate(dateFormat, document.getCreatedDatetime()),
                     "#date_modified#", formatDate(dateFormat, document.getModifiedDatetime()),

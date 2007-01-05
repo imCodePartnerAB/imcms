@@ -81,9 +81,9 @@ if (doCheckLinks) {
 				continue;
 			}
 			DocumentDomainObject document = link.getDocument() ; %>
-<tr><%String alias = document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+<tr><%String alias = document.getAlias();
     if ( alias != null ) { %>
-    <td><a name="alias" href="<%= request.getContextPath() + "/" + document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) %>"><%= StringEscapeUtils.escapeHtml(document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)) %></a></td>
+    <td><a name="alias" href="<%= request.getContextPath() + "/" + document.getAlias() %>"><%= StringEscapeUtils.escapeHtml(document.getAlias()) %></a></td>
     <% }else { %>
     <td>&nbsp;</td> <%}%>
     <td nowrap><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td><%

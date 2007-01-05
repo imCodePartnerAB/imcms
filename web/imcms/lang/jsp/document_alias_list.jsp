@@ -85,7 +85,7 @@ if (null != listDocumentAliasPage.aliasInSelectedRange) { %>
 	<td colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1_cccccc.gif" width="100%" height="1"></td>
 </tr>
 <tr valign="top">
-    <td><a name="alias" href="$contextPath/<%= document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) %>"><%= StringEscapeUtils.escapeHtml(document.getProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)) %></a></td>
+    <td><a name="alias" href="$contextPath/<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml(document.getAlias()) %></a></td>
 	<td align="center"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
     <%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
 	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
