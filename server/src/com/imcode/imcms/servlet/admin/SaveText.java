@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
@@ -12,6 +13,7 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
+import imcode.util.ShouldNotBeThrownException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -69,6 +71,8 @@ public final class SaveText extends HttpServlet {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
         } catch ( NoPermissionToAddDocumentToMenuException e ) {
             throw new ConcurrentDocumentModificationException(e);
+        } catch (DocumentSaveException e) {
+            throw new ShouldNotBeThrownException(e);
         }
 
         imcref.updateMainLog( "Text " + txt_no + " in [" + meta_id + "] modified by user: [" + user.getFullName()

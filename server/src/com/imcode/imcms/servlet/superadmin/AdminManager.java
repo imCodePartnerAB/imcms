@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.SearchDocumentsPage;
@@ -23,6 +24,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
+import imcode.util.ShouldNotBeThrownException;
 import imcode.util.jscalendar.JSCalendar;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -95,11 +97,12 @@ public class AdminManager extends HttpServlet {
 
         final DocumentMapper documentMapper = service.getDocumentMapper();
         if ( Utility.parameterIsSet( request, REQUEST_PARAMETER__CREATE_NEW_DOCUMENT ) ) {
+        String parentPageId =  request.getParameter( REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID );
             try {
-                int parentId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID ) );
-                DocumentDomainObject parentDocument = documentMapper.getDocument( parentId );
+                DocumentDomainObject parentDocument;
+                parentDocument = documentMapper.getDocumentFromId( parentPageId.toLowerCase().trim() );
                 String createDocumentAction = request.getParameter( REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION );
-                if ( REQUEST_PARAMETER__ACTION__COPY.equals( createDocumentAction ) ) {
+                if ( REQUEST_PARAMETER__ACTION__COPY.equals( createDocumentAction ) && parentDocument != null ) {
                     documentMapper.copyDocument( parentDocument, user );
                     createAndShowAdminManagerPage( request, response, null, PARAMETER_VALUE__SHOW_RECENT);
                 } else {
@@ -121,6 +124,8 @@ public class AdminManager extends HttpServlet {
                 createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__NO_CREATE_PERMISSION, PARAMETER_VALUE__SHOW_CREATE);
             } catch ( NoPermissionToAddDocumentToMenuException e ) {
                 throw new UnhandledException(e);
+            } catch (DocumentSaveException e) {
+                throw new ShouldNotBeThrownException(e);
             }
         } else {
             createAndShowAdminManagerPage( request, response, null);
@@ -606,7 +611,7 @@ public class AdminManager extends HttpServlet {
 
     private static class SaveNewDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
 
-        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException {
+        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveNewDocument( document, user, false);
         }
     }

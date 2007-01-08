@@ -34,7 +34,7 @@ public class TestDocumentSaver extends TestCase {
         documentSaver = new DocumentSaver(documentMapper);
     }
 
-    public void testRemoveOwnPermissionsFromDocument() throws SaveException, NoPermissionException {
+    public void testRemoveOwnPermissionsFromDocument() throws SaveException, NoPermissionException, DocumentSaveException {
         final TextDocumentDomainObject oldDocument = createDocument(1001);
         documentMapper.setDocumentGetter(new AbstractDocumentGetter() {
             public DocumentDomainObject getDocument(Integer documentId) {
@@ -106,7 +106,7 @@ public class TestDocumentSaver extends TestCase {
         } catch ( NoPermissionToAddDocumentToMenuException e ) {}
     }
 
-    public void testDocumentAddedWithPropertyAlias() {
+    public void testDocumentAddedWithPropertyAlias() throws DocumentSaveException {
         UserDomainObject testedUser = new UserDomainObject();
         testedUser.addRoleId(RoleId.SUPERADMIN);
         TextDocumentDomainObject document = createTextDocument(1001);

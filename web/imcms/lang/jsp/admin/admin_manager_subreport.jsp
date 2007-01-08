@@ -37,6 +37,7 @@
         <td colspan="2">
             <table border="0" cellspacing="0" cellpadding="2" width="100%">
                 <tr valign="bottom">
+                    <td><b><? global/Page_alias ?>&nbsp;</b></td>
                     <td width="40"><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/16 ?></b>&nbsp;</td>
                     <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/15 ?></b></td>
                     <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/21 ?></b></td>
@@ -51,7 +52,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="5"><img src="<%= imagesPath %>/1x1_cccccc.gif" width="100%" height="1"></td>
+                    <td colspan="6"><img src="<%= imagesPath %>/1x1_cccccc.gif" width="100%" height="1"></td>
                 </tr>
 
                <%

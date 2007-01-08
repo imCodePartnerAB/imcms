@@ -154,6 +154,14 @@ public class Document implements Serializable {
         return internalDocument.getMenuText();
     }
 
+    public String getAlias() {
+        return  internalDocument.getAlias();
+    }
+
+    public void setAlias(String alias) {
+        internalDocument.setAlias(alias);
+    }
+
     public String getMenuImageURL() {
         return internalDocument.getMenuImage();
     }

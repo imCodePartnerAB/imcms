@@ -4,15 +4,15 @@ import com.imcode.db.Database;
 import com.imcode.db.DatabaseCommand;
 import com.imcode.db.commands.CompositeDatabaseCommand;
 import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
-import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.flow.DocumentPageFlow;
+import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.Config;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
@@ -24,11 +24,11 @@ import imcode.util.LazilyLoadedObject;
 import imcode.util.SystemClock;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.collections.map.LRUMap;
 import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.File;
@@ -176,14 +176,14 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void saveNewDocument(DocumentDomainObject document, UserDomainObject user, boolean copying)
-            throws MaxCategoryDomainObjectsOfTypeExceededException, NoPermissionToAddDocumentToMenuException {
+            throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         documentSaver.saveNewDocument(user, document, copying);
 
     }
 
     public void saveDocument(DocumentDomainObject document,
-                             final UserDomainObject user) throws MaxCategoryDomainObjectsOfTypeExceededException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException
+                             final UserDomainObject user) throws DocumentSaveException , NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException
     {
 
         DocumentDomainObject oldDocument = getDocument(document.getId());
@@ -404,12 +404,13 @@ public class DocumentMapper implements DocumentGetter {
         return Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT MAX(meta_id) FROM meta", params, Utility.SINGLE_STRING_HANDLER)));
     }
 
-    public void copyDocument(DocumentDomainObject selectedChild,
-                             UserDomainObject user) throws NoPermissionToAddDocumentToMenuException {
+    public void copyDocument(DocumentDomainObject document,
+                             UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         String copyHeadlineSuffix = imcmsServices.getAdminTemplate(COPY_HEADLINE_SUFFIX_TEMPLATE, user, null);
-        selectedChild.setHeadline(selectedChild.getHeadline() + copyHeadlineSuffix);
-        makeDocumentLookNew(selectedChild, user);
-        saveNewDocument(selectedChild, user, true);
+        document.setHeadline(document.getHeadline() + copyHeadlineSuffix);
+        document.setAlias(null);
+        makeDocumentLookNew(document, user);
+        saveNewDocument(document, user, true);
     }
 
     public List getDocumentsWithPermissionsForRole(RoleDomainObject role) {
@@ -544,7 +545,7 @@ public class DocumentMapper implements DocumentGetter {
 
     public static class SaveEditedDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
 
-        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException {
+        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveDocument(document, user);
         }
     }

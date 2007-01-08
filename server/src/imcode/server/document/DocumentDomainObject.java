@@ -459,6 +459,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return getProperty(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
     }
 
+    public void setAlias(String alias) {
+        if(alias==null) {
+            removeProperty(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+        }else{
+            setProperty(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, alias);
+        }
+    }
+
     public static class Attributes implements Cloneable, Serializable {
 
         private Date archivedDatetime;

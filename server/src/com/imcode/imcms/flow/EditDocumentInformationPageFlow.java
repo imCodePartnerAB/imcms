@@ -298,15 +298,15 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
                 if (allAlias.contains(newAlias.toLowerCase())) {
                     errors.add(ALIAS_ERROR__ALREADY_EXIST) ;
                     newAlias = oldAlias;
-                }else if (path.exists()) {
+                }else if (newAlias.length()>0 && path.exists()) {
                     errors.add(ALIAS_ERROR__USED_BY_SYSTEM) ;
                     newAlias = oldAlias;
                 }
             }
-            if(newAlias.length()>0){
-                document.setProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, newAlias);
+            if(newAlias!=null && newAlias.length()>0){
+                document.setAlias(newAlias);
             }else{
-                document.removeProperty(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+                document.setAlias(null);
             }
         }
 

@@ -1,5 +1,7 @@
 package com.imcode.imcms.flow;
 
+import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.NoPermissionInternalException;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -8,6 +10,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.HttpSessionUtils;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
+import org.apache.commons.lang.UnhandledException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +37,8 @@ public abstract class DocumentPageFlow extends PageFlow {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
         } catch ( NoPermissionToAddDocumentToMenuException e ) {
             throw new ConcurrentDocumentModificationException(e);
+        } catch (DocumentSaveException e) {
+            throw new UnhandledException(e);
         }
     }
 
@@ -47,6 +52,6 @@ public abstract class DocumentPageFlow extends PageFlow {
     }
 
     public static interface SaveDocumentCommand extends Serializable {
-        void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException;
+        void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionInternalException, DocumentSaveException;
     }
 }

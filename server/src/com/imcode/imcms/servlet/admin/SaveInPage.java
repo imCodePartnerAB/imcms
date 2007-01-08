@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.ImcmsConstants;
@@ -10,6 +11,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
+import imcode.util.ShouldNotBeThrownException;
 import org.apache.commons.lang.UnhandledException;
 
 import javax.servlet.ServletException;
@@ -83,6 +85,8 @@ public class SaveInPage extends HttpServlet {
                 throw new ShouldHaveCheckedPermissionsEarlierException(e);
             } catch ( NoPermissionToAddDocumentToMenuException e ) {
                 throw new ConcurrentDocumentModificationException(e);
+            } catch (DocumentSaveException e) {
+                throw new ShouldNotBeThrownException(e);
             }
 
             Utility.setDefaultHtmlContentType( res );

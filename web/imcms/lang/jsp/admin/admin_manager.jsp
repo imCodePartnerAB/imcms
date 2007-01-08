@@ -112,7 +112,7 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
 			<option value="<%= AdminManager.REQUEST_PARAMETER__ACTION__COPY %>"><? global/Copy ?></option>
 		</select>
 		&nbsp;<? web/imcms/lang/jsp/admin/admin_manager.jsp/based_on ?>&nbsp;
-		<input type="text" name="<%= AdminManager.REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID %>" value="" size="5">&nbsp;
+		<input type="text" name="<%= AdminManager.REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID %>" value="" size="40" maxlength="255">&nbsp;
 		<input type="submit" name="<%= AdminManager.REQUEST_PARAMETER__CREATE_NEW_DOCUMENT %>" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/create_button ?>" class="imcmsFormBtnSmall"></td>
 	</tr>
     <tr>

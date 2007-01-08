@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.imcms.api.NoPermissionException;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.mapping.NoPermissionInternalException;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.PhoneNumber;
@@ -351,7 +352,7 @@ public class UserEditorPage extends OkCancelPage {
     public void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
         if (!uneditedUser.isNew() && !loggedOnUser.canEdit(uneditedUser)) {
-            throw new ShouldHaveCheckedPermissionsEarlierException(new NoPermissionException("User "+loggedOnUser+" does not have the permission to edit "+editedUser));
+            throw new ShouldHaveCheckedPermissionsEarlierException(new NoPermissionInternalException("User "+loggedOnUser+" does not have the permission to edit "+editedUser));
         }
 
         super.forward(request, response);

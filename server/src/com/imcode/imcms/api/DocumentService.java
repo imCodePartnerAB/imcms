@@ -2,6 +2,8 @@ package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.AliasAlreadyExistsInternalException;
+import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -90,6 +92,10 @@ public class DocumentService {
             }
         } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
             throw new MaxCategoriesOfTypeExceededException(e);
+        } catch (AliasAlreadyExistsInternalException e) {
+            throw new AliasAlreadyExistsException();
+        } catch (DocumentSaveException e) {
+            throw new SaveException(e) ;
         }
     }
 

@@ -1,11 +1,14 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
-import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.imcms.api.Document;
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
@@ -32,7 +35,7 @@ class DocumentSaver {
     }
 
     void saveDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
-                      final UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException {
+                      final UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         if (!user.canEdit(oldDocument)) {
             throw new NoPermissionToEditDocumentException("No permission to edit document "+oldDocument.getId()) ;
         }
@@ -143,7 +146,7 @@ class DocumentSaver {
     }
 
     void saveNewDocument(UserDomainObject user,
-                         DocumentDomainObject document, boolean copying) throws NoPermissionToAddDocumentToMenuException {
+                         DocumentDomainObject document, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         if (!user.canEdit(document)) {
             return; // TODO: More specific check needed. Throw exception ?
         }
@@ -178,12 +181,14 @@ class DocumentSaver {
     }
 
     private void checkDocumentForSave(DocumentDomainObject document,
-                                      DocumentDomainObject oldDocument, UserDomainObject user, boolean copying) throws NoPermissionToAddDocumentToMenuException {
+                                      DocumentDomainObject oldDocument, UserDomainObject user, boolean copying) throws NoPermissionInternalException, DocumentSaveException {
         if ( !copying && document instanceof TextDocumentDomainObject ) {
             checkDocumentsAddedWithoutPermission((TextDocumentDomainObject)document, (TextDocumentDomainObject) oldDocument, user);
         }
 
         documentMapper.getCategoryMapper().checkMaxDocumentCategoriesOfType(document);
+        checkIfAliasAlreadyExist(document);
+
     }
 
     void updateDocumentRolePermissions(DocumentDomainObject document, UserDomainObject user,
@@ -392,4 +397,14 @@ class DocumentSaver {
         String[] params = new String[]{"" + meta_id, "" + keywordId};
         ((Integer)documentMapper.getDatabase().execute( new SqlUpdateCommand( "INSERT INTO meta_classification (meta_id, class_id) VALUES(?,?)", params ) )).intValue();
     }
+
+    public void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
+        Set<String> allAlias = documentMapper.getAllDocumentAlias() ;
+        String alias = document.getAlias();
+        if(allAlias.contains(alias) && !documentMapper.getDocumentFromId(alias).equals(document) ) {
+            throw new AliasAlreadyExistsInternalException("A document with alias '" + document.getAlias()
+                                                                         + "' already exists");
+        }
+    }
+
 }

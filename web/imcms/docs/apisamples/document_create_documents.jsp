@@ -1,8 +1,7 @@
 <%@ page import="com.imcode.imcms.api.*,
-                 java.util.Date,
                  javax.activation.DataSource,
                  java.io.*,
-                 javax.activation.FileDataSource" errorPage="error.jsp" %>
+                 java.util.Date" errorPage="error.jsp" %>
 
 <%
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
@@ -16,9 +15,8 @@
     textDocument.setHeadline( "Textdocument created from API" );
     textDocument.setPlainTextField( 1, "Test text field" );
     textDocument.setPublicationStartDatetime( new Date() );
-    textDocument.setStatus(Document.STATUS_PUBLICATION_APPROVED);
+    textDocument.setPublicationStatus(Document.PublicationStatus.APPROVED);
     documentService.saveChanges( textDocument );
-
     parentDocument.getMenu( menuIndex ).addDocument( textDocument );
     documentService.saveChanges( parentDocument );
 %>
@@ -30,7 +28,7 @@ with link from the document with id "<a href="<%= request.getContextPath() %>/se
     urlDocument.setHeadline( "URL-document created from API" );
     urlDocument.setUrl( "www.imcode.com" );
     urlDocument.setPublicationStartDatetime( new Date() );
-    urlDocument.setStatus(Document.STATUS_PUBLICATION_APPROVED);
+    urlDocument.setPublicationStatus(Document.PublicationStatus.APPROVED);
     documentService.saveChanges( urlDocument );
 
     parentDocument.getMenu( menuIndex ).addDocument( urlDocument );
@@ -47,7 +45,7 @@ with link from the document with id "<a href="<%= request.getContextPath() %>/se
     FileDocument.FileDocumentFile file = new FileDocument.FileDocumentFile( new StringDataSource("This is the contents of the file."));
     fileDocument.addFile( "text", file );
     fileDocument.setPublicationStartDatetime( new Date() );
-    fileDocument.setStatus(Document.STATUS_PUBLICATION_APPROVED);
+    fileDocument.setPublicationStatus(Document.PublicationStatus.APPROVED);
     documentService.saveChanges( fileDocument );
 
     parentDocument.getMenu( menuIndex ).addDocument( fileDocument );

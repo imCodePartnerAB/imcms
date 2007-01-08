@@ -12,7 +12,7 @@
 
     document.setPublicationStartDatetime( new Date() );
     document.setArchivedDatetime( new Date() );
-    document.setStatus( Document.STATUS_PUBLICATION_APPROVED );
+    document.setPublicationStatus( Document.PublicationStatus.APPROVED );
     document.setVisibleInMenusForUnauthorizedUsers( false );
 
     //Section section = documentService.getSection( "sectionname" );
@@ -46,6 +46,13 @@
     document.setCreator( admin ) ;
 
     // don't forget to save your changes!
-    documentService.saveChanges( document );
+    document.setAlias("start");
+    try{
+        documentService.saveChanges( document );
+    }catch(SaveException e){
+        document.setAlias(null);
+        documentService.saveChanges( document );
+    }
+
 %>
 Done changing document <a href="<%= request.getContextPath() %>/servlet/GetDoc?meta_id=<%= documentId %>"><%= documentId %></a>.

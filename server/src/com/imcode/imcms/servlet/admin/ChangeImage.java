@@ -1,12 +1,10 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.flow.CreateDocumentPageFlow;
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.flow.DocumentPageFlow;
-import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
-import com.imcode.imcms.flow.EditFileDocumentPageFlow;
+import com.imcode.imcms.flow.*;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.NoPermissionInternalException;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.superadmin.AdminManager;
 import com.imcode.util.HumanReadable;
@@ -20,10 +18,7 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
-import imcode.util.ImcmsImageUtils;
-import imcode.util.LocalizedMessage;
-import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
-import imcode.util.Utility;
+import imcode.util.*;
 import imcode.util.io.InputStreamSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -110,6 +105,8 @@ public class ChangeImage extends HttpServlet {
                 throw new ShouldHaveCheckedPermissionsEarlierException(e);
             } catch ( NoPermissionToAddDocumentToMenuException e ) {
                 throw new ConcurrentDocumentModificationException(e);
+            } catch (DocumentSaveException e) {
+                throw new ShouldNotBeThrownException(e);
             }
             imcref.updateMainLog("ImageRef " + imageIndex + " =" + image.getUrlPathRelativeToContextPath() +
                                  " in  " + "[" + document.getId() + "] modified by user: [" +
@@ -126,7 +123,7 @@ public class ChangeImage extends HttpServlet {
             FileDocumentDomainObject fileDocument = (FileDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.FILE_ID, document, user);
             final EditFileDocumentPageFlow.ArrayMimeTypeRestriction mimeTypeRestriction = new EditFileDocumentPageFlow.ArrayMimeTypeRestriction(IMAGE_MIME_TYPES, ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES);
             DocumentPageFlow.SaveDocumentCommand saveNewImageFileDocument = new CreateDocumentPageFlow.SaveDocumentCommand() {
-                public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException {
+                public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
                     FileDocumentDomainObject fileDocument = (FileDocumentDomainObject) document;
                     Map files = fileDocument.getFiles();
                     for ( Iterator iterator = files.values().iterator(); iterator.hasNext(); ) {

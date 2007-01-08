@@ -4,6 +4,7 @@ import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.flow.CreateDocumentPageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
@@ -119,6 +120,8 @@ public class MenuEditPage extends OkCancelPage {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
         } catch ( NoPermissionToAddDocumentToMenuException e ) {
             throw new ConcurrentDocumentModificationException(e);
+        } catch (DocumentSaveException e) {
+            throw new ShouldNotBeThrownException(e);
         }
 
         forward(request, response);
@@ -228,8 +231,7 @@ public class MenuEditPage extends OkCancelPage {
             this.parentMenuIndex = parentMenuIndex;
         }
 
-        public synchronized void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException
-        {
+        public synchronized void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
             if ( null == savedDocument ) {
                 final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
                 documentMapper.saveNewDocument( document, user, false);

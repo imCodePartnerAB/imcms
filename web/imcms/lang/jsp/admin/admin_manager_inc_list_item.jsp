@@ -3,7 +3,9 @@
                  imcode.server.document.DocumentDomainObject,
                  imcode.util.Utility,
                  imcode.util.Html,
-                 imcode.server.user.UserDomainObject"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+                 imcode.server.user.UserDomainObject"%>
+<%@ page import="org.apache.commons.lang.ObjectUtils"%>
+<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request"/>
 <%
     String imagesPath  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
@@ -12,7 +14,12 @@
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
 %>
 <vel:velocity>
-<tr valign="top"<%= listItemBean.getIndex() % 2 != 1 ? " bgcolor=\"#ffffff\"" : "" %>>
+<tr valign="top"<%= listItemBean.getIndex() % 2 != 1 ? " bgcolor=\"#ffffff\"" : "" %>><%
+    String alias = document.getAlias();
+    if ( alias != null ) { %>
+    <td><a name="alias" href="$contextPath/<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml(document.getAlias()) %></a></td>
+    <% }else { %>
+    <td>&nbsp;</td> <%}%>
     <td align="center"><%= linkedStatusIcon %></td>
     <td><img src="<%= imagesPath %>/1x1.gif" width="1" height="3"><br><%
 		if (user.canEdit(document)) {
@@ -25,8 +32,8 @@
     <td><img src="<%= imagesPath %>/1x1.gif" width="1" height="3"><br>
     <%= document.getDocumentType().getName().toLocalizedString(request) %></td>
     <td><img src="<%= imagesPath %>/1x1.gif" width="1" height="3"><br>
-        <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId()%>" target="<%= document.getTarget() %>"<%
-				%> title="GetDoc?meta_id=<%= document.getId() %>"><%= StringEscapeUtils.escapeHtml(document.getHeadline()) %></a><br>
+        <a href="$contextPath/<%= ObjectUtils.defaultIfNull(alias, document.getId())%>" target="<%= document.getTarget() %>"<%
+				%> title="<%=ObjectUtils.defaultIfNull(alias, document.getId())%>"><%= StringEscapeUtils.escapeHtml(document.getHeadline()) %></a><br>
         <%= StringEscapeUtils.escapeHtml(document.getMenuText() ) %></td>
     <td align="left"><img src="<%= imagesPath %>/1x1.gif" width="1" height="3">
         <jsp:useBean id="expandableDatesBean" class="com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean" scope="request"/>

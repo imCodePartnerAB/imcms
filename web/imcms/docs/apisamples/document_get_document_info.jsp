@@ -1,4 +1,5 @@
 <%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
+<%@ page import="org.apache.commons.lang.ObjectUtils"%>
 
 <%
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
@@ -12,10 +13,11 @@
 <pre>
 for document with id <%=documentId%>
 
+Alias: "<%=document.getAlias()%>"
 Headline: "<%=document.getHeadline()%>"
 Menu text: "<%=document.getMenuText()%>"
 Menu image url: "<%=document.getMenuImageURL()%>"
-Status: The document is <% if (Document.STATUS_PUBLICATION_APPROVED != document.getStatus()) {%>not<%}%> approved for publication.
+Status: The document is <% if (Document.PublicationStatus.APPROVED != document.getPublicationStatus()) {%>not<%}%> approved for publication.
 Created: <%=document.getCreatedDatetime()%>
 Modified: <%=document.getModifiedDatetime()%>
 Publication start datetime: <%=document.getPublicationStartDatetime()%>

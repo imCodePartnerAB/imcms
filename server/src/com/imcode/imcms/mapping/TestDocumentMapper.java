@@ -180,7 +180,7 @@ public class TestDocumentMapper extends TestCase {
         assertFalse(documentIndex.isIndexDocumentCalled()) ;
     }
 
-    public void testCreateTextDocument() throws NoPermissionToAddDocumentToMenuException, NoPermissionToCreateDocumentException {
+    public void testCreateTextDocument() throws NoPermissionToAddDocumentToMenuException, NoPermissionToCreateDocumentException, DocumentSaveException {
         user.addRoleId( RoleId.SUPERADMIN );
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.TEXT_ID, textDocument, user );
         document.setTemplateId( 1 );
@@ -189,7 +189,7 @@ public class TestDocumentMapper extends TestCase {
         database.assertExpectedSqlCalls();
     }
 
-    public void testCreateHtmlDocument() throws NoPermissionToAddDocumentToMenuException, NoPermissionToCreateDocumentException {
+    public void testCreateHtmlDocument() throws NoPermissionToAddDocumentToMenuException, NoPermissionToCreateDocumentException, DocumentSaveException {
         user.addRoleId( RoleId.SUPERADMIN );
         DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.HTML_ID, textDocument, user );
         database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "meta" ), new Integer(1002));
@@ -197,7 +197,7 @@ public class TestDocumentMapper extends TestCase {
         database.assertExpectedSqlCalls();
     }
 
-    public void testCreateUrlDocument() throws NoPermissionToAddDocumentToMenuException, NoPermissionToCreateDocumentException {
+    public void testCreateUrlDocument() throws NoPermissionToAddDocumentToMenuException, NoPermissionToCreateDocumentException, DocumentSaveException {
         user.addRoleId( RoleId.SUPERADMIN );
         DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.URL_ID, textDocument, user );
         database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "meta" ), new Integer(1002));
