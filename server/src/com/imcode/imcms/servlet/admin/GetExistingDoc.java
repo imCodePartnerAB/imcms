@@ -448,7 +448,7 @@ public class GetExistingDoc extends HttpServlet {
             String[] data = {
                     "#alias#", alias  ,
                     "#meta_id#", meta_id+"",
-                    "#page_ref#", (String) ObjectUtils.defaultIfNull(alias, meta_id) ,
+                    "#page_name#", document.getName() ,
                     "#status#", Html.getStatusIconTemplate(document, user),
                     "#doc_type#", (String) docTypesHash.get("" + document.getDocumentTypeId()),
                     "#meta_headline#", document.getHeadline() ,
