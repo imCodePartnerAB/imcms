@@ -13,6 +13,7 @@
 <pre>
 for document with id <%=documentId%>
 
+Name: "<%=document.getName()%>"   
 Alias: "<%=document.getAlias()%>"
 Headline: "<%=document.getHeadline()%>"
 Menu text: "<%=document.getMenuText()%>"

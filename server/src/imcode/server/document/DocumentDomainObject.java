@@ -469,7 +469,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public String getName() {
-        return (String) ObjectUtils.defaultIfNull(getAlias(), getId());
+        return (String) ObjectUtils.defaultIfNull(getAlias(), getId()+"");
     }
 
     public static class Attributes implements Cloneable, Serializable {
