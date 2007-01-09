@@ -162,6 +162,10 @@ public class Document implements Serializable {
         internalDocument.setAlias(alias);
     }
 
+    public String getName() {
+        return internalDocument.getName();
+    }
+
     public String getMenuImageURL() {
         return internalDocument.getMenuImage();
     }

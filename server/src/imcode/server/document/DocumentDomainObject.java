@@ -8,6 +8,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;
 import imcode.util.LazilyLoadedObject;
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
@@ -465,6 +466,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         }else{
             setProperty(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, alias);
         }
+    }
+
+    public String getName() {
+        return (String) ObjectUtils.defaultIfNull(getAlias(), getId());
     }
 
     public static class Attributes implements Cloneable, Serializable {
