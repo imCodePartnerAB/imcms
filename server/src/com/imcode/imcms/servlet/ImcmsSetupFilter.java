@@ -36,7 +36,7 @@ public class ImcmsSetupFilter implements Filter {
 
         String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
         FallbackDecoder fallbackDecoder = new FallbackDecoder(Charset.forName(Imcms.DEFAULT_ENCODING),
-                Charset.forName(workaroundUriEncoding));
+                null != workaroundUriEncoding ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset());
         if ( null != workaroundUriEncoding ) {
             request = new UriEncodingWorkaroundWrapper(request, fallbackDecoder);
         }
