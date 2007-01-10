@@ -13,10 +13,12 @@ import imcode.util.DateConstants;
 import imcode.util.Html;
 import imcode.util.ShouldNotBeThrownException;
 import org.apache.commons.lang.time.StopWatch;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.regex.*;
 
+import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
@@ -77,29 +79,48 @@ public class TextDocumentParser {
             TextDocumentDomainObject document = (TextDocumentDomainObject)documentRequest.getDocument();
             UserDomainObject user = documentRequest.getUser();
 
-            String template = getTemplate( document, parserParameters );
+            String templateName = document.getTemplateName();
 
-            Perl5Matcher patMat = new Perl5Matcher();
-
-            SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING );
-
-            final String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
-
-            Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, viewing.isEditingTemplate(), parserParameters );
-            MapSubstitution hashtagsubstitution = new MapSubstitution( hashTags, true );
-            TagParser tagParser = new TagParser( this, parserParameters, includelevel);
-
-            String tagsReplaced = tagParser.replaceTags(template, false);
-            tagsReplaced = Util.substitute( patMat, hashtagPattern, hashtagsubstitution, tagsReplaced, Util.SUBSTITUTE_ALL );
-
-            String emphasizedAndTagsReplaced = applyEmphasis( documentRequest, user, tagsReplaced, patMat );
-            out.write(Util.substitute( patMat, htmlTagHtmlPattern, new Substitution() {
-                public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
-                                                PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
-                                                Pattern pattern ) {
-                    stringBuffer.append( imcmsMessage ).append( matchResult.group( 0 ) );
+            TemplateMapper templateMapper = service.getTemplateMapper();
+            if ( parserParameters.getTemplateName() != null ) {
+                TemplateDomainObject template1 = templateMapper.getTemplateByName( parserParameters.getTemplateName() );
+                if ( null != template1 ) {
+                    templateName = template1.getName();
                 }
-            }, emphasizedAndTagsReplaced ));
+            }
+
+            TemplateDomainObject template = templateMapper.getTemplateByName(templateName);
+            if (template.getFileName().endsWith(".jsp")) {
+                try {
+                    documentRequest.getHttpServletRequest().getRequestDispatcher("/WEB-INF/templates/text/"+template.getFileName()).forward(documentRequest.getHttpServletRequest(), documentRequest.getHttpServletResponse());
+                } catch ( ServletException e ) {
+                    throw new UnhandledException(e);
+                }
+            } else {
+                String templateContent = service.getTemplateMapper().getTemplateData(templateName);
+
+                Perl5Matcher patMat = new Perl5Matcher();
+
+                SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING );
+
+                final String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
+
+                Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, viewing.isEditingTemplate(), parserParameters );
+                MapSubstitution hashtagsubstitution = new MapSubstitution( hashTags, true );
+                TagParser tagParser = new TagParser( this, parserParameters, includelevel);
+
+                String tagsReplaced = tagParser.replaceTags(templateContent, false);
+                tagsReplaced = Util.substitute( patMat, hashtagPattern, hashtagsubstitution, tagsReplaced, Util.SUBSTITUTE_ALL );
+
+                String emphasizedAndTagsReplaced = applyEmphasis( documentRequest, user, tagsReplaced, patMat );
+                out.write(Util.substitute( patMat, htmlTagHtmlPattern, new Substitution() {
+                    public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
+                                                    PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
+                                                    Pattern pattern ) {
+                        stringBuffer.append( imcmsMessage ).append( matchResult.group( 0 ) );
+                    }
+                }, emphasizedAndTagsReplaced ));
+            }
         } finally {
             if (null != previousViewing) {
                 TextDocumentViewing.putInRequest( previousViewing ) ;
@@ -108,21 +129,6 @@ public class TextDocumentParser {
                 ParserParameters.putInRequest(parserParameters) ;
             }
         }
-    }
-
-    private String getTemplate( TextDocumentDomainObject document, ParserParameters parserParameters ) throws IOException {
-        int documentTemplateId = document.getTemplateId();
-
-        String template_name = parserParameters.getTemplate();
-        if ( template_name != null ) {
-            TemplateMapper templateMapper = service.getTemplateMapper();
-            TemplateDomainObject template = templateMapper.getTemplateByName( template_name );
-            if ( null != template ) {
-                documentTemplateId = template.getId();
-            }
-        }
-
-        return service.getTemplateMapper().getTemplateData( documentTemplateId );
     }
 
     private String applyEmphasis( DocumentRequest documentRequest, UserDomainObject user, String string,
@@ -183,13 +189,13 @@ public class TextDocumentParser {
             tags.setProperty( "#adminMode#", Html.getAdminButtons( user, document, parserParameters.getDocumentRequest().getHttpServletRequest(), parserParameters.getDocumentRequest().getHttpServletResponse() ) );
         }
 
-        String changeTemplateUi = createChangeTemplateUi( templatemode, user, document );
+        String changeTemplateUi = createChangeTemplateUi( templatemode, user, document, service);
         tags.setProperty( "#changePage#", changeTemplateUi );
         return tags;
     }
 
-    private String createChangeTemplateUi( boolean templatemode, UserDomainObject user,
-                                           TextDocumentDomainObject document ) throws IOException {
+    public static String createChangeTemplateUi(boolean templatemode, UserDomainObject user,
+                                          TextDocumentDomainObject document, ImcmsServices service) throws IOException {
         String changeTemplateUi = "";
         if ( templatemode ) {	//Templatemode! :)
 
@@ -206,12 +212,12 @@ public class TextDocumentParser {
             List allowedTemplateGroups = templateMapper.getTemplateGroups(allowedTemplateGroupIds);
             String templateGroupsHtmlOptionList = templateMapper.createHtmlOptionListOfTemplateGroups( allowedTemplateGroups, selectedTemplateGroup );
 
-            TemplateDomainObject[] templates = new TemplateDomainObject[0];
+            List<TemplateDomainObject> templates = new ArrayList<TemplateDomainObject>();
             if ( allowedTemplateGroupIds.contains(new Integer(selectedTemplateGroup.getId()) ) ) {
                 templates = templateMapper.getTemplatesInGroup( selectedTemplateGroup );
             }
-            int templateId = document.getTemplateId();
-            TemplateDomainObject template = templateMapper.getTemplateById(templateId) ;
+            String templateId = document.getTemplateName();
+            TemplateDomainObject template = templateMapper.getTemplateByName(templateId) ;
             String templatesHtmlOptionList = templateMapper.createHtmlOptionListOfTemplates( templates, template );
 
             // Oh! I need a set of tags to be replaced in the templatefiles we'll load...
@@ -240,10 +246,10 @@ public class TextDocumentParser {
 
         Perl5Compiler empCompiler = new Perl5Compiler();
         // for each string to emphasize
-        for ( int i = 0; i < emp.length; ++i ) {
+        for ( String anEmp : emp ) {
             try {
                 Pattern empPattern = empCompiler.compile(
-                        "(" + Perl5Compiler.quotemeta(emp[i]) + ")", Perl5Compiler.CASE_INSENSITIVE_MASK);
+                        "(" + Perl5Compiler.quotemeta(anEmp) + ")", Perl5Compiler.CASE_INSENSITIVE_MASK);
                 emphasizedString = Util.substitute(patMat, empPattern, emphasize_substitution, emphasizedString, Util.SUBSTITUTE_ALL);
             } catch ( MalformedPatternException ex ) {
                 throw new ShouldNotBeThrownException(ex);
@@ -252,4 +258,5 @@ public class TextDocumentParser {
         return emphasizedString;
     }
 
+    
 }

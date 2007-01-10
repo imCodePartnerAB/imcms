@@ -20,7 +20,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         final Object[] parameters = new String[] {
                                              "" + document.getId(), document.getHtml()
                                              };
-        ((Integer)database.execute( new SqlUpdateCommand( sqlUrlDocsInsertStr, parameters ) )).intValue();
+        database.execute(new SqlUpdateCommand(sqlUrlDocsInsertStr, parameters));
     }
 
     public void visitUrlDocument( UrlDocumentDomainObject document ) {
@@ -31,20 +31,20 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         final Object[] parameters = new String[] {
                                              "" + document.getId(), "", "", document.getUrl(), "", ""
                                              };
-        ((Integer)database.execute( new SqlUpdateCommand( sqlUrlDocsInsertStr, parameters ) )).intValue();
+        database.execute(new SqlUpdateCommand(sqlUrlDocsInsertStr, parameters));
     }
 
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
-        String sqlTextDocsInsertStr = "INSERT INTO text_docs (meta_id, template_id, group_id, default_template, default_template_1, default_template_2) VALUES (?,?,?,?,?,?)";
-        int templateId = textDocument.getTemplateId();
-        Integer defaultTemplate = textDocument.getDefaultTemplateId();
-        Integer defaultTemplateForRestricted1 = textDocument.getDefaultTemplateIdForRestricted1();
-        Integer defaultTemplateForRestricted2 = textDocument.getDefaultTemplateIdForRestricted2();
+        String sqlTextDocsInsertStr = "INSERT INTO text_docs (meta_id, template_name, group_id, default_template, default_template_1, default_template_2) VALUES (?,?,?,?,?,?)";
+        String templateName = textDocument.getTemplateName();
+        String defaultTemplate = textDocument.getDefaultTemplateName();
+        String defaultTemplateForRestricted1 = textDocument.getDefaultTemplateNameForRestricted1();
+        String defaultTemplateForRestricted2 = textDocument.getDefaultTemplateNameForRestricted2();
         int templateGroupId = textDocument.getTemplateGroupId();
         int textDocumentId = textDocument.getId();
         final Object[] parameters = new String[] {
                 "" + textDocumentId,
-                "" + templateId,
+                "" + templateName,
                 "" + templateGroupId,
                 null != defaultTemplate ? "" + defaultTemplate : null,
                 null != defaultTemplateForRestricted1
@@ -52,7 +52,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
                 null != defaultTemplateForRestricted2
                 ? "" + defaultTemplateForRestricted2 : "-1",
                 };
-        ((Integer)database.execute( new SqlUpdateCommand( sqlTextDocsInsertStr, parameters ) )).intValue();
+        database.execute(new SqlUpdateCommand(sqlTextDocsInsertStr, parameters));
         updateTextDocumentTexts( textDocument );
         updateTextDocumentImages( textDocument );
         updateTextDocumentIncludes( textDocument );

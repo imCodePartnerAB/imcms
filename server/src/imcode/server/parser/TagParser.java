@@ -141,9 +141,8 @@ public class TagParser {
      * Handle a <?imcms:include ...?> tag
      *
      * @param attributes The attributes of the include tag
-     * @param patMat     A pattern matcher.
      */
-    private String tagInclude(Properties attributes, PatternMatcher patMat) {
+    public String tagInclude(Properties attributes) {
         if ( shouldOutputNothingAccordingToMode(attributes, includeMode) ) {
             return "";
         }
@@ -164,17 +163,17 @@ public class TagParser {
             return includePath(attributevalue);
         } else if ( null
                     != ( attributevalue = attributes.getProperty("file") ) ) { // If we have the attribute file="filename"...
-            return includeFile(attributevalue, patMat);
+            return includeFile(attributevalue);
         } else if ( null
                     != ( attributevalue = attributes.getProperty("document") ) ) { // If we have the attribute document="meta-id"
-            return includeDocument(attributevalue, attributes, patMat);
+            return includeDocument(attributevalue, attributes);
         } else if ( null
                     != ( attributevalue = attributes.getProperty("url") ) ) { // If we have an attribute of the form url="url:url"
             return includeUrl(attributevalue, attributes);
         } else { // If we have none of the attributes no, file, url, or document
             no = implicitIncludeNumber++; // Implicitly use the next number.
         }
-        return includeEditing(attributes, no, patMat);
+        return includeEditing(attributes, no);
     }
 
     private String includePath(String path) {
@@ -189,7 +188,7 @@ public class TagParser {
         }
     }
 
-    private String includeEditing(Properties attributes, int no, PatternMatcher patMat) {
+    private String includeEditing(Properties attributes, int no) {
         try {
             String label = getLabel(attributes);
             Integer includedDocumentId = document.getIncludedDocumentId(no);
@@ -214,6 +213,7 @@ public class TagParser {
                 ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters(parserParameters, includedDocumentId.intValue(), attributes);
                 StringWriter writer = new StringWriter();
                 textDocParser.parsePage(includedDocumentParserParameters, includeLevel - 1, writer);
+                PatternMatcher patMat = new Perl5Matcher();
                 String documentStr = Util.substitute(patMat, htmlPrebodyPattern, NULL_SUBSTITUTION, writer.toString());
                 documentStr = Util.substitute(patMat, htmlPostbodyPattern, NULL_SUBSTITUTION, documentStr);
                 return documentStr;
@@ -299,13 +299,14 @@ public class TagParser {
         }
     }
 
-    private String includeDocument(String attributevalue, Properties attributes, PatternMatcher patMat) {
+    private String includeDocument(String attributevalue, Properties attributes) {
         try {
             if ( includeLevel > 0 ) {
                 int included_meta_id = Integer.parseInt(attributevalue);
                 ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters(parserParameters, included_meta_id, attributes);
                 StringWriter writer = new StringWriter();
                 textDocParser.parsePage(includedDocumentParserParameters, includeLevel - 1, writer);
+                PatternMatcher patMat = new Perl5Matcher();
                 String documentStr = Util.substitute(patMat, htmlPrebodyPattern, NULL_SUBSTITUTION, writer.toString());
                 documentStr = Util.substitute(patMat, htmlPostbodyPattern, NULL_SUBSTITUTION, documentStr);
                 return documentStr;
@@ -320,7 +321,7 @@ public class TagParser {
         return "";
     }
 
-    private String includeFile(String attributevalue, PatternMatcher patMat) {// Fetch a file from the disk
+    private String includeFile(String attributevalue) {// Fetch a file from the disk
         try {
             return replaceTags(service.getFileCache().getCachedFileString(new File(service.getIncludePath(), attributevalue)), false); // Get a file from the include directory
         } catch ( IOException ex ) {
@@ -677,7 +678,7 @@ public class TagParser {
             } else if ( "image".equals(tagname) ) {
                 tagResult = tagImage(attributes);
             } else if ( "include".equals(tagname) ) {
-                tagResult = tagInclude(attributes, patMat);
+                tagResult = tagInclude(attributes);
             } else if ( "metaid".equals(tagname) ) {
                 tagResult = tagMetaId();
             } else if ( "datetime".equals(tagname) ) {
@@ -723,7 +724,7 @@ public class TagParser {
             } else {
                 tagResult = singleTag(tagName, attributes, entireTag, patMat, insideText);
             }
-            addResultWithPrePost(result, tagResult, attributes);
+            result.append(addPreAndPost(attributes, tagResult)) ;
             lastMatchEndOffset = input.getCurrentOffset();
         }
         result.append(template.substring(lastMatchEndOffset));
@@ -748,18 +749,13 @@ public class TagParser {
         return tagResult;
     }
 
-    private void addResultWithPrePost(StringBuffer result, String tagResult, Properties attributes) {
-        if ( tagResult.length() > 0 ) {
-            String preAttribute = attributes.getProperty("pre");
-            if ( preAttribute != null ) {
-                result.append(preAttribute);
-            }
-            result.append(tagResult);
-            String postAttribute = attributes.getProperty("post");
-            if ( postAttribute != null ) {
-                result.append(postAttribute);
-            }
+    public static String addPreAndPost(Properties attributes, String tagResult) {
+        if ( 0 == tagResult.length() ) {
+            return "" ;
         }
+        String preAttribute = StringUtils.defaultString(attributes.getProperty("pre"));
+        String postAttribute = StringUtils.defaultString(attributes.getProperty("post"));
+        return preAttribute+tagResult+postAttribute;
     }
 
     String blockTag(String tagname, Properties attributes, String content,

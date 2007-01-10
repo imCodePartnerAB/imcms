@@ -172,7 +172,7 @@
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-       depends="init,web,test,checkstyle,libraries,conf,sql,jar"
+       depends="init,web,jspc,test,checkstyle,libraries,conf,sql,jar"
        description="Builds everything."/>
 
     <target name="clean" description="Deletes everything for a fresh start.">
@@ -309,10 +309,12 @@
 
         <mkdir dir="${classes}"/>
 
-        <javac srcdir="server/src" destdir="${classes}"
+        <javac destdir="${classes}"
             debug="${debug}" optimize="${optimize}" deprecation="${deprecation}"
             source="1.5" target="1.5"
             encoding="iso-8859-1">
+            
+            <src path="server/src"/>
 
             <exclude name="**/Test*.java" unless="junit-available"/>
             <exclude name="**/*TestCase.java" unless="junit-available"/>
@@ -333,12 +335,12 @@
 
     </target>
 
-    <target name="jspc" depends="init,classes">
+    <target name="jspc" depends="init,web,libraries,classes">
 
         <jasper2
                 validateXml="false"
                 verbose="9"
-                uriroot="${basedir}/web"
+                uriroot="${build}"
                 webXmlFragment="${tmp}/generated_web.xml"
                 outputDir="${tmp}/jsp"
                 classpath="${classes}"/>
@@ -375,8 +377,7 @@
         </concat>
 
         <copy todir="${sql}">
-            <fileset file="sql/data/types.sql"/>
-            <fileset file="sql/data/newdb.sql"/>
+            <fileset file="sql/data/init.sql"/>
         </copy>
                         
         <copy todir="${sql-diff}">
@@ -391,7 +392,7 @@
 
     <!-- Creates the directories and copies the files that are to be public. -->
     <target name="web"
-       depends="init,changes,jspc"
+       depends="init,changes"
        description="Translates and copies the webfiles.">
 
         <dependset>

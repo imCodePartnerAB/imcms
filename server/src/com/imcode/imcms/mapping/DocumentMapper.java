@@ -116,17 +116,17 @@ public class DocumentMapper implements DocumentGetter {
     void setTemplateForNewTextDocument( TextDocumentDomainObject newTextDocument, UserDomainObject user,
                                         final DocumentDomainObject parent ) {
         DocumentPermissionSetTypeDomainObject documentPermissionSetType = user.getDocumentPermissionSetTypeFor( parent );
-        Integer templateId = null;
+        String templateName = null;
         if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(documentPermissionSetType) ) {
-            templateId = newTextDocument.getDefaultTemplateIdForRestricted1();
+            templateName = newTextDocument.getDefaultTemplateNameForRestricted1();
         } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSetType) ) {
-            templateId = newTextDocument.getDefaultTemplateIdForRestricted2();
+            templateName = newTextDocument.getDefaultTemplateNameForRestricted2();
         }
-        if ( null == templateId && parent instanceof TextDocumentDomainObject ) {
-            templateId = ( (TextDocumentDomainObject)parent ).getDefaultTemplateId();
+        if ( null == templateName && parent instanceof TextDocumentDomainObject ) {
+            templateName = ( (TextDocumentDomainObject)parent ).getDefaultTemplateName();
         }
-        if ( null != templateId ) {
-            newTextDocument.setTemplateId( templateId.intValue() );
+        if ( null != templateName ) {
+            newTextDocument.setTemplateName( templateName );
         }
     }
 

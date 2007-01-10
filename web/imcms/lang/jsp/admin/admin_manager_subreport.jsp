@@ -1,5 +1,5 @@
 <%@ page import="imcode.server.document.DocumentDomainObject,
-                 imcode.util.LocalizedMessage,
+                 com.imcode.imcms.util.l10n.LocalizedMessage,
                  imcode.util.Utility,
                  org.apache.commons.lang.StringEscapeUtils,
                  java.util.List"%>

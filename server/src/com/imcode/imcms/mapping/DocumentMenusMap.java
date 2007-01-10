@@ -6,10 +6,10 @@ import imcode.server.document.textdocument.MenuDomainObject;
 
 import java.util.*;
 
-public class DocumentMenusMap extends AbstractMap implements LazilyLoadedObject.Copyable {
+public class DocumentMenusMap extends AbstractMap implements LazilyLoadedObject.Copyable<DocumentMenusMap> {
     private final HashMap menusMap = new HashMap();
 
-    public LazilyLoadedObject.Copyable copy() {
+    public DocumentMenusMap copy() {
         DocumentMenusMap menusClone = new DocumentMenusMap() ;
         for ( Iterator iterator = entrySet().iterator(); iterator.hasNext(); ) {
             Entry entry = (Entry)iterator.next();

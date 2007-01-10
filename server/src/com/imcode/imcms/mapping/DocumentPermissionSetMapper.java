@@ -102,7 +102,7 @@ public class DocumentPermissionSetMapper {
                     ""
                     + allowedTemplateGroupId.intValue()
             };
-            ((Integer)database.execute( new SqlUpdateCommand( sqlInsertAllowedTemplateGroupId, parameters ) )).intValue();
+            database.execute(new SqlUpdateCommand(sqlInsertAllowedTemplateGroupId, parameters));
         }
     }
 
@@ -133,7 +133,7 @@ public class DocumentPermissionSetMapper {
                     ""
                     + allowedDocumentTypeId.intValue()
             };
-            ((Integer)database.execute( new SqlUpdateCommand( sqlInsertCreatableDocumentTypeId, parameters ) )).intValue();
+            database.execute(new SqlUpdateCommand(sqlInsertCreatableDocumentTypeId, parameters));
         }
     }
 

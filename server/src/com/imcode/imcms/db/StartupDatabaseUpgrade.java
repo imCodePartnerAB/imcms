@@ -1,29 +1,18 @@
 package com.imcode.imcms.db;
 
 import com.imcode.db.Database;
-import com.imcode.db.DatabaseCommand;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
-import com.imcode.db.commands.CompositeDatabaseCommand;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.db.handlers.SingleObjectHandler;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.ddlutils.Platform;
 import org.apache.ddlutils.platform.SqlBuilder;
-import org.apache.ddlutils.platform.CreationParameters;
 import org.apache.log4j.Logger;
 
-import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.regex.Pattern;
-import java.util.Locale;
-
-import imcode.util.LocalizedMessage;
 
 public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
 
@@ -40,11 +29,12 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
             ),
             new DatabaseVersionUpgradePair(4, 3, new CreateTableUpgrade(wantedDdl, "document_properties")),
     };
-    private File scriptPath;
+    private ImcmsDatabaseCreator imcmsDatabaseCreator ;
 
-    public StartupDatabaseUpgrade(org.apache.ddlutils.model.Database ddl, File scriptPath) {
+    public StartupDatabaseUpgrade(org.apache.ddlutils.model.Database ddl,
+                                  ImcmsDatabaseCreator imcmsDatabaseCreator) {
         super(ddl);
-        this.scriptPath = scriptPath;
+        this.imcmsDatabaseCreator = imcmsDatabaseCreator;
     }
 
     public void upgrade(Database database) throws DatabaseException {
@@ -58,7 +48,7 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
                 }
             });
             if ( 0 == tableCount ) {
-                createDatabase(database);
+                createDatabaseAndSetVersion(database, wantedDdl);
                 return;
             }
             databaseVersion = new DatabaseVersion(0,0);
@@ -95,61 +85,10 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
         }
     }
 
-    private void createDatabase(Database database) {
+    private void createDatabaseAndSetVersion(Database database, org.apache.ddlutils.model.Database wantedDdl) {
+        imcmsDatabaseCreator.createDatabase(database, wantedDdl);
         DatabaseVersion lastDatabaseVersion = getLastDatabaseVersion();
-        database.execute(new CompositeDatabaseCommand(
-                new DatabaseCommand[] {
-                        new DdlUtilsPlatformCommand() {
-                            protected Object executePlatform(DatabaseConnection databaseConnection, Platform platform) {
-                                CreationParameters params = new CreationParameters();
-                                params.addParameter(null, "ENGINE", "InnoDB");
-                                params.addParameter(null, "CHARACTER SET", "UTF8");
-                                platform.createTables(wantedDdl, params, false, false);
-                                return null ;
-                            }
-                        },
-                        new DdlUtilsPlatformCommand() {
-                            protected Object executePlatform(DatabaseConnection databaseConnection,
-                                                             Platform platform) {
-                                String sql;
-                                try {
-                                    sql = getSqlScript("types.sql")
-                                          + getSqlScript("newdb.sql");
-                                } catch ( IOException e ) {
-                                    throw new RuntimeException(e);
-                                }
-                                sql = massageSql(platform, sql);
-                                platform.evaluateBatch(databaseConnection.getConnection(), sql, false) ;
-                                return null ;
-                            }
-                        },
-                        new InsertIntoTableDatabaseCommand("database_version", new Object[][] {
-                                { "major", lastDatabaseVersion.getMajorVersion() },
-                                { "minor", lastDatabaseVersion.getMinorVersion() },
-                        })
-                }
-        ));
-    }
-
-    private String massageSql(Platform platform, String sql) {
-        String platformName = platform.getName().toLowerCase();
-        sql = Pattern.compile(
-                "^-- " + platformName + " ", Pattern.MULTILINE).matcher(sql).replaceAll("");
-        sql = Pattern.compile("^-- \\w+ (.*?)\n", Pattern.MULTILINE).matcher(sql).replaceAll("");
-        String language = Locale.getDefault().getISO3Language() ;
-        if ( StringUtils.isBlank(language)) {
-            language = "eng" ;
-        }
-        sql = sql.replaceAll("@language@", language);
-        sql = sql.replaceAll("@headline@", new LocalizedMessage("start_document/headline").toLocalizedString(language)) ;
-        sql = sql.replaceAll("@text1@", new LocalizedMessage("start_document/text1").toLocalizedString(language)) ;
-        sql = sql.replaceAll("@text2@", new LocalizedMessage("start_document/text2").toLocalizedString(language)) ;
-        return sql;
-    }
-
-    private String getSqlScript(String scriptName) throws IOException {
-        File file = new File(scriptPath,scriptName);
-        return IOUtils.toString(new BufferedReader(new InputStreamReader(new FileInputStream(file))));
+        setDatabaseVersion(database, lastDatabaseVersion);
     }
 
     private DatabaseVersion getLastDatabaseVersion() {

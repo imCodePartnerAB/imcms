@@ -9,6 +9,9 @@ import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
+import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.index.RebuildingDirectoryIndex;
@@ -71,14 +74,16 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private Map velocityEngines = new TreeMap();
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
+    private final LocalizedMessageProvider localizedMessageProvider;
 
     static {
         mainLog.info("Main log started.");
     }
 
     /** Contructs an DefaultImcmsServices object. */
-    public DefaultImcmsServices(Database database, Properties props) {
+    public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider) {
         this.database = database;
+        this.localizedMessageProvider = localizedMessageProvider;
         procedureExecutor = new DefaultProcedureExecutor(this.database, fileLoader);
         initConfig(props);
         initKeyStore();
@@ -260,6 +265,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return result;
     }
 
+    public LocalizedMessageProvider getLocalizedMessageFactory() {
+        return localizedMessageProvider;
+    }
+
     public UserDomainObject verifyUser(String login, String password) {
         NDC.push("verifyUser");
         try {
@@ -297,7 +306,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         sessionCounter++;
         final Object[] parameters = new String[] { ""
                                                    + sessionCounter };
-        ((Integer)getDatabase().execute( new SqlUpdateCommand( "UPDATE sys_data SET value = ? WHERE type_id = 1", parameters ) )).intValue();
+        getDatabase().execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 1", parameters));
     }
 
     private UserAndRoleRegistry initExternalUserAndRoleMapper(String externalUserAndRoleMapperName,

@@ -1,6 +1,6 @@
 <%@ page import="com.imcode.imcms.flow.OkCancelPage"%><%@ page  import="com.imcode.imcms.flow.Page"%>
-<%@ page import="com.imcode.imcms.servlet.superadmin.UserEditorPage"%><%@ page import="imcode.server.user.UserDomainObject"%>
-<%@ page import="imcode.util.DateConstants"%><%@  page import="imcode.util.LocalizedMessage"%>
+<%@ page import="com.imcode.imcms.servlet.superadmin.UserEditorPage"%><%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage"%>
+<%@ page import="imcode.server.user.UserDomainObject"%><%@  page import="imcode.util.DateConstants"%>
 <%@ page import="imcode.util.Utility"%><%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page contentType="text/html; charset=UTF-8" %>

@@ -3,12 +3,12 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.db.handlers.ObjectFromFirstRowResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import imcode.util.LocalizedMessage;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -62,7 +62,7 @@ public class AdminDeleteDoc extends HttpServlet {
                 Properties params = getParameters(req);
                 if ( !validateParameters(params) ) {
                     String header = "Error in AdminDeleteDoc.";
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_valid_metaid") + "<br>";
                     log.debug(header + "- no valid metaid");
                     AdminRoles.printErrorMessage(req, res, header, msg);
@@ -78,7 +78,7 @@ public class AdminDeleteDoc extends HttpServlet {
 
                 if ( foundMetaId == null ) {
                     String header = "Error in AdminDeleteDoc. ";
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_metaid_in_db") + "( "
                                  + metaId
                                  + " ) <br>";

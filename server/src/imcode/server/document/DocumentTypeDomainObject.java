@@ -1,7 +1,7 @@
 package imcode.server.document;
 
 import imcode.util.IdLocalizedNamePair;
-import imcode.util.LocalizedMessage;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 import java.util.Set;
 import java.util.HashSet;

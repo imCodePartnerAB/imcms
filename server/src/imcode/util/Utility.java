@@ -6,6 +6,7 @@ import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.db.handlers.SingleObjectHandler;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;

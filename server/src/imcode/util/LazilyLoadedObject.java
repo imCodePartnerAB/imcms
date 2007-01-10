@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-public class LazilyLoadedObject implements Serializable, Cloneable {
+public class LazilyLoadedObject<E extends LazilyLoadedObject.Copyable<E>> implements Serializable, Cloneable {
 
-    private Loader loader;
-    private Copyable object;
+    private Loader<E> loader;
+    private E object;
 
-    public LazilyLoadedObject(Loader loader) {
+    public LazilyLoadedObject(Loader<E> loader) {
         this.loader = loader ;
     }
 
@@ -20,7 +20,8 @@ public class LazilyLoadedObject implements Serializable, Cloneable {
 
     public void load() {
         if (!isLoaded()) {
-            object = loader.load().copy() ;
+            E loaded = loader.load();
+            object = loaded.copy() ;
             setLoaded();
         }
     }
@@ -37,7 +38,7 @@ public class LazilyLoadedObject implements Serializable, Cloneable {
         return clone ;
     }
 
-    public void set(Copyable o) {
+    public void set(E o) {
         setLoaded();
         object = o ;
     }
@@ -46,12 +47,12 @@ public class LazilyLoadedObject implements Serializable, Cloneable {
         loader = null ;
     }
 
-    public interface Loader<E extends Copyable> extends Serializable {
-        E load() ;
+    public interface Loader<L extends Copyable> extends Serializable {
+        L load() ;
     }
 
-    public interface Copyable extends Serializable {
-        Copyable copy() ;
+    public interface Copyable<C extends Copyable> extends Serializable {
+        C copy() ;
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

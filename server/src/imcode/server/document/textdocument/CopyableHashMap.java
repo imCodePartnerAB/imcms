@@ -5,7 +5,7 @@ import imcode.util.LazilyLoadedObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CopyableHashMap extends HashMap implements LazilyLoadedObject.Copyable {
+public class CopyableHashMap extends HashMap implements LazilyLoadedObject.Copyable<CopyableHashMap> {
 
     public CopyableHashMap() {
     }
@@ -14,7 +14,7 @@ public class CopyableHashMap extends HashMap implements LazilyLoadedObject.Copya
         super(m);
     }
 
-    public LazilyLoadedObject.Copyable copy() {
+    public CopyableHashMap copy() {
         return new CopyableHashMap(this) ;
     }
 }

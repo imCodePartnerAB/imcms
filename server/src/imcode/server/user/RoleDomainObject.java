@@ -1,6 +1,6 @@
 package imcode.server.user;
 
-import imcode.util.LocalizedMessage;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -61,7 +61,7 @@ public class RoleDomainObject implements Serializable, Comparable {
         if ( isAdminRole() || roleDomainObject.isAdminRole() ) {
             return adminRoleId == roleDomainObject.adminRoleId;
         }
-        
+
         return id.equals(roleDomainObject.id);
     }
 

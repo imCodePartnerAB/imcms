@@ -5,6 +5,7 @@ import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.flow.CreateDocumentPageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;

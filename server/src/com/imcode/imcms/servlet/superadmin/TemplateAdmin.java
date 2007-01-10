@@ -7,7 +7,7 @@ import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.user.UserDomainObject;
-import imcode.util.LocalizedMessage;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import org.apache.commons.collections.iterators.ArrayIterator;
@@ -134,7 +134,7 @@ public class TemplateAdmin extends HttpServlet {
         List vec = new ArrayList();
         vec.add( "#language#" );
         vec.add( lang );
-        TemplateDomainObject[] templates = imcref.getTemplateMapper().getAllTemplates();
+        List<TemplateDomainObject> templates = imcref.getTemplateMapper().getAllTemplates();
         String temps = templateMapper.createHtmlOptionListOfTemplates( templates, null );
         vec.add( "#templates#" );
         vec.add( temps );
@@ -146,7 +146,7 @@ public class TemplateAdmin extends HttpServlet {
         List vec = new ArrayList();
         vec.add( "#language#" );
         vec.add( lang );
-        TemplateDomainObject[] templates = imcref.getTemplateMapper().getAllTemplates();
+        List<TemplateDomainObject> templates = imcref.getTemplateMapper().getAllTemplates();
         String temps = templateMapper.createHtmlOptionListOfTemplates( templates, null );
         vec.add( "#templates#" );
         vec.add( temps );
@@ -181,7 +181,7 @@ public class TemplateAdmin extends HttpServlet {
         List vec = new ArrayList();
         vec.add( "#language#" );
         vec.add( lang );
-        TemplateDomainObject[] templates = templateMapper.getAllTemplates();
+        List<TemplateDomainObject> templates = templateMapper.getAllTemplates();
         String temps = templateMapper.createHtmlOptionListOfTemplates( templates, null );
         vec.add( "#templates#" );
         vec.add( temps );
@@ -227,8 +227,8 @@ public class TemplateAdmin extends HttpServlet {
             vec.add( "#group_id#" );
             vec.add( "" );
         } else {
-            TemplateDomainObject[] templatesInGroup = templateMapper.getTemplatesInGroup( currentTemplateGroup );
-            TemplateDomainObject[] templatesNotInGroup = templateMapper.getTemplatesNotInGroup( currentTemplateGroup );
+            List<TemplateDomainObject> templatesInGroup = templateMapper.getTemplatesInGroup( currentTemplateGroup );
+            List<TemplateDomainObject> templatesNotInGroup = templateMapper.getTemplatesNotInGroup( currentTemplateGroup );
             String htmlOptionListOfTemplatesInSelectedGroup = templateMapper.createHtmlOptionListOfTemplates(
                     templatesInGroup, null );
             String htmlOptionListOfTemplatesNotInSelectedGroup = templateMapper.createHtmlOptionListOfTemplates(
@@ -251,21 +251,18 @@ public class TemplateAdmin extends HttpServlet {
                                                                  UserDomainObject user ) {
         DocumentDomainObject[] documents = imcref.getTemplateMapper().getDocumentsUsingTemplate( template );
         StringBuffer htmlOptionList = new StringBuffer();
-        for ( int i = 0; i < documents.length; i++ ) {
-            DocumentDomainObject document = documents[i];
+        for ( DocumentDomainObject document : documents ) {
             List vec = new ArrayList();
-            vec.add( "#meta_id#" );
-            vec.add( "" + document.getId() );
-            vec.add( "#meta_headline#" );
+            vec.add("#meta_id#");
+            vec.add("" + document.getId());
+            vec.add("#meta_headline#");
 
-            String[] pd = {"&", "&amp;", "<", "&lt;", ">", "&gt;", "\"", "&quot;"};
+            String[] pd = { "&", "&amp;", "<", "&lt;", ">", "&gt;", "\"", "&quot;" };
             String headline = document.getHeadline();
-            if ( headline.length() > 60 ) {
-                headline = headline.substring( 0, 57 ) + "...";
-            }
-            headline = Parser.parseDoc( headline, pd );
-            vec.add( headline );
-            htmlOptionList.append( imcref.getAdminTemplate( TEMPLATE_DOCS_ROW, user, vec ) );
+            headline = StringUtils.abbreviate(headline, 60) ;
+            headline = Parser.parseDoc(headline, pd);
+            vec.add(headline);
+            htmlOptionList.append(imcref.getAdminTemplate(TEMPLATE_DOCS_ROW, user, vec));
         }
         return htmlOptionList.toString();
     }
@@ -277,29 +274,29 @@ public class TemplateAdmin extends HttpServlet {
         vec.add( "#language#" );
         vec.add( lang );
         vec.add( "#template#" );
-        vec.add( String.valueOf( template.getId() ) );
+        vec.add( template.getName() );
         vec.add( "#docs#" );
         vec.add( createHtmlOptionListOfDocumentsUsingTemplate( imcref, template, user ) );
         vec.add( "#templates#" );
-        vec.add( templateMapper.createHtmlOptionListOfTemplates( templateMapper.getArrayOfAllTemplatesExceptOne( template ), null ) );
+        vec.add( templateMapper.createHtmlOptionListOfTemplates( templateMapper.getAllTemplatesExceptOne( template ), null ) );
 
         return imcref.getAdminTemplate(TEMPLATE_DELETE_WARNING, user, vec);
     }
 
-    static String createDeleteNonEmptyTemplateGroupWarningDialog( TemplateDomainObject[] templatesInGroup,
+    static String createDeleteNonEmptyTemplateGroupWarningDialog( Iterable<TemplateDomainObject> templatesInGroup,
                                                                    int templateGroupId, ImcmsServices imcref,
                                                                    UserDomainObject user ) {
         return createTemplateGroupWarningDialog(templatesInGroup, templateGroupId, imcref, TEMPLATE_GROUP_DELETE_WARNING, user);
     }
 
-    static String createDocumentsAssignedToTemplateInTemplateGroupWarningDialog( TemplateDomainObject[] templatesInGroup,
+    static String createDocumentsAssignedToTemplateInTemplateGroupWarningDialog( Iterable<TemplateDomainObject> templatesInGroup,
                                                                    int templateGroupId, ImcmsServices imcref,
                                                                    UserDomainObject user) {
 
         return createTemplateGroupWarningDialog(templatesInGroup, templateGroupId, imcref, TEMPLATE_GROUP_DELETE_DOCUMENTS_ASSIGNED_WARNING, user);
     }
 
-    private static String createTemplateGroupWarningDialog(TemplateDomainObject[] templatesInGroup, int templateGroupId,
+    private static String createTemplateGroupWarningDialog(Iterable<TemplateDomainObject> templatesInGroup, int templateGroupId,
                                                            ImcmsServices imcref, String template,
                                                            UserDomainObject user) {
         String commaSeparatedTemplateNames = StringUtils.join( new ArrayIterator( templatesInGroup ) {

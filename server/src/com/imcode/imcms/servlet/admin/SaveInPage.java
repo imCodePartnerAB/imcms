@@ -3,8 +3,8 @@ package com.imcode.imcms.servlet.admin;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
 import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -15,7 +15,6 @@ import imcode.util.ShouldNotBeThrownException;
 import org.apache.commons.lang.UnhandledException;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -71,7 +70,7 @@ public class SaveInPage extends HttpServlet {
             }
 
             // save textdoc
-            textDocument.setTemplateId( requestedTemplate.getId() );
+            textDocument.setTemplateName( requestedTemplate.getName() );
             if ( null != requestedTemplateGroup ) {
                 textDocument.setTemplateGroupId( requestedTemplateGroup.getId() );
             }
@@ -92,28 +91,6 @@ public class SaveInPage extends HttpServlet {
             Utility.setDefaultHtmlContentType( res );
             AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
 
-        } else if ( req.getParameter( "preview" ) != null ) {
-            if ( requestedTemplate == null ) { // If the user didn't select a template
-                Writer out = res.getWriter();
-                Utility.setDefaultHtmlContentType( res );
-                errorNoTemplateSelected(documentId, services, user, out);
-                return;
-            }
-            Object[] temp = services.getTemplateMapper().getDemoTemplate( requestedTemplate.getId() );
-            if ( temp != null ) {
-                String demoTemplateName = requestedTemplate.getId() + "." + temp[0];
-                // Set content-type depending on type of demo-template.
-                res.setContentType( getServletContext().getMimeType( demoTemplateName ) );
-                byte[] bytes = (byte[])temp[1];
-                ServletOutputStream out = res.getOutputStream();
-                res.setContentLength( bytes.length );
-                out.write( bytes );
-            } else {
-                Utility.setDefaultHtmlContentType( res );
-                String htmlStr = services.getAdminTemplate( "no_demotemplate.html", user, null );
-                Writer out = res.getWriter();
-                out.write( htmlStr );
-            }
         } else if ( req.getParameter( "change_group" ) != null ) {
             Utility.setDefaultHtmlContentType( res );
 
@@ -155,7 +132,7 @@ public class SaveInPage extends HttpServlet {
 
     private TemplateDomainObject getRequestedTemplate( HttpServletRequest req, TemplateMapper templateMapper ) {
         try {
-            return templateMapper.getTemplateById( Integer.parseInt( req.getParameter( "template" ) ) );
+            return templateMapper.getTemplateByName( req.getParameter( "template" ) );
         } catch ( NumberFormatException nfe ) {
             return null;
         }

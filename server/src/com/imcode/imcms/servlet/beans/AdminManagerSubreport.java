@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.beans;
 
 import com.imcode.imcms.servlet.superadmin.AdminManager;
-import imcode.util.LocalizedMessage;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 import java.util.List;
 

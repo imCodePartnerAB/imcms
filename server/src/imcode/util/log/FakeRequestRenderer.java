@@ -5,7 +5,6 @@ import imcode.server.Revisits;
 import imcode.server.Imcms;
 import com.imcode.imcms.mapping.SectionFromIdTransformer;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.collections.iterators.TransformIterator;
@@ -70,9 +69,8 @@ public class FakeRequestRenderer implements ObjectRenderer {
         result.append( lossyUrlEncode( headline ) );
         result.append( '/' );
         if ( document instanceof TextDocumentDomainObject ) {
-            int templateId = ( (TextDocumentDomainObject) document ).getTemplateId();
-            TemplateDomainObject template = Imcms.getServices().getTemplateMapper().getTemplateById(templateId) ;
-            result.append( lossyUrlEncode( template.getName() ) );
+            String templateName = ( (TextDocumentDomainObject) document ).getTemplateName();
+            result.append( lossyUrlEncode( templateName ) );
         }
         result.append( '/' );
 

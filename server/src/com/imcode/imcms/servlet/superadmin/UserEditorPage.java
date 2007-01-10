@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.imcms.api.NoPermissionException;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.mapping.NoPermissionInternalException;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;

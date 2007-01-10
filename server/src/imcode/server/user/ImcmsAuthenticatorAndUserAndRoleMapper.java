@@ -198,23 +198,23 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 "" + user.getId(),
         };
         try {
-            ((Integer)services.getDatabase().execute( new SqlUpdateCommand("UPDATE users \n"
-                                                                           + "SET login_name = ?,\n"
-                                                                           + "login_password = ?,\n"
-                                                                           + "first_name = ?,\n"
-                                                                           + "last_name = ?,\n"
-                                                                           + "title = ?,\n"
-                                                                           + "company = ?,\n"
-                                                                           + "address =  ?,\n"
-                                                                           + "city = ?,\n"
-                                                                           + "zip = ?,\n"
-                                                                           + "country = ?,\n"
-                                                                           + "county_council = ?,\n"
-                                                                           + "email = ?,\n"
-                                                                           + "external = ?,\n"
-                                                                           + "active = ?,\n"
-                                                                           + "language = ?\n"
-                                                                           + "WHERE user_id = ?", params ) )).intValue();
+            services.getDatabase().execute(new SqlUpdateCommand("UPDATE users \n"
+                                                                + "SET login_name = ?,\n"
+                                                                + "login_password = ?,\n"
+                                                                + "first_name = ?,\n"
+                                                                + "last_name = ?,\n"
+                                                                + "title = ?,\n"
+                                                                + "company = ?,\n"
+                                                                + "address =  ?,\n"
+                                                                + "city = ?,\n"
+                                                                + "zip = ?,\n"
+                                                                + "country = ?,\n"
+                                                                + "county_council = ?,\n"
+                                                                + "email = ?,\n"
+                                                                + "external = ?,\n"
+                                                                + "active = ?,\n"
+                                                                + "language = ?\n"
+                                                                + "WHERE user_id = ?", params));
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }
@@ -571,7 +571,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             final Object[] parameters = new String[] {
                     role.getName(),
                     "" + unionOfRolePermissionIds, "" + role.getId() };
-            ((Integer)services.getDatabase().execute( new SqlUpdateCommand( "UPDATE roles SET role_name = ?, permissions = ? WHERE role_id = ?", parameters ) )).intValue();
+            services.getDatabase().execute(new SqlUpdateCommand("UPDATE roles SET role_name = ?, permissions = ? WHERE role_id = ?", parameters));
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }

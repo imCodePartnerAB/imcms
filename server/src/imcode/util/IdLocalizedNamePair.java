@@ -1,5 +1,7 @@
 package imcode.util;
 
+import com.imcode.imcms.util.l10n.LocalizedMessage;
+
 import java.io.Serializable;
 
 public class IdLocalizedNamePair implements Serializable {

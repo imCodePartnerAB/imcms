@@ -1,14 +1,11 @@
 package imcode.server.document;
 
-import imcode.util.IdNamePair;
-
-
-public class TemplateDomainObject extends IdNamePair {
+public class TemplateDomainObject implements Comparable<TemplateDomainObject> {
+    private final String name;
     private final String fileName;
 
-    public TemplateDomainObject(int id, String name, String fileName) {
-        super(id, name);
-
+    public TemplateDomainObject(String name, String fileName) {
+        this.name = name ;
         this.fileName = fileName;
     }
 
@@ -16,4 +13,29 @@ public class TemplateDomainObject extends IdNamePair {
         return fileName;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int compareTo(TemplateDomainObject o) {
+        return name.compareToIgnoreCase(o.getName()) ;
+    }
+
+    public boolean equals(Object o) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+
+        final TemplateDomainObject that = (TemplateDomainObject) o;
+
+        return fileName.equals(that.fileName);
+
+    }
+
+    public int hashCode() {
+        return fileName.hashCode();
+    }
 }

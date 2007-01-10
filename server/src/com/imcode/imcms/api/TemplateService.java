@@ -7,6 +7,7 @@ import imcode.server.user.UserDomainObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class TemplateService {
 
@@ -63,13 +64,13 @@ public class TemplateService {
      * @throws NoPermissionException If the current user doesn't have permission to list the templates in the templategroup.
      */
     public Template[] getTemplates( TemplateGroup templateGroup ) throws NoPermissionException {
-        TemplateDomainObject[] templates = getTemplateMapper().getTemplatesInGroup( templateGroup.getInternal() );
-        Template[] result = new Template[templates.length];
-        for (int i = 0; i < templates.length; i++) {
-            TemplateDomainObject domainObject = templates[i];
-            result[i] = new Template( domainObject );
+        List<TemplateDomainObject> templates = getTemplateMapper().getTemplatesInGroup( templateGroup.getInternal() );
+        
+        List<Template> result = new ArrayList<Template>(templates.size());
+        for ( TemplateDomainObject template : templates ) {
+            result.add(new Template( template ));
         }
-        return result;
+        return result.toArray(new Template[result.size()]);
     }
 
     /**
@@ -81,13 +82,12 @@ public class TemplateService {
     public Template[] getPossibleTemplates( TextDocument textDocument ) throws NoPermissionException {
         getSecurityChecker().hasEditPermission( textDocument );
         TemplateGroup[] groups = getTemplatesGroups( textDocument );
-        ArrayList temp = new ArrayList();
-        for (int i = 0; i < groups.length; i++) {
-            Template[] templates = getTemplates( groups[i] );
-            temp.addAll( Arrays.asList( templates ) );
+        List temp = new ArrayList();
+        for ( TemplateGroup group : groups ) {
+            Template[] templates = getTemplates(group);
+            temp.addAll(Arrays.asList(templates));
         }
-        Template[] result = (Template[]) temp.toArray( new Template[temp.size()] );
-        return result;
+        return (Template[]) temp.toArray( new Template[temp.size()] );
     }
 
     public Template getTemplate( String templateName ) {
@@ -96,8 +96,7 @@ public class TemplateService {
     }
 
     public Template getTemplateById( int templateId ) {
-        TemplateDomainObject template = getTemplateMapper().getTemplateById( templateId );
-        return null != template ? new Template( template ) : null;
+        return null ;
     }
 
     public TemplateGroup getTemplateGroupById( int templateGroupId ) {

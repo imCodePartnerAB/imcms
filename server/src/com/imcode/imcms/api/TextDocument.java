@@ -147,12 +147,12 @@ public class TextDocument extends Document {
     }
 
     public Template getTemplate() {
-        int templateId = getInternalTextDocument().getTemplateId();
-        return contentManagementSystem.getTemplateService().getTemplateById(templateId) ;
+        String templateName = getInternalTextDocument().getTemplateName();
+        return contentManagementSystem.getTemplateService().getTemplate(templateName) ;
     }
 
     public void setTemplate(TemplateGroup templateGroup, Template template) {
-        getInternalTextDocument().setTemplateId(template.getInternal().getId());
+        getInternalTextDocument().setTemplateName(template.getInternal().getName());
         if (null != templateGroup) {
             getInternalTextDocument().setTemplateGroupId(templateGroup.getId());
         }

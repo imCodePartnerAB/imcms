@@ -57,7 +57,7 @@ public class TestDocumentSaver extends TestCase {
         TextDocumentDomainObject document = new TextDocumentDomainObject();
         documentMapper.makeDocumentLookNew(document, new UserDomainObject());
         document.setId(documentId);
-        document.setTemplateId(1);
+        document.setTemplateName("1");
         return document;
     }
 

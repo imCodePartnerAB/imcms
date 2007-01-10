@@ -1,12 +1,12 @@
 package com.imcode.imcms.flow;
 
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.Imcms;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CounterStringFactory;
-import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
 import imcode.util.io.InputStreamSource;
 import org.apache.commons.collections.IteratorUtils;

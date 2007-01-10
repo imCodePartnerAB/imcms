@@ -81,11 +81,11 @@ public class DocumentPermissionsPage extends OkCancelPage {
 
         if ( document instanceof TextDocumentDomainObject ) {
             String defaultTemplateIdStr = request.getParameter( REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID );
-            Integer templateId = null;
+            String templateName = null;
             try {
-                templateId = Integer.valueOf( defaultTemplateIdStr );
+                templateName = defaultTemplateIdStr ;
             } catch ( NumberFormatException ignored ) {}
-            ( (TextDocumentDomainObject)document ).setDefaultTemplateId( templateId );
+            ( (TextDocumentDomainObject)document ).setDefaultTemplateId( templateName );
         }
 
     }

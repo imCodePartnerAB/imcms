@@ -4,7 +4,7 @@
                  com.imcode.imcms.servlet.admin.ImageBrowser,
                  imcode.util.HttpSessionUtils,
                  imcode.server.Imcms,
-                 imcode.util.LocalizedMessage,
+                 com.imcode.imcms.util.l10n.LocalizedMessage,
                  imcode.util.Utility"
         contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%

@@ -6,7 +6,9 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.util.Utility;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.iterators.FilterIterator;
@@ -17,8 +19,11 @@ import org.apache.oro.text.regex.PatternMatcher;
 import org.apache.oro.text.regex.StringSubstitution;
 import org.apache.oro.text.regex.Substitution;
 import org.apache.oro.text.regex.Util;
+import org.apache.oro.text.regex.Perl5Matcher;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +33,7 @@ import java.util.List;
 import java.util.Properties;
 import java.io.Writer;
 import java.io.IOException;
+import java.io.StringWriter;
 
 public class MenuParser {
 
@@ -49,20 +55,39 @@ public class MenuParser {
         if ( menuMode && modeIsRead || !menuMode && modeIsWrite ) {
             return "";
         }
+
         try {
+            NodeList menuNodes = new NodeList( menuTemplate, parserParameters.getDocumentRequest().getHttpServletRequest(), tagParser );
             DocumentRequest documentRequest = parserParameters.getDocumentRequest();
-            HttpServletRequest request = documentRequest.getHttpServletRequest();
-            request.setAttribute("tagParser", tagParser);
-            request.setAttribute("menuParser", this);
-            request.setAttribute("menuTemplate", menuTemplate) ;
-            request.setAttribute("parserParameters", parserParameters);
-            request.setAttribute("menuIndex", new Integer(menuIndex));
-            request.setAttribute("menuAttributes", menuAttributes);
-            return Utility.getContents("/imcms/"+documentRequest.getUser().getLanguageIso639_2()+"/jsp/docadmin/text/edit_menu.jsp",
-                                       request, documentRequest.getHttpServletResponse()) ;
+            TextDocumentDomainObject document = (TextDocumentDomainObject) documentRequest.getDocument() ;
+            final MenuDomainObject menu = document.getMenu(menuIndex) ;
+            StringWriter contentWriter = new StringWriter();
+            nodeMenu( new SimpleElement( "menu", menuAttributes, menuNodes ), contentWriter, menu, new Perl5Matcher(), menuIndex, tagParser );
+            String content = contentWriter.toString();
+            return addMenuAdmin(menuIndex, menuMode, content, menu, documentRequest.getHttpServletRequest(), documentRequest.getHttpServletResponse(), menuAttributes.getProperty("label"));
         } catch ( Exception e ) {
             throw new UnhandledException(e);
         }
+    }
+
+    public static String addMenuAdmin(int menuIndex, boolean menuMode, String content,
+                                MenuDomainObject menu,
+                                HttpServletRequest request, HttpServletResponse response, String label) throws ServletException, IOException {
+        if (!menuMode) {
+            return content;
+        }
+        ImcmsAuthenticatorAndUserAndRoleMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+        UserDomainObject defaultUser = userMapper.getDefaultUser() ;
+        MenuItemDomainObject[] defaultUserMenuItems = menu.getPublishedMenuItemsUserCanSee( defaultUser );
+        UserDomainObject user = Utility.getLoggedOnUser(request);
+        MenuItemDomainObject[] menuItemsUserCanSee = menu.getMenuItemsUserCanSee(user ) ;
+        request.setAttribute("content", content);
+        request.setAttribute("label", label);
+        request.setAttribute("defaultUserCount", defaultUserMenuItems.length) ;
+        request.setAttribute("userCount", menuItemsUserCanSee.length);
+        request.setAttribute("menuIndex", new Integer(menuIndex));
+        return Utility.getContents("/imcms/"+user.getLanguageIso639_2()+"/jsp/docadmin/text/edit_menu.jsp",
+                                   request, response) ;
     }
 
     /**
@@ -285,11 +310,8 @@ public class MenuParser {
         tags.setProperty( "#menuitemdatemodified#", modifiedDate );
 
         String template = parameters.getProperty( "template" );
-        String href = Utility.getAbsolutePathToDocument( documentRequest.getHttpServletRequest(), document );
-        if (null != template) {
-            href += -1 != href.indexOf( '?' ) ? '&' : '?' ;
-            href += "template=" + URLEncoder.encode( template ) ;
-        }
+        HttpServletRequest request = documentRequest.getHttpServletRequest();
+        String href = getPathToDocument(request, document, template);
 
         List menuItemAHref = new ArrayList( 4 );
         menuItemAHref.add( "#href#" );
@@ -309,6 +331,15 @@ public class MenuParser {
         tags.setProperty( "#/menuitemlink#", "</a>" );
 
         return new MapSubstitution( tags, true );
+    }
+
+    public static String getPathToDocument(HttpServletRequest request, DocumentDomainObject document, String template) {
+        String href = Utility.getAbsolutePathToDocument( request, document );
+        if (StringUtils.isNotBlank(template)) {
+            href += -1 != href.indexOf( '?' ) ? '&' : '?' ;
+            href += "template=" + URLEncoder.encode( template ) ;
+        }
+        return href;
     }
 
 }

@@ -1,7 +1,5 @@
 package imcode.util.jscalendar;
 
-import imcode.util.LocalizedMessage;
-
 import javax.servlet.http.HttpServletRequest;
 
 public class JSCalendar {

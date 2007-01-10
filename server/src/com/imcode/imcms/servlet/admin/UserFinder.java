@@ -3,7 +3,7 @@ package com.imcode.imcms.servlet.admin;
 import com.imcode.imcms.servlet.WebComponent;
 import imcode.server.user.UserDomainObject;
 import imcode.util.HttpSessionUtils;
-import imcode.util.LocalizedMessage;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

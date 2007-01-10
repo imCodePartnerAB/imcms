@@ -5,9 +5,9 @@ import com.imcode.imcms.api.User;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;

@@ -6,7 +6,7 @@
                  imcode.server.document.SectionDomainObject,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Html,
-                 imcode.util.LocalizedMessage,
+                 com.imcode.imcms.util.l10n.LocalizedMessage,
                  imcode.util.ToDoubleObjectStringPairTransformer,
                  imcode.util.Utility,
                  imcode.util.jscalendar.JSCalendar,

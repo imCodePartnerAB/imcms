@@ -18,7 +18,7 @@
 <%@ page import="java.util.Arrays"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.SortedSet"%>
-<%@ page import="java.util.TreeSet"%><%@ page import="imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper"%>
+<%@ page import="java.util.TreeSet"%><%@ page import="imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper, java.util.List"%>
 <%@page contentType="text/html; charset=UTF-8"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%!
     String formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject radioButtonDocumentPermissionSetType, UserDomainObject user, DocumentPermissionSetTypeDomainObject documentPermissionSetType,
                                             RoleId roleId,
@@ -183,11 +183,10 @@
                     <select name="<%= DocumentPermissionsPage.REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID %>">
                         <option value=""><? templates/sv/docinfo/default_templates_1.html/2 ?></option>
                         <%
-                            Integer defaultTemplateId = textDocument.getDefaultTemplateId();
-                            TemplateDomainObject[] allTemplates = Imcms.getServices().getTemplateMapper().getAllTemplates() ;
-                            for ( int i = 0; i < allTemplates.length; i++ ) {
-                                TemplateDomainObject template = allTemplates[i];
-                                %><%= Html.option( ""+template.getId(), template.getName(), defaultTemplateId != null && template.getId() == defaultTemplateId.intValue() )%><%
+                            String defaultTemplateId = textDocument.getDefaultTemplateName();
+                            List<TemplateDomainObject> allTemplates = Imcms.getServices().getTemplateMapper().getAllTemplates() ;
+                            for ( TemplateDomainObject template : allTemplates ) {
+                                %><%= Html.option( ""+template.getName(), template.getName(), defaultTemplateId != null && template.getName().equals(defaultTemplateId) )%><%
                             } %>
                     </select>
                 </td>

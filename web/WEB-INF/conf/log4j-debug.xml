@@ -37,44 +37,16 @@
         </layout>
     </appender>
 
-    <!-- Comment unless you have a log4j server listening to logevents -->
-    <appender name="SOCKET" class="org.apache.log4j.net.SocketAppender">
-        <param name="Port" value="4445"/>
-        <param name="RemoteHost" value="localhost"/>
-        <param name="LocationInfo" value="true"/>
-        <param name="ReconnectionDelay" value="10000"/>
-    </appender>
-
-    <!-- Write HttpUnit code for requests to logfile
-        <appender name="HTTPUNIT" class="org.apache.log4j.FileAppender">
-            <layout class="org.apache.log4j.PatternLayout">
-                <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
-            </layout>
-        </appender>
-
-        <appender name="WEBAPPHTTPUNIT" class="imcode.util.log.WebAppFileAppender">
-            <param name="File" value="WEB-INF/logs/httpunit.log"/>
-            <appender-ref ref="HTTPUNIT"/>
-        </appender>
-
-        <category name="httpunit" additivity="false">
-        <priority value="debug"/>
-        <appender-ref ref="WEBAPPHTTPUNIT"/>
-        </category>
-    -->
-
     <!-- Set up accesslog with priority 'debug' -->
     <category name="com.imcode.imcms.log.access" additivity="false">
         <priority value="debug"/>
         <appender-ref ref="ACCESS"/>
-        <appender-ref ref="SOCKET"/>
     </category>
 
     <!-- Set up mainlog with priority 'debug' -->
     <category name="com.imcode.imcms.log.main" additivity="false">
         <priority value="debug"/>
         <appender-ref ref="MAIN"/>
-        <appender-ref ref="SOCKET"/>
     </category>
 
     <category name="org.apache" additivity="false">
@@ -86,7 +58,6 @@
     <root>
         <priority value="trace"/>
         <appender-ref ref="ERROR"/>
-        <appender-ref ref="SOCKET"/>
     </root>
 
 </log4j:configuration>

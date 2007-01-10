@@ -2,11 +2,11 @@ package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.admin.UserFinder;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
-import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import org.apache.log4j.Logger;
 
 import javax.servlet.RequestDispatcher;
@@ -34,7 +34,7 @@ public class AdminUser extends HttpServlet {
         // Lets verify that the user is an admin, otherwise throw him out.
         if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() ) {
             String header = "Error in AdminUser.";
-            Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+            Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             log.debug(header + "- user is not an administrator");
             AdminRoles.printErrorMessage(req, res, header, msg);
@@ -84,7 +84,7 @@ public class AdminUser extends HttpServlet {
 
         if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() && !userToChange.equals( user ) ) {
             String header = "Error in AdminUser, change user.";
-            Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+            Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/AdminUser/user_have_no_permission") + "<br>";
             log.debug(header + "- user have no permission to edit user values");
             AdminRoles.printErrorMessage(req, res, header, msg);

@@ -15,6 +15,18 @@ Library 1.2//EN"
     </tag>
 
     <tag>
+        <name>headline</name>
+        <tag-class>com.imcode.imcms.servlet.tags.HeadlineTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+
+    <tag>
+        <name>admin</name>
+        <tag-class>com.imcode.imcms.servlet.tags.AdminTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+    
+    <tag>
         <name>text</name>
         <tag-class>com.imcode.imcms.servlet.tags.TextTag</tag-class>
         <body-content>empty</body-content>
@@ -37,6 +49,14 @@ Library 1.2//EN"
         </attribute>
         <attribute>
             <name>formats</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>pre</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>post</name>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
@@ -74,5 +94,97 @@ Library 1.2//EN"
             <name>mode</name>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
+        <attribute>
+            <name>pre</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>post</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
     </tag>
+    
+    <tag>
+        <name>include</name>
+        <tag-class>com.imcode.imcms.servlet.tags.IncludeTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>no</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>label</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>pre</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>post</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>path</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>document</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>url</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>file</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <name>menu</name>
+        <tag-class>com.imcode.imcms.servlet.tags.MenuTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>id</name>
+        </attribute>
+        <attribute>
+            <name>no</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>label</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>pre</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>post</name>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>menuloop</name>
+        <tag-class>com.imcode.imcms.servlet.tags.MenuLoopTag</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+
+    <tag>
+        <name>menuitem</name>
+        <tag-class>com.imcode.imcms.servlet.tags.MenuItemTag</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+
+    <tag>
+        <name>menuitemlink</name>
+        <tag-class>com.imcode.imcms.servlet.tags.MenuItemLinkTag</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+
 </taglib>
+        

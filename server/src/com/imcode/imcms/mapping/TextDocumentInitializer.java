@@ -273,35 +273,29 @@ public class TextDocumentInitializer {
 
         public LazilyLoadedObject.Copyable load() {
             initDocumentsTemplateIds();
-            TextDocumentDomainObject.TemplateIds templateIds = (TextDocumentDomainObject.TemplateIds) documentsTemplateIds.get(documentId) ;
-            if (null == templateIds) {
-                templateIds = new TextDocumentDomainObject.TemplateIds();
+            TextDocumentDomainObject.TemplateNames templateNames = (TextDocumentDomainObject.TemplateNames) documentsTemplateIds.get(documentId) ;
+            if (null == templateNames ) {
+                templateNames = new TextDocumentDomainObject.TemplateNames();
             }
-            return templateIds ;
+            return templateNames ;
         }
 
         private void initDocumentsTemplateIds() {
             if ( null == documentsTemplateIds ) {
                 documentsTemplateIds = new HashMap();
-                DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id, template_id, group_id, default_template, default_template_1, default_template_2 FROM text_docs WHERE meta_id ", documentIds, new ResultSetHandler() {
+                DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id, template_name, group_id, default_template, default_template_1, default_template_2 FROM text_docs WHERE meta_id ", documentIds, new ResultSetHandler() {
                     public Object handle(ResultSet rs) throws SQLException {
                         while ( rs.next() ) {
-                            Integer documentId = new Integer(rs.getInt(1));
-                            TextDocumentDomainObject.TemplateIds templateIds = new TextDocumentDomainObject.TemplateIds();
-                            templateIds.setTemplateId(rs.getInt(2));
-                            templateIds.setTemplateGroupId(rs.getInt(3));
-                            templateIds.setDefaultTemplateId(Utility.getInteger(rs.getObject(4)));
-                            Integer defaultTemplateIdForR1 = Utility.getInteger(rs.getObject(5));
-                            Integer defaultTemplateIdForR2 = Utility.getInteger(rs.getObject(6));
-                            if ( defaultTemplateIdForR1.intValue() == -1 ) {
-                                defaultTemplateIdForR1 = null;
-                            }
-                            if ( defaultTemplateIdForR2.intValue() == -1 ) {
-                                defaultTemplateIdForR2 = null;
-                            }
-                            templateIds.setDefaultTemplateIdForRestricted1(defaultTemplateIdForR1);
-                            templateIds.setDefaultTemplateIdForRestricted2(defaultTemplateIdForR2);
-                            documentsTemplateIds.put(documentId, templateIds);
+                            Integer documentId = new Integer(rs.getInt("meta_id"));
+                            TextDocumentDomainObject.TemplateNames templateNames = new TextDocumentDomainObject.TemplateNames();
+                            templateNames.setTemplateName(rs.getString("template_name"));
+                            templateNames.setTemplateGroupId(rs.getInt(3));
+                            templateNames.setDefaultTemplateName(rs.getString("default_template"));
+                            String defaultTemplateIdForR1 = rs.getString("default_template_1");
+                            String defaultTemplateIdForR2 = rs.getString("default_template_2");
+                            templateNames.setDefaultTemplateNameForRestricted1(defaultTemplateIdForR1);
+                            templateNames.setDefaultTemplateNameForRestricted2(defaultTemplateIdForR2);
+                            documentsTemplateIds.put(documentId, templateNames);
                         }
                         return null;
                     }

@@ -5,11 +5,11 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.handlers.ObjectFromFirstRowResultSetHandler;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import imcode.util.LocalizedMessage;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -86,7 +86,7 @@ public class AdminSection extends HttpServlet {
                 for( int i=0; i < section_arr.length; i++){
                     if( new_section_name.equals( section_arr[i][1]) ){
                         section_exists = true;
-                        Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                        Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                         errormsg = langproperties.getProperty("error/servlet/AdminSection/section_exists");
                         break;
                     }
@@ -158,7 +158,7 @@ public class AdminSection extends HttpServlet {
             } else {
                 final Object[] parameters = new String[] {new_sections,
                                                                                             del_section};
-                ((Integer)imcref.getDatabase().execute( new SqlUpdateCommand( "update meta_section set section_id = ? where section_id = ?", parameters ) )).intValue();
+                imcref.getDatabase().execute(new SqlUpdateCommand("update meta_section set section_id = ? where section_id = ?", parameters));
                 deleteSection( imcref, del_section );
             }
         }

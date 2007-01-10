@@ -1,12 +1,12 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.db.StringArrayResultSetHandler;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.*;
 import imcode.util.Html;
-import imcode.util.LocalizedMessage;
 import imcode.util.ToStringPairTransformer;
 import imcode.util.Utility;
 import org.apache.commons.lang.UnhandledException;
@@ -46,7 +46,7 @@ public class AdminRoles extends HttpServlet {
         Utility.setDefaultHtmlContentType(res);
         if ( !user.isSuperAdmin() ) {
             String header = "Error in AdminRoles.";
-            Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+            Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             LOG.debug(header + "- user is not an administrator");
             printErrorMessage(req, res, header, msg);
@@ -125,7 +125,7 @@ public class AdminRoles extends HttpServlet {
             } else if ( req.getParameter("VIEW_RENAME_ROLE") != null ) {
                 String roleIdStr = req.getParameter("ROLE_ID");
                 if ( roleIdStr == null ) {
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_missing") + "<BR>";
                     LOG.debug("Error in rename roles, no role selected for rename");
                     printErrorMessage(req, res, "Roles error", msg);
@@ -144,7 +144,7 @@ public class AdminRoles extends HttpServlet {
                 String roleIdStr = req.getParameter("ROLE_ID");
                 if ( roleIdStr == null ) {
                     String header = "Error in AdminRoles, edit role";
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_missing") + "<br>";
                     LOG.debug(header + "- select the role to be changed");
                     printErrorMessage(req, res, header, msg);
@@ -188,7 +188,7 @@ public class AdminRoles extends HttpServlet {
                 Properties params = getAddRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles ";
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/new_rolename_missing") + "<br>";
                     LOG.debug(header + "- new rolename missing");
                     printErrorMessage(req, res, header, msg);
@@ -199,7 +199,7 @@ public class AdminRoles extends HttpServlet {
                 String roleName = params.getProperty("ROLE_NAME");
                 if ( roleExists(userAndRoleMapper, roleName) ) {
                     String header = "Error in AdminRoles.";
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_already_exists")
                                  + "<br>";
                     LOG.debug(header + "- role name already exists");
@@ -228,7 +228,7 @@ public class AdminRoles extends HttpServlet {
                 Properties params = getRenameRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles, rename role ";
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/new_rolename_missing") + "<br>";
                     LOG.debug(header + "- new role name is missing");
                     printErrorMessage(req, res, header, msg);
@@ -246,7 +246,7 @@ public class AdminRoles extends HttpServlet {
                     throw new UnhandledException(e);
                 } catch ( RoleAlreadyExistsException e ) {
                     String header = "Error in AdminRoles.";
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_already_exists")
                                  + "<br>";
                     LOG.debug(header + "- rolename already exists");
@@ -268,7 +268,7 @@ public class AdminRoles extends HttpServlet {
                 Properties params = getDeleteRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles ";
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                     LOG.debug(header + "- no role was selected for delete");
                     printErrorMessage(req, res, header, msg);
@@ -327,7 +327,7 @@ public class AdminRoles extends HttpServlet {
                 Properties params = getDeleteRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles, delete ";
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                     LOG.debug(header + "- no role was selected for delete");
                     printErrorMessage(req, res, header, msg);
@@ -349,7 +349,7 @@ public class AdminRoles extends HttpServlet {
                 Properties params = getDeleteRoleParameters(req);
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles, delete";
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                     LOG.debug(header + "- no role was selected for delete");
                     printErrorMessage(req, res, header, msg);
@@ -376,7 +376,7 @@ public class AdminRoles extends HttpServlet {
 
                 if ( params.values().contains("") ) {
                     String header = "Error in AdminRoles ";
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                     LOG.debug(header + "- no role was selected for delete");
                     printErrorMessage(req, res, header, msg);

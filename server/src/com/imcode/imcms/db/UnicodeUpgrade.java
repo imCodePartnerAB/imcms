@@ -9,6 +9,7 @@ import org.apache.ddlutils.model.Table;
 import org.apache.ddlutils.model.Column;
 import org.apache.ddlutils.platform.SqlBuilder;
 import org.apache.ddlutils.platform.CreationParameters;
+import org.apache.ddlutils.Platform;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -54,7 +55,11 @@ class UnicodeUpgrade extends DatabaseTypeSpecificUpgrade {
     }
 
     public void upgradeMysql(Database database) throws DatabaseException {
-        Table[] tables = wantedDdl.getTables();
+        Table[] tables = (Table[]) database.execute(new DdlUtilsPlatformCommand() {
+            protected Object executePlatform(DatabaseConnection databaseConnection, Platform platform) {
+                return platform.readModelFromDatabase(null).getTables();
+            }
+        });
         for ( Table table : tables ) {
             database.execute(new SqlUpdateCommand("ALTER TABLE " + table.getName() + " CHARACTER SET UTF8", new Object[0]));
         }

@@ -4,6 +4,10 @@ import com.imcode.db.*;
 import com.imcode.imcms.db.DatabaseUpgrade;
 import com.imcode.imcms.db.StartupDatabaseUpgrade;
 import com.imcode.imcms.db.DatabaseUtils;
+import com.imcode.imcms.db.ImcmsDatabaseCreator;
+import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
+import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.util.Prefs;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
@@ -60,9 +64,11 @@ public class Imcms {
         Properties serverprops = getServerProperties();
         LOG.debug("Creating main DataSource.");
         Database database = createDatabase(serverprops);
-        DatabaseUpgrade upgrade = new StartupDatabaseUpgrade(DatabaseUtils.getWantedDdl(), new File(getPath(),"WEB-INF/sql/"));
+        LocalizedMessageProvider localizedMessageProvider = new CachingLocalizedMessageProvider(new ImcmsPrefsLocalizedMessageProvider());
+        InputStreamReader initScriptReader = new InputStreamReader(new FileInputStream(new File(getPath(), "WEB-INF/sql/init.sql")), "UTF-8");
+        DatabaseUpgrade upgrade = new StartupDatabaseUpgrade(DatabaseUtils.getWantedDdl(), new ImcmsDatabaseCreator(initScriptReader, localizedMessageProvider));
         upgrade.upgrade(database);
-        return new DefaultImcmsServices(database, serverprops);
+        return new DefaultImcmsServices(database, serverprops, localizedMessageProvider);
     }
 
     private static Database createDatabase(Properties serverprops) {

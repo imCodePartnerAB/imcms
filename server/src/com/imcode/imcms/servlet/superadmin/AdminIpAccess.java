@@ -1,12 +1,12 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
-import imcode.util.LocalizedMessage;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 
@@ -148,7 +148,7 @@ public class AdminIpAccess extends HttpServlet {
                     }
                 } else {
                     String header = "Error in AdminIpAccess, delete. ";
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminIpAccess/no_session") + "<br>";
                     log.debug(header + "- session could not be created");
                     AdminRoles.printErrorMessage(req, res, header, msg);
@@ -177,7 +177,7 @@ public class AdminIpAccess extends HttpServlet {
                     }
                 } else {
                     String header = "Error in AdminIpAccess, delete.";
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     String msg = langproperties.getProperty("error/servlet/AdminIpAccess/no_session") + "<br>";
                     log.debug(header + "- session could not be created");
                     AdminRoles.printErrorMessage(req, res, header, msg);
@@ -191,7 +191,7 @@ public class AdminIpAccess extends HttpServlet {
 
     static void printNonAdminError(ImcmsServices imcref, UserDomainObject user, HttpServletRequest req,
                                    HttpServletResponse res, Class clazz) throws IOException {
-        Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+        Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
         String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
         String header = "Error in "+ ClassUtils.getShortClassName(clazz) +".";
         log.debug(header + "- user is not an administrator");
@@ -238,7 +238,7 @@ public class AdminIpAccess extends HttpServlet {
 
         if ( aPropObj.values().contains("") ) {
             String header = "Error in AdminIpAccess, assertNoEmptyStringsInPropertyValues.";
-            Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+            Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/AdminIpAccess/vaidate_form_parameters") + "<br>";
             log.debug(header + "- values is missing for some parameters");
             AdminRoles.printErrorMessage(req, res, header, msg);

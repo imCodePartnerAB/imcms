@@ -58,9 +58,9 @@ public class DocumentPermissionSetPage extends OkCancelPage {
             textDocumentPermissionSet.setAllowedDocumentTypeIds( new IntegerSet(Utility.getParameterInts(request, REQUEST_PARAMETER__ALLOWED_DOCUMENT_TYPE_IDS)) );
             int[] allowedTemplateGroupIds = Utility.getParameterInts( request, REQUEST_PARAMETER__ALLOWED_TEMPLATE_GROUP_IDS ) ;
             textDocumentPermissionSet.setAllowedTemplateGroupIds( new IntegerSet(allowedTemplateGroupIds));
-            Integer defaultTemplateId = null;
+            String defaultTemplateId = null;
             try {
-                defaultTemplateId = Integer.valueOf(request.getParameter( REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID ));
+                defaultTemplateId = request.getParameter( REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID );
             } catch( NumberFormatException ignored ) {}
             TextDocumentDomainObject textDocument = (TextDocumentDomainObject) document;
             if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(textDocumentPermissionSet.getType())) {

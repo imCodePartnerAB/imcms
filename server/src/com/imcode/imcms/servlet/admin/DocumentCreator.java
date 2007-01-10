@@ -43,7 +43,7 @@ public class DocumentCreator {
         if ( document instanceof TextDocumentDomainObject ) {
             TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
             if ( null != template ) {
-                textDocument.setTemplateId( template.getId() );
+                textDocument.setTemplateName( template.getName() );
             }
             pageFlow = new CreateTextDocumentPageFlow( textDocument, saveDocumentCommand, returnCommand );
         } else if ( document instanceof UrlDocumentDomainObject ) {

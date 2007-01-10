@@ -118,7 +118,7 @@ public class CategoryMapper {
     public void deleteCategoryTypeFromDb(CategoryTypeDomainObject categoryType) {
         String sqlstr = "delete from category_types where category_type_id = ?";
         String[] params = new String[]{categoryType.getId() + ""};
-        ((Integer)database.execute( new SqlUpdateCommand( sqlstr, params ) )).intValue();
+        database.execute(new SqlUpdateCommand(sqlstr, params));
     }
 
     public CategoryTypeDomainObject addCategoryTypeToDb(final CategoryTypeDomainObject categoryType
@@ -162,7 +162,7 @@ public class CategoryMapper {
     public void deleteCategoryFromDb(CategoryDomainObject category) {
         String sqlstr = "delete from categories where category_id = ?";
         String[] params = new String[]{category.getId() + ""};
-        ((Integer)database.execute( new SqlUpdateCommand( sqlstr, params ) )).intValue();
+        database.execute(new SqlUpdateCommand(sqlstr, params));
     }
 
     void updateDocumentCategories(DocumentDomainObject document) {
@@ -176,7 +176,7 @@ public class CategoryMapper {
 
     private void addCategoryToDocument(int categoryId, DocumentDomainObject document) {
         String[] params = new String[]{"" + document.getId(), "" + categoryId};
-        ((Integer)database.execute( new SqlUpdateCommand( "INSERT INTO document_categories (meta_id, category_id) VALUES(?,?)", params ) )).intValue();
+        database.execute(new SqlUpdateCommand("INSERT INTO document_categories (meta_id, category_id) VALUES(?,?)", params));
     }
 
     public String[] getAllDocumentsOfOneCategory(CategoryDomainObject category) {
@@ -189,13 +189,13 @@ public class CategoryMapper {
 
     private void removeAllCategoriesFromDocument(DocumentDomainObject document) {
         String[] params = new String[]{"" + document.getId()};
-        ((Integer)database.execute( new SqlUpdateCommand( "DELETE FROM document_categories WHERE meta_id = ?", params ) )).intValue();
+        database.execute(new SqlUpdateCommand("DELETE FROM document_categories WHERE meta_id = ?", params));
     }
 
     public void deleteOneCategoryFromDocument(DocumentDomainObject document, CategoryDomainObject category
     ) {
         String[] params = new String[]{document.getId() + "", category.getId() + ""};
-        ((Integer)database.execute( new SqlUpdateCommand( "DELETE FROM document_categories WHERE meta_id = ? and category_id = ?", params ) )).intValue();
+        database.execute(new SqlUpdateCommand("DELETE FROM document_categories WHERE meta_id = ? and category_id = ?", params));
     }
 
     void checkMaxDocumentCategoriesOfType(DocumentDomainObject document)

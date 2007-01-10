@@ -28,7 +28,7 @@ public class ParserParameters implements Cloneable {
         this.param = param;
     }
 
-    public String getTemplate() {
+    public String getTemplateName() {
         return template;
     }
 

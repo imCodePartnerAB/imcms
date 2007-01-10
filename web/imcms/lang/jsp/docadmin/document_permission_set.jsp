@@ -14,7 +14,7 @@
                  java.util.Map"%>
 <%@ page import="java.util.Set"%>
 <%@ page import="imcode.server.document.DocumentPermissionSetTypeDomainObject"%>
-<%@ page import="imcode.server.document.textdocument.TextDocumentDomainObject"%>
+<%@ page import="imcode.server.document.textdocument.TextDocumentDomainObject, java.util.List"%>
 <%@ page contentType="text/html; charset=UTF-8"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%
     DocumentPermissionSetPage documentPermissionSetPage = (DocumentPermissionSetPage)Page.fromRequest(request) ;
     DocumentPermissionSetDomainObject documentPermissionSet = documentPermissionSetPage.getDocumentPermissionSet() ;
@@ -120,18 +120,17 @@
                 <select name="<%= DocumentPermissionSetPage.REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID %>">
                     <option value=""><? templates/sv/docinfo/default_templates_1.html/2 ?></option>
                     <%
-                        TemplateDomainObject[] allTemplates = services.getTemplateMapper().getAllTemplates() ;
+                        List<TemplateDomainObject> allTemplates = services.getTemplateMapper().getAllTemplates() ;
                         TextDocumentDomainObject textDocument = (TextDocumentDomainObject) documentPermissionSetPage.getDocument();
-                        Integer defaultTemplateId = null ;
+                        String defaultTemplateId = null ;
                         if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(documentPermissionSet.getType())) {
-                            defaultTemplateId = textDocument.getDefaultTemplateIdForRestricted1();
+                            defaultTemplateId = textDocument.getDefaultTemplateNameForRestricted1();
                         } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSet.getType())) {
-                            defaultTemplateId = textDocument.getDefaultTemplateIdForRestricted2();
+                            defaultTemplateId = textDocument.getDefaultTemplateNameForRestricted2();
                         }
-                        for ( int i = 0; i < allTemplates.length; i++ ) {
-                            TemplateDomainObject template = allTemplates[i];
-                            boolean selected = null != defaultTemplateId && template.getId() == defaultTemplateId.intValue() ;
-                            %><option value="<%= template.getId() %>" <% if (selected) { %>selected<% } %>><%= StringEscapeUtils.escapeHtml( template.getName() )%></option><%
+                        for ( TemplateDomainObject template : allTemplates ) {
+                            boolean selected = null != defaultTemplateId && template.getName().equals(defaultTemplateId) ;
+                            %><option value="<%= StringEscapeUtils.escapeHtml(template.getName()) %>" <% if (selected) { %>selected<% } %>><%= StringEscapeUtils.escapeHtml( template.getName() )%></option><%
                         }
                     %>
                 </select>

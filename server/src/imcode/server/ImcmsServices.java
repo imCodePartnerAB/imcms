@@ -4,13 +4,13 @@ import com.imcode.db.Database;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
-import imcode.util.LocalizedMessage;
 import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -21,13 +21,12 @@ import java.io.Writer;
 import java.security.KeyStore;
 import java.text.Collator;
 import java.util.Date;
-import java.util.Properties;
 
 public interface ImcmsServices {
 
     /** Verify a Internet/Intranet user. Data from any SQL Database. **/
     UserDomainObject verifyUser(String login, String password)
-	;
+    ;
 
     void parsePage(ParserParameters paramsToParse, Writer out) throws IOException ;
 
@@ -47,8 +46,8 @@ public interface ImcmsServices {
 
     // parseExternaldoc use template
     String getTemplateFromDirectory( String adminTemplateName, UserDomainObject user, java.util.List variables,
-                                                 String directory )
-	;
+                                     String directory )
+    ;
 
     // get doctype
     int getDocType(int meta_id)
@@ -100,4 +99,5 @@ public interface ImcmsServices {
 
     UserDomainObject verifyUserByIpOrDefault(String remoteAddr);
 
+    LocalizedMessageProvider getLocalizedMessageFactory();
 }

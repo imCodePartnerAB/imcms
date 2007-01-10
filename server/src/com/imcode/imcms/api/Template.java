@@ -14,8 +14,9 @@ public class Template {
         return internalTemplate.getName();
     }
 
+    /** @deprecated Returns 0, use {@link #getName()} instead. **/
     public int getId() {
-        return internalTemplate.getId();
+        return 0;
     }
 
     public boolean equals(Object o) {

@@ -13,29 +13,29 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     public DocumentSavingVisitor(DocumentDomainObject documentInDatabase, Database database,
                                  ImcmsServices services) {
         super(database, services );
-        this.oldDocument = documentInDatabase;
+        oldDocument = documentInDatabase;
     }
 
     public void visitHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
         String sqlStr = "UPDATE frameset_docs SET frame_set = ? WHERE meta_id = ?";
         final Object[] parameters = new String[]{htmlDocument.getHtml(), "" + htmlDocument.getId()};
-        ((Integer)database.execute( new SqlUpdateCommand( sqlStr, parameters ) )).intValue();
+        database.execute(new SqlUpdateCommand(sqlStr, parameters));
     }
 
     public void visitUrlDocument( UrlDocumentDomainObject urlDocument ) {
         String sqlStr = "UPDATE url_docs SET url_ref = ? WHERE meta_id = ?";
         final Object[] parameters = new String[]{urlDocument.getUrl(), "" + urlDocument.getId()};
-        ((Integer)database.execute( new SqlUpdateCommand( sqlStr, parameters ) )).intValue();
+        database.execute(new SqlUpdateCommand(sqlStr, parameters));
     }
 
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
-        String sqlStr = "UPDATE text_docs SET template_id = ?, group_id = ?,\n"
+        String sqlStr = "UPDATE text_docs SET template_name = ?, group_id = ?,\n"
                         + "default_template = ?, default_template_1 = ?, default_template_2 = ? WHERE meta_id = ?";
-        Integer defaultTemplateId = textDocument.getDefaultTemplateId();
-        Integer defaultTemplateIdForRestricted1 = textDocument.getDefaultTemplateIdForRestricted1();
-        Integer defaultTemplateIdForRestricted2 = textDocument.getDefaultTemplateIdForRestricted2();
+        String defaultTemplateId = textDocument.getDefaultTemplateName();
+        String defaultTemplateIdForRestricted1 = textDocument.getDefaultTemplateNameForRestricted1();
+        String defaultTemplateIdForRestricted2 = textDocument.getDefaultTemplateNameForRestricted2();
 
-        int templateId = textDocument.getTemplateId();
+        String templateId = textDocument.getTemplateName();
         int templateGroupId = textDocument.getTemplateGroupId();
 
         final Object[] parameters = new String[]{
@@ -46,7 +46,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
             null != defaultTemplateIdForRestricted2 ? "" + defaultTemplateIdForRestricted2 : "-1",
             "" + textDocument.getId()
         };
-        ((Integer)database.execute( new SqlUpdateCommand( sqlStr, parameters ) )).intValue();
+        database.execute(new SqlUpdateCommand(sqlStr, parameters));
 
         updateTextDocumentTexts( textDocument );
         updateTextDocumentImages( textDocument );

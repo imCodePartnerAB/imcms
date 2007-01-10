@@ -6,6 +6,7 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.admin.ImageBrowser;
 import com.imcode.imcms.servlet.admin.ListDocumentAliasPage;
 import com.imcode.imcms.servlet.admin.UserFinder;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.util.KeywordsParser;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;

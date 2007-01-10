@@ -4,6 +4,7 @@ import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.admin.ImageBrowser;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.CategoryDomainObject;
@@ -11,7 +12,6 @@ import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import imcode.util.LocalizedMessage;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
@@ -63,7 +63,7 @@ public class AdminCategories extends HttpServlet {
         Utility.setDefaultHtmlContentType(res);
         if ( !user.isSuperAdmin() ) {
             String header = "Error in AdminCategories. ";
-            Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+            Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             AdminRoles.printErrorMessage(req, res, header, msg);
             return;

@@ -4,8 +4,10 @@ import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
 import org.apache.ddlutils.alteration.AddTableChange;
 import org.apache.ddlutils.alteration.ModelChange;
+import org.apache.ddlutils.alteration.AddForeignKeyChange;
 import org.apache.ddlutils.model.Database;
 import org.apache.ddlutils.model.Table;
+import org.apache.ddlutils.model.ForeignKey;
 import org.apache.ddlutils.platform.SqlBuilder;
 
 import java.io.IOException;
@@ -35,7 +37,11 @@ public class CreateTableUpgrade extends ImcmsDatabaseUpgrade {
                 }
                 final List<ModelChange> changes = new ArrayList();
                 changes.add(new AddTableChange(table));
+                for ( ForeignKey foreignKey : table.getForeignKeys() ) {
+                    changes.add(new AddForeignKeyChange(table, foreignKey)) ;
+                }
                 sqlBuilder.processChanges(actualDdl, wantedDdl, changes, null);
+                
                 return null;
             }
         });

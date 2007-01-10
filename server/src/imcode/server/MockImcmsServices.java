@@ -11,9 +11,11 @@ import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
+import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +24,6 @@ import java.security.KeyStore;
 import java.text.Collator;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
 public class MockImcmsServices implements ImcmsServices {
 
@@ -43,7 +44,7 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public void parsePage(ParserParameters paramsToParse, Writer out) throws IOException {
-        
+
     }
 
     public void incrementSessionCounter() {
@@ -167,6 +168,10 @@ public class MockImcmsServices implements ImcmsServices {
 
     public UserDomainObject verifyUserByIpOrDefault(String remoteAddr) {
         return null;
+    }
+
+    public LocalizedMessageProvider getLocalizedMessageFactory() {
+        throw new NotImplementedException("imcode.server.MockImcmsServices.getLocalizedMessageFactory");
     }
 
     public KeyStore getKeyStore() {

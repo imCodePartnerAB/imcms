@@ -2,10 +2,10 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.user.*;
 import imcode.util.HttpSessionUtils;
-import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;

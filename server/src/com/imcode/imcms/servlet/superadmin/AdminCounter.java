@@ -6,7 +6,7 @@ import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
-import imcode.util.LocalizedMessage;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.util.jscalendar.JSCalendar;
 import org.apache.log4j.Logger;
 
@@ -21,9 +21,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
-
-
-
 
 public class AdminCounter extends HttpServlet {
 
@@ -90,7 +87,7 @@ public class AdminCounter extends HttpServlet {
                 Date date = dateFormat.parse(dateStr);
                 newDateStr = dateFormat.format(date);
                 if ( !newDateStr.equals(dateStr) ) {
-                    Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                    Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                     errormsg = langproperties.getProperty("error/servlet/AdminCounter/no_valid_date");
                     newDateStr = dateStr;
                 } else {
@@ -99,7 +96,7 @@ public class AdminCounter extends HttpServlet {
                 }
 
             } catch ( ParseException pe ) {
-                Properties langproperties = LocalizedMessage.getLanguageProperties(user);
+                Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                 errormsg = langproperties.getProperty("error/servlet/AdminCounter/no_valid_date");
                 newDateStr = dateStr;
             }

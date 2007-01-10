@@ -1,6 +1,6 @@
 package imcode.server.user;
 
-import imcode.util.LocalizedMessage;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 import java.io.Serializable;
 
