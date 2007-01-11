@@ -19,6 +19,7 @@ import org.apache.log4j.NDC;
 import org.apache.oro.text.regex.*;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
@@ -92,7 +93,8 @@ public class TextDocumentParser {
             TemplateDomainObject template = templateMapper.getTemplateByName(templateName);
             if (template.getFileName().endsWith(".jsp")) {
                 try {
-                    documentRequest.getHttpServletRequest().getRequestDispatcher("/WEB-INF/templates/text/"+template.getFileName()).forward(documentRequest.getHttpServletRequest(), documentRequest.getHttpServletResponse());
+                    HttpServletRequest request = documentRequest.getHttpServletRequest();
+                    request.getRequestDispatcher("/WEB-INF/templates/text/"+template.getFileName()).forward(request, documentRequest.getHttpServletResponse());
                 } catch ( ServletException e ) {
                     throw new UnhandledException(e);
                 }

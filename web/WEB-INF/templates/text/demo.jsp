@@ -1,6 +1,7 @@
 <%@taglib prefix="imcms" uri="imcms"%><%@taglib prefix="c" uri="http://java.sun.com/jstl/core" %><html>
+<imcms:variables/>
 <head>
-<title><imcms:headline/> - Powered by imCMS from imCode Partner AB</title>
+<title><c:out value="${document.headline}"/> - Powered by imCMS from imCode Partner AB</title>
 
 <style type="text/css">
 <!--
