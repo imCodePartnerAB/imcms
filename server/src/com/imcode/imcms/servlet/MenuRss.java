@@ -99,7 +99,7 @@ public class MenuRss extends HttpServlet {
     private String getUrlToDocument(HttpServletRequest request, com.imcode.imcms.api.Document document) {
         String requestUrl = request.getRequestURL().toString();
         requestUrl = StringUtils.substringBefore(requestUrl, "/servlet/") + Utility
-                .getContextRelativePathToDocumentWithId(document.getId());
+                .getContextRelativePathToDocumentWithName(document.getName());
         return requestUrl;
     }
 

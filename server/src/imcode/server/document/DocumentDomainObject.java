@@ -9,6 +9,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.LazilyLoadedObject;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
@@ -469,7 +470,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public String getName() {
-        return (String) ObjectUtils.defaultIfNull(getAlias(), getId()+"");
+        return StringUtils.defaultString(getAlias(), getId()+"");
     }
 
     public static class Attributes implements Cloneable, Serializable {

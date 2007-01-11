@@ -181,6 +181,12 @@ Library 1.2//EN"
     </tag>
 
     <tag>
+        <name>menuitemhide</name>
+        <tag-class>com.imcode.imcms.servlet.tags.MenuItemHideTag</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+
+    <tag>
         <name>menuitemlink</name>
         <tag-class>com.imcode.imcms.servlet.tags.MenuItemLinkTag</tag-class>
         <body-content>JSP</body-content>

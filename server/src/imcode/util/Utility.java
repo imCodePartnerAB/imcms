@@ -221,28 +221,15 @@ public class Utility {
         if (null == document) {
             return null ;
         }
-        if (document.getAlias() != null  ) {
-            return getContextRelativePathToDocumentWithAlias(document.getAlias());
-
-        }else  {
-            return getContextRelativePathToDocumentWithId(document.getId());
-        }
+        return getContextRelativePathToDocumentWithName(document.getName());
     }
 
-    public static String getContextRelativePathToDocumentWithId(int documentId) {
-        String documentPathPrefix = Imcms.getServices().getConfig().getDocumentPathPrefix() ;
-        if (StringUtils.isBlank( documentPathPrefix )) {
-            documentPathPrefix = "/servlet/GetDoc?meta_id=" ;
-        }
-        return documentPathPrefix + documentId;
-    }
-
-    public static String getContextRelativePathToDocumentWithAlias(String alias) {
+    public static String getContextRelativePathToDocumentWithName(String name) {
         String documentPathPrefix = Imcms.getServices().getConfig().getDocumentPathPrefix() ;
         if (StringUtils.isBlank( documentPathPrefix )) {
             documentPathPrefix = "/" ;
         }
-        return documentPathPrefix + alias;
+        return documentPathPrefix + name;
     }
 
     public static String formatHtmlDatetime( Date datetime ) {

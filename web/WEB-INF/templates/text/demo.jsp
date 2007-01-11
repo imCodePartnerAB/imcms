@@ -38,20 +38,20 @@ LI { padding-bottom:5; }
 		<td width="385">
             <imcms:text no="1" label="Text (Rubrik)" pre='<span class="imcHeading">' post='</span><br><br>' />
             <imcms:text no='2' label='<br>Text' post='<br><br>' />
-            menu
-            <imcms:menu no='1' label='<br><br>Meny (punktlista)' pre="testpre" post="testpost">
+            <imcms:menu no='1' label='<br><br>Meny (punktlista)'>
                 <ul>
-                    <%-- imcms:menuloop>
+                    <imcms:menuloop>
                         <imcms:menuitem>
                             <li style="padding-bottom:5; color: green;"><imcms:menuitemlink><c:out value="${menuitem.document.headline}"/></imcms:menuitemlink></li>
                         </imcms:menuitem>
                         <imcms:menuitem>
-                            <li style="padding-bottom:5; color: red;"><imcms:menuitemlink><c:out value="${menuitem.document.headline}"/></imcms:menuitemlink></li>
+                            <imcms:menuitemhide>
+                                <li style="padding-bottom:5; color: red;"><imcms:menuitemlink><c:out value="${menuitem.document.headline}"/></imcms:menuitemlink></li>
+                            </imcms:menuitemhide>
                         </imcms:menuitem>
-                    </imcms:menuloop --%>
+                    </imcms:menuloop>
                 </ul>
             </imcms:menu>
-            menu
             <imcms:include url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoContent" pre='<hr>' post='<hr>'/>
             <imcms:image no='3' label='Bild' pre='<br><br>' post='<br>'/><br>
             <imcms:include no='1' label='Dynamisk inkludering 1'/>
