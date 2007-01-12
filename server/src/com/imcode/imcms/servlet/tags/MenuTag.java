@@ -66,7 +66,8 @@ public class MenuTag extends BodyTagSupport {
 
     public int doEndTag() throws JspException {
         try {
-            String bodyContentString = null != bodyContent ? bodyContent.getString() : "";
+            String bodyContentString = null != getBodyContent() ? getBodyContent().getString() : "";
+            bodyContent = null ;
             HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
             HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
             ParserParameters parserParameters = ParserParameters.fromRequest(request);
