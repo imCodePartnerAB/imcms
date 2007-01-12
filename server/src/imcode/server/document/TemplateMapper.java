@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileFilter;
 import java.util.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -88,11 +89,11 @@ public class TemplateMapper {
         for ( TemplateDomainObject template : templates ) {
             List tags = new ArrayList();
             tags.add("#template_name#");
-            tags.add(template.getName());
+            tags.add(StringEscapeUtils.escapeHtml(template.getName()));
             tags.add("#docs#");
             tags.add("" + templateMapper.getCountOfDocumentsUsingTemplate(template));
             tags.add("#template_id#");
-            tags.add(template.getName());
+            tags.add(StringEscapeUtils.escapeHtml(template.getName()));
             htmlStr += services.getAdminTemplate("template_list_row.html", user, tags);
         }
         return htmlStr;
@@ -105,9 +106,7 @@ public class TemplateMapper {
 
         database.execute( new SqlUpdateCommand( "delete from templates_cref where template_name = ?", new String[]{template.getName()} ) );
 
-        // delete from database
-        database.execute(new SqlUpdateCommand("delete from templates where template_id = ?", new String[] {
-                template.getName() }));
+        new File(getTemplateDirectory(), template.getFileName()).delete();
 
         // test if template exists and delete it
         File f = new File( services.getConfig().getTemplatePath() + "/text/" + template.getFileName() );
@@ -148,11 +147,18 @@ public class TemplateMapper {
     }
 
     public List<TemplateDomainObject> getAllTemplates() {
-        String sqlStr = "select template_name from templates order by simple_name";
-        final Object[] parameters = new String[0];
-        String[][] queryResult = (String[][]) database.execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
-
-        return createTemplatesFromSqlResult( queryResult );
+        File[] templateFiles = getTemplateDirectory().listFiles(new FileFilter() {
+            public boolean accept(File pathname) {
+                String fileName = pathname.getName().toLowerCase();
+                return pathname.isFile() && (fileName.endsWith(".jsp") || fileName.endsWith(".html")) ; 
+            }
+        });
+        SortedSet<TemplateDomainObject> templates = new TreeSet<TemplateDomainObject>();
+        for ( File templateFile : templateFiles ) {
+            String nameWithoutExtension = StringUtils.substringBeforeLast(templateFile.getName(), ".");
+            templates.add(new TemplateDomainObject(nameWithoutExtension, templateFile.getName())) ;
+        }
+        return new ArrayList<TemplateDomainObject>(templates);
     }
 
     private int getCountOfDocumentsUsingTemplate( TemplateDomainObject template ) {
@@ -162,7 +168,7 @@ public class TemplateMapper {
     }
 
     public DocumentDomainObject[] getDocumentsUsingTemplate( TemplateDomainObject template ) {
-        String[][] temp = (String[][]) database.execute(new SqlQueryCommand("select td.meta_id, meta_headline from text_docs td join meta m on td.meta_id = m.meta_id where template_id = ? order by td.meta_id", new String[]{template.getName()}, Utility.STRING_ARRAY_ARRAY_HANDLER));
+        String[][] temp = (String[][]) database.execute(new SqlQueryCommand("select td.meta_id, meta_headline from text_docs td join meta m on td.meta_id = m.meta_id where template_name = ? order by td.meta_id", new String[]{template.getName()}, Utility.STRING_ARRAY_ARRAY_HANDLER));
         DocumentMapper documentMapper = services.getDocumentMapper();
         DocumentDomainObject[] documents = new DocumentDomainObject[temp.length];
         for ( int i = 0; i < documents.length; i++ ) {
@@ -289,14 +295,6 @@ public class TemplateMapper {
         return templateGroups;
     }
 
-    private List<TemplateDomainObject> createTemplatesFromSqlResult( String[][] queryResult ) {
-        List<TemplateDomainObject> templates = new ArrayList<TemplateDomainObject>(queryResult.length);
-        for ( String[] aQueryResult : queryResult ) {
-            templates.add(createTemplateFromSqlResultRow(aQueryResult));
-        }
-        return templates;
-    }
-
     public void createTemplateGroup( String name ) {
         database.execute(new InsertIntoTableDatabaseCommand("templategroups", new Object[][] {
                 { "group_name", name },
@@ -326,8 +324,8 @@ public class TemplateMapper {
         return 0;
     }
 
-    public String getTemplateData( String template_id ) throws IOException {
-        return services.getFileCache().getCachedFileString( new File( services.getConfig().getTemplatePath(), "/text/" + getTemplateByName(template_id).getFileName() ) );
+    public String getTemplateData( String templateName ) throws IOException {
+        return services.getFileCache().getCachedFileString( new File( services.getConfig().getTemplatePath(), "/text/" + getTemplateByName(templateName).getFileName() ) );
     }
 
     public List getTemplateGroups(Set<Integer> templateGroupIds) {

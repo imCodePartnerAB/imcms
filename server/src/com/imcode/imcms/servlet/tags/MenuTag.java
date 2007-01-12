@@ -25,7 +25,6 @@ public class MenuTag extends BodyTagSupport {
     private Properties attributes = new Properties();
     private Iterator<MenuItemDomainObject> menuItemIterator;
     private MenuItemDomainObject menuItem ;
-    private static final String CONTENT_ATTRIBUTE_NAME = MenuTag.class.getName() + ".content";
     private String template;
     private MenuDomainObject menu;
     private String label;
@@ -123,12 +122,6 @@ public class MenuTag extends BodyTagSupport {
 
     public void invalidateMenuItem() {
         menuItem = null ;
-    }
-
-    public static String getContent(HttpServletRequest request) {
-        String content = (String) request.getAttribute(CONTENT_ATTRIBUTE_NAME);
-        request.removeAttribute(CONTENT_ATTRIBUTE_NAME);
-        return content;
     }
 
     public String getTemplate() {
