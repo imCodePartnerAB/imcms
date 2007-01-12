@@ -52,6 +52,11 @@ Single tags
 
         Attributes:
             * no - The number of this text in the text document.
+            * document - The document to get the textfield from (documentId or documentAlias),
+                        - if documentName is blank or NULL use text from current document.
+                        - don't output anything if not a valid text document.
+                        - when not current document only output if not in "edit text" mode.
+
             * label - A small text describing the intended use for this text.
             * rows - Indicate number of rows to use for the editor.
             * mode - Possible values:
@@ -68,6 +73,11 @@ Single tags
 
         Attributes:
             * no - The number of this image in the text document.
+            * document - The document to get the image from (documentId or documentAlias),
+                        - if documentName is blank or NULL use image from current document.
+                        - don't output anything if not a valid text document.
+                        - when not current document only output if not in "edit image" mode.
+
             * label - A small text describing the intended use for this image.
             * class - Passes through to the result.
             * style - Passes through to the result.

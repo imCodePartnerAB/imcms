@@ -27,4 +27,8 @@ public class ImageTag extends SimpleImcmsTag {
     public void setStyleId(String id) {
         attributes.setProperty("id", id) ;
     }
+
+    public void setDocument(String documentName) {
+        attributes.setProperty("document", documentName) ;
+    }
 }

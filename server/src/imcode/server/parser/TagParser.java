@@ -382,6 +382,7 @@ public class TagParser {
      * @param attributes The attributes of the text tag
      *                   attributes:
      *                   - no  Text number in document
+     *                   - document  Document to get text from ( id or alias )
      *                   - label Label to show in write mode
      *                   - mode  ( "read" | "write" )
      *                   - filter
@@ -389,7 +390,8 @@ public class TagParser {
      *                   - rows
      */
     public String tagText(Properties attributes) {
-        if ( shouldOutputNothingAccordingToMode(attributes, textMode) ) {
+        TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
+        if ( shouldOutputNothingAccordingToMode(attributes, textMode) || textDocumentToUse==null || textDocumentToUse.getId() != document.getId() && textMode ) {
             return "";
         }
         // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
@@ -398,11 +400,11 @@ public class TagParser {
         TextDomainObject text;
         if ( null == noStr ) {
             no = implicitTextNumber++;
-            text = (TextDomainObject) document.getText(no);
+            text = textDocumentToUse.getText(no);
         } else {
             noStr = noStr.trim();
             no = Integer.parseInt(noStr);
-            text = (TextDomainObject) document.getText(no);
+            text = textDocumentToUse.getText(no);
             implicitTextNumber = no + 1;
         }
         String result = "";
@@ -481,10 +483,12 @@ public class TagParser {
         return tagImage(attributes, imageMode, implicitImageIndex, documentRequest.getUser(), document, documentRequest.getHttpServletRequest(), service);
     }
 
-    public static String tagImage(Properties attributes, boolean imageMode, int[] implicitImageIndex,
+    public String tagImage(Properties attributes, boolean imageMode, int[] implicitImageIndex,
                            UserDomainObject user, TextDocumentDomainObject document,
                            HttpServletRequest httpServletRequest, ImcmsServices service) {
-        if ( shouldOutputNothingAccordingToMode(attributes, imageMode) ) {
+
+        TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
+        if ( shouldOutputNothingAccordingToMode(attributes, imageMode) || textDocumentToUse==null || textDocumentToUse.getId() != document.getId() && imageMode ) {
             return "";
         }
         // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
@@ -497,7 +501,7 @@ public class TagParser {
             imageIndex = Integer.parseInt(noStr);
             implicitImageIndex[0] = imageIndex + 1;
         }
-        ImageDomainObject image = document.getImage(imageIndex) ;
+        ImageDomainObject image = textDocumentToUse.getImage(imageIndex) ;
         ImageSource imageSource = image.getSource();
         String imageTag = "" ;
         if ( !( imageSource instanceof FileDocumentImageSource )
@@ -507,7 +511,7 @@ public class TagParser {
         }
 
         if ( imageMode ) {
-            String[] replace_tags = getLabelTags(attributes, imageIndex, imageTag, document);
+            String[] replace_tags = getLabelTags(attributes, imageIndex, imageTag, textDocumentToUse);
             String admin_template_file;
             if ( "".equals(imageTag) ) { // no data in the db-field.
                 admin_template_file = "textdoc/admin_no_image.frag";
@@ -790,6 +794,18 @@ public class TagParser {
             throw new UnhandledException(e);
         }
         return stringWriter.toString();
+    }
+
+    private TextDocumentDomainObject getTextDocumentToUse(Properties attributes) {
+        String documentName = attributes.getProperty("document");
+        TextDocumentDomainObject textDocumentToUse = document;
+        if(StringUtils.isNotBlank(documentName)) {
+            textDocumentToUse = null;
+            try{
+                textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocumentFromId(documentName);
+            }catch(ClassCastException e ){/* return null */}
+        }
+       return textDocumentToUse;
     }
 
     public class MetaIdHeaderHttpServletRequest extends HttpServletRequestWrapper {
