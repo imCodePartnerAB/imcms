@@ -85,10 +85,10 @@
     <taskdef name="install" classname="org.apache.catalina.ant.InstallTask" classpathref="libraries"/>
     <taskdef name="remove" classname="org.apache.catalina.ant.RemoveTask" classpathref="libraries"/>
     <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" classpathref="libraries"/>
-    <taskdef classname="org.apache.jasper.JspC" name="jasper2" classpathref="libraries"/>
 
     <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
 
+    <taskdef classname="org.apache.jasper.JspC" name="jasper2" classpathref="libraries-with-commons-logging"/>
     <taskdef resource="checkstyletask.properties" classpathref="libraries-with-commons-logging"/>
     <taskdef name="ddl2db" classname="org.apache.ddlutils.task.DdlToDatabaseTask"  classpathref="libraries-with-commons-logging"/>
 
