@@ -62,7 +62,7 @@
 	<td class="imcmsAdmText"><? templates/sv/permissions/define_permission_4.html/1 ?></td>
 	<td colspan="2"><input type="checkbox" name="<%= DocumentPermissionSetPage.REQUEST_PARAMETER__EDIT_PERMISSIONS %>" value="1" <% if (documentPermissionSet.getEditPermissions() ) { %>checked<% } %>></td>
 </tr>
-<% if (documentPermissionSet instanceof TextDocumentPermissionSetDomainObject) {
+<% if (documentPermissionSet instanceof TextDocumentPermissionSetDomainObject && documentPermissionSetPage.getDocument() instanceof TextDocumentDomainObject) {
     TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet ;
     %>
     <tr>
