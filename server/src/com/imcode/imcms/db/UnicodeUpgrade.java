@@ -4,6 +4,7 @@ import com.imcode.db.Database;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.imcms.db.refactoring.DatabaseNotSupportedException;
 import org.apache.ddlutils.alteration.*;
 import org.apache.ddlutils.model.Table;
 import org.apache.ddlutils.model.Column;
@@ -26,7 +27,7 @@ class UnicodeUpgrade extends DatabaseTypeSpecificUpgrade {
     }
 
     public void upgradeOther(Database database) throws DatabaseException {
-        throw new DatabaseNotSupportedException(null, null);
+        throw new DatabaseNotSupportedException();
     }
 
     public void upgradeMssql(Database database) throws DatabaseException {
@@ -61,7 +62,7 @@ class UnicodeUpgrade extends DatabaseTypeSpecificUpgrade {
             }
         });
         for ( Table table : tables ) {
-            database.execute(new SqlUpdateCommand("ALTER TABLE " + table.getName() + " CHARACTER SET UTF8", new Object[0]));
+            database.execute(new SqlUpdateCommand("ALTER TABLE " + table.getName() + " CONVERT TO CHARACTER SET UTF8", new Object[0]));
         }
     }
 }

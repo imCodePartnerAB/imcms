@@ -1,44 +1,36 @@
 package com.imcode.imcms.test.external;
 
-import junit.framework.*;
-import com.imcode.imcms.db.StartupDatabaseUpgrade;
-import com.imcode.imcms.db.ImcmsDatabaseCreator;
-import com.imcode.imcms.db.DdlUtilsPlatformCommand;
-import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.db.DataSourceDatabase;
-import com.imcode.db.DatabaseException;
 import com.imcode.db.DatabaseConnection;
+import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.SqlUpdateCommand;
-import org.apache.ddlutils.model.Database;
-import org.apache.ddlutils.model.Index;
-import org.apache.ddlutils.model.IndexColumn;
-import org.apache.ddlutils.model.ForeignKey;
-import org.apache.ddlutils.io.DatabaseIO;
-import org.apache.ddlutils.Platform;
-import org.apache.ddlutils.alteration.*;
-import org.apache.commons.io.CopyUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
+import com.imcode.imcms.db.DdlUtilsPlatformCommand;
+import com.imcode.imcms.db.ImcmsDatabaseCreator;
+import com.imcode.imcms.db.StartupDatabaseUpgrade;
+import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.util.ShouldNotBeThrownException;
+import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.io.CopyUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.ddlutils.Platform;
+import org.apache.ddlutils.alteration.*;
+import org.apache.ddlutils.io.DatabaseIO;
+import org.apache.ddlutils.model.Database;
+import org.apache.ddlutils.model.ForeignKey;
+import org.apache.ddlutils.model.Index;
+import org.apache.ddlutils.model.IndexColumn;
 
 import java.io.*;
-import java.util.Properties;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 
 public class TestStartupDatabaseUpgrade extends TestCase {
-
-    public void testCreateMssql() throws Exception {
-        String jdbcDriver = "net.sourceforge.jtds.jdbc.Driver";
-        String host = "localhost";
-        String baseUrl = "jdbc:jtds:sqlserver://" + host + ":1433/";
-        String jdbcUser = "sa";
-        String jdbcPassword = "";
-        String databaseName = "imcmstest";
-        doTest(jdbcDriver, baseUrl, jdbcUser, jdbcPassword, databaseName);
-    }
 
     public void testCreateMysql() throws Exception {
         String jdbcDriver = "com.mysql.jdbc.Driver";
@@ -50,8 +42,25 @@ public class TestStartupDatabaseUpgrade extends TestCase {
         doTest(jdbcDriver, baseUrl, jdbcUser, jdbcPassword, databaseName);
     }
 
+    public void testCreateMssql() throws Exception {
+        String jdbcDriver = "net.sourceforge.jtds.jdbc.Driver";
+        String host = "localhost";
+        String baseUrl = "jdbc:jtds:sqlserver://" + host + ":1433/";
+        String jdbcUser = "sa";
+        String jdbcPassword = "";
+        String databaseName = "imcmstest";
+        doTest(jdbcDriver, baseUrl, jdbcUser, jdbcPassword, databaseName);
+    }
+
     private void doTest(String jdbcDriver, String baseUrl, String jdbcUser, String jdbcPassword,
                         String databaseName) throws IOException {
+        File root = new File("tmp/test/");
+        FileUtils.deleteDirectory(root);
+        Imcms.setPath(root);
+        File templatesDirectory = new File(root, "WEB-INF/templates/text");
+        templatesDirectory.mkdirs();
+        File templateFile = new File(templatesDirectory, "1.html");
+        templateFile.createNewFile();
         DataSourceDatabase database = createDataSourceDatabase(jdbcDriver, baseUrl, jdbcUser, jdbcPassword);
         dropDatabase(database, databaseName);
         createDatabase(database, databaseName);
@@ -61,6 +70,8 @@ public class TestStartupDatabaseUpgrade extends TestCase {
         final Database wantedDdl = getWantedDdl();
         new StartupDatabaseUpgrade(wantedDdl, databaseCreator).upgrade(database);
         //assertDatabaseUpgraded(database, wantedDdl);
+        assertFalse(templateFile.exists());
+        assertTrue(new File(templatesDirectory, "demo.html").exists());
     }
 
     private void assertDatabaseUpgraded(DataSourceDatabase database, final Database wantedDdl) {

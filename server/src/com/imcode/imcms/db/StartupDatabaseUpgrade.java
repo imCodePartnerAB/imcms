@@ -3,9 +3,11 @@ package com.imcode.imcms.db;
 import com.imcode.db.Database;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
+import com.imcode.db.SingleConnectionDatabase;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.db.commands.TransactionDatabaseCommand;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.db.handlers.SingleObjectHandler;
 import org.apache.ddlutils.platform.SqlBuilder;
@@ -13,6 +15,9 @@ import org.apache.log4j.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.io.File;
+
+import imcode.server.Imcms;
 
 public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
 
@@ -28,6 +33,7 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
                     new ColumnSizeUpgrade(wantedDdl, "category_types", "name", 128))
             ),
             new DatabaseVersionUpgradePair(4, 3, new CreateTableUpgrade(wantedDdl, "document_properties")),
+            new DatabaseVersionUpgradePair(4, 4, new TemplateNamesUpgrade(new File(Imcms.getPath(), "WEB-INF/templates/text"))),
     };
     private ImcmsDatabaseCreator imcmsDatabaseCreator ;
 
@@ -59,12 +65,18 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
     private void upgradeDatabase(DatabaseVersion databaseVersion, Database database) {
         LOG.info("Database is version "+databaseVersion) ;
         if (getLastDatabaseVersion().compareTo(databaseVersion) > 0 ) {
-            for ( DatabaseVersionUpgradePair versionUpgradePair : upgrades ) {
-                DatabaseVersion upgradeVersion = versionUpgradePair.getVersion();
+            for ( final DatabaseVersionUpgradePair versionUpgradePair : upgrades ) {
+                final DatabaseVersion upgradeVersion = versionUpgradePair.getVersion();
                 if ( upgradeVersion.compareTo(databaseVersion) > 0 ) {
                     LOG.info("Upgrading database to version "+upgradeVersion);
-                    versionUpgradePair.getUpgrade().upgrade(database);
-                    setDatabaseVersion(database, upgradeVersion);
+                    database.execute(new TransactionDatabaseCommand() {
+                        public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
+                            SingleConnectionDatabase database = new SingleConnectionDatabase(connection);
+                            versionUpgradePair.getUpgrade().upgrade(database);
+                            setDatabaseVersion(database, upgradeVersion);
+                            return null;
+                        }
+                    });
                     databaseVersion = upgradeVersion ;
                 }
             }
@@ -123,4 +135,5 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
 
         }
     }
+
 }
