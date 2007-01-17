@@ -24,6 +24,7 @@ public class Config {
     private String keyStorePath ;
     private String keyStoreType ;
     private String workaroundUriEncoding;
+    private boolean secureLoginRequired;
 
     public String getWorkaroundUriEncoding() {
         return workaroundUriEncoding;
@@ -164,4 +165,11 @@ public class Config {
         this.keyStoreType = keyStoreType;
     }
 
+    public boolean getSecureLoginRequired() {
+        return secureLoginRequired;
+    }
+
+    public void setSecureLoginRequired(boolean secureLoginRequired) {
+        this.secureLoginRequired = secureLoginRequired;
+    }
 }

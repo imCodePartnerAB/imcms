@@ -418,6 +418,9 @@ public class Utility {
     }
 
     public static void makeUserLoggedIn(HttpServletRequest req, UserDomainObject user) {
+        if ( null != user && !user.isDefaultUser() && !req.isSecure() && Imcms.getServices().getConfig().getSecureLoginRequired() ) {
+            return;
+        }
         req.getSession().setAttribute(LOGGED_IN_USER, user);
         if (null != user) {
             // FIXME: Ugly hack to get the contextpath into DefaultImcmsServices.getVelocityContext()
