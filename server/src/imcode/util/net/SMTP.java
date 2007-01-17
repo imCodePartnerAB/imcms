@@ -12,6 +12,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.io.IOException;
 import java.util.Arrays;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 /**
  * class SMTP - Provides methods for sending mail.
@@ -58,12 +59,13 @@ public class SMTP {
 
         private HtmlEmail mail = new HtmlEmail();
         private String textBody ;
-        
+
         public Mail( String fromAddress ) {
             try {
                 mail.setFrom( fromAddress );
             } catch ( EmailException e ) {
-                throw new UnhandledException( e );
+                LocalizedMessage errorMessage = new LocalizedMessage("error/missing_email_fromAdress");
+                throw new UnhandledException( errorMessage.toLocalizedString("eng")  , e );
             }
         }
 
@@ -90,7 +92,7 @@ public class SMTP {
                 throw new UnhandledException( e );
             }
         }
-        
+
         public void setHtmlBody( String htmlBody ) {
             try {
                 mail.setHtmlMsg(htmlBody) ;

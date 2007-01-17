@@ -4,6 +4,7 @@ import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
 
@@ -29,10 +30,8 @@ public class PasswordMailReminder extends HttpServlet {
     private final static String ERROR_STRING = "password_error_input.txt";
 
     /* returning document */
-    private final static String RETURNING_DOCUMENT_NO_USER_NAME = "password_no_user.html";
-    private final static String RETURNING_DOCUMENT_NO_EMAIL = "password_no_email.html";
-    private final static String RETURNING_DOCUMENT_NO_RIGHT = "password_no_right.html";
     private final static String RETURNING_DOCUMENT_SENT = "password_sent.html";
+    private final static String RETURNING_DOCUMENT_NOT_SENT = "password_not_sent.html";
     private final static String RETURNING_DOCUMENT_INPUT = "password_submit.html";
 
     private final static int PASSWORD_PERMISSION_ID = 1;
@@ -67,13 +66,11 @@ public class PasswordMailReminder extends HttpServlet {
         /* server info */
 
         ImcmsServices imcref = Imcms.getServices();
+        ImcmsAuthenticatorAndUserAndRoleMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
 
         /* mailserver info */
         imcode.server.SystemData sysData = imcref.getSystemData();
         String eMailServerMaster = sysData.getServerMasterAddress();
-        String emailFromServer = sysData.getServerMasterAddress();
-
-        String mailFrom = eMailServerMaster;
 
         String emptyString = "";
 
@@ -83,26 +80,28 @@ public class PasswordMailReminder extends HttpServlet {
         String lastName = emptyString;
         String password = emptyString;
         String userEmail = emptyString;
+        String userName = emptyString;
 
-        String returnFileBody = emptyString;
-        String serverMasterMailBody = emptyString;
-        String returnString = emptyString;
+        String returnFileBody ;
+        String serverMasterMailBody ;
+        String returnString ;
         List tags = new ArrayList();
 
         /* condition variabels */
-        boolean validLoginName = false;
+        boolean validLoginName;
         boolean sendMailToUser = false;
 
         postedLoginName = req.getParameter( "login_name" );
+
         validLoginName = !( !( postedLoginName != null ) || postedLoginName.length() == 0 );
 
         if ( validLoginName ) {
 
             final Object[] parameters = new String[]{
-            "" + PasswordMailReminder.PASSWORD_PERMISSION_ID, postedLoginName
+            "" + PasswordMailReminder.PASSWORD_PERMISSION_ID, postedLoginName, postedLoginName
             };
             String[] queryResult = (String[]) imcref.getDatabase().execute(new SqlQueryCommand(
-                    "select login_password, first_name, last_name, email, min(permissions & ?), lang_prefix \n"
+                    "select login_password, first_name, last_name, email, min(permissions & ?), lang_prefix, login_name \n"
                     + "from users u \n"
                     + "join lang_prefixes lp \n"
                     + "    on u.language = lp.lang_prefix\n"
@@ -111,14 +110,15 @@ public class PasswordMailReminder extends HttpServlet {
                     + "join roles r \n"
                     + "    on r.role_id = urc.role_id\n"
                     + "where login_name = ?\n"
-                    + "group by login_password, first_name, last_name, email, lang_prefix", parameters, Utility.STRING_ARRAY_HANDLER));
-            UserDomainObject user = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUser( postedLoginName );
-            user.setCurrentContextPath( req.getContextPath() );
+                    + "or email = ?\n"
+                    + "group by login_password, first_name, last_name, email, lang_prefix, login_name", parameters, Utility.STRING_ARRAY_HANDLER));
+
             if ( ( queryResult != null ) && ( queryResult.length > 0 ) ) {
 
                 firstName = queryResult[1];
                 lastName = queryResult[2];
                 userEmail = queryResult[3];
+                userName = queryResult[6];
 
                 boolean userHasOnlyRolesWithPermissionToGetPasswordSentByMail = !( "0".equals( queryResult[4] ) );
 
@@ -132,23 +132,30 @@ public class PasswordMailReminder extends HttpServlet {
                         serverMasterMailBody = PasswordMailReminder.SENT_USER_PASSWORD;
 
                     } else {
-                        returnFileBody = PasswordMailReminder.RETURNING_DOCUMENT_NO_EMAIL;
+                        returnFileBody = PasswordMailReminder.RETURNING_DOCUMENT_NOT_SENT;
                         serverMasterMailBody = PasswordMailReminder.USER_HAS_NO_EMAIL;
                     }
 
                 } else {
-                    returnFileBody = PasswordMailReminder.RETURNING_DOCUMENT_NO_RIGHT;
+                    returnFileBody = PasswordMailReminder.RETURNING_DOCUMENT_NOT_SENT;
                     serverMasterMailBody = PasswordMailReminder.USER_HAS_NOT_RIGHT;
                 }
 
             } else {
-                returnFileBody = PasswordMailReminder.RETURNING_DOCUMENT_NO_USER_NAME;
+                returnFileBody = PasswordMailReminder.RETURNING_DOCUMENT_NOT_SENT;
                 serverMasterMailBody = PasswordMailReminder.USER_DONT_EXIST;
             }
+
+            UserDomainObject user = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUser( userName );
+            if (user == null ) {
+                user = userMapper.getDefaultUser() ;
+            }
+            user.setCurrentContextPath( req.getContextPath() );
 
             /* send mail */
             //			try {
             SMTP smtp = imcref.getSMTP();
+            String host = req.getServerName();
 
             if ( sendMailToUser ) {
                 List mailTags = new ArrayList();
@@ -157,28 +164,30 @@ public class PasswordMailReminder extends HttpServlet {
                 mailTags.add( firstName );
                 mailTags.add( "#lastname#" );
                 mailTags.add( lastName );
+                mailTags.add( "#username#" );
+                mailTags.add( userName );
                 mailTags.add( "#password#" );
                 mailTags.add( password );
+                mailTags.add( "#host#" );
+                mailTags.add( host );
 
                 String userMessage = imcref.getAdminTemplate( PasswordMailReminder.USER_MAIL_BODY, user, mailTags );
-
-                smtp.sendMail( new SMTP.Mail( mailFrom, new String[] { userEmail }, null, userMessage ) );
+                smtp.sendMail( new SMTP.Mail( eMailServerMaster, new String[] { userEmail }, null , userMessage ) );
 
             }
 
             List parsVector = new ArrayList();
-            String host = req.getServerName();
 
             parsVector.add( "#username#" );
-            parsVector.add( postedLoginName );
+            parsVector.add( userName );
             parsVector.add( "#email#" );
             parsVector.add( userEmail );
             parsVector.add( "#host#" );
             parsVector.add( host );
 
-            String serverMasterMessage = imcref.getAdminTemplate( serverMasterMailBody, user, parsVector );
+            String serverMasterMessage = imcref.getAdminTemplate( serverMasterMailBody, userMapper.getDefaultUser(), parsVector );
 
-            smtp.sendMail( new SMTP.Mail( emailFromServer, new String[] { eMailServerMaster }, null, serverMasterMessage ) ) ;
+            smtp.sendMail( new SMTP.Mail( eMailServerMaster, new String[] { eMailServerMaster }, null, serverMasterMessage ) ) ;
 
             returnString = imcref.getAdminTemplate( returnFileBody, user, null );
 
