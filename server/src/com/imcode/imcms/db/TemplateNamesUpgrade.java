@@ -33,7 +33,7 @@ public class TemplateNamesUpgrade implements DatabaseUpgrade {
                     String templateName = rs.getString("simple_name");
                     File templateFile = new File(templatesDirectory, templateId+".html");
                     if (templateFile.exists()) {
-                        templateFile.renameTo(new File(templatesDirectory, FileUtility.escapeFilename(templateName)+".html")) ;
+                        templateFile.renameTo(new File(templatesDirectory, FileUtility.escapeFilename(templateName).replaceAll("_005f", "_" )+".html")) ;
                     }
                 }
                 return null;

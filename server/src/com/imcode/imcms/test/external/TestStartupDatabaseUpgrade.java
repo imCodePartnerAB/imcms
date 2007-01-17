@@ -71,7 +71,7 @@ public class TestStartupDatabaseUpgrade extends TestCase {
         new StartupDatabaseUpgrade(wantedDdl, databaseCreator).upgrade(database);
         //assertDatabaseUpgraded(database, wantedDdl);
         assertFalse(templateFile.exists());
-        assertTrue(new File(templatesDirectory, "demo.html").exists());
+        assertTrue(new File(templatesDirectory, "demo_test.html").exists());
     }
 
     private void assertDatabaseUpgraded(DataSourceDatabase database, final Database wantedDdl) {
