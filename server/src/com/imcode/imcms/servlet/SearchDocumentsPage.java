@@ -183,13 +183,13 @@ public class SearchDocumentsPage extends OkCancelPage {
             newQuery.add( sectionQueries, true, false );
         }
 
-        BooleanQuery phaseQueries = new BooleanQuery();
-        for ( int i = 0; i < phases.length; i++ ) {
-            String phase = phases[i];
-            Query phaseQuery = new TermQuery( new Term( DocumentIndex.FIELD__PHASE, "" + phase ) );
-            phaseQueries.add( phaseQuery, false, false );
-        }
-        if ( phases.length > 0 ) {
+        if ( null != phases && phases.length > 0 ) {
+            BooleanQuery phaseQueries = new BooleanQuery();
+            for ( int i = 0; i < phases.length; i++ ) {
+                String phase = phases[i];
+                Query phaseQuery = new TermQuery( new Term( DocumentIndex.FIELD__PHASE, "" + phase ) );
+                phaseQueries.add( phaseQuery, false, false );
+            }
             newQuery.add( phaseQueries, true, false );
         }
 
