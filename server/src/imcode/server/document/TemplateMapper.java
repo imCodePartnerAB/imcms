@@ -12,6 +12,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.io.FileUtility;
 import org.apache.commons.io.CopyUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -106,13 +107,15 @@ public class TemplateMapper {
 
         database.execute( new SqlUpdateCommand( "delete from templates_cref where template_name = ?", new String[]{template.getName()} ) );
 
-        new File(getTemplateDirectory(), template.getFileName()).delete();
-
         // test if template exists and delete it
-        File f = new File( services.getConfig().getTemplatePath() + "/text/" + template.getFileName() );
+        File f = getTemplateFile(template);
         if ( f.exists() ) {
             f.delete();
         }
+    }
+
+    private File getTemplateFile(TemplateDomainObject template) {
+        return new File(getTemplateDirectory(), template.getFileName());
     }
 
     public void deleteTemplateGroup( int grp_id ) {
@@ -181,7 +184,7 @@ public class TemplateMapper {
     public TemplateDomainObject getTemplateByName( String templateName ) {
         String[] extensions = new String[] { "jsp", "html" } ;
         for ( String extension : extensions ) {
-            String templateFileName = templateName + "." + extension;
+            String templateFileName = escapeTemplateFilename(templateName) + "." + extension;
             File templateFile = new File(getTemplateDirectory(), templateFileName);
             if (templateFile.exists()) {
                 return new TemplateDomainObject(templateName, templateFileName);
@@ -232,9 +235,9 @@ public class TemplateMapper {
 
     public boolean renameTemplate( TemplateDomainObject template, String newNameForTemplate ) {
         File templateDirectory = getTemplateDirectory();
-        File templateFile = new File(templateDirectory, template.getFileName());
+        File templateFile = getTemplateFile(template);
         String extension = StringUtils.substringAfterLast(template.getFileName(), ".");
-        return templateFile.renameTo(new File(templateDirectory, newNameForTemplate+"."+extension)) ;
+        return templateFile.renameTo(new File(templateDirectory, escapeTemplateFilename(newNameForTemplate)+"."+extension)) ;
     }
 
     private File getTemplateDirectory() {
@@ -267,15 +270,6 @@ public class TemplateMapper {
         return (String[][]) services.getProcedureExecutor().executeProcedure(SPROC_GET_TEMPLATE_GROUPS_FOR_USER, parameters, new StringArrayArrayResultSetHandler());
     }
 
-    private TemplateDomainObject createTemplateFromSqlResultRow( String[] sqlResultRow ) {
-        if ( 0 == sqlResultRow.length ) {
-            return null;
-        }
-        String templateName = sqlResultRow[1];
-        String simpleName = sqlResultRow[2];
-        return new TemplateDomainObject(simpleName, templateName);
-    }
-
     private TemplateGroupDomainObject createTemplateGroupFromSqlResultRow( String[] sqlResultRow ) {
         if ( 0 == sqlResultRow.length ) {
             return null;
@@ -303,7 +297,7 @@ public class TemplateMapper {
 
     public int saveTemplate(String name, String file_name, InputStream templateData, boolean overwrite) {
 
-        File f = new File( services.getConfig().getTemplatePath(), "text/" + name+"."+StringUtils.substringAfterLast(file_name,".") );
+        File f = new File( getTemplateDirectory(), escapeTemplateFilename(name)+"."+StringUtils.substringAfterLast(file_name,".") );
         if (f.exists() && !overwrite) {
             return -1 ;
         }
@@ -325,7 +319,7 @@ public class TemplateMapper {
     }
 
     public String getTemplateData( String templateName ) throws IOException {
-        return services.getFileCache().getCachedFileString( new File( services.getConfig().getTemplatePath(), "/text/" + getTemplateByName(templateName).getFileName() ) );
+        return services.getFileCache().getCachedFileString( getTemplateFile(getTemplateByName(templateName)) );
     }
 
     public List getTemplateGroups(Set<Integer> templateGroupIds) {
@@ -351,4 +345,7 @@ public class TemplateMapper {
         return false ;
     }
 
+    public static String escapeTemplateFilename(String templateName) {
+        return FileUtility.escapeFilename(templateName).replaceAll("_005f", "_" );
+    }
 }

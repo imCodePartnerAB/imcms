@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.io.File;
 
-import imcode.util.io.FileUtility;
+import imcode.server.document.TemplateMapper;
 
 public class TemplateNamesUpgrade implements DatabaseUpgrade {
 
@@ -33,7 +33,7 @@ public class TemplateNamesUpgrade implements DatabaseUpgrade {
                     String templateName = rs.getString("simple_name");
                     File templateFile = new File(templatesDirectory, templateId+".html");
                     if (templateFile.exists()) {
-                        templateFile.renameTo(new File(templatesDirectory, FileUtility.escapeFilename(templateName).replaceAll("_005f", "_" )+".html")) ;
+                        templateFile.renameTo(new File(templatesDirectory, TemplateMapper.escapeTemplateFilename(templateName) +".html")) ;
                     }
                 }
                 return null;
