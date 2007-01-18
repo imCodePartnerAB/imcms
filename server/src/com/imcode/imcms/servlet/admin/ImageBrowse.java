@@ -96,7 +96,7 @@ public class ImageBrowse extends HttpServlet {
             boolean underImagesRoot = FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, destinationFile.getParentFile() );
             boolean hasImageExtension = new ImageExtensionFilenameFilter().accept( destinationFile, destinationFile.getName() );
             if (!hasImageExtension) {
-                page.setErrorMessage(ChangeImage.ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES) ;
+                page.setErrorMessage(ImageEditPage.ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES) ;
             } else if ( destinationFile.exists() ) {
                 page.setErrorMessage(ERROR_MESSAGE__FILE_EXISTS) ;
             } else if ( underImagesRoot ) {

@@ -1,156 +1,50 @@
 <%@ page
 
-  import="com.imcode.imcms.servlet.admin.ChangeImage,
+  import="com.imcode.imcms.flow.Page,
+          com.imcode.imcms.servlet.admin.ImageEditPage,
           com.imcode.util.ImageSize,
-          imcode.server.Imcms,
-          imcode.server.document.DocumentTypeDomainObject,
           imcode.server.document.FileDocumentDomainObject,
           imcode.server.document.textdocument.FileDocumentImageSource,
           imcode.server.document.textdocument.ImageDomainObject,
           imcode.server.document.textdocument.ImageSource,
-          imcode.server.document.textdocument.TextDocumentDomainObject,
           imcode.server.user.UserDomainObject,
           imcode.util.Html,
           imcode.util.ImcmsImageUtils,
-          imcode.util.Utility, org.apache.commons.lang.StringEscapeUtils"
+          imcode.util.Utility,
+          org.apache.commons.lang.StringEscapeUtils,
+          org.apache.commons.lang.StringUtils, java.util.Properties"
 
 	contentType="text/html; charset=UTF-8"
 
-%>
-<%@ page import="org.apache.commons.lang.StringUtils"%>
-<%@ page import="java.util.Properties"%>
-<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
+%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
-
-boolean fromEditor = (request.getParameter("editor_image") != null && request.getParameter("editor_image").equals("true")) ;
-
-String image_url = request.getContextPath() + Imcms.getServices().getConfig().getImageUrl() ;
-
-
-
-ChangeImage.ImageEditPage imageEditPage = null ;
-TextDocumentDomainObject document       = null ;
-ImageDomainObject image                 = null ;
-int imageIndex                          = 1 ;
-ImageSize realImageSize                 = null ;
-UserDomainObject user                   = Utility.getLoggedOnUser( request );
-
-
-if (fromEditor) {
-	imageEditPage = (ChangeImage.ImageEditPage) request.getAttribute( ChangeImage.ImageEditPage.REQUEST_ATTRIBUTE__PAGE ) ;
-	document      = imageEditPage.getDocument() ;
-	image         = imageEditPage.getImage() ;
-	imageIndex    = imageEditPage.getImageIndex() ;
-	realImageSize = image.getRealImageSize();
-} else {
-	imageEditPage = (ChangeImage.ImageEditPage) request.getAttribute( ChangeImage.ImageEditPage.REQUEST_ATTRIBUTE__PAGE ) ;
-	document      = imageEditPage.getDocument() ;
-	image         = imageEditPage.getImage() ;
-	imageIndex    = imageEditPage.getImageIndex() ;
-	realImageSize = image.getRealImageSize();
-}
+    ImageEditPage imageEditPage = ImageEditPage.getFromRequest(request);
+    assert null != imageEditPage;
+    ImageDomainObject image = imageEditPage.getImage();
+    assert null != image;
+    ImageSize realImageSize = image.getRealImageSize();
+    assert null != realImageSize;
+    UserDomainObject user = Utility.getLoggedOnUser( request );
 
 %><vel:velocity>
 <html>
 <head>
 <title><? templates/sv/change_img.html/1 ?></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script><%
-
-if (fromEditor) { %>
-
-<script type="text/javascript" src="$contextPath/imcms/htmlarea/popups/popup.js"></script>
-
-<script type="text/javascript">
-function Init() {
-	__dlg_init(null, true);
-	window.resizeTo(800,screen.height - 50) ;
-	window.moveTo((screen.width/2) - 400, 10) ;
-	var param = window.dialogArguments;
-	if (param) {
-		var re = new RegExp("^<%= image_url %>", "") ;
-		var imgSrc = param["imageref"].replace(re, "") ;
-		var w = (param["image_width"] >= 0)  ? param["image_width"]  : 0 ;
-		var h = (param["image_height"] >= 0) ? param["image_height"] : 0 ;
-		var b = (param["image_border"] >= 0) ? param["image_border"] : 0 ;
-		document.getElementById("imageref").value     = imgSrc ;
-		document.getElementById("image_name").value   = param["image_name"] ;
-		document.getElementById("image_width").value  = w ;
-		document.getElementById("image_height").value = h ;
-		document.getElementById("image_border").value = b ;
-		document.getElementById("v_space").value      = (param["v_space"] >= 0)      ? param["v_space"]      : 0 ;
-		document.getElementById("h_space").value      = (param["h_space"] >= 0)      ? param["h_space"]      : 0 ;
-		document.getElementById("image_align").value  = param["image_align"] ;
-		document.getElementById("alt_text").value     = param["alt_text"] ;
-		var imgTag = "<img src=\"<%= image_url %>" + imgSrc + "\" width=\"" + w + "\" height=\"" + h + "\" border=\"" + b + "\" align=\"" + param["image_align"] + "\">" ;
-		if (document.getElementById("previewDiv").innerHTML == "") {
-			document.getElementById("previewDiv").innerHTML = imgTag ;
-		}
-	}
-};
-
-function onOK() {
-	try {
-		var required = {
-			"imageref"     : ["\.(gif|jpe?g?|png)$", "You must select an image!"],
-			"image_width"  : ["^\\d+$", "Specify width in pixels!"],
-			"image_height" : ["^\\d+$", "Specify height in pixels!"],
-			"image_border" : ["^\\d+$", "Specify border in pixels!"],
-			"v_space"      : ["^\\d+$", "Specify vertical space in pixels!"],
-			"h_space"      : ["^\\d+$", "Specify horizontal space in pixels!"]
-		} ;
-		for (var i in required) {
-			var el = document.getElementById(i) ;
-			var re = new RegExp(required[i][0], "gi") ;
-			if (!re.test(el.value)) {
-				alert(required[i][1]) ;
-				el.focus() ;
-				return false ;
-			}
-		}
-		// pass data back to the calling window
-		var fields = [
-			"imageref", "image_name", "image_width", "image_height", "image_border", "v_space", "h_space", "image_align", "alt_text"
-		] ;
-		var param = new Object() ;
-		for (var i in fields) {
-			var id = fields[i] ;
-			var el = document.getElementById(id) ;
-			if (id == "imageref") {
-				param[id] = "<%= image_url %>" + el.value ;
-			} else {
-				param[id] = el.value ;
-			}
-		}
-		__dlg_close(param) ;
-		return false ;
-	} catch(e) {
-		return false ;
-	}
-};
-
-function onCancel() {
-  __dlg_close(null);
-  return false;
-};
-</script><%
-} %>
-
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/imcms/css/imcms_admin.css.jsp">
+<script src="<%=request.getContextPath()%>/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+    
 <script language="JavaScript">
-<!--<%
-if (!fromEditor) { %>
+<!--
 function setDef() {
 	var f   = document.forms[0] ;
 	if (!hasDocumentLayers && f.imageref.value == "") f.image_align.selectedIndex = 0;
 	changeLinkType(1) ;
-}<%
-} %>
-
+}
+        
 var defValues = new Array("meta_id","http://") ;
 
-function changeLinkType(idx) {<%
-	if (!fromEditor) { %>
+function changeLinkType(idx) {
 	var f   = document.forms[0] ;
 	var rad = f.linkType ;
 	var url = f.imageref_link ;
@@ -165,12 +59,9 @@ function changeLinkType(idx) {<%
 	} else {
         rad[idx].checked = 1 ;
     }
-    <%
-	} %>
 }
 
-function checkLinkType() {<%
-	if (!fromEditor) { %>
+function checkLinkType() {
 	var f   = document.forms[0] ;
 	var url = f.imageref_link ;
 	var val = url.value ;
@@ -179,23 +70,19 @@ function checkLinkType() {<%
 	} else if (/^\d+$/.test(val)) {
 		url.value = "GetDoc?meta_id=" + val ;
 	}
-	return true ;<%
-	} %>
+	return true ;
 }
 
-function checkLinkOnFocus() {<%
-	if (!fromEditor) { %>
+function checkLinkOnFocus() {
 	var f   = document.forms[0] ;
 	var url = f.imageref_link
 	var val = url.value ;
 	if (val == defValues[0]) {
 		url.value = "" ;
-	}<%
-	} %>
+	}
 }
 
-function checkLinkOnBlur() {<%
-	if (!fromEditor) { %>
+function checkLinkOnBlur() {
 	var f   = document.forms[0] ;
 	var rad = f.linkType ;
 	var url = f.imageref_link ;
@@ -203,42 +90,26 @@ function checkLinkOnBlur() {<%
 	if (val == "") {
 		url.value = defValues[0] ;
 		rad[0].checked = 1 ;
-	}<%
-	} %>
+	}
 }
 //-->
 </script>
 
 </head>
-<body id="body" bgcolor="#FFFFFF" onLoad="<%
-	// Don't init when from browser or on preview
-	if (fromEditor && request.getParameter("imglist") == null && request.getParameter("imageref") == null) {
-		%>Init(); <%
-	} else if (!fromEditor) {
-		%>setDef(); <%
-	}%>document.forms[0].imageref.focus();"<%
-	if (fromEditor) {
-		%> style="overflow:auto;" scroll="auto"<%
-	} %>>
+<body id="body" bgcolor="#FFFFFF" onLoad="setDef(); document.forms[0].imageref.focus();">
 
 
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )
-<form method="POST" action="ChangeImage" onsubmit="checkLinkType();">
-<input type="hidden" name="editor_image" value="<%= fromEditor %>">
-<input type="HIDDEN" name="<%= ChangeImage.REQUEST_PARAMETER__DOCUMENT_ID %>" value="<%= (document != null) ? document.getId() : 1001 %>">
-<input type="HIDDEN" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_INDEX %>" value="<%= imageIndex %>">
-<input type="hidden" name="<%= ChangeImage.REQUEST_PARAMETER__LABEL %>" value="<%= (imageEditPage != null) ? StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) : "" %>">
-
+<form method="POST" action="<%= request.getContextPath() %>/servlet/PageDispatcher" onsubmit="checkLinkType();">
+<%= Page.htmlHidden(request) %>
+    
     <table border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td>
         <table border="0" cellspacing="0" cellpadding="0">
         <tr>
-            <td><input type="SUBMIT" class="imcmsFormBtn" name="<%= ChangeImage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/back ?>"<%
-						if (fromEditor) {
-							%> onClick="return onCancel(); return false"<%
-						} %>></td>
+            <td><input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/back ?>"></td>
             <td>&nbsp;</td>
             <td><input type="button" value="<? templates/sv/change_img.html/2002 ?>" title="<? templates/sv/change_img.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW('ImageAdmin')"></td>
         </tr>
@@ -252,18 +123,14 @@ function checkLinkOnBlur() {<%
         <tr>
             <td colspan="2">
                 &nbsp;<br>
-                #gui_heading( "<? templates/sv/change_img.html/9/1 ?><%
-			if (!fromEditor) {
-				%> <%= imageIndex %> <? templates/sv/change_img.html/9/2 ?> <%= (document != null) ? document.getId() : 0 %><%
-			} %>" )<%=
-				(imageEditPage != null) ? "<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) + "</i></div>" : "" %></td>
+                #gui_heading( "<%= imageEditPage.getHeading().toLocalizedString(request) %>" )<%=
+            "<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) + "</i></div>"  %></td>
         </tr><%
-		if (fromEditor || (image != null && !image.isEmpty())) { %>
+		if (!image.isEmpty()) { %>
 		<tr>
 			<td colspan="2" align="center">
-			<div id="previewDiv"><%= (image != null && !image.isEmpty()) ? ImcmsImageUtils.getImageHtmlTag( image, request, new Properties()) : "" %></div></td>
+			<div id="previewDiv"><%= !image.isEmpty() ? ImcmsImageUtils.getImageHtmlTag( image, request, new Properties()) : "" %></div></td>
 		</tr><%
-			if (!fromEditor) {
 				ImageSource imageSource = image.getSource();
 				if ( imageSource instanceof FileDocumentImageSource) { %>
 		<tr>
@@ -272,8 +139,7 @@ function checkLinkOnBlur() {<%
 					FileDocumentDomainObject imageFileDocument = fileDocumentImageSource.getFileDocument() ; %>
 			 <%= Html.getAdminButtons( Utility.getLoggedOnUser(request), imageFileDocument, request, response ) %></td>
 		</tr><%
-				}
-			} %>
+				} %>
 		<tr>
 			<td colspan="2">#gui_hr( "blue" )</td>
 		</tr><%
@@ -282,20 +148,18 @@ function checkLinkOnBlur() {<%
 			<td colspan="2" align="center">
 			<table>
 			<tr><%
-				if (!fromEditor) {
-					if (user.canCreateDocumentOfTypeIdFromParent( DocumentTypeDomainObject.FILE_ID, document )) { %>
+					if (imageEditPage.canAddImageFiles(user)) { %>
 				<td><input type="submit" <%
-							%>name="<%= ChangeImage.REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON %>" <%
+							%>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON %>" <%
 							%>class="imcmsFormBtnSmall" style="width:200px" <%
 							%>value="<? web/imcms/lang/jsp/change_img.jsp/add_restricted_image ?>" ></td><%
 					} %>
 				<td><input type="submit" <%
-						%>name="<%= ChangeImage.REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON %>" <%
+						%>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON %>" <%
 						%>class="imcmsFormBtnSmall" style="width:200px" <%
-						%>value="<? web/imcms/lang/jsp/change_img.jsp/image_search ?>" ></td><%
-				} %>
+						%>value="<? web/imcms/lang/jsp/change_img.jsp/image_search ?>" ></td>
 				<td><input type="submit" <%
-					%>name="<%= ChangeImage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>" <%
+					%>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>" <%
 					%>class="imcmsFormBtnSmall" style="width:200px" <%
 					%>value="<? templates/sv/change_img.html/2004 ?>"></td>
 			</tr>
@@ -310,20 +174,20 @@ function checkLinkOnBlur() {<%
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
             <tr>
                 <td colspan="2"><input type="text" <%
-								%>name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_URL %>" <%
-								%>id="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_URL %>" <%
+								%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>" <%
+								%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>" <%
 								%>size="50" maxlength="255" style="width: 350" value="<%=
-								(image != null) ? StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getSource().toStorageString())) : "" %>"></td>
+								StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getSource().toStorageString())) %>"></td>
             </tr>
             </table></td>
         </tr>
         <tr>
             <td nowrap><? templates/sv/change_img.html/14 ?></td>
             <td><input type="text" <%
-								%>name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_NAME %>" <%
-								%>id="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_NAME %>" <%
+								%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>" <%
+								%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>" <%
 								%>size="50" maxlength="255" style="width: 350" value="<%=
-						(image != null) ? StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getName())) : "" %>"></td>
+						StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getName())) %>"></td>
         </tr>
 				<tr>
 					<td nowrap><? templates/sv/change_img.html/16 ?></td>
@@ -334,51 +198,41 @@ function checkLinkOnBlur() {<%
 						<td>&nbsp;</td>
 						<td><? templates/sv/change_img.html/18 ?></td>
 						<td>&nbsp;</td>
-						<td><? templates/sv/change_img.html/19 ?></td><%
-						if (!fromEditor) { %>
+						<td><? templates/sv/change_img.html/19 ?></td>
 						<td>&nbsp;</td>
-						<td>&nbsp;</td><%
-						} %>
+						<td>&nbsp;</td>
 					</tr>
 					<tr>
 						<td><input type="text" <%
-						%>name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_WIDTH %>" <%
-						%>id="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_WIDTH %>" <%
+						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>" <%
+						%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>" <%
 						%>size="4" maxlength="4" value="<%
-						if (fromEditor && realImageSize != null) {
-							%><%= realImageSize.getWidth() %><%
-						} else if (image != null && image.getWidth() > 0) {
+						if (image.getWidth() > 0) {
 							%><%= image.getWidth() %><%
 						} %>"></td>
 						<td>&nbsp;X&nbsp;</td>
 						<td><input type="text" <%
-						%>name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_HEIGHT %>" <%
-						%>id="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_HEIGHT %>" <%
+						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>" <%
+						%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>" <%
 						%>size="4" maxlength="4" value="<%
-						if (fromEditor && realImageSize != null) {
-							%><%= realImageSize.getHeight() %><%
-						} else if (image != null && image.getHeight() > 0) {
+						if (image.getHeight() > 0) {
 							%><%= image.getHeight() %><%
 						} %>"></td>
 						<td>&nbsp;</td>
 						<td><input type="text" <%
-						%>name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_BORDER %>" <%
-						%>id="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_BORDER %>" <%
-						%>size="4" maxlength="4" value="<%= (image != null) ? image.getBorder() : 0 %>"></td><%
-						if (!fromEditor) { %>
+						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>" <%
+						%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>" <%
+						%>size="4" maxlength="4" value="<%= image.getBorder() %>"></td>
 						<td>&nbsp;</td>
-						<td><? templates/sv/change_img.html/size_explanation ?></td><%
-						} %>
-					</tr><%
-					if (!fromEditor) { %>
+						<td><? templates/sv/change_img.html/size_explanation ?></td>
+					</tr>
 					<tr>
-						<td height="20">&nbsp;<%= (realImageSize != null) ? realImageSize.getWidth() + "" : "" %></td>
+						<td height="20">&nbsp;<%= realImageSize.getWidth() %></td>
 						<td>&nbsp;X&nbsp;</td>
-						<td>&nbsp;<%= (realImageSize != null) ? realImageSize.getHeight() + "" : "" %></td>
+						<td>&nbsp;<%= realImageSize.getHeight() %></td>
 						<td>&nbsp;</td>
 						<td colspan="3"><? templates/sv/change_img.html/originalSize ?></td>
-					</tr><%
-					} %>
+					</tr>
 					</table></td>
 				</tr>
         <tr>
@@ -387,16 +241,16 @@ function checkLinkOnBlur() {<%
             <table border="0" cellspacing="0" cellpadding="0">
             <tr>
                 <td><input type="text" <%
-								%>name="<%= ChangeImage.REQUEST_PARAMETER__VERTICAL_SPACE %>" <%
-								%>id="<%= ChangeImage.REQUEST_PARAMETER__VERTICAL_SPACE %>" <%
-								%>size="4" maxlength="4" value="<%= (image != null) ? image.getVerticalSpace() : 0 %>"></td>
+								%>name="<%= ImageEditPage.REQUEST_PARAMETER__VERTICAL_SPACE %>" <%
+								%>id="<%= ImageEditPage.REQUEST_PARAMETER__VERTICAL_SPACE %>" <%
+								%>size="4" maxlength="4" value="<%= image.getVerticalSpace() %>"></td>
                 <td>&nbsp;</td>
                 <td><? templates/sv/change_img.html/27 ?></td>
                 <td>&nbsp; &nbsp;</td>
                 <td><input type="text" <%
-								%>name="<%= ChangeImage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>" <%
-								%>id="<%= ChangeImage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>" <%
-								%>size="4" maxlength="4" value="<%= (image != null) ? image.getHorizontalSpace() : 0 %>"></td>
+								%>name="<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>" <%
+								%>id="<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>" <%
+								%>size="4" maxlength="4" value="<%= image.getHorizontalSpace() %>"></td>
                 <td>&nbsp;</td>
                 <td><? templates/sv/change_img.html/29 ?></td>
             </tr>
@@ -405,9 +259,9 @@ function checkLinkOnBlur() {<%
         <tr>
             <td nowrap><? templates/sv/change_img.html/30 ?></td>
             <td>
-						<select name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_ALIGN %>" id="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_ALIGN %>" size="1"><%
-							String align = (image != null) ? image.getAlign() : "" ; %>
-							<option value="<%= fromEditor ? "" : "none" %>" <%      if (StringUtils.isBlank(align)) { %> selected <% } %>><? templates/sv/change_img.html/31 ?></option>
+						<select name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>" id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>" size="1"><%
+							String align = image.getAlign() ; %>
+							<option value="none" <%      if (StringUtils.isBlank(align)) { %> selected <% } %>><? templates/sv/change_img.html/31 ?></option>
 							<option value="baseline" <%  if ("baseline".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/32 ?></option>
 							<option value="top" <%       if ("top".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/33 ?></option>
 							<option value="middle" <%    if ("middle".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/34 ?></option>
@@ -422,12 +276,11 @@ function checkLinkOnBlur() {<%
         <tr>
             <td nowrap><? templates/sv/change_img.html/41 ?></td>
             <td><input type="text" <%
-						%>name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_ALT %>" <%
-						%>id="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_ALT %>" <%
+						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>" <%
+						%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>" <%
 						%>size="92" maxlength="255" style="width: 100%" value="<%=
-						(image != null) ? StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getAlternateText())) : "" %>"></td>
-        </tr><%
-				if (!fromEditor) { %>
+						StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getAlternateText())) %>"></td>
+        </tr>
         <tr>
             <td colspan="2">&nbsp;<br>#gui_heading( "<? templates/sv/change_img.html/43/1 ?>" )</td>
         </tr>
@@ -444,8 +297,8 @@ function checkLinkOnBlur() {<%
                 <td><label for="linkType1"><? templates/sv/change_img.html/4001 ?></label></td>
             </tr>
             </table></td>
-            <td><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__LINK_URL %>" size="92" maxlength="255" style="width: 100%" value="<%=
-						(image != null) ? StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLinkUrl())) : "" %>" onFocus="checkLinkOnFocus()" onBlur="checkLinkOnBlur()"></td>
+            <td><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__LINK_URL %>" size="92" maxlength="255" style="width: 100%" value="<%=
+						StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLinkUrl())) %>" onFocus="checkLinkOnFocus()" onBlur="checkLinkOnBlur()"></td>
         </tr>
         <tr>
             <td nowrap><? templates/sv/change_img.html/46 ?></td>
@@ -453,8 +306,8 @@ function checkLinkOnBlur() {<%
             <table border="0" cellspacing="0" cellpadding="0">
             <tr>
                 <td>
-								<select name="<%= ChangeImage.REQUEST_PARAMETER__LINK_TARGET %>" size="1"><%
-									String target = (image != null) ? StringUtils.defaultString( image.getTarget() ) : "" ;
+								<select name="<%= ImageEditPage.REQUEST_PARAMETER__LINK_TARGET %>" size="1"><%
+									String target = StringUtils.defaultString( image.getTarget() );
 									boolean targetTop    = "_top".equalsIgnoreCase(target);
 									boolean targetBlank  = "_blank".equalsIgnoreCase(target);
 									boolean targetParent = "_parent".equalsIgnoreCase(target);
@@ -467,37 +320,26 @@ function checkLinkOnBlur() {<%
 									<option <% if (targetOther) { %> selected<% } %>><? templates/sv/change_img.html/51 ?></option>
 								</select></td>
                 <td>&nbsp;&nbsp;</td>
-                <td><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__LINK_TARGET %>" size="10" maxlength="20" value="<%= StringEscapeUtils.escapeHtml(targetOther ? target : "") %>"></td>
+                <td><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__LINK_TARGET %>" size="10" maxlength="20" value="<%= StringEscapeUtils.escapeHtml(targetOther ? target : "") %>"></td>
             </tr>
             </table></td>
-        </tr><%
-				} else { %>
-				<input type="hidden" name="<%= ChangeImage.REQUEST_PARAMETER__LINK_TARGET %>" value="_self"><%
-				} // end !fromEditor %>
+        </tr>
         <tr>
             <td colspan="2">#gui_hr( "blue" )</td>
         </tr>
         <tr>
             <td colspan="2" align="right">
-            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ChangeImage.REQUEST_PARAMETER__PREVIEW_BUTTON %>" value="  <? templates/sv/change_img.html/2006 ?>  ">
-            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ChangeImage.REQUEST_PARAMETER__OK_BUTTON %>" value="  <? templates/sv/change_img.html/2007 ?>  "<%
-						if (fromEditor) {
-							%> onClick="return onOK(); return false"<%
-						} %>><%
-						if (!fromEditor) { %>
-            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ChangeImage.REQUEST_PARAMETER__DELETE_BUTTON %>" value="  <? templates/sv/change_img.html/2009 ?>  "><%
-						} %>
-            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ChangeImage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value=" <? templates/sv/change_img.html/2008 ?> "<%
-						if (fromEditor) {
-							%> onClick="return onCancel(); return false"<%
-						} %>></td>
+            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__PREVIEW_BUTTON %>" value="  <? templates/sv/change_img.html/2006 ?>  ">
+            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__OK_BUTTON %>" value="  <? templates/sv/change_img.html/2007 ?>  ">
+            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__DELETE_BUTTON %>" value="  <? templates/sv/change_img.html/2009 ?>  ">
+            <input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value=" <? templates/sv/change_img.html/2008 ?> "></td>
         </tr>
         <tr>
-            <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="156" height="1"></td>
-            <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+            <td><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif" width="156" height="1"></td>
+            <td><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif" width="1" height="1"></td>
         </tr>
-        <input type="hidden" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_LOWSRC %>" value="<%=
-				(image != null) ? StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLowResolutionUrl())) : "" %>">
+        <input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_LOWSRC %>" value="<%=
+				StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLowResolutionUrl())) %>">
     </table>
 </form>
 #gui_bottom()

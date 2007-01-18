@@ -170,7 +170,7 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public LocalizedMessageProvider getLocalizedMessageFactory() {
+    public LocalizedMessageProvider getLocalizedMessageProvider() {
         throw new NotImplementedException("imcode.server.MockImcmsServices.getLocalizedMessageFactory");
     }
 

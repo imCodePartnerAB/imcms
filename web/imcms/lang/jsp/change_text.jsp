@@ -25,8 +25,8 @@ ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttr
     _editor_url  = "<%=request.getContextPath()%>/imcms/xinha/"  // (preferably absolute) URL (including trailing slash) where Xinha is installed
     _editor_lang = "<%= LanguageMapper.convert639_2to639_1(Utility.getLoggedOnUser(request).getLanguageIso639_2()) %>";      // And the language we need to use in the editor.
 </script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/imcms/xinha/htmlarea.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/imcms/xinha/imcms.js"></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/imcms/xinha/XinhaCore.js"></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/imcms/xinha/imcms.js.jsp"></script>
 <form method="POST" action="<%= request.getContextPath() %>/servlet/SaveText">
 <input type="hidden" name="meta_id"  value="<%= textEditPage.getDocumentId() %>">
 <input type="hidden" name="txt_no"   value="<%= textEditPage.getTextIndex() %>">

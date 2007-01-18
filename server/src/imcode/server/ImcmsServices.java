@@ -99,5 +99,5 @@ public interface ImcmsServices {
 
     UserDomainObject verifyUserByIpOrDefault(String remoteAddr);
 
-    LocalizedMessageProvider getLocalizedMessageFactory();
+    LocalizedMessageProvider getLocalizedMessageProvider();
 }

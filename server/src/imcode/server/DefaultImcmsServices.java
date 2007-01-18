@@ -9,9 +9,7 @@ import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
-import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.index.RebuildingDirectoryIndex;
@@ -265,7 +263,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return result;
     }
 
-    public LocalizedMessageProvider getLocalizedMessageFactory() {
+    public LocalizedMessageProvider getLocalizedMessageProvider() {
         return localizedMessageProvider;
     }
 

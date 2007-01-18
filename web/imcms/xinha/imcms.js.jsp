@@ -1,3 +1,4 @@
+<%@page contentType="text/javascript"  %>
 xinha_editors = null;
 xinha_init    = null;
 xinha_config  = null;
@@ -23,6 +24,8 @@ xinha_init = xinha_init ? xinha_init : function()
 
     xinha_config = xinha_config ? xinha_config() : new Xinha.Config();
 
+    xinha_config.URIs['insert_image'] = '<%= request.getContextPath() %>/servlet/Test'
+    
     xinha_editors = xinha_editors ? xinha_editors : Xinha.makeEditors([ 'text' ], xinha_config, xinha_plugins);
 
     Xinha.startEditors(xinha_editors);
