@@ -38,18 +38,20 @@ function ExtendedFileManager(editor)
     var cfg = editor.config;
     var toolbar = cfg.toolbar;
     var self = this;
-
-    cfg.registerButton({
-        id        : "linkfile",
-        tooltip   : HTMLArea._lc("Insert File Link",'ExtendedFileManager'),
-        image     : _editor_url + 'plugins/ExtendedFileManager/img/ed_linkfile.gif',
-        textMode  : false,
-        action    : function(editor) {
-                editor._linkFile();
-              }
-        });
-    cfg.toolbar.push([ "linkfile" ]);
-};
+    
+    if (cfg.ExtendedFileManager.use_linker) {
+        cfg.registerButton({
+            id        : "linkfile",
+            tooltip   : HTMLArea._lc("Insert File Link",'ExtendedFileManager'),
+            image     : _editor_url + 'plugins/ExtendedFileManager/img/ed_linkfile.gif',
+            textMode  : false,
+            action    : function(editor) {
+                    editor._linkFile();
+                  }
+            });
+        cfg.addToolbarElement("linkfile", "createlink", 1);
+        };
+    }
 
 ExtendedFileManager._pluginInfo = {
     name          : "ExtendedFileManager",
@@ -61,7 +63,10 @@ ExtendedFileManager._pluginInfo = {
 
 HTMLArea.Config.prototype.ExtendedFileManager =
 {
+  'use_linker': true,
   'backend'    : _editor_url + 'plugins/ExtendedFileManager/backend.php?__plugin=ExtendedFileManager&',
+  'backend_data' : null,
+  // deprecated keys, use passing data through e.g. xinha_pass_to_php_backend()
   'backend_config'     : null,
   'backend_config_hash': null,
   'backend_config_secret_key_location': 'Xinha:ImageManager'
@@ -83,6 +88,7 @@ HTMLArea.prototype._insertImage = function(image) {
         outparam = {
             f_url    : HTMLArea.is_ie ? image.src : image.getAttribute("src"),
             f_alt    : image.alt,
+            f_title  : image.title,
             f_border : image.style.borderWidth ? image.style.borderWidth : image.border,
             f_align  : image.align,
             f_width  : image.width,
@@ -116,6 +122,14 @@ HTMLArea.prototype._insertImage = function(image) {
         + encodeURIComponent(editor.config.ExtendedFileManager.backend_config_secret_key_location);
     }
 
+    if(editor.config.ExtendedFileManager.backend_data != null)
+    {
+        for ( var i in editor.config.ExtendedFileManager.backend_data )
+        {
+            manager += '&' + i + '=' + encodeURIComponent(editor.config.ExtendedFileManager.backend_data[i]);
+        }
+    }
+
     Dialog(manager, function(param){
         if (!param)
         {   // user must have pressed Cancel
@@ -124,6 +138,7 @@ HTMLArea.prototype._insertImage = function(image) {
 
         var img = image;
         if (!img) {
+        	if ( !param.f_url ) return false;
             if (HTMLArea.is_ie) {
                 var sel = editor._getSelection();
                 var range = editor._createRange(sel);
@@ -141,31 +156,47 @@ HTMLArea.prototype._insertImage = function(image) {
             }
 
         } else {
-            img.src = param.f_url;
+        	if ( !param.f_url ) { // delete the image if empty url passed
+        		img.parentNode.removeChild(img);
+        		editor.updateToolbar();
+        		return false;
+        	} else {
+                img.src = param.f_url;
+        	}
         }
 
+        img.alt = img.alt ? img.alt : '';
+        
         for (field in param)
         {
             var value = param[field];
             switch (field)
             {
                 case "f_alt"    : img.alt    = value; break;
-                case "f_border" :
-                    img.style.borderWidth = /[^0-9]/.test(value) ? value : (parseInt(value || "0") + 'px');
-                    if(img.style.borderWidth && !img.style.borderStyle)
+                case "f_title"  : img.title = value; break;
+                case "f_border" : 
+                    if (value)
                     {
-                        img.style.borderStyle = 'solid';
+                        img.style.borderWidth = /[^0-9]/.test(value) ? value : (value != '') ? (parseInt(value) + 'px') : '';
+                        if(img.style.borderWidth && !img.style.borderStyle)
+                        {
+                            img.style.borderStyle = 'solid';
+                        }
+                        else if (!img.style.borderWidth)
+                        {
+                        	img.style.border = '';
+                        }
                     }
-                    break;
-                case "f_borderColor": img.style.borderColor = value; break;
+                break;
+                case "f_borderColor": img.style.borderColor =  value; break;
                 case "f_backgroundColor": img.style.backgroundColor = value; break;
                 case "f_align"  : img.align  = value; break;
                 case "f_width"  : img.width = parseInt(value || "0"); break;
                 case "f_height"  : img.height = parseInt(value || "0"); break;
                 case "f_padding": img.style.padding =
-                                          /[^0-9]/.test(value) ? value : (parseInt(value || "0") + 'px'); break;
+                                          /[^0-9]/.test(value) ? value : (value != '') ? (parseInt(value) + 'px') :''; break;
                 case "f_margin": img.style.margin =
-                                          /[^0-9]/.test(value) ? value : (parseInt(value || "0") + 'px'); break;
+                                          /[^0-9]/.test(value) ? value : (value != '') ? (parseInt(value) + 'px') :''; break;
             }
         }
 
@@ -228,6 +259,15 @@ HTMLArea.prototype._linkFile = function(link) {
        manager += '&backend_config_secret_key_location='
                + encodeURIComponent(editor.config.ExtendedFileManager.backend_config_secret_key_location);
     }
+
+    if(editor.config.ExtendedFileManager.backend_data != null)
+    {
+        for ( var i in editor.config.ExtendedFileManager.backend_data )
+        {
+            manager += '&' + i + '=' + encodeURIComponent(editor.config.ExtendedFileManager.backend_data[i]);
+        }
+    }
+
 
     Dialog(manager, function(param){
         if (!param)

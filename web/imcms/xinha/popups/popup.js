@@ -9,8 +9,10 @@
 // Version 3.0 developed by Mihai Bazon.
 //   http://dynarch.com/mishoo
 //
-// $Id: popup.js 504 2006-05-01 00:34:54Z gogo $
-HTMLArea = window.opener.HTMLArea;
+// $Id: popup.js 649 2007-01-12 12:58:32Z ray $
+Xinha = window.opener.Xinha;
+// Backward compatibility will be removed some time or not?
+HTMLArea = window.opener.Xinha;
 
 function getAbsolutePos(el) {
 	var r = { x: el.offsetLeft, y: el.offsetTop };
@@ -59,8 +61,16 @@ function __dlg_init(bottom, win_dim) {
     }
     else
     {
-      var x = opener.screenX + (opener.outerWidth - win_dim.width) / 2;
-      var y = opener.screenY + (opener.outerHeight - win_dim.height) / 2;
+      if (!Xinha.is_ie)
+      {
+      	var x = opener.screenX + (opener.outerWidth - win_dim.width) / 2;
+        var y = opener.screenY + (opener.outerHeight - win_dim.height) / 2;
+      }
+      else
+      {//IE does not have window.outer... , so center it on the screen at least
+        var x =  (self.screen.availWidth - win_dim.width) / 2;
+        var y =  (self.screen.availHeight - win_dim.height) / 2;	
+      }
       window.moveTo(x,y);
     }
   }
@@ -78,7 +88,7 @@ function __dlg_init(bottom, win_dim) {
 		window.moveTo(x, y);
 	} else {
 		var docElm      = document.documentElement ? document.documentElement : null;    
-		var body_height = body.scrollHeight;
+		var body_height = docElm && docElm.scrollTop ? docElm.scrollHeight : body.scrollHeight;
     
 		window.resizeTo(body.scrollWidth, body_height);
 		var ch = docElm && docElm.clientHeight ? docElm.clientHeight : body.clientHeight;
@@ -91,29 +101,29 @@ function __dlg_init(bottom, win_dim) {
 		var y = (screen.availHeight - H) / 2;
 		window.moveTo(x, y);
 	}
-	HTMLArea.addDom0Event(document.body, 'keypress', __dlg_close_on_esc);
+	Xinha.addDom0Event(document.body, 'keypress', __dlg_close_on_esc);
   window.__dlg_init_done = true;
 }
 
 function __dlg_translate(context) {
-	var types = ["input", "select", "legend", "span", "option", "td", "button", "div", "label", "a", "img"];
+	var types = ["input", "select", "legend", "span", "option", "td", "th", "button", "div", "label", "a", "img"];
 	for (var type = 0; type < types.length; ++type) {
 		var spans = document.getElementsByTagName(types[type]);
 		for (var i = spans.length; --i >= 0;) {
 			var span = spans[i];
 			if (span.firstChild && span.firstChild.data) {
-				var txt = HTMLArea._lc(span.firstChild.data, context);
+				var txt = Xinha._lc(span.firstChild.data, context);
 				if (txt)
 					span.firstChild.data = txt;
 			}
                         if (span.title) {
-				var txt = HTMLArea._lc(span.title, context);
+				var txt = Xinha._lc(span.title, context);
 				if (txt)
 					span.title = txt;
                         }
 		}
 	}
-    document.title = HTMLArea._lc(document.title, context);
+    document.title = Xinha._lc(document.title, context);
 }
 
 // closes the dialog and passes the return info upper.
@@ -125,7 +135,7 @@ function __dlg_close(val) {
 function __dlg_close_on_esc(ev) {
 	ev || (ev = window.event);
 	if (ev.keyCode == 27) {
-		window.close();
+		__dlg_close(null);
 		return false;
 	}
 	return true;

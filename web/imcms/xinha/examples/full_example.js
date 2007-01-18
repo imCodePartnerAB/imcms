@@ -4,8 +4,8 @@
     --  as controlled by the options set in full_example-menu.html.  it's called
     --  from full_example-body.html.
     --
-    --  $HeadURL: http://svn.xinha.python-hosting.com/trunk/examples/full_example.js $
-    --  $LastChangedDate: 2005-10-30 05:28:08 +1300 (Sun, 30 Oct 2005) $
+    --  $HeadURL: http://svn.xinha.python-hosting.com/tags/0.91beta/examples/full_example.js $
+    --  $LastChangedDate: 2005-10-29 18:28:08 +0200 (Sa, 29 Okt 2005) $
     --  $LastChangedRevision: 416 $
     --  $LastChangedBy: gogo $
     --------------------------------------------------------------------------*/

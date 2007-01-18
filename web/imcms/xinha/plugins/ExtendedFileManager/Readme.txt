@@ -1,17 +1,17 @@
 Package : Extended File Manager EFM 1.1.1
-Plugin url : http://www.afrusoft.com/htmlarea
+
 Version 1.1 created from 1.0 beta by Krzysztof Kotowicz <koto@webworkers.pl>
 
 Overview :
 ----------
 
-Extended File Manager is an advanced plugin for HtmlArea 3.0 
+Extended File Manager is an advanced plugin for Xinha 
 
 It works in two different modes.
 1). Insert Image Mode and 
 2). Insert File Link Mode.
 
-In Insert Image Mode, it replaces the basic insert image functionality of HtmlArea with its advanced image manager.
+In Insert Image Mode, it replaces the basic insert image functionality of Xinha with its advanced image manager.
 
 If Insert File Link Mode is enabled, a new icon will be added to the toolbar with advanced file linking capability.
 
@@ -35,6 +35,9 @@ Complete Features :
 * Can be used to insert images along with properties. 
 * Can be used to insert link to non-image files like pdf or zip.
 * You can specify image margin / padding / background and border colors
+* You may edit Alt/title tags for inserted images
+
+(Most of the features can be enabled/disabled as needed)
 
 Installation :
 --------------
@@ -44,47 +47,10 @@ and selecting the plugin in appropriate xinha_plugins list.
 
 Plugin may be configured via xinha_config.ExtendedFileManager object.
 Look into ImageManager plugin documentation as this plugin uses almost identical
-settings. 
-
-The plugin may share the same config array as ImageManager plugin - just specify
-the same storage location like this:
+settings. All available options can be found in the file config.inc.php.
 
 // only snippets of code from initializing file shown below
 
-<?php
-
-    // define backend configuration for both plugins
-    
-    $IMConfig = array();
-    $IMConfig['images_dir'] = '<images dir>';
-    $IMConfig['images_url'] = '<images url>';
-    $IMConfig['thumbnail_prefix'] = 't_';
-    $IMConfig['thumbnail_dir'] = 't';
-    $IMConfig['resized_prefix'] = 'resized_';
-    $IMConfig['resized_dir'] = '';
-    $IMConfig['tmp_prefix'] = '_tmp';
-    $IMConfig['max_filesize_kb_image'] = 2000;
-    // maximum size for uploading files in 'insert image' mode (2000 kB here)
-
-    $IMConfig['max_filesize_kb_link'] = 5000;
-    // maximum size for uploading files in 'insert link' mode (2000 kB here)
-
-    // Maximum upload folder size in Megabytes.
-    // Use 0 to disable limit
-
-    $IMConfig['max_foldersize_mb'] = 0;
-    $IMConfig['allowed_image_extensions'] = array("jpg","gif","png");
-    $IMConfig['allowed_link_extensions'] = array("jpg","gif","pdf","ip","txt",
-                                                 "psd","png","html","swf",
-                                                 "xml","xls");
-
-    $IMConfig = serialize($IMConfig);
-    if(!isset($_SESSION['Xinha:ImageManager']))
-    {
-      $_SESSION['Xinha:ImageManager'] = uniqid('secret_code');
-    }
-
-?>
 
   xinha_plugins = xinha_plugins ? xinha_plugins :
   [
@@ -99,17 +65,46 @@ the same storage location like this:
 
 ...
 
-// pass the configuration to plugins
-if (xinha_config.ImageManager) {
-    xinha_config.ImageManager.backend_config = '<?php echo jsaddslashes($IMConfig)?>';
-    xinha_config.ImageManager.backend_config_hash = '<?php echo sha1($IMConfig . $_SESSION['Xinha:ImageManager'])?>';
-}
-
+//If you don't want to add a button for linking files and use only the advanced ImageManager
+xinha_config.ExtendedFileManager.use_linker = false;
+// pass the configuration to plugin
 if (xinha_config.ExtendedFileManager) {
-    xinha_config.ExtendedFileManager.backend_config = '<?php echo jsaddslashes($IMConfig)?>';
-    xinha_config.ExtendedFileManager.backend_config_hash = '<?php echo sha1($IMConfig . $_SESSION['Xinha:ImageManager'])?>';
-}
+   	    with (xinha_config.ExtendedFileManager)
+        {
+            <?php
 
+            // define backend configuration for the plugin
+            $IMConfig = array();
+            $IMConfig['images_dir'] = '<images dir>';
+            $IMConfig['images_url'] = '<images url>';
+            $IMConfig['files_dir'] = '<files dir>';
+            $IMConfig['files_url'] = '<files url>';
+            $IMConfig['thumbnail_prefix'] = 't_';
+            $IMConfig['thumbnail_dir'] = 't';
+            $IMConfig['resized_prefix'] = 'resized_';
+            $IMConfig['resized_dir'] = '';
+            $IMConfig['tmp_prefix'] = '_tmp';
+            $IMConfig['max_filesize_kb_image'] = 2000;
+            // maximum size for uploading files in 'insert image' mode (2000 kB here)
+
+            $IMConfig['max_filesize_kb_link'] = 5000;
+            // maximum size for uploading files in 'insert link' mode (5000 kB here)
+
+            // Maximum upload folder size in Megabytes.
+            // Use 0 to disable limit
+            $IMConfig['max_foldersize_mb'] = 0;
+            
+            $IMConfig['allowed_image_extensions'] = array("jpg","gif","png");
+            $IMConfig['allowed_link_extensions'] = array("jpg","gif","pdf","ip","txt",
+                                                         "psd","png","html","swf",
+                                                         "xml","xls");
+
+            require_once '/path/to/xinha/contrib/php-xinha.php';
+            xinha_pass_to_php_backend($IMConfig);
+            
+            ?>
+        }
+}
 
 =====
 afrusoft@gmail.com - author of EFM 1.0 beta

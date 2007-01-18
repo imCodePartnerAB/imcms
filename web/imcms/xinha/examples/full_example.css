@@ -1,10 +1,10 @@
    /*--------------------------------------:noTabs=true:tabSize=2:indentSize=2:--
     --  Xinha example CSS file.  This is ripped from Trac ;)
     --
-    --  $HeadURL: http://svn.xinha.python-hosting.com/trunk/examples/full_example.css $
-    --  $LastChangedDate: 2005-02-19 17:10:03 +1300 (Sat, 19 Feb 2005) $
-    --  $LastChangedRevision: 14 $
-    --  $LastChangedBy: gogo $
+    --  $HeadURL: http://svn.xinha.python-hosting.com/tags/0.91beta/examples/full_example.css $
+    --  $LastChangedDate: 2006-09-25 21:14:02 +0200 (Mo, 25 Sep 2006) $
+    --  $LastChangedRevision: 592 $
+    --  $LastChangedBy: koto $
     --------------------------------------------------------------------------*/
 
  body {
@@ -45,3 +45,4 @@
   {
     margin:10px;
   }
+  label {font-size: 11px;}

@@ -1,10 +1,11 @@
 <?php
 /**
  * ExtendedFileManager images.php file. Shows folders and files.
- * Authors: Wei Zhuo, Afru, Krzysztof Kotowicz
+ * Authors: Wei Zhuo, Afru, Krzysztof Kotowicz, Raimund Meyer
  * Version: Updated on 08-01-2005 by Afru
  * Version: Updated on 04-07-2006 by Krzysztof Kotowicz
- * Package: ExtendedFileManager (EFM 1.1.2)
+ * Version: Updated on 29-10-2006 by Raimund Meyer
+ * Package: ExtendedFileManager (EFM 1.1.3)
  * http://www.afrusoft.com/htmlarea
  */
 
@@ -24,12 +25,16 @@ $uploadStatus=$manager->processUploads();
 //process any file renames
 $renameStatus=$manager->processRenames();
 
+//process paste
+if (isset($_GET['paste']))
+	$pasteStatus = $manager->processPaste();
+
 if ($manager->deleteFiles())
     $refreshFile = true;
 
 $refreshDir = false;
 //process any directory functions
-if($manager->deleteDirs() || $manager->processNewDir())
+if($manager->deleteDirs() || $manager->processNewDir() || $pasteStatus || $renameStatus )
 	$refreshDir = true;
 
 
@@ -94,6 +99,13 @@ function drawDirs_Files($list, &$manager)
 
     			<td class="actions" nowrap>
     				<a href="<?php print $IMConfig['backend_url']; ?>__function=images&amp;mode=<?php echo $insertMode;?>&amp;dir=<?php echo $relative; ?>&amp;deld=<?php echo rawurlencode($path); ?>&amp;viewtype=<?php echo $afruViewType; ?>" title="Trash" onclick="return confirmDeleteDir('<?php echo $dir['entry']; ?>', <?php echo $dir['count']; ?>);" style="border:0px;"><img src="<?php print $IMConfig['base_url'];?>img/edit_trash.gif" height="15" width="15" alt="Trash" border="0" /></a>
+			    	<?php if ($IMConfig['allow_rename']) { ?>
+			                    <a href="#" title="Rename" onclick="renameDir('<?php echo rawurlencode($dir['entry']);?>'); return false;"><img src="<?php print $IMConfig['base_url'];?>img/edit_rename.gif" height="15" width="15" alt="Rename" border="0" /></a>
+			        <?php }  ?>
+    				<?php if ($IMConfig['allow_cut_copy_paste']) { ?>
+                    <a href="#" title="Cut" onclick="copyDir('<?php echo rawurlencode($dir['entry']);?>','move'); return false;"><img src="<?php print $IMConfig['base_url'];?>img/edit_cut.gif" height="15" width="15" alt="Cut" /></a>
+                     <a href="#" title="Copy" onclick="copyDir('<?php echo rawurlencode($dir['entry']);?>','copy'); return false;"><img src="<?php print $IMConfig['base_url'];?>img/edit_copy.gif" height="15" width="15" alt="Copy" /></a>
+     		   		<?php }  ?>
     			</td>
     			</tr>
     		  <?php
@@ -107,7 +119,7 @@ function drawDirs_Files($list, &$manager)
     			?>
                 <tr>
         		  <td><img src="<?php print $IMConfig['base_url']; if(is_file('icons/'.$file['ext'].'_small.gif')) echo "icons/".$file['ext']."_small.gif"; else echo $IMConfig['default_listicon']; ?>" alt="" /></td>
-                  <th><a href="#" class="thumb" style="cursor: pointer;" onclick="selectImage('<?php echo $file['relative'];?>', '<?php echo preg_replace('#\..{3,4}$#', '', $entry); ?>', <?php echo $file['image'][0];?>, <?php echo $file['image'][1]; ?>);return false;" title="<?php echo $entry; ?> - <?php echo Files::formatSize($file['stat']['size']); ?>" <?php if ($insertMode == 'image') { ?> onmouseover="showPreview('<?php echo $file['relative'];?>')" onmouseout="showPreview(window.parent.document.getElementById('f_url').value)" <?php } ?> >
+                  <th><a href="#" class="thumb" style="cursor: pointer;" ondblclick="this.onclick();window.top.onOK();" onclick="selectImage('<?php echo $file['relative'];?>', '<?php echo preg_replace('#\..{3,4}$#', '', $entry); ?>', <?php echo $file['image'][0];?>, <?php echo $file['image'][1]; ?>);return false;" title="<?php echo $entry; ?> - <?php echo Files::formatSize($file['stat']['size']); ?>" <?php if ($insertMode == 'image') { ?> onmouseover="showPreview('<?php echo $file['relative'];?>')" onmouseout="showPreview(window.parent.document.getElementById('f_url').value)" <?php } ?> >
         			<?php
         			if(strlen($entry)>$maxNameLength) echo substr($entry,0,$maxNameLength)."..."; else echo $entry;
         			?>
@@ -116,13 +128,17 @@ function drawDirs_Files($list, &$manager)
                   <td><?php if($file['image'][0] > 0){ echo $file['image'][0].'x'.$file['image'][1]; } ?></td>
     			  <td nowrap><?php echo date("d.m.y H:i",$file['stat']['mtime']); ?></td>
                   <td class="actions">
+                    <?php if($IMConfig['img_library'] && $IMConfig['allow_edit_image'] && $file['image'][0] > 0) { ?>
+                    <a href="javascript:;" title="Edit" onclick="editImage('<?php echo rawurlencode($file['relative']);?>');"><img src="<?php print $IMConfig['base_url'];?>img/edit_pencil.gif" height="15" width="15" alt="Edit" border="0" /></a>
+                    <?php }  ?>  
                     <a href="<?php print $IMConfig['backend_url']; ?>__function=images&dir=<?php echo $relative; ?>&amp;delf=<?php echo rawurlencode($file['relative']);?>&amp;mode=<?php echo $insertMode;?>&amp;viewtype=<?php echo $afruViewType; ?>" title="Trash" onclick="return confirmDeleteFile('<?php echo $entry; ?>');"><img src="<?php print $IMConfig['base_url'];?>img/edit_trash.gif" height="15" width="15" alt="Trash" border="0" /></a>
         			<?php if ($IMConfig['allow_rename']) { ?>
                     <a href="#" title="Rename" onclick="renameFile('<?php echo rawurlencode($file['relative']);?>'); return false;"><img src="<?php print $IMConfig['base_url'];?>img/edit_rename.gif" height="15" width="15" alt="Rename" border="0" /></a>
                     <?php }  ?>
-        			<?php if($IMConfig['img_library'] && $IMConfig['allow_edit_image'] && $file['image'][0] > 0) { ?>
-                    <a href="javascript:;" title="Edit" onclick="editImage('<?php echo rawurlencode($file['relative']);?>');"><img src="<?php print $IMConfig['base_url'];?>img/edit_pencil.gif" height="15" width="15" alt="Edit" border="0" /></a>
-                    <?php }  ?>
+        			<?php if ($IMConfig['allow_cut_copy_paste']) { ?>
+                    <a href="#" title="Cut" onclick="copyFile('<?php echo rawurlencode($entry);?>','move'); return false;"><img src="<?php print $IMConfig['base_url'];?>img/edit_cut.gif" height="15" width="15" alt="Cut" /></a>
+                     <a href="#" title="Copy" onclick="copyFile('<?php echo rawurlencode($entry);?>','copy'); return false;"><img src="<?php print $IMConfig['base_url'];?>img/edit_copy.gif" height="15" width="15" alt="Copy" /></a>
+                    <?php $thisFileNameLength -= 6; }  ?>
                   </td>
                 </tr>
     		  <?php
@@ -134,20 +150,29 @@ function drawDirs_Files($list, &$manager)
         break;
         case 'thumbview': // thumbview is default
         default:
-    		$maxFileNameLength=11;
-    		$maxFolderNameLength=13;
+    		$maxFileNameLength=16;
+    		$maxFolderNameLength=16;
     		// start of foreach for draw thumbview folders.
     		foreach($list[0] as $path => $dir)
     		{ ?>
     <div class="dir_holder">
       <a class="dir" href="<?php print $IMConfig['backend_url'];?>__function=images&amp;mode=<?php echo $insertMode;?>&amp;dir=<?php echo rawurlencode($path); ?>&amp;viewtype=<?php echo $afruViewType; ?>" onclick="updateDir('<?php echo $path; ?>')" title="<?php echo $dir['entry']; ?>"><img src="<?php print $IMConfig['base_url'];?>img/folder.gif" height="80" width="80" alt="<?php echo $dir['entry']; ?>" /></a>
 
-      <div class="edit">
-        <a href="<?php print $IMConfig['backend_url'];?>__function=images&amp;mode=<?php echo $insertMode;?>&amp;dir=<?php echo $relative; ?>&amp;deld=<?php echo rawurlencode($path); ?>&amp;viewtype=<?php echo $afruViewType; ?>" title="Trash" onclick="return confirmDeleteDir('<?php echo $dir['entry']; ?>', <?php echo $dir['count']; ?>);"><img src="<?php print $IMConfig['base_url'];?>img/edit_trash.gif" height="15" width="15" alt="Trash" /></a>
-    	<?php if(strlen($dir['entry']) > $maxFolderNameLength)
+      <div class="fileName">
+      <?php if(strlen($dir['entry']) > $maxFolderNameLength)
                 echo substr($dir['entry'], 0, $maxFolderNameLength) . "...";
               else
                 echo $dir['entry']; ?>
+      </div>
+      <div class="edit">
+        <a href="<?php print $IMConfig['backend_url'];?>__function=images&amp;mode=<?php echo $insertMode;?>&amp;dir=<?php echo $relative; ?>&amp;deld=<?php echo rawurlencode($path); ?>&amp;viewtype=<?php echo $afruViewType; ?>" title="Trash" onclick="return confirmDeleteDir('<?php echo $dir['entry']; ?>', <?php echo $dir['count']; ?>);"><img src="<?php print $IMConfig['base_url'];?>img/edit_trash.gif" height="15" width="15" alt="Trash" /></a>
+    	<?php if ($IMConfig['allow_rename']) { ?>
+                    <a href="#" title="Rename" onclick="renameDir('<?php echo rawurlencode($dir['entry']);?>'); return false;"><img src="<?php print $IMConfig['base_url'];?>img/edit_rename.gif" height="15" width="15" alt="Rename" border="0" /></a>
+        <?php }  ?>
+        <?php if ($IMConfig['allow_cut_copy_paste']) { ?>
+                    <a href="#" title="Cut" onclick="copyDir('<?php echo rawurlencode($dir['entry']);?>','move'); return false;"><img src="<?php print $IMConfig['base_url'];?>img/edit_cut.gif" height="15" width="15" alt="Cut" /></a>
+                     <a href="#" title="Copy" onclick="copyDir('<?php echo rawurlencode($dir['entry']);?>','copy'); return false;"><img src="<?php print $IMConfig['base_url'];?>img/edit_copy.gif" height="15" width="15" alt="Copy" /></a>
+        <?php }  ?>
       </div>
     </div>
     		  <?php
@@ -161,22 +186,28 @@ function drawDirs_Files($list, &$manager)
     			$thisFileNameLength = $maxFileNameLength;
     			?>
                 <div class="thumb_holder" id="holder_<?php echo asc2hex($entry) ?>">
-                  <a href="#" class="thumb" style="cursor: pointer;" onclick="selectImage('<?php echo $file['relative'];?>', '<?php echo preg_replace('#\..{3,4}$#', '', $entry); ?>', <?php echo $file['image'][0];?>, <?php echo $file['image'][1]; ?>);return false;" title="<?php echo $entry; ?> - <?php echo Files::formatSize($file['stat']['size']); ?>">
+                  <a href="#" class="thumb" style="cursor: pointer;" ondblclick="this.onclick();window.top.onOK();" onclick="selectImage('<?php echo $file['relative'];?>', '<?php echo preg_replace('#\..{3,4}$#', '', $entry); ?>', <?php echo $file['image'][0];?>, <?php echo $file['image'][1]; ?>);return false;" title="<?php echo $entry; ?> - <?php echo Files::formatSize($file['stat']['size']); ?>">
                     <img src="<?php print $manager->getThumbnail($file['relative']); ?>" alt="<?php echo $entry; ?> - <?php echo Files::formatSize($file['stat']['size']); ?>" />
                   </a>
+                   <div class="fileName">
+                   <?php
+            			if(strlen($entry) > $thisFileNameLength + 3) echo strtolower(substr($entry,0,$thisFileNameLength))."..."; else echo $entry;
+            		?>
+                   </div>
                   <div class="edit">
+                    <?php if($IMConfig['img_library'] && $IMConfig['allow_edit_image'] && $file['image'][0] > 0 )
+                    { ?>
+                    <a href="javascript:;" title="Edit" onclick="editImage('<?php echo rawurlencode($file['relative']);?>');"><img src="<?php print $IMConfig['base_url'];?>img/edit_pencil.gif" height="15" width="15" alt="Edit" /></a>
+            		<?php $thisFileNameLength -= 3; } ?>
                     <a href="<?php print $IMConfig['backend_url']; ?>__function=images&amp;mode=<?php echo $insertMode;?>&amp;dir=<?php echo $relative; ?>&amp;delf=<?php echo rawurlencode($file['relative']);?>&amp;viewtype=<?php echo $afruViewType; ?>" title="Trash" onclick="return confirmDeleteFile('<?php echo $entry; ?>');"><img src="<?php print $IMConfig['base_url'];?>img/edit_trash.gif" height="15" width="15" alt="Trash" /></a>
         			<?php if ($IMConfig['allow_rename']) { ?>
                     <a href="#" title="Rename" onclick="renameFile('<?php echo rawurlencode($file['relative']);?>'); return false;"><img src="<?php print $IMConfig['base_url'];?>img/edit_rename.gif" height="15" width="15" alt="Rename" /></a>
                     <?php $thisFileNameLength -= 3; }  ?>
-                	<?php if($IMConfig['img_library'] && $IMConfig['allow_edit_image'] && $file['image'][0] > 0 )
-                    { ?>
-                    <a href="javascript:;" title="Edit" onclick="editImage('<?php echo rawurlencode($file['relative']);?>');"><img src="<?php print $IMConfig['base_url'];?>img/edit_pencil.gif" height="15" width="15" alt="Edit" /></a>
-            		<?php $thisFileNameLength -= 3; } ?>
-
-            		<?php
-            			if(strlen($entry) > $thisFileNameLength + 3) echo strtolower(substr($entry,0,$thisFileNameLength))."..."; else echo $entry;
-            		?>
+                	<?php if ($IMConfig['allow_cut_copy_paste']) { ?>
+                    <a href="#" title="Cut" onclick="copyFile('<?php echo rawurlencode($entry);?>','move'); return false;"><img src="<?php print $IMConfig['base_url'];?>img/edit_cut.gif" height="15" width="15" alt="Cut" /></a>
+                     <a href="#" title="Copy" onclick="copyFile('<?php echo rawurlencode($entry);?>','copy'); return false;"><img src="<?php print $IMConfig['base_url'];?>img/edit_copy.gif" height="15" width="15" alt="Copy" /></a>
+                    <?php $thisFileNameLength -= 6; }  ?>
+            		
                   </div>
                 </div>
     		  <?php
@@ -202,7 +233,7 @@ function drawNoResults()
 function drawErrorBase(&$manager) 
 {
 ?>
-<div class="error"><span>Invalid base directory:</span> <?php echo $manager->config['images_dir']; ?></div>
+<div class="error"><span>Invalid base directory:</span> <?php echo $manager->getImagesDir(); ?></div>
 <?php
 }
 
@@ -248,9 +279,9 @@ function asc2hex ($temp)
 
 		<?php
 		if(isset($uploadStatus) && !is_numeric($uploadStatus) && !is_bool($uploadStatus))
-		echo 'alert(i18n("'.$uploadStatus.'"));';
+		echo "alert(i18n('$uploadStatus'));";
 		else if(isset($uploadStatus) && $uploadStatus==false)
-		echo 'alert("Unable to upload File. \nEither Maximum file size ['.($insertMode == 'image' ? $IMConfig['max_filesize_kb_image'] : $IMConfig['max_filesize_kb_link'] ).'Kb] exceeded or\nFolder doesn\'t have write permission.");';
+		echo 'alert(i18n("Unable to upload File. \nEither Maximum file size [$max_size='.($insertMode == 'image' ? $IMConfig['max_filesize_kb_image'] : $IMConfig['max_filesize_kb_link'] ).'$ KB] exceeded or\nFolder doesn\'t have write permission."));';
 		?>
 
 		<?php
@@ -258,6 +289,31 @@ function asc2hex ($temp)
 		echo 'alert(i18n("'.$renameStatus.'"));';
 		else if(isset($renameStatus) && $renameStatus===false)
 		echo 'alert(i18n("Unable to rename file. File of the same name already exists or\nfolder doesn\'t have write permission."));';
+		?>
+		
+		<?php
+		if (isset($pasteStatus) && is_numeric($pasteStatus))
+		{
+			switch ($pasteStatus)
+			{
+				case 100 :
+					$pasteStatus = 'Source file/folder not found.';
+				break;
+				case 101 :
+					$pasteStatus = 'Copy failed.\nMaybe folder doesn\'t have write permission.';
+				break;
+				case 102 :
+					$pasteStatus = 'Could not create destination folder.';
+				break;
+				case 104 :
+					$pasteStatus = 'Destination file/folder already exists.';
+				break;
+			}
+		}
+		if(isset($pasteStatus) && !is_bool($pasteStatus))
+		{
+			echo 'alert(i18n("'.$pasteStatus.'"));';
+		}
 		?>
 
 		var topDoc = window.top.document;
@@ -295,7 +351,7 @@ function asc2hex ($temp)
     
 	function editImage(image) 
 	{
-		var url = "<?php print $IMConfig['backend_url']; ?>__function=editor&img="+image;
+		var url = "<?php print $IMConfig['backend_url']; ?>__function=editor&img="+image+"&mode=<?php print $insertMode ?>";
         Dialog(url, function(param)
 		{
 			if (!param) { // user must have pressed Cancel
@@ -316,7 +372,7 @@ function asc2hex ($temp)
 // Koto: why emptying? commented out
 //if(window.top.document.getElementById('manager_mode').value=="image")
 //emptyProperties();
-<?php if(isset($diskInfo)) echo 'updateDiskMesg("'.$diskInfo.'");'; ?>
+<?php if(isset($diskInfo)) echo 'updateDiskMesg(i18n(\''.$diskInfo.'\'));'; ?>
 //-->
 </script>
 

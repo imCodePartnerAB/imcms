@@ -16,6 +16,7 @@ HTMLArea.loadStyle('dTree/dtree.css', 'Linker');
 HTMLArea.Config.prototype.Linker =
 {
   'backend' : _editor_url + 'plugins/Linker/scan.php',
+  'backend_data' : null,
   'files' : null
 };
 
@@ -66,13 +67,16 @@ Linker.prototype._createLink = function(a)
     p_options: ['menubar=no','toolbar=yes','location=no','status=no','scrollbars=yes','resizeable=yes'],
     to:       'alice@example.com',
     subject:  '',
-    body:     ''
+    body:     '',
+    anchor:   ''
   };
 
   if(a && a.tagName.toLowerCase() == 'a')
   {
-    var m = a.href.match(/^mailto:(.*@[^?&]*)(\?(.*))?$/);
-    var anchor = a.href.match(/^#(.*)$/);
+    var href =this.editor.fixRelativeLinks(a.getAttribute('href'));
+    var m = href.match(/^mailto:(.*@[^?&]*)(\?(.*))?$/);
+    var anchor = href.match(/^#(.*)$/);
+
     if(m)
     {
       // Mailto
@@ -95,7 +99,8 @@ Linker.prototype._createLink = function(a)
     {
       //Anchor-Link
       inputs.type = 'anchor';
-      inputs.anchor = m[1];
+      inputs.anchor = anchor[1];
+      
     }
     else
     {
@@ -106,7 +111,7 @@ Linker.prototype._createLink = function(a)
         var m = a.getAttribute('onclick').match(/window\.open\(\s*this\.href\s*,\s*'([a-z0-9_]*)'\s*,\s*'([a-z0-9_=,]*)'\s*\)/i);
 
         // Popup Window
-        inputs.href   = a.href ? a.href : '';
+        inputs.href   = href ? href : '';
         inputs.target = 'popup';
         inputs.p_name = m[1];
         inputs.p_options = [ ];
@@ -129,7 +134,7 @@ Linker.prototype._createLink = function(a)
       else
       {
         // Normal
-        inputs.href   = a.href;
+        inputs.href   = href;
         inputs.target = a.target;
       }
     }
@@ -208,6 +213,8 @@ Linker.prototype._createLink = function(a)
             p.insertBefore(a.removeChild(a.childNodes[0]), a);
           }
           p.removeChild(a);
+          linker.editor.updateToolbar();
+          return;
         }
       }
       else
@@ -242,17 +249,20 @@ Linker.prototype._createLink = function(a)
       var anchors = linker.editor._doc.getElementsByTagName('a');
       for(var i = 0; i < anchors.length; i++)
       {
-        var a = anchors[i];
-        if(a.href == tmp)
+        var anchor = anchors[i];
+        if(anchor.href == tmp)
         {
           // Found one.
-          for(var i in atr)
+          if (!a) a = anchor;
+          for(var j in atr)
           {
-            a.setAttribute(i, atr[i]);
+            anchor.setAttribute(j, atr[j]);
           }
         }
       }
     }
+    linker.editor.selectNodeContents(a);
+    linker.editor.updateToolbar();
   };
 
   this._dialog.show(inputs, doOK);
@@ -326,10 +336,12 @@ Linker.Dialog.prototype._prepareDialog = function()
     if(linker.lConfig.backend)
     {
         //get files from backend
-        HTMLArea._getback(linker.lConfig.backend,
+        HTMLArea._postback(linker.lConfig.backend,
+                          linker.lConfig.backend_data,
                           function(txt) {
                             try {
-                                eval('lDialog.files = '+txt);
+                                eval('var f = '+txt);
+                                lDialog.files = f;
                             } catch(Error) {
                                 lDialog.files = [ {url:'',title:Error.toString()} ];
                             }
@@ -478,10 +490,10 @@ Linker.Dialog.prototype.show = function(inputs, ok, cancel)
   {
     this.dialog.getElementById('popuptable').style.display = 'none';
   }
-
+  
   var anchor = this.dialog.getElementById('anchor');
-  for(var i=0;i<anchor.childNodes.length;i++) {
-    anchor.removeChild(anchor.childNodes[i]);
+  for(var i=anchor.length;i>=0;i--) {
+    anchor[i] = null;
   }
 
   var html = this.linker.editor.getHTML();  
@@ -508,14 +520,12 @@ Linker.Dialog.prototype.show = function(inputs, ok, cancel)
   
   for(i=0;i<anchors.length;i++)
   {
-    var opt = document.createElement('option');
-    opt.value = '#'+anchors[i];
-    opt.innerHTML = anchors[i];
-    anchor.appendChild(opt);
+    var opt = new Option(anchors[i],'#'+anchors[i],false,(inputs.anchor == anchors[i]));
+    anchor[anchor.length] = opt;
   }
 
   //if no anchors found completely hide Anchor-Link
-  if(anchor.childNodes.length==0) {
+  if(anchor.length==0) {
     this.dialog.getElementById('anchorfieldset').style.display = "none";
   }
   

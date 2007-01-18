@@ -19,13 +19,13 @@ xinha_init = xinha_init ? xinha_init : function()
                             'TableOperations'
                             ];
     // THIS BIT OF JAVASCRIPT LOADS THE PLUGINS, NO TOUCHING  :)
-    if(!HTMLArea.loadPlugins(xinha_plugins, xinha_init)) return;
+    if(!Xinha.loadPlugins(xinha_plugins, xinha_init)) return;
 
-    xinha_config = xinha_config ? xinha_config() : new HTMLArea.Config();
+    xinha_config = xinha_config ? xinha_config() : new Xinha.Config();
 
-    xinha_editors = xinha_editors ? xinha_editors : HTMLArea.makeEditors([ 'text' ], xinha_config, xinha_plugins);
+    xinha_editors = xinha_editors ? xinha_editors : Xinha.makeEditors([ 'text' ], xinha_config, xinha_plugins);
 
-    HTMLArea.startEditors(xinha_editors);
+    Xinha.startEditors(xinha_editors);
 
 }
 

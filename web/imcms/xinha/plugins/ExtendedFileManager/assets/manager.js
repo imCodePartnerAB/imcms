@@ -1,9 +1,10 @@
 /**
  * Functions for the ExtendedFileManager, used by manager.php only
- * Authors: Wei Zhuo, Afru, Krzysztof Kotowicz
+ * Authors: Wei Zhuo, Afru, Krzysztof Kotowicz, Raimund Meyer
  * Version: Updated on 08-01-2005 by Afru
  * Version: Updated on 20-06-2006 by Krzysztof Kotowicz
- * Package: ExtendedFileManager (EFM 1.1.1)
+ * Version: Updated on 17-11-2006 by Raimund Meyer
+ * Package: ExtendedFileManager (EFM 1.1.3)
  * http://www.afrusoft.com/htmlarea
  */
 
@@ -45,19 +46,29 @@ function onTargetChanged() {
 }
 
 //initialise the form
+
+if (manager_mode == "link")
+{
+    var offsetForInputs = (HTMLArea.is_ie) ? 155 : 140;
+}
+else
+{
+    var offsetForInputs = (HTMLArea.is_ie) ? 220 : 200;
+}    
 init = function ()
 {
-    if (manager_mode == "link")
-      __dlg_init(null,  {width:650,height:500});
-    else
-      __dlg_init(null,  {width:650,height:550});
+    var h =  100 // space above files 
+           + 250 // files iframe
+           + offsetForInputs;
+    
+    __dlg_init(null,  {width:650,height:h});
 
     __dlg_translate('ExtendedFileManager');
 
     var uploadForm = document.getElementById('uploadForm');
     if(uploadForm) uploadForm.target = 'imgManager';
 
-    if (manager_mode == 'image' && typeof colorPicker != "undefined") {
+    if (manager_mode == 'image' && typeof colorPicker != "undefined" && document.getElementById('bgCol_pick')) {
         // Hookup color pickers
         var bgCol_pick = document.getElementById('bgCol_pick');
         var f_backgroundColor = document.getElementById('f_backgroundColor');
@@ -101,6 +112,7 @@ init = function ()
 
         document.getElementById("f_url").value = param["f_url"];
         document.getElementById("f_alt").value = param["f_alt"];
+        document.getElementById("f_title").value = param["f_title"];
         document.getElementById("f_border").value = param["f_border"];
         document.getElementById("f_width").value = param["f_width"];
         document.getElementById("f_height").value = param["f_height"];
@@ -153,10 +165,21 @@ init = function ()
         param.f_href = param.f_href.replace( href_regex, "" );
 
         // Locate to the correct directory
+        var startDir;
         var dreg = new RegExp('^(.*/)([^/]+)$');
         if (dreg.test(param['f_href']))
         {
-          changeDir(RegExp.$1);
+        	startDir = RegExp.$1;
+        }
+        else
+        {
+        	startDir = document.cookie.match(/EFMStartDirlink=(.*?)(;|$)/);
+        	if (startDir) startDir = startDir[1];
+        }
+        
+        if (startDir)
+        {
+          changeDir(startDir);
           var dirPath = document.getElementById('dirPath');
           for(var i = 0; i < dirPath.options.length; i++)
           {
@@ -198,13 +221,71 @@ init = function ()
 
         var opt = document.createElement("option");
         opt.value = "_other";
-        opt.innerHTML = "Other";
+        opt.innerHTML = i18n("Other");
         target_select.appendChild(opt);
         target_select.onchange = onTargetChanged;
         document.getElementById("f_href").focus();
     }
+    else if (!param)
+    {
+    	var startDir = document.cookie.match(new RegExp ("EFMStartDir" + manager_mode + "=(.*?)(;|$)"));
+    	if (startDir)
+    	{
+    		startDir = startDir[1];
+    		changeDir(startDir);
+	        var dirPath = document.getElementById('dirPath');
+	        for(var i = 0; i < dirPath.options.length; i++)
+	        {
+	          if(dirPath.options[i].value == encodeURIComponent(startDir))
+	          {
+	            dirPath.options[i].selected = true;
+	            break;
+	          }
+	        }
+    	}
+    }
 }
 
+function pasteButton(action)
+{
+	var buttonHolder = document.getElementById('pasteBtn');
+	if (!buttonHolder.firstChild)
+	{
+		var a = document.createElement('a');
+			a.href = "javascript:void(0);";
+			
+		var img = document.createElement('img');
+			img.src = window.opener._editor_url+'plugins/ExtendedFileManager/img/edit_paste.gif';
+			img.alt = i18n('Paste');
+			a.appendChild(img);
+			buttonHolder.appendChild(a);
+	}
+	buttonHolder.onclick = function() {  
+				if(typeof imgManager != 'undefined') imgManager.paste(action);
+				if (action.action ==  'moveFile' || action.action ==  'moveDir' )
+				{
+					this.onclick = null;
+					this.removeChild(this.firstChild)
+				}
+	}
+	switch (action.action)
+	{
+		case 'copyFile':
+			buttonHolder.firstChild.title = i18n('Copy "$file='+action.file+'$" from "$dir='+decodeURIComponent(action.dir)+'$" here');			
+		break;
+		case 'copyDir':
+			buttonHolder.firstChild.title = i18n('Copy folder "$file='+action.file+'$" from "$dir='+decodeURIComponent(action.dir)+'$" here');		
+		break;
+		case 'moveFile':
+			buttonHolder.firstChild.title = i18n('Move "$file='+action.file+'$" from "$dir='+decodeURIComponent(action.dir)+'$" here');
+		break;
+		break;
+		case 'moveDir':
+			buttonHolder.firstChild.title = i18n('Move folder "$file='+action.file+'$" from "$dir='+decodeURIComponent(action.dir)+'$" here');
+		break;	
+	}
+	
+}
 function onCancel()
 {
     __dlg_close(null);
@@ -216,13 +297,13 @@ function onOK()
     if(manager_mode=="image")
     {
         // pass data back to the calling window
-        var fields = ["f_url", "f_alt", "f_align", "f_border", "f_margin", "f_padding", "f_height", "f_width", "f_borderColor", "f_backgroundColor"];
+        var fields = ["f_url", "f_alt", "f_title", "f_align", "f_border", "f_margin", "f_padding", "f_height", "f_width", "f_borderColor", "f_backgroundColor"];
         var param = new Object();
         for (var i in fields)
         {
             var id = fields[i];
             var el = document.getElementById(id);
-            if(id == "f_url" && el.value.indexOf('://') < 0 )
+            if(id == "f_url" && el.value.indexOf('://') < 0 && el.value )
                 param[id] = makeURL(base_url,el.value);
             else
                 param[id] = el.value;
@@ -248,7 +329,6 @@ function onOK()
             param.f_url = makeURL(base_url, resized);
           }
         }
-
         __dlg_close(param);
         return false;
     }
@@ -445,4 +525,13 @@ function newFolder()
         imgManager.newFolder(dir, encodeURI(folder));
 }
 
+
+function resize()
+{
+	var win = HTMLArea.viewportSize(window);
+	document.getElementById('imgManager').style.height = win.y - 150 - offsetForInputs + 'px';
+	
+	return true;
+}
 addEvent(window, 'load', init);
+addEvent(window, 'resize', resize);

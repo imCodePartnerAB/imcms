@@ -1,10 +1,11 @@
 <?php
 /**
  * ExtendedFileManager, list images, directories, and thumbnails.
- * Authors: Wei Zhuo, Afru, Krzysztof Kotowicz
+ * Authors: Wei Zhuo, Afru, Krzysztof Kotowicz, Raimund Meyer
  * Version: Updated on 08-01-2005 by Afru
  * Version: Updated on 04-07-2006 by Krzysztof Kotowicz
- * Package: ExtendedFileManager (EFM 1.1.2)
+ * Version: Updated on 29-10-2006 by Raimund Meyer
+ * Package: ExtendedFileManager (EFM 1.1.3)
  * http://www.afrusoft.com/htmlarea
  */
 
@@ -53,7 +54,9 @@ class ExtendedFileManager
 	 */
 	function getImagesDir()
 	{
-		Return $this->config['images_dir'];
+		if ($this->mode == 'link' && isset($this->config['files_dir']))
+			Return $this->config['files_dir'];
+		else Return $this->config['images_dir'];
 	}
 
 	/**
@@ -62,7 +65,9 @@ class ExtendedFileManager
 	 */
 	function getImagesURL()
 	{
-		Return $this->config['images_url'];
+		if ($this->mode == 'link' && isset($this->config['files_url']))
+				Return $this->config['files_url'];
+		else Return $this->config['images_url'];
 	}
 
 	function isValidBase()
@@ -468,13 +473,13 @@ class ExtendedFileManager
 		if(!in_array($afruext, $valid_extensions))
 		{
 			Files::delFile($file['tmp_name']);
-			Return "Cannot upload .".$afruext." Files. Permission denied.";
+			Return 'Cannot upload $extension='.$afruext.'$ Files. Permission denied.';
 		}
 
 		if($file['size']>($max_size*1024))
 		{
 			Files::delFile($file['tmp_name']);
-			Return "Unble to upload file. Maximum file size [".$max_size."Kb] exceeded.";
+			Return 'Unble to upload file. Maximum file size [$max_size='.$max_size.'$ KB] exceeded.';
 		}
 
 		if(!empty($this->config['max_foldersize_mb']) &&  (Files::dirSize($this->getImagesDir()))+$file['size']> ($this->config['max_foldersize_mb']*1048576))
@@ -491,7 +496,7 @@ class ExtendedFileManager
 		if(!is_int($result))
 		{
 			Files::delFile($file['tmp_name']);
-			Return $file['name']." successfully uploaded.";
+			Return 'File "$file='.$file['name'].'$" successfully uploaded.';
 		}
 
 		//delete tmp files.
@@ -510,7 +515,7 @@ class ExtendedFileManager
 
 		if(!is_numeric($tmpFreeSize) || $tmpFreeSize<0)	$tmpFreeSize=0;
         
-		Return 'Total Size : '.$this->config['max_foldersize_mb'].' Mb , Free Space: '.Files::formatSize($tmpFreeSize);
+		Return 'Total Size : $max_foldersize_mb='.$this->config['max_foldersize_mb'].'$ MB, Free Space: $free_space='.Files::formatSize($tmpFreeSize).'$';
 	}
 
 
@@ -656,7 +661,7 @@ class ExtendedFileManager
 
 		//well, no thumbnail was found, so ask the thumbs.php
 		//to generate the thumbnail on the fly.
-		Return $IMConfig['backend_url'] . '__function=thumbs&img='.rawurlencode($relative);
+		Return $IMConfig['backend_url'] . '__function=thumbs&img='.rawurlencode($relative)."&mode=$this->mode";
 	}
 
 	/**
@@ -718,10 +723,10 @@ class ExtendedFileManager
 	function _delDir($relative) 
 	{
 		$fullpath = Files::makePath($this->getImagesDir(),$relative);
-		if($this->countFiles($fullpath) <= 0)
+	//	if($this->countFiles($fullpath) <= 0)
 			return Files::delFolder($fullpath,true); //delete recursively.
-		else
-			Return false;
+		//else
+			//Return false;
 	}
 
 	/**
@@ -765,13 +770,21 @@ class ExtendedFileManager
 			// strip parent dir ("..") to avoid escaping from base directiory
 			$oldName = preg_replace('#\.\.#', '', $oldName);
 
-			// path to old file
-			$oldPath = Files::makeFile($this->getImagesDir(), $oldName);
-
-			$ret = Files::renameFile($oldPath, $newName);
-			if ($ret === true) {
-				// delete old thumbnail
-				Files::delFile($this->getThumbname($oldPath));
+			if (is_dir($oldPath = Files::makeFile($this->getImagesDir(), $_GET['dir'].$oldName)))
+			{
+				$newPath = Files::makeFile($this->getImagesDir(), $_GET['dir'].$newName);
+				return Files::rename($oldPath,$newPath);
+			}
+			else 
+			{
+				// path to old file
+				$oldPath = Files::makeFile($this->getImagesDir(), $oldName);
+	
+				$ret = Files::renameFile($oldPath, $newName);
+				if ($ret === true) {
+					// delete old thumbnail
+					Files::delFile($this->getThumbname($oldPath));
+				}
 			}
 			return $ret;
 		}
@@ -779,6 +792,34 @@ class ExtendedFileManager
 		return null;
 	}
 
+	function processPaste()
+	{
+		switch ($_GET['paste'])
+		{
+			case 'copyFile':
+				$src = Files::makeFile($this->getImagesDir(), $_GET['srcdir'].$_GET['file']);
+				$file = $_GET['file'];
+				$dest = Files::makeFile($this->getImagesDir(), $_GET['dir']);
+				return  Files::copyFile($src,$dest,$file);
+			break;
+			case 'copyDir':
+				$basePath = $this->getImagesDir();
+				$src = $_GET['srcdir'].$_GET['file'];
+				$dest = $_GET['dir'].$_GET['file'];
+				return Files::copyDir($basePath,$src,$dest);
+			break;
+			case 'moveFile':
+				$src = Files::makePath($this->getImagesDir(), $_GET['srcdir'].$_GET['file']);
+				$dest = Files::makePath($this->getImagesDir(), $_GET['dir'].$_GET['file']);
+				return Files::rename($src,$dest);
+			break;
+			case 'moveDir':
+				$src = Files::makeFile($this->getImagesDir(), $_GET['srcdir'].$_GET['file']);
+				$dest = Files::makeFile($this->getImagesDir(), $_GET['dir'].$_GET['file']);
+				return Files::rename($src,$dest);
+			break;
+		}
+	}
 }
 
 ?>

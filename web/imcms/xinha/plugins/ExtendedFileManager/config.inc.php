@@ -20,6 +20,13 @@
  *
  *	Best of Luck :) Afru.
  */
+ 
+/*
+ *	Getting the mode for further differentiation
+ */
+
+if(empty($insertMode))
+    $insertMode="image";
 
 /**
 * Default backend URL
@@ -52,6 +59,8 @@ $IMConfig['base_url'] = '';
 		   Able to create directories is nice, but not necessary.
 */
 $IMConfig['images_dir'] = 'demo_images';
+//You may set a different directory for the link mode; if you don't, the above setting will be used for both modes
+//$IMConfig['files_dir'] = 'demo_files';
 
 /*
  The URL to the above path, the web browser needs to be able to see it.
@@ -61,7 +70,8 @@ $IMConfig['images_dir'] = 'demo_images';
  for this directory (i.e. disable PHP, Perl, CGI). We only want to store assets
  in this directory and its subdirectories.
 */
-$IMConfig['images_url'] = str_replace( "backend.php", "", $_SERVER["PHP_SELF"] ) . "demo_images";
+$IMConfig['images_url'] = str_replace( array("backend.php","manager.php"), "", $_SERVER["PHP_SELF"] ) . $IMConfig['images_dir'];
+//$IMConfig['files_url'] = 'url/to/files_dir';
 
 /*
   Possible values: true, false
@@ -87,8 +97,6 @@ View type when the File manager is in insert image mode.
 Valid values are "thumbview" and "listview".
 */
 
-if(empty($insertMode))
-    $insertMode="image";
     
 if ($insertMode == 'image')
 	$IMConfig['view_type'] = "thumbview";
@@ -170,7 +178,6 @@ $IMConfig['resized_dir'] = '';
 */
 $IMConfig['allow_new_dir'] = true;
 
-
 /*
   Possible values: true, false
 
@@ -186,12 +193,22 @@ $IMConfig['allow_edit_image'] = true;
 /*
   Possible values: true, false
 
- TRUE -  Allow the user to rename files.
+ TRUE -  Allow the user to rename files and folders.
 
  FALSE - No rename icon will be displayed.
 
 */
 $IMConfig['allow_rename'] = true;
+
+/*
+  Possible values: true, false
+
+ TRUE -  Allow the user to perform cut/copy/paste actions.
+
+ FALSE - No cut/copy/paste icons will be displayed.
+
+*/
+$IMConfig['allow_cut_copy_paste'] = true;
 
 /*
   Possible values: true, false
@@ -205,14 +222,72 @@ $IMConfig['use_color_pickers'] = true;
 /*
   Possible values: true, false
 
+ TRUE -  Allow the user to set alt (alternative text) attribute.
+
+ FALSE - No input field for alt attribute will be displayed.
+
+ NOTE: The alt attribute is _obligatory_ for images, so <img alt="" /> will be inserted
+      if 'images_enable_alt' is set to false
+*/
+$IMConfig['images_enable_alt'] = true;
+
+/*
+  Possible values: true, false
+
+ TRUE -  Allow the user to set title attribute (usually displayed when mouse is over element).
+
+ FALSE - No input field for title attribute will be displayed.
+
+*/
+$IMConfig['images_enable_title'] = false;
+
+/*
+  Possible values: true, false
+
+ TRUE -  Allow the user to set align attribute.
+
+ FALSE - No selection box for align attribute will be displayed.
+
+*/
+$IMConfig['images_enable_align'] = true;
+
+/*
+  Possible values: true, false
+
+ TRUE -  Allow the user to set margin, padding, and border styles for the image
+
+ FALSE - No styling input fields will be displayed.
+
+*/
+$IMConfig['images_enable_styling'] = true;
+
+/*
+  Possible values: true, false
+
+ TRUE -   Allow the user to set target attribute for link (the window in which the link will be opened).
+
+ FALSE - No selection box for target attribute will be displayed.
+
+*/
+$IMConfig['link_enable_target'] = true;
+/*
+  Possible values: true, false
+
   TRUE - Allow the user to upload files.
 
   FALSE - No uploading allowed.
 */
 $IMConfig['allow_upload'] = true;
 
-/* Maximum upload file size in Kilobytes */
-$IMConfig['max_filesize_kb_image'] = 2000;
+/* Maximum upload file size
+
+  Possible values: number, "max"
+
+  number - maximum size in Kilobytes.
+
+  "max"  - the maximum allowed by the server (the value is retrieved from the server configuration).
+*/
+$IMConfig['max_filesize_kb_image'] = 2000000;
 
 $IMConfig['max_filesize_kb_link'] = 5000;
 
@@ -253,8 +328,17 @@ $IMConfig['thumbnail_height'] = 84;
 $IMConfig['tmp_prefix'] = '.editor_';
 
 
-// If config specified from front end, merge it
-if(isset($_REQUEST['backend_config']))
+// Standard PHP Backend Data Passing
+//  if data was passed using xinha_pass_to_php_backend() we merge the items
+//  provided into the Config
+require_once(realpath(dirname(__FILE__) . '/../../contrib/php-xinha.php'));
+if($passed_data = xinha_read_passed_data())
+{
+  $IMConfig = array_merge($IMConfig, $passed_data);
+  $IMConfig['backend_url'] .= xinha_passed_data_querystring() . '&';
+}
+// Deprecated config passing, don't use this way any more!
+elseif(isset($_REQUEST['backend_config']))
 {
   if(get_magic_quotes_gpc()) {
     $_REQUEST['backend_config'] = stripslashes($_REQUEST['backend_config']);
@@ -286,7 +370,15 @@ if(isset($_REQUEST['backend_config']))
   $IMConfig['backend_url'] .= "backend_config_secret_key_location=" . rawurlencode($_REQUEST['backend_config_secret_key_location']) . '&';
 
 }
+if ($IMConfig['max_filesize_kb_link'] == "max")
+{
+  $IMConfig['max_filesize_kb_link'] = upload_max_filesize_kb();
+}
 
+if ($IMConfig['max_filesize_kb_image'] == "max")
+{
+  $IMConfig['max_filesize_kb_image'] = upload_max_filesize_kb();
+}
 // END
 
 ?>

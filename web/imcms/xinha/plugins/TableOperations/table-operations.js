@@ -10,7 +10,7 @@
 // Version 3.0 developed by Mihai Bazon for InteractiveTools.
 //   http://dynarch.com/mishoo
 //
-// $Id: table-operations.js 499 2006-04-30 10:19:10Z gogo $
+// $Id: table-operations.js 584 2006-09-23 13:05:01Z gocher $
 
 // Object that will encapsulate all the table operations provided by
 // HTMLArea-3.0 (except "insert table" which is included in the main file)
@@ -176,8 +176,7 @@ TableOperations.prototype.dialogTableProperties = function() {
 		// dialog contents
 		dialog.content.style.width = "400px";
 		dialog.content.innerHTML = " \
-<div class='title'\
- style='background: url(" + dialog.baseURL + dialog.editor.imgURL("table-prop.gif", "TableOperations") + ") #fff 98% 50% no-repeat'>" + HTMLArea._lc("Table Properties", "TableOperations") + "\
+<div class='title'>" + HTMLArea._lc("Table Properties", "TableOperations") + "\
 </div> \
 <table style='width:100%'> \
   <tr> \
@@ -329,8 +328,7 @@ TableOperations.prototype.dialogRowCellProperties = function(cell) {
 		// dialog contents
 		dialog.content.style.width = "400px";
 		dialog.content.innerHTML = " \
-<div class='title'\
- style='background: url(" + dialog.baseURL + dialog.editor.imgURL(cell ? "cell-prop.gif" : "row-prop.gif", "TableOperations") + ") #fff 98% 50% no-repeat'>" + HTMLArea._lc(cell ? "Cell Properties" : "Row Properties", "TableOperations") + "</div> \
+<div class='title'>" + HTMLArea._lc(cell ? "Cell Properties" : "Row Properties", "TableOperations") + "</div> \
 <table style='width:100%'> \
   <tr> \
     <td id='--HA-layout'> \

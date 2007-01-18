@@ -1,9 +1,10 @@
 /**
  * Functions for the image listing, used by images.php only
- * Authors: Wei Zhuo, Afru, Krzysztof Kotowicz
+ * Authors: Wei Zhuo, Afru, Krzysztof Kotowicz, Raimund Meyer
  * Version: Updated on 08-01-2005 by Afru
  * Version: Updated on 04-07-2006 by Krzysztof Kotowicz
- * Package: ExtendedFileManager (EFM 1.1.2)
+ * Version: Updated on 17-11-2006 by Raimund Meyer
+ * Package: ExtendedFileManager (EFM 1.1.3)
  * http://www.afrusoft.com/htmlarea
  */
 
@@ -18,6 +19,7 @@ function changeDir(newDir)
     var selection = window.top.document.getElementById('viewtype');
     var viewtype = selection.options[selection.selectedIndex].value;
     location.href = _backend_url + "__function=images&mode="+mode+"&dir="+newDir+"&viewtype="+viewtype;
+	document.cookie = "EFMStartDir" + mode + "="+newDir;
 }
 
 function newFolder(dir, newDir)
@@ -45,11 +47,51 @@ function renameFile(oldPath) {
     var viewtype = selection.options[selection.selectedIndex].value;
     location.href = _backend_url + "__function=images&mode="+mode+"&dir="+dir+"&rename="+oldPath+"&renameTo="+newName+"&viewtype="+viewtype;
 }
+function renameDir(oldName) {
+    // strip directory and extension
+   
+    var newName = prompt(i18n('Please enter new name for this folder...'), oldName);
 
+    if(newName == '' || newName == null || newName == oldName)
+    {
+        alert(i18n('Cancelled rename.'));
+        return false;
+    }
+    var mode=window.top.document.getElementById('manager_mode').value;
+    var selection = window.top.document.getElementById('dirPath');
+    var dir = selection.options[selection.selectedIndex].value;
+    selection = window.top.document.getElementById('viewtype');
+    var viewtype = selection.options[selection.selectedIndex].value;
+    location.href = _backend_url + "__function=images&mode="+mode+"&dir="+dir+"&rename="+oldName+"&renameTo="+newName+"&viewtype="+viewtype;
+}
+function copyFile(file,action)
+{
+	var selection = window.top.document.getElementById('dirPath');
+    var dir = selection.options[selection.selectedIndex].value;
+	window.top.pasteButton({'dir':dir,'file':file,'action':action+'File'});
+}
+function copyDir(dirToCopy,action)
+{
+	var selection = window.top.document.getElementById('dirPath');
+    var dir = selection.options[selection.selectedIndex].value;
+	window.top.pasteButton({'dir':dir,'file':dirToCopy,'action':action+'Dir'});
+}
+function paste(action)
+{
+    var mode=window.top.document.getElementById('manager_mode').value;
+    var selection = window.top.document.getElementById('dirPath');
+    var dir = selection.options[selection.selectedIndex].value;
+    selection = window.top.document.getElementById('viewtype');
+    var viewtype = selection.options[selection.selectedIndex].value;
+	location.href = _backend_url + "__function=images&mode="+mode+"&dir="+dir+"&paste="+action.action+"&srcdir="+action.dir+"&file="+action.file+"&viewtype="+viewtype;
+}
 //update the dir list in the parent window.
 function updateDir(newDir)
 {
-    var selection = window.top.document.getElementById('dirPath');
+	var mode = window.top.document.getElementById('manager_mode').value;
+	document.cookie = "EFMStartDir" + mode + "="+newDir;
+    
+	var selection = window.top.document.getElementById('dirPath');
     if(selection)
     {
         for(var i = 0; i < selection.length; i++)
@@ -72,6 +114,7 @@ function emptyProperties()
     var topDoc = window.top.document;
     topDoc.getElementById('f_url').value = '';
     topDoc.getElementById('f_alt').value = '';
+    topDoc.getElementById('f_title').value = '';
     topDoc.getElementById('f_width').value = '';
     topDoc.getElementById('f_margin').value = '';
     topDoc.getElementById('f_height').value = '';
@@ -112,7 +155,8 @@ function selectImage(filename, alt, width, height)
     if(topDoc.getElementById('manager_mode').value=="image")
     {
         var obj = topDoc.getElementById('f_url');  obj.value = filename;
-        var obj = topDoc.getElementById('f_alt'); obj.value = alt;
+        obj = topDoc.getElementById('f_alt'); obj.value = alt;
+        obj = topDoc.getElementById('f_title'); obj.value = alt;
 
         if(width==0 && height==0) toggleImageProperties(true);
         else
@@ -184,7 +228,7 @@ function showMessage(newMessage)
         if(message.firstChild)
             message.removeChild(message.firstChild);
 
-        message.appendChild(topDoc.createTextNode(i18n(newMessage)));
+        message.appendChild(topDoc.createTextNode(newMessage));
 
         messages.style.display = "block";
     }
@@ -214,7 +258,7 @@ function addEvent(obj, evType, fn)
 
 function confirmDeleteFile(file)
 {
-    if(confirm(file + "\n\n" + i18n("Delete file?")))
+    if(confirm(i18n('Delete file "$file=' + file +'$"?')))
         return true;
 
     return false;
@@ -222,13 +266,13 @@ function confirmDeleteFile(file)
 
 function confirmDeleteDir(dir, count)
 {
-    if(count > 0)
+   /* if(count > 0)
     {
         alert(i18n("Folder is not empty. Please delete all Files and Subfolders inside."));
         return false;
-    }
+    }*/
 
-    if(confirm(i18n(dir + "\n\n" + i18n("Delete folder?"))))
+    if(confirm(i18n('Delete folder "$dir=' + dir +'$"?')))
         return true;
 
     return false;
@@ -237,7 +281,7 @@ function confirmDeleteDir(dir, count)
 function showPreview(f_url)
 {
     window.parent.document.getElementById('f_preview').src =
-    f_url ? window.parent._backend_url + '__function=thumbs&img=' + f_url : "";
+    f_url ? window.parent._backend_url + '__function=thumbs&img=' + f_url :window.parent.opener._editor_url+'plugins/ExtendedFileManager/img/1x1_transparent.gif';
 }
 
 addEvent(window, 'load', init);
