@@ -3,17 +3,16 @@ package imcode.server.document.textdocument;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.util.io.FileInputStreamSource;
-import imcode.util.io.FileUtility;
 import imcode.util.io.InputStreamSource;
 
 import java.io.File;
 import java.util.Date;
 
 public class ImagesPathRelativePathImageSource extends ImageSource {
-    private String relativePath;
+    private String path;
 
-    public ImagesPathRelativePathImageSource( String relativePath ) {
-        this.relativePath = relativePath.replace('\\','/');
+    public ImagesPathRelativePathImageSource( String path ) {
+        this.path = path.replace('\\','/');
     }
 
     public InputStreamSource getInputStreamSource( ) {
@@ -22,21 +21,27 @@ public class ImagesPathRelativePathImageSource extends ImageSource {
 
     private File getFile( ) {
         ImcmsServices service = Imcms.getServices( );
-        File imageDirectory = service.getConfig( ).getImagePath( );
-        return new File( imageDirectory, relativePath );
+        File basePath = isAbsolute() ? Imcms.getPath() : service.getConfig( ).getImagePath( ); 
+        return new File( basePath, path );
     }
 
     public String getUrlPathRelativeToContextPath( ) {
-        File file = new File ( relativePath );
-        return getImagePath() + FileUtility.relativeFileToString( file );
+        if (!isAbsolute()) {
+            return getImagesUrlPath() + path ;
+        }
+        return path;
     }
 
-    public static String getImagePath() {
+    private boolean isAbsolute() {
+        return path.startsWith("/");
+    }
+
+    public static String getImagesUrlPath() {
         return Imcms.getServices( ).getConfig( ).getImageUrl( );
     }
 
     public String toStorageString( ) {
-        return relativePath;
+        return path;
     }
 
     public int getTypeId( ) {

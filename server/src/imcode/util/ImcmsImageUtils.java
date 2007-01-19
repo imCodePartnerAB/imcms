@@ -108,7 +108,7 @@ public class ImcmsImageUtils {
                     imageSource = new FileDocumentImageSource(documentMapper.getDocumentReference(document));
                 }
             } catch ( NumberFormatException nfe ) {
-                String imagesPath = ImagesPathRelativePathImageSource.getImagePath();
+                String imagesPath = ImagesPathRelativePathImageSource.getImagesUrlPath();
                 if (imageUrl.startsWith(imagesPath)) {
                     imageUrl = imageUrl.substring(imagesPath.length());
                 }
