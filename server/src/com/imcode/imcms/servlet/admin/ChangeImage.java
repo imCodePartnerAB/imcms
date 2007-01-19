@@ -4,6 +4,7 @@ import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.ImcmsConstants;
@@ -68,7 +69,7 @@ public class ChangeImage extends HttpServlet {
 
             }
         };
-        LocalizedMessage heading = new LocalizedMessage("image/edit_image_on_page", imageIndex, document.getId());
+        LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand);
         imageEditPage.forward(request, response);
 

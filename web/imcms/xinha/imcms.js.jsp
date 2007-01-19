@@ -24,7 +24,7 @@ xinha_init = xinha_init ? xinha_init : function()
 
     xinha_config = xinha_config ? xinha_config() : new Xinha.Config();
 
-    xinha_config.URIs['insert_image'] = '<%= request.getContextPath() %>/servlet/Test'
+    xinha_config.URIs['insert_image'] = '<%= request.getContextPath() %>/servlet/InsertImage'
     
     xinha_editors = xinha_editors ? xinha_editors : Xinha.makeEditors([ 'text' ], xinha_config, xinha_plugins);
 

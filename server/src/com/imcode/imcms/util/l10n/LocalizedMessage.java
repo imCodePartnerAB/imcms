@@ -7,25 +7,22 @@ import org.apache.commons.lang.NullArgumentException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
-import java.text.MessageFormat;
 
 public class LocalizedMessage implements Serializable {
 
     private final String languageKey;
     private final LocalizedMessageProvider provider;
-    private final Object[] arguments;
 
-    public LocalizedMessage( String languageKey, Object... arguments ) {
-        this(languageKey, null, arguments);
+    public LocalizedMessage( String languageKey  ) {
+        this(languageKey, null);
     }
 
-    LocalizedMessage(String languageKey, LocalizedMessageProvider provider, Object... arguments) {
+    LocalizedMessage(String languageKey, LocalizedMessageProvider provider) {
         if (null == languageKey) {
             throw new NullArgumentException("languageKey");
         }
         this.provider = provider;
         this.languageKey = languageKey;
-        this.arguments = arguments;
     }
 
     public final String toLocalizedString(HttpServletRequest request) {
@@ -42,8 +39,7 @@ public class LocalizedMessage implements Serializable {
         if (null == localProvider) {
             localProvider = Imcms.getServices().getLocalizedMessageProvider();
         }
-        String pattern = localProvider.getLanguageProperties(languageIso639_2).getProperty(languageKey);
-        return new MessageFormat(pattern).format(arguments) ;
+        return localProvider.getLanguageProperties(languageIso639_2).getProperty(languageKey);
     }
 
     public boolean equals(Object o) {
@@ -59,11 +55,8 @@ public class LocalizedMessage implements Serializable {
         if ( !languageKey.equals(that.languageKey) ) {
             return false;
         }
-        if ( provider != null ? !provider.equals(that.provider) : that.provider != null ) {
-            return false;
-        }
+        return !( provider != null ? !provider.equals(that.provider) : that.provider != null );
 
-        return true;
     }
 
     public int hashCode() {

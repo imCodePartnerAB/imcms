@@ -132,6 +132,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.InsertImage</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.InsertImage</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.LogOut</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.LogOut</servlet-class>
     </servlet>
@@ -347,6 +352,11 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.InsertImage</servlet-name>
+        <url-pattern>/servlet/InsertImage</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.ImageBrowse</servlet-name>
         <url-pattern>/servlet/ImageBrowse</url-pattern>
     </servlet-mapping>
@@ -557,10 +567,5 @@
         <exception-type>java.lang.Throwable</exception-type>
         <location>/imcms/internalerrorpage.jsp</location>
     </error-page>
-
-    <taglib>
-        <taglib-uri>imcms</taglib-uri>
-        <taglib-location>/WEB-INF/imcms.tld</taglib-location>
-    </taglib>
 
 </web-app>

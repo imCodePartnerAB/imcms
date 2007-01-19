@@ -145,11 +145,6 @@ public class ImageEditPage extends OkCancelPage {
         ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
 
-        if ( !userHasImagePermissionsOnDocument(user, document) ) {
-            dispatchCancel(request, response);
-            return;
-        }
-
         if ( null != request.getParameter(REQUEST_PARAMETER__DELETE_BUTTON) ) {
             image = new ImageDomainObject();
 
@@ -260,8 +255,7 @@ public class ImageEditPage extends OkCancelPage {
     private Query createImageFileDocumentsQuery() {
         BooleanQuery imageMimeTypeQuery = new BooleanQuery();
 
-        for ( int i = 0; i < IMAGE_MIME_TYPES.length; i++ ) {
-            String imageMimeType = IMAGE_MIME_TYPES[i];
+        for ( String imageMimeType : IMAGE_MIME_TYPES ) {
             imageMimeTypeQuery.add(new TermQuery(new Term(DocumentIndex.FIELD__MIME_TYPE, imageMimeType)), false, false);
         }
 
