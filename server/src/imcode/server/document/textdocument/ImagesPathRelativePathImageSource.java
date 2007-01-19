@@ -23,14 +23,16 @@ public class ImagesPathRelativePathImageSource extends ImageSource {
     private File getFile( ) {
         ImcmsServices service = Imcms.getServices( );
         File imageDirectory = service.getConfig( ).getImagePath( );
-        File imageFile = new File( imageDirectory, relativePath );
-        return imageFile;
+        return new File( imageDirectory, relativePath );
     }
 
     public String getUrlPathRelativeToContextPath( ) {
         File file = new File ( relativePath );
-        return Imcms.getServices( ).getConfig( ).getImageUrl( ) + FileUtility.relativeFileToString( file );
+        return getImagePath() + FileUtility.relativeFileToString( file );
+    }
 
+    public static String getImagePath() {
+        return Imcms.getServices( ).getConfig( ).getImageUrl( );
     }
 
     public String toStorageString( ) {

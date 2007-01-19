@@ -28,7 +28,7 @@ public abstract class ImageSource implements Serializable {
     ImageSize getImageSize( ) throws IOException {
         if ( getInputStreamSource().getSize( ) > 0 ) {
             Date modifiedDatetime = getModifiedDatetime( );
-            if ( cachedImageSizeTime == null || modifiedDatetime.after( cachedImageSizeTime ) ) {
+            if ( cachedImageSizeTime == null || modifiedDatetime.after(cachedImageSizeTime) ) {
                 cachedImageSize = getNonCachedImageSize();
                 cachedImageSizeTime = modifiedDatetime;
             }

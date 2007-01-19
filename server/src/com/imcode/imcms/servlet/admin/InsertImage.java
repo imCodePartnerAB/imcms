@@ -14,6 +14,7 @@ import com.imcode.imcms.flow.DispatchCommand;
 public class InsertImage extends HttpServlet {
 
     private static final String REQUEST_ATTRIBUTE__IMAGE = InsertImage.class+".image";
+    private static final String IMAGE_RETURN_PATH = "/imcms/xinha/plugins/ImcmsIntegration/return_image.jsp";
 
     public void doGet(final HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
@@ -23,12 +24,12 @@ public class InsertImage extends HttpServlet {
             public void dispatch(HttpServletRequest request,
                                  HttpServletResponse response) throws IOException, ServletException {
                 request.setAttribute(REQUEST_ATTRIBUTE__IMAGE, imageCommand.getImage());
-                request.getRequestDispatcher("/WEB-INF/imcms/jsp/admin/text/insertimage.jsp").forward(request, response);
+                request.getRequestDispatcher(IMAGE_RETURN_PATH).forward(request, response);
             }
         };
-        ImageEditPage imageEditPage = new ImageEditPage(null, new ImageDomainObject(), new LocalizedMessage(""), "", getServletContext(), imageCommand, returnCommand);
+        ImageEditPage imageEditPage = new ImageEditPage(null, null, new LocalizedMessage(""), "", getServletContext(), imageCommand, returnCommand);
+        imageEditPage.updateFromRequest(request);
         imageEditPage.forward(request, response);
-
     }
 
     public static ImageDomainObject getImage(HttpServletRequest request) {

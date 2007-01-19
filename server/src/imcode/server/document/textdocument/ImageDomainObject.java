@@ -2,12 +2,13 @@ package imcode.server.document.textdocument;
 
 import com.imcode.util.ImageSize;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.NullArgumentException;
 
 import java.io.IOException;
 import java.io.Serializable;
 
 public class ImageDomainObject implements Serializable {
-    private ImageSource source;
+    private ImageSource source = new NullImageSource(); 
 
     private String name = "";
     private int width;
@@ -142,11 +143,14 @@ public class ImageDomainObject implements Serializable {
     }
 
     public void setSource(ImageSource source) {
+        if (null == source) {
+            throw new NullArgumentException("source");
+        }
         this.source = source;
     }
 
     public boolean isEmpty() {
-        return null == source || source.isEmpty( );
+        return source.isEmpty( );
     }
 
     public String getUrlPath(String contextPath) {
@@ -158,9 +162,6 @@ public class ImageDomainObject implements Serializable {
     }
 
     public String getUrlPathRelativeToContextPath() {
-        if ( isEmpty( ) ) {
-            return "";
-        }
         return source.getUrlPathRelativeToContextPath( );
     }
 

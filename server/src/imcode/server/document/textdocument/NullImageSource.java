@@ -1,12 +1,13 @@
 package imcode.server.document.textdocument;
 
 import imcode.util.io.InputStreamSource;
+import imcode.util.io.EmptyInputStreamSource;
 
 import java.util.Date;
 
 public class NullImageSource extends ImageSource {
     public InputStreamSource getInputStreamSource( ) {
-        return null;
+        return new EmptyInputStreamSource();
     }
 
     public String getUrlPathRelativeToContextPath( ) {

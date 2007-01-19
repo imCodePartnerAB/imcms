@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
@@ -39,7 +40,7 @@ public class LocalizedMessage implements Serializable {
         if (null == localProvider) {
             localProvider = Imcms.getServices().getLocalizedMessageProvider();
         }
-        return localProvider.getLanguageProperties(languageIso639_2).getProperty(languageKey);
+        return StringUtils.defaultString(localProvider.getLanguageProperties(languageIso639_2).getProperty(languageKey));
     }
 
     public boolean equals(Object o) {

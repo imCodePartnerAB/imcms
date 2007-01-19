@@ -104,7 +104,7 @@ public class ImageEditPage extends OkCancelPage {
         return label;
     }
 
-    public static ImageDomainObject getImageFromRequest(HttpServletRequest req) {
+    private static ImageDomainObject getImageFromRequest(HttpServletRequest req) {
         ImageDomainObject image = new ImageDomainObject();
         try {
             image.setWidth(Integer.parseInt(req.getParameter(REQUEST_PARAMETER__IMAGE_WIDTH)));
@@ -127,10 +127,13 @@ public class ImageEditPage extends OkCancelPage {
         } catch ( NumberFormatException ignored ) {
         }
         String imageUrl = req.getParameter(REQUEST_PARAMETER__IMAGE_URL);
+        if ( null != imageUrl && imageUrl.startsWith(req.getContextPath()) ) {
+            imageUrl = imageUrl.substring(req.getContextPath().length());
+        }
         ImageSource imageSource = ImcmsImageUtils.createImageSourceFromString(imageUrl);
 
         image.setSource(imageSource);
-        image.setName(req.getParameter(REQUEST_PARAMETER__IMAGE_NAME).trim());
+        image.setName(StringUtils.trim(req.getParameter(REQUEST_PARAMETER__IMAGE_NAME)));
         image.setAlign(req.getParameter(REQUEST_PARAMETER__IMAGE_ALIGN));
         image.setAlternateText(req.getParameter(REQUEST_PARAMETER__IMAGE_ALT));
         image.setLowResolutionUrl(req.getParameter(REQUEST_PARAMETER__IMAGE_LOWSRC));

@@ -341,15 +341,17 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static String getTargetFromRequest( HttpServletRequest request ) {
         String[] possibleTargets = request.getParameterValues( REQUEST_PARAMETER__TARGET );
         String target = null;
-        for ( String possibleTarget : possibleTargets ) {
-            target = possibleTarget;
-            boolean targetIsPredefinedTarget
-                    = "_self".equalsIgnoreCase(target)
-                      || "_blank".equalsIgnoreCase(target)
-                      || "_parent".equalsIgnoreCase(target)
-                      || "_top".equalsIgnoreCase(target);
-            if ( targetIsPredefinedTarget ) {
-                break;
+        if (null != possibleTargets) {
+            for ( String possibleTarget : possibleTargets ) {
+                target = possibleTarget;
+                boolean targetIsPredefinedTarget
+                        = "_self".equalsIgnoreCase(target)
+                          || "_blank".equalsIgnoreCase(target)
+                          || "_parent".equalsIgnoreCase(target)
+                          || "_top".equalsIgnoreCase(target);
+                if ( targetIsPredefinedTarget ) {
+                    break;
+                }
             }
         }
         return target;

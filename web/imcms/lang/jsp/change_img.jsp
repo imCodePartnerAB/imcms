@@ -176,8 +176,8 @@ function checkLinkOnBlur() {
                 <td colspan="2"><input type="text" <%
 								%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>" <%
 								%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>" <%
-								%>size="50" maxlength="255" style="width: 350" value="<%=
-								StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getSource().toStorageString())) %>"></td>
+								String path = image.getUrlPathRelativeToContextPath();
+                %>size="50" maxlength="255" style="width: 350" value="<%= StringUtils.isBlank(path) ? "" : StringEscapeUtils.escapeHtml(request.getContextPath()+path) %>"></td>
             </tr>
             </table></td>
         </tr>

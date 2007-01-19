@@ -4,7 +4,7 @@
 <body>
 <script type="text/javascript">
     var param = new Object();
-    param["f_url"] = '<%=StringEscapeUtils.escapeJavaScript(request.getContextPath()+"/"+image.getUrlPathRelativeToContextPath())%>';
+    param["f_url"] = '<%=StringEscapeUtils.escapeJavaScript(request.getContextPath()+image.getUrlPathRelativeToContextPath())%>';
     param["f_alt"] = '<%= StringEscapeUtils.escapeJavaScript(image.getAlternateText())%>';
     param["f_align"] = '<%= StringEscapeUtils.escapeJavaScript(image.getAlign())%>';
     param["f_border"] = '<%= image.getBorder() %>';
