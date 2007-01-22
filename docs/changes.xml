@@ -1,6 +1,87 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <changesets>
 
+<changeset version="3.2.0">
+    <changes for="users">
+        <change>
+            <p>
+                Added "by published datetime" sorting to menus.
+            </p>
+            <issue id="2155"/>
+        </change>
+        <change>
+            <p>
+                Fixed "NullPointerException in FrequencyOrderedBag" crash.
+            </p>
+            <issue id="4500"/>
+        </change>
+        <change>
+            <p>
+                Fixed crash caused by menuitems not being properly removed
+                when deleting a document.
+            </p>
+            <issue id="4498"/>
+        </change>
+        <change>
+            <p>
+                Fixed crash caused by documents not being removed from the cache
+                when their template was deleted.
+            </p>
+            <issue id="4800"/>
+        </change>
+    </changes>
+    <changes for="administrators">
+        <change>
+            <p>
+                Fixed image preview in the file administrator. 
+            </p>
+            <issue id="4833"/>
+        </change>
+    </changes>
+    <changes for="site developers">
+        <change>
+            <p>
+                Added capability to send HTML mail.
+            </p>
+            <issue id="4412"/>
+        </change>
+        <change>
+            <p>
+                Mails now use UTF-8 encoding.
+            </p>
+            <issue id="4412"/>
+        </change>
+        <change>
+            <p>
+                Fixed a typo in <localfile>TEMPLATE_SYNTAX.TXT</localfile>.
+            </p>
+            <issue id="4505"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug preventing users with the UserAdmin role
+                from editing users through the API.
+            </p>
+            <issue id="4553"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug making it impossible to change sort keys for menu items
+                through the API.
+            </p>
+            <issue id="4804"/>
+        </change>
+    </changes>
+    <changes for="developers">
+        <change>
+            <p>
+                Made the error page output less redundant by only displaying one stack trace.
+            </p>
+            <issue id="4506"/>
+        </change>
+    </changes>
+</changeset>
+    
 <changeset version="3.1.2">
     <changes for="users">
         <change>
