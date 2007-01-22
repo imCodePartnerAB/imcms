@@ -51,7 +51,7 @@ Xinha.prototype._insertImage = function(image)
                     {
                         var sel = editor._getSelection();
                         var range = editor._createRange(sel);
-                        editor._doc.execCommand("insertimage", false, param.f_url);
+                        editor._doc.execCommand("insertimage", false, param.src);
                         img = range.parentElement();
                         // wonder if this works...
                         if ( img.tagName.toLowerCase() != "img" )
@@ -62,7 +62,7 @@ Xinha.prototype._insertImage = function(image)
                     else
                     {
                         img = document.createElement('img');
-                        img.src = param.f_url;
+                        img.src = param.src;
                         editor.insertNodeAtSelection(img);
                         if ( !img.tagName )
                         {
@@ -73,7 +73,7 @@ Xinha.prototype._insertImage = function(image)
                 }
                 else
                 {
-                    img.src = param.f_url;
+                    img.src = param.src;
                 }
 
                 for ( var field in param )
@@ -81,20 +81,29 @@ Xinha.prototype._insertImage = function(image)
                     var value = param[field];
                     switch (field)
                             {
-                        case "f_alt":
+                        case "alt":
                             img.alt = value;
                             break;
-                        case "f_border":
+                        case "border":
                             img.border = parseInt(value || "0", 10);
                             break;
-                        case "f_align":
+                        case "align":
                             img.align = value;
                             break;
-                        case "f_vert":
+                        case "vert":
                             img.vspace = parseInt(value || "0", 10);
                             break;
-                        case "f_horiz":
+                        case "horiz":
                             img.hspace = parseInt(value || "0", 10);
+                            break;
+                        case "width":
+                            img.width = parseInt(value, 10);
+                            break;
+                        case "height":
+                            img.height = parseInt(value, 10);
+                            break;
+                        case "name":
+                            img.name = value;
                             break;
                     }
                 }

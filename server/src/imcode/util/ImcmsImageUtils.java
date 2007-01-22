@@ -77,7 +77,7 @@ public class ImcmsImageUtils {
 
             styleBuffer.append(" margin: ")
                     .append(image.getVerticalSpace()).append("px ")
-                    .append(image.getHorizontalSpace()).append("px ");
+                    .append(image.getHorizontalSpace()).append("px;");
 
             if ( StringUtils.isNotBlank(image.getAlign()) && !"none".equals(image.getAlign()) ) {
                 styleBuffer.append(" vertical-align: ").append(StringEscapeUtils.escapeHtml(image.getAlign())).append(";");
