@@ -3,12 +3,14 @@ package imcode.server.document.textdocument;
 import com.imcode.util.ImageSize;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.io.IOException;
 import java.io.Serializable;
 
 public class ImageDomainObject implements Serializable {
-    private ImageSource source = new NullImageSource(); 
+    private ImageSource source = new NullImageSource();
 
     private String name = "";
     private int width;
@@ -182,4 +184,35 @@ public class ImageDomainObject implements Serializable {
         }
         return source;
     }
+
+    public boolean equals( Object obj ) {
+        if ( !( obj instanceof ImageDomainObject ) ) {
+            return false;
+        }
+        final ImageDomainObject o = (ImageDomainObject)obj;
+        return new EqualsBuilder().append(source.toStorageString(), o.getSource().toStorageString())
+                .append(name, o.getName())
+                .append(width, o.getWidth())
+                .append(height, o.getHeight())
+                .append(border, o .getBorder())
+                .append(align, o.getAlign())
+                .append(alternateText,o.getAlternateText())
+                .append(lowResolutionUrl, o.getLowResolutionUrl())
+                .append(verticalSpace, o.getVerticalSpace())
+                .append(horizontalSpace, o.getHorizontalSpace())
+                .append(target, o.getTarget())
+                .append(linkUrl, o.getLinkUrl())
+                .isEquals();
+   }
+
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(source.toStorageString())
+                .append(name).append(width).append(height)
+                .append(border).append(align).append(alternateText)
+                .append(lowResolutionUrl).append(verticalSpace).append(horizontalSpace)
+                .append(target).append(linkUrl)
+                .toHashCode();
+    }
+
 }

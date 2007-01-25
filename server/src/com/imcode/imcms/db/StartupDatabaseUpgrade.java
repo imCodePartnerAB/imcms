@@ -33,7 +33,10 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
                     new ColumnSizeUpgrade(wantedDdl, "category_types", "name", 128))
             ),
             new DatabaseVersionUpgradePair(4, 3, new CreateTableUpgrade(wantedDdl, "document_properties")),
-            new DatabaseVersionUpgradePair(4, 4, new TemplateNamesUpgrade(new File(Imcms.getPath(), "WEB-INF/templates/text"))),
+            new DatabaseVersionUpgradePair(4, 4, new CompositeUpgrade(
+                new CreateTableUpgrade(wantedDdl, "texts_history"),
+                new CreateTableUpgrade(wantedDdl, "images_history"))
+            ),
     };
     private ImcmsDatabaseCreator imcmsDatabaseCreator ;
 

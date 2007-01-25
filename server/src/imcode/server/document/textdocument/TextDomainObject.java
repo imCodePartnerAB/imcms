@@ -4,6 +4,9 @@ import imcode.util.Parser;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class TextDomainObject implements Serializable {
 
     String text;
@@ -99,4 +102,17 @@ public class TextDomainObject implements Serializable {
         return result;
     }
 
+    public boolean equals( Object obj ) {
+        if ( !( obj instanceof TextDomainObject ) ) {
+            return false;
+        }
+        final TextDomainObject o = (TextDomainObject)obj;
+        return new EqualsBuilder().append(text, o.getText())
+                .append(type, o.getType()).isEquals();
+        }
+
+    public int hashCode() {
+        return new HashCodeBuilder().append(type)
+                .append(text).toHashCode();
+    }
 }

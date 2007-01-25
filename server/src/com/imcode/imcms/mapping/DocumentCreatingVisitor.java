@@ -53,8 +53,8 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
                 ? "" + defaultTemplateForRestricted2 : "-1",
                 };
         database.execute(new SqlUpdateCommand(sqlTextDocsInsertStr, parameters));
-        updateTextDocumentTexts( textDocument );
-        updateTextDocumentImages( textDocument );
+        updateTextDocumentTexts( textDocument, null, null);
+        updateTextDocumentImages( textDocument, null, null);
         updateTextDocumentIncludes( textDocument );
         updateTextDocumentMenus( textDocument );
     }

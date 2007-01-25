@@ -3,17 +3,20 @@ package com.imcode.imcms.mapping;
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlUpdateCommand;
 import imcode.server.ImcmsServices;
+import imcode.server.user.UserDomainObject;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     private DocumentDomainObject oldDocument;
+    private UserDomainObject savingUser;
 
     public DocumentSavingVisitor(DocumentDomainObject documentInDatabase, Database database,
-                                 ImcmsServices services) {
+                                 ImcmsServices services, UserDomainObject user) {
         super(database, services );
         oldDocument = documentInDatabase;
+        savingUser = user;
     }
 
     public void visitHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
@@ -48,8 +51,8 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         };
         database.execute(new SqlUpdateCommand(sqlStr, parameters));
 
-        updateTextDocumentTexts( textDocument );
-        updateTextDocumentImages( textDocument );
+        updateTextDocumentTexts( textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
+        updateTextDocumentImages( textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
         updateTextDocumentIncludes( textDocument );
 
         boolean menusChanged = !textDocument.getMenus().equals( ( (TextDocumentDomainObject)oldDocument ).getMenus() );

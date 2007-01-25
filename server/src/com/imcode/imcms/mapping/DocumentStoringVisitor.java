@@ -3,8 +3,8 @@ package com.imcode.imcms.mapping;
 import com.imcode.db.Database;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.SingleConnectionDatabase;
-import com.imcode.db.commands.TransactionDatabaseCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.db.commands.TransactionDatabaseCommand;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.BrowserDocumentDomainObject;
@@ -14,6 +14,8 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.user.UserDomainObject;
+import imcode.util.DateConstants;
 import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.FileUtility;
 import imcode.util.io.InputStreamSource;
@@ -21,8 +23,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
 import java.io.*;
-import java.util.Iterator;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,7 +42,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     protected void saveFileDocumentFile( int fileDocumentId, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
-                                       String fileId ) {
+                                         String fileId ) {
         try {
             InputStreamSource inputStreamSource = fileDocumentFile.getInputStreamSource();
             InputStream in;
@@ -84,8 +86,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         if (StringUtils.isNotBlank( fileId )) {
             filename += "."+FileUtility.escapeFilename(fileId) ;
         }
-        File file = new File(filePath, filename);
-        return file;
+        return new File(filePath, filename);
     }
 
     static String makeSqlInsertString(String tableName, String[] columnNames) {
@@ -93,28 +94,45 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 + "VALUES(?" + StringUtils.repeat(",?", columnNames.length - 1) + ")";
     }
 
-    void updateTextDocumentTexts(TextDocumentDomainObject textDocument) {
+    void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         Map texts = textDocument.getTexts();
         String sqlDeleteTexts = "DELETE FROM texts WHERE meta_id = ?";
         final Object[] parameters = new String[]{"" + textDocument.getId()};
         database.execute(new SqlUpdateCommand(sqlDeleteTexts, parameters));
         for (Iterator iterator = texts.keySet().iterator(); iterator.hasNext();) {
             Integer textIndex = (Integer) iterator.next();
-            TextDomainObject text = (TextDomainObject) texts.get(textIndex);
+            TextDomainObject text = (TextDomainObject) texts.get(textIndex.intValue());
+            if(oldTextDocument != null && oldTextDocument.getText(textIndex.intValue()) !=null && !oldTextDocument.getText(textIndex.intValue()).toString().equals("") && !text.equals(oldTextDocument.getText(textIndex.intValue()))){
+                sqlInsertTextHistory(oldTextDocument, textIndex, oldTextDocument.getText(textIndex.intValue()), user);
+            }
             sqlInsertText(textDocument, textIndex, text);
         }
     }
 
-    void updateTextDocumentImages(TextDocumentDomainObject textDocument) {
+    void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         Map images = textDocument.getImages();
         String sqlDeleteImages = "DELETE FROM images WHERE meta_id = ?";
         final Object[] parameters = new String[]{"" + textDocument.getId()};
         database.execute(new SqlUpdateCommand(sqlDeleteImages, parameters));
         for (Iterator iterator = images.keySet().iterator(); iterator.hasNext();) {
             Integer imageIndex = (Integer) iterator.next();
-            ImageDomainObject image = (ImageDomainObject) images.get(imageIndex);
+            ImageDomainObject image = (ImageDomainObject) images.get(imageIndex.intValue());
+            if(oldTextDocument != null && oldTextDocument.getImage(imageIndex.intValue())!=null && !oldTextDocument.getImage(imageIndex.intValue()).getSource().toStorageString().equals("") &&  !image.equals(oldTextDocument.getImage(imageIndex.intValue()))){
+                sqlInsertImageHistory(oldTextDocument, imageIndex.intValue(), user);
+            }
             saveDocumentImage(textDocument.getId(), imageIndex.intValue(), image);
         }
+    }
+
+    private void sqlInsertImageHistory(TextDocumentDomainObject textDocument, Integer imageIndex, UserDomainObject user) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING);
+        String[] columnNames = new String[] {"imgurl", "width", "height", "border", "v_space", "h_space", "image_name", "target", "align", "alt_text", "low_scr", "linkurl", "type", "meta_id", "name", "modified_datetime", "user_id" };
+        ImageDomainObject image = textDocument.getImage(imageIndex.intValue());
+        final String[] parameters = getSqlImageParameters(image, textDocument.getId(), imageIndex.intValue());
+        List <String> param =  new ArrayList <String>( Arrays.asList(parameters) ) ;
+        param.add(dateFormat.format(new Date()));
+        param.add(""+user.getId());
+        database.execute(new SqlUpdateCommand(makeSqlInsertString("images_history", columnNames), param.toArray(new String[param.size()])));
     }
 
     void updateTextDocumentIncludes(TextDocumentDomainObject textDocument) {
@@ -134,6 +152,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType()
         };
         database.execute(new SqlUpdateCommand("INSERT INTO texts (meta_id, name, text, type) VALUES(?,?,?,?)", parameters));
+    }
+
+    private void sqlInsertTextHistory(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text, UserDomainObject user) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING);
+        final Object[] parameters = new String[]{
+            "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType(), dateFormat.format(new Date()), ""+user.getId()
+        };
+        database.execute(new SqlUpdateCommand("INSERT INTO texts_history (meta_id, name, text, type, modified_datetime, user_id) VALUES(?,?,?,?,?,?)", parameters));
     }
 
     private void sqlInsertTextDocumentInclude(TextDocumentDomainObject textDocument, Integer includeIndex,
@@ -172,8 +198,13 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     private static int sqlImageUpdateQuery(String sqlStr, ImageDomainObject image, int meta_id, int img_no) {
+        final String[] parameters = getSqlImageParameters(image, meta_id, img_no);
+        return ((Number)Imcms.getServices().getDatabase().execute(new SqlUpdateCommand(sqlStr, parameters))).intValue();
+    }
+
+    private static String[] getSqlImageParameters(ImageDomainObject image, int meta_id, int img_no) {
         ImageSource imageSource = image.getSource();
-        final Object[] parameters = new String[] {
+        return new String[] {
             imageSource.toStorageString(),
             "" + image.getWidth(),
             "" + image.getHeight(),
@@ -190,7 +221,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             "" + meta_id,
             "" + img_no,
         };
-        return ((Number)Imcms.getServices().getDatabase().execute(new SqlUpdateCommand(sqlStr, parameters))).intValue();
     }
 
     public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
