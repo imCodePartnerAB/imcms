@@ -33,12 +33,13 @@ public class DocumentService {
      * Used to get a document of any type. If you need a specific document, i.e. a TextDocument, use @see getTextDocument
      * instead.
      *
-     * @param documentId The id number of the document requested, also somtimes known as "meta_id"
+     * @param documentIdString The unique id or name of the document requested, can be either the int value also known as "meta_id"
+     * or the document name also known as "alias".
      * @return The document The type is usually a subclass to document, if there exist one.
      * @throws NoPermissionException If the current user dosen't have the rights to read this document.
      */
-    public Document getDocument(int documentId) throws NoPermissionException {
-        DocumentDomainObject doc = getDocumentMapper().getDocument(documentId);
+    public Document getDocument(String documentIdString) throws NoPermissionException {
+        DocumentDomainObject doc = getDocumentMapper().getDocumentFromId(documentIdString);
         Document result = null;
         if ( null != doc ) {
             result = wrapDocumentDomainObject(doc, contentManagementSystem);
@@ -48,12 +49,44 @@ public class DocumentService {
     }
 
     /**
+     * Used to get a document of any type. If you need a specific document, i.e. a TextDocument, use @see getTextDocument
+     * instead.
+     *
+     * @param documentId The id number of the document requested, also sometimes known as "meta_id"
+     * @return The document The type is usually a subclass to document, if there exist one.
+     * @throws NoPermissionException If the current user dosen't have the rights to read this document.
+     */
+    public Document getDocument(int documentId) throws NoPermissionException {
+        return getDocument(""+documentId);
+    }
+
+    /**
+     * @param documentIdString The unique id or name of the document requested, can be either the int value alsp known as "meta_id"
+     * or the document name also known as "alias".
+     * @return The document
+     * @throws NoPermissionException If the current user dosen't have the rights to read this document.
+     */
+    public TextDocument getTextDocument(String documentIdString) throws NoPermissionException {
+        return (TextDocument) getDocument(documentIdString);
+    }
+
+    /**
      * @param documentId The id number of the document requested, also known as "meta_id"
      * @return The document
      * @throws NoPermissionException If the current user dosen't have the rights to read this document.
      */
     public TextDocument getTextDocument(int documentId) throws NoPermissionException {
-        return (TextDocument) getDocument(documentId);
+        return (TextDocument) getDocument(""+documentId);
+    }
+
+    /**
+     * @param documentIdString The unique id or name of the document requested, can be either the int value also known as "meta_id"
+     * or the document name also known as "alias".
+     * @return The document
+     * @throws NoPermissionException If the current user dosen't have the rights to read this document.
+     */
+    public UrlDocument getUrlDocument(String documentIdString) throws NoPermissionException {
+        return (UrlDocument) getDocument(documentIdString);
     }
 
     /**

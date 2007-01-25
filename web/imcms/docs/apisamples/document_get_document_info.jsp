@@ -5,7 +5,7 @@
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService() ;
     int documentId = 1001 ;
-    Document document = documentService.getDocument(documentId) ;
+    Document document = documentService.getDocument(""+documentId) ;
 %>
 <html>
 <body>

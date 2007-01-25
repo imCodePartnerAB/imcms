@@ -354,12 +354,11 @@ public class DocumentMapper implements DocumentGetter {
 
     public DocumentDomainObject getDocumentFromId(String documentIdString) {
         DocumentDomainObject document = null;
-        ImcmsServices service = Imcms.getServices();
         final String SQL_GET_DOCUMENT_ID_FROM_PROPERTIES = "SELECT meta_id FROM document_properties WHERE key_name=? AND value=?";
 
         if (null != documentIdString) {
             if ( NumberUtils.isDigits( documentIdString ) ) {
-                document = service.getDocumentMapper().getDocument(new Integer(documentIdString));
+                document = getDocument(new Integer(documentIdString));
             }else{
                 String[] documentIds = (String[]) getDatabase().execute(
                         new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
@@ -367,7 +366,7 @@ public class DocumentMapper implements DocumentGetter {
                                 Utility.STRING_ARRAY_HANDLER));
 
                 if(documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {
-                    document = service.getDocumentMapper().getDocument(new Integer(documentIds[0]));
+                    document = getDocument(new Integer(documentIds[0]));
                 }
             }
         }
