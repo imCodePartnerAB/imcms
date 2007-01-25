@@ -2,12 +2,12 @@ package com.imcode.imcms.util.l10n;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
+import java.util.ResourceBundle;
 
 public class CachingLocalizedMessageProvider extends LocalizedMessageProvider {
 
     private final LocalizedMessageProvider provider ;
-    private final Map<String, Properties> languagePropertiesMap = new HashMap();
+    private final Map<String, ResourceBundle> bundleMap = new HashMap();
 
     public CachingLocalizedMessageProvider(LocalizedMessageProvider provider) {
         this.provider = provider;
@@ -17,13 +17,13 @@ public class CachingLocalizedMessageProvider extends LocalizedMessageProvider {
         this(new ImcmsPrefsLocalizedMessageProvider());
     }
 
-    public Properties getLanguageProperties(String languageIso639_2) {
-        Properties languageProperties = languagePropertiesMap.get(languageIso639_2);
-        if ( null == languageProperties ) {
-            languageProperties = provider.getLanguageProperties(languageIso639_2);
-            languagePropertiesMap.put(languageIso639_2, languageProperties);
+    public ResourceBundle getResourceBundle(String languageIso639_2) {
+        ResourceBundle resourceBundle = bundleMap.get(languageIso639_2);
+        if ( null == resourceBundle ) {
+            resourceBundle = provider.getResourceBundle(languageIso639_2);
+            bundleMap.put(languageIso639_2, resourceBundle);
         }
-        return languageProperties;
+        return resourceBundle ;
     }
 
 }

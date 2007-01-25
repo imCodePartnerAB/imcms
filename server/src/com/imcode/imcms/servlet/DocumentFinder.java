@@ -26,28 +26,27 @@ public class DocumentFinder extends WebComponent {
     private Query restrictingQuery;
     private QueryParser queryParser = new DefaultQueryParser();
     private Set extraSearchResultColumns = SetUtils.orderedSet( new HashSet() ) ;
-    private SearchDocumentsPage page ;
+    private DocumentFinderPage page ;
     private Comparator documentComparator ;
 
     public DocumentFinder() {
         this(new SearchDocumentsPage());
     }
 
-    public DocumentFinder(SearchDocumentsPage page) {
+    public DocumentFinder(DocumentFinderPage page) {
         this.page = page ;
         page.setDocumentFinder(this);
     }
 
-    public void selectDocument( DocumentDomainObject selectedDocument, HttpServletRequest request,
-                                HttpServletResponse response ) throws IOException, ServletException {
-        selectDocumentCommand.selectDocument( selectedDocument, request, response );
+    public void selectDocument(DocumentDomainObject selectedDocument) throws IOException, ServletException {
+        selectDocumentCommand.selectDocument( selectedDocument);
     }
 
     public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         forwardWithPage(request, response, page);
     }
 
-    void forwardWithPage(HttpServletRequest request, HttpServletResponse response, SearchDocumentsPage page) throws IOException, ServletException {
+    void forwardWithPage(HttpServletRequest request, HttpServletResponse response, DocumentFinderPage page) throws IOException, ServletException {
         ImcmsServices service = Imcms.getServices();
         DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
         BooleanQuery booleanQuery = new BooleanQuery();
@@ -99,10 +98,12 @@ public class DocumentFinder extends WebComponent {
         this.documentComparator = documentComparator;
     }
 
-    public interface SelectDocumentCommand extends Serializable {
+    public void dispatchReturn(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        cancel(request, response);
+    }
 
-        void selectDocument( DocumentDomainObject document, HttpServletRequest request,
-                             HttpServletResponse response ) throws IOException, ServletException;
+    public interface SelectDocumentCommand extends Serializable {
+        void selectDocument(DocumentDomainObject document) throws IOException, ServletException;
     }
 
     public interface SearchResultColumn extends Serializable {

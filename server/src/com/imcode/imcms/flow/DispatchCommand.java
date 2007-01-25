@@ -7,5 +7,5 @@ import java.io.IOException;
 import java.io.Serializable;
 
 public interface DispatchCommand extends Serializable {
-    public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException;
+    void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException;
 }

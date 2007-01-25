@@ -15,7 +15,7 @@ public class SearchDocuments extends HttpServlet {
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
         if (null != Page.fromRequest( request )) {
-            request.getRequestDispatcher( "PageDispatcher" ).forward( request, response );
+            request.getRequestDispatcher( "/servlet/PageDispatcher" ).forward( request, response );
         } else {
             SearchDocumentsPage searchDocumentsPage = new SearchDocumentsPage() ;
             DocumentFinder documentFinder = new DocumentFinder(searchDocumentsPage);

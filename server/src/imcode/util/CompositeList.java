@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.io.Serializable;
 
-public class CompositeList extends AbstractList {
+public class CompositeList extends AbstractList implements Serializable {
 
     private final List lists = Collections.synchronizedList(new ArrayList());
 

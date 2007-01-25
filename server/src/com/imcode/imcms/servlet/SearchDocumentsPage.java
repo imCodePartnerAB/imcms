@@ -36,7 +36,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class SearchDocumentsPage extends OkCancelPage {
+public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderPage {
 
     public static final String REQUEST_PARAMETER__SECTION_ID = "section_id";
     public static final String REQUEST_PARAMETER__DOCUMENTS_PER_PAGE = "num";
@@ -73,7 +73,7 @@ public class SearchDocumentsPage extends OkCancelPage {
     private DocumentDomainObject selectedDocument;
     private Query query;
 
-    DocumentFinder documentFinder;
+    private DocumentFinder documentFinder;
 
     public static final String USER_DOCUMENTS_RESTRICTION__NONE = "";
     public static final String USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER = "created";
@@ -272,7 +272,8 @@ public class SearchDocumentsPage extends OkCancelPage {
         if ( null != documentSelectedForEditing ) {
             goToEditDocumentInformation( request, response, documentSelectedForEditing );
         } else if ( null != getSelectedDocument() ) {
-            documentFinder.selectDocument( getSelectedDocument(), request, response );
+            documentFinder.selectDocument( getSelectedDocument());
+            documentFinder.dispatchReturn(request, response);
         } else {
             documentFinder.forwardWithPage( request, response, this );
         }

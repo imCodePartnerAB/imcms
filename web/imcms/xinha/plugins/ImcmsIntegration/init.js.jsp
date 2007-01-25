@@ -25,8 +25,6 @@ xinha_init = xinha_init ? xinha_init : function()
 
     xinha_config = xinha_config ? xinha_config() : new Xinha.Config();
 
-    xinha_config.URIs['insert_image'] = '<%= request.getContextPath() %>/servlet/InsertImage';
-
     var serverBase = location.href.replace(/(https?:\/\/[^\/]*)\/.*/, '$1') ;
     xinha_config.baseHref = serverBase;
 

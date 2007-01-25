@@ -6,6 +6,7 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.mapping.NoPermissionInternalException;
 import com.imcode.imcms.servlet.DocumentFinder;
+import com.imcode.imcms.servlet.SearchDocumentsPage;
 import com.imcode.imcms.servlet.superadmin.AdminManager;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.util.HumanReadable;
@@ -37,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -224,7 +226,7 @@ public class ImageEditPage extends OkCancelPage {
     private void goToImageSearch(final DocumentMapper documentMapper,
                                  final HttpServletRequest request,
                                  final HttpServletResponse response) throws IOException, ServletException {
-        DocumentFinder documentFinder = new DocumentFinder();
+        DocumentFinder documentFinder = new DocumentFinder(new SearchDocumentsPage());
         documentFinder.setQueryParser(new HeadlineWildcardQueryParser());
         documentFinder.setCancelCommand(new DispatchCommand() {
             public void dispatch(HttpServletRequest request,
@@ -234,8 +236,8 @@ public class ImageEditPage extends OkCancelPage {
             }
         });
         documentFinder.setSelectDocumentCommand(new DocumentFinder.SelectDocumentCommand() {
-            public void selectDocument(DocumentDomainObject documentFound, HttpServletRequest request,
-                                       HttpServletResponse response) throws IOException, ServletException {
+            public void selectDocument(DocumentDomainObject documentFound
+            ) throws IOException, ServletException {
                 FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject) documentFound;
                 if ( null != imageFileDocument ) {
                     image.setSourceAndClearSize(new FileDocumentImageSource(documentMapper.getDocumentReference(imageFileDocument)));
@@ -339,7 +341,7 @@ public class ImageEditPage extends OkCancelPage {
         super.dispatchOk(request, response);
     }
 
-    public interface ImageCommand {
+    public interface ImageCommand extends Serializable {
         void handleImage(ImageDomainObject image);        
     }
 }

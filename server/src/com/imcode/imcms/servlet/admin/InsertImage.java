@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.io.Serializable;
 
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.flow.DispatchCommand;

@@ -40,7 +40,7 @@ public class LocalizedMessage implements Serializable {
         if (null == localProvider) {
             localProvider = Imcms.getServices().getLocalizedMessageProvider();
         }
-        return StringUtils.defaultString(localProvider.getLanguageProperties(languageIso639_2).getProperty(languageKey));
+        return StringUtils.defaultString(localProvider.getResourceBundle(languageIso639_2).getString(languageKey));
     }
 
     public boolean equals(Object o) {

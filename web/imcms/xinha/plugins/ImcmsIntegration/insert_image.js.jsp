@@ -1,6 +1,4 @@
 <%@ page import="com.imcode.imcms.servlet.admin.ImageEditPage"%><%@page contentType="text/javascript" %>
-// Called when the user clicks on "InsertImage" button.  If an image is already
-// there, it will just modify it's properties.
 Xinha.prototype._insertImage = function(image)
 {
     var editor = this;	// for nested functions
@@ -36,7 +34,7 @@ Xinha.prototype._insertImage = function(image)
         }
     }
     this._popupDialog(
-            editor.config.URIs.insert_image+queryString,
+            '<%= request.getContextPath() %>/servlet/InsertImage'+queryString,
             function(param)
             {
                 // user must have pressed Cancel

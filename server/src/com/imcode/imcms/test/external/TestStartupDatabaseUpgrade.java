@@ -8,6 +8,7 @@ import com.imcode.imcms.db.DdlUtilsPlatformCommand;
 import com.imcode.imcms.db.ImcmsDatabaseCreator;
 import com.imcode.imcms.db.StartupDatabaseUpgrade;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
+import com.imcode.imcms.util.EmptyEnumeration;
 import imcode.server.Imcms;
 import imcode.util.ShouldNotBeThrownException;
 import junit.framework.AssertionFailedError;
@@ -26,9 +27,7 @@ import org.apache.ddlutils.model.Index;
 import org.apache.ddlutils.model.IndexColumn;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class TestStartupDatabaseUpgrade extends TestCase {
 
@@ -153,12 +152,8 @@ public class TestStartupDatabaseUpgrade extends TestCase {
         try {
             InputStreamReader initScriptReader = new InputStreamReader(getClass().getResourceAsStream("/com/imcode/imcms/test/external/imcms-init-3.0.sql"), "UTF-8");
             return new ImcmsDatabaseCreator(initScriptReader, new LocalizedMessageProvider() {
-                protected Properties getLanguageProperties(String languageIso639_2) {
-                    return new Properties() {
-                        public String getProperty(String key) {
-                            return "";
-                        }
-                    };
+                public ResourceBundle getResourceBundle(String languageIso639_2) {
+                    return new NullResourceBundle();
                 }
             });
         } catch ( UnsupportedEncodingException e ) {
@@ -201,4 +196,14 @@ public class TestStartupDatabaseUpgrade extends TestCase {
         return ddlXmlWriter.toString();
     }
 
+    private static class NullResourceBundle extends ResourceBundle {
+
+        protected Object handleGetObject(String key) {
+            return "";
+        }
+
+        public Enumeration<String> getKeys() {
+            return new EmptyEnumeration();
+        }
+    }
 }

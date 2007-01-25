@@ -12,4 +12,4 @@ ImcmsIntegration._pluginInfo = {
 };
 
 Xinha._loadback(_editor_url + 'plugins/ImcmsIntegration/insert_image.js.jsp');
-
+Xinha._loadback(_editor_url + 'plugins/ImcmsIntegration/create_link.js.jsp');

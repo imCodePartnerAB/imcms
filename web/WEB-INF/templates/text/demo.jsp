@@ -1,8 +1,9 @@
-<%@page isELIgnored="false" %><%@taglib prefix="imcms" uri="imcms"%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><html>
+<%@taglib prefix="imcms" uri="imcms"
+        %><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" 
+        %><%@taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%><html>
 <imcms:variables/>
 <head>
 <title><c:out value="${document.headline}"/> - Powered by imCMS from imCode Partner AB</title>
-
 <style type="text/css">
 <!--
 .imcHeading { font: bold medium Verdana,Geneva,sans-serif; color:#000099; }

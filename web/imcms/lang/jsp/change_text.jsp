@@ -57,7 +57,7 @@ ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttr
 </vel:velocity>
 <tr>
 	<td colspan="2" class="imcmsAdmForm">
-	<textarea name="text" tabindex="1" id="text" cols="125" rows="18" style="overflow: auto; width: 100%" wrap="virtual"><%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea></td>
+	<textarea name="text" tabindex="1" id="text" cols="125" rows="25" style="overflow: auto; width: 100%" wrap="virtual"><%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea></td>
 </tr>
 <vel:velocity>
 <tr>

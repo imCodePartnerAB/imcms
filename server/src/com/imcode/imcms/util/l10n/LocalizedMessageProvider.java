@@ -1,6 +1,6 @@
 package com.imcode.imcms.util.l10n;
 
-import java.util.Properties;
+import java.util.ResourceBundle;
 
 public abstract class LocalizedMessageProvider {
 
@@ -8,5 +8,5 @@ public abstract class LocalizedMessageProvider {
         return new LocalizedMessage(key, this);
     }
 
-    protected abstract Properties getLanguageProperties(String languageIso639_2);
+    public abstract ResourceBundle getResourceBundle(String languageIso639_2);
 }
