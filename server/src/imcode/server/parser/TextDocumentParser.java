@@ -91,7 +91,9 @@ public class TextDocumentParser {
             }
 
             TemplateDomainObject template = templateMapper.getTemplateByName(templateName);
-            if (template.getFileName().endsWith(".jsp")) {
+            if (null == template) {
+                throw new RuntimeException("Template not found: "+templateName);
+            } else if (template.getFileName().endsWith(".jsp")) {
                 try {
                     HttpServletRequest request = documentRequest.getHttpServletRequest();
                     request.getRequestDispatcher("/WEB-INF/templates/text/"+template.getFileName()).forward(request, documentRequest.getHttpServletResponse());

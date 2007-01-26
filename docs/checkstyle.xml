@@ -38,7 +38,7 @@
   </module>
     
   <module name="StrictDuplicateCode">
-      <property name="min" value="12"/>
+      <property name="min" value="11"/>
   </module>
 
 </module>

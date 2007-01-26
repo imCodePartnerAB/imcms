@@ -12,19 +12,18 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import imcode.util.io.FileUtility;
 import org.apache.commons.io.CopyUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FileFilter;
-import java.util.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.*;
 
 public class TemplateMapper {
 
@@ -184,7 +183,7 @@ public class TemplateMapper {
     public TemplateDomainObject getTemplateByName( String templateName ) {
         String[] extensions = new String[] { "jsp", "html" } ;
         for ( String extension : extensions ) {
-            String templateFileName = escapeTemplateFilename(templateName) + "." + extension;
+            String templateFileName = templateName + "." + extension;
             File templateFile = new File(getTemplateDirectory(), templateFileName);
             if (templateFile.exists()) {
                 return new TemplateDomainObject(templateName, templateFileName);
@@ -233,11 +232,20 @@ public class TemplateMapper {
                                                 new String[]{"" + templateGroup.getId(), template.getName()} ) );
     }
 
-    public boolean renameTemplate( TemplateDomainObject template, String newNameForTemplate ) {
-        File templateDirectory = getTemplateDirectory();
-        File templateFile = getTemplateFile(template);
-        String extension = StringUtils.substringAfterLast(template.getFileName(), ".");
-        return templateFile.renameTo(new File(templateDirectory, escapeTemplateFilename(newNameForTemplate)+"."+extension)) ;
+    public boolean renameTemplate( String templateName, String newNameForTemplate ) {
+        if (null != getTemplateByName(newNameForTemplate)) {
+            return false;
+        }
+        for (TemplateDomainObject template = getTemplateByName(templateName); null != template; template = getTemplateByName(templateName)) {
+            File templateFile = getTemplateFile(template);
+            String extension = StringUtils.substringAfterLast(template.getFileName(), ".");
+            String newFilename = newNameForTemplate + "." + extension;
+
+            if (templateFile.renameTo(new File(getTemplateDirectory(), newFilename))) {
+                replaceAllUsagesOfTemplate(template, new TemplateDomainObject(newNameForTemplate, newFilename));
+            }
+        }
+        return true;
     }
 
     private File getTemplateDirectory() {
@@ -297,7 +305,7 @@ public class TemplateMapper {
 
     public int saveTemplate(String name, String file_name, InputStream templateData, boolean overwrite) {
 
-        File f = new File( getTemplateDirectory(), escapeTemplateFilename(name)+"."+StringUtils.substringAfterLast(file_name,".") );
+        File f = new File( getTemplateDirectory(), name+"."+StringUtils.substringAfterLast(file_name,".") );
         if (f.exists() && !overwrite) {
             return -1 ;
         }
@@ -345,7 +353,4 @@ public class TemplateMapper {
         return false ;
     }
 
-    public static String escapeTemplateFilename(String templateName) {
-        return FileUtility.escapeFilename(templateName).replaceAll("_005f", "_" );
-    }
 }

@@ -4,15 +4,13 @@ import com.imcode.db.Database;
 import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.SqlQueryDatabaseCommand;
 import com.imcode.imcms.db.refactoring.DatabasePlatform;
-import com.imcode.imcms.db.refactoring.model.Type;
 import com.imcode.imcms.db.refactoring.model.SimpleColumn;
+import com.imcode.imcms.db.refactoring.model.Type;
 import org.apache.commons.dbutils.ResultSetHandler;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.io.File;
-
-import imcode.server.document.TemplateMapper;
 
 public class TemplateNamesUpgrade implements DatabaseUpgrade {
 
@@ -33,7 +31,7 @@ public class TemplateNamesUpgrade implements DatabaseUpgrade {
                     String templateName = rs.getString("simple_name");
                     File templateFile = new File(templatesDirectory, templateId+".html");
                     if (templateFile.exists()) {
-                        templateFile.renameTo(new File(templatesDirectory, TemplateMapper.escapeTemplateFilename(templateName) +".html")) ;
+                        templateFile.renameTo(new File(templatesDirectory, templateName +".html")) ;
                     }
                 }
                 return null;

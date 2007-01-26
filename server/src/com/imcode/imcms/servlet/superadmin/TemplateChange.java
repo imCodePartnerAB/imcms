@@ -255,7 +255,7 @@ public class TemplateChange extends HttpServlet {
             htmlStr = createRenameNameEmptyErrorDialog(lang, imcref, user);
         } else {
             LocalizedMessage error = null;
-            if ( !templateMapper.renameTemplate(template, newNameForTemplate) ) {
+            if ( !templateMapper.renameTemplate(template.getName(), newNameForTemplate) ) {
                 error = ERROR__TEMPLATE_NAME_TAKEN;
             }
             htmlStr = TemplateAdmin.createRenameTemplateDialog(lang, imcref, templateMapper, user, error);
