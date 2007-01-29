@@ -296,11 +296,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     }
 
-    protected void updateTextDocumentMenus(final TextDocumentDomainObject textDocument) {
+    protected void updateTextDocumentMenus(final TextDocumentDomainObject textDocument, final TextDocumentDomainObject oldTextDocument, final UserDomainObject savingUser) {
         database.execute( new TransactionDatabaseCommand() {
             public Object executeInTransaction( DatabaseConnection connection ) {
                 MenuSaver menuSaver = new MenuSaver(new SingleConnectionDatabase(connection)) ;
-                menuSaver.updateTextDocumentMenus(textDocument, services );
+                menuSaver.updateTextDocumentMenus(textDocument, services, oldTextDocument, savingUser);
                 return null ;
             }
         } );

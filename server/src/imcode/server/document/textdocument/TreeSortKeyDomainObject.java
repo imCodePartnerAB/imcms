@@ -2,6 +2,8 @@ package imcode.server.document.textdocument;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,7 +12,7 @@ import java.util.NoSuchElementException;
 
 public class TreeSortKeyDomainObject implements Comparable, Serializable {
 
-    private int[] keys;
+    private final int[] keys;
 
     public TreeSortKeyDomainObject( String treeSortKey ) {
         String[] keyStrings = treeSortKey.trim().split( "\\D+",0 ) ;
@@ -56,5 +58,18 @@ public class TreeSortKeyDomainObject implements Comparable, Serializable {
             }
         }
         return keys1.length - keys2.length ;
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false;}
+
+        final TreeSortKeyDomainObject that = (TreeSortKeyDomainObject) o;
+
+        return new EqualsBuilder().append(keys, that.keys).isEquals();
+    }
+
+    public int hashCode() {
+        return new HashCodeBuilder().append(keys).toHashCode();
     }
 }

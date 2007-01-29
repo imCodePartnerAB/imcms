@@ -58,7 +58,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         boolean menusChanged = !textDocument.getMenus().equals( ( (TextDocumentDomainObject)oldDocument ).getMenus() );
 
         if ( menusChanged ) {
-            updateTextDocumentMenus( textDocument );
+            updateTextDocumentMenus( textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
         }
     }
 }

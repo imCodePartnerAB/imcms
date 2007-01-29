@@ -5,6 +5,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.io.Serializable;
 import java.util.*;
@@ -183,11 +185,12 @@ public class MenuDomainObject implements Cloneable, Serializable {
             return false ;
         }
         MenuDomainObject otherMenu = (MenuDomainObject)obj;
-        return otherMenu.sortOrder == sortOrder && otherMenu.menuItems.equals( menuItems ) ;
+        return  new EqualsBuilder().append(sortOrder, otherMenu.sortOrder)
+                .append(menuItems, otherMenu.menuItems).isEquals();
     }
 
     public int hashCode() {
-        return sortOrder + menuItems.hashCode() ;
+        return new HashCodeBuilder().append(sortOrder).append(menuItems).toHashCode() ;
     }
 
 }

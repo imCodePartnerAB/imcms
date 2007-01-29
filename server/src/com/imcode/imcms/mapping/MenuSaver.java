@@ -7,10 +7,14 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.ImcmsServices;
+import imcode.server.user.UserDomainObject;
+import imcode.util.DateConstants;
 
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Collection;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
@@ -24,15 +28,53 @@ public class MenuSaver {
         this.database = database ;
     }
 
-    void updateTextDocumentMenus(TextDocumentDomainObject textDocument, ImcmsServices services) {
+    void updateTextDocumentMenus(TextDocumentDomainObject textDocument, ImcmsServices services, TextDocumentDomainObject oldTextDocument, UserDomainObject savingUser) {
         Map menuMap = textDocument.getMenus();
         for ( Iterator iterator = menuMap.entrySet().iterator(); iterator.hasNext();) {
             Map.Entry entry = (Map.Entry) iterator.next();
             Integer menuIndex = (Integer) entry.getKey();
             MenuDomainObject menu = (MenuDomainObject) entry.getValue();
+            if(oldTextDocument != null) {
+                MenuDomainObject oldMenu = oldTextDocument.getMenu(menuIndex.intValue());
+                if(oldMenu != null && oldMenu.getMenuItemsUnsorted().size()>0 && !oldMenu.equals(menu)) {
+                   updateTextDocumentMenuHistory(oldTextDocument, menuIndex, oldMenu, savingUser, services );
+                }
+            }
             updateTextDocumentMenu(textDocument, menuIndex, menu, services);
         }
         deleteUnusedMenus(textDocument);
+    }
+
+    private void updateTextDocumentMenuHistory(TextDocumentDomainObject oldTextDocument, Integer menuIndex, MenuDomainObject oldMenu, UserDomainObject savingUser, ImcmsServices services) {
+        insertTextDocumentMenuHistory(oldTextDocument, menuIndex, oldMenu, savingUser, services);
+    }
+
+    private void insertTextDocumentMenuHistory(TextDocumentDomainObject oldTextDocument, Integer menuIndex, MenuDomainObject oldMenu, UserDomainObject savingUser, ImcmsServices services) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING);
+        database.execute(new InsertIntoTableDatabaseCommand("menus_history", new Object[][] {
+                { "menu_id", new Integer(oldMenu.getId())},
+                { "meta_id", new Integer(oldTextDocument.getId())},
+                { "menu_index", new Integer(menuIndex) },
+                { "sort_order", new Integer(oldMenu.getSortOrder()) },
+                { "modified_datetime", dateFormat.format(new Date()) },
+                { "user_id", new Integer(savingUser.getId()) }
+        }));
+
+        Collection menuItems = oldMenu.getMenuItemsUnsorted();
+        for ( Iterator iterator = menuItems.iterator(); iterator.hasNext(); ) {
+            MenuItemDomainObject menuItem = (MenuItemDomainObject) iterator.next();
+            sqlInsertMenuItemHistory(oldMenu, menuItem);
+        }
+    }
+
+    private void sqlInsertMenuItemHistory(MenuDomainObject oldMenu, MenuItemDomainObject menuItem) {
+
+        database.execute(new InsertIntoTableDatabaseCommand("childs_history", new Object[][] {
+                { "menu_id", new Integer(oldMenu.getId())},
+                { "to_meta_id", new Integer(menuItem.getDocumentReference().getDocumentId())},
+                { "manual_sort_order", new Integer(menuItem.getSortKey()) },
+                { "tree_sort_index", menuItem.getTreeSortKey().toString() }
+        }));
     }
 
     private void deleteUnusedMenus( TextDocumentDomainObject textDocument ) {

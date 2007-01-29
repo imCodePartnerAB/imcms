@@ -1,0 +1,11 @@
+    <table name="menus_history">
+        <column name="menu_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="meta_id" required="true" type="INTEGER" />
+        <column name="menu_index" required="true" type="INTEGER" />
+        <column name="sort_order" required="true" type="INTEGER" />
+        <column name="modified_datetime" type="TIMESTAMP" required="true"/>
+        <column name="user_id" type="INTEGER" required="true" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>

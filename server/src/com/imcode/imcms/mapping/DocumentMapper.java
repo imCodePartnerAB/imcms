@@ -279,9 +279,14 @@ public class DocumentMapper implements DocumentGetter {
             new DeleteWhereColumnsEqualDatabaseCommand("doc_permission_sets", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("includes", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("includes", "included_meta_id", metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("meta_section", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("meta", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("texts_history", metaIdColumn, metaIdStr ),
+            new DeleteWhereColumnsEqualDatabaseCommand("images_history", metaIdColumn, metaIdStr ),
+            new DeleteWhereColumnsEqualDatabaseCommand("childs_history", "to_meta_id", metaIdStr ),
+            new SqlUpdateDatabaseCommand("DELETE FROM childs_history WHERE menu_id IN (SELECT menu_id FROM menus_history WHERE meta_id = ?)", new String[] {metaIdStr} ),
+            new DeleteWhereColumnsEqualDatabaseCommand("menus_history", metaIdColumn, metaIdStr ),
             new DeleteWhereColumnsEqualDatabaseCommand("document_properties", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("meta_section", metaIdColumn, metaIdStr),
+            new DeleteWhereColumnsEqualDatabaseCommand("meta", metaIdColumn, metaIdStr)
         });
     }
 
