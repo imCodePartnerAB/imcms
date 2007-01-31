@@ -300,7 +300,8 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
 
     private MultiMap getParameterMap( HttpServletRequest request ) {
         MultiMap parameters = new MultiHashMap();
-        String pageSessionNameFromRequest = Page.fromRequest( request ).getSessionAttributeName();
+        Page page = Page.fromRequest(request);
+        String pageSessionNameFromRequest = page.getSessionAttributeName();
         if ( null != pageSessionNameFromRequest ) {
             parameters.put( Page.IN_REQUEST, pageSessionNameFromRequest );
         }

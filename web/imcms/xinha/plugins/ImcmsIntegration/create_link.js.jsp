@@ -1,4 +1,4 @@
-<%@ page contentType="text/javascript" %>
+<%@ page import="com.imcode.imcms.servlet.admin.EditLink"%><%@ page contentType="text/javascript" %>
 Xinha.prototype._createLink = function(link)
 {
   var editor = this;
@@ -41,24 +41,31 @@ Xinha.prototype._createLink = function(link)
     }
     outparam =
     {
-      href : '',
-      title : '',
-      target : '',
-      usetarget : editor.config.makeLinkShowsTarget
+      '<%= EditLink.Parameter.HREF %>'   : '',
+      '<%= EditLink.Parameter.TITLE %>'  : '',
+      '<%= EditLink.Parameter.TARGET %>' : '',
+      '<%= EditLink.Parameter.USE_TARGET %>' : editor.config.makeLinkShowsTarget
     };
   }
   else
   {
     outparam =
     {
-      href   : Xinha.is_ie ? editor.stripBaseURL(link.href) : link.getAttribute("href"),
-      title : link.title,
-      target : link.target,
-      usetarget : editor.config.makeLinkShowsTarget
+      '<%= EditLink.Parameter.HREF %>'   : Xinha.is_ie ? editor.stripBaseURL(link.href) : link.getAttribute("href"),
+      '<%= EditLink.Parameter.TITLE %>'  : link.title,
+      '<%= EditLink.Parameter.TARGET %>' : link.target,
+      '<%= EditLink.Parameter.USE_TARGET %>' : editor.config.makeLinkShowsTarget
     };
   }
+  var queryString = '';
+  for ( var i in outparam )
+  {
+      if (outparam[i]) {
+          queryString += '&' + i + '=' + encodeURIComponent(outparam[i]);
+      }
+  }
   this._popupDialog(
-    '<%= request.getContextPath() %>/servlet/InsertLink',
+    '<%= EditLink.linkTo(request, "/imcms/xinha/plugins/ImcmsIntegration/return_link.jsp") %>'+queryString,
     function(param)
     {
       if ( !param )

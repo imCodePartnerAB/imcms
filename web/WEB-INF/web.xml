@@ -133,13 +133,13 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.InsertImage</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.InsertImage</servlet-class>
+        <servlet-name>com.imcode.imcms.servlet.admin.EditImage</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.EditImage</servlet-class>
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.InsertLink</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.InsertLink</servlet-class>
+        <servlet-name>com.imcode.imcms.servlet.admin.EditLink</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.EditLink</servlet-class>
     </servlet>
 
     <servlet>
@@ -358,13 +358,13 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.InsertImage</servlet-name>
+        <servlet-name>com.imcode.imcms.servlet.admin.EditImage</servlet-name>
         <url-pattern>/servlet/InsertImage</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.InsertLink</servlet-name>
-        <url-pattern>/servlet/InsertLink</url-pattern>
+        <servlet-name>com.imcode.imcms.servlet.admin.EditLink</servlet-name>
+        <url-pattern>/servlet/EditLink</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

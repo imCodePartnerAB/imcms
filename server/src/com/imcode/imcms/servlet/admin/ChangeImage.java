@@ -50,8 +50,8 @@ public class ChangeImage extends HttpServlet {
 
             }
         };
-        ImageEditPage.ImageCommand imageCommand = new ImageEditPage.ImageCommand() {
-            public void handleImage(ImageDomainObject image) {
+        Handler<ImageDomainObject> imageCommand = new Handler<ImageDomainObject>() {
+            public void handle(ImageDomainObject image) {
                 ImcmsServices services = Imcms.getServices();
                 document.setImage(imageIndex, image);
                 try {
@@ -68,6 +68,7 @@ public class ChangeImage extends HttpServlet {
                                        user.getFullName() + "]");
 
             }
+
         };
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand);

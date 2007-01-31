@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -72,12 +71,12 @@ public class ImageEditPage extends OkCancelPage {
     private ImageDomainObject image;
     private String label;
     private final ServletContext servletContext;
-    private final ImageCommand imageCommand;
+    private final Handler<ImageDomainObject> imageCommand;
     private final LocalizedMessage heading;
 
     public ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image,
                          LocalizedMessage heading, String label, ServletContext servletContext,
-                         ImageCommand imageCommand,
+                         Handler<ImageDomainObject> imageCommand,
                          DispatchCommand returnCommand
     ) {
         super(returnCommand, returnCommand);
@@ -275,7 +274,7 @@ public class ImageEditPage extends OkCancelPage {
     }
 
     public static ImageEditPage getFromRequest(HttpServletRequest request) {
-        return (ImageEditPage) fromRequest(request);
+        return fromRequest(request);
     }
 
     public LocalizedMessage getHeading() {
@@ -337,11 +336,8 @@ public class ImageEditPage extends OkCancelPage {
 
     protected void dispatchOk(HttpServletRequest request,
                               HttpServletResponse response) throws IOException, ServletException {
-        imageCommand.handleImage(image);
+        imageCommand.handle(image);
         super.dispatchOk(request, response);
     }
 
-    public interface ImageCommand extends Serializable {
-        void handleImage(ImageDomainObject image);        
-    }
 }

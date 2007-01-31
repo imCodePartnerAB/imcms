@@ -1,4 +1,4 @@
-<%@ page import="com.imcode.imcms.servlet.admin.ImageEditPage"%><%@page contentType="text/javascript" %>
+<%@ page import="com.imcode.imcms.servlet.admin.ImageEditPage, com.imcode.imcms.servlet.admin.EditImage"%><%@page contentType="text/javascript" %>
 Xinha.prototype._insertImage = function(image)
 {
     var editor = this;	// for nested functions
@@ -34,7 +34,7 @@ Xinha.prototype._insertImage = function(image)
         }
     }
     this._popupDialog(
-            '<%= request.getContextPath() %>/servlet/InsertImage'+queryString,
+            '<%= request.getContextPath() %>/servlet/EditImage'+queryString+'&<%= EditImage.REQUEST_PARAMETER__RETURN %>=/imcms/xinha/plugins/ImcmsIntegration/return_image.jsp',
             function(param)
             {
                 // user must have pressed Cancel

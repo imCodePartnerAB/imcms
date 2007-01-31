@@ -1,5 +1,5 @@
-<%@ page import="org.apache.commons.lang.StringEscapeUtils, imcode.server.document.textdocument.ImageDomainObject, com.imcode.imcms.servlet.admin.InsertImage"%><%
-    ImageDomainObject image = InsertImage.getImage(request);
+<%@ page import="org.apache.commons.lang.StringEscapeUtils, imcode.server.document.textdocument.ImageDomainObject, com.imcode.imcms.servlet.admin.EditImage"%><%
+    ImageDomainObject image = EditImage.getImage(request);
 %><html>
 <body>
 <script type="text/javascript">
