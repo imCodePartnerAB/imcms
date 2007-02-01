@@ -69,7 +69,7 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 
     private void updateFromRequestAndDispatchIfError( MultipartHttpServletRequest request,
                                                                         HttpServletResponse response ) throws IOException, ServletException {
-        document.setTarget( EditDocumentInformationPageFlow.getTargetFromRequest( request ));
+        document.setTarget( EditDocumentInformationPageFlow.getTargetFromRequest( request, EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET));
 
         final FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
         String defaultFileId = request.getParameter( REQUEST_PARAMETER__DEFAULT_FILE );

@@ -314,7 +314,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         boolean searchDisabled = "1".equals( request.getParameter( REQUEST_PARAMETER__SEARCH_DISABLED ) );
         document.setSearchDisabled( searchDisabled );
 
-        String target = getTargetFromRequest( request );
+        String target = getTargetFromRequest( request, REQUEST_PARAMETER__TARGET);
         document.setTarget( target );
 
         Date createdDatetime = (Date)ObjectUtils.defaultIfNull( parseDatetimeParameters( request, REQUEST_PARAMETER__CREATED_DATE, REQUEST_PARAMETER__CREATED_TIME, dateFormat, timeFormat ), new Date() );
@@ -338,8 +338,8 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         return publicationStatus;
     }
 
-    public static String getTargetFromRequest( HttpServletRequest request ) {
-        String[] possibleTargets = request.getParameterValues( REQUEST_PARAMETER__TARGET );
+    public static String getTargetFromRequest(HttpServletRequest request, String parameterName) {
+        String[] possibleTargets = request.getParameterValues( parameterName );
         String target = null;
         if (null != possibleTargets) {
             for ( String possibleTarget : possibleTargets ) {

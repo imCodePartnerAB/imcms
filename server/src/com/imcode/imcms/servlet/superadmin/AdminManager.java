@@ -100,7 +100,7 @@ public class AdminManager extends HttpServlet {
         String parentPageId =  request.getParameter( REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID );
             try {
                 DocumentDomainObject parentDocument;
-                parentDocument = documentMapper.getDocumentFromId( parentPageId.toLowerCase().trim() );
+                parentDocument = documentMapper.getDocument( parentPageId.toLowerCase().trim() );
                 String createDocumentAction = request.getParameter( REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION );
                 if ( REQUEST_PARAMETER__ACTION__COPY.equals( createDocumentAction ) && parentDocument != null ) {
                     documentMapper.copyDocument( parentDocument, user );

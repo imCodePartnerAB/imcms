@@ -401,7 +401,7 @@ class DocumentSaver {
     public void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
         Set<String> allAlias = documentMapper.getAllDocumentAlias() ;
         String alias = document.getAlias();
-        if(allAlias.contains(alias) && !documentMapper.getDocumentFromId(alias).equals(document) ) {
+        if(allAlias.contains(alias) && !documentMapper.getDocument(alias).equals(document) ) {
             throw new AliasAlreadyExistsInternalException("A document with alias '" + document.getAlias()
                                                                          + "' already exists");
         }

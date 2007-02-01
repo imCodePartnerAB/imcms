@@ -2,11 +2,13 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
+import com.imcode.imcms.servlet.DocumentFinder;
 import org.apache.commons.lang.StringUtils;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
 import java.io.IOException;
 
 public class LinkEditPage extends OkCancelPage {
@@ -46,16 +48,39 @@ public class LinkEditPage extends OkCancelPage {
         HREF,
         TITLE,
         TARGET,
+        SEARCH
+    }
+
+    protected void dispatchOther(HttpServletRequest request,
+                                 HttpServletResponse response) throws IOException, ServletException {
+        if (null != request.getParameter(Parameter.SEARCH.toString())) {
+            DocumentFinder documentFinder = new DocumentFinder();
+
+            final DocumentIdRetrievalCommand documentRetrievalCommand = new DocumentIdRetrievalCommand();
+            DispatchCommand returnCommand = new DispatchCommand() {
+                public void dispatch(HttpServletRequest request,
+                                     HttpServletResponse response) throws IOException, ServletException {
+                    Integer documentId = documentRetrievalCommand.getDocumentId();
+                    if (null != documentId) {
+                        setLink(new SimpleLink(request.getContextPath()+"/"+documentId, link.getTitle(), link.getTarget()));
+                    }
+                    forward(request, response);
+                }
+            };
+            documentFinder.setCancelCommand(returnCommand);
+            documentFinder.setSelectDocumentCommand(documentRetrievalCommand);
+            documentFinder.forward(request, response);
+        }
     }
 
     protected void updateFromRequest(HttpServletRequest request) {
-        link = getLinkFromRequest(request) ;
+        setLink(getLinkFromRequest(request)) ;
     }
 
     private EditLink.Link getLinkFromRequest(HttpServletRequest request) {
         final String href = StringUtils.defaultString(request.getParameter(Parameter.HREF.toString()));
         final String title = StringUtils.defaultString(request.getParameter(Parameter.TITLE.toString()));
-        final String target = StringUtils.defaultString(request.getParameter(Parameter.TARGET.toString()));
+        final String target = EditDocumentInformationPageFlow.getTargetFromRequest(request, Parameter.TARGET.toString());
         return new SimpleLink(href, title, isTargetEditable() ? target : link.getTarget());
     }
 
@@ -63,7 +88,7 @@ public class LinkEditPage extends OkCancelPage {
         return "/WEB-INF/imcms/jsp/edit_link.jsp" ;
     }
 
-    public static class SimpleLink implements EditLink.Link {
+    static class SimpleLink implements EditLink.Link {
 
         private final String href;
         private final String title;
@@ -85,6 +110,19 @@ public class LinkEditPage extends OkCancelPage {
 
         public String getTarget() {
             return target;
+        }
+    }
+
+    private static class DocumentIdRetrievalCommand implements Handler<Integer> {
+
+        private Integer documentId;
+
+        public void handle(Integer e) {
+            this.documentId = e;
+        }
+
+        public Integer getDocumentId() {
+            return documentId;
         }
     }
 

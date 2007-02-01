@@ -802,7 +802,7 @@ public class TagParser {
         if(StringUtils.isNotBlank(documentName)) {
             textDocumentToUse = null;
             try{
-                textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocumentFromId(documentName);
+                textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocument(documentName);
             }catch(ClassCastException e ){/* return null */}
         }
        return textDocumentToUse;

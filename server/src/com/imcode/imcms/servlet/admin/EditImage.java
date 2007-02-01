@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.flow.DispatchCommand;
 
 public class EditImage extends HttpServlet {
@@ -28,11 +27,15 @@ public class EditImage extends HttpServlet {
                 request.getRequestDispatcher(returnPath).forward(request, response);
             }
         };
-        ImageEditPage imageEditPage = new ImageEditPage(null, null, new LocalizedMessage(""), "", getServletContext(), imageCommand, returnCommand);
+        ImageEditPage imageEditPage = new ImageEditPage(null, null, null, "", getServletContext(), imageCommand, returnCommand, false);
         imageEditPage.updateFromRequest(request);
         imageEditPage.forward(request, response);
     }
 
+    public static String linkTo(HttpServletRequest request, String returnPath) {
+        return request.getContextPath()+"/servlet/EditImage?"+REQUEST_PARAMETER__RETURN+"="+returnPath ;
+    }
+    
     public static ImageDomainObject getImage(HttpServletRequest request) {
         return (ImageDomainObject) request.getAttribute(REQUEST_ATTRIBUTE__IMAGE);
     }

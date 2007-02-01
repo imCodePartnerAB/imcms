@@ -73,12 +73,12 @@ public class ImageEditPage extends OkCancelPage {
     private final ServletContext servletContext;
     private final Handler<ImageDomainObject> imageCommand;
     private final LocalizedMessage heading;
+    private boolean linkable;
 
     public ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image,
                          LocalizedMessage heading, String label, ServletContext servletContext,
                          Handler<ImageDomainObject> imageCommand,
-                         DispatchCommand returnCommand
-    ) {
+                         DispatchCommand returnCommand, boolean linkable) {
         super(returnCommand, returnCommand);
         this.document = document;
         this.image = image;
@@ -86,6 +86,7 @@ public class ImageEditPage extends OkCancelPage {
         this.servletContext = servletContext;
         this.imageCommand = imageCommand;
         this.heading = heading ;
+        this.linkable = linkable ;
     }
 
     public ImageDomainObject getImage() {
@@ -105,7 +106,7 @@ public class ImageEditPage extends OkCancelPage {
         return label;
     }
 
-    private static ImageDomainObject getImageFromRequest(HttpServletRequest req) {
+    private ImageDomainObject getImageFromRequest(HttpServletRequest req) {
         ImageDomainObject image = new ImageDomainObject();
         try {
             image.setWidth(Integer.parseInt(req.getParameter(REQUEST_PARAMETER__IMAGE_WIDTH)));
@@ -138,8 +139,10 @@ public class ImageEditPage extends OkCancelPage {
         image.setAlign(req.getParameter(REQUEST_PARAMETER__IMAGE_ALIGN));
         image.setAlternateText(req.getParameter(REQUEST_PARAMETER__IMAGE_ALT));
         image.setLowResolutionUrl(req.getParameter(REQUEST_PARAMETER__IMAGE_LOWSRC));
-        image.setTarget(EditDocumentInformationPageFlow.getTargetFromRequest(req));
-        image.setLinkUrl(req.getParameter(REQUEST_PARAMETER__LINK_URL));
+        if (isLinkable()) {
+            image.setTarget(EditDocumentInformationPageFlow.getTargetFromRequest(req, EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET));
+            image.setLinkUrl(req.getParameter(REQUEST_PARAMETER__LINK_URL));
+        }
         return image;
     }
 
@@ -230,19 +233,14 @@ public class ImageEditPage extends OkCancelPage {
         documentFinder.setCancelCommand(new DispatchCommand() {
             public void dispatch(HttpServletRequest request,
                                  HttpServletResponse response) throws IOException, ServletException {
-
                 forward(request, response);
             }
         });
-        documentFinder.setSelectDocumentCommand(new DocumentFinder.SelectDocumentCommand() {
-            public void selectDocument(DocumentDomainObject documentFound
-            ) throws IOException, ServletException {
-                FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject) documentFound;
-                if ( null != imageFileDocument ) {
-                    image.setSourceAndClearSize(new FileDocumentImageSource(documentMapper.getDocumentReference(imageFileDocument)));
+        documentFinder.setSelectDocumentCommand(new Handler<Integer>() {
+            public void handle(Integer documentIdFound){
+                if ( null != documentIdFound ) {
+                    image.setSourceAndClearSize(new FileDocumentImageSource(documentMapper.getDocumentReference(documentIdFound)));
                 }
-
-                forward(request, response);
             }
         });
         documentFinder.setRestrictingQuery(createImageFileDocumentsQuery());
@@ -283,6 +281,10 @@ public class ImageEditPage extends OkCancelPage {
 
     public boolean canAddImageFiles(UserDomainObject user) {
         return user.canCreateDocumentOfTypeIdFromParent( DocumentTypeDomainObject.FILE_ID, document );
+    }
+
+    public boolean isLinkable() {
+        return linkable;
     }
 
     private static class HeadlineWildcardQueryParser implements QueryParser {

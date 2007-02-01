@@ -30,11 +30,11 @@ Xinha.prototype._insertImage = function(image)
     for ( var i in outparam )
     {
         if (outparam[i]) {
-            queryString += (queryString.length ? '&' : '?') + i + '=' + encodeURIComponent(outparam[i]);
+            queryString += '&' + i + '=' + encodeURIComponent(outparam[i]);
         }
     }
     this._popupDialog(
-            '<%= request.getContextPath() %>/servlet/EditImage'+queryString+'&<%= EditImage.REQUEST_PARAMETER__RETURN %>=/imcms/xinha/plugins/ImcmsIntegration/return_image.jsp',
+            '<%= EditImage.linkTo(request, "/imcms/xinha/plugins/ImcmsIntegration/return_image.jsp")%>'+queryString,
             function(param)
             {
                 // user must have pressed Cancel

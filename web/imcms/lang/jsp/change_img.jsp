@@ -123,7 +123,10 @@ function checkLinkOnBlur() {
         <tr>
             <td colspan="2">
                 &nbsp;<br>
-                #gui_heading( "<%= imageEditPage.getHeading().toLocalizedString(request) %>" )<%=
+                <% if (null != imageEditPage.getHeading()) { %>
+                #gui_heading( "<%= imageEditPage.getHeading().toLocalizedString(request) %>" )
+                <% } %>
+                <%=
             "<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) + "</i></div>"  %></td>
         </tr><%
 		if (!image.isEmpty()) { %>
@@ -281,6 +284,7 @@ function checkLinkOnBlur() {
 						%>size="92" maxlength="255" style="width: 100%" value="<%=
 						StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getAlternateText())) %>"></td>
         </tr>
+        <% if (imageEditPage.isLinkable()) { %>
         <tr>
             <td colspan="2">&nbsp;<br>#gui_heading( "<? templates/sv/change_img.html/43/1 ?>" )</td>
         </tr>
@@ -324,6 +328,7 @@ function checkLinkOnBlur() {
             </tr>
             </table></td>
         </tr>
+        <% } %>
         <tr>
             <td colspan="2">#gui_hr( "blue" )</td>
         </tr>

@@ -359,7 +359,7 @@
 
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.EditImage</servlet-name>
-        <url-pattern>/servlet/InsertImage</url-pattern>
+        <url-pattern>/servlet/EditImage</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

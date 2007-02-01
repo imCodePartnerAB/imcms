@@ -464,4 +464,8 @@ public class Utility {
         return fallbackDecoder.decodeBytes(out.toByteArray(), null) ;
     }
 
+    public static ResourceBundle getResourceBundle(HttpServletRequest request) {
+        return Imcms.getServices().getLocalizedMessageProvider().getResourceBundle(Utility.getLoggedOnUser(request).getLanguageIso639_2());
+    }
+
 }

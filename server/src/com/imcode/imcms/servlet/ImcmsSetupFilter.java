@@ -10,12 +10,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.NDC;
 
 import javax.servlet.*;
+import javax.servlet.jsp.jstl.core.Config;
+import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ResourceBundle;
 
 public class ImcmsSetupFilter implements Filter {
 
@@ -36,7 +39,7 @@ public class ImcmsSetupFilter implements Filter {
 
         String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
         FallbackDecoder fallbackDecoder = new FallbackDecoder(Charset.forName(Imcms.DEFAULT_ENCODING),
-                null != workaroundUriEncoding ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset());
+                                                              null != workaroundUriEncoding ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset());
         if ( null != workaroundUriEncoding ) {
             request = new UriEncodingWorkaroundWrapper(request, fallbackDecoder);
         }
@@ -48,6 +51,9 @@ public class ImcmsSetupFilter implements Filter {
             Utility.makeUserLoggedIn(request, user);
         }
 
+        ResourceBundle resourceBundle = Utility.getResourceBundle(request);
+        Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
+        
         Utility.initRequestWithApi(request, user);
 
         NDC.setMaxDepth( 0 );
@@ -75,7 +81,7 @@ public class ImcmsSetupFilter implements Filter {
         }
         HttpSession session = httpServletRequest.getSession();
         boolean isResourcePath = null != session.getServletContext().getResourcePaths(path);
-        DocumentDomainObject document = !isResourcePath ? service.getDocumentMapper().getDocumentFromId(documentIdString) : null ;
+        DocumentDomainObject document = !isResourcePath ? service.getDocumentMapper().getDocument(documentIdString) : null ;
         if ( null != document ) {
             try {
                 GetDoc.output( document.getId(), httpServletRequest, (HttpServletResponse)response );

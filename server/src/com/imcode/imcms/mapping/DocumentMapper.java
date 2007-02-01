@@ -357,7 +357,7 @@ public class DocumentMapper implements DocumentGetter {
         return allDocumentAlias;
     }
 
-    public DocumentDomainObject getDocumentFromId(String documentIdString) {
+    public DocumentDomainObject getDocument(String documentIdString) {
         DocumentDomainObject document = null;
         final String SQL_GET_DOCUMENT_ID_FROM_PROPERTIES = "SELECT meta_id FROM document_properties WHERE key_name=? AND value=?";
 

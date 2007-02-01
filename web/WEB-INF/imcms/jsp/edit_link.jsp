@@ -1,21 +1,25 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page import="com.imcode.imcms.flow.Page, com.imcode.imcms.servlet.admin.LinkEditPage, java.util.concurrent.LinkedBlockingQueue, org.apache.commons.lang.StringEscapeUtils, com.imcode.imcms.servlet.admin.EditLink"%><%@page contentType="text/html"%> 
-<html>
-    <head>
-        <title>Edit link</title>
-    </head>
-    <body>
-        <form action="<%= request.getContextPath() %>/servlet/PageDispatcher">
-            <%= Page.htmlHidden(request) %>
-            <% LinkEditPage linkEditPage = Page.fromRequest(request);
-               EditLink.Link link = linkEditPage.getLink(); %>
-            <input type="text" name="<%= LinkEditPage.Parameter.HREF %>" value="<%= StringEscapeUtils.escapeHtml(link.getHref()) %>" />
-            <input type="text" name="<%= LinkEditPage.Parameter.TITLE %>" value="<%= StringEscapeUtils.escapeHtml(link.getTitle()) %>" />
-            <% if (linkEditPage.isTargetEditable()) { %>
-            <input type="text" name="<%= LinkEditPage.Parameter.TARGET %>" value="<%= StringEscapeUtils.escapeHtml(link.getTarget()) %>" />
-            <% } %>
-            <input type="submit" name="ok" value="OK"/>
-            <input type="submit" name="cancel" value="Cancel"/>
-        </form>
-    </body>
-</html>
+<%@ page import="com.imcode.imcms.flow.Page, static com.imcode.imcms.servlet.admin.LinkEditPage.Parameter.*" contentType="text/html"%> 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+
+<% pageContext.setAttribute("linkEditPage", Page.fromRequest(request)); %>
+<jsp:useBean id="linkEditPage" type="com.imcode.imcms.servlet.admin.LinkEditPage" />
+
+<ui:dialog title="Edit link" helpid="EditLink">
+
+    <ui:labeled idref="<%= HREF.toString() %>" key="edit/link/href">
+        <ui:text id="<%= HREF.toString() %>" value="${linkEditPage.link.href}" maxlength="300" size="100"/>
+        <ui:smallsubmit name="<%= SEARCH.toString() %>" value="..."/>
+    </ui:labeled>
+    
+    <ui:labeled idref="<%= TITLE.toString() %>" key="edit/link/title">
+        <ui:text id="<%= TITLE.toString() %>" value="${linkEditPage.link.title}" maxlength="300" size="100"/>
+    </ui:labeled>
+    
+    <c:if test="${linkEditPage.targetEditable}">
+        <ui:separator/>
+        <ui:labeled idref="<%= TARGET.toString() %>" key="edit/link/target">
+            <ui:linktarget name="<%= TARGET.toString() %>" target="${linkEditPage.link.target}"/>
+        </ui:labeled>
+    </c:if>
+
+</ui:dialog>

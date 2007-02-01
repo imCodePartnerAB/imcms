@@ -39,7 +39,7 @@ public class DocumentService {
      * @throws NoPermissionException If the current user dosen't have the rights to read this document.
      */
     public Document getDocument(String documentIdString) throws NoPermissionException {
-        DocumentDomainObject doc = getDocumentMapper().getDocumentFromId(documentIdString);
+        DocumentDomainObject doc = getDocumentMapper().getDocument(documentIdString);
         Document result = null;
         if ( null != doc ) {
             result = wrapDocumentDomainObject(doc, contentManagementSystem);

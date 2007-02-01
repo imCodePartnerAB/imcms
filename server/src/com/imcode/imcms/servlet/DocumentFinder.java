@@ -7,6 +7,7 @@ import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import com.imcode.imcms.servlet.admin.Handler;
 import imcode.util.Utility;
 import org.apache.commons.collections.SetUtils;
 import org.apache.lucene.queryParser.ParseException;
@@ -22,7 +23,7 @@ import java.util.*;
 
 public class DocumentFinder extends WebComponent {
 
-    private SelectDocumentCommand selectDocumentCommand;
+    private Handler<Integer> selectDocumentCommand;
     private Query restrictingQuery;
     private QueryParser queryParser = new DefaultQueryParser();
     private Set extraSearchResultColumns = SetUtils.orderedSet( new HashSet() ) ;
@@ -39,7 +40,7 @@ public class DocumentFinder extends WebComponent {
     }
 
     public void selectDocument(DocumentDomainObject selectedDocument) throws IOException, ServletException {
-        selectDocumentCommand.selectDocument( selectedDocument);
+        selectDocumentCommand.handle( selectedDocument.getId() );
     }
 
     public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
@@ -70,7 +71,7 @@ public class DocumentFinder extends WebComponent {
         return null != selectDocumentCommand;
     }
 
-    public void setSelectDocumentCommand( SelectDocumentCommand selectDocumentCommand ) {
+    public void setSelectDocumentCommand( Handler<Integer> selectDocumentCommand ) {
         this.selectDocumentCommand = selectDocumentCommand;
     }
 
@@ -102,9 +103,6 @@ public class DocumentFinder extends WebComponent {
         cancel(request, response);
     }
 
-    public interface SelectDocumentCommand extends Serializable {
-        void selectDocument(DocumentDomainObject document) throws IOException, ServletException;
-    }
 
     public interface SearchResultColumn extends Serializable {
 

@@ -80,7 +80,7 @@ if (null != listDocumentAliasPage.aliasInSelectedRange) { %>
 </tr><%
     Iterator aliasIter = listDocumentAliasPage.aliasInSelectedRange.iterator();
 	while ( aliasIter.hasNext() ) {
-		DocumentDomainObject document = documentMapper.getDocumentFromId( aliasIter.next().toString() ); %>
+		DocumentDomainObject document = documentMapper.getDocument( aliasIter.next().toString() ); %>
 <tr>
 	<td colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1_cccccc.gif" width="100%" height="1"></td>
 </tr>
