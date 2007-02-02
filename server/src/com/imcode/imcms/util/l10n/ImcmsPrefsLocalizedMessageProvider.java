@@ -13,7 +13,7 @@ import java.util.ResourceBundle;
 public class ImcmsPrefsLocalizedMessageProvider extends LocalizedMessageProvider {
 
     public ResourceBundle getResourceBundle(String languageIso639_2) {
-        String propertiesFilename = languageIso639_2 + ".properties";
+        String propertiesFilename = "imcms_"+languageIso639_2 + ".properties";
         try {
             final Properties languageProperties = Prefs.getProperties(propertiesFilename);
             return new ResourceBundle() {

@@ -15,7 +15,7 @@ import java.util.Set;
 public class TestLanguagePropertyFilesInSync extends TestCase {
 
     public void testLanguagePropertyFiles() throws IOException {
-        String dir = ".";
+        String dir = "web/WEB-INF/conf";
         compareLanguagePropertyFiles( dir, "eng", "swe" );
         compareLanguagePropertyFiles( dir, "swe", "eng" );
     }

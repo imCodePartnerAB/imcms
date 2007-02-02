@@ -172,7 +172,7 @@
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-       depends="init,web,jspc,test,checkstyle,libraries,conf,sql,jar"
+       depends="init,web,jspc,test,checkstyle,libraries,sql,jar"
        description="Builds everything."/>
 
     <target name="clean" description="Deletes everything for a fresh start.">
@@ -325,16 +325,6 @@
 
     </target>
 
-    <!-- Copies and filters the config-files with the correct properties. -->
-    <target name="conf" depends="init,web" description="Builds the config-directory.">
-
-        <copy file="imcms_swe.properties" tofile="${conf}/swe.properties"/>
-        <copy file="imcms_eng.properties" tofile="${conf}/eng.properties"/>
-
-        <copy file="${conf}/${log4j-config}" tofile="${conf}/log4j.xml"/>
-
-    </target>
-
     <target name="jspc" depends="init,web,libraries,classes">
 
         <jasper2
@@ -444,17 +434,19 @@
             <fileset dir="${basedir}/docs"/>
         </copy>
 
+        <copy file="${conf}/${log4j-config}" tofile="${conf}/log4j.xml"/>
+
     </target>
 
     <target name="web-lang" depends="init">
 
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="web/WEB-INF/conf/imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${templates}/${buildlanguage}" filtering="true" encoding="utf-8">
             <fileset dir="web/WEB-INF/templates/lang"/>
         </imtranslate>
 
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="web/WEB-INF/conf/imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${imcms}/${buildlanguage}" filtering="true" encoding="utf-8">
             <fileset dir="web/imcms/lang" excludes="${imagespattern}"/>

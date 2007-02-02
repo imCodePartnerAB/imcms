@@ -1,12 +1,12 @@
 <%@ tag import="com.imcode.imcms.flow.OkCancelPage, com.imcode.imcms.flow.Page"%><%@
-        attribute name="title"%><%@
+        attribute name="titlekey"%><%@
         attribute name="helpid"%><%@
         taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%@
         taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@
         taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%@
         taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %><html>
 <head>
-<title><c:out value="${title}"/></title>
+<title><fmt:message key="${titlekey}"/></title>
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/imcms/css/imcms_admin.css.jsp">
 </head>
 <body>
@@ -14,7 +14,7 @@
 <%= Page.htmlHidden(request) %>
 <vel:velocity>
 #gui_outer_start()
-#gui_head( "<c:out value="${title}"/> " )
+#gui_head( "<fmt:message key="${titlekey}"/> " )
 <table border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td>
