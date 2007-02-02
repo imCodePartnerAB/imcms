@@ -31,7 +31,11 @@ xinha_init = xinha_init ? xinha_init : function()
     xinha_editors = xinha_editors ? xinha_editors : Xinha.makeEditors([ 'text' ], xinha_config, xinha_plugins);
 
     Xinha.startEditors(xinha_editors);
-
+    
+    setTimeout(function() {
+            xinha_editors.text.activateEditor();
+            xinha_editors.text.focusEditor() ;
+        }, 1000);
 }
 
 window.onload = xinha_init;
