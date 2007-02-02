@@ -36,6 +36,10 @@
     
 <script language="JavaScript">
 <!--
+if (window.opener) {
+    window.resizeTo(800,760);
+}
+
 function setDef() {
 	var f   = document.forms[0] ;
 	if (!hasDocumentLayers && f.imageref.value == "") f.image_align.selectedIndex = 0;
