@@ -2,7 +2,7 @@
 // LANG: "sv" (Swedish), ENCODING: UTF-8
 // translated: Erik Dalén, <dalen@jpl.se>
 {
-  "Decimal numbers": "Desimaltal",
+  "Decimal numbers": "Decimaltal",
   "Lower roman numbers": "Små romerska siffror",
   "Upper roman numbers": "Stora romerska siffror",
   "Lower latin letters": "Små latinska bokstäver",

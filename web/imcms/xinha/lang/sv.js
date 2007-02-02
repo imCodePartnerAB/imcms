@@ -25,7 +25,7 @@
   "Horizontal Rule": "Vågrät linje",
   "Insert Web Link": "Infoga länk",
   "Insert/Modify Image": "Infoga bild",
-  "Toggle HTML Source": "Visa källkod",
+  "Toggle HTML Source": "Växla mellan textläge och WYSIWYG-läge.",
   "Enlarge Editor": "Visa i eget fönster",
   "About this editor": "Om denna editor",
   "Help using editor": "Hjälp",
@@ -47,7 +47,7 @@
   "OK": "OK",
   "Cancel": "Avbryt",
   "Path": "Objekt",
-  "You are in TEXT MODE.  Use the [<>] button to switch back to WYSIWYG.": "Du befinner dig i texläge. Klicka på ikonen [<>] ovan för att växla tillbaka till WYSIWIG läge",
+  "You are in TEXT MODE.  Use the [<>] button to switch back to WYSIWYG.": "Du befinner dig i textläge. Klicka på ikonen [<>] ovan för att växla tillbaka till WYSIWYG-läge",
   "The full screen mode is known to cause problems with Internet Explorer, due to browser bugs that we weren": "Visning i fullskärmsläga fungerar dåligt i din webläsare. Möjliga problem resulterar i en ryckig editor, saknade editorfunktioner och/eller att webläsaren kraschar. Om du använder Windows 95/98 finns också möjligheten att Windows kraschar.\n\nTryck ",
   "The Paste button does not work in Mozilla based web browsers (technical security reasons). Press CTRL-V on your keyboard to paste directly.": "Denna knapp fungerar ej i Mozillabaserad webläsare, använd istället snabbtangenterna CTRL-V på tangentbordet för att klistra in.",
 

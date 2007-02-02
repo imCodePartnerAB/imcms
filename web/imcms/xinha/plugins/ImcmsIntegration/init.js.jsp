@@ -10,15 +10,14 @@ xinha_init = xinha_init ? xinha_init : function()
     xinha_plugins = xinha_plugins ? xinha_plugins :
                     [
                             'ImcmsIntegration',
+                            'TableOperations',
                             'CharacterMap',
                             'ContextMenu',
                             'InsertAnchor',
                             'FullScreen',
                             'ListType',
                             'SpellChecker',
-                            'Stylist',
-                            'SuperClean',
-                            'TableOperations'
+                            'Stylist'
                             ];
     // THIS BIT OF JAVASCRIPT LOADS THE PLUGINS, NO TOUCHING  :)
     if(!Xinha.loadPlugins(xinha_plugins, xinha_init)) return;

@@ -53,7 +53,7 @@ ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttr
 #gui_mid()
 <div id="theLabel"><%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></div>
 
-<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+<table border="0" cellspacing="0" cellpadding="2" width="720" align="center">
 </vel:velocity>
 <tr>
 	<td colspan="2" class="imcmsAdmForm">
