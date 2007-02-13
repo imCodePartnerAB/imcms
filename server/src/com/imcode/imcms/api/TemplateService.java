@@ -95,10 +95,6 @@ public class TemplateService {
         return null != template ? new Template( template ) : null;
     }
 
-    public Template getTemplateById( int templateId ) {
-        return null ;
-    }
-
     public TemplateGroup getTemplateGroupById( int templateGroupId ) {
         TemplateGroupDomainObject template = getTemplateMapper().getTemplateGroupById( templateGroupId );
         return null != template ? new TemplateGroup( template ) : null;
