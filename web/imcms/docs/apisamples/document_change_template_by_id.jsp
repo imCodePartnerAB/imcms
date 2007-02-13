@@ -7,8 +7,7 @@
     int documentId = 1001 ;
     TextDocument document = documentService.getTextDocument(documentId) ;
 
-    int templateId = 1;
-    Template template = templateService.getTemplateById( templateId );
+    Template template = templateService.getTemplate( "demo" );
 
     if( null != template )  {
         document.setTemplate( template );
