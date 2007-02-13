@@ -30,8 +30,9 @@ public class TemplateNamesUpgrade implements DatabaseUpgrade {
                     int templateId = rs.getInt("template_id");
                     String templateName = rs.getString("simple_name");
                     File templateFile = new File(templatesDirectory, templateId+".html");
-                    if (templateFile.exists()) {
-                        templateFile.renameTo(new File(templatesDirectory, templateName +".html")) ;
+                    File newTemplateFile = new File(templatesDirectory, templateName + ".html");
+                    if (templateFile.exists() && !newTemplateFile.exists()) {
+                        templateFile.renameTo(newTemplateFile) ;
                     }
                 }
                 return null;
