@@ -2,6 +2,7 @@ package imcode.server.document.textdocument;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
@@ -15,6 +16,9 @@ public class TreeSortKeyDomainObject implements Comparable, Serializable {
     private final int[] keys;
 
     public TreeSortKeyDomainObject( String treeSortKey ) {
+        if (null == treeSortKey) {
+            throw new NullArgumentException("treeSortKey");
+        }
         String[] keyStrings = treeSortKey.trim().split( "\\D+",0 ) ;
         List keyList = new ArrayList() ;
         for (int i = 0; i < keyStrings.length; ++i) {

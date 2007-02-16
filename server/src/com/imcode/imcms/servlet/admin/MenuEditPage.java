@@ -132,13 +132,15 @@ public class MenuEditPage extends OkCancelPage {
         MenuItemDomainObject[] menuItems = menu.getMenuItems();
         for ( MenuItemDomainObject menuItem : menuItems ) {
             String newSortKey = request.getParameter(SORT_KEY + menuItem.getDocument().getId());
-            if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED == menu.getSortOrder() ) {
-                try {
-                    menuItem.setSortKey(new Integer(newSortKey));
-                } catch ( NumberFormatException ignored ) {
+            if (null != newSortKey) {
+                if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED == menu.getSortOrder() ) {
+                    try {
+                        menuItem.setSortKey(new Integer(newSortKey));
+                    } catch ( NumberFormatException ignored ) {
+                    }
+                } else if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER == menu.getSortOrder() ) {
+                    menuItem.setTreeSortKey(new TreeSortKeyDomainObject(newSortKey));
                 }
-            } else if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER == menu.getSortOrder() ) {
-                menuItem.setTreeSortKey(new TreeSortKeyDomainObject(newSortKey));
             }
         }
     }
