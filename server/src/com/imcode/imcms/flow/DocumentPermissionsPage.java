@@ -11,6 +11,7 @@ import imcode.util.Utility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -81,10 +82,7 @@ public class DocumentPermissionsPage extends OkCancelPage {
 
         if ( document instanceof TextDocumentDomainObject ) {
             String defaultTemplateIdStr = request.getParameter( REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID );
-            String templateName = null;
-            try {
-                templateName = defaultTemplateIdStr ;
-            } catch ( NumberFormatException ignored ) {}
+            String templateName = StringUtils.isNotBlank(defaultTemplateIdStr) ? defaultTemplateIdStr : null;
             ( (TextDocumentDomainObject)document ).setDefaultTemplateId( templateName );
         }
 

@@ -47,10 +47,8 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
                 "" + templateName,
                 "" + templateGroupId,
                 null != defaultTemplate ? "" + defaultTemplate : null,
-                null != defaultTemplateForRestricted1
-                ? "" + defaultTemplateForRestricted1 : "-1",
-                null != defaultTemplateForRestricted2
-                ? "" + defaultTemplateForRestricted2 : "-1",
+                null != defaultTemplateForRestricted1 ? "" + defaultTemplateForRestricted1 : null,
+                null != defaultTemplateForRestricted2 ? "" + defaultTemplateForRestricted2 : null,
                 };
         database.execute(new SqlUpdateCommand(sqlTextDocsInsertStr, parameters));
         updateTextDocumentTexts( textDocument, null, null);

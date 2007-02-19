@@ -45,8 +45,8 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
             "" + templateId,
             "" + templateGroupId,
             (null != defaultTemplateId ? "" + defaultTemplateId : null),
-            null != defaultTemplateIdForRestricted1 ? "" + defaultTemplateIdForRestricted1 : "-1",
-            null != defaultTemplateIdForRestricted2 ? "" + defaultTemplateIdForRestricted2 : "-1",
+            null != defaultTemplateIdForRestricted1 ? "" + defaultTemplateIdForRestricted1 : null,
+            null != defaultTemplateIdForRestricted2 ? "" + defaultTemplateIdForRestricted2 : null,
             "" + textDocument.getId()
         };
         database.execute(new SqlUpdateCommand(sqlStr, parameters));

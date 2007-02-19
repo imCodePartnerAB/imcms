@@ -8,6 +8,8 @@ import imcode.util.IntegerSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 public class DocumentPermissionSetPage extends OkCancelPage {
 
     private static final String URL_I15D_PAGE__DOCUMENT_PERMISSION_SET = "/jsp/docadmin/document_permission_set.jsp";
@@ -58,10 +60,8 @@ public class DocumentPermissionSetPage extends OkCancelPage {
             textDocumentPermissionSet.setAllowedDocumentTypeIds( new IntegerSet(Utility.getParameterInts(request, REQUEST_PARAMETER__ALLOWED_DOCUMENT_TYPE_IDS)) );
             int[] allowedTemplateGroupIds = Utility.getParameterInts( request, REQUEST_PARAMETER__ALLOWED_TEMPLATE_GROUP_IDS ) ;
             textDocumentPermissionSet.setAllowedTemplateGroupIds( new IntegerSet(allowedTemplateGroupIds));
-            String defaultTemplateId = null;
-            try {
-                defaultTemplateId = request.getParameter( REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID );
-            } catch( NumberFormatException ignored ) {}
+            String defaultTemplateIdParameter = request.getParameter(REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID);
+            String defaultTemplateId = StringUtils.isNotBlank(defaultTemplateIdParameter) ? defaultTemplateIdParameter : null;
             TextDocumentDomainObject textDocument = (TextDocumentDomainObject) document;
             if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(textDocumentPermissionSet.getType())) {
                 textDocument.setDefaultTemplateIdForRestricted1( defaultTemplateId );
