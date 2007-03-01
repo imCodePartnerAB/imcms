@@ -44,9 +44,9 @@ public class TestLdapUserAndRoleRegistry extends TestCase {
             throw new Exception( "Set ldap-test-user in " + propertyFileName );
         }
 
-        LdapUserAndRoleRegistry ldapUserAndRoleRegistry = new LdapUserAndRoleRegistry( ldapUrl, LdapUserAndRoleRegistry.AUTHENTICATION_TYPE_SIMPLE,
+        LdapUserAndRoleRegistry ldapUserAndRoleRegistry = new LdapUserAndRoleRegistry( ldapUrl,
                                                                                        ldapUserObjectClass,
-                                                                                       ldapBindDN, ldapPassword, ldapAttributesMappedToRoles );
+                                                                                       ldapBindDN, ldapPassword, ldapAttributesMappedToRoles, new Properties());
         ldapUserAndRoleRegistry.setUserPropertyLdapAttribute("LoginName", ldapAttributeLoginName) ;
         return ldapUserAndRoleRegistry;
     }

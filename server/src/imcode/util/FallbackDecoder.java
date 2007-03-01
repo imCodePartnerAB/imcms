@@ -28,7 +28,6 @@ public class FallbackDecoder {
         String result;
         try {
             result = createReportingDecoder(charset).decode(ByteBuffer.wrap(inputBytes)).toString();
-            logCharactersDecoded(inputBytes, result, charset, sourceName);
         } catch ( CharacterCodingException e1 ) {
             if ( LOG.isDebugEnabled() ) {
                 LOG.debug("Failed to decode " + sourceName + " using " + charset + ", falling back to "
@@ -36,7 +35,6 @@ public class FallbackDecoder {
             }
             try {
                 result = createReportingDecoder(fallbackCharset).decode(ByteBuffer.wrap(inputBytes)).toString();
-                logCharactersDecoded(inputBytes, result, fallbackCharset, sourceName);
             } catch ( CharacterCodingException e2 ) {
                 LOG.warn("Failed to decode "+sourceName +" using "+charset +" and "+fallbackCharset +", using broken "+charset+" result.", e2);
                 result = charset.decode(ByteBuffer.wrap(inputBytes)).toString() ;
@@ -45,9 +43,6 @@ public class FallbackDecoder {
         return result;
     }
 
-    private static void logCharactersDecoded(byte[] inputBytes, String result, Charset charset, String sourceName) {
-        LOG.trace("Decoded "+inputBytes.length+" bytes of "+sourceName+" using "+charset+" to "+result.length()+" characters.") ;
-    }
     private static CharsetDecoder createReportingDecoder(Charset charset) {
         return charset.newDecoder().onMalformedInput(CodingErrorAction.REPORT) ;
     }

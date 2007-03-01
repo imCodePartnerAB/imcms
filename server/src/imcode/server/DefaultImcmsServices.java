@@ -10,6 +10,7 @@ import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
+import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.index.RebuildingDirectoryIndex;
@@ -315,7 +316,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         } else if ( EXTERNAL_USER_AND_ROLE_MAPPER_LDAP.equalsIgnoreCase(externalUserAndRoleMapperName) ) {
             try {
                 externalUserAndRoleRegistry = new LdapUserAndRoleRegistry(userAndRoleMapperPropertiesSubset);
-            } catch ( LdapUserAndRoleRegistry.LdapInitException e ) {
+            } catch ( LdapClientException e ) {
                 log.error("LdapUserAndRoleRegistry could not be created, using default user and role documentMapper.",
                           e);
             }
@@ -334,7 +335,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             } else if ( EXTERNAL_AUTHENTICATOR_LDAP.equalsIgnoreCase(externalAuthenticatorName) ) {
                 try {
                     externalAuthenticator = new LdapUserAndRoleRegistry(authenticatorPropertiesSubset);
-                } catch ( LdapUserAndRoleRegistry.LdapInitException e ) {
+                } catch ( LdapClientException e ) {
                     log.error("LdapUserAndRoleRegistry could not be created, using default user and role documentMapper.",
                               e);
                 }
