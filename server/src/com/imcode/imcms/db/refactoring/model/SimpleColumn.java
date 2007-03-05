@@ -5,7 +5,6 @@ public class SimpleColumn implements Column {
     private Required required;
     private String defaultValue;
     private boolean autoIncremented;
-    private boolean primaryKey;
     private Type type;
     private int size;
     private String name;
@@ -34,7 +33,7 @@ public class SimpleColumn implements Column {
     }
 
     public boolean isPrimaryKey() {
-        return primaryKey;
+        return Required.PRIMARY_KEY.equals(required);
     }
 
     public Type getType() {

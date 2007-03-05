@@ -38,10 +38,12 @@ public class TemplateNamesUpgrade implements DatabaseUpgrade {
                 return null;
             }
         })) ;
+
         DatabasePlatform dp = DatabasePlatform.getInstance(database);
-        SimpleColumn templateNameColumn = new SimpleColumn("template_name", Type.VARCHAR, 255, SimpleColumn.Required.NOT_NULL);
+        SimpleColumn templateNameColumn = new SimpleColumn("template_name", Type.VARCHAR, 255, SimpleColumn.Required.PRIMARY_KEY);
         dp.alterColumn("templates_cref", "template_id", templateNameColumn) ;
         updateTemplateName(dp, "templates_cref", "template_name");
+        templateNameColumn.setRequired(SimpleColumn.Required.NOT_NULL);
 
         dp.alterColumn("text_docs", "template_id", templateNameColumn) ;
         updateTemplateName(dp, "text_docs", "template_name");
