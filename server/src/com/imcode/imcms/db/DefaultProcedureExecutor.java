@@ -105,7 +105,7 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         }
     }
 
-    private File getFile( String wantedProcedure ) {
+    protected File getFile( String wantedProcedure ) {
         return FileUtility.getFileFromWebappRelativePath( "WEB-INF/sql/sprocs/"
                                                           + wantedProcedure.toLowerCase() + ".prc" );
     }

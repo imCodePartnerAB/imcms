@@ -435,7 +435,7 @@ public class Utility {
     public static ContentManagementSystem initRequestWithApi(ServletRequest request, UserDomainObject currentUser) {
         NDC.push( "initRequestWithApi" );
         ImcmsServices service = Imcms.getServices();
-        ContentManagementSystem imcmsSystem = DefaultContentManagementSystem.create( service, currentUser );
+        ContentManagementSystem imcmsSystem = DefaultContentManagementSystem.create( service, currentUser, Imcms.getApiDataSource());
         request.setAttribute( CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE, imcmsSystem );
         NDC.pop();
         return imcmsSystem ;

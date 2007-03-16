@@ -13,7 +13,7 @@ public class UserService {
 
     private ContentManagementSystem contentManagementSystem;
 
-    UserService( ContentManagementSystem contentManagementSystem ) {
+    public UserService( ContentManagementSystem contentManagementSystem ) {
         this.contentManagementSystem = contentManagementSystem;
     }
 

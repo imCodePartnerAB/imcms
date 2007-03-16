@@ -55,7 +55,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private Date sessionCounterDate;
     private int sessionCounter = 0;
-    private CachingFileLoader fileLoader = new CachingFileLoader();
+    private CachingFileLoader fileLoader ;
 
     private final static Logger mainLog = Logger.getLogger(ImcmsConstants.MAIN_LOG);
 
@@ -80,10 +80,12 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     /** Contructs an DefaultImcmsServices object. */
-    public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider) {
+    public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
+                                CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor) {
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
-        procedureExecutor = new DefaultProcedureExecutor(this.database, fileLoader);
+        this.procedureExecutor = procedureExecutor;
+        this.fileLoader = fileLoader;
         initConfig(props);
         initKeyStore();
         initSysData();

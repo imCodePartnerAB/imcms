@@ -1,24 +1,32 @@
 package imcode.server;
 
 import com.imcode.db.*;
-import com.imcode.imcms.db.DatabaseUpgrade;
-import com.imcode.imcms.db.StartupDatabaseUpgrade;
-import com.imcode.imcms.db.DatabaseUtils;
-import com.imcode.imcms.db.ImcmsDatabaseCreator;
+import com.imcode.db.Database;
+import com.imcode.imcms.db.*;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.util.Prefs;
+import imcode.util.CachingFileLoader;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
+import org.apache.ddlutils.Platform;
+import org.apache.ddlutils.model.Index;
+import org.apache.ddlutils.model.IndexColumn;
+import org.apache.ddlutils.model.ForeignKey;
+import org.apache.ddlutils.alteration.*;
 
 import javax.sql.DataSource;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.Properties;
+import java.util.*;
 
 public class Imcms {
 
@@ -52,7 +60,7 @@ public class Imcms {
         return path;
     }
 
-    public static void start() throws StartupException {
+    public synchronized static void start() throws StartupException {
         try {
             services = createServices();
         } catch (Exception e) {
@@ -66,9 +74,26 @@ public class Imcms {
         Database database = createDatabase(serverprops);
         LocalizedMessageProvider localizedMessageProvider = new CachingLocalizedMessageProvider(new ImcmsPrefsLocalizedMessageProvider());
         InputStreamReader initScriptReader = new InputStreamReader(new FileInputStream(new File(getPath(), "WEB-INF/sql/init.sql")), "UTF-8");
-        DatabaseUpgrade upgrade = new StartupDatabaseUpgrade(DatabaseUtils.getWantedDdl(), new ImcmsDatabaseCreator(initScriptReader, localizedMessageProvider));
+        org.apache.ddlutils.model.Database wantedDdl = DatabaseUtils.getWantedDdl();
+        DatabaseUpgrade upgrade = new StartupDatabaseUpgrade(wantedDdl, new ImcmsDatabaseCreator(initScriptReader, localizedMessageProvider));
         upgrade.upgrade(database);
-        return new DefaultImcmsServices(database, serverprops, localizedMessageProvider);
+        sanityCheckDatabase(database, wantedDdl);
+        final CachingFileLoader fileLoader = new CachingFileLoader();
+        return new DefaultImcmsServices(database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
+    }
+
+    private static void sanityCheckDatabase(Database database, org.apache.ddlutils.model.Database wantedDdl) {
+        DatabaseSanityCheck databaseSanityCheck = new DatabaseSanityCheck(database, wantedDdl);
+        Collection<SanityCheck.Problem> problems = databaseSanityCheck.execute();
+        for ( SanityCheck.Problem problem : problems ) {
+            if ( SanityCheck.Problem.Severity.ERROR == problem.getSeverity() ) {
+                LOG.error(problem.getDescription());
+            } else if (SanityCheck.Problem.Severity.WARNING == problem.getSeverity()) {
+                LOG.warn(problem.getDescription());
+            } else if (SanityCheck.Problem.Severity.UNKNOWN == problem.getSeverity()) {
+                LOG.debug(problem.getDescription());
+            }
+        }
     }
 
     private static Database createDatabase(Properties serverprops) {

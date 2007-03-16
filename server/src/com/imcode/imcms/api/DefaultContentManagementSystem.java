@@ -6,6 +6,7 @@ import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
+import javax.sql.DataSource;
 import java.security.KeyStore;
 
 public class DefaultContentManagementSystem extends ContentManagementSystem implements Cloneable {
@@ -24,19 +25,20 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
         currentUser = accessor;
     }
 
-    public static DefaultContentManagementSystem create( ImcmsServices service, UserDomainObject accessor ) {
+    public static DefaultContentManagementSystem create(ImcmsServices service, UserDomainObject accessor,
+                                                        DataSource apiDataSource) {
         DefaultContentManagementSystem contentManagementSystem = new DefaultContentManagementSystem( service, accessor );
-        contentManagementSystem.init();
+        contentManagementSystem.init(apiDataSource);
         return contentManagementSystem ;
     }
 
-    private void init() {
+    private void init(DataSource apiDataSource) {
         securityChecker = new SecurityChecker( this );
         userService = new UserService( this );
         documentService = new DocumentService( this ) ;
         templateService = new TemplateService( this );
-        databaseService = new DatabaseService( Imcms.getApiDataSource() );
-        mailService = new MailService(this.service.getSMTP()) ;
+        databaseService = new DatabaseService( apiDataSource );
+        mailService = new MailService(service.getSMTP()) ;
     }
 
     protected Object clone() throws CloneNotSupportedException {
@@ -83,7 +85,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
         if (!Utility.classIsSignedByCertificatesInKeyStore( clazz, keyStore )) {
             throw new NoPermissionException("Class "+clazz.getName()+" is not signed by certificates in keystore.") ;
         }
-        DefaultContentManagementSystem cms = DefaultContentManagementSystem.create( service, (UserDomainObject)currentUser.clone() );
+        DefaultContentManagementSystem cms = create( service, (UserDomainObject)currentUser.clone(), Imcms.getApiDataSource());
         cms.currentUser.addRoleId( RoleId.SUPERADMIN );
         runnable.runWith( cms );
         cms.currentUser = null;

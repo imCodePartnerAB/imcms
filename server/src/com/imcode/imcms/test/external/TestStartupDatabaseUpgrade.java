@@ -73,65 +73,6 @@ public class TestStartupDatabaseUpgrade extends TestCase {
         assertTrue(new File(templatesDirectory, "demo_test.html").exists());
     }
 
-    private void assertDatabaseUpgraded(DataSourceDatabase database, final Database wantedDdl) {
-        database.execute(new DdlUtilsPlatformCommand() {
-            protected Object executePlatform(DatabaseConnection databaseConnection, Platform platform) {
-                Database actualDdl = platform.readModelFromDatabase(null);
-                List<ModelChange> list = new ModelComparator(platform.getPlatformInfo(), true).compare(actualDdl, wantedDdl);
-                if (!list.isEmpty()) {
-                    StringWriter changesString = new StringWriter();
-                    PrintWriter changesPrintWriter = new PrintWriter(changesString);
-                    changesPrintWriter.println("Changes left for upgrade :");
-                    for ( ModelChange change : list ) {
-                        String changeString ;
-                        if (change instanceof RemoveIndexChange ) {
-                            RemoveIndexChange removeIndexChange = (RemoveIndexChange) change;
-                            Index index = removeIndexChange.getIndex();
-                            changeString = "Remove index "+index.getName() + " on column(s) "+ StringUtils.join(CollectionUtils.collect(Arrays.asList(index.getColumns()), new Transformer() {
-                                public Object transform(Object input) {
-                                    IndexColumn indexColumn = (IndexColumn) input ;
-                                    return indexColumn.getName();
-                                }
-                            }).iterator(), ", ");
-                        } else if (change instanceof ColumnDefaultValueChange ) {
-                            ColumnDefaultValueChange columnDefaultValueChange = (ColumnDefaultValueChange) change;
-                            changeString = "Change default value to "+columnDefaultValueChange.getNewDefaultValue();
-                        } else if (change instanceof ColumnDataTypeChange ) {
-                            ColumnDataTypeChange columnDataTypeChange = (ColumnDataTypeChange) change;
-                            changeString = "Change data type to "+platform.getPlatformInfo().getNativeType(columnDataTypeChange.getNewTypeCode()) ;
-                        } else if (change instanceof AddTableChange ) {
-                            AddTableChange addTableChange = (AddTableChange) change;
-                            changeString = "Add table "+addTableChange.getNewTable();
-                        } else if (change instanceof RemoveForeignKeyChange) {
-                            RemoveForeignKeyChange removeForeignKeyChange = (RemoveForeignKeyChange) change;
-                            ForeignKey foreignKey = removeForeignKeyChange.getForeignKey();
-                            changeString = "Remove foreign key to "+foreignKey.getForeignTableName();
-                        } else if (change instanceof AddForeignKeyChange) {
-                            AddForeignKeyChange removeForeignKeyChange = (AddForeignKeyChange) change;
-                            ForeignKey newForeignKey = removeForeignKeyChange.getNewForeignKey();
-                            changeString = "Add foreign key to "+newForeignKey.getForeignTableName();
-                        } else if (change instanceof AddIndexChange) {
-                            AddIndexChange addIndexChange = (AddIndexChange) change;
-                            Index index = addIndexChange.getNewIndex();
-                            changeString = "Add index "+index.getName();
-                        } else {
-                            changeString = change.toString();
-                        }
-                        if (change instanceof ColumnChange ) {
-                            changeString = ((ColumnChange)change).getChangedColumn().getName()+": "+changeString ;
-                        }
-                        if (change instanceof TableChange ) {
-                            changeString = ((TableChange)change).getChangedTable().getName()+": "+changeString ;
-                        }
-                        changesPrintWriter.println(changeString) ;
-                    }
-                    throw new AssertionFailedError(changesString.toString()) ;
-                }
-                return null;
-            }
-        }) ;
-    }
-
     private Database getOldDdl() {
         return getDdl(getOldDdlXmlReader());
     }

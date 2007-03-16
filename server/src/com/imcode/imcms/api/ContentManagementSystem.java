@@ -30,7 +30,7 @@ public abstract class ContentManagementSystem {
     public static ContentManagementSystem getContentManagementSystem( String userName, String password ) {
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = imcref.verifyUser( userName, password );
-        return DefaultContentManagementSystem.create( imcref, user );
+        return DefaultContentManagementSystem.create( imcref, user, Imcms.getApiDataSource());
     }
 
     /**
