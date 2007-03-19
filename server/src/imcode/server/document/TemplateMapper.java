@@ -152,7 +152,7 @@ public class TemplateMapper {
         File[] templateFiles = getTemplateDirectory().listFiles(new FileFilter() {
             public boolean accept(File pathname) {
                 String fileName = pathname.getName().toLowerCase();
-                return pathname.isFile() && (fileName.endsWith(".jsp") || fileName.endsWith(".html")) ; 
+                return pathname.isFile() && (fileName.endsWith(".jsp") || fileName.endsWith(".jspx") || fileName.endsWith(".html")) ; 
             }
         });
         SortedSet<TemplateDomainObject> templates = new TreeSet<TemplateDomainObject>();
@@ -181,7 +181,7 @@ public class TemplateMapper {
     }
 
     public TemplateDomainObject getTemplateByName( String templateName ) {
-        String[] extensions = new String[] { "jsp", "html" } ;
+        String[] extensions = new String[] { "jsp", "jspx", "html" } ;
         for ( String extension : extensions ) {
             String templateFileName = templateName + "." + extension;
             File templateFile = new File(getTemplateDirectory(), templateFileName);
@@ -219,8 +219,8 @@ public class TemplateMapper {
     }
 
     public List<TemplateDomainObject> getTemplatesNotInGroup( TemplateGroupDomainObject templateGroup ) {
-        List templatesInGroup = Arrays.asList( getTemplatesInGroup( templateGroup ) );
-        Set allTemplates = new HashSet( Arrays.asList( getAllTemplates() ) );
+        List<TemplateDomainObject> templatesInGroup = getTemplatesInGroup( templateGroup );
+        Set<TemplateDomainObject> allTemplates = new HashSet<TemplateDomainObject>( getAllTemplates() ) ;
         allTemplates.removeAll( templatesInGroup );
         List<TemplateDomainObject> templatesNotInGroup = new ArrayList<TemplateDomainObject>(allTemplates);
         Collections.sort(templatesNotInGroup) ;
