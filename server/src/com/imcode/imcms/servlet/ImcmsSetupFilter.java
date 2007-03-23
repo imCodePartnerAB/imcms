@@ -2,7 +2,6 @@ package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.FallbackDecoder;
@@ -67,10 +66,10 @@ public class ImcmsSetupFilter implements Filter {
         NDC.setMaxDepth( 0 );
     }
 
-    private void handleDocumentUri(FilterChain chain, HttpServletRequest httpServletRequest, ServletResponse response,
+    private void handleDocumentUri(FilterChain chain, HttpServletRequest request, ServletResponse response,
                                    ImcmsServices service, FallbackDecoder fallbackDecoder) throws ServletException, IOException {
-        String path = Utility.fallbackUrlDecode(httpServletRequest.getRequestURI(), fallbackDecoder) ;
-        path = StringUtils.substringAfter( path, httpServletRequest.getContextPath() ) ;
+        String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder) ;
+        path = StringUtils.substringAfter( path, request.getContextPath() ) ;
         String documentPathPrefix = service.getConfig().getDocumentPathPrefix() ;
         String documentIdString = null ;
         if (StringUtils.isNotBlank( documentPathPrefix ) && path.startsWith( documentPathPrefix )) {
@@ -79,17 +78,15 @@ public class ImcmsSetupFilter implements Filter {
                 documentIdString = documentIdString.substring(0,documentIdString.length()-1);
             }
         }
-        HttpSession session = httpServletRequest.getSession();
-        boolean isResourcePath = null != session.getServletContext().getResourcePaths(path);
-        DocumentDomainObject document = !isResourcePath ? service.getDocumentMapper().getDocument(documentIdString) : null ;
-        if ( null != document ) {
+        ServletContext servletContext = request.getSession().getServletContext();
+        if ( null == servletContext.getResourcePaths(path) ) {
             try {
-                GetDoc.output( document.getId(), httpServletRequest, (HttpServletResponse)response );
+                GetDoc.output( Integer.parseInt(documentIdString), request, (HttpServletResponse)response );
             } catch( NumberFormatException nfe ) {
-                chain.doFilter( httpServletRequest, response );
+                chain.doFilter( request, response );
             }
         } else {
-            chain.doFilter( httpServletRequest, response );
+            chain.doFilter( request, response );
         }
     }
 
