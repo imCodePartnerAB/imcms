@@ -35,10 +35,22 @@ public class ContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         Logger log = Logger.getLogger(ContextListener.class);
         log.debug("Stopping imCMS.");
-        Imcms.stop();
+        try {
+            Imcms.stop();
+        } catch(Exception e) {
+            log.error("Stopping imCMS failed.", e);
+        }
         log.debug("Shutting down logging.");
-        LogManager.shutdown();
-        LogFactory.releaseAll();
+        try {
+            LogManager.shutdown();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+        try {
+            LogFactory.releaseAll();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
     }
 
     private void configureLogging(ServletContext servletContext, File root, File configPath) {
