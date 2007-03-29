@@ -104,7 +104,7 @@ public class AdminDoc extends HttpServlet {
 
         DocumentDomainObject document = imcref.getDocumentMapper().getDocument( meta_id );
         if ( null == document ) {
-            GetDoc.outputDocumentDoesNotExistPage(res, user );
+            res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return ;
         }
 
@@ -133,7 +133,7 @@ public class AdminDoc extends HttpServlet {
         }
 
         if ( !user.canEdit( document ) ) {
-            GetDoc.getDoc( meta_id, req, res );
+            GetDoc.viewDoc( ""+meta_id, req, res );
             return ;
         }
 

@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.FallbackDecoder;
@@ -80,14 +81,15 @@ public class ImcmsSetupFilter implements Filter {
         }
         ServletContext servletContext = request.getSession().getServletContext();
         if ( null == servletContext.getResourcePaths(path) ) {
-            try {
-                GetDoc.output( Integer.parseInt(documentIdString), request, (HttpServletResponse)response );
-            } catch( NumberFormatException nfe ) {
-                chain.doFilter( request, response );
+            DocumentDomainObject document = service.getDocumentMapper().getDocument(documentIdString);
+            if (null != document) {
+                try {
+                    GetDoc.viewDoc( document, request, (HttpServletResponse)response );
+                    return ;
+                } catch( NumberFormatException nfe ) {}
             }
-        } else {
-            chain.doFilter( request, response );
         }
+        chain.doFilter( request, response );
     }
 
     private void setDomainSessionCookie( ServletResponse response, HttpSession session ) {

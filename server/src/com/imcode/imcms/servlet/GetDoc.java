@@ -41,46 +41,47 @@ public class GetDoc extends HttpServlet {
 
     /** doGet() */
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-
-        ImcmsServices imcref = Imcms.getServices();
-
-        int meta_id;
-
-        try {
-            meta_id = Integer.parseInt(req.getParameter("meta_id"));
-        } catch ( NumberFormatException ex ) {
-            // Find the start-page
-            meta_id = imcref.getSystemData().getStartDocument();
-        }
-        output(meta_id, req, res);
+        String documentId = req.getParameter("meta_id");
+        viewDoc(documentId, req, res);
     }
 
-    static void output(int meta_id, HttpServletRequest req,
-                       HttpServletResponse res) throws IOException, ServletException {
-        NDC.push("" + meta_id);
+    public static void viewDoc(String documentId, HttpServletRequest req,
+                         HttpServletResponse res) throws IOException, ServletException {
+        ImcmsServices imcref = Imcms.getServices();
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( documentId );
+        if (null == document) {
+            document = documentMapper.getDocument(imcref.getSystemData().getStartDocument());
+        }
+
+        viewDoc(document, req, res);
+    }
+
+    public static void viewDoc(DocumentDomainObject document, HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        NDC.push("" + document.getId());
         try {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
-            getDoc(meta_id, req, res);
+
+            privateGetDoc(document, res, req);
             stopWatch.stop();
             long renderTime = stopWatch.getTime();
-            log.trace("Rendering document " + meta_id + " took " + renderTime + "ms.");
+            log.trace("Rendering document " + document.getId() + " took " + renderTime + "ms.");
         } finally {
             NDC.pop();
         }
     }
 
-    public static void getDoc(int meta_id, HttpServletRequest req, HttpServletResponse res)
-            throws IOException, ServletException {
+    private static void privateGetDoc(DocumentDomainObject document, HttpServletResponse res,
+                                      HttpServletRequest req) throws IOException, ServletException {
         ImcmsServices imcref = Imcms.getServices();
 
         HttpSession session = req.getSession(true);
         UserDomainObject user = Utility.getLoggedOnUser( req );
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument( meta_id );
 
         if ( null == document ) {
-            outputDocumentDoesNotExistPage(res, user);
+            res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return ;
         }
 
@@ -155,7 +156,7 @@ public class GetDoc extends HttpServlet {
             if ( br_id == null ) {
                 br_id = "";
             }
-            final Object[] parameters = new String[] { "" + meta_id, br_id };
+            final Object[] parameters = new String[] { "" + document.getId(), br_id };
             String destinationMetaId = (String) imcref.getDatabase().execute(new SqlQueryCommand("select to_meta_id\n"
                                                                                                  + "from browser_docs\n"
                                                                                                  + "join browsers on browsers.browser_id = browser_docs.browser_id\n"
@@ -187,7 +188,7 @@ public class GetDoc extends HttpServlet {
             try {
                 fr = new BufferedInputStream(file.getInputStreamSource().getInputStream());
             } catch ( IOException ex ) {
-                outputDocumentDoesNotExistPage(res, user);
+                res.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return ;
             }
             int len = fr.available();
@@ -224,19 +225,6 @@ public class GetDoc extends HttpServlet {
             trackLog.info(documentRequest);
             imcref.parsePage(paramsToParser, res.getWriter());
         }
-    }
-
-    public static void outputDocumentDoesNotExistPage(HttpServletResponse res,
-                                                      UserDomainObject user) throws IOException {
-        ImcmsServices imcref = Imcms.getServices();
-        List vec = new ArrayList();
-        SystemData sysData = imcref.getSystemData();
-        String eMailServerMaster = sysData.getServerMasterAddress();
-        vec.add("#EMAIL_SERVER_MASTER#");
-        vec.add(eMailServerMaster);
-        res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        Utility.setDefaultHtmlContentType(res);
-        res.getWriter().write(imcref.getAdminTemplate(NO_PAGE_URL, user, vec));
     }
 
     private static boolean isTextDocument(DocumentDomainObject document) {
