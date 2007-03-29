@@ -51,7 +51,8 @@ public class GetDoc extends HttpServlet {
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( documentId );
         if (null == document) {
-            document = documentMapper.getDocument(imcref.getSystemData().getStartDocument());
+            res.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
         }
 
         viewDoc(document, req, res);
