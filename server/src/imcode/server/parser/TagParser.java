@@ -41,7 +41,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -55,7 +54,7 @@ public class TagParser {
     private static Pattern imcmsEndTagPattern;
     private static Pattern attributesPattern;
 
-    private final static Logger log = Logger.getLogger(TagParser.class.getName());
+    private final static Logger LOG = Logger.getLogger(TagParser.class.getName());
 
     static {
         Perl5Compiler patComp = new Perl5Compiler();
@@ -74,7 +73,7 @@ public class TagParser {
                                                                                       | Perl5Compiler.READ_ONLY_MASK);
         } catch ( MalformedPatternException ignored ) {
             // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
-            log.fatal("Danger, Will Robinson!", ignored);
+            LOG.fatal("Danger, Will Robinson!", ignored);
         }
     }
 
@@ -181,10 +180,9 @@ public class TagParser {
         HttpServletRequestWrapper metaIdHeaderHttpServletRequest = new MetaIdHeaderHttpServletRequest(request, document.getId());
         try {
             return Utility.getContents(path, metaIdHeaderHttpServletRequest, documentRequest.getHttpServletResponse());
-        } catch ( ServletException ex ) {
-            return "<!-- imcms:include path failed: " + ex + " -->";
-        } catch ( IOException ex ) {
-            return "<!-- imcms:include path failed: " + ex + " -->";
+        } catch ( Exception ex ) {
+            LOG.warn("imcms:include path "+path+" failed.",ex);
+            return "<!-- imcms:include path failed: " + StringEscapeUtils.escapeHtml(ex.toString()) + " -->";
         }
     }
 
@@ -271,7 +269,7 @@ public class TagParser {
             InputStream connectionInputStream = urlConnection.getInputStream();
             String contentType = urlConnection.getContentType();
             String contentEncoding = StringUtils.substringAfter(contentType, "charset=");
-            if ( "".equals(contentEncoding) ) {
+            if ( StringUtils.isBlank(contentEncoding) ) {
                 contentEncoding = Imcms.DEFAULT_ENCODING;
             }
             InputStreamReader urlInput = null;
@@ -290,12 +288,9 @@ public class TagParser {
                     urlInput.close();
                 }
             }
-        } catch ( MalformedURLException ex ) {
-            return "<!-- imcms:include url failed: " + ex + " -->";
-        } catch ( IOException ex ) {
-            return "<!-- imcms:include url failed: " + ex + " -->";
-        } catch ( RuntimeException ex ) {
-            return "<!-- imcms:include url failed: " + ex + " -->";
+        } catch ( Exception ex ) {
+            LOG.warn("imcms:include url "+urlStr+" failed.",ex);
+            return "<!-- imcms:include url failed: " + StringEscapeUtils.escapeHtml(ex.toString()) + " -->";
         }
     }
 
