@@ -43,7 +43,6 @@ public class DocumentService {
         Document result = null;
         if ( null != doc ) {
             result = wrapDocumentDomainObject(doc, contentManagementSystem);
-            getSecurityChecker().hasAtLeastDocumentReadPermission(result);
         }
         return result;
     }
@@ -111,7 +110,6 @@ public class DocumentService {
     }
 
     private Document createNewDocument(int doctype, Document parent) throws NoPermissionException {
-        getSecurityChecker().hasEditPermission(parent);
         return wrapDocumentDomainObject(getDocumentMapper().createDocumentOfTypeFromParent(doctype, parent.getInternal(), contentManagementSystem.getCurrentUser().getInternal()), contentManagementSystem);
     }
 
@@ -202,7 +200,6 @@ public class DocumentService {
      */
     public CategoryType createNewCategoryType(String name,
                                               int maxChoices) throws NoPermissionException, CategoryTypeAlreadyExistsException {
-        getSecurityChecker().isSuperAdmin();
         if ( getCategoryMapper().isUniqueCategoryTypeName(name) ) {
             CategoryTypeDomainObject newCategoryTypeDO = new CategoryTypeDomainObject(0, name, maxChoices, false);
             newCategoryTypeDO = getCategoryMapper().addCategoryTypeToDb(newCategoryTypeDO);
@@ -210,10 +207,6 @@ public class DocumentService {
         } else {
             throw new CategoryTypeAlreadyExistsException("A category with name " + name + " already exists.");
         }
-    }
-
-    private SecurityChecker getSecurityChecker() {
-        return contentManagementSystem.getSecurityChecker();
     }
 
     public Section getSection(int sectionId) {
@@ -262,7 +255,6 @@ public class DocumentService {
     }
 
     public void saveCategory(Category category) throws NoPermissionException, CategoryAlreadyExistsException {
-        getSecurityChecker().isSuperAdmin();
         getCategoryMapper().saveCategory(category.getInternal());
     }
 

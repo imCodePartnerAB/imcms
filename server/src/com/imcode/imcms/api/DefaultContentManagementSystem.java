@@ -75,10 +75,6 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
         return service ;
     }
 
-    SecurityChecker getSecurityChecker() {
-        return securityChecker ;
-    }
-
     public void runAsSuperadmin( ContentManagementSystemRunnable runnable ) throws NoPermissionException {
         KeyStore keyStore = service.getKeyStore();
         Class clazz = runnable.getClass();

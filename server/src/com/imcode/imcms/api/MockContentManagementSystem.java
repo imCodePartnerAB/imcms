@@ -8,10 +8,6 @@ public class MockContentManagementSystem extends ContentManagementSystem {
     private ImcmsServices imcmsServices;
     private User currentUser;
 
-    SecurityChecker getSecurityChecker() {
-        return new SecurityChecker( this );
-    }
-
     public UserService getUserService() {
         return null;  // TODO
     }

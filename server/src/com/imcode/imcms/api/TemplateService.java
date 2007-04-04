@@ -25,7 +25,6 @@ public class TemplateService {
      * @throws NoPermissionException If the current user isn't superadmin
      */
     public TemplateGroup[] getTemplatesGroups( TextDocument textDocument ) throws NoPermissionException {
-        getSecurityChecker().hasEditPermission( textDocument );
         UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
         TemplateGroupDomainObject[] internalTemplates = getTemplateMapper().getAllTemplateGroupsAvailableForUserOnDocument( user, textDocument.getId() );
         return createTemplateGroupArray( internalTemplates );
@@ -33,10 +32,6 @@ public class TemplateService {
 
     private TemplateMapper getTemplateMapper() {
         return contentManagementSystem.getInternal().getTemplateMapper() ;
-    }
-
-    private SecurityChecker getSecurityChecker() {
-        return contentManagementSystem.getSecurityChecker() ;
     }
 
     /**
@@ -80,7 +75,6 @@ public class TemplateService {
      * @return An array of all templates that may be used for the given TextDocument.
      */
     public Template[] getPossibleTemplates( TextDocument textDocument ) throws NoPermissionException {
-        getSecurityChecker().hasEditPermission( textDocument );
         TemplateGroup[] groups = getTemplatesGroups( textDocument );
         List temp = new ArrayList();
         for ( TemplateGroup group : groups ) {

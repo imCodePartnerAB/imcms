@@ -21,16 +21,12 @@ public class UserService {
         return contentManagementSystem.getInternal().getImcmsAuthenticatorAndUserAndRoleMapper() ;
     }
 
-    private SecurityChecker getSecurityChecker() {
-        return contentManagementSystem.getSecurityChecker() ;
-    }
-
     public User[] getAllUsers() throws NoPermissionException {
 
         UserDomainObject[] internalUsers = getMapper().getAllUsers();
         User[] result = new User[internalUsers.length];
         for( int i = 0; i < result.length; i++ ) {
-            imcode.server.user.UserDomainObject internalUser = internalUsers[i];
+            UserDomainObject internalUser = internalUsers[i];
             result[i] = new User( internalUser );
         }
         return result;
@@ -68,8 +64,6 @@ public class UserService {
      * @since 2.0
      */
     public Role[] getAllRoles() throws NoPermissionException {
-        getSecurityChecker().isSuperAdmin();
-
         RoleDomainObject[] roleDOs = getMapper().getAllRoles();
         Role[] roles = new Role[roleDOs.length] ;
         for ( int i = 0; i < roleDOs.length; i++ ) {
@@ -98,8 +92,6 @@ public class UserService {
      * @since 2.0
      */
     public void deleteRole( Role role ) throws NoPermissionException {
-        getSecurityChecker().isSuperAdmin();
-
         getMapper().deleteRole( role.getInternal() );
     }
 
@@ -107,8 +99,6 @@ public class UserService {
      * @since 2.0
      */
     public User[] getAllUsersWithRole( Role role ) throws NoPermissionException {
-        getSecurityChecker().isSuperAdmin();
-
         UserDomainObject[] internalUsersWithRole = getMapper().getAllUsersWithRole( role.getInternal() );
 
         User[] users = new User[internalUsersWithRole.length];
@@ -137,8 +127,6 @@ public class UserService {
         if (null == role) {
             return ;
         }
-        getSecurityChecker().isSuperAdmin();
-
         try {
             getMapper().saveRole(role.getInternal()) ;
         } catch ( imcode.server.user.RoleAlreadyExistsException icvse ) {
@@ -167,7 +155,6 @@ public class UserService {
         if (null == user) {
             return ;
         }
-        getSecurityChecker().canEditUser(user);
         try {
             ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = getMapper();
             if (0 == user.getId()) {

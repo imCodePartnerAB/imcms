@@ -63,5 +63,4 @@ public abstract class ContentManagementSystem {
 
     abstract ImcmsServices getInternal() ;
 
-    abstract SecurityChecker getSecurityChecker() ;
 }

@@ -59,25 +59,6 @@ public class TestUserService extends TestCase {
         database.assertCalled( new MockDatabase.MatchesRegexSqlCallPredicate( "role" ) ) ;
     }
 
-    public void testNonAdminCantCreateUser() throws SaveException {
-        User user = userService.createNewUser( "test", "test" ) ;
-        user.addRole( new Role( mockImcmsServices.getRoleGetter().getRole(RoleId.SUPERADMIN) ));
-        try {
-            userService.saveUser( user );
-            fail() ;
-        } catch( NoPermissionException ex ) {}
-        database.assertExpectedSqlCalls();
-    }
-
-    public void testNonAdminCantEditOtherUsers() throws SaveException {
-        UserDomainObject otherInternalUser = new UserDomainObject(HIGHEST_USER_ID + 1);
-        User otherUser = new User( otherInternalUser );
-        try {
-            userService.saveUser( otherUser );
-            fail() ;
-        } catch( NoPermissionException ex ) {}
-    }
-
     public void testUserCanEditSelf() throws SaveException, NoPermissionException {
         String loginName = "loginName";
         String firstName = "firstName";
@@ -116,13 +97,6 @@ public class TestUserService extends TestCase {
         userService.saveRole( newRole );
         database.assertExpectedSqlCalls();
         database.assertCalled( new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate( "roles", roleName ) );
-    }
-
-    public void testGetAllRoles() {
-        try {
-            userService.getAllRoles() ;
-            fail() ;
-        } catch (NoPermissionException npe) {}
     }
 
     public void testGetRoleByName() throws NoPermissionException {

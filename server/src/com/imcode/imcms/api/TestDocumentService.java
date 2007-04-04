@@ -49,10 +49,6 @@ public class TestDocumentService extends TestCase {
         Category category = new Category( categoryName, categoryType );
         category.setDescription( "description" );
         category.setImage( "image" );
-        try {
-            documentService.saveCategory(category);
-            fail() ;
-        } catch( NoPermissionException e ) {}
         user.addRole( new Role( imcmsServices.getRoleGetter().getRole(RoleId.SUPERADMIN) ) );
         database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "categories" ), new Integer(1) );
         documentService.saveCategory(category);
