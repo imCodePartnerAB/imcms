@@ -16,24 +16,6 @@
 imCMS comes with an API for usage in servlets and jsp-pages, see <a href="../api/">the javadocs</a>.<br>
 Also, linked from this document are differens examples on how to use the api. Follow the links below.
 
-<h2>Example pages</h2>
-<p>Warning!</p>
-<p>
-The following links works differently depending on the user's permissions on the corresponding admin-pages. That is, what
-user you are logged in as, and what administrative permissions that user has.<br>
-That means that even though you don't specify a user in most of the API:s method, usually the current logged in user
-is passed as an invisible parameter.
-</p>
-
-<h3>Exeption handling in jsp-pages</h3>
-<p>
-If the user that is accessing the page doesn't have the right permissions a NoPermissionException is thrown from the methods.
-There are two normal ways to handle this. <BR>
-1. In the jsp pages page-tag set the errorpage attribute and let that page handle the response to the user<BR>
-2. Use try/catch in a normal Java way.<BR>
-In this sample page, the first choice is made; see <%=makeLinks("error.jsp")%> files for details.
-
-
 <h3>Who you are</h3>
 To see what user you are logged in as, <%= makeLinks("logged_in_user.jsp") %><br>
 <br>
