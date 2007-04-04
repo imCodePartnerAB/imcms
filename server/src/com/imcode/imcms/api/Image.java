@@ -132,7 +132,11 @@ public class Image {
         return internalImage.getUrlPath( contextPath ) ;
     }
 
+    public String toHtmlTag(HttpServletRequest request, Properties attributes, boolean absolute) {
+        return ImcmsImageUtils.getImageHtmlTag(internalImage, request, attributes, absolute);
+    }
+
     public String toHtmlTag(HttpServletRequest request, Properties attributes) {
-        return ImcmsImageUtils.getImageHtmlTag(internalImage, request, attributes);
+        return toHtmlTag(request, attributes, false);
     }
 }

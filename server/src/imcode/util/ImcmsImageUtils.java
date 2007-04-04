@@ -22,6 +22,10 @@ public class ImcmsImageUtils {
     }
 
     public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes) {
+        return getImageHtmlTag(image, request, attributes, false);
+    }
+    
+    public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes, boolean absoluteUrl) {
         StringBuffer imageTagBuffer = new StringBuffer(96);
         if ( image.getSize() > 0 ) {
 
@@ -33,9 +37,13 @@ public class ImcmsImageUtils {
                 imageTagBuffer.append('>');
             }
 
-            String imageUrl = request.getContextPath() + image.getUrlPathRelativeToContextPath();
-
-            imageTagBuffer.append("<img src=\"").append(StringEscapeUtils.escapeHtml(Utility.escapeUrl(imageUrl))).append("\"");
+            String urlEscapedImageUrl = Utility.escapeUrl(request.getContextPath() + image.getUrlPathRelativeToContextPath());
+            if (absoluteUrl) {
+                StringBuffer requestURL = request.getRequestURL();
+                urlEscapedImageUrl = requestURL.substring(0,StringUtils.ordinalIndexOf(requestURL.toString(), "/", 3))+urlEscapedImageUrl;
+            }
+            
+            imageTagBuffer.append("<img src=\"").append(StringEscapeUtils.escapeHtml(urlEscapedImageUrl)).append("\"");
 
             imageTagBuffer.append(" alt=\"").append(StringEscapeUtils.escapeHtml(image.getAlternateText())).append("\"");
             imageTagBuffer.append(" title=\"").append(StringEscapeUtils.escapeHtml(image.getAlternateText())).append("\"");
