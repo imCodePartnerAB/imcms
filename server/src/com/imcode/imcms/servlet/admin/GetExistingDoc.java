@@ -234,7 +234,7 @@ public class GetExistingDoc extends HttpServlet {
                                  DocumentDomainObject document) {
         Set allowedDocumentTypeIds = ( (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(parentDocument) ).getAllowedDocumentTypeIds() ;
         boolean sharePermission = user.canAddDocumentToAnyMenu( document );
-        return sharePermission && allowedDocumentTypeIds.contains(new Integer(document.getDocumentTypeId()));
+        return sharePermission && (allowedDocumentTypeIds.isEmpty() || allowedDocumentTypeIds.contains(new Integer(document.getDocumentTypeId())));
     }
 
     private void createSearchResultsPage(ImcmsServices imcref, UserDomainObject user,
