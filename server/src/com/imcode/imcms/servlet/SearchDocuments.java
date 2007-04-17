@@ -19,6 +19,7 @@ public class SearchDocuments extends HttpServlet {
         } else {
             SearchDocumentsPage searchDocumentsPage = new SearchDocumentsPage() ;
             DocumentFinder documentFinder = new DocumentFinder(searchDocumentsPage);
+            documentFinder.setLogged(true);
             documentFinder.addExtraSearchResultColumn( new AdminManager.DatesSummarySearchResultColumn());
             documentFinder.setCancelCommand( new DispatchCommand() {
                 public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {

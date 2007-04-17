@@ -149,10 +149,9 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
     }
 
-    public List search(Query query,
-                       Sort sort, UserDomainObject searchingUser) throws IndexException {
+    public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         try {
-            List documents = index.search(query, sort, searchingUser);
+            List documents = index.search(query, searchingUser);
             if ( index.isInconsistent() ) {
                 rebuildBecauseOfError("Index is inconsistent.", null);
             }
@@ -200,7 +199,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         public void removeDocument(DocumentDomainObject document) throws IndexException {
         }
 
-        public List search(Query query, Sort sort, UserDomainObject searchingUser) throws IndexException {
+        public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
             return Collections.EMPTY_LIST;
         }
 

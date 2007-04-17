@@ -5,6 +5,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.SimpleDocumentQuery;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -178,7 +179,7 @@ public class LinkCheck extends HttpServlet {
                                       HttpServletRequest request, IntRange range ) {
         TermQuery urlDocumentsQuery = new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""
                                                                                      + DocumentTypeDomainObject.URL_ID ) );
-        List urlDocuments = reindexingIndex.search( urlDocumentsQuery, null, user );
+        List urlDocuments = reindexingIndex.search( new SimpleDocumentQuery(urlDocumentsQuery), user );
 
         for ( Iterator iterator = urlDocuments.iterator(); iterator.hasNext(); ) {
             UrlDocumentDomainObject urlDocument = (UrlDocumentDomainObject) iterator.next();
@@ -197,7 +198,7 @@ public class LinkCheck extends HttpServlet {
         query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "href" ) ), false, false );
         query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__IMAGE_LINK_URL, "http" ) ), false, false );
 
-        List textDocuments = reindexingIndex.search( query, null, user );
+        List textDocuments = reindexingIndex.search( new SimpleDocumentQuery(query), user );
 
         for ( Iterator iterator = textDocuments.iterator(); iterator.hasNext(); ) {
             TextDocumentDomainObject textDocument = (TextDocumentDomainObject) iterator.next();

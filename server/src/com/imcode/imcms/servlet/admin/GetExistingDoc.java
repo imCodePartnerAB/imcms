@@ -9,12 +9,12 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.SimpleDocumentQuery;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
@@ -134,7 +134,7 @@ public class GetExistingDoc extends HttpServlet {
             }
 
             LOG.debug( "Query: " + query );
-            List searchResultDocuments = index.search( query, null, user );
+            List searchResultDocuments = index.search( new SimpleDocumentQuery(query), user );
 
             if ( 0 == searchResultDocuments.size() ) {
                 if ( StringUtils.isNumeric(searchString) ) {

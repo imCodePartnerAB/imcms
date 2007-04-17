@@ -40,6 +40,7 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
             new DatabaseVersionUpgradePair(4, 6, new CompositeUpgrade(
                    new CreateTableUpgrade(wantedDdl, "menus_history"),
                    new CreateTableUpgrade(wantedDdl, "childs_history"))),
+            new DatabaseVersionUpgradePair(4,7, new CreateTableUpgrade(wantedDdl, "document_search_log"))
     };
     private ImcmsDatabaseCreator imcmsDatabaseCreator ;
 

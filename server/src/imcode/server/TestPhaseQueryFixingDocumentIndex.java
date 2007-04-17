@@ -12,9 +12,8 @@ public class TestPhaseQueryFixingDocumentIndex extends TestCase {
     PhaseQueryFixingDocumentIndex index = new PhaseQueryFixingDocumentIndex(null);
 
     public void testFixQuery() throws Exception {
-        for ( int i = 0; i < LifeCyclePhase.ALL.length; i++ ) {
-            LifeCyclePhase lifeCyclePhase = LifeCyclePhase.ALL[i];
-            assertNotNull(index.fixQuery(new TermQuery(new Term(DocumentIndex.FIELD__PHASE, lifeCyclePhase.toString())))) ;
+        for ( LifeCyclePhase lifeCyclePhase : LifeCyclePhase.ALL ) {
+            assertNotNull(index.fixQuery(new TermQuery(new Term(DocumentIndex.FIELD__PHASE, lifeCyclePhase.toString()))));
         }
     }
 

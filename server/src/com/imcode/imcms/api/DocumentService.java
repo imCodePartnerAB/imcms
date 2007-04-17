@@ -5,11 +5,15 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.AliasAlreadyExistsInternalException;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.document.*;
+import imcode.server.document.index.DocumentQuery;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 import java.util.List;
 import java.util.AbstractList;
+
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
 
 public class DocumentService {
 
@@ -226,9 +230,21 @@ public class DocumentService {
         return new Section(section);
     }
 
-    public List getDocuments(SearchQuery query) throws SearchException {
+    public List getDocuments(final SearchQuery query) throws SearchException {
         try {
-            final List documentList = getDocumentMapper().getDocumentIndex().search(query.getQuery(), query.getSort(), contentManagementSystem.getCurrentUser().getInternal());
+            final List documentList = getDocumentMapper().getDocumentIndex().search(new DocumentQuery() {
+                public Query getQuery() {
+                    return query.getQuery();
+                }
+
+                public Sort getSort() {
+                    return query.getSort();
+                }
+
+                public boolean isLogged() {
+                    return query.isLogged();
+                }
+            }, contentManagementSystem.getCurrentUser().getInternal());
             return new ApiDocumentWrappingList(documentList, contentManagementSystem);
         } catch ( RuntimeException e ) {
             throw new SearchException(e);

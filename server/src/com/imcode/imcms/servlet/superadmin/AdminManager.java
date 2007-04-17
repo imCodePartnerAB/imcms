@@ -20,6 +20,7 @@ import imcode.server.document.NoPermissionToCreateDocumentException;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.LifeCyclePhase;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.SimpleDocumentQuery;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -161,7 +162,7 @@ public class AdminManager extends HttpServlet {
         List documentsFound = Collections.EMPTY_LIST;
         if ( tabToShow.equals( PARAMETER_VALUE__SHOW_RECENT ) || tabToShow.equals(PARAMETER_VALUE__SHOW_REMINDERS)
              || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY) ) {
-            documentsFound = index.search( query, null, loggedOnUser );
+            documentsFound = index.search( new SimpleDocumentQuery(query), loggedOnUser );
         }
 
         AdminManagerSubreport newDocumentsSubreport = new AdminManagerSubreport();

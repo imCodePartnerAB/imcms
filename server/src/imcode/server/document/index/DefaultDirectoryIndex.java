@@ -51,13 +51,13 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         this.indexDocumentFactory = indexDocumentFactory;
     }
 
-    public List search(Query query, Sort sort, UserDomainObject searchingUser) throws IndexException {
+    public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         try {
             IndexSearcher indexSearcher = new IndexSearcher( directory.toString() );
             try {
                 StopWatch searchStopWatch = new StopWatch();
                 searchStopWatch.start();
-                Hits hits = indexSearcher.search( query, sort );
+                Hits hits = indexSearcher.search( query.getQuery(), query.getSort() );
                 long searchTime = searchStopWatch.getTime();
                 List documentList = getDocumentListForHits( hits, searchingUser );
                 if (log.isDebugEnabled()) {

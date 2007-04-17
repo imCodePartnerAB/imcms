@@ -6,6 +6,7 @@ import org.apache.lucene.search.Sort;
 public abstract class SearchQuery {
 
     private Sort sort ;
+    private boolean logged;
 
     abstract Query getQuery() ;
     
@@ -15,6 +16,14 @@ public abstract class SearchQuery {
 
     public void setSort(Sort sort) {
         this.sort = sort;
+    }
+    
+    public void setLogged(boolean logged) {
+        this.logged = logged;
+    }
+
+    boolean isLogged() {
+        return logged;
     }
 
 }

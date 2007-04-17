@@ -1,0 +1,4 @@
+    <table name="document_search_log">
+        <column name="datetime" required="true" type="TIMESTAMP"/>
+        <column name="term" required="true" type="VARCHAR" size="255"/>
+    </table>
