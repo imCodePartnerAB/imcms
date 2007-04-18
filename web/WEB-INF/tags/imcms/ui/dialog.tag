@@ -1,13 +1,20 @@
-<%@ tag import="com.imcode.imcms.flow.OkCancelPage, com.imcode.imcms.flow.Page"%><%@
-        attribute name="titlekey"%><%@
-        attribute name="helpid"%><%@
+<%@ tag import="com.imcode.imcms.flow.OkCancelPage, com.imcode.imcms.flow.Page, org.apache.log4j.Logger"%><%@
+        attribute name="titlekey" required="true" %><%@
+        attribute name="helpid" required="true" %><%@
         taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%@
         taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@
         taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%@
         taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %><html>
+<%
+    try {
+%>
 <head>
 <title><fmt:message key="${titlekey}"/></title>
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/imcms/css/imcms_admin.css.jsp">
+<link rel="stylesheet" type="text/css" media="all" href="<%=request.getContextPath()%>/imcms/jscalendar/skins/aqua/theme.css.jsp" />
+<script type="text/javascript" src="<%=request.getContextPath()%>/imcms/jscalendar/calendar.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/imcms/jscalendar/lang/calendar-eng.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/imcms/jscalendar/calendar-setup.js"></script>
 </head>
 <body>
 <form action="<%= request.getContextPath() %>/servlet/PageDispatcher">
@@ -47,3 +54,9 @@
 </form>
 </body>
 </html>
+<%
+    } catch (Exception e) {
+        Logger.getLogger("jsp").error("Exception in dialog.tag.", e);
+        throw e;
+    }
+%>

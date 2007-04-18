@@ -585,6 +585,8 @@ public class AdminManager extends HttpServlet {
             url += "AdminUser";
         } else if ( whichButton.equalsIgnoreCase( "CounterStart" ) ) {
             url += "AdminCounter";
+        } else if ( whichButton.equalsIgnoreCase( "AdminSearchTerms" ) ) {
+            url += "AdminSearchTerms";
         } else if ( whichButton.equalsIgnoreCase( "AddTemplates" ) ) {
             url += "TemplateAdmin";
         } else if ( whichButton.equalsIgnoreCase( "DeleteDocs" ) ) {

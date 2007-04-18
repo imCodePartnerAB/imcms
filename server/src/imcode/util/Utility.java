@@ -356,6 +356,16 @@ public class Utility {
         return URLEncoder.encode(imageUrl).replaceAll("%2F", "/").replaceAll("\\+", "%20");
     }
 
+    public static Date addDate(Date date, int i) {
+        if (null == date) {
+            return null;
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE, i);
+        return calendar.getTime();
+    }
+
     private static class ObjectPairToMapEntryTransformer implements Transformer {
         public Object transform(Object input) {
             final Object[] pair = (Object[])input ;

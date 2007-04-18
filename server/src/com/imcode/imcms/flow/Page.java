@@ -18,6 +18,9 @@ public abstract class Page implements Serializable, HttpSessionAttribute {
 
     public static String htmlHidden( HttpServletRequest request ) {
         Page page = Page.fromRequest(request);
+        if (null == page) {
+            return "";
+        }
         return Html.hidden( IN_REQUEST, page.getSessionAttributeName() ) ;
     }
 

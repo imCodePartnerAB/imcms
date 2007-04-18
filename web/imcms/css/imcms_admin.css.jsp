@@ -196,6 +196,8 @@ BODY {
 	overflow: -moz-scrollbars-vertical;
 }
 
+TH   { text-align: left; }
+
 B    { font-weight:bold; }
 I    { font-style:italic; }<%
 if (!isNS) { %>
