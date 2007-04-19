@@ -111,6 +111,9 @@ public class ImcmsImageUtils {
         if ( StringUtils.isNotBlank(imageUrl) ) {
             try {
                 DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+                if (imageUrl.matches("/\\d+")) {
+                    imageUrl = imageUrl.substring(1);
+                }
                 DocumentDomainObject document = documentMapper.getDocument(Integer.parseInt(imageUrl));
                 if ( document instanceof FileDocumentDomainObject ) {
                     imageSource = new FileDocumentImageSource(documentMapper.getDocumentReference(document));
