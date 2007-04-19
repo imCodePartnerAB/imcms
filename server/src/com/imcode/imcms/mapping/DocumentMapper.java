@@ -81,11 +81,7 @@ public class DocumentMapper implements DocumentGetter {
         return documentSaver ;
     }
 
-    public DocumentDomainObject createDocumentOfTypeFromParent(int documentTypeId, final DocumentDomainObject parent,
-                                                               UserDomainObject user) throws NoPermissionToCreateDocumentException {
-        if (!user.canCreateDocumentOfTypeIdFromParent(documentTypeId, parent)) {
-            throw new NoPermissionToCreateDocumentException("User can't create documents from document " + parent.getId());
-        }
+    public DocumentDomainObject createDocumentOfTypeFromParent(int documentTypeId, final DocumentDomainObject parent, UserDomainObject user) {
         DocumentDomainObject newDocument;
         try {
             if ( DocumentTypeDomainObject.TEXT_ID == documentTypeId) {

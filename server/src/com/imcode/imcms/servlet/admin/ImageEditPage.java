@@ -173,6 +173,9 @@ public class ImageEditPage extends OkCancelPage {
                                 HttpServletRequest request,
                                 HttpServletResponse response) throws IOException, ServletException {
         try {
+            if (!user.canCreateDocumentOfTypeIdFromParent(DocumentTypeDomainObject.FILE_ID, document)) {
+                throw new NoPermissionToCreateDocumentException("User can't create documents from document " + document.getId());
+            }
             FileDocumentDomainObject fileDocument = (FileDocumentDomainObject) documentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.FILE_ID, document, user);
             final EditFileDocumentPageFlow.ArrayMimeTypeRestriction mimeTypeRestriction = new EditFileDocumentPageFlow.ArrayMimeTypeRestriction(IMAGE_MIME_TYPES, ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES);
             DocumentPageFlow.SaveDocumentCommand saveNewImageFileDocument = new CreateDocumentPageFlow.SaveDocumentCommand() {

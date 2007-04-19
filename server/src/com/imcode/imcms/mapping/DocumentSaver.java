@@ -16,7 +16,6 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -40,7 +39,7 @@ class DocumentSaver {
             throw new NoPermissionToEditDocumentException("No permission to edit document "+oldDocument.getId()) ;
         }
 
-        checkDocumentForSave(document, oldDocument, user, false);
+        checkDocumentForSave(document);
 
         document.loadAllLazilyLoaded();
         
@@ -67,23 +66,6 @@ class DocumentSaver {
             document.accept(new DocumentSavingVisitor(oldDocument, documentMapper.getDatabase(), documentMapper.getImcmsServices(), user));
         } finally {
             documentMapper.invalidateDocument(document);
-        }
-    }
-
-    void checkDocumentsAddedWithoutPermission(TextDocumentDomainObject textDocument,
-                                              TextDocumentDomainObject oldTextDocument,
-                                              final UserDomainObject user) throws NoPermissionToAddDocumentToMenuException
-    {
-        Collection documentsAddedWithoutPermission = getDocumentsAddedWithoutPermission(textDocument, oldTextDocument, user, documentMapper);
-        boolean documentsWereAddedWithoutPermission = !documentsAddedWithoutPermission.isEmpty();
-        if (documentsWereAddedWithoutPermission ) {
-            Collection documentIds = CollectionUtils.collect(documentsAddedWithoutPermission, new Transformer() {
-                public Object transform(Object object) {
-                    DocumentDomainObject document = (DocumentDomainObject) object;
-                    return ""+document.getId() ;
-                }
-            });
-            throw new NoPermissionToAddDocumentToMenuException("User is not allowed to add documents "+documentIds +" to document "+textDocument.getId()) ;
         }
     }
 
@@ -147,11 +129,7 @@ class DocumentSaver {
 
     void saveNewDocument(UserDomainObject user,
                          DocumentDomainObject document, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-        if (!user.canEdit(document)) {
-            return; // TODO: More specific check needed. Throw exception ?
-        }
-
-        checkDocumentForSave(document, null, user, copying);
+        checkDocumentForSave(document);
 
         document.loadAllLazilyLoaded();
         
@@ -180,11 +158,7 @@ class DocumentSaver {
         documentMapper.invalidateDocument(document);
     }
 
-    private void checkDocumentForSave(DocumentDomainObject document,
-                                      DocumentDomainObject oldDocument, UserDomainObject user, boolean copying) throws NoPermissionInternalException, DocumentSaveException {
-        if ( !copying && document instanceof TextDocumentDomainObject ) {
-            checkDocumentsAddedWithoutPermission((TextDocumentDomainObject)document, (TextDocumentDomainObject) oldDocument, user);
-        }
+    private void checkDocumentForSave(DocumentDomainObject document) throws NoPermissionInternalException, DocumentSaveException {
 
         documentMapper.getCategoryMapper().checkMaxDocumentCategoriesOfType(document);
         checkIfAliasAlreadyExist(document);

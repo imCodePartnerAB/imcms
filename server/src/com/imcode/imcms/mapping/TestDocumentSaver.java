@@ -100,10 +100,6 @@ public class TestDocumentSaver extends TestCase {
         testedUser.removeRoleId(RoleId.SUPERADMIN);
         assertDocumentsAddedWithoutPermission(document, oldDocument, testedUser, documentGetter);
 
-        try {
-            documentMapper.getDocumentSaver().checkDocumentsAddedWithoutPermission(document, oldDocument, testedUser);
-            fail("Expected exception.");
-        } catch ( NoPermissionToAddDocumentToMenuException e ) {}
     }
 
     public void testDocumentAddedWithPropertyAlias() throws DocumentSaveException {

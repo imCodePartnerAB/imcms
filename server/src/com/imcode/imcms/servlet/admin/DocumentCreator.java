@@ -36,6 +36,9 @@ public class DocumentCreator {
                                                            HttpServletRequest request,
                                                            HttpServletResponse response ) throws IOException, ServletException, NoPermissionToCreateDocumentException {
         UserDomainObject user = Utility.getLoggedOnUser( request );
+        if (!user.canCreateDocumentOfTypeIdFromParent(documentTypeId, parentDocument)) {
+            throw new NoPermissionToCreateDocumentException("User can't create documents from document " + parentDocument.getId());
+        }
         ImcmsServices services = Imcms.getServices();
         DocumentMapper documentMapper = services.getDocumentMapper();
         DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( documentTypeId, parentDocument, user );
