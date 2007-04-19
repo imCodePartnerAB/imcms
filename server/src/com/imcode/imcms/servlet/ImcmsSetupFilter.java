@@ -71,14 +71,7 @@ public class ImcmsSetupFilter implements Filter {
                                    ImcmsServices service, FallbackDecoder fallbackDecoder) throws ServletException, IOException {
         String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder) ;
         path = StringUtils.substringAfter( path, request.getContextPath() ) ;
-        String documentPathPrefix = service.getConfig().getDocumentPathPrefix() ;
-        String documentIdString = null ;
-        if (StringUtils.isNotBlank( documentPathPrefix ) && path.startsWith( documentPathPrefix )) {
-            documentIdString = path.substring( documentPathPrefix.length());
-            if (documentIdString.endsWith( documentPathPrefix ) ) {
-                documentIdString = documentIdString.substring(0,documentIdString.length()-1);
-            }
-        }
+        String documentIdString = getDocumentIdString(service, path);
         ServletContext servletContext = request.getSession().getServletContext();
         if ( null == servletContext.getResourcePaths(path) ) {
             DocumentDomainObject document = service.getDocumentMapper().getDocument(documentIdString);
@@ -90,6 +83,18 @@ public class ImcmsSetupFilter implements Filter {
             }
         }
         chain.doFilter( request, response );
+    }
+
+    public static String getDocumentIdString(ImcmsServices service, String path) {
+        String documentPathPrefix = service.getConfig().getDocumentPathPrefix() ;
+        String documentIdString = null ;
+        if ( StringUtils.isNotBlank( documentPathPrefix ) && path.startsWith( documentPathPrefix )) {
+            documentIdString = path.substring( documentPathPrefix.length());
+            if (documentIdString.endsWith( "/" ) ) {
+                documentIdString = documentIdString.substring(0,documentIdString.length()-1);
+            }
+        }
+        return documentIdString;
     }
 
     private void setDomainSessionCookie( ServletResponse response, HttpSession session ) {

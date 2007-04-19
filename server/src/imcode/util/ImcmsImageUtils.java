@@ -1,8 +1,10 @@
 package imcode.util;
 
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.FileDocumentImageSource;
@@ -109,16 +111,13 @@ public class ImcmsImageUtils {
     public static ImageSource createImageSourceFromString(String imageUrl) {
         ImageSource imageSource = new NullImageSource();
         if ( StringUtils.isNotBlank(imageUrl) ) {
-            try {
-                DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-                if (imageUrl.matches("/\\d+")) {
-                    imageUrl = imageUrl.substring(1);
-                }
-                DocumentDomainObject document = documentMapper.getDocument(Integer.parseInt(imageUrl));
-                if ( document instanceof FileDocumentDomainObject ) {
-                    imageSource = new FileDocumentImageSource(documentMapper.getDocumentReference(document));
-                }
-            } catch ( NumberFormatException nfe ) {
+            ImcmsServices services = Imcms.getServices();
+            DocumentMapper documentMapper = services.getDocumentMapper();
+            String documentIdString = ImcmsSetupFilter.getDocumentIdString(services, imageUrl);
+            DocumentDomainObject document = documentMapper.getDocument(documentIdString);
+            if ( document instanceof FileDocumentDomainObject ) {
+                imageSource = new FileDocumentImageSource(documentMapper.getDocumentReference(document));
+            } else {
                 String imagesPath = ImagesPathRelativePathImageSource.getImagesUrlPath();
                 if (imageUrl.startsWith(imagesPath)) {
                     imageUrl = imageUrl.substring(imagesPath.length());

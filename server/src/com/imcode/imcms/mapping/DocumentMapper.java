@@ -40,6 +40,7 @@ import java.util.*;
 public class DocumentMapper implements DocumentGetter {
 
     private static final String SQL_GET_ALL_SECTIONS = "SELECT section_id, section_name FROM sections";
+    private static final String SQL_GET_DOCUMENT_ID_FROM_PROPERTIES = "SELECT meta_id FROM document_properties WHERE key_name=? AND value=?";
 
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
 
@@ -355,7 +356,6 @@ public class DocumentMapper implements DocumentGetter {
 
     public DocumentDomainObject getDocument(String documentIdString) {
         DocumentDomainObject document = null;
-        final String SQL_GET_DOCUMENT_ID_FROM_PROPERTIES = "SELECT meta_id FROM document_properties WHERE key_name=? AND value=?";
 
         if (null != documentIdString) {
             if ( NumberUtils.isDigits( documentIdString ) ) {
