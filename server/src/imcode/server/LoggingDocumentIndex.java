@@ -8,16 +8,10 @@ import imcode.server.user.UserDomainObject;
 import com.imcode.db.Database;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 
-import java.util.List;
-import java.util.Date;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 import java.sql.Timestamp;
 
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.*;
 import org.apache.lucene.index.Term;
 
 public class LoggingDocumentIndex extends DocumentIndexWrapper {
@@ -62,7 +56,26 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
             }
         } else if ( query instanceof TermQuery ) {
             TermQuery termQuery = (TermQuery) query;
-            Term term = termQuery.getTerm();
+            addTerm(terms, termQuery.getTerm());
+        } else if ( query instanceof MultiTermQuery ) {
+            MultiTermQuery multiTermQuery = (MultiTermQuery) query;
+            addTerm(terms, multiTermQuery.getTerm());
+        } else if ( query instanceof PrefixQuery ) {
+            PrefixQuery prefixQuery = (PrefixQuery) query;
+            addTerm(terms, prefixQuery.getPrefix());
+        }
+    }
+
+    private final static Set LOGGED_FIELDS = new HashSet(Arrays.asList(new String[] {
+            DocumentIndex.FIELD__META_HEADLINE,
+            DocumentIndex.FIELD__META_TEXT,
+            DocumentIndex.FIELD__TEXT,
+            DocumentIndex.FIELD__ALIAS,
+            DocumentIndex.FIELD__KEYWORD,
+    } )); 
+    
+    private void addTerm(Collection<String> terms, Term term) {
+        if (LOGGED_FIELDS.contains(term.field())) {
             terms.add(term.text());
         }
     }
