@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -73,11 +74,11 @@ public class AdminSearchTerms extends HttpServlet {
         List<Date> parameters = new ArrayList<Date>();
         if (null != fromDate) {
             whereClauses.add("datetime >= ?");
-            parameters.add(fromDate);
+            parameters.add(new Timestamp(fromDate.getTime()));
         }
         if (null != toDate) {
             whereClauses.add("datetime < ?");
-            parameters.add(toDate);
+            parameters.add(new Timestamp(toDate.getTime()));
         }
         String whereClausesString = whereClauses.isEmpty() ? "" : " WHERE "+StringUtils.join(whereClauses.iterator(), " AND ");
         DatabaseCommand queryCommand = new SqlQueryDatabaseCommand("SELECT term, COUNT(term) FROM document_search_log"+whereClausesString+
