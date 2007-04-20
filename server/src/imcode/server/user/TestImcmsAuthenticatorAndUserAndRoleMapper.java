@@ -16,7 +16,7 @@ public class TestImcmsAuthenticatorAndUserAndRoleMapper extends TestCase {
         user.setLoginName( "Test" );
         user.setImcmsExternal( true );
         user.setLanguageIso639_2( "eng" );
-        imcmsAuthenticatorAndUserAndRoleMapper.addUser( user, null );
+        imcmsAuthenticatorAndUserAndRoleMapper.addUser( user);
         database.assertExpectedSqlCalls();
     }
 

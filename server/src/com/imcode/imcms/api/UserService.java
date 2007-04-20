@@ -158,9 +158,9 @@ public class UserService {
         try {
             ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = getMapper();
             if (0 == user.getId()) {
-                imcmsAuthenticatorAndUserAndRoleMapper.addUser(user.getInternal(), contentManagementSystem.getCurrentUser().getInternal()) ;
+                imcmsAuthenticatorAndUserAndRoleMapper.addUser(user.getInternal()) ;
             } else {
-                imcmsAuthenticatorAndUserAndRoleMapper.saveUser(user.getInternal(), contentManagementSystem.getCurrentUser().getInternal() );
+                imcmsAuthenticatorAndUserAndRoleMapper.saveUser(user.getInternal());
             }
         } catch ( imcode.server.user.UserAlreadyExistsException uaee ) {
             throw new UserAlreadyExistsException( "A user with the login name \""+user.getLoginName()+"\" already exists." ) ;

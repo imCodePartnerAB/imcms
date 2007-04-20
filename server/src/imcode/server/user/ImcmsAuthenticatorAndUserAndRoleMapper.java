@@ -169,15 +169,14 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         }
     }
 
-    public void saveUser(String loginName, UserDomainObject userToSave, UserDomainObject currentUser) {
+    public void saveUser(String loginName, UserDomainObject userToSave) {
         UserDomainObject imcmsUser = getUser(loginName);
         userToSave.setId(imcmsUser.getId());
         userToSave.setLoginName(loginName);
-        saveUser(userToSave, currentUser);
+        saveUser(userToSave);
     }
 
-    public void saveUser(UserDomainObject user, UserDomainObject currentUser) {
-        UserDomainObject oldUser = getUser(user.getId());
+    public void saveUser(UserDomainObject user) {
 
         String[] params = {
                 user.getLoginName(),
@@ -219,37 +218,23 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             throw new UnhandledException(e);
         }
 
-        updateUserRoles(user, oldUser, currentUser);
+        updateUserRoles(user);
         removePhoneNumbers(user);
         addPhoneNumbers(user);
     }
 
-    private void updateUserRoles(UserDomainObject newUser, UserDomainObject oldUser, UserDomainObject loggedInUser) {
-        if ( !newUser.equals(loggedInUser) || loggedInUser.isSuperAdmin() ) {
-            Set newUserRoles = new HashSet(Arrays.asList(newUser.getRoleIds()));
-            if ( null != loggedInUser && loggedInUser.isUserAdminAndNotSuperAdmin() ) {
-                Set loggedInUserUserAdminRoles = new HashSet(Arrays.asList(loggedInUser.getUserAdminRoleIds()));
-                newUserRoles.retainAll(loggedInUserUserAdminRoles);
-                if ( null != oldUser ) {
-                    Set oldUserRoles = new HashSet(Arrays.asList(oldUser.getRoleIds()));
-                    oldUserRoles.removeAll(loggedInUserUserAdminRoles);
-                    newUserRoles.addAll(oldUserRoles);
-                }
-            }
-            newUserRoles.add(RoleId.USERS);
-            CompositeDatabaseCommand updateUserRolesCommand = new CompositeDatabaseCommand(new DeleteWhereColumnsEqualDatabaseCommand("user_roles_crossref", "user_id", new Integer(newUser.getId())));
-            for ( Iterator iterator = newUserRoles.iterator(); iterator.hasNext(); ) {
-                RoleId roleId = (RoleId) iterator.next();
-                updateUserRolesCommand.add(new InsertIntoTableDatabaseCommand("user_roles_crossref", new String[][] {
-                        { "user_id", "" + newUser.getId() },
-                        { "role_id", "" + roleId.intValue() }
-                }));
-            }
-            services.getDatabase().execute(updateUserRolesCommand);
-            if ( null == loggedInUser || loggedInUser.isSuperAdmin() ) {
-                sqlUpdateUserUserAdminRoles(newUser);
-            }
+    private void updateUserRoles(UserDomainObject newUser) {
+        Set<RoleId> newUserRoleIds = new HashSet(Arrays.asList(newUser.getRoleIds()));
+        newUserRoleIds.add(RoleId.USERS);
+        CompositeDatabaseCommand updateUserRolesCommand = new CompositeDatabaseCommand(new DeleteWhereColumnsEqualDatabaseCommand("user_roles_crossref", "user_id", new Integer(newUser.getId())));
+        for ( RoleId roleId : newUserRoleIds ) {
+            updateUserRolesCommand.add(new InsertIntoTableDatabaseCommand("user_roles_crossref", new String[][] {
+                    { "user_id", "" + newUser.getId() },
+                    { "role_id", "" + roleId.intValue() }
+            }));
         }
+        services.getDatabase().execute(updateUserRolesCommand);
+        sqlUpdateUserUserAdminRoles(newUser);
     }
 
     private void sqlUpdateUserUserAdminRoles(UserDomainObject user) {
@@ -258,8 +243,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                                                                                                                                   + user.getId());
         CompositeDatabaseCommand updateUserAdminRolesCommand = new CompositeDatabaseCommand(deleteAllUserAdminRolesForUserCommand);
         RoleId[] userAdminRolesReferences = user.getUserAdminRoleIds();
-        for ( int i = 0; i < userAdminRolesReferences.length; i++ ) {
-            RoleId userAdminRoleId = userAdminRolesReferences[i];
+        for ( RoleId userAdminRoleId : userAdminRolesReferences ) {
             updateUserAdminRolesCommand.add(new InsertIntoTableDatabaseCommand(TABLE__USERADMIN_ROLE_CROSSREF, new String[][] {
                     { "user_id", "" + user.getId() },
                     { "role_id", "" + userAdminRoleId.intValue() }
@@ -268,8 +252,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         services.getDatabase().execute(updateUserAdminRolesCommand);
     }
 
-    public synchronized void addUser(UserDomainObject user,
-                                     UserDomainObject currentUser) throws UserAlreadyExistsException {
+    public synchronized void addUser(UserDomainObject user) throws UserAlreadyExistsException {
         if ( null != getUser(user.getLoginName()) ) {
             throw new UserAlreadyExistsException(
                     "A user with the name \"" + user.getLoginName() + "\" already exists.");
@@ -299,7 +282,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             int newIntUserId = newUserId.intValue();
             user.setId(newIntUserId);
 
-            updateUserRoles(user, null, currentUser);
+            updateUserRoles(user);
             addPhoneNumbers(user);
         } catch ( IntegrityConstraintViolationException e ) {
             throw new UserAlreadyExistsException(e);

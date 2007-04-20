@@ -65,7 +65,7 @@ public class UserBrowser extends HttpServlet {
             public void dispatch(HttpServletRequest request,
                                  HttpServletResponse response) throws IOException, ServletException {
                 try {
-                    Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().addUser(newUser, Utility.getLoggedOnUser(request));
+                    Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().addUser(newUser);
                     returnCommand.dispatch(request, response);
                 } catch ( UserAlreadyExistsException e ) {
                     userEditorPage.setErrorMessage(ERROR__USER_ALREADY_EXISTS) ;

@@ -102,10 +102,10 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
 
         if ( null != imcmsUser ) {
             externalUser.setRoleIds( imcmsUser.getRoleIds() );
-            imcmsAuthenticatorAndUserMapperAndRole.saveUser( loginName, externalUser, null );
+            imcmsAuthenticatorAndUserMapperAndRole.saveUser( loginName, externalUser);
         } else {
             try {
-                imcmsAuthenticatorAndUserMapperAndRole.addUser( externalUser, null );
+                imcmsAuthenticatorAndUserMapperAndRole.addUser( externalUser);
             } catch ( UserAlreadyExistsException shouldNotBeThrown ) {
                 throw new UnhandledException( shouldNotBeThrown );
             }
@@ -130,7 +130,7 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
 
     private void deactivateExternalUserInImcms( String loginName, UserDomainObject imcmsUser ) {
         imcmsUser.setActive( false );
-        imcmsAuthenticatorAndUserMapperAndRole.saveUser( loginName, imcmsUser, null );
+        imcmsAuthenticatorAndUserMapperAndRole.saveUser( loginName, imcmsUser);
     }
 
     public String[] getRoleNames( UserDomainObject user ) {

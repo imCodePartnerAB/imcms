@@ -112,7 +112,7 @@ public class AdminUser extends HttpServlet {
 
         public void dispatch(HttpServletRequest request,
                              HttpServletResponse response) throws IOException, ServletException {
-            Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(userToChange, Utility.getLoggedOnUser(request));
+            Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(userToChange);
             returnCommand.dispatch(request, response);
         }
     }

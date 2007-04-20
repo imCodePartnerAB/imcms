@@ -82,7 +82,7 @@ public class TestUserService extends TestCase {
         database.assertCalled( "New login name not set.", new MockDatabase.UpdateTableSqlCallPredicate( "users", newLoginName ) );
         database.assertNotCalled( "Old first name set.", new MockDatabase.UpdateTableSqlCallPredicate( "users", firstName ) );
         database.assertCalled( "New first name not set.", new MockDatabase.UpdateTableSqlCallPredicate( "users", newFirstName ) );
-        database.assertNotCalled( "User can not change own roles.", new MockDatabase.MatchesRegexSqlCallPredicate( "role" ) );
+        database.assertCalled( "User can change own roles.", new MockDatabase.MatchesRegexSqlCallPredicate( "role" ) );
 
         internalUser.addRoleId( RoleId.SUPERADMIN );
         userService.saveUser( user );
