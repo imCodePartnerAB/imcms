@@ -81,8 +81,8 @@ public class AdminSearchTerms extends HttpServlet {
             parameters.add(new Timestamp(toDate.getTime()));
         }
         String whereClausesString = whereClauses.isEmpty() ? "" : " WHERE "+StringUtils.join(whereClauses.iterator(), " AND ");
-        DatabaseCommand queryCommand = new SqlQueryDatabaseCommand("SELECT term, COUNT(term) FROM document_search_log"+whereClausesString+
-                                                                   " GROUP BY term ORDER BY COUNT(term) DESC, term", 
+        DatabaseCommand queryCommand = new SqlQueryDatabaseCommand("SELECT term, COUNT(term) c FROM document_search_log"+whereClausesString+
+                                                                   " GROUP BY term ORDER BY c DESC, term", 
                                                                    parameters.toArray(new Object[parameters.size()]),
                                                                    new CollectionHandler(new ArrayList(), new TermCountFactory()));
         return (List<TermCount>) database.execute(queryCommand);
