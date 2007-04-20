@@ -46,12 +46,12 @@ public class DatabaseSanityCheck implements SanityCheck {
                         ColumnSizeChange.class,
                         AddForeignKeyChange.class,
                         ColumnOrderChange.class,
+                }));
+                Set<Class> ignoredChanges = new HashSet<Class>(Arrays.asList(new Class[] {
                         RemoveForeignKeyChange.class,
                         RemoveIndexChange.class,
                         RemoveTableChange.class,
-                        RemovePrimaryKeyChange.class
-                }));
-                Set<Class> ignoredChanges = new HashSet<Class>(Arrays.asList(new Class[] {
+                        RemovePrimaryKeyChange.class,
                         ColumnDefaultValueChange.class
                 }));
                 List<Problem> problems = new ArrayList<Problem>();

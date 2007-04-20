@@ -9,6 +9,7 @@ import org.apache.ddlutils.Platform;
 import org.apache.ddlutils.platform.CreationParameters;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.regex.Pattern;
@@ -19,6 +20,8 @@ public class ImcmsDatabaseCreator {
     private final LocalizedMessageProvider localizedMessageProvider;
     private final Reader initScriptReader;
 
+    private final static Logger LOG = Logger.getLogger(ImcmsDatabaseCreator.class);
+    
     public ImcmsDatabaseCreator(Reader initScriptReader, LocalizedMessageProvider localizedMessageProvider) {
         this.initScriptReader = initScriptReader;
         this.localizedMessageProvider = localizedMessageProvider;
@@ -32,7 +35,9 @@ public class ImcmsDatabaseCreator {
                                 CreationParameters params = new CreationParameters();
                                 params.addParameter(null, "ENGINE", "InnoDB");
                                 params.addParameter(null, "CHARACTER SET", "UTF8");
-                                platform.createTables(wantedDdl, params, false, false);
+                                String sql = platform.getCreateTablesSql(wantedDdl, params, false, false);
+                                LOG.trace(sql);
+                                platform.evaluateBatch(sql, false);
                                 return null ;
                             }
                         },
@@ -46,7 +51,8 @@ public class ImcmsDatabaseCreator {
                                     throw new RuntimeException(e);
                                 }
                                 sql = massageSql(platform, sql);
-                                platform.evaluateBatch(databaseConnection.getConnection(), sql, false) ;
+                                LOG.trace(sql);
+                                platform.evaluateBatch(sql, false) ;
                                 return null ;
                             }
                         },
