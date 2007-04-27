@@ -276,9 +276,6 @@ public class DocumentService {
 
     public void deleteDocument(Document document) throws NoPermissionException {
         UserDomainObject internalUser = contentManagementSystem.getCurrentUser().getInternal();
-        if ( !internalUser.isSuperAdmin() ) {
-            throw new NoPermissionException("User must be superadmin to delete documents.");
-        }
         getDocumentMapper().deleteDocument(document.getInternal(), internalUser);
     }
 

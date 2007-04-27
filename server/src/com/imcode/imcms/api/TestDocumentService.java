@@ -72,21 +72,6 @@ public class TestDocumentService extends TestCase {
         database.assertCalled( new MockDatabase.UpdateTableSqlCallPredicate( "categories", otherName ));
     }
 
-    public void testDeleteDocument() throws Exception {
-        TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
-        textDocument.setId(1001);
-        TextDocument document = new TextDocument(textDocument, contentManagementSystem);
-
-        try {
-            documentService.deleteDocument(document);
-            fail("Expected NoPermissionException") ;
-        } catch(NoPermissionException e) {}
-        UserDomainObject admin = new UserDomainObject() ;
-        admin.addRoleId(RoleId.SUPERADMIN) ;
-        contentManagementSystem.setCurrentInternalUser(admin);
-        documentService.deleteDocument(document);
-    }
-
     public void testApiWrappingList() {
         List list = new ArrayList() ;
         DocumentService.ApiDocumentWrappingList apiDocumentWrappingList = new DocumentService.ApiDocumentWrappingList(list, contentManagementSystem);

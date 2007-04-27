@@ -18,7 +18,6 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
     private MailService mailService;
     UserDomainObject currentUser;
     protected ImcmsServices service;
-    protected SecurityChecker securityChecker;
 
     public DefaultContentManagementSystem( ImcmsServices service, UserDomainObject accessor ) {
         this.service = service ;
@@ -33,7 +32,6 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
     }
 
     private void init(DataSource apiDataSource) {
-        securityChecker = new SecurityChecker( this );
         userService = new UserService( this );
         documentService = new DocumentService( this ) ;
         templateService = new TemplateService( this );
