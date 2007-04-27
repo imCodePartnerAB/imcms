@@ -12,6 +12,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Html;
 import imcode.util.ShouldNotBeThrownException;
+import imcode.util.Utility;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
@@ -20,6 +21,7 @@ import org.apache.oro.text.regex.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
@@ -61,7 +63,7 @@ public class TextDocumentParser {
         try {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
-            parsePage( paramsToParse, 5, out);
+            untimedParsePage( paramsToParse, out);
             stopWatch.stop();
             LOG.trace("Parsing template took "+stopWatch.getTime()+"ms.");
         } finally {
@@ -69,11 +71,11 @@ public class TextDocumentParser {
         }
     }
 
-    public void parsePage(ParserParameters parserParameters,
-                          int includelevel, Writer out) throws IOException {
+    public void untimedParsePage(ParserParameters parserParameters,
+                                 Writer out) throws IOException {
         TextDocumentViewing viewing = new TextDocumentViewing( parserParameters );
         TextDocumentViewing previousViewing = TextDocumentViewing.putInRequest( viewing );
-        Object previousParameters = ParserParameters.putInRequest(parserParameters);
+        ParserParameters previousParameters = ParserParameters.putInRequest(parserParameters);
         try {
             DocumentRequest documentRequest = parserParameters.getDocumentRequest();
 
@@ -96,7 +98,9 @@ public class TextDocumentParser {
             } else if (template.getFileName().endsWith(".jsp") || template.getFileName().endsWith(".jspx")) {
                 try {
                     HttpServletRequest request = documentRequest.getHttpServletRequest();
-                    request.getRequestDispatcher("/WEB-INF/templates/text/"+template.getFileName()).forward(request, documentRequest.getHttpServletResponse());
+                    HttpServletResponse response = documentRequest.getHttpServletResponse();
+                    String contents = Utility.getContents("/WEB-INF/templates/text/" + template.getFileName(), request, response);
+                    out.write(contents);
                 } catch ( ServletException e ) {
                     throw new UnhandledException(e);
                 }
@@ -111,7 +115,7 @@ public class TextDocumentParser {
 
                 Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, viewing.isEditingTemplate(), parserParameters );
                 MapSubstitution hashtagsubstitution = new MapSubstitution( hashTags, true );
-                TagParser tagParser = new TagParser( this, parserParameters, includelevel);
+                TagParser tagParser = new TagParser( this, parserParameters);
 
                 String tagsReplaced = tagParser.replaceTags(templateContent, false);
                 tagsReplaced = Util.substitute( patMat, hashtagPattern, hashtagsubstitution, tagsReplaced, Util.SUBSTITUTE_ALL );
@@ -130,7 +134,7 @@ public class TextDocumentParser {
                 TextDocumentViewing.putInRequest( previousViewing ) ;
             }
             if (null != previousParameters) {
-                ParserParameters.putInRequest(parserParameters) ;
+                ParserParameters.putInRequest(previousParameters) ;
             }
         }
     }

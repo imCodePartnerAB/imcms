@@ -15,6 +15,7 @@ public class ParserParameters implements Cloneable {
     private int flags;
     private boolean adminButtonsVisible = true ;
     private final static String ATTRIBUTE_NAME = ParserParameters.class.getName();
+    private int includeLevel = 5;
 
     public ParserParameters( DocumentRequest documentRequest ) {
         this.documentRequest = documentRequest;
@@ -103,14 +104,22 @@ public class ParserParameters implements Cloneable {
         return isTextMode() || isImageMode() || isMenuMode() || isIncludesMode() || isTemplateMode() ;
     }
 
-    public static Object putInRequest(ParserParameters parserParameters) {
+    public static ParserParameters putInRequest(ParserParameters parserParameters) {
         HttpServletRequest request = parserParameters.getDocumentRequest().getHttpServletRequest();
         Object attribute = request.getAttribute(ATTRIBUTE_NAME);
         request.setAttribute(ATTRIBUTE_NAME, parserParameters);
-        return attribute ;
+        return (ParserParameters) attribute ;
     }
     
     public static ParserParameters fromRequest(HttpServletRequest request) {
         return (ParserParameters) request.getAttribute(ATTRIBUTE_NAME) ;
+    }
+
+    public int getIncludeLevel() {
+        return includeLevel;
+    }
+
+    public void setIncludeLevel(int includeLevel) {
+        this.includeLevel = includeLevel;
     }
 }

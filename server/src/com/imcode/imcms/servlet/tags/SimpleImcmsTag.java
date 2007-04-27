@@ -19,7 +19,7 @@ public abstract class SimpleImcmsTag extends TagSupport {
         try {
             HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
             ParserParameters parserParameters = ParserParameters.fromRequest(request);
-            TagParser tagParser = new TagParser(new TextDocumentParser(Imcms.getServices()), parserParameters, 0);
+            TagParser tagParser = new TagParser(new TextDocumentParser(Imcms.getServices()), parserParameters);
             String content = getContent(tagParser);
             String contentWithPreAndPost = TagParser.addPreAndPost(attributes, content);
             pageContext.getOut().print(contentWithPreAndPost);

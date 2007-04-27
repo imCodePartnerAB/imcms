@@ -82,7 +82,6 @@ public class TagParser {
     private TextDocumentParser textDocParser;
 
     private boolean includeMode;
-    private int includeLevel;
     private int implicitIncludeNumber = 1;
 
     private boolean textMode;
@@ -98,8 +97,8 @@ public class TagParser {
 
     private TextDocumentViewing viewing;
 
-    public TagParser(TextDocumentParser textdocparser, ParserParameters parserParameters,
-                     int includelevel) {
+    public TagParser(TextDocumentParser textdocparser, ParserParameters parserParameters
+    ) {
         this.textDocParser = textdocparser;
         this.parserParameters = parserParameters;
         this.documentRequest = parserParameters.getDocumentRequest();
@@ -107,7 +106,6 @@ public class TagParser {
         this.service = documentRequest.getServices();
 
         this.includeMode = parserParameters.isIncludesMode() ;
-        this.includeLevel = includelevel;
 
         this.textMode = parserParameters.isTextMode();
 
@@ -204,13 +202,13 @@ public class TagParser {
                 } catch ( Exception e ) {
                     throw new UnhandledException(e);
                 }
-            } else if ( includeLevel > 0 ) {
+            } else if ( parserParameters.getIncludeLevel() > 0 ) {
                 if ( null == includedDocumentId ) {
                     return "";
                 }
                 ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters(parserParameters, includedDocumentId.intValue(), attributes);
                 StringWriter writer = new StringWriter();
-                textDocParser.parsePage(includedDocumentParserParameters, includeLevel - 1, writer);
+                textDocParser.untimedParsePage(includedDocumentParserParameters, writer);
                 PatternMatcher patMat = new Perl5Matcher();
                 String documentStr = Util.substitute(patMat, htmlPrebodyPattern, NULL_SUBSTITUTION, writer.toString());
                 documentStr = Util.substitute(patMat, htmlPostbodyPattern, NULL_SUBSTITUTION, documentStr);
@@ -296,11 +294,11 @@ public class TagParser {
 
     private String includeDocument(String attributevalue, Properties attributes) {
         try {
-            if ( includeLevel > 0 ) {
+            if ( parserParameters.getIncludeLevel() > 0 ) {
                 int included_meta_id = Integer.parseInt(attributevalue);
                 ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters(parserParameters, included_meta_id, attributes);
                 StringWriter writer = new StringWriter();
-                textDocParser.parsePage(includedDocumentParserParameters, includeLevel - 1, writer);
+                textDocParser.untimedParsePage(includedDocumentParserParameters, writer);
                 PatternMatcher patMat = new Perl5Matcher();
                 String documentStr = Util.substitute(patMat, htmlPrebodyPattern, NULL_SUBSTITUTION, writer.toString());
                 documentStr = Util.substitute(patMat, htmlPostbodyPattern, NULL_SUBSTITUTION, documentStr);
@@ -334,6 +332,7 @@ public class TagParser {
             includedParserParameters.getDocumentRequest().setDocument(service.getDocumentMapper().getDocument(included_meta_id));
             includedParserParameters.getDocumentRequest().setReferrer(document);
             includedParserParameters.setFlags(0);
+            includedParserParameters.setIncludeLevel(parserParameters.getIncludeLevel() - 1);
             includedParserParameters.setAdminButtonsVisible(false);
         } catch ( CloneNotSupportedException e ) {
             // ignored, supported
