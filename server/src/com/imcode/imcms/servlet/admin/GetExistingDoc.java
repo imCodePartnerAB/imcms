@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.flow.Page;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
@@ -15,6 +16,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
@@ -115,12 +117,6 @@ public class GetExistingDoc extends HttpServlet {
             // Lets get the language prefix
             String langPrefix = user.getLanguageIso639_2();
 
-            // Lets check that the sortby option is valid by run the method
-            // "SortOrder_GetExistingDocs 'lang_prefix' wich will return
-            // an array with all the document types. By adding the key-value pair
-            // array into an hashtable and check if the sortorder exists in the hashtable.
-            // we are able to determine if the sortorder is okay.
-
             // Lets fix the sortby list, first get the displaytexts from the database
             Set sortOrderSet = SORT_ORDERS_MAP.keySet() ;
             if ( !sortOrderSet.contains( sortBy ) ) {
@@ -214,6 +210,11 @@ public class GetExistingDoc extends HttpServlet {
             // Add the document in menu if user is admin for the document OR the document is shared.
             addDocumentToMenu(existingDocument, parentDocument, user, menuEditPage);
 
+        }
+        try {
+            menuEditPage.save(user);
+        } catch ( DocumentSaveException e ) {
+            throw new UnhandledException(e);
         }
     }
 

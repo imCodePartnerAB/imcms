@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.flow.CreateDocumentPageFlow;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
-import com.imcode.imcms.flow.CreateDocumentPageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
@@ -26,11 +26,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.text.SimpleDateFormat;
 
 public class MenuEditPage extends OkCancelPage {
 
@@ -80,6 +80,25 @@ public class MenuEditPage extends OkCancelPage {
             }
         }
 
+        forward(request, response);
+    }
+
+    protected void updateFromRequest(HttpServletRequest request) {
+        MenuItemDomainObject[] menuItems = menu.getMenuItems();
+        for ( MenuItemDomainObject menuItem : menuItems ) {
+            String newSortKey = request.getParameter(SORT_KEY + menuItem.getDocument().getId());
+            if (null != newSortKey) {
+                if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED == menu.getSortOrder() ) {
+                    try {
+                        menuItem.setSortKey(new Integer(newSortKey));
+                    } catch ( NumberFormatException ignored ) {
+                    }
+                } else if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER == menu.getSortOrder() ) {
+                    menuItem.setTreeSortKey(new TreeSortKeyDomainObject(newSortKey));
+                }
+            }
+        }
+
         try {
             String[] selectedChildrenIds = request.getParameterValues(SELECTED);
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
@@ -117,6 +136,7 @@ public class MenuEditPage extends OkCancelPage {
                     }
                 }
             }
+            documentMapper.saveDocument(textDocument, user);
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
         } catch ( NoPermissionToAddDocumentToMenuException e ) {
@@ -125,24 +145,6 @@ public class MenuEditPage extends OkCancelPage {
             throw new ShouldNotBeThrownException(e);
         }
 
-        forward(request, response);
-    }
-
-    protected void updateFromRequest(HttpServletRequest request) {
-        MenuItemDomainObject[] menuItems = menu.getMenuItems();
-        for ( MenuItemDomainObject menuItem : menuItems ) {
-            String newSortKey = request.getParameter(SORT_KEY + menuItem.getDocument().getId());
-            if (null != newSortKey) {
-                if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED == menu.getSortOrder() ) {
-                    try {
-                        menuItem.setSortKey(new Integer(newSortKey));
-                    } catch ( NumberFormatException ignored ) {
-                    }
-                } else if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER == menu.getSortOrder() ) {
-                    menuItem.setTreeSortKey(new TreeSortKeyDomainObject(newSortKey));
-                }
-            }
-        }
     }
 
     public MenuDomainObject getMenu() {
@@ -223,6 +225,11 @@ public class MenuEditPage extends OkCancelPage {
         response.getWriter().write( imcref.getAdminTemplate( "existing_doc.html", user, vec ) );
     }
 
+    public void save(UserDomainObject user) throws DocumentSaveException {
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        documentMapper.saveDocument(textDocument, user);
+    }
+
     public static class SaveNewDocumentAndAddToMenuCommand implements CreateDocumentPageFlow.SaveDocumentCommand {
 
         private TextDocumentDomainObject parentDocument;
@@ -235,16 +242,18 @@ public class MenuEditPage extends OkCancelPage {
         }
 
         public synchronized void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-            if ( null == savedDocument ) {
-                final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-                documentMapper.saveNewDocument( document, user, false);
-                this.savedDocument = document ;
-                if (null != parentMenuIndex) {
-                    MenuDomainObject menu = parentDocument.getMenu(parentMenuIndex.intValue());
-                    menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(document)));
-                    documentMapper.saveDocument(parentDocument, user);
-                }
+            if ( null != savedDocument ) {
+                return;
             }
+            final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+            documentMapper.saveNewDocument( document, user, false);
+            savedDocument = document ;
+            if ( null == parentMenuIndex ) {
+                return;
+            }
+            MenuDomainObject menu = parentDocument.getMenu(parentMenuIndex.intValue());
+            menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(document)));
+            documentMapper.saveDocument(parentDocument, user);
         }
 
         public synchronized DocumentDomainObject getSavedDocument() {
