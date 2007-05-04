@@ -42,7 +42,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.security.KeyStore;
@@ -409,17 +408,17 @@ public class Utility {
 
     public static void outputXmlDocument( HttpServletResponse response, Document xmlDocument ) throws IOException {
         response.setContentType( "text/xml; charset=UTF-8" );
-        writeXmlDocumentToStream( xmlDocument, response.getOutputStream() );
+        writeXmlDocument( xmlDocument, new StreamResult( response.getOutputStream() ));
     }
 
-    private static void writeXmlDocumentToStream( Document xmlDocument, OutputStream outputStream ) {
+    public static void writeXmlDocument(Document xmlDocument,
+                                         StreamResult streamResult) {
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             javax.xml.transform.Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
-            StreamResult outputTarget = new StreamResult( outputStream );
             DOMSource xmlSource = new DOMSource( xmlDocument );
-            transformer.transform( xmlSource, outputTarget );
+            transformer.transform( xmlSource, streamResult );
         } catch ( TransformerConfigurationException e ) {
             throw new UnhandledException( e );
         } catch ( TransformerException e ) {
