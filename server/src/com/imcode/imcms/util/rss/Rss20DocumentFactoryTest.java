@@ -123,7 +123,7 @@ public class Rss20DocumentFactoryTest extends TestCase {
             return description;
         }
 
-        public Collection<Item> getItems() {
+        public Iterable<Item> getItems() {
             return items;
         }
 

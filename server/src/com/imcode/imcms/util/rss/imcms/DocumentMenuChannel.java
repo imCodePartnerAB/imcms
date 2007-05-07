@@ -5,7 +5,6 @@ import com.imcode.imcms.util.rss.Item;
 import com.imcode.imcms.util.rss.dc.DublinCoreChannel;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class DocumentMenuChannel extends DublinCoreChannel {
@@ -21,7 +20,7 @@ public class DocumentMenuChannel extends DublinCoreChannel {
         this.menuIndex = menuIndex;
     }
 
-    public Collection<Item> getItems() {
+    public Iterable<Item> getItems() {
         TextDocument.MenuItem[] visibleMenuItems = document.getMenu(menuIndex).getVisibleMenuItems();
         List<Item> result = new ArrayList<Item>();
         for ( TextDocument.MenuItem menuItem : visibleMenuItems ) {
