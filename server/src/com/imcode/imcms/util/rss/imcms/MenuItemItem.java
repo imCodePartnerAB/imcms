@@ -11,8 +11,8 @@ import java.util.Map;
 public class MenuItemItem extends DublinCoreItem {
 
     private TextDocument.MenuItem menuItem;
-    static final String IMCMS_MENU_NAMESPACE_URI = "imcms:menu";
-    public static final NameSpace IMCMS_MENU_NAME_SPACE = new SimpleNameSpace("imcms", IMCMS_MENU_NAMESPACE_URI);
+    private static final String IMCMS_MENU_NAMESPACE_URI = "imcms:menu";
+    private static final NameSpace IMCMS_MENU_NAME_SPACE = new SimpleNameSpace("imcms", IMCMS_MENU_NAMESPACE_URI);
 
     public MenuItemItem(String urlRoot, TextDocument.MenuItem menuItem) {
         super(new DocumentDublinCoreTerms(urlRoot, menuItem.getDocument()));

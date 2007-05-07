@@ -54,6 +54,7 @@ public class Rss20DocumentFactory implements RssDocumentFactory {
         appendTextElement(channelElement, "title", channel.getTitle());
         appendTextElement(channelElement, "link", channel.getLink());
         appendTextElement(channelElement, "description", channel.getDescription());
+        appendNameSpaceStrings(channelElement, channel.getNameSpaceStrings());
 
         appendItems(channelElement, channel);
 
@@ -94,11 +95,12 @@ public class Rss20DocumentFactory implements RssDocumentFactory {
         }
 
         Map<NameSpace, Map<String, String>> nameSpaces = item.getNameSpaceStrings();
-        appendNameSpaceStrings(nameSpaces, itemElement);
+        appendNameSpaceStrings(itemElement, nameSpaces);
         return itemElement;
     }
 
-    private void appendNameSpaceStrings(Map<NameSpace, Map<String, String>> nameSpaces, Element itemElement) {
+    private void appendNameSpaceStrings(Element itemElement, Map<NameSpace, Map<String, String>> nameSpaces
+    ) {
         for ( Map.Entry<NameSpace, Map<String, String>> nameSpaceEntry : nameSpaces.entrySet() ) {
             NameSpace nameSpace = nameSpaceEntry.getKey();
             String nameSpaceUri = nameSpace.getNameSpaceUri();
@@ -127,6 +129,10 @@ public class Rss20DocumentFactory implements RssDocumentFactory {
         return prefix;
     }
 
+    private void appendTextElement(Element parentElement, String tagName, String text) {
+        appendTextElementNS(parentElement, null, tagName, text);
+    }
+
     private void appendTextElementNS(Element parentElement, String namespaceUri, String qualifiedName,
                                      String text) {
         if ( StringUtils.isNotBlank(text) ) {
@@ -134,21 +140,11 @@ public class Rss20DocumentFactory implements RssDocumentFactory {
         }
     }
 
-    private void appendTextElement(Element parentElement, String tagName, String text) {
-        appendTextElementNS(parentElement, null, tagName, text);
-    }
-
     private Element createTextElementNS(Document xmlDocument, String namespaceUri, String qualifiedName,
                                         String text) {
         Element treeKeyElement = xmlDocument.createElementNS(namespaceUri, qualifiedName);
         treeKeyElement.appendChild(xmlDocument.createTextNode(text));
         return treeKeyElement;
-    }
-
-    private Element createTextElement(Document xmlDocument, String tagName, String text) {
-        Element element = xmlDocument.createElement(tagName);
-        element.appendChild(xmlDocument.createTextNode(text));
-        return element;
     }
 
 }

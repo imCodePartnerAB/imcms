@@ -5,15 +5,15 @@ import com.imcode.imcms.util.rss.dc.DublinCoreItem;
 import com.imcode.imcms.util.rss.dc.DublinCoreTerms;
 import imcode.util.Utility;
 import junit.framework.TestCase;
-import org.apache.commons.lang.UnhandledException;
 import org.w3c.dom.Document;
+import org.apache.commons.beanutils.DynaBean;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamResult;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.Collections;
 
 public class Rss20DocumentFactoryTest extends TestCase {
 
@@ -125,6 +125,14 @@ public class Rss20DocumentFactoryTest extends TestCase {
 
         public Collection<Item> getItems() {
             return items;
+        }
+
+        public Map<NameSpace, Map<String, String>> getNameSpaceStrings() {
+            return Collections.EMPTY_MAP;
+        }
+
+        public Map<NameSpace, DynaBean> getNameSpaceBeans() {
+            return Collections.EMPTY_MAP;
         }
 
         public void setDescription(String description) {
