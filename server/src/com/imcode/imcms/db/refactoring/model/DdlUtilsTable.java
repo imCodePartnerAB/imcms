@@ -36,7 +36,4 @@ public class DdlUtilsTable implements Table {
         return columns;
     }
 
-    public List<Column> getPrimaryKeyColumns() {
-        return wrapColumns(table.getPrimaryKeyColumns());
-    }
 }

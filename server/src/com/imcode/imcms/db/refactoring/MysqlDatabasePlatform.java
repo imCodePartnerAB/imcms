@@ -28,7 +28,7 @@ public class MysqlDatabasePlatform extends DatabasePlatform {
         update("ALTER TABLE "+table.getName() +" CHANGE COLUMN "+columnName+" "+createColumnDefinition(column));
     }
 
-    private String createColumnDefinition(Column column) {
+    protected String createColumnDefinition(Column column) {
         List<String> columnDefinition = new ArrayList();
         columnDefinition.add(column.getName());
         columnDefinition.add(getTypeString(column));
@@ -38,23 +38,14 @@ public class MysqlDatabasePlatform extends DatabasePlatform {
         } else if (column.isAutoIncremented()) {
             columnDefinition.add("AUTO_INCREMENT") ;
         }
-        if (column.isPrimaryKey()) {
-            columnDefinition.add("PRIMARY KEY") ;
-        }
         return StringUtils.join(columnDefinition.iterator(), " ");
     }
 
-    private String getTypeString(Column column) {
-        String typeString = null;
-        switch ( column.getType() ) {
-            case INTEGER:
-                typeString = "INTEGER";
-                break;
-            case VARCHAR:
-                typeString = "VARCHAR("+column.getSize()+")";
-                break;
-        }
-        return typeString;
+    public void createTable(Table table) {
+        super.createTable(table);
     }
 
+    protected String createTableDefinition(Table table) {
+        return super.createTableDefinition(table)+" ENGINE=InnoDB DEFAULT CHARSET=utf8";
+    }
 }

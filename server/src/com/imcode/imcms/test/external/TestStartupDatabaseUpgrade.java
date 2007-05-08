@@ -1,30 +1,20 @@
 package com.imcode.imcms.test.external;
 
 import com.imcode.db.DataSourceDatabase;
-import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.imcms.db.DdlUtilsPlatformCommand;
 import com.imcode.imcms.db.ImcmsDatabaseCreator;
 import com.imcode.imcms.db.StartupDatabaseUpgrade;
+import com.imcode.imcms.db.refactoring.DatabasePlatform;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.imcms.util.EmptyEnumeration;
 import imcode.server.Imcms;
 import imcode.util.ShouldNotBeThrownException;
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
 import org.apache.commons.io.CopyUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.ddlutils.Platform;
-import org.apache.ddlutils.alteration.*;
 import org.apache.ddlutils.io.DatabaseIO;
 import org.apache.ddlutils.model.Database;
-import org.apache.ddlutils.model.ForeignKey;
-import org.apache.ddlutils.model.Index;
-import org.apache.ddlutils.model.IndexColumn;
 
 import java.io.*;
 import java.util.*;
@@ -43,10 +33,10 @@ public class TestStartupDatabaseUpgrade extends TestCase {
 
     public void testCreateMssql() throws Exception {
         String jdbcDriver = "net.sourceforge.jtds.jdbc.Driver";
-        String host = "localhost";
+        String host = "ratatosk";
         String baseUrl = "jdbc:jtds:sqlserver://" + host + ":1433/";
-        String jdbcUser = "sa";
-        String jdbcPassword = "";
+        String jdbcUser = "chrham";
+        String jdbcPassword = "trexus";
         String databaseName = "imcmstest";
         doTest(jdbcDriver, baseUrl, jdbcUser, jdbcPassword, databaseName);
     }
@@ -61,8 +51,9 @@ public class TestStartupDatabaseUpgrade extends TestCase {
         File templateFile = new File(templatesDirectory, "1.html");
         templateFile.createNewFile();
         DataSourceDatabase database = createDataSourceDatabase(jdbcDriver, baseUrl, jdbcUser, jdbcPassword);
-        dropDatabase(database, databaseName);
-        createDatabase(database, databaseName);
+        DatabasePlatform databasePlatform = DatabasePlatform.getInstance(database);
+        databasePlatform.dropDatabase(databaseName);
+        databasePlatform.createDatabase(databaseName);
         database = createDataSourceDatabase(jdbcDriver, baseUrl + databaseName, jdbcUser, jdbcPassword);
         ImcmsDatabaseCreator databaseCreator = createDatabaseCreator();
         databaseCreator.createDatabase(database, getOldDdl());
@@ -103,17 +94,9 @@ public class TestStartupDatabaseUpgrade extends TestCase {
     }
 
     private Database getDdl(Reader reader) {
-        return new DatabaseIO().read(reader);
-    }
-
-    private void createDatabase(DataSourceDatabase mssqlDatabase, String database) {
-        mssqlDatabase.execute(new SqlUpdateCommand("CREATE DATABASE "+database,null)) ;
-    }
-
-    private void dropDatabase(DataSourceDatabase mssqlDatabase, String databaseName) {
-        try {
-            mssqlDatabase.execute(new SqlUpdateCommand("DROP DATABASE "+databaseName,null)) ;
-        } catch( DatabaseException ignored ) {}
+        DatabaseIO io = new DatabaseIO();
+        io.setValidateXml(false);
+        return io.read(reader);
     }
 
     private DataSourceDatabase createDataSourceDatabase(String jdbcDriver, String jdbcUrl, String jdbcUser,

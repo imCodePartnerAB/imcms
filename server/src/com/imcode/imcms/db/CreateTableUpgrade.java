@@ -2,6 +2,8 @@ package com.imcode.imcms.db;
 
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
+import com.imcode.imcms.db.refactoring.DatabasePlatform;
+import com.imcode.imcms.db.refactoring.model.DdlUtilsTable;
 import org.apache.ddlutils.alteration.AddTableChange;
 import org.apache.ddlutils.alteration.ModelChange;
 import org.apache.ddlutils.alteration.AddForeignKeyChange;
@@ -24,27 +26,8 @@ public class CreateTableUpgrade extends ImcmsDatabaseUpgrade {
     }
 
     public void upgrade(com.imcode.db.Database database) throws DatabaseException {
-        database.execute(new DdlUtilsSqlBuilderCommand() {
-            protected Object executeSqlBuilder(DatabaseConnection databaseConnection,
-                                               SqlBuilder sqlBuilder) throws IOException {
-                final Database actualDdl = sqlBuilder.getPlatform().readModelFromDatabase(databaseConnection.getConnection(), null);
-                Table table = wantedDdl.findTable(tableName);
-                if ( null == table ) {
-                    throw new DatabaseException("Table " + tableName + " missing from ddl", null);
-                }
-                if ( null != actualDdl.findTable(tableName) ) {
-                    return null ;
-                }
-                final List<ModelChange> changes = new ArrayList();
-                changes.add(new AddTableChange(table));
-                for ( ForeignKey foreignKey : table.getForeignKeys() ) {
-                    changes.add(new AddForeignKeyChange(table, foreignKey)) ;
-                }
-                sqlBuilder.processChanges(actualDdl, wantedDdl, changes, null);
-                
-                return null;
-            }
-        });
-
+        DatabasePlatform databasePlatform = DatabasePlatform.getInstance(database);
+        final Table table = wantedDdl.findTable(tableName);
+        databasePlatform.createTable(new DdlUtilsTable(table));
     }
 }

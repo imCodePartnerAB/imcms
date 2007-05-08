@@ -29,7 +29,13 @@ public class DdlUtilsColumn implements Column {
     }
 
     public Type getType() {
-        return column.isOfNumericType() ? Type.INTEGER : Type.VARCHAR;
+        if ( column.isOfNumericType() ) {
+            return Type.INTEGER;
+        } else if (column.isOfTextType()) {
+            return Type.VARCHAR;
+        } else {
+            return Type.DATETIME;
+        }
     }
 
     public int getSize() {

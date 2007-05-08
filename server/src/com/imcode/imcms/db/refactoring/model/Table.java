@@ -7,6 +7,6 @@ public interface Table {
     String getName();
 
     Collection<Column> getColumns();
-
+    
     Collection<ForeignKey> getForeignKeys();
 }

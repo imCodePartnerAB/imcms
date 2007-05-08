@@ -3,17 +3,14 @@ package com.imcode.imcms.util.rss;
 import com.imcode.imcms.util.rss.dc.DublinCoreEntity;
 import com.imcode.imcms.util.rss.dc.DublinCoreItem;
 import com.imcode.imcms.util.rss.dc.DublinCoreTerms;
+import com.imcode.imcms.util.rss.dc.DublinCoreChannel;
 import imcode.util.Utility;
 import junit.framework.TestCase;
 import org.w3c.dom.Document;
 import org.apache.commons.beanutils.DynaBean;
 
 import javax.xml.transform.stream.StreamResult;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
-import java.util.Collections;
+import java.util.*;
 
 public class Rss20DocumentFactoryTest extends TestCase {
 
@@ -26,12 +23,7 @@ public class Rss20DocumentFactoryTest extends TestCase {
         SimpleDublinCoreTerms dublinCoreTerms = new SimpleDublinCoreTerms();
         dublinCoreTerms.setTitle("title");
         dublinCoreTerms.setIssued(new Date());
-        DublinCoreItem item = new DublinCoreItem(dublinCoreTerms) {
-            public Map<NameSpace, Map<String, String>> getNameSpaceStrings() {
-                Map<NameSpace, Map<String, String>> nameSpaceStrings = super.getNameSpaceStrings();
-                return nameSpaceStrings;
-            }
-        };
+        DublinCoreItem item = new DublinCoreItem(dublinCoreTerms) ;
         channel.setItems(Arrays.asList(new Item[] { item }));
         Document rssDocument = rssDocumentFactory.createRssDocument(channel);
         Utility.writeXmlDocument(rssDocument, new StreamResult(System.out));

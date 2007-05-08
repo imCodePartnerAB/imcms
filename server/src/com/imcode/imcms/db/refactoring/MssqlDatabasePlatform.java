@@ -1,11 +1,7 @@
 package com.imcode.imcms.db.refactoring;
 
 import com.imcode.db.Database;
-import com.imcode.imcms.db.refactoring.model.Column;
-import com.imcode.imcms.db.refactoring.model.ForeignKey;
-import com.imcode.imcms.db.refactoring.model.Table;
-import com.imcode.imcms.db.refactoring.model.TableWrapper;
-import com.imcode.imcms.db.refactoring.model.ForeignKeyHasLocalColumnName;
+import com.imcode.imcms.db.refactoring.model.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.functors.NotPredicate;
@@ -62,41 +58,11 @@ public class MssqlDatabasePlatform extends DatabasePlatform {
         update("sp_rename '"+oldName+"', '"+newName+"'");
     }
 
-    private void copyTable(String tableName, String temporaryTableName) {
+    public void copyTable(String tableName, String temporaryTableName) {
         update("INSERT INTO "+temporaryTableName+" SELECT * FROM "+tableName);
     }
 
-    private void createTable(Table table) {
-        update("CREATE TABLE "+table.getName()+" ( "+createTableDefinition(table) +" )");
-    }
-
-    private String createTableDefinition(Table table) {
-        List<String> tableDefinition = new ArrayList<String>();
-        tableDefinition.add(createColumnDefinitions(table.getColumns()));
-        List<String> primaryKeyColumnNames = new ArrayList<String>();
-        for ( Column column : table.getColumns() ) {
-            if (column.isPrimaryKey()) {
-                primaryKeyColumnNames.add(column.getName()) ;
-            }
-        }
-        if (!primaryKeyColumnNames.isEmpty()) {
-            tableDefinition.add("PRIMARY KEY ( "+StringUtils.join(primaryKeyColumnNames.iterator(), ", ")+" )");
-        }
-        for ( ForeignKey foreignKey : table.getForeignKeys() ) {
-            tableDefinition.add(createForeignKeyDefinition(foreignKey));
-        }
-        return StringUtils.join(tableDefinition.iterator(), ", ");
-    }
-
-    private String createColumnDefinitions(Collection<Column> columns) {
-        List<String> columnDefinitions =  new ArrayList<String>();
-        for ( Column column : columns ) {
-            columnDefinitions.add(createColumnDefinition(column));
-        }
-        return StringUtils.join(columnDefinitions.iterator(), ", ");
-    }
-
-    private String createColumnDefinition(Column column) {
+    protected String createColumnDefinition(Column column) {
         List<String> columnDefinition = new ArrayList<String>();
         columnDefinition.add(column.getName());
         columnDefinition.add(getTypeString(column));
@@ -107,15 +73,10 @@ public class MssqlDatabasePlatform extends DatabasePlatform {
         return StringUtils.join(columnDefinition.iterator(), " ");
     }
 
-    private String getTypeString(Column column) {
-        String typeString = null;
-        switch(column.getType()) {
-            case INTEGER:
-                typeString = "INTEGER";
-                break;
-            case VARCHAR:
-                typeString = "NVARCHAR("+column.getSize()+")";
-                break;
+    protected String getTypeString(Column column) {
+        String typeString = super.getTypeString(column);
+        if (column.getType() == Type.VARCHAR) {
+            typeString = "N"+typeString;
         }
         return typeString;
     }
