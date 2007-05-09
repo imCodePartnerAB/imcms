@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Writer;
 
 import com.imcode.imcms.mapping.DocumentMapper;
 
@@ -24,31 +23,31 @@ public class ChangeText extends HttpServlet {
 
     private static final String JSP__CHANGE_TEXT = "change_text.jsp";
 
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doGet( HttpServletRequest request, HttpServletResponse res ) throws ServletException, IOException {
         Utility.setDefaultHtmlContentType( res );
 
-        UserDomainObject user = Utility.getLoggedOnUser( req );
+        UserDomainObject user = Utility.getLoggedOnUser( request );
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-        int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
+        int documentId = Integer.parseInt( request.getParameter( "meta_id" ) );
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
 
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( textDocument );
 
         if ( !textDocumentPermissionSet.getEditTexts() ) {	// Checking to see if user may edit this
-            AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
+            AdminDoc.adminDoc( documentId, user, request, res, getServletContext() );
             return;
         }
 
-        int textIndex = Integer.parseInt( req.getParameter( "txt" ) );
-        String label = null == req.getParameter( "label" ) ? "" : req.getParameter( "label" );
+        int textIndex = Integer.parseInt( request.getParameter( "txt" ) );
+        String label = null == request.getParameter( "label" ) ? "" : request.getParameter( "label" );
 
         TextDomainObject text = textDocument.getText( textIndex );
         if ( null == text ) {
             text = new TextDomainObject( "", TextDomainObject.TEXT_TYPE_PLAIN );
         }
-
+        String formatsParameter = request.getParameter("formats");
         TextEditPage page = new TextEditPage( documentId, textIndex, text, label );
-        page.forward( req, res, user );
+        page.forward( request, res, user );
 
     }
 
@@ -60,6 +59,12 @@ public class ChangeText extends HttpServlet {
         private String label;
         private TextDomainObject text;
 
+        public enum Format {
+            NONE,
+            TEXT,
+            EDITOR
+        }
+        
         public TextEditPage( int documentId, int textIndex, TextDomainObject text, String label ) {
             this.documentId = documentId;
             this.text = text;

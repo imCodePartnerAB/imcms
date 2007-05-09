@@ -4,7 +4,7 @@
                  imcode.util.Utility,
                  org.apache.commons.lang.StringEscapeUtils,
                  org.apache.commons.lang.math.NumberUtils,
-                 java.net.URLEncoder"%><%
+                 java.net.URLEncoder, org.apache.commons.lang.StringUtils"%><%
 
     DocumentDomainObject document = (DocumentDomainObject)request.getAttribute( "document" ) ;
     Integer textIndex = (Integer)request.getAttribute( "textIndex" ) ;
@@ -19,9 +19,10 @@
         url += "&label="+URLEncoder.encode( Html.removeTags(label) ) ;
     }
     if (null != formats) {
-        for ( int i = 0; i < formats.length; i++ ) {
-            String format = formats[i];
-            url += "&format="+URLEncoder.encode( format ) ;
+        for ( String format : formats ) {
+            if ( StringUtils.isNotBlank(format) ) {
+                url += "&format=" + URLEncoder.encode(format);
+            }
         }
     }
     if (null != rows && NumberUtils.isDigits( rows )) {

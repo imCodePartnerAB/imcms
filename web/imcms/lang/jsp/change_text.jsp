@@ -2,7 +2,7 @@
 
 	import="com.imcode.imcms.servlet.admin.ChangeText,
 	        imcode.server.Imcms,
-	        org.apache.commons.lang.StringEscapeUtils, imcode.util.Utility, imcode.server.LanguageMapper, imcode.server.document.textdocument.TextDomainObject"
+	        imcode.server.LanguageMapper, imcode.server.document.textdocument.TextDomainObject, imcode.util.Utility, org.apache.commons.lang.StringEscapeUtils, java.util.ArrayList, java.util.Arrays, java.util.List"
 
     contentType="text/html; charset=UTF-8"
 
@@ -10,6 +10,17 @@
 %><%
 	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );
 ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttribute(ChangeText.TextEditPage.REQUEST_ATTRIBUTE__PAGE);
+
+List<String> formats = new ArrayList<String>();
+String[] formatParameterValues = request.getParameterValues("format");
+if (null != formatParameterValues) {
+    formats.addAll(Arrays.asList(formatParameterValues));
+    formats.remove("");
+}
+
+boolean showModeEditor = formats.isEmpty();
+boolean showModeText   = formats.contains("text") || showModeEditor;
+boolean showModeHtml   = formats.contains("html") || formats.contains("none") || showModeEditor ;
 
 %>
 <vel:velocity>
@@ -21,12 +32,14 @@ ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttr
 <script src="<%= request.getContextPath() %>/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 </head>
 <body bgcolor="#FFFFFF" style="margin-bottom:0px;">
+<% if (showModeEditor) { %>
 <script type="text/javascript">
     _editor_url  = "<%=request.getContextPath()%>/imcms/xinha/"  // (preferably absolute) URL (including trailing slash) where Xinha is installed
     _editor_lang = "<%= LanguageMapper.convert639_2to639_1(Utility.getLoggedOnUser(request).getLanguageIso639_2()) %>";      // And the language we need to use in the editor.
 </script>
 <script type="text/javascript" src="<%= request.getContextPath() %>/imcms/xinha/XinhaCore.js"></script>
 <script type="text/javascript" src="<%= request.getContextPath() %>/imcms/xinha/plugins/ImcmsIntegration/init.js.jsp<% if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType()) { %>?html=true<% } %>"></script>
+<% } %>
 <form method="POST" action="<%= request.getContextPath() %>/servlet/SaveText">
 <input type="hidden" name="meta_id"  value="<%= textEditPage.getDocumentId() %>">
 <input type="hidden" name="txt_no"   value="<%= textEditPage.getTextIndex() %>">
@@ -65,6 +78,7 @@ ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttr
 <vel:velocity>
 <tr>
 	<td>
+        <% if (showModeEditor) { %>
         <script type="text/javascript">
             
             function getElementsByClassAttribute(node, tagname, class) {
@@ -93,10 +107,19 @@ ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttr
                 Xinha.startEditors(xinha_editors);
             }
         </script>
-        <input type="radio" name="format_type" id="format_type_text" value="0" onclick="setTextMode()"<% if (TextDomainObject.TEXT_TYPE_PLAIN==textEditPage.getType()) { %> checked<% } %>>
+        <% } %>
+        <% if (showModeText && showModeHtml) { %>
+        <input type="radio" name="format_type" id="format_type_text" value="0" <% if (TextDomainObject.TEXT_TYPE_PLAIN==textEditPage.getType()) { %> checked<% } %>
+               <% if (showModeEditor) { %>onclick="setTextMode()"<% } %>>
         <label for="format_type_text">Text</label>
-        <input type="radio" name="format_type" id="format_type_html" value="1" onclick="setHtmlMode()"<% if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType()) { %> checked<% } %>>
+        <input type="radio" name="format_type" id="format_type_html" value="1" <% if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType()) { %> checked<% } %> 
+               <% if (showModeEditor) { %>onclick="setHtmlMode()"<% } %>>
         <label for="format_type_html">HTML</label>
+        <% } else if (showModeText) { %>
+            <input type="hidden" name="format_type" value="<%= TextDomainObject.TEXT_TYPE_PLAIN %>">
+        <% } else if (showModeHtml) { %>
+            <input type="hidden" name="format_type" value="<%= TextDomainObject.TEXT_TYPE_HTML %>">
+        <% } %>
     </td>
     <td align="right">
             <input tabindex="2" type="SUBMIT" class="imcmsFormBtn" name="ok" value="  <? templates/sv/change_text.html/2006 ?>  ">

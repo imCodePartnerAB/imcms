@@ -63,7 +63,7 @@ Single tags
                 - "write" - The content is only output if in "edit text" mode.
                 - "read" - The content is only output if not in "edit text" mode.
             * formats - List of allowed formats in the editor. Possible values:
-                - "none" - Do not use the html-editor to input HTML.
+                - "none" or "html" - Do not use the html-editor to input HTML.
                 - "text" - Use plain text, newlines converted to "<BR>" and html escaped on output.
 
 
