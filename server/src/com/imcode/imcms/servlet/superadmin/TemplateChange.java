@@ -123,9 +123,9 @@ public class TemplateChange extends HttpServlet {
     private String removeTemplatesFromGroup(HttpServletRequest req, TemplateMapper templateMapper, String lang,
                                             UserDomainObject user, ImcmsServices imcref) throws IOException {
         String groupIdParameter = req.getParameter("group_id");
-        String[] templateIds = req.getParameterValues("unassigned");
-        TemplateGroupDomainObject templateGroup = null;
-        if ( null != groupIdParameter && null != templateIds ) {
+        String[] templateIds = req.getParameterValues("assigned");
+        TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById(Integer.parseInt(groupIdParameter));
+        if ( null != templateGroup && null != templateIds ) {
             for ( String templateName : templateIds ) {
                 TemplateDomainObject templateToUnassign = templateMapper.getTemplateByName(templateName);
                 templateMapper.removeTemplateFromGroup(templateToUnassign, templateGroup);

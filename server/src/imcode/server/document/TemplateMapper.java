@@ -12,7 +12,10 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.io.CopyUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.functors.NotPredicate;
+import org.apache.commons.collections.functors.NullPredicate;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -207,15 +210,16 @@ public class TemplateMapper {
     }
 
     public List<TemplateDomainObject> getTemplatesInGroup( TemplateGroupDomainObject templateGroup ) {
-        return (List<TemplateDomainObject>) services.getProcedureExecutor().executeProcedure(SPROC_GET_TEMPLATES_IN_GROUP, new String[]{"" + templateGroup.getId()}, new CollectionHandler(new ArrayList(), new RowTransformer() {
+        return (List<TemplateDomainObject>) CollectionUtils.select((Collection) services.getProcedureExecutor().executeProcedure(SPROC_GET_TEMPLATES_IN_GROUP, new String[] {
+                "" + templateGroup.getId() }, new CollectionHandler(new ArrayList(), new RowTransformer() {
             public Object createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
-                return getTemplateByName(resultSet.getString(1)) ;
+                return getTemplateByName(resultSet.getString(1));
             }
 
             public Class getClassOfCreatedObjects() {
-                return TemplateDomainObject.class ;
+                return TemplateDomainObject.class;
             }
-        }));
+        })), NotPredicate.getInstance(NullPredicate.INSTANCE));
     }
 
     public List<TemplateDomainObject> getTemplatesNotInGroup( TemplateGroupDomainObject templateGroup ) {
@@ -312,7 +316,7 @@ public class TemplateMapper {
         
         try {
             FileOutputStream fw = new FileOutputStream( f );
-            CopyUtils.copy(templateData, fw);
+            IOUtils.copy(templateData, fw);
             fw.flush();
             fw.close();
 
