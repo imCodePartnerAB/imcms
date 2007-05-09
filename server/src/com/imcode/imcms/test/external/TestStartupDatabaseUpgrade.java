@@ -33,10 +33,10 @@ public class TestStartupDatabaseUpgrade extends TestCase {
 
     public void testCreateMssql() throws Exception {
         String jdbcDriver = "net.sourceforge.jtds.jdbc.Driver";
-        String host = "ratatosk";
+        String host = "localhost";
         String baseUrl = "jdbc:jtds:sqlserver://" + host + ":1433/";
-        String jdbcUser = "chrham";
-        String jdbcPassword = "trexus";
+        String jdbcUser = "sa";
+        String jdbcPassword = "";
         String databaseName = "imcmstest";
         doTest(jdbcDriver, baseUrl, jdbcUser, jdbcPassword, databaseName);
     }
