@@ -70,21 +70,23 @@
 		$num_rows +=2;
 	}
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title>Insert <?php echo ($insertMode == 'image' ? 'Image' : 'File Link') ?></title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
  <link href="<?php print $IMConfig['base_url'];?>assets/manager.css" rel="stylesheet" type="text/css" />
+ <link href="../../popups/popup.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../popups/popup.js"></script>
 <script type="text/javascript" src="<?php print $IMConfig['base_url'];?>assets/popup.js"></script>
 <script type="text/javascript" src="<?php print $IMConfig['base_url'];?>assets/dialog.js"></script>
-<?php if (!empty($IMConfig['use_color_pickers'])) { ?><script type="text/javascript" src="../../popups/color_picker.js"></script><?php } ?>
+<?php if (!empty($IMConfig['use_color_pickers'])) { ?><script type="text/javascript" src="../../modules/ColorPicker/ColorPicker.js"></script><?php } ?>
 <script type="text/javascript">
 /* <![CDATA[ */
 
 	if(window.opener)
-		HTMLArea = window.opener.HTMLArea;
+		Xinha = window.opener.Xinha;
 		
 	var thumbdir = "<?php echo $IMConfig['thumbnail_dir']; ?>";
 	var base_url = "<?php echo $manager->getImagesURL(); ?>";
@@ -155,7 +157,7 @@
             <div style="padding:4px;background-color:#CCC;border:1px inset;width: 100px; height: 100px;">
             <img src="<?php print $IMConfig['base_url'];?>img/1x1_transparent.gif" alt="" id="f_preview" />
             </div>
-            <?php } else if($insertMode=="link" && $IMConfig['link_enable_target'] !== false) {?><label for="f_align">Target Window</label>
+            <?php } else if($insertMode=="link" && $IMConfig['link_enable_target'] !== false) {?><label for="f_align" id="f_target_label">Target Window</label>
 			<select id="f_target" style="width:125px;">
 			  <option value="">None (use implicit)</option>
 			  <option value="_blank">New window (_blank)</option>
@@ -233,7 +235,7 @@ else if($IMConfig['allow_upload']) { ?>
             <?php if($insertMode=='image' && !empty($IMConfig['use_color_pickers']) && $IMConfig['images_enable_styling'] !== false) { ?>
    	            <td align="left">Color</td>
   	            <td>
-                  <input name="f_backgroundColor" type="text" id="f_backgroundColor" size="7" /><input type="button" id="bgCol_pick" value="..." />
+                  <input name="f_backgroundColor" type="text" id="f_backgroundColor" size="7" />
                 </td>
   	        <?php } ?>
 </tr>
@@ -259,7 +261,7 @@ else if($IMConfig['allow_upload']) { ?>
 			<td><?php if($insertMode=='image' && $IMConfig['images_enable_styling'] !== false) { ?><input type="text" id="f_border" class="smallWidth" value="" /><?php }?></td>
 			<?php if($insertMode=='image' && !empty($IMConfig['use_color_pickers']) && $IMConfig['images_enable_styling'] !== false) { ?>
   	        <td align="left">Border Color</td>
-            <td><input name="f_borderColor" type="text" id="f_borderColor" size="7" /><input type="button" id="bdCol_pick" value="..." /></td>
+            <td><input name="f_borderColor" type="text" id="f_borderColor" size="7" /></td>
             <?php } ?>
 </tr>
 </table>

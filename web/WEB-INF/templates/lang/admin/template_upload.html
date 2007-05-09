@@ -12,7 +12,7 @@
 function checkForName() {
 	var theFile = document.forms.TemplateAdd.file.value;
 	var sFileName = '';
-	var re0 = /.(php|html?)$/gi;
+	var re0 = /.(php|html?|jspx?)$/gi;
 	var re1 = /(\w+)\.(\w+)$/i;
 	var re2 = /\"/g; //"
 	sFileName = theFile.replace(re2, '');

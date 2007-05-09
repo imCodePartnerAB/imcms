@@ -1,8 +1,8 @@
 <?php
 /**
  * File Utilities.
- * @author $Author: Wei Zhuo $
- * @version $Id: Files.php 26 2004-03-31 02:35:21Z Wei Zhuo $
+ * @author $Author: ray $
+ * @version $Id: Files.php 709 2007-01-30 23:22:04Z ray $
  * @package ImageManager
  */
 
@@ -14,8 +14,8 @@ define('FILE_ERROR_DST_DIR_EXIST', 104);
 
 /**
  * File Utilities
- * @author $Author: Wei Zhuo $
- * @version $Id: Files.php 26 2004-03-31 02:35:21Z Wei Zhuo $
+ * @author $Author: ray $
+ * @version $Id: Files.php 709 2007-01-30 23:22:04Z ray $
  * @package ImageManager
  * @subpackage files
  */

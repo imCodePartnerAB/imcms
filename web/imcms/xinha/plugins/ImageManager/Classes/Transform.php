@@ -31,7 +31,7 @@
 // |          Vincent Oostindie <vincent@sunlight.tmfweb.nl>              |
 // +----------------------------------------------------------------------+
 //
-// $Id: Transform.php 26 2004-03-31 02:35:21Z Wei Zhuo $
+// $Id: Transform.php 709 2007-01-30 23:22:04Z ray $
 //
 // Image Transformation interface
 //
@@ -127,7 +127,7 @@ Class Image_Transform
         }
         $this->uid = md5($_SERVER['REMOTE_ADDR']);
 
-        include_once "$driver.php";
+        include_once "../ImageManager/Classes/$driver.php";
 
         $classname = "Image_Transform_Driver_{$driver}";
         $obj =& new $classname;

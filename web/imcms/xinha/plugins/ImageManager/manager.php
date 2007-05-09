@@ -1,8 +1,8 @@
 <?php
 /**
  * The main GUI for the ImageManager.
- * @author $Author: Wei Zhuo $
- * @version $Id: manager.php 26 2004-03-31 02:35:21Z Wei Zhuo $
+ * @author $Author: ray $
+ * @version $Id: manager.php 770 2007-03-12 20:25:19Z ray $
  * @package ImageManager
  */
 
@@ -29,7 +29,7 @@
  <link href="<?php print $IMConfig['base_url'];?>assets/manager.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../popups/popup.js"></script>
 <script type="text/javascript" src="assets/popup.js"></script>
-<script type="text/javascript" src="../../popups/color_picker.js"></script>
+<script type="text/javascript" src="../../modules/ColorPicker/ColorPicker.js"></script>
 <script type="text/javascript" src="<?php print $IMConfig['base_url'];?>assets/dialog.js"></script>
 <script type="text/javascript">
 /*<![CDATA[*/
@@ -144,7 +144,7 @@
     <th align="left">Color:</th>
     <td>
       <input name="f_backgroundColor" type="text" id="f_backgroundColor" size="7" />
-      <input type="button" id="bgCol_pick" value="..." />
+     
     </td>
   </tr>
 
@@ -172,7 +172,7 @@
     <th align="left">Color:</th>
     <td>
       <input name="f_borderColor" type="text" id="f_borderColor" size="7" />
-      <input type="button" id="bdCol_pick" value="..." />
+      
     </td>
   </tr>
 

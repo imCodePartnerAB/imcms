@@ -61,7 +61,7 @@
   "Cancel": "Abbrechen",
   "Path": "Pfad",
   "You are in TEXT MODE.  Use the [<>] button to switch back to WYSIWYG.": "Sie sind im Text-Modus. Benutzen Sie den [<>] Button, um in den visuellen Modus (WYSIWIG) zu gelangen.",
-  "The Paste button does not work in Mozilla based web browsers (technical security reasons). Press CTRL-V on your keyboard to paste directly.": "Aus Sicherheitsgründen dürfen Skripte normalerweise nicht auf Ausschneiden/Kopieren/Einfügen zugreifen. Bitte klicken Sie OK um die technische Erläuterung auf mozilla.org zu öffnen, in der erklärt wird, wie einem Skript Zugriff gewährt werden kann.",
+   "The Paste button does not work in Mozilla based web browsers (technical security reasons). Press CTRL-V on your keyboard to paste directly.": "Aus Sicherheitsgründen dürfen Skripte normalerweise nicht auf Ausschneiden/Kopieren/Einfügen zugreifen. Benutzen Sie bitte die entsprechenden Tastatur-Kommandos (Strg + x/c/v).",
 
   "You need to select some text before create a link": "Sie müssen einen Text markieren, um einen Link zu erstellen",
   "Your Document is not well formed. Check JavaScript console for details.": "Ihr Dokument ist in keinem sauberen Format. Benutzen Sie die Javascript Console für weitere Informationen.",
@@ -100,7 +100,7 @@
   "You must enter the URL where this link points to": "Sie müssen eine Ziel-URL angeben für die Verknüpfung angeben",
 
   // Insert Table
-  "Insert Table": "Table einfügen",
+  "Insert Table": "Tabelle einfügen",
   "Rows:": "Zeilen:",
   "Number of rows": "Zeilenanzahl",
   "Cols:": "Spalten:",
@@ -147,11 +147,23 @@
   "Close": "Schließen",
 
   // Loading messages
-  "Loading in progress. Please wait !": "Editor wird geladen. Bitte warten !",
-  "Constructing main object": "Hauptteil wird erzeugt",
-  "Create Toolbar": "Bearbeitungswerkzeuge werden angelegt",
-  "Register panel right": "Erzeugt rechte Leiste",
-  "Register panel left": "Erzeugt linke Leiste",
-  "Register panel top": "Erzeugt obere Leiste",
-  "Register panel bottom": "Erzeugt untere Leiste"
+  "Loading in progress. Please wait!": "Editor wird geladen. Bitte warten !",
+  "Loading plugin $plugin" : "Plugin $plugin wird geladen",
+  "Register plugin $plugin" : "Plugin $plugin wird registriert", 
+  "Constructing object": "Objekt wird generiert",
+  "Generate Xinha framework": "Xinha Framework wird generiert",
+  "Init editor size":"Größe wird berechnet", 
+  "Create Toolbar": "Werkzeugleiste wird generiert",
+  "Create Statusbar" : "Statusleiste wird generiert",
+  "Register right panel" : "Rechtes Panel wird generiert", 
+  "Register left panel" : "Linkes Panel wird generiert", 
+  "Register bottom panel" : "Unteres Panel wird generiert", 
+  "Register top panel" : "Oberes Panel wird generiert", 
+  "Finishing" : "Laden wird abgeschlossen", 
+  
+  // ColorPicker
+  "Click a color..." : "Farbe wählen",
+  "Sample" : "Beispiel",
+  "Web Safe: " : "Web Safe: ",
+  "Color: " : "Farbe: "
 };

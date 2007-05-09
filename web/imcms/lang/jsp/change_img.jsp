@@ -268,14 +268,10 @@ function checkLinkOnBlur() {
             <td>
 						<select name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>" id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>" size="1"><%
 							String align = image.getAlign() ; %>
-							<option value="none" <%      if (StringUtils.isBlank(align)) { %> selected <% } %>><? templates/sv/change_img.html/31 ?></option>
-							<option value="baseline" <%  if ("baseline".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/32 ?></option>
+							<option value="" <%      if (StringUtils.isBlank(align)) { %> selected <% } %>><? templates/sv/change_img.html/31 ?></option>
 							<option value="top" <%       if ("top".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/33 ?></option>
 							<option value="middle" <%    if ("middle".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/34 ?></option>
 							<option value="bottom" <%    if ("bottom".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/35 ?></option>
-							<option value="texttop" <%   if ("texttop".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/36 ?></option>
-							<option value="absmiddle" <% if ("absmiddle".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/37 ?></option>
-							<option value="absbottom" <% if ("absbottom".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/38 ?></option>
 							<option value="left" <%      if ("left".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/39 ?></option>
 							<option value="right" <%     if ("right".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/40 ?></option>
 						</select></td>

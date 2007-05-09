@@ -1,8 +1,8 @@
 <?php 
 /**
  * The frame that contains the image to be edited.
- * @author $Author: Wei Zhuo $
- * @version $Id: editorFrame.php 26 2004-03-31 02:35:21Z Wei Zhuo $
+ * @author $Author: ray $
+ * @version $Id: editorFrame.php 677 2007-01-19 22:24:36Z ray $
  * @package ImageManager
  */
 

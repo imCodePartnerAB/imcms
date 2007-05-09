@@ -1,17 +1,17 @@
 <?php
 /**
  * Image Editor. Editing tools, crop, rotate, scale and save.
- * @author $Author: Wei Zhuo $
- * @version $Id: ImageEditor.php 27 2004-04-01 08:31:57Z Wei Zhuo $
+ * @author $Author: ray $
+ * @version $Id: ImageEditor.php 709 2007-01-30 23:22:04Z ray $
  * @package ImageManager
  */
 
-require_once('Transform.php');
+require_once('../ImageManager/Classes/Transform.php');
 
 /**
  * Handles the basic image editing capbabilities.
- * @author $Author: Wei Zhuo $
- * @version $Id: ImageEditor.php 27 2004-04-01 08:31:57Z Wei Zhuo $
+ * @author $Author: ray $
+ * @version $Id: ImageEditor.php 709 2007-01-30 23:22:04Z ray $
  * @package ImageManager
  * @subpackage Editor
  */

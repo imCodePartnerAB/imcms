@@ -16,14 +16,14 @@ Xinha.prototype._insertImage = function(image)
         outparam =
         {
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>' : Xinha.is_ie ? editor.stripBaseURL(image.src) : image.getAttribute("src"),
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>' : image.alt,
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>'  : image.width,
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>'  : image.height,
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>' : image.border,
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>'  : image.align,
-            '<%= ImageEditPage.REQUEST_PARAMETER__VERTICAL_SPACE %>'   : image.vspace,
-            '<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>'  : image.hspace,
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>'  : image.name
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>' : image.alt || image.title,
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>'  : image.style.width.replace(/px/, '') || image.width,
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>'  : image.style.height.replace(/px/, '') || image.height,
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>' : (image.style.borderWidth || image.border || '').replace(/px/, ''),
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>'  : (image.style.verticalAlign || image.align),
+            '<%= ImageEditPage.REQUEST_PARAMETER__VERTICAL_SPACE %>'   : (image.style.marginTop || image.vspace || '').replace(/px/, ''),
+            '<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>'  : (image.style.marginRight || image.hspace || '').replace(/px/, ''),
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>'  : image.id || image.name
         };
     }
     var queryString = '';
@@ -80,28 +80,33 @@ Xinha.prototype._insertImage = function(image)
                     switch (field)
                             {
                         case "alt":
-                            img.alt = value;
+                            img.alt = value || " ";
+                            img.title = value;
                             break;
                         case "border":
-                            img.border = parseInt(value || "0", 10);
+                            img.style.borderWidth = parseInt(value || "0", 10)+"px";
                             break;
                         case "align":
-                            img.align = value;
+                            img.style.verticalAlign = value;
                             break;
                         case "vert":
-                            img.vspace = parseInt(value || "0", 10);
+                            img.style.marginTop = parseInt(value || "0", 10)+"px";
+                            img.style.marginBottom = parseInt(value || "0", 10)+"px";
                             break;
                         case "horiz":
-                            img.hspace = parseInt(value || "0", 10);
+                            img.style.marginLeft = parseInt(value || "0", 10)+"px";
+                            img.style.marginRight = parseInt(value || "0", 10)+"px";
                             break;
                         case "width":
+                            img.style.width = parseInt(value, 10)+"px";
                             img.width = parseInt(value, 10);
                             break;
                         case "height":
+                            img.style.height = parseInt(value, 10)+"px";
                             img.height = parseInt(value, 10);
                             break;
                         case "name":
-                            img.name = value;
+                            img.id = value;
                             break;
                     }
                 }

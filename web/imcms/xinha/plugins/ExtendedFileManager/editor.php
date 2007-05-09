@@ -33,7 +33,7 @@ $editor = new ImageEditor($manager);
     var _backend_url = "<?php print $IMConfig['backend_url']."&mode=$insertMode"; ?>&";
 
 	if(window.opener)
-		HTMLArea = window.opener.HTMLArea;
+		Xinha = window.opener.Xinha;
 /*]]>*/
 </script>
 <script type="text/javascript" src="<?php print $IMConfig['base_url'];?>assets/editor.js"></script>
@@ -72,7 +72,7 @@ $editor = new ImageEditor($manager);
               <option selected>Flip Image</option>
               <option>-----------------</option>
               <option value="hoz">Flip Horizontal</option>
-              <option value="ver">Flip Virtical</option>
+              <option value="ver">Flip Vertical</option>
          </select>
 			<select name="rotate" onchange="rotatePreset(this)" style="margin-left: 20px; vertical-align: middle;">
               <option selected>Rotate Image</option>

@@ -1,12 +1,12 @@
 <?php
 /**
  * ImageManager, list images, directories, and thumbnails.
- * @author $Author: Wei Zhuo $
- * @version $Id: ImageManager.php 27 2004-04-01 08:31:57Z Wei Zhuo $
+ * @author $Author: ray $
+ * @version $Id: ImageManager.php 709 2007-01-30 23:22:04Z ray $
  * @package ImageManager
  */
 
-require_once('Files.php');
+require_once('../ImageManager/Classes/Files.php');
 
 // uncomment to turn on debugging
 
@@ -14,8 +14,8 @@ require_once('Files.php');
 
 /**
  * ImageManager Class.
- * @author $Author: Wei Zhuo $
- * @version $Id: ImageManager.php 27 2004-04-01 08:31:57Z Wei Zhuo $
+ * @author $Author: ray $
+ * @version $Id: ImageManager.php 709 2007-01-30 23:22:04Z ray $
  */
 class ImageManager 
 {

@@ -1,6 +1,6 @@
 <?php
-  /** This PHP file is intended for use with XMLHTTPRequest from an HTMLArea
-   * it requrns javascript to set the htmlarea html with tidied html that is
+  /** This PHP file is intended for use with XMLHTTPRequest from Xinha
+   * it requrns javascript to set the Xinha html with tidied html that is
    * submitted in a $_POST parameter called 'content'
    */
 
@@ -115,7 +115,7 @@
       $content = ob_get_contents();
     ob_end_clean();
 
-    if(!strlen($content))
+    if(strlen($content) < 4)
     {
       // Tidy on the local machine failed, try a post
       $res_1
@@ -159,20 +159,20 @@
     if($content)
     {
       ?>
-      editor.setHTML('<?php echo js_encode($content) ?>');
+      {action:'setHTML',value:'<?php echo js_encode($content) ?>'};
       <?php
     }
     else
     {
       ?>
-      alert(this._lc('Tidy failed.  Check your HTML for syntax errors.'));
+      {action:'alert',value:'Tidy failed.  Check your HTML for syntax errors.'};
       <?php
     }
   }
   else
   {
     ?>
-    alert(this._lc("You don't have anything to tidy!"));
+    {action:'alert',value:"You don't have anything to tidy!"}
     <?php
   }
 
