@@ -123,6 +123,7 @@ public class MenuTag extends BodyTagSupport {
 
     public void invalidateMenuItem() {
         menuItem = null ;
+        pageContext.removeAttribute("menuitem");
     }
 
     public String getTemplate() {

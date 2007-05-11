@@ -224,7 +224,9 @@
 
     <target name="jar" depends="classes">
         <mkdir dir="${lib}"/>
-        <jar destfile="${jar}" basedir="${classes}"/>
+        <jar destfile="${jar}" basedir="${classes}">
+            <metainf dir="${WEB-INF}/tld"/>
+        </jar>
     </target>
 
     <target name="test" depends="check-junit-task-available,classes" description="Runs JUnit-tests.">

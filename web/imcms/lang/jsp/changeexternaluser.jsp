@@ -5,7 +5,7 @@
                  java.io.IOException,
                  java.util.Arrays,
                  java.util.HashSet"
-%><%@ page import="java.util.Iterator"%><%@ page import="java.util.Set"%><%@ page import="java.util.TreeSet"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"
+%><%@ page import="java.util.Iterator"%><%@ page import="java.util.Set"%><%@ page import="java.util.TreeSet"%><%@taglib prefix="vel" uri="imcmsvelocity"
 %><vel:velocity><%!
 
 private final static String ACTION_SAVE_USER       = "SAVE_USER" ;

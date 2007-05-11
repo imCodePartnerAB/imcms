@@ -1,4 +1,4 @@
-<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%@taglib prefix="vel" uri="imcmsvelocity"%>
 <vel:velocity>
 <html>
 <head>

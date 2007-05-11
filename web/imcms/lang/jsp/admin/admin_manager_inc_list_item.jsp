@@ -5,7 +5,7 @@
                  imcode.util.Html,
                  imcode.server.user.UserDomainObject"%>
 <%@ page import="org.apache.commons.lang.ObjectUtils"%>
-<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%@taglib prefix="vel" uri="imcmsvelocity"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request"/>
 <%
     String imagesPath  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;

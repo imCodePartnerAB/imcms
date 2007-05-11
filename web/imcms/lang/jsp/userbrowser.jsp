@@ -10,7 +10,7 @@
                  imcode.server.user.RoleDomainObject,
                  imcode.util.Html,
                  java.util.Arrays"%>
-<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <%
     UserFinder userFinder = (UserFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
     UserBrowser.UserBrowserPage userBrowserPage = (UserBrowser.UserBrowserPage)request.getAttribute( UserBrowser.REQUEST_ATTRIBUTE__FORM_DATA ) ;

@@ -1,6 +1,6 @@
 <%@ page import="imcode.server.document.DocumentDomainObject,
                  org.apache.commons.lang.StringEscapeUtils"%>
-<%@page contentType="text/html; charset=UTF-8"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel" %>
+<%@page contentType="text/html; charset=UTF-8"%><%@taglib uri="imcmsvelocity" prefix="vel" %>
 <%
     String label = (String)request.getAttribute( "label" );
     DocumentDomainObject includingDocument = (DocumentDomainObject)request.getAttribute( "includingDocument" ) ;

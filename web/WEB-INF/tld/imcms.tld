@@ -182,18 +182,33 @@ Library 1.2//EN"
         <name>menuloop</name>
         <tag-class>com.imcode.imcms.servlet.tags.MenuLoopTag</tag-class>
         <body-content>JSP</body-content>
+        <variable>
+            <name-given>menuitem</name-given>
+            <variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>
+            <scope>NESTED</scope>
+        </variable>
     </tag>
 
     <tag>
         <name>menuitem</name>
         <tag-class>com.imcode.imcms.servlet.tags.MenuItemTag</tag-class>
         <body-content>JSP</body-content>
+        <variable>
+            <name-given>menuitem</name-given>
+            <variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>
+            <scope>NESTED</scope>
+        </variable>
     </tag>
 
     <tag>
         <name>menuitemhide</name>
         <tag-class>com.imcode.imcms.servlet.tags.MenuItemHideTag</tag-class>
         <body-content>JSP</body-content>
+        <variable>
+            <name-given>menuitem</name-given>
+            <variable-class>com.imcode.imcms.api.TextDocument.MenuItem</variable-class>
+            <scope>NESTED</scope>
+        </variable>
     </tag>
 
     <tag>

@@ -9,7 +9,7 @@
     UserDomainObject editedUser = userEditorPage.getEditedUser() ;
     UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
     LocalizedMessage errorMessage = userEditorPage.getErrorMessage() ;
-%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><vel:velocity><html>
+%><%@taglib prefix="vel" uri="imcmsvelocity"%><vel:velocity><html>
 <head>
 <title><? templates/sv/AdminUserResp.htm/1 ?></title>
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">

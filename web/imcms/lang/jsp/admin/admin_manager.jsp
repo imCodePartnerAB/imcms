@@ -4,7 +4,7 @@
                  imcode.util.jscalendar.JSCalendar,
                  java.util.Iterator,
                  java.util.List"%>
-<%@page contentType="text/html; charset=UTF-8" %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%@page contentType="text/html; charset=UTF-8" %><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
     AdminManager.AdminManagerPage adminManagerPage = (AdminManager.AdminManagerPage) request.getAttribute(AdminManager.AdminManagerPage.REQUEST_ATTRIBUTE__PAGE) ;

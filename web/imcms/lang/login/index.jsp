@@ -1,7 +1,7 @@
 <%@ page import="com.imcode.imcms.servlet.VerifyUser"%><%@ page import="imcode.server.user.UserDomainObject"%><%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage"%>
 <%@ page import="imcode.util.Utility"%><%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%@taglib prefix="vel" uri="imcmsvelocity"%>
 <vel:velocity>
 <%
     UserDomainObject user = Utility.getLoggedOnUser(request);

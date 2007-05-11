@@ -1,7 +1,7 @@
 <%@ tag import="com.imcode.imcms.flow.OkCancelPage, com.imcode.imcms.flow.Page, org.apache.log4j.Logger"%><%@
         attribute name="titlekey" required="true" %><%@
         attribute name="helpid" required="true" %><%@
-        taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%@
+        taglib prefix="vel" uri="imcmsvelocity"%><%@
         taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@
         taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%@
         taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %><html>

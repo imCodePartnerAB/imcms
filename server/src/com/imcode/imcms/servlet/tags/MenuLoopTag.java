@@ -6,10 +6,8 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 public class MenuLoopTag extends TagSupport {
 
-    private MenuTag menuTag;
-
     public int doStartTag() throws JspException {
-        this.menuTag = (MenuTag) findAncestorWithClass(this, MenuTag.class);
+        MenuTag menuTag = (MenuTag) findAncestorWithClass(this, MenuTag.class);
         if (null == menuTag) {
             throw new JspTagException("menuloop must be enclosed in menu.") ;
         }
@@ -17,6 +15,7 @@ public class MenuLoopTag extends TagSupport {
     }
 
     public int doAfterBody() throws JspException {
+        MenuTag menuTag = (MenuTag) findAncestorWithClass(this, MenuTag.class);
         if (!menuTag.nextMenuItem()) {
             return SKIP_BODY;
         }

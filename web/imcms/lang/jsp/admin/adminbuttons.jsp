@@ -6,7 +6,7 @@
                  imcode.server.user.UserDomainObject"%>
 <%@ page import="imcode.util.Html"%>
 <%@ page import="imcode.util.Utility"%>
-<%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel" %>
+<%@taglib uri="imcmsvelocity" prefix="vel" %>
 <%
     UserDomainObject user = (UserDomainObject)request.getAttribute("user") ;
     DocumentDomainObject document = (DocumentDomainObject)request.getAttribute("document") ;

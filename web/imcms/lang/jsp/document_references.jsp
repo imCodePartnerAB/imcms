@@ -6,7 +6,7 @@
                  imcode.util.Utility,
                  com.imcode.imcms.servlet.superadmin.DocumentReferences,
                  imcode.util.Html"%><%@ page import="com.imcode.imcms.mapping.DocumentMapper"%>
-<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
+<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%><%
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     if (!user.isSuperAdmin()) {
         return ;

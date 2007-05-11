@@ -9,7 +9,7 @@
           java.util.*,
           com.imcode.imcms.servlet.GetDoc,
           com.imcode.util.HumanReadable"
-%><%@ page import="com.imcode.imcms.mapping.DocumentMapper, com.imcode.imcms.util.l10n.LocalizedMessage"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+%><%@ page import="com.imcode.imcms.mapping.DocumentMapper, com.imcode.imcms.util.l10n.LocalizedMessage"%><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <vel:velocity>
 <html>
 <head>

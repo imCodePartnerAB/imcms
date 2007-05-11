@@ -1,4 +1,4 @@
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage, imcode.server.Imcms"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage, imcode.server.Imcms"%><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <vel:velocity>
 <html>
 <head>

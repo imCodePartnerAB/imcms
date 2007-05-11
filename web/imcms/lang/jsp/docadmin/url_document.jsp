@@ -6,7 +6,7 @@
                  imcode.util.HttpSessionUtils,
                  org.apache.commons.lang.ObjectUtils,
                  org.apache.commons.lang.StringEscapeUtils" contentType="text/html; charset=UTF-8"%>
-<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
+<%@taglib prefix="vel" uri="imcmsvelocity"%><%
     DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
     UrlDocumentDomainObject document = (UrlDocumentDomainObject)httpFlow.getDocument() ;
 %>

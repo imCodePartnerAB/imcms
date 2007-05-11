@@ -7,7 +7,7 @@
                  org.apache.commons.lang.ObjectUtils,
                  org.apache.commons.lang.StringEscapeUtils"
                 contentType="text/html; charset=UTF-8"%>
-<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%@taglib prefix="vel" uri="imcmsvelocity"%>
 <vel:velocity>
 <html>
 <head>

@@ -11,7 +11,7 @@
                  org.apache.commons.lang.ObjectUtils,
                  imcode.util.Html,
                  imcode.server.document.DocumentComparator"%><%@ page import="com.imcode.imcms.mapping.DocumentMapper"%>
-<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <% ListDocuments.FormData formData = (ListDocuments.FormData)request.getAttribute( ListDocuments.REQUEST_ATTRIBUTE__FORM_DATA ) ;%>
 <vel:velocity>
 

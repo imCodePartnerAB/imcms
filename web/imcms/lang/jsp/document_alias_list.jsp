@@ -11,7 +11,7 @@
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.Map"%>
 <%@ page import="com.imcode.imcms.flow.OkCancelPage"%>
-<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <%  ListDocumentAliasPage listDocumentAliasPage = (ListDocumentAliasPage) ListDocumentAliasPage.fromRequest(request) ;
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     UserService userService = imcmsSystem.getUserService();

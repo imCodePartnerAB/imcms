@@ -8,7 +8,7 @@
                  imcode.util.Html,
                  imcode.util.Utility,
                  org.apache.commons.lang.StringEscapeUtils"%><%@ page import="java.util.Iterator"%>
-<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
+<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%><%
 
 LinkCheck.LinkCheckPage linkCheckPage = (LinkCheck.LinkCheckPage) request.getAttribute(LinkCheck.LinkCheckPage.REQUEST_ATTRIBUTE__PAGE) ;
 boolean doCheckLinks = linkCheckPage.isDoCheckLinks();

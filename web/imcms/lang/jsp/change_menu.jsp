@@ -7,7 +7,7 @@
     MenuItemDomainObject[] menuItemsUserCanSee = menu.getMenuItemsUserCanSee(user);
     TextDocumentDomainObject textDocument = menuEditPage.getTextDocument();
 
-%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld" %><vel:velocity><html>
+%><%@taglib prefix="vel" uri="imcmsvelocity" %><vel:velocity><html>
     <head>
         <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css.jsp">
     </head>

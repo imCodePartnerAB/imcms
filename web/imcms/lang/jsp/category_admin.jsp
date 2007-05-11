@@ -2,7 +2,7 @@
                  imcode.server.document.CategoryDomainObject,
                  imcode.server.document.CategoryTypeDomainObject"
         contentType="text/html; charset=UTF-8" %>
-<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%@taglib prefix="vel" uri="imcmsvelocity"%>
 <vel:velocity><%
 
 AdminCategories.AdminCategoriesPage adminCategoriesPage = (AdminCategories.AdminCategoriesPage)request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);

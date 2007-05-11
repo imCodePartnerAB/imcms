@@ -6,7 +6,7 @@
 
     contentType="text/html; charset=UTF-8"
 
-%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"
+%><%@taglib prefix="vel" uri="imcmsvelocity"
 %><%
 	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );
 ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttribute(ChangeText.TextEditPage.REQUEST_ATTRIBUTE__PAGE);

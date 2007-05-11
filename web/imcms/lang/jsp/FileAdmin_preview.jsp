@@ -134,7 +134,7 @@ try {
 
 //out.print("fn.length(): " + fn.length() + "<br><br>iSize: " + iSize + "<br><br>size: " + size) ;
 
-%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><vel:velocity><%
+%><%@taglib prefix="vel" uri="imcmsvelocity"%><vel:velocity><%
 
 /* *******************************************************************************************
  *         FRAME MAIN                                                                        *

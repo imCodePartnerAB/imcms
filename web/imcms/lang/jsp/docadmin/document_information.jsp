@@ -31,7 +31,7 @@
             java.util.Set,
             java.util.TreeSet"%>
 
-<%@	taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
+<%@	taglib prefix="vel" uri="imcmsvelocity"%><%
 
 	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );
 

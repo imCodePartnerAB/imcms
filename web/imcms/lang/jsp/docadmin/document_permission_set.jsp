@@ -15,7 +15,7 @@
 <%@ page import="java.util.Set"%>
 <%@ page import="imcode.server.document.DocumentPermissionSetTypeDomainObject"%>
 <%@ page import="imcode.server.document.textdocument.TextDocumentDomainObject, java.util.List"%>
-<%@ page contentType="text/html; charset=UTF-8"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%
+<%@ page contentType="text/html; charset=UTF-8"%><%@taglib uri="imcmsvelocity" prefix="vel"%><%
     DocumentPermissionSetPage documentPermissionSetPage = (DocumentPermissionSetPage)Page.fromRequest(request) ;
     DocumentPermissionSetDomainObject documentPermissionSet = documentPermissionSetPage.getDocumentPermissionSet() ;
     UserDomainObject user = Utility.getLoggedOnUser(request) ;
