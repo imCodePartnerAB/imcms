@@ -1,7 +1,7 @@
 /**
  * Functions for the ImageManager, used by manager.php only	
- * @author $Author: ray $
- * @version $Id: manager.js 799 2007-03-27 23:30:28Z ray $
+ * @author $Author: gogo $
+ * @version $Id: manager.js 833 2007-05-09 15:04:07Z gogo $
  * @package ImageManager
  */
 	
@@ -26,8 +26,11 @@
 	}
 
 	//initialise the form
+  doneinit = 0; // Seems that in Opera the load event of the iframe re-fires this one also.
 	init = function () 
 	{
+    if(doneinit++) return;
+    
 		__dlg_init(null, {width:600,height:460});
 
 		__dlg_translate('ImageManager');

@@ -27,18 +27,18 @@
     --     included in the top 10 lines of the file (see the embedded edit mode)
     --
     --  $HeadURL: http://svn.xinha.python-hosting.com/trunk/XinhaCore.js $
-    --  $LastChangedDate: 2007-04-20 01:20:22 +0200 (fre, 20 apr 2007) $
-    --  $LastChangedRevision: 819 $
-    --  $LastChangedBy: ray $
+    --  $LastChangedDate: 2007-05-10 21:44:33 +0200 (tor, 10 maj 2007) $
+    --  $LastChangedRevision: 834 $
+    --  $LastChangedBy: wymsy $
     --------------------------------------------------------------------------*/
 
 Xinha.version =
 {
   'Release'   : 'Trunk',
   'Head'      : '$HeadURL: http://svn.xinha.python-hosting.com/trunk/XinhaCore.js $'.replace(/^[^:]*: (.*) \$$/, '$1'),
-  'Date'      : '$LastChangedDate: 2007-04-20 01:20:22 +0200 (fre, 20 apr 2007) $'.replace(/^[^:]*: ([0-9-]*) ([0-9:]*) ([+0-9]*) \((.*)\) \$/, '$4 $2 $3'),
-  'Revision'  : '$LastChangedRevision: 819 $'.replace(/^[^:]*: (.*) \$$/, '$1'),
-  'RevisionBy': '$LastChangedBy: ray $'.replace(/^[^:]*: (.*) \$$/, '$1')
+  'Date'      : '$LastChangedDate: 2007-05-10 21:44:33 +0200 (tor, 10 maj 2007) $'.replace(/^[^:]*: ([0-9-]*) ([0-9:]*) ([+0-9]*) \((.*)\) \$/, '$4 $2 $3'),
+  'Revision'  : '$LastChangedRevision: 834 $'.replace(/^[^:]*: (.*) \$$/, '$1'),
+  'RevisionBy': '$LastChangedBy: wymsy $'.replace(/^[^:]*: (.*) \$$/, '$1')
 };
 
 //must be here. it is called while converting _editor_url to absolute
@@ -205,7 +205,7 @@ if ( Xinha.isRunLocally && Xinha.isSupportedBrowser)
 }
 
 /** Creates a new Xinha object
- * @version $Rev: 819 $ $LastChangedDate: 2007-04-20 01:20:22 +0200 (fre, 20 apr 2007) $
+ * @version $Rev: 834 $ $LastChangedDate: 2007-05-10 21:44:33 +0200 (tor, 10 maj 2007) $
  * @constructor
  * @param {String|DomNode}   textarea the textarea to replace; can be either only the id or the DOM object as returned by document.getElementById()
  * @param {Xinha.Config} config optional if no Xinha.Config object is passed, the default config is used
@@ -467,7 +467,7 @@ Xinha.RE_url      = /(https?:\/\/)?(([a-z0-9_]+:[a-z0-9_]+@)?[a-z0-9_-]{2,}(\.[a
 /**
  * This class creates an object that can be passed to the Xinha constructor as a parameter.
  * Set the object's properties as you need to configure the editor (toolbar etc.)
- * @version $Rev: 819 $ $LastChangedDate: 2007-04-20 01:20:22 +0200 (fre, 20 apr 2007) $
+ * @version $Rev: 834 $ $LastChangedDate: 2007-05-10 21:44:33 +0200 (tor, 10 maj 2007) $
  * @constructor
  */
 Xinha.Config = function()
@@ -1997,10 +1997,39 @@ Xinha.prototype.generate = function ()
   var i;
   var editor = this;  // we'll need "this" in some nested functions
   var url;
-  
+  var found = false;
+  var links = document.getElementsByTagName("link");
+
   if (!document.getElementById("XinhaCoreDesign"))
   {
-    Xinha.loadStyle(typeof _editor_css == "string" ? _editor_css : "Xinha.css",null,"XinhaCoreDesign");
+    _editor_css = (typeof _editor_css == "string") ? _editor_css : "Xinha.css";
+    for(i = 0; i<links.length; i++)
+    {
+      if ( ( links[i].rel == "stylesheet" ) && ( links[i].href == _editor_url + _editor_css ) )
+      {
+        found = true;
+      }
+    }
+    if ( !found )
+    {
+      Xinha.loadStyle(_editor_css,null,"XinhaCoreDesign");
+    }
+  }
+  
+  if ( _editor_skin !== "" && !document.getElementById("XinhaSkin"))
+  {
+    found = false;
+    for(i = 0; i<links.length; i++)
+    {
+      if ( ( links[i].rel == "stylesheet" ) && ( links[i].href == _editor_url + 'skins/' + _editor_skin + '/skin.css' ) )
+      {
+        found = true;
+      }
+    }
+    if ( !found )
+    {
+      Xinha.loadStyle('skins/' + _editor_skin + '/skin.css',null,"XinhaSkin")
+    }
   }
   
   // Now load a specific browser plugin which will implement the above for us.
@@ -2127,29 +2156,6 @@ Xinha.prototype.generate = function ()
     return false;        
   }
   else editor.registerPlugin('GetHtmlImplementation');
-  
-
-  if ( _editor_skin !== "" )
-  {
-    var found = false;
-    var head = document.getElementsByTagName("head")[0];
-    var links = document.getElementsByTagName("link");
-    for(i = 0; i<links.length; i++)
-    {
-      if ( ( links[i].rel == "stylesheet" ) && ( links[i].href == _editor_url + 'skins/' + _editor_skin + '/skin.css' ) )
-      {
-        found = true;
-      }
-    }
-    if ( !found )
-    {
-      var link = document.createElement("link");
-      link.type = "text/css";
-      link.href = _editor_url + 'skins/' + _editor_skin + '/skin.css';
-      link.rel = "stylesheet";
-      head.appendChild(link);
-    }
-  }
   
   // create the editor framework, yah, table layout I know, but much easier
   // to get it working correctly this way, sorry about that, patches welcome.
@@ -3128,7 +3134,7 @@ Xinha.prototype.setFullHTML = function(html)
 Xinha.prototype.setEditorEvents = function()
 {
   var editor=this;
-  var doc=this._doc;
+  var doc=this._doc.getElementsByTagName("html")[0];
   editor.whenDocReady(
     function()
     {
@@ -3484,6 +3490,7 @@ Xinha.loadStyle = function(style, plugin, id)
   var link = document.createElement("link");
   link.rel = "stylesheet";
   link.href = url;
+  link.type = "text/css";
   if (id) link.id = id;
   head.appendChild(link);
 };

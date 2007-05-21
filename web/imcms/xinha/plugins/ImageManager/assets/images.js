@@ -1,7 +1,7 @@
 /**
  * Functions for the image listing, used by images.php only	
- * @author $Author: ray $
- * @version $Id: images.js 677 2007-01-19 22:24:36Z ray $
+ * @author $Author: gogo $
+ * @version $Id: images.js 829 2007-05-09 12:45:09Z gogo $
  * @package ImageManager
  */
 
@@ -16,13 +16,13 @@
 		// backend_url is defined in the calling page. For now we 
 		// assume it has a trailing &
 
-		location.href = _backend_url + "__function=images&dir="+newDir;
+		location.href = _backend_url + "__function=images&dir="+encodeURIComponent(newDir);
 	}
 
 
 	function newFolder(dir, newDir) 
 	{
-		location.href = _backend_url + "__function=images&dir="+dir+"&newDir="+newDir;
+		location.href = _backend_url + "__function=images&dir="+encodeURIComponent(dir)+"&newDir="+encodeURIComponent(newDir);
 	}
 
 	//update the dir list in the parent window.

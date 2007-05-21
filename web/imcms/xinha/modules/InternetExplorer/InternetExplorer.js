@@ -26,15 +26,15 @@
     --   namespace that way.
     --
     --  $HeadURL: http://svn.xinha.python-hosting.com/trunk/modules/InternetExplorer/InternetExplorer.js $
-    --  $LastChangedDate: 2007-04-17 18:06:18 +0200 (tis, 17 apr 2007) $
-    --  $LastChangedRevision: 816 $
+    --  $LastChangedDate: 2007-05-18 02:58:46 +0200 (fre, 18 maj 2007) $
+    --  $LastChangedRevision: 839 $
     --  $LastChangedBy: wymsy $
     --------------------------------------------------------------------------*/
                                                     
 InternetExplorer._pluginInfo = {
   name          : "Internet Explorer",
   origin        : "Xinha Core",
-  version       : "$LastChangedRevision: 816 $".replace(/^[^:]*: (.*) \$$/, '$1'),
+  version       : "$LastChangedRevision: 839 $".replace(/^[^:]*: (.*) \$$/, '$1'),
   developer     : "The Xinha Core Developer Team",
   developer_url : "$HeadURL: http://svn.xinha.python-hosting.com/trunk/modules/InternetExplorer/InternetExplorer.js $".replace(/^[^:]*: (.*) \$$/, '$1'),
   sponsor       : "",
@@ -144,7 +144,7 @@ InternetExplorer.prototype.inwardHtml = function(html)
    html = html.replace(/<(\/?)del(\s|>|\/)/ig, "<$1strike$2");
    // ie eats scripts and comments at beginning of page, so
    // make sure there is something before the first script on the page
-   html = html.replace(/(&nbsp;)?([\s\S]*?)(<script|<!--)/i,"$2&nbsp;$3");
+   html = html.replace(/(<script|<!--)/i,"&nbsp;$1");
    
    return html;
 }

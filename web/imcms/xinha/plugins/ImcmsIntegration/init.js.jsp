@@ -15,7 +15,6 @@ xinha_init = xinha_init ? xinha_init : function()
                             'CharacterMap',
                             'ContextMenu',
                             'InsertAnchor',
-                            'FullScreen',
                             'ListType',
                             'Stylist'
                             ];

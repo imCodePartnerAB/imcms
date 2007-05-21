@@ -61,7 +61,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
                 long searchTime = searchStopWatch.getTime();
                 List documentList = getDocumentListForHits( hits, searchingUser );
                 if (log.isDebugEnabled()) {
-                    log.debug( "Search for " + query.toString() + ": " + searchTime + "ms. Total: "
+                    log.debug( "Search for " + query.getQuery().toString() + ": " + searchTime + "ms. Total: "
                            + searchStopWatch.getTime()
                            + "ms." );
                 }
