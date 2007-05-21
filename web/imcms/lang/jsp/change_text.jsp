@@ -7,8 +7,25 @@
     contentType="text/html; charset=UTF-8"
 
 %><%@taglib prefix="vel" uri="imcmsvelocity"
+%><%!
+
+private String getCookie( String name, HttpServletRequest request ) {
+	String retVal = "" ;
+	Cookie[] cookies = request.getCookies() ;
+	if (cookies != null) {
+		for (int i = 0; i < cookies.length; i++) {
+			if (cookies[i].getName().equals(name)) {
+				retVal = cookies[i].getValue() ;
+				break ;
+			}
+		}
+	}
+	return retVal ;
+}
+
 %><%
-	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );
+
+response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );
 ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttribute(ChangeText.TextEditPage.REQUEST_ATTRIBUTE__PAGE);
 
 List<String> formats = new ArrayList<String>();
@@ -38,7 +55,8 @@ boolean showModeHtml   = formats.contains("html") || formats.contains("none") ||
     _editor_lang = "<%= LanguageMapper.convert639_2to639_1(Utility.getLoggedOnUser(request).getLanguageIso639_2()) %>";      // And the language we need to use in the editor.
 </script>
 <script type="text/javascript" src="<%= request.getContextPath() %>/imcms/xinha/XinhaCore.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/imcms/xinha/plugins/ImcmsIntegration/init.js.jsp<% if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType()) { %>?html=true<% } %>"></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/imcms/xinha/plugins/ImcmsIntegration/init.js.jsp<%
+if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType() && !getCookie("imcms_hide_editor", request).equals("true")) { %>?html=true<% } %>"></script>
 <% } %>
 <form method="POST" action="<%= request.getContextPath() %>/servlet/SaveText">
 <input type="hidden" name="meta_id"  value="<%= textEditPage.getDocumentId() %>">
@@ -53,7 +71,22 @@ boolean showModeHtml   = formats.contains("html") || formats.contains("none") ||
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td>
-		<input type="button" tabindex="10" value="<? global/back ?>" name="cancel" class="imcmsFormBtn"></td>
+		<input type="button" tabindex="10" value="<? global/back ?>" name="cancel" class="imcmsFormBtn"></td><%
+		if (showModeEditor) { %>
+		<td style="color:#ffffff;" nowrap>&nbsp; &nbsp; <? install/htdocs/sv/htmleditor/editor/editor.jsp/3000 ?> &nbsp;</td>
+		<td><%
+			if (getCookie("imcms_hide_editor", request).equals("true")) { %>
+		<button id="editorOnOffBtn0" onClick="toggleEditorOnOff(0); return false"
+			class="imcmsFormBtn" style="width:40px;"><? global/off ?></button>
+		<button id="editorOnOffBtn1" onClick="toggleEditorOnOff(1); return false"
+			class="imcmsFormBtnActive" style="width:40px; display:none"><? global/on ?></button><%
+			} else { %>
+		<button id="editorOnOffBtn0" onClick="toggleEditorOnOff(0); return false"
+			class="imcmsFormBtn" style="width:40px; display:none"><? global/off ?></button>
+		<button id="editorOnOffBtn1" onClick="toggleEditorOnOff(1); return false"
+			class="imcmsFormBtnActive" style="width:40px;"><? global/on ?></button><%
+			} %></td><%
+		} %>
 	</tr>
 	</table></td>
 
@@ -81,12 +114,12 @@ boolean showModeHtml   = formats.contains("html") || formats.contains("none") ||
         <% if (showModeEditor) { %>
         <script type="text/javascript">
             
-            function getElementsByClassAttribute(node, tagname, class) {
+            function getElementsByClassAttribute(node, tagname, sClass) {
                 var result = new Array();
                 var elements = node.getElementsByTagName(tagname);
                 for (i = 0, j = 0; i < elements.length; ++i) {
                     var element = elements[i];
-                    if (element.className == class) {
+                    if (element.className == sClass) {
                         result[j++] = element;
                     }
                 }
@@ -94,17 +127,24 @@ boolean showModeHtml   = formats.contains("html") || formats.contains("none") ||
             }
                     
             function setTextMode() {
-                xinha_editors.text.deactivateEditor();
                 var editors = getElementsByClassAttribute(document, 'table', 'htmlarea')
                 var editor = editors[0];
-                var textarea = document.getElementById('text');
-                editor.parentNode.replaceChild(textarea,editor);
-                textarea.style.width = editor.style.width;
-                textarea.style.height = editor.style.height;
-                textarea.style.display = 'block';
+                if (editor) {
+	                xinha_editors.text.deactivateEditor();
+									var textarea = document.getElementById('text');
+									editor.parentNode.replaceChild(textarea,editor);
+									textarea.style.width = editor.style.width;
+									textarea.style.height = editor.style.height;
+									textarea.style.display = 'block';
+                }
             }
             function setHtmlMode() {
-                Xinha.startEditors(xinha_editors);
+                var hasEditor = false ;
+	              try {
+		              var editors = getElementsByClassAttribute(document, 'table', 'htmlarea');
+									hasEditor = editors[0];
+	              } catch (e) {}
+                if (!hasEditor && getCookie("imcms_hide_editor") != "true") Xinha.startEditors(xinha_editors);
             }
         </script>
         <% } %>
