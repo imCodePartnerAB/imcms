@@ -155,15 +155,21 @@ function setHtmlMode() {
 		} catch (e) {}
 }
 
+var ua = navigator.userAgent.toLowerCase() ;
+var isIE7 = ua.indexOf("msie 7") != -1 ;
+
 if (screen.width >= 1600) {
-	var oTextArea = document.getElementById("text");
-	oTextArea.style.height = (screen.width - 800);
+	var oTextArea = document.getElementById("text") ;
+	var offsetH = isIE7 ? 900 : 800 ;
+	oTextArea.style.height = (screen.width - offsetH) ;
 } else if (screen.width >= 1280) {
-	var oTextArea = document.getElementById("text");
-	oTextArea.style.height = 630;
+	var oTextArea = document.getElementById("text") ;
+	var offsetH = isIE7 ? 580 : 630 ;
+	oTextArea.style.height = offsetH ;
 } else if (screen.width >= 1024) {
-	var oTextArea = document.getElementById("text");
-	oTextArea.style.height = 400;
+	var oTextArea = document.getElementById("text") ;
+	var offsetH = isIE7 ? 350 : 400 ;
+	oTextArea.style.height = offsetH ;
 }
 </script>
         <% } %>
