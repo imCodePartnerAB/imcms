@@ -8,7 +8,7 @@ import com.imcode.imcms.api.Document;
 import com.imcode.imcms.util.rss.dc.DublinCoreTerms;
 import com.imcode.imcms.util.rss.dc.DublinCoreEntity;
 
-class DocumentDublinCoreTerms implements DublinCoreTerms {
+public class DocumentDublinCoreTerms implements DublinCoreTerms {
 
     private final String urlRoot;
     private Document document;
