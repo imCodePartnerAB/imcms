@@ -44,12 +44,6 @@ public class TestDocumentSaver extends TestCase {
 
         TextDocumentDomainObject document = createDocument(1001);
 
-        try {
-            documentSaver.saveDocument(document, oldDocument, new UserDomainObject());
-            fail("Expected exception.") ;
-        } catch ( NoPermissionToEditDocumentException e) {
-        }
-        oldDocument.setDocumentPermissionSetTypeForRoleId(RoleId.USERS, DocumentPermissionSetTypeDomainObject.FULL);
         documentSaver.saveDocument(document, oldDocument, new UserDomainObject());
     }
 

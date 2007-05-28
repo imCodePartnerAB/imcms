@@ -35,10 +35,6 @@ class DocumentSaver {
 
     void saveDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
                       final UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        if (!user.canEdit(oldDocument)) {
-            throw new NoPermissionToEditDocumentException("No permission to edit document "+oldDocument.getId()) ;
-        }
-
         checkDocumentForSave(document);
 
         document.loadAllLazilyLoaded();
