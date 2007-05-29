@@ -5,40 +5,50 @@
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  imcode.server.user.UserDomainObject"%>
 <%@ page import="imcode.util.Html"%>
-<%@ page import="imcode.util.Utility"%>
+<%@ page import="imcode.util.Utility, org.apache.oro.text.perl.Perl5Util"%>
 <%@taglib uri="imcmsvelocity" prefix="vel" %>
 <%
     UserDomainObject user = (UserDomainObject)request.getAttribute("user") ;
     DocumentDomainObject document = (DocumentDomainObject)request.getAttribute("document") ;
     DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetFor( document ) ;
+
+Perl5Util re  = new Perl5Util() ;
+String uAgent = request.getHeader("USER-AGENT") ;
+
+boolean isIE     = re.match("/(MSIE 4|MSIE 5|MSIE 5\\.5|MSIE 6)/i", uAgent) ;
+boolean isIE7    = re.match("/(MSIE 7)/i", uAgent) ;
+boolean isGecko  = re.match("/Gecko/i", uAgent) ;
+
 %><vel:velocity>
 <style type="text/css">
 <!--
 /* IMCMS SPECIFIC */
-
-/* imCMS label. Ändra utseende om så önskas. */
+/* imCMS label. */
 
 .imcms_label, .imcms_label:link, .imcms_label:visited { font: 10px Verdana; color:#c00000; text-decoration:none; background-color:#ffffcc }
 .imcms_label:active, .imcms_label:hover { font: 10px Verdana; color:#000099; text-decoration:underline; background-color:#ffffcc }
 
 /* adminMode */
 
-#adminPanelDiv      { padding: 15px 0px 10px 0px; }
- .adminPanelTable    { border-right: 1px solid #000000; border-bottom: 1px solid #000000; background-color:#f5f5f7; }
-  .adminPanelTd1      { padding:2px; background-color:#20568D; }
-    #adminPanelTd1_1  { }
-      .adminPanelLogo  { font: bold 11px Verdana,Geneva,sans-serif; color:#ddddff; letter-spacing:-1px; }
-    #adminPanelTd1_2  {  }
-      .adminPanelText, .adminPanelText SPAN { font: 11px Verdana,Geneva,sans-serif; color:#ffffff; }
-    #adminPanelTd1_3  {  }
-  .adminPanelTd2      { padding:3px; height:32; vertical-align:top; }
+#adminPanelDiv    { padding: 15px 0 10px 0; }
+.adminPanelTable  { border-right: 1px solid #000000; border-bottom: 1px solid #000000; background-color: #f5f5f7; }
+.adminPanelTd1    { padding: 2px; background-color: #20568D; }
+#adminPanelTd1_1  { }
+.adminPanelLogo   { font: bold 11px Verdana,Geneva,sans-serif; color: #ddddff; letter-spacing: -1px; }
+#adminPanelTd1_2  {  }
+.adminPanelText,
+.adminPanelText SPAN { font: 11px Verdana,Geneva,sans-serif; color: #ffffff; }
+#adminPanelTd1_3  {  }
+.adminPanelTd2    { padding: 3px; height: 32px; vertical-align: top; }
 
-  .adminPanelTd2 A IMG { filter: }
-  .adminPanelTd2 A:hover IMG {
-     filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=0, xray=0, mirror=0, invert=0, opacity=0.5, rotation=0);
-		 -moz-opacity: 0.5;
-     /* position:relative; top:+1; left:+1; */
-	}
+.adminPanelTd2 A IMG {  }
+.adminPanelTd2 A:hover IMG {<%
+	if (isGecko) { %>
+	<%= "-moz-opacity: 0.5;" %><%
+	} else if (isIE || isIE7) { %>
+	<%= "filter: Alpha(Opacity=0.5);" %><%
+	} %>
+}
 B { font-weight: bold; }
 -->
 </style>
