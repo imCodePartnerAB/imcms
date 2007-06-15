@@ -171,10 +171,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return getTemplateNames().getTemplateGroupId();
     }
 
-    /**
-     * @return Map<Integer, {@link TextDomainObject}>
-     */
-    public Map getTexts() {
+    public Map<Integer, TextDomainObject> getTexts() {
         return Collections.unmodifiableMap( getTextsMap() );
     }
 

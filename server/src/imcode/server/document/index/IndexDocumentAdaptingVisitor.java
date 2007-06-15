@@ -11,7 +11,6 @@ import org.apache.lucene.document.Field;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 class IndexDocumentAdaptingVisitor extends DocumentVisitor {
@@ -28,20 +27,18 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
     }
 
     public void visitTextDocument(TextDocumentDomainObject textDocument) {
-        Iterator textsIterator = textDocument.getTexts().entrySet().iterator();
-        while ( textsIterator.hasNext() ) {
-            Map.Entry textEntry = (Map.Entry) textsIterator.next();
-            Integer textIndex = (Integer) textEntry.getKey();
-            TextDomainObject text = (TextDomainObject) textEntry.getValue();
+        indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__TEMPLATE, textDocument.getTemplateName()));
+
+        for ( Map.Entry<Integer,TextDomainObject> textEntry : textDocument.getTexts().entrySet() ) {
+            Integer textIndex = textEntry.getKey();
+            TextDomainObject text = textEntry.getValue();
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText()));
             String htmlStrippedText = stripHtml(text);
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, htmlStrippedText));
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText));
         }
 
-        Iterator imagesIterator = textDocument.getImages().values().iterator();
-        while ( imagesIterator.hasNext() ) {
-            ImageDomainObject image = (ImageDomainObject) imagesIterator.next();
+        for ( ImageDomainObject image : textDocument.getImages().values() ) {
             String imageLinkUrl = image.getLinkUrl();
             if ( null != imageLinkUrl && imageLinkUrl.length() > 0 ) {
                 indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl));
@@ -85,8 +82,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         } catch ( IOException ioe ) {
             throw new RuntimeException(ioe);
         }
-        for ( int i = 0; i < texts.length; i++ ) {
-            String text = texts[i];
+        for ( String text : texts ) {
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, text));
         }
     }
