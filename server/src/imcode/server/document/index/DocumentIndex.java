@@ -40,6 +40,7 @@ public interface DocumentIndex {
     String FIELD__PROPERTY_PREFIX = "property.";
     String FIELD__ALIAS = "alias";
     String FIELD__TEMPLATE = "template";
+    String FIELD__CHILD_ID = "child_id";
     
     void indexDocument( DocumentDomainObject document ) throws IndexException ;
 

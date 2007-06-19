@@ -5,6 +5,8 @@ import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.MenuDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -36,6 +38,12 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
             String htmlStrippedText = stripHtml(text);
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, htmlStrippedText));
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText));
+        }
+
+        for ( MenuDomainObject menu : textDocument.getMenus().values() ) {
+            for ( MenuItemDomainObject menuItem : menu.getMenuItems() ) {
+                indexDocument.add(Field.Keyword(DocumentIndex.FIELD__CHILD_ID, ""+menuItem.getDocumentId()));
+            }
         }
 
         for ( ImageDomainObject image : textDocument.getImages().values() ) {
