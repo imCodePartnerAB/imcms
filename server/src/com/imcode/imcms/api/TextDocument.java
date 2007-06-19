@@ -1,7 +1,11 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.*;
 import com.imcode.imcms.mapping.DocumentGetter;
+import imcode.server.document.DirectDocumentReference;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPredicate;
+import imcode.server.document.DocumentReference;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
@@ -18,7 +22,7 @@ public class TextDocument extends Document {
     public final static int TYPE_ID = DocumentTypeDomainObject.TEXT_ID;
 
     TextDocument( TextDocumentDomainObject textDocument,
-                         ContentManagementSystem contentManagementSystem ) {
+                  ContentManagementSystem contentManagementSystem ) {
         super(textDocument, contentManagementSystem);
     }
 
@@ -104,11 +108,10 @@ public class TextDocument extends Document {
     }
 
     private SortedMap filterAndConvertValues(Map map, Predicate predicate, Transformer transformer) {
-        Collection nonEmptyTextFields = CollectionUtils.select(map.entrySet(), predicate);
+        Collection<Map.Entry> nonEmptyTextFields = CollectionUtils.select(map.entrySet(), predicate);
         final SortedMap sortedMap = TransformedSortedMap.decorate(new TreeMap(), CloneTransformer.INSTANCE, transformer);
 
-        for (Iterator iterator = nonEmptyTextFields.iterator(); iterator.hasNext();) {
-            Map.Entry entry = (Map.Entry) iterator.next();
+        for ( Map.Entry entry : nonEmptyTextFields ) {
             sortedMap.put(entry.getKey(), entry.getValue());
         }
 
@@ -125,15 +128,15 @@ public class TextDocument extends Document {
     }
 
     public void setPlainTextField(int textFieldIndexInDocument, String newText) {
-        setTextField(textFieldIndexInDocument, newText, TextDomainObject.TEXT_TYPE_PLAIN);
+        setTextField(textFieldIndexInDocument, newText, TextField.Format.PLAIN);
     }
 
     public void setHtmlTextField(int textFieldIndexInDocument, String newText) {
-        setTextField(textFieldIndexInDocument, newText, TextDomainObject.TEXT_TYPE_HTML);
+        setTextField(textFieldIndexInDocument, newText, TextField.Format.HTML);
     }
 
-    private void setTextField(int textFieldIndexInDocument, String newText, int textType) {
-        TextDomainObject imcmsText = new TextDomainObject(newText, textType);
+    public void setTextField(int textFieldIndexInDocument, String newText, TextField.Format format) {
+        TextDomainObject imcmsText = new TextDomainObject(newText, format.getType());
         getInternalTextDocument().setText(textFieldIndexInDocument, imcmsText);
     }
 
@@ -192,11 +195,10 @@ public class TextDocument extends Document {
     }
 
     public SortedMap getMenus() {
-        Map internalMenus = getInternalTextDocument().getMenus() ;
+        Map<Integer, MenuDomainObject> internalMenus = getInternalTextDocument().getMenus() ;
         SortedMap menus = new TreeMap();
-        for ( Iterator iterator = internalMenus.keySet().iterator(); iterator.hasNext(); ) {
-            Integer menuIndex = (Integer)iterator.next();
-            menus.put( menuIndex, new Menu( this, menuIndex.intValue())) ;
+        for ( Integer menuIndex : internalMenus.keySet() ) {
+            menus.put(menuIndex, new Menu(this, menuIndex.intValue()));
         }
         return menus ;
     }
@@ -213,22 +215,44 @@ public class TextDocument extends Document {
     public static class TextField {
         private TextDomainObject imcmsText;
 
+        public enum Format {
+            PLAIN(TextDomainObject.TEXT_TYPE_PLAIN),
+            HTML(TextDomainObject.TEXT_TYPE_HTML);
+            private final int type;
+
+            Format(int type) {
+                this.type = type;
+            }
+
+            public int getType() {
+                return type;
+            }
+        }
+
         private TextField(TextDomainObject imcmsText) {
             this.imcmsText = imcmsText;
         }
 
         /**
-         * Set the format of the text in this textfield to HTML. (Should not be html-formatted.)
+         * @deprecated Use {@link #setFormat(Format)}
          */
         public void setHtmlFormat() {
-            this.imcmsText.setType(TextDomainObject.TEXT_TYPE_HTML);
+            imcmsText.setType(TextDomainObject.TEXT_TYPE_HTML);
         }
 
         /**
-         * Set the format of the text in this textfield to plain text. (Should be html-formatted.)
+         * @deprecated Use {@link #setFormat(Format)}
          */
         public void setPlainFormat() {
-            this.imcmsText.setType(TextDomainObject.TEXT_TYPE_PLAIN);
+            imcmsText.setType(TextDomainObject.TEXT_TYPE_PLAIN);
+        }
+
+        public Format getFormat() {
+            return imcmsText.getType() == TextDomainObject.TEXT_TYPE_PLAIN ? Format.PLAIN : Format.HTML;
+        }
+
+        public void setFormat(Format format) {
+            imcmsText.setType(format.getType());
         }
 
         /**
@@ -299,7 +323,7 @@ public class TextDocument extends Document {
         }
 
         public void setTreeKey(TreeKey treeKey) {
-            internalMenuItem.setTreeSortKey(treeKey.internalTreeSortKey); 
+            internalMenuItem.setTreeSortKey(treeKey.internalTreeSortKey);
         }
 
         public static class TreeKey {
@@ -310,7 +334,7 @@ public class TextDocument extends Document {
             }
 
             public TreeKey(String treeSortKey) {
-                this.internalTreeSortKey = new TreeSortKeyDomainObject(treeSortKey); ;
+                internalTreeSortKey = new TreeSortKeyDomainObject(treeSortKey);
             }
 
             public int getLevelCount() {
@@ -364,9 +388,9 @@ public class TextDocument extends Document {
         private final ContentManagementSystem contentManagementSystem;
 
         Menu(TextDocument document, int menuIndex) {
-            this.internalTextDocument = document.getInternalTextDocument();
+            internalTextDocument = document.getInternalTextDocument();
             this.menuIndex = menuIndex;
-            this.contentManagementSystem = document.getContentManagementSystem() ;
+            contentManagementSystem = document.getContentManagementSystem() ;
         }
 
         /**
@@ -458,11 +482,10 @@ public class TextDocument extends Document {
         private MenuItem[] getMenuItems( DocumentPredicate documentPredicate ) {
             MenuItemDomainObject[] menuItemsDomainObjects = internalTextDocument.getMenu( menuIndex ).getMenuItems();
             List menuItems = new ArrayList( menuItemsDomainObjects.length );
-            for ( int i = 0; i < menuItemsDomainObjects.length; i++ ) {
-                MenuItemDomainObject menuItemDomainObject = menuItemsDomainObjects[i];
+            for ( MenuItemDomainObject menuItemDomainObject : menuItemsDomainObjects ) {
                 DocumentDomainObject document = menuItemDomainObject.getDocument();
-                if ( documentPredicate.evaluateDocument( document ) ) {
-                    menuItems.add( new MenuItem( menuItemDomainObject, contentManagementSystem ) );
+                if ( documentPredicate.evaluateDocument(document) ) {
+                    menuItems.add(new MenuItem(menuItemDomainObject, contentManagementSystem));
                 }
             }
             return (MenuItem[])menuItems.toArray( new MenuItem[menuItems.size()] );

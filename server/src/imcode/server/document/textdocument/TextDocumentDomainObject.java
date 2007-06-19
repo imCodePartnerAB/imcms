@@ -155,7 +155,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return Collections.unmodifiableMap( getIncludesMap() );
     }
 
-    public Map getMenus() {
+    public Map<Integer, MenuDomainObject> getMenus() {
         return Collections.unmodifiableMap( getMenusMap() );
     }
 
