@@ -120,6 +120,10 @@ public class TextDocument extends Document {
 
     public TextField getTextField(int textFieldIndexInDocument) {
         TextDomainObject imcmsText = getInternalTextDocument().getText(textFieldIndexInDocument);
+        if (null == imcmsText) {
+            imcmsText = new TextDomainObject("");
+            getInternalTextDocument().setText(textFieldIndexInDocument, imcmsText);
+        }
         return new TextField(imcmsText);
     }
 
@@ -213,7 +217,7 @@ public class TextDocument extends Document {
     }
 
     public static class TextField {
-        private TextDomainObject imcmsText;
+        private final TextDomainObject imcmsText;
 
         public enum Format {
             PLAIN(TextDomainObject.TEXT_TYPE_PLAIN),
@@ -261,11 +265,7 @@ public class TextDocument extends Document {
          * @return the text of this textfield.
          */
         public String getText() {
-            if (null != imcmsText) {
-                return imcmsText.getText();
-            } else {
-                return "";
-            }
+            return imcmsText.getText();
         }
 
         /**
@@ -275,11 +275,7 @@ public class TextDocument extends Document {
          * @return the text of this textfield as a html-formatted string, suitable for displaying in a html-page.
          */
         public String getHtmlFormattedText() {
-            if (null != imcmsText) {
-                return imcmsText.toHtmlString();
-            } else {
-                return "";
-            }
+            return imcmsText.toHtmlString();
         }
     }
 

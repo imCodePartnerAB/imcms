@@ -24,6 +24,10 @@ public class TextDomainObject implements Serializable {
      */
     public final static int TEXT_TYPE_HTML = 1;
 
+    public TextDomainObject(String text) {
+        this(text, TEXT_TYPE_PLAIN);
+    }
+
     /**
      * Create a text for a text-page.
      *
