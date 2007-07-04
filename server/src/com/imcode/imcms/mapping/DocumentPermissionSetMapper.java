@@ -1,15 +1,21 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
+import com.imcode.db.DatabaseCommand;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
-import com.imcode.db.commands.TransactionDatabaseCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class DocumentPermissionSetMapper {
 
@@ -64,8 +70,8 @@ public class DocumentPermissionSetMapper {
         }
 
         final int permissionBits1 = permissionBits;
-        database.execute(new TransactionDatabaseCommand() {
-            public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
+        database.execute(new DatabaseCommand() {
+            public Object executeOn(DatabaseConnection connection) throws DatabaseException {
                 sqlDeleteFromExtendedPermissionsTable(document, documentPermissionSet, forNewDocuments, connection);
                 String tableName = forNewDocuments ? TABLE_NEW_DOC_PERMISSION_SETS : TABLE_DOC_PERMISSION_SETS;
                 connection.executeUpdate("DELETE FROM " + tableName + "\n"
