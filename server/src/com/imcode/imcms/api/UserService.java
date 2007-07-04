@@ -130,9 +130,9 @@ public class UserService {
         try {
             getMapper().saveRole(role.getInternal()) ;
         } catch ( imcode.server.user.RoleAlreadyExistsException icvse ) {
-            throw new com.imcode.imcms.api.RoleAlreadyExistsException("A role with the name \""+role.getName()+"\" already exists.") ;
+            throw new RoleAlreadyExistsException("A role with the name \""+role.getName()+"\" already exists.", icvse) ;
         } catch( NameTooLongException stle ) {
-            throw new SaveException( "Role name too long." );
+            throw new SaveException( "Role name too long.", stle);
         }
     }
 
@@ -163,7 +163,7 @@ public class UserService {
                 imcmsAuthenticatorAndUserAndRoleMapper.saveUser(user.getInternal());
             }
         } catch ( imcode.server.user.UserAlreadyExistsException uaee ) {
-            throw new UserAlreadyExistsException( "A user with the login name \""+user.getLoginName()+"\" already exists." ) ;
+            throw new UserAlreadyExistsException( "A user with the login name \""+user.getLoginName()+"\" already exists.", uaee ) ;
         }
     }
 

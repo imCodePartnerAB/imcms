@@ -128,7 +128,7 @@ public class DocumentService {
         } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
             throw new MaxCategoriesOfTypeExceededException(e);
         } catch (AliasAlreadyExistsInternalException e) {
-            throw new AliasAlreadyExistsException();
+            throw new AliasAlreadyExistsException(e);
         } catch (DocumentSaveException e) {
             throw new SaveException(e) ;
         }
