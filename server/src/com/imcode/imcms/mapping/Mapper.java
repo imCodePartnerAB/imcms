@@ -86,7 +86,7 @@ public abstract class Mapper<E extends Mapper.MapperObject> {
         return null;
     }
 
-    protected interface MapperObject {
+    public interface MapperObject {
 
         Object getId();
 
