@@ -3,7 +3,7 @@
                  imcode.server.document.DocumentTypeDomainObject,
                  imcode.util.jscalendar.JSCalendar,
                  java.util.Iterator,
-                 java.util.List"%>
+                 java.util.List, com.imcode.imcms.api.ContentManagementSystem, com.imcode.db.DataSourceDatabase, com.imcode.imcms.mapping.ProfileMapper, imcode.server.document.Profile, org.apache.commons.lang.StringEscapeUtils"%>
 <%@page contentType="text/html; charset=UTF-8" %><%@taglib prefix="vel" uri="imcmsvelocity"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
@@ -82,8 +82,8 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
 		adminManagerPage.getErrorMessage().toLocalizedString(request)
 		%></div><%
 	} %>
-	<table border="0" cellspacing="0" cellpadding="2" width="656">
 	<form method="POST" action="AdminManager">
+	<table border="0" cellspacing="0" cellpadding="2" width="656">
     <input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__SHOW %>" value="<%= adminManagerPage.getTabName() %>"><%
     if (AdminManager.PARAMETER_VALUE__SHOW_CREATE.equals( adminManagerPage.getTabName() ) || AdminManager.PARAMETER_VALUE__SHOW_RECENT.equals( adminManagerPage.getTabName() ) ) {%>
 	<tr>
@@ -112,7 +112,20 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
 			<option value="<%= AdminManager.REQUEST_PARAMETER__ACTION__COPY %>"><? global/Copy ?></option>
 		</select>
 		&nbsp;<? web/imcms/lang/jsp/admin/admin_manager.jsp/based_on ?>&nbsp;
-		<input type="text" name="<%= AdminManager.REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID %>" value="" size="40" maxlength="255">&nbsp;
+        <select onchange="getElementById('document_id').value = this.value;">
+            <option value=""></option>
+            <%
+                ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
+                DataSourceDatabase database = new DataSourceDatabase(cms.getDatabaseService().getDataSource());
+                ProfileMapper profileMapper = new ProfileMapper(database);
+                List<Profile> profiles = profileMapper.getAll();
+                for ( Profile profile : profiles ) {
+                    %><option value="<%= StringEscapeUtils.escapeHtml(profile.getDocumentName()) %>"><%= StringEscapeUtils.escapeHtml(profile.getName()) %></option><%
+                }
+            %>
+        </select>
+		&nbsp;<? web/imcms/lang/jsp/admin/admin_manager.jsp/with_document ?>&nbsp;
+		<input type="text" id="document_id" name="<%= AdminManager.REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID %>" value="" size="40" maxlength="255">&nbsp;
 		<input type="submit" name="<%= AdminManager.REQUEST_PARAMETER__CREATE_NEW_DOCUMENT %>" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/create_button ?>" class="imcmsFormBtnSmall"></td>
 	</tr>
     <tr>
@@ -146,7 +159,8 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
 		<jsp:include page="../search_documents_results.jsp" />
 	</form><%
 } %>
-#gui_end_of_page()
-
+	#gui_bottom()
+	#gui_outer_end()
 </vel:velocity>
-
+</body>
+</html>

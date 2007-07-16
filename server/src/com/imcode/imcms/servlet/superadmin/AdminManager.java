@@ -79,7 +79,7 @@ public class AdminManager extends HttpServlet {
         String whichButton = request.getParameter( "AdminTask" );
         if ( null != whichButton ) {
 
-            String url = getAdminTaskUrl( whichButton );
+            String url = getAdminTaskUrl( whichButton, request );
             if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() ) {
                 Utility.forwardToLogin( request, response );
                 return;
@@ -100,8 +100,7 @@ public class AdminManager extends HttpServlet {
         if ( Utility.parameterIsSet( request, REQUEST_PARAMETER__CREATE_NEW_DOCUMENT ) ) {
         String parentPageId =  request.getParameter( REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID );
             try {
-                DocumentDomainObject parentDocument;
-                parentDocument = documentMapper.getDocument( parentPageId.toLowerCase().trim() );
+                DocumentDomainObject parentDocument = documentMapper.getDocument(parentPageId.toLowerCase().trim());
                 String createDocumentAction = request.getParameter( REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION );
                 if ( REQUEST_PARAMETER__ACTION__COPY.equals( createDocumentAction ) && parentDocument != null ) {
                     documentMapper.copyDocument( parentDocument, user );
@@ -579,7 +578,7 @@ public class AdminManager extends HttpServlet {
         return comparator;
     }
 
-    private String getAdminTaskUrl( String whichButton ) {
+    private String getAdminTaskUrl(String whichButton, HttpServletRequest request) {
         String url = "";
         if ( whichButton.equalsIgnoreCase( "UserStart" ) ) {
             url += "AdminUser";
@@ -607,6 +606,8 @@ public class AdminManager extends HttpServlet {
             url += "AdminSection";
         } else if ( whichButton.equalsIgnoreCase( "AdminCategories" ) ) {
             url += "AdminCategories";
+        } else if ( whichButton.equals( "AdminProfiles" ) ) {
+            url = request.getContextPath()+"/imcms/admin/profile/list";
         }
         return url;
 

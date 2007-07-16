@@ -1,0 +1,5 @@
+    <table name="profiles">
+        <column name="profile_id" autoIncrement="true" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="name" required="true" size="255" type="VARCHAR"/>
+        <column name="document_name" required="true" size="255" type="VARCHAR"/>
+    </table>

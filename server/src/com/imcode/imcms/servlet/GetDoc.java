@@ -27,10 +27,9 @@ import java.util.*;
 
 public class GetDoc extends HttpServlet {
 
-    private final static Logger trackLog = Logger.getLogger(ImcmsConstants.ACCESS_LOG);
-    private final static Logger log = Logger.getLogger(GetDoc.class.getName());
+    private final static Logger TRACK_LOG = Logger.getLogger(ImcmsConstants.ACCESS_LOG);
+    private final static Logger LOG = Logger.getLogger(GetDoc.class.getName());
     private final static String NO_ACTIVE_DOCUMENT_URL = "no_active_document.html";
-    private final static String NO_PAGE_URL = "no_page.html";
 
     private static final String HTTP_HEADER_REFERRER = "Referer";// Note, intended misspelling of "Referrer", according to the HTTP spec.
     public static final String REQUEST_PARAMETER__FILE_ID = "file_id";
@@ -67,7 +66,7 @@ public class GetDoc extends HttpServlet {
             privateGetDoc(document, res, req);
             stopWatch.stop();
             long renderTime = stopWatch.getTime();
-            log.trace("Rendering document " + document.getId() + " took " + renderTime + "ms.");
+            LOG.trace("Rendering document " + document.getId() + " took " + renderTime + "ms.");
         } finally {
             NDC.pop();
         }
@@ -149,7 +148,7 @@ public class GetDoc extends HttpServlet {
             String url_ref = ( (UrlDocumentDomainObject) document ).getUrl();
             res.sendRedirect(url_ref);
             // Log to accesslog
-            trackLog.info(documentRequest);
+            TRACK_LOG.info(documentRequest);
             return ;
         } else if ( document instanceof BrowserDocumentDomainObject ) {
 
@@ -172,12 +171,12 @@ public class GetDoc extends HttpServlet {
 
             res.sendRedirect("GetDoc?meta_id=" + toMetaId);
             // Log to accesslog
-            trackLog.info(documentRequest);
+            TRACK_LOG.info(documentRequest);
             return ;
         } else if ( document instanceof HtmlDocumentDomainObject ) {
             Utility.setDefaultHtmlContentType(res);
             String htmlDocumentData = ((HtmlDocumentDomainObject)document).getHtml();
-            trackLog.info(documentRequest);
+            TRACK_LOG.info(documentRequest);
             res.getWriter().write(htmlDocumentData);
         } else if ( document instanceof FileDocumentDomainObject ) {
             String fileId = req.getParameter(REQUEST_PARAMETER__FILE_ID);
@@ -208,13 +207,13 @@ public class GetDoc extends HttpServlet {
                     out.write(buffer, 0, bytes_read);
                 }
             } catch ( SocketException ex ) {
-                log.debug("Exception occured", ex);
+                LOG.debug("Exception occured", ex);
             }
             fr.close();
             out.flush();
             out.close();
             // Log to accesslog
-            trackLog.info(documentRequest);
+            TRACK_LOG.info(documentRequest);
         } else {
             Utility.setDefaultHtmlContentType(res);
             user.setTemplateGroup(null);
@@ -223,7 +222,7 @@ public class GetDoc extends HttpServlet {
             paramsToParser.setTemplate(req.getParameter("template"));
             paramsToParser.setParameter(req.getParameter("param"));
             // Log to accesslog
-            trackLog.info(documentRequest);
+            TRACK_LOG.info(documentRequest);
             imcref.parsePage(paramsToParser, res.getWriter());
         }
     }
