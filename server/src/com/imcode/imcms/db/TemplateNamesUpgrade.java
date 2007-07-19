@@ -40,6 +40,7 @@ public class TemplateNamesUpgrade implements DatabaseUpgrade {
         })) ;
 
         DatabasePlatform dp = DatabasePlatform.getInstance(database);
+        dp.update("DELETE FROM templates_cref WHERE group_id NOT IN (SELECT group_id FROM templategroups)");
         SimpleColumn templateNameColumn = new SimpleColumn("template_name", Type.VARCHAR, 255, SimpleColumn.Required.PRIMARY_KEY);
         dp.alterColumn("templates_cref", "template_id", templateNameColumn) ;
         updateTemplateName(dp, "templates_cref", "template_name");
