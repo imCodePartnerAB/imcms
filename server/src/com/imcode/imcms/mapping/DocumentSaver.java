@@ -120,7 +120,7 @@ class DocumentSaver {
     private void updateDocumentSectionsCategoriesKeywords(DocumentDomainObject document) {
         updateDocumentSections(document.getId(), document.getSectionIds());
 
-        documentMapper.getCategoryMapper().updateDocumentCategories(document);
+        new CategoryMapper(database).updateDocumentCategories(document);
 
         updateDocumentKeywords(document);
     }
