@@ -73,12 +73,8 @@ public class TestDocumentMapper extends TestCase {
 
     public void testUpdateDocumentRolePermissionsWithNoPermissions() throws Exception {
         textDocument.setDocumentPermissionSetTypeForRoleId(testRole.getId(), DocumentPermissionSetTypeDomainObject.READ);
-        getDocumentSaver().updateDocumentRolePermissions( textDocument, user, oldDocument );
+        documentMapper.getDocumentSaver().updateDocumentRolePermissions( textDocument, user, oldDocument );
         assertEquals( 0, database.getSqlCallCount() );
-    }
-
-    private DocumentSaver getDocumentSaver() {
-        return new DocumentSaver(documentMapper, database);
     }
 
     public void testUpdateDocumentRolePermissionsWithRestricted1Permission() throws Exception {
@@ -93,15 +89,15 @@ public class TestDocumentMapper extends TestCase {
         oldDocument.getPermissionSets().setRestricted1(permissionSetForRestrictedOne);
 
         permissionSetForRestrictedOne.setEditPermissions(false);
-        getDocumentSaver().updateDocumentRolePermissions(textDocument, user, oldDocument);
+        documentMapper.getDocumentSaver().updateDocumentRolePermissions(textDocument, user, oldDocument);
         assertEquals(0, database.getSqlCallCount());
 
         permissionSetForRestrictedOne.setEditPermissions(true);
-        getDocumentSaver().updateDocumentRolePermissions(textDocument, user, oldDocument);
+        documentMapper.getDocumentSaver().updateDocumentRolePermissions(textDocument, user, oldDocument);
         assertEquals(4, database.getSqlCallCount());
 
         textDocument.setDocumentPermissionSetTypeForRoleId(testRole.getId(), DocumentPermissionSetTypeDomainObject.RESTRICTED_1);
-        getDocumentSaver().updateDocumentRolePermissions(textDocument, user, oldDocument);
+        documentMapper.getDocumentSaver().updateDocumentRolePermissions(textDocument, user, oldDocument);
         database.assertCalled(new MockDatabase.EqualsSqlCallPredicate(DocumentSaver.SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID));
     }
 
@@ -109,13 +105,13 @@ public class TestDocumentMapper extends TestCase {
         oldDocument.setDocumentPermissionSetTypeForRoleId(userRole, DocumentPermissionSetTypeDomainObject.FULL);
         textDocument.setDocumentPermissionSetTypeForRoleId(testRole.getId(), DocumentPermissionSetTypeDomainObject.READ);
         textDocument.setRoleIdsMappedToDocumentPermissionSetTypes(oldDocument.getRoleIdsMappedToDocumentPermissionSetTypes());
-        getDocumentSaver().updateDocumentRolePermissions(textDocument, user, oldDocument);
+        documentMapper.getDocumentSaver().updateDocumentRolePermissions(textDocument, user, oldDocument);
         assertEquals(2, database.getSqlCallCount());
     }
 
     public void testUpdateDocumentRolePermissionsRemovesPermission() {
         oldDocument.setDocumentPermissionSetTypeForRoleId(userRole, DocumentPermissionSetTypeDomainObject.FULL);
-        getDocumentSaver().updateDocumentRolePermissions(textDocument, user, oldDocument);
+        documentMapper.getDocumentSaver().updateDocumentRolePermissions(textDocument, user, oldDocument);
         database.assertCalled(new MockDatabase.EqualsSqlCallPredicate(DocumentSaver.SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID));
         database.assertNotCalled(new MockDatabase.EqualsWithParametersSqlCallPredicate(DocumentSaver.SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID,
                                                                                        new String[] {
@@ -137,7 +133,7 @@ public class TestDocumentMapper extends TestCase {
     }
 
     public void testUpdateDocumentRolePermissionsAllowsNullOldDocument() throws Exception {
-        getDocumentSaver().updateDocumentRolePermissions( textDocument, user, null );
+        documentMapper.getDocumentSaver().updateDocumentRolePermissions( textDocument, user, null );
         assertTrue(true);
     }
 

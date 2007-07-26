@@ -29,8 +29,9 @@ public class TestDocumentSaver extends TestCase {
             public void invalidateDocument(DocumentDomainObject document) {
             }
         };
+        documentMapper.setDocumentPermissionSetMapper(new DocumentPermissionSetMapper(database));
         documentMapper.setClock(new SystemClock()) ;
-        documentSaver = new DocumentSaver(documentMapper, documentMapper.getDatabase());
+        documentSaver = new DocumentSaver(documentMapper);
     }
 
     public void testRemoveOwnPermissionsFromDocument() throws SaveException, NoPermissionException, DocumentSaveException {

@@ -2,10 +2,10 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
 import com.imcode.db.DatabaseCommand;
-import com.imcode.db.DatabaseConnection;
-import com.imcode.db.DatabaseException;
-import com.imcode.db.SingleConnectionDatabase;
-import com.imcode.db.commands.*;
+import com.imcode.db.commands.CompositeDatabaseCommand;
+import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
@@ -45,11 +45,13 @@ public class DocumentMapper implements DocumentGetter {
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
 
     private Database database;
+    private DocumentPermissionSetMapper documentPermissionSetMapper;
     private DocumentIndex documentIndex;
     private Map documentCache ;
     private Clock clock = new SystemClock();
     private ImcmsServices imcmsServices;
     private DocumentGetter documentGetter ;
+    private DocumentSaver documentSaver ;
     private CategoryMapper categoryMapper;
 
     private LazilyLoadedObject sections;
@@ -62,7 +64,9 @@ public class DocumentMapper implements DocumentGetter {
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
         documentCache = Collections.synchronizedMap(new LRUMap(documentCacheMaxSize)) ;
         setDocumentGetter(new FragmentingDocumentGetter(new DatabaseDocumentGetter(database, services)));
+        this.documentPermissionSetMapper = new DocumentPermissionSetMapper(database);
         this.categoryMapper = new CategoryMapper(database);
+        documentSaver = new DocumentSaver(this);
         initSections();
     }
 
@@ -72,6 +76,10 @@ public class DocumentMapper implements DocumentGetter {
 
     public void setDocumentGetter(DocumentGetter documentGetter) {
         this.documentGetter = new CachingDocumentGetter(documentGetter, documentCache);
+    }
+
+    public DocumentSaver getDocumentSaver() {
+        return documentSaver ;
     }
 
     public DocumentDomainObject createDocumentOfTypeFromParent(int documentTypeId, final DocumentDomainObject parent, UserDomainObject user) {
@@ -167,30 +175,18 @@ public class DocumentMapper implements DocumentGetter {
     public void saveNewDocument(DocumentDomainObject document, UserDomainObject user, boolean copying)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
-        new DocumentSaver(this, getDatabase()).saveNewDocument(user, document, copying);
+        documentSaver.saveNewDocument(user, document, copying);
 
     }
 
-    public void saveDocument(final DocumentDomainObject document,
+    public void saveDocument(DocumentDomainObject document,
                              final UserDomainObject user) throws DocumentSaveException , NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException
     {
 
-        final DocumentDomainObject oldDocument = getDocument(document.getId());
+        DocumentDomainObject oldDocument = getDocument(document.getId());
 
-        DocumentSaveException exception = (DocumentSaveException) getDatabase().execute(new TransactionDatabaseCommand() {
-            public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
-                try {
-                    SingleConnectionDatabase database = new SingleConnectionDatabase(connection);
-                    new DocumentSaver(DocumentMapper.this, database).saveDocument(document, oldDocument, user);
-                } catch ( DocumentSaveException e ) {
-                    return e;
-                }
-                return null;
-            }
-        });
-        if (null != exception) {
-            throw exception;
-        }
+        documentSaver.saveDocument(document, oldDocument, user);
+
     }
 
     public void invalidateDocument(DocumentDomainObject document) {
@@ -263,7 +259,7 @@ public class DocumentMapper implements DocumentGetter {
             new DeleteWhereColumnsEqualDatabaseCommand("document_categories", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("meta_classification", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("childs", "to_meta_id", metaIdStr),
-            new SqlUpdateCommand("DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?)", new String[]{metaIdStr}),
+            new SqlUpdateDatabaseCommand("DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?)", new String[]{metaIdStr}),
             new DeleteWhereColumnsEqualDatabaseCommand("menus", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("text_docs", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("texts", metaIdColumn, metaIdStr),
@@ -283,7 +279,7 @@ public class DocumentMapper implements DocumentGetter {
             new DeleteWhereColumnsEqualDatabaseCommand("texts_history", metaIdColumn, metaIdStr ),
             new DeleteWhereColumnsEqualDatabaseCommand("images_history", metaIdColumn, metaIdStr ),
             new DeleteWhereColumnsEqualDatabaseCommand("childs_history", "to_meta_id", metaIdStr ),
-            new SqlUpdateCommand("DELETE FROM childs_history WHERE menu_id IN (SELECT menu_id FROM menus_history WHERE meta_id = ?)", new String[] {metaIdStr} ),
+            new SqlUpdateDatabaseCommand("DELETE FROM childs_history WHERE menu_id IN (SELECT menu_id FROM menus_history WHERE meta_id = ?)", new String[] {metaIdStr} ),
             new DeleteWhereColumnsEqualDatabaseCommand("menus_history", metaIdColumn, metaIdStr ),
             new DeleteWhereColumnsEqualDatabaseCommand("document_properties", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("meta_section", metaIdColumn, metaIdStr),
@@ -390,6 +386,10 @@ public class DocumentMapper implements DocumentGetter {
         deleteFileDocumentFilesAccordingToFileFilter(new FileDocumentFileFilter(fileDocument));
     }
 
+    public DocumentPermissionSetMapper getDocumentPermissionSetMapper() {
+        return documentPermissionSetMapper;
+    }
+
     static void deleteOtherFileDocumentFiles(final FileDocumentDomainObject fileDocument) {
         deleteFileDocumentFilesAccordingToFileFilter(new SuperfluousFileDocumentFilesFileFilter(fileDocument));
     }
@@ -462,6 +462,10 @@ public class DocumentMapper implements DocumentGetter {
 
     public void setClock(Clock clock) {
         this.clock = clock;
+    }
+
+    public void setDocumentPermissionSetMapper(DocumentPermissionSetMapper documentPermissionSetMapper) {
+        this.documentPermissionSetMapper = documentPermissionSetMapper;
     }
 
     public void setDocumentIndex(DocumentIndex documentIndex) {

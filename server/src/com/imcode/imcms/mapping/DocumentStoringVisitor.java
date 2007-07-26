@@ -1,7 +1,10 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
+import com.imcode.db.DatabaseConnection;
+import com.imcode.db.SingleConnectionDatabase;
 import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.db.commands.TransactionDatabaseCommand;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.BrowserDocumentDomainObject;
@@ -167,7 +170,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         database.execute(new SqlUpdateCommand("INSERT INTO includes (meta_id, include_id, included_meta_id) VALUES(?,?,?)", parameters));
     }
 
-    public void saveDocumentImage(int meta_id, int img_no, ImageDomainObject image) {
+    public static void saveDocumentImage(int meta_id, int img_no, ImageDomainObject image) {
         String sqlStr = "update images\n"
                 + "set imgurl  = ?, \n"
                 + "width       = ?, \n"
@@ -194,9 +197,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     }
 
-    private int sqlImageUpdateQuery(String sqlStr, ImageDomainObject image, int meta_id, int img_no) {
+    private static int sqlImageUpdateQuery(String sqlStr, ImageDomainObject image, int meta_id, int img_no) {
         final String[] parameters = getSqlImageParameters(image, meta_id, img_no);
-        return ((Number)database.execute(new SqlUpdateCommand(sqlStr, parameters))).intValue();
+        return ((Number)Imcms.getServices().getDatabase().execute(new SqlUpdateCommand(sqlStr, parameters))).intValue();
     }
 
     private static String[] getSqlImageParameters(ImageDomainObject image, int meta_id, int img_no) {
@@ -294,7 +297,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     protected void updateTextDocumentMenus(final TextDocumentDomainObject textDocument, final TextDocumentDomainObject oldTextDocument, final UserDomainObject savingUser) {
-        MenuSaver menuSaver = new MenuSaver(database) ;
-        menuSaver.updateTextDocumentMenus(textDocument, services, oldTextDocument, savingUser);
+        database.execute( new TransactionDatabaseCommand() {
+            public Object executeInTransaction( DatabaseConnection connection ) {
+                MenuSaver menuSaver = new MenuSaver(new SingleConnectionDatabase(connection)) ;
+                menuSaver.updateTextDocumentMenus(textDocument, services, oldTextDocument, savingUser);
+                return null ;
+            }
+        } );
     }
 }

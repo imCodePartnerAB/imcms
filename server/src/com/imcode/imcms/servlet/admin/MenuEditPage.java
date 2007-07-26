@@ -136,7 +136,9 @@ public class MenuEditPage extends OkCancelPage {
                     }
                 }
             }
-            documentMapper.saveDocument(textDocument, user);
+            if ( null == request.getParameter(CREATE) ) {
+                documentMapper.saveDocument(textDocument, user);
+            }
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
         } catch ( NoPermissionToAddDocumentToMenuException e ) {
