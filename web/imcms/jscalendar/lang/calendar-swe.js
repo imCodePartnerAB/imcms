@@ -11,14 +11,14 @@
 
 // full day names
 Calendar._DN = new Array
-("söndag",
- "måndag",
+("sÃ¶ndag",
+ "mÃ¥ndag",
  "tisdag",
  "onsdag",
  "torsdag",
  "fredag",
- "lördag",
- "söndag");
+ "lÃ¶rdag",
+ "sÃ¶ndag");
 
 // Please note that the following array of short day names (and the same goes
 // for short month names, _SMN) isn't absolutely necessary.  We give it here
@@ -34,14 +34,14 @@ Calendar._DN = new Array
 
 // short day names
 Calendar._SDN = new Array
-("Sön",
- "Mån",
+("SÃ¶n",
+ "MÃ¥n",
  "Tis",
  "Ons",
  "Tor",
  "Fre",
- "Lör",
- "Sön");
+ "LÃ¶r",
+ "SÃ¶n");
 
 // First day of the week. "0" means display Sunday first, "1" means display
 // Monday first, etc.
@@ -97,27 +97,27 @@ Calendar._TT["ABOUT_TIME"] = "\n\n" +
 "- or Shift-click to decrease it\n" +
 "- or click and drag for faster selection.";
 
-Calendar._TT["PREV_YEAR"] = "Föregående år (håll för menu)";
-Calendar._TT["PREV_MONTH"] = "Föregående månad (håll för menu)";
-Calendar._TT["GO_TODAY"] = "Gå till dagens datum";
-Calendar._TT["NEXT_MONTH"] = "Följande månad (håll för menu)";
-Calendar._TT["NEXT_YEAR"] = "Följande år (håll för menu)";
-Calendar._TT["SEL_DATE"] = "Välj datum";
-Calendar._TT["DRAG_TO_MOVE"] = "Drag för att flytta";
+Calendar._TT["PREV_YEAR"] = "FÃ¶regÃ¥ende Ã¥r (hÃ¥ll fÃ¶r menu)";
+Calendar._TT["PREV_MONTH"] = "FÃ¶regÃ¥ende mÃ¥nad (hÃ¥ll fÃ¶r menu)";
+Calendar._TT["GO_TODAY"] = "GÃ¥ till dagens datum";
+Calendar._TT["NEXT_MONTH"] = "FÃ¶ljande mÃ¥nad (hÃ¥ll fÃ¶r menu)";
+Calendar._TT["NEXT_YEAR"] = "FÃ¶ljande Ã¥r (hÃ¥ll fÃ¶r menu)";
+Calendar._TT["SEL_DATE"] = "VÃ¤lj datum";
+Calendar._TT["DRAG_TO_MOVE"] = "Drag fÃ¶r att flytta";
 Calendar._TT["PART_TODAY"] = " (idag)";
 
 // the following is to inform that "%s" is to be the first day of week
 // %s will be replaced with the day name.
-Calendar._TT["DAY_FIRST"] = "Visa %s först";
+Calendar._TT["DAY_FIRST"] = "Visa %s fÃ¶rst";
 
 // This may be locale-dependent.  It specifies the week-end days, as an array
 // of comma-separated numbers.  The numbers are from 0 to 6: 0 means Sunday, 1
 // means Monday, etc.
 Calendar._TT["WEEKEND"] = "0";
 
-Calendar._TT["CLOSE"] = "Stäng";
+Calendar._TT["CLOSE"] = "StÃ¤ng";
 Calendar._TT["TODAY"] = "Idag";
-Calendar._TT["TIME_PART"] = "(Skift-)klicka eller drag för att ändra tid";
+Calendar._TT["TIME_PART"] = "(Skift-)klicka eller drag fÃ¶r att Ã¤ndra tid";
 
 // date formats
 Calendar._TT["DEF_DATE_FORMAT"] = "%Y-%m-%d";
