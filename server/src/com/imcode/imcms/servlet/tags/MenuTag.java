@@ -9,6 +9,7 @@ import imcode.server.parser.MenuParser;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TagParser;
 import org.apache.commons.collections.iterators.ArrayIterator;
+import org.apache.commons.collections.iterators.FilterIterator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +36,7 @@ public class MenuTag extends BodyTagSupport {
         TextDocumentDomainObject document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
         menu = document.getMenu(no);
         MenuItemDomainObject[] menuItems = menu.getMenuItems();
-        menuItemIterator = new ArrayIterator(menuItems) ;
+        menuItemIterator = new FilterIterator(new ArrayIterator(menuItems), new MenuParser.UserCanSeeMenuItemPredicate(parserParameters.getDocumentRequest().getUser())) ;
         if (menuItemIterator.hasNext()) {
             nextMenuItem();
             return EVAL_BODY_BUFFERED;

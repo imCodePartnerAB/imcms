@@ -154,13 +154,8 @@ public class MenuParser {
                                                                             Properties menuAttributes,
                                                                             PatternMatcher patMat,
                                                                             TagParser tagParser) throws IOException {
-        Iterator menuItemsIterator = new FilterIterator( Arrays.asList( menu.getMenuItems() ).iterator(), new Predicate() {
-            public boolean evaluate( Object o ) {
-                DocumentDomainObject document = ( (MenuItemDomainObject)o ).getDocument();
-                UserDomainObject user = parserParameters.getDocumentRequest().getUser();
-                return user.canSeeDocumentInMenus(document);
-            }
-        } );
+        final UserDomainObject user = parserParameters.getDocumentRequest().getUser();
+        Iterator menuItemsIterator = new FilterIterator( Arrays.asList( menu.getMenuItems() ).iterator(), new UserCanSeeMenuItemPredicate(user) );
 
         int menuItemIndexStart = 0;
         try {
@@ -342,4 +337,17 @@ public class MenuParser {
         return href;
     }
 
+    public static class UserCanSeeMenuItemPredicate implements Predicate {
+
+        private final UserDomainObject user;
+
+        public UserCanSeeMenuItemPredicate(UserDomainObject user) {
+            this.user = user;
+        }
+
+        public boolean evaluate( Object o ) {
+            DocumentDomainObject document = ( (MenuItemDomainObject)o ).getDocument();
+            return user.canSeeDocumentInMenus(document);
+        }
+    }
 }
