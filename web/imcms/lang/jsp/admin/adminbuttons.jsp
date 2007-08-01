@@ -5,25 +5,16 @@
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  imcode.server.user.UserDomainObject"%>
 <%@ page import="imcode.util.Html"%>
-<%@ page import="imcode.util.Utility, org.apache.oro.text.perl.Perl5Util"%>
+<%@ page import="imcode.util.Utility"%>
 <%@taglib uri="imcmsvelocity" prefix="vel" %>
 <%
     UserDomainObject user = (UserDomainObject)request.getAttribute("user") ;
     DocumentDomainObject document = (DocumentDomainObject)request.getAttribute("document") ;
     DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetFor( document ) ;
 
-Perl5Util re  = new Perl5Util() ;
-String uAgent = request.getHeader("USER-AGENT") ;
-
-boolean isIE     = re.match("/(MSIE 4|MSIE 5|MSIE 5\\.5|MSIE 6)/i", uAgent) ;
-boolean isIE7    = re.match("/(MSIE 7)/i", uAgent) ;
-boolean isGecko  = re.match("/Gecko/i", uAgent) ;
-
 %><vel:velocity>
 <style type="text/css">
 <!--
-/* IMCMS SPECIFIC */
-/* imCMS label. */
 
 .imcms_label, .imcms_label:link, .imcms_label:visited { font: 10px Verdana; color:#c00000; text-decoration:none; background-color:#ffffcc }
 .imcms_label:active, .imcms_label:hover { font: 10px Verdana; color:#000099; text-decoration:underline; background-color:#ffffcc }
@@ -41,13 +32,9 @@ boolean isGecko  = re.match("/Gecko/i", uAgent) ;
 #adminPanelTd1_3  {  }
 .adminPanelTd2    { padding: 3px; height: 32px; vertical-align: top; }
 
-.adminPanelTd2 A IMG {  }
-.adminPanelTd2 A:hover IMG {<%
-	if (isGecko) { %>
-	<%= "-moz-opacity: 0.5;" %><%
-	} else if (isIE || isIE7) { %>
-	<%= "filter: Alpha(Opacity=0.5);" %><%
-	} %>
+.adminPanelTd2 A:hover IMG {
+    filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=0, xray=0, mirror=0, invert=0, opacity=0.5, rotation=0);
+    -moz-opacity: 0.5;
 }
 B { font-weight: bold; }
 -->
