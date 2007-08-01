@@ -1,4 +1,4 @@
-<%@ page import="com.imcode.imcms.servlet.superadmin.AdminProfiles, imcode.server.document.Profile, org.apache.commons.lang.StringEscapeUtils, java.util.List"%><%
+<%@ page import="com.imcode.imcms.servlet.superadmin.AdminProfiles, imcode.server.document.Profile, org.apache.commons.lang.StringEscapeUtils, java.util.List" contentType="text/html; charset=UTF-8"%><%
     List<Profile> profiles = (List<Profile>) request.getAttribute("profiles");
     %><%@taglib prefix="vel" uri="imcmsvelocity"%><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><vel:velocity>
 <html>
