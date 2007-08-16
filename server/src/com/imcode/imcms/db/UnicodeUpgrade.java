@@ -41,6 +41,9 @@ class UnicodeUpgrade extends DatabaseTypeSpecificUpgrade {
                 org.apache.ddlutils.model.Database sourceDdl = sqlBuilder.getPlatform().readModelFromDatabase(databaseConnection.getConnection(), null);
                 List<ModelChange> changes = new ArrayList() ;
                 for ( Table sourceTable : sourceDdl.getTables() ) {
+                    if (null == wantedDdl.findTable(sourceTable.getName())) {
+                        continue;
+                    }
                     for ( Column column : sourceTable.getColumns() ) {
                         if (column.isOfTextType()) {
                             LOG.debug("Rebuilding table "+sourceTable) ;
