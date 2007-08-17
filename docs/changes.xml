@@ -1,6 +1,206 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <changesets>
 
+<changeset version="4.0.0">
+    <changes importance="high" for="users">
+        <change>
+            <p>
+                The HTMLArea text field editor was no longer supported and has been replaced with Xinha.
+            </p>
+            <issue id="4596"/>
+        </change>
+    </changes>
+    <changes importance="high" for="administrators">
+        <change>
+            <p>
+                imCMS now automatically upgrades the database on startup.
+                When upgrading from version 3.0 or later, no manual running of SQL scripts is required.
+            </p>
+            <issue id="206"/>
+        </change>
+        <change>
+            <p>
+                The default character encoding has been changed from windows-1252 to UTF-8. 
+            </p>
+            <issue id="4491"/>
+            <issue id="4593"/>
+        </change>
+    </changes>
+    <changes for="users">
+        <change>
+            <p>
+                Fixed a crash when trying to add a link to a document that doesn't exist.
+            </p>
+            <issue id="4677"/>
+        </change>
+        <change>
+            <p>
+                Created new "dual list" user interface for setting document categories.
+            </p>
+            <issue id="3437"/>
+        </change>
+        <change>
+            <p>
+                Created a new user interface for editing menus.
+                Menus are now edited on a separate page from the containing text document. 
+            </p>
+            <issue id="2939"/>
+            <issue id="4605"/>
+        </change>
+        <change>
+            <p>
+                Menus can now be sorted in order of published datetime.
+            </p>
+            <issue id="2155"/>
+        </change>
+        <change>
+            <p>
+                The "Edit permissions for new documents" was wrongly displayed for non-text documents.
+            </p>
+            <issue id="4636"/>
+        </change>
+    </changes>
+    <changes for="administrators">
+        <change>
+            <p>
+                The template administration user interface would crash if demo template directory was missing.
+                It will now be created if needed.
+            </p>
+            <issue id="4724"/>
+        </change>
+        <change>
+            <p>
+                Use english language error page if no user language is available.
+            </p>
+            <issue id="4595"/>
+        </change>
+        <change>
+            <p>
+                The maximum length for a category name was changed from 50 characters to 128.
+            </p>
+            <issue id="4687"/>
+        </change>
+    </changes>
+    <changes for="site developers">
+        <change>
+            <p>
+                Added API method <method>Image.toHtmlTag()</method> for 
+                generating the html tag for an <class>Image</class>. 
+            </p>
+            <issue id="4712"/>
+        </change>
+        <change>
+            <p>
+                Added <attr>title</attr> attribute to <tag>&lt;img&gt;</tag>
+                with the same content as the <attr>alt</attr> attribute.
+            </p>
+            <issue id="4623"/>
+        </change>
+        <change>
+            <p>
+                Removed non-XHTML compatible <attr>border</attr> attribute from <tag>&lt;img&gt;</tag>,
+                instead passing through <attr>style</attr>, <attr>class</attr>, and <attr>usemap</attr> attributes
+                from the <tag>&lt;imcms:image&gt;</tag> in the template.
+            </p>
+            <issue id="4579"/>
+        </change>
+        <change>
+            <p>
+                Line breaks in text fields now generate <tag>"&lt;br /&gt;"</tag> instead of <tag>"&lt;BR&gt;"</tag>,
+                providing XHTML compatibility.
+            </p>
+            <issue id="4581"/>
+        </change>
+        <change>
+            <p>
+                <method>UserService.saveUser(User)</method> did not respect the UserAdmin role.
+            </p>
+            <issue id="4553"/>
+        </change>
+    </changes>
+</changeset>
+    
+<changeset version="3.2.0">
+    <changes for="users">
+        <change>
+            <p>
+                Added "by published datetime" sorting to menus.
+            </p>
+            <issue id="2155"/>
+        </change>
+        <change>
+            <p>
+                Fixed "NullPointerException in FrequencyOrderedBag" crash.
+            </p>
+            <issue id="4500"/>
+        </change>
+        <change>
+            <p>
+                Fixed crash caused by menuitems not being properly removed
+                when deleting a document.
+            </p>
+            <issue id="4498"/>
+        </change>
+        <change>
+            <p>
+                Fixed crash caused by documents not being removed from the cache
+                when their template was deleted.
+            </p>
+            <issue id="4800"/>
+        </change>
+    </changes>
+    <changes for="administrators">
+        <change>
+            <p>
+                Fixed image preview in the file administrator. 
+            </p>
+            <issue id="4833"/>
+        </change>
+    </changes>
+    <changes for="site developers">
+        <change>
+            <p>
+                Added capability to send HTML mail.
+            </p>
+            <issue id="4412"/>
+        </change>
+        <change>
+            <p>
+                Mails now use UTF-8 encoding.
+            </p>
+            <issue id="4412"/>
+        </change>
+        <change>
+            <p>
+                Fixed a typo in <localfile>TEMPLATE_SYNTAX.TXT</localfile>.
+            </p>
+            <issue id="4505"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug preventing users with the UserAdmin role
+                from editing users through the API.
+            </p>
+            <issue id="4553"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug making it impossible to change sort keys for menu items
+                through the API.
+            </p>
+            <issue id="4804"/>
+        </change>
+    </changes>
+    <changes for="developers">
+        <change>
+            <p>
+                Made the error page output less redundant by only displaying one stack trace.
+            </p>
+            <issue id="4506"/>
+        </change>
+    </changes>
+</changeset>
+    
 <changeset version="3.1.2">
     <changes for="users">
         <change>
