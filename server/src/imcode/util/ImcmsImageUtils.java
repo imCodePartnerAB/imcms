@@ -89,6 +89,12 @@ public class ImcmsImageUtils {
                     .append(image.getVerticalSpace()).append("px ")
                     .append(image.getHorizontalSpace()).append("px;");
 
+            if ( StringUtils.isNotBlank(image.getAlign()) && "left".equals(image.getAlign()) ) {
+                styleBuffer.append(" align: ").append(StringEscapeUtils.escapeHtml(image.getAlign())).append(";");
+            }
+            if ( StringUtils.isNotBlank(image.getAlign()) && "right".equals(image.getAlign()) ) {
+                styleBuffer.append(" align: ").append(StringEscapeUtils.escapeHtml(image.getAlign())).append(";");
+            }
             if ( StringUtils.isNotBlank(image.getAlign()) && !"none".equals(image.getAlign()) ) {
                 styleBuffer.append(" vertical-align: ").append(StringEscapeUtils.escapeHtml(image.getAlign())).append(";");
             }
