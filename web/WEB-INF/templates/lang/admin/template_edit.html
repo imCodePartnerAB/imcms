@@ -10,9 +10,9 @@
 <!--
 function editFile() {
 	var f = document.forms.TemplateEdit;
-	var sTemplateUrl  = "/WEB-INF/templates/text/" + f.template.options[f.template.selectedIndex].value + ".html";
+	var sTemplateUrl  = "/WEB-INF/templates/text/" + f.template.options[f.template.selectedIndex].value ;
 	var sTemplateName = f.template.options[f.template.selectedIndex].text;
-	popWinOpen(800,570,"$contextPath/imcms/$language/jsp/FileAdmin_edit.jsp?template=1&file=" + escape(sTemplateUrl) + "&templName=" + escape(sTemplateName),"templateEdit",0,0);
+	popWinOpen(800,570,"$contextPath/imcms/$language/jsp/FileAdmin_edit.jsp?template=true&file=" + escape(sTemplateUrl) + "&templName=" + escape(sTemplateName),"templateEdit",0,0);
 }
 //-->
 </script>

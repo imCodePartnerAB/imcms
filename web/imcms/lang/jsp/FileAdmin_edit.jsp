@@ -42,13 +42,6 @@ boolean isReadonly = request.getParameter("readonly") != null ;
 
 String theSearchString = (request.getParameter("searchString") != null) ? request.getParameter("searchString") : "" ;
 
-/* Is editable file? */
-Perl5Util re = new Perl5Util() ;
-
-if (isReadonly) acceptedExtPattern = acceptedExtPatternReadonly ;
-
-boolean isEditable = re.match(acceptedExtPattern, file) ;
-
 /* reset file ? */
 
 boolean resetOrg   = false ;
@@ -64,7 +57,7 @@ if (request.getParameter("resetFile") != null) {
 
 /* edit template ? */
 
-boolean isTempl  = (request.getParameter("template") != null) ? true : false ;
+boolean isTempl  = (request.getParameter("template") != null) ;
 String templName = request.getParameter("templName") ;
 
 /* split to "/path" and "filename.ext" */
@@ -73,24 +66,36 @@ String templName = request.getParameter("templName") ;
 
 /* get full path */
 
-File fn = new File(webRoot, file) ;
+File fn = new File(webRoot, file + (isTempl ? ".html" : "")) ;
+
+if (isTempl && !fn.exists()) {
+	fn = new File(webRoot, file + ".jsp") ;
+}
 
 if (hdPath == null) {
 	hdPath = fn.getCanonicalPath() ;
 }
 
+/* Is editable file? */
+
+Perl5Util re = new Perl5Util() ;
+
+if (isReadonly) acceptedExtPattern = acceptedExtPatternReadonly ;
+
+boolean isEditable = re.match(acceptedExtPattern, fn.getName()) ;
+
 /* Check browser */
 
 String uAgent = request.getHeader("USER-AGENT") ;
 boolean hasDocumentAll  = re.match("/(MSIE 4|MSIE 5|MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) ;
-boolean hasDocumentLayers  = (re.match("/Mozilla/i", uAgent) && !re.match("/Gecko/i", uAgent) && !re.match("/MSIE/i", uAgent)) ? true : false ;
+boolean hasDocumentLayers  = (re.match("/Mozilla/i", uAgent) && !re.match("/Gecko/i", uAgent) && !re.match("/MSIE/i", uAgent)) ;
 boolean hasGetElementById = re.match("/Gecko/i", uAgent) ;
 boolean isMac = re.match("/Mac/i", uAgent) ;
 
 /* Special Character replacers */
 
  /* replace entities so they will render correctly.
-    ie: &Aring; in code would have been Å in the editfield.
+    ie: &Aring; in code would have been ï¿½ in the editfield.
     Now &amp;Aring; in code and &Aring; in editfield. Thereby saved correctly. */
 String[] fuckedUpUmling = new String[] {
  "&", "&amp;"
@@ -133,8 +138,8 @@ if (doSave) {
 
 /* if Is editable file - Read file and show it */
 
-String fileLine = "" ;
-String tempStr  = "";
+String fileLine ;
+String tempStr ;
 
 if (isEditable && !doSave) {
 
@@ -199,7 +204,7 @@ if (isReadonly) {
  *         Help window                                                                       *
  ******************************************************************************************* */
 
-boolean isHelpWin = (request.getParameter("show") != null && request.getParameter("show").equals("help")) ? true : false ;
+boolean isHelpWin = (request.getParameter("show") != null && request.getParameter("show").equals("help")) ;
 
 if (isHelpWin) { %>
 <html>
@@ -583,8 +588,8 @@ if (isTempl && !(isMac && (hasDocumentLayers || hasDocumentAll))) { %>
 <!--
 function imScriptCount(imType) {
 	var hits,arr1,arr2;
-	var retStr = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/8 ?>\n¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨\n";
-	if (hasDocumentLayers) retStr += "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/9 ?>\n¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨\n";
+	var retStr = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/8 ?>\nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\n";
+	if (hasDocumentLayers) retStr += "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/9 ?>\nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\n";
 	var head_1_a = ":: ";
 	var head_1_b = " ::";
 	var head_2_a = "        - ";
