@@ -39,6 +39,11 @@ boolean showModeEditor = formats.isEmpty();
 boolean showModeText   = formats.contains("text") || showModeEditor;
 boolean showModeHtml   = formats.contains("html") || formats.contains("none") || showModeEditor ;
 boolean editorHidden   = getCookie("imcms_hide_editor", request).equals("true") ;
+int rows = (request.getParameter("rows") != null && request.getParameter("rows").matches("^\\d+$")) ? Integer.parseInt(request.getParameter("rows")) : 0 ;
+
+if (rows > 0) {
+	showModeEditor = false ;
+}
 %>
 <vel:velocity>
 <html>
@@ -103,9 +108,13 @@ if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType() && !editorHidden) { 
 </vel:velocity>
 <tr>
 	<td colspan="2" class="imcmsAdmForm">
-        <div id="editor">
-            <textarea name="text" tabindex="1" id="text" cols="125" rows="25" style="overflow: auto; width: 100%;"><%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea>
-        </div>    
+        <div id="editor"><%
+	        if (rows == 1) { %>
+	          <input type="text" name="text" tabindex="1" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>" style="width:100%;" /><%
+	        } else { %>
+            <textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width: 100%;"><%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
+	        } %>
+        </div>
     </td>
 </tr>
 <vel:velocity>
