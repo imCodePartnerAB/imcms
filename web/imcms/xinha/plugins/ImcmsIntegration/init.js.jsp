@@ -16,7 +16,8 @@ xinha_init = xinha_init ? xinha_init : function()
                             'CharacterMap',
                             'Stylist',
                             'ListType',
-                            'InsertAnchor'
+                            'InsertAnchor',
+														'SuperClean'
                             ];
     // THIS BIT OF JAVASCRIPT LOADS THE PLUGINS, NO TOUCHING  :)
     if(!Xinha.loadPlugins(xinha_plugins, xinha_init)) return;
@@ -29,8 +30,13 @@ xinha_init = xinha_init ? xinha_init : function()
     ] ;
     
     xinha_config.stylistLoadStylesheet("<%= request.getContextPath() %>/css/editor_default_classes.css") ;
-    
-    xinha_config.toolbar = [
+		
+		xinha_config.SuperClean.filters = {
+		           'paragraph': 'Paragraph tags',
+		           'word': 'Word & formatting'
+		          };
+		
+		xinha_config.toolbar = [
 			["popupeditor"],
 			["separator","formatblock","separator","bold","italic","underline","strikethrough"],
 			["separator","subscript","superscript"],
