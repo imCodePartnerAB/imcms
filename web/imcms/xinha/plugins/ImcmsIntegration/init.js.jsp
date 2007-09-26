@@ -12,7 +12,6 @@ xinha_init = xinha_init ? xinha_init : function()
                             'ImcmsIntegration',
                             'ContextMenu',
                             'TableOperations',
-                            'CharCounter',
                             'CharacterMap',
                             'Stylist',
                             'ListType',
