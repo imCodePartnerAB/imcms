@@ -2,11 +2,17 @@
 <%@ page import="com.imcode.imcms.servlet.superadmin.UserEditorPage"%><%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage"%>
 <%@ page import="imcode.server.user.UserDomainObject"%><%@  page import="imcode.util.DateConstants"%>
 <%@ page import="imcode.util.Utility"%><%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
-<%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="java.text.SimpleDateFormat, imcode.server.Imcms"%>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%
     UserEditorPage userEditorPage = (UserEditorPage) Page.fromRequest(request);
     UserDomainObject editedUser = userEditorPage.getEditedUser() ;
+		try {
+			if (editedUser != null && (editedUser.getLanguageIso639_2() == null || editedUser.getLanguageIso639_2().equals(""))) {
+				String defaultLanguage = Imcms.getServices().getLanguageMapper().getDefaultLanguage();
+				editedUser.setLanguageIso639_2(defaultLanguage);
+			}
+		} catch(Exception e) {}
     UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
     LocalizedMessage errorMessage = userEditorPage.getErrorMessage() ;
 %><%@taglib prefix="vel" uri="imcmsvelocity"%><vel:velocity><html>
