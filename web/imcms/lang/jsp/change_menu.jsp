@@ -83,7 +83,7 @@
                                 if (menu.getSortOrder() == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED) {
                                     sortKey =  menuItem.getSortKey() == null ? "" : menuItem.getSortKey().toString() ;
                                 }
-                                %><input type="text" name="<%= MenuEditPage.SORT_KEY %><%= menuItemDocument.getId() %>" size="5" value="<%= StringEscapeUtils.escapeHtml(sortKey) %>"><%
+                                %><input type="text" name="<%= MenuEditPage.SORT_KEY %><%= menuItemDocument.getId() %>" size="<%= (menu.getSortOrder() == MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER) ? 25 : 5 %>" value="<%= StringEscapeUtils.escapeHtml(sortKey) %>"><%
                             }
                         %><%= Html.getLinkedStatusIconTemplate( menuItem.getDocument(), user, request ) %> 
                         <input type="checkbox" name="<%= MenuEditPage.SELECTED %>" value="<%= menuItemDocument.getId() %>">
