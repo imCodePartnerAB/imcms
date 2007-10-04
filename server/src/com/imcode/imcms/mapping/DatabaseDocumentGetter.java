@@ -56,7 +56,14 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
         DocumentInitializer initializer = new DocumentInitializer(services.getDocumentMapper());
         initializer.initDocuments(documentList);
 
-        return documentList;
+        LinkedHashMap retMap = new LinkedHashMap();
+        
+        for (Iterator it = documentIds.iterator(); it.hasNext();) {
+            Integer id = (Integer)it.next();
+            retMap.put(id, documentMap.get(id));
+        }
+
+        return new DocumentList(retMap);
     }
 
     private class DocumentMapSet extends AbstractSet {
