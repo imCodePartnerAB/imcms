@@ -4,12 +4,17 @@ import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.servlet.DocumentFinder;
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.mapping.DocumentMapper;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.Imcms;
 
 public class LinkEditPage extends OkCancelPage {
 
@@ -62,7 +67,9 @@ public class LinkEditPage extends OkCancelPage {
                                      HttpServletResponse response) throws IOException, ServletException {
                     Integer documentId = documentRetrievalCommand.getDocumentId();
                     if (null != documentId) {
-                        setLink(new SimpleLink(request.getContextPath()+"/"+documentId, link.getTitle(), link.getTarget()));
+												DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper() ;
+	                      DocumentDomainObject doc = documentMapper.getDocument(documentId) ;
+                        setLink(new SimpleLink(request.getContextPath()+"/"+doc.getName(), link.getTitle(), link.getTarget()));
                     }
                     forward(request, response);
                 }
