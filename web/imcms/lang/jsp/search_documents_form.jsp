@@ -28,6 +28,9 @@
 
 %>
     <%= Page.htmlHidden(request) %>
+</form>
+<form method="post" action="<%= request.getContextPath() %>/servlet/SearchDocuments">
+    <%= Page.htmlHidden(request) %>
     <table border="0" cellspacing="0" cellpadding="2" width="656">
         <tr>
             <td width="120" height="24"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/2 ?></td>

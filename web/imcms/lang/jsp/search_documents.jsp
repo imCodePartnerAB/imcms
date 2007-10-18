@@ -12,7 +12,7 @@
 
 %>
 <vel:velocity>
-<html>
+<html style="height:100%;">
 <head>
 <title><? templates/sv/search/search_documents.html/1 ?></title>
 
@@ -20,14 +20,33 @@
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 <%= jsCalendar.getHeadTagScripts() %>
 
+<style type="text/css">
+BODY {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+#container {
+	margin: 0;
+	padding: 30px 10px;
+}
+</style>
+
+<script type="text/javascript">
+function addScrolling() {
+	var obj = document.getElementById("container") ;
+	obj.style.height = "100%" ;
+	obj.style.overflow = "scroll" ;
+}
+</script>
+
 </head>
 
-<body bgcolor="#FFFFFF" onLoad="document.forms[0].<%= StringEscapeUtils.escapeJavaScript(SearchDocumentsPage.REQUEST_PARAMETER__QUERY_STRING) %>.focus()">
+<body bgcolor="#FFFFFF" onload="addScrolling(); document.forms[1].<%= StringEscapeUtils.escapeJavaScript(SearchDocumentsPage.REQUEST_PARAMETER__QUERY_STRING) %>.focus()">
+<div id="container">
 #gui_outer_start()
 #gui_head( "<? templates/sv/search/search_documents.html/1 ?>" )
 
 <form method="GET" action="<%= request.getContextPath() %>/servlet/SearchDocuments">
-
 <table border="0" cellspacing="0" cellpadding="0">
     <tr>
         <% if (documentFinder.isCancelable()) { %>
@@ -36,12 +55,16 @@
         <td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW('MyPagesSearch')"></td>
     </tr>
 </table>
-
 #gui_mid()
 <jsp:include page="search_documents_form.jsp" />
 </form>
 
 
 <jsp:include page="search_documents_results.jsp" />
-#gui_end_of_page()
+#gui_bottom()
+#gui_outer_end()
+	<div>&nbsp;</div>
+</div>
+</body>
+</html>
 </vel:velocity>
