@@ -249,6 +249,7 @@ TableOperations.prototype.dialogTableProperties = function() {
             <td class='label'>" + HTMLArea._lc("Frames", "TableOperations") + ":</td> \
             <td> \
               <select name='f_frames'> \
+                <option value=''" + selected(f_frames == "") + "></option> \
                 <option value='void'" + selected(f_frames == "void") + ">" + HTMLArea._lc("No sides", "TableOperations") + "</option> \
                 <option value='above'" + selected(f_frames == "above") + ">" + HTMLArea._lc("The top side only", "TableOperations") + "</option> \
                 <option value='below'" + selected(f_frames == "below") + ">" + HTMLArea._lc("The bottom side only", "TableOperations") + "</option> \
@@ -264,6 +265,7 @@ TableOperations.prototype.dialogTableProperties = function() {
             <td class='label'>" + HTMLArea._lc("Rules", "TableOperations") + ":</td> \
             <td> \
               <select name='f_rules'> \
+                <option value=''" + selected(f_rules == "") + "></option> \
                 <option value='none'" + selected(f_rules == "none") + ">" + HTMLArea._lc("No rules", "TableOperations") + "</option> \
                 <option value='rows'" + selected(f_rules == "rows") + ">" + HTMLArea._lc("Rules will appear between rows only", "TableOperations") + "</option> \
                 <option value='cols'" + selected(f_rules == "cols") + ">" + HTMLArea._lc("Rules will appear between columns only", "TableOperations") + "</option> \
@@ -1123,7 +1125,7 @@ TableOperations.createStyleFieldset = function(doc, editor, el) {
 	var borderFields = [];
 	td.appendChild(select);
 	select.name = "f_st_borderStyle";
-	options = ["none", "dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset"];
+	options = ["", "none", "dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset"];
 	var currentBorderStyle = el.style.borderStyle;
 	// Gecko reports "solid solid solid solid" for "border-style: solid".
 	// That is, "top right bottom left" -- we only consider the first
