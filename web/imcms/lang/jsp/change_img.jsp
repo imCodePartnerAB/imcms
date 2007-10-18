@@ -26,18 +26,42 @@
     assert null != realImageSize;
     UserDomainObject user = Utility.getLoggedOnUser( request );
 
-%><vel:velocity>
+%><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<vel:velocity>
 <html>
 <head>
 <title><? templates/sv/change_img.html/1 ?></title>
 
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/imcms/css/imcms_admin.css.jsp">
 <script src="<%=request.getContextPath()%>/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
-    
-<script language="JavaScript">
+
+<style type="text/css">
+HTML {
+	height: 100%;
+}
+BODY {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+#outer_container {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+#inner_container {
+	margin: 30px 10px !important;
+	padding: 0 !important;
+}
+</style>
+
+<script type="text/javascript">
 <!--
-if (window.opener) {
-    window.resizeTo(800,760);
+function addScrolling() {
+	if (window.opener) {
+		var obj = document.getElementById("outer_container") ;
+		obj.style.height = "100%" ;
+		obj.style.overflow = "scroll" ;
+		window.resizeTo(800,760) ;
+	}
 }
 
 function setDef() {
@@ -48,7 +72,8 @@ function setDef() {
         
 var defValues = new Array("meta_id","http://") ;
 
-function changeLinkType(idx) {
+function changeLinkType(idx) {<%
+	if (imageEditPage.isLinkable()) { %>
 	var f   = document.forms[0] ;
 	var rad = f.linkType ;
 	var url = f.imageref_link ;
@@ -62,10 +87,12 @@ function changeLinkType(idx) {
 		rad[0].checked = 1 ;
 	} else {
         rad[idx].checked = 1 ;
-    }
+    }<%
+	} %>
 }
 
-function checkLinkType() {
+function checkLinkType() {<%
+	if (imageEditPage.isLinkable()) { %>
 	var f   = document.forms[0] ;
 	var url = f.imageref_link ;
 	var val = url.value ;
@@ -74,19 +101,23 @@ function checkLinkType() {
 	} else if (/^\d+$/.test(val)) {
 		url.value = "GetDoc?meta_id=" + val ;
 	}
-	return true ;
+	return true ;<%
+	} %>
 }
 
-function checkLinkOnFocus() {
+function checkLinkOnFocus() {<%
+	if (imageEditPage.isLinkable()) { %>
 	var f   = document.forms[0] ;
-	var url = f.imageref_link
+	var url = f.imageref_link ;
 	var val = url.value ;
 	if (val == defValues[0]) {
 		url.value = "" ;
-	}
+	}<%
+	} %>
 }
 
-function checkLinkOnBlur() {
+function checkLinkOnBlur() {<%
+	if (imageEditPage.isLinkable()) { %>
 	var f   = document.forms[0] ;
 	var rad = f.linkType ;
 	var url = f.imageref_link ;
@@ -94,15 +125,17 @@ function checkLinkOnBlur() {
 	if (val == "") {
 		url.value = defValues[0] ;
 		rad[0].checked = 1 ;
-	}
+	}<%
+	} %>
 }
 //-->
 </script>
 
 </head>
-<body id="body" bgcolor="#FFFFFF" onLoad="setDef(); document.forms[0].imageref.focus();">
+<body id="body" bgcolor="#FFFFFF" onload="setDef(); addScrolling(); document.forms[0].imageref.focus();">
 
-
+<div id="outer_container">
+	<div id="inner_container">
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )
 <form method="POST" action="<%= request.getContextPath() %>/servlet/PageDispatcher" onsubmit="checkLinkType();">
@@ -340,8 +373,8 @@ function checkLinkOnBlur() {
             <input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value=" <? templates/sv/change_img.html/2008 ?> "></td>
         </tr>
         <tr>
-            <td><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif" width="156" height="1"></td>
-            <td><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif" width="1" height="1"></td>
+            <td><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif" width="156" height="1" alt=""></td>
+            <td><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif" width="1" height="1" alt=""></td>
         </tr>
         <input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_LOWSRC %>" value="<%=
 				StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLowResolutionUrl())) %>">
@@ -349,6 +382,8 @@ function checkLinkOnBlur() {
 </form>
 #gui_bottom()
 #gui_outer_end()
+	</div>
+</div>
 </body>
 </html>
 </vel:velocity>
