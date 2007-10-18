@@ -33,9 +33,11 @@ BODY {
 
 <script type="text/javascript">
 function addScrolling() {
-	var obj = document.getElementById("container") ;
-	obj.style.height = "100%" ;
-	obj.style.overflow = "scroll" ;
+	if (window.opener) {
+		var obj = document.getElementById("container") ;
+		obj.style.height = "100%" ;
+		obj.style.overflow = "scroll" ;
+	}
 }
 </script>
 
