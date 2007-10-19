@@ -24,7 +24,7 @@ pageContext.setAttribute("linkEditPage", Page.fromRequest(request));
 <ui:dialog titlekey="edit/link/dialog/title" helpid="EditLink">
 
     <ui:labeled idref="DEFVAL" key="install/htdocs/imcms/html/link_editor.jsp/7">
-        <select onchange="setValue(this.selectedIndex);">
+        <select id="typeSelect" onchange="setValue(this.selectedIndex);">
 	        <option value="" selected="selected">-</option>
 	        <option value="1"><fmt:message key="install/htdocs/imcms/html/link_editor.jsp/8" /></option>
 	        <option value="2"><fmt:message key="install/htdocs/imcms/html/link_editor.jsp/9" /></option>
@@ -65,7 +65,42 @@ function setValue(idx) {
 		"#anchorName"
 	] ;
 	if (idx > 0) {
-		oHref.value = arrValues[idx-1] ;
+		var confirmed = true ;
+		if (oHref.value != "") {
+			confirmed = confirm("<%= isSwe ? "Vill du skriva \u00F6ver det gamla l\u00e4nkadress-v\u00e4rdet med ett exempel?" :
+			                                 "Do you want to overwrite the old link address value with an example?" %>") ;
+		}
+		if (confirmed) oHref.value = arrValues[idx-1] ;
+	}
+	checkSearchEnabled() ;
+}
+function checkSearchEnabled() {
+	var objType = document.getElementById("typeSelect") ;
+	var objBtn  = document.getElementById("searchBtn") ;
+	if (objType.selectedIndex != 1) {
+		objBtn.className = "imcmsFormBtnSmallDisabled" ;
+		objBtn.disabled  = true ;
+	} else {
+		objBtn.className = "imcmsFormBtnSmall" ;
+		objBtn.disabled  = false ;
 	}
 }
+function setSelectToLinkType() {
+	var objType = document.getElementById("typeSelect") ;
+	var objHref = document.getElementById("<%= HREF.toString() %>") ;
+	var href = objHref.value ;
+	if (/^#.*/.test(href)) {
+		objType.selectedIndex = 5 ;
+	} else if (/^ftp:.*/.test(href)) {
+		objType.selectedIndex = 4 ;
+	} else if (/^mailto:.*/.test(href)) {
+		objType.selectedIndex = 3 ;
+	} else if (href.indexOf(":") != -1) {
+		objType.selectedIndex = 2 ;
+	} else if (/^\/.*/.test(href)) {
+		objType.selectedIndex = 1 ;
+	}
+	checkSearchEnabled() ;
+}
+setSelectToLinkType() ;
 </script>
