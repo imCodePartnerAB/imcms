@@ -93,6 +93,10 @@ public class TextDocumentParser {
             }
 
             TemplateDomainObject template = templateMapper.getTemplateByName(templateName);
+
+            Perl5Matcher patMat = new Perl5Matcher();
+
+            final String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
             if (null == template) {
                 throw new RuntimeException("Template not found: "+templateName);
             } else if (template.getFileName().endsWith(".jsp") || template.getFileName().endsWith(".jspx")) {
@@ -100,18 +104,21 @@ public class TextDocumentParser {
                     HttpServletRequest request = documentRequest.getHttpServletRequest();
                     HttpServletResponse response = documentRequest.getHttpServletResponse();
                     String contents = Utility.getContents("/WEB-INF/templates/text/" + template.getFileName(), request, response);
-                    out.write(contents);
+                    contents = Util.substitute( patMat, htmlTagHtmlPattern, new Substitution() {
+                    public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
+                                                    PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
+                                                    Pattern pattern ) {
+                          stringBuffer.append( imcmsMessage ).append( matchResult.group( 0 ) );
+                       }
+                    }, contents ) ;
+	                  out.write(contents);
                 } catch ( ServletException e ) {
                     throw new UnhandledException(e);
                 }
             } else {
                 String templateContent = service.getTemplateMapper().getTemplateData(templateName);
 
-                Perl5Matcher patMat = new Perl5Matcher();
-
                 SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING );
-
-                final String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
 
                 Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, viewing.isEditingTemplate(), parserParameters );
                 MapSubstitution hashtagsubstitution = new MapSubstitution( hashTags, true );
@@ -138,6 +145,7 @@ public class TextDocumentParser {
             }
         }
     }
+	 
 
     private String applyEmphasis( DocumentRequest documentRequest, UserDomainObject user, String string,
                                   Perl5Matcher patMat ) {
