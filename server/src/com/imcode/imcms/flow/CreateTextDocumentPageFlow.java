@@ -20,7 +20,7 @@ public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)getDocument() ;
         if ( null != request.getParameter( EditDocumentInformationPageFlow.REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS ) ) {
             textDocument.setText( 1, new TextDomainObject( textDocument.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN ) );
-            textDocument.setText( 2, new TextDomainObject( textDocument.getMenuText(), TextDomainObject.TEXT_TYPE_PLAIN ) );
+            textDocument.setText( 2, new TextDomainObject( textDocument.getMenuText(), TextDomainObject.TEXT_TYPE_HTML ) );
         }
         saveDocumentAndReturn(request, response);
     }
