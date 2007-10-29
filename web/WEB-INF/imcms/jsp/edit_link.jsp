@@ -2,14 +2,16 @@
 	
 	import="com.imcode.imcms.flow.Page,
 	        static com.imcode.imcms.servlet.admin.LinkEditPage.Parameter.*,
-	        com.imcode.imcms.api.ContentManagementSystem"
+	        com.imcode.imcms.api.ContentManagementSystem, imcode.server.Imcms"
 	
-	contentType="text/html"
+	contentType="text/html; charset=UTF-8"
 	
 %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
 %><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui"
 %><%
+
+response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );
 
 boolean isSwe = false ;
 try {
