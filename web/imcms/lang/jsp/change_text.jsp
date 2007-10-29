@@ -124,6 +124,7 @@ if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType() && !editorHidden) { 
 <script type="text/javascript">
 
 function getElementsByClassAttribute(node, tagname, sClass) {
+	try {
 		var result = new Array();
 		var elements = node.getElementsByTagName(tagname);
 		for (i = 0, j = 0; i < elements.length; ++i) {
@@ -133,9 +134,13 @@ function getElementsByClassAttribute(node, tagname, sClass) {
 				}
 		}
 		return result;
+	} catch (e) {
+		return null ;
+	}
 }
 				
 function setTextMode() {
+	try {
 		var editors = getElementsByClassAttribute(document, "table", "htmlarea")
 		var editor = editors[0];
 		if (editor) {
@@ -146,7 +151,9 @@ function setTextMode() {
 			textarea.style.width = editor.style.width;
 			textarea.style.height = editor.style.height;
 			textarea.style.display = "block";
+			document.forms[0].onsubmit = null ;
 		}
+	} catch (e) {}
 }
 function setHtmlMode() {
 		var hasEditor = false ;
