@@ -42,6 +42,21 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
                    new CreateTableUpgrade(wantedDdl, "childs_history"))),
             new DatabaseVersionUpgradePair(4,7, new CreateTableUpgrade(wantedDdl, "document_search_log")),
             new DatabaseVersionUpgradePair(4,8, new CreateTableUpgrade(wantedDdl, "profiles")),
+
+            new DatabaseVersionUpgradePair(4,9, new CompositeUpgrade(
+                new ColumnSizeUpgrade(wantedDdl, "classification", "code", 128),                    
+                new ColumnSizeUpgrade(wantedDdl, "users", "login_name", 128),
+                new ColumnSizeUpgrade(wantedDdl, "users", "first_name", 64),
+                new ColumnSizeUpgrade(wantedDdl, "users", "last_name", 64),
+                new ColumnSizeUpgrade(wantedDdl, "users", "title", 64),
+                new ColumnSizeUpgrade(wantedDdl, "users", "company", 64),
+                new ColumnSizeUpgrade(wantedDdl, "users", "address", 128),
+                new ColumnSizeUpgrade(wantedDdl, "users", "city", 64),
+                new ColumnSizeUpgrade(wantedDdl, "users", "zip", 64),
+                new ColumnSizeUpgrade(wantedDdl, "users", "country", 64),
+                new ColumnSizeUpgrade(wantedDdl, "users", "county_council", 128),
+                new ColumnSizeUpgrade(wantedDdl, "users", "email", 128))
+            )
     };
     private ImcmsDatabaseCreator imcmsDatabaseCreator ;
 

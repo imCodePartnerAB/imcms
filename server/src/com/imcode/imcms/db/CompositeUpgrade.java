@@ -10,9 +10,10 @@ public class CompositeUpgrade implements DatabaseUpgrade {
 
     List<DatabaseUpgrade> upgrades = new ArrayList() ;
 
-    public CompositeUpgrade(DatabaseUpgrade upgrade1, DatabaseUpgrade upgrade2) {
-        upgrades.add(upgrade1) ;
-        upgrades.add(upgrade2) ;
+    public CompositeUpgrade(DatabaseUpgrade... ups) {
+        for (DatabaseUpgrade upgrade : ups) {
+            upgrades.add(upgrade);
+        }
     }
 
     public void upgrade(Database database) throws DatabaseException {
