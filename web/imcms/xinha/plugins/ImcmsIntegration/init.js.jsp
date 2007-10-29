@@ -30,10 +30,16 @@ xinha_init = xinha_init ? xinha_init : function()
     
     xinha_config.stylistLoadStylesheet("<%= request.getContextPath() %>/css/editor_default_classes.css") ;
 		
+		xinha_config.SuperClean.show_dialog = true ;
+		/*xinha_config.SuperClean.filters = {
+			'remove_formatting': 'Remove formatting',
+			'paragraph': 'Paragraph tags',
+			'word': 'Word & formatting'
+		} ;*/
 		xinha_config.SuperClean.filters = {
-		           'paragraph': 'Paragraph tags',
-		           'word': 'Word & formatting'
-		          };
+			'remove_formatting': {label:Xinha._lc('Remove all formatting', 'SuperClean'), checked:false},
+			'remove_word_formatting': {label:Xinha._lc('Clean up Word formatting', 'SuperClean'), checked:true}
+		} ;
 		
 		xinha_config.toolbar = [
 			["popupeditor"],
@@ -44,7 +50,7 @@ xinha_init = xinha_init ? xinha_init : function()
 			["separator","toggleborders","selectall"], (Xinha.is_gecko ? [] : ["saveas"]),
 			["print","separator","showhelp","about","linebreak"],
 			["htmlmode","separator","undo","redo"], (Xinha.is_gecko ? [] : ["separator","cut","copy","paste","overwrite"]),
-			["separator","wordclean","killword","clearfonts","removeformat"]
+			["separator","killword","clearfonts"]
 		] ;
 		
 		xinha_config.formatblock = {
@@ -70,6 +76,7 @@ xinha_init = xinha_init ? xinha_init : function()
 		
 		xinha_config.showLoading = true ;
 		xinha_config.flowToolbars = false ;
+		xinha_config.killWordOnPaste = true ;
 
     var serverBase = location.href.replace(/(https?:\/\/[^\/]*)\/.*/, '$1') ;
     xinha_config.baseHref = serverBase;
