@@ -141,7 +141,7 @@ function getElementsByClassAttribute(node, tagname, sClass) {
 				
 function setTextMode() {
 	try {
-		var editors = getElementsByClassAttribute(document, "table", "htmlarea")
+		var editors = getElementsByClassAttribute(document, "table", "htmlarea") ;
 		var editor = editors[0];
 		if (editor) {
 			var textarea = document.getElementById("text");
@@ -172,20 +172,25 @@ function setHtmlMode() {
 }
 
 var ua = navigator.userAgent.toLowerCase() ;
-var isIE7 = ua.indexOf("msie 7") != -1 ;
+var isIE7   = ua.indexOf("msie 7") != -1 ;
+var isGecko = ua.indexOf("gecko") != -1 ;
+var isMac   = ua.indexOf("mac") != -1 ;
 
-if (screen.width >= 1600) {
+function setEditorSize() {
 	var oTextArea = document.getElementById("text") ;
-	var offsetH = isIE7 ? 900 : 800 ;
-	oTextArea.style.height = (screen.width - offsetH) ;
-} else if (screen.width >= 1280) {
-	var oTextArea = document.getElementById("text") ;
-	var offsetH = isIE7 ? 580 : 630 ;
-	oTextArea.style.height = offsetH ;
-} else if (screen.width >= 1024) {
-	var oTextArea = document.getElementById("text") ;
-	var offsetH = isIE7 ? 350 : 400 ;
-	oTextArea.style.height = offsetH ;
+	if (oTextArea) {
+		var offsetH = (isMac && isGecko) ? 250 : (isIE7) ? 240 : 230 ;
+		var winH = (window.innerHeight) ? window.innerHeight : (document.body && document.body.offsetHeight) ? document.body.offsetHeight - 4 : document.body.clientHeight ;
+		if (winH > 400) {
+			oTextArea.style.height = (winH - offsetH) + "px" ;
+		}
+	}
+}
+setEditorSize() ;
+if (window.attachEvent) {
+	window.attachEvent("onresize",    function(){ setEditorSize(); }) ;
+} else if (window.addEventListener) {
+	window.addEventListener("resize", function(){ setEditorSize(); }, true) ;
 }
 </script>
         <% } %>
