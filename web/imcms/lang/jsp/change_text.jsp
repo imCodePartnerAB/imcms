@@ -188,7 +188,7 @@ if (screen.width >= 1600) {
         <label for="format_type_text">Text</label>
         <input type="radio" name="format_type" id="format_type_html" value="1" <% if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType()) { %> checked<% } %> 
                <% if (showModeEditor) { %>onclick="setHtmlMode()"<% } %>>
-        <label for="format_type_html">HTML</label>
+        <label for="format_type_html">Editor/HTML</label>
         <% } else if (showModeText) { %>
             <input type="hidden" name="format_type" value="<%= TextDomainObject.TEXT_TYPE_PLAIN %>">
         <% } else if (showModeHtml) { %>
