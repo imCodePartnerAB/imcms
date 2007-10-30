@@ -31,14 +31,10 @@ xinha_init = xinha_init ? xinha_init : function()
     xinha_config.stylistLoadStylesheet("<%= request.getContextPath() %>/css/editor_default_classes.css") ;
 		
 		xinha_config.SuperClean.show_dialog = true ;
-		/*xinha_config.SuperClean.filters = {
-			'remove_formatting': 'Remove formatting',
-			'paragraph': 'Paragraph tags',
-			'word': 'Word & formatting'
-		} ;*/
 		xinha_config.SuperClean.filters = {
-			'remove_formatting': {label:Xinha._lc('Remove all formatting', 'SuperClean'), checked:false},
-			'remove_word_formatting': {label:Xinha._lc('Clean up Word formatting', 'SuperClean'), checked:true}
+			'remove_some_formatting': {label:Xinha._lc('Clean up Word formatting, but save text formatting', 'SuperClean'), checked:true},
+			'remove_word_formatting': {label:Xinha._lc('Clean up Word formatting only', 'SuperClean'), checked:false},
+			'remove_formatting': {label:Xinha._lc('Remove all formatting', 'SuperClean'), checked:false}
 		} ;
 		
 		xinha_config.toolbar = [

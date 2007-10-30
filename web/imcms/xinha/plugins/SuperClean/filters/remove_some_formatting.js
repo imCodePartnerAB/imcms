@@ -17,10 +17,12 @@ function(html) {
 		.replace(/<ul [^>]*>/gi, "<ul>") ;
 	
 	html = html
-		.replace(/(<\/?)strong(>)/gi, "$1b$2") ;
+		.replace(/<strong>/gi, "<b>")
+		.replace(/<\/strong>/gi, "</b>") ;
 	
 	html = html
-		.replace(/(<\/?)em(>)/gi, "$1i$2") ;
+		.replace(/<em>/gi, "<i>")
+		.replace(/<\/em>/gi, "</i>") ;
 	
 	html = html
 		.replace(/<\?xml:[^>]*>/g, "")
@@ -35,7 +37,7 @@ function(html) {
 	oldlen = html.length + 1 ;
 	
 	while (oldlen > html.length) {
-		oldlen = html.length ;
+		oldlen = html.length;
 		html = html
 			.replace(/<([a-z][a-z]*)> *<\/\1>/gi, " ")
 			.replace(/<([a-z][a-z]*)> *<([a-z][^>]*)> *<\/\1>/gi, "<$2>") ;
@@ -43,7 +45,10 @@ function(html) {
 	
 	html = html
 		.replace(/<([a-z][a-z]*)><\1>/gi, "<$1>")
-		.replace(/<\/([a-z][a-z]*)><\/\1>/gi,"</$1>") ;
+		.replace(/<\/([a-z][a-z]*)><\/\1>/gi, "</$1>") ;
+	
+	html = html
+		.replace(/<a name="_Toc[\d]+">([^<]*?)<\/a>/gi, "$1") ;
 	
 	html = html
 		.replace(/  */gi, " ") ;
