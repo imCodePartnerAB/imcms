@@ -20,7 +20,7 @@ Xinha.prototype._insertImage = function(image)
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>'  : image.style.width.replace(/px/, '') || image.width,
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>'  : image.style.height.replace(/px/, '') || image.height,
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>' : (image.style.borderWidth || image.border || '').replace(/px/, ''),
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>'  : (image.style.verticalAlign || image.align),
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>'  : image.align,
             '<%= ImageEditPage.REQUEST_PARAMETER__VERTICAL_SPACE %>'   : (image.style.marginTop || image.vspace || '').replace(/px/, ''),
             '<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>'  : (image.style.marginRight || image.hspace || '').replace(/px/, ''),
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>'  : image.id || image.name
@@ -87,7 +87,7 @@ Xinha.prototype._insertImage = function(image)
                             img.style.borderWidth = parseInt(value || "0", 10)+"px";
                             break;
                         case "align":
-                            img.style.verticalAlign = value;
+                            img.align = value;
                             break;
                         case "vert":
                             img.style.marginTop = parseInt(value || "0", 10)+"px";
