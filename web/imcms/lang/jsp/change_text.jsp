@@ -2,7 +2,7 @@
 
 	import="com.imcode.imcms.servlet.admin.ChangeText,
 	        imcode.server.Imcms,
-	        imcode.server.LanguageMapper, imcode.server.document.textdocument.TextDomainObject, imcode.util.Utility, org.apache.commons.lang.StringEscapeUtils, java.util.ArrayList, java.util.Arrays, java.util.List"
+	        imcode.server.LanguageMapper, imcode.server.document.textdocument.TextDomainObject, imcode.util.Utility, org.apache.commons.lang.StringEscapeUtils, java.util.ArrayList, java.util.Arrays, java.util.List, com.imcode.imcms.api.ContentManagementSystem"
 
     contentType="text/html; charset=UTF-8"
 
@@ -44,6 +44,11 @@ int rows = (request.getParameter("rows") != null && request.getParameter("rows")
 if (rows > 0) {
 	showModeEditor = false ;
 }
+
+boolean isSwe = false ;
+try {
+	isSwe =	ContentManagementSystem.fromRequest(request).getCurrentUser().getLanguage().getIsoCode639_2().equals("swe");
+} catch (Exception e) {}
 %>
 <vel:velocity>
 <html>
@@ -103,7 +108,7 @@ if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType() && !editorHidden) { 
 
 #gui_mid()
 <div id="theLabel"><%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></div>
-
+<div id="messageDiv" style="display:none; color:#cc0000; padding:10px 0;"></div>
 <table border="0" cellspacing="0" cellpadding="2" width="720" align="center">
 </vel:velocity>
 <tr>
@@ -169,28 +174,6 @@ function setHtmlMode() {
 				}, 500);
 			}
 		} catch (e) {}
-}
-
-var ua = navigator.userAgent.toLowerCase() ;
-var isIE7   = ua.indexOf("msie 7") != -1 ;
-var isGecko = ua.indexOf("gecko") != -1 ;
-var isMac   = ua.indexOf("mac") != -1 ;
-
-function setEditorSize() {
-	var oTextArea = document.getElementById("text") ;
-	if (oTextArea) {
-		var offsetH = (isMac && isGecko) ? 250 : (isIE7) ? 240 : 230 ;
-		var winH = (window.innerHeight) ? window.innerHeight : (document.body && document.body.offsetHeight) ? document.body.offsetHeight - 4 : document.body.clientHeight ;
-		if (winH > 400) {
-			oTextArea.style.height = (winH - offsetH) + "px" ;
-		}
-	}
-}
-setEditorSize() ;
-if (window.attachEvent) {
-	window.attachEvent("onresize",    function(){ setEditorSize(); }) ;
-} else if (window.addEventListener) {
-	window.addEventListener("resize", function(){ setEditorSize(); }, true) ;
 }
 </script>
         <% } %>
@@ -284,6 +267,84 @@ function getCookie(Name) {
 }
 </script><%
 } %>
+<script type="text/javascript">
+var ua = navigator.userAgent.toLowerCase() ;
+var isIE7   = ua.indexOf("msie 7") != -1 ;
+var isGecko = ua.indexOf("gecko") != -1 ;
+var isMac   = ua.indexOf("mac") != -1 ;
+
+function setEditorSize() {
+	var oTextArea = document.getElementById("text") ;
+	if (oTextArea) {
+		var offsetH = (isMac && isGecko) ? 270 : (isIE7) ? 260 : 250 ;
+		var winH = (window.innerHeight) ? window.innerHeight : (document.body && document.body.offsetHeight) ? document.body.offsetHeight - 4 : document.body.clientHeight ;
+		if (winH > 400) {
+			oTextArea.style.height = (winH - offsetH) + "px" ;
+		}
+	}
+}
+setEditorSize() ;
+if (window.attachEvent) {
+	window.attachEvent("onresize",    function(){ setEditorSize(); }) ;
+} else if (window.addEventListener) {
+	window.addEventListener("resize", function(){ setEditorSize(); }, true) ;
+}
+
+var oSessionTimer ;
+var sessionTimeOutMs = <%= session.getMaxInactiveInterval() * 1000 %> ;
+var firstVarningTimeMs = 300000 ;<% /* 5 minutes */ %>
+var secondCountTimeS = 60 ;<% /* Count every second for the last minute */ %>
+var timeLoaded = (new Date()).getTime() ;
+var hasQuickRefresh = false ;
+var oMessageDiv ;
+try {
+	oMessageDiv = document.getElementById("messageDiv") ;
+} catch(e) {}
+
+function initSessionChecker() {
+	try {
+		oSessionTimer = setInterval("sessionChecker()", 10000) ;
+	} catch(e) {}
+}
+function sessionChecker() {
+	try {
+		var timeNow = (new Date()).getTime() ;<% /*
+		//var mess = "timeLoaded: " + timeLoaded + ", timeNow: " + timeNow + ", diff: " + (timeNow - timeLoaded) ;
+		//mess += ", (sessionTimeOutMs - firstVarningTimeMs): " + (sessionTimeOutMs - firstVarningTimeMs) ;*/ %>
+		if ((timeNow - timeLoaded) > (sessionTimeOutMs - firstVarningTimeMs)) {
+			var timeLeft = Math.round(-((timeNow - timeLoaded) - sessionTimeOutMs)/1000) ;<%
+			//mess += " - timeLeft: " + timeLeft ;%>
+			if (!hasQuickRefresh && timeLeft <= secondCountTimeS + 10) {
+				hasQuickRefresh = true ;
+				clearInterval(oSessionTimer) ;
+				oSessionTimer = setInterval("sessionChecker()", 1000) ;
+			}
+			if (timeLeft >= secondCountTimeS) {
+				oMessageDiv.innerHTML = <%= isSwe ?
+						"'<b>Varning!<b/> Din sessionstid går ut om ' + Math.ceil(timeLeft/60) + ' minuter. Spara dina ändringar!'" :
+						"'<b>Warning!<b/> Your session time will expire in ' + Math.ceil(timeLeft/60) + ' minutes. Please save your changes!'" %> ;
+			} else if (timeLeft > 0) {
+				oMessageDiv.innerHTML = <%= isSwe ?
+						"'<b>Varning!<b/> Din sessionstid går ut om ' + timeLeft + ' sekunder. Spara dina ändringar!'" :
+						"'<b>Warning!<b/> Your session time will expire in ' + timeLeft + ' seconds. Please save your changes!'" %> ;
+			} else {
+				clearInterval(oSessionTimer) ;
+				oMessageDiv.innerHTML = <%= isSwe ?
+						"'<b>Varning!<b/> Din sessionstid har gått ut. Öppna ett annat fönster och logga in - återvänd sedan och spara dina ändringar!'" :
+						"'<b>Warning!<b/> Your session time has expired. Open another window and login - then return to this window and save your changes.'" %> ;
+			}
+			oMessageDiv.style.display = "block" ;
+		}<%
+		//document.getElementById("theLabel").innerHTML = mess ;%>
+	} catch(e) {}
+}
+if (window.attachEvent) {
+	window.attachEvent("onload",    function(){ initSessionChecker(); }) ;
+} else if (window.addEventListener) {
+	window.addEventListener("load", function(){ initSessionChecker(); }, true) ;
+}
+</script>
+
 
 </body>
 </html>
