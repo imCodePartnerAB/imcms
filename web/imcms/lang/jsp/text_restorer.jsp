@@ -368,7 +368,7 @@ String heading = isSwe ? "Återställ tidigare versioner av textfält #TXT# på 
 
 String alias = thisDoc.getAlias() != null ? thisDoc.getAlias() : "" ;
 if (!alias.equals("")) {
-	alias = " (\"" + alias + "\")" ;
+	alias = " (&quot;" + alias + "&quot;)" ;
 }
 
 heading = heading
