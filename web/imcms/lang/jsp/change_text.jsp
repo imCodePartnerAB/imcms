@@ -194,7 +194,8 @@ function setHtmlMode() {
             <input tabindex="2" type="submit" class="imcmsFormBtn" name="ok" value="  <? templates/sv/change_text.html/2006 ?>  ">
             <input tabindex="3" type="submit" class="imcmsFormBtn" name="save" value="  <? templates/sv/change_text.html/save ?>  ">
             <input tabindex="4" type="reset" class="imcmsFormBtn" value="<? templates/sv/change_text.html/2007 ?>">
-            <input tabindex="5" type="submit" class="imcmsFormBtn" name="cancel" value=" <? global/back ?> ">
+            <input tabindex="5" type="button" class="imcmsFormBtn" value="<%= isSwe ? "Återställ sparade texter" : "Restore saved texts" %>>" onclick="openTextRestorer(); return false">
+            <input tabindex="6" type="submit" class="imcmsFormBtn" name="cancel" value=" <? global/back ?> ">
     </td>
 </tr>
 </table>
@@ -342,6 +343,25 @@ if (window.attachEvent) {
 	window.attachEvent("onload",    function(){ initSessionChecker(); }) ;
 } else if (window.addEventListener) {
 	window.addEventListener("load", function(){ initSessionChecker(); }, true) ;
+}
+
+function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll,iStatus) {
+	if (screen) {
+		if ((screen.height - winH) < 150) {
+			var winX = (screen.width - winW) / 2;
+			var winY = 0;
+		} else {
+			var winX = (screen.width - winW) / 2;
+			var winY = (screen.height - winH) / 2;
+		}
+		var popWindow = window.open(sUrl,sName,"resizable=" + iResize + ",menubar=0,scrollbars=" + iScroll + ",status=" + iStatus + ",width=" + winW + ",height=" + winH + ",top=" + winY + ",left=" + winX + "");
+		if (popWindow) popWindow.focus();
+	} else {
+		window.open(sUrl,sName,"resizable=" + iResize + ",menubar=0,scrollbars=" + iScroll + ",status=" + iStatus + ",width=" + winW + ",height=" + winH);
+	}
+}
+function openTextRestorer() {
+	popWinOpen(700,600,"<%= request.getContextPath() %>/imcms/eng/jsp/text_restorer.jsp?meta_id=<%= textEditPage.getDocumentId() %>&txt=<%= textEditPage.getTextIndex() %>","textRestorerWin",1,1,1) ;
 }
 </script>
 
