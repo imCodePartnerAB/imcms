@@ -271,16 +271,16 @@ function initRestore() {
 		
 		if (isOneLinerMode && theContentHasMoreThanOneLine) {
 			errorMess += '<%= isSwe ?
-			           "\\n\\n- denna text var sparad med mer än en rad, men din text-editor har bara en rad aktiv.\\nAnvänd \\\"Spara i textfältet och ladda om\\\" istället!" :
-			           "\\n\\n- this text was saved with more than one lines, but your text editor only has one line active.\\nPlease use \\\"Save in textfield and reload\\\" instead!" %>' ;
+			           "\\n\\n- denna text var sparad med mer än en rad, men din text-editor har bara en rad aktiv.\\nAnvänd [Spara i textfältet och ladda om] istället!" :
+			           "\\n\\n- this text was saved with more than one lines, but your text editor only has one line active.\\nPlease use [Save in textfield and reload] instead!" %>' ;
 		}
 		
 		// Wrong format - and not changeable
 		
 		if ((isPlainText && openerIsFormatHtmlOnly) || (!isPlainText && openerIsFormatTextOnly)) {
 			errorMess += '<%= isSwe ?
-			           "\\n\\n- denna text var sparad i ett format som inte längre är tillgängligt i din text editor.\\nAnvänd \\\"Spara i textfältet och ladda om\\\" istället!" :
-			           "\\n\\n- this text was saved with a format that is no longer avaliable in your text editor.\\nPlease use \\\"Save in textfield and reload\\\" instead!" %>' ;
+			           "\\n\\n- denna text var sparad i ett format som inte längre är tillgängligt i din text editor.\\nAnvänd [Spara i textfältet och ladda om] istället!" :
+			           "\\n\\n- this text was saved with a format that is no longer avaliable in your text editor.\\nPlease use [Save in textfield and reload] instead!" %>' ;
 		}
 		
 		if (errorMess != "") {
@@ -291,9 +291,13 @@ function initRestore() {
 		
 		if (confirm("<%= isSwe ? "Vill du kopiera denna version till text-editorn?" : "Do you want to copy this version to the the text editor?" %>")) {
 			
-			var xinha = eval("parent.parent.opener.xinha_editors.text") ;
-			var xinhaIframe = eval("parent.parent.opener.document.getElementById('XinhaIFrame_text')") ;
-			var xinhaActive = (xinha && xinhaIframe) ;
+			var xinha = null ;
+			var xinhaActive = false ;
+			try {
+				xinha = eval("parent.parent.opener.xinha_editors.text") ;
+				var xinhaIframe = eval("parent.parent.opener.document.getElementById('XinhaIFrame_text')") ;
+				xinhaActive = (xinha && xinhaIframe) ;
+			} catch (ex) {}
 			
 			// Copy plain text
 			
@@ -333,8 +337,13 @@ function initRestore() {
 					openerFormatHtml.checked = true ;
 				}
 			}
-			//parent.parent.opener.focus() ;
-			//parent.window.close() ;
+			if (!isCopied) {
+				alert("ERROR - <%= isSwe ? "Kopieringen misslyckades! Försök kopiera manuellt istället." :
+				                           "The copying failed! Try copy manually instead." %>") ;
+			} else {
+				parent.parent.opener.focus() ;
+				parent.window.close() ;
+			}
 		}
 	} catch(e) {
 		alert("ERROR - <%= isSwe ? "Kopieringen misslyckades!" : "The copying failed!" %>\n" + e.message) ;
@@ -364,11 +373,11 @@ initRestore() ;
 TextDocument thisDoc = documentService.getTextDocument(meta_id) ;
 
 
-String heading = isSwe ? "Återställ tidigare versioner av textfält #TXT# på sida #META##ALIAS#" : "Restore earlier versions of textfield #TXT# on page #META##ALIAS#" ;
+String heading = isSwe ? "Tidigare versioner av textfält #TXT# på sida #META##ALIAS#" : "Earlier versions of textfield #TXT# on page #META##ALIAS#" ;
 
 String alias = thisDoc.getAlias() != null ? thisDoc.getAlias() : "" ;
 if (!alias.equals("")) {
-	alias = " (&quot;" + alias + "&quot;)" ;
+	alias = " &nbsp;<span style='font-size:11px; font-weight:normal;'>&quot;" + alias + "&quot;</span>" ;
 }
 
 heading = heading
@@ -379,7 +388,7 @@ heading = heading
 %><vel:velocity>
 <html>
 <head>
-<title><%= heading %></title>
+<title><%= heading.replaceAll("<[^>]+?>", "") %></title>
 
 <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css.jsp">
 <script src="<%= request.getContextPath() %>/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
@@ -409,6 +418,20 @@ function doView(id) {
 	oBtnCopy.id        = id ;
 	oBtnCopy.disabled  = false ;
 	oBtnCopy.className = "imcmsFormBtnSmall" ;
+}
+function checkViewType(val) {
+	var iframe    = document.getElementById("restoreIframe") ;
+	var iframeSrc = iframe.src ;
+	var id        = (iframeSrc.indexOf("view=") != -1) ? /view=(\d+)/.exec(iframeSrc)[1] :
+	                (iframeSrc.indexOf("restore=") != -1) ? /restore=(\d+)/.exec(iframeSrc)[1] :
+	                (iframeSrc.indexOf("save=") != -1) ? /save=(\d+)/.exec(iframeSrc)[1] :
+	                0 ;
+	if (isNaN(id) || id < 1) return ;
+	if (val == "html") {
+		iframe.src = "text_restorer.jsp?view=" + id + "&html=true" ;
+	} else if (val == "text") {
+		iframe.src = "text_restorer.jsp?view=" + id ;
+	}
 }
 
 function doRestore(id) {
@@ -544,18 +567,25 @@ try {
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td style="padding-right:10px;"><%= isSwe ? "Förhandsgranska&nbsp;som" : "Preview&nbsp;as" %></td>
-			<td><input type="radio" name="preview_type" id="preview_type0" value="text" checked="checked" /></td>
+			<td><input type="radio" name="preview_type" id="preview_type0" value="text" onclick="checkViewType('text');" checked="checked" /></td>
 			<td style="padding-right:10px;"><label for="preview_type0">Text</label></td>
-			<td><input type="radio" name="preview_type" id="preview_type1" value="html" /></td>
+			<td><input type="radio" name="preview_type" id="preview_type1" value="html" onclick="checkViewType('html');" /></td>
 			<td><label for="preview_type1">HTML</label></td>
 		</tr>
 		</table>
 	</div>
-	<div style="margin-top:10px;" class="imcmsAdmDim">
+	<div style="margin-top:10px;" class="imcmsAdmDim"><%
+		if (isSwe) { %>
 		<p style="margin: 4px 0;"><b>Obs!</b></p>
-		<!-- <p style="margin: 4px 0;">Denna funktion kopierar bara ner det autosparade innehållet till den ordinarie editorn.</p>
+		<p style="margin: 4px 0;">Om du väljer <nobr>[Kopiera denna version till text-editorn]</nobr>, kopieras bara det förhandsgranskade innehållet ner till den ordinarie editorn.</p>
 		<p style="margin: 4px 0;">Vill man spara det återställda innehållet måste man själv spara.</p>
-		<p style="margin: 4px 0;">Ev. innehåll i den ordinarie editorn kommer att skrivas över.</p> -->
+		<p style="margin: 4px 0;">Ev. innehåll i den ordinarie editorn kommer att skrivas över.</p><%
+		} else { %>
+		<p style="margin: 4px 0;"><b>Note!</b></p>
+		<p style="margin: 4px 0;">If you choose <nobr>[Copy this version to the the text editor]</nobr>, the previewed content is only copied down to ordinary editor.</p>
+		<p style="margin: 4px 0;">If you want to save the restored content you'll have to save it yourself.</p>
+		<p style="margin: 4px 0;">Any previous written content in the ordinary editor will be overwritten.</p><%
+		} %>
 	</div></td>
 	
 	<td width="90%">
@@ -563,9 +593,6 @@ try {
 		<b><%= isSwe ? "Förhandsgranska versionen:" : "Preview the version" %></b>
 	</div>
 	<iframe name="restoreIframe" id="restoreIframe" width="100%" height="600" frameborder="0" marginwidth="0" marginheight="0" style="height:600px;" src="text_restorer.jsp?blank=true"></iframe></td>
-</tr>
-<tr>
-	<td colspan="2">#gui_hr( "blue" )</td>
 </tr><%
 } catch(Exception e) {
 	//out.print("ERROR: Ett fel har uppstått! " + e.getMessage()) ;
@@ -586,8 +613,8 @@ function rePos() {
 	if (document.getElementById) {
 		try {
 			var winH = (document.all) ? document.body.offsetHeight - 4 : document.body.clientHeight ;
-			document.getElementById("restoreIframe").style.height = (winH - 210) + "px" ;
-			document.getElementById("restoreSelect").style.height = (winH - 360) + "px" ;
+			document.getElementById("restoreIframe").style.height = (winH - 230) + "px" ;
+			document.getElementById("restoreSelect").style.height = (winH - 380) + "px" ;
 		} catch (e) {}
 	}
 }

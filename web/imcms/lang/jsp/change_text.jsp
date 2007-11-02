@@ -2,7 +2,14 @@
 
 	import="com.imcode.imcms.servlet.admin.ChangeText,
 	        imcode.server.Imcms,
-	        imcode.server.LanguageMapper, imcode.server.document.textdocument.TextDomainObject, imcode.util.Utility, org.apache.commons.lang.StringEscapeUtils, java.util.ArrayList, java.util.Arrays, java.util.List, com.imcode.imcms.api.ContentManagementSystem"
+	        imcode.server.LanguageMapper,
+	        imcode.server.document.textdocument.TextDomainObject,
+	        imcode.util.Utility,
+	        org.apache.commons.lang.StringEscapeUtils,
+	        java.util.ArrayList,
+	        java.util.Arrays,
+	        java.util.List,
+	        com.imcode.imcms.api.ContentManagementSystem"
 
     contentType="text/html; charset=UTF-8"
 
@@ -107,15 +114,27 @@ if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType() && !editorHidden) { 
 </table>
 
 #gui_mid()
-<div id="theLabel"><%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></div>
-<div id="messageDiv" style="display:none; color:#cc0000; padding:10px 0;"></div>
+
 <table border="0" cellspacing="0" cellpadding="2" width="720" align="center">
+<tr>
+	<td colspan="2">
+	<table border="0" cellspacing="0" cellpadding="2" width="100%;">
+	<tr valign="top">
+		<td width="80%">
+		<div id="theLabel"><%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></div>
+		<div id="messageDiv" style="display:none; color:#cc0000; padding:10px 0;"></div></td>
+		
+		<td width="20%" align="right" style="padding-top:3px; padding-left:15px;">
+		<input tabindex="6" type="button" class="imcmsFormBtnSmall" value="<%= isSwe ? "Återställ tidigare versioner" : "Restore earlier versions" %>" onclick="openTextRestorer(); return false"></td>
+	</tr>
+	</table></td>
+<tr>
 </vel:velocity>
 <tr>
 	<td colspan="2" class="imcmsAdmForm">
         <div id="editor"><%
 	        if (rows == 1) { %>
-	          <input type="text" name="text" tabindex="1" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>" style="width:100%;" /><%
+	          <input type="text" name="text" id="text_1row" tabindex="1" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>" style="width:100%;" /><%
 	        } else { %>
             <textarea name="text" tabindex="1" id="text" cols="125" rows="<%= (rows > 1) ? rows : 25 %>" style="overflow: auto; width: 100%;"><%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
 	        } %>
@@ -185,17 +204,16 @@ function setHtmlMode() {
                <% if (showModeEditor) { %>onclick="setHtmlMode()"<% } %>>
         <label for="format_type_html">Editor/HTML</label>
         <% } else if (showModeText) { %>
-            <input type="hidden" name="format_type" value="<%= TextDomainObject.TEXT_TYPE_PLAIN %>">
+            <input type="hidden" name="format_type" id="format_type_text_hidden" value="<%= TextDomainObject.TEXT_TYPE_PLAIN %>">
         <% } else if (showModeHtml) { %>
-            <input type="hidden" name="format_type" value="<%= TextDomainObject.TEXT_TYPE_HTML %>">
+            <input type="hidden" name="format_type" id="format_type_html_hidden" value="<%= TextDomainObject.TEXT_TYPE_HTML %>">
         <% } %>
     </td>
     <td align="right">
             <input tabindex="2" type="submit" class="imcmsFormBtn" name="ok" value="  <? templates/sv/change_text.html/2006 ?>  ">
             <input tabindex="3" type="submit" class="imcmsFormBtn" name="save" value="  <? templates/sv/change_text.html/save ?>  ">
             <input tabindex="4" type="reset" class="imcmsFormBtn" value="<? templates/sv/change_text.html/2007 ?>">
-            <input tabindex="5" type="button" class="imcmsFormBtn" value="<%= isSwe ? "Återställ sparade texter" : "Restore saved texts" %>>" onclick="openTextRestorer(); return false">
-            <input tabindex="6" type="submit" class="imcmsFormBtn" name="cancel" value=" <? global/back ?> ">
+            <input tabindex="5" type="submit" class="imcmsFormBtn" name="cancel" value=" <? global/back ?> ">
     </td>
 </tr>
 </table>
@@ -361,7 +379,7 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll,iStatus) {
 	}
 }
 function openTextRestorer() {
-	popWinOpen(700,600,"<%= request.getContextPath() %>/imcms/eng/jsp/text_restorer.jsp?meta_id=<%= textEditPage.getDocumentId() %>&txt=<%= textEditPage.getTextIndex() %>","textRestorerWin",1,1,1) ;
+	popWinOpen(800,600,"<%= request.getContextPath() %>/imcms/eng/jsp/text_restorer.jsp?meta_id=<%= textEditPage.getDocumentId() %>&txt=<%= textEditPage.getTextIndex() %>","textRestorerWin",1,1,1) ;
 }
 </script>
 
