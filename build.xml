@@ -76,7 +76,7 @@
         <pathelement path="${classes}"/>
         <path refid="libraries"/>
     </path>
-    
+
     <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="libraries"/>
     <taskdef name="checksumfiles" classname="com.imcode.ant.tasks.ChecksumFiles" classpathref="libraries"/>
     <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask" classpathref="libraries"/>
@@ -197,7 +197,7 @@
              userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
             CREATE DATABASE ${db-name}
         </sql>
-        
+
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
             <transaction src="${sql}/imcms${versionfilesuffix}-${defaultlanguage}-${db-target}.sql"/>
@@ -304,7 +304,7 @@
         <checkstyle config="docs/checkstyle.xml">
             <fileset dir="server/src" includes="**/*.java"/>
         </checkstyle>
-        
+
     </target>
 
     <target name="classes" depends="init">
@@ -315,7 +315,7 @@
             debug="${debug}" optimize="${optimize}" deprecation="${deprecation}"
             source="1.5" target="1.5"
             encoding="iso-8859-1">
-            
+
             <src path="server/src"/>
 
             <exclude name="**/Test*.java" unless="junit-available"/>
@@ -361,7 +361,7 @@
     </target>
 
     <target name="sql">
-    
+
         <concat destfile="${sql}/ddl.xml">
             <header>&lt;database defaultIdMethod="native" name="imcms"&gt;${line.separator}</header>
             <fileset dir="sql/tables" includes="*.tab"/>
@@ -371,7 +371,7 @@
         <copy todir="${sql}">
             <fileset file="sql/data/init.sql"/>
         </copy>
-                        
+
         <copy todir="${sql-diff}">
             <fileset dir="sql/diff" includes="diff-*.sql"/>
         </copy>
@@ -406,7 +406,7 @@
         <mkdir dir="${WEB-INF}/uploads"/>
 
         <echo message="${version}" file="${versionfile}"/>
-        
+
         <copy todir="${webroot}" filtering="true">
             <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
         </copy>
@@ -491,7 +491,7 @@
         <copy file="build.properties.template" tofile="build.properties"/>
     </target>
 
-    
+
     <target name="init-version-properties">
 
         <propertyregex property="version"
@@ -555,6 +555,17 @@
         <filter token="ldap-password" value="${ldap-password}"/>
         <filter token="ldap-user-object-class" value="${ldap-user-object-class}"/>
         <filter token="ldap-attribute-login-name" value="${ldap-attribute-login-name}"/>
+
+
+        <filter token="secondary-external-authenticator" value="${secondary-external-authenticator}"/>
+        <filter token="secondary-external-user-and-role-registry" value="${secondary-external-user-and-role-registry}"/>
+
+        <filter token="secondary-ldap-url" value="${secondary-ldap-url}"/>
+        <filter token="secondary-ldap-bind-dn" value="${secondary-ldap-bind-dn}"/>
+        <filter token="secondary-ldap-password" value="${secondary-ldap-password}"/>
+        <filter token="secondary-ldap-user-object-class" value="${secondary-ldap-user-object-class}"/>
+        <filter token="secondary-ldap-attribute-login-name" value="${secondary-ldap-attribute-login-name}"/>
+
 
         <filter token="smtp-server" value="${smtp-server}"/>
 

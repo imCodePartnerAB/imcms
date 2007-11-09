@@ -61,6 +61,24 @@ ldap-attribute-login-name = uid
 #ldap-attribute-login-name = sAMAccountName
 
 
+secondary-external-authenticator =
+secondary-external-user-and-role-registry =
+
+# Secondary LDAP-authentication-parameters
+
+secondary-ldap-url = ldap://localhost:389/CN=Users,DC=example,DC=com
+secondary-ldap-bind-dn =
+secondary-ldap-password =
+secondary-ldap-test-user =
+secondary-ldap-test-password =
+secondary-ldap-user-object-class = inetOrgPerson
+secondary-ldap-attribute-login-name = uid
+
+# For Microsoft Active Directory
+#secondary-ldap-user-object-class = user
+#secondary-ldap-attribute-login-name = sAMAccountName
+
+
 # The smtp-server used for sending mails.
 
 smtp-server =

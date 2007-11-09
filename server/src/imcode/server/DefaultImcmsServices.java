@@ -234,12 +234,102 @@ final public class DefaultImcmsServices implements ImcmsServices {
             log.error("External authenticator and external usermapper should both be either set or not set. Using default implementation.");
             log.error("External authenticator and external usermapper should both be either set or not set. Using default implementation.");
         }
+
+        // TO-DO: problem if primary LDAP classes are not instantiatd,
+        // because of conf error, secondary LDAP also will not be instantiated
+        if (externalAuthenticator != null
+                && externalUserAndRoleRegistry != null
+                && externalAuthenticator instanceof LdapUserAndRoleRegistry
+                && externalUserAndRoleRegistry instanceof LdapUserAndRoleRegistry) {
+
+            ChainedLdapUserAndRoleRegistry chainedLdapUserAndRoleRegistry
+                    = new ChainedLdapUserAndRoleRegistry(externalAuthenticator, externalUserAndRoleRegistry);
+
+
+            initAndAddSecondaryLdapUserAndRoleRegistry(chainedLdapUserAndRoleRegistry,
+                    props);
+
+            externalAuthenticator = chainedLdapUserAndRoleRegistry;
+            externalUserAndRoleRegistry = chainedLdapUserAndRoleRegistry;
+        }
+
         imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper(this);
         externalizedImcmsAuthAndMapper =
                 new ExternalizedImcmsAuthenticatorAndUserRegistry(imcmsAuthenticatorAndUserAndRoleMapper, externalAuthenticator,
                                                                   externalUserAndRoleRegistry, getLanguageMapper().getDefaultLanguage());
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
     }
+
+
+    /**
+     * Inits and adds secondary LdapUserAndRoleRegistry to the ChainedLdapUserAndRoleRegistry.
+     * 
+     * @param chainedLdapUserAndRoleRegistry instance of ChainedLdapUserAndRoleRegistry
+     * @param props configuration properties
+     */
+    private void initAndAddSecondaryLdapUserAndRoleRegistry(
+            ChainedLdapUserAndRoleRegistry chainedLdapUserAndRoleRegistry,
+            Properties props) {   
+
+        final String secondaryLdapPrefix = "Secondary";
+        final int secondaryLdapPrefixLength = secondaryLdapPrefix.length();
+
+        log.info("Searching for secondary LDAP configuration parameters.");
+
+        Properties secondaryLdapProperties = new Properties();
+
+        Enumeration names = props.propertyNames();
+
+        while (names.hasMoreElements()) {
+            String name = (String)names.nextElement();
+
+            if (name.startsWith(secondaryLdapPrefix)) {
+                String newName = name.substring(secondaryLdapPrefixLength);                
+                String value = props.getProperty(name);
+
+                secondaryLdapProperties.setProperty(newName, value);
+            }
+        }
+
+        if (secondaryLdapProperties.size() == 0) {
+            log.info("Secondary LDAP configuration parameters not found.");    
+        } else {
+            log.info("Found secondary LDAP configuration parameters. " +
+                    "Initializing secondary LDAP user and role registry");
+
+            // Copied from method initAuthenticatorsAndUserAndRoleMappers
+            // TO-DO refactor
+            String externalAuthenticatorName = secondaryLdapProperties.getProperty("ExternalAuthenticator");
+            String externalUserAndRoleMapperName = secondaryLdapProperties.getProperty("ExternalUserAndRoleMapper");
+
+            Authenticator externalAuthenticator = null;
+            UserAndRoleRegistry externalUserAndRoleRegistry = null;
+
+            boolean externalAuthenticatorIsSet = StringUtils.isNotBlank(externalAuthenticatorName);
+            boolean externalUserAndRoleRegistryIsSet = StringUtils.isNotBlank(externalUserAndRoleMapperName);
+            
+            if ( !externalAuthenticatorIsSet || !externalUserAndRoleRegistryIsSet ) {
+                log.error("Secondary LDAP configuration ignored. External authenticator and external usermapper should both be either set or not set.");
+            } else {
+                log.info("SecondaryExternalAuthenticator: " + externalAuthenticatorName);
+                log.info("SecondaryExternalUserAndRoleMapper: " + externalUserAndRoleMapperName);
+                externalAuthenticator =
+                        initExternalAuthenticator(externalAuthenticatorName, secondaryLdapProperties);
+                externalUserAndRoleRegistry =
+                        initExternalUserAndRoleMapper(externalUserAndRoleMapperName, secondaryLdapProperties);
+
+                if ( null == externalAuthenticator || null == externalUserAndRoleRegistry ) {
+                    log.error("Secondary LDAP configuration ignored. Failed to initialize both authenticator and user-and-role-documentMapper.");
+                } else if (!(externalAuthenticator instanceof LdapUserAndRoleRegistry)
+                        || !(externalUserAndRoleRegistry instanceof LdapUserAndRoleRegistry)) {
+                    log.error("Secondary LDAP configuration ignored. Both SecondaryExternalAuthenticator and SecondaryExternalUserAndRoleMapper properties should be set to LDAP.");
+                } else {
+                     chainedLdapUserAndRoleRegistry.addLink(externalAuthenticator, externalUserAndRoleRegistry);   
+                }
+            }
+        }
+    }
+    
 
     public synchronized int getSessionCounter() {
         return sessionCounter;
