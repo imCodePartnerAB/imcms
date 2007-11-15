@@ -25,6 +25,7 @@ public class Config {
     private String keyStoreType ;
     private String workaroundUriEncoding;
     private boolean secureLoginRequired;
+    private boolean denyMultipleUserLogin;
 
     public String getWorkaroundUriEncoding() {
         return workaroundUriEncoding;
@@ -171,5 +172,13 @@ public class Config {
 
     public void setSecureLoginRequired(boolean secureLoginRequired) {
         this.secureLoginRequired = secureLoginRequired;
+    }
+
+    public boolean isDenyMultipleUserLogin() {
+        return denyMultipleUserLogin;
+    }
+
+    public void setDenyMultipleUserLogin(boolean denyMultipleUserLogin) {
+        this.denyMultipleUserLogin = denyMultipleUserLogin;
     }
 }

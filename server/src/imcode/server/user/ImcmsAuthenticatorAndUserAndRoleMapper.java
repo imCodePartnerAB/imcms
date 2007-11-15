@@ -34,7 +34,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private static final String SQL_SELECT_USERS = "SELECT user_id, login_name, login_password, first_name, last_name, "
                                                    + "title, company, address, city, zip, country, county_council, "
                                                    + "email, language, active, "
-                                                   + "create_date, external "
+                                                   + "create_date, external, session_id "
                                                    + "FROM users";
 
     public static final String SQL_ROLES_COLUMNS = "roles.role_id, roles.role_name, roles.admin_role, roles.permissions";
@@ -49,6 +49,11 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private static final String TABLE__USERADMIN_ROLE_CROSSREF = "useradmin_role_crossref";
     private static final String SQL__SELECT_USER_BY_ID = SQL_SELECT_USERS
                                                          + " WHERE user_id = ?";
+
+    private static final String SQL_UPDATE_USER_SESSION = "update users set session_id = ? where user_id = ?";
+
+    private static final String SQL_SELECT_USER_SESSION = "select session_id from users where user_id = ?";
+
     private final ImcmsServices services;
 
     public ImcmsAuthenticatorAndUserAndRoleMapper(ImcmsServices services) {
@@ -110,6 +115,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING);
         user.setCreateDate(Utility.parseDateFormat(dateFormat, sqlResult[15]));
         user.setImcmsExternal(0 != Integer.parseInt(sqlResult[16]));
+        user.setSessionId(sqlResult[17]);
     }
 
     private RoleId[] getRoleReferencesForUser(UserDomainObject user) {
@@ -176,6 +182,21 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         saveUser(userToSave);
     }
 
+
+    public void updateUserSessionId(final UserDomainObject loggedInUser) {
+        services.getDatabase().execute(new SqlUpdateCommand(SQL_UPDATE_USER_SESSION,
+                new Object[] { loggedInUser.getSessionId(), loggedInUser.getId() }
+        ));
+    }
+
+
+    public String getUserSessionId(final UserDomainObject loggedInUser) {
+        return (String)services.getDatabase().execute(new SqlQueryCommand(SQL_SELECT_USER_SESSION,
+                new Object[] { loggedInUser.getId() },
+                Utility.SINGLE_STRING_HANDLER
+        ));
+    }
+    
     public void saveUser(UserDomainObject user) {
 
         String[] params = {

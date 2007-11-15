@@ -167,6 +167,11 @@ public class UserService {
         }
     }
 
+
+    public void updateUserSession(User user) {
+        getMapper().updateUserSessionId(user.getInternal());
+    }
+
     /**
      * Send a password reminder mail
      *

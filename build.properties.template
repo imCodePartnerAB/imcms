@@ -19,6 +19,8 @@ webappname = imcms
 
 webapproot = ${deployroot}/${webappname}
 
+# Denies multiple login for same user. To enable this option change property value to true. 
+deny-multiple-user-login = false
 
 # Database parameters
 

@@ -266,4 +266,11 @@ public class User {
         return Language.getLanguageByISO639_2( internalUser.getLanguageIso639_2() ) ;
     }
 
+    public String getSessionId() {
+        return internalUser.getSessionId();
+    }
+
+    public void setSessionId(String sessionId) {
+        internalUser.setSessionId(sessionId);
+    }
 }

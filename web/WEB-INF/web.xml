@@ -8,6 +8,12 @@
     <display-name>imCMS</display-name>
 
     <filter>
+        <description>Checks for multiple user login</description>
+        <filter-name>ImcmsMultipleUserLoginFilter</filter-name>
+        <filter-class>com.imcode.imcms.servlet.ImcmsMultipleUserLoginFilter</filter-class>
+    </filter>
+
+    <filter>
         <description>Setting up objects in request for api usage.</description>
         <filter-name>ImcmsSetupFilter</filter-name>
         <filter-class>com.imcode.imcms.servlet.ImcmsSetupFilter</filter-class>
@@ -18,7 +24,12 @@
         <filter-name>SuperAdminFilter</filter-name>
         <filter-class>com.imcode.imcms.servlet.SuperAdminFilter</filter-class>
     </filter>
-    
+
+    <filter-mapping>
+        <filter-name>ImcmsMultipleUserLoginFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <filter-mapping>
         <filter-name>ImcmsSetupFilter</filter-name>
         <url-pattern>/*</url-pattern>

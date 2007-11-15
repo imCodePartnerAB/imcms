@@ -540,6 +540,8 @@
         <filter token="documentationwebappurl" value="http://${documentation-host}/${versionnumber}"/>
         <filter token="documentationurl" value="http://${documentation-host}/${versionnumber}"/>
 
+        <filter token="deny-multiple-user-login" value="${deny-multiple-user-login}"/>
+
         <filter token="db-driver" value="${db-driver}"/>
         <filter token="db-url" value="${db-url}"/>
         <filter token="db-name" value="${db-name}"/>

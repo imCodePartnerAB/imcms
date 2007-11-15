@@ -16,6 +16,7 @@
         <column default="1" name="active" required="true" type="INTEGER" />
         <column name="create_date" required="true" type="TIMESTAMP" />
         <column name="language" required="true" size="3" type="VARCHAR" />
+        <column name="session_id" required="false" size="128" type="VARCHAR" />
         <unique name="UQ__users__login_name">
             <unique-column name="login_name"/>
         </unique>

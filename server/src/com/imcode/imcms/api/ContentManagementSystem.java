@@ -45,12 +45,21 @@ public abstract class ContentManagementSystem {
         ImcmsServices services = Imcms.getServices();
         UserDomainObject user = services.verifyUser(username, password);
 
-        if ( null == user ) {
+        if ( null == user || user.isDefaultUser()) {
             return null ;
         }
+        
+        ContentManagementSystem cms = Utility.initRequestWithApi(request, user);
 
+        if (services.getConfig().isDenyMultipleUserLogin()) {
+            User currentUser = cms.getCurrentUser();
+            currentUser.setSessionId(request.getSession().getId());
+            cms.getUserService().updateUserSession(currentUser);
+        }
+        
         Utility.makeUserLoggedIn(request, user);
-        return Utility.initRequestWithApi(request, user) ;
+
+        return cms;
     }
 
     /**

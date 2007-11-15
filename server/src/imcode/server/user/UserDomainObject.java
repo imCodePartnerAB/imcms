@@ -42,6 +42,9 @@ public class UserDomainObject implements Cloneable, Serializable {
     RoleIds roleIds = createRolesSetWithUserRole();
     protected RoleIds userAdminRoleIds = new RoleIds();
 
+    /** Http session id.*/
+    private String sessionId;
+
     public UserDomainObject() {
     }
 
@@ -423,6 +426,14 @@ public class UserDomainObject implements Cloneable, Serializable {
         this.languageIso639_2 = languageIso639_2;
     }
 
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+    
     public boolean isImcmsExternal() {
         return imcmsExternal;
     }
@@ -445,6 +456,8 @@ public class UserDomainObject implements Cloneable, Serializable {
         this.roleIds = new RoleIds(roleIds) ;
         this.roleIds.add( RoleId.USERS );
     }
+
+
 
     public boolean hasRoleId( RoleId roleId ) {
         return roleIds.contains( roleId );

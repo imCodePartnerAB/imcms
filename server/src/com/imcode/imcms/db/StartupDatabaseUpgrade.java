@@ -56,7 +56,8 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
                 new ColumnSizeUpgrade(wantedDdl, "users", "country", 64),
                 new ColumnSizeUpgrade(wantedDdl, "users", "county_council", 128),
                 new ColumnSizeUpgrade(wantedDdl, "users", "email", 128))
-            )
+            ),
+            new DatabaseVersionUpgradePair(4,10, new AddVarcharColumnUpgrade(wantedDdl, "users", "language", "session_id", 128, false)),
     };
     private ImcmsDatabaseCreator imcmsDatabaseCreator ;
 
