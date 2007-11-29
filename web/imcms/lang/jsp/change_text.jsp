@@ -301,13 +301,15 @@ function setEditorSize() {
 			oTextArea.style.height = (winH - offsetH) + "px" ;
 		}
 	}
-}
+}<%
+if (rows == 0) { %>
 setEditorSize() ;
 if (window.attachEvent) {
 	window.attachEvent("onresize",    function(){ setEditorSize(); }) ;
 } else if (window.addEventListener) {
 	window.addEventListener("resize", function(){ setEditorSize(); }, true) ;
-}
+}<%
+} %>
 
 var oSessionTimer ;
 var sessionTimeOutMs = <%= session.getMaxInactiveInterval() * 1000 %> ;
