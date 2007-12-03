@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
+import javax.naming.CommunicationException;
 import javax.naming.directory.SearchControls;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -62,7 +63,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     static final String INETORGPERSON_USER_IDENTITY = "uid";
 
     private final LdapClient ldapClient ;
-    private final LdapConnection ldapConnection ;
+    private LdapConnection ldapConnection ;
 
     private final String ldapUserObjectClass ;
     private final String[] ldapAttributesAutoMappedToRoles;
@@ -84,6 +85,9 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
         {"MobilePhone", INETORGPERSON_MOBILE},
         {"HomePhone", INETORGPERSON_HOME_PHONE},
     } );
+    
+    private String ldapUsername;
+    private String ldapPassword;
 
     private static final String LDAP_USER_OBJECTCLASS__INETORGPERSON = "inetOrgPerson";
     private static final String LDAP_USER_OBJECTCLASS_DEFAULT = LDAP_USER_OBJECTCLASS__INETORGPERSON;
@@ -128,7 +132,16 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
 
         this.ldapUserObjectClass = ldapUserObjectClass;
         ldapClient = new LdapClient(ldapUrl);
-        ldapConnection = ldapClient.bind(ldapUserName, ldapPassword);
+        
+        this.ldapUsername = ldapUserName;
+        this.ldapPassword = ldapPassword;        
+        
+        createLdapConnection();
+    }
+    
+    private void createLdapConnection() 
+    throws LdapClientException {
+    	ldapConnection = ldapClient.bind(ldapUsername, ldapPassword);    	
     }
 
     public String[] getAllRoleNames() {
@@ -223,9 +236,19 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
             searchControls.setReturningAttributes( attributesToReturn );
             searchControls.setReturningObjFlag( true );
 
-            attributeMap = ldapConnection.search("(&(objectClass={0})({1}={2}))",
+            // Quick fix:
+            try {
+            	attributeMap = ldapConnection.search("(&(objectClass={0})({1}={2}))",
                                                  new Object[] { ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName },
                                                  searchControls);
+            } catch (LdapClientException e) {
+            	if (e.getCause() instanceof CommunicationException) {
+            		createLdapConnection();
+                	attributeMap = ldapConnection.search("(&(objectClass={0})({1}={2}))",
+                            new Object[] { ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName },
+                            searchControls);            		
+            	}
+            }
         } catch ( LdapClientException e ) {
             LOG.warn( "Could not find user " + loginName, e );
         }
