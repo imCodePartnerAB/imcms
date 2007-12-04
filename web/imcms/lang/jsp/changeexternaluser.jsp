@@ -26,6 +26,8 @@ private static void redirectToAdminUser (HttpServletRequest request, HttpServlet
 }
 
 private static void updateUserRoles( HttpServletRequest request, UserService userService, User user ) throws NoPermissionException {
+	user.setRoles(new Role[] {});
+	
 	String[] roleNames = request.getParameterValues(FORM_SELECT_ROLES) ;
 
     for(int i = 0; i < roleNames.length; i++) {

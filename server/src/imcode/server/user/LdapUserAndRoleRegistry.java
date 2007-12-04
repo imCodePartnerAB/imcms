@@ -239,14 +239,17 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
             // Quick fix:
             try {
             	attributeMap = ldapConnection.search("(&(objectClass={0})({1}={2}))",
-                                                 new Object[] { ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName },
-                                                 searchControls);
+            			new Object[] { ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName },
+                    		searchControls);
             } catch (LdapClientException e) {
+            	// in case of communication exception recreate connection and retry last operation.
             	if (e.getCause() instanceof CommunicationException) {
             		createLdapConnection();
                 	attributeMap = ldapConnection.search("(&(objectClass={0})({1}={2}))",
                             new Object[] { ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName },
                             searchControls);            		
+            	} else {
+            		throw e;
             	}
             }
         } catch ( LdapClientException e ) {
