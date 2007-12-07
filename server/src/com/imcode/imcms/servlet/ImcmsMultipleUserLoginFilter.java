@@ -27,6 +27,8 @@ public class ImcmsMultipleUserLoginFilter implements Filter {
     
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
     throws IOException, ServletException {       
+    	req.setCharacterEncoding(Imcms.DEFAULT_ENCODING);
+    	
         HttpServletRequest request = (HttpServletRequest)req;
         HttpServletResponse response = (HttpServletResponse)res;
         HttpSession session = request.getSession();
