@@ -154,7 +154,7 @@ class DocumentSaver {
 
         documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
 
-        document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices()));
+        document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
 
         documentMapper.invalidateDocument(document);
     }

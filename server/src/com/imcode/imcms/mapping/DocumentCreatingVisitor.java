@@ -5,12 +5,21 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.UserDomainObject;
 
 public class DocumentCreatingVisitor extends DocumentStoringVisitor {
+	
+	private UserDomainObject currentUser;
 
     public DocumentCreatingVisitor(Database database, ImcmsServices services) {
-        super(database, services );
+        this(database, services, null);
     }
+    
+    public DocumentCreatingVisitor(Database database, ImcmsServices services, UserDomainObject currentUser) {
+        super(database, services);
+        this.currentUser = currentUser;        
+    }
+    
 
     public void visitHtmlDocument( HtmlDocumentDomainObject document ) {
         String[] htmlDocumentColumns = {"meta_id", "frame_set"};
@@ -51,7 +60,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
                 null != defaultTemplateForRestricted2 ? "" + defaultTemplateForRestricted2 : null,
                 };
         database.execute(new SqlUpdateCommand(sqlTextDocsInsertStr, parameters));
-        updateTextDocumentTexts( textDocument, null, null);
+        updateTextDocumentTexts( textDocument, null, currentUser);
         updateTextDocumentImages( textDocument, null, null);
         updateTextDocumentIncludes( textDocument );
         updateTextDocumentMenus( textDocument, null, null);

@@ -220,5 +220,14 @@ INSERT INTO roles_rights VALUES (2,1001,3);
 INSERT INTO texts (meta_id, name, text, type) VALUES( 1001, 1, '@text1@',1);
 INSERT INTO texts (meta_id, name, text, type) VALUES( 1001, 2, '@text2@',1);
 
+INSERT INTO texts_history (meta_id, name, text, type, modified_datetime, user_id) VALUES( 1001, 1, '@text1@',1,
+-- mysql NOW()
+-- mssql GETDATE()
+,1);
+INSERT INTO texts_history (meta_id, name, text, type, modified_datetime, user_id) VALUES( 1001, 2, '@text2@',1,
+-- mysql NOW()
+-- mssql GETDATE()
+,1);
+
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , align , alt_text , low_scr , imgurl , linkurl, type )
 values (1001,0,0,0,0,0,3,'','_blank','top','','','imCMSpower.gif','http://www.imcms.net','0');

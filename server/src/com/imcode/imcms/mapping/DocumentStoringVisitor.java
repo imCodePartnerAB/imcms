@@ -1,10 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.db.Database;
-import com.imcode.db.DatabaseConnection;
-import com.imcode.db.SingleConnectionDatabase;
-import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.db.commands.TransactionDatabaseCommand;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.BrowserDocumentDomainObject;
@@ -19,14 +14,33 @@ import imcode.util.DateConstants;
 import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.FileUtility;
 import imcode.util.io.InputStreamSource;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
-import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.imcode.db.Database;
+import com.imcode.db.DatabaseConnection;
+import com.imcode.db.SingleConnectionDatabase;
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.db.commands.TransactionDatabaseCommand;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
 
@@ -102,11 +116,36 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         for (Iterator iterator = texts.keySet().iterator(); iterator.hasNext();) {
             Integer textIndex = (Integer) iterator.next();
             TextDomainObject text = (TextDomainObject) texts.get(textIndex.intValue());
-            if(oldTextDocument != null && oldTextDocument.getText(textIndex.intValue()) !=null && !oldTextDocument.getText(textIndex.intValue()).toString().equals("") && !text.equals(oldTextDocument.getText(textIndex.intValue()))){
-                sqlInsertTextHistory(oldTextDocument, textIndex, oldTextDocument.getText(textIndex.intValue()), user);
+            String lastHistoryTextValue = getLastHistoryTextValue(textDocument.getId(), textIndex, text.getType());
+                  
+            // Legacy logic support: copy old text to history if it does not exists
+            if (oldTextDocument != null) {            	
+            	TextDomainObject oldText = oldTextDocument.getText(textIndex.intValue());
+            	              	 
+            	if (oldText != null 
+            			&& !oldText.toString().equals("") 
+            			&& !oldText.toString().equals(lastHistoryTextValue)
+            			&& !text.equals(oldText)) {            		
+            		sqlInsertTextHistory(oldTextDocument, textIndex, oldText, user);
+            	}
+            }            
+            
+            if (!text.toString().equals(lastHistoryTextValue) && user != null) {
+            	sqlInsertTextHistory(textDocument, textIndex, text, user);
             }
+                        
             sqlInsertText(textDocument, textIndex, text);
         }
+    }
+    
+    
+    private String getLastHistoryTextValue(int metaId, int name, int type) {
+    	String sql = "SELECT text FROM texts_history WHERE counter = (" +
+    			"SELECT MAX(counter) FROM texts_history WHERE meta_id = ? AND name = ? AND type = ?)";
+    	
+    	Object[] parameters = new Object[] {metaId, name, type};
+    	
+    	return (String)database.execute(new SqlQueryCommand(sql, parameters, new ScalarHandler(1)));
     }
 
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
