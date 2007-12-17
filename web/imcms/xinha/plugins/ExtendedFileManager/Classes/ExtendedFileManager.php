@@ -16,9 +16,9 @@ require_once '../ImageManager/Classes/Files.php';
 
 /**
  * ExtendedFileManager Class.
- * @author $Author: ray $
- * @author $Author: ray $
- * @version $Id: ExtendedFileManager.php 677 2007-01-19 22:24:36Z ray $
+ * @author $Author: koto $
+ * @author $Author: koto $
+ * @version $Id: ExtendedFileManager.php 841 2007-05-27 13:31:51Z koto $
  */
 class ExtendedFileManager 
 {
@@ -800,7 +800,7 @@ class ExtendedFileManager
 				$src = Files::makeFile($this->getImagesDir(), $_GET['srcdir'].$_GET['file']);
 				$file = $_GET['file'];
 				$dest = Files::makeFile($this->getImagesDir(), $_GET['dir']);
-				return  Files::copyFile($src,$dest,$file);
+				return Files::copyFile($src,$dest,$file);
 			break;
 			case 'copyDir':
 				$basePath = $this->getImagesDir();

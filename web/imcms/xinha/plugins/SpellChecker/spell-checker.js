@@ -6,9 +6,9 @@
 // Distributed under the same terms as HTMLArea itself.
 // This notice MUST stay intact for use (see license.txt).
 //
-// $Id: spell-checker.js 498 2006-04-30 09:46:23Z gogo $
+// $Id: spell-checker.js 856 2007-06-13 18:34:34Z wymsy $
 
-HTMLArea.Config.prototype.SpellChecker = { 'backend': 'php', 'personalFilesDir' : '', 'defaultDictionary' : 'en_GB', 'utf8_to_entities' : true };
+Xinha.Config.prototype.SpellChecker = { 'backend': 'php', 'personalFilesDir' : '', 'defaultDictionary' : 'en_GB', 'utf8_to_entities' : true };
 
 function SpellChecker(editor) {
   this.editor = editor;
@@ -40,7 +40,7 @@ SpellChecker._pluginInfo = {
 };
 
 SpellChecker.prototype._lc = function(string) {
-    return HTMLArea._lc(string, 'SpellChecker');
+    return Xinha._lc(string, 'SpellChecker');
 };
 
 SpellChecker.btnList = [
@@ -55,7 +55,7 @@ SpellChecker.prototype.buttonPress = function(editor, id) {
     SpellChecker.init = true;
     var uiurl = _editor_url + "plugins/SpellChecker/spell-check-ui.html";
     var win;
-    if (HTMLArea.is_ie) {
+    if (Xinha.is_ie) {
       win = window.open(uiurl, "SC_spell_checker",
             "toolbar=no,location=no,directories=no,status=no,menubar=no," +
             "scrollbars=no,resizable=yes,width=600,height=450");

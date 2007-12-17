@@ -1,8 +1,8 @@
 <?php
 /**
  * File Utilities.
- * @author $Author: ray $
- * @version $Id: Files.php 709 2007-01-30 23:22:04Z ray $
+ * @author $Author: koto $
+ * @version $Id: Files.php 841 2007-05-27 13:31:51Z koto $
  * @package ImageManager
  */
 
@@ -14,8 +14,8 @@ define('FILE_ERROR_DST_DIR_EXIST', 104);
 
 /**
  * File Utilities
- * @author $Author: ray $
- * @version $Id: Files.php 709 2007-01-30 23:22:04Z ray $
+ * @author $Author: koto $
+ * @version $Id: Files.php 841 2007-05-27 13:31:51Z koto $
  * @package ImageManager
  * @subpackage files
  */
@@ -279,7 +279,7 @@ class Files
 		else return FILE_COPY_OK;
 	}
 	
-		/**
+	/**
 	 * copy a directory and all subdirectories and files (recursive)
 	 * @author SBoisvert at Don'tSpamMe dot Bryxal dot ca (adapted from php.net)
 	 * @author Raimund Meyer

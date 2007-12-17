@@ -16,8 +16,8 @@
     --  he file is loaded as a special plugin by the Xinha Core when no alternative method (plugin) is loaded.
     --
     --
-    --  $HeadURL: http://svn.xinha.python-hosting.com/trunk/modules/CreateLink/link.js $
-    --  $LastChangedDate: 2007-01-23 15:26:04 +0100 (tis, 23 jan 2007) $
+    --  $HeadURL: http://svn.xinha.webfactional.com/trunk/modules/CreateLink/link.js $
+    --  $LastChangedDate: 2007-01-24 03:26:04 +1300 (Wed, 24 Jan 2007) $
     --  $LastChangedRevision: 694 $
     --  $LastChangedBy: gogo $
     --------------------------------------------------------------------------*/
@@ -26,7 +26,7 @@ CreateLink._pluginInfo = {
   origin        : "Xinha Core",
   version       : "$LastChangedRevision: 694 $".replace(/^[^:]*: (.*) \$$/, '$1'),
   developer     : "The Xinha Core Developer Team",
-  developer_url : "$HeadURL: http://svn.xinha.python-hosting.com/trunk/modules/CreateLink/link.js $".replace(/^[^:]*: (.*) \$$/, '$1'),
+  developer_url : "$HeadURL: http://svn.xinha.webfactional.com/trunk/modules/CreateLink/link.js $".replace(/^[^:]*: (.*) \$$/, '$1'),
   sponsor       : "",
   sponsor_url   : "",
   license       : "htmlArea"

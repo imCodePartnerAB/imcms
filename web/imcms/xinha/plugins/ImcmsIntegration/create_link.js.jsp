@@ -1,4 +1,14 @@
-<%@ page import="com.imcode.imcms.servlet.admin.EditLink"%><%@ page contentType="text/javascript" %>
+<%@ page
+	
+	import="com.imcode.imcms.servlet.admin.EditLink"
+	
+	contentType="text/javascript"
+	
+%>
+
+function CreateLink(editor) {
+}
+
 Xinha.prototype._createLink = function(link)
 {
   var editor = this;
@@ -16,8 +26,8 @@ Xinha.prototype._createLink = function(link)
   }
   if ( !link )
   {
-    var sel = editor._getSelection();
-    var range = editor._createRange(sel);
+    var sel = editor.getSelection();
+    var range = editor.createRange(sel);
     var compare = 0;
     if ( Xinha.is_ie )
     {
@@ -41,9 +51,9 @@ Xinha.prototype._createLink = function(link)
     }
     outparam =
     {
-      '<%= EditLink.Parameter.HREF %>'   : '',
-      '<%= EditLink.Parameter.TITLE %>'  : '',
-      '<%= EditLink.Parameter.TARGET %>' : '',
+      '<%= EditLink.Parameter.HREF %>'       : '',
+      '<%= EditLink.Parameter.TITLE %>'      : '',
+      '<%= EditLink.Parameter.TARGET %>'     : '',
       '<%= EditLink.Parameter.USE_TARGET %>' : editor.config.makeLinkShowsTarget
     };
   }
@@ -51,9 +61,9 @@ Xinha.prototype._createLink = function(link)
   {
     outparam =
     {
-      '<%= EditLink.Parameter.HREF %>'   : Xinha.is_ie ? editor.stripBaseURL(link.href) : link.getAttribute("href"),
-      '<%= EditLink.Parameter.TITLE %>'  : link.title,
-      '<%= EditLink.Parameter.TARGET %>' : link.target,
+      '<%= EditLink.Parameter.HREF %>'       : Xinha.is_ie ? editor.stripBaseURL(link.href) : link.getAttribute("href"),
+      '<%= EditLink.Parameter.TITLE %>'      : link.title,
+      '<%= EditLink.Parameter.TARGET %>'     : link.target,
       '<%= EditLink.Parameter.USE_TARGET %>' : editor.config.makeLinkShowsTarget
     };
   }
@@ -64,8 +74,9 @@ Xinha.prototype._createLink = function(link)
           queryString += '&' + i + '=' + encodeURIComponent(outparam[i]);
       }
   }
+  editor.config.URIs.link = '<%= EditLink.linkTo(request, "/imcms/xinha/plugins/ImcmsIntegration/return_link.jsp") %>'+queryString ;
   this._popupDialog(
-    '<%= EditLink.linkTo(request, "/imcms/xinha/plugins/ImcmsIntegration/return_link.jsp") %>'+queryString,
+    editor.config.URIs.link,
     function(param)
     {
       if ( !param )
@@ -90,8 +101,8 @@ Xinha.prototype._createLink = function(link)
               // Found one.
               if (!a) a = anchor;
               anchor.href =  param.href;
-              if (param.target) anchor.target =  param.target;
-              if (param.title)  anchor.title =  param.title;
+              if (param.target) anchor.target = param.target;
+              if (param.title)  anchor.title  = param.title;
             }
           }
         } catch(ex) {}
@@ -100,7 +111,7 @@ Xinha.prototype._createLink = function(link)
       {
         var href = param.href.trim();
         editor.selectNodeContents(a);
-        if ( href === '' )
+        if ( href == '' )
         {
           editor._doc.execCommand("unlink", false, null);
           editor.updateToolbar();
@@ -115,8 +126,8 @@ Xinha.prototype._createLink = function(link)
       {
         return false;
       }
-      if (param.target) a.target = param.target.trim();
-      if (param.title) a.title = param.title.trim();
+      a.target = param.target.trim();
+      a.title = param.title.trim();
       editor.selectNodeContents(a);
       editor.updateToolbar();
     },

@@ -25,18 +25,18 @@
     --   be a part of the InternetExplorer.prototype, we won't trample on 
     --   namespace that way.
     --
-    --  $HeadURL: http://svn.xinha.python-hosting.com/trunk/modules/InternetExplorer/InternetExplorer.js $
-    --  $LastChangedDate: 2007-05-18 02:58:46 +0200 (fre, 18 maj 2007) $
-    --  $LastChangedRevision: 839 $
-    --  $LastChangedBy: wymsy $
+    --  $HeadURL: http://svn.xinha.webfactional.com/trunk/modules/InternetExplorer/InternetExplorer.js $
+    --  $LastChangedDate: 2007-10-12 23:00:47 +1300 (Fri, 12 Oct 2007) $
+    --  $LastChangedRevision: 901 $
+    --  $LastChangedBy: ray $
     --------------------------------------------------------------------------*/
                                                     
 InternetExplorer._pluginInfo = {
   name          : "Internet Explorer",
   origin        : "Xinha Core",
-  version       : "$LastChangedRevision: 839 $".replace(/^[^:]*: (.*) \$$/, '$1'),
+  version       : "$LastChangedRevision: 901 $".replace(/^[^:]*: (.*) \$$/, '$1'),
   developer     : "The Xinha Core Developer Team",
-  developer_url : "$HeadURL: http://svn.xinha.python-hosting.com/trunk/modules/InternetExplorer/InternetExplorer.js $".replace(/^[^:]*: (.*) \$$/, '$1'),
+  developer_url : "$HeadURL: http://svn.xinha.webfactional.com/trunk/modules/InternetExplorer/InternetExplorer.js $".replace(/^[^:]*: (.*) \$$/, '$1'),
   sponsor       : "",
   sponsor_url   : "",
   license       : "htmlArea"
@@ -305,7 +305,7 @@ Xinha.prototype.saveSelection = function()
  */
 Xinha.prototype.restoreSelection = function(savedSelection)
 {
-  savedSelection.select();
+  try { savedSelection.select() } catch (e) {};
 }
 
 /**
@@ -435,22 +435,25 @@ Xinha.prototype.cc = String.fromCharCode(0x2009);
 
 Xinha.prototype.setCC = function ( target )
 {
+  var cc = this.cc;
   if ( target == "textarea" )
   {
     var ta = this._textArea;
     var pos = document.selection.createRange();
     pos.collapse();
-    pos.text = this.cc;
-    var index = ta.value.indexOf( this.cc );
+    pos.text = cc;
+    var index = ta.value.indexOf( cc );
     var before = ta.value.substring( 0, index );
-    var after  = ta.value.substring( index + this.cc.length , ta.value.length );
+    var after  = ta.value.substring( index + cc.length , ta.value.length );
     
-    if ( after.match(/^[^<]*>/) )
+    if ( after.match(/^[^<]*>/) ) // make sure cursor is in an editable area (outside tags, script blocks, and inside the body)
     {
       var tagEnd = after.indexOf(">") + 1;
-      ta.value = before + after.substring( 0, tagEnd ) + this.cc + after.substring( tagEnd, after.length );
+      ta.value = before + after.substring( 0, tagEnd ) + cc + after.substring( tagEnd, after.length );
     }
-    else ta.value = before + this.cc + after;
+    else ta.value = before + cc + after;
+    ta.value = ta.value.replace(new RegExp ('(<script[^>]*>[^'+cc+']*?)('+cc+')([^'+cc+']*?<\/script>)'), "$1$3$2");
+    ta.value = ta.value.replace(new RegExp ('^([^'+cc+']*)('+cc+')([^'+cc+']*<body[^>]*>)(.*?)'), "$1$3$2$4");
   }
   else
   {
@@ -459,12 +462,12 @@ Xinha.prototype.setCC = function ( target )
     if ( sel.type == 'Control' )
     {
       var control = r.item(0);
-      control.outerHTML += this.cc;
+      control.outerHTML += cc;
     }
     else
     {
       r.collapse();
-      r.text = this.cc;
+      r.text = cc;
     }
   }
 };

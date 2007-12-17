@@ -1,4 +1,6 @@
-<%@page contentType="text/javascript"  %>
+<%@ page
+	contentType="text/javascript"
+%>
 xinha_editors = null;
 xinha_init    = null;
 xinha_config  = null;
@@ -8,16 +10,16 @@ xinha_plugins = null;
 xinha_init = xinha_init ? xinha_init : function()
 {
     xinha_plugins = xinha_plugins ? xinha_plugins :
-                    [
-                            'ImcmsIntegration',
-                            'ContextMenu',
-                            'TableOperations',
-                            'CharacterMap',
-                            'Stylist',
-                            'ListType',
-                            'InsertAnchor',
-														'SuperClean'
-                            ];
+		[
+			'ImcmsIntegration',
+			'ContextMenu',
+			'TableOperations',
+			'CharacterMap',
+			'Stylist',
+			'ListType',
+			'InsertAnchor',
+			'SuperClean'
+		];
     // THIS BIT OF JAVASCRIPT LOADS THE PLUGINS, NO TOUCHING  :)
     if(!Xinha.loadPlugins(xinha_plugins, xinha_init)) return;
 

@@ -6,10 +6,10 @@
 // Distributed under the same terms as HTMLArea itself.
 // This notice MUST stay intact for use (see license.txt).
 //
-// $Id: css.js 419 2005-10-31 05:33:41Z mokhet $
+// $Id: css.js 856 2007-06-13 18:34:34Z wymsy $
 // @TODO This is the default and won't be very useful to others.
 // We should make this better.
-HTMLArea.Config.prototype.cssPluginConfig =
+Xinha.Config.prototype.cssPluginConfig =
   {
     combos : [
       { label: "Syntax",

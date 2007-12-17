@@ -2,8 +2,8 @@
   /*--------------------------------------:noTabs=true:tabSize=2:indentSize=2:--
     --  FormOperations Plugin
     --
-    --  $HeadURL: http://svn.xinha.python-hosting.com/trunk/plugins/FormOperations/form-operations.js $
-    --  $LastChangedDate: 2007-02-07 20:12:42 +0100 (ons, 07 feb 2007) $
+    --  $HeadURL: http://svn.xinha.webfactional.com/trunk/plugins/FormOperations/form-operations.js $
+    --  $LastChangedDate: 2007-02-08 08:12:42 +1300 (Thu, 08 Feb 2007) $
     --  $LastChangedRevision: 715 $
     --  $LastChangedBy: htanaka $
     --------------------------------------------------------------------------*/

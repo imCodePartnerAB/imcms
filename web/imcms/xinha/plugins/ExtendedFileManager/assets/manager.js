@@ -54,13 +54,29 @@ if (manager_mode == "link")
 else
 {
     var offsetForInputs = (Xinha.is_ie) ? 230 : 210;
-}    
+}   
+
+var h =  100 // space above files 
+       + 250 // files iframe
+       + offsetForInputs; 
+
+var win_dim = {width:650,height:h};
+window.resizeTo(win_dim.width,win_dim.height);
+if (!Xinha.is_ie)
+{
+  var x = opener.screenX + (opener.outerWidth - win_dim.width) / 2;
+  var y = opener.screenY + (opener.outerHeight - win_dim.height) / 2;
+}
+else
+{//IE does not have window.outer... , so center it on the screen at least
+  var x =  (self.screen.availWidth - win_dim.width) / 2;
+  var y =  (self.screen.availHeight - win_dim.height) / 2;	
+}
+window.moveTo(x,y);
+
 init = function ()
 {
     
-	var h =  100 // space above files 
-           + 250 // files iframe
-           + offsetForInputs;
     
     __dlg_init(null,  {width:650,height:h});
 
@@ -72,7 +88,8 @@ init = function ()
     var editor = window.dialogArguments.editor;
 
     var param = window.dialogArguments.param;
-
+    var startDir = null;
+	
     if(manager_mode=="image" && param)
     {
         var absoluteURL = new RegExp('^https?://');
@@ -124,16 +141,7 @@ init = function ()
         var dreg = new RegExp('^(.*/)([^/]+)$');
         if (dreg.test(param['f_url']))
         {
-          changeDir(RegExp.$1);
-          var dirPath = document.getElementById('dirPath');
-          for(var i = 0; i < dirPath.options.length; i++)
-          {
-            if(dirPath.options[i].value == encodeURIComponent(RegExp.$1))
-            {
-              dirPath.options[i].selected = true;
-              break;
-            }
-          }
+		  startDir = RegExp.$1;
         }
 
         document.getElementById('f_preview').src = _backend_url + '__function=thumbs&img=' + param.f_url;
@@ -157,7 +165,6 @@ init = function ()
         param.f_href = param.f_href.replace( href_regex, "" );
 
         // Locate to the correct directory
-        var startDir;
         var dreg = new RegExp('^(.*/)([^/]+)$');
         if (dreg.test(param['f_href']))
         {
@@ -169,20 +176,6 @@ init = function ()
         	if (startDir) startDir = startDir[1];
         }
         
-        if (startDir)
-        {
-          changeDir(startDir);
-          var dirPath = document.getElementById('dirPath');
-          for(var i = 0; i < dirPath.options.length; i++)
-          {
-            if(dirPath.options[i].value == encodeURIComponent(RegExp.$1))
-            {
-              dirPath.options[i].selected = true;
-              break;
-            }
-          }
-        }
-
         if (param)
         {
             if ( typeof param["f_usetarget"] != "undefined" )
@@ -221,23 +214,28 @@ init = function ()
     }
     else if (!param)
     {
-    	var startDir = document.cookie.match(new RegExp ("EFMStartDir" + manager_mode + "=(.*?)(;|$)"));
+    	startDir = document.cookie.match(new RegExp ("EFMStartDir" + manager_mode + "=(.*?)(;|$)"));
     	if (startDir)
     	{
     		startDir = startDir[1];
-    		changeDir(startDir);
-	        var dirPath = document.getElementById('dirPath');
-	        for(var i = 0; i < dirPath.options.length; i++)
-	        {
-	          if(dirPath.options[i].value == encodeURIComponent(startDir))
-	          {
-	            dirPath.options[i].selected = true;
-	            break;
-	          }
-	        }
     	}
     }
-    if (manager_mode == 'image' && typeof Xinha.colorPicker != "undefined" && document.getElementById('f_backgroundColor')) {
+	if ( startDir )
+    {
+         Xinha._addEvent(imgManager,'load', function () {
+                changeDir(startDir);
+                var dirPath = document.getElementById('dirPath');
+                for(var i = 0; i < dirPath.options.length; i++)
+                {
+                    if(dirPath.options[i].value == encodeURIComponent(startDir))
+                    {
+                        dirPath.options[i].selected = true;
+                        break;
+                    }
+                }
+            } );
+    }
+    if (manager_mode == 'image' && typeof Xinha.colorPicker != "undefined" && document.getElementById('f_backgroundColor') && document.getElementById('f_backgroundColor').type == 'text') {
       // Hookup color pickers
 
       var pickerConfig = {
@@ -554,4 +552,11 @@ function resize()
 	return true;
 }
 addEvent(window, 'resize', resize);
-addEvent(window, 'load', init);
+if (Xinha.is_gecko)
+{// this runs the init function (translation) before all the images in the iframe have loaded
+	document.addEventListener("DOMContentLoaded", init, false);
+}
+else
+{
+	addEvent(window, 'load', init);
+}

@@ -25,7 +25,7 @@
   "Horizontal Rule": "Vågrät linje",
   "Insert Web Link": "Infoga länk",
   "Insert/Modify Image": "Infoga bild",
-  "Toggle HTML Source": "Växla mellan textläge och WYSIWYG-läge.",
+  "Toggle HTML Source": "Visa källkod",
   "Enlarge Editor": "Visa i eget fönster",
   "About this editor": "Om denna editor",
   "Help using editor": "Hjälp",

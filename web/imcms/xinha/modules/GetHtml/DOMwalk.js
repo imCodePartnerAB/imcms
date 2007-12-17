@@ -15,9 +15,9 @@
     --  The file is loaded by the Xinha Core when no alternative method (plugin) is loaded.
     --
     --
-    --  $HeadURL: http://svn.xinha.python-hosting.com/trunk/modules/GetHtml/DOMwalk.js $
-    --  $LastChangedDate: 2007-04-30 11:52:22 +0200 (mån, 30 apr 2007) $
-    --  $LastChangedRevision: 821 $
+    --  $HeadURL: http://svn.xinha.webfactional.com/trunk/modules/GetHtml/DOMwalk.js $
+    --  $LastChangedDate: 2007-08-07 01:58:56 +1200 (Tue, 07 Aug 2007) $
+    --  $LastChangedRevision: 871 $
     --  $LastChangedBy: ray $
     --------------------------------------------------------------------------*/
 function GetHtmlImplementation(editor) {
@@ -27,9 +27,9 @@ function GetHtmlImplementation(editor) {
 GetHtmlImplementation._pluginInfo = {
   name          : "GetHtmlImplementation DOMwalk",
   origin        : "Xinha Core",
-  version       : "$LastChangedRevision: 821 $".replace(/^[^:]*: (.*) \$$/, '$1'),
+  version       : "$LastChangedRevision: 871 $".replace(/^[^:]*: (.*) \$$/, '$1'),
   developer     : "The Xinha Core Developer Team",
-  developer_url : "$HeadURL: http://svn.xinha.python-hosting.com/trunk/modules/GetHtml/DOMwalk.js $".replace(/^[^:]*: (.*) \$$/, '$1'),
+  developer_url : "$HeadURL: http://svn.xinha.webfactional.com/trunk/modules/GetHtml/DOMwalk.js $".replace(/^[^:]*: (.*) \$$/, '$1'),
   sponsor       : "",
   sponsor_url   : "",
   license       : "htmlArea"
@@ -51,8 +51,7 @@ Xinha.getHTML = function(root, outputRoot, editor)
   }
 };
 
-Xinha.emptyAttributes = " checked disabled ismap readonly nowrap compact declare selected defer multiple noresize noshade ";
-Xinha.elGetsNewLine = function (el) { return (" br meta link title ".indexOf(" " + el.tagName.toLowerCase() + " ") != -1);};
+Xinha.emptyAttributes = " checked disabled ismap readonly nowrap compact declare selected defer multiple noresize noshade "
 
 Xinha.getHTMLWrapper = function(root, outputRoot, editor, indent)
 {
@@ -132,7 +131,7 @@ Xinha.getHTMLWrapper = function(root, outputRoot, editor, indent)
       else if ( outputRoot )
       {
         closed = (!(root.hasChildNodes() || Xinha.needsClosingTag(root)));
-        html += ((Xinha.isBlockElement(root) || Xinha.elGetsNewLine(root)) ? ('\n' + indent) : '') + "<" + root.tagName.toLowerCase();
+        html += ((Xinha.isBlockElement(root)) ? ('\n' + indent) : '') + "<" + root.tagName.toLowerCase();
         var attrs = root.attributes;
         
         for ( i = 0; i < attrs.length; ++i )
@@ -299,7 +298,14 @@ Xinha.getHTMLWrapper = function(root, outputRoot, editor, indent)
       }
       else if(root.data.trim() == '')
       {
-        html = '';
+        if(root.data)
+        {
+          html = ' ';
+        }
+        else
+        {
+          html = '';
+        }
       }
       else
       {

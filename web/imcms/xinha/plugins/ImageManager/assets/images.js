@@ -1,12 +1,12 @@
 /**
  * Functions for the image listing, used by images.php only	
- * @author $Author: gogo $
- * @version $Id: images.js 829 2007-05-09 12:45:09Z gogo $
+ * @author $Author: wymsy $
+ * @version $Id: images.js 856 2007-06-13 18:34:34Z wymsy $
  * @package ImageManager
  */
 
 	function i18n(str) {
-        return HTMLArea._lc(str, 'ImageManager');
+        return Xinha._lc(str, 'ImageManager');
 	}
 
 	function changeDir(newDir) 

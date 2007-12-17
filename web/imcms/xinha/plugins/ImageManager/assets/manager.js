@@ -1,13 +1,13 @@
 /**
  * Functions for the ImageManager, used by manager.php only	
  * @author $Author: gogo $
- * @version $Id: manager.js 833 2007-05-09 15:04:07Z gogo $
+ * @version $Id: manager.js 877 2007-08-12 15:50:03Z gogo $
  * @package ImageManager
  */
 	
 	//Translation
 	function i18n(str) {
-        return HTMLArea._lc(str, 'ImageManager');
+        return Xinha._lc(str, 'ImageManager');
 	}
 
 
@@ -80,7 +80,7 @@
 
       // Locate to the correct directory
       var dreg = new RegExp('^(.*/)([^/]+)$');
-      if(dreg.test(param['f_url']))
+      if(dreg.test(param['f_url']) && !(new RegExp('^https?://','i')).test(param['f_url']))
       {
         changeDir(RegExp.$1);
         var dirPath = document.getElementById('dirPath');
@@ -147,7 +147,7 @@
       || (origsize.h != param.f_height) )
     {
       // Yup, need to resize
-      var resized = HTMLArea._geturlcontent(_backend_url + '&__function=resizer&img=' + encodeURIComponent(document.getElementById('f_url').value) + '&width=' + param.f_width + '&height=' + param.f_height);
+      var resized = Xinha._geturlcontent(_backend_url + '&__function=resizer&img=' + encodeURIComponent(document.getElementById('f_url').value) + '&width=' + param.f_width + '&height=' + param.f_height);
       // alert(resized);
       resized = eval(resized);
       if(resized)
@@ -211,7 +211,9 @@
 	function changeDir(newDir) 
 	{
 		if(typeof imgManager != 'undefined')
-			imgManager.changeDir(newDir);
+    {      
+	    imgManager.changeDir(newDir);
+    }
 	}
 
 	function toggleConstrains(constrains) 
@@ -335,4 +337,5 @@
 			createFolder(folder);
 		}
 	}
+  
 	addEvent(window, 'load', init);

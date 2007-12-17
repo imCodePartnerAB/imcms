@@ -16,17 +16,17 @@
     --  he file is loaded as a special plugin by the Xinha Core when no alternative method (plugin) is loaded.
     --
     --
-    --  $HeadURL: http://svn.xinha.python-hosting.com/trunk/modules/InsertImage/insert_image.js $
-    --  $LastChangedDate: 2007-02-13 13:54:39 +0100 (tis, 13 feb 2007) $
-    --  $LastChangedRevision: 733 $
-    --  $LastChangedBy: htanaka $
+    --  $HeadURL: http://svn.xinha.webfactional.com/trunk/modules/InsertImage/insert_image.js $
+    --  $LastChangedDate: 2007-10-11 10:08:24 +1300 (Thu, 11 Oct 2007) $
+    --  $LastChangedRevision: 900 $
+    --  $LastChangedBy: ray $
     --------------------------------------------------------------------------*/
 InsertImage._pluginInfo = {
   name          : "InsertImage",
   origin        : "Xinha Core",
-  version       : "$LastChangedRevision: 733 $".replace(/^[^:]*: (.*) \$$/, '$1'),
+  version       : "$LastChangedRevision: 900 $".replace(/^[^:]*: (.*) \$$/, '$1'),
   developer     : "The Xinha Core Developer Team",
-  developer_url : "$HeadURL: http://svn.xinha.python-hosting.com/trunk/modules/InsertImage/insert_image.js $".replace(/^[^:]*: (.*) \$$/, '$1'),
+  developer_url : "$HeadURL: http://svn.xinha.webfactional.com/trunk/modules/InsertImage/insert_image.js $".replace(/^[^:]*: (.*) \$$/, '$1'),
   sponsor       : "",
   sponsor_url   : "",
   license       : "htmlArea"
@@ -39,7 +39,7 @@ function InsertImage(editor) {
 // there, it will just modify it's properties.
 Xinha.prototype._insertImage = function(image)
 {
-  var editor = this;	// for nested functions
+  var editor = this;  // for nested functions
   var outparam;
   if ( typeof image == "undefined" )
   {
@@ -62,25 +62,41 @@ Xinha.prototype._insertImage = function(image)
   
   if ( image )
   {
-    outparam =
+    function getSpecifiedAttribute(element,attribute)
+    {
+      var a = element.attributes;
+      for (var i=0;i<a.length;i++)
+      {
+        if (a[i].nodeName == attribute && a[i].specified)
+        {
+          return a[i].value;
+        }
+      }
+      return '';
+  }
+  /* if you want to understand why the above function is required, uncomment the two lines below and launch InsertImage in both Mozilla & IE with an image selected that hath neither value set and compare the results
+  alert(image.vspace +' '+ image.getAttribute('vspace') + ' ' + image.getAttribute('vspace',2) + ' ' + getSpecifiedAttribute(image,'vspace') );
+    alert(image.hspace +' '+ image.getAttribute('hspace') + ' ' + image.getAttribute('hspace',2) + ' ' + getSpecifiedAttribute(image,'hspace') );
+  */
+  outparam =
     {
       f_base   : base,
-      f_url    : Xinha.is_ie ? editor.stripBaseURL(image.src) : image.getAttribute("src"),
+      f_url    : image.getAttribute('src',2), // the second parameter makes IE return the value as it is set, as opposed to an "interpolated" (as MSDN calls it) value
       f_alt    : image.alt,
       f_border : image.border,
       f_align  : image.align,
-      f_vert   : (image.vspace!=-1 ? image.vspace : ""), //FireFox reports -1 when this attr has no value.
-      f_horiz  : (image.hspace!=-1 ? image.hspace : ""), //FireFox reports -1 when this attr has no value.
+      f_vert   : getSpecifiedAttribute(image,'vspace'),
+      f_horiz  : getSpecifiedAttribute(image,'hspace'),
       f_width  : image.width,
       f_height : image.height
     };
   }
   else{
-  	outparam =
-  	{
+    outparam =
+    {
       f_base   : base,
       f_url    : ""      
-  	};
+    };
   }
   
   Dialog(
@@ -148,13 +164,13 @@ Xinha.prototype._insertImage = function(image)
               img.removeAttribute("align");
             break;
           case "f_vert":
-            if (value)
+            if (value != "")
               img.vspace = parseInt(value || "0");
             else
               img.removeAttribute("vspace");
             break;
           case "f_horiz":
-            if (value)
+            if (value != "")
               img.hspace = parseInt(value || "0");
             else
               img.removeAttribute("hspace");

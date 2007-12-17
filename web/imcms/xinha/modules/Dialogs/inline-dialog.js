@@ -15,8 +15,8 @@
     --  
     --
     --
-    --  $HeadURL: http://svn.xinha.python-hosting.com/trunk/modules/Dialogs/inline-dialog.js $
-    --  $LastChangedDate: 2007-01-23 15:26:04 +0100 (tis, 23 jan 2007) $
+    --  $HeadURL: http://svn.xinha.webfactional.com/trunk/modules/Dialogs/inline-dialog.js $
+    --  $LastChangedDate: 2007-01-24 03:26:04 +1300 (Wed, 24 Jan 2007) $
     --  $LastChangedRevision: 694 $
     --  $LastChangedBy: gogo $
     --------------------------------------------------------------------------*/

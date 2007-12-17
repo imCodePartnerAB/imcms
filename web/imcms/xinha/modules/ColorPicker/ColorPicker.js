@@ -363,6 +363,10 @@
       var left = 0;
       do
       {
+        if (e.style.position == 'fixed') 
+        {
+          this.table.style.position = 'fixed';
+        }
         top += e.offsetTop;
         left += e.offsetLeft;
         e = e.offsetParent;
@@ -682,7 +686,7 @@
         but.style.padding = '0px 4px';
         but.style.cursor = 'pointer';
         but.onclick = function() { Xinha.colorPicker.remember(picker.chosenColor.value, picker.savecolors); picker.callback(picker.chosenColor.value); picker.close(); };
-        but.appendChild(document.createTextNode('OK'));
+        but.appendChild(document.createTextNode(Xinha._lc('OK')));
         but.align = 'center';
         div.appendChild(but);
         td.appendChild(div);
@@ -799,7 +803,7 @@
       if ( this.iframe ) { this.iframe.style.display = 'none'; }
       @*/
     };
-  }
+} // end Xinha.colorPicker
 
 // array of the saved colors
 Xinha.colorPicker.savedColors = [];
@@ -842,9 +846,6 @@ Xinha.colorPicker.loadColors = function()
   }
 };
 
-Xinha.colorPicker._lc = function(string) {
-  return Xinha._lc(string);
-}
 
 
 /** Create a neat little box next to an input field
@@ -887,4 +888,9 @@ Xinha.colorPicker.InputBinding = function(input,pickerConfig)
     var colPicker = new Xinha.colorPicker(pickerConfig);
 	  colPicker.open("",chooser, input.value ); 
   }
+  Xinha.freeLater(this,"chooser");
+}
+Xinha.colorPicker.InputBinding.prototype.setColor = function (color)
+{
+  this.chooser.style.backgroundColor = color;
 }

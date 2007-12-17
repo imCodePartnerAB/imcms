@@ -9,10 +9,12 @@
 // Version 3.0 developed by Mihai Bazon.
 //   http://dynarch.com/mishoo
 //
-// $Id: popup.js 797 2007-03-27 23:14:46Z ray $
-Xinha = window.opener.Xinha;
+// $Id: popup.js 877 2007-08-12 15:50:03Z gogo $
+if(typeof Xinha == 'undefined')
+  Xinha = window.opener.Xinha;
+
 // Backward compatibility will be removed some time or not?
-HTMLArea = window.opener.Xinha;
+HTMLArea = Xinha;
 
 function getAbsolutePos(el) {
 	var r = { x: el.offsetLeft, y: el.offsetTop };
