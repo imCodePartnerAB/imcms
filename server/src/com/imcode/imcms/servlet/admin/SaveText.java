@@ -46,6 +46,8 @@ public final class SaveText extends HttpServlet {
             int text_format = Integer.parseInt( req.getParameter( "format_type" ) );
 
             TextDomainObject text = new TextDomainObject( text_string, text_format );
+            
+            text.setModified(true);
 
             saveText( documentMapper, text, document, txt_no, imcref, meta_id, user );
 

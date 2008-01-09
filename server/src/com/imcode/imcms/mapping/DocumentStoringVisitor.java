@@ -116,24 +116,29 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         for (Iterator iterator = texts.keySet().iterator(); iterator.hasNext();) {
             Integer textIndex = (Integer) iterator.next();
             TextDomainObject text = (TextDomainObject) texts.get(textIndex.intValue());
-            String lastHistoryTextValue = getLastHistoryTextValue(textDocument.getId(), textIndex, text.getType());
-                  
-            // Legacy logic support: copy old text to history if it does not exists
-            if (oldTextDocument != null) {            	
-            	TextDomainObject oldText = oldTextDocument.getText(textIndex.intValue());
-            	              	 
-            	if (oldText != null 
-            			&& !oldText.toString().equals("") 
-            			&& !oldText.toString().equals(lastHistoryTextValue)
-            			&& !text.equals(oldText)) {            		
-            		sqlInsertTextHistory(oldTextDocument, textIndex, oldText, user);
-            	}
-            }            
             
-            if (!text.toString().equals(lastHistoryTextValue) && user != null) {
+            // If this is first time insertion then ignore modified flag
+            if (oldTextDocument == null) {
             	sqlInsertTextHistory(textDocument, textIndex, text, user);
+            } else if (text.isModified()) {
+         		TextDomainObject oldText = oldTextDocument.getText(textIndex.intValue());    
+         		String oldTextValue = oldText == null ? null : oldText.toString();
+        		
+         	    // Legacy logic support: copy old text to history if it does not exists             		
+         		if (oldTextValue != null) {
+         			String lastHistoryTextValue = getLastHistoryTextValue(
+         					textDocument.getId(), textIndex, text.getType());
+         			
+         			if (!oldTextValue.equals(lastHistoryTextValue)) {
+         				sqlInsertTextHistory(oldTextDocument, textIndex, oldText, user);
+         			}
+         		}
+        		
+         		if (!text.getText().equals(oldTextValue)) {
+         			sqlInsertTextHistory(textDocument, textIndex, text, user);
+         		}             		                    	            	
             }
-                        
+            
             sqlInsertText(textDocument, textIndex, text);
         }
     }
