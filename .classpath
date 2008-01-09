@@ -48,6 +48,6 @@
 	<classpathentry kind="lib" path="lib/noinstall/servlet-api-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/nodist/junit.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.5.0_13"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/imcode-ldap"/>
+	<classpathentry kind="lib" path="lib/imcode-ldap-0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

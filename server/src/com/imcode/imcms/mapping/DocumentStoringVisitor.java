@@ -110,36 +110,42 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         Map texts = textDocument.getTexts();
-        String sqlDeleteTexts = "DELETE FROM texts WHERE meta_id = ?";
-        final Object[] parameters = new String[]{"" + textDocument.getId()};
-        database.execute(new SqlUpdateCommand(sqlDeleteTexts, parameters));
+        
         for (Iterator iterator = texts.keySet().iterator(); iterator.hasNext();) {
             Integer textIndex = (Integer) iterator.next();
-            TextDomainObject text = (TextDomainObject) texts.get(textIndex.intValue());
+            TextDomainObject text = (TextDomainObject) texts.get(textIndex.intValue());  
+            boolean saveText = false;
             
             // If this is first time insertion then ignore modified flag
-            if (oldTextDocument == null) {
-            	sqlInsertTextHistory(textDocument, textIndex, text, user);
-            } else if (text.isModified()) {
-         		TextDomainObject oldText = oldTextDocument.getText(textIndex.intValue());    
-         		String oldTextValue = oldText == null ? null : oldText.toString();
-        		
-         	    // Legacy logic support: copy old text to history if it does not exists             		
-         		if (oldTextValue != null) {
+            if (oldTextDocument == null) {            	
+            	saveText = true;
+            } else {
+            	TextDomainObject oldText = oldTextDocument.getText(textIndex.intValue());
+         		String oldTextValue = oldText == null ? null : oldText.toString();            	
+            	
+         		// If this is first time insertion then ignore modified flag
+         		if (oldTextValue == null) {
+         			saveText = true;
+         		} else if (text.isModified()) {    	         	                		
          			String lastHistoryTextValue = getLastHistoryTextValue(
          					textDocument.getId(), textIndex, text.getType());
          			
+         			// Legacy logic support: copy old text to history if it does not yet exists         			
          			if (!oldTextValue.equals(lastHistoryTextValue)) {
          				sqlInsertTextHistory(oldTextDocument, textIndex, oldText, user);
          			}
-         		}
-        		
-         		if (!text.getText().equals(oldTextValue)) {
-         			sqlInsertTextHistory(textDocument, textIndex, text, user);
-         		}             		                    	            	
+	        		
+	         		if (!text.getText().equals(oldTextValue)) {	         			
+	         			saveText = true;
+	         		}          		
+            	}
             }
             
-            sqlInsertText(textDocument, textIndex, text);
+            if (saveText) {
+            	sqlInsertTextHistory(textDocument, textIndex, text, user);      	
+            	sqlDeleteText(textDocument, textIndex, text);
+            	sqlInsertText(textDocument, textIndex, text);           	
+            }
         }
     }
     
@@ -191,6 +197,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     }
 
+    private void sqlDeleteText(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
+    	Object[] parameters = new String[] {"" + textDocument.getId(), 
+        		"" + textIndex, "" + text.getType()};
+    	
+        database.execute(new SqlUpdateCommand(
+        		"DELETE FROM texts WHERE meta_id = ? AND name = ? AND type = ?", parameters));
+    }
+    
     private void sqlInsertText(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
         final Object[] parameters = new String[]{
             "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType()
