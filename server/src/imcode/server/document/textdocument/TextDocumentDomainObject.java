@@ -10,6 +10,16 @@ import org.apache.commons.lang.UnhandledException;
 import java.util.*;
 
 public class TextDocumentDomainObject extends DocumentDomainObject {
+	
+	/** 
+	 * Modified text indexes. 
+	 * 
+	 * Every modified text can be saved to history. 
+	 * This controlled by setting boolean flag.
+	 * 
+	 * Required when saving only particular set of text fields.
+	 */
+	private Map<Integer, Boolean> modifiedTextIndexes = new TreeMap<Integer, Boolean>();
 
     private LazilyLoadedObject<CopyableHashMap> texts = new LazilyLoadedObject<CopyableHashMap>(new CopyableHashMapLoader());
     private LazilyLoadedObject<CopyableHashMap> images = new LazilyLoadedObject<CopyableHashMap>(new CopyableHashMapLoader());
@@ -302,5 +312,20 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         }
     }
 
-
+    
+	public Map<Integer, Boolean> getModifiedTextIndexes() {
+		return modifiedTextIndexes;
+	}
+	
+	public void addModifiedTextIndex(int index, boolean saveToHistory) {
+		modifiedTextIndexes.put(index, saveToHistory);
+	}
+	
+	public void removeModifiedTextIndex(int index) {
+		modifiedTextIndexes.remove(index);
+	}
+	
+	public void removeAllModifiedTextIndexs() {
+		modifiedTextIndexes.clear();
+	}	
 }

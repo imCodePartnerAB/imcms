@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -109,14 +110,19 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-        Map texts = textDocument.getTexts();
+        Map<Integer, TextDomainObject> texts = textDocument.getTexts();
+        Map<Integer, Boolean> modifiedTextIndexes = textDocument.getModifiedTextIndexes();
+        boolean useModifiedTextIndexes = modifiedTextIndexes.size() > 0;
         
-        for (Iterator iterator = texts.keySet().iterator(); iterator.hasNext();) {
-            Integer textIndex = (Integer) iterator.next();
-            TextDomainObject text = (TextDomainObject) texts.get(textIndex.intValue());  
+        Set<Integer> indexes = useModifiedTextIndexes
+        		? modifiedTextIndexes.keySet()
+        		: texts.keySet();		        
+        
+        for (Integer textIndex: indexes) {
+            TextDomainObject text = texts.get(textIndex);  
             boolean saveText = false;
+            boolean saveTextHistory = !(useModifiedTextIndexes && !modifiedTextIndexes.get(textIndex));
             
-            // If this is first time insertion then ignore modified flag
             if (oldTextDocument == null) {            	
             	saveText = true;
             } else {
@@ -126,12 +132,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
          		// If this is first time insertion then ignore modified flag
          		if (oldTextValue == null) {
          			saveText = true;
-         		} else if (text.isModified()) {    	         	                		
+         		} else {    	         	                		
          			String lastHistoryTextValue = getLastHistoryTextValue(
          					textDocument.getId(), textIndex, text.getType());
          			
-         			// Legacy logic support: copy old text to history if it does not yet exists         			
-         			if (!oldTextValue.equals(lastHistoryTextValue)) {
+         			// Legacy logic support: copy old text to history if it does not yet exists  
+         			if (saveTextHistory && !oldTextValue.equals(lastHistoryTextValue)) {
          				sqlInsertTextHistory(oldTextDocument, textIndex, oldText, user);
          			}
 	        		
@@ -142,7 +148,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             }
             
             if (saveText) {
-            	sqlInsertTextHistory(textDocument, textIndex, text, user);      	
+            	if (saveTextHistory) {
+            		sqlInsertTextHistory(textDocument, textIndex, text, user);      
+            	}
+            	
             	sqlDeleteText(textDocument, textIndex, text);
             	sqlInsertText(textDocument, textIndex, text);           	
             }

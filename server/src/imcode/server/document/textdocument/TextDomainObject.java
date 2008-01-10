@@ -11,8 +11,6 @@ public class TextDomainObject implements Serializable {
 
     String text;
     int type;
-    
-    private boolean modified;
 
     /* Text-types. */
 
@@ -121,13 +119,4 @@ public class TextDomainObject implements Serializable {
         return new HashCodeBuilder().append(type)
                 .append(text).toHashCode();
     }
-
-    /** Returns if this text was modified. */
-	public boolean isModified() {
-		return modified;
-	}
-
-	public void setModified(boolean modified) {
-		this.modified = modified;
-	}
 }

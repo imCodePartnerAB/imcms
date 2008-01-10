@@ -46,8 +46,6 @@ public final class SaveText extends HttpServlet {
             int text_format = Integer.parseInt( req.getParameter( "format_type" ) );
 
             TextDomainObject text = new TextDomainObject( text_string, text_format );
-            
-            text.setModified(true);
 
             saveText( documentMapper, text, document, txt_no, imcref, meta_id, user );
 
@@ -66,6 +64,7 @@ public final class SaveText extends HttpServlet {
                           int txt_no, ImcmsServices imcref, int meta_id,
                           UserDomainObject user) {
         document.setText( txt_no, text );
+        document.addModifiedTextIndex(txt_no, true);
 
         try {
             documentMapper.saveDocument( document, user );
