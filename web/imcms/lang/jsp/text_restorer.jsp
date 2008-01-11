@@ -522,7 +522,7 @@ try {
 	sSql = "SELECT t.counter, t.modified_datetime, t.type, u.first_name, u.last_name, u.login_name\n" +
 				 "FROM texts_history t INNER JOIN users u ON t.user_id = u.user_id\n" +
 				 "WHERE t.meta_id = ? AND t.name = ?" + dateSpan + "\n" +
-				 "ORDER BY t.modified_datetime DESC" ;
+				 "ORDER BY t.counter DESC" ;
 	preparedStatement = connection.prepareStatement(sSql) ;
 	preparedStatement.setInt(1, meta_id) ;
 	preparedStatement.setInt(2, txtNo) ;
