@@ -43,7 +43,7 @@ public class ChangeText extends HttpServlet {
 
         TextDomainObject text = textDocument.getText( textIndex );
         if ( null == text ) {
-            text = new TextDomainObject( "", TextDomainObject.TEXT_TYPE_PLAIN );
+            text = new TextDomainObject( "", TextDomainObject.TEXT_TYPE_HTML );
         }
         String formatsParameter = request.getParameter("formats");
         TextEditPage page = new TextEditPage( documentId, textIndex, text, label );

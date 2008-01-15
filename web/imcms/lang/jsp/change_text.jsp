@@ -49,7 +49,7 @@ boolean editorHidden   = getCookie("imcms_hide_editor", request).equals("true") 
 int rows = (request.getParameter("rows") != null && request.getParameter("rows").matches("^\\d+$")) ? Integer.parseInt(request.getParameter("rows")) : 0 ;
 
 if (rows > 0) {
-	showModeEditor = false ;
+	showModeEditor = false;
 }
 
 boolean isSwe = false ;
@@ -78,6 +78,12 @@ if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType() && !editorHidden) { 
 <form method="POST" action="<%= request.getContextPath() %>/servlet/SaveText">
 <input type="hidden" name="meta_id"  value="<%= textEditPage.getDocumentId() %>">
 <input type="hidden" name="txt_no"   value="<%= textEditPage.getTextIndex() %>">
+
+<%
+if (rows > 0) {
+	%><input type="hidden" name="rows"  value="<%=rows%>"><%
+}
+%>
 
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )

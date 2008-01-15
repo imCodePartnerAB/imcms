@@ -21,6 +21,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +34,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -44,6 +47,12 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.TransactionDatabaseCommand;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
+	
+	private final ResultSetHandler singleStringHandler = new ResultSetHandler() {
+		public Object handle(ResultSet rs) throws SQLException {
+			return rs.next() ? rs.getString(1) : null;
+		}
+	};
 
     protected Database database ;
     protected ImcmsServices services;
@@ -165,7 +174,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     	
     	Object[] parameters = new Object[] {metaId, name, type};
     	
-    	return (String)database.execute(new SqlQueryCommand(sql, parameters, new ScalarHandler(1)));
+    	return (String)database.execute(new SqlQueryCommand(sql, parameters, singleStringHandler));
     }
 
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
