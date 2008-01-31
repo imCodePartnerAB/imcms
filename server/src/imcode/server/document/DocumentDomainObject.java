@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.CopyableHashMap;
@@ -22,6 +23,9 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     protected Attributes attributes = new Attributes();
     private static Logger log = Logger.getLogger( DocumentDomainObject.class );
+    
+    // Hibernate object
+    private Meta meta;
 
     public Object clone() throws CloneNotSupportedException {
         DocumentDomainObject clone = (DocumentDomainObject)super.clone();
@@ -545,5 +549,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             }
         }
     }
+
+	public Meta getMeta() {
+		return meta;
+	}
+
+	public void setMeta(Meta meta) {
+		this.meta = meta;
+	}
 
 }

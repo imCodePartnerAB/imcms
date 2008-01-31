@@ -29,7 +29,11 @@
             java.util.Arrays,
             java.util.Date,
             java.util.Set,
-            java.util.TreeSet"%>
+            java.util.TreeSet,
+            com.imcode.imcms.api.Meta"%>
+
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%@	taglib prefix="vel" uri="imcmsvelocity"%><%
 
@@ -52,6 +56,7 @@
     JSCalendar jsCalendar = new JSCalendar( Utility.getLoggedOnUser(request).getLanguageIso639_2(), request ) ;
     String calendarButtonTitle = "<? web/imcms/lang/jscalendar/show_calendar_button ?>";
 
+    pageContext.setAttribute("document", document);
 %><%!
 
 String formatDate(Date date) {
@@ -146,14 +151,18 @@ function checkFocus() {
 </tr><%
 } %>
 <tr>
+    
 	<td>
-	<table border="0" cellspacing="0" cellpadding="0" width="656">
-	<tr>
-		<td class="imcmsAdmText" nowrap>
-		<? install/htdocs/sv/jsp/docadmin/document_information.jsp/6 ?><sup class="imNote">1</sup></td>
-		<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE %>" size="48" maxlength="255" style="width: 100%"
-		value="<%= StringEscapeUtils.escapeHtml(document.getHeadline()) %>"></td>
-	</tr>
+	  <table border="0" cellspacing="0" cellpadding="0" width="656">
+	      <%-- LINK HEADING --%>
+	      <c:forEach items="${document.meta.i18nParts}" var="i18nPart">
+	      
+		  <tr>
+			<td class="imcmsAdmText" nowrap>
+			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/6 ?><sup class="imNote">1</sup></td>
+			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE %>" size="48" maxlength="255" style="width: 100%"
+			value="<%= StringEscapeUtils.escapeHtml(document.getHeadline()) %>"></td>
+	      </tr>	
     <tr>
         <td></td>
         <td class="imNoteComment"><sup class="imNote">1</sup>
@@ -163,11 +172,13 @@ function checkFocus() {
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="2"></td>
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="2"></td>
 	</tr>
-	<tr>
+	
+      <%-- LINK HEADING --%> 
+	  <tr>	  
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1002 ?>&nbsp;</td>
 		<td class="imcmsAdmForm">
 		<textarea name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;">
-<%= StringEscapeUtils.escapeHtml(document.getMenuText()) %></textarea><%
+			<c:out value="${i18nPart.text}"/></textarea><%
 
 		if (creatingNewDocument && document instanceof TextDocumentDomainObject) { %>
 		<table border="0" cellspacing="0" cellpadding="0">
@@ -177,7 +188,8 @@ function checkFocus() {
 		</tr>
 		</table><%
 		} %></td>
-	</tr>
+	  </tr>
+	
 	<tr>
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/10 ?></td>
 		<td>
@@ -192,7 +204,12 @@ function checkFocus() {
 	</tr>
     <tr>
 	    <td colspan="2">#gui_hr( 'cccccc' )</td>
-	</tr><% if( !documentInformationPage.getErrors().isEmpty() &&
+	</tr>
+	
+    </c:forEach>
+    
+    <%-- ERROR MESSAGE--%>
+	<% if( !documentInformationPage.getErrors().isEmpty() &&
             documentInformationPage.getErrors().contains(EditDocumentInformationPageFlow.ALIAS_ERROR__ALREADY_EXIST) ) {%>
     <tr>
         <td colspan="2" class="error"><span style='color:red'><%= EditDocumentInformationPageFlow.ALIAS_ERROR__ALREADY_EXIST.toLocalizedString(user) %></span></td>
@@ -200,7 +217,8 @@ function checkFocus() {
             documentInformationPage.getErrors().contains(EditDocumentInformationPageFlow.ALIAS_ERROR__USED_BY_SYSTEM) ) {%>
     <tr>
         <td colspan="2" class="error"><span style='color:red'><%= EditDocumentInformationPageFlow.ALIAS_ERROR__USED_BY_SYSTEM.toLocalizedString(user) %></span></td>
-    </tr><%}%>
+    </tr><%}%>    
+    
     <tr>
         <td class="imcmsAdmText" nowrap><? global/Page_alias ?></td>
         <td>
@@ -218,7 +236,10 @@ function checkFocus() {
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="1"></td>
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="1"></td>
 	</tr>
-	</table><%
+	
+		
+	</table>
+	<%
 
 /* *******************************************************************************************
  *         STATUS                                                                            *
@@ -306,8 +327,66 @@ function checkFocus() {
 			EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_DATE %>','<%=
 			EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_TIME %>');"></td>
 		</tr>
-		</table></td>
-	</tr>
+		
+		<%-- Enabled/Dsabled (Active in spec) languages --%>
+	    <tr>
+		  <td colspan="6">#gui_hr( 'cccccc' )</td>
+	    </tr>		
+		<tr>
+		  <td class="imcmsAdmText" colspan="6">
+		    Active languages
+		  </td>
+		</tr>  
+		<tr>
+		  <td colspan="6">
+		  <table>
+			<c:forEach items="${document.meta.i18nParts}" var="i18nPart">
+	  		  <tr>	  
+				<td>
+				  <input type="checkbox" cheked="${i18nPart.enabled}"/>
+				</td>
+				<td>
+				  ${i18nPart.language.name}
+				</td>		
+	  		  </tr>
+	        </c:forEach>	           			 
+		  </table>		
+		  </td>
+		</tr>
+		<%-- End og Enabled/Dsabled languages --%>
+		
+	    <%-- Missing i18n show rule --%>
+	    <tr>
+		  <td colspan="6">#gui_hr( 'cccccc' )</td>
+	    </tr>	
+	    <tr>
+	      <td colspan="6">
+	        If requested language is missing:
+	      </td>
+	    </tr>
+	    <tr>
+	      <td colspan="6">
+			  <input type="radio" name="MissingI18nShowRule" value="<%=Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE%>"
+		  		checked="<%=document.getMeta().getMissingI18nShowRule() == Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE%>"
+			  />
+			  <%=Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE%>	        
+	      </td>
+	    </tr>
+	    <tr>
+	      <td colspan="6">
+		      <input type="radio" name="MissingI18nShowRule" value="<%=Meta.MissingI18nShowRule.DO_NOT_SHOW%>"
+		  		checked="<%=document.getMeta().getMissingI18nShowRule() == Meta.MissingI18nShowRule.DO_NOT_SHOW%>"
+			  /> 
+			  <%=Meta.MissingI18nShowRule.DO_NOT_SHOW%>	         
+	      </td>
+	    </tr>	    	    
+	    	
+		<%-- End of Missing i18n show rule --%>
+		
+		</table>
+		</td>
+	</tr>			
+	
 	<tr>
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="1"></td>
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="1"></td>
@@ -504,7 +583,11 @@ function checkFocus() {
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/35 ?></td>
-		<td class="imcmsAdmText"><%
+		<td class="imcmsAdmText">
+		
+		  <%-- Keywords old code:
+		  
+		  		<%
 		Set documentKeywords = document.getKeywords();
         String[] keywords = (String[])documentKeywords.toArray(new String[documentKeywords.size()]);
 		Collator collator = service.getDefaultLanguageCollator() ;
@@ -517,7 +600,42 @@ function checkFocus() {
 		<input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SEARCH_DISABLED %>" value="1" <%
 		if (document.isSearchDisabled()) {
 			%> checked<%
-		} %>> <? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?></td>
+		} %>> <? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?>
+		  
+		  --%>
+		  
+		  <table>
+				<c:forEach items="${document.meta.i18nParts}" var="i18nPart">
+	  			  <tr>	  
+					<td>
+					  ${i18nPart.language.name}
+					</td>
+					<td>
+					  <input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS %>" size="48" maxlength="200" style="width: 100%"
+					    value="${i18nPart.keywordsAsString}"
+					  />  
+					</td>		
+	  		      </tr>
+	           </c:forEach>
+	           
+	           <tr>
+	             <td>
+	             
+	             <br>
+		<span class="imcmsAdmDim"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/keywords_explanation ?></span><br>
+		<input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SEARCH_DISABLED %>" value="1" 
+		  <%
+		    if (document.isSearchDisabled()) {
+			  %> checked <%
+		    } 
+		  %>
+		 /> 
+		 <? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?>
+	             
+	             </td>
+	           </tr>
+		  </table>
+		</td>
 	</tr>
 	<tr>
 		<td colspan="2">#gui_hr( "cccccc" )</td>

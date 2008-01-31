@@ -1,5 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.flow.*;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.GetDoc;
@@ -17,6 +19,9 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
 import org.apache.commons.lang.ObjectUtils;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.jsf.WebApplicationContextVariableResolver;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -68,7 +73,15 @@ public class AdminDoc extends HttpServlet {
 
         PageFlow pageFlow = null;
         if ( ImcmsConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags && user.canEditDocumentInformationFor( document ) ) {
-            pageFlow = new EditDocumentInformationPageFlow( document, returnCommand, saveDocumentCommand );
+            //TODO Anton Josua: Document info: i18n. Include meta into document object
+        	WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        	
+        	MetaDao metaDao = (MetaDao) ctx.getBean("metaDao");
+        	Meta meta = metaDao.getMeta(document.getId());
+        	
+        	document.setMeta(meta);
+        	
+        	pageFlow = new EditDocumentInformationPageFlow( document, returnCommand, saveDocumentCommand );
         } else if ( ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor( document ) ) {
             pageFlow = new EditDocumentPermissionsPageFlow( document, returnCommand, saveDocumentCommand );
         } else if ( document instanceof BrowserDocumentDomainObject

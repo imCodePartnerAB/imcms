@@ -1,6 +1,7 @@
 package com.imcode.imcms.flow;
 
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.admin.ImageBrowser;
@@ -398,6 +399,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         private DocumentDomainObject document;
         private boolean adminButtonsHidden;
         private Set errors;
+        private Meta meta;
 
         public DocumentInformationPage( DocumentDomainObject document, boolean adminButtonsHidden, Set errors ) {
             this.document = document;
@@ -412,6 +414,8 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         }
 
         public static DocumentInformationPage fromRequest( HttpServletRequest request ) {
+        	
+        	
             return (DocumentInformationPage)request.getAttribute( REQUEST_ATTRIBUTE__DOCUMENT_INFORMATION_PAGE ) ;
         }
 

@@ -328,7 +328,8 @@
     </target>
 
     <target name="jspc" depends="init,web,libraries,classes">
-
+	
+    	
         <jasper2
                 validateXml="false"
                 verbose="9"
@@ -342,7 +343,7 @@
         <javac srcdir="${tmp}/jsp" destdir="${tmp}/jspc"
                classpathref="classes-and-libraries" fork="yes"
                excludes="**/*_included_jsp.java"/>
-
+		
     </target>
 
     <!-- Copies the libraries (jar-files) needed for building. -->
@@ -404,6 +405,11 @@
         <mkdir dir="${WEB-INF}/includes"/>
         <mkdir dir="${WEB-INF}/logs"/>
         <mkdir dir="${WEB-INF}/uploads"/>
+    	<mkdir dir="${WEB-INF}/classes"/>
+    	
+        <copy todir="${WEB-INF}" file="server/src/applicationContext.xml"/>
+    	
+        <copy todir="${WEB-INF}/classes" file="server/src/hibernate.cfg.xml"/>
 
         <echo message="${version}" file="${versionfile}"/>
 

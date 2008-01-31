@@ -46,8 +46,20 @@
 	<classpathentry kind="lib" path="lib/noinstall/jasper-runtime-5.0.28.jar"/>
 	<classpathentry kind="lib" path="lib/noinstall/jsp-api-2.0.jar"/>
 	<classpathentry kind="lib" path="lib/noinstall/servlet-api-2.4.jar"/>
-	<classpathentry kind="lib" path="lib/nodist/junit.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.5.0_13"/>
 	<classpathentry kind="lib" path="lib/imcode-ldap-0.1.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate3.jar"/>
+	<classpathentry kind="lib" path="lib/persistence.jar"/>
+	<classpathentry kind="lib" path="lib/spring-core.jar"/>
+	<classpathentry kind="lib" path="lib/spring-orm.jar" sourcepath="C:/Devtools/spring-framework-2.5.1"/>
+	<classpathentry kind="lib" path="lib/spring-web.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/spring.jar"/>
+	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/jta.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate-annotations.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate-commons-annotations.jar"/>
+	<classpathentry kind="lib" path="lib/cglib-nodep-2.1_3.jar"/>
+	<classpathentry kind="lib" path="lib/nodist/junit-4.3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
