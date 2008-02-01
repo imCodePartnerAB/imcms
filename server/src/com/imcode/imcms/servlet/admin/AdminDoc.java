@@ -73,10 +73,9 @@ public class AdminDoc extends HttpServlet {
 
         PageFlow pageFlow = null;
         if ( ImcmsConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags && user.canEditDocumentInformationFor( document ) ) {
-            //TODO Anton Josua: Document info: i18n. Include meta into document object
-        	WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+            //TODO Anton Josua: Document info: i18n. refactor
+        	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao"); 
         	
-        	MetaDao metaDao = (MetaDao) ctx.getBean("metaDao");
         	Meta meta = metaDao.getMeta(document.getId());
         	
         	document.setMeta(meta);

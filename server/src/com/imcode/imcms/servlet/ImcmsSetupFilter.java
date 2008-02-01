@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet;
 
+import imcode.server.DefaultImcmsServices;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -8,6 +9,8 @@ import imcode.util.Utility;
 import imcode.util.FallbackDecoder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.NDC;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.*;
 import javax.servlet.jsp.jstl.core.Config;
@@ -23,7 +26,7 @@ import java.util.ResourceBundle;
 public class ImcmsSetupFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
-
+    
     public void doFilter( ServletRequest r, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
         r.setCharacterEncoding(Imcms.DEFAULT_ENCODING);
 
@@ -32,6 +35,7 @@ public class ImcmsSetupFilter implements Filter {
         HttpSession session = request.getSession();
 
         ImcmsServices service = Imcms.getServices();
+        
         if ( session.isNew() ) {
             service.incrementSessionCounter();
             setDomainSessionCookie( response, session );
@@ -109,6 +113,12 @@ public class ImcmsSetupFilter implements Filter {
     }
 
     public void init( FilterConfig config ) throws ServletException {
+    	WebApplicationContext webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(
+    			config.getServletContext());
+    	
+    	DefaultImcmsServices services = (DefaultImcmsServices)Imcms.getServices();
+    	
+    	services.setWebApplicationContext(webApplicationContext);
     }
 
     public void destroy() {

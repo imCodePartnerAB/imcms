@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.beans.PropertyDescriptor;
 import java.io.*;
@@ -45,7 +46,7 @@ import java.util.*;
 
 final public class DefaultImcmsServices implements ImcmsServices {
 
-    private final Database database;
+	private final Database database;
     private TextDocumentParser textDocParser;
     private Config config;
 
@@ -74,6 +75,11 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private final LocalizedMessageProvider localizedMessageProvider;
+    
+    /**
+     * This variable is currently set from ImcmsSetupFilter.config(...) method. 
+     */
+    private WebApplicationContext webApplicationContext;
 
     static {
         mainLog.info("Main log started.");
@@ -717,4 +723,20 @@ final public class DefaultImcmsServices implements ImcmsServices {
         }
     }
 
+    public WebApplicationContext getWebApplicationContext() {
+		return webApplicationContext;
+	}
+
+	public void setWebApplicationContext(WebApplicationContext webApplicationContext) {
+		this.webApplicationContext = webApplicationContext;
+	}
+
+	public Object getSpringBean(String beanName) {		
+		if (webApplicationContext == null) {
+			log.error("WebApplicationContext is not set.");
+			throw new NullPointerException("WebApplicationContext is not set.");
+		}
+		
+		return webApplicationContext.getBean(beanName);
+	}    
 }

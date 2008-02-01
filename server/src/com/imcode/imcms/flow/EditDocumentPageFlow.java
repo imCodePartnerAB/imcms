@@ -1,10 +1,17 @@
 package com.imcode.imcms.flow;
 
+import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.imcode.imcms.dao.MetaDao;
+
 import java.io.IOException;
 
 public abstract class EditDocumentPageFlow extends DocumentPageFlow {
@@ -31,6 +38,11 @@ public abstract class EditDocumentPageFlow extends DocumentPageFlow {
         dispatchOkFromEditPage( request, response );
         if (!response.isCommitted()) {
             saveDocumentAndReturn( request, response );
+            
+            //TODO Anton Josua: Document info: i18n. Refactor
+        	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao"); 
+        	
+        	metaDao.updateMeta(document.getMeta());
         }
     }
 

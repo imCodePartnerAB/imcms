@@ -1,6 +1,8 @@
 package com.imcode.imcms.flow;
 
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.I18nKeyword;
+import com.imcode.imcms.api.I18nMetaPart;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -64,6 +66,10 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER = "browseForMenuImage";
     public static final String REQUEST_PARAMETER__GO_TO_ALIAS_LIST = "listDocumentAlias";
     public static final String PAGE__DOCUMENT_INFORMATION = "document_information";
+    
+    public static final String REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE = "missingI18nShowRule";
+    public static final String REQUEST_PARAMETER__ENABLED_I18N = "activeLanguage";
+    public static final String REQUEST_PARAMETER__I18N_CODE = "i18nCode";
 
     public static final String REQUEST_PARAMETER__STATUS__NEW = "new";
     public static final String REQUEST_PARAMETER__STATUS__APPROVED = "approved";
@@ -120,7 +126,11 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     }
 
     private void dispatchToImageBrowser( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        ImageBrowser imageBrowser = new ImageBrowser();
+        String i18nCode = request.getParameter(REQUEST_PARAMETER__I18N_CODE);        
+    	final ImageBrowser imageBrowser = new ImageBrowser();
+    	
+    	imageBrowser.setI18nCode(i18nCode);
+    	
         final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
         imageBrowser.setCancelCommand( new DispatchCommand() {
             public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
@@ -129,8 +139,18 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             }
         } );
         imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
-            public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                document.setMenuImage( imageUrl );
+            public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {            	
+            	String i18nCode = imageBrowser.getI18nCode();
+            	
+            	if (i18nCode != null) {
+                	for (I18nMetaPart i18nPart: document.getMeta().getI18nParts()) {
+                		if (i18nPart.getLanguage().getCode().equals(i18nCode)) {
+                			i18nPart.setImageURL(imageUrl);
+                			break;
+                		}	
+                	}
+                }
+                
                 request.setAttribute( REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
                 dispatchToFirstPage( request, response );
             }
@@ -217,7 +237,42 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         final ImcmsServices service = Imcms.getServices();
         final CategoryMapper categoryMapper = service.getCategoryMapper();
         final DocumentMapper documentMapper = service.getDocumentMapper();
+        
+        Meta meta = document.getMeta();
+        
+        for (I18nMetaPart i18nPart: meta.getI18nParts()) {
+        	String suffix = "_" + i18nPart.getLanguage().getCode();
+            String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE + suffix);
+            String menuText = request.getParameter( REQUEST_PARAMETER__MENUTEXT + suffix);
+            String imageURL = request.getParameter( REQUEST_PARAMETER__IMAGE + suffix);           	
+            boolean enabled = request.getParameter(REQUEST_PARAMETER__ENABLED_I18N + suffix) != null;
+            
+            i18nPart.setHeadline(headline);
+            i18nPart.setMenuText(menuText);
+            i18nPart.setEnabled(enabled);
+            i18nPart.setImageURL(imageURL);
+            
+            String keywordsString = request.getParameter( REQUEST_PARAMETER__KEYWORDS + suffix);
+            KeywordsParser keywordsParser = new KeywordsParser();
+            
+            String[] keywords =  keywordsParser.parseKeywords( keywordsString );
+            Set<I18nKeyword> i18nKeywords = new TreeSet<I18nKeyword>();
+            
+            for (String value: keywords) {
+            	I18nKeyword i18nKeyword = new I18nKeyword(value);
+            	i18nKeywords.add(i18nKeyword);
+            }
+            
+            i18nPart.setKeywords(i18nKeywords);
+        }
+        
 
+        /* What to assign to this members?
+         *             String keywordsString = request.getParameter( REQUEST_PARAMETER__KEYWORDS);
+            KeywordsParser keywordsParser = new KeywordsParser();
+            String[] keywords =  keywordsParser.parseKeywords( keywordsString );
+            document.setKeywords( new ArraySet(keywords) );
+            
         String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE );
         document.setHeadline( headline );
 
@@ -226,7 +281,13 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
         String imageUrl = request.getParameter( REQUEST_PARAMETER__IMAGE );
         document.setMenuImage( imageUrl );
-
+        */
+        
+        String missingI18nShowRule = request.getParameter(REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE); 
+        
+        meta.setMissingI18nShowRule(Meta.MissingI18nShowRule.valueOf(missingI18nShowRule));
+        
+        
         String status = request.getParameter( REQUEST_PARAMETER__STATUS );
         Document.PublicationStatus publicationStatus = publicationStatusFromString(status);
         document.setPublicationStatus( publicationStatus );
@@ -285,10 +346,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         boolean linkableByOtherUsers = "1".equals( request.getParameter( REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS ) );
         document.setLinkableByOtherUsers( linkableByOtherUsers );
 
-        String keywordsString = request.getParameter( REQUEST_PARAMETER__KEYWORDS );
-        KeywordsParser keywordsParser = new KeywordsParser();
-        String[] keywords =  keywordsParser.parseKeywords( keywordsString );
-        document.setKeywords( new ArraySet(keywords) );
         if ( null != request.getParameter(REQUEST_PARAMETER__DOCUMENT_ALIAS) ) {
             errors.remove(ALIAS_ERROR__ALREADY_EXIST);
             errors.remove(ALIAS_ERROR__USED_BY_SYSTEM);

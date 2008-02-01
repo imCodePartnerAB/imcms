@@ -75,6 +75,8 @@ String formatTime(Date time) {
     return dateFormat.format(time) ;
 }
 
+
+
 %><vel:velocity><html>
 <head>
 <title><? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_information_title ?></title>
@@ -104,6 +106,10 @@ function checkFocus() {
 		selFocused = false ;
 	}
 }
+
+function setI18nCodeParameterValue(value) {
+    document.mainForm.<%=EditDocumentInformationPageFlow.REQUEST_PARAMETER__I18N_CODE%>.value = value;
+}
 //-->
 </script>
 
@@ -120,6 +126,13 @@ function checkFocus() {
 
 %>
 <form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentPageFlowDispatcher">
+
+<%-- 
+  This request parameter is altered using JavaScript in case user chooses
+  image URL for particular language.
+--%>
+<input type="hidden" name="<%=EditDocumentInformationPageFlow.REQUEST_PARAMETER__I18N_CODE%>"/> 
+
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
 	<td><input type="submit" name="<%= PageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2001 ?>"></td>
@@ -154,14 +167,16 @@ function checkFocus() {
     
 	<td>
 	  <table border="0" cellspacing="0" cellpadding="0" width="656">
-	      <%-- LINK HEADING --%>
+	      <%-- TODO: Escape XML: $Headline$ --%>
 	      <c:forEach items="${document.meta.i18nParts}" var="i18nPart">
+	      
+	      <c:set var="prefix" value="_${i18nPart.language.code}"/>
 	      
 		  <tr>
 			<td class="imcmsAdmText" nowrap>
 			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/6 ?><sup class="imNote">1</sup></td>
-			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE %>" size="48" maxlength="255" style="width: 100%"
-			value="<%= StringEscapeUtils.escapeHtml(document.getHeadline()) %>"></td>
+			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE + pageContext.getAttribute("prefix")%>" size="48" maxlength="255" style="width: 100%"
+			value="${i18nPart.headline}"></td>
 	      </tr>	
     <tr>
         <td></td>
@@ -173,12 +188,11 @@ function checkFocus() {
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="2"></td>
 	</tr>
 	
-      <%-- LINK HEADING --%> 
+      <%-- TODO: Escape XML: $MenuText$ --%>
 	  <tr>	  
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1002 ?>&nbsp;</td>
 		<td class="imcmsAdmForm">
-		<textarea name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;">
-			<c:out value="${i18nPart.text}"/></textarea><%
+		<textarea name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT + pageContext.getAttribute("prefix") %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;"><c:out value="${i18nPart.menuText}"/></textarea><%
 
 		if (creatingNewDocument && document instanceof TextDocumentDomainObject) { %>
 		<table border="0" cellspacing="0" cellpadding="0">
@@ -189,16 +203,23 @@ function checkFocus() {
 		</table><%
 		} %></td>
 	  </tr>
+	  
+	  <%-- 
+	  <%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getMenuImage(), "" )) %>
+	  --%>
 	
 	<tr>
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/10 ?></td>
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tr>
-			<td width="85%"><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__IMAGE %>" size="40" maxlength="255" style="width: 100%"
-			value="<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getMenuImage(), "" )) %>"></td>
+			<td width="85%">
+			  <input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__IMAGE + pageContext.getAttribute("prefix") %>" size="40" maxlength="255" style="width: 100%"
+			    value="<c:out value="${i18nPart.imageURL}" default=""/>"
+			  />
+			</td>
 			<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER%>"
-			value=" <? install/htdocs/global/pageinfo/browse ?> "></td>
+			value=" <? install/htdocs/global/pageinfo/browse ?> " onClick="setI18nCodeParameterValue('${i18nPart.language.code}')"></td>
 		</tr>
         </table></td>
 	</tr>
@@ -341,9 +362,10 @@ function checkFocus() {
 		  <td colspan="6">
 		  <table>
 			<c:forEach items="${document.meta.i18nParts}" var="i18nPart">
+			  <c:set var="prefix" value="_${i18nPart.language.code}"/>
 	  		  <tr>	  
 				<td>
-				  <input type="checkbox" cheked="${i18nPart.enabled}"/>
+				  <input type="checkbox" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>" <c:if test="${i18nPart.enabled}">checked="true"</c:if>/>
 				</td>
 				<td>
 				  ${i18nPart.language.name}
@@ -363,19 +385,19 @@ function checkFocus() {
 	      <td colspan="6">
 	        If requested language is missing:
 	      </td>
-	    </tr>
+	    </tr>  
 	    <tr>
 	      <td colspan="6">
-			  <input type="radio" name="MissingI18nShowRule" value="<%=Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE%>"
-		  		checked="<%=document.getMeta().getMissingI18nShowRule() == Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE%>"
+			  <input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>" value="<%=Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE%>"
+		  		<%=document.getMeta().getMissingI18nShowRule() == Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE ? "checked='x'" : ""%>
 			  />
 			  <%=Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE%>	        
 	      </td>
 	    </tr>
 	    <tr>
 	      <td colspan="6">
-		      <input type="radio" name="MissingI18nShowRule" value="<%=Meta.MissingI18nShowRule.DO_NOT_SHOW%>"
-		  		checked="<%=document.getMeta().getMissingI18nShowRule() == Meta.MissingI18nShowRule.DO_NOT_SHOW%>"
+		      <input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>" value="<%=Meta.MissingI18nShowRule.DO_NOT_SHOW%>"
+		  		<%=document.getMeta().getMissingI18nShowRule() == Meta.MissingI18nShowRule.DO_NOT_SHOW ? "checked='x'" : ""%>
 			  /> 
 			  <%=Meta.MissingI18nShowRule.DO_NOT_SHOW%>	         
 	      </td>
@@ -587,7 +609,7 @@ function checkFocus() {
 		
 		  <%-- Keywords old code:
 		  
-		  		<%
+		  		
 		Set documentKeywords = document.getKeywords();
         String[] keywords = (String[])documentKeywords.toArray(new String[documentKeywords.size()]);
 		Collator collator = service.getDefaultLanguageCollator() ;
@@ -606,12 +628,13 @@ function checkFocus() {
 		  
 		  <table>
 				<c:forEach items="${document.meta.i18nParts}" var="i18nPart">
+				  <c:set var="prefix" value="_${i18nPart.language.code}"/>
 	  			  <tr>	  
 					<td>
 					  ${i18nPart.language.name}
 					</td>
 					<td>
-					  <input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS %>" size="48" maxlength="200" style="width: 100%"
+					  <input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS + pageContext.getAttribute("prefix")%>" size="48" maxlength="200" style="width: 100%"
 					    value="${i18nPart.keywordsAsString}"
 					  />  
 					</td>		

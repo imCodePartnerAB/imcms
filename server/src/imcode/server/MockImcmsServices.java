@@ -16,6 +16,7 @@ import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.commons.lang.NotImplementedException;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +28,12 @@ import java.util.List;
 
 public class MockImcmsServices implements ImcmsServices {
 
-    private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
+    public Object getSpringBean(String beanName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
 
     private Database database = new MockDatabase();
     private KeyStore keyStore;
@@ -214,4 +220,9 @@ public class MockImcmsServices implements ImcmsServices {
     public void setProcedureExecutor(ProcedureExecutor procedureExecutor) {
         this.procedureExecutor = procedureExecutor;
     }
+
+	public WebApplicationContext getWebApplicationContext() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

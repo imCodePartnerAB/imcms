@@ -14,6 +14,7 @@ import imcode.util.CachingFileLoader;
 import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,4 +101,13 @@ public interface ImcmsServices {
     UserDomainObject verifyUserByIpOrDefault(String remoteAddr);
 
     LocalizedMessageProvider getLocalizedMessageProvider();
+    
+    
+    /**
+     * Spring framework integration.
+     * Latter this will be refactored out.
+     */    
+    WebApplicationContext getWebApplicationContext();
+    
+    Object getSpringBean(String beanName);
 }

@@ -1,7 +1,6 @@
 package imcode.server;
 
 import com.imcode.db.*;
-import com.imcode.db.Database;
 import com.imcode.imcms.db.*;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
@@ -20,6 +19,7 @@ import org.apache.ddlutils.model.Index;
 import org.apache.ddlutils.model.IndexColumn;
 import org.apache.ddlutils.model.ForeignKey;
 import org.apache.ddlutils.alteration.*;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.sql.DataSource;
 import java.io.*;
@@ -41,7 +41,6 @@ public class Imcms {
     private static BasicDataSource apiDataSource;
     private static BasicDataSource dataSource;
     private static File path;
-
     private Imcms() {
     }
 
