@@ -300,11 +300,11 @@
     </target>
 
     <target name="checkstyle" depends="init">
-
+<!--
         <checkstyle config="docs/checkstyle.xml">
             <fileset dir="server/src" includes="**/*.java"/>
         </checkstyle>
-
+-->
     </target>
 
     <target name="classes" depends="init">

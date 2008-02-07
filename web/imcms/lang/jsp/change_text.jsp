@@ -13,7 +13,12 @@
 
     contentType="text/html; charset=UTF-8"
 
-%><%@taglib prefix="vel" uri="imcmsvelocity"
+%>
+
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<%@taglib prefix="vel" uri="imcmsvelocity"
 %><%!
 
 private String getCookie( String name, HttpServletRequest request ) {
@@ -134,7 +139,20 @@ if (rows > 0) {
 		<input tabindex="6" type="button" class="imcmsFormBtnSmall" value="<%= isSwe ? "Återställ tidigare versioner" : "Restore earlier versions" %>" onclick="openTextRestorer(); return false"></td>
 	</tr>
 	</table></td>
+</tr>
+
 <tr>
+  <td>
+    <table>
+      <tr>
+        <c:forEach items="${sessionScope.i18nlanguages}" var="i18nLanguage">
+          <td><a href="ChangeText?lang=${i18nLanguage.code}&${requestScope.queryString}">${i18nLanguage.name}</a></td>
+        </c:forEach>
+      </tr>  
+    </table>
+  </td>  
+</tr>
+
 </vel:velocity>
 <tr>
 	<td colspan="2" class="imcmsAdmForm">

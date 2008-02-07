@@ -5,31 +5,47 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.FallbackDecoder;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.NDC;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import imcode.util.Utility;
 
-import javax.servlet.*;
-import javax.servlet.jsp.jstl.core.Config;
-import javax.servlet.jsp.jstl.fmt.LocalizationContext;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ResourceBundle;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ResourceBundle;
+import javax.servlet.jsp.jstl.core.Config;
+import javax.servlet.jsp.jstl.fmt.LocalizationContext;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.dao.LanguageDao;
 
 public class ImcmsSetupFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
     
+    private LanguageDao languageDao; 
+    
+    private final Logger logger = Logger.getLogger(getClass());
+    
     public void doFilter( ServletRequest r, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
         r.setCharacterEncoding(Imcms.DEFAULT_ENCODING);
-
+        
         HttpServletRequest request = (HttpServletRequest) r;
 
         HttpSession session = request.getSession();
@@ -40,6 +56,8 @@ public class ImcmsSetupFilter implements Filter {
             service.incrementSessionCounter();
             setDomainSessionCookie( response, session );
         }
+        
+        setCurrentLanguage(request);
 
         String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
         FallbackDecoder fallbackDecoder = new FallbackDecoder(Charset.forName(Imcms.DEFAULT_ENCODING),
@@ -111,6 +129,46 @@ public class ImcmsSetupFilter implements Filter {
             ((HttpServletResponse)response).addCookie( cookie );
         }
     }
+    
+    private void setCurrentLanguage(HttpServletRequest request) 
+    throws ServletException {
+    	String languageCode = request.getParameter("lang");
+    	I18nLanguage language = null;    	
+    	
+    	if (languageCode != null) {
+    		language = languageDao.getByCode(languageCode);
+    	}
+    	
+    	if (language == null) {
+    		language = (I18nLanguage)request.getSession().getAttribute("lang");    		
+    	}     	    	        	
+    	
+    	// TODO: if session does not contain language
+    	// do not allow any admin oparation and forward to front page!!!
+    	if (language == null) {
+    		language = Imcms.getDefaultLanguage();
+    	}
+    	
+		request.getSession().setAttribute("lang", language);    	
+    	
+    	
+    	/* 
+    	if (language == null) {
+    		List<I18nLanguage> languages = languageDao.getAllLanguages();
+    		
+    		if (languages.size() == 0) {
+    			String msg = "No languages definitions found in i18n_languages table. This table must contain at least one record.";
+    			logger.fatal(msg);
+    			
+    			throw new ServletException(msg);
+    		}
+    		
+    		language = languages.get(0);
+    	}
+    	*/
+    	
+    	Imcms.currentLanguage.set(language);
+    }
 
     public void init( FilterConfig config ) throws ServletException {
     	WebApplicationContext webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(
@@ -119,6 +177,16 @@ public class ImcmsSetupFilter implements Filter {
     	DefaultImcmsServices services = (DefaultImcmsServices)Imcms.getServices();
     	
     	services.setWebApplicationContext(webApplicationContext);
+    	
+    	languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao");
+    	
+    	// TODO i18n: implement 
+    	//int languageCount = languageDao.checkDefaultLanguageCount();
+    	//int defaultLanguageCount = languageDao.checkDefaultLanguageCount();
+    	
+    	I18nLanguage defaultLanguage = languageDao.getDefaultLanguage();
+    	
+    	Imcms.setDefaultLanguage(defaultLanguage);
     }
 
     public void destroy() {

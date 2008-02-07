@@ -68,6 +68,26 @@ public class ChangeImage extends HttpServlet {
                                        user.getFullName() + "]");
 
             }
+            
+
+/*            public void handle2(ImageDomainObject image) {
+                ImcmsServices services = Imcms.getServices();
+                document.setImage(imageIndex, image);
+                try {
+                    services.getDocumentMapper().saveDocument(document, user);
+                } catch ( NoPermissionToEditDocumentException e ) {
+                    throw new ShouldHaveCheckedPermissionsEarlierException(e);
+                } catch ( NoPermissionToAddDocumentToMenuException e ) {
+                    throw new ConcurrentDocumentModificationException(e);
+                } catch ( DocumentSaveException e ) {
+                    throw new ShouldNotBeThrownException(e);
+                }
+                services.updateMainLog("ImageRef " + imageIndex + " =" + image.getUrlPathRelativeToContextPath() +
+                                       " in  " + "[" + document.getId() + "] modified by user: [" +
+                                       user.getFullName() + "]");
+
+            }*/
+            
 
         };
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());

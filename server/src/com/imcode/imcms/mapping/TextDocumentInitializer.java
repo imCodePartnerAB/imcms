@@ -1,6 +1,9 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
+import com.imcode.imcms.api.I18nLanguage;
+
+import imcode.server.Imcms;
 import imcode.server.document.DirectDocumentReference;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.GetterDocumentReference;
@@ -167,7 +170,7 @@ public class TextDocumentInitializer {
                 documentsImages = new HashMap();
                 DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id,name,image_name,imgurl,"
                                                                                  + "width,height,border,v_space,h_space,"
-                                                                                 + "target,align,alt_text,low_scr,linkurl,type "
+                                                                                 + "target,align,alt_text,low_scr,linkurl,type,language_id "
                                                                                  + "FROM images WHERE meta_id ", documentIds, new ResultSetHandler() {
                     public Object handle(ResultSet rs) throws SQLException {
                         while ( rs.next() ) {
@@ -193,6 +196,7 @@ public class TextDocumentInitializer {
                             image.setLowResolutionUrl(rs.getString(13));
                             image.setLinkUrl(rs.getString(14));
                             int imageType = rs.getInt(15);
+                            image.setLanguageId(rs.getInt(16));                            
 
                             if ( StringUtils.isNotBlank(imageSource) ) {
                                 if ( ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {
@@ -240,8 +244,20 @@ public class TextDocumentInitializer {
 
         private void initDocumentsTexts() {
             if ( null == documentsTexts ) {
+            	final I18nLanguage language = Imcms.currentLanguage.get();
+            	String sql;
+            	
+            	if (language == null) {
+            		// TODO: i18n: throw exception
+            		LOG.error("Language is not set.");
+            		sql = "SELECT meta_id, name, text, type FROM texts WHERE meta_id ";
+            	} else {
+            		LOG.trace("Current language is [" + language + "].");
+            		sql = "SELECT meta_id, name, text, type FROM texts WHERE language_id=" + language.getId() + " and meta_id ";
+            	}
+            	
                 documentsTexts = new HashMap();
-                DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id, name, text, type FROM texts WHERE meta_id ", documentIds, new ResultSetHandler() {
+                DocumentInitializer.executeWithAppendedIntegerInClause(database, sql, documentIds, new ResultSetHandler() {
                     public Object handle(ResultSet rs) throws SQLException {
                         while ( rs.next() ) {
                             Integer documentId = new Integer(rs.getInt(1));
@@ -253,7 +269,11 @@ public class TextDocumentInitializer {
                                 documentTextsMap = new CopyableHashMap();
                                 documentsTexts.put(documentId, documentTextsMap);
                             }
-                            documentTextsMap.put(textIndex, new TextDomainObject(text, textType));
+                            
+                            TextDomainObject tdo = new TextDomainObject(text, textType);
+                            tdo.setLanguageId(language.getId());
+                            
+                            documentTextsMap.put(textIndex, tdo);
                         }
                         return null;
                     }

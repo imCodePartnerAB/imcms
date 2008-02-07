@@ -1,18 +1,23 @@
 package com.imcode.imcms.servlet.admin;
 
 import imcode.server.Imcms;
-import imcode.server.document.*;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.regex.Matcher;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.dao.LanguageDao;
 import com.imcode.imcms.mapping.DocumentMapper;
 
 /**
@@ -42,13 +47,26 @@ public class ChangeText extends HttpServlet {
         String label = null == request.getParameter( "label" ) ? "" : request.getParameter( "label" );
 
         TextDomainObject text = textDocument.getText( textIndex );
+        
         if ( null == text ) {
             text = new TextDomainObject( "", TextDomainObject.TEXT_TYPE_HTML );
-        }
-        String formatsParameter = request.getParameter("formats");
+            text.setLanguageId(Imcms.currentLanguage.get().getId());
+        }        
+        
+        LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao"); 
+        
+    	List<I18nLanguage> i18nLanguages = languageDao.getAllLanguages();
+        
+    	String queryString = request.getQueryString();
+    	
+    	// TODO 18n: refactor
+    	queryString = queryString.replaceFirst("lang=..&?", "");
+    	
+    	request.getSession().setAttribute("i18nlanguages", i18nLanguages);
+    	request.setAttribute("queryString", queryString);
+    	
         TextEditPage page = new TextEditPage( documentId, textIndex, text, label );
         page.forward( request, res, user );
-
     }
 
     public static class TextEditPage {

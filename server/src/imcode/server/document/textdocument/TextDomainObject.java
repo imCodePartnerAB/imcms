@@ -11,6 +11,8 @@ public class TextDomainObject implements Serializable {
 
     String text;
     int type;
+    
+    Integer languageId;
 
     /* Text-types. */
 
@@ -119,4 +121,12 @@ public class TextDomainObject implements Serializable {
         return new HashCodeBuilder().append(type)
                 .append(text).toHashCode();
     }
+
+	public Integer getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(Integer languageId) {
+		this.languageId = languageId;
+	}
 }

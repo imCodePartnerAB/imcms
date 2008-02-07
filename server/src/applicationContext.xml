@@ -33,8 +33,12 @@
     </property>
   </bean>
   
-  <bean id="metaDao" class="com.imcode.imcms.dao.MetaDaoImpl">
+  <bean id="metaDao" class="com.imcode.imcms.dao.MetaDaoImpl" scope="prototype">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
+  
+  <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDaoImpl" scope="prototype">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>  
   
 </beans>

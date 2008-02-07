@@ -216,18 +216,21 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     private void sqlDeleteText(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
-    	Object[] parameters = new String[] {"" + textDocument.getId(), 
+    	Object[] parameters = new String[] {
+    			"" + Imcms.currentLanguage.get().getId(),
+    			"" + textDocument.getId(), 
         		"" + textIndex, "" + text.getType()};
     	
         database.execute(new SqlUpdateCommand(
-        		"DELETE FROM texts WHERE meta_id = ? AND name = ? AND type = ?", parameters));
+        		"DELETE FROM texts WHERE language_id = ? AND meta_id = ? AND name = ? AND type = ?", parameters));
     }
     
     private void sqlInsertText(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
         final Object[] parameters = new String[]{
             "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType()
+            , "" + Imcms.currentLanguage.get().getId()
         };
-        database.execute(new SqlUpdateCommand("INSERT INTO texts (meta_id, name, text, type) VALUES(?,?,?,?)", parameters));
+        database.execute(new SqlUpdateCommand("INSERT INTO texts (meta_id, name, text, type, language_id) VALUES(?,?,?,?,?)", parameters));
     }
 
     private void sqlInsertTextHistory(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text, UserDomainObject user) {
@@ -260,14 +263,15 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 + "alt_text    = ?, \n"
                 + "low_scr     = ?, \n"
                 + "linkurl     = ?, \n"
-                + "type        = ?  \n"
+                + "type        = ?, \n"
+                + "language_id = ?  \n"
                 + "where meta_id = ? \n"
                 + "and name = ? \n";
 
         int rowUpdateCount = sqlImageUpdateQuery(sqlStr, image, meta_id, img_no);
         if (0 == rowUpdateCount) {
-            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, align, alt_text, low_scr, linkurl, type, meta_id, name)"
-                    + " values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)";
+            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, align, alt_text, low_scr, linkurl, type, language_id, meta_id, name)"
+                    + " values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?,?)";
 
             sqlImageUpdateQuery(sqlStr, image, meta_id, img_no);
         }
@@ -294,6 +298,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             image.getLowResolutionUrl(),
             image.getLinkUrl(),
             "" + imageSource.getTypeId(),
+            "" + image.getLanguageId(),
             "" + meta_id,
             "" + img_no,
         };

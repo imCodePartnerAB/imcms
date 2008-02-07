@@ -167,5 +167,4 @@ public class AdminDoc extends HttpServlet {
             response.sendRedirect( "AdminDoc?meta_id=" + document.getId() );
         }
     }
-
 }

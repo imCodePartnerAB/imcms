@@ -23,6 +23,11 @@ public class ImageDomainObject implements Serializable {
     private int horizontalSpace;
     private String target = "";
     private String linkUrl = "";
+    
+    /**
+     * i18n support 
+     */
+    private int languageId;
 
     public String getName() {
         return name;
@@ -202,6 +207,7 @@ public class ImageDomainObject implements Serializable {
                 .append(horizontalSpace, o.getHorizontalSpace())
                 .append(target, o.getTarget())
                 .append(linkUrl, o.getLinkUrl())
+                .append(languageId, o.languageId)
                 .isEquals();
    }
 
@@ -211,8 +217,16 @@ public class ImageDomainObject implements Serializable {
                 .append(name).append(width).append(height)
                 .append(border).append(align).append(alternateText)
                 .append(lowResolutionUrl).append(verticalSpace).append(horizontalSpace)
-                .append(target).append(linkUrl)
+                .append(target).append(linkUrl).append(languageId)
                 .toHashCode();
     }
+
+	public int getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(int languageId) {
+		this.languageId = languageId;
+	}
 
 }
