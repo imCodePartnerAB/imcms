@@ -4,6 +4,10 @@ import com.imcode.db.Database;
 import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.dao.MetaDao;
+
+import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
 import imcode.server.document.DocumentDomainObject;
@@ -55,6 +59,15 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
 
         DocumentInitializer initializer = new DocumentInitializer(services.getDocumentMapper());
         initializer.initDocuments(documentList);
+        
+        // TODO: i18n refactor:
+        MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao");
+        
+        for (DocumentDomainObject document: documentList) {
+        	Meta meta = metaDao.getMeta(document.getId());
+        	
+        	document.setMeta(meta);
+        }
 
         LinkedHashMap retMap = new LinkedHashMap();
         

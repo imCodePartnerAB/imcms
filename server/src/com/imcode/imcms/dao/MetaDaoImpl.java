@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.I18nKeyword;
 import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nMetaPart;
+import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 
 public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
@@ -28,13 +28,16 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 				findByNamedQueryAndNamedParam("I18nLanguage.missingMetaLanguages", "metaId", metaId);
 				
 		if (languages != null) {
-			Collection<I18nMetaPart> parts = meta.getI18nParts();
+			Collection<I18nMeta> parts = meta.getI18nParts();
 			
 			for (I18nLanguage language: languages) {
-				I18nMetaPart part = new I18nMetaPart();
+				I18nMeta part = new I18nMeta();
 				
 				part.setLanguage(language);
 				part.setEnabled(false);
+				part.setHeadline("");
+				part.setMenuImageURL("");
+				part.setMenuText("");
 				
 				parts.add(part);
 			}

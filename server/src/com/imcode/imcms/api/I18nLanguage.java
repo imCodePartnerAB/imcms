@@ -14,12 +14,12 @@ import javax.persistence.Table;
 @NamedQueries({
 	@NamedQuery(name="I18nLanguage.getDefaultLanguage", query="select l from I18nLanguage l where l.systemDefault is true"),
 	@NamedQuery(name="I18nLanguage.getByCode", query="select l from I18nLanguage l where l.code = :code"),
-	@NamedQuery(name="I18nLanguage.missingMetaLanguages", query="select l from I18nLanguage l where l not in (select m.language from I18nMetaPart m where m.metaId = :metaId)")
+	@NamedQuery(name="I18nLanguage.missingMetaLanguages", query="select l from I18nLanguage l where l not in (select m.language from I18nMeta m where m.metaId = :metaId)")
 })
 public class I18nLanguage implements Serializable {
 
 	@Id
-	@Column(name="language_id")	
+	@Column(name="language_id")
     private Integer id;
 	
 	@Column(name="system_default")
@@ -34,6 +34,24 @@ public class I18nLanguage implements Serializable {
 	@Column(name="language_native_name")
     private String nativeName;
 
+	@Override
+	public boolean equals(Object object) {
+		if (object != null && object instanceof I18nLanguage) {
+			I18nLanguage comparedLanguage = (I18nLanguage) object;
+			long id = getId();
+			long comparedId = comparedLanguage.getId();
+			
+			return id == comparedId;
+		}
+		
+		return false;
+	}
+	
+	//@Override	
+	//public int hashCode() {
+		
+	//}
+	
 	public Integer getId() {
 		return id;
 	}

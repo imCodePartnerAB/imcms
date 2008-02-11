@@ -3,16 +3,42 @@
                  imcode.server.document.DocumentPermissionSetDomainObject,
                  imcode.server.document.TextDocumentPermissionSetDomainObject,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
-                 imcode.server.user.UserDomainObject"%>
+                 imcode.server.user.UserDomainObject,
+                 imcode.server.Imcms"%>
 <%@ page import="imcode.util.Html"%>
 <%@ page import="imcode.util.Utility"%>
 <%@taglib uri="imcmsvelocity" prefix="vel" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
     UserDomainObject user = (UserDomainObject)request.getAttribute("user") ;
     DocumentDomainObject document = (DocumentDomainObject)request.getAttribute("document") ;
     DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetFor( document ) ;
+    
+    LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao");
+    
+	List<I18nLanguage> languages = languageDao.getAllLanguages();
+	
+	pageContext.setAttribute("languages", languages);
+	
+	String queryString = request.getQueryString();
+	StringBuffer baseURL = request.getRequestURL();
 
-%><vel:velocity>
+	if (queryString == null) {
+		baseURL.append("?" + "lang=");
+	}else {
+    	// TODO 18n: refactor
+    	queryString = queryString.replaceFirst("&?lang=..", "");
+	
+		baseURL.append("?" + queryString + "&lang=");
+	}
+	
+	pageContext.setAttribute("baseURL", baseURL);
+%>
+<%@page import="com.imcode.imcms.dao.LanguageDao"%>
+<%@page import="java.util.List"%>
+<%@page import="com.imcode.imcms.api.I18nLanguage"%>
+<vel:velocity>
 <style type="text/css">
 <!--
 
@@ -40,7 +66,7 @@ B { font-weight: bold; }
 -->
 </style>
 <div id="adminPanelDiv">
-<table border="0" cellspacing="0" cellpadding="2" class="adminPanelTable">
+<table border="3" cellspacing="0" cellpadding="2" class="adminPanelTable">
 <tr>
 	<td class="adminPanelTd1">
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
@@ -54,6 +80,22 @@ B { font-weight: bold; }
 	</tr>
 	</table></td>
 </tr>
+
+<c:if test="${fn:length(languages) > 0}">
+<tr>
+  <td>
+    <table border="2">
+      <tr>
+         <td>LANGUAGES:</td>
+         <c:forEach items="${languages}" var="language">
+           <td><a href="${baseURL}${language.code}">${language.name}</a></td>
+         </c:forEach>
+       </tr>
+    </table>
+  </td>
+</tr>
+</c:if>
+
 <tr>
 	<td class="adminPanelTd2" align="center" nowrap>
         <a href="$contextPath/servlet/BackDoc" id="admHrefBackdoc"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/foregaende.gif"<%

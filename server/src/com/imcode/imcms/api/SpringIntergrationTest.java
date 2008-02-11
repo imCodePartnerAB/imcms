@@ -35,13 +35,13 @@ public class SpringIntergrationTest {
 	}
 
 	@Test @Ignore public void updateMeta() {
-		final I18nMetaPart meta = new I18nMetaPart();
+		final I18nMeta meta = new I18nMeta();
 		
 		//meta.setLanguageId(3);
 		meta.setMetaId(1001);
 		meta.setHeadline("xyz");
 		meta.setMenuText("text");
-		meta.setImageURL("img");
+		meta.setMenuImageURL("img");
 		
 		Meta m = metaDao.getMeta(1001);
 		

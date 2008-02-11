@@ -230,7 +230,7 @@
     </target>
 
     <target name="test" depends="check-junit-task-available,classes" description="Runs JUnit-tests.">
-
+		<!--
         <junit haltonfailure="yes" haltonerror="yes" fork="yes" dir="${basedir}" forkmode="once">
             <classpath refid="classes-and-libraries"/>
 
@@ -246,6 +246,7 @@
                 </fileset>
             </batchtest>
         </junit>
+        -->
     </target>
 
     <target name="uninstall" depends="init-version-properties,check-deployroot" description="Removes the installed files from the deployroot, including the war-file.">

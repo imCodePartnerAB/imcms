@@ -18,6 +18,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	 * This controlled by setting boolean flag.
 	 * 
 	 * Required when saving only particular set of text fields.
+	 * 
+	 * TODO: Move to thread local or make separate call
 	 */
 	private Map<Integer, Boolean> modifiedTextIndexes = new TreeMap<Integer, Boolean>();
 

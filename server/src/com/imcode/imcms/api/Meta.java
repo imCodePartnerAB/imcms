@@ -30,7 +30,7 @@ public class Meta implements Serializable {
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
 	@JoinColumn(name="meta_id", referencedColumnName="meta_id")
-	private List<I18nMetaPart> i18nParts;
+	private List<I18nMeta> i18nParts;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="missing_i18n_show_rule")
@@ -44,11 +44,11 @@ public class Meta implements Serializable {
 		this.metaId = metaId;
 	}
 
-	public List<I18nMetaPart> getI18nParts() {
+	public List<I18nMeta> getI18nParts() {
 		return i18nParts;
 	}
 
-	public void setI18nParts(List<I18nMetaPart> i18nParts) {
+	public void setI18nParts(List<I18nMeta> i18nParts) {
 		this.i18nParts = i18nParts;
 	}
 

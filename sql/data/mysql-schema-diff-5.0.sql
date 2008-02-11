@@ -20,6 +20,9 @@ values ('sv', 'Swedish', 'Svenska');
 insert into i18n_available_languages (language_code_iso_639_1, language_name, language_native_name)
 values ('de', 'German', 'Deutsch');
 
+insert into i18n_available_languages (language_code_iso_639_1, language_name, language_native_name)
+values ('ru', 'Russian', 'Russkij');
+
 -- Instance languages contains chosen subset from available languages
 DROP TABLE IF EXISTS `i18n_languages`;
 
@@ -32,6 +35,7 @@ create table i18n_languages (
 
 insert into i18n_languages (language_id) select language_id from i18n_available_languages;
 
+update i18n_languages set system_default = true where language_id =1;
 
 create or replace view i18n_languages_v as
     select
@@ -52,7 +56,7 @@ create table settings (
 */
 
 
-alter table texts add column language_id smallint null;
+alter table texts add column language_id smallint not null default 1;
 alter table images add column language_id smallint null;
 
 

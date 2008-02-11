@@ -2,7 +2,7 @@ package com.imcode.imcms.flow;
 
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.I18nKeyword;
-import com.imcode.imcms.api.I18nMetaPart;
+import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -143,9 +143,9 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             	String i18nCode = imageBrowser.getI18nCode();
             	
             	if (i18nCode != null) {
-                	for (I18nMetaPart i18nPart: document.getMeta().getI18nParts()) {
+                	for (I18nMeta i18nPart: document.getMeta().getI18nParts()) {
                 		if (i18nPart.getLanguage().getCode().equals(i18nCode)) {
-                			i18nPart.setImageURL(imageUrl);
+                			i18nPart.setMenuImageURL(imageUrl);
                 			break;
                 		}	
                 	}
@@ -240,7 +240,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         
         Meta meta = document.getMeta();
         
-        for (I18nMetaPart i18nPart: meta.getI18nParts()) {
+        for (I18nMeta i18nPart: meta.getI18nParts()) {
         	String suffix = "_" + i18nPart.getLanguage().getCode();
             String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE + suffix);
             String menuText = request.getParameter( REQUEST_PARAMETER__MENUTEXT + suffix);
@@ -250,7 +250,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             i18nPart.setHeadline(headline);
             i18nPart.setMenuText(menuText);
             i18nPart.setEnabled(enabled);
-            i18nPart.setImageURL(imageURL);
+            i18nPart.setMenuImageURL(imageURL);
             
             String keywordsString = request.getParameter( REQUEST_PARAMETER__KEYWORDS + suffix);
             KeywordsParser keywordsParser = new KeywordsParser();

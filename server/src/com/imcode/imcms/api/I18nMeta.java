@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
 import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -24,10 +25,10 @@ import javax.persistence.Table;
 @Entity
 @Table(name="i18n_meta_part")
 @NamedQueries({
-	//@NamedQuery(name="I18nMeta.getMetaLanguageRightJoin", query="select l, m from I18nMeta m right join m.language l where m.metaId = :metaId"),
+	@NamedQuery(name="I18nMeta.getByLanguage", query="select m from I18nMeta m where m.metaId = :metaId and m.language.id = :languageId")
 	//@NamedQuery(name="I18nMeta.getByMetaId&LanguageId", query="select m from I18nMeta m where m.metaId = :metaId and m.language.id=:languageId")
 })
-public class I18nMetaPart implements Serializable {
+public class I18nMeta implements Serializable {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="part_id")
@@ -57,7 +58,7 @@ public class I18nMetaPart implements Serializable {
     private String menuText;
     
 	@Column(name="meta_image")
-    private String imageURL;
+    private String menuImageURL;
 
 	public String getHeadline() {
 		return headline;
@@ -75,12 +76,12 @@ public class I18nMetaPart implements Serializable {
 		this.menuText = text;
 	}
 
-	public String getImageURL() {
-		return imageURL;
+	public String getMenuImageURL() {
+		return menuImageURL;
 	}
 
-	public void setImageURL(String image) {
-		this.imageURL = image;
+	public void setMenuImageURL(String image) {
+		this.menuImageURL = image;
 	}
 
 	public I18nLanguage getLanguage() {

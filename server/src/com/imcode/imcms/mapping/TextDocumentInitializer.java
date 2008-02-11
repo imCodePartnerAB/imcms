@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
+import com.imcode.imcms.api.I18nException;
 import com.imcode.imcms.api.I18nLanguage;
 
 import imcode.server.Imcms;
@@ -243,18 +244,32 @@ public class TextDocumentInitializer {
         }
 
         private void initDocumentsTexts() {
-            if ( null == documentsTexts ) {
-            	final I18nLanguage language = Imcms.currentLanguage.get();
-            	String sql;
+        	final I18nLanguage language = Imcms.currentLanguage.get();
+        	
+        	if (LOG.isTraceEnabled()) {
+        		LOG.trace("Initializing document texts for language [" 
+        				+ language.getName() + "].");
+        	}
+        	
+        	if (documentsTexts != null) {
+            	if (LOG.isTraceEnabled()) {
+            		LOG.trace("Document texts for language [" 
+            				+ language.getName() + "] allready retrieved from database.");
+            	}        		
+        	} else {
+            	if (LOG.isTraceEnabled()) {
+            		LOG.trace("Quering databse for document texts. Language [" 
+        				+ language.getName() + "].");
+            	}            	
             	
-            	if (language == null) {
-            		// TODO: i18n: throw exception
-            		LOG.error("Language is not set.");
-            		sql = "SELECT meta_id, name, text, type FROM texts WHERE meta_id ";
-            	} else {
-            		LOG.trace("Current language is [" + language + "].");
-            		sql = "SELECT meta_id, name, text, type FROM texts WHERE language_id=" + language.getId() + " and meta_id ";
+             	if (language == null) {
+            		LOG.fatal("Language is not set.");
+            		throw new I18nException("Language is not set.");
             	}
+            	
+            	LOG.trace("Current language is [" + language + "].");
+            	String sql = "SELECT meta_id, name, text, type FROM texts WHERE language_id=" + language.getId() + " and meta_id ";
+       
             	
                 documentsTexts = new HashMap();
                 DocumentInitializer.executeWithAppendedIntegerInClause(database, sql, documentIds, new ResultSetHandler() {

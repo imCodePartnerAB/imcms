@@ -1,8 +1,13 @@
 package imcode.server.document;
 
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.I18nException;
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+
+import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.CopyableHashMap;
 import imcode.server.user.RoleId;
@@ -24,7 +29,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     protected Attributes attributes = new Attributes();
     private static Logger log = Logger.getLogger( DocumentDomainObject.class );
     
-    // Hibernate object
+    // TODO i18n: refactor out. This is hibernate object. 
+    // document info must be saved separately. 
     private Meta meta;
 
     public Object clone() throws CloneNotSupportedException {
@@ -59,6 +65,9 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
                 log.error( errorMessage );
                 throw new IllegalArgumentException( errorMessage );
         }
+        
+        // TODO: Refactor out:
+        
 
         return document;
     }
@@ -100,7 +109,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public String getHeadline() {
-        return attributes.headline;
+        //return attributes.headline;
+    	return getI18nMeta().getHeadline();
     }
 
     public void setHeadline( String v ) {
@@ -116,7 +126,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public String getMenuImage() {
-        return attributes.image;
+        //return attributes.image;
+    	return getI18nMeta().getMenuImageURL();
     }
 
     public void setMenuImage( String v ) {
@@ -163,7 +174,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public String getMenuText() {
-        return attributes.menuText;
+        //return attributes.menuText;
+    	return getI18nMeta().getMenuText();
     }
 
     public void setMenuText( String v ) {
@@ -557,5 +569,27 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	public void setMeta(Meta meta) {
 		this.meta = meta;
 	}
-
+	
+	// TODO i18n refactor
+	private I18nMeta getI18nMeta() {
+		if (meta == null) {
+			throw new I18nException("I18nMeta for document [" 
+					+ getId() + "] is not set.");
+		}
+		
+		I18nLanguage currentLanguage = Imcms.currentLanguage.get();
+		
+		if (currentLanguage == null) {
+			throw new I18nException("No language bound to the current thread.");
+		}
+		
+		for (I18nMeta i18nMeta: meta.getI18nParts()) {
+			if (i18nMeta.getLanguage().equals(currentLanguage)) {
+				return i18nMeta;
+			}
+		}
+		
+		throw new I18nException("No I18nMeta found for for document [" 
+					+ getId() + "] and language [" + currentLanguage .getName() + "].");
+	}
 }
