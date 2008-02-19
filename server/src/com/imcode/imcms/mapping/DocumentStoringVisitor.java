@@ -298,7 +298,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             image.getLowResolutionUrl(),
             image.getLinkUrl(),
             "" + imageSource.getTypeId(),
-            "" + image.getLanguageId(),
             "" + meta_id,
             "" + img_no,
         };

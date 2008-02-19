@@ -1,5 +1,6 @@
 package imcode.server.document.textdocument;
 
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.util.ImageSize;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.NullArgumentException;
@@ -9,25 +10,71 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import java.io.IOException;
 import java.io.Serializable;
 
-public class ImageDomainObject implements Serializable {
-    private ImageSource source = new NullImageSource();
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
+@Entity(name="I18nImage")
+@Table(name="images")
+@NamedQueries({
+	@NamedQuery(name="Image.getByLanguageId", query="select i from I18nImage i where i.metaId = :metaId and i.language.id = :languageId"),
+	@NamedQuery(name="Image.getLanguagesToImagesByMetaId", query="select l, i from I18nImage i right join i.language l where (i.metaId = :metaId and i.name = :imageId) or i is null order by l.systemDefault desc"),
+	@NamedQuery(name="Image.getDefaultImage", query="select i from I18nImage i where i.metaId = :metaId and i.name = :imageId and i.language.systemDefault is true")
+})
+public class ImageDomainObject implements Serializable, Cloneable {
+    
+	@Transient
+	private ImageSource source = new NullImageSource();
+	
+	@Id
+	@Column(name="image_id")
+	private Long imageId;
+	
+	@Column(name="meta_id")
+	private int metaId;
+
+    //????? Image name ????
+	
     private String name = "";
     private int width;
     private int height;
     private int border;
     private String align = "";
+    
+    @Column(name="alt_text")
     private String alternateText = "";
+    
+    @Column(name="low_scr")
     private String lowResolutionUrl = "";
+    
+    @Column(name="v_space")
     private int verticalSpace;
+    
+    @Column(name="h_space")
     private int horizontalSpace;
     private String target = "";
+    
+    @Column(name="linkurl")
     private String linkUrl = "";
+    
+    @Column(name="imgurl")
+    private String imageUrl;
+    
     
     /**
      * i18n support 
      */
-    private int languageId;
+	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@JoinColumn(name="language_id", referencedColumnName="language_id")    
+    private I18nLanguage language;
 
     public String getName() {
         return name;
@@ -207,7 +254,6 @@ public class ImageDomainObject implements Serializable {
                 .append(horizontalSpace, o.getHorizontalSpace())
                 .append(target, o.getTarget())
                 .append(linkUrl, o.getLinkUrl())
-                .append(languageId, o.languageId)
                 .isEquals();
    }
 
@@ -217,16 +263,47 @@ public class ImageDomainObject implements Serializable {
                 .append(name).append(width).append(height)
                 .append(border).append(align).append(alternateText)
                 .append(lowResolutionUrl).append(verticalSpace).append(horizontalSpace)
-                .append(target).append(linkUrl).append(languageId)
+                .append(target).append(linkUrl)
                 .toHashCode();
     }
 
-	public int getLanguageId() {
-		return languageId;
+	public I18nLanguage getLanguage() {
+		return language;
 	}
 
-	public void setLanguageId(int languageId) {
-		this.languageId = languageId;
+	public void setLanguage(I18nLanguage language) {
+		this.language = language;
 	}
 
+	public int getMetaId() {
+		return metaId;
+	}
+
+	public void setMetaId(int metaId) {
+		this.metaId = metaId;
+	}
+
+	public Long getImageId() {
+		return imageId;
+	}
+
+	public void setImageId(Long imageId) {
+		this.imageId = imageId;
+	}
+	
+	public ImageDomainObject clone() {
+		try {
+			return (ImageDomainObject)super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 }

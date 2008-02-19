@@ -58,6 +58,7 @@ create table settings (
 
 alter table texts add column language_id smallint not null default 1;
 alter table images add column language_id smallint null;
+alter table images add column image_id int auto_increment not null primary key;
 
 
 alter table meta add column missing_i18n_show_rule varchar(32) default 'DO_NOT_SHOW';
@@ -104,3 +105,36 @@ create table i18n_meta_keywords(
 delete from database_version;
 insert into database_version values (5, 0);
 commit;
+
+
+--
+-- Dumping data for table `text_docs`
+--
+
+/*!40000 ALTER TABLE `text_docs` DISABLE KEYS */;
+INSERT INTO `text_docs` (`meta_id`,`template_name`,`group_id`,`default_template_1`,`default_template_2`,`default_template`) VALUES
+ (1001,'demo',0,NULL,NULL,NULL);
+/*!40000 ALTER TABLE `text_docs` ENABLE KEYS */;
+
+--
+-- Dumping data for table `texts`
+--
+
+/*!40000 ALTER TABLE `texts` DISABLE KEYS */;
+INSERT INTO `texts` (`meta_id`,`name`,`text`,`type`,`counter`, language_id) VALUES
+ (1001,1,'<h3>Welcome to imCMS</h3>',1,1,1),
+ (1001,2,'<a href=\"<?imcms:contextpath?>/login/\" title=\"Link to login-page\"><b>Log in!</b></a><br><br><br><a href=\"<?imcms:contextpath?>/servlet/SearchDocuments\" target=\"_blank\" title=\"Link to search-page\"><b>Search-page</b></a><br>Opens in new window.<br><br><a href=\"http://doc.imcms.net//\" target=\"_blank\" title=\"Link to documentation-site\"><b>Documentation</b></a><br>External site, opens in new window.<br><br><a href=\"http://www.imcms.net\" target=\"_blank\" title=\"Link to www.imcms.net\"><b>More about imCMS</b></a><br>imCMS Product-site. External site, opens in new window.<br><br><a href=\"<?imcms:contextpath?>/imcms/docs/\" target=\"_blank\" title=\"Link to included documentation.\"><b>Included documentation.</b></a><br>For administrators and developers, in english. Opens in new window.<br><br><a href=\"<?imcms:contextpath?>/imcms/docs/apisamples/\" target=\"_blank\" title=\"Link to API-samples\"><b>API examples</b></a><br>Only for developers, in english. Opens in new window.<br>Note! Only to be used in test environment - not sites for public use.',1,2,1);
+/*!40000 ALTER TABLE `texts` ENABLE KEYS */;
+
+
+/*!40000 ALTER TABLE `images` DISABLE KEYS */;
+INSERT INTO `images` (`image_id`, `language_id`, `meta_id`,`width`,`height`,`border`,`v_space`,`h_space`,`name`,`image_name`,`target`,`align`,`alt_text`,`low_scr`,`imgurl`,`linkurl`,`type`) VALUES
+ (1,1,1001,0,0,0,0,0,3,'','_blank','top','','','imCMSpower.gif','http://www.imcms.net',0);
+/*!40000 ALTER TABLE `images` ENABLE KEYS */;
+
+/*
+create table i18n_images(
+    image_id int not null,
+    language_id
+)
+*/

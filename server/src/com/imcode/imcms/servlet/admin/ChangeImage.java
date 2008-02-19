@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
@@ -22,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 public class ChangeImage extends HttpServlet {
 
@@ -90,10 +92,17 @@ public class ChangeImage extends HttpServlet {
             
 
         };
+        
+        ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
+        
+        List<ImageDomainObject> images = imageDao.getAllImages(document.getId(), imageIndex);
+        
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true);
+        
+        imageEditPage.setImageDao(imageDao);
+        imageEditPage.setImages(images);
         imageEditPage.forward(request, response);
-
     }
 
 }

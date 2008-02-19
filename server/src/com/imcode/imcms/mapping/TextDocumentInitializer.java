@@ -171,7 +171,7 @@ public class TextDocumentInitializer {
                 documentsImages = new HashMap();
                 DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id,name,image_name,imgurl,"
                                                                                  + "width,height,border,v_space,h_space,"
-                                                                                 + "target,align,alt_text,low_scr,linkurl,type,language_id "
+                                                                                 + "target,align,alt_text,low_scr,linkurl,type "
                                                                                  + "FROM images WHERE meta_id ", documentIds, new ResultSetHandler() {
                     public Object handle(ResultSet rs) throws SQLException {
                         while ( rs.next() ) {
@@ -196,8 +196,7 @@ public class TextDocumentInitializer {
                             image.setAlternateText(rs.getString(12));
                             image.setLowResolutionUrl(rs.getString(13));
                             image.setLinkUrl(rs.getString(14));
-                            int imageType = rs.getInt(15);
-                            image.setLanguageId(rs.getInt(16));                            
+                            int imageType = rs.getInt(15);                          
 
                             if ( StringUtils.isNotBlank(imageSource) ) {
                                 if ( ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {

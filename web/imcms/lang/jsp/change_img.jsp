@@ -16,17 +16,30 @@
 
 	contentType="text/html; charset=UTF-8"
 
-%><%@taglib prefix="vel" uri="imcmsvelocity"%><%
+%>
+
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<%@taglib prefix="vel" uri="imcmsvelocity"%><%
 
     ImageEditPage imageEditPage = ImageEditPage.getFromRequest(request);
     assert null != imageEditPage;
+    
+    // Get Images. or get i18nMetas
+    // Image meta; Image
+    
     ImageDomainObject image = imageEditPage.getImage();
     assert null != image;
     ImageSize realImageSize = image.getRealImageSize();
     assert null != realImageSize;
     UserDomainObject user = Utility.getLoggedOnUser( request );
+    
+    List<ImageDomainObject> images = imageEditPage.getImages();
+    pageContext.setAttribute("images", images);
 
 %><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<%@page import="java.util.List"%>
 <vel:velocity>
 <html>
 <head>
@@ -128,6 +141,10 @@ function checkLinkOnBlur() {<%
 	}<%
 	} %>
 }
+
+function setI18nCodeParameterValue(value) {
+    document.mainForm.<%=ImageEditPage.REQUEST_PARAMETER__I18N_CODE%>.value = value;
+}
 //-->
 </script>
 
@@ -138,8 +155,11 @@ function checkLinkOnBlur() {<%
 	<div id="inner_container">
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )
-<form method="POST" action="<%= request.getContextPath() %>/servlet/PageDispatcher" onsubmit="checkLinkType();">
+<form method="POST" action="<%= request.getContextPath() %>/servlet/PageDispatcher" onsubmit="checkLinkType();" name="mainForm">
 <%= Page.htmlHidden(request) %>
+    
+    <%-- Hidden language code parameter --%>
+    <input type="hidden" name="<%=ImageEditPage.REQUEST_PARAMETER__I18N_CODE%>"/>
     
     <table border="0" cellspacing="0" cellpadding="0">
     <tr>
@@ -157,54 +177,29 @@ function checkLinkOnBlur() {<%
     #gui_mid()
 
     <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+        <c:forEach items="${images}" var="image">
+          <c:set var="suffix" value="_${image.language.code}"/>
+          
+          <% ImageDomainObject i18nImage = (ImageDomainObject)pageContext.getAttribute("image"); %>
+        
         <tr>
-            <td colspan="2">
+            <td colspan="2">${image.language.name}
                 &nbsp;<br>
                 <% if (null != imageEditPage.getHeading()) { %>
                 #gui_heading( "<%= imageEditPage.getHeading().toLocalizedString(request) %>" )
                 <% } %>
-                <%=
-            "<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) + "</i></div>"  %></td>
-        </tr><%
+                <%="<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) + "</i></div>"  %>
+            </td>
+        </tr>
+         
+         <%
 		if (!image.isEmpty()) { %>
 		<tr>
 			<td colspan="2" align="center">
-			<div id="previewDiv"><%= !image.isEmpty() ? ImcmsImageUtils.getImageHtmlTag( image, request, new Properties()) : "" %></div></td>
-		</tr><%
-				ImageSource imageSource = image.getSource();
-				if ( imageSource instanceof FileDocumentImageSource) { %>
-		<tr>
-			<td colspan="2" align="center"><%
-					FileDocumentImageSource fileDocumentImageSource = (FileDocumentImageSource)imageSource ;
-					FileDocumentDomainObject imageFileDocument = fileDocumentImageSource.getFileDocument() ; %>
-			 <%= Html.getAdminButtons( Utility.getLoggedOnUser(request), imageFileDocument, request, response ) %></td>
-		</tr><%
-				} %>
-		<tr>
-			<td colspan="2">#gui_hr( "blue" )</td>
-		</tr><%
-		} %>
-		<tr>
-			<td colspan="2" align="center">
-			<table>
-			<tr><%
-					if (imageEditPage.canAddImageFiles(user)) { %>
-				<td><input type="submit" <%
-							%>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON %>" <%
-							%>class="imcmsFormBtnSmall" style="width:200px" <%
-							%>value="<? web/imcms/lang/jsp/change_img.jsp/add_restricted_image ?>" ></td><%
-					} %>
-				<td><input type="submit" <%
-						%>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON %>" <%
-						%>class="imcmsFormBtnSmall" style="width:200px" <%
-						%>value="<? web/imcms/lang/jsp/change_img.jsp/image_search ?>" ></td>
-				<td><input type="submit" <%
-					%>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>" <%
-					%>class="imcmsFormBtnSmall" style="width:200px" <%
-					%>value="<? templates/sv/change_img.html/2004 ?>"></td>
-			</tr>
-			</table></td>
+			<div id="previewDiv"><%= !i18nImage.isEmpty() ? ImcmsImageUtils.getImageHtmlTag( i18nImage, request, new Properties()) : "" %></div></td>
 		</tr>
+		<%}%>
+	       	
         <tr>
             <td colspan="2">#gui_hr( "blue" )</td>
         </tr>
@@ -214,13 +209,41 @@ function checkLinkOnBlur() {<%
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
             <tr>
                 <td colspan="2"><input type="text" <%
-								%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>" <%
-								%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>" <%
-								String path = image.getUrlPathRelativeToContextPath();
-                %>size="50" maxlength="255" style="width: 350" value="<%= StringUtils.isBlank(path) ? "" : StringEscapeUtils.escapeHtml(request.getContextPath()+path) %>"></td>
+								%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>${suffix}" <%
+								%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>${suffix}" <%
+								String path = i18nImage.getUrlPathRelativeToContextPath();
+                  %>size="50" maxlength="255" style="width: 350" value="<%= StringUtils.isBlank(path) ? "" : StringEscapeUtils.escapeHtml(request.getContextPath()+path) %>">
+                </td>
+                
+                <%-- Browse Image button --%>
+				<td><input type="submit" <%
+					%>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>" <%
+					%>class="imcmsFormBtnSmall" style="width:200px" <%
+					%>value="<? templates/sv/change_img.html/2004 ?>"
+					onClick="setI18nCodeParameterValue('${image.language.code}')">
+				</td>                
+                
             </tr>
             </table></td>
         </tr>
+        
+		<%-- Image alt text --%>
+        <tr>
+            <td nowrap><? templates/sv/change_img.html/41 ?></td>
+            <td><input type="text" <%
+						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>${suffix}" <%
+						%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>${suffix}" <%
+						%>size="92" maxlength="255" style="width: 100%" value="<%=
+						StringEscapeUtils.escapeHtml(StringUtils.defaultString(i18nImage.getAlternateText())) %>"></td>
+        </tr> 
+        
+        <tr>
+            <td colspan="2">#gui_hr( "blue" )</td>
+        </tr>
+        
+        </c:forEach>
+        <%-- End of Language Loop --%>               
+        
         <tr>
             <td nowrap><? templates/sv/change_img.html/14 ?></td>
             <td><input type="text" <%
@@ -309,14 +332,7 @@ function checkLinkOnBlur() {<%
 							<option value="right" <%     if ("right".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/40 ?></option>
 						</select></td>
         </tr>
-        <tr>
-            <td nowrap><? templates/sv/change_img.html/41 ?></td>
-            <td><input type="text" <%
-						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>" <%
-						%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>" <%
-						%>size="92" maxlength="255" style="width: 100%" value="<%=
-						StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getAlternateText())) %>"></td>
-        </tr>
+
         <% if (imageEditPage.isLinkable()) { %>
         <tr>
             <td colspan="2">&nbsp;<br>#gui_heading( "<? templates/sv/change_img.html/43/1 ?>" )</td>

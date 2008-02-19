@@ -1,6 +1,10 @@
 package com.imcode.imcms.api;
 
+import imcode.server.document.textdocument.ImageDomainObject;
+
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -13,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
+import javax.persistence.MapKey;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -48,8 +53,12 @@ public class I18nMeta implements Serializable {
 	@JoinTable(name="i18n_meta_keywords", 
 		joinColumns={@JoinColumn(name="meta_id")},			
 		inverseJoinColumns={@JoinColumn(name="keyword_id")}
-	)
+	)	
 	private Set<I18nKeyword> keywords;
+	
+	//@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	//@MapKey(name="")	
+	//private Map<Integer, ImageDomainObject> images;
     
 	@Column(name="meta_headline")
     private String headline;
@@ -123,18 +132,26 @@ public class I18nMeta implements Serializable {
 	public void setKeywords(Set<I18nKeyword> keywords) {
 		this.keywords = keywords;
 	}
+		
+	public Set<String> getKeywordsValues() {
+    	Set<String> values = new HashSet<String>();
+    	
+    	for (I18nKeyword keyword: keywords) {
+    		values.add(keyword.getValue());
+    	}
 	
-	// TODO ajosua: refactor out
-	public String getKeywordsAsString() {
-		if (keywords == null) {return "";};
+    	return values;
+	}
+	
+	public void setKeywordsValues(Set<String> values) {
+		keywords.clear();
 		
-		StringBuilder sb = new StringBuilder();
-		
-		for (I18nKeyword keyword: keywords) {
-			sb.append(keyword.getValue());
-			sb.append(",");
+		for (String value: values) {
+			I18nKeyword keyword = new I18nKeyword();
+			
+			keyword.setValue(value);
+			
+			keywords.add(keyword);
 		}
-		
-		return sb.toString();
 	}
 }

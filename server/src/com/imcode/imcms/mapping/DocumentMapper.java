@@ -97,6 +97,7 @@ public class DocumentMapper implements DocumentGetter {
             } else {
                 newDocument = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
                 newDocument.setAttributes((DocumentDomainObject.Attributes) parent.getAttributes().clone());
+                newDocument.setMeta(parent.getMeta());
             }
         } catch (CloneNotSupportedException e) {
             throw new UnhandledException(e);

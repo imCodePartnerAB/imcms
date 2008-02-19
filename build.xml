@@ -410,7 +410,7 @@
     	
         <copy todir="${WEB-INF}" file="server/src/applicationContext.xml"/>
     	
-        <copy todir="${WEB-INF}/classes" file="server/src/hibernate.cfg.xml"/>
+        <copy todir="${WEB-INF}/classes" file="server/src/hibernate.cfg.xml" filtering="true"/>
 
         <echo message="${version}" file="${versionfile}"/>
 

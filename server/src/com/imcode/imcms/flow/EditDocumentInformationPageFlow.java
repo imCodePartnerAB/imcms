@@ -255,23 +255,17 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             String keywordsString = request.getParameter( REQUEST_PARAMETER__KEYWORDS + suffix);
             KeywordsParser keywordsParser = new KeywordsParser();
             
-            String[] keywords =  keywordsParser.parseKeywords( keywordsString );
-            Set<I18nKeyword> i18nKeywords = new TreeSet<I18nKeyword>();
+            String[] values =  keywordsParser.parseKeywords( keywordsString );
             
-            for (String value: keywords) {
-            	I18nKeyword i18nKeyword = new I18nKeyword(value);
-            	i18nKeywords.add(i18nKeyword);
-            }
-            
-            i18nPart.setKeywords(i18nKeywords);
+            i18nPart.setKeywordsValues(new ArraySet<String>(values));
         }
         
 
-        /* What to assign to this members?
-         *             String keywordsString = request.getParameter( REQUEST_PARAMETER__KEYWORDS);
-            KeywordsParser keywordsParser = new KeywordsParser();
-            String[] keywords =  keywordsParser.parseKeywords( keywordsString );
-            document.setKeywords( new ArraySet(keywords) );
+        /* 
+         String keywordsString = request.getParameter( REQUEST_PARAMETER__KEYWORDS);
+         KeywordsParser keywordsParser = new KeywordsParser();
+         String[] keywords =  keywordsParser.parseKeywords( keywordsString );
+         document.setKeywords( new ArraySet(keywords) );
             
         String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE );
         document.setHeadline( headline );

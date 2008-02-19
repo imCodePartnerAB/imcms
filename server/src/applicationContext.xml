@@ -41,4 +41,8 @@
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>  
   
+  <bean id="imageDao" class="com.imcode.imcms.dao.ImageDaoImpl" scope="prototype">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>  
+  
 </beans>

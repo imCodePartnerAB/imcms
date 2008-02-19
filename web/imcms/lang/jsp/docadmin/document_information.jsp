@@ -172,6 +172,7 @@ function setI18nCodeParameterValue(value) {
 	      
 	      <c:set var="prefix" value="_${i18nPart.language.code}"/>
 	      
+	      <tr><td>LANGUAGE: ${i18nPart.language.name}</td></tr>
 		  <tr>
 			<td class="imcmsAdmText" nowrap>
 			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/6 ?><sup class="imNote">1</sup></td>
@@ -215,7 +216,7 @@ function setI18nCodeParameterValue(value) {
 		<tr>
 			<td width="85%">
 			  <input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__IMAGE + pageContext.getAttribute("prefix") %>" size="40" maxlength="255" style="width: 100%"
-			    value="<c:out value="${i18nPart.imageURL}" default=""/>"
+			    value="<c:out value="${i18nPart.menuImageURL}" default=""/>"
 			  />
 			</td>
 			<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER%>"
@@ -620,22 +621,28 @@ function setI18nCodeParameterValue(value) {
 		value="<%= StringEscapeUtils.escapeHtml( keywordsParser.formatKeywords(keywords) )%>"><br>
 		<span class="imcmsAdmDim"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/keywords_explanation ?></span><br>
 		<input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SEARCH_DISABLED %>" value="1" <%
-		if (document.isSearchDisabled()) {
-			%> checked<%
-		} %>> <? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?>
 		  
 		  --%>
 		  
 		  <table>
 				<c:forEach items="${document.meta.i18nParts}" var="i18nPart">
 				  <c:set var="prefix" value="_${i18nPart.language.code}"/>
+				  <c:set var="keywordsValues" value="${i18nPart.keywordsValues}"/>
 	  			  <tr>	  
 					<td>
 					  ${i18nPart.language.name}
 					</td>
 					<td>
+					  <%					  
+						Set documentKeywords = (Set) pageContext.getAttribute("keywordsValues");
+        				String[] keywords = (String[])documentKeywords.toArray(new String[documentKeywords.size()]);
+						Collator collator = service.getDefaultLanguageCollator() ; // ???
+						Arrays.sort(keywords,collator) ;
+        				KeywordsParser keywordsParser = new KeywordsParser();							  
+					  %>
+					
 					  <input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS + pageContext.getAttribute("prefix")%>" size="48" maxlength="200" style="width: 100%"
-					    value="${i18nPart.keywordsAsString}"
+					    value="<%=StringEscapeUtils.escapeHtml( keywordsParser.formatKeywords(keywords) )%>"
 					  />  
 					</td>		
 	  		      </tr>

@@ -2,6 +2,7 @@ package imcode.server.document;
 
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.I18nException;
+import com.imcode.imcms.api.I18nKeyword;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
@@ -135,7 +136,16 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public Set getKeywords() {
-        return Collections.unmodifiableSet((Set) attributes.keywords.get()) ;
+    	I18nMeta meta = getI18nMeta();
+    	
+    	Set<String> values = new HashSet<String>();
+    	
+    	for (I18nKeyword keyword: meta.getKeywords()) {
+    		values.add(keyword.getValue());
+    	}
+    	
+        //return Collections.unmodifiableSet((Set) attributes.keywords.get()) ;
+    	return values;
     }
 
     public void setKeywords( Set keywords ) {
