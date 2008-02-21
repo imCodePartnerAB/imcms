@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.util.List;
 
 import com.imcode.imcms.flow.DispatchCommand;
 
@@ -40,16 +41,16 @@ public class EditImage extends HttpServlet {
         return (ImageDomainObject) request.getAttribute(REQUEST_ATTRIBUTE__IMAGE);
     }
 
-    private static class ImageRetrievalCommand implements Handler<ImageDomainObject> {
+    private static class ImageRetrievalCommand implements Handler<List<ImageDomainObject>> {
 
-        private ImageDomainObject image;
+        private List<ImageDomainObject> images;
 
         public ImageDomainObject getImage() {
-            return image;
+            return images.get(0);
         }
 
-        public void handle(ImageDomainObject image) {
-            this.image = image;
+        public void handle(List<ImageDomainObject> images) {
+            this.images = images;
         }
     }
 }

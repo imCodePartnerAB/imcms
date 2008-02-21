@@ -126,11 +126,9 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     }
 
     private void dispatchToImageBrowser( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        String i18nCode = request.getParameter(REQUEST_PARAMETER__I18N_CODE);        
+        final String i18nCode = request.getParameter(REQUEST_PARAMETER__I18N_CODE);        
     	final ImageBrowser imageBrowser = new ImageBrowser();
-    	
-    	imageBrowser.setI18nCode(i18nCode);
-    	
+    	    	
         final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
         imageBrowser.setCancelCommand( new DispatchCommand() {
             public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
@@ -140,8 +138,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         } );
         imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
             public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {            	
-            	String i18nCode = imageBrowser.getI18nCode();
-            	
             	if (i18nCode != null) {
                 	for (I18nMeta i18nPart: document.getMeta().getI18nParts()) {
                 		if (i18nPart.getLanguage().getCode().equals(i18nCode)) {

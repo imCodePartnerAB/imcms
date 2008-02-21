@@ -55,7 +55,7 @@ public class ImageEditPage extends OkCancelPage {
     private TextDocumentDomainObject document;
     private ImageDomainObject image;
     private String label;
-    private final Handler<ImageDomainObject> imageCommand;
+    private final Handler<List<ImageDomainObject>> imageCommand;
     private final LocalizedMessage heading;
     private boolean linkable;
     
@@ -67,7 +67,7 @@ public class ImageEditPage extends OkCancelPage {
 
     public ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image,
                          LocalizedMessage heading, String label, ServletContext servletContext,
-                         Handler<ImageDomainObject> imageCommand,
+                         Handler<List<ImageDomainObject>> imageCommand,
                          DispatchCommand returnCommand, boolean linkable) {
         super(returnCommand, returnCommand);
         this.document = document;
@@ -127,6 +127,7 @@ public class ImageEditPage extends OkCancelPage {
             image.setLinkUrl(req.getParameter(REQUEST_PARAMETER__LINK_URL));
         }
         
+        // Get default image and assign it to image.
         
         String imageUrl = req.getParameter(REQUEST_PARAMETER__IMAGE_URL);
         if ( null != imageUrl && imageUrl.startsWith(req.getContextPath()) ) {
@@ -156,7 +157,17 @@ public class ImageEditPage extends OkCancelPage {
             imageSource = ImcmsImageUtils.createImageSourceFromString(imageUrl);
 
             i18nImage.setAlternateText(alternateText);
-            i18nImage.setSource(imageSource);            
+            i18nImage.setSource(imageSource);  
+            
+            i18nImage.setWidth(image.getWidth());
+            i18nImage.setHeight(image.getHeight());
+            i18nImage.setBorder(image.getBorder());
+            i18nImage.setVerticalSpace(image.getVerticalSpace());
+            i18nImage.setHorizontalSpace(image.getHorizontalSpace());
+            i18nImage.setName(image.getName());
+            i18nImage.setAlign(image.getAlign());
+            
+            // linkable
         }
         
         return image;
@@ -240,7 +251,7 @@ public class ImageEditPage extends OkCancelPage {
 
     protected void dispatchOk(HttpServletRequest request,
                               HttpServletResponse response) throws IOException, ServletException {
-        imageCommand.handle(image);
+        imageCommand.handle(images);
         super.dispatchOk(request, response);
     }
 

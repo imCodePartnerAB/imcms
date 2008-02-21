@@ -15,11 +15,6 @@ public class ImageBrowser extends WebComponent {
 
     private SelectImageUrlCommand selectImageUrlCommand;
     
-    /**
-     * Refactor out. 
-     */
-    private String i18nCode;
-
     public void setSelectImageUrlCommand( SelectImageUrlCommand selectImageUrlCommand ) {
         this.selectImageUrlCommand = selectImageUrlCommand;
     }
@@ -36,12 +31,4 @@ public class ImageBrowser extends WebComponent {
     public static interface SelectImageUrlCommand extends Serializable {
         void selectImageUrl(String imageUrl, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException;
     }
-
-	public String getI18nCode() {
-		return i18nCode;
-	}
-
-	public void setI18nCode(String code) {
-		i18nCode = code;
-	}
 }

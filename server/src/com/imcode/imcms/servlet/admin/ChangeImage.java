@@ -52,9 +52,12 @@ public class ChangeImage extends HttpServlet {
 
             }
         };
-        Handler<ImageDomainObject> imageCommand = new Handler<ImageDomainObject>() {
-            public void handle(ImageDomainObject image) {
+        Handler<List<ImageDomainObject>> imageCommand = new Handler<List<ImageDomainObject>>() {
+            public void handle(List<ImageDomainObject> images) {
                 ImcmsServices services = Imcms.getServices();
+                // Refactor: 
+                ImageDomainObject image = images.get(0);
+                
                 document.setImage(imageIndex, image);
                 try {
                     services.getDocumentMapper().saveDocument(document, user);
