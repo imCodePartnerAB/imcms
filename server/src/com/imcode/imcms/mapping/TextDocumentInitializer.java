@@ -3,6 +3,7 @@ package com.imcode.imcms.mapping;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.I18nException;
 import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nSupport;
 
 import imcode.server.Imcms;
 import imcode.server.document.DirectDocumentReference;
@@ -243,7 +244,7 @@ public class TextDocumentInitializer {
         }
 
         private void initDocumentsTexts() {
-        	final I18nLanguage language = Imcms.currentLanguage.get();
+        	final I18nLanguage language = I18nSupport.getCurrentLanguage();
         	
         	if (LOG.isTraceEnabled()) {
         		LOG.trace("Initializing document texts for language [" 

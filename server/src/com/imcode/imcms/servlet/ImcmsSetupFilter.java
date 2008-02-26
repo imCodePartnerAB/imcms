@@ -33,6 +33,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.dao.LanguageDao;
 
 public class ImcmsSetupFilter implements Filter {
@@ -146,7 +147,7 @@ public class ImcmsSetupFilter implements Filter {
     	// TODO: if session does not contain language
     	// do not allow any admin oparation and forward to front page!!!
     	if (language == null) {
-    		language = Imcms.getDefaultLanguage();
+    		language = I18nSupport.getDefaultLanguage();
     	}
     	
 		request.getSession().setAttribute("lang", language);    	
@@ -167,7 +168,7 @@ public class ImcmsSetupFilter implements Filter {
     	}
     	*/
     	
-    	Imcms.currentLanguage.set(language);
+    	I18nSupport.setCurrentLanguege(language);
     }
 
     public void init( FilterConfig config ) throws ServletException {
@@ -186,7 +187,7 @@ public class ImcmsSetupFilter implements Filter {
     	
     	I18nLanguage defaultLanguage = languageDao.getDefaultLanguage();
     	
-    	Imcms.setDefaultLanguage(defaultLanguage);
+    	I18nSupport.setDefaultLanguage(defaultLanguage);
     }
 
     public void destroy() {

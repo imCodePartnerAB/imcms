@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.dao.LanguageDao;
 import com.imcode.imcms.mapping.DocumentMapper;
 
@@ -50,7 +51,7 @@ public class ChangeText extends HttpServlet {
         
         if ( null == text ) {
             text = new TextDomainObject( "", TextDomainObject.TEXT_TYPE_HTML );
-            text.setLanguageId(Imcms.currentLanguage.get().getId());
+            text.setLanguageId(I18nSupport.getCurrentLanguage().getId());
         }        
         
         LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao"); 

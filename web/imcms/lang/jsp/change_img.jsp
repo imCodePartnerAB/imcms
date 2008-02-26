@@ -31,15 +31,17 @@
     
     ImageDomainObject image = imageEditPage.getImage();
     assert null != image;
-    ImageSize realImageSize = image.getRealImageSize();
-    assert null != realImageSize;
     UserDomainObject user = Utility.getLoggedOnUser( request );
     
-    List<ImageDomainObject> images = imageEditPage.getImages();
+    Map<I18nLanguage, ImageDomainObject> i18nImagesMap = imageEditPage.getI18nImageMap();
+    Collection<ImageDomainObject> images = i18nImagesMap.values();
     pageContext.setAttribute("images", images);
 
 %><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <%@page import="java.util.List"%>
+<%@page import="java.util.Map"%>
+<%@page import="com.imcode.imcms.api.I18nLanguage"%>
+<%@page import="java.util.Collection"%>
 <vel:velocity>
 <html>
 <head>
@@ -180,7 +182,9 @@ function setI18nCodeParameterValue(value) {
         <c:forEach items="${images}" var="image">
           <c:set var="suffix" value="_${image.language.code}"/>
           
-          <% ImageDomainObject i18nImage = (ImageDomainObject)pageContext.getAttribute("image"); %>
+          <% 
+            ImageDomainObject i18nImage = (ImageDomainObject)pageContext.getAttribute("image");           
+          %>
         
         <tr>
             <td colspan="2">${image.language.name}
@@ -193,7 +197,7 @@ function setI18nCodeParameterValue(value) {
         </tr>
          
          <%
-		if (!image.isEmpty()) { %>
+		if (!i18nImage.isEmpty()) { %>
 		<tr>
 			<td colspan="2" align="center">
 			<div id="previewDiv"><%= !i18nImage.isEmpty() ? ImcmsImageUtils.getImageHtmlTag( i18nImage, request, new Properties()) : "" %></div></td>
@@ -237,6 +241,40 @@ function setI18nCodeParameterValue(value) {
 						StringEscapeUtils.escapeHtml(StringUtils.defaultString(i18nImage.getAlternateText())) %>"></td>
         </tr> 
         
+        <%
+        if (!i18nImage.isEmpty()) { 
+            ImageSize realImageSize = i18nImage.getRealImageSize();            
+            ImageSize displayImageSize = i18nImage.getDisplayImageSize();
+            
+            assert null != realImageSize;
+            
+            %>
+            <%-- Actual size lable --%>
+            <tr>
+              <td><? templates/sv/change_img.html/originalSize ?></td>
+              <td height="20">
+                &nbsp;<%= realImageSize.getWidth() %>
+                &nbsp;X&nbsp;
+                &nbsp;<%= realImageSize.getHeight() %>
+                &nbsp;
+              </td>           
+            </tr>    
+            
+            <%-- Display size lable --%>
+            <tr>
+              <td>#DISPLAY SIZE#</td>
+              <td height="20">
+                &nbsp;<%= displayImageSize.getWidth() %>
+                &nbsp;X&nbsp;
+                &nbsp;<%= displayImageSize.getHeight() %>
+                &nbsp;
+              </td>           
+            </tr>                                  
+            <%
+        }
+        %>
+       
+        
         <tr>
             <td colspan="2">#gui_hr( "blue" )</td>
         </tr>
@@ -255,7 +293,7 @@ function setI18nCodeParameterValue(value) {
 				<tr>
 					<td nowrap><? templates/sv/change_img.html/16 ?></td>
 					<td>
-					<table border="0" cellspacing="0" cellpadding="0">
+					<table border="3" cellspacing="0" cellpadding="0">
 					<tr>
 						<td><? templates/sv/change_img.html/17 ?></td>
 						<td>&nbsp;</td>
@@ -289,13 +327,8 @@ function setI18nCodeParameterValue(value) {
 						<td>&nbsp;</td>
 						<td><? templates/sv/change_img.html/size_explanation ?></td>
 					</tr>
-					<tr>
-						<td height="20">&nbsp;<%= realImageSize.getWidth() %></td>
-						<td>&nbsp;X&nbsp;</td>
-						<td>&nbsp;<%= realImageSize.getHeight() %></td>
-						<td>&nbsp;</td>
-						<td colspan="3"><? templates/sv/change_img.html/originalSize ?></td>
-					</tr>
+					<!-- break -->
+					<tr><td colspan="7">&nbsp;</td></tr>
 					</table></td>
 				</tr>
         <tr>

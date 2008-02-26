@@ -36,21 +36,14 @@ public class I18nLanguage implements Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object != null && object instanceof I18nLanguage) {
-			I18nLanguage comparedLanguage = (I18nLanguage) object;
-			long id = getId();
-			long comparedId = comparedLanguage.getId();
-			
-			return id == comparedId;
-		}
-		
-		return false;
+		return object instanceof I18nLanguage
+			&& hashCode() == ((I18nLanguage) object).hashCode();
 	}
 	
-	//@Override	
-	//public int hashCode() {
-		
-	//}
+	@Override	
+	public int hashCode() {
+		return id;
+	}
 	
 	public Integer getId() {
 		return id;

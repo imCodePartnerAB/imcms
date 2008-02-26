@@ -35,7 +35,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
@@ -45,6 +44,8 @@ import com.imcode.db.SingleConnectionDatabase;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.TransactionDatabaseCommand;
+import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.dao.ImageDao;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
 	
@@ -178,6 +179,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
+    	/*
+    	
         Map images = textDocument.getImages();
         String sqlDeleteImages = "DELETE FROM images WHERE meta_id = ?";
         final Object[] parameters = new String[]{"" + textDocument.getId()};
@@ -190,6 +193,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             }
             saveDocumentImage(textDocument.getId(), imageIndex.intValue(), image);
         }
+        */
+    	
+        ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
+        
+        imageDao.saveAllImages(textDocument.getAllImages());
     }
 
     private void sqlInsertImageHistory(TextDocumentDomainObject textDocument, Integer imageIndex, UserDomainObject user) {
@@ -217,7 +225,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     private void sqlDeleteText(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
     	Object[] parameters = new String[] {
-    			"" + Imcms.currentLanguage.get().getId(),
+    			"" + I18nSupport.getCurrentLanguage().getId(),
     			"" + textDocument.getId(), 
         		"" + textIndex, "" + text.getType()};
     	
@@ -228,7 +236,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     private void sqlInsertText(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
         final Object[] parameters = new String[]{
             "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType()
-            , "" + Imcms.currentLanguage.get().getId()
+            , "" + I18nSupport.getCurrentLanguage().getId()
         };
         database.execute(new SqlUpdateCommand("INSERT INTO texts (meta_id, name, text, type, language_id) VALUES(?,?,?,?,?)", parameters));
     }

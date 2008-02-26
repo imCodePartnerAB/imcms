@@ -26,24 +26,16 @@ deny-multiple-user-login = false
 
 db-host = localhost
 db-name = imcms
-db-user =
-db-pass =
+db-user = root
+db-pass = root
 db-maxconnections = 20
 
-# For MSSQL
-db-target = mssql
-db-port = 1433
-db-driver = net.sourceforge.jtds.jdbc.Driver
-db-url-without-db-name = jdbc:jtds:sqlserver://${db-host}:${db-port}/;AppName=imCMS
-db-url = ${db-url-without-db-name};DatabaseName=${db-name}
-
 # For MySQL
-#db-target = mysql
-#db-port = 3306
-#db-driver = com.mysql.jdbc.Driver
-#db-url-without-db-name = jdbc:mysql://${db-host}:${db-port}/
-#db-url = ${db-url-without-db-name}${db-name}?characterEncoding=utf8
-
+db-target = mysql
+db-port = 3306
+db-driver = com.mysql.jdbc.Driver
+db-url-without-db-name = jdbc:mysql://${db-host}:${db-port}/
+db-url = ${db-url-without-db-name}${db-name}?characterEncoding=utf8
 
 external-authenticator =
 external-user-and-role-registry =

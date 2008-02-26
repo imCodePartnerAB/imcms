@@ -5,6 +5,7 @@ import com.imcode.imcms.api.I18nException;
 import com.imcode.imcms.api.I18nKeyword;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
+import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 
@@ -587,11 +588,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 					+ getId() + "] is not set.");
 		}
 		
-		I18nLanguage currentLanguage = Imcms.currentLanguage.get();
-		
-		if (currentLanguage == null) {
-			throw new I18nException("No language bound to the current thread.");
-		}
+		I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
 		
 		for (I18nMeta i18nMeta: meta.getI18nParts()) {
 			if (i18nMeta.getLanguage().equals(currentLanguage)) {

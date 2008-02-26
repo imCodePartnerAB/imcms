@@ -14,6 +14,7 @@ import imcode.util.Utility;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -22,12 +23,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import com.imcode.util.ImageSize;
 
 public class ImageEditPage extends OkCancelPage {
 
@@ -55,7 +58,7 @@ public class ImageEditPage extends OkCancelPage {
     private TextDocumentDomainObject document;
     private ImageDomainObject image;
     private String label;
-    private final Handler<List<ImageDomainObject>> imageCommand;
+    private final Handler<Map<I18nLanguage, ImageDomainObject>> imageCommand;
     private final LocalizedMessage heading;
     private boolean linkable;
     
@@ -63,11 +66,11 @@ public class ImageEditPage extends OkCancelPage {
     private ImageDao imageDao;
     
     /** Injected by ChangeImage servlet. */
-    private List<ImageDomainObject> images;
+    private Map<I18nLanguage, ImageDomainObject> i18nImageMap;
 
     public ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image,
                          LocalizedMessage heading, String label, ServletContext servletContext,
-                         Handler<List<ImageDomainObject>> imageCommand,
+                         Handler<Map<I18nLanguage, ImageDomainObject>> imageCommand,
                          DispatchCommand returnCommand, boolean linkable) {
         super(returnCommand, returnCommand);
         this.document = document;
@@ -143,7 +146,7 @@ public class ImageEditPage extends OkCancelPage {
         // ??? Never used ???
         image.setLowResolutionUrl(req.getParameter(REQUEST_PARAMETER__IMAGE_LOWSRC));
         
-        for (ImageDomainObject i18nImage: images) {
+        for (ImageDomainObject i18nImage: i18nImageMap.values()) {
         	String suffix = "_" + i18nImage.getLanguage().getCode();
         	String alternateText = req.getParameter(REQUEST_PARAMETER__IMAGE_ALT
         			+ suffix);
@@ -214,12 +217,20 @@ public class ImageEditPage extends OkCancelPage {
         imageBrowser.setSelectImageUrlCommand(new ImageBrowser.SelectImageUrlCommand() {
             public void selectImageUrl(String imageUrl, HttpServletRequest request,
                                        HttpServletResponse response) throws IOException, ServletException {
-                image.setSourceAndClearSize(new ImagesPathRelativePathImageSource(imageUrl));
+            	
+            	// Image size on view for every chosen image must remain
+            	// the same.
+            	int width = image.getWidth();
+            	int height = image.getHeight();
                 
-                for (ImageDomainObject image: images) {
-                	if (image.getLanguage().getCode().equals(i18nCode)) {
-                		image.setSourceAndClearSize(new ImagesPathRelativePathImageSource(imageUrl));
-                	}
+                // TODO i18n: refactor
+                for (ImageDomainObject i18nImage: i18nImageMap.values()) {
+                	if (i18nImage.getLanguage().getCode().equals(i18nCode)) {
+                		i18nImage.setSource(new ImagesPathRelativePathImageSource(imageUrl));
+                 	}
+                	
+                 	i18nImage.setHeight(height);
+                 	i18nImage.setWidth(width);
                 }
                 
                 forward(request, response);
@@ -251,7 +262,7 @@ public class ImageEditPage extends OkCancelPage {
 
     protected void dispatchOk(HttpServletRequest request,
                               HttpServletResponse response) throws IOException, ServletException {
-        imageCommand.handle(images);
+        imageCommand.handle(i18nImageMap);
         super.dispatchOk(request, response);
     }
 
@@ -263,12 +274,12 @@ public class ImageEditPage extends OkCancelPage {
 		this.imageDao = imageDao;
 	}
 
-	public List<ImageDomainObject> getImages() {
-		return images;
+	public Map<I18nLanguage, ImageDomainObject> getI18nImageMap() {
+		return i18nImageMap;
 	}
 
-	public void setImages(List<ImageDomainObject> images) {
-		this.images = images;
+	public void setImages(Map<I18nLanguage, ImageDomainObject> i18nImageMap) {
+		this.i18nImageMap = i18nImageMap;
 	}
 
 }

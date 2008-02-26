@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class ChangeImage extends HttpServlet {
 
@@ -34,9 +36,13 @@ public class ChangeImage extends HttpServlet {
         final ImcmsServices imcref = Imcms.getServices();
         final DocumentMapper documentMapper = imcref.getDocumentMapper();
         final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(Integer.parseInt(request.getParameter("meta_id")));
-        final int imageIndex = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__IMAGE_INDEX));
-        final ImageDomainObject image = document.getImage(imageIndex);
+        final int imageIndex = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__IMAGE_INDEX));        
         final UserDomainObject user = Utility.getLoggedOnUser(request);
+        
+        // I18n changes
+        // This image object is now used for holding generic properties
+        // such as size, border, etc
+        final ImageDomainObject image = document.getImage(imageIndex);
 
         // Check if user has image rights
         if ( !ImageEditPage.userHasImagePermissionsOnDocument(user, document) ) {
@@ -52,13 +58,14 @@ public class ChangeImage extends HttpServlet {
 
             }
         };
-        Handler<List<ImageDomainObject>> imageCommand = new Handler<List<ImageDomainObject>>() {
-            public void handle(List<ImageDomainObject> images) {
+        
+        Handler<Map<I18nLanguage, ImageDomainObject>> imageCommand = new Handler<Map<I18nLanguage, ImageDomainObject>>() {
+            public void handle(Map<I18nLanguage, ImageDomainObject> imageMap) {
                 ImcmsServices services = Imcms.getServices();
-                // Refactor: 
-                ImageDomainObject image = images.get(0);
                 
-                document.setImage(imageIndex, image);
+                // TODO: I18n images assignment to document.                
+                document.setI18nImageMap(imageIndex, imageMap);
+                
                 try {
                     services.getDocumentMapper().saveDocument(document, user);
                 } catch ( NoPermissionToEditDocumentException e ) {
@@ -98,14 +105,13 @@ public class ChangeImage extends HttpServlet {
         
         ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
         
-        List<ImageDomainObject> images = imageDao.getAllImages(document.getId(), imageIndex);
+        Map<I18nLanguage, ImageDomainObject> i18nImageMap = imageDao.getI18nImageMap(document.getId(), imageIndex);
         
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true);
         
         imageEditPage.setImageDao(imageDao);
-        imageEditPage.setImages(images);
+        imageEditPage.setImages(i18nImageMap);
         imageEditPage.forward(request, response);
     }
-
 }

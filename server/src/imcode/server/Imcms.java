@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.Database;
+import com.imcode.imcms.api.I18nException;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
@@ -25,13 +26,6 @@ import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 
 public class Imcms {
-
-	/** 
-	 * I18n: current language id. 
-	 * Set by filter for each request. 
-	 */
-	public static final ThreadLocal<I18nLanguage> currentLanguage = new ThreadLocal<I18nLanguage>();
-	private static I18nLanguage defaultLanguage;
 	
     private static final String SERVER_PROPERTIES_FILENAME = "server.properties";
     public static final String ASCII_ENCODING = "US-ASCII";
@@ -43,8 +37,7 @@ public class Imcms {
     private static ImcmsServices services;
     private static BasicDataSource apiDataSource;
     private static BasicDataSource dataSource;
-    private static File path;
-    
+    private static File path;  
     
     private Imcms() {
     }
@@ -185,13 +178,4 @@ public class Imcms {
             super(message, e) ;
         }
     }
-
-	public static I18nLanguage getDefaultLanguage() {
-		return defaultLanguage;
-	}
-
-	public static void setDefaultLanguage(I18nLanguage defaultLanguage) {
-		Imcms.defaultLanguage = defaultLanguage;
-	}
-
 }

@@ -1,6 +1,11 @@
 package imcode.server.document.textdocument;
 
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.mapping.DocumentMenusMap;
+
+import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
@@ -24,7 +29,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	private Map<Integer, Boolean> modifiedTextIndexes = new TreeMap<Integer, Boolean>();
 
     private LazilyLoadedObject<CopyableHashMap> texts = new LazilyLoadedObject<CopyableHashMap>(new CopyableHashMapLoader());
-    private LazilyLoadedObject<CopyableHashMap> images = new LazilyLoadedObject<CopyableHashMap>(new CopyableHashMapLoader());
+    //private LazilyLoadedObject<CopyableHashMap> images = new LazilyLoadedObject<CopyableHashMap>(new CopyableHashMapLoader());
+    
+    // Map of image index to image map with key of language code. 
+    private Map<Integer, Map<I18nLanguage, ImageDomainObject>> images
+    	= new HashMap<Integer, Map<I18nLanguage,ImageDomainObject>>();
+    
     private LazilyLoadedObject<CopyableHashMap> includes = new LazilyLoadedObject<CopyableHashMap>(new CopyableHashMapLoader());
     private LazilyLoadedObject<DocumentMenusMap> menus = new LazilyLoadedObject<DocumentMenusMap>(new LazilyLoadedObject.Loader<DocumentMenusMap>() {
         public DocumentMenusMap load() {
@@ -48,8 +58,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public void loadAllLazilyLoaded() {
         super.loadAllLazilyLoaded();
 
+        // TODO i18n: Do not laad here !!!
+        // Implement exactley as images!!
         texts.load();
-        images.load();
+        
+               
+        //images.load();        
         includes.load();
         menus.load();
         templateNames.load();
@@ -58,7 +72,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public Object clone() throws CloneNotSupportedException {
         TextDocumentDomainObject clone = (TextDocumentDomainObject)super.clone();
         clone.texts = (LazilyLoadedObject) texts.clone();
-        clone.images = (LazilyLoadedObject) images.clone();
+        
+        // TODO i18n: Clone images
+        //clone.images = (LazilyLoadedObject) images.clone();
         clone.includes = (LazilyLoadedObject) includes.clone();
         clone.menus = (LazilyLoadedObject) menus.clone() ;
         clone.templateNames = (LazilyLoadedObject) templateNames.clone() ;
@@ -82,16 +98,16 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return childDocuments ;
     }
 
-    public ImageDomainObject getImage( int imageIndex ) {
-        ImageDomainObject image = (ImageDomainObject)getImagesMap().get( new Integer( imageIndex )) ;
-        if (null == image) {
-            image = new ImageDomainObject() ;
-        }
-        return image ;
-    }
+    //public ImageDomainObject getImage( int imageIndex ) {
+    //    ImageDomainObject image = (ImageDomainObject)getImagesMap().get( new Integer( imageIndex )) ;
+    //    if (null == image) {
+    //        image = new ImageDomainObject() ;
+    //    }
+    //    return image ;
+    //}
 
     private Map getImagesMap() {
-        return (Map) images.get();
+        return (Map) images.get(I18nSupport.getCurrentLanguage());
     }
 
     public Integer getIncludedDocumentId( int includeIndex ) {
@@ -125,6 +141,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void removeAllImages() {
+    	// TODO i18n: wtf ????????? 
         getImagesMap().clear();
     }
 
@@ -196,7 +213,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void setImage( int imageIndex, ImageDomainObject image ) {
-        getImagesMap().put( new Integer( imageIndex ), image ) ;
+    	// TODO: I18n wtf ????
+    	//I18nLanguage language = image.getLanguage();
+    	//Map<Integer, ImageDomainObject> imagesMap 
+    	//	= images.get(language);
+    	
+    	//imagesMap.put(imageIndex, image);
+    	
+    	// TODO: I18n wtf ????
+        //getImagesMap().put( new Integer( imageIndex ), image ) ;
     }
 
     public String getDefaultTemplateName() {
@@ -216,7 +241,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void setLazilyLoadedImages(LazilyLoadedObject images) {
-        this.images = images ;
+    	// TODO i18n: rewrite or remove latter.
+        //this.images = images ;
     }
 
     public void setLazilyLoadedIncludes(LazilyLoadedObject includes) {
@@ -330,4 +356,52 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	public void removeAllModifiedTextIndexs() {
 		modifiedTextIndexes.clear();
 	}	
+	
+	public Map<I18nLanguage, Map<Integer, ImageDomainObject>> getAllImages() {
+		//return images;
+		return null;
+	}
+	
+	/**
+	 * Returns i18n-ed image for language bound to the current thread. 
+	 * 
+	 * @return ImageDomainObject for language bound to the current thread. 
+	 */
+	public ImageDomainObject getImage(int imageIndex) {
+		I18nLanguage language = I18nSupport.getCurrentLanguage();
+		
+		return getImage(language, imageIndex);
+	}
+	
+	/**
+	 * Returns i18n-ed image.
+	 */
+	public ImageDomainObject getImage(I18nLanguage language, int imageIndex) {
+		Map<I18nLanguage, ImageDomainObject> i18nImageMap = getI18nImageMap(imageIndex);
+		
+		return i18nImageMap.get(language);
+	}	
+	
+	/**
+	 * Returns languages mapped to images. 
+	 * 
+	 * @return languages mapped to images. 
+	 */	
+	public synchronized Map<I18nLanguage, ImageDomainObject> getI18nImageMap(int imageIndex) {
+		Map<I18nLanguage, ImageDomainObject> i18nImageMap = images.get(imageIndex);
+		
+		if (i18nImageMap == null) {
+			ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
+		        
+			i18nImageMap = imageDao.getI18nImageMap(getId(), imageIndex);
+			
+			images.put(imageIndex, i18nImageMap);
+		}
+		
+		return i18nImageMap;
+	}	
+	
+    public synchronized void setI18nImageMap(int imageIndex, Map<I18nLanguage, ImageDomainObject> i18nImageMap) {
+    	images.put(imageIndex, i18nImageMap);
+    }
 }

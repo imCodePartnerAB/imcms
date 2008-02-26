@@ -27,6 +27,7 @@ import javax.persistence.Transient;
 @NamedQueries({
 	@NamedQuery(name="Image.getByLanguageId", query="select i from I18nImage i where i.metaId = :metaId and i.language.id = :languageId"),
 	@NamedQuery(name="Image.getLanguagesToImagesByMetaId", query="select l, i from I18nImage i right join i.language l where (i.metaId = :metaId and i.name = :imageId) or i is null order by l.systemDefault desc"),
+	@NamedQuery(name="Image.getAllImages", query="select i from I18nImage i where i.metaId = :metaId"),
 	@NamedQuery(name="Image.getDefaultImage", query="select i from I18nImage i where i.metaId = :metaId and i.name = :imageId and i.language.systemDefault is true")
 })
 public class ImageDomainObject implements Serializable, Cloneable {

@@ -8,7 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.flow.DispatchCommand;
 
 public class EditImage extends HttpServlet {
@@ -41,16 +43,17 @@ public class EditImage extends HttpServlet {
         return (ImageDomainObject) request.getAttribute(REQUEST_ATTRIBUTE__IMAGE);
     }
 
-    private static class ImageRetrievalCommand implements Handler<List<ImageDomainObject>> {
+    private static class ImageRetrievalCommand implements Handler<Map<I18nLanguage, ImageDomainObject>> {
 
-        private List<ImageDomainObject> images;
+        private Map<I18nLanguage, ImageDomainObject> map;
 
         public ImageDomainObject getImage() {
-            return images.get(0);
+            //return images.get(0);
+        	return null;
         }
 
-        public void handle(List<ImageDomainObject> images) {
-            this.images = images;
+        public void handle(Map<I18nLanguage, ImageDomainObject> map) {
+            this.map = map;
         }
     }
 }
