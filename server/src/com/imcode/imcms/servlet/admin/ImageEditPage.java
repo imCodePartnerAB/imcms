@@ -159,6 +159,8 @@ public class ImageEditPage extends OkCancelPage {
             
             imageSource = ImcmsImageUtils.createImageSourceFromString(imageUrl);
 
+            i18nImage.setImageUrl(imageUrl);
+            i18nImage.setType(imageSource.getTypeId());
             i18nImage.setAlternateText(alternateText);
             i18nImage.setSource(imageSource);  
             
@@ -169,6 +171,9 @@ public class ImageEditPage extends OkCancelPage {
             i18nImage.setHorizontalSpace(image.getHorizontalSpace());
             i18nImage.setName(image.getName());
             i18nImage.setAlign(image.getAlign());
+            
+            i18nImage.setTarget(image.getTarget());
+            i18nImage.setLinkUrl(image.getLinkUrl());
             
             // linkable
         }

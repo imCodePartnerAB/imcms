@@ -64,7 +64,7 @@ public class ChangeImage extends HttpServlet {
                 ImcmsServices services = Imcms.getServices();
                 
                 // TODO: I18n images assignment to document.                
-                document.setI18nImageMap(imageIndex, imageMap);
+               document.setI18nImageMap(imageIndex, imageMap);
                 
                 try {
                     services.getDocumentMapper().saveDocument(document, user);
@@ -105,7 +105,7 @@ public class ChangeImage extends HttpServlet {
         
         ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
         
-        Map<I18nLanguage, ImageDomainObject> i18nImageMap = imageDao.getI18nImageMap(document.getId(), imageIndex);
+        Map<I18nLanguage, ImageDomainObject> i18nImageMap = imageDao.getImagesMap(document.getId(), imageIndex, true);
         
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true);

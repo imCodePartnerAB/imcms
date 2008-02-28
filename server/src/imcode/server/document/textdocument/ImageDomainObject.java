@@ -1,11 +1,13 @@
 package imcode.server.document.textdocument;
 
 import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.ImageId;
 import com.imcode.util.ImageSize;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.hibernate.annotations.AccessType;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -14,7 +16,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -23,28 +28,35 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Entity(name="I18nImage")
+//@IdClass(ImageId.class)
 @Table(name="images")
 @NamedQueries({
 	@NamedQuery(name="Image.getByLanguageId", query="select i from I18nImage i where i.metaId = :metaId and i.language.id = :languageId"),
-	@NamedQuery(name="Image.getLanguagesToImagesByMetaId", query="select l, i from I18nImage i right join i.language l where (i.metaId = :metaId and i.name = :imageId) or i is null order by l.systemDefault desc"),
+	@NamedQuery(name="Image.getLanguagesToImagesByMetaId", query="select l, i from I18nImage i right join i.language l where (i.metaId = :metaId and i.name = :name) or i.metaId is null order by l.systemDefault desc"),
 	@NamedQuery(name="Image.getAllImages", query="select i from I18nImage i where i.metaId = :metaId"),
-	@NamedQuery(name="Image.getDefaultImage", query="select i from I18nImage i where i.metaId = :metaId and i.name = :imageId and i.language.systemDefault is true")
+	@NamedQuery(name="Image.getAllDocumentImagesByLanguage", query="select i from I18nImage i where i.metaId = :metaId and i.language.id = :languageId"),
+	@NamedQuery(name="Image.getDefaultImage", query="select i from I18nImage i where i.metaId = :metaId and i.name = :name and i.language.systemDefault is true")
 })
 public class ImageDomainObject implements Serializable, Cloneable {
+	
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="image_id")
+	private Long id;
     
 	@Transient
 	private ImageSource source = new NullImageSource();
 	
-	@Id
-	@Column(name="image_id")
-	private Long imageId;
-	
+	//@Id
 	@Column(name="meta_id")
 	private int metaId;
 
-    //????? Image name ????
-	
+    /**
+     * 'name' is a legacy identifier. 
+     * Actually this is natural key. 
+     */
+	//@Id
     private String name = "";
+	
     private int width;
     private int height;
     private int border;
@@ -69,13 +81,15 @@ public class ImageDomainObject implements Serializable, Cloneable {
     @Column(name="imgurl")
     private String imageUrl;
     
+    private Integer type;
+    
     
     /**
      * i18n support 
      */
 	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	@JoinColumn(name="language_id", referencedColumnName="language_id")    
-    private I18nLanguage language;
+    private I18nLanguage language;		
 
     public String getName() {
         return name;
@@ -283,14 +297,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
 	public void setMetaId(int metaId) {
 		this.metaId = metaId;
 	}
-
-	public Long getImageId() {
-		return imageId;
-	}
-
-	public void setImageId(Long imageId) {
-		this.imageId = imageId;
-	}
 	
 	public ImageDomainObject clone() {
 		try {
@@ -306,5 +312,21 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 }

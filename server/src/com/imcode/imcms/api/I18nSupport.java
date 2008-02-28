@@ -50,7 +50,12 @@ public class I18nSupport {
 	/**
 	 * Returns default language. 
 	 */
-	public static I18nLanguage getDefaultLanguage() {
+	public static I18nLanguage getDefaultLanguage()
+	throws I18nException {
+		if (defaultLanguage == null) {
+			throw new I18nException("Default language is not set.");
+		}
+		
 		return defaultLanguage;
 	}
 	

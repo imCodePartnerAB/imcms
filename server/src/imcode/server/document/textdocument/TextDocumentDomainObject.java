@@ -4,6 +4,7 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.mapping.DocumentMenusMap;
+import com.sun.imageio.plugins.common.I18NImpl;
 
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
@@ -32,8 +33,16 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     //private LazilyLoadedObject<CopyableHashMap> images = new LazilyLoadedObject<CopyableHashMap>(new CopyableHashMapLoader());
     
     // Map of image index to image map with key of language code. 
-    private Map<Integer, Map<I18nLanguage, ImageDomainObject>> images
-    	= new HashMap<Integer, Map<I18nLanguage,ImageDomainObject>>();
+    
+    /**
+     * Holds map of loaded images.
+     * 
+     * Latter can be loaded as lazy object in loadAllLazyLoaded.
+     * 
+     * For now loaded only on demand, when 
+     */
+    private Map<I18nLanguage, Map<Integer, ImageDomainObject>> images
+    		= new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
     
     private LazilyLoadedObject<CopyableHashMap> includes = new LazilyLoadedObject<CopyableHashMap>(new CopyableHashMapLoader());
     private LazilyLoadedObject<DocumentMenusMap> menus = new LazilyLoadedObject<DocumentMenusMap>(new LazilyLoadedObject.Loader<DocumentMenusMap>() {
@@ -62,6 +71,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         // Implement exactley as images!!
         texts.load();
         
+        //loadAllImages();
                
         //images.load();        
         includes.load();
@@ -106,9 +116,36 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     //    return image ;
     //}
 
-    private Map getImagesMap() {
-        return (Map) images.get(I18nSupport.getCurrentLanguage());
+    private Map<Integer, ImageDomainObject> getImagesMap() {
+    	I18nLanguage language = I18nSupport.getCurrentLanguage();
+    	
+    	return getImagesMap(language);
     }
+    
+    /**
+     * Returns all images for language specified.
+     * 
+     * Populates images map with values at the first run.  
+     */
+    private synchronized Map<Integer, ImageDomainObject> getImagesMap(I18nLanguage language) {
+    	Map<Integer, ImageDomainObject> imagesMap = images.get(language);
+    	
+    	if (imagesMap == null) {
+			imagesMap = new HashMap<Integer, ImageDomainObject>();
+						
+			ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
+			
+			List<ImageDomainObject> _images = imageDao.getAllImages(getId(), language.getId());
+			
+			for (ImageDomainObject image: _images) {
+				imagesMap.put(Integer.parseInt(image.getName()), image);
+			}			
+			
+			images.put(language, imagesMap);
+    	}
+    	
+        return imagesMap;
+    }    
 
     public Integer getIncludedDocumentId( int includeIndex ) {
         return (Integer)getIncludesMap().get( new Integer( includeIndex ) );
@@ -174,7 +211,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     /**
-     * @return Map<Integer, {@link ImageDomainObject} *
+     * @return Image id mapped to image for current laguage.
      */
     public Map<Integer, ImageDomainObject> getImages() {
         return Collections.unmodifiableMap( getImagesMap() );
@@ -212,17 +249,17 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         getTemplateNames().setTemplateGroupId(v);
     }
 
-    public void setImage( int imageIndex, ImageDomainObject image ) {
-    	// TODO: I18n wtf ????
-    	//I18nLanguage language = image.getLanguage();
-    	//Map<Integer, ImageDomainObject> imagesMap 
-    	//	= images.get(language);
-    	
-    	//imagesMap.put(imageIndex, image);
-    	
-    	// TODO: I18n wtf ????
-        //getImagesMap().put( new Integer( imageIndex ), image ) ;
+    public void setImage(int imageIndex, ImageDomainObject image) {
+    	setImage(I18nSupport.getCurrentLanguage(), imageIndex, image);
     }
+    
+    public synchronized void setImage(I18nLanguage language, int imageIndex,
+    		ImageDomainObject image) {
+    	
+    	Map<Integer, ImageDomainObject> imagesMap = getImagesMap(language);
+    	
+    	imagesMap.put(imageIndex, image);
+     }
 
     public String getDefaultTemplateName() {
         return getTemplateNames().getDefaultTemplateName();
@@ -358,8 +395,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	}	
 	
 	public Map<I18nLanguage, Map<Integer, ImageDomainObject>> getAllImages() {
-		//return images;
-		return null;
+		return images;
 	}
 	
 	/**
@@ -374,26 +410,53 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	}
 	
 	/**
-	 * Returns i18n-ed image.
+	 * Returns i18n-ed image. 
 	 */
-	public ImageDomainObject getImage(I18nLanguage language, int imageIndex) {
-		Map<I18nLanguage, ImageDomainObject> i18nImageMap = getI18nImageMap(imageIndex);
+	public synchronized ImageDomainObject getImage(I18nLanguage language, int imageIndex) {
+		if (language == null) {
+			throw new IllegalArgumentException("language argument " +
+					"can not be null.");			
+		}		
 		
-		return i18nImageMap.get(language);
+		Map<Integer, ImageDomainObject> imagesMap = getImagesMap(language);
+		
+		ImageDomainObject image = imagesMap.get(imageIndex);
+		
+		// TODO: ask meta if show in default language
+		// TODO: optimize && show default
+		if (image == null) {
+			ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
+						
+			image = imageDao.getDefaultImage(getId(), imageIndex); 
+			
+			if (image == null) {
+				image = new ImageDomainObject();
+			} 
+			
+			image.setId(null);
+			image.setMetaId(getId());
+			image.setLanguage(language);
+			image.setName("" + imageIndex);
+				
+			imagesMap.put(imageIndex, image);
+		}
+		
+		return image;
 	}	
 	
 	/**
-	 * Returns languages mapped to images. 
+	 * Returns languages mapped to images.
+	 * This method is used by administration interface.
 	 * 
 	 * @return languages mapped to images. 
 	 */	
-	public synchronized Map<I18nLanguage, ImageDomainObject> getI18nImageMap(int imageIndex) {
+/*	public synchronized Map<I18nLanguage, ImageDomainObject> getI18nImageMap(int imageIndex) {
 		Map<I18nLanguage, ImageDomainObject> i18nImageMap = images.get(imageIndex);
 		
 		if (i18nImageMap == null) {
 			ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
 		        
-			i18nImageMap = imageDao.getI18nImageMap(getId(), imageIndex);
+			i18nImageMap = imageDao.getImagesMap(getId(), imageIndex);
 			
 			images.put(imageIndex, i18nImageMap);
 		}
@@ -401,7 +464,25 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		return i18nImageMap;
 	}	
 	
-    public synchronized void setI18nImageMap(int imageIndex, Map<I18nLanguage, ImageDomainObject> i18nImageMap) {
-    	images.put(imageIndex, i18nImageMap);
+*/
+  
+    public synchronized void setI18nImageMap(int imageIndex, Map<I18nLanguage, 
+    		ImageDomainObject> i18nImageMap) {
+    	
+    	//if (images.size() == 0) {
+    	//	loadAllImages();
+    	//}
+    	
+    	for (ImageDomainObject image: i18nImageMap.values()) {
+    		I18nLanguage language = image.getLanguage();
+    		
+    		setImage(language, imageIndex, image);
+    	}
+    }	
+    
+    private synchronized void loadAllImages() {
+		ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
+
+		images = imageDao.getImagesMap(getId());
     }
 }

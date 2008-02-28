@@ -197,7 +197,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     	
         ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
         
-        imageDao.saveAllImages(textDocument.getAllImages());
+        imageDao.saveImagesMap(textDocument.getId(), textDocument.getAllImages());
+        
+        //imageDao.saveDocumentImages(textDocument.getAllImages());
     }
 
     private void sqlInsertImageHistory(TextDocumentDomainObject textDocument, Integer imageIndex, UserDomainObject user) {

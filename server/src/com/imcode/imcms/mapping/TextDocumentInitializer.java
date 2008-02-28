@@ -12,6 +12,8 @@ import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
 import imcode.util.LazilyLoadedObject;
 import imcode.util.Utility;
+import imcode.util.LazilyLoadedObject.Copyable;
+
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
