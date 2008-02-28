@@ -1,14 +1,5 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.ImageId;
-import com.imcode.util.ImageSize;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.hibernate.annotations.AccessType;
-
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -19,13 +10,20 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.util.ImageSize;
 
 @Entity(name="I18nImage")
 //@IdClass(ImageId.class)
