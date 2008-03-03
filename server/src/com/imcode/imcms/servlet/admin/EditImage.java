@@ -2,15 +2,14 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.document.textdocument.ImageDomainObject;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
-import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.flow.DispatchCommand;
 
 public class EditImage extends HttpServlet {
@@ -43,17 +42,17 @@ public class EditImage extends HttpServlet {
         return (ImageDomainObject) request.getAttribute(REQUEST_ATTRIBUTE__IMAGE);
     }
 
-    private static class ImageRetrievalCommand implements Handler<Map<I18nLanguage, ImageDomainObject>> {
+    private static class ImageRetrievalCommand implements Handler<List<ImageDomainObject>> {
 
-        private Map<I18nLanguage, ImageDomainObject> map;
+        private List<ImageDomainObject> images;
 
         public ImageDomainObject getImage() {
             //return images.get(0);
         	return null;
         }
 
-        public void handle(Map<I18nLanguage, ImageDomainObject> map) {
-            this.map = map;
+        public void handle(List<ImageDomainObject> images) {
+            this.images = images;
         }
     }
 }

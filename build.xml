@@ -408,9 +408,9 @@
         <mkdir dir="${WEB-INF}/uploads"/>
     	<mkdir dir="${WEB-INF}/classes"/>
     	
-        <copy todir="${WEB-INF}" file="server/src/applicationContext.xml"/>
+        <copy todir="${WEB-INF}" file="server/src/applicationContext.xml" filtering="true"/>
     	
-        <copy todir="${WEB-INF}/classes" file="server/src/hibernate.cfg.xml" filtering="true"/>
+        <copy todir="${WEB-INF}/classes" file="server/src/hibernate.cfg.xml"/>
 
         <echo message="${version}" file="${versionfile}"/>
 

@@ -17,7 +17,7 @@ public abstract class ImageSource implements Serializable {
 
     abstract InputStreamSource getInputStreamSource( );
 
-    abstract String getUrlPathRelativeToContextPath( );
+    public abstract String getUrlPathRelativeToContextPath( );
 
     public abstract String toStorageString( );
 

@@ -43,20 +43,10 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		return allImagesMap;
 	}
 		
-	public Map<I18nLanguage, ImageDomainObject> getImagesMap(int metaId, int imageId, boolean createImageIfNotExists) {
-		Map<I18nLanguage, ImageDomainObject> map =
-			new HashMap<I18nLanguage, ImageDomainObject>();
-
-		List<ImageDomainObject> images = getAllImages(metaId, imageId, createImageIfNotExists);
-		
-		for (ImageDomainObject image: images) {
-			map.put(image.getLanguage(), image);
-		}
-		
-		return map;
-	}
 	
-	private List<ImageDomainObject> getAllImages(int metaId, int imageId, boolean createIfNotExists) {
+	public List<ImageDomainObject> getImages(int metaId, int imageId, 
+			boolean createIfNotExists) {
+		
 		ImageDomainObject defaultImage = getDefaultImage(metaId, imageId);
 				
 		if (logger.isTraceEnabled()) {
@@ -110,15 +100,12 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		
 		for (Map<Integer, ImageDomainObject> map: imagesMap.values()) {
 			for (ImageDomainObject image: map.values()) {
-				if (image.getSource().getTypeId() != -1
-						&& !StringUtils.isBlank(image.getImageUrl())) {
-					saveOrUpdate(image);
-				}
+				saveOrUpdate(image);
 			}
 		}		
 	}
 
-	public List<ImageDomainObject> getAllImages(int metaId, int languageId) {
+	public List<ImageDomainObject> getImages(int metaId, int languageId) {
 		List<ImageDomainObject> images = findByNamedQueryAndNamedParam(
 				"Image.getAllDocumentImagesByLanguage", 
 					new String[] {"metaId", "languageId"}, 

@@ -7,6 +7,7 @@ import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
+import imcode.server.document.textdocument.NullImageSource;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
@@ -14,7 +15,6 @@ import imcode.util.Utility;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -23,14 +23,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
-import com.imcode.util.ImageSize;
 
 public class ImageEditPage extends OkCancelPage {
 
@@ -56,21 +53,26 @@ public class ImageEditPage extends OkCancelPage {
     static final LocalizedMessage ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images");
 
     private TextDocumentDomainObject document;
-    private ImageDomainObject image;
     private String label;
-    private final Handler<Map<I18nLanguage, ImageDomainObject>> imageCommand;
+    private final Handler<List<ImageDomainObject>> imageCommand;
     private final LocalizedMessage heading;
     private boolean linkable;
     
-    /** Injected by ChangeImage servlet. */
-    private ImageDao imageDao;
-    
-    /** Injected by ChangeImage servlet. */
-    private Map<I18nLanguage, ImageDomainObject> i18nImageMap;
+    /**
+     * Image DTO. Holds generic properties such as size and border. 
+     */
+    private ImageDomainObject image;
+        
+    /** 
+     * Sorted Image DTO list. Default image always has index 0. 
+     * 
+     * Injected by ChangeImage servlet. 
+     */
+    private List<ImageDomainObject> images;
 
     public ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image,
                          LocalizedMessage heading, String label, ServletContext servletContext,
-                         Handler<Map<I18nLanguage, ImageDomainObject>> imageCommand,
+                         Handler<List<ImageDomainObject>> imageCommand,
                          DispatchCommand returnCommand, boolean linkable) {
         super(returnCommand, returnCommand);
         this.document = document;
@@ -146,7 +148,7 @@ public class ImageEditPage extends OkCancelPage {
         // ??? Never used ???
         image.setLowResolutionUrl(req.getParameter(REQUEST_PARAMETER__IMAGE_LOWSRC));
         
-        for (ImageDomainObject i18nImage: i18nImageMap.values()) {
+        for (ImageDomainObject i18nImage: images) {
         	String suffix = "_" + i18nImage.getLanguage().getCode();
         	String alternateText = req.getParameter(REQUEST_PARAMETER__IMAGE_ALT
         			+ suffix);
@@ -229,7 +231,7 @@ public class ImageEditPage extends OkCancelPage {
             	int height = image.getHeight();
                 
                 // TODO i18n: refactor
-                for (ImageDomainObject i18nImage: i18nImageMap.values()) {
+                for (ImageDomainObject i18nImage: images) {
                 	if (i18nImage.getLanguage().getCode().equals(i18nCode)) {
                 		i18nImage.setSource(new ImagesPathRelativePathImageSource(imageUrl));
                  	}
@@ -267,24 +269,43 @@ public class ImageEditPage extends OkCancelPage {
 
     protected void dispatchOk(HttpServletRequest request,
                               HttpServletResponse response) throws IOException, ServletException {
-        imageCommand.handle(i18nImageMap);
+        imageCommand.handle(images);
         super.dispatchOk(request, response);
     }
 
-	public ImageDao getImageDao() {
-		return imageDao;
+	public List<ImageDomainObject> getImages() {
+		return images;
 	}
 
-	public void setImageDao(ImageDao imageDao) {
-		this.imageDao = imageDao;
+	public void setImages(List<ImageDomainObject> images) {
+		this.images = images;
 	}
-
-	public Map<I18nLanguage, ImageDomainObject> getI18nImageMap() {
-		return i18nImageMap;
-	}
-
-	public void setImages(Map<I18nLanguage, ImageDomainObject> i18nImageMap) {
-		this.i18nImageMap = i18nImageMap;
+	
+	/**
+	 * Returns if all images shares same image source. 
+	 */
+	public boolean getImagesSharesSameSource() {
+		boolean same = images.size() > 0;
+		String path = null; 
+		
+		for (ImageDomainObject image: images) {
+			ImageSource source = image.getSource();
+			String newPath = source.getUrlPathRelativeToContextPath();
+			
+			if (image.getSource() instanceof NullImageSource) {
+				same = false;
+				break;
+			}
+			
+			if (path != null && !path.equals(newPath)) {
+				same = false;
+				break;
+			}
+			
+			path = newPath;
+		}
+		
+		return same;
 	}
 
 }

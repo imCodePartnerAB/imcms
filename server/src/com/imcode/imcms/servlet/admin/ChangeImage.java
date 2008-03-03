@@ -1,31 +1,34 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.api.I18nLanguage;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
+import imcode.server.document.ConcurrentDocumentModificationException;
+import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.UserDomainObject;
+import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
+import imcode.util.ShouldNotBeThrownException;
+import imcode.util.Utility;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
-import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
-import imcode.server.ImcmsConstants;
-import imcode.server.document.textdocument.*;
-import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.document.ConcurrentDocumentModificationException;
-import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
-import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
-import imcode.util.ShouldNotBeThrownException;
-import org.apache.commons.lang.StringUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 public class ChangeImage extends HttpServlet {
 
@@ -39,9 +42,9 @@ public class ChangeImage extends HttpServlet {
         final int imageIndex = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__IMAGE_INDEX));        
         final UserDomainObject user = Utility.getLoggedOnUser(request);
         
-        // I18n changes
-        // This image object is now used for holding generic properties
-        // such as size, border, etc
+        /**
+         * Image DTO. Holds generic properties such as size and border. 
+         */
         final ImageDomainObject image = document.getImage(imageIndex);
 
         // Check if user has image rights
@@ -59,12 +62,11 @@ public class ChangeImage extends HttpServlet {
             }
         };
         
-        Handler<Map<I18nLanguage, ImageDomainObject>> imageCommand = new Handler<Map<I18nLanguage, ImageDomainObject>>() {
-            public void handle(Map<I18nLanguage, ImageDomainObject> imageMap) {
+        Handler<List<ImageDomainObject>> imageCommand = new Handler<List<ImageDomainObject>>() {
+            public void handle(List<ImageDomainObject> images) {
                 ImcmsServices services = Imcms.getServices();
                 
-                // TODO: I18n images assignment to document.                
-               document.setI18nImageMap(imageIndex, imageMap);
+                document.setImages(imageIndex, images);
                 
                 try {
                     services.getDocumentMapper().saveDocument(document, user);
@@ -105,13 +107,12 @@ public class ChangeImage extends HttpServlet {
         
         ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
         
-        Map<I18nLanguage, ImageDomainObject> i18nImageMap = imageDao.getImagesMap(document.getId(), imageIndex, true);
+        List<ImageDomainObject> images = imageDao.getImages(document.getId(), imageIndex, true);
         
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true);
         
-        imageEditPage.setImageDao(imageDao);
-        imageEditPage.setImages(i18nImageMap);
+        imageEditPage.setImages(images);
         imageEditPage.forward(request, response);
     }
 }
