@@ -14,6 +14,7 @@ import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -59,16 +60,15 @@ public class ImageEditPage extends OkCancelPage {
     private boolean linkable;
     
     /**
-     * Image DTO. Holds generic properties such as size and border. 
+     * Image DTO. Contains generic image properties such as size, border,
+     * target and url.
      */
     private ImageDomainObject image;
         
     /** 
-     * Sorted Image DTO list. Default image always has index 0. 
-     * 
-     * Injected by ChangeImage servlet. 
+     * Edited images.
      */
-    private List<ImageDomainObject> images;
+    private List<ImageDomainObject> images = new LinkedList<ImageDomainObject>();
 
     public ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image,
                          LocalizedMessage heading, String label, ServletContext servletContext,
@@ -126,13 +126,10 @@ public class ImageEditPage extends OkCancelPage {
         image.setName(StringUtils.trim(req.getParameter(REQUEST_PARAMETER__IMAGE_NAME)));
         image.setAlign(req.getParameter(REQUEST_PARAMETER__IMAGE_ALIGN));        
         
-        // Currently always linkable
         if (isLinkable()) {
             image.setTarget(EditDocumentInformationPageFlow.getTargetFromRequest(req, EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET));
             image.setLinkUrl(req.getParameter(REQUEST_PARAMETER__LINK_URL));
         }
-        
-        // Get default image and assign it to image.
         
         String imageUrl = req.getParameter(REQUEST_PARAMETER__IMAGE_URL);
         if ( null != imageUrl && imageUrl.startsWith(req.getContextPath()) ) {
@@ -145,7 +142,6 @@ public class ImageEditPage extends OkCancelPage {
                 
         image.setAlternateText(req.getParameter(REQUEST_PARAMETER__IMAGE_ALT));
         
-        // ??? Never used ???
         image.setLowResolutionUrl(req.getParameter(REQUEST_PARAMETER__IMAGE_LOWSRC));
         
         for (ImageDomainObject i18nImage: images) {
@@ -173,11 +169,11 @@ public class ImageEditPage extends OkCancelPage {
             i18nImage.setHorizontalSpace(image.getHorizontalSpace());
             i18nImage.setName(image.getName());
             i18nImage.setAlign(image.getAlign());
-            
-            i18nImage.setTarget(image.getTarget());
-            i18nImage.setLinkUrl(image.getLinkUrl());
-            
-            // linkable
+                        
+            if (isLinkable()) {
+                i18nImage.setTarget(image.getTarget());
+                i18nImage.setLinkUrl(image.getLinkUrl());
+            }
         }
         
         return image;

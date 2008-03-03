@@ -33,10 +33,8 @@
 	assert null != image;
 	UserDomainObject user = Utility.getLoggedOnUser(request);
 
-	List<ImageDomainObject> images = imageEditPage.getImages();
-	pageContext.setAttribute("images", images);
-
 	pageContext.setAttribute("imageEditPage", imageEditPage);
+	pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -321,12 +319,12 @@
 			<%-- 
           Indicates this images should be shared among all languages. 
         --%>
-			<c:if test="${status.first}">
+			<c:if test="${status.first && imagesCount > 1}">
 				<tr>
 					<td colspan="2"><input type="checkbox" name=""
 						onClick="toggleOptional(this)"
 						<%--=imageEditPage.getImagesSharesSameSource() ? " checked=\"true\" " : ""--%>
-              />
+                    />
 					#Other images share same source. NB! This will overwrite current settings.#</td>
 				</tr>
 			</c:if>
