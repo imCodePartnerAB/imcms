@@ -132,7 +132,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Populates images map with values from the database 
      * on a first run.  
      */
-    private synchronized Map<Integer, ImageDomainObject> getImagesMap(I18nLanguage language) {
+    private /*synchronized*/ Map<Integer, ImageDomainObject> getImagesMap(I18nLanguage language) {
     	Map<Integer, ImageDomainObject> imagesMap = images.get(language);
     	
     	if (imagesMap == null) {
@@ -186,7 +186,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Removes all images  
      * TODO: find when it is used.
      */
-    public synchronized void removeAllImages() {
+    public /*synchronized*/ void removeAllImages() {
         images.clear();
     }
 
@@ -396,7 +396,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	 * Sets images.
 	 * This method currently used by only administration interface.
 	 */		
-    public synchronized void setImages(int imageIndex, 
+    public /*synchronized*/ void setImages(int imageIndex, 
     		Collection<ImageDomainObject> images) {
     	
     	for (ImageDomainObject image: images) {
@@ -457,7 +457,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	 * 
 	 * If image does not exists returns default image.
 	 */
-	public synchronized ImageDomainObject getImage(I18nLanguage language, int imageIndex) {
+	public /*synchronized*/ ImageDomainObject getImage(I18nLanguage language, int imageIndex) {
 		if (language == null) {
 			throw new IllegalArgumentException("language argument " +
 					"can not be null.");			
