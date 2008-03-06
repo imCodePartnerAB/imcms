@@ -2,31 +2,102 @@
 <changesets>
 
 <changeset version="4.0.0">
+   
     <changes importance="high" for="users">
         <change>
+            <p>Add a text history restorer feature (version control of text fields).
+            </p>
+            <issue id="6836"/>
+        </change>
+		<change>
+            <p> Add time-out warning in text-editing GUI.
+            </p>
+            <issue id="6791"/>
+        </change>		
+		<change>
             <p>
-                The HTMLArea text field editor was no longer supported and has been replaced with Xinha.
+                The HTMLArea text field editor is no longer supported and has been replaced with Xinha.
             </p>
             <issue id="4596"/>
         </change>
     </changes>
+   
     <changes importance="high" for="administrators">
-        <change>
-            <p>
-                imCMS now automatically upgrades the database on startup.
+      	<change>
+            <p>imCMS now automatically upgrades the database on startup.
                 When upgrading from version 3.0 or later, no manual running of SQL scripts is required.
             </p>
             <issue id="206"/>
         </change>
         <change>
-            <p>
-                The default character encoding has been changed from windows-1252 to UTF-8. 
+            <p>The default character encoding has been changed from windows-1252 to UTF-8. 
             </p>
             <issue id="4491"/>
             <issue id="4593"/>
         </change>
     </changes>
+   
+   <changes importance="high" for="site developers">
+      	<change>
+            <p>Remove permission check when saving document.
+            </p>
+            <issue id="4259"/>
+        </change>	
+    </changes>
+   
     <changes for="users">
+		
+		<change>
+            <p>Add more options for insert link in Xinha editor.
+            </p>
+            <issue id="6487"/>
+        </change>
+		<change>
+            <p>Xinha, insert link. Internal link should go to alias, if existing.
+            </p>
+            <issue id="6572"/>
+        </change>
+		<change>
+            <p>Increased max length of words in "Search keywords".
+            </p>
+            <issue id="6733"/>
+        </change>
+		<change>
+            <p>Improved security and speed when saving a document.
+            </p>
+            <issue id="6838"/>
+        </change>
+		<change>
+            <p>Increase width for treekey-field in menu administration.
+            </p>
+            <issue id="6638"/>
+        </change>
+		<change>
+            <p>Remove the charcount-addon to Xinha since it slows down IE.
+            </p>
+            <issue id="6489"/>
+        </change>
+		<change>
+            <p>Made it possible to remove a role added to a LDAP-user. 
+            </p>
+            <issue id="6851"/>
+        </change>
+		<change>
+            <p>Add medium and strong filters (for Word and HTML-code) in Xinha.
+            </p>
+            <issue id="6828"/>
+			<issue id="6822"/>
+        </change>
+		<change>
+            <p>Changed HTML to Editor/HTML in text-editing GUI.
+            </p>
+            <issue id="6821"/>
+        </change>
+		<change>
+            <p>Fixed problem that adminbuttons disappear when hovered in IE
+            </p>
+            <issue id="6287"/>
+        </change>
         <change>
             <p>
                 Fixed a crash when trying to add a link to a document that doesn't exist.
@@ -60,8 +131,54 @@
             <issue id="4636"/>
         </change>
     </changes>
+  
     <changes for="administrators">
-        <change>
+         <change>
+            <p>Made it possible to prevent multiple user sessions.
+            </p>
+            <issue id="6586"/>
+        </change>
+		 <change>
+            <p>Skip UnicodeUpgrade for non-imCMS tables.
+            </p>
+            <issue id="6350"/>
+        </change>
+		 <change>
+            <p>Properly report cause of exceptions.
+            </p>
+            <issue id="6196"/>
+        </change>
+		<change>
+            <p>Remove invalid template group assignments.
+            </p>
+            <issue id="6251"/>
+        </change>
+		<change>
+            <p>Store calendar language file as UTF-8.
+            </p>
+            <issue id="6282"/>
+        </change>
+		 <change>
+            <p>Change so that admin language for new users are set by DefaultLanguage.
+            </p>
+            <issue id="6541"/>
+        </change>
+		<change>
+            <p>Implemented "profiles" in My Pages for connecting meta-id for parent doc with a name (profile) instead, when creating new documents.
+            </p>
+            <issue id="6247"/>
+        </change>
+		<change>
+            <p>Properly close PDF document after use.
+            </p>
+            <issue id="6132"/>
+        </change>
+		 <change>
+            <p>Added secondary LDAP support.
+            </p>
+            <issue id="6825"/>
+        </change>
+		<change>
             <p>
                 The template administration user interface would crash if demo template directory was missing.
                 It will now be created if needed.
@@ -81,8 +198,39 @@
             <issue id="4687"/>
         </change>
     </changes>
+      
     <changes for="site developers">
         <change>
+            <p>Make sure JSP menu tag shows the same menu items that the old menu parser does.
+            </p>
+            <issue id="6284"/>
+        </change>
+		<change>
+            <p>Add RSS-support to Lists in imCMS.
+            </p>
+            <issue id="5708"/>
+        </change>
+		<change>
+            <p>Made it possible to search for documents by child_id.
+            </p>
+            <issue id="6131"/>
+        </change>
+		<change>
+            <p>Made it possible to set and get the format of a TextField.
+            </p>
+            <issue id="6130"/>
+        </change>
+		<change>
+            <p>Made it possible to search for text documents by template.
+            </p>
+            <issue id="6099"/>
+        </change>
+		<change>
+            <p>Present search result in order of relevans.
+            </p>
+            <issue id="6348"/>
+        </change>
+		<change>
             <p>
                 Added API method <method>Image.toHtmlTag()</method> for 
                 generating the html tag for an <class>Image</class>. 
