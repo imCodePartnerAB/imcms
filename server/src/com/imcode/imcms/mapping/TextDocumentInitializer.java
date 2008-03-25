@@ -288,7 +288,7 @@ public class TextDocumentInitializer {
                             }
                             
                             TextDomainObject tdo = new TextDomainObject(text, textType);
-                            tdo.setLanguageId(language.getId());
+                            //tdo.setLanguageId(language.getId());
                             
                             documentTextsMap.put(textIndex, tdo);
                         }

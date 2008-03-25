@@ -44,6 +44,7 @@ import com.imcode.db.SingleConnectionDatabase;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.TransactionDatabaseCommand;
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.dao.ImageDao;
 
@@ -126,7 +127,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         
         Set<Integer> indexes = useModifiedTextIndexes
         		? modifiedTextIndexes.keySet()
-        		: texts.keySet();		        
+        		: texts.keySet();		
         
         for (Integer textIndex: indexes) {
             TextDomainObject text = texts.get(textIndex);  
@@ -198,8 +199,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
         
         imageDao.saveImagesMap(textDocument.getId(), textDocument.getAllImages());
-        
-        //imageDao.saveDocumentImages(textDocument.getAllImages());
     }
 
     private void sqlInsertImageHistory(TextDocumentDomainObject textDocument, Integer imageIndex, UserDomainObject user) {
@@ -246,9 +245,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     private void sqlInsertTextHistory(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text, UserDomainObject user) {
         SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING);
         final Object[] parameters = new String[]{
-            "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType(), dateFormat.format(new Date()), ""+user.getId()
+            "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType(), dateFormat.format(new Date()), 
+            ""+user.getId(), "" + I18nSupport.getCurrentLanguage().getId()
         };
-        database.execute(new SqlUpdateCommand("INSERT INTO texts_history (meta_id, name, text, type, modified_datetime, user_id) VALUES(?,?,?,?,?,?)", parameters));
+        database.execute(new SqlUpdateCommand("INSERT INTO texts_history (meta_id, name, text, type, modified_datetime, user_id, language_id) VALUES(?,?,?,?,?,?,?)", parameters));
     }
 
     private void sqlInsertTextDocumentInclude(TextDocumentDomainObject textDocument, Integer includeIndex,

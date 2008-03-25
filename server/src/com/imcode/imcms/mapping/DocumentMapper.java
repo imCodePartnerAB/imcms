@@ -75,8 +75,8 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void setDocumentGetter(DocumentGetter documentGetter) {
-        //this.documentGetter = new CachingDocumentGetter(documentGetter, documentCache);
-    	this.documentGetter = documentGetter;
+        this.documentGetter = new CachingDocumentGetter(documentGetter, documentCache);
+    	//this.documentGetter = documentGetter;
     }
 
     public DocumentSaver getDocumentSaver() {

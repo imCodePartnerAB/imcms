@@ -49,9 +49,10 @@ public class ChangeText extends HttpServlet {
 
         TextDomainObject text = textDocument.getText( textIndex );
         
+        // TODO 18n: refactor: where create TextDomObj / here or inside API
         if ( null == text ) {
             text = new TextDomainObject( "", TextDomainObject.TEXT_TYPE_HTML );
-            text.setLanguageId(I18nSupport.getCurrentLanguage().getId());
+            text.setLanguage(I18nSupport.getCurrentLanguage());
         }        
         
         LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao"); 

@@ -4,15 +4,60 @@ import imcode.util.Parser;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.imcode.imcms.api.I18nLanguage;
+
+@Entity(name="I18nText")
+@Table(name="texts")
+@NamedQueries({
+	@NamedQuery(name="Text.getByMetaIdAndLanguageId", 
+			query="select t from I18nText t where t.metaId = :metaId and t.language.id = :languageId"),
+	@NamedQuery(name="Text.getByMetaIdAndIndexAndLanguageId", 
+			query="select t from I18nText t where t.metaId = :metaId and t.index = :index and t.language.id = :languageId")
+
+})
 public class TextDomainObject implements Serializable {
 
-    String text;
-    int type;
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="counter")
+	private Long id;
+	
+	@Column(name="meta_id")
+	private Integer metaId;
+	
+    /**
+     * 'name' is a legacy identifier. 
+     * Actually it is a part of natural key. 
+     */	
+	@Column(name="name")
+	Integer index;
+		
+    String text;        
     
-    Integer languageId;
+    int type;        
+    
+    /**
+     * i18n support 
+     */
+	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@JoinColumn(name="language_id", referencedColumnName="language_id")    
+    private I18nLanguage language;    
 
     /* Text-types. */
 
@@ -26,6 +71,10 @@ public class TextDomainObject implements Serializable {
      */
     public final static int TEXT_TYPE_HTML = 1;
 
+    public TextDomainObject() {
+        this("");
+    }
+    
     public TextDomainObject(String text) {
         this(text, TEXT_TYPE_PLAIN);
     }
@@ -122,11 +171,35 @@ public class TextDomainObject implements Serializable {
                 .append(text).toHashCode();
     }
 
-	public Integer getLanguageId() {
-		return languageId;
+	public Long getId() {
+		return id;
 	}
 
-	public void setLanguageId(Integer languageId) {
-		this.languageId = languageId;
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Integer getMetaId() {
+		return metaId;
+	}
+
+	public void setMetaId(Integer metaId) {
+		this.metaId = metaId;
+	}
+
+	public I18nLanguage getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(I18nLanguage language) {
+		this.language = language;
+	}
+
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
 	}
 }

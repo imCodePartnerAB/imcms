@@ -3,14 +3,13 @@ package com.imcode.imcms.dao;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,32 +17,7 @@ import com.imcode.imcms.api.I18nLanguage;
 
 public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 	
-	public Map<I18nLanguage, Map<Integer, ImageDomainObject>> getImagesMap(int doucmentId) {
-		Map<I18nLanguage, Map<Integer, ImageDomainObject>> allImagesMap
-    			= new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
-		
-		// 1. load all images for given document
-		
-		List<ImageDomainObject> images = findByNamedQueryAndNamedParam("Image.getAllImages", 
-				"metaId", doucmentId);
-		
-		for (ImageDomainObject image: images) {
-			I18nLanguage langage = image.getLanguage();
-			
-			Map<Integer, ImageDomainObject> imagesMap = allImagesMap.get(langage);
-			
-			if (imagesMap == null) {
-				imagesMap = new HashMap<Integer, ImageDomainObject>();
-				allImagesMap.put(langage, imagesMap);
-			}
-			
-			imagesMap.put(Integer.parseInt(image.getName()), image);
-		}
-		
-		return allImagesMap;
-	}
-		
-	
+	@Transactional
 	public List<ImageDomainObject> getImages(int metaId, int imageId, 
 			boolean createIfNotExists) {
 		
@@ -64,6 +38,8 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 			ImageDomainObject image = (ImageDomainObject)languageToImage[1];
 			
 			if (image == null && createIfNotExists) {
+				evict(language);
+				
 				if (defaultImage != null) {				
 					image = (ImageDomainObject)defaultImage.clone();
 					image.setId(null);
@@ -84,6 +60,7 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		return images;
 	}
 
+	@Transactional
 	public ImageDomainObject getDefaultImage(int metaId, int imageId) {
 		ImageDomainObject image = (ImageDomainObject)getSession()
 			.getNamedQuery("Image.getDefaultImage")
@@ -105,6 +82,7 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		}		
 	}
 
+	@Transactional
 	public List<ImageDomainObject> getImages(int metaId, int languageId) {
 		List<ImageDomainObject> images = findByNamedQueryAndNamedParam(
 				"Image.getAllDocumentImagesByLanguage", 

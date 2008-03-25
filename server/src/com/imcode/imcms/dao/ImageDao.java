@@ -29,13 +29,7 @@ public interface ImageDao {
 	 */
 	List<ImageDomainObject> getImages(int metaId, int imageId, 
 			boolean createImageIfNotExists);		
-	
-	/**
-	 * Returns all document images.
-	 * Currently not in use.
-	 */
-	Map<I18nLanguage, Map<Integer, ImageDomainObject>> getImagesMap(int doucmentId);
-	
+		
 	/**
 	 * Saves text document's images. 
 	 */	

@@ -50,7 +50,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     /**
      * 'name' is a legacy identifier. 
-     * Actually this is natural key. 
+     * Actually it is a part of natural key. 
      */
 	//@Id
     private String name = "";

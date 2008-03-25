@@ -126,12 +126,15 @@ boolean isSavedInTextField = false ;
 if (view.matches("^\\d+$") || restore.matches("^\\d+$") || save.matches("^\\d+$")) {
 	boolean viewAsHtml = (request.getParameter("html") != null) ;
 	try {
+		int languageId = I18nSupport.getCurrentLanguage().getId();
+		
 		connection = databaseService.getConnection() ;
 		sSql = "SELECT t.text, t.modified_datetime, t.type, u.first_name, u.last_name\n" +
 					 "FROM texts_history t INNER JOIN users u ON t.user_id = u.user_id\n" +
-					 "WHERE t.counter = ?" ;
+					 "WHERE t.counter = ? AND language_id = ?" ;
 		preparedStatement = connection.prepareStatement(sSql) ;
 		preparedStatement.setInt(1, (view.matches("\\d+") ? Integer.parseInt(view) : (save.matches("\\d+") ? Integer.parseInt(save) : Integer.parseInt(restore)))) ;
+		preparedStatement.setInt(2, languageId);
 		resultSet = preparedStatement.executeQuery() ;
 		boolean hasContent = false ;
 		while (resultSet.next()) {
@@ -518,14 +521,17 @@ function doSave(id) {
 
 
 try {
+	int languageId = I18nSupport.getCurrentLanguage().getId();
+	
 	connection = databaseService.getConnection() ;
 	sSql = "SELECT t.counter, t.modified_datetime, t.type, u.first_name, u.last_name, u.login_name\n" +
 				 "FROM texts_history t INNER JOIN users u ON t.user_id = u.user_id\n" +
-				 "WHERE t.meta_id = ? AND t.name = ?" + dateSpan + "\n" +
+				 "WHERE t.meta_id = ? AND t.name = ? AND t.language_id = ?" + dateSpan + "\n" +
 				 "ORDER BY t.counter DESC" ;
 	preparedStatement = connection.prepareStatement(sSql) ;
 	preparedStatement.setInt(1, meta_id) ;
 	preparedStatement.setInt(2, txtNo) ;
+	preparedStatement.setInt(3, languageId) ;
 	resultSet = preparedStatement.executeQuery() ;
 
 	//out.println("<!-- " + sSql + " -->") ;
