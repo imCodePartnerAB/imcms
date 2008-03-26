@@ -149,13 +149,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	if (map == null) {
     		map = new HashMap<Integer, ImageDomainObject>();
 						
-			ImageDao dao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
-			
-			List<ImageDomainObject> items = dao.getImages(getId(), language.getId());
-			
-			for (ImageDomainObject item: items) {
-				map.put(Integer.parseInt(item.getName()), item);
-			}			
+    		if (getMeta().getI18nMeta(language).getEnabled()) { 
+				ImageDao dao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
+				
+				List<ImageDomainObject> items = dao.getImages(getId(), language.getId());
+				
+				for (ImageDomainObject item: items) {
+					map.put(Integer.parseInt(item.getName()), item);
+				}
+    		}
 			
 			images.put(language, map);
     	}
@@ -201,7 +203,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		
 		Map<Integer, TextDomainObject> map = getTextsMap(language);
 		
-		TextDomainObject item = map.get(index);
+		TextDomainObject item = map.get(index);				
 		
 		if (item == null) {
 			if (getMeta().getMissingI18nShowRule() == Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE
@@ -248,14 +250,17 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	
     	if (map == null) {
     		map = new HashMap<Integer, TextDomainObject>();
+    		
+    		if (getMeta().getI18nMeta(language).getEnabled()) {
 						
-			TextDao dao = (TextDao)Imcms.getServices().getSpringBean("textDao");
-			
-			List<TextDomainObject> items = dao.getTexts(getId(), language.getId());
-			
-			for (TextDomainObject item: items) {
-				map.put(item.getIndex(), item);
-			}			
+				TextDao dao = (TextDao)Imcms.getServices().getSpringBean("textDao");
+				
+				List<TextDomainObject> items = dao.getTexts(getId(), language.getId());
+				
+				for (TextDomainObject item: items) {
+					map.put(item.getIndex(), item);
+				}
+    		}
 			
 			texts.put(language, map);
     	}

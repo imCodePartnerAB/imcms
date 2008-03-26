@@ -1,7 +1,9 @@
 package com.imcode.imcms.api;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -14,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name="meta")
@@ -23,13 +26,16 @@ public class Meta implements Serializable {
 		SHOW_IN_DEFAULT_LANGUAGE,
 		DO_NOT_SHOW
 	}
+	
+	@Transient
+	private Map<I18nLanguage, I18nMeta> metaMap;
 
 	@Id
 	@Column(name="meta_id")
 	private Integer metaId;
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
-	@JoinColumn(name="meta_id", referencedColumnName="meta_id")
+	@JoinColumn(name="meta_id", referencedColumnName="meta_id")		
 	private List<I18nMeta> i18nParts;
 	
 	@Enumerated(EnumType.STRING)
@@ -47,9 +53,17 @@ public class Meta implements Serializable {
 	public List<I18nMeta> getI18nParts() {
 		return i18nParts;
 	}
-
+	
 	public void setI18nParts(List<I18nMeta> i18nParts) {
 		this.i18nParts = i18nParts;
+		
+		metaMap = new HashMap<I18nLanguage, I18nMeta>();
+		
+		if (i18nParts != null) {
+			for (I18nMeta i18nMeta: i18nParts) {
+				metaMap.put(i18nMeta.getLanguage(), i18nMeta);
+			}
+		}
 	}
 
 	public MissingI18nShowRule getMissingI18nShowRule() {
@@ -58,5 +72,9 @@ public class Meta implements Serializable {
 
 	public void setMissingI18nShowRule(MissingI18nShowRule missingI18nShowRule) {
 		this.missingI18nShowRule = missingI18nShowRule;
+	}
+	
+	public I18nMeta getI18nMeta(I18nLanguage language) {
+		return metaMap == null ? null : metaMap.get(language);
 	}
 }
