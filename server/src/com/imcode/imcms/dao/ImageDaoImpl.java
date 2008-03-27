@@ -18,8 +18,9 @@ import com.imcode.imcms.api.I18nLanguage;
 public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 	
 	@Transactional
-	public List<ImageDomainObject> getImages(int metaId, int imageId, 
-			boolean createIfNotExists) {
+	public List<ImageDomainObject> getImages(
+			List<I18nLanguage> languages, 
+			int metaId, int imageId, boolean createImageIfNotExists) {
 		
 		ImageDomainObject defaultImage = getDefaultImage(metaId, imageId);
 				
@@ -27,19 +28,12 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 			logger.trace("Default image is " + defaultImage);
 		}				
 		
-		List<Object[]> languagesToImages = getSession().getNamedQuery("Image.getLanguagesToImagesByMetaId")
-			.setParameter("metaId", metaId)
-			.setParameter("name", "" + imageId).list();
+		List<ImageDomainObject> images = new LinkedList<ImageDomainObject>();
 		
-		List<ImageDomainObject> images = new LinkedList<ImageDomainObject>();			
-		
-		for (Object[] languageToImage: languagesToImages) {
-			I18nLanguage language = (I18nLanguage)languageToImage[0];
-			ImageDomainObject image = (ImageDomainObject)languageToImage[1];
+		for (I18nLanguage language: languages) {
+			ImageDomainObject image = getImage(language.getId(), metaId, imageId);
 			
-			if (image == null && createIfNotExists) {
-				evict(language);
-				
+			if (image == null && createImageIfNotExists) {
 				if (defaultImage != null) {				
 					image = (ImageDomainObject)defaultImage.clone();
 					image.setId(null);
@@ -94,6 +88,16 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		}
 		
 		return images;
+	}
+	
+	public ImageDomainObject getImage(int languageId, 
+			int metaId, int index) {
+		
+		return (ImageDomainObject)getSession().createQuery("select i from I18nImage i where i.metaId = :metaId and i.name = :name and i.language.id = :languageId")
+			.setParameter("metaId", metaId)
+			.setParameter("name", "" + index)
+			.setParameter("languageId", languageId)
+			.uniqueResult();
 	}
 	
 	private ImageDomainObject setImageSource(ImageDomainObject image) {

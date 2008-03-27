@@ -23,7 +23,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.dao.ImageDao;
+import com.imcode.imcms.dao.LanguageDao;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
@@ -106,8 +108,10 @@ public class ChangeImage extends HttpServlet {
         };
         
         ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
+        LanguageDao languageDao = (LanguageDao)Imcms.getServices().getSpringBean("languageDao");
         
-        List<ImageDomainObject> images = imageDao.getImages(document.getId(), imageIndex, true);
+        List<I18nLanguage> languages = languageDao.getAllLanguages();
+        List<ImageDomainObject> images = imageDao.getImages(languages, document.getId(), imageIndex, true);
         
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true);
