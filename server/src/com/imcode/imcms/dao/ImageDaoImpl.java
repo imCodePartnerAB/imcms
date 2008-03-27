@@ -3,6 +3,7 @@ package com.imcode.imcms.dao;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
+import imcode.server.document.textdocument.NullImageSource;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -71,7 +72,9 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		
 		for (Map<Integer, ImageDomainObject> map: imagesMap.values()) {
 			for (ImageDomainObject image: map.values()) {
-				saveOrUpdate(image);
+				if (!(image.getSource() instanceof NullImageSource)) {
+					saveOrUpdate(image);
+				}
 			}
 		}		
 	}
@@ -93,11 +96,13 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 	public ImageDomainObject getImage(int languageId, 
 			int metaId, int index) {
 		
-		return (ImageDomainObject)getSession().createQuery("select i from I18nImage i where i.metaId = :metaId and i.name = :name and i.language.id = :languageId")
+		ImageDomainObject image = (ImageDomainObject)getSession().createQuery("select i from I18nImage i where i.metaId = :metaId and i.name = :name and i.language.id = :languageId")
 			.setParameter("metaId", metaId)
 			.setParameter("name", "" + index)
 			.setParameter("languageId", languageId)
 			.uniqueResult();
+		
+		return image;
 	}
 	
 	private ImageDomainObject setImageSource(ImageDomainObject image) {
