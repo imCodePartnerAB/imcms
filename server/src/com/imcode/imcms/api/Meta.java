@@ -55,15 +55,7 @@ public class Meta implements Serializable {
 	}
 	
 	public void setI18nParts(List<I18nMeta> i18nParts) {
-		this.i18nParts = i18nParts;
-		
-		metaMap = new HashMap<I18nLanguage, I18nMeta>();
-		
-		if (i18nParts != null) {
-			for (I18nMeta i18nMeta: i18nParts) {
-				metaMap.put(i18nMeta.getLanguage(), i18nMeta);
-			}
-		}
+		this.i18nParts = i18nParts;		
 	}
 
 	public MissingI18nShowRule getMissingI18nShowRule() {
@@ -74,7 +66,18 @@ public class Meta implements Serializable {
 		this.missingI18nShowRule = missingI18nShowRule;
 	}
 	
-	public I18nMeta getI18nMeta(I18nLanguage language) {
-		return metaMap == null ? null : metaMap.get(language);
+	// TODO i18n : refactor
+	public synchronized I18nMeta getI18nMeta(I18nLanguage language) {
+		if (metaMap == null) {
+			metaMap = new HashMap<I18nLanguage, I18nMeta>();
+			
+			if (i18nParts != null) {
+				for (I18nMeta i18nMeta: i18nParts) {
+					metaMap.put(i18nMeta.getLanguage(), i18nMeta);
+				}
+			}			
+		}
+		
+		return metaMap.get(language);
 	}
 }
