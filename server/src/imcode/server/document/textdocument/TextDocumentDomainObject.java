@@ -138,9 +138,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
     
     /**
-     * Returns all images for language specified.
+     * Returns all images for language specified in case this language is enabled.
      * 
-     * Populates images map with values from the database 
+     * Populates images map with values from the database if language is enabled 
      * on a first run.  
      */
     private synchronized Map<Integer, ImageDomainObject> getImagesMap(I18nLanguage language) {
@@ -155,6 +155,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 				List<ImageDomainObject> items = dao.getImages(getId(), language.getId());
 				
 				for (ImageDomainObject item: items) {
+					/*
 					if (item.getSource() instanceof NullImageSource) {
 						int index = Integer.parseInt(item.getName());
 						
@@ -162,6 +163,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 						
 						item.setSource(defaultImage.getSource());
 					}
+					*/
 					
 					map.put(Integer.parseInt(item.getName()), item);
 				}
@@ -561,7 +563,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	}
 	
 	/**
-	 * Returns i18n-ed image.
+	 * Returns image for language specified.
 	 */
 	public synchronized ImageDomainObject getImage(I18nLanguage language, int imageIndex) {
 		if (language == null) {
