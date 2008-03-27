@@ -23,11 +23,11 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 			List<I18nLanguage> languages, 
 			int metaId, int imageId, boolean createImageIfNotExists) {
 		
-		ImageDomainObject defaultImage = getDefaultImage(metaId, imageId);
+		//ImageDomainObject defaultImage = getDefaultImage(metaId, imageId);
 				
-		if (logger.isTraceEnabled()) {
-			logger.trace("Default image is " + defaultImage);
-		}				
+		//if (logger.isTraceEnabled()) {
+		//	logger.trace("Default image is " + defaultImage);
+		//}				
 		
 		List<ImageDomainObject> images = new LinkedList<ImageDomainObject>();
 		
@@ -35,14 +35,14 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 			ImageDomainObject image = getImage(language.getId(), metaId, imageId);
 			
 			if (image == null && createImageIfNotExists) {
-				if (defaultImage != null) {				
-					image = (ImageDomainObject)defaultImage.clone();
-					image.setId(null);
-				} else {
+				//if (defaultImage != null) {				
+				//	image = (ImageDomainObject)defaultImage.clone();
+				//	image.setId(null);
+				//} else {
 					image = new ImageDomainObject();
 					image.setMetaId(metaId);
 					image.setName("" + imageId);
-				}
+				//}
 				
 				image.setLanguage(language);
 			}
@@ -72,9 +72,7 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		
 		for (Map<Integer, ImageDomainObject> map: imagesMap.values()) {
 			for (ImageDomainObject image: map.values()) {
-				if (!(image.getSource() instanceof NullImageSource)) {
-					saveOrUpdate(image);
-				}
+				saveOrUpdate(image);				
 			}
 		}		
 	}

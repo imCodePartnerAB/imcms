@@ -155,9 +155,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 				List<ImageDomainObject> items = dao.getImages(getId(), language.getId());
 				
 				for (ImageDomainObject item: items) {
-					if (!(item.getSource() instanceof NullImageSource)) {				
-						map.put(Integer.parseInt(item.getName()), item);
+					if (item.getSource() instanceof NullImageSource) {
+						int index = Integer.parseInt(item.getName());
+						
+						ImageDomainObject defaultImage = dao.getDefaultImage(getId(), index);
+						
+						item.setSource(defaultImage.getSource());
 					}
+					
+					map.put(Integer.parseInt(item.getName()), item);
 				}
     		}
 			

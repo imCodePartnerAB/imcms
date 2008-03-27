@@ -3,7 +3,6 @@ package imcode.server.document.textdocument;
 import java.io.IOException;
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -85,7 +84,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
     /**
      * i18n support 
      */
-	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="language_id", referencedColumnName="language_id")    
     private I18nLanguage language;		
 
