@@ -32,7 +32,16 @@ import com.imcode.imcms.api.I18nLanguage;
 			query="select t from I18nText t where t.metaId = :metaId and t.index = :index and t.language.id = :languageId")
 
 })
-public class TextDomainObject implements Serializable {
+public class TextDomainObject implements Serializable, Cloneable {
+
+	@Override
+	protected TextDomainObject clone() {
+		try {
+			return (TextDomainObject)super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="counter")
@@ -40,6 +49,9 @@ public class TextDomainObject implements Serializable {
 	
 	@Column(name="meta_id")
 	private Integer metaId;
+	
+	@Transient 
+	private boolean temporary;
 	
     /**
      * 'name' is a legacy identifier. 
@@ -201,5 +213,13 @@ public class TextDomainObject implements Serializable {
 
 	public void setIndex(Integer index) {
 		this.index = index;
+	}
+
+	public boolean isTemporary() {
+		return temporary;
+	}
+
+	public void setTemporary(boolean temporary) {
+		this.temporary = temporary;
 	}
 }

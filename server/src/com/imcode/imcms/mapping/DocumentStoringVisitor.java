@@ -47,6 +47,7 @@ import com.imcode.db.commands.TransactionDatabaseCommand;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.dao.ImageDao;
+import com.imcode.imcms.dao.TextDao;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
 	
@@ -123,21 +124,22 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         Map<Integer, TextDomainObject> texts = textDocument.getTexts();
         Map<Integer, Boolean> modifiedTextIndexes = textDocument.getModifiedTextIndexes();
-        boolean useModifiedTextIndexes = modifiedTextIndexes.size() > 0;
         
-        Set<Integer> indexes = useModifiedTextIndexes
-        		? modifiedTextIndexes.keySet()
-        		: texts.keySet();		
+        TextDao textDao = (TextDao)Imcms.getServices().getSpringBean("textDao");        
+        
+        Set<Integer> indexes = modifiedTextIndexes.keySet();		
         
         for (Integer textIndex: indexes) {
             TextDomainObject text = texts.get(textIndex);  
             boolean saveText = false;
-            boolean saveTextHistory = !(useModifiedTextIndexes && !modifiedTextIndexes.get(textIndex));
+            boolean saveTextHistory = modifiedTextIndexes.get(textIndex);
             
             if (oldTextDocument == null) {            	
             	saveText = true;
             } else {
-            	TextDomainObject oldText = oldTextDocument.getText(textIndex.intValue());
+            	TextDomainObject oldText = textDao.getText(text.getMetaId(),
+            			text.getIndex(), text.getLanguage().getId());
+            	
          		String oldTextValue = oldText == null ? null : oldText.toString();            	
             	
          		// If this is first time insertion then ignore modified flag

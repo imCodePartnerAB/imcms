@@ -17,8 +17,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.LanguageDao;
+import com.imcode.imcms.dao.TextDao;
 import com.imcode.imcms.mapping.DocumentMapper;
 
 /**
@@ -47,27 +50,43 @@ public class ChangeText extends HttpServlet {
         int textIndex = Integer.parseInt( request.getParameter( "txt" ) );
         String label = null == request.getParameter( "label" ) ? "" : request.getParameter( "label" );
 
-        TextDomainObject text = textDocument.getText( textIndex );
+        TextDomainObject text = textDocument.getText( textIndex );        
         
         // TODO 18n: refactor: where create TextDomObj / here or inside API
-        if ( null == text ) {
-            text = new TextDomainObject( "", TextDomainObject.TEXT_TYPE_HTML );
-            text.setLanguage(I18nSupport.getCurrentLanguage());
-        }        
+        //if ( null == text ) {
+        //    text = new TextDomainObject( "", TextDomainObject.TEXT_TYPE_HTML );
+        //    text.setLanguage(I18nSupport.getCurrentLanguage());
+        //}        
         
-        LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao"); 
+        I18nLanguage language = I18nSupport.getCurrentLanguage();
+        Meta meta = textDocument.getMeta();
+        I18nMeta i18nMeta = meta.getI18nMeta(language);
+        boolean enabled = i18nMeta.getEnabled(); 
         
-    	List<I18nLanguage> i18nLanguages = languageDao.getAllLanguages();
+        if (text.isTemporary() && !enabled) {
+            TextDao textDao = (TextDao) Imcms.getServices().getSpringBean("textDao");            
+        	
+        	text = textDao.getText(documentId, textIndex, language.getId());
+        	
+        	if (text == null) {
+        		text = TextDocumentDomainObject.createTemporaryText(
+        				meta.getMetaId(), textIndex, language);
+        	}
+        }
+        
         
     	String queryString = request.getQueryString();
     	
     	// TODO 18n: refactor
     	queryString = queryString.replaceFirst("lang=..&?", "");
     	
-    	request.getSession().setAttribute("i18nlanguages", i18nLanguages);
     	request.setAttribute("queryString", queryString);
     	
         TextEditPage page = new TextEditPage( documentId, textIndex, text, label );
+        page.setEnabled(enabled);
+        page.setSubstitutedWithDefault(!enabled && meta.getMissingI18nShowRule()
+        		== Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE);
+        
         page.forward( request, res, user );
     }
 
@@ -78,6 +97,8 @@ public class ChangeText extends HttpServlet {
         private int textIndex;
         private String label;
         private TextDomainObject text;
+        private boolean enabled;
+        private boolean substitutedWithDefault;
 
         public enum Format {
             NONE,
@@ -118,6 +139,21 @@ public class ChangeText extends HttpServlet {
             request.getRequestDispatcher( forwardPath ).forward( request, response );
         }
 
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public boolean isSubstitutedWithDefault() {
+			return substitutedWithDefault;
+		}
+
+		public void setSubstitutedWithDefault(boolean substitutedWithDefault) {
+			this.substitutedWithDefault = substitutedWithDefault;
+		}
     }
 
 }

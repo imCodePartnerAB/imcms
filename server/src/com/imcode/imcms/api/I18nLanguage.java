@@ -45,6 +45,11 @@ public class I18nLanguage implements Serializable {
 		return id;
 	}
 	
+	@Override 
+	public String toString() {
+		return getName();
+	}
+	
 	public Integer getId() {
 		return id;
 	}

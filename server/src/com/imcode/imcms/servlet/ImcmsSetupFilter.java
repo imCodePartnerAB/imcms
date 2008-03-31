@@ -10,6 +10,7 @@ import imcode.util.Utility;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.servlet.Filter;
@@ -39,8 +40,6 @@ import com.imcode.imcms.dao.LanguageDao;
 public class ImcmsSetupFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
-    
-    private LanguageDao languageDao; 
     
     private final Logger logger = Logger.getLogger(getClass());
     
@@ -137,7 +136,7 @@ public class ImcmsSetupFilter implements Filter {
     	I18nLanguage language = null;    	
     	
     	if (languageCode != null) {
-    		language = languageDao.getByCode(languageCode);
+    		language = I18nSupport.getByCode(languageCode);
     	}
     	
     	if (language == null) {
@@ -151,6 +150,7 @@ public class ImcmsSetupFilter implements Filter {
     	}
     	
 		request.getSession().setAttribute("lang", language);    	
+		request.setAttribute("currentLanguage", language);		
     	
     	
     	/* 
@@ -179,18 +179,22 @@ public class ImcmsSetupFilter implements Filter {
     	
     	services.setWebApplicationContext(webApplicationContext);
     	
-    	languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao");
+    	LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao");
     	
     	// TODO i18n: implement 
     	//int languageCount = languageDao.checkDefaultLanguageCount();
     	//int defaultLanguageCount = languageDao.checkDefaultLanguageCount();
     	
     	I18nLanguage defaultLanguage = languageDao.getDefaultLanguage();
+    	List<I18nLanguage> languages = languageDao.getAllLanguages();
     	
     	I18nSupport.setDefaultLanguage(defaultLanguage);
+    	I18nSupport.setLanguages(languages);
+    	
+    	config.getServletContext().setAttribute("defaultLanguage", defaultLanguage);
+    	config.getServletContext().setAttribute("languages", languages);
     }
 
     public void destroy() {
     }
-
 }

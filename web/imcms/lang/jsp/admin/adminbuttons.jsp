@@ -3,8 +3,7 @@
                  imcode.server.document.DocumentPermissionSetDomainObject,
                  imcode.server.document.TextDocumentPermissionSetDomainObject,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
-                 imcode.server.user.UserDomainObject,
-                 imcode.server.Imcms"%>
+                 imcode.server.user.UserDomainObject"%>
 <%@ page import="imcode.util.Html"%>
 <%@ page import="imcode.util.Utility"%>
 <%@taglib uri="imcmsvelocity" prefix="vel" %>
@@ -15,12 +14,6 @@
     DocumentDomainObject document = (DocumentDomainObject)request.getAttribute("document") ;
     DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetFor( document ) ;
     
-    LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao");
-    
-	List<I18nLanguage> languages = languageDao.getAllLanguages();
-	
-	pageContext.setAttribute("languages", languages);
-	
 	String queryString = request.getQueryString();
 	StringBuffer baseURL = request.getRequestURL();
 
@@ -35,9 +28,9 @@
 	
 	pageContext.setAttribute("baseURL", baseURL);
 %>
-<%@page import="com.imcode.imcms.dao.LanguageDao"%>
 <%@page import="java.util.List"%>
 <%@page import="com.imcode.imcms.api.I18nLanguage"%>
+<%@page import="com.imcode.imcms.api.I18nSupport"%>
 <vel:velocity>
 <style type="text/css">
 <!--
@@ -88,7 +81,17 @@ B { font-weight: bold; }
       <tr>
          <td>LANGUAGES:</td>
          <c:forEach items="${languages}" var="language">
-           <td><a href="${baseURL}${language.code}">${language.name}</a></td>
+           <td>
+             <a href="${baseURL}${language.code}">
+                ${language.name}
+                <c:if test="${language eq defaultLanguage}">
+                  (default)
+                </c:if>
+                <c:if test="${language eq currentLanguage}">
+                  (current)
+                </c:if>                
+             </a>
+           </td>
          </c:forEach>
        </tr>
     </table>

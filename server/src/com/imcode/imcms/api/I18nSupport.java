@@ -1,5 +1,9 @@
 package com.imcode.imcms.api;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * I18n support.
  * 
@@ -12,8 +16,8 @@ public class I18nSupport {
 	/** 
 	 * Language bound to current thread.
 	 * 
-	 * When application running in container current language is set
-	 * using HTTP request filter. 
+	 * When application running in container current language is bound
+	 * to thread using HTTP request filter. 
 	 */
 	private static ThreadLocal<I18nLanguage> currentLanguage = new ThreadLocal<I18nLanguage>();
 
@@ -21,6 +25,21 @@ public class I18nSupport {
 	 * Default language.  
 	 */
 	private static I18nLanguage defaultLanguage;
+	
+	/**
+	 * Available languages list. 
+	 */
+	private static List<I18nLanguage> languages;
+	
+	/**
+	 * Available languages map.   
+	 */
+	private static Map<String, I18nLanguage> codeMap;
+	
+	/**
+	 * Available languages map. 
+	 */
+	private static Map<Integer, I18nLanguage> idMap;
 	
 	/** 
 	 * Implicit instantiation is not allowed.
@@ -93,4 +112,58 @@ public class I18nSupport {
 		
 		currentLanguage.set(language);
 	}
+	
+	/**
+	 * Return if tested language is default.
+	 */
+	public static boolean isDefault(I18nLanguage language) {
+		if (language == null) {
+			throw new IllegalArgumentException("Language argument " +
+					"can not be null.");			
+		}
+		
+		return language.equals(getDefaultLanguage());
+	}
+	
+	/**
+	 * Return if tested language is current.
+	 */
+	public static boolean isCurrent(I18nLanguage language) {
+		if (language == null) {
+			throw new IllegalArgumentException("Language argument " +
+					"can not be null.");			
+		}
+		
+		return language.equals(getCurrentLanguage());
+	}
+
+	public static List<I18nLanguage> getLanguages() {
+		return languages;
+	}
+
+	public static void setLanguages(List<I18nLanguage> languages) {
+		if (languages == null) {
+			throw new IllegalArgumentException("Languages argument " +
+					"can not be null.");			
+		}
+		
+		I18nSupport.languages = languages;
+		
+		idMap = new HashMap<Integer, I18nLanguage>();
+		codeMap = new HashMap<String, I18nLanguage>();
+		
+		for (I18nLanguage language: languages) {
+			idMap.put(language.getId(), language);
+			codeMap.put(language.getCode(), language);
+		}
+	}	
+	
+	
+	public static I18nLanguage getByCode(String code) {
+		return codeMap.get(code);
+	}
+	
+	public static I18nLanguage getById(Integer id) {
+		return idMap.get(id);
+	}	
 }

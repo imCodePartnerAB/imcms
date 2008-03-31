@@ -1,5 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.Imcms;
@@ -45,8 +47,12 @@ public final class SaveText extends HttpServlet {
 
             int text_format = Integer.parseInt( req.getParameter( "format_type" ) );
 
-            TextDomainObject text = new TextDomainObject( text_string, text_format );
-
+            TextDomainObject text = TextDocumentDomainObject.createTemporaryText(
+            		meta_id, txt_no, I18nSupport.getCurrentLanguage()); 
+            
+            text.setText(text_string);
+            text.setType(text_format);
+            	
             saveText( documentMapper, text, document, txt_no, imcref, meta_id, user );
 
             if (null != req.getParameter( "save" )) {

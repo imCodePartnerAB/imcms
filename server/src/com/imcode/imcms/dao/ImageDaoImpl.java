@@ -23,26 +23,15 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 			List<I18nLanguage> languages, 
 			int metaId, int imageId, boolean createImageIfNotExists) {
 		
-		//ImageDomainObject defaultImage = getDefaultImage(metaId, imageId);
-				
-		//if (logger.isTraceEnabled()) {
-		//	logger.trace("Default image is " + defaultImage);
-		//}				
-		
 		List<ImageDomainObject> images = new LinkedList<ImageDomainObject>();
 		
 		for (I18nLanguage language: languages) {
 			ImageDomainObject image = getImage(language.getId(), metaId, imageId);
 			
 			if (image == null && createImageIfNotExists) {
-				//if (defaultImage != null) {				
-				//	image = (ImageDomainObject)defaultImage.clone();
-				//	image.setId(null);
-				//} else {
 					image = new ImageDomainObject();
 					image.setMetaId(metaId);
 					image.setName("" + imageId);
-				//}
 				
 				image.setLanguage(language);
 			}
@@ -56,23 +45,15 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 	}
 
 	@Transactional
-	public ImageDomainObject getDefaultImage(int metaId, int imageId) {
-		ImageDomainObject image = (ImageDomainObject)getSession()
-			.getNamedQuery("Image.getDefaultImage")
-			.setParameter("metaId", metaId)
-			.setParameter("name", "" + imageId).uniqueResult();
-		
-		return setImageSource(image);
-	}
-
-	@Transactional
 	public void saveImagesMap(int metaId,
 			Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap) {
 		
 		
 		for (Map<Integer, ImageDomainObject> map: imagesMap.values()) {
 			for (ImageDomainObject image: map.values()) {
-				saveOrUpdate(image);				
+				if (!image.isTemporary()) {
+					saveOrUpdate(image);
+				}
 			}
 		}		
 	}

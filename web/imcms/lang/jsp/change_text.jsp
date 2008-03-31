@@ -40,6 +40,8 @@ private String getCookie( String name, HttpServletRequest request ) {
 response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );
 ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttribute(ChangeText.TextEditPage.REQUEST_ATTRIBUTE__PAGE);
 
+pageContext.setAttribute("textEditPage", textEditPage);
+
 List<String> formats = new ArrayList<String>();
 String[] formatParameterValues = request.getParameterValues("format");
 if (null != formatParameterValues) {
@@ -62,6 +64,7 @@ try {
 	isSwe =	ContentManagementSystem.fromRequest(request).getCurrentUser().getLanguage().getIsoCode639_2().equals("swe");
 } catch (Exception e) {}
 %>
+<%@page import="com.imcode.imcms.api.I18nMeta"%>
 <vel:velocity>
 <html>
 <head>
@@ -144,10 +147,10 @@ if (rows > 0) {
 <tr>
   <td>
     <table>
-      <tr>
-        <c:forEach items="${sessionScope.i18nlanguages}" var="i18nLanguage">
-          <td><a href="ChangeText?lang=${i18nLanguage.code}&${requestScope.queryString}">${i18nLanguage.name}</a></td>
-        </c:forEach>
+      <tr><td>CURRENT LANGUAGE::${currentLanguage}</td></tr>
+      <tr><td>DEFAULT LANGUAGE::${defaultLanguage}</td>
+      <tr><td>IS ACTIVE::${textEditPage.enabled}</td>
+      <tr><td>SUBSTITUTED WITH DEFAULT::${textEditPage.substitutedWithDefault}</td>
       </tr>  
     </table>
   </td>  
