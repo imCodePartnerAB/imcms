@@ -44,7 +44,6 @@ import com.imcode.db.SingleConnectionDatabase;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.TransactionDatabaseCommand;
-import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.TextDao;

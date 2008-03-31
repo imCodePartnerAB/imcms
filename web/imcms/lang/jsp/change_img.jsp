@@ -210,45 +210,54 @@
 	</table>
 	#gui_mid()
 
-	<table border="0" cellspacing="0" cellpadding="2" width="660"
-		align="center">
+	<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">		
+        <tr>
+           <td colspan="2">
+            <%
+            if (null != imageEditPage.getHeading()) {
+                %> 
+                #gui_heading( "<%=imageEditPage.getHeading().toLocalizedString(request)%>" )
+               <%
+            }
+            %>            
+            </td>
+        </tr>
+        		
 		<c:forEach items="${imageEditPage.images}" var="image" varStatus="status">
+		    <tr>
+		      <td>
+		        ${image.language.name} 
+		        ${image.language eq currentLanguage ? "(current)" : ""} 
+		        ${image.language eq defaultLanguage ? "(default)" : ""}
+		      </td>	      
+		    </tr>
+		    
 			<c:set var="suffix" value="_${image.language.code}" />
 
 			<% 
 			    ImageDomainObject i18nImage = (ImageDomainObject) pageContext.getAttribute("image");
-			%>
-
-			<tr>
-				<td colspan="2">${image.language.name} &nbsp;<br>
-				<%
-				if (null != imageEditPage.getHeading()) {
-				    %> 
-				    #gui_heading( "<%=imageEditPage.getHeading().toLocalizedString(request)%>" )
-                   <%
- 	            }
-                %> 
-                <%="<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) + "</i></div>"%>
-				</td>
-			</tr>
-
-			<%
+			
 				if (!i18nImage.isEmpty()) {
 					%>
 					<tr>
-						<td colspan="2" align="center">
+					    <td>
+  					      <%="<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) + "</i></div>"%>
+					    </td>
+						<td align="center">						
 						<div id="previewDiv">
 						  <%=!i18nImage.isEmpty() ? ImcmsImageUtils.getImageHtmlTag(i18nImage, request, new Properties()) : ""%></div>
 						</td>
 					</tr>
 			    <%
 				}
-			    %>
+			%>
 
+            <%-- 
 			<tr>
 				<td colspan="2">#gui_hr( "blue" )</td>
 			</tr>
-
+            --%>
+ 
 			<%-- Image URL: may be hidden --%>
 
 			<tr>
@@ -270,9 +279,16 @@
 						<%-- Browse Image button --%>
 						<td><input type="submit" <% %>
 							name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>"
-							<% %> class="imcmsFormBtnSmall" style="width: 200px"
-							<% %> value="<? templates/sv/change_img.html/2004 ?>"
-							onClick="setI18nCodeParameterValue('${image.language.code}')">
+							class="imcmsFormBtnSmall" style="width: 200px"
+							value="<? templates/sv/change_img.html/2004 ?>"
+							onClick="setI18nCodeParameterValue('${image.language.code}')"/>
+						</td>
+						<td>
+                            <input
+                                type="button" 
+                                class="imcmsFormBtnSmall"
+                                name="<%= ImageEditPage.REQUEST_PARAMETER__DELETE_BUTTON %>"
+                                value="  <? templates/sv/change_img.html/2009 ?>  "/>
 						</td>
 					</tr>
 				</table>
@@ -317,19 +333,24 @@
 			%>
 
 			<%-- 
-          Indicates this images should be shared among all languages. 
-        --%>
+              Indicates this images should be shared among all languages. 
+            --%>
+            <%
+            if (!i18nImage.isEmpty()) {
+            %>	            
 			<c:if test="${status.first && imagesCount > 1}">
 				<tr>
 					<td colspan="2"><input type="checkbox" name=""
 						onClick="toggleOptional(this)"
 						<%--=imageEditPage.getImagesSharesSameSource() ? " checked=\"true\" " : ""--%>
                     />
-					#Other images share same source. NB! This will overwrite current settings.#</td>
+					#All languages share same image. NB! This will overwrite current settings.#</td>
 				</tr>
 			</c:if>
-	
-
+	        <%
+            }
+	        %> 
+            
 
 			<tr>
 				<td colspan="2">#gui_hr( "blue" )</td>
@@ -533,7 +554,7 @@
 				value="  <? templates/sv/change_img.html/2009 ?>  "> <input
 				type="SUBMIT" class="imcmsFormBtn"
 				name="<%= ImageEditPage.REQUEST_PARAMETER__CANCEL_BUTTON %>"
-				value=" <? templates/sv/change_img.html/2008 ?> "></td>
+				value=" #Clear all# "></td>
 		</tr>
 		<tr>
 			<td><img

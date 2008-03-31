@@ -50,8 +50,11 @@ public class TextDomainObject implements Serializable, Cloneable {
 	@Column(name="meta_id")
 	private Integer metaId;
 	
+	/**
+	 * 
+	 */
 	@Transient 
-	private boolean temporary;
+	private boolean substitution;
 	
     /**
      * 'name' is a legacy identifier. 
@@ -215,11 +218,11 @@ public class TextDomainObject implements Serializable, Cloneable {
 		this.index = index;
 	}
 
-	public boolean isTemporary() {
-		return temporary;
+	public boolean isSubstitution() {
+		return substitution;
 	}
 
-	public void setTemporary(boolean temporary) {
-		this.temporary = temporary;
+	public void setSubstitution(boolean temporary) {
+		this.substitution = temporary;
 	}
 }

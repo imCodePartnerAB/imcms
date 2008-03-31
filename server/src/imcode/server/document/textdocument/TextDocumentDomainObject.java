@@ -170,7 +170,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     					if (disabled || image.getSource() instanceof NullImageSource) {
     						ImageDomainObject defaultImage = getImage(defaultLanguage, index);
     						
-    						image = createTemporaryImage(defaultImage, language);
+    						image = createSubstitutionImage(defaultImage, language);
     						
         					entry.setValue(image);
     					}    					
@@ -179,7 +179,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         			int metaId = getId();
     				for (Map.Entry<Integer, ImageDomainObject> entry: map.entrySet()) {
     					int index = entry.getKey();
-    					ImageDomainObject image = createTemporaryImage(metaId,index, language);
+    					ImageDomainObject image = createSubstitutionImage(metaId,index, language);
  
    						entry.setValue(image);
     				}        			
@@ -193,63 +193,63 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }    
     
     /**
-     * Creates empty image. 
+     * Creates substitution image. 
      */
-    private static ImageDomainObject createTemporaryImage(int metaId, int index, I18nLanguage language) {    	
+    private static ImageDomainObject createSubstitutionImage(int metaId, int index, I18nLanguage language) {    	
     	ImageDomainObject image = new ImageDomainObject();
     	
     	image.setMetaId(metaId);    	
     	image.setName("" + index);
     	image.setLanguage(language);
-    	image.setTemporary(true);
+    	image.setSubstitution(true);
     	
     	return image;
     }
     
     
     /**
-     * Creates temporary text. 
+     * Creates substitution text. 
      */
-    public static TextDomainObject createTemporaryText(int metaId, int index, I18nLanguage language) {    	
+    public static TextDomainObject createSubstitutionText(int metaId, int index, I18nLanguage language) {    	
     	TextDomainObject text = new TextDomainObject();
     	
     	text.setMetaId(metaId);
     	text.setIndex(index);
     	text.setLanguage(language);
-    	text.setTemporary(true);
+    	text.setSubstitution(true);
     	
     	return text;
     }    
     
     /**
-     * Creates temporary text. 
+     * Creates substitution text. 
      */
-    public static TextDomainObject createTemporaryText(
+    public static TextDomainObject createSubstitutionText(
     		TextDomainObject originalText, I18nLanguage newLanguage) {
     	
     	TextDomainObject text = originalText.clone();
     	
     	text.setId(null);
     	text.setLanguage(newLanguage);
-    	text.setTemporary(true);
+    	text.setSubstitution(true);
     	
     	return text;
     }    
     
     
     /**
-     * Create temporary image from original image.
+     * Create substitution image from original image.
      * 
      * @param originalImage original image.
      * @param newLanguage cloned image language. 
      */
-    private static ImageDomainObject createTemporaryImage(ImageDomainObject 
+    private static ImageDomainObject createSubstitutionImage(ImageDomainObject 
     		originalImage, I18nLanguage newLanguage) {
     	
     	ImageDomainObject newImage = originalImage.clone();
     	
     	newImage.setId(null);
-    	newImage.setTemporary(true);
+    	newImage.setSubstitution(true);
     	newImage.setLanguage(newLanguage);
     	
     	return newImage;
@@ -337,7 +337,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 			TextDomainObject defaultText = defaultMap.get(index);
 			
 			if (defaultText == null) {
-				defaultText = createTemporaryText(getId(), index, defaultLanguage);
+				defaultText = createSubstitutionText(getId(), index, defaultLanguage);
 				defaultMap.put(index, defaultText);
 			}
 			
@@ -348,7 +348,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         		if (getMeta().getMissingI18nShowRule() 
         				== Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE) {
 				
-        			text = createTemporaryText(defaultText, language);
+        			text = createSubstitutionText(defaultText, language);
         		}
         		
         		map.put(index, text);				
@@ -403,15 +403,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 						if (allowsSubstitionWithDefault) {
 							TextDomainObject defaultText = getText(defaultLanguage, index);
 							
-							text = createTemporaryText(defaultText, language);
+							text = createSubstitutionText(defaultText, language);
 						} else {
-							text = createTemporaryText(metaId, index, language);
+							text = createSubstitutionText(metaId, index, language);
 						}
 					} else if (text.getText().length() == 0) {
 						if (allowsSubstitionWithDefault) {
 							TextDomainObject defaultText = getText(defaultLanguage, index);
 							
-							text = createTemporaryText(defaultText, language);
+							text = createSubstitutionText(defaultText, language);
 						} 						
 					}
 					
@@ -727,7 +727,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 			ImageDomainObject defaultImage = defaultMap.get(index);
 			
 			if (defaultImage == null) {
-				defaultImage = createTemporaryImage(getId(), index, defaultLanguage);
+				defaultImage = createSubstitutionImage(getId(), index, defaultLanguage);
 				defaultMap.put(index, defaultImage);
 			}
 			
@@ -738,7 +738,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         		if (getMeta().getMissingI18nShowRule() 
         				== Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE) {
 				
-        			createTemporaryImage(defaultImage, language);
+        			createSubstitutionImage(defaultImage, language);
         		}
         		
         		map.put(index, image);				

@@ -51,26 +51,21 @@ public class ChangeText extends HttpServlet {
         String label = null == request.getParameter( "label" ) ? "" : request.getParameter( "label" );
 
         TextDomainObject text = textDocument.getText( textIndex );        
-        
-        // TODO 18n: refactor: where create TextDomObj / here or inside API
-        //if ( null == text ) {
-        //    text = new TextDomainObject( "", TextDomainObject.TEXT_TYPE_HTML );
-        //    text.setLanguage(I18nSupport.getCurrentLanguage());
-        //}        
-        
+                
         I18nLanguage language = I18nSupport.getCurrentLanguage();
         Meta meta = textDocument.getMeta();
         I18nMeta i18nMeta = meta.getI18nMeta(language);
         boolean enabled = i18nMeta.getEnabled(); 
         
-        if (text.isTemporary() && !enabled) {
+        if (text.isSubstitution()) {
             TextDao textDao = (TextDao) Imcms.getServices().getSpringBean("textDao");            
         	
         	text = textDao.getText(documentId, textIndex, language.getId());
         	
         	if (text == null) {
-        		text = TextDocumentDomainObject.createTemporaryText(
+        		text = TextDocumentDomainObject.createSubstitutionText(
         				meta.getMetaId(), textIndex, language);
+        		text.setType(TextDomainObject.TEXT_TYPE_HTML);
         	}
         }
         

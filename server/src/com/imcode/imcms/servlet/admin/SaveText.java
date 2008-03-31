@@ -47,7 +47,7 @@ public final class SaveText extends HttpServlet {
 
             int text_format = Integer.parseInt( req.getParameter( "format_type" ) );
 
-            TextDomainObject text = TextDocumentDomainObject.createTemporaryText(
+            TextDomainObject text = TextDocumentDomainObject.createSubstitutionText(
             		meta_id, txt_no, I18nSupport.getCurrentLanguage()); 
             
             text.setText(text_string);
