@@ -35,9 +35,6 @@
 
 	pageContext.setAttribute("imageEditPage", imageEditPage);
 	pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
-	
-	boolean shareImages = request.getParameter(
-			ImageEditPage.REQUEST_PARAMETER__SHARE_IMAGE) != null;
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -363,7 +360,7 @@
 					<td colspan="2"><input type="checkbox" 
 					    name="<%= ImageEditPage.REQUEST_PARAMETER__SHARE_IMAGE %>"
 						
-						<%= shareImages ? " checked='true'" : "" %>
+						<%= imageEditPage.isShareImages() ? " checked='true'" : "" %>
 						<%--=imageEditPage.getImagesSharesSameSource() ? " checked=\"true\" " : ""--%>
                     />
 					#All languages share same image. NB! This will overwrite current settings.#</td>

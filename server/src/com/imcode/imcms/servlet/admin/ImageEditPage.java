@@ -60,6 +60,7 @@ public class ImageEditPage extends OkCancelPage {
     private final Handler<List<ImageDomainObject>> imageCommand;
     private final LocalizedMessage heading;
     private boolean linkable;
+    private boolean shareImages;
     
     /**
      * Image DTO. Contains generic image properties such as size, border,
@@ -146,7 +147,7 @@ public class ImageEditPage extends OkCancelPage {
         
         image.setLowResolutionUrl(req.getParameter(REQUEST_PARAMETER__IMAGE_LOWSRC));
         
-        boolean shareImages = req.getParameter(REQUEST_PARAMETER__SHARE_IMAGE) != null;
+        shareImages = req.getParameter(REQUEST_PARAMETER__SHARE_IMAGE) != null;
         
         int index = 0;
         ImageDomainObject firstImage = images.get(0);
@@ -245,7 +246,7 @@ public class ImageEditPage extends OkCancelPage {
                 
                 // TODO i18n: refactor
                 for (ImageDomainObject i18nImage: images) {
-                	if (i18nImage.getLanguage().getCode().equals(i18nCode)) {
+                	if (shareImages || i18nImage.getLanguage().getCode().equals(i18nCode)) {
                 		i18nImage.setSource(new ImagesPathRelativePathImageSource(imageUrl));
                  	}
                 	
@@ -319,6 +320,14 @@ public class ImageEditPage extends OkCancelPage {
 		}
 		
 		return same;
+	}
+
+	public boolean isShareImages() {
+		return shareImages;
+	}
+
+	public void setShareImages(boolean shareImages) {
+		this.shareImages = shareImages;
 	}
 
 }
