@@ -35,6 +35,9 @@
 
 	pageContext.setAttribute("imageEditPage", imageEditPage);
 	pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
+	
+	boolean shareImages = request.getParameter(
+			ImageEditPage.REQUEST_PARAMETER__SHARE_IMAGE) != null;
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -167,6 +170,21 @@
 		    }
 		}
 		--%>
+		function hideImage(prefix) {
+		  getById('ImageUrl' + prefix).value = "";
+		  getById('previewDiv' + prefix).style.display = "none";
+		}
+		
+		function getById(id) {
+			if (document.getElementById)
+    			var returnVar = document.getElementById(id);
+			else if (document.all)
+	   		    var returnVar = document.all[id];
+			else if (document.layers)
+			    var returnVar = document.layers[id];			
+			
+			return returnVar;
+		}				
 		//-->
 		</script>
 	</head>
@@ -244,7 +262,7 @@
   					      <%="<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) + "</i></div>"%>
 					    </td>
 						<td align="center">						
-						<div id="previewDiv">
+						<div id="previewDiv${suffix}">
 						  <%=!i18nImage.isEmpty() ? ImcmsImageUtils.getImageHtmlTag(i18nImage, request, new Properties()) : ""%></div>
 						</td>
 					</tr>
@@ -265,9 +283,8 @@
 				<td>
 				<table border="0" cellspacing="0" cellpadding="0" width="100%">
 					<tr>
-						<td colspan="2"><input type="text" <% %>
+						<td colspan="2"><input type="text" id="ImageUrl${suffix}"
 							name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>${suffix}"
-							<% %>
 							id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>${suffix}"
 							<%
 							 String path = i18nImage.getUrlPathRelativeToContextPath();
@@ -277,7 +294,7 @@
 						</td>
 
 						<%-- Browse Image button --%>
-						<td><input type="submit" <% %>
+						<td><input type="submit"
 							name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>"
 							class="imcmsFormBtnSmall" style="width: 200px"
 							value="<? templates/sv/change_img.html/2004 ?>"
@@ -288,7 +305,9 @@
                                 type="button" 
                                 class="imcmsFormBtnSmall"
                                 name="<%= ImageEditPage.REQUEST_PARAMETER__DELETE_BUTTON %>"
-                                value="  <? templates/sv/change_img.html/2009 ?>  "/>
+                                value="  <? templates/sv/change_img.html/2009 ?>  "
+                                onClick="hideImage('${suffix}')"
+                                />
 						</td>
 					</tr>
 				</table>
@@ -334,14 +353,17 @@
 
 			<%-- 
               Indicates this images should be shared among all languages. 
+              onClick="toggleOptional(this)"
             --%>
             <%
             if (!i18nImage.isEmpty()) {
             %>	            
 			<c:if test="${status.first && imagesCount > 1}">
 				<tr>
-					<td colspan="2"><input type="checkbox" name=""
-						onClick="toggleOptional(this)"
+					<td colspan="2"><input type="checkbox" 
+					    name="<%= ImageEditPage.REQUEST_PARAMETER__SHARE_IMAGE %>"
+						
+						<%= shareImages ? " checked='true'" : "" %>
 						<%--=imageEditPage.getImagesSharesSameSource() ? " checked=\"true\" " : ""--%>
                     />
 					#All languages share same image. NB! This will overwrite current settings.#</td>
@@ -551,10 +573,10 @@
 				value="  <? templates/sv/change_img.html/2007 ?>  "> <input
 				type="SUBMIT" class="imcmsFormBtn"
 				name="<%= ImageEditPage.REQUEST_PARAMETER__DELETE_BUTTON %>"
-				value="  <? templates/sv/change_img.html/2009 ?>  "> <input
+				value="  #Clear all#  "> <input
 				type="SUBMIT" class="imcmsFormBtn"
 				name="<%= ImageEditPage.REQUEST_PARAMETER__CANCEL_BUTTON %>"
-				value=" #Clear all# "></td>
+				value=" #Cancel# "></td>
 		</tr>
 		<tr>
 			<td><img

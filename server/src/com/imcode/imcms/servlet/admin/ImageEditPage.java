@@ -52,6 +52,8 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__LINK_TARGET = EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET;
     public static final String REQUEST_PARAMETER__I18N_CODE = "i18nCode";
     static final LocalizedMessage ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images");
+    
+    public static final String REQUEST_PARAMETER__SHARE_IMAGE = "share_image";
 
     private TextDocumentDomainObject document;
     private String label;
@@ -144,18 +146,26 @@ public class ImageEditPage extends OkCancelPage {
         
         image.setLowResolutionUrl(req.getParameter(REQUEST_PARAMETER__IMAGE_LOWSRC));
         
+        boolean shareImages = req.getParameter(REQUEST_PARAMETER__SHARE_IMAGE) != null;
+        
+        int index = 0;
+        ImageDomainObject firstImage = images.get(0);
+        
         for (ImageDomainObject i18nImage: images) {
-        	String suffix = "_" + i18nImage.getLanguage().getCode();
-        	String alternateText = req.getParameter(REQUEST_PARAMETER__IMAGE_ALT
-        			+ suffix);
-        	
-        	imageUrl = req.getParameter(REQUEST_PARAMETER__IMAGE_URL
-        			+ suffix);
-            if ( null != imageUrl && imageUrl.startsWith(req.getContextPath()) ) {
-                imageUrl = imageUrl.substring(req.getContextPath().length());
-            } 
-            
-            imageSource = ImcmsImageUtils.createImageSourceFromString(imageUrl);
+    		String suffix = "_" + i18nImage.getLanguage().getCode();
+    		String alternateText = req.getParameter(REQUEST_PARAMETER__IMAGE_ALT
+    			+ suffix);
+    		
+        	if (shareImages && index++ > 0) {
+        		imageSource = firstImage.getSource();
+        	} else {        	
+        		imageUrl = req.getParameter(REQUEST_PARAMETER__IMAGE_URL + suffix);
+        		if ( null != imageUrl && imageUrl.startsWith(req.getContextPath()) ) {
+        			imageUrl = imageUrl.substring(req.getContextPath().length());
+        		}
+        		
+        		imageSource = ImcmsImageUtils.createImageSourceFromString(imageUrl);
+        	}                        
 
             i18nImage.setImageUrl(imageUrl);
             i18nImage.setType(imageSource.getTypeId());
@@ -186,7 +196,14 @@ public class ImageEditPage extends OkCancelPage {
         DocumentMapper documentMapper = imcref.getDocumentMapper();
 
         if ( null != request.getParameter(REQUEST_PARAMETER__DELETE_BUTTON) ) {
-            image = new ImageDomainObject();
+            NullImageSource source = new NullImageSource();
+            
+            for (ImageDomainObject image: images) {
+            	image.setSourceAndClearSize(source);
+            	image.setAlternateText(null);
+            }
+            
+            image = images.get(0);
 
             forward(request, response);
         } else if ( null != request.getParameter(REQUEST_PARAMETER__PREVIEW_BUTTON) ) {
