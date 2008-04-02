@@ -1,13 +1,9 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.textdocument.ImageDomainObject;
-
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,20 +11,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.JoinTable;
-import javax.persistence.MapKey;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
 
 /**
  * I18n-ed part of meta.
  */
 @Entity
-@Table(name="i18n_meta_part")
+@Table(name="i18n_meta")
 @NamedQueries({
 	@NamedQuery(name="I18nMeta.getByLanguage", query="select m from I18nMeta m where m.metaId = :metaId and m.language.id = :languageId")
 	//@NamedQuery(name="I18nMeta.getByMetaId&LanguageId", query="select m from I18nMeta m where m.metaId = :metaId and m.language.id=:languageId")
@@ -36,7 +30,7 @@ import javax.persistence.Table;
 public class I18nMeta implements Serializable {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="part_id")
+	@Column(name="i18n_meta_id")
 	private Long id;
 	
 	@Column(name="meta_id")
@@ -45,20 +39,15 @@ public class I18nMeta implements Serializable {
 	@Column(name="meta_enabled")
 	private Boolean enabled;
 				
-	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="language_id", referencedColumnName="language_id")
 	private I18nLanguage language;
 	
-	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-	@JoinTable(name="i18n_meta_keywords", 
-		joinColumns={@JoinColumn(name="meta_id")},			
-		inverseJoinColumns={@JoinColumn(name="keyword_id")}
-	)	
-	private Set<I18nKeyword> keywords;
 	
-	//@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-	//@MapKey(name="")	
-	//private Map<Integer, ImageDomainObject> images;
+	@Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+          org.hibernate.annotations.CascadeType.DELETE_ORPHAN})
+	@JoinColumn(name="i18n_meta_id", referencedColumnName="i18n_meta_id")
+	private Set<I18nKeyword> keywords;
     
 	@Column(name="meta_headline")
     private String headline;
@@ -146,10 +135,13 @@ public class I18nMeta implements Serializable {
 	public void setKeywordsValues(Set<String> values) {
 		keywords.clear();
 		
+		Long id = getId();
+		
 		for (String value: values) {
 			I18nKeyword keyword = new I18nKeyword();
 			
 			keyword.setValue(value);
+			keyword.setI18nMetaId(id);
 			
 			keywords.add(keyword);
 		}

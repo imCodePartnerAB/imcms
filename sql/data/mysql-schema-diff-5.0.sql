@@ -72,16 +72,16 @@ alter table texts add foreign key fk__texts__i18n_languages(language_id) referen
 alter table texts_history add foreign key fk__texts_history__i18n_languages(language_id) references i18n_languages(language_id);
 
 -- contains i18n-ed part of meta
-drop table if exists i18n_meta_part;
-create table i18n_meta_part(
-    part_id int auto_increment not null,
+drop table if exists i18n_meta;
+create table i18n_meta(
+    i18n_meta_id int auto_increment not null,
     language_id smallint,
     meta_id int,
     meta_enabled boolean not null default false,
     meta_headline varchar(255) null,
     meta_text varchar(1000) null,
     meta_image varchar(255) null,
-    primary key pk__i18n_meta_part(part_id),
+    primary key pk__i18n_meta_part(i18n_meta_id),
     foreign key fk__i18n_meta_part__i18n_languages(language_id) references i18n_languages(language_id),
     unique index uix__i18n_meta_part__language_id__meta_id(language_id, meta_id)
 ); -- type;
@@ -90,16 +90,20 @@ create table i18n_meta_part(
 drop table if exists i18n_keywords;
 create table i18n_keywords(
     keyword_id int auto_increment not null,
-    keyword_value varchar(128),
-    primary key pk__i18n_meta_keywords(keyword_id)
+    i18n_meta_id int not null,
+    keyword_value varchar(128) not null,
+    primary key pk__i18n_keywords(keyword_id)
 ); -- type;
 
 -- contains i18n-ed part of meta
 drop table if exists i18n_meta_keywords;
+/*
 create table i18n_meta_keywords(
-    meta_id int not null,
-    keyword_id int not null
+    keyword_id int auto_increment not null,
+    i18n_meta_id int not null
+    keyword_value varchar(128) not null,
 ); -- type;
+*/
 
 
 delete from database_version;

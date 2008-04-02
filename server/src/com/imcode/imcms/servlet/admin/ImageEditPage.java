@@ -14,6 +14,7 @@ import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -291,8 +292,33 @@ public class ImageEditPage extends OkCancelPage {
 		return images;
 	}
 
+	/** 
+	 * Sets images and resets shareImages flag. 
+	 */
 	public void setImages(List<ImageDomainObject> images) {
 		this.images = images;
+		
+		boolean mayShareImages = images != null && images.size() > 1;
+		
+		if (mayShareImages) {
+			Iterator<ImageDomainObject> iterator = images.iterator();			
+			ImageDomainObject image = iterator.next();			
+			ImageSource source = image.getSource();
+			
+			while (iterator.hasNext()) {
+				image = iterator.next();
+				ImageSource otherSource = image.getSource();
+				
+				if (!(source.getTypeId() == otherSource.getTypeId() 
+						&& source.getUrlPathRelativeToContextPath().equals(
+								otherSource.getUrlPathRelativeToContextPath()))) {
+					mayShareImages = false;
+					break;
+				}
+			}
+		}
+		
+		this.shareImages = mayShareImages;
 	}
 	
 	/**

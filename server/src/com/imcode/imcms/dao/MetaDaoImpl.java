@@ -3,10 +3,10 @@ package com.imcode.imcms.dao;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.Query;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.imcode.imcms.api.I18nKeyword;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
@@ -22,7 +22,10 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 	 */
 	@Transactional
 	public Meta getMeta(Integer metaId) {
-		Meta meta = (Meta)get(Meta.class, metaId);
+		Query query = getSession().createQuery("select m from Meta m where m.metaId = :metaId")
+			.setParameter("metaId", metaId);
+		
+		Meta meta = (Meta)query.uniqueResult();
 		
 		List<I18nLanguage> languages = (List<I18nLanguage>)
 				findByNamedQueryAndNamedParam("I18nLanguage.missingMetaLanguages", "metaId", metaId);

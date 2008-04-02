@@ -352,9 +352,9 @@
               Indicates this images should be shared among all languages. 
               onClick="toggleOptional(this)"
             --%>
-            <%
+            <%--
             if (!i18nImage.isEmpty()) {
-            %>	            
+            --%>	            
 			<c:if test="${status.first && imagesCount > 1}">
 				<tr>
 					<td colspan="2"><input type="checkbox" 
@@ -366,9 +366,9 @@
 					#All languages share same image. NB! This will overwrite current settings.#</td>
 				</tr>
 			</c:if>
-	        <%
+	        <%--
             }
-	        %> 
+	        --%> 
             
 
 			<tr>
