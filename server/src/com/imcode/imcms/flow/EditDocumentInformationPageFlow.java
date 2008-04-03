@@ -139,7 +139,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
             public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {            	
             	if (i18nCode != null) {
-                	for (I18nMeta i18nPart: document.getMeta().getI18nParts()) {
+                	for (I18nMeta i18nPart: document.getMeta().getI18nMetas()) {
                 		if (i18nPart.getLanguage().getCode().equals(i18nCode)) {
                 			i18nPart.setMenuImageURL(imageUrl);
                 			break;
@@ -236,24 +236,24 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         
         Meta meta = document.getMeta();
         
-        for (I18nMeta i18nPart: meta.getI18nParts()) {
-        	String suffix = "_" + i18nPart.getLanguage().getCode();
+        for (I18nMeta i18nMeta: meta.getI18nMetas()) {
+        	String suffix = "_" + i18nMeta.getLanguage().getCode();
             String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE + suffix);
             String menuText = request.getParameter( REQUEST_PARAMETER__MENUTEXT + suffix);
             String imageURL = request.getParameter( REQUEST_PARAMETER__IMAGE + suffix);           	
             boolean enabled = request.getParameter(REQUEST_PARAMETER__ENABLED_I18N + suffix) != null;
             
-            i18nPart.setHeadline(headline);
-            i18nPart.setMenuText(menuText);
-            i18nPart.setEnabled(enabled);
-            i18nPart.setMenuImageURL(imageURL);
+            i18nMeta.setHeadline(headline);
+            i18nMeta.setMenuText(menuText);
+            i18nMeta.setEnabled(enabled);
+            i18nMeta.setMenuImageURL(imageURL);
             
             String keywordsString = request.getParameter( REQUEST_PARAMETER__KEYWORDS + suffix);
             KeywordsParser keywordsParser = new KeywordsParser();
             
             String[] values =  keywordsParser.parseKeywords( keywordsString );
             
-            i18nPart.setKeywordsValues(new ArraySet<String>(values));
+            i18nMeta.setKeywordsValues(new ArraySet<String>(values));
         }
         
 

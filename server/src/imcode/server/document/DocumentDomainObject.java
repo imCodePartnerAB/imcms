@@ -1,27 +1,28 @@
 package imcode.server.document;
 
+import imcode.server.document.textdocument.CopyableHashMap;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
+import imcode.util.LazilyLoadedObject;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.I18nException;
-import com.imcode.imcms.api.I18nKeyword;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
-
-import imcode.server.Imcms;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.CopyableHashMap;
-import imcode.server.user.RoleId;
-import imcode.server.user.UserDomainObject;
-import imcode.util.LazilyLoadedObject;
-import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import java.io.Serializable;
-import java.util.*;
 
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
@@ -31,8 +32,9 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     protected Attributes attributes = new Attributes();
     private static Logger log = Logger.getLogger( DocumentDomainObject.class );
     
-    // TODO i18n: refactor out. This is hibernate object. 
-    // document info must be saved separately. 
+    /**
+     * Document meta.  
+     */ 
     private Meta meta;
 
     public Object clone() throws CloneNotSupportedException {
@@ -66,9 +68,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
                 String errorMessage = "Unknown document-type-id: " + documentTypeId;
                 log.error( errorMessage );
                 throw new IllegalArgumentException( errorMessage );
-        }
-        
-        // TODO: Refactor out:
+        }                
         
 
         return document;
@@ -116,7 +116,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setHeadline( String v ) {
-        attributes.headline = v;
+        //attributes.headline = v;
+    	getI18nMeta().setHeadline(v);
     }
 
     public int getId() {
@@ -133,24 +134,20 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setMenuImage( String v ) {
-        attributes.image = v;
+    	getI18nMeta().setMenuImageURL(v);
+        //attributes.image = v;
     }
 
     public Set getKeywords() {
-    	I18nMeta meta = getI18nMeta();
-    	
-    	Set<String> values = new HashSet<String>();
-    	
-    	for (I18nKeyword keyword: meta.getKeywords()) {
-    		values.add(keyword.getValue());
-    	}
+    	return getI18nMeta().getKeywordsValues();
     	
         //return Collections.unmodifiableSet((Set) attributes.keywords.get()) ;
-    	return values;
     }
 
     public void setKeywords( Set keywords ) {
-        attributes.keywords.set(new CopyableHashSet(keywords));
+    	getI18nMeta().setKeywordsValues(keywords);
+    	
+        //attributes.keywords.set(new CopyableHashSet(keywords));
     }
 
     public void setProperties( Map properties ) {
@@ -190,7 +187,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setMenuText( String v ) {
-        attributes.menuText = v;
+    	getI18nMeta().setMenuText(v);
+        //attributes.menuText = v;
     }
 
     public Date getModifiedDatetime() {
@@ -584,19 +582,18 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	// TODO i18n refactor
 	private I18nMeta getI18nMeta() {
 		if (meta == null) {
-			throw new I18nException("I18nMeta for document [" 
+			throw new I18nException("Meta for document [" 
 					+ getId() + "] is not set.");
 		}
 		
-		I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
+		I18nLanguage language = I18nSupport.getCurrentLanguage();
+		I18nMeta i18nMeta = meta.getI18nMeta(language);
 		
-		for (I18nMeta i18nMeta: meta.getI18nParts()) {
-			if (i18nMeta.getLanguage().equals(currentLanguage)) {
-				return i18nMeta;
-			}
+		if (i18nMeta == null) {
+			throw new I18nException("No I18nMeta found for document [" 
+					+ getId() + "], language [" + language + "].");
 		}
 		
-		throw new I18nException("No I18nMeta found for for document [" 
-					+ getId() + "] and language [" + currentLanguage .getName() + "].");
+		return i18nMeta;
 	}
 }

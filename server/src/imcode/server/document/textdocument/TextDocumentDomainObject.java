@@ -25,6 +25,8 @@ import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.TextDao;
 import com.imcode.imcms.mapping.DocumentMenusMap;
 
+//TODO: Refactor out text and image loading logic into lazy load object and optimize:
+// getTextsMap, getImagesMap, getText, getImage
 public class TextDocumentDomainObject extends DocumentDomainObject {
 	
 	/** 
@@ -140,6 +142,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * 
      * This method loads images when invoked for the first time.  
      */
+    
+    // TODO: Refactor out into lazy loaded object and optimize 
     private synchronized Map<Integer, ImageDomainObject> getImagesMap(I18nLanguage language) {
     	Map<Integer, ImageDomainObject> map = images.get(language);    	
     	
@@ -177,12 +181,19 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     				}
         		} else if (disabled){
         			int metaId = getId();
+
     				for (Map.Entry<Integer, ImageDomainObject> entry: map.entrySet()) {
     					int index = entry.getKey();
-    					ImageDomainObject image = createSubstitutionImage(metaId,index, language);
+    					ImageDomainObject image = createSubstitutionImage(metaId, index, language);
  
    						entry.setValue(image);
-    				}        			
+    				} 
+    				
+    				for (Integer index: defaultMap.keySet()) {
+    					ImageDomainObject image = createSubstitutionImage(metaId, index, language);
+ 
+   						map.put(index, image);
+    				}         			
         		}
         		
         		images.put(language, map);
@@ -314,9 +325,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public TextDomainObject getText( int textFieldIndex ) {
     	I18nLanguage language = I18nSupport.getCurrentLanguage();
     	
-    	TextDomainObject item = getText(language, textFieldIndex);
+    	TextDomainObject text = getText(language, textFieldIndex);
     	
-        return item;
+        return text;
     }
     
     
@@ -335,9 +346,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 			I18nLanguage defaultLanguage = I18nSupport.getDefaultLanguage();
 			Map<Integer, TextDomainObject> defaultMap = getTextsMap(defaultLanguage);			
 			TextDomainObject defaultText = defaultMap.get(index);
+			int metaId = getId();
 			
 			if (defaultText == null) {
-				defaultText = createSubstitutionText(getId(), index, defaultLanguage);
+				defaultText = createSubstitutionText(metaId, index, defaultLanguage);
 				defaultMap.put(index, defaultText);
 			}
 			
@@ -349,6 +361,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         				== Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE) {
 				
         			text = createSubstitutionText(defaultText, language);
+        		} else {
+        			text = createSubstitutionText(metaId, index, language);
         		}
         		
         		map.put(index, text);				
@@ -370,6 +384,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * Returns all texts for language specified.
      */
+    // TODO: Refactor out into lazy loaded object and optimize
     private synchronized Map<Integer, TextDomainObject> getTextsMap(
     		I18nLanguage language) {
     	Map<Integer, TextDomainObject> map = texts.get(language);
@@ -725,9 +740,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 			I18nLanguage defaultLanguage = I18nSupport.getDefaultLanguage();
 			Map<Integer, ImageDomainObject> defaultMap = getImagesMap(defaultLanguage);			
 			ImageDomainObject defaultImage = defaultMap.get(index);
+			int metaId = getId();
 			
 			if (defaultImage == null) {
-				defaultImage = createSubstitutionImage(getId(), index, defaultLanguage);
+				defaultImage = createSubstitutionImage(metaId, index, defaultLanguage);
 				defaultMap.put(index, defaultImage);
 			}
 			
@@ -738,7 +754,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         		if (getMeta().getMissingI18nShowRule() 
         				== Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE) {
 				
-        			createSubstitutionImage(defaultImage, language);
+        			image = createSubstitutionImage(defaultImage, language);
+        		} else {
+        			image = createSubstitutionImage(metaId, index, language);
         		}
         		
         		map.put(index, image);				

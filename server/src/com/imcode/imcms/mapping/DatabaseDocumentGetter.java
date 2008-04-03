@@ -22,9 +22,9 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
     private ImcmsServices services;
     public static final String SQL_GET_DOCUMENTS = "SELECT meta_id,\n"
                                                    + "doc_type,\n"
-                                                   + "meta_headline,\n"
-                                                   + "meta_text,\n"
-                                                   + "meta_image,\n"
+                                                   //+ "meta_headline,\n"
+                                                   //+ "meta_text,\n"
+                                                   //+ "meta_image,\n"
                                                    + "owner_id,\n"
                                                    + "permissions,\n"
                                                    + "shared,\n"
@@ -118,31 +118,34 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
             final int documentTypeId = resultSet.getInt(2);
             DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
 
-            int documentId = resultSet.getInt(1);
+            int index = 1; 
+            int documentId = resultSet.getInt(index++);
             document.setId(documentId);
-            document.setHeadline(resultSet.getString(3));
-            document.setMenuText(resultSet.getString(4));
-            document.setMenuImage(resultSet.getString(5));
+            //document.setHeadline(resultSet.getString(3));
+            //document.setMenuText(resultSet.getString(4));
+            //document.setMenuImage(resultSet.getString(5));
 
-            document.setCreatorId(resultSet.getInt(6));
-            document.setRestrictedOneMorePrivilegedThanRestrictedTwo(resultSet.getBoolean(7));
-            document.setLinkableByOtherUsers(resultSet.getBoolean(8));
-            document.setLinkedForUnauthorizedUsers(resultSet.getBoolean(9));
-            document.setLanguageIso639_2(LanguageMapper.getAsIso639_2OrDefaultLanguage(resultSet.getString(10), services.getLanguageMapper().getDefaultLanguage()));
-            document.setCreatedDatetime(resultSet.getTimestamp(11));
-            Date modifiedDatetime = resultSet.getTimestamp(12);
+            index += 1; //skip type
+            
+            document.setCreatorId(resultSet.getInt(index++));
+            document.setRestrictedOneMorePrivilegedThanRestrictedTwo(resultSet.getBoolean(index++));
+            document.setLinkableByOtherUsers(resultSet.getBoolean(index++));
+            document.setLinkedForUnauthorizedUsers(resultSet.getBoolean(index++));
+            document.setLanguageIso639_2(LanguageMapper.getAsIso639_2OrDefaultLanguage(resultSet.getString(index++), services.getLanguageMapper().getDefaultLanguage()));
+            document.setCreatedDatetime(resultSet.getTimestamp(index++));
+            Date modifiedDatetime = resultSet.getTimestamp(index++);
             document.setModifiedDatetime(modifiedDatetime);
             document.setActualModifiedDatetime(modifiedDatetime);
-            document.setSearchDisabled(resultSet.getBoolean(13));
-            document.setTarget(resultSet.getString(14));
-            document.setArchivedDatetime(resultSet.getTimestamp(15));
-            Number publisherId = (Number) resultSet.getObject(16);
+            document.setSearchDisabled(resultSet.getBoolean(index++));
+            document.setTarget(resultSet.getString(index++));
+            document.setArchivedDatetime(resultSet.getTimestamp(index++));
+            Number publisherId = (Number) resultSet.getObject(index++);
             document.setPublisherId(publisherId == null ? null : new Integer(publisherId.intValue()));
-            int publicationStatusInt = resultSet.getInt(17);
+            int publicationStatusInt = resultSet.getInt(index++);
             Document.PublicationStatus publicationStatus = publicationStatusFromInt(publicationStatusInt);
             document.setPublicationStatus(publicationStatus);
-            document.setPublicationStartDatetime(resultSet.getTimestamp(18));
-            document.setPublicationEndDatetime(resultSet.getTimestamp(19));
+            document.setPublicationStartDatetime(resultSet.getTimestamp(index++));
+            document.setPublicationEndDatetime(resultSet.getTimestamp(index++));
 
             return document;
         }

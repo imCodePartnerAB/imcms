@@ -1,4 +1,12 @@
-﻿-- Available languages
+﻿-- those columns become i18n-ed
+-- they will apper in i18n_meta table
+alter table meta
+  drop column `meta_headline`,
+  drop column `meta_text`,
+  drop column `meta_image`;
+
+
+-- Available languages
 DROP TABLE IF EXISTS `i18n_available_languages`;
 
 create table i18n_available_languages (
@@ -90,7 +98,7 @@ create table i18n_meta(
 drop table if exists i18n_keywords;
 create table i18n_keywords(
     keyword_id int auto_increment not null,
-    i18n_meta_id int not null,
+    i18n_meta_id int, -- not null
     keyword_value varchar(128) not null,
     primary key pk__i18n_keywords(keyword_id)
 ); -- type;

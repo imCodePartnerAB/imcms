@@ -6,6 +6,9 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.dao.MetaDao;
+
+import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -61,6 +64,11 @@ class DocumentSaver {
             }
 
             document.accept(new DocumentSavingVisitor(oldDocument, getDatabase(), documentMapper.getImcmsServices(), user));
+            
+            //TODO i18n: Refactor
+        	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao"); 
+        	
+        	metaDao.updateMeta(document.getMeta());            
         } finally {
             documentMapper.invalidateDocument(document);
         }
@@ -79,13 +87,18 @@ class DocumentSaver {
         makeDateSqlUpdateClause("publication_end_datetime", document.getPublicationEndDatetime(), sqlUpdateColumns, sqlUpdateValues);
         makeDateSqlUpdateClause("archived_datetime", document.getArchivedDatetime(), sqlUpdateColumns, sqlUpdateValues);
         makeDateSqlUpdateClause("date_created", document.getCreatedDatetime(), sqlUpdateColumns, sqlUpdateValues);
-        String headlineThatFitsInDB = headline.substring(0, Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
-        makeStringSqlUpdateClause("meta_headline", headlineThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
-        makeStringSqlUpdateClause("meta_image", document.getMenuImage(), sqlUpdateColumns, sqlUpdateValues);
+        
+        //String headlineThatFitsInDB = headline.substring(0, Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
+        //makeStringSqlUpdateClause("meta_headline", headlineThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
+        
+        //makeStringSqlUpdateClause("meta_image", document.getMenuImage(), sqlUpdateColumns, sqlUpdateValues);
+        
         makeDateSqlUpdateClause("date_modified", document.getModifiedDatetime(), sqlUpdateColumns, sqlUpdateValues);
         makeStringSqlUpdateClause("target", document.getTarget(), sqlUpdateColumns, sqlUpdateValues);
-        String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
-        makeStringSqlUpdateClause("meta_text", textThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
+        
+        //String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
+        //makeStringSqlUpdateClause("meta_text", textThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
+        
         makeStringSqlUpdateClause("lang_prefix", document.getLanguageIso639_2(), sqlUpdateColumns, sqlUpdateValues);
         makeBooleanSqlUpdateClause("disable_search", document.isSearchDisabled(), sqlUpdateColumns, sqlUpdateValues);
         makeBooleanSqlUpdateClause("shared", document.isLinkableByOtherUsers(), sqlUpdateColumns, sqlUpdateValues);
@@ -121,7 +134,7 @@ class DocumentSaver {
 
         new CategoryMapper(getDatabase()).updateDocumentCategories(document);
 
-        updateDocumentKeywords(document);
+        //updateDocumentKeywords(document);
     }
 
     private Database getDatabase() {
@@ -156,6 +169,11 @@ class DocumentSaver {
 
         document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
 
+        //TODO i18n: Refactor
+    	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao"); 
+    	
+    	metaDao.updateMeta(document.getMeta()); 
+    	
         documentMapper.invalidateDocument(document);
     }
 
@@ -239,9 +257,9 @@ class DocumentSaver {
 
         final Number documentId = (Number) getDatabase().execute(new InsertIntoTableDatabaseCommand("meta", new String[][]{
             { "doc_type", document.getDocumentTypeId() + ""},
-            { "meta_headline", document.getHeadline()},
-            { "meta_text", document.getMenuText()},
-            { "meta_image", document.getMenuImage()},
+            //{ "meta_headline", document.getHeadline()},
+            //{ "meta_text", document.getMenuText()},
+            //{ "meta_image", document.getMenuImage()},
             { "owner_id", document.getCreatorId() + ""},
             { "permissions", makeSqlStringFromBoolean(document.isRestrictedOneMorePrivilegedThanRestrictedTwo())},
             { "shared", makeSqlStringFromBoolean(document.isLinkableByOtherUsers())},
@@ -297,6 +315,7 @@ class DocumentSaver {
         return result ;
     }
 
+    /*
     void updateDocumentKeywords(DocumentDomainObject document) {
         int meta_id = document.getId();
         Set keywords = document.getKeywords();
@@ -312,6 +331,7 @@ class DocumentSaver {
         }
         deleteUnusedKeywords();
     }
+    */
 
     void updateDocumentProperties( DocumentDomainObject document ) {
         int meta_id = document.getId();

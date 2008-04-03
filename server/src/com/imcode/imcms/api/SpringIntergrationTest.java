@@ -45,7 +45,7 @@ public class SpringIntergrationTest {
 		
 		Meta m = metaDao.getMeta(1001);
 		
-		m.getI18nParts().add(meta);
+		m.getI18nMetas().add(meta);
 		metaDao.updateMeta(m);
 		
 		
@@ -58,10 +58,10 @@ public class SpringIntergrationTest {
 		
 		kw.setValue("xa");
 		
-		meta.getI18nParts().get(0).getKeywords().add(kw);
+		meta.getI18nMetas().get(0).getKeywords().add(kw);
 		
 		metaDao.updateMeta(meta);
 		
-		Assert.assertTrue(meta.getI18nParts().size() == 3);
+		Assert.assertTrue(meta.getI18nMetas().size() == 3);
 	}	
 }

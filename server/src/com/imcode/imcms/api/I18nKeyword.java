@@ -17,9 +17,6 @@ public class I18nKeyword implements Serializable {
 	@Column(name="keyword_id")
 	private Long id;
 	
-	@Column(name="i18n_meta_id")
-	private Long i18nMetaId;	
-	
 	@Column(name="keyword_value")
 	private String value;
 	
@@ -43,13 +40,5 @@ public class I18nKeyword implements Serializable {
 
 	public void setValue(String value) {
 		this.value = value;
-	}
-
-	public Long getI18nMetaId() {
-		return i18nMetaId;
-	}
-
-	public void setI18nMetaId(Long metaId) {
-		i18nMetaId = metaId;
 	}
 }

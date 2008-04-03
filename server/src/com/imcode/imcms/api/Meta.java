@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,7 +35,7 @@ public class Meta implements Serializable {
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
 	@JoinColumn(name="meta_id", referencedColumnName="meta_id")		
-	private List<I18nMeta> i18nParts;
+	private List<I18nMeta> i18nMetas;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="missing_i18n_show_rule")
@@ -50,12 +49,12 @@ public class Meta implements Serializable {
 		this.metaId = metaId;
 	}
 
-	public List<I18nMeta> getI18nParts() {
-		return i18nParts;
+	public List<I18nMeta> getI18nMetas() {
+		return i18nMetas;
 	}
 	
-	public void setI18nParts(List<I18nMeta> i18nParts) {
-		this.i18nParts = i18nParts;		
+	public void setI18nMetas(List<I18nMeta> i18nParts) {
+		this.i18nMetas = i18nParts;		
 	}
 
 	public MissingI18nShowRule getMissingI18nShowRule() {
@@ -71,8 +70,8 @@ public class Meta implements Serializable {
 		if (metaMap == null) {
 			metaMap = new HashMap<I18nLanguage, I18nMeta>();
 			
-			if (i18nParts != null) {
-				for (I18nMeta i18nMeta: i18nParts) {
+			if (i18nMetas != null) {
+				for (I18nMeta i18nMeta: i18nMetas) {
 					metaMap.put(i18nMeta.getLanguage(), i18nMeta);
 				}
 			}			

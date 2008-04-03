@@ -168,7 +168,7 @@ function setI18nCodeParameterValue(value) {
 	<td>
 	  <table border="0" cellspacing="0" cellpadding="0" width="656">
 	      <%-- TODO: Escape XML: $Headline$ --%>
-	      <c:forEach items="${document.meta.i18nParts}" var="i18nPart">
+	      <c:forEach items="${document.meta.i18nMetas}" var="i18nPart">
 	      
 	      <c:set var="prefix" value="_${i18nPart.language.code}"/>
 	      
@@ -362,7 +362,7 @@ function setI18nCodeParameterValue(value) {
 		<tr>
 		  <td colspan="6">
 		  <table>
-			<c:forEach items="${document.meta.i18nParts}" var="i18nPart">
+			<c:forEach items="${document.meta.i18nMetas}" var="i18nPart">
 			  <c:set var="prefix" value="_${i18nPart.language.code}"/>
 	  		  <tr>	  
 				<td>
@@ -625,7 +625,7 @@ function setI18nCodeParameterValue(value) {
 		  --%>
 		  
 		  <table>
-				<c:forEach items="${document.meta.i18nParts}" var="i18nPart">
+				<c:forEach items="${document.meta.i18nMetas}" var="i18nPart">
 				  <c:set var="prefix" value="_${i18nPart.language.code}"/>
 				  <c:set var="keywordsValues" value="${i18nPart.keywordsValues}"/>
 	  			  <tr>	  

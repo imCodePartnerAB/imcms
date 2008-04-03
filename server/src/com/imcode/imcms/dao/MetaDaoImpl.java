@@ -31,7 +31,7 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 				findByNamedQueryAndNamedParam("I18nLanguage.missingMetaLanguages", "metaId", metaId);
 				
 		if (languages != null) {
-			Collection<I18nMeta> parts = meta.getI18nParts();
+			Collection<I18nMeta> parts = meta.getI18nMetas();
 			
 			for (I18nLanguage language: languages) {
 				I18nMeta part = new I18nMeta();
@@ -51,6 +51,15 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 	
 	@Transactional
 	public void updateMeta(Meta meta) {
+        //String headlineThatFitsInDB = headline.substring(0, Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
+        //makeStringSqlUpdateClause("meta_headline", headlineThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
+        
+        //makeStringSqlUpdateClause("meta_image", document.getMenuImage(), sqlUpdateColumns, sqlUpdateValues);
+        
+        //String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
+        //makeStringSqlUpdateClause("meta_text", textThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
+		
+		
 		saveOrUpdate(meta);
 	}	
 }

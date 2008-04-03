@@ -136,13 +136,8 @@ public class I18nMeta implements Serializable {
 	public void setKeywordsValues(Set<String> values) {
 		keywords.clear();
 		
-		Long id = getId();
-		
 		for (String value: values) {
-			I18nKeyword keyword = new I18nKeyword();
-			
-			keyword.setValue(value);
-			keyword.setI18nMetaId(id);
+			I18nKeyword keyword = new I18nKeyword(value);
 			
 			keywords.add(keyword);
 		}
