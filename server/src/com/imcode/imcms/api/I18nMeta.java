@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -42,10 +44,9 @@ public class I18nMeta implements Serializable {
 	@OneToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="language_id", referencedColumnName="language_id")
 	private I18nLanguage language;
-	
-	
-	@Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
-          org.hibernate.annotations.CascadeType.DELETE_ORPHAN})
+		
+	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	@JoinColumn(name="i18n_meta_id", referencedColumnName="i18n_meta_id")
 	private Set<I18nKeyword> keywords;
     
