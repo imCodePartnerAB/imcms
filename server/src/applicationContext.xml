@@ -9,16 +9,25 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 	 
   <tx:annotation-driven transaction-manager="txManager"/>
+  
+  <!--
+    ${com.imcode.imcms.path} is a system property value which is initialized in
+    com.imcode.imcms.servlet.ContextListener   
+  -->
+  <bean id="propertyConfigurer"
+      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location" value="file:${com.imcode.imcms.path}/WEB-INF/conf/server.properties"/>
+  </bean>  
 	 
   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-    <property name="driverClassName" value="org.gjt.mm.mysql.Driver"/>
-    <property name="url" value="@db-url@"/>
-    <property name="username" value="@db-user@"/>
-    <property name="password" value="@db-pass@"/>
+    <property name="driverClassName" value="${JdbcDriver}"/>
+    <property name="url" value="${JdbcUrl}"/>
+    <property name="username" value="${User}"/>
+    <property name="password" value="${Password}"/>
     <property name="testOnBorrow" value="true"/>
     <property name="validationQuery" value="select 1"/>    
     <property name="defaultAutoCommit" value="false"/>
-    <property name="maxActive" value="@db-maxconnections@"/>
+    <property name="maxActive" value="${MaxConnectionCount}"/>
   </bean> 
   
   <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
