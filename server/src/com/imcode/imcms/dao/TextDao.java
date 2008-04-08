@@ -15,4 +15,6 @@ public interface TextDao {
 	 * Returns text;
 	 */
 	TextDomainObject getText(int metaId, int index, int languageId);
+	
+	void saveText(TextDomainObject text);
 }

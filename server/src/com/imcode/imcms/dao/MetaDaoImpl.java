@@ -21,7 +21,7 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 	 * @return Meta
 	 */
 	@Transactional
-	public Meta getMeta(Integer metaId) {
+	public synchronized Meta getMeta(Integer metaId) {
 		Query query = getSession().createQuery("select m from Meta m where m.metaId = :metaId")
 			.setParameter("metaId", metaId);
 		
@@ -50,7 +50,7 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 	}
 	
 	@Transactional
-	public void updateMeta(Meta meta) {
+	public synchronized void updateMeta(Meta meta) {
         //String headlineThatFitsInDB = headline.substring(0, Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
         //makeStringSqlUpdateClause("meta_headline", headlineThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
         

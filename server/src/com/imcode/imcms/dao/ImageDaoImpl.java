@@ -3,14 +3,12 @@ package com.imcode.imcms.dao;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
-import imcode.server.document.textdocument.NullImageSource;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +17,7 @@ import com.imcode.imcms.api.I18nLanguage;
 public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 	
 	@Transactional
-	public List<ImageDomainObject> getImages(
+	public synchronized List<ImageDomainObject> getImages(
 			List<I18nLanguage> languages, 
 			int metaId, int imageId, boolean createImageIfNotExists) {
 		
@@ -45,7 +43,7 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 	}
 
 	@Transactional
-	public void saveImagesMap(int metaId,
+	public synchronized void saveImagesMap(int metaId,
 			Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap) {
 		
 		
@@ -59,7 +57,7 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 	}
 
 	@Transactional
-	public List<ImageDomainObject> getImages(int metaId, int languageId) {
+	public synchronized List<ImageDomainObject> getImages(int metaId, int languageId) {
 		List<ImageDomainObject> images = findByNamedQueryAndNamedParam(
 				"Image.getAllDocumentImagesByLanguage", 
 					new String[] {"metaId", "languageId"}, 
@@ -72,7 +70,7 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		return images;
 	}
 	
-	public ImageDomainObject getImage(int languageId, 
+	public synchronized ImageDomainObject getImage(int languageId, 
 			int metaId, int index) {
 		
 		ImageDomainObject image = (ImageDomainObject)getSession().createQuery("select i from I18nImage i where i.metaId = :metaId and i.name = :name and i.language.id = :languageId")

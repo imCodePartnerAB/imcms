@@ -1,9 +1,5 @@
 package com.imcode.imcms.api;
 
-import java.sql.SQLException;
-
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -11,8 +7,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import com.imcode.imcms.dao.MetaDao;
 

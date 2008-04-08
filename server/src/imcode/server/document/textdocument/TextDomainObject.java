@@ -11,6 +11,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -51,7 +53,7 @@ public class TextDomainObject implements Serializable, Cloneable {
 	private Integer metaId;
 	
 	/**
-	 * 
+	 *   
 	 */
 	@Transient 
 	private boolean substitution;
@@ -70,7 +72,7 @@ public class TextDomainObject implements Serializable, Cloneable {
     /**
      * i18n support 
      */
-	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="language_id", referencedColumnName="language_id")    
     private I18nLanguage language;    
 

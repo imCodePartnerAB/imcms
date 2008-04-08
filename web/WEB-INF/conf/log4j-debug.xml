@@ -1,14 +1,27 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-
-
-<!-- Start log4j configuration -->
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true">
-
+<log4j:configuration 
+    xmlns:log4j="http://jakarta.apache.org/log4j/"
+    debug="true" threshold="all">
+    
     <!-- Renderer for DocumentRequest -->
-    <renderer
+    <!-- renderer
         renderingClass="imcode.util.log.FakeRequestRenderer"
-        renderedClass="imcode.server.DocumentRequest"/>
+        renderedClass="imcode.server.DocumentRequest"/-->
+        
+    <appender name="console" class="org.apache.log4j.ConsoleAppender">
+
+      <param name="threshold" value="fatal"/>
+
+    
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d %p [%c] - %m%n"/>
+        <!-- 
+        <param name="ConversionPattern" value="%d %p [%c][%X{user}] - %m%n"/>
+        <param name="ConversionPattern" value="%d %p [%c][%X{user}] - %m%n"/>
+        -->     
+      </layout>   
+    </appender>        
 
     <!-- The accesslog (logs usermovements) -->
     <appender name="ACCESS" class="imcode.util.log.DailyRollingFileAppender">
@@ -36,6 +49,24 @@
             <param name="ConversionPattern" value="%d{ISO8601} %-5p %c %x - %m%n"/>
         </layout>
     </appender>
+    
+    <!--  -->
+    <appender name="file" class="org.apache.log4j.FileAppender">
+        <param name="File" value="${com.imcode.imcms.path}/WEB-INF/logs/all.log"/>
+        
+      <!-- 
+      <param name="threshold" value="all"/>
+      -->
+    
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d %p [%c] - %m%n"/>
+        <!-- 
+        <param name="ConversionPattern" value="%d %p [%c][%X{user}] - %m%n"/>
+        <param name="ConversionPattern" value="%d %p [%c][%X{user}] - %m%n"/>
+        -->     
+      </layout>   
+        
+    </appender>    
 
     <!-- Set up accesslog with priority 'debug' -->
     <category name="com.imcode.imcms.log.access" additivity="false">
@@ -53,11 +84,12 @@
         <priority value="error"/>
         <appender-ref ref="ERROR"/>
     </category>
-
+    
     <!-- Set up the errorlog with priority 'debug' -->
     <root>
-        <priority value="trace"/>
+        <level value="all"/>
         <appender-ref ref="ERROR"/>
+        <appender-ref ref="console"/>
     </root>
 
 </log4j:configuration>

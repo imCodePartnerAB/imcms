@@ -24,33 +24,31 @@
   <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
     <property name="configLocation" value="classpath:hibernate.cfg.xml"/>
     
-    <property name="dataSource" ref="dataSource"/>
-    
+    <property name="dataSource" ref="dataSource"/>    
   </bean>  
   
-  
-  
+    
   <bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>  
   
-  <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+  <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate" scope="protorype">
   	<property name="sessionFactory" ref="sessionFactory"/>
   </bean>
   
-  <bean id="metaDao" class="com.imcode.imcms.dao.MetaDaoImpl" scope="prototype">
+  <bean id="metaDao" class="com.imcode.imcms.dao.MetaDaoImpl">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
   
-  <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDaoImpl" scope="prototype">
+  <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDaoImpl">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>  
   
-  <bean id="imageDao" class="com.imcode.imcms.dao.ImageDaoImpl" scope="prototype">
+  <bean id="imageDao" class="com.imcode.imcms.dao.ImageDaoImpl">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean> 
   
-   <bean id="textDao" class="com.imcode.imcms.dao.TextDaoImpl" scope="prototype">
+   <bean id="textDao" class="com.imcode.imcms.dao.TextDaoImpl">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
   

@@ -21,6 +21,26 @@ import javax.persistence.Transient;
 @Table(name="meta")
 public class Meta implements Serializable {
 	
+	// TODO i18n v5.1: refactor to UnavailableI18nDataSubstitutionRule
+	// Data considered unavailable if inner accessor returns null
+	// Note: 
+	//   image also considered unavailable if its url property is not set
+	//   text also considered unavailable if its text property is empty
+	//
+    // public static enum UnavailableI18nDataSubstitutionRule {
+    //     SUBSTITUTE_WITH_DEFAULT,
+    //     SUBSTITUTE_WITH_EMPTY
+	// }
+	// 
+	// @Transient 
+	// private boolean useUnavailableI18nDataSubstitutionRule = true; 
+	// or add this property to document api:
+	// Document document = new Document(DocumentDomainObject ddo, 
+	//         boolean useUnavailableI18nDataSubstitutionRule) 
+    
+	/**
+	 * Show modes for disabled or missing i18n-ed data.  
+	 */
 	public static enum MissingI18nShowRule {
 		SHOW_IN_DEFAULT_LANGUAGE,
 		DO_NOT_SHOW

@@ -8,6 +8,10 @@
     <display-name>imCMS</display-name>
      
     <listener>
+        <listener-class>com.imcode.imcms.servlet.ContextListener</listener-class>
+    </listener>
+         
+    <listener>
     	<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
@@ -46,10 +50,6 @@
         <filter-name>SuperAdminFilter</filter-name>
         <url-pattern>/imcms/docs/apisamples/*</url-pattern>
     </filter-mapping>
-
-    <listener>
-        <listener-class>com.imcode.imcms.servlet.ContextListener</listener-class>
-    </listener>
     
     <servlet>
         <servlet-name>RD</servlet-name>

@@ -629,5 +629,17 @@
                 location="javax/servlet/resources/web-app_2_3.dtd"/>
         </xmlvalidate>
     </target>
+	
+	<target name="mvn">
+		<property name="tagName" value="5.0.0-alpha1"/>
+		
+		<delete dir="export"/>
+		<mkdir dir="export"/>
+		
+		<svn javahl="false">
+			<export srcUrl="https://repo.imcode.com/imcode/imcms/trunk" 
+				destPath="export"/>
+		</svn>	
+	</target>
 
 </project>
