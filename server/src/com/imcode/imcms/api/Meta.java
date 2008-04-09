@@ -2,6 +2,7 @@ package com.imcode.imcms.api;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name="meta")
-public class Meta implements Serializable {
+public class Meta implements Serializable, Cloneable {
 	
 	// TODO i18n v5.1: refactor to UnavailableI18nDataSubstitutionRule
 	// Data considered unavailable if inner accessor returns null
@@ -37,7 +38,7 @@ public class Meta implements Serializable {
 	// or add this property to document api:
 	// Document document = new Document(DocumentDomainObject ddo, 
 	//         boolean useUnavailableI18nDataSubstitutionRule) 
-    
+	
 	/**
 	 * Show modes for disabled or missing i18n-ed data.  
 	 */
@@ -60,6 +61,25 @@ public class Meta implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Column(name="missing_i18n_show_rule")
 	private MissingI18nShowRule missingI18nShowRule;
+	
+	@Override
+	public Meta clone() {
+		try {
+			Meta clone = (Meta)super.clone();
+			
+			if (i18nMetas != null) {
+				clone.i18nMetas = new LinkedList<I18nMeta>();
+			
+				for (I18nMeta i18nMeta: i18nMetas) {
+					clone.i18nMetas.add(i18nMeta.clone());	
+				}
+			}
+			
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}	
 	
 	public Integer getMetaId() {
 		return metaId;

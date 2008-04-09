@@ -16,7 +16,7 @@ import javax.persistence.Table;
 	@NamedQuery(name="I18nLanguage.getByCode", query="select l from I18nLanguage l where l.code = :code"),
 	@NamedQuery(name="I18nLanguage.missingMetaLanguages", query="select l from I18nLanguage l where l not in (select m.language from I18nMeta m where m.metaId = :metaId)")
 })
-public class I18nLanguage implements Serializable {
+public class I18nLanguage implements Serializable, Cloneable {
 
 	@Id
 	@Column(name="language_id")
@@ -38,6 +38,15 @@ public class I18nLanguage implements Serializable {
 	public boolean equals(Object object) {
 		return object instanceof I18nLanguage
 			&& hashCode() == ((I18nLanguage) object).hashCode();
+	}
+
+	@Override
+	public I18nLanguage clone() {
+		try {
+			return (I18nLanguage)super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}	
 	}
 	
 	@Override	

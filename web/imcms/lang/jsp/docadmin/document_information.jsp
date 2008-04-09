@@ -198,7 +198,7 @@ function setI18nCodeParameterValue(value) {
 		if (creatingNewDocument && document instanceof TextDocumentDomainObject) { %>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS %>" value="1" checked></td>
+			<td><input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS + pageContext.getAttribute("prefix") %>" value="1" checked></td>
 			<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/copy_headline_and_text_to_textfields ?></td>
 		</tr>
 		</table><%

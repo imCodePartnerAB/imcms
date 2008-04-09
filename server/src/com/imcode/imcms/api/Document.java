@@ -132,8 +132,8 @@ public class Document implements Serializable {
         return internalDocument.getKeywords();
     }
 
-    public void setKeywords(Set keywords) {
-        internalDocument.setKeywords(keywords);
+    public void setKeywords(I18nLanguage language, Set keywords) {
+        internalDocument.setKeywords(language, keywords);
     }
 
     public DocumentPermissionSet getPermissionSetRestrictedOne() {
@@ -170,16 +170,16 @@ public class Document implements Serializable {
         return internalDocument.getMenuImage();
     }
 
-    public void setHeadline( String headline ) {
-        internalDocument.setHeadline( headline );
+    public void setHeadline(I18nLanguage language, String headline ) {
+        internalDocument.setHeadline(language, headline );
     }
 
-    public void setMenuText( String menuText ) {
-        internalDocument.setMenuText( menuText );
+    public void setMenuText(I18nLanguage language,  String menuText ) {
+        internalDocument.setMenuText(language, menuText );
     }
 
-    public void setMenuImageURL( String imageUrl ) {
-        internalDocument.setMenuImage( imageUrl );
+    public void setMenuImageURL(I18nLanguage language, String imageUrl ) {
+        internalDocument.setMenuImage(language, imageUrl );
     }
 
     public User getCreator() {

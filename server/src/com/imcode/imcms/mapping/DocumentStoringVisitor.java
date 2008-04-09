@@ -44,6 +44,7 @@ import com.imcode.db.SingleConnectionDatabase;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.TransactionDatabaseCommand;
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.TextDao;
@@ -120,62 +121,60 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 + "VALUES(?" + StringUtils.repeat(",?", columnNames.length - 1) + ")";
     }
 
+    // TODO i18n: refactor
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-        Map<Integer, TextDomainObject> texts = textDocument.getTexts();
-        Map<Integer, Boolean> modifiedTextIndexes = textDocument.getModifiedTextIndexes();
+        TextDao textDao = (TextDao)Imcms.getServices().getSpringBean("textDao");
+        Integer metaId = textDocument.getId();
+
+        for (I18nLanguage language: I18nSupport.getLanguages()) {
         
-        TextDao textDao = (TextDao)Imcms.getServices().getSpringBean("textDao");        
-        
-        Set<Integer> indexes = modifiedTextIndexes.keySet();		
-        
-        for (Integer textIndex: indexes) {
-            TextDomainObject text = texts.get(textIndex);  
-            boolean saveText = false;
-            boolean saveTextHistory = modifiedTextIndexes.get(textIndex);
-            
-            if (oldTextDocument == null) {            	
-            	saveText = true;
-            } else {
-            	TextDomainObject oldText = textDao.getText(text.getMetaId(),
-            			text.getIndex(), text.getLanguage().getId());
-            	
-         		String oldTextValue = oldText == null ? null : oldText.toString();            	
-            	
-         		// If this is first time insertion then ignore modified flag
-         		if (oldTextValue == null) {
-         			saveText = true;
-         		} else {    	         	                		
-         			String lastHistoryTextValue = getLastHistoryTextValue(
-         					textDocument.getId(), textIndex, text.getType());
-         			
-         			// Legacy logic support: copy old text to history if it does not yet exists  
-         			if (saveTextHistory && !oldTextValue.equals(lastHistoryTextValue)) {
-         				sqlInsertTextHistory(oldTextDocument, textIndex, oldText, user);
-         			}
-	        		
-	         		if (!text.getText().equals(oldTextValue)) {	         			
+	        Map<Integer, TextDomainObject> texts = textDocument.getOriginalTextsMap(language, metaId);        
+	        Set<Integer> indexes = texts.keySet();
+	        
+	        for (Integer index: indexes) {
+	            TextDomainObject text = texts.get(index);  
+	            boolean saveText = false;
+	            
+	            if (oldTextDocument == null) {            	
+	            	saveText = true;
+	            } else {
+	            	TextDomainObject oldText = oldTextDocument.getOriginalText(language, index);
+	            	
+	         		String oldTextValue = oldText == null ? null : oldText.toString();            	
+	            	
+	         		// If this is first time insertion then ignore modified flag
+	         		if (oldTextValue == null) {
 	         			saveText = true;
-	         		}          		
-            	}
-            }
-            
-            if (saveText) {
-            	if (saveTextHistory) {
-            		sqlInsertTextHistory(textDocument, textIndex, text, user);      
-            	}
-            	
-            	sqlDeleteText(textDocument, textIndex, text);
-            	sqlInsertText(textDocument, textIndex, text);           	
-            }
-        }
+	         		} else {    	         	                		
+	         			String lastHistoryTextValue = getLastHistoryTextValue(language, 
+	         					textDocument.getId(), index, text.getType());
+	         			
+	         			// Legacy logic support: copy old text to history if it does not yet exists  
+	         			if (!oldTextValue.equals(lastHistoryTextValue)) {
+	         				sqlInsertTextHistory(language, oldTextDocument, index, oldText, user);
+	         			}
+		        		
+		         		if (!text.getText().equals(oldTextValue)) {	         			
+		         			saveText = true;
+		         		}          		
+	            	}
+	            }
+	            
+	            if (saveText) {
+	            	sqlInsertTextHistory(language, textDocument, index, text, user);      
+	            	sqlDeleteText(language, textDocument, index, text);
+	            	sqlInsertText(language, textDocument, index, text);           	
+	            }
+	        }        
+        } 
     }
     
     
-    private String getLastHistoryTextValue(int metaId, int name, int type) {
+    private String getLastHistoryTextValue(I18nLanguage language, int metaId, int name, int type) {
     	String sql = "SELECT text FROM texts_history WHERE counter = (" +
-    			"SELECT MAX(counter) FROM texts_history WHERE meta_id = ? AND name = ? AND type = ?)";
+    			"SELECT MAX(counter) FROM texts_history WHERE meta_id = ? AND name = ? AND type = ? and language_id = ?)";
     	
-    	Object[] parameters = new Object[] {metaId, name, type};
+    	Object[] parameters = new Object[] {metaId, name, type, language.getId()};
     	
     	return (String)database.execute(new SqlQueryCommand(sql, parameters, singleStringHandler));
     }
@@ -225,9 +224,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     }
 
-    private void sqlDeleteText(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
+    private void sqlDeleteText(I18nLanguage language, TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
     	Object[] parameters = new String[] {
-    			"" + I18nSupport.getCurrentLanguage().getId(),
+    			"" + language.getId(),
     			"" + textDocument.getId(), 
         		"" + textIndex, "" + text.getType()};
     	
@@ -235,19 +234,19 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         		"DELETE FROM texts WHERE language_id = ? AND meta_id = ? AND name = ? AND type = ?", parameters));
     }
     
-    private void sqlInsertText(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
+    private void sqlInsertText(I18nLanguage language, TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
         final Object[] parameters = new String[]{
             "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType()
-            , "" + I18nSupport.getCurrentLanguage().getId()
+            , "" + language.getId()
         };
         database.execute(new SqlUpdateCommand("INSERT INTO texts (meta_id, name, text, type, language_id) VALUES(?,?,?,?,?)", parameters));
     }
 
-    private void sqlInsertTextHistory(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text, UserDomainObject user) {
+    private void sqlInsertTextHistory(I18nLanguage language, TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text, UserDomainObject user) {
         SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING);
         final Object[] parameters = new String[]{
             "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType(), dateFormat.format(new Date()), 
-            ""+user.getId(), "" + I18nSupport.getCurrentLanguage().getId()
+            ""+user.getId(), "" + language.getId()
         };
         database.execute(new SqlUpdateCommand("INSERT INTO texts_history (meta_id, name, text, type, modified_datetime, user_id, language_id) VALUES(?,?,?,?,?,?,?)", parameters));
     }

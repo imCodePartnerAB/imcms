@@ -50,7 +50,7 @@ public class TestDocument extends TestCase{
         TextDocument document = new TextDocument(documentDO, null);
         Set keywords = new HashSet();
         keywords.add("foo") ;
-        documentDO.setKeywords(keywords);
+        //documentDO.setKeywords(keywords);
         assertTrue(document.getKeywords().contains("foo")) ;
     }
 

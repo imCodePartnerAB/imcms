@@ -29,7 +29,7 @@ import org.hibernate.annotations.Cascade;
 	@NamedQuery(name="I18nMeta.getByLanguage", query="select m from I18nMeta m where m.metaId = :metaId and m.language.id = :languageId")
 	//@NamedQuery(name="I18nMeta.getByMetaId&LanguageId", query="select m from I18nMeta m where m.metaId = :metaId and m.language.id=:languageId")
 })
-public class I18nMeta implements Serializable {
+public class I18nMeta implements Serializable, Cloneable {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="i18n_meta_id")
@@ -58,6 +58,29 @@ public class I18nMeta implements Serializable {
     
 	@Column(name="meta_image")
     private String menuImageURL;
+	
+	@Override
+	public I18nMeta clone() {
+		try {
+			I18nMeta clone = (I18nMeta)super.clone();
+			
+			if (keywords != null) {
+				clone.keywords = new HashSet<I18nKeyword>();
+				
+				for (I18nKeyword keyword: keywords) {
+					clone.keywords.add(keyword.clone());
+				}
+			}		
+			
+			if (language != null) {
+				clone.language = language.clone();
+			}
+			
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	public String getHeadline() {
 		return headline;

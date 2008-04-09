@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
 import java.io.Serializable;
+import java.util.HashSet;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="i18n_keywords")
-public class I18nKeyword implements Serializable {
+public class I18nKeyword implements Serializable, Cloneable {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="keyword_id")
@@ -24,6 +25,15 @@ public class I18nKeyword implements Serializable {
 	
 	public I18nKeyword(String value) {
 		setValue(value);
+	}
+	
+	@Override
+	public I18nKeyword clone() {
+		try {
+			return (I18nKeyword)super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}	
 	}
 
 	public Long getId() {

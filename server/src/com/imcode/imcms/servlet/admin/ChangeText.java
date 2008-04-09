@@ -50,12 +50,12 @@ public class ChangeText extends HttpServlet {
         int textIndex = Integer.parseInt( request.getParameter( "txt" ) );
         String label = null == request.getParameter( "label" ) ? "" : request.getParameter( "label" );
 
+        /*
         TextDomainObject text = textDocument.getText( textIndex );        
                 
         I18nLanguage language = I18nSupport.getCurrentLanguage();
         Meta meta = textDocument.getMeta();
-        I18nMeta i18nMeta = meta.getI18nMeta(language);
-        boolean enabled = i18nMeta.getEnabled(); 
+
         
         if (text.isSubstitution()) {
             TextDao textDao = (TextDao) Imcms.getServices().getSpringBean("textDao");            
@@ -68,7 +68,19 @@ public class ChangeText extends HttpServlet {
         		text.setType(TextDomainObject.TEXT_TYPE_HTML);
         	}
         }
+        */
+        I18nLanguage language = I18nSupport.getCurrentLanguage();
         
+        TextDomainObject text = textDocument.getOriginalText(language, textIndex );        
+        Integer metaId = textDocument.getId();
+        Meta meta = textDocument.getMeta();
+        I18nMeta i18nMeta = meta.getI18nMeta(language);
+        boolean enabled = i18nMeta.getEnabled();         
+    	if (text == null) {
+    		text = TextDocumentDomainObject.createSubstitutionText(
+    				metaId, textIndex, language);
+    		text.setType(TextDomainObject.TEXT_TYPE_HTML);
+        }        
         
     	String queryString = request.getQueryString();
     	

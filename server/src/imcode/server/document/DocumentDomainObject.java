@@ -37,11 +37,17 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      */ 
     private Meta meta;
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         DocumentDomainObject clone = (DocumentDomainObject)super.clone();
         if ( null != attributes ) {
             clone.attributes = (Attributes)attributes.clone();
         }
+        
+        if (clone.meta != null) {
+        	clone.meta = meta.clone();
+        }
+        
         return clone;
     }
 
@@ -111,14 +117,21 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public String getHeadline() {
-        //return attributes.headline;
-    	return getI18nMeta().getHeadline();
+    	return getHeadline(I18nSupport.getCurrentLanguage());
     }
+    
+    public String getHeadline(I18nLanguage language) {
+    	return getI18nMeta(language).getHeadline();
+    }    
 
     public void setHeadline( String v ) {
-        //attributes.headline = v;
-    	getI18nMeta().setHeadline(v);
+    	setHeadline(I18nSupport.getCurrentLanguage(), v);
     }
+    
+    public void setHeadline(I18nLanguage language, String v ) {
+    	getI18nMeta(language).setHeadline(v);
+    }
+    
 
     public int getId() {
         return attributes.id;
@@ -126,29 +139,49 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public void setId( int v ) {
         attributes.id = v;
+        
+        if (meta != null) {
+        	meta.setMetaId(v);
+        }
     }
 
     public String getMenuImage() {
-        //return attributes.image;
-    	return getI18nMeta().getMenuImageURL();
+    	return getMenuImage(I18nSupport.getCurrentLanguage());
     }
-
+    
+    public String getMenuImage(I18nLanguage language) {
+    	return getI18nMeta(language).getMenuImageURL();
+    }
+    
+    /* I18n disabled: unsafe method
     public void setMenuImage( String v ) {
-    	getI18nMeta().setMenuImageURL(v);
-        //attributes.image = v;
+    	setMenuImage(I18nSupport.getCurrentLanguage(), v);
     }
-
+    */
+    
+    public void setMenuImage( I18nLanguage language, String v ) {
+    	getI18nMeta(language).setMenuImageURL(v);
+    }    
+    
     public Set getKeywords() {
-    	return getI18nMeta().getKeywordsValues();
-    	
-        //return Collections.unmodifiableSet((Set) attributes.keywords.get()) ;
+    	return getKeywords(I18nSupport.getCurrentLanguage());
     }
-
+    
+    
+    public Set getKeywords(I18nLanguage language) {
+    	return getI18nMeta(language).getKeywordsValues();
+    }
+    
+    /* I18n disabled: unsafe method
     public void setKeywords( Set keywords ) {
-    	getI18nMeta().setKeywordsValues(keywords);
-    	
-        //attributes.keywords.set(new CopyableHashSet(keywords));
+    	setKeywords(I18nSupport.getCurrentLanguage(), keywords);
     }
+    */
+    
+    public void setKeywords(I18nLanguage language, Set keywords ) {
+    	getI18nMeta(language).setKeywordsValues(keywords);
+    }
+    
 
     public void setProperties( Map properties ) {
         attributes.properties.set(new CopyableHashMap(properties));
@@ -182,14 +215,21 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public String getMenuText() {
-        //return attributes.menuText;
-    	return getI18nMeta().getMenuText();
+    	return getMenuText(I18nSupport.getCurrentLanguage());
     }
+    
+    public String getMenuText(I18nLanguage language) {
+    	return getI18nMeta(language).getMenuText();
+    }    
 
     public void setMenuText( String v ) {
-    	getI18nMeta().setMenuText(v);
-        //attributes.menuText = v;
+    	setMenuText(I18nSupport.getCurrentLanguage(), v);
     }
+    
+    public void setMenuText( I18nLanguage language, String v ) {
+    	getI18nMeta(language).setMenuText(v);
+    }
+    
 
     public Date getModifiedDatetime() {
         return attributes.modifiedDatetime;
@@ -578,15 +618,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	public void setMeta(Meta meta) {
 		this.meta = meta;
 	}
-	
+		
 	// TODO i18n refactor
-	private I18nMeta getI18nMeta() {
+	public I18nMeta getI18nMeta(I18nLanguage language) {
 		if (meta == null) {
 			throw new I18nException("Meta for document [" 
 					+ getId() + "] is not set.");
 		}
 		
-		I18nLanguage language = I18nSupport.getCurrentLanguage();
 		I18nMeta i18nMeta = meta.getI18nMeta(language);
 		
 		if (i18nMeta == null) {
@@ -595,5 +634,5 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		}
 		
 		return i18nMeta;
-	}
+	}	
 }

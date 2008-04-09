@@ -6,6 +6,9 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.I18nKeyword;
+import com.imcode.imcms.api.I18nMeta;
+import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
 
 import imcode.server.Imcms;
@@ -158,6 +161,30 @@ class DocumentSaver {
         }
 
         document.setId(newMetaId);
+        
+        Meta meta = document.getMeta();
+        
+        if (meta != null) {
+        	meta.setMetaId(newMetaId);
+        	
+        	List<I18nMeta> i18nMetas = meta.getI18nMetas();
+        	
+        	if (i18nMetas != null) {
+        		for (I18nMeta i18nMeta: i18nMetas) {
+        			i18nMeta.setId(null);
+        			i18nMeta.setMetaId(newMetaId);
+        			
+        			Set<I18nKeyword> keywords = i18nMeta.getKeywords();
+        			
+        			if (keywords != null) {
+        				for (I18nKeyword keyword: keywords) {
+        					keyword.setId(null);
+        				}
+        			}
+        		}
+        	}
+        }
+        
 
         updateDocumentSectionsCategoriesKeywords(document);
 

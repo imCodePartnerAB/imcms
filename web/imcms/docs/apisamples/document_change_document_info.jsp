@@ -5,10 +5,11 @@
     DocumentService documentService = imcmsSystem.getDocumentService() ;
     int documentId = 1001 ;
     TextDocument document = documentService.getTextDocument(documentId) ;
+    I18nLanguage language = I18nSupport.getCurrentLanguage(); 
 
-    document.setHeadline( "Test headline text");
-    document.setMenuText( "Test menu text");
-    document.setMenuImageURL("Test menu image url");
+    document.setHeadline(language, "Test headline text");
+    document.setMenuText(language, "Test menu text");
+    document.setMenuImageURL(language, "Test menu image url");
 
     document.setPublicationStartDatetime( new Date() );
     document.setArchivedDatetime( new Date() );

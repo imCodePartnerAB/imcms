@@ -9,6 +9,7 @@ import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import imcode.server.Config;
 import imcode.server.Imcms;
@@ -96,15 +97,20 @@ public class DocumentMapper implements DocumentGetter {
             } else {
                 newDocument = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
                 newDocument.setAttributes((DocumentDomainObject.Attributes) parent.getAttributes().clone());
-                newDocument.setMeta(parent.getMeta());
+                newDocument.setMeta(parent.getMeta().clone());
             }
         } catch (CloneNotSupportedException e) {
             throw new UnhandledException(e);
         }
+        
         newDocument.setId( 0 );
-        newDocument.setHeadline( "" );
-        newDocument.setMenuText( "" );
-        newDocument.setMenuImage( "" );
+        
+        for (I18nMeta i18nMeta: newDocument.getMeta().getI18nMetas()) {
+        	i18nMeta.setHeadline("");
+        	i18nMeta.setMenuText("");
+        	i18nMeta.setMenuImageURL("");
+        } 
+                
         newDocument.setProperties(new HashMap());
         makeDocumentLookNew( newDocument, user );
         removeNonInheritedCategories(newDocument) ;
