@@ -275,7 +275,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         
         String missingI18nShowRule = request.getParameter(REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE); 
         
-        meta.setMissingI18nShowRule(Meta.MissingI18nShowRule.valueOf(missingI18nShowRule));
+        meta.setUnavailableI18nDataSubstitution(Meta.UnavailableI18nDataSubstitution.valueOf(missingI18nShowRule));
         
         
         String status = request.getParameter( REQUEST_PARAMETER__STATUS );

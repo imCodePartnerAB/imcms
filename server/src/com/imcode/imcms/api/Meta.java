@@ -20,31 +20,28 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name="meta")
+/**
+ * Document meta.
+ */
 public class Meta implements Serializable, Cloneable {
 	
-	// TODO i18n v5.1: refactor to UnavailableI18nDataSubstitutionRule
-	// Data considered unavailable if inner accessor returns null
-	// Note: 
-	//   image also considered unavailable if its url property is not set
-	//   text also considered unavailable if its text property is empty
-	//
-    // public static enum UnavailableI18nDataSubstitutionRule {
-    //     SUBSTITUTE_WITH_DEFAULT,
-    //     SUBSTITUTE_WITH_EMPTY
+	// TODO i18n: refactor
+    // public static enum UnavailableI18nDataSubstitution {
+    //     DEFAULT_LANGUAGE_DATA,
+    //     EMPTY_DATA
 	// }
-	// 
-	// @Transient 
-	// private boolean useUnavailableI18nDataSubstitutionRule = true; 
-	// or add this property to document api:
-	// Document document = new Document(DocumentDomainObject ddo, 
-	//         boolean useUnavailableI18nDataSubstitutionRule) 
 	
 	/**
-	 * Show modes for disabled or missing i18n-ed data.  
+	 * Substitution modes for disabled or missing i18n-ed data.
+	 * 
+	 * Data considered unavailable if inner accessor returns null.
+	 * Note: 
+	 *   ImageDomainObject instance also considered unavailable if its URL property is not set
+	 *   TextDomainObject instance also considered unavailable if its text property is empty or null   
 	 */
-	public static enum MissingI18nShowRule {
+	public static enum UnavailableI18nDataSubstitution {
 		SHOW_IN_DEFAULT_LANGUAGE,
-		DO_NOT_SHOW
+		DO_NOT_SHOW,		
 	}
 	
 	@Transient
@@ -60,7 +57,7 @@ public class Meta implements Serializable, Cloneable {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="missing_i18n_show_rule")
-	private MissingI18nShowRule missingI18nShowRule;
+	private UnavailableI18nDataSubstitution unavailableI18nDataSubstitution;
 	
 	@Override
 	public Meta clone() {
@@ -97,12 +94,12 @@ public class Meta implements Serializable, Cloneable {
 		this.i18nMetas = i18nParts;		
 	}
 
-	public MissingI18nShowRule getMissingI18nShowRule() {
-		return missingI18nShowRule;
+	public UnavailableI18nDataSubstitution getUnavailableI18nDataSubstitution() {
+		return unavailableI18nDataSubstitution;
 	}
 
-	public void setMissingI18nShowRule(MissingI18nShowRule missingI18nShowRule) {
-		this.missingI18nShowRule = missingI18nShowRule;
+	public void setUnavailableI18nDataSubstitution(UnavailableI18nDataSubstitution unavailableI18nDataSubstitution) {
+		this.unavailableI18nDataSubstitution = unavailableI18nDataSubstitution;
 	}
 	
 	// TODO i18n : refactor

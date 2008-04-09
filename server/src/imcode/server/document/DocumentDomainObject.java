@@ -33,7 +33,9 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     private static Logger log = Logger.getLogger( DocumentDomainObject.class );
     
     /**
-     * Document meta.  
+     * Document meta.
+     * 
+     * Introduced in v5 to replace meta properties previously stored in attributes.    
      */ 
     private Meta meta;
 
@@ -163,11 +165,19 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     	getI18nMeta(language).setMenuImageURL(v);
     }    
     
+    /**
+     * Unsafe method. 
+     *  
+     * Use getKeywords(I18nLanguage language) instead.
+     */
+    @Deprecated
     public Set getKeywords() {
     	return getKeywords(I18nSupport.getCurrentLanguage());
     }
     
-    
+    /**
+     * @return keywords 
+     */
     public Set getKeywords(I18nLanguage language) {
     	return getI18nMeta(language).getKeywordsValues();
     }

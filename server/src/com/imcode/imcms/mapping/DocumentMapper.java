@@ -1,20 +1,18 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.db.Database;
-import com.imcode.db.DatabaseCommand;
-import com.imcode.db.commands.CompositeDatabaseCommand;
-import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
-import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateDatabaseCommand;
-import com.imcode.db.handlers.CollectionHandler;
-import com.imcode.db.handlers.RowTransformer;
-import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.I18nMeta;
-import com.imcode.imcms.flow.DocumentPageFlow;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.*;
+import imcode.server.document.BrowserDocumentDomainObject;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.DocumentReference;
+import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.GetterDocumentReference;
+import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.SectionDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -25,6 +23,28 @@ import imcode.util.LazilyLoadedObject;
 import imcode.util.SystemClock;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.AbstractList;
+import java.util.AbstractSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.TreeMap;
+
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -32,11 +52,18 @@ import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.oro.text.perl.Perl5Util;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import com.imcode.db.Database;
+import com.imcode.db.DatabaseCommand;
+import com.imcode.db.commands.CompositeDatabaseCommand;
+import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.db.commands.SqlUpdateDatabaseCommand;
+import com.imcode.db.handlers.CollectionHandler;
+import com.imcode.db.handlers.RowTransformer;
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.I18nMeta;
+import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.flow.DocumentPageFlow;
 
 public class DocumentMapper implements DocumentGetter {
 
@@ -105,10 +132,15 @@ public class DocumentMapper implements DocumentGetter {
         
         newDocument.setId( 0 );
         
-        for (I18nMeta i18nMeta: newDocument.getMeta().getI18nMetas()) {
+        Meta meta = newDocument.getMeta();
+        meta.setUnavailableI18nDataSubstitution(Meta.UnavailableI18nDataSubstitution.DO_NOT_SHOW);
+        
+        for (I18nMeta i18nMeta: meta.getI18nMetas()) {
         	i18nMeta.setHeadline("");
         	i18nMeta.setMenuText("");
         	i18nMeta.setMenuImageURL("");
+        	i18nMeta.getKeywords().clear();
+        	i18nMeta.setEnabled(false);
         } 
                 
         newDocument.setProperties(new HashMap());

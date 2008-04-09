@@ -53,7 +53,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * TODO I18n refactor: holds original texts for every language. 
      */
     private Map<I18nLanguage, Map<Integer, TextDomainObject>> originalTexts
-    		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();    
+    		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
+    
+    /**
+     * TODO I18n refactor: holds original images for every language. 
+     */
+    private Map<I18nLanguage, Map<Integer, ImageDomainObject>> originalImages
+    		= new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();     
     
     
     private LazilyLoadedObject<CopyableHashMap> includes = new LazilyLoadedObject<CopyableHashMap>(new CopyableHashMapLoader());
@@ -199,10 +205,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         clone.images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
         
         clone.originalTexts = new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
+        clone.originalImages = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
         
         clone.includes = (LazilyLoadedObject) includes.clone();
         clone.menus = (LazilyLoadedObject) menus.clone() ;
         clone.templateNames = (LazilyLoadedObject) templateNames.clone() ;
+        
         return clone;
     }
 
@@ -260,7 +268,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     			        		
         		boolean disabled = !meta.getI18nMeta(language).getEnabled(); 
         		boolean allowsSubstitionWithDefault 
-        				= meta.getMissingI18nShowRule() == Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE;
+        				= meta.getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;
 
         		if (allowsSubstitionWithDefault) {
     				for (Map.Entry<Integer, ImageDomainObject> entry: map.entrySet()) {
@@ -351,8 +359,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 				text = defaultText;
 			} else {
 				// if allows substitution
-        		if (getMeta().getMissingI18nShowRule() 
-        				== Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE) {
+        		if (getMeta().getUnavailableI18nDataSubstitution() 
+        				== Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE) {
 				
         			text = createSubstitutionText(defaultText, language);
         		} else {
@@ -403,7 +411,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     			
     			boolean disabled = !meta.getI18nMeta(language).getEnabled(); 
     			boolean allowsSubstitionWithDefault 
-    				= meta.getMissingI18nShowRule() == Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE;
+    				= meta.getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;
     			    			
 				for (Map.Entry<Integer, TextDomainObject> entry: map.entrySet()) {
 					int index = entry.getKey();
@@ -436,7 +444,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
     
     /**
-     * Loads original texts for language specified.
+     * Returns original texts for language specified.
      * 
      * @param language
      */
@@ -450,6 +458,23 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	
 		return map;    	
     }
+    
+    /**
+     * Returns original images for language specified.
+     * 
+     * @param language
+     */
+    public synchronized Map<Integer, ImageDomainObject> getOriginalImagesMap(I18nLanguage language, Integer metaId) {
+    	Map<Integer, ImageDomainObject> map = originalImages.get(language);
+    	
+    	if (map == null) {    	
+    		map = queryOriginalImagesMap(language, metaId);
+    		originalImages.put(language, map);	
+    	}
+    	
+		return map;    	
+    }
+    
 
     public void accept( DocumentVisitor documentVisitor ) {
         documentVisitor.visitTextDocument(this) ;
@@ -536,9 +561,38 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	}    	
     }
     
+    public synchronized void setOriginalImage(I18nLanguage language, int index,
+    		ImageDomainObject image) {
+    	Integer metaId = getId();    	
+    	Map<Integer, ImageDomainObject> map = getOriginalImagesMap(language, metaId);
+    	ImageDomainObject existingImage = map.get(index);
+    	
+    	if (existingImage != null) {    		
+    		//existingImage.set
+    		//existingImage.setType(text.getType());
+    	} else {
+    		image = image.clone();
+    		
+        	image.setId(null);
+        	image.setMetaId(metaId);
+        	image.setName("" + index);
+        	image.setLanguage(language);
+        	image.setSubstitution(false);
+        	
+        	map.put(index, image);    		
+    	}    	
+    }    
+    
     public TextDomainObject getOriginalText(I18nLanguage language, int index) {
     	Integer metaId = getId();    	
     	Map<Integer, TextDomainObject> map = getOriginalTextsMap(language, metaId);
+    	
+    	return map.get(index);    	
+    }
+
+    public ImageDomainObject getOriginalImage(I18nLanguage language, int index) {
+    	Integer metaId = getId();    	
+    	Map<Integer, ImageDomainObject> map = getOriginalImagesMap(language, metaId);
     	
     	return map.get(index);    	
     }    
@@ -789,8 +843,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 				image = defaultImage;
 			} else {
 				// if allows substitution
-        		if (getMeta().getMissingI18nShowRule() 
-        				== Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE) {
+        		if (getMeta().getUnavailableI18nDataSubstitution() 
+        				== Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE) {
 				
         			image = createSubstitutionImage(defaultImage, language);
         		} else {

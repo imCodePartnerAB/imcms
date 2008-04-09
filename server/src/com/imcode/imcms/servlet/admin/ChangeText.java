@@ -91,8 +91,8 @@ public class ChangeText extends HttpServlet {
     	
         TextEditPage page = new TextEditPage( documentId, textIndex, text, label );
         page.setEnabled(enabled);
-        page.setSubstitutedWithDefault(!enabled && meta.getMissingI18nShowRule()
-        		== Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE);
+        page.setSubstitutedWithDefault(!enabled && meta.getUnavailableI18nDataSubstitution()
+        		== Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE);
         
         page.forward( request, res, user );
     }

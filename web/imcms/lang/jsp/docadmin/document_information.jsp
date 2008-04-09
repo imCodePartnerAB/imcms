@@ -392,7 +392,7 @@ function setI18nCodeParameterValue(value) {
 			  <input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>" value="<%=Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE%>"
 		  		<%=document.getMeta().getMissingI18nShowRule() == Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE ? "checked='x'" : ""%>
 			  />
-			  <%=Meta.MissingI18nShowRule.SHOW_IN_DEFAULT_LANGUAGE%>	        
+			  <%=Meta.UnavailableI18nDataSubstitutionRule.SHOW_IN_DEFAULT_LANGUAGE%>	        
 	      </td>
 	    </tr>
 	    <tr>
@@ -400,7 +400,7 @@ function setI18nCodeParameterValue(value) {
 		      <input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>" value="<%=Meta.MissingI18nShowRule.DO_NOT_SHOW%>"
 		  		<%=document.getMeta().getMissingI18nShowRule() == Meta.MissingI18nShowRule.DO_NOT_SHOW ? "checked='x'" : ""%>
 			  /> 
-			  <%=Meta.MissingI18nShowRule.DO_NOT_SHOW%>	         
+			  <%=Meta.UnavailableI18nDataSubstitutionRule.DO_NOT_SHOW%>	         
 	      </td>
 	    </tr>	    	    
 	    	
