@@ -12,7 +12,7 @@
     TextDocument parentDocument = documentService.getTextDocument( parentId );
 
     TextDocument textDocument = documentService.createNewTextDocument( parentDocument ) ;
-    textDocument.setHeadline( "Textdocument created from API" );
+    textDocument.setHeadline(I18nSupport.getCurrentLanguage(), "Textdocument created from API" );
     textDocument.setPlainTextField( 1, "Test text field" );
     textDocument.setPublicationStartDatetime( new Date() );
     textDocument.setPublicationStatus(Document.PublicationStatus.APPROVED);
