@@ -152,6 +152,13 @@ if (rows > 0) {
       <tr><td>IS ACTIVE::${textEditPage.enabled}</td>
       <tr><td>SUBSTITUTED WITH DEFAULT::${textEditPage.substitutedWithDefault}</td>
       </tr>  
+      
+      <tr>
+        <c:forEach items="${languages}" var="i18nLanguage">
+          <td><a href="ChangeText?lang=${i18nLanguage.code}&${requestScope.queryString}">${i18nLanguage.name}</a></td>
+        </c:forEach>
+      </tr>
+            
     </table>
   </td>  
 </tr>
