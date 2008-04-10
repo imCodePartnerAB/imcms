@@ -57,12 +57,18 @@ public class Meta implements Serializable, Cloneable {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="missing_i18n_show_rule")
+	/**
+	 * Please note, that currently this value must not be changed 
+	 * client API. It used internally to cache I18n data.
+	 */
 	private UnavailableI18nDataSubstitution unavailableI18nDataSubstitution;
 	
 	@Override
 	public Meta clone() {
 		try {
 			Meta clone = (Meta)super.clone();
+			
+			clone.metaMap = null;
 			
 			if (i18nMetas != null) {
 				clone.i18nMetas = new LinkedList<I18nMeta>();

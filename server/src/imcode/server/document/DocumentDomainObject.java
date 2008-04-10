@@ -33,6 +33,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     private static Logger log = Logger.getLogger( DocumentDomainObject.class );
     
     /**
+     * I18n data cache.
+     * Its content depends on Meta.unavailableI18nDataSubstitution value. 
+     */
+    //private Map<String, String> i18nDataCache = new HashMap<String, String>();
+    
+    /**
      * Document meta.
      * 
      * Introduced in v5 to replace meta properties previously stored in attributes.    
@@ -49,6 +55,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         if (clone.meta != null) {
         	clone.meta = meta.clone();
         }
+        
+        //clone.i18nDataCache = new HashMap<String, String>();
         
         return clone;
     }
@@ -118,14 +126,29 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         this.attributes = attributes;
     }
 
+    /**
+     * TODO i18n: cache menu image according to Menu.unavailableI18nDataSubstitution value.
+     */
     public String getHeadline() {
-    	return getHeadline(I18nSupport.getCurrentLanguage());
+    	I18nLanguage language = I18nSupport.getCurrentLanguage();
+    	String value = getHeadline(language);
+    	
+    	if (substituteWithDefault(language, value)) {
+    		value = meta.getUnavailableI18nDataSubstitution() == 
+    				Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE
+ 
+    			? getHeadline(I18nSupport.getDefaultLanguage())
+    			: "";
+    	}
+
+    	return value;
     }
     
     public String getHeadline(I18nLanguage language) {
     	return getI18nMeta(language).getHeadline();
     }    
 
+    @Deprecated
     public void setHeadline( String v ) {
     	setHeadline(I18nSupport.getCurrentLanguage(), v);
     }
@@ -147,10 +170,42 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         }
     }
 
+    /**
+     * TODO i18n: cache menu image according to Menu.unavailableI18nDataSubstitution value.
+     */
     public String getMenuImage() {
-    	return getMenuImage(I18nSupport.getCurrentLanguage());
+    	I18nLanguage language = I18nSupport.getCurrentLanguage();
+    	String value = getMenuImage(language);
+    	
+    	if (substituteWithDefault(language, value)) {
+    		value = meta.getUnavailableI18nDataSubstitution() == 
+    				Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE
+ 
+    			? getMenuImage(I18nSupport.getDefaultLanguage())
+    			: "";
+    	}
+    	
+    	return value;
     }
     
+    /**
+     * @return if data should be substituted with default language data. 
+     */
+    private boolean substituteWithDefault(I18nLanguage language, String value) {
+    	if (I18nSupport.isDefault(language)) {
+    		return false;
+    	}
+    			
+		return !getI18nMeta(language).getEnabled() 
+			|| value == null 
+			|| value.length() == 0; 		
+    }
+    
+    /** 
+     * @param language
+     * 
+     * @return (original) menu image for language specified.
+     */
     public String getMenuImage(I18nLanguage language) {
     	return getI18nMeta(language).getMenuImageURL();
     }
@@ -224,14 +279,30 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.languageIso639_2 = languageIso639_2;
     }
 
+    /**
+     * TODO i18n: cache menu image according to Menu.unavailableI18nDataSubstitution value.
+     */
     public String getMenuText() {
-    	return getMenuText(I18nSupport.getCurrentLanguage());
+    	I18nLanguage language = I18nSupport.getCurrentLanguage();
+    	String value = getMenuText(language);
+    	
+    	if (substituteWithDefault(language, value)) {
+    		value = meta.getUnavailableI18nDataSubstitution() == 
+    				Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE
+ 
+    			? getMenuText(I18nSupport.getDefaultLanguage())
+    			: "";
+    	}
+
+    	return value;
     }
     
     public String getMenuText(I18nLanguage language) {
     	return getI18nMeta(language).getMenuText();
     }    
 
+    /** Unsafe method */
+    @Deprecated    
     public void setMenuText( String v ) {
     	setMenuText(I18nSupport.getCurrentLanguage(), v);
     }
