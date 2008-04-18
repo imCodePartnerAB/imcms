@@ -30,16 +30,17 @@
             java.util.Date,
             java.util.Set,
             java.util.TreeSet,
-            com.imcode.imcms.api.Meta"%>
-
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
-<%@	taglib prefix="vel" uri="imcmsvelocity"%><%
+            com.imcode.imcms.api.Meta"
+	
+%><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"
+%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
+%><%@	taglib prefix="vel" uri="imcmsvelocity"
+%><%
 
 	response.setContentType( "text/html; charset=" + Imcms.DEFAULT_ENCODING );
 
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
+		boolean isSwe = user.getLanguageIso639_2().equalsIgnoreCase("swe") ;
     final ImcmsServices service = Imcms.getServices();
     ImcmsAuthenticatorAndUserAndRoleMapper userMapper = service.getImcmsAuthenticatorAndUserAndRoleMapper();
     final DocumentMapper documentMapper = service.getDocumentMapper();
@@ -89,7 +90,7 @@ String formatTime(Date time) {
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 <%= jsCalendar.getHeadTagScripts() %>
-<script language="JavaScript">
+<script type="text/javascript">
 <!--
 var selFocused = false ;
 
@@ -166,27 +167,34 @@ function setI18nCodeParameterValue(value) {
 <tr>
     
 	<td>
-	  <table border="0" cellspacing="0" cellpadding="0" width="656">
-	      <%-- TODO: Escape XML: $Headline$ --%>
-	      <c:forEach items="${document.meta.i18nMetas}" var="i18nPart">
-	      
-	      <c:set var="prefix" value="_${i18nPart.language.code}"/>
-	      
-	      <tr><td>LANGUAGE: ${i18nPart.language.name}</td></tr>
-		  <tr>
-			<td class="imcmsAdmText" nowrap>
-			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/6 ?><sup class="imNote">1</sup></td>
-			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE + pageContext.getAttribute("prefix")%>" size="48" maxlength="255" style="width: 100%"
-			value="${i18nPart.headline}"></td>
-	      </tr>	
-    <tr>
-        <td></td>
-        <td class="imNoteComment"><sup class="imNote">1</sup>
-        <? install/htdocs/sv/jsp/docadmin/document_information.jsp/46 ?></td>
-    </tr>
+	<table border="0" cellspacing="0" cellpadding="0" width="656">
+	<%-- TODO: Escape XML: $Headline$ --%>
+	<c:forEach items="${document.meta.i18nMetas}" var="i18nPart">
+	
+	<c:set var="prefix" value="_${i18nPart.language.code}"/>
+	
 	<tr>
-		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="2"></td>
-		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="2"></td>
+		<td colspan="2" style="padding-bottom:3px;">
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${i18nPart.language.code}.gif" alt="" style="border:0;" /></td>
+			<td class="imcmsAdmText" style="padding-left:10px; font-weight:bold;">${i18nPart.language.name}</td>
+		</tr>
+		</table></td></tr>
+	<tr>
+		<td class="imcmsAdmText" nowrap>
+		<? install/htdocs/sv/jsp/docadmin/document_information.jsp/6 ?><sup class="imNote">1</sup></td>
+		<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE + pageContext.getAttribute("prefix")%>" size="48" maxlength="255" style="width: 100%"
+		value="${i18nPart.headline}"></td>
+	</tr>	
+	<tr>
+		<td></td>
+		<td class="imNoteComment"><sup class="imNote">1</sup>
+		<? install/htdocs/sv/jsp/docadmin/document_information.jsp/46 ?></td>
+	</tr>
+	<tr>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="2" alt=""></td>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="2" alt=""></td>
 	</tr>
 	
       <%-- TODO: Escape XML: $MenuText$ --%>
@@ -255,8 +263,8 @@ function setI18nCodeParameterValue(value) {
     </tr>
 
     <tr>
-		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="1"></td>
-		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="1"></td>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="1" alt=""></td>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="1" alt=""></td>
 	</tr>
 	
 		
@@ -273,7 +281,7 @@ function setI18nCodeParameterValue(value) {
 		<td colspan="2">#gui_hr( 'cccccc' )</td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText">
+		<td class="imcmsAdmText" valign="top">
 		<? install/htdocs/sv/jsp/docadmin/document_information.jsp/status ?></td>
 		<td>
 		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__STATUS %>" onFocus="selFocused = true;">
@@ -355,54 +363,64 @@ function setI18nCodeParameterValue(value) {
 		  <td colspan="6">#gui_hr( 'cccccc' )</td>
 	    </tr>		
 		<tr>
-		  <td class="imcmsAdmText" colspan="6">
-		    Active languages
+		  <td class="imcmsAdmText" colspan="6" style="font-weight:bold; padding-bottom:3px;">
+		    <%= isSwe ? "Aktiva språk" : "Active languages" %>
 		  </td>
 		</tr>  
 		<tr>
 		  <td colspan="6">
-		  <table>
+			<table border="0" cellspacing="0" cellpadding="2">
 			<c:forEach items="${document.meta.i18nMetas}" var="i18nPart">
-			  <c:set var="prefix" value="_${i18nPart.language.code}"/>
-	  		  <tr>	  
-				<td>
-				  <input type="checkbox" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>" <c:if test="${i18nPart.enabled}">checked="true"</c:if>/>
-				</td>
-				<td>
-				  ${i18nPart.language.name}
-				</td>		
-	  		  </tr>
-	        </c:forEach>	           			 
-		  </table>		
+			<c:set var="prefix" value="_${i18nPart.language.code}"/>
+			<tr>	  
+				<td><input type="checkbox"
+				 name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>"
+				 id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>"<c:if test="${i18nPart.enabled}"> checked="checked"</c:if>/></td>
+				<td><label for="<%=
+				EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>"><img
+				  src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${i18nPart.language.code}.gif" alt="" style="border:0;" /></label></td>
+				<td class="imcmsAdmText" style="padding-left:10px;"><label for="<%=
+				EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>">${i18nPart.language.name}</label></td>
+			</tr>
+			</c:forEach>	           			 
+			</table>		
 		  </td>
 		</tr>
 		<%-- End og Enabled/Dsabled languages --%>
 		
 	    <%-- Missing i18n show rule --%>
-	    <tr>
-		  <td colspan="6">#gui_hr( 'cccccc' )</td>
-	    </tr>	
-	    <tr>
-	      <td colspan="6">
-	        If requested language is missing:
-	      </td>
-	    </tr>  
-	    <tr>
-	      <td colspan="6">
-			  <input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>" value="<%=Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE%>"
-		  		<%=document.getMeta().getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE ? "checked='x'" : ""%>
-			  />
-			  <%=Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE%>	        
-	      </td>
-	    </tr>
-	    <tr>
-	      <td colspan="6">
-		      <input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>" value="<%=Meta.UnavailableI18nDataSubstitution.DO_NOT_SHOW%>"
-		  		<%=document.getMeta().getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.DO_NOT_SHOW ? "checked='x'" : ""%>
-			  /> 
-			  <%=Meta.UnavailableI18nDataSubstitution.DO_NOT_SHOW%>	         
-	      </td>
-	    </tr>	    	    
+		<tr>
+			<td colspan="6">#gui_hr( 'cccccc' )</td>
+		</tr>	
+		<tr>
+			<td colspan="6" style="font-weight:bold; padding-bottom:3px;"><%= isSwe ? "Om efterfrågad sida saknas" : "If requested language is missing" %></td>
+		</tr>  
+		<tr>
+			<td colspan="6">
+			<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>"
+				id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>0"
+				value="<%=Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE%>"<%=
+				document.getMeta().getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE ? " checked=\"checked\"" : "" %> /></td>
+				<td style="padding-left:5px;"><label for="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>0"><%=
+				isSwe ? "Visa på standardspråket" : "Show in default language" %></label></td>
+			</tr>
+			</table></td>
+		</tr>
+		<tr>
+			<td colspan="6">
+			<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>"
+				id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>1"
+				value="<%=Meta.UnavailableI18nDataSubstitution.DO_NOT_SHOW%>"<%=
+				document.getMeta().getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.DO_NOT_SHOW ? " checked=\"checked\"" : "" %> /></td>
+				<td style="padding-left:5px;"><label for="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>1"><%=
+				isSwe ? "Visa inte alls" : "Don't show at all" %></label></td>
+			</tr>
+			</table></td>
+		</tr>	    	    
 	    	
 		<%-- End of Missing i18n show rule --%>
 		
@@ -411,8 +429,8 @@ function setI18nCodeParameterValue(value) {
 	</tr>			
 	
 	<tr>
-		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="1"></td>
-		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="1"></td>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="1" alt=""></td>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="1" alt=""></td>
 	</tr>
 	</table></td>
 </tr><%
@@ -428,7 +446,7 @@ function setI18nCodeParameterValue(value) {
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
 		<td><span class="imcmsAdmHeading"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/21/1 ?></span></td>
-		<script language="javascript">
+		<script type="text/javascript">
 		if (hasGetElementById) {
 			document.writeln('<td align="right"><input type="button" id="advanced_button1" class="imcmsFormBtnSmall" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button_hide ?>" onClick="toggleAdvanced()"></td>') ;
 		}
@@ -455,7 +473,7 @@ function setI18nCodeParameterValue(value) {
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/22 ?></td>
 		<td class="imcmsAdmText">
 		<a href="$contextPath/imcms/$language/jsp/section_descriptions.jsp" target="_blank"><? global/view ?> info</a><br>
-		<img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
+		<img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3" alt=""><br>
 		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SECTIONS %>" size="<%= (sections.length > 5) ? 5 : sections.length %>" multiple><%
 		ToStringPairTransformer sectionToStrings = new ToStringPairTransformer() {
 			public String[] transformToStringPair( Object o ) {
@@ -512,7 +530,8 @@ function setI18nCodeParameterValue(value) {
 				if (1 != categoryType.getMaxChoices()) { %>
 		<div style="float: left; margin: auto 1em 1ex auto; border: 1px solid #ccc;text-align:center;">
 		<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%=
-			    URLEncoder.encode(StringEscapeUtils.escapeHtml( categoryType.getName() ),"UTF-8") %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
+			    URLEncoder.encode(StringEscapeUtils.escapeHtml( categoryType.getName() ),"UTF-8") %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br>
+			<img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3" alt=""><br>
 		<table>
 			<tr>
 				<td valign="top"><select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORY_IDS_TO_ADD %>" size="4" multiple>
@@ -532,7 +551,8 @@ function setI18nCodeParameterValue(value) {
 				} else {%>
 		<div style="float: left; margin: auto 1em 1ex auto;">
 		<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%=
-			    URLEncoder.encode(StringEscapeUtils.escapeHtml( categoryType.getName() ),"UTF-8") %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
+			    URLEncoder.encode(StringEscapeUtils.escapeHtml( categoryType.getName() ),"UTF-8") %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br>
+			<img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3" alt=""><br>
 		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORIES %>" onFocus="selFocused = true;">
 			<%= Html.createOptionListOfCategoriesOfTypeForDocument( categoryMapper, categoryType, document, request) %>
 		</select></div><%
@@ -582,22 +602,28 @@ function setI18nCodeParameterValue(value) {
 
 	%>
 	<tr>
-		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/32 ?></td>
+		<td class="imcmsAdmText" valign="top" style="padding-top:5px;"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/32 ?></td>
 		<td class="imcmsAdmText">
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS %>" value="1"<%
+			<td><input type="checkbox"
+				name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS %>"
+				id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS %>"
+				value="1"<%
 			if (document.isLinkedForUnauthorizedUsers()) {
-				%> checked<%
+				%> checked="checked"<%
 			} %>></td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/global/pageinfo/show_link_to_unauthorized_user ?></td>
+			<td class="imcmsAdmText"><label for="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS %>">&nbsp;<? install/htdocs/global/pageinfo/show_link_to_unauthorized_user ?></label></td>
 		</tr>
 		<tr>
-			<td><input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS %>" value="1"<%
+			<td><input type="checkbox"
+				name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS %>"
+				id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS %>"
+				value="1"<%
 			if (document.isLinkableByOtherUsers()) {
-				%> checked<%
+				%> checked="checked"<%
 			} %>></td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/global/pageinfo/share ?></td>
+			<td class="imcmsAdmText"><label for="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS %>">&nbsp;<? install/htdocs/global/pageinfo/share ?></label></td>
 		</tr>
 		</table></td>
 	</tr>
@@ -605,7 +631,7 @@ function setI18nCodeParameterValue(value) {
 		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/35 ?></td>
+		<td class="imcmsAdmText" valign="top" style="padding-top:5px;"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/35 ?></td>
 		<td class="imcmsAdmText">
 		
 		  <%-- Keywords old code:
@@ -624,48 +650,41 @@ function setI18nCodeParameterValue(value) {
 		  
 		  --%>
 		  
-		  <table>
-				<c:forEach items="${document.meta.i18nMetas}" var="i18nPart">
-				  <c:set var="prefix" value="_${i18nPart.language.code}"/>
-				  <c:set var="keywordsValues" value="${i18nPart.keywordsValues}"/>
-	  			  <tr>	  
-					<td>
-					  ${i18nPart.language.name}
-					</td>
-					<td>
-					  <%					  
-						Set documentKeywords = (Set) pageContext.getAttribute("keywordsValues");
-        				String[] keywords = (String[])documentKeywords.toArray(new String[documentKeywords.size()]);
-						Collator collator = service.getDefaultLanguageCollator() ; // ???
-						Arrays.sort(keywords,collator) ;
-        				KeywordsParser keywordsParser = new KeywordsParser();							  
-					  %>
-					
-					  <input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS + pageContext.getAttribute("prefix")%>" size="48" maxlength="200" style="width: 100%"
-					    value="<%=StringEscapeUtils.escapeHtml( keywordsParser.formatKeywords(keywords) )%>"
-					  />  
-					</td>		
-	  		      </tr>
-	           </c:forEach>
-	           
-	           <tr>
-	             <td>
-	             
-	             <br>
-		<span class="imcmsAdmDim"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/keywords_explanation ?></span><br>
-		<input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SEARCH_DISABLED %>" value="1" 
-		  <%
-		    if (document.isSearchDisabled()) {
-			  %> checked <%
-		    } 
-		  %>
-		 /> 
-		 <? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?>
-	             
-	             </td>
-	           </tr>
-		  </table>
-		</td>
+		<table border="0" cellspacing="0" cellpadding="2" style="width:98%;">
+		<c:forEach items="${document.meta.i18nMetas}" var="i18nPart">
+		<c:set var="prefix" value="_${i18nPart.language.code}"/>
+		<c:set var="keywordsValues" value="${i18nPart.keywordsValues}"/>
+		<tr>
+			<td><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${i18nPart.language.code}.gif" alt="" style="border:0;" /></td>
+			<td class="imcmsAdmText" style="padding-left:10px; padding-right:25px;">${i18nPart.language.name}</td>
+			<td><%					  
+			Set documentKeywords = (Set) pageContext.getAttribute("keywordsValues");
+			String[] keywords = (String[])documentKeywords.toArray(new String[documentKeywords.size()]);
+			Collator collator = service.getDefaultLanguageCollator() ; // ???
+			Arrays.sort(keywords,collator) ;
+			KeywordsParser keywordsParser = new KeywordsParser();							  
+			%><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS + pageContext.getAttribute("prefix")%>"
+			      size="48" maxlength="200" style="width:100%;"
+			      value="<%=StringEscapeUtils.escapeHtml( keywordsParser.formatKeywords(keywords) )%>" /></td>		
+		</tr>
+		</c:forEach>
+		<tr>
+			<td colspan="3" class="imcmsAdmDim" style="padding-top:10px; padding-bottom:10px;"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/keywords_explanation ?></td>
+		</tr>
+		<tr>
+			<td colspan="3">
+			<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td><input type="checkbox"
+				           name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SEARCH_DISABLED %>"
+				           id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SEARCH_DISABLED %>"
+				           value="1"<%= document.isSearchDisabled() ? " checked=\"checked\"" : "" %> /></td>
+				<td class="imcmsAdmText"><label for="<%=
+				EditDocumentInformationPageFlow.REQUEST_PARAMETER__SEARCH_DISABLED %>">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?></label></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table></td>
 	</tr>
 	<tr>
 		<td colspan="2">#gui_hr( "cccccc" )</td>
@@ -721,7 +740,7 @@ function setI18nCodeParameterValue(value) {
 			value="<%= formatTime( document.getCreatedDatetime() ) %>"></td>
 			<td class="imcmsAdmText"><%= jsCalendar.getInstance(EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_DATE,
 			                             EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_TIME).getButton(calendarButtonTitle) %>&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/created_by ?>
-			<%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %>&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER %>" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/select_creator_button ?>"></td>
+			<%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %> &nbsp; <input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER %>" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/select_creator_button ?>"></td>
 		</tr>
 		</table></td>
 	</tr>
@@ -753,11 +772,11 @@ function setI18nCodeParameterValue(value) {
 		null == publisher
 		? "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/no_publisher ?>"
 		: Utility.formatUser(publisher)
-		%>&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_PUBLISHER_BROWSER %>" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/select_publisher_button ?>"></td>
+		%> &nbsp; <input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_PUBLISHER_BROWSER %>" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/select_publisher_button ?>"></td>
 	</tr>
 	<tr>
-		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="1"></td>
-		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="1"></td>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="1" alt=""></td>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="1" alt=""></td>
 	</tr>
 	</table></td>
 </tr>
@@ -773,7 +792,7 @@ function setI18nCodeParameterValue(value) {
 	<td align="right">
 	<table border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<script language="javascript">
+		<script type="text/javascript">
 		if (hasGetElementById) {
 			document.writeln('<td><input type="button" id="advanced_button2" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>" onClick="toggleAdvanced()"></td>') ;
 			document.writeln('<td>&nbsp;&nbsp;</td>') ;
@@ -803,7 +822,7 @@ if (!adminButtonsHidden) {
 	}
 }
 %>
-<script language="javascript">
+<script type="text/javascript">
 <!--<%
 String viewCookieName = "document_information_view" ;
 
