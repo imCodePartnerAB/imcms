@@ -37,12 +37,12 @@ ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest(reques
 DocumentService documentService     = imcmsSystem.getDocumentService() ;
 DatabaseService databaseService     = imcmsSystem.getDatabaseService() ;
 
-String action   = (request.getParameter("action") != null)   ? request.getParameter("action")  : "" ;
-String view     = (request.getParameter("view") != null)     ? request.getParameter("view")     : "" ;
-String restore  = (request.getParameter("restore") != null)  ? request.getParameter("restore")  : "" ;
-String save     = (request.getParameter("save") != null)     ? request.getParameter("save")     : "" ;
-int meta_id     = (request.getParameter("meta_id") != null)  ? Integer.parseInt(request.getParameter("meta_id")) : 0 ;
-int txtNo       = (request.getParameter("txt") != null)      ? Integer.parseInt(request.getParameter("txt")) : 0 ;
+String action   = StringUtils.defaultString(request.getParameter("action")) ;
+String view     = StringUtils.defaultString(request.getParameter("view")) ;
+String restore  = StringUtils.defaultString(request.getParameter("restore")) ;
+String save     = StringUtils.defaultString(request.getParameter("save")) ;
+int meta_id     = StringUtils.defaultString(request.getParameter("meta_id")).matches("^\\d+$")  ? Integer.parseInt(request.getParameter("meta_id")) : 0 ;
+int txtNo       = StringUtils.defaultString(request.getParameter("txt")).matches("^\\d+$")      ? Integer.parseInt(request.getParameter("txt")) : 0 ;
 
 
 
@@ -57,6 +57,8 @@ boolean isSwe = false ;
 try {
 	isSwe =	imcmsSystem.getCurrentUser().getLanguage().getIsoCode639_2().equals("swe");
 } catch (Exception e) {}
+
+I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage() ;
 
 
 //DateFormat df  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
@@ -126,7 +128,7 @@ boolean isSavedInTextField = false ;
 if (view.matches("^\\d+$") || restore.matches("^\\d+$") || save.matches("^\\d+$")) {
 	boolean viewAsHtml = (request.getParameter("html") != null) ;
 	try {
-		int languageId = I18nSupport.getCurrentLanguage().getId();
+		int languageId = currentLanguage.getId();
 		
 		connection = databaseService.getConnection() ;
 		sSql = "SELECT t.text, t.modified_datetime, t.type, u.first_name, u.last_name\n" +
@@ -177,8 +179,6 @@ if (view.matches("^\\d+$") || restore.matches("^\\d+$") || save.matches("^\\d+$"
 <html>
 <head>
 <title>Viewer</title>
-
-<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/css/skolverket.css.jsp">
 
 <style type="text/css">
 <!-- 
@@ -376,11 +376,13 @@ initRestore() ;
 TextDocument thisDoc = documentService.getTextDocument(meta_id) ;
 
 
-String heading = isSwe ? "Tidigare versioner av textfält #TXT# på sida #META##ALIAS#" : "Earlier versions of textfield #TXT# on page #META##ALIAS#" ;
+String heading = isSwe ?
+                 "Tidigare " + currentLanguage.getName().toLowerCase() + "/" + currentLanguage.getNativeName().toLowerCase() + " versioner av textfält #TXT# på sida #META##ALIAS#" :
+                 "Earlier " + currentLanguage.getName().toLowerCase() + "/" + currentLanguage.getNativeName().toLowerCase() + " versions of textfield #TXT# on page #META##ALIAS#" ;
 
 String alias = thisDoc.getAlias() != null ? thisDoc.getAlias() : "" ;
 if (!alias.equals("")) {
-	alias = " &nbsp;<span style='font-size:11px; font-weight:normal;'>&quot;" + alias + "&quot;</span>" ;
+	alias = " &nbsp;<span style='font-size:11px; font-weight:normal; white-space:nowrap;'>Alias: " + alias + "</span>" ;
 }
 
 heading = heading
@@ -457,7 +459,7 @@ function doSave(id) {
 #gui_mid_noshade()
 <table border="0" cellspacing="0" cellpadding="0" width="100%">
 <tr>
-	<td colspan="2">#gui_heading("<%= isSwe ? "Granska/välj tidigare versioner" : "View/choose earlier versions" %>")</td>
+	<td colspan="2">#gui_heading("<%= (isSwe ? "Granska/välj tidigare versioner på " : "View/choose earlier versions in ") + currentLanguage.getName().toLowerCase() + "/" + currentLanguage.getNativeName().toLowerCase() %>")</td>
 </tr>
 <form name="selectForm" action="text_restorer.jsp" method="post">
 <input type="hidden" name="action" value="setDateSpan">

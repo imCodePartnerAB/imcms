@@ -63,8 +63,23 @@ boolean isSwe = false ;
 try {
 	isSwe =	ContentManagementSystem.fromRequest(request).getCurrentUser().getLanguage().getIsoCode639_2().equals("swe");
 } catch (Exception e) {}
+
+/* *******************************************************************************************
+ *         Get languages                                                                     *
+ ******************************************************************************************* */
+
+LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao") ;
+List<I18nLanguage> languages = languageDao.getAllLanguages() ;
+I18nLanguage defaultLanguage = languageDao.getDefaultLanguage() ;
+I18nLanguage currentLanguage = (null != session.getAttribute("lang")) ? (I18nLanguage)session.getAttribute("lang") : defaultLanguage ;
+
+DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper() ;
+DocumentDomainObject document = documentMapper.getDocument(textEditPage.getDocumentId()) ;
+Meta meta = document.getMeta() ;
+List<I18nMeta> i18nMetas = meta.getI18nMetas() ;
+
 %>
-<%@page import="com.imcode.imcms.api.I18nMeta"%>
+<%@page import="com.imcode.imcms.api.I18nMeta, com.imcode.imcms.dao.LanguageDao, com.imcode.imcms.api.I18nLanguage, com.imcode.imcms.api.Meta, imcode.server.document.DocumentDomainObject, com.imcode.imcms.mapping.DocumentMapper"%>
 <vel:velocity>
 <html>
 <head>
@@ -85,14 +100,16 @@ if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType() && !editorHidden) { 
 <% } %>
 <form method="POST" action="<%= request.getContextPath() %>/servlet/SaveText">
 <input type="hidden" name="meta_id"  value="<%= textEditPage.getDocumentId() %>">
-<input type="hidden" name="txt_no"   value="<%= textEditPage.getTextIndex() %>">
-
-<%
-if (rows > 0) {
-	%><input type="hidden" name="rows"  value="<%=rows%>"><%
-}
-%>
-
+<input type="hidden" name="txt_no"   value="<%= textEditPage.getTextIndex() %>"><%
+if (null != formatParameterValues) {
+	for ( String formatParameter : formatParameterValues ) { %>
+<input type="hidden" name="format" value="<%= formatParameter %>"><%
+	}
+	if (rows > 0) { %>
+<input type="hidden" name="rows" value="<%= rows %>"><%
+	}
+} %>
+<input type="hidden" name="label" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %>">
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )
 
@@ -135,32 +152,81 @@ if (rows > 0) {
 	<table border="0" cellspacing="0" cellpadding="2" width="100%;">
 	<tr valign="top">
 		<td width="80%">
-		<div id="theLabel"><%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></div>
-		<div id="messageDiv" style="display:none; color:#cc0000; padding:10px 0;"></div></td>
+		<div id="theLabel"><b class="imcmsAdmHeadingSmall">Label:</b> <%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></div></td>
 		
 		<td width="20%" align="right" style="padding-top:3px; padding-left:15px;">
-		<input tabindex="6" type="button" class="imcmsFormBtnSmall" value="<%= isSwe ? "Återställ tidigare versioner" : "Restore earlier versions" %>" onclick="openTextRestorer(); return false"></td>
+		<input tabindex="6" type="button" class="imcmsFormBtnSmall" value="<%= isSwe ? "Återställ tidigare versioner" : "Restore earlier versions" %>"
+		       onclick="openTextRestorer(); return false"></td>
 	</tr>
 	</table></td>
 </tr>
-
 <tr>
-  <td>
-    <table>
-      <tr><td>CURRENT LANGUAGE::${currentLanguage}</td></tr>
-      <tr><td>DEFAULT LANGUAGE::${defaultLanguage}</td></tr>
-      <tr><td>IS ACTIVE::${textEditPage.enabled}</td></tr>
-      <tr><td>SUBSTITUTED WITH DEFAULT::${textEditPage.substitutedWithDefault}</td></tr>
-      <tr>
-        <c:forEach items="${languages}" var="i18nLanguage">
-          <td><a href="ChangeText?lang=${i18nLanguage.code}&${requestScope.queryString}">${i18nLanguage.name}</a></td>
-        </c:forEach>
-      </tr>
-            
-    </table>
-  </td>  
+	<td colspan="2">#gui_hr( "blue" )<div id="messageDiv" style="display:none; color:#cc0000; padding:10px 0;"></div></td>
+</tr><%
+if (null != languages) { %>
+<tr>
+	<td colspan="2" style="padding: 3px 5px;">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr><%
+	int iCount = 0 ;
+	int languagesPerRow = 7 ;
+	for ( I18nMeta i18nMeta : i18nMetas ) {
+		I18nLanguage lang     = i18nMeta.getLanguage() ;
+		String langCode       = lang.getCode() ;
+		String langName       = lang.getName() ;
+		String langNameNative = lang.getNativeName() ;
+		boolean isEnabled  = (i18nMeta.getEnabled()) ;
+		boolean isDefault  = (null != defaultLanguage && defaultLanguage.equals(lang)) ;
+		boolean isCurrent  = (null != currentLanguage && currentLanguage.equals(lang)) ;
+		String queryString = request.getQueryString().replaceAll("lang=[a-z]{2}&?", "") ;
+		String href_0      = "<a href=\"ChangeText?lang=" + langCode + "&amp;" + queryString + "\" title=\"" + langName + "/" + langNameNative + "#DATA#\" style=\"#STYLE#\">" ;
+		String href_1      = "</a>" ;
+		String sData = "" ;
+		if (isDefault)  sData += "default " ;
+		if (isCurrent)  sData += "current " ;
+		if (!isEnabled) sData += "disabled " ;
+		if (!"".equals(sData)) {
+			sData = " (" + sData.trim() + ")" ;
+		}
+		href_0 = href_0.replace("#DATA#", sData) ;
+		String sStyle = "text-decoration:none; " ;
+		if (isEnabled) {
+			sStyle += "color:#000; " ;
+		} else {
+			sStyle += "color:#999; " ;
+		}
+		if (isCurrent)  sStyle += "font-weight:bold; " ;
+		href_0 = href_0.replace("#STYLE#", sStyle.trim()) ;
+		if (iCount > 0 && iCount % languagesPerRow == 0) { %>
+	</tr>
+	<tr><%
+		} %>
+		<td><%= href_0 %><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/<%= langCode %>.gif" alt="" style="border:0;" /><%= href_1 %></td>
+		<td style="width:<%= isDefault ? 4.6 : 2.2 %>em; padding-left:5px; font: 13px Verdana, Arial, sans-serif;"><%
+		%><%= href_0 %><%= langCode %><%= isDefault ? "&nbsp;(d)" : "" %><%= href_1 %></td><%
+		iCount++ ;
+	}
+	while(iCount % languagesPerRow != 0) { %>
+		<td colspan="2">&nbsp;</td><%
+		iCount++ ;
+	} %>
+	</tr>
+	</table></td>
+</tr><%
+} %>
+<tr>
+	<td colspan="2" style="padding-top:5px; padding-bottom:15px;">
+	<%= isSwe ? "Valt språk aktiverat" : "Current language active" %>:&nbsp;
+	<c:choose>
+		<c:when test="${textEditPage.enabled}"><b><%= isSwe ? "Ja" : "Yes" %></b></c:when>
+		<c:otherwise><b><%= isSwe ? "Nej" : "No" %></b></c:otherwise>
+	</c:choose>
+	<c:if test="${textEditPage.substitutedWithDefault}">
+	<div style="padding-top:3px;">
+		<%= isSwe ? "Språket är inte aktiverat - visar standardspråket om fältet är tomt!" : "Language is not active - default language is shown if field is empty!" %>
+	</div>
+	</c:if></td>
 </tr>
-
 </vel:velocity>
 <tr>
 	<td colspan="2" class="imcmsAdmForm">
@@ -232,7 +298,7 @@ function setHtmlMode() {
         <input type="radio" name="format_type" id="format_type_text" value="0" <% if (TextDomainObject.TEXT_TYPE_PLAIN==textEditPage.getType()) { %> checked<% } %>
                <% if (showModeEditor) { %>onclick="setTextMode()"<% } %>>
         <label for="format_type_text">Text</label>
-        <input type="radio" name="format_type" id="format_type_html" value="1" <% if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType()) { %> checked<% } %> 
+        <input type="radio" name="format_type" id="format_type_html" value="1" <% if (TextDomainObject.TEXT_TYPE_PLAIN!=textEditPage.getType()) { %> checked<% } %> 
                <% if (showModeEditor) { %>onclick="setHtmlMode()"<% } %>>
         <label for="format_type_html">Editor/HTML</label>
         <% } else if (showModeText) { %>

@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
+import org.apache.commons.lang.StringUtils;
 
 public final class SaveText extends HttpServlet {
 
@@ -48,16 +49,29 @@ public final class SaveText extends HttpServlet {
 
             int text_format = Integer.parseInt( req.getParameter( "format_type" ) );
 
+	          String[] formatParameterValues = req.getParameterValues("format") ;
+	          String rowsParameterValue = (null != formatParameterValues) ? req.getParameter("rows") : null ;
+	          String formatRowsQueryString = "" ;
+	          if (null != formatParameterValues) {
+		          for (String formatParameter : formatParameterValues) {
+			          formatRowsQueryString += "&format=" + formatParameter ;
+		          }
+		          if (null != rowsParameterValue) {
+			          formatRowsQueryString += "&rows=" + rowsParameterValue ;
+		          }
+	          }
+            String label = StringUtils.defaultString(req.getParameter("label")) ;
+
             TextDomainObject text = TextDocumentDomainObject.createSubstitutionText(
-            		meta_id, txt_no, I18nSupport.getCurrentLanguage()); 
-            
+		            meta_id, txt_no, I18nSupport.getCurrentLanguage());
+
             text.setText(text_string);
             text.setType(text_format);
-            	
+
             saveText( documentMapper, text, document, txt_no, imcref, meta_id, user );
 
             if (null != req.getParameter( "save" )) {
-                res.sendRedirect( "ChangeText?meta_id="+meta_id+"&txt="+txt_no );
+                res.sendRedirect( "ChangeText?meta_id="+meta_id+"&txt="+txt_no + formatRowsQueryString + "&label=" + label );
                 return ;
             }
         }
