@@ -9,8 +9,12 @@
 	        imcode.server.user.UserDomainObject,
 	        imcode.util.Html,
 	        imcode.util.Utility,
+	        imcode.server.Imcms,
 	        org.apache.oro.text.perl.Perl5Util,
-	        org.apache.commons.lang.StringUtils, com.imcode.imcms.api.I18nLanguage, java.util.List, com.imcode.imcms.dao.LanguageDao, imcode.server.Imcms"
+	        org.apache.commons.lang.StringUtils,
+	        java.util.List,
+	        com.imcode.imcms.dao.LanguageDao,
+	        com.imcode.imcms.api.*"
 	
 %><%@ taglib uri="imcmsvelocity" prefix="vel"
 %><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"
@@ -41,7 +45,10 @@ pageContext.setAttribute("baseURL", baseURL);
 LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao") ;
 List<I18nLanguage> languages = languageDao.getAllLanguages() ;
 I18nLanguage defaultLanguage = languageDao.getDefaultLanguage() ;
-I18nLanguage currentLanguage = (null != session.getAttribute("lang")) ? (I18nLanguage)session.getAttribute("lang") : defaultLanguage ; 
+I18nLanguage currentLanguage = (null != session.getAttribute("lang")) ? (I18nLanguage)session.getAttribute("lang") : defaultLanguage ;
+
+Meta meta = document.getMeta() ;
+List<I18nMeta> i18nMetas = meta.getI18nMetas() ;
 
 /* *******************************************************************************************
  *         BROWSER SNIFFER                                                                   *
@@ -112,9 +119,9 @@ if (isIE || isIE7 || isGecko) { %>
 	<table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
 	<tr>
 		<td id="adminPanelTd1_1" width="25%" nowrap>
-		<span style="font: small Verdana, Arial, Helvetica, sans-serif;" class="adminPanelLogo" ondblclick="window.open('http://www.imcms.net/')"><? templates/sv/adminbuttons/adminbuttons.html/1 ?> &nbsp;</span></td>
+		<span style="font: 12px Verdana, Arial, Helvetica, sans-serif;" class="adminPanelLogo" ondblclick="window.open('http://www.imcms.net/')"><? templates/sv/adminbuttons/adminbuttons.html/1 ?> &nbsp;</span></td>
 		<td id="adminPanelTd1_2" width="50%" align="center" nowrap>
-		<span style="font: small Verdana, Arial, Helvetica, sans-serif;" class="adminPanelText">
+		<span style="font: 12px Verdana, Arial, Helvetica, sans-serif;" class="adminPanelText">
 		<span title="<? web/imcms/lang/jsp/admin/adminbuttons.jsp/title_id ?>"><b>Id:</b> <%= document.getId() %></span> &nbsp; <span title="<? web/imcms/lang/jsp/admin/adminbuttons.jsp/title_type ?>"><b><? templates/sv/adminbuttons/adminbuttons.html/1001 ?>:</b> <%= document.getDocumentTypeName().toLocalizedString( request ) %></span> &nbsp;</span></td>
 		<td id="adminPanelTd1_3" width="25%" align="right"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
 	</tr>
@@ -123,20 +130,52 @@ if (isIE || isIE7 || isGecko) { %>
 <%
 if (null != languages) { %>
 <tr>
-	<td style="padding: 3px 5px;"><%
-	for (int i = 0; i < languages.size(); i++) {
-		I18nLanguage lang     = languages.get(i) ;
+	<td style="padding: 3px 5px;">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr><%
+	int iCount = 0 ;
+	int languagesPerRow = 7 ;
+	for ( I18nMeta i18nMeta : i18nMetas ) {
+		I18nLanguage lang     = i18nMeta.getLanguage() ;
 		String langCode       = lang.getCode() ;
 		String langName       = lang.getName() ;
 		String langNameNative = lang.getNativeName() ;
+		boolean isEnabled = (i18nMeta.getEnabled()) ;
 		boolean isDefault = (null != defaultLanguage && defaultLanguage.equals(lang)) ;
 		boolean isCurrent = (null != currentLanguage && currentLanguage.equals(lang)) ;
-		if (i > 0) {
-			%> |<%
+		String href_0     = "<a href=\"" + baseURL + langCode + "\" title=\"" + langName + "/" + langNameNative + "#DATA#\" style=\"#STYLE#\">" ;
+		String href_1     = "</a>" ;
+		String sData = "" ;
+		if (isDefault)  sData += "default " ;
+		if (isCurrent)  sData += "current " ;
+		if (!isEnabled) sData += "disabled " ;
+		if (!"".equals(sData)) {
+			sData = " (" + sData.trim() + ")" ;
+		}
+		href_0 = href_0.replace("#DATA#", sData) ;
+		String sStyle = "text-decoration:none; " ;
+		if (isEnabled) {
+			sStyle += "color:#000; " ;
+		} else {
+			sStyle += "color:#999; " ;
+		}
+		if (isCurrent)  sStyle += "font-weight:bold; " ;
+		href_0 = href_0.replace("#STYLE#", sStyle.trim()) ;
+		if (iCount > 0 && iCount % languagesPerRow == 0) { %>
+	</tr>
+	<tr><%
 		} %>
-	<a href="<%= baseURL + lang.getCode() %>" title="<%= langName + "/" + langNameNative %><%= isDefault && isCurrent ? " (default active)" : isDefault ? " (default)" : isCurrent ? " (active)" : "" %>"<%= isCurrent ? " style=\"font-weight:bold;\"" : "" %>><%
-		%><%= langCode %><%= isDefault ? "&nbsp;(d)" : "" %></a><%
-	} %></td>
+		<td><%= href_0 %><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/<%= langCode %>.gif" alt="" style="border:0;" /><%= href_1 %></td>
+		<td style="width:<%= isDefault ? 4.6 : 2.2 %>em; padding-left:5px; font: 13px Verdana, Arial, sans-serif;"><%
+		%><%= href_0 %><%= langCode %><%= isDefault ? "&nbsp;(d)" : "" %><%= href_1 %></td><%
+		iCount++ ;
+	}
+	while(iCount % languagesPerRow != 0) { %>
+		<td colspan="2">&nbsp;</td><%
+		iCount++ ;
+	} %>
+	</tr>
+	</table></td>
 </tr><%
 } %>
 
