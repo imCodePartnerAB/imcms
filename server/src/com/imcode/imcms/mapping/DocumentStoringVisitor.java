@@ -154,7 +154,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 	         				sqlInsertTextHistory(language, oldTextDocument, index, oldText, user);
 	         			}
 		        		
-		         		if (!text.getText().equals(oldTextValue)) {	         			
+		         		if (!text.getText().equals(oldTextValue) || text.getType() != oldText.getType()) {	         			
 		         			saveText = true;
 		         		}          		
 	            	}
