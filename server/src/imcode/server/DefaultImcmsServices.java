@@ -727,6 +727,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
 		return webApplicationContext;
 	}
 
+    /**
+     * Sets springframework WebApplicationContext. 
+     */
 	public void setWebApplicationContext(WebApplicationContext webApplicationContext) {
 		this.webApplicationContext = webApplicationContext;
 	}

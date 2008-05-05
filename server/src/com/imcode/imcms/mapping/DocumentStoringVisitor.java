@@ -123,12 +123,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     // TODO i18n: refactor
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-        TextDao textDao = (TextDao)Imcms.getServices().getSpringBean("textDao");
-        Integer metaId = textDocument.getId();
+        //TextDao textDao = (TextDao)Imcms.getServices().getSpringBean("textDao");
+        //Integer metaId = textDocument.getId();
 
-        for (I18nLanguage language: I18nSupport.getLanguages()) {
-        
-	        Map<Integer, TextDomainObject> texts = textDocument.getOriginalTextsMap(language, metaId);        
+        for (I18nLanguage language: I18nSupport.getLanguages()) {        
+	        Map<Integer, TextDomainObject> texts = textDocument.getTextsMap(language, false);
+	        
+	        if (texts == null) continue;
+	        
 	        Set<Integer> indexes = texts.keySet();
 	        
 	        for (Integer index: indexes) {
@@ -138,7 +140,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 	            if (oldTextDocument == null) {            	
 	            	saveText = true;
 	            } else {
-	            	TextDomainObject oldText = oldTextDocument.getOriginalText(language, index);
+	            	TextDomainObject oldText = oldTextDocument.getText(language, index);
 	            	
 	         		String oldTextValue = oldText == null ? null : oldText.toString();            	
 	            	

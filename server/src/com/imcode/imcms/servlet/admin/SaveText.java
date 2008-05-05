@@ -62,9 +62,10 @@ public final class SaveText extends HttpServlet {
 	          }
             String label = StringUtils.defaultString(req.getParameter("label")) ;
 
-            TextDomainObject text = TextDocumentDomainObject.createSubstitutionText(
-		            meta_id, txt_no, I18nSupport.getCurrentLanguage());
-
+            TextDomainObject text = new TextDomainObject();
+    		text.setMetaId(meta_id);
+    		text.setIndex(txt_no);
+    		text.setLanguage(I18nSupport.getCurrentLanguage());
             text.setText(text_string);
             text.setType(text_format);
 

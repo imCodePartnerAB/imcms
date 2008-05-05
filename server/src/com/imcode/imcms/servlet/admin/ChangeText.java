@@ -50,35 +50,18 @@ public class ChangeText extends HttpServlet {
         int textIndex = Integer.parseInt( request.getParameter( "txt" ) );
         String label = null == request.getParameter( "label" ) ? "" : request.getParameter( "label" );
 
-        /*
-        TextDomainObject text = textDocument.getText( textIndex );        
-                
-        I18nLanguage language = I18nSupport.getCurrentLanguage();
-        Meta meta = textDocument.getMeta();
-
-        
-        if (text.isSubstitution()) {
-            TextDao textDao = (TextDao) Imcms.getServices().getSpringBean("textDao");            
-        	
-        	text = textDao.getText(documentId, textIndex, language.getId());
-        	
-        	if (text == null) {
-        		text = TextDocumentDomainObject.createSubstitutionText(
-        				meta.getMetaId(), textIndex, language);
-        		text.setType(TextDomainObject.TEXT_TYPE_HTML);
-        	}
-        }
-        */
-        I18nLanguage language = I18nSupport.getCurrentLanguage();
-        
-        TextDomainObject text = textDocument.getOriginalText(language, textIndex );        
+        I18nLanguage language = I18nSupport.getCurrentLanguage();        
+        TextDomainObject text = textDocument.getText(language, textIndex );        
         Integer metaId = textDocument.getId();
         Meta meta = textDocument.getMeta();
         I18nMeta i18nMeta = meta.getI18nMeta(language);
         boolean enabled = i18nMeta.getEnabled();         
+        
     	if (text == null) {
-    		text = TextDocumentDomainObject.createSubstitutionText(
-    				metaId, textIndex, language);
+    		text = new TextDomainObject();
+    		text.setMetaId(metaId);
+    		text.setIndex(textIndex);
+    		text.setLanguage(language);
     		text.setType(TextDomainObject.TEXT_TYPE_HTML);
         }        
         
@@ -92,7 +75,8 @@ public class ChangeText extends HttpServlet {
         TextEditPage page = new TextEditPage( documentId, textIndex, text, label );
         page.setEnabled(enabled);
         page.setSubstitutedWithDefault(!enabled && meta.getUnavailableI18nDataSubstitution()
-        		== Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE);
+        		== Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE
+        			&& meta.getI18nMeta(I18nSupport.getDefaultLanguage()).getEnabled());
         
         page.forward( request, res, user );
     }

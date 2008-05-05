@@ -11,4 +11,6 @@ public interface LanguageDao {
     I18nLanguage getDefaultLanguage();
     
     I18nLanguage getByCode(String code);
+    
+    void setDefaultLanguage(I18nLanguage language);
 }

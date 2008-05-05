@@ -1,5 +1,9 @@
 package imcode.server.parser;
 
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nMeta;
+import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import com.imcode.imcms.mapping.SectionFromIdTransformer;
@@ -394,11 +398,11 @@ public class TagParser {
         TextDomainObject text;
         if ( null == noStr ) {
             no = implicitTextNumber++;
-            text = textDocumentToUse.getText(no);
+            text = getI18nText(textDocumentToUse, no);//textDocumentToUse.getText(no);
         } else {
             noStr = noStr.trim();
             no = Integer.parseInt(noStr);
-            text = textDocumentToUse.getText(no);
+            text = getI18nText(textDocumentToUse, no);//textDocumentToUse.getText(no);
             implicitTextNumber = no + 1;
         }
         String result = "";
@@ -433,6 +437,37 @@ public class TagParser {
         }
 
         return result;
+    }
+    
+    
+    private TextDomainObject getI18nText(TextDocumentDomainObject textDDO, int index) {
+    	I18nLanguage language = I18nSupport.getCurrentLanguage();    	
+    	Meta meta = textDDO.getMeta();
+    	I18nMeta i18nMeta = meta.getI18nMeta(language);
+    	TextDomainObject textDO = null;
+    	    	
+    	if (i18nMeta.getEnabled()) {
+    		textDO = textDDO.getText(language, index);
+    	} else if (!I18nSupport.isDefault(language)) {
+   			language = I18nSupport.getDefaultLanguage();
+   			i18nMeta = meta.getI18nMeta(language);
+    			
+   			if (i18nMeta.getEnabled()) {
+   				textDO = textDDO.getText(language, index);
+   			}
+    	}
+    	
+    	return textDO;
+    	
+    	// if (document.isActive()) {
+    	//     return document.getText(index);
+    	// } else if (!I18nSupport.isDefault(document.getLanguage())) {
+    	//     if (defaultDocument.isActive()) {
+    	//         return document.getText(index);
+    	//     }
+    	// } else {
+    	//     return null;     
+    	// }
     }
 
     private static boolean shouldOutputNothingAccordingToMode(Properties attributes, boolean mode) {
@@ -518,6 +553,11 @@ public class TagParser {
 
         return imageTag;
     }
+    
+    
+    private ImageDomainObject getI18nImage(TextDocumentDomainObject textDDO, int index) {
+    	return null;
+    } 
 
     /**
      * Handle a <?imcms:datetime ...?> tag

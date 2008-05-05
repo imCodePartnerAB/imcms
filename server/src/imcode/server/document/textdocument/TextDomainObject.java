@@ -50,13 +50,7 @@ public class TextDomainObject implements Serializable, Cloneable {
 	private Long id;
 	
 	@Column(name="meta_id")
-	private Integer metaId;
-	
-	/**
-	 *   
-	 */
-	@Transient 
-	private boolean substitution;
+	private Integer metaId;	
 	
     /**
      * 'name' is a legacy identifier. 
@@ -64,6 +58,16 @@ public class TextDomainObject implements Serializable, Cloneable {
      */	
 	@Column(name="name")
 	Integer index;
+	
+	/**
+	 * Altered if text was modified.
+	 * Not yet in use
+	 * 
+	 * @see TextDocumentDomainObject.setText
+	 * @see DocumentStoringVisitor.updateTextDocumentTexts 
+	 */
+	@Transient
+	private boolean modified;
 		
     String text;        
     
@@ -220,11 +224,11 @@ public class TextDomainObject implements Serializable, Cloneable {
 		this.index = index;
 	}
 
-	public boolean isSubstitution() {
-		return substitution;
+	public boolean isModified() {
+		return modified;
 	}
 
-	public void setSubstitution(boolean temporary) {
-		this.substitution = temporary;
+	public void setModified(boolean modified) {
+		this.modified = modified;
 	}
 }

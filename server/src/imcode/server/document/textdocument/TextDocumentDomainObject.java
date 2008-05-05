@@ -48,13 +48,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      */
     private Map<I18nLanguage, Map<Integer, TextDomainObject>> texts    
     		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
-    
-    /**
-     * TODO I18n refactor: holds original texts for every language. 
-     */
-    private Map<I18nLanguage, Map<Integer, TextDomainObject>> originalTexts
-    		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
-    
+        
     /**
      * TODO I18n refactor: holds original images for every language. 
      */
@@ -107,37 +101,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	return image;
     }
     
-    
-    /**
-     * Creates substitution text. 
-     */
-    public static TextDomainObject createSubstitutionText(int metaId, int index, I18nLanguage language) {    	
-    	TextDomainObject text = new TextDomainObject();
-    	
-    	text.setMetaId(metaId);
-    	text.setIndex(index);
-    	text.setLanguage(language);
-    	text.setSubstitution(true);
-    	
-    	return text;
-    }    
-    
-    /**
-     * Creates substitution text. 
-     */
-    public static TextDomainObject createSubstitutionText(
-    		TextDomainObject originalText, I18nLanguage newLanguage) {
-    	
-    	TextDomainObject text = originalText.clone();
-    	
-    	text.setId(null);
-    	text.setLanguage(newLanguage);
-    	text.setSubstitution(true);
-    	
-    	return text;
-    } 
-    
-    
     /**
      * Returns original images map.
      */
@@ -154,12 +117,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		
     	return map;
     }
-    
-    
+        
     /**
-     * Returns original texts map from database.
+     * Loads texts map from the database.
      */
-    public static Map<Integer, TextDomainObject> queryOriginalTextsMap(I18nLanguage language, Integer metaId) {
+    public static Map<Integer, TextDomainObject> loadTextsMap(I18nLanguage language, Integer metaId) {
     	Map<Integer, TextDomainObject> map = new HashMap<Integer, TextDomainObject>(); 
     	
    		TextDao dao = (TextDao)Imcms.getServices().getSpringBean("textDao");
@@ -204,7 +166,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         clone.texts = new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
         clone.images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
         
-        clone.originalTexts = new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
         clone.originalImages = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
         
         clone.includes = (LazilyLoadedObject) includes.clone();
@@ -333,7 +294,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
     
     
-	public synchronized TextDomainObject getText(I18nLanguage language, 
+	public TextDomainObject getText(I18nLanguage language, 
 			int index) {
 		
 		if (language == null) {
@@ -341,37 +302,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 					"can not be null.");			
 		}		
 		
-		Map<Integer, TextDomainObject> map = getTextsMap(language);		
-		TextDomainObject text = map.get(index);				
+		Map<Integer, TextDomainObject> map = getTextsMap(language, true);
 		
-		if (text == null) {
-			I18nLanguage defaultLanguage = I18nSupport.getDefaultLanguage();
-			Map<Integer, TextDomainObject> defaultMap = getTextsMap(defaultLanguage);			
-			TextDomainObject defaultText = defaultMap.get(index);
-			int metaId = getId();
-			
-			if (defaultText == null) {
-				defaultText = createSubstitutionText(metaId, index, defaultLanguage);
-				defaultMap.put(index, defaultText);
-			}
-			
-			if (language.equals(defaultLanguage)) {
-				text = defaultText;
-			} else {
-				// if allows substitution
-        		if (getMeta().getUnavailableI18nDataSubstitution() 
-        				== Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE) {
-				
-        			text = createSubstitutionText(defaultText, language);
-        		} else {
-        			text = createSubstitutionText(metaId, index, language);
-        		}
-        		
-        		map.put(index, text);				
-			}
-		}
-				
-		return text;
+		return map.get(index);
 	}    
 
     /**
@@ -380,84 +313,26 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private Map<Integer, TextDomainObject> getTextsMap() {
     	I18nLanguage language = I18nSupport.getCurrentLanguage();
     	
-    	return getTextsMap(language);
+    	return getTextsMap(language, true);
     }
     
     /**
      * Returns all texts for language specified.
      */
-    // TODO: Refactor out into lazy loaded object and optimize
-    private synchronized Map<Integer, TextDomainObject> getTextsMap(
-    		I18nLanguage language) {
+    public Map<Integer, TextDomainObject> getTextsMap(
+    		I18nLanguage language, boolean load) {
     	Map<Integer, TextDomainObject> map = texts.get(language);
     	
-    	if (map == null) {
+    	if (map == null && load) {
     		Meta meta = getMeta();
     		Integer metaId = meta.getMetaId();
-    		
-    		I18nLanguage defaultLanguage = I18nSupport.getDefaultLanguage();
-    		
-    		Map<Integer, TextDomainObject> defaultMap = texts.get(defaultLanguage);
-    		
-    		if (defaultMap == null) {
-    			defaultMap = queryOriginalTextsMap(defaultLanguage, metaId);				
-    			texts.put(defaultLanguage, defaultMap);
-    		}
-    		
-    		if (language.equals(defaultLanguage)) {
-    			map = defaultMap;
-    		} else {
-    			map = queryOriginalTextsMap(language, metaId);    		
+    		map = loadTextsMap(language, metaId);    		
     			
-    			boolean disabled = !meta.getI18nMeta(language).getEnabled(); 
-    			boolean allowsSubstitionWithDefault 
-    				= meta.getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;
-    			    			
-				for (Map.Entry<Integer, TextDomainObject> entry: map.entrySet()) {
-					int index = entry.getKey();
-					TextDomainObject text = entry.getValue();
-					
-					if (disabled) {
-						if (allowsSubstitionWithDefault) {
-							TextDomainObject defaultText = getText(defaultLanguage, index);
-							
-							text = createSubstitutionText(defaultText, language);
-						} else {
-							text = createSubstitutionText(metaId, index, language);
-						}
-					} else if (text.getText().length() == 0) {
-						if (allowsSubstitionWithDefault) {
-							TextDomainObject defaultText = getText(defaultLanguage, index);
-							
-							text = createSubstitutionText(defaultText, language);
-						} 						
-					}
-					
-					entry.setValue(text);
-				}
-    			
-    			texts.put(language, map);
-    		}
+    		texts.put(language, map);
     	}
     	
         return map;
-    }
-    
-    /**
-     * Returns original texts for language specified.
-     * 
-     * @param language
-     */
-    public synchronized Map<Integer, TextDomainObject> getOriginalTextsMap(I18nLanguage language, Integer metaId) {
-    	Map<Integer, TextDomainObject> map = originalTexts.get(language);
-    	
-    	if (map == null) {    	
-    		map = queryOriginalTextsMap(language, metaId);
-    		originalTexts.put(language, map);	
-    	}
-    	
-		return map;    	
-    }
+    }    
     
     /**
      * Returns original images for language specified.
@@ -520,34 +395,19 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
     
     /**
-     * Sets both text and original text.
+     * Sets text.
      */   
-    public synchronized void setText(I18nLanguage language, int index,
+    public void setText(I18nLanguage language, int index,
     		TextDomainObject text) {
-    	
-    	Map<Integer, TextDomainObject> map = getTextsMap(language);
-    	Integer metaId = getId();
 
-    	text.setId(null);
-    	text.setMetaId(metaId);
-    	text.setIndex(index);
-    	text.setLanguage(language);
-    	
-    	map.put(index, text);
-    	
-    	setOriginalText(language, index, text);
-    }            
-    
-    
-    public synchronized void setOriginalText(I18nLanguage language, int index,
-    		TextDomainObject text) {
     	Integer metaId = getId();    	
-    	Map<Integer, TextDomainObject> map = getOriginalTextsMap(language, metaId);
+    	Map<Integer, TextDomainObject> map = getTextsMap(language, true);
     	TextDomainObject existingText = map.get(index);
     	
     	if (existingText != null) {    		
     		existingText.setText(text.getText());
     		existingText.setType(text.getType());
+    		existingText.setModified(true);
     	} else {
     		text = text.clone();
     		
@@ -555,11 +415,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         	text.setMetaId(metaId);
         	text.setIndex(index);
         	text.setLanguage(language);
-        	text.setSubstitution(false);
+        	text.setModified(true);
         	
         	map.put(index, text);    		
-    	}    	
-    }
+    	}
+    } 
     
     public synchronized void setOriginalImage(I18nLanguage language, int index,
     		ImageDomainObject image) {
@@ -581,13 +441,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         	
         	map.put(index, image);    		
     	}    	
-    }    
-    
-    public TextDomainObject getOriginalText(I18nLanguage language, int index) {
-    	Integer metaId = getId();    	
-    	Map<Integer, TextDomainObject> map = getOriginalTextsMap(language, metaId);
-    	
-    	return map.get(index);    	
     }
 
     public ImageDomainObject getOriginalImage(I18nLanguage language, int index) {

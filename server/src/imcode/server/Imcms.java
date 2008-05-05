@@ -89,7 +89,7 @@ public class Imcms {
         return apiDataSource;
     }
 
-    private static Properties getServerProperties() {
+    public static Properties getServerProperties() {
         try {
             return Prefs.getProperties(SERVER_PROPERTIES_FILENAME);
         } catch ( IOException e ) {

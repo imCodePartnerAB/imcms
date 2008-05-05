@@ -11,6 +11,7 @@ import imcode.util.Utility;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.servlet.Filter;
@@ -149,52 +150,101 @@ public class ImcmsSetupFilter implements Filter {
     		language = I18nSupport.getDefaultLanguage();
     	}
     	
+    	// TODO i18n: remove lang session parameter
+    	// request and thread local parameters 
+    	
 		request.getSession().setAttribute("lang", language);    	
-		request.setAttribute("currentLanguage", language);		
-    	
-    	
-    	/* 
-    	if (language == null) {
-    		List<I18nLanguage> languages = languageDao.getAllLanguages();
-    		
-    		if (languages.size() == 0) {
-    			String msg = "No languages definitions found in i18n_languages table. This table must contain at least one record.";
-    			logger.fatal(msg);
-    			
-    			throw new ServletException(msg);
-    		}
-    		
-    		language = languages.get(0);
-    	}
-    	*/
+		request.setAttribute("currentLanguage", language);
     	
     	I18nSupport.setCurrentLanguege(language);
     }
 
+    /**
+     * Integrates springframework.
+     * Set up i18n support.
+     * 
+     * TODO i18n: refactor out 
+     */
     public void init( FilterConfig config ) throws ServletException {
+    	ServletContext servletContext = config.getServletContext();
+    	initSpringframework(servletContext);
+    	initI18nSupport(servletContext);
+    }
+    
+    private void initSpringframework(ServletContext servletContext) throws ServletException {
+    	logger.info("Initializing springframework web application context.");
+    	
     	WebApplicationContext webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(
-    			config.getServletContext());
+    			servletContext);
     	
     	DefaultImcmsServices services = (DefaultImcmsServices)Imcms.getServices();
     	
-    	services.setWebApplicationContext(webApplicationContext);
+    	services.setWebApplicationContext(webApplicationContext);    	
+    }
+    
+    /**
+     * Default language can be set either in configuration file 
+     * or one (and only one) language in the database table i18n_languages
+     * should be flagged as default.
+     */
+	private void initI18nSupport(ServletContext servletContext) throws ServletException {
+    	logger.info("Initializing i18n support.");
     	
-    	LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao");
-    	
-    	// TODO i18n: implement 
-    	//int languageCount = languageDao.checkDefaultLanguageCount();
-    	//int defaultLanguageCount = languageDao.checkDefaultLanguageCount();
-    	
+    	LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao");    	    	
+    	List<I18nLanguage> languages = languageDao.getAllLanguages();    
     	I18nLanguage defaultLanguage = languageDao.getDefaultLanguage();
-    	List<I18nLanguage> languages = languageDao.getAllLanguages();
+    	
+    	if (languages.size() == 0) {
+    		String msg = "I18n configuration error. Database table i18n_languages must contain at least one record.";
+    		logger.fatal(msg);
+    		throw new ServletException(msg);
+    	}
+    	    	
+    	Properties properties = Imcms.getServerProperties();    	
+    	String defaultLanguageCode = properties.getProperty("i18n.defaultLanguage.code");  
+    	
+    	if (StringUtils.isEmpty(defaultLanguageCode)) {
+    		logger.info("I18n configuration property [i18n.defaultLanguage.code] is not set.");    
+    		
+    		if (defaultLanguage == null) {
+        		String msg = "I18n configuration error. Default language is not set. Plese set configuration property [i18n.defaultLanguage.code].";
+        		logger.fatal(msg);
+        		throw new ServletException(msg);        			
+    		}
+    	} else {   
+    		logger.info("I18n configuration property [i18n.defaultLanguage.code] is set to [" + defaultLanguageCode + "].");    	
+    		
+    		I18nLanguage newDefaultLanguage = languageDao.getByCode(defaultLanguageCode);
+    		
+    		if (newDefaultLanguage == null) {
+        		String msg = "I18n configuration error. No language with code [" + defaultLanguageCode + "] was found in the database.";
+        		logger.fatal(msg);
+        		throw new ServletException(msg);    			
+    		}
+    		
+    		if (!newDefaultLanguage.equals(defaultLanguage)) {
+    			logger.info("Updating i18n default language database settings." +
+    					"Current default language: [" + defaultLanguage + "], " +
+    					"new default language: [" + newDefaultLanguage + "].");
+    			
+    			languageDao.setDefaultLanguage(newDefaultLanguage);
+    			defaultLanguage = newDefaultLanguage;
+    			languages = languageDao.getAllLanguages(); 
+    		}
+        	
+        	if (StringUtils.isEmpty(defaultLanguageCode)) {
+        		String msg = "Configuration error. No default language for i18n support is defined.";
+        		logger.fatal(msg);
+        		throw new ServletException(msg);        		
+        	}
+    	} 
     	
     	I18nSupport.setDefaultLanguage(defaultLanguage);
     	I18nSupport.setLanguages(languages);
     	
-    	config.getServletContext().setAttribute("defaultLanguage", defaultLanguage);
-    	config.getServletContext().setAttribute("languages", languages);
-    }
+    	servletContext.setAttribute("defaultLanguage", defaultLanguage);
+    	servletContext.setAttribute("languages", languages);				
+	}    
 
-    public void destroy() {
-    }
+    public void destroy() {}
 }

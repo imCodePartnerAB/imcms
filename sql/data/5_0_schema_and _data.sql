@@ -18,9 +18,9 @@
 -- Create schema imcms
 --
 
-drop database imcms;
-CREATE DATABASE IF NOT EXISTS imcms;
-USE imcms;
+drop database tat5;
+CREATE DATABASE IF NOT EXISTS tat5;
+USE tat5;
 
 --
 -- Definition of table `browser_docs`

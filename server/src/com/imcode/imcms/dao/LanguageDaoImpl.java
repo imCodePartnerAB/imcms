@@ -10,6 +10,13 @@ import com.imcode.imcms.api.I18nLanguage;
 public class LanguageDaoImpl extends HibernateTemplate implements LanguageDao {
 
 	@Transactional
+	public void setDefaultLanguage(I18nLanguage language) {
+		bulkUpdate("update I18nLanguage l set l.systemDefault = false");
+		bulkUpdate("update I18nLanguage l set l.systemDefault = true where l.code = ?", 
+				language.getCode());
+	}
+
+	@Transactional
 	public synchronized I18nLanguage getDefaultLanguage() {
 		return (I18nLanguage) getSession().getNamedQuery("I18nLanguage.getDefaultLanguage").uniqueResult();
 	}
