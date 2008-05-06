@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 
 import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.LanguageDao;
 import com.imcode.imcms.flow.DispatchCommand;
@@ -47,7 +48,10 @@ public class ChangeImage extends HttpServlet {
         /**
          * Image DTO. Holds generic properties such as size and border. 
          */
-        final ImageDomainObject image = document.getImage(imageIndex);
+        final ImageDomainObject defaultImage = document.getImage(I18nSupport.getDefaultLanguage(), imageIndex);
+        final ImageDomainObject image = defaultImage != null 
+        	? defaultImage
+        	: new ImageDomainObject();
 
         // Check if user has image rights
         if ( !ImageEditPage.userHasImagePermissionsOnDocument(user, document) ) {

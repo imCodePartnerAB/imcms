@@ -51,7 +51,12 @@ import java.net.URLEncoder;
 import java.util.*;
 
 public class TagParser {
-
+	
+	/**
+	 * Empty image.
+	 */
+	private static final ImageDomainObject EMPTY_IMAGE = new ImageDomainObject();
+	
     private static Pattern htmlPrebodyPattern;
     private static Pattern htmlPostbodyPattern;
     private static Pattern imcmsTagPattern;
@@ -452,7 +457,8 @@ public class TagParser {
    			language = I18nSupport.getDefaultLanguage();
    			i18nMeta = meta.getI18nMeta(language);
     			
-   			if (i18nMeta.getEnabled()) {
+   			if (i18nMeta.getEnabled()
+   					&& meta.getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE) {
    				textDO = textDDO.getText(language, index);
    			}
     	}
@@ -530,7 +536,7 @@ public class TagParser {
             imageIndex = Integer.parseInt(noStr);
             implicitImageIndex[0] = imageIndex + 1;
         }
-        ImageDomainObject image = textDocumentToUse.getImage(imageIndex) ;
+        ImageDomainObject image = getI18nImage(textDocumentToUse, imageIndex); //textDocumentToUse.getImage(imageIndex) ;
         ImageSource imageSource = image.getSource();
         String imageTag = "" ;
         if ( !( imageSource instanceof FileDocumentImageSource )
@@ -556,7 +562,28 @@ public class TagParser {
     
     
     private ImageDomainObject getI18nImage(TextDocumentDomainObject textDDO, int index) {
-    	return null;
+    	I18nLanguage language = I18nSupport.getCurrentLanguage();    	
+    	Meta meta = textDDO.getMeta();
+    	I18nMeta i18nMeta = meta.getI18nMeta(language);
+    	ImageDomainObject imageDO = null;
+    	    	
+    	if (i18nMeta.getEnabled()) {
+    		imageDO = textDDO.getImage(language, index);
+    	} else if (!I18nSupport.isDefault(language)) {
+   			language = I18nSupport.getDefaultLanguage();
+   			i18nMeta = meta.getI18nMeta(language);
+    			
+   			if (i18nMeta.getEnabled() && 
+   					meta.getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE) {
+   				imageDO = textDDO.getImage(language, index);
+   			}
+    	}
+    	
+    	if (imageDO == null) {
+    		imageDO = EMPTY_IMAGE;
+    	}
+    	
+    	return imageDO;
     } 
 
     /**
