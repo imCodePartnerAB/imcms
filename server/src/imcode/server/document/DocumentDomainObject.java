@@ -131,17 +131,15 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      */
     public String getHeadline() {
     	I18nLanguage language = I18nSupport.getCurrentLanguage();
+    	I18nLanguage defaLanguage = I18nSupport.getDefaultLanguage();
     	String value = getHeadline(language);
     	
-    	if (substituteWithDefault(language, value)) {
-    		value = meta.getUnavailableI18nDataSubstitution() == 
-    				Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE
- 
-    			? getHeadline(I18nSupport.getDefaultLanguage())
-    			: "";
-    	}
-
-    	return value;
+    	return getI18nMeta(language).getEnabled() 
+			? value 
+			: substituteWithDefault(language, defaLanguage)
+			    ? getHeadline(defaLanguage)
+			    : "";
+		
     }
     
     public String getHeadline(I18nLanguage language) {
@@ -175,30 +173,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      */
     public String getMenuImage() {
     	I18nLanguage language = I18nSupport.getCurrentLanguage();
+    	I18nLanguage defaLanguage = I18nSupport.getDefaultLanguage();
     	String value = getMenuImage(language);
     	
-    	if (substituteWithDefault(language, value)) {
-    		value = meta.getUnavailableI18nDataSubstitution() == 
-    				Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE
- 
-    			? getMenuImage(I18nSupport.getDefaultLanguage())
-    			: "";
-    	}
-    	
-    	return value;
-    }
-    
-    /**
-     * @return if data should be substituted with default language data. 
-     */
-    private boolean substituteWithDefault(I18nLanguage language, String value) {
-    	if (I18nSupport.isDefault(language)) {
-    		return false;
-    	}
-    			
-		return !getI18nMeta(language).getEnabled() 
-			|| value == null 
-			|| value.length() == 0; 		
+    	return getI18nMeta(language).getEnabled() 
+			? value 
+			: substituteWithDefault(language, defaLanguage)
+			    ? getMenuImage(defaLanguage)
+			    : "";
     }
     
     /** 
@@ -284,17 +266,21 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      */
     public String getMenuText() {
     	I18nLanguage language = I18nSupport.getCurrentLanguage();
+    	I18nLanguage defaLanguage = I18nSupport.getDefaultLanguage();
+    	
     	String value = getMenuText(language);
     	
-    	if (substituteWithDefault(language, value)) {
-    		value = meta.getUnavailableI18nDataSubstitution() == 
-    				Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE
- 
-    			? getMenuText(I18nSupport.getDefaultLanguage())
-    			: "";
-    	}
-
-    	return value;
+    	return getI18nMeta(language).getEnabled() 
+			? value 
+			: substituteWithDefault(language, defaLanguage)
+			    ? getMenuText(defaLanguage)
+			    : "";
+    }
+    
+    public boolean substituteWithDefault(I18nLanguage language, I18nLanguage defaultLanguage) {    	
+    	return !language.equals(defaultLanguage)
+    		&& meta.getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE
+    		&& getI18nMeta(defaultLanguage).getEnabled();
     }
     
     public String getMenuText(I18nLanguage language) {

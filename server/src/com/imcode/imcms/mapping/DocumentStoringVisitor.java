@@ -144,7 +144,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 	            	
 	         		String oldTextValue = oldText == null ? null : oldText.toString();            	
 	            	
-	         		// If this is first time insertion then ignore modified flag
 	         		if (oldTextValue == null) {
 	         			saveText = true;
 	         		} else {    	         	                		

@@ -1,5 +1,8 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.*;
@@ -79,6 +82,20 @@ public class GetDoc extends HttpServlet {
         HttpSession session = req.getSession(true);
         UserDomainObject user = Utility.getLoggedOnUser( req );
         DocumentMapper documentMapper = imcref.getDocumentMapper();
+        
+        if (document != null && user.getLoginName().equals("user")) {
+        	I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
+        	I18nLanguage defaultLanguage = I18nSupport.getDefaultLanguage();
+        	Meta meta = document.getMeta();
+        	
+        	if (!meta.getI18nMeta(currentLanguage).getEnabled()
+        		&& !document.substituteWithDefault(currentLanguage, defaultLanguage)) {
+        		LOG.debug("Document [" + document.getId() + "] is inactive for " + 
+        				currentLanguage + " language.");
+        		
+        		document = null;
+        	}
+        }
 
         if ( null == document ) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);

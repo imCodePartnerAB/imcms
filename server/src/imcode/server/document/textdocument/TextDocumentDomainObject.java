@@ -118,14 +118,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public Object clone() throws CloneNotSupportedException {
         TextDocumentDomainObject clone = (TextDocumentDomainObject)super.clone();
-               
-        // TODO i18n: Clone texts
-        // TODO i18n: Clone images        
-        //clone.texts = (LazilyLoadedObject) texts.clone();
-        //clone.images = (LazilyLoadedObject) images.clone();
-                
-        clone.texts = new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
-        clone.images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
+        
+        clone.texts = new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>(texts);
+        clone.images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>(images);
         
         clone.includes = (LazilyLoadedObject) includes.clone();
         clone.menus = (LazilyLoadedObject) menus.clone() ;

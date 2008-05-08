@@ -7,6 +7,11 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.UnhandledException;
 
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nMeta;
+import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.Meta;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -674,8 +679,18 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean canSeeDocumentInMenus( DocumentDomainObject document ) {
-        return document.isActive() && canSeeDocumentWhenEditingMenus( document );
+        return document.isActive() && canSeeDocumentWhenEditingMenus( document )
+        	&& languageIsActive(document);
     }
+    
+    private boolean languageIsActive(DocumentDomainObject document) {
+    	I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
+    	Meta meta = document.getMeta();
+    	I18nMeta i18nMeta = meta.getI18nMeta(currentLanguage);
+    	
+    	return i18nMeta.getEnabled()||
+    		meta.getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;  
+    } 
 
     public boolean canSeeDocumentWhenEditingMenus( DocumentDomainObject document ) {
         return document.isLinkedForUnauthorizedUsers() || canAccess( document );
