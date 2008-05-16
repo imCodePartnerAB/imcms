@@ -258,13 +258,30 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 				if (!i18nImage.isEmpty()) {
 					%>
 					<tr>
-					    <td>
-  					      <%="<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) + "</i></div>"%>
-					    </td>
-						<td align="center">						
-						<div id="previewDiv${suffix}">
-						  <%=!i18nImage.isEmpty() ? ImcmsImageUtils.getImageHtmlTag(i18nImage, request, new Properties()) : ""%></div>
-						</td>
+					  <td style="padding-bottom:10px;"><%="<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) + "</i></div>"%></td>
+						<td style="padding-bottom:10px;" align="center">						
+						<div id="previewDiv${suffix}"><%
+							String imageTag = (!i18nImage.isEmpty()) ? ImcmsImageUtils.getImageHtmlTag(i18nImage, request, new Properties()) : "" ;
+							if (!"".equals(imageTag)) {
+								boolean isScaled = false ;
+								try {
+									int imgWidth = i18nImage.getWidth() ;
+									if (imgWidth > 600) {
+										isScaled = true ;
+										imageTag = imageTag
+													.replaceAll("\\s+width=(\\\")[^\\\"]+\\\"", " width=$1600$1")
+													.replaceAll("\\s+width:\\s*[\\d]+px;", " width:600px;")
+													.replaceAll("\\s*height=(\\\")[^\\\"]+\\\"", "")
+													.replaceAll("\\s*height:\\s*[\\d]+px;", "") ;
+									}
+								} catch(Exception e) {} %>
+								<%= imageTag %><%
+								if (isScaled) { %>
+								<div style="padding: 5px 0 15px 0; text-align:center; font-style:italic;">
+									<? templates/sv/change_img.html/scaledDown ?>
+								</div><%
+								}
+							} %></div></td>
 					</tr>
 			    <%
 				}
