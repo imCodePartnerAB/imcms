@@ -695,26 +695,26 @@ function setI18nCodeParameterValue(value) {
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr><%
 			String target = document.getTarget() ; %>
-			<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_self"<%
+			<td><input type="radio" id="target0" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_self"<%
 			if ("_self".equalsIgnoreCase( target ) || "".equals( target )) {
 				%> checked<%
 				target = null;
 			} %>></td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1015 ?> &nbsp;</td>
-			<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_blank"<%
+			<td class="imcmsAdmText">&nbsp;<label for="target0"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1015 ?></label> &nbsp;</td>
+			<td><input type="radio" id="target1" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_blank"<%
 			if ("_blank".equalsIgnoreCase( target ) ) {
 				%> checked<%
 				target = null;
 			} %>></td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1016 ?> &nbsp;</td>
-			<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_top"<%
+			<td class="imcmsAdmText">&nbsp;<label for="target1"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1016 ?></label> &nbsp;</td>
+			<td><input type="radio" id="target2" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_top"<%
 			if ("_top".equalsIgnoreCase( target ) ) {
 				%> checked<%
 				target = null;
 			} %>></td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1017 ?> &nbsp;</td>
-			<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" <% if (null != target) { %> checked<% } %>></td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1018 ?>&nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;<label for="target2"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1017 ?></label> &nbsp;</td>
+			<td><input type="radio" id="target3" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" <% if (null != target) { %> checked<% } %>></td>
+			<td class="imcmsAdmText">&nbsp;<label for="target3"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1018 ?></label>&nbsp;</td>
 			<td>
 			<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" size="9" maxlength="20" style="width:120"
 			value="<%
@@ -805,9 +805,6 @@ function setI18nCodeParameterValue(value) {
 		value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2006 ?>"></td>
 	</tr>
 	</table></td>
-</tr>
-<tr>
-	<td>#gui_hr( "blue" )</td>
 </tr>
 </table>
 </form>

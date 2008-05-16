@@ -1,43 +1,43 @@
-<%@page import="java.util.List"%>
-<%@page import="java.util.Map"%>
-<%@page import="com.imcode.imcms.api.I18nLanguage"%>
-<%@page import="java.util.Collection"%>
-
 <%@ page
-	import="com.imcode.imcms.flow.Page,
-	com.imcode.imcms.servlet.admin.ImageEditPage,
-	com.imcode.util.ImageSize,
-	imcode.server.document.FileDocumentDomainObject,
-	imcode.server.document.textdocument.FileDocumentImageSource,
-	imcode.server.document.textdocument.ImageDomainObject,
-	imcode.server.document.textdocument.ImageSource,
-	imcode.server.user.UserDomainObject,
-	imcode.util.Html,
-	imcode.util.ImcmsImageUtils,
-	imcode.util.Utility,
-	org.apache.commons.lang.StringEscapeUtils,
-	org.apache.commons.lang.StringUtils,
-	java.util.Properties"
-
+	
+	import="java.util.List,
+	        java.util.Map,
+	        com.imcode.imcms.api.I18nLanguage,
+	        java.util.Collection,
+	        com.imcode.imcms.flow.Page,
+	        com.imcode.imcms.servlet.admin.ImageEditPage,
+	        com.imcode.util.ImageSize,
+	        imcode.server.document.FileDocumentDomainObject,
+	        imcode.server.document.textdocument.FileDocumentImageSource,
+	        imcode.server.document.textdocument.ImageDomainObject,
+	        imcode.server.document.textdocument.ImageSource,
+	        imcode.server.user.UserDomainObject,
+	        imcode.util.Html,
+	        imcode.util.ImcmsImageUtils,
+	        imcode.util.Utility,
+	        org.apache.commons.lang.StringEscapeUtils,
+	        org.apache.commons.lang.StringUtils,
+	        java.util.Properties"
+	
 	contentType="text/html; charset=UTF-8"
-%>
+	pageEncoding="UTF-8"
+	
+%><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"
+%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
+%><%@ taglib prefix="vel" uri="imcmsvelocity"
+%><%
 
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@taglib prefix="vel" uri="imcmsvelocity"%>
-<%
-	ImageEditPage imageEditPage = ImageEditPage.getFromRequest(request);
-	assert null != imageEditPage;
+ImageEditPage imageEditPage = ImageEditPage.getFromRequest(request);
+assert null != imageEditPage;
 
-	ImageDomainObject image = imageEditPage.getImage();
-	assert null != image;
-	UserDomainObject user = Utility.getLoggedOnUser(request);
+ImageDomainObject image = imageEditPage.getImage();
+assert null != image;
+UserDomainObject user = Utility.getLoggedOnUser(request);
 
-	pageContext.setAttribute("imageEditPage", imageEditPage);
-	pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
-%>
+pageContext.setAttribute("imageEditPage", imageEditPage);
+pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+%><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <vel:velocity>
 	<html>
@@ -239,13 +239,16 @@
         </tr>
         		
 		<c:forEach items="${imageEditPage.images}" var="image" varStatus="status">
-		    <tr>
-		      <td>
-		        ${image.language.name} 
-		        ${image.language eq currentLanguage ? "(current)" : ""} 
-		        ${image.language eq defaultLanguage ? "(default)" : ""}
-		      </td>	      
-		    </tr>
+				<tr>
+					<td colspan="2" style="padding-bottom:3px;">
+					<table border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${image.language.code}.gif" alt="" style="border:0;" /></td>
+						<td class="imcmsAdmText" style="padding-left:10px; font-weight:bold;">
+						${image.language.name}${image.language eq defaultLanguage ? " <span title=\"Default\">(d)</span>" : ""}${image.language eq currentLanguage ? " <span title=\"Current/Active\">(c)</span>" : ""}</td>
+					</tr>
+					</table></td></tr>
+				<tr>
 		    
 			<c:set var="suffix" value="_${image.language.code}" />
 
@@ -279,36 +282,26 @@
 				<td nowrap><? templates/sv/change_img.html/12 ?></td>
 				<td>
 				<table border="0" cellspacing="0" cellpadding="0" width="100%">
-					<tr>
+					<tr><%
+						String path = i18nImage.getUrlPathRelativeToContextPath(); %>
 						<td colspan="2"><input type="text" id="ImageUrl${suffix}"
 							name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>${suffix}"
-							id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>${suffix}"
-							<%
-							 String path = i18nImage.getUrlPathRelativeToContextPath();
-                            %>
-							size="50" maxlength="255" style="width: 350"
-							value="<%= StringUtils.isBlank(path) ? "" : StringEscapeUtils.escapeHtml(request.getContextPath()+path) %>">
-						</td>
+							size="50" maxlength="255" style="width:350px;"
+							value="<%= StringUtils.isBlank(path) ? "" : StringEscapeUtils.escapeHtml(request.getContextPath()+path) %>"></td>
 
 						<%-- Browse Image button --%>
-						<td><input type="submit"
+						<td style="padding-left:10px;"><input type="submit"
 							name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>"
-							class="imcmsFormBtnSmall" style="width: 200px"
+							class="imcmsFormBtnSmall" style="width:180px"
 							value="<? templates/sv/change_img.html/2004 ?>"
-							onClick="setI18nCodeParameterValue('${image.language.code}')"/>
-						</td>
-						<td>
-                            <input
-                                type="button" 
-                                class="imcmsFormBtnSmall"
-                                name="<%= ImageEditPage.REQUEST_PARAMETER__DELETE_BUTTON %>"
-                                value="  <? templates/sv/change_img.html/2009 ?>  "
-                                onClick="hideImage('${suffix}')"
-                                />
-						</td>
+							onClick="setI18nCodeParameterValue('${image.language.code}')"/></td>
+						
+						<td style="padding-left:10px;"><input type="button" class="imcmsFormBtnSmall"
+						           name="<%= ImageEditPage.REQUEST_PARAMETER__DELETE_BUTTON %>"
+						           value="  <? templates/sv/change_img.html/clearBtn ?>  "
+						           onClick="hideImage('${suffix}')" /></td>
 					</tr>
-				</table>
-				</td>
+				</table></td>
 			</tr>
 		
 
@@ -333,16 +326,15 @@
 			%>
 			<%-- Actual size lable --%>
 			<tr>
-				<td><? templates/sv/change_img.html/originalSize ?></td>
-				<td height="20">&nbsp;<%=realImageSize.getWidth()%>
-				&nbsp;X&nbsp; &nbsp;<%=realImageSize.getHeight()%> &nbsp;</td>
+				<td><? templates/sv/change_img.html/originalSize ?> (px)</td>
+				<td height="20"><%= realImageSize.getWidth() %> &nbsp;X&nbsp; <%= realImageSize.getHeight() %> &nbsp;</td>
 			</tr>
 
 			<%-- Display size lable --%>
 			<tr>
-				<td>#DISPLAY SIZE#</td>
-				<td height="20">&nbsp;<%=displayImageSize.getWidth()%>
-				&nbsp;X&nbsp; &nbsp;<%=displayImageSize.getHeight()%> &nbsp;</td>
+				<td><? templates/sv/change_img.html/displaySize ?> (px)</td>
+				<td height="20"><%= displayImageSize.getWidth() %> &nbsp;X&nbsp; <%= displayImageSize.getHeight() %><%=
+				image.getBorder() > 0 ? " (+ border " + image.getBorder() + " px =&gt; " + (displayImageSize.getWidth() + (2 * image.getBorder())) + " &nbsp;X&nbsp; " + (displayImageSize.getHeight() + (2 * image.getBorder())) + " px)" : "" %></td>
 			</tr>
 			<%
 				}
@@ -357,13 +349,13 @@
             --%>	            
 			<c:if test="${status.first && imagesCount > 1}">
 				<tr>
-					<td colspan="2"><input type="checkbox" 
-					    name="<%= ImageEditPage.REQUEST_PARAMETER__SHARE_IMAGE %>"
-						
-						<%= imageEditPage.isShareImages() ? " checked='true'" : "" %>
-						<%--=imageEditPage.getImagesSharesSameSource() ? " checked=\"true\" " : ""--%>
-                    />
-					#All languages share same image. NB! This will overwrite current settings.#</td>
+					<td colspan="2" style="padding-top:5px;">
+					<table border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td><input type="checkbox" name="<%= ImageEditPage.REQUEST_PARAMETER__SHARE_IMAGE %>" id="<%= ImageEditPage.REQUEST_PARAMETER__SHARE_IMAGE %>"<%= imageEditPage.isShareImages() ? " checked=\"checked\"" : "" %> /></td>
+						<td class="imcmsAdmText" style="padding-left:5px;"><label for="<%= ImageEditPage.REQUEST_PARAMETER__SHARE_IMAGE %>"><? templates/sv/change_img.html/allShareTheSame ?></label></td>
+					</tr>
+					</table></td>
 				</tr>
 			</c:if>
 	        <%--
@@ -380,63 +372,30 @@
 
 		<tr>
 			<td nowrap><? templates/sv/change_img.html/14 ?></td>
-			<td><input type="text" <% %>
-				name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>"
-				<% %>
-				id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>"
-				<% %> size="50" maxlength="255" style="width: 350"
-				value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getName())) %>"></td>
+			<td><input type="text"<%
+				%> name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>"<%
+				%> id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>"<%
+				%> size="50" maxlength="255" style="width:350px;" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getName())) %>"></td>
 		</tr>
 		<tr>
 			<td nowrap><? templates/sv/change_img.html/16 ?></td>
 			<td>
-			<table border="3" cellspacing="0" cellpadding="0">
+			<table border="0" cellspacing="0" cellpadding="0">
 				<tr>
-					<td><? templates/sv/change_img.html/17 ?></td>
+					<td style="padding-bottom:3px;"><? templates/sv/change_img.html/17 ?></td>
 					<td>&nbsp;</td>
-					<td><? templates/sv/change_img.html/18 ?></td>
-					<td>&nbsp;</td>
-					<td><? templates/sv/change_img.html/19 ?></td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
+					<td style="padding-bottom:3px;"><? templates/sv/change_img.html/18 ?></td>
+					<td colspan="2" style="padding-bottom:3px; padding-left:10px;"><? templates/sv/change_img.html/19 ?></td>
 				</tr>
 				<tr>
-					<td><input type="text" <% %>
-						name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>"
-						<% %>
-						id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>"
-						<% %> size="4" maxlength="4"
-						value="<%
-						if (image.getWidth() > 0) {
-							%><%= image.getWidth() %>
-							<%
-						} %>"></td>
-					<td>&nbsp;X&nbsp;</td>
-					<td><input type="text" <%
-						%>
-						name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>"
-						<%
-						%>
-						id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>"
-						<% %> size="4" maxlength="4"
-						value="<%
-						if (image.getHeight() > 0) {
-							%><%= image.getHeight() %><%
-						} %>"></td>
-					<td>&nbsp;</td>
-					<td><input type="text" <%
-						%>
-						name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>"
-						<% %>
-						id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>"
-						<% %> size="4" maxlength="4"
-						value="<%= image.getBorder() %>"></td>
-					<td>&nbsp;</td>
-					<td><? templates/sv/change_img.html/size_explanation ?></td>
-				</tr>
-				<!-- break -->
-				<tr>
-					<td colspan="7">&nbsp;</td>
+					<td><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>" id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>"
+					           size="4" maxlength="4" value="<%= (image.getWidth() > 0) ? image.getWidth() + "" : "" %>"></td>
+					<td style="padding: 0 5px;">X</td>
+					<td><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>" id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>"
+					           size="4" maxlength="4" value="<%= (image.getHeight() > 0) ? image.getHeight() + "" : "" %>"></td>
+					<td style="padding-left:10px;"><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>" id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>"
+					           size="4" maxlength="4" value="<%= image.getBorder() %>"></td>
+					<td style="padding-left:10px;"><? templates/sv/change_img.html/size_explanation ?></td>
 				</tr>
 			</table>
 			</td>
@@ -446,22 +405,13 @@
 			<td>
 			<table border="0" cellspacing="0" cellpadding="0">
 				<tr>
-					<td><input type="text" <%
-								%>
-						name="<%= ImageEditPage.REQUEST_PARAMETER__VERTICAL_SPACE %>"
-						<% %>
-						id="<%= ImageEditPage.REQUEST_PARAMETER__VERTICAL_SPACE %>"
-						<% %> size="4" maxlength="4"
-						value="<%= image.getVerticalSpace() %>"></td>
+					<td><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__VERTICAL_SPACE %>" id="<%= ImageEditPage.REQUEST_PARAMETER__VERTICAL_SPACE %>"
+					           size="4" maxlength="4" value="<%= image.getVerticalSpace() %>"></td>
 					<td>&nbsp;</td>
 					<td><? templates/sv/change_img.html/27 ?></td>
 					<td>&nbsp; &nbsp;</td>
-					<td><input type="text" <% %>
-						name="<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>"
-						<% %>
-						id="<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>"
-						<% %> size="4" maxlength="4"
-						value="<%= image.getHorizontalSpace() %>"></td>
+					<td><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>" id="<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>"
+					           size="4" maxlength="4" value="<%= image.getHorizontalSpace() %>"></td>
 					<td>&nbsp;</td>
 					<td><? templates/sv/change_img.html/29 ?></td>
 				</tr>
@@ -470,29 +420,20 @@
 		</tr>
 		<tr>
 			<td nowrap><? templates/sv/change_img.html/30 ?></td>
-			<td><select
-				name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>"
-				id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>" size="1">
-				<%
+			<td><select name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>" id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>" size="1"><%
 					String align = image.getAlign();
 				%>
-				<option value="" <%      if (StringUtils.isBlank(align)) { %>
-					selected <% } %>><? templates/sv/change_img.html/31 ?></option>
-				<option value="top" <%       if ("top".equalsIgnoreCase(align)) { %>
-					selected <% } %>><? templates/sv/change_img.html/33 ?></option>
-				<option value="middle"
-					<%    if ("middle".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/34 ?></option>
-				<option value="bottom"
-					<%    if ("bottom".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/35 ?></option>
-				<option value="left"
-					<%      if ("left".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/39 ?></option>
-				<option value="right"
-					<%     if ("right".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/40 ?></option>
+				<option value=""<%= (StringUtils.isBlank(align)) ? " selected=\"selected\"" : "" %>><? templates/sv/change_img.html/31 ?></option>
+				<option value="top"<%= ("top".equalsIgnoreCase(align)) ? " selected=\"selected\"" : "" %>><? templates/sv/change_img.html/33 ?></option>
+				<option value="middle"<%= ("middle".equalsIgnoreCase(align)) ? " selected=\"selected\"" : "" %>><? templates/sv/change_img.html/34 ?></option>
+				<option value="bottom"<%= ("bottom".equalsIgnoreCase(align)) ? " selected=\"selected\"" : "" %>><? templates/sv/change_img.html/35 ?></option>
+				<option value="left"<%= ("left".equalsIgnoreCase(align)) ? " selected=\"selected\"" : "" %>><? templates/sv/change_img.html/39 ?></option>
+				<option value="right"<%= ("right".equalsIgnoreCase(align)) ? " selected=\"selected\"" : "" %>><? templates/sv/change_img.html/40 ?></option>
 			</select></td>
-		</tr>
-
-		<%
+		</tr><%
+	      
 			if (imageEditPage.isLinkable()) {
+			
 		%>
 		<tr>
 			<td colspan="2">&nbsp;<br>
@@ -503,53 +444,42 @@
 			<table border="0" cellspacing="0" cellpadding="0" width="100%">
 				<tr>
 					<td rowspan="2" nowrap><? templates/sv/change_img.html/44 ?></td>
-					<td><input type="radio" name="linkType" id="linkType0"
-						value="0" onClick="changeLinkType(0);"></td>
+					<td><input type="radio" name="linkType" id="linkType0" value="0" onClick="changeLinkType(0);"></td>
 					<td><label for="linkType0"><? templates/sv/change_img.html/4000 ?></label></td>
 				</tr>
 				<tr>
-					<td><input type="radio" name="linkType" id="linkType1"
-						value="1" onClick="changeLinkType(1);"></td>
+					<td><input type="radio" name="linkType" id="linkType1" value="1" onClick="changeLinkType(1);"></td>
 					<td><label for="linkType1"><? templates/sv/change_img.html/4001 ?></label></td>
 				</tr>
 			</table>
 			</td>
-			<td><input type="text"
-				name="<%= ImageEditPage.REQUEST_PARAMETER__LINK_URL %>" size="92"
-				maxlength="255" style="width: 100%"
-				value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLinkUrl())) %>"
-				onFocus="checkLinkOnFocus()" onBlur="checkLinkOnBlur()"></td>
+			<td><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__LINK_URL %>"
+			           size="92" maxlength="255" style="width:100%;"
+			           value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLinkUrl())) %>"
+			           onfocus="checkLinkOnFocus()" onblur="checkLinkOnBlur()"></td>
 		</tr>
 		<tr>
 			<td nowrap><? templates/sv/change_img.html/46 ?></td>
 			<td>
 			<table border="0" cellspacing="0" cellpadding="0">
 				<tr>
-					<td><select
-						name="<%= ImageEditPage.REQUEST_PARAMETER__LINK_TARGET %>"
-						size="1">
-						<%
-							String target = StringUtils
-											.defaultString(image.getTarget());
-									boolean targetTop = "_top".equalsIgnoreCase(target);
-									boolean targetBlank = "_blank".equalsIgnoreCase(target);
-									boolean targetParent = "_parent".equalsIgnoreCase(target);
-									boolean targetSelf = "_self".equalsIgnoreCase(target)
-											|| StringUtils.isWhitespace(target);
-									boolean targetOther = !(targetTop || targetBlank
-											|| targetParent || targetSelf);
+					<td><select name="<%= ImageEditPage.REQUEST_PARAMETER__LINK_TARGET %>" size="1"><%
+						String target = StringUtils.defaultString(image.getTarget());
+						boolean targetTop = "_top".equalsIgnoreCase(target);
+						boolean targetBlank = "_blank".equalsIgnoreCase(target);
+						boolean targetParent = "_parent".equalsIgnoreCase(target);
+						boolean targetSelf = "_self".equalsIgnoreCase(target) || StringUtils.isWhitespace(target);
+						boolean targetOther = !(targetTop || targetBlank || targetParent || targetSelf);
 						%>
-						<option value="_top" <% if (targetTop) { %> selected <% } %>><? templates/sv/change_img.html/47 ?></option>
-						<option value="_blank" <% if (targetBlank) { %> selected <% } %>><? templates/sv/change_img.html/48 ?></option>
-						<option value="_parent" <% if (targetParent) { %> selected <% } %>><? templates/sv/change_img.html/49 ?></option>
-						<option value="_self" <% if (targetSelf) { %> selected <% } %>><? templates/sv/change_img.html/50 ?></option>
-						<option <% if (targetOther) { %> selected <% } %>><? templates/sv/change_img.html/51 ?></option>
+						<option value="_top"<%= (targetTop) ? " selected=\"selected\"" : "" %>><? templates/sv/change_img.html/47 ?></option>
+						<option value="_blank"<%= (targetBlank) ? " selected=\"selected\"" : "" %>><? templates/sv/change_img.html/48 ?></option>
+						<option value="_parent"<%= (targetParent) ? " selected=\"selected\"" : "" %>><? templates/sv/change_img.html/49 ?></option>
+						<option value="_self"<%= (targetSelf) ? " selected=\"selected\"" : "" %>><? templates/sv/change_img.html/50 ?></option>
+						<option<%= (targetOther) ? " selected=\"selected\"" : "" %>><? templates/sv/change_img.html/51 ?></option>
 					</select></td>
 					<td>&nbsp;&nbsp;</td>
-					<td><input type="text"
-						name="<%= ImageEditPage.REQUEST_PARAMETER__LINK_TARGET %>"
-						size="10" maxlength="20"
-						value="<%= StringEscapeUtils.escapeHtml(targetOther ? target : "") %>"></td>
+					<td><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__LINK_TARGET %>"size="10" maxlength="20"
+					           value="<%= StringEscapeUtils.escapeHtml(targetOther ? target : "") %>"></td>
 				</tr>
 			</table>
 			</td>
@@ -561,32 +491,18 @@
 			<td colspan="2">#gui_hr( "blue" )</td>
 		</tr>
 		<tr>
-			<td colspan="2" align="right"><input type="SUBMIT"
-				class="imcmsFormBtn"
-				name="<%= ImageEditPage.REQUEST_PARAMETER__PREVIEW_BUTTON %>"
-				value="  <? templates/sv/change_img.html/2006 ?>  "> <input
-				type="SUBMIT" class="imcmsFormBtn"
-				name="<%= ImageEditPage.REQUEST_PARAMETER__OK_BUTTON %>"
-				value="  <? templates/sv/change_img.html/2007 ?>  "> <input
-				type="SUBMIT" class="imcmsFormBtn"
-				name="<%= ImageEditPage.REQUEST_PARAMETER__DELETE_BUTTON %>"
-				value="  #Clear all#  "> <input
-				type="SUBMIT" class="imcmsFormBtn"
-				name="<%= ImageEditPage.REQUEST_PARAMETER__CANCEL_BUTTON %>"
-				value=" #Cancel# "></td>
+			<td colspan="2" align="right">
+			<input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__PREVIEW_BUTTON %>" value="<? templates/sv/change_img.html/2006 ?>">
+			<input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__OK_BUTTON %>" value="  <? templates/sv/change_img.html/2007 ?>  ">
+			<input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__DELETE_BUTTON %>" value="<? templates/sv/change_img.html/clearAllBtn ?>">
+			<input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value=" <? global/cancel ?> "></td>
 		</tr>
 		<tr>
-			<td><img
-				src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif"
-				width="156" height="1" alt=""></td>
-			<td><img
-				src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif"
-				width="1" height="1" alt=""></td>
+			<td><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif" width="156" height="1" alt=""></td>
+			<td><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif" width="1" height="1" alt=""></td>
 		</tr>
-		<input type="hidden"
-			name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_LOWSRC %>"
-			value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLowResolutionUrl())) %>">
 	</table>
+	<input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_LOWSRC %>" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLowResolutionUrl())) %>">
 	</form>
 	#gui_bottom() 
 	#gui_outer_end()
