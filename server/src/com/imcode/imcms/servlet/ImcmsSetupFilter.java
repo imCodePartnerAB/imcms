@@ -10,9 +10,13 @@ import imcode.util.Utility;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -43,6 +47,8 @@ public class ImcmsSetupFilter implements Filter {
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
     
     private final Logger logger = Logger.getLogger(getClass());
+    
+    private Map<String, I18nLanguage> i18nHosts = new HashMap<String, I18nLanguage>();
     
     public void doFilter( ServletRequest r, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
         r.setCharacterEncoding(Imcms.DEFAULT_ENCODING);
@@ -141,13 +147,22 @@ public class ImcmsSetupFilter implements Filter {
     	}
     	
     	if (language == null) {
-    		language = (I18nLanguage)request.getSession().getAttribute("lang");    		
+    		language = (I18nLanguage)request.getSession().getAttribute("lang");
     	}     	    	        	
     	
     	// TODO: if session does not contain language
     	// do not allow any admin oparation and forward to front page!!!
     	if (language == null) {
     		language = I18nSupport.getDefaultLanguage();
+    	}
+    	
+    	if (i18nHosts.size() > 0) {
+    		String hostname = request.getServerName();
+    		I18nLanguage hostLanguage = i18nHosts.get(hostname);
+    		
+    		if (hostLanguage != null && !language.equals(hostLanguage)) {
+    			language = hostLanguage;
+    		}
     	}
     	
     	// TODO i18n: remove lang session parameter
@@ -233,7 +248,7 @@ public class ImcmsSetupFilter implements Filter {
     		}
         	
         	if (StringUtils.isEmpty(defaultLanguageCode)) {
-        		String msg = "Configuration error. No default language for i18n support is defined.";
+        		String msg = "I18n configuration error. No default language for i18n support is defined.";
         		logger.fatal(msg);
         		throw new ServletException(msg);        		
         	}
@@ -243,7 +258,36 @@ public class ImcmsSetupFilter implements Filter {
     	I18nSupport.setLanguages(languages);
     	
     	servletContext.setAttribute("defaultLanguage", defaultLanguage);
-    	servletContext.setAttribute("languages", languages);				
+    	servletContext.setAttribute("languages", languages);	
+    	
+    	String prefix = "i18n.host.";
+    	int prefixLength = prefix.length(); 
+    	
+    	for (Entry entry: properties.entrySet()) {
+    		String key = (String)entry.getKey();
+    		
+    		if (!key.startsWith(prefix)) {
+    			continue;
+    		}
+    		
+			String languageCode = key.substring(prefixLength);
+			I18nLanguage language = I18nSupport.getByCode(languageCode);
+			
+			if (language == null) {
+				String msg = "I18n configuration error. No language for code [" + languageCode + "] is defined.";
+        		logger.fatal(msg);
+        		throw new ServletException(msg);
+			}
+			
+			String value = (String)entry.getValue();
+			String hosts[] = value.split("[ \\t]*,[ \\t]*");
+			
+			logger.info("I18n configurtion: virtual hosts mapped for language [" + language + "]: [" + value + "].");
+			
+			for (String host: hosts) {
+				i18nHosts.put(host, language);
+			}
+    	}
 	}    
 
     public void destroy() {}

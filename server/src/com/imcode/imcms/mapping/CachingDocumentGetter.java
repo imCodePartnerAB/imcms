@@ -25,15 +25,11 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
             cache.put(documentId, document) ;
         }
         
-        return document;
-        
-        /*
         try {
             return (DocumentDomainObject) document.clone() ;
         } catch ( CloneNotSupportedException e ) {
             throw new ShouldNotBeThrownException(e);
         }
-        */
     }
 
     public List getDocuments(Collection documentIds) {

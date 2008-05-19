@@ -584,6 +584,7 @@
         <filter token="webmaster-name" value="${webmaster-name}"/>
         <filter token="webmaster-email" value="${webmaster-email}"/>
 
+    	<filter token="i18n.defaultLanguage.code" value="${i18n.defaultLanguage.code}"/>
     </target>
 
     <!-- Check targets -->

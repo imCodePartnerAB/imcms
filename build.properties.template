@@ -37,6 +37,13 @@ db-driver = com.mysql.jdbc.Driver
 db-url-without-db-name = jdbc:mysql://${db-host}:${db-port}/
 db-url = ${db-url-without-db-name}${db-name}?characterEncoding=utf8
 
+
+# I18N support settings
+
+# Default language code
+i18n.defaultLanguage.code =
+
+
 external-authenticator =
 external-user-and-role-registry =
 
@@ -53,7 +60,6 @@ ldap-attribute-login-name = uid
 # For Microsoft Active Directory
 #ldap-user-object-class = user
 #ldap-attribute-login-name = sAMAccountName
-
 
 secondary-external-authenticator =
 secondary-external-user-and-role-registry =
