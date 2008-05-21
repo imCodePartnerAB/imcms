@@ -157,7 +157,7 @@ public class ImcmsSetupFilter implements Filter {
     	
     	if (languageCode != null) {
     		language = I18nSupport.getByCode(languageCode);
-    	} else {
+    	} else if (language == null) {
     		language = (I18nLanguage)request.getSession().getAttribute("lang");
     	}     	    	        	
     	
