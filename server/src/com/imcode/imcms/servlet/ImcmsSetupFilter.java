@@ -64,8 +64,6 @@ public class ImcmsSetupFilter implements Filter {
             setDomainSessionCookie( response, session );
         }
         
-        setCurrentLanguage(request);
-
         String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
         FallbackDecoder fallbackDecoder = new FallbackDecoder(Charset.forName(Imcms.DEFAULT_ENCODING),
                                                               null != workaroundUriEncoding ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset());
@@ -79,6 +77,8 @@ public class ImcmsSetupFilter implements Filter {
             assert user.isActive() ;
             Utility.makeUserLoggedIn(request, user);
         }
+        
+        setCurrentLanguage(request, user);
 
         ResourceBundle resourceBundle = Utility.getResourceBundle(request);
         Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
@@ -137,33 +137,37 @@ public class ImcmsSetupFilter implements Filter {
         }
     }
     
-    private void setCurrentLanguage(HttpServletRequest request) 
+    /**
+     * Sets current language.
+     */
+    private void setCurrentLanguage(HttpServletRequest request, UserDomainObject user) 
     throws ServletException {
+    	I18nLanguage language = null;
+    	
+    	if (/*user.isDefaultUser() && */i18nHosts.size() > 0) {
+    		String hostname = request.getServerName();
+    		language = i18nHosts.get(hostname);
+    		
+    		if (logger.isTraceEnabled()) {
+    			logger.trace("Hostname [" + hostname + "] mapped to language [" + language + "].");
+    		}
+    	}
+    	
     	String languageCode = request.getParameter("lang");
-    	I18nLanguage language = null;    	
     	
     	if (languageCode != null) {
     		language = I18nSupport.getByCode(languageCode);
-    	}
-    	
-    	if (language == null) {
+    	} else {
     		language = (I18nLanguage)request.getSession().getAttribute("lang");
     	}     	    	        	
     	
     	// TODO: if session does not contain language
     	// do not allow any admin oparation and forward to front page!!!
+    	
     	if (language == null) {
     		language = I18nSupport.getDefaultLanguage();
     	}
     	
-    	if (i18nHosts.size() > 0) {
-    		String hostname = request.getServerName();
-    		I18nLanguage hostLanguage = i18nHosts.get(hostname);
-    		
-    		if (hostLanguage != null && !language.equals(hostLanguage)) {
-    			language = hostLanguage;
-    		}
-    	}
     	
     	// TODO i18n: remove lang session parameter
     	// request and thread local parameters 
@@ -246,12 +250,6 @@ public class ImcmsSetupFilter implements Filter {
     			defaultLanguage = newDefaultLanguage;
     			languages = languageDao.getAllLanguages(); 
     		}
-        	
-        	if (StringUtils.isEmpty(defaultLanguageCode)) {
-        		String msg = "I18n configuration error. No default language for i18n support is defined.";
-        		logger.fatal(msg);
-        		throw new ServletException(msg);        		
-        	}
     	} 
     	
     	I18nSupport.setDefaultLanguage(defaultLanguage);
@@ -270,19 +268,20 @@ public class ImcmsSetupFilter implements Filter {
     			continue;
     		}
     		
-			String languageCode = key.substring(prefixLength);
+			String languageCode = key.substring(prefixLength);    		
+			String value = (String)entry.getValue();
+			
+    		logger.info("I18n configurtion: language code [" + languageCode + "] mapped to host(s) [" + value + "].");
+    		
 			I18nLanguage language = I18nSupport.getByCode(languageCode);
 			
 			if (language == null) {
-				String msg = "I18n configuration error. No language for code [" + languageCode + "] is defined.";
+				String msg = "I18n configuration error. Language with code [" + languageCode + "] is not defined in database.";
         		logger.fatal(msg);
         		throw new ServletException(msg);
 			}
-			
-			String value = (String)entry.getValue();
+						
 			String hosts[] = value.split("[ \\t]*,[ \\t]*");
-			
-			logger.info("I18n configurtion: virtual hosts mapped for language [" + language + "]: [" + value + "].");
 			
 			for (String host: hosts) {
 				i18nHosts.put(host, language);
