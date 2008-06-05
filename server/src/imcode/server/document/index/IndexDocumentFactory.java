@@ -1,5 +1,7 @@
 package imcode.server.document.index;
 
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
@@ -18,6 +20,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.Map;
 
@@ -37,9 +40,18 @@ public class IndexDocumentFactory {
 
         int documentId = document.getId();
         indexDocument.add( Field.Keyword( DocumentIndex.FIELD__META_ID, "" + documentId ) );
-        indexDocument.add( Field.UnStored( DocumentIndex.FIELD__META_HEADLINE, document.getHeadline() ) );
-        indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__META_HEADLINE_KEYWORD, document.getHeadline() ) );
-        indexDocument.add( Field.UnStored( DocumentIndex.FIELD__META_TEXT, document.getMenuText() ) );
+        
+        List<I18nLanguage> languages = I18nSupport.getLanguages();
+        
+        for (I18nLanguage language: languages) {
+        	String headline = document.getHeadline(language);
+        	String menuText = document.getMenuText(language);
+        	
+            indexDocument.add( Field.UnStored( DocumentIndex.FIELD__META_HEADLINE, headline ) );
+            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__META_HEADLINE_KEYWORD, headline ) );
+            indexDocument.add( Field.UnStored( DocumentIndex.FIELD__META_TEXT, menuText ) );        	
+        }
+        
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__DOC_TYPE_ID, "" + document.getDocumentTypeId() ) );
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__CREATOR_ID, "" + document.getCreatorId()) );
         if ( null != document.getPublisherId() ){
@@ -84,10 +96,12 @@ public class IndexDocumentFactory {
             indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__CATEGORY_TYPE_ID, ""+categoryType.getId() )) ;
         }
 
-        Set documentKeywords = document.getKeywords();
-        for ( Iterator iterator = documentKeywords.iterator(); iterator.hasNext(); ) {
-            String documentKeyword = (String) iterator.next();
-            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__KEYWORD, documentKeyword ) );
+        for (I18nLanguage language: languages) {
+        	Set documentKeywords = document.getKeywords(language);
+        	for ( Iterator iterator = documentKeywords.iterator(); iterator.hasNext(); ) {
+        		String documentKeyword = (String) iterator.next();
+        		indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__KEYWORD, documentKeyword ) );
+        	}
         }
 
         String[][] parentDocumentAndMenuIds = documentMapper.getParentDocumentAndMenuIdsForDocument( document );
