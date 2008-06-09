@@ -11,8 +11,12 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nSupport;
+
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 class IndexDocumentAdaptingVisitor extends DocumentVisitor {
@@ -30,14 +34,18 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
 
     public void visitTextDocument(TextDocumentDomainObject textDocument) {
         indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__TEMPLATE, textDocument.getTemplateName()));
-
-        for ( Map.Entry<Integer,TextDomainObject> textEntry : textDocument.getTexts().entrySet() ) {
-            Integer textIndex = textEntry.getKey();
-            TextDomainObject text = textEntry.getValue();
-            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText()));
-            String htmlStrippedText = stripHtml(text);
-            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, htmlStrippedText));
-            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText));
+        
+        List<I18nLanguage> languages = I18nSupport.getLanguages();
+        
+        for (I18nLanguage language: languages) {
+	        for ( Map.Entry<Integer,TextDomainObject> textEntry : textDocument.getTexts(language).entrySet() ) {
+	            Integer textIndex = textEntry.getKey();
+	            TextDomainObject text = textEntry.getValue();
+	            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText()));
+	            String htmlStrippedText = stripHtml(text);
+	            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, htmlStrippedText));
+	            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText));
+	        }
         }
 
         for ( MenuDomainObject menu : textDocument.getMenus().values() ) {
@@ -46,11 +54,13 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
             }
         }
 
-        for ( ImageDomainObject image : textDocument.getImages().values() ) {
-            String imageLinkUrl = image.getLinkUrl();
-            if ( null != imageLinkUrl && imageLinkUrl.length() > 0 ) {
-                indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl));
-            }
+        for (I18nLanguage language: languages) {
+	        for ( ImageDomainObject image : textDocument.getImages(language).values() ) {
+	            String imageLinkUrl = image.getLinkUrl();
+	            if ( null != imageLinkUrl && imageLinkUrl.length() > 0 ) {
+	                indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl));
+	            }
+	        }
         }
     }
 

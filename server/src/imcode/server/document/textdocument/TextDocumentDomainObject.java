@@ -335,6 +335,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public Map<Integer, TextDomainObject> getTexts() {
         return Collections.unmodifiableMap( getTextsMap() );
     }
+    
+    public Map<Integer, TextDomainObject> getTexts(I18nLanguage language) {
+        return Collections.unmodifiableMap( getTextsMap(language, true) );
+    }    
 
     public void setTemplateName( String templateName ) {
         getTemplateNames().setTemplateName(templateName);
@@ -467,6 +471,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public Map<Integer, ImageDomainObject> getImages() {
         return Collections.unmodifiableMap( getImagesMap() );
     }
+    
+    /**
+     * @return Image id mapped to image for language specified.
+     */
+    public Map<Integer, ImageDomainObject> getImages(I18nLanguage language) {
+        return Collections.unmodifiableMap( getImagesMap(language, true) );
+    }    
     
 	/**
 	 * Sets images.
