@@ -4,12 +4,13 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.util.CounterStringFactory;
 import imcode.util.ShouldNotBeThrownException;
 import imcode.util.Utility;
+
+import java.io.File;
+
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-
-import java.io.File;
 
 public class BackgroundIndexBuilder {
     private final static Logger log = Logger.getLogger(BackgroundIndexBuilder.class);

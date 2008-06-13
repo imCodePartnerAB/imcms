@@ -2,7 +2,8 @@ package imcode.server.parser;
 
 import imcode.server.DocumentRequest;
 import imcode.server.ImcmsConstants;
-import imcode.server.document.*;
+import imcode.server.document.DocumentPermission;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 
 import javax.servlet.http.HttpServletRequest;
 

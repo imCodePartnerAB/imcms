@@ -1,9 +1,9 @@
 package imcode.server.document.index;
 
-import org.apache.lucene.search.Query;
-import org.apache.lucene.queryParser.ParseException;
-
 import java.io.Serializable;
+
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.Query;
 
 public interface QueryParser extends Serializable {
 

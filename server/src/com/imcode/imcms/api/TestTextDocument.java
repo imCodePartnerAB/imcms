@@ -1,15 +1,19 @@
 package com.imcode.imcms.api;
 
 import imcode.server.MockImcmsServices;
-import imcode.server.document.*;
+import imcode.server.document.DirectDocumentReference;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.DocumentReference;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
-import junit.framework.TestCase;
 
 import java.util.Date;
+
+import junit.framework.TestCase;
 
 public class TestTextDocument extends TestCase {
 

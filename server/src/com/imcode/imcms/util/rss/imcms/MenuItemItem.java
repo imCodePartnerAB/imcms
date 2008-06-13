@@ -1,12 +1,13 @@
 package com.imcode.imcms.util.rss.imcms;
 
+import java.util.Map;
+
+import org.apache.commons.lang.ArrayUtils;
+
 import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.util.rss.NameSpace;
 import com.imcode.imcms.util.rss.SimpleNameSpace;
 import com.imcode.imcms.util.rss.dc.DublinCoreItem;
-import org.apache.commons.lang.ArrayUtils;
-
-import java.util.Map;
 
 public class MenuItemItem extends DublinCoreItem {
 

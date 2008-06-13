@@ -1,8 +1,8 @@
 package com.imcode.imcms.util.rss;
 
-import org.apache.commons.beanutils.DynaBean;
-
 import java.util.Map;
+
+import org.apache.commons.beanutils.DynaBean;
 
 public interface Item {
 

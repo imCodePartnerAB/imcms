@@ -1,19 +1,29 @@
 package com.imcode.imcms.api;
 
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.AliasAlreadyExistsInternalException;
-import com.imcode.imcms.mapping.DocumentSaveException;
-import imcode.server.document.*;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.CategoryTypeDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.DocumentVisitor;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
+import imcode.server.document.SectionDomainObject;
+import imcode.server.document.UrlDocumentDomainObject;
+import imcode.server.document.XmlDocumentBuilder;
 import imcode.server.document.index.DocumentQuery;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
-import java.util.List;
 import java.util.AbstractList;
+import java.util.List;
 
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
+
+import com.imcode.imcms.mapping.AliasAlreadyExistsInternalException;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentSaveException;
 
 public class DocumentService {
 

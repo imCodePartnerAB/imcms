@@ -1,21 +1,35 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.flow.*;
-import com.imcode.imcms.mapping.DocumentMapper;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
+import imcode.server.document.BrowserDocumentDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.HtmlDocumentDomainObject;
+import imcode.server.document.NoPermissionToCreateDocumentException;
+import imcode.server.document.TemplateDomainObject;
+import imcode.server.document.UrlDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
+
+import java.io.IOException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import imcode.server.document.*;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.user.UserDomainObject;
-import imcode.server.ImcmsServices;
-import imcode.server.Imcms;
-import imcode.util.Utility;
-
-import java.io.IOException;
+import com.imcode.imcms.flow.CreateDocumentWithEditPageFlow;
+import com.imcode.imcms.flow.CreateTextDocumentPageFlow;
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.DocumentPageFlow;
+import com.imcode.imcms.flow.EditBrowserDocumentPageFlow;
+import com.imcode.imcms.flow.EditFileDocumentPageFlow;
+import com.imcode.imcms.flow.EditHtmlDocumentPageFlow;
+import com.imcode.imcms.flow.EditUrlDocumentPageFlow;
+import com.imcode.imcms.flow.PageFlow;
+import com.imcode.imcms.mapping.DocumentMapper;
 
 public class DocumentCreator {
 

@@ -1,8 +1,8 @@
 package imcode.util;
 
-import org.apache.commons.lang.ClassUtils;
-
 import java.io.Serializable;
+
+import org.apache.commons.lang.ClassUtils;
 
 public class IdNamePair implements Comparable, Serializable {
 

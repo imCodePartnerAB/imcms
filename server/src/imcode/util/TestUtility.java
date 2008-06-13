@@ -1,6 +1,7 @@
 package imcode.util;
 
 import junit.framework.TestCase;
+
 import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.collections.MultiMap;
 

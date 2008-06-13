@@ -1,13 +1,15 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.servlet.superadmin.AdminManager;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
-import java.io.IOException;
+
+import com.imcode.imcms.servlet.superadmin.AdminManager;
 
 public class AdminManagerSearchPage extends SearchDocumentsPage {
 

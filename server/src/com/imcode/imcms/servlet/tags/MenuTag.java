@@ -1,24 +1,27 @@
 package com.imcode.imcms.servlet.tags;
 
-import com.imcode.imcms.api.ContentManagementSystem;
-import com.imcode.imcms.api.TextDocument;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.parser.MenuParser;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TagParser;
-import org.apache.commons.collections.iterators.ArrayIterator;
-import org.apache.commons.collections.iterators.FilterIterator;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Properties;
+
+import org.apache.commons.collections.iterators.ArrayIterator;
+import org.apache.commons.collections.iterators.FilterIterator;
+
+import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.api.TextDocument;
 
 public class MenuTag extends BodyTagSupport {
 

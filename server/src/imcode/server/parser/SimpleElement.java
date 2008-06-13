@@ -1,10 +1,10 @@
 package imcode.server.parser ;
 
-import java.util.List ;
-import java.util.LinkedList ;
-import java.util.Properties ;
-import java.util.Enumeration ;
-import java.util.Iterator ;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
 
 public class SimpleElement implements Element {
 

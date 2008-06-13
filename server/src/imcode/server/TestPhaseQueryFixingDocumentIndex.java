@@ -1,11 +1,11 @@
 package imcode.server;
 
-import junit.framework.*;
-import imcode.server.PhaseQueryFixingDocumentIndex;
 import imcode.server.document.LifeCyclePhase;
 import imcode.server.document.index.DocumentIndex;
-import org.apache.lucene.search.TermQuery;
+import junit.framework.TestCase;
+
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.TermQuery;
 
 public class TestPhaseQueryFixingDocumentIndex extends TestCase {
 

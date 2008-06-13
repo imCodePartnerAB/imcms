@@ -3,13 +3,14 @@ package imcode.server.document;
 import imcode.util.Utility;
 import imcode.util.io.ExceptionFreeInputStreamSource;
 import imcode.util.io.InputStreamSource;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.UnhandledException;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.lang.UnhandledException;
 
 public class FileDocumentDomainObject extends DocumentDomainObject {
 

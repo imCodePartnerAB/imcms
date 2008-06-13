@@ -1,8 +1,9 @@
 package imcode.server.user;
 
-import com.imcode.db.mock.MockDatabase;
 import imcode.server.MockImcmsServices;
 import junit.framework.TestCase;
+
+import com.imcode.db.mock.MockDatabase;
 
 public class TestImcmsAuthenticatorAndUserAndRoleMapper extends TestCase {
 

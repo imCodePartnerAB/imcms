@@ -1,10 +1,15 @@
 package com.imcode.imcms.mapping;
 
+import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.util.LazilyLoadedObject;
 import imcode.util.ShouldNotBeThrownException;
-import imcode.server.document.textdocument.MenuDomainObject;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class DocumentMenusMap extends AbstractMap implements LazilyLoadedObject.Copyable<DocumentMenusMap> {
     private final HashMap menusMap = new HashMap();

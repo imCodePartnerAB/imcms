@@ -1,11 +1,5 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
-import com.imcode.imcms.flow.OkCancelPage;
-import com.imcode.imcms.flow.Page;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.servlet.superadmin.AdminManager;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.SectionDomainObject;
@@ -14,6 +8,22 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
 import imcode.util.jscalendar.JSCalendar;
+
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.lang.StringUtils;
@@ -28,13 +38,12 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.RangeQuery;
 import org.apache.lucene.search.TermQuery;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
+import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.flow.Page;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.servlet.superadmin.AdminManager;
 
 public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderPage {
 

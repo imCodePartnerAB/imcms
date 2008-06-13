@@ -7,20 +7,23 @@ import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.user.UserDomainObject;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.util.Parser;
 import imcode.util.Utility;
-import org.apache.commons.collections.iterators.ArrayIterator;
-import org.apache.commons.lang.StringUtils;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.apache.commons.collections.iterators.ArrayIterator;
+import org.apache.commons.lang.StringUtils;
+
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class TemplateAdmin extends HttpServlet {
     private static final String TEMPLATE_ADMIN = "template_admin.html";

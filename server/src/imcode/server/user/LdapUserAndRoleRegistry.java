@@ -1,5 +1,20 @@
 package imcode.server.user;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
+
+import javax.naming.CommunicationException;
+import javax.naming.directory.SearchControls;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.ExtendedProperties;
@@ -8,15 +23,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
-import javax.naming.CommunicationException;
-import javax.naming.directory.SearchControls;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-
 import com.imcode.net.ldap.LdapClient;
-import com.imcode.net.ldap.LdapConnection;
 import com.imcode.net.ldap.LdapClientException;
+import com.imcode.net.ldap.LdapConnection;
 
 /**
  * The documentMapper maps LDAP attributes to Imcms internal user object.

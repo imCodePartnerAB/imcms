@@ -1,21 +1,23 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.ContentManagementSystem;
-import com.imcode.imcms.api.User;
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.servlet.superadmin.AdminUser;
-import com.imcode.imcms.servlet.superadmin.UserEditorPage;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+
+import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
+
+import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.api.User;
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.servlet.superadmin.AdminUser;
+import com.imcode.imcms.servlet.superadmin.UserEditorPage;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class VerifyUser extends HttpServlet {
 

@@ -1,19 +1,28 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.db.commands.SqlQueryCommand;
-import imcode.server.*;
-import imcode.server.document.*;
+import imcode.server.DocumentRequest;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
+import imcode.server.Revisits;
+import imcode.server.document.BrowserDocumentDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.HtmlDocumentDomainObject;
+import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
-import org.apache.oro.text.perl.Perl5Util;
-import org.apache.commons.lang.time.StopWatch;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.SocketException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -22,11 +31,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.SocketException;
-import java.util.*;
+
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
+import org.apache.oro.text.perl.Perl5Util;
+
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.mapping.DocumentMapper;
 
 public class GetDoc extends HttpServlet {
 

@@ -2,8 +2,6 @@ package imcode.server.document.index;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
 
 import java.util.List;
 

@@ -2,7 +2,6 @@ package imcode.server.document;
 
 import imcode.util.LazilyLoadedObject;
 
-import java.util.Set;
 import java.util.Collection;
 import java.util.HashSet;
 

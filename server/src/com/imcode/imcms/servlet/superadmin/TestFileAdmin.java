@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import junit.framework.TestCase;
-
 import java.io.File;
+
+import junit.framework.TestCase;
 
 public class TestFileAdmin extends TestCase {
 

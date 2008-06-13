@@ -1,14 +1,21 @@
 package imcode.server;
 
-import com.imcode.db.Database;
-import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import com.imcode.db.Database;
+import com.imcode.db.commands.SqlQueryCommand;
 
 /** @author kreiger */
 public class LanguageMapper {

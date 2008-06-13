@@ -1,13 +1,13 @@
 package com.imcode.imcms.test;
 
-import junit.framework.TestCase;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.Set;
+
+import junit.framework.TestCase;
 
 /**
  * @author kreiger

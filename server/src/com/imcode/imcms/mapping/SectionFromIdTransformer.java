@@ -1,7 +1,8 @@
 package com.imcode.imcms.mapping;
 
-import org.apache.commons.collections.Transformer;
 import imcode.server.ImcmsServices;
+
+import org.apache.commons.collections.Transformer;
 
 public class SectionFromIdTransformer implements Transformer {
 

@@ -1,9 +1,9 @@
 package imcode.server.document.index;
 
-import org.apache.poi.hslf.extractor.PowerPointExtractor;
-
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.poi.hslf.extractor.PowerPointExtractor;
 
 class MicrosoftPowerPointTextExtractor implements StreamTextsExtractor {
 

@@ -1,10 +1,10 @@
 package imcode.server;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.io.File;
-import java.security.KeyStore;
 import java.nio.charset.Charset;
+import java.security.KeyStore;
+
+import org.apache.commons.lang.StringUtils;
 
 public class Config {
 

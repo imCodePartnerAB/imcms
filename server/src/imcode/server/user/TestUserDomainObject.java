@@ -3,6 +3,7 @@ package imcode.server.user;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import junit.framework.TestCase;
+
 import org.apache.commons.lang.ArrayUtils;
 
 public class TestUserDomainObject extends TestCase {

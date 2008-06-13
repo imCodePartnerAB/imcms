@@ -4,8 +4,9 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.util.ImcmsImageUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Properties;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class Image {
 

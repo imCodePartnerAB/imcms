@@ -1,10 +1,5 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.dao.MetaDao;
-import com.imcode.imcms.flow.*;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.servlet.GetDoc;
 import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -18,10 +13,11 @@ import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
-import org.apache.commons.lang.ObjectUtils;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.jsf.WebApplicationContextVariableResolver;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -29,10 +25,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+
+import org.apache.commons.lang.ObjectUtils;
+
+import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.dao.MetaDao;
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.EditBrowserDocumentPageFlow;
+import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
+import com.imcode.imcms.flow.EditDocumentPermissionsPageFlow;
+import com.imcode.imcms.flow.EditFileDocumentPageFlow;
+import com.imcode.imcms.flow.EditHtmlDocumentPageFlow;
+import com.imcode.imcms.flow.EditUrlDocumentPageFlow;
+import com.imcode.imcms.flow.PageFlow;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.servlet.GetDoc;
 
 public class AdminDoc extends HttpServlet {
 

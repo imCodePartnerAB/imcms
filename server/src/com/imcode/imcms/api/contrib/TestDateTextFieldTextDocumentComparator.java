@@ -1,15 +1,16 @@
 package com.imcode.imcms.api.contrib;
 
-import com.imcode.imcms.api.DocumentService;
-import com.imcode.imcms.api.MockContentManagementSystem;
-import com.imcode.imcms.api.TextDocument;
-import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.MockImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
+
+import com.imcode.imcms.api.DocumentService;
+import com.imcode.imcms.api.MockContentManagementSystem;
+import com.imcode.imcms.api.TextDocument;
+import com.imcode.imcms.mapping.DocumentMapper;
 
 public class TestDateTextFieldTextDocumentComparator extends TestCase {
 

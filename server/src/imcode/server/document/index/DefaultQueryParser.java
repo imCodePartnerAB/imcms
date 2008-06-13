@@ -1,8 +1,8 @@
 package imcode.server.document.index;
 
-import org.apache.lucene.search.Query;
-import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.Query;
 
 public class DefaultQueryParser implements QueryParser {
 

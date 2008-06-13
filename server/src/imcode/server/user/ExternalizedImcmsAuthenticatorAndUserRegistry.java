@@ -1,12 +1,13 @@
 package imcode.server.user;
 
 import imcode.server.ImcmsConstants;
-import org.apache.commons.lang.UnhandledException;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
 
 import java.util.Arrays;
 import java.util.HashSet;
+
+import org.apache.commons.lang.UnhandledException;
+import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRoleRegistry, Authenticator {
 

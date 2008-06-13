@@ -1,7 +1,7 @@
 package imcode.server.document.textdocument;
 
-import imcode.util.io.InputStreamSource;
 import imcode.util.io.EmptyInputStreamSource;
+import imcode.util.io.InputStreamSource;
 
 import java.util.Date;
 

@@ -1,16 +1,27 @@
 package com.imcode.imcms.api;
 
-import com.imcode.util.ChainableReversibleNullComparator;
-import com.imcode.util.CountingIterator;
-import com.imcode.imcms.mapping.CategoryMapper;
-import imcode.server.document.*;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.RoleId;
-import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.util.ChainableReversibleNullComparator;
+import com.imcode.util.CountingIterator;
 
 public class Document implements Serializable {
 

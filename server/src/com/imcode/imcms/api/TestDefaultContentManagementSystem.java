@@ -2,9 +2,10 @@ package com.imcode.imcms.api;
 
 import imcode.server.MockImcmsServices;
 import imcode.server.user.UserDomainObject;
-import junit.framework.TestCase;
 
 import java.security.KeyStore;
+
+import junit.framework.TestCase;
 
 public class TestDefaultContentManagementSystem extends TestCase {
 

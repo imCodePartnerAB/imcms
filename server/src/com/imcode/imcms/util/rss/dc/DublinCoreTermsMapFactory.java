@@ -1,12 +1,13 @@
 package com.imcode.imcms.util.rss.dc;
 
-import com.imcode.imcms.util.rss.NameSpace;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
-
 import java.text.Format;
 import java.util.Date;
 import java.util.Map;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
+
+import com.imcode.imcms.util.rss.NameSpace;
 
 class DublinCoreTermsMapFactory {
 

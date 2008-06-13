@@ -1,8 +1,5 @@
 package imcode.util;
 
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.servlet.ImcmsSetupFilter;
-import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -12,11 +9,17 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.NullImageSource;
+
+import java.util.Properties;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Properties;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.servlet.ImcmsSetupFilter;
+import com.imcode.util.ImageSize;
 
 public class ImcmsImageUtils {
 

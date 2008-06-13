@@ -1,12 +1,13 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.db.Database;
 import imcode.server.document.Profile;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+
+import com.imcode.db.Database;
 
 public class ProfileMapper extends Mapper<Profile>{
 

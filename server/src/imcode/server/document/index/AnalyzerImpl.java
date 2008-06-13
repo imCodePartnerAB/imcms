@@ -1,8 +1,12 @@
 package imcode.server.document.index;
 
-import org.apache.lucene.analysis.*;
-
 import java.io.Reader;
+
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharTokenizer;
+import org.apache.lucene.analysis.LowerCaseFilter;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.Tokenizer;
 
 class AnalyzerImpl extends Analyzer {
 

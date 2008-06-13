@@ -1,16 +1,13 @@
 package com.imcode.imcms.servlet;
 
-import junit.framework.*;
-
+import java.io.File;
+import java.io.IOException;
 import java.util.Set;
-import java.util.HashSet;
-import java.io.*;
+
+import junit.framework.TestCase;
 
 import com.imcode.imcms.test.casual.TestLanguagePropertiesInUse;
 import com.imcode.util.FileTreeTraverser;
-import org.apache.oro.text.perl.Perl5Util;
-import org.apache.oro.text.regex.PatternMatcherInput;
-import org.apache.commons.lang.UnhandledException;
 
 public class TestHelpDocLinks extends TestCase {
 

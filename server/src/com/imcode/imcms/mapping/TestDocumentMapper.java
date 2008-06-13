@@ -1,9 +1,14 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.db.mock.MockDatabase;
-import com.imcode.db.mock.MockResultSet;
 import imcode.server.MockImcmsServices;
-import imcode.server.document.*;
+import imcode.server.document.BrowserDocumentDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.NoPermissionToCreateDocumentException;
+import imcode.server.document.TemplateMapper;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -11,12 +16,17 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IntegerSet;
-import junit.framework.TestCase;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.varia.NullAppender;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
+
+import junit.framework.TestCase;
+
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.varia.NullAppender;
+
+import com.imcode.db.mock.MockDatabase;
+import com.imcode.db.mock.MockResultSet;
 
 public class TestDocumentMapper extends TestCase {
 

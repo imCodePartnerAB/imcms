@@ -1,20 +1,9 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.db.Database;
-import com.imcode.db.DatabaseCommand;
-import com.imcode.db.commands.SqlQueryDatabaseCommand;
-import com.imcode.db.handlers.CollectionHandler;
-import com.imcode.db.handlers.RowTransformer;
-import com.imcode.imcms.flow.OkCancelPage;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.lang.StringUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,6 +14,20 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.imcode.db.Database;
+import com.imcode.db.DatabaseCommand;
+import com.imcode.db.commands.SqlQueryDatabaseCommand;
+import com.imcode.db.handlers.CollectionHandler;
+import com.imcode.db.handlers.RowTransformer;
+import com.imcode.imcms.flow.OkCancelPage;
 
 public class AdminSearchTerms extends HttpServlet {
 

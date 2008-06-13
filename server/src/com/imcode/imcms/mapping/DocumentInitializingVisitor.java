@@ -1,19 +1,25 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.db.Database;
-import com.imcode.db.DatabaseException;
-import com.imcode.db.commands.SqlQueryCommand;
-import imcode.server.document.*;
+import imcode.server.document.BrowserDocumentDomainObject;
+import imcode.server.document.DocumentVisitor;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.HtmlDocumentDomainObject;
+import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.util.io.FileInputStreamSource;
 import imcode.util.Utility;
-import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.lang.UnhandledException;
+import imcode.util.io.FileInputStreamSource;
 
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+
+import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.lang.UnhandledException;
+
+import com.imcode.db.Database;
+import com.imcode.db.DatabaseException;
+import com.imcode.db.commands.SqlQueryCommand;
 
 class DocumentInitializingVisitor extends DocumentVisitor {
 

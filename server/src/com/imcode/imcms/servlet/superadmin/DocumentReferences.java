@@ -1,16 +1,18 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.server.user.UserDomainObject;
-import com.imcode.imcms.mapping.DocumentMapper;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.Imcms;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
-import java.io.IOException;
+
+import com.imcode.imcms.mapping.DocumentMapper;
 
 public class DocumentReferences extends HttpServlet {
 

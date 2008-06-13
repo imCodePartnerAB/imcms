@@ -1,13 +1,14 @@
 package com.imcode.imcms.flow;
 
-import imcode.util.HttpSessionUtils;
 import imcode.util.HttpSessionAttribute;
+import imcode.util.HttpSessionUtils;
+
+import java.io.IOException;
+import java.io.Serializable;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.Serializable;
 
 public abstract class PageFlow implements Serializable, HttpSessionAttribute {
 

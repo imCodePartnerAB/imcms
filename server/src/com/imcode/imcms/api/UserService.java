@@ -6,8 +6,8 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 public class UserService {
 

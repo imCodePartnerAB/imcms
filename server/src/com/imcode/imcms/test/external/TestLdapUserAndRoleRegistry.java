@@ -2,17 +2,19 @@ package com.imcode.imcms.test.external;
 
 import imcode.server.user.LdapUserAndRoleRegistry;
 import imcode.server.user.UserDomainObject;
-import junit.framework.TestCase;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.SimpleLayout;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
+
+import junit.framework.TestCase;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.SimpleLayout;
 
 public class TestLdapUserAndRoleRegistry extends TestCase {
 

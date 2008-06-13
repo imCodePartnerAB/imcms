@@ -1,7 +1,34 @@
 package com.imcode.imcms.flow;
 
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.CategoryTypeDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.user.UserDomainObject;
+import imcode.util.ArraySet;
+import imcode.util.DateConstants;
+import imcode.util.HttpSessionUtils;
+import imcode.util.Utility;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TimeZone;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.ObjectUtils;
+
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.I18nKeyword;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.mapping.CategoryMapper;
@@ -11,24 +38,6 @@ import com.imcode.imcms.servlet.admin.ListDocumentAliasPage;
 import com.imcode.imcms.servlet.admin.UserFinder;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.util.KeywordsParser;
-import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.CategoryTypeDomainObject;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.user.UserDomainObject;
-import imcode.util.*;
-import org.apache.commons.lang.ObjectUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.File;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 

@@ -1,9 +1,5 @@
 package imcode.util;
 
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.servlet.admin.AdminDoc;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.CategoryDomainObject;
@@ -11,15 +7,28 @@ import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.LifeCyclePhase;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.UnhandledException;
-import org.apache.oro.text.perl.Perl5Util;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.*;
+
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.oro.text.perl.Perl5Util;
+
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.servlet.admin.AdminDoc;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class Html {
 

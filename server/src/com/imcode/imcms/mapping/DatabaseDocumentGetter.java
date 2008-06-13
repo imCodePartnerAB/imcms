@@ -1,12 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.db.Database;
-import com.imcode.db.handlers.CollectionHandler;
-import com.imcode.db.handlers.RowTransformer;
-import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.dao.MetaDao;
-
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
@@ -14,7 +7,21 @@ import imcode.server.document.DocumentDomainObject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.imcode.db.Database;
+import com.imcode.db.handlers.CollectionHandler;
+import com.imcode.db.handlers.RowTransformer;
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.dao.MetaDao;
 
 public class DatabaseDocumentGetter extends AbstractDocumentGetter {
 

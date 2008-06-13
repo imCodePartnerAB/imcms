@@ -3,14 +3,14 @@ package com.imcode.imcms.flow;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 
+import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
-
-import java.io.IOException;
 
 public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
 

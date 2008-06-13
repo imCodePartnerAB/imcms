@@ -1,11 +1,11 @@
 package imcode.util;
 
+import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.io.Serializable;
 
 public class CompositeList extends AbstractList implements Serializable {
 

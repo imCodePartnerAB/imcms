@@ -1,11 +1,11 @@
 package com.imcode.imcms.util.rss.imcms;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.util.rss.Item;
 import com.imcode.imcms.util.rss.dc.DublinCoreChannel;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DocumentMenuChannel extends DublinCoreChannel {
 

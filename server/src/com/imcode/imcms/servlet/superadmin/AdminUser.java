@@ -1,22 +1,25 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.servlet.admin.UserFinder;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
-import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Properties;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.Properties;
+
+import org.apache.log4j.Logger;
+
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.servlet.admin.UserFinder;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class AdminUser extends HttpServlet {
 

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.servlet.Filter;
@@ -142,27 +141,26 @@ public class ImcmsSetupFilter implements Filter {
      */
     private void setCurrentLanguage(HttpServletRequest request, UserDomainObject user) 
     throws ServletException {
-    	I18nLanguage language = null;
-    	
-    	if (/*user.isDefaultUser() && */i18nHosts.size() > 0) {
+    	HttpSession session = request.getSession();
+    	I18nLanguage language = (I18nLanguage)session.getAttribute("lang");
+    	    	
+    	if (language == null && /*user.isDefaultUser() && */i18nHosts.size() > 0) {
     		String hostname = request.getServerName();
     		language = i18nHosts.get(hostname);
-    		
+        		
     		if (logger.isTraceEnabled()) {
     			logger.trace("Hostname [" + hostname + "] mapped to language [" + language + "].");
-    		}
+    		}         			
     	}
     	
     	String languageCode = request.getParameter("lang");
     	
     	if (languageCode != null) {
     		language = I18nSupport.getByCode(languageCode);
-    	} else if (language == null) {
-    		language = (I18nLanguage)request.getSession().getAttribute("lang");
-    	}     	    	        	
+    	}    	    	        	
     	
     	// TODO: if session does not contain language
-    	// do not allow any admin oparation and forward to front page!!!
+    	// do not allow any admin operation and forward to front page!!!
     	
     	if (language == null) {
     		language = I18nSupport.getDefaultLanguage();
@@ -172,7 +170,7 @@ public class ImcmsSetupFilter implements Filter {
     	// TODO i18n: remove lang session parameter
     	// request and thread local parameters 
     	
-		request.getSession().setAttribute("lang", language);    	
+		session.setAttribute("lang", language);    	
 		request.setAttribute("currentLanguage", language);
     	
     	I18nSupport.setCurrentLanguege(language);
@@ -284,7 +282,7 @@ public class ImcmsSetupFilter implements Filter {
 			String hosts[] = value.split("[ \\t]*,[ \\t]*");
 			
 			for (String host: hosts) {
-				i18nHosts.put(host, language);
+				i18nHosts.put(host.trim(), language);
 			}
     	}
 	}    

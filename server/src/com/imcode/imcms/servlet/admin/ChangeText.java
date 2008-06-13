@@ -8,8 +8,6 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.regex.Matcher;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,8 +18,6 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.dao.LanguageDao;
-import com.imcode.imcms.dao.TextDao;
 import com.imcode.imcms.mapping.DocumentMapper;
 
 /**

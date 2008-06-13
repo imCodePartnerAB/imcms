@@ -3,16 +3,18 @@ package com.imcode.imcms.api;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.util.io.InputStreamSource;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.list.TransformedList;
 
-import javax.activation.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.activation.DataSource;
+
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.list.TransformedList;
 
 public class FileDocument extends Document {
 

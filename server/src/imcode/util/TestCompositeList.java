@@ -1,9 +1,9 @@
 package imcode.util;
 
-import junit.framework.TestCase;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 
 public class TestCompositeList extends TestCase {
 

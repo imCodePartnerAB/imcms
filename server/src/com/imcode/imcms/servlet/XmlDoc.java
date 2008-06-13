@@ -1,17 +1,19 @@
 package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
-import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.XmlDocumentBuilder;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.w3c.dom.Document;
+
+import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
+import org.w3c.dom.Document;
 
 import com.imcode.imcms.mapping.DocumentMapper;
 

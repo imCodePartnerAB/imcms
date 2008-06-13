@@ -1,13 +1,25 @@
 package com.imcode.imcms.api;
 
-import com.imcode.imcms.mapping.DocumentGetter;
 import imcode.server.document.DirectDocumentReference;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPredicate;
 import imcode.server.document.DocumentReference;
 import imcode.server.document.DocumentTypeDomainObject;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.MenuDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.TreeSortKeyDomainObject;
 import imcode.server.user.UserDomainObject;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
@@ -15,7 +27,7 @@ import org.apache.commons.collections.functors.CloneTransformer;
 import org.apache.commons.collections.map.TransformedSortedMap;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import com.imcode.imcms.mapping.DocumentGetter;
 
 public class TextDocument extends Document {
 

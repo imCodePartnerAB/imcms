@@ -1,24 +1,27 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.db.handlers.ObjectFromFirstRowResultSetHandler;
-import com.imcode.imcms.db.StringFromRowFactory;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+
+import org.apache.log4j.Logger;
+
+import com.imcode.db.handlers.ObjectFromFirstRowResultSetHandler;
+import com.imcode.imcms.db.StringFromRowFactory;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 
 public class AdminDeleteDoc extends HttpServlet {
 

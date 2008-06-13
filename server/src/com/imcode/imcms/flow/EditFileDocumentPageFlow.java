@@ -1,24 +1,12 @@
 package com.imcode.imcms.flow;
 
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
-import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.Imcms;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CounterStringFactory;
 import imcode.util.Utility;
 import imcode.util.io.InputStreamSource;
-import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -28,6 +16,21 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
+import com.imcode.util.MultipartHttpServletRequest;
 
 public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 

@@ -1,6 +1,5 @@
 package imcode.server.parser ;
 
-import java.util.List ;
 
 public class SimpleText implements Text {
 

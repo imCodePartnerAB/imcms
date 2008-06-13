@@ -1,11 +1,12 @@
 package com.imcode.imcms.db;
 
-import com.imcode.db.jdbc.ConnectionWrapper;
-
-import javax.sql.DataSource;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.io.PrintWriter;
+
+import javax.sql.DataSource;
+
+import com.imcode.db.jdbc.ConnectionWrapper;
 
 public class SingleConnectionDataSource implements DataSource {
 

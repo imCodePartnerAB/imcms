@@ -2,10 +2,10 @@ package com.imcode.imcms.mapping;
 
 import imcode.util.CompositeList;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;

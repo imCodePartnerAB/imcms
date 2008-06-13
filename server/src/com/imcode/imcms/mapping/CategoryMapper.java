@@ -1,14 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.db.Database;
-import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
-import com.imcode.db.commands.UpdateTableWhereColumnEqualsDatabaseCommand;
-import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.db.handlers.RowTransformer;
-import com.imcode.db.handlers.SingleObjectHandler;
-import com.imcode.db.handlers.ObjectArrayHandler;
-import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
@@ -21,6 +12,16 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import com.imcode.db.Database;
+import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.db.commands.UpdateTableWhereColumnEqualsDatabaseCommand;
+import com.imcode.db.handlers.ObjectArrayHandler;
+import com.imcode.db.handlers.RowTransformer;
+import com.imcode.db.handlers.SingleObjectHandler;
+import com.imcode.imcms.api.CategoryAlreadyExistsException;
 
 public class CategoryMapper {
     private Database database;

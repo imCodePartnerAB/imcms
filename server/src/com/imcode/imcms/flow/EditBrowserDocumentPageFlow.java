@@ -2,18 +2,21 @@ package com.imcode.imcms.flow;
 
 import imcode.server.Imcms;
 import imcode.server.document.BrowserDocumentDomainObject;
-import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.lang.StringUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.imcode.imcms.mapping.DocumentMapper;
 
 public class EditBrowserDocumentPageFlow extends EditDocumentPageFlow {
 

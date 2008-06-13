@@ -4,11 +4,12 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.parser.MenuParser;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
-import java.io.IOException;
 
 public class MenuItemLinkTag extends TagSupport {
 

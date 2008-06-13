@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.index.DefaultQueryParser;
+
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
 

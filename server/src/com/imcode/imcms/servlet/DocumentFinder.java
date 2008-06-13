@@ -1,7 +1,5 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.servlet.admin.Handler;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -10,13 +8,7 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;
 import imcode.server.document.index.SimpleDocumentQuery;
 import imcode.util.Utility;
-import org.apache.commons.collections.SetUtils;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
@@ -24,6 +16,18 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.collections.SetUtils;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+
+import com.imcode.imcms.servlet.admin.Handler;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class DocumentFinder extends WebComponent {
 

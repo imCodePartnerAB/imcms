@@ -1,12 +1,12 @@
 package com.imcode.imcms.db;
 
-import org.apache.commons.dbutils.ResultSetHandler;
-
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.dbutils.ResultSetHandler;
 
 public class StringArrayResultSetHandler implements ResultSetHandler {
 

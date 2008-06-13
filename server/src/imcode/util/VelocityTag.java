@@ -3,12 +3,12 @@ package imcode.util;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
-import org.apache.velocity.VelocityContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.BodyTag;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+
+import org.apache.velocity.VelocityContext;
 
 public class VelocityTag extends BodyTagSupport {
 

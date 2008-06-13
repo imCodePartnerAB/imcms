@@ -1,10 +1,10 @@
 package imcode.server.user;
 
-import com.imcode.imcms.util.l10n.LocalizedMessage;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class RoleDomainObject implements Serializable, Comparable {
 

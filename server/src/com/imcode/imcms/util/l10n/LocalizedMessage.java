@@ -3,11 +3,13 @@ package com.imcode.imcms.util.l10n;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.StringUtils;
+
+import java.io.Serializable;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
+
+import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.lang.StringUtils;
 
 public class LocalizedMessage implements Serializable {
 

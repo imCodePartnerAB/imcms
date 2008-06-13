@@ -1,5 +1,42 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentComparator;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.LifeCyclePhase;
+import imcode.server.document.NoPermissionToCreateDocumentException;
+import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.SimpleDocumentQuery;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.UserDomainObject;
+import imcode.util.ShouldNotBeThrownException;
+import imcode.util.Utility;
+import imcode.util.jscalendar.JSCalendar;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -12,35 +49,6 @@ import com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean;
 import com.imcode.imcms.servlet.beans.AdminManagerSubreport;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.util.ChainableReversibleNullComparator;
-import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentComparator;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.NoPermissionToCreateDocumentException;
-import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.document.LifeCyclePhase;
-import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.SimpleDocumentQuery;
-import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
-import imcode.util.ShouldNotBeThrownException;
-import imcode.util.jscalendar.JSCalendar;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.UnhandledException;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.*;
 
 public class AdminManager extends HttpServlet {
 

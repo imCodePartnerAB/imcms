@@ -1,15 +1,17 @@
 package com.imcode.imcms.flow;
 
+import imcode.server.ImcmsServices;
+import imcode.server.MockImcmsServices;
+import imcode.server.document.BrowserDocumentDomainObject;
+
+import java.util.Map;
+
+import junit.framework.TestCase;
+
 import com.imcode.db.Database;
 import com.imcode.db.mock.MockDatabase;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.test.mock.MockHttpServletRequest;
-import imcode.server.ImcmsServices;
-import imcode.server.MockImcmsServices;
-import imcode.server.document.BrowserDocumentDomainObject;
-import junit.framework.TestCase;
-
-import java.util.Map;
 
 public class TestEditBrowserDocumentPageFlow extends TestCase {
 

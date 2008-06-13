@@ -1,12 +1,13 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.flow.DispatchCommand;
+import java.io.IOException;
+import java.io.Serializable;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.Serializable;
+
+import com.imcode.imcms.flow.DispatchCommand;
 
 public class WebComponent implements Serializable {
 

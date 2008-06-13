@@ -1,10 +1,5 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.api.CategoryAlreadyExistsException;
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.servlet.admin.ImageBrowser;
-import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.CategoryDomainObject;
@@ -12,14 +7,22 @@ import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.lang.StringUtils;
+
+import java.io.IOException;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Properties;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.imcode.imcms.api.CategoryAlreadyExistsException;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.servlet.admin.ImageBrowser;
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 
 public class AdminCategories extends HttpServlet {
 

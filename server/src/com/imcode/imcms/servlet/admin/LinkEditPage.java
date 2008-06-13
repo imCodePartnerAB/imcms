@@ -1,20 +1,21 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.flow.OkCancelPage;
-import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
-import com.imcode.imcms.servlet.DocumentFinder;
-import com.imcode.imcms.api.Document;
-import com.imcode.imcms.mapping.DocumentMapper;
-import org.apache.commons.lang.StringUtils;
+import imcode.server.Imcms;
+import imcode.server.document.DocumentDomainObject;
+
+import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.Imcms;
+import org.apache.commons.lang.StringUtils;
+
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
+import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.servlet.DocumentFinder;
 
 public class LinkEditPage extends OkCancelPage {
 

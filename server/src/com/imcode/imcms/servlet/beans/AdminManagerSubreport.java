@@ -1,9 +1,9 @@
 package com.imcode.imcms.servlet.beans;
 
+import java.util.List;
+
 import com.imcode.imcms.servlet.superadmin.AdminManager;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
-
-import java.util.List;
 
 public class AdminManagerSubreport {
 

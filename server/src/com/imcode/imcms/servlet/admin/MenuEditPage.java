@@ -1,11 +1,5 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.flow.CreateDocumentPageFlow;
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.flow.OkCancelPage;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.DocumentSaveException;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
@@ -18,19 +12,33 @@ import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuExcept
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TreeSortKeyDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.*;
-import org.apache.commons.lang.UnhandledException;
+import imcode.util.DateConstants;
+import imcode.util.Html;
+import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
+import imcode.util.ShouldNotBeThrownException;
+import imcode.util.ToStringPairTransformer;
+import imcode.util.Utility;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.UnhandledException;
+
+import com.imcode.imcms.flow.CreateDocumentPageFlow;
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class MenuEditPage extends OkCancelPage {
 

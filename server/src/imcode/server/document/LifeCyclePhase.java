@@ -1,16 +1,17 @@
 package imcode.server.document;
 
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.RangeQuery;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.document.DateField;
-import com.imcode.imcms.api.Document;
+import imcode.server.document.index.DocumentIndex;
 
 import java.util.Date;
 
-import imcode.server.document.index.DocumentIndex;
+import org.apache.lucene.document.DateField;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.RangeQuery;
+import org.apache.lucene.search.TermQuery;
+
+import com.imcode.imcms.api.Document;
 
 public abstract class LifeCyclePhase {
 

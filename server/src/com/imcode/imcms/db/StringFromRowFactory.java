@@ -1,9 +1,9 @@
 package com.imcode.imcms.db;
 
-import com.imcode.db.handlers.ObjectFromRowFactory;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import com.imcode.db.handlers.ObjectFromRowFactory;
 
 public class StringFromRowFactory implements ObjectFromRowFactory {
 

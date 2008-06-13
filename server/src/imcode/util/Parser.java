@@ -1,6 +1,5 @@
 package imcode.util;
 
-import java.util.Map;
 
 public class Parser {
 

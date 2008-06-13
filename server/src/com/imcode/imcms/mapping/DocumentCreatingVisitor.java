@@ -1,11 +1,13 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.db.Database;
-import com.imcode.db.commands.SqlUpdateCommand;
 import imcode.server.ImcmsServices;
-import imcode.server.document.*;
+import imcode.server.document.HtmlDocumentDomainObject;
+import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+
+import com.imcode.db.Database;
+import com.imcode.db.commands.SqlUpdateCommand;
 
 public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 	

@@ -1,10 +1,10 @@
 package com.imcode.imcms.servlet.tags;
 
-import com.imcode.imcms.api.TextDocumentViewing;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
+
+import com.imcode.imcms.api.TextDocumentViewing;
 
 public class VariablesTag extends TagSupport {
 

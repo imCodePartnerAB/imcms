@@ -1,8 +1,8 @@
 package imcode.util;
 
-import java.io.Serializable;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 public class LazilyLoadedObject<E extends LazilyLoadedObject.Copyable<E>> implements Serializable, Cloneable {
 

@@ -1,11 +1,11 @@
 package imcode.server.document;
 
-import org.apache.commons.collections.MapUtils;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.collections.MapUtils;
 
 public class BrowserDocumentDomainObject extends DocumentDomainObject {
 

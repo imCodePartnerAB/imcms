@@ -1,7 +1,8 @@
 package imcode.server.document;
 
-import com.imcode.util.ChainableReversibleNullComparator;
 import org.apache.commons.lang.NullArgumentException;
+
+import com.imcode.util.ChainableReversibleNullComparator;
 
 public abstract class DocumentComparator extends ChainableReversibleNullComparator {
 

@@ -6,8 +6,9 @@ import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
-import javax.sql.DataSource;
 import java.security.KeyStore;
+
+import javax.sql.DataSource;
 
 public class DefaultContentManagementSystem extends ContentManagementSystem implements Cloneable {
 

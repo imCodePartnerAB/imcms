@@ -1,6 +1,6 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.*;
+import imcode.server.document.SectionDomainObject;
 
 public class Section {
     SectionDomainObject internalSection;

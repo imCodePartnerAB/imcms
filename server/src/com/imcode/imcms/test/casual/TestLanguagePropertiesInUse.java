@@ -1,17 +1,25 @@
 package com.imcode.imcms.test.casual;
 
-import com.imcode.util.FileTreeTraverser;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
+
 import junit.framework.TestCase;
-import org.apache.commons.lang.UnhandledException;
+
 import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.oro.text.perl.Perl5Util;
 import org.apache.oro.text.regex.PatternMatcherInput;
 
-import java.io.*;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Iterator;
+import com.imcode.util.FileTreeTraverser;
 
 public class TestLanguagePropertiesInUse extends TestCase {
 

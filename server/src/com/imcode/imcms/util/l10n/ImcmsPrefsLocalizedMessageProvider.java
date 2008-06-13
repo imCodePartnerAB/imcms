@@ -2,13 +2,14 @@ package com.imcode.imcms.util.l10n;
 
 import imcode.server.user.UserDomainObject;
 import imcode.util.Prefs;
-import org.apache.commons.collections.iterators.IteratorEnumeration;
-import org.apache.commons.lang.UnhandledException;
 
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.ResourceBundle;
+
+import org.apache.commons.collections.iterators.IteratorEnumeration;
+import org.apache.commons.lang.UnhandledException;
 
 public class ImcmsPrefsLocalizedMessageProvider extends LocalizedMessageProvider {
 

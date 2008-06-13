@@ -3,7 +3,9 @@ package com.imcode.imcms.mapping;
 import imcode.server.document.DocumentDomainObject;
 import imcode.util.ShouldNotBeThrownException;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class CachingDocumentGetter extends DocumentGetterWrapper {
 

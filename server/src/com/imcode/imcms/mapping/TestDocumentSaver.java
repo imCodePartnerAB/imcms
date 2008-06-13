@@ -1,21 +1,26 @@
 package com.imcode.imcms.mapping;
 
+import imcode.server.MockImcmsServices;
+import imcode.server.document.DirectDocumentReference;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
+import imcode.util.SystemClock;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.Set;
+
+import junit.framework.TestCase;
+
 import com.imcode.db.mock.MockDatabase;
 import com.imcode.imcms.api.NoPermissionException;
 import com.imcode.imcms.api.SaveException;
-import imcode.server.document.*;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
-import imcode.server.user.RoleId;
-import imcode.server.user.UserDomainObject;
-import imcode.server.MockImcmsServices;
-import imcode.util.SystemClock;
-import junit.framework.TestCase;
-
-import java.util.Collection;
-import java.util.Set;
-import java.util.Date;
 
 public class TestDocumentSaver extends TestCase {
     private DocumentMapper documentMapper;

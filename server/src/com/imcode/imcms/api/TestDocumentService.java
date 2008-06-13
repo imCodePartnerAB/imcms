@@ -1,20 +1,22 @@
 package com.imcode.imcms.api;
 
-import com.imcode.db.mock.MockDatabase;
-import com.imcode.db.mock.MockResultSet;
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.MockDocumentIndex;
 import imcode.server.MockImcmsServices;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.MockRoleGetter;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
-import junit.framework.TestCase;
 
 import java.sql.ResultSet;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+
+import junit.framework.TestCase;
+
+import com.imcode.db.mock.MockDatabase;
+import com.imcode.db.mock.MockResultSet;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.MockDocumentIndex;
 
 public class TestDocumentService extends TestCase {
 

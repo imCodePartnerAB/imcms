@@ -2,8 +2,9 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.*;
-import com.imcode.imcms.mapping.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.SimpleDocumentQuery;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -11,7 +12,30 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.httpclient.*;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.ConnectException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.regex.Pattern;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnection;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang.math.NumberUtils;
@@ -23,16 +47,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.oro.text.perl.Perl5Util;
 import org.apache.oro.text.regex.PatternMatcherInput;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.Serializable;
-import java.net.ConnectException;
-import java.net.UnknownHostException;
-import java.util.*;
-import java.util.regex.Pattern;
+import com.imcode.imcms.mapping.DocumentMapper;
 
 public class LinkCheck extends HttpServlet {
 

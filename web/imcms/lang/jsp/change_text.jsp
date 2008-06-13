@@ -99,6 +99,7 @@ List<I18nMeta> i18nMetas = meta.getI18nMetas() ;
 if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType() && !editorHidden) { %>?html=true<% } %>"></script>
 <% } %>
 <form method="POST" action="<%= request.getContextPath() %>/servlet/SaveText">
+<input type="hidden" name="lang"  value="${currentLanguage.code}">
 <input type="hidden" name="meta_id"  value="<%= textEditPage.getDocumentId() %>">
 <input type="hidden" name="txt_no"   value="<%= textEditPage.getTextIndex() %>"><%
 if (null != formatParameterValues) {

@@ -1,11 +1,15 @@
 package imcode.util.log;
 
-import junit.framework.TestCase;
-import org.apache.log4j.*;
-import org.apache.log4j.spi.LoggingEvent;
-
 import java.io.File;
 import java.io.IOException;
+
+import junit.framework.TestCase;
+
+import org.apache.log4j.Layout;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
+import org.apache.log4j.SimpleLayout;
+import org.apache.log4j.spi.LoggingEvent;
 
 public class TestDailyRollingFileAppender extends TestCase {
 

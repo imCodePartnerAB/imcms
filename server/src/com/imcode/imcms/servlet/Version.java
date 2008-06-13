@@ -1,20 +1,23 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.db.DatabaseCommand;
-import com.imcode.db.DatabaseConnection;
-import com.imcode.db.DatabaseException;
 import imcode.server.Imcms;
-import org.apache.commons.io.IOUtils;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
+
+import com.imcode.db.DatabaseCommand;
+import com.imcode.db.DatabaseConnection;
+import com.imcode.db.DatabaseException;
 
 public class Version extends HttpServlet {
 

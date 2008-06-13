@@ -1,17 +1,20 @@
 package imcode.util.net;
 
 import imcode.util.Utility;
+
+import java.io.IOException;
+import java.util.Arrays;
+
+import javax.activation.DataSource;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 
-import javax.activation.DataSource;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import java.io.IOException;
-import java.util.Arrays;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 /**

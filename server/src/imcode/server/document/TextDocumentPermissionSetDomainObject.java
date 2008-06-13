@@ -1,10 +1,10 @@
 package imcode.server.document;
 
+import imcode.server.ImcmsConstants;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import imcode.server.ImcmsConstants;
 
 public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSetDomainObject {
 

@@ -1,15 +1,16 @@
 package imcode.server.document;
 
 import imcode.server.user.RoleId;
-import imcode.util.ShouldNotBeThrownException;
 import imcode.util.LazilyLoadedObject;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
+import imcode.util.ShouldNotBeThrownException;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
 
 public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, Cloneable, LazilyLoadedObject.Copyable {
 

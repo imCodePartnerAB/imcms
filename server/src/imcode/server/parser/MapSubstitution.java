@@ -1,8 +1,12 @@
 package imcode.server.parser;
 
-import org.apache.oro.text.regex.*;
-
 import java.util.Map;
+
+import org.apache.oro.text.regex.MatchResult;
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.PatternMatcher;
+import org.apache.oro.text.regex.PatternMatcherInput;
+import org.apache.oro.text.regex.Substitution;
 
 /**
  * This class is a generic Substitiution to be used with

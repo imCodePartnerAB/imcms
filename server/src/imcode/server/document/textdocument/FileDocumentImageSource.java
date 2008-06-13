@@ -1,8 +1,8 @@
 package imcode.server.document.textdocument;
 
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.DocumentReference;
+import imcode.server.document.FileDocumentDomainObject;
 import imcode.util.Utility;
 import imcode.util.io.EmptyInputStreamSource;
 import imcode.util.io.InputStreamSource;

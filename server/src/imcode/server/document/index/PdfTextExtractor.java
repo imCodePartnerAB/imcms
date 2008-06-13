@@ -1,10 +1,10 @@
 package imcode.server.document.index;
 
-import org.pdfbox.pdmodel.PDDocument;
-import org.pdfbox.util.PDFTextStripper;
-
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.pdfbox.pdmodel.PDDocument;
+import org.pdfbox.util.PDFTextStripper;
 
 class PdfTextExtractor implements StreamTextsExtractor {
 

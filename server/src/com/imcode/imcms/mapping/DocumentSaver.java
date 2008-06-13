@@ -1,31 +1,38 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
-import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.db.commands.SqlUpdateDatabaseCommand;
-import com.imcode.db.Database;
-import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.I18nKeyword;
-import com.imcode.imcms.api.I18nMeta;
-import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.dao.MetaDao;
-
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
-import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import com.imcode.db.Database;
+import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.db.commands.SqlUpdateDatabaseCommand;
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.I18nKeyword;
+import com.imcode.imcms.api.I18nMeta;
+import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.dao.MetaDao;
 
 class DocumentSaver {
 

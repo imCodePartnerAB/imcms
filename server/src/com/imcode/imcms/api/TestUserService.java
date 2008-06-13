@@ -1,8 +1,5 @@
 package com.imcode.imcms.api;
 
-import com.imcode.db.DatabaseException;
-import com.imcode.db.mock.MockDatabase;
-import com.imcode.imcms.db.ProcedureExecutor;
 import imcode.server.LanguageMapper;
 import imcode.server.MockImcmsServices;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -10,7 +7,12 @@ import imcode.server.user.MockRoleGetter;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
+
 import org.apache.commons.dbutils.ResultSetHandler;
+
+import com.imcode.db.DatabaseException;
+import com.imcode.db.mock.MockDatabase;
+import com.imcode.imcms.db.ProcedureExecutor;
 
 public class TestUserService extends TestCase {
 

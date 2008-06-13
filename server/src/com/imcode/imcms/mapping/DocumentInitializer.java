@@ -1,20 +1,33 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.db.Database;
-import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.util.CountingIterator;
 import imcode.server.ImcmsConstants;
-import imcode.server.document.*;
+import imcode.server.document.CopyableHashSet;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.DocumentPermissionSets;
+import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.CopyableHashMap;
 import imcode.server.user.RoleId;
 import imcode.util.LazilyLoadedObject;
 import imcode.util.Utility;
-import org.apache.commons.collections.MultiHashMap;
-import org.apache.commons.dbutils.ResultSetHandler;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.dbutils.ResultSetHandler;
+
+import com.imcode.db.Database;
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.util.CountingIterator;
 
 public class DocumentInitializer {
     private static final String SQL_GET_KEYWORDS = "SELECT mc.meta_id, c.code FROM classification c JOIN meta_classification mc ON mc.class_id = c.class_id WHERE mc.meta_id ";

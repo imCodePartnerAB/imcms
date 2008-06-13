@@ -6,13 +6,15 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.MockRoleGetter;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
-import junit.framework.TestCase;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import junit.framework.TestCase;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 
 public class TestDocument extends TestCase{
 

@@ -1,23 +1,25 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.flow.OkCancelPage;
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.mapping.DocumentMapper;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.List;
-import java.util.Arrays;
-import java.io.IOException;
-
-import imcode.server.ImcmsServices;
 import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
+
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.mapping.DocumentMapper;
 
 public class ListDocumentAliasPage extends OkCancelPage {
 
@@ -37,13 +39,13 @@ public class ListDocumentAliasPage extends OkCancelPage {
 
     protected void updateFromRequest(HttpServletRequest request) {
         startString = StringUtils.defaultString(request.getParameter( REQUEST_PARAMETER__LIST_START ), "A");
-        endString = StringUtils.defaultString(request.getParameter( REQUEST_PARAMETER__LIST_END ), "Ö");
+        endString = StringUtils.defaultString(request.getParameter( REQUEST_PARAMETER__LIST_END ), "ï¿½");
     }
 
     protected void dispatchOther(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper() ;
-        List alphaRange = Arrays.asList(new String[]{"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","Å","Ä","Ö" });
+        List alphaRange = Arrays.asList(new String[]{"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","ï¿½","ï¿½","ï¿½" });
         if(!alphaRange.contains(startString.toUpperCase())) {
             startString = alphaRange.get(0).toString();
         }

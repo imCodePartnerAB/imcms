@@ -1,10 +1,16 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.ContentManagementSystem;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
+
+import com.imcode.imcms.api.ContentManagementSystem;
 
 public class SuperAdminFilter implements Filter {
 

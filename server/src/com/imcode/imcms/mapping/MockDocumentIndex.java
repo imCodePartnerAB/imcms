@@ -2,14 +2,12 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.IndexException;
 import imcode.server.document.index.DocumentQuery;
+import imcode.server.document.index.IndexException;
 import imcode.server.user.UserDomainObject;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
 
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 public class MockDocumentIndex implements DocumentIndex {
     private boolean indexDocumentCalled;

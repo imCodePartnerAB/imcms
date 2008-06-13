@@ -1,9 +1,11 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import junit.framework.*;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import junit.framework.TestCase;
+
 import org.apache.oro.text.perl.Perl5Util;
 import org.apache.oro.text.regex.PatternMatcherInput;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
+
 import com.imcode.test.mock.MockHttpServletRequest;
 
 public class TestLinkCheck extends TestCase {

@@ -1,14 +1,16 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.db.mock.MockDatabase;
-import com.imcode.db.mock.MockResultSet;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import junit.framework.TestCase;
 
 import java.util.Arrays;
 import java.util.List;
+
+import junit.framework.TestCase;
+
+import com.imcode.db.mock.MockDatabase;
+import com.imcode.db.mock.MockResultSet;
 
 public class TestTextDocumentInitializer extends TestCase {
 

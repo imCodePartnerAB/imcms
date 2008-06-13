@@ -1,10 +1,11 @@
 package imcode.server.document;
 
 import imcode.util.IdLocalizedNamePair;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
 
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
+
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class DocumentTypeDomainObject extends IdLocalizedNamePair {
 

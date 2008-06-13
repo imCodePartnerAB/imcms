@@ -1,9 +1,16 @@
 package imcode.server.parser;
 
-import org.apache.oro.text.regex.*;
+import java.util.LinkedList;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.LinkedList;
+
+import org.apache.oro.text.regex.MalformedPatternException;
+import org.apache.oro.text.regex.MatchResult;
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.PatternMatcher;
+import org.apache.oro.text.regex.PatternMatcherInput;
+import org.apache.oro.text.regex.Perl5Compiler;
+import org.apache.oro.text.regex.Perl5Matcher;
 
 public class NodeList extends LinkedList {
 

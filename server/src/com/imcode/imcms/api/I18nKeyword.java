@@ -1,7 +1,6 @@
 package com.imcode.imcms.api;
 
 import java.io.Serializable;
-import java.util.HashSet;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

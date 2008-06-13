@@ -1,10 +1,12 @@
 package imcode.server.document;
 
-import com.imcode.imcms.api.Document;
 import imcode.server.user.RoleId;
-import junit.framework.TestCase;
 
 import java.util.Date;
+
+import junit.framework.TestCase;
+
+import com.imcode.imcms.api.Document;
 
 public class TestDocumentDomainObject extends TestCase {
 

@@ -1,15 +1,16 @@
 package imcode.server.document.index;
 
 import imcode.server.document.DocumentDomainObject;
-import org.apache.commons.lang.ClassUtils;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import org.apache.commons.lang.ClassUtils;
+import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 class IndexBuildingThread extends Thread {
 

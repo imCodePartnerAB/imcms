@@ -1,15 +1,17 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.servlet.WebComponent;
 import imcode.server.user.UserDomainObject;
 import imcode.util.HttpSessionUtils;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
+
+import java.io.IOException;
+import java.io.Serializable;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.Serializable;
+
+import com.imcode.imcms.servlet.WebComponent;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class UserFinder extends WebComponent {
 

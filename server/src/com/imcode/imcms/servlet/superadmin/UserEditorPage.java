@@ -1,10 +1,5 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.api.NoPermissionException;
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.flow.OkCancelPage;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
-import com.imcode.imcms.mapping.NoPermissionInternalException;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.PhoneNumber;
@@ -12,14 +7,12 @@ import imcode.server.user.PhoneNumberType;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
-import imcode.util.*;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.StringUtils;
+import imcode.util.ArraySet;
+import imcode.util.Html;
+import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
+import imcode.util.ToStringPairTransformer;
+import imcode.util.Utility;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -27,6 +20,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.StringUtils;
+
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.mapping.NoPermissionInternalException;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class UserEditorPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__LOGIN_NAME = "login_name";

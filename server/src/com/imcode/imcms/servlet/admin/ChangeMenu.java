@@ -1,8 +1,5 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -10,15 +7,21 @@ import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.ShouldNotBeThrownException;
-import org.apache.commons.lang.UnhandledException;
+import imcode.util.Utility;
+
+import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
+import org.apache.commons.lang.UnhandledException;
+
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentSaveException;
 
 public class ChangeMenu extends HttpServlet {
 

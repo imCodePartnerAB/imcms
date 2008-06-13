@@ -1,9 +1,9 @@
 package imcode.server.document.index;
 
-import org.apache.log4j.Logger;
-
 import java.util.Date;
 import java.util.TimerTask;
+
+import org.apache.log4j.Logger;
 
 class IndexRebuildTimerTask extends TimerTask {
 

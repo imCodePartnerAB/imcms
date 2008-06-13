@@ -1,9 +1,9 @@
 package com.imcode.imcms.util.rss.dc;
 
+import java.util.Date;
+
 import com.imcode.imcms.util.rss.NameSpace;
 import com.imcode.imcms.util.rss.SimpleNameSpace;
-
-import java.util.Date;
 
 public interface DublinCoreTerms {
 

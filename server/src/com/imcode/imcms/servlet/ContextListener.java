@@ -2,15 +2,17 @@ package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
 import imcode.util.Prefs;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
-import org.apache.commons.logging.LogFactory;
+
+import java.io.File;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.io.File;
+
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.xml.DOMConfigurator;
 
 public class ContextListener implements ServletContextListener {
 

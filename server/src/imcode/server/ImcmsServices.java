@@ -1,10 +1,5 @@
 package imcode.server ;
 
-import com.imcode.db.Database;
-import com.imcode.imcms.db.ProcedureExecutor;
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -12,9 +7,6 @@ import imcode.server.user.RoleGetter;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.net.SMTP;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +14,16 @@ import java.io.Writer;
 import java.security.KeyStore;
 import java.text.Collator;
 import java.util.Date;
+
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.springframework.web.context.WebApplicationContext;
+
+import com.imcode.db.Database;
+import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 
 public interface ImcmsServices {
 

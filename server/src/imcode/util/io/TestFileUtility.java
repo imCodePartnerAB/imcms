@@ -1,10 +1,11 @@
 package imcode.util.io;
 
-import junit.framework.TestCase;
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
+
+import junit.framework.TestCase;
+
+import org.apache.commons.io.FileUtils;
 
 public class TestFileUtility extends TestCase {
 
@@ -31,17 +32,17 @@ public class TestFileUtility extends TestCase {
 
     public void testUnescapeFilename() throws Exception {
         assertEquals("Space", " ",FileUtility.unescapeFilename( "_0020")) ;
-        assertEquals( "ЕДЦедц", "ЕДЦедц", FileUtility.unescapeFilename( "_00c5_00c4_00d6_00e5_00e4_00f6" ) );
+        assertEquals( "пїЅпїЅпїЅпїЅпїЅпїЅ", "пїЅпїЅпїЅпїЅпїЅпїЅ", FileUtility.unescapeFilename( "_00c5_00c4_00d6_00e5_00e4_00f6" ) );
     }
 
     public void testEscapeFilename() throws Exception {
         assertEquals( "Space", "_0020", FileUtility.escapeFilename( " " ) );
-        assertEquals( "ЕДЦедц", "_00c5_00c4_00d6_00e5_00e4_00f6", FileUtility.escapeFilename( "ЕДЦедц" ) );
+        assertEquals( "пїЅпїЅпїЅпїЅпїЅпїЅ", "_00c5_00c4_00d6_00e5_00e4_00f6", FileUtility.escapeFilename( "пїЅпїЅпїЅпїЅпїЅпїЅ" ) );
     }
 
     public void testEscapes() {
         assertEquals( "Space", " ", FileUtility.unescapeFilename( FileUtility.escapeFilename( " " ) ) );
-        assertEquals( "ЕДЦ_едц", "ЕДЦ_едц", FileUtility.unescapeFilename( FileUtility.escapeFilename( "ЕДЦ_едц" ) ) );
+        assertEquals( "пїЅпїЅпїЅ_пїЅпїЅпїЅ", "пїЅпїЅпїЅ_пїЅпїЅпїЅ", FileUtility.unescapeFilename( FileUtility.escapeFilename( "пїЅпїЅпїЅ_пїЅпїЅпїЅ" ) ) );
     }
 
     public void testDirectoryIsAncestorOfOrEqualTo() throws IOException {

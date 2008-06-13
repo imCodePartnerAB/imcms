@@ -2,10 +2,11 @@ package com.imcode.imcms.servlet;
 
 import imcode.util.FallbackDecoder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 class UriEncodingWorkaroundWrapper extends HttpServletRequestWrapper {
 

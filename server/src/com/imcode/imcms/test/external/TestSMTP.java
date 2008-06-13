@@ -1,17 +1,26 @@
 package com.imcode.imcms.test.external;
 
 import imcode.util.net.SMTP;
-import junit.framework.TestCase;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.Properties;
 
 import javax.activation.DataSource;
-import java.io.*;
-import java.util.Properties;
+
+import junit.framework.TestCase;
 
 public class TestSMTP extends TestCase {
 
     private String fromAddress;
     private String toAddress;
-    private static final String TEST_MAIL = "Testing swedish characters: ÅÄÖ\n" 
+    private static final String TEST_MAIL = "Testing swedish characters: ï¿½ï¿½ï¿½\n" 
                                             + "There should be an empty line below\n" + "\n" +
                                             "There should be a single dot below\n" + ".\n";
     private SMTP smtp;
@@ -92,7 +101,7 @@ public class TestSMTP extends TestCase {
         SMTP.Mail mail = new SMTP.Mail( fromAddress );
         mail.setSubject("HTML "+TEST_SUBJECT);
         mail.setToAddresses(new String[]{toAddress});
-        mail.setHtmlBody("<html><body>This mail should have an <strong>HTML</strong> <em>alternative</em> and these swedish characters should be OK: ÅÄÖ.</body></html>");
+        mail.setHtmlBody("<html><body>This mail should have an <strong>HTML</strong> <em>alternative</em> and these swedish characters should be OK: ï¿½ï¿½ï¿½.</body></html>");
         smtp.sendMail( mail );
     }
 }

@@ -1,14 +1,15 @@
 package imcode.util;
 
-import org.apache.commons.collections.map.LRUMap;
-import org.apache.commons.lang.RandomStringUtils;
-import org.apache.log4j.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.log4j.Logger;
 
 public class HttpSessionUtils {
 

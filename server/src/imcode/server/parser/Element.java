@@ -1,7 +1,7 @@
 package imcode.server.parser ;
 
-import java.util.List ;
-import java.util.Properties ;
+import java.util.List;
+import java.util.Properties;
 
 public interface Element extends Node {
 
