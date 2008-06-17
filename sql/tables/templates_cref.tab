@@ -1,7 +1,0 @@
-    <table name="templates_cref">
-        <column name="group_id" primaryKey="true" required="true" type="INTEGER" />
-        <column name="template_name" primaryKey="true" required="true" type="VARCHAR" size="255" />
-        <foreign-key foreignTable="templategroups">
-            <reference foreign="group_id" local="group_id" />
-        </foreign-key>
-    </table>

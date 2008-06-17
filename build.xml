@@ -364,23 +364,13 @@
 
     <target name="sql">
 
-        <concat destfile="${sql}/ddl.xml">
-            <header>&lt;database defaultIdMethod="native" name="imcms"&gt;${line.separator}</header>
-            <fileset dir="sql/tables" includes="*.tab"/>
-            <footer>&lt;/database&gt;${line.separator}</footer>
-        </concat>
-
         <copy todir="${sql}">
-            <fileset file="sql/data/init.sql"/>
+            <fileset file="sql/imcms_5.0_schema.sql"/>
         </copy>
-
-        <copy todir="${sql-diff}">
-            <fileset dir="sql/diff" includes="diff-*.sql"/>
-        </copy>
-
-        <copy todir="${sql-sprocs}">
-            <fileset dir="sql/sprocs" includes="*.prc"/>
-        </copy>
+    	
+        <copy todir="${sql}">
+            <fileset file="sql/imcms_data_5.0.sql"/>
+        </copy>    	
 
     </target>
 

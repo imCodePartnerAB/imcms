@@ -38,6 +38,25 @@ LI { padding-bottom:5; }
 		<td width="15">&nbsp;</td>
 
 		<td width="385">
+		<%		
+		    // Refactor
+		    String queryString = request.getQueryString();
+		    StringBuffer baseURL = request.getRequestURL();
+		    
+			if (queryString == null) {
+			    baseURL.append("?" + "lang=");
+			} else {
+			    // TODO 18n: refactor
+			    queryString = queryString.replaceFirst("&?lang=..", "");
+			    baseURL.append("?" + queryString + "&lang=");
+			}
+			
+			pageContext.setAttribute("baseURL", baseURL);
+			
+		  %>
+		    <a href="${baseURL}en"><img src="${pageContext.request.contextPath}/imcms/eng/images/admin/flags_iso_639_1/en.gif" alt="" style="border:0;" /></a>
+		    <a href="${baseURL}sv"><img src="${pageContext.request.contextPath}/imcms/swe/images/admin/flags_iso_639_1/sv.gif" alt="" style="border:0;" /></a>
+		  
             <imcms:text no="1" label="Text (Rubrik)" pre='<span class="imcHeading">' post='</span><br><br>' />
             <imcms:text no='2' label='<br>Text' post='<br><br>' />
             <imcms:menu no='1' label='<br><br>Meny (punktlista)'>
