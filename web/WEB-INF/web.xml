@@ -217,11 +217,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.SanityCheckServlet</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.SanityCheckServlet</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.SaveInclude</servlet-class>
     </servlet>
