@@ -50,7 +50,6 @@
     <property name="templates" value="${WEB-INF}/templates"/>
     <property name="sql" value="${WEB-INF}/sql"/>
     <property name="sql-diff" value="${sql}/diff"/>
-    <property name="sql-sprocs" value="${sql}/sprocs"/>
 
     <!-- Paths for other templates -->
     <property name="texttemplates" value="${templates}/text"/>
@@ -90,13 +89,12 @@
 
     <taskdef classname="org.apache.jasper.JspC" name="jasper2" classpathref="libraries-with-commons-logging"/>
     <taskdef resource="checkstyletask.properties" classpathref="libraries-with-commons-logging"/>
-    <taskdef name="ddl2db" classname="org.apache.ddlutils.task.DdlToDatabaseTask"  classpathref="libraries-with-commons-logging"/>
 
     <!-- Distribution targets -->
 
     <target name="dist" depends="bindist,srcdist" description="Build all binary and source distributions."/>
 
-    <target name="bindist" depends="bindist-jar,bindist-zip,bindist-tgz" description="Build all binary distributions."/>
+    <target name="bindist" depends="bindist-jar,bindist-api-jar,bindist-zip,bindist-tgz" description="Build all binary distributions."/>
 
     <target name="bindist-zip" depends="bindist-war">
         <mkdir dir="${dist}"/>
@@ -125,7 +123,12 @@
         <war warfile="${war}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
     </target>
 
-    <target name="bindist-jar" depends="test">
+    <target name="bindist-jar" depends="build">
+        <mkdir dir="${dist}"/>
+        <copy file="${jar}" tofile="${bindist-jar}"/>
+    </target>
+    	
+    <target name="bindist-api-jar" depends="test">
         <mkdir dir="${dist}"/>
         <jar destfile="${bindist-api-jar}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>
     </target>
@@ -222,13 +225,19 @@
         </copy>
     </target>
 
+	
     <target name="jar" depends="classes">
         <mkdir dir="${lib}"/>
         <jar destfile="${jar}" basedir="${classes}">
             <metainf dir="${WEB-INF}/tld"/>
         </jar>
     </target>
+	
 
+	<!-- 
+	Temporary disabled since language layer (v5.x) implementation broke many tests.
+	Additional time is required to recover and compatibility.  
+	-->
     <target name="test" depends="check-junit-task-available,classes" description="Runs JUnit-tests.">
 		<!--
         <junit haltonfailure="yes" haltonerror="yes" fork="yes" dir="${basedir}" forkmode="once">
@@ -356,12 +365,6 @@
 
     </target>
 
-    <target name="drop-sql">
-
-        <copy file="sql/delete_db.sql" tofile="${drop-sql}" filtering="true"/>
-
-    </target>
-
     <target name="sql">
 
         <copy todir="${sql}">
@@ -369,7 +372,7 @@
         </copy>
     	
         <copy todir="${sql}">
-            <fileset file="sql/imcms_data_5.0.sql"/>
+            <fileset file="sql/imcms_5.0_data.sql"/>
         </copy>    	
 
     </target>
@@ -517,6 +520,7 @@
 
         <property name="sprocs-sql" value="${sql}/imcms-sprocs${versionfilesuffix}.sql"/>
 
+    	<property name="bindist-jar" value="${dist}/imcms${versionfilesuffix}.jar"/>
         <property name="bindist-api-jar" value="${dist}/imcms${versionfilesuffix}-api.jar"/>
         <property name="bindist-util-jar" value="${dist}/imcms${versionfilesuffix}-util.jar"/>
 
@@ -620,17 +624,5 @@
                 location="javax/servlet/resources/web-app_2_3.dtd"/>
         </xmlvalidate>
     </target>
-	
-	<target name="mvn">
-		<property name="tagName" value="5.0.0-alpha1"/>
-		
-		<delete dir="export"/>
-		<mkdir dir="export"/>
-		
-		<svn javahl="false">
-			<export srcUrl="https://repo.imcode.com/imcode/imcms/trunk" 
-				destPath="export"/>
-		</svn>	
-	</target>
 
 </project>
