@@ -462,11 +462,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.SanityCheckServlet</servlet-name>
-        <url-pattern>/servlet/SanityCheck</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>
         <url-pattern>/servlet/SaveInclude</url-pattern>
     </servlet-mapping>
