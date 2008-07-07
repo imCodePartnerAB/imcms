@@ -59,7 +59,6 @@ public class TextDomainObject implements Serializable, Cloneable {
 	
 	/**
 	 * Altered if text was modified.
-	 * Not yet in use
 	 * 
 	 * @see TextDocumentDomainObject.setText
 	 * @see DocumentStoringVisitor.updateTextDocumentTexts 
@@ -222,6 +221,9 @@ public class TextDomainObject implements Serializable, Cloneable {
 		this.index = index;
 	}
 
+	/**
+	 * @return if text was modified. 
+	 */
 	public boolean isModified() {
 		return modified;
 	}

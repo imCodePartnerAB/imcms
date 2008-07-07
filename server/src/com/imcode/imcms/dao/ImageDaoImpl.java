@@ -49,9 +49,7 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		
 		for (Map<Integer, ImageDomainObject> map: imagesMap.values()) {
 			for (ImageDomainObject image: map.values()) {
-				if (!image.isSubstitution()) {
-					saveOrUpdate(image);
-				}
+				saveOrUpdate(image);
 			}
 		}		
 	}

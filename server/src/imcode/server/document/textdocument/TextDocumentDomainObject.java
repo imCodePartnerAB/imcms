@@ -118,8 +118,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public Object clone() throws CloneNotSupportedException {
         TextDocumentDomainObject clone = (TextDocumentDomainObject)super.clone();
         
-        clone.texts = new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>(texts);
-        clone.images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>(images);
+        //clone.texts = new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>(texts);
+        //clone.images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>(images);
         
         clone.includes = (LazilyLoadedObject) includes.clone();
         clone.menus = (LazilyLoadedObject) menus.clone() ;
@@ -207,12 +207,14 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	public TextDomainObject getText(I18nLanguage language, 
 			int index) {
 		
+		getMenu(0);
+		
 		if (language == null) {
 			throw new IllegalArgumentException("language argument " +
 					"can not be null.");			
 		}		
 		
-		Map<Integer, TextDomainObject> map = getTextsMap(language, true);
+		Map<Integer, TextDomainObject> map = getTextsMap(language);
 		
 		return map.get(index);
 	}    
@@ -223,17 +225,16 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private Map<Integer, TextDomainObject> getTextsMap() {
     	I18nLanguage language = I18nSupport.getCurrentLanguage();
     	
-    	return getTextsMap(language, true);
+    	return getTextsMap(language);
     }
     
     /**
      * Returns all texts for language specified.
      */
-    public Map<Integer, TextDomainObject> getTextsMap(
-    		I18nLanguage language, boolean load) {
+    public Map<Integer, TextDomainObject> getTextsMap(I18nLanguage language) {
     	Map<Integer, TextDomainObject> map = texts.get(language);
     	
-    	if (map == null && load) {
+    	if (map == null) {
     		Meta meta = getMeta();
     		Integer metaId = meta.getMetaId();
     		map = getOrigianlTextsMap(language, metaId);    		
@@ -252,7 +253,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Removes all image.
      */
     public synchronized void removeAllImages() {
-        images.clear();
+    	images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
     }
 
     public void removeAllIncludes() {
@@ -268,7 +269,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void removeAllTexts() {
-        texts.clear();
+    	texts = new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
     }
 
     public void setInclude( int includeIndex, int includedDocumentId ) {
@@ -294,21 +295,30 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     		TextDomainObject text) {
 
     	Integer metaId = getId();    	
-    	Map<Integer, TextDomainObject> map = getTextsMap(language, true);
+    	Map<Integer, TextDomainObject> map = getTextsMap(language);
     	TextDomainObject existingText = map.get(index);
+    	boolean modified = true;
+    	Long id = null;
     	
     	if (existingText != null) {
-    		text.setId(existingText.getId());
-    	} else {
-        	text.setId(null);
+    		String oldValue = existingText.getText();
+    		String newValue = text.getText();    		
+    		int newType = text.getType(); 
+    		int oldType = existingText.getType(); 
+    		
+    		if (oldValue == null) oldValue = "";
+    		
+    		id = existingText.getId();
+    		modified = oldType != newType || !oldValue.equals(newValue);
     	}
-
+    	
+    	text.setId(id);
     	text.setMetaId(metaId);
     	text.setIndex(index);
     	text.setLanguage(language);
-    	text.setModified(true);
+    	text.setModified(modified);
     	
-    	map.put(index, text);
+    	map.put(index, text);    	
     } 
     
     public Map getIncludes() {
@@ -336,7 +346,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
     
     public Map<Integer, TextDomainObject> getTexts(I18nLanguage language) {
-        return Collections.unmodifiableMap( getTextsMap(language, true) );
+        return Collections.unmodifiableMap( getTextsMap(language) );
     }    
 
     public void setTemplateName( String templateName ) {
@@ -480,7 +490,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     
 	/**
 	 * Sets images.
-	 * This method currently used by only administration interface.
+	 * This method is only used by administration interface.
 	 */		
     public synchronized void setImages(int imageIndex, 
     		Collection<ImageDomainObject> images) {
@@ -521,7 +531,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	image.setMetaId(metaId);
     	image.setLanguage(language);
     	image.setName("" + index);
-    	image.setSubstitution(false);
     	
     	map.put(index, image);
     }	

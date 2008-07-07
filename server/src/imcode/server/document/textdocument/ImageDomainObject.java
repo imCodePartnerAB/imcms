@@ -43,12 +43,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
 	@Transient
 	private ImageSource source = new NullImageSource();
 	
-	/**
-	 * Substitution image should not be saved. 
-	 */
-	@Transient	
-	private boolean substitution;
-	
 	//@Id
 	@Column(name="meta_id")
 	private int metaId;
@@ -331,13 +325,5 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
 	public void setType(Integer type) {
 		this.type = type;
-	}
-
-	public boolean isSubstitution() {
-		return substitution;
-	}
-
-	public void setSubstitution(boolean temporary) {
-		this.substitution = temporary;
 	}
 }

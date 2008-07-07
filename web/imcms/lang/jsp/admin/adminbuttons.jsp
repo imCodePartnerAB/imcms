@@ -13,7 +13,6 @@
 	        org.apache.oro.text.perl.Perl5Util,
 	        org.apache.commons.lang.StringUtils,
 	        java.util.List,
-	        com.imcode.imcms.dao.LanguageDao,
 	        com.imcode.imcms.api.*"
 	
 %><%@ taglib uri="imcmsvelocity" prefix="vel"
@@ -41,10 +40,8 @@ pageContext.setAttribute("baseURL", baseURL);
 /* *******************************************************************************************
  *         Get languages                                                                     *
  ******************************************************************************************* */
-
-LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao") ;
-List<I18nLanguage> languages = languageDao.getAllLanguages() ;
-I18nLanguage defaultLanguage = languageDao.getDefaultLanguage() ;
+List<I18nLanguage> languages = I18nSupport.getLanguages();
+I18nLanguage defaultLanguage = I18nSupport.getDefaultLanguage() ;
 I18nLanguage currentLanguage = (null != session.getAttribute("lang")) ? (I18nLanguage)session.getAttribute("lang") : defaultLanguage ;
 
 Meta meta = document.getMeta() ;

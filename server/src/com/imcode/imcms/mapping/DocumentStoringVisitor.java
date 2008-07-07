@@ -47,6 +47,7 @@ import com.imcode.db.commands.TransactionDatabaseCommand;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.dao.ImageDao;
+import com.imcode.imcms.dao.TextDao;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
 	
@@ -122,52 +123,38 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     // TODO i18n: refactor
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-        //TextDao textDao = (TextDao)Imcms.getServices().getSpringBean("textDao");
-        //Integer metaId = textDocument.getId();
-
-        for (I18nLanguage language: I18nSupport.getLanguages()) {        
-	        Map<Integer, TextDomainObject> texts = textDocument.getTextsMap(language, false);
-	        
-	        if (texts == null) continue;
-	        
-	        Set<Integer> indexes = texts.keySet();
-	        
-	        for (Integer index: indexes) {
-	            TextDomainObject text = texts.get(index);  
-	            boolean saveText = false;
-	            
-	            if (oldTextDocument == null) {            	
-	            	saveText = true;
-	            } else {
-	            	TextDomainObject oldText = oldTextDocument.getText(language, index);
-	            	
-	         		String oldTextValue = oldText == null ? null : oldText.toString();            	
-	            	
-	         		if (oldTextValue == null) {
-	         			saveText = true;
-	         		} else {    	         	                		
-	         			String lastHistoryTextValue = getLastHistoryTextValue(language, 
-	         					textDocument.getId(), index, text.getType());
-	         			
-	         			// Legacy logic support: copy old text to history if it does not yet exists  
-	         			if (!oldTextValue.equals(lastHistoryTextValue)) {
-	         				sqlInsertTextHistory(language, oldTextDocument, index, oldText, user);
-	         			}
-		        		
-		         		if (!text.getText().equals(oldTextValue) || text.getType() != oldText.getType()) {	         			
-		         			saveText = true;
-		         		}          		
-	            	}
-	            }
-	            
-	            if (saveText) {
-	            	sqlInsertTextHistory(language, textDocument, index, text, user);      
-	            	sqlDeleteText(language, textDocument, index, text);
-	            	sqlInsertText(language, textDocument, index, text);           	
-	            }
-	        }        
-        } 
-    }
+        TextDao textDao = (TextDao)Imcms.getServices().getSpringBean("textDao");
+        Integer metaId = textDocument.getId();
+     	I18nLanguage language = I18nSupport.getCurrentLanguage();
+    	     
+        Map<Integer, TextDomainObject> texts = textDocument.getTextsMap(language);
+        
+        for (Map.Entry<Integer, TextDomainObject> entry: texts.entrySet()) {
+        	Integer index = entry.getKey();
+            TextDomainObject text = entry.getValue();
+            
+            if (text.isModified()) {
+            	// legacy support:
+            	/*
+            	TextDomainObject oldText = textDao.getText(metaId, index, language.getId());
+            	String oldTextValue = oldText == null ? "" : oldText.getText();
+            	
+            	
+     			String lastHistoryTextValue = getLastHistoryTextValue(language, 
+     					textDocument.getId(), index, text.getType());
+     			
+     			// Legacy logic support: copy old text to history if it does not yet exists  
+     			if (!oldTextValue.equals(lastHistoryTextValue)) {
+     				sqlInsertTextHistory(language, oldTextDocument, index, oldText, user);
+     			}            	
+            	*/
+            	
+            	sqlInsertTextHistory(language, textDocument, index, text, user);      
+            	sqlDeleteText(language, textDocument, index, text);
+            	sqlInsertText(language, textDocument, index, text);   
+            }
+        }        
+}
     
     
     private String getLastHistoryTextValue(I18nLanguage language, int metaId, int name, int type) {

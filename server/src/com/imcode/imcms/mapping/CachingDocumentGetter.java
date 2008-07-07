@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.util.ShouldNotBeThrownException;
 
 import java.util.Collection;
@@ -20,6 +21,7 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
         DocumentDomainObject document = (DocumentDomainObject) cache.get(documentId) ;
         if (null == document) {
             document = super.getDocument(documentId) ;
+            
             if (null == document) {
                 return null ;
             }
@@ -27,13 +29,19 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
             cache.put(documentId, document) ;
         }
         
-        /*
+        
         try {
-            return (DocumentDomainObject) document.clone() ;
+        	// I18nRefactor - remove cloning and loading
+        	if (document instanceof TextDocumentDomainObject) {
+        		TextDocumentDomainObject t = (TextDocumentDomainObject)document;
+        		t.getTexts();
+        		t.getImages();
+        	}
+        	
+            document = (DocumentDomainObject) document.clone() ;
         } catch ( CloneNotSupportedException e ) {
             throw new ShouldNotBeThrownException(e);
         }
-        */
         
         return document;
     }

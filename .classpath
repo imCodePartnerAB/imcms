@@ -13,7 +13,6 @@
 	<classpathentry kind="lib" path="lib/commons-lang-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-api-1.0.5-alpha1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-pool-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/ddlutils-imcms-svn20060906-src.jar"/>
 	<classpathentry kind="lib" path="lib/gnu-activation-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/gnu-crypto-javax-security-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/gnu-inetlib-1.1.jar"/>
