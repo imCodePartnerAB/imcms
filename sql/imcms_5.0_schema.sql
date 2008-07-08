@@ -3,6 +3,64 @@
 -- ============================================================================
 
 --
+-- Table users
+--
+
+CREATE TABLE users (
+  user_id int(11) NOT NULL auto_increment,
+  login_name varchar(128) NOT NULL,
+  login_password varchar(15) NOT NULL,
+  first_name varchar(64) NOT NULL,
+  last_name varchar(64) NOT NULL,
+  title varchar(64) NOT NULL,
+  company varchar(64) NOT NULL,
+  address varchar(128) NOT NULL,
+  city varchar(64) NOT NULL,
+  zip varchar(64) NOT NULL,
+  country varchar(64) NOT NULL,
+  county_council varchar(128) NOT NULL,
+  email varchar(128) NOT NULL,
+  external int(11) NOT NULL,
+  active int(11) NOT NULL default '1',
+  create_date datetime NOT NULL,
+  language varchar(3) NOT NULL,
+  session_id varchar(128) default NULL,
+  PRIMARY KEY  (user_id),
+  UNIQUE KEY UQ__users__login_name (login_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table meta
+--
+
+CREATE TABLE meta (
+  meta_id int(11) NOT NULL auto_increment,
+  doc_type int(11) NOT NULL,
+  owner_id int(11) NOT NULL,
+  permissions int(11) NOT NULL,
+  shared int(11) NOT NULL,
+  show_meta int(11) NOT NULL,
+  lang_prefix varchar(3) NOT NULL,
+  date_created datetime NOT NULL,
+  date_modified datetime NOT NULL,
+  disable_search int(11) NOT NULL,
+  target varchar(10) NOT NULL,
+  activate int(11) NOT NULL,
+  archived_datetime datetime default NULL,
+  publisher_id int(11) default NULL,
+  status int(11) NOT NULL,
+  publication_start_datetime datetime default NULL,
+  publication_end_datetime datetime default NULL,
+  missing_i18n_show_rule varchar(32) default 'DO_NOT_SHOW',
+  PRIMARY KEY  (meta_id),
+  KEY meta_FK_owner_id_users (owner_id),
+  KEY meta_FK_publisher_id_users (publisher_id),
+  CONSTRAINT meta_FK_owner_id_users FOREIGN KEY (owner_id) REFERENCES users (user_id),
+  CONSTRAINT meta_FK_publisher_id_users FOREIGN KEY (publisher_id) REFERENCES users (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+--
 -- Table browser_docs
 --
 
@@ -27,21 +85,6 @@ CREATE TABLE browsers (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table categories
---
-
-CREATE TABLE categories (
-  category_id int(11) NOT NULL auto_increment,
-  category_type_id int(11) NOT NULL,
-  name varchar(128) NOT NULL,
-  description varchar(500) default NULL,
-  image varchar(255) NOT NULL,
-  PRIMARY KEY  (category_id),
-  KEY categories_FK_category_type_id_category_types (category_type_id),
-  CONSTRAINT categories_FK_category_type_id_category_types FOREIGN KEY (category_type_id) REFERENCES category_types (category_type_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
 -- Table category_types
 --
 
@@ -54,33 +97,18 @@ CREATE TABLE category_types (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table childs
+-- Table categories
 --
 
-CREATE TABLE childs (
-  to_meta_id int(11) NOT NULL,
-  manual_sort_order int(11) NOT NULL,
-  tree_sort_index varchar(64) NOT NULL,
-  menu_id int(11) NOT NULL,
-  PRIMARY KEY  (to_meta_id,menu_id),
-  KEY childs_FK_menu_id_menus (menu_id),
-  CONSTRAINT childs_FK_menu_id_menus FOREIGN KEY (menu_id) REFERENCES menus (menu_id),
-  CONSTRAINT childs_FK_to_meta_id_meta FOREIGN KEY (to_meta_id) REFERENCES meta (meta_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table childs_history
---
-
-CREATE TABLE childs_history (
-  menu_id int(11) NOT NULL,
-  to_meta_id int(11) NOT NULL,
-  manual_sort_order int(11) NOT NULL,
-  tree_sort_index varchar(64) NOT NULL,
-  PRIMARY KEY  (menu_id,to_meta_id),
-  KEY childs_history_FK_to_meta_id_meta (to_meta_id),
-  CONSTRAINT childs_history_FK_menu_id_menus_history FOREIGN KEY (menu_id) REFERENCES menus_history (menu_id),
-  CONSTRAINT childs_history_FK_to_meta_id_meta FOREIGN KEY (to_meta_id) REFERENCES meta (meta_id)
+CREATE TABLE categories (
+  category_id int(11) NOT NULL auto_increment,
+  category_type_id int(11) NOT NULL,
+  name varchar(128) NOT NULL,
+  description varchar(500) default NULL,
+  image varchar(255) NOT NULL,
+  PRIMARY KEY  (category_id),
+  KEY categories_FK_category_type_id_category_types (category_type_id),
+  CONSTRAINT categories_FK_category_type_id_category_types FOREIGN KEY (category_type_id) REFERENCES category_types (category_type_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -101,35 +129,6 @@ CREATE TABLE database_version (
   major int(11) NOT NULL,
   minor int(11) NOT NULL,
   PRIMARY KEY  (major,minor)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table doc_permission_sets
---
-
-CREATE TABLE doc_permission_sets (
-  meta_id int(11) NOT NULL,
-  set_id int(11) NOT NULL,
-  permission_id int(11) NOT NULL,
-  PRIMARY KEY  (meta_id,set_id),
-  KEY doc_permission_sets_FK_set_id_permission_sets (set_id),
-  CONSTRAINT doc_permission_sets_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id),
-  CONSTRAINT doc_permission_sets_FK_set_id_permission_sets FOREIGN KEY (set_id) REFERENCES permission_sets (set_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table doc_permission_sets_ex
---
-
-CREATE TABLE doc_permission_sets_ex (
-  meta_id int(11) NOT NULL,
-  set_id int(11) NOT NULL,
-  permission_id int(11) NOT NULL,
-  permission_data int(11) NOT NULL,
-  PRIMARY KEY  (meta_id,set_id,permission_id,permission_data),
-  KEY doc_permission_sets_ex_FK_set_id_permission_sets (set_id),
-  CONSTRAINT doc_permission_sets_ex_FK_meta_id_set_id_doc_permission_sets FOREIGN KEY (meta_id, set_id) REFERENCES doc_permission_sets (meta_id, set_id),
-  CONSTRAINT doc_permission_sets_ex_FK_set_id_permission_sets FOREIGN KEY (set_id) REFERENCES permission_sets (set_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -226,7 +225,7 @@ CREATE TABLE i18n_available_languages (
   language_name varchar(128) NOT NULL,
   language_native_name varchar(128) default NULL,
   PRIMARY KEY  (language_id)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table i18n_keywords
@@ -263,7 +262,7 @@ CREATE TABLE i18n_meta (
   meta_text varchar(1000) default NULL,
   meta_image varchar(255) default NULL,
   PRIMARY KEY  (i18n_meta_id),
-  UNIQUE KEY uix__i18n_meta_part__language_id__meta_id (language_id,meta_id),
+  UNIQUE KEY ux__i18n_meta_part__language_id__meta_id (language_id,meta_id),
   CONSTRAINT i18n_meta_ibfk_1 FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -292,7 +291,7 @@ CREATE TABLE images (
   PRIMARY KEY  (image_id),
   KEY images_FK_meta_id_meta (meta_id),
   CONSTRAINT images_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table images_history
@@ -386,6 +385,21 @@ CREATE TABLE menus (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table childs
+--
+
+CREATE TABLE childs (
+  to_meta_id int(11) NOT NULL,
+  manual_sort_order int(11) NOT NULL,
+  tree_sort_index varchar(64) NOT NULL,
+  menu_id int(11) NOT NULL,
+  PRIMARY KEY  (to_meta_id,menu_id),
+  KEY childs_FK_menu_id_menus (menu_id),
+  CONSTRAINT childs_FK_menu_id_menus FOREIGN KEY (menu_id) REFERENCES menus (menu_id),
+  CONSTRAINT childs_FK_to_meta_id_meta FOREIGN KEY (to_meta_id) REFERENCES meta (meta_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table menus_history
 --
 
@@ -402,34 +416,19 @@ CREATE TABLE menus_history (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table meta
+-- Table childs_history
 --
 
-CREATE TABLE meta (
-  meta_id int(11) NOT NULL auto_increment,
-  doc_type int(11) NOT NULL,
-  owner_id int(11) NOT NULL,
-  permissions int(11) NOT NULL,
-  shared int(11) NOT NULL,
-  show_meta int(11) NOT NULL,
-  lang_prefix varchar(3) NOT NULL,
-  date_created datetime NOT NULL,
-  date_modified datetime NOT NULL,
-  disable_search int(11) NOT NULL,
-  target varchar(10) NOT NULL,
-  activate int(11) NOT NULL,
-  archived_datetime datetime default NULL,
-  publisher_id int(11) default NULL,
-  status int(11) NOT NULL,
-  publication_start_datetime datetime default NULL,
-  publication_end_datetime datetime default NULL,
-  missing_i18n_show_rule varchar(32) default 'DO_NOT_SHOW',
-  PRIMARY KEY  (meta_id),
-  KEY meta_FK_owner_id_users (owner_id),
-  KEY meta_FK_publisher_id_users (publisher_id),
-  CONSTRAINT meta_FK_owner_id_users FOREIGN KEY (owner_id) REFERENCES users (user_id),
-  CONSTRAINT meta_FK_publisher_id_users FOREIGN KEY (publisher_id) REFERENCES users (user_id)
-) ENGINE=InnoDB AUTO_INCREMENT=1002 DEFAULT CHARSET=utf8;
+CREATE TABLE childs_history (
+  menu_id int(11) NOT NULL,
+  to_meta_id int(11) NOT NULL,
+  manual_sort_order int(11) NOT NULL,
+  tree_sort_index varchar(64) NOT NULL,
+  PRIMARY KEY  (menu_id,to_meta_id),
+  KEY childs_history_FK_to_meta_id_meta (to_meta_id),
+  CONSTRAINT childs_history_FK_menu_id_menus_history FOREIGN KEY (menu_id) REFERENCES menus_history (menu_id),
+  CONSTRAINT childs_history_FK_to_meta_id_meta FOREIGN KEY (to_meta_id) REFERENCES meta (meta_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table meta_classification
@@ -445,19 +444,6 @@ CREATE TABLE meta_classification (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table meta_section
---
-
-CREATE TABLE meta_section (
-  meta_id int(11) NOT NULL,
-  section_id int(11) NOT NULL,
-  PRIMARY KEY  (meta_id,section_id),
-  KEY meta_section_FK_section_id_sections (section_id),
-  CONSTRAINT meta_section_FK_section_id_sections FOREIGN KEY (section_id) REFERENCES sections (section_id),
-  CONSTRAINT meta_section_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
 -- Table mime_types
 --
 
@@ -467,6 +453,41 @@ CREATE TABLE mime_types (
   mime varchar(50) NOT NULL,
   lang_prefix varchar(3) NOT NULL default 'swe',
   PRIMARY KEY  (mime_id,lang_prefix)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table permission_sets
+--
+
+CREATE TABLE permission_sets (
+  set_id int(11) NOT NULL,
+  description varchar(30) NOT NULL,
+  PRIMARY KEY  (set_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table permissions
+--
+
+CREATE TABLE permissions (
+  permission_id smallint(6) NOT NULL,
+  lang_prefix varchar(3) NOT NULL default 'swe',
+  description varchar(50) NOT NULL,
+  PRIMARY KEY  (permission_id,lang_prefix)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table doc_permission_sets
+--
+
+CREATE TABLE doc_permission_sets (
+  meta_id int(11) NOT NULL,
+  set_id int(11) NOT NULL,
+  permission_id int(11) NOT NULL,
+  PRIMARY KEY  (meta_id,set_id),
+  KEY doc_permission_sets_FK_set_id_permission_sets (set_id),
+  CONSTRAINT doc_permission_sets_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id),
+  CONSTRAINT doc_permission_sets_FK_set_id_permission_sets FOREIGN KEY (set_id) REFERENCES permission_sets (set_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -499,24 +520,18 @@ CREATE TABLE new_doc_permission_sets_ex (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table permission_sets
+-- Table doc_permission_sets_ex
 --
 
-CREATE TABLE permission_sets (
+CREATE TABLE doc_permission_sets_ex (
+  meta_id int(11) NOT NULL,
   set_id int(11) NOT NULL,
-  description varchar(30) NOT NULL,
-  PRIMARY KEY  (set_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table permissions
---
-
-CREATE TABLE permissions (
-  permission_id smallint(6) NOT NULL,
-  lang_prefix varchar(3) NOT NULL default 'swe',
-  description varchar(50) NOT NULL,
-  PRIMARY KEY  (permission_id,lang_prefix)
+  permission_id int(11) NOT NULL,
+  permission_data int(11) NOT NULL,
+  PRIMARY KEY  (meta_id,set_id,permission_id,permission_data),
+  KEY doc_permission_sets_ex_FK_set_id_permission_sets (set_id),
+  CONSTRAINT doc_permission_sets_ex_FK_meta_id_set_id_doc_permission_sets FOREIGN KEY (meta_id, set_id) REFERENCES doc_permission_sets (meta_id, set_id),
+  CONSTRAINT doc_permission_sets_ex_FK_set_id_permission_sets FOREIGN KEY (set_id) REFERENCES permission_sets (set_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -568,7 +583,7 @@ CREATE TABLE roles (
   admin_role int(11) NOT NULL default '0',
   PRIMARY KEY  (role_id),
   UNIQUE KEY UQ_roles__role_name (role_name)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table roles_rights
@@ -594,6 +609,20 @@ CREATE TABLE sections (
   PRIMARY KEY  (section_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+--
+-- Table meta_section
+--
+
+CREATE TABLE meta_section (
+  meta_id int(11) NOT NULL,
+  section_id int(11) NOT NULL,
+  PRIMARY KEY  (meta_id,section_id),
+  KEY meta_section_FK_section_id_sections (section_id),
+  CONSTRAINT meta_section_FK_section_id_sections FOREIGN KEY (section_id) REFERENCES sections (section_id),
+  CONSTRAINT meta_section_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 --
 -- Table stats
 --
@@ -602,6 +631,16 @@ CREATE TABLE stats (
   name varchar(120) NOT NULL,
   num int(11) NOT NULL,
   PRIMARY KEY  (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table sys_types
+--
+
+CREATE TABLE sys_types (
+  type_id smallint(6) NOT NULL,
+  name varchar(50) default NULL,
+  PRIMARY KEY  (type_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -615,16 +654,6 @@ CREATE TABLE sys_data (
   PRIMARY KEY  (sys_id,type_id),
   KEY sys_data_FK_type_id_sys_types (type_id),
   CONSTRAINT sys_data_FK_type_id_sys_types FOREIGN KEY (type_id) REFERENCES sys_types (type_id)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
-
---
--- Table sys_types
---
-
-CREATE TABLE sys_types (
-  type_id smallint(6) NOT NULL,
-  name varchar(50) default NULL,
-  PRIMARY KEY  (type_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -681,7 +710,7 @@ CREATE TABLE texts (
   CONSTRAINT texts_ibfk_2 FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
   CONSTRAINT texts_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id),
   CONSTRAINT texts_ibfk_1 FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table texts_history
@@ -704,7 +733,7 @@ CREATE TABLE texts_history (
   CONSTRAINT texts_history_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id),
   CONSTRAINT texts_history_FK_user_id_users FOREIGN KEY (user_id) REFERENCES users (user_id),
   CONSTRAINT texts_history_ibfk_1 FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table url_docs
@@ -760,33 +789,6 @@ CREATE TABLE useradmin_role_crossref (
   CONSTRAINT useradmin_role_crossref_FK_user_id_users FOREIGN KEY (user_id) REFERENCES users (user_id),
   CONSTRAINT useradmin_role_crossref_FK_role_id_roles FOREIGN KEY (role_id) REFERENCES roles (role_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table users
---
-
-CREATE TABLE users (
-  user_id int(11) NOT NULL auto_increment,
-  login_name varchar(128) NOT NULL,
-  login_password varchar(15) NOT NULL,
-  first_name varchar(64) NOT NULL,
-  last_name varchar(64) NOT NULL,
-  title varchar(64) NOT NULL,
-  company varchar(64) NOT NULL,
-  address varchar(128) NOT NULL,
-  city varchar(64) NOT NULL,
-  zip varchar(64) NOT NULL,
-  country varchar(64) NOT NULL,
-  county_council varchar(128) NOT NULL,
-  email varchar(128) NOT NULL,
-  external int(11) NOT NULL,
-  active int(11) NOT NULL default '1',
-  create_date datetime NOT NULL,
-  language varchar(3) NOT NULL,
-  session_id varchar(128) default NULL,
-  PRIMARY KEY  (user_id),
-  UNIQUE KEY UQ__users__login_name (login_name)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
 -- ============================================================================

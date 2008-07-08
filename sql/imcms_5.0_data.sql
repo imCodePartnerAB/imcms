@@ -72,6 +72,25 @@ SET @start_document__text2__swedish = '<a href="<?imcms:contextpath?>/login/" ti
 -- ============================================================================
 
 --
+-- Data for table users
+--
+
+INSERT INTO users
+  (user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, active, create_date, language, session_id)
+VALUES
+  (@user_id__admin, 'admin', 'admin', 'Admin', 'Super', '', '', '', '', '', '', '', '', 0, 1, NOW(), @'ui__language', NULL),
+  (@user_id__user, 'user', 'user', 'User', 'Extern', '', '', '', '', '', '', '', '', 0, 1, NOW(), @'ui__language', NULL);
+
+--
+-- Data for table meta
+--
+
+INSERT INTO meta
+  (meta_id, doc_type, owner_id, permissions, shared, show_meta, lang_prefix, date_created, date_modified, disable_search, target, activate, archived_datetime, publisher_id, status, publication_start_datetime, publication_end_datetime, missing_i18n_show_rule)
+VALUES
+  (@start_document__meta_id, 2, @user_id__admin, 0, 0, 0, @'ui__language', NOW(), NOW(), 0, '_self', 1, NULL, NULL, 2, NOW(), NULL, 'DO_NOT_SHOW');
+
+--
 -- Data for table browsers
 --
 
@@ -237,15 +256,6 @@ VALUES
   ('swe', 'swe', 'Svenska');
 
 --
--- Data for table meta
---
-
-INSERT INTO meta
-  (meta_id, doc_type, owner_id, permissions, shared, show_meta, lang_prefix, date_created, date_modified, disable_search, target, activate, archived_datetime, publisher_id, status, publication_start_datetime, publication_end_datetime, missing_i18n_show_rule)
-VALUES
-  (@start_document__meta_id, 2, 1, 0, 0, 0, @'ui__language', NOW(), NOW(), 0, '_self', 1, NULL, NULL, 2, NOW(), NULL, 'DO_NOT_SHOW');
-
---
 -- Data for table mime_types
 --
 
@@ -356,22 +366,6 @@ VALUES
   (@role_id__users, @start_document__meta_id, 3);
 
 --
--- Data for table sys_data
---
-
-INSERT INTO sys_data
-  (sys_id, type_id, value)
-VALUES
-  (0, 0, @start_document__meta_id),
-  (1, 1, 2),
-  (2, 2, NOW()),
-  (3, 3, ''),
-  (4, 4, ''),
-  (5, 5, ''),
-  (6, 6, ''),
-  (7, 7, '');
-
---
 -- Data for table sys_types
 --
 
@@ -386,6 +380,22 @@ VALUES
   (5, 'ServerMasterAddress'),
   (6, 'WebMaster'),
   (7, 'WebMasterAddress');
+
+--
+-- Data for table sys_data
+--
+
+INSERT INTO sys_data
+  (sys_id, type_id, value)
+VALUES
+  (0, 0, @start_document__meta_id),
+  (1, 1, 2),
+  (2, 2, NOW()),
+  (3, 3, ''),
+  (4, 4, ''),
+  (5, 5, ''),
+  (6, 6, ''),
+  (7, 7, '');
 
 --
 -- Data for table templategroups
@@ -446,13 +456,3 @@ INSERT INTO user_roles_crossref
 VALUES
   (@user_id__admin, @role_id__superadmin),
   (@user_id__user, @role_id__users);
-
---
--- Data for table users
---
-
-INSERT INTO users
-  (user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, active, create_date, language, session_id)
-VALUES
-  (@user_id__admin, 'admin', 'admin', 'Admin', 'Super', '', '', '', '', '', '', '', '', 0, 1, NOW(), @'ui__language', NULL),
-  (@user_id__user, 'user', 'user', 'User', 'Extern', '', '', '', '', '', '', '', '', 0, 1, NOW(), @'ui__language', NULL);

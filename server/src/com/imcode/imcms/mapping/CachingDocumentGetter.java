@@ -31,13 +31,6 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
         
         
         try {
-        	// I18nRefactor - remove cloning and loading
-        	if (document instanceof TextDocumentDomainObject) {
-        		TextDocumentDomainObject t = (TextDocumentDomainObject)document;
-        		t.getTexts();
-        		t.getImages();
-        	}
-        	
             document = (DocumentDomainObject) document.clone() ;
         } catch ( CloneNotSupportedException e ) {
             throw new ShouldNotBeThrownException(e);

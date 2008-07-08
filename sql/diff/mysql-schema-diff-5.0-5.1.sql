@@ -1,0 +1,118 @@
+﻿--
+-- Remove ambigous tables and view.
+--
+
+-- Current schema version
+SET @database_version__major__current = 5;
+SET @database_version__minor__current = 0;
+
+-- New schema version
+SET @database_version__major__new = 5;
+SET @database_version__minor__new = 1;
+
+--
+-- TODO: Check if schema version is 5.0
+--
+
+--
+-- The only i18n_%language% table which will stay.
+--
+CREATE TABLE i18n_languages_new (
+  language_id smallint NOT NULL auto_increment,
+  code varchar(2) NOT NULL COMMENT 'Language code in ISO 639-1 format.',
+  name varchar(128) NOT NULL,
+  native_name varchar(128) default NULL,
+  is_default boolean NOT NULL default false COMMENT 'Default language flag for application. Only one language can be set as default.',
+  is_enabled boolean NOT NULL default true COMMENT 'Language status for application. Reserved for future use.',
+  PRIMARY KEY (language_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+INSERT INTO i18n_languages_new (
+  language_id,
+  code,
+  name,
+  native_name,
+  is_default,
+  is_enabled
+)
+SELECT
+  language_id,
+  language_code_iso_639_1,
+  language_name,
+  language_native_name,
+  system_default,
+  true
+FROM
+  i18n_languages_v;
+
+--
+-- Drop all old i18n_%language% tables
+-- For some reasons table renaming operation fails when execut the following:
+-- DROP TABLE i18n_languages;
+-- RENAME TABLE i18n_languages_work TO i18n_languages;
+--
+
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE i18n_available_languages;
+DROP VIEW i18n_languages_v;
+
+-- workaroud
+RENAME TABLE i18n_languages TO i18n_languages_old;
+RENAME TABLE i18n_languages_new TO i18n_languages;
+
+DROP TABLE i18n_languages_old;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+--
+-- Adds foreign keys
+--
+ALTER TABLE i18n_meta
+ADD CONSTRAINT fk__i18n_meta__i18n_languages FOREIGN KEY(language_id) REFERENCES i18n_languages (language_id);
+
+ALTER TABLE texts
+ADD CONSTRAINT fk__texts__i18n_languages FOREIGN KEY(language_id) REFERENCES i18n_languages (language_id);
+
+ALTER TABLE images
+ADD CONSTRAINT fk__images__i18n_languages FOREIGN KEY(language_id) REFERENCES i18n_languages (language_id);
+
+/* Changes for v 5.2
+--
+-- Replace i18n_keywords with new table
+--
+
+CREATE TABLE keywords (
+  keywords_id int NOT NULL auto_increment,
+  meta_id int NOT NULL,
+  language_id smallint NOT NULL,
+  keyword_value varchar(128) NOT NULL,
+  PRIMARY KEY (keywords_id),
+  CONSTRAINT fk__keywords__meta FOREIGN KEY(meta_id) REFERENCES meta (meta_id),
+  CONSTRAINT fk__keywords__i18n_languages FOREIGN KEY(language_id) REFERENCES i18n_languages (language_id)
+);
+
+
+INSERT INTO keywords (
+  meta_id, language_id, keyword_value
+)
+SELECT
+  m.meta_id, m.language_id, k.keyword_value
+FROM
+  i18n_meta m
+INNER JOIN
+  i18n_keywords k
+ON
+  m.i18n_meta_id = k.i18n_meta_id;
+
+DROP TABLE i18n_keywords;
+*/
+
+--
+-- Update schema version
+--
+UPDATE database_version
+SET
+  major = @database_version__major__new,
+  minor = @database_version__minor__new;
+  
