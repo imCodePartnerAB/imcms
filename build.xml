@@ -5,7 +5,7 @@
 <project name="imCMS" default="dist">
 
     <!-- Read in 'build.properties' and set the properties therein. -->
-    <!-- Those properties are used as bases for later properties in this file. -->
+    <!-- Those properties are used as bases for latsproer properties in this file. -->
     <available file="build.properties" property="build.properties-available" />
     <available file="build.properties" property="build.properties" value="build.properties"/>
     <property name="build.properties" value="build.properties.template" />
@@ -22,7 +22,10 @@
     <!-- Paths. Later ones are built on earlier ones. -->
 
     <!-- The directory to build in. -->
+	<!-- 
     <property name="build" value="${basedir}/build"/>
+    -->
+	<property name="build" value="${basedir}/src/main/webapp"/>
     <property name="dist" value="${basedir}/dist"/>
     <property name="tmp" value="${basedir}/tmp"/>
 	<property name="src.dir" value="${basedir}/src/main/java"/>
@@ -51,6 +54,7 @@
     <property name="templates" value="${WEB-INF}/templates"/>
     <property name="sql" value="${WEB-INF}/sql"/>
     <property name="sql-diff" value="${sql}/diff"/>
+    <property name="sql-sprocs" value="${sql}/sprocs"/>
 
     <!-- Paths for other templates -->
     <property name="texttemplates" value="${templates}/text"/>
@@ -367,6 +371,10 @@
     </target>
 
     <target name="sql">
+    	
+        <copy todir="${sql-diff}">
+            <fileset dir="sql/diff" includes="diff-*.sql"/>
+        </copy>    	
 
         <copy todir="${sql}">
             <fileset file="sql/imcms_5.0_schema.sql"/>
@@ -376,6 +384,10 @@
             <fileset file="sql/imcms_5.0_data.sql"/>
         </copy>    	
 
+        <copy todir="${sql-sprocs}">
+            <fileset dir="sql/sprocs" includes="*.prc"/>
+        </copy>
+    	
     </target>
 
     <!-- Creates the directories and copies the files that are to be public. -->
