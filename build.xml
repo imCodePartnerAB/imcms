@@ -25,6 +25,7 @@
     <property name="build" value="${basedir}/build"/>
     <property name="dist" value="${basedir}/dist"/>
     <property name="tmp" value="${basedir}/tmp"/>
+	<property name="src.dir" value="${basedir}/src/main/java"/>
 
     <!-- The webroot. Everything put here can be seen by any visitor. -->
     <property name="webroot" value="${build}"/>
@@ -287,10 +288,10 @@
     <!-- Component targets used in build -->
 
     <target name="apidocs">
-        <javadoc sourcepath="server/src/" destdir="${apidocs}"
+        <javadoc sourcepath="${src.dir}/" destdir="${apidocs}"
                  windowtitle="imCMS API" classpathref="libraries"
                  encoding="iso-8859-1">
-            <fileset dir="server/src/" defaultexcludes="yes">
+            <fileset dir="${src.dir}/" defaultexcludes="yes">
                 <include name="com/imcode/imcms/api/**"/>
                 <include name="com/imcode/util/**"/>
                 <exclude name="**/Test*.java"/>
@@ -312,7 +313,7 @@
     <target name="checkstyle" depends="init">
 <!--
         <checkstyle config="docs/checkstyle.xml">
-            <fileset dir="server/src" includes="**/*.java"/>
+            <fileset dir="${src.dir}" includes="**/*.java"/>
         </checkstyle>
 -->
     </target>
@@ -326,7 +327,7 @@
             source="1.5" target="1.5"
             encoding="iso-8859-1">
 
-            <src path="server/src"/>
+            <src path="${src.dir}"/>
 
             <exclude name="**/Test*.java" unless="junit-available"/>
             <exclude name="**/*TestCase.java" unless="junit-available"/>
@@ -401,9 +402,9 @@
         <mkdir dir="${WEB-INF}/uploads"/>
     	<mkdir dir="${WEB-INF}/classes"/>
     	
-        <copy todir="${WEB-INF}" file="server/src/applicationContext.xml" filtering="true"/>
+        <copy todir="${WEB-INF}" file="${src.dir}/applicationContext.xml" filtering="true"/>
     	
-        <copy todir="${WEB-INF}/classes" file="server/src/hibernate.cfg.xml" filtering="true"/>
+        <copy todir="${WEB-INF}/classes" file="${src.dir}/hibernate.cfg.xml" filtering="true"/>
 
         <echo message="${version}" file="${versionfile}"/>
 
