@@ -525,6 +525,10 @@
             override="true"
             replace="-\1"
             casesensitive="false"/>
+    	
+    	<echo message="init-version-properties version: ${version}"/>
+    	<echo message="init-version-properties version: ${versionnumber}"/>
+    	<echo message="init-version-properties version: ${versionfilesuffix}"/>    		
 
         <!-- Locations for the final packages -->
         <property name="warfilename" value="imcms${versionfilesuffix}.war"/>
@@ -637,5 +641,4 @@
                 location="javax/servlet/resources/web-app_2_3.dtd"/>
         </xmlvalidate>
     </target>
-
 </project>
