@@ -66,17 +66,9 @@
 	
 	<property name="compile.classpath" value=""/>
 
-    <path id="libraries" path="${compile.classpath}">
-        <fileset dir="lib">
-            <include name="**/*.jar"/>
-            <exclude name="commons-logging*.jar"/>
-        </fileset>
-    </path>
+    <path id="libraries" path="${compile.classpath}"/>
 
-    <path id="libraries-with-commons-logging" path="${compile.classpath}">
-        <path refid="libraries"/>
-        <fileset dir="lib" includes="commons-logging*.jar"/>
-    </path>
+    <path id="libraries-with-commons-logging" path="${compile.classpath}"/>
 
     <path id="classes-and-libraries">
         <pathelement path="${classes}"/>
