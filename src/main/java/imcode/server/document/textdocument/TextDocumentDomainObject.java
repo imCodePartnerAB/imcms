@@ -32,7 +32,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Holds map of loaded images.
      * 
      * Latter can be loaded as lazy object in loadAllLazyLoaded.
-     * 
+     *                  
      * For now loaded only by demand.
      */
     private Map<I18nLanguage, Map<Integer, ImageDomainObject>> images
@@ -106,9 +106,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public void loadAllLazilyLoaded() {
         super.loadAllLazilyLoaded();
 
-        // TODO i18n: Do not load here
-        // texts.load();
-        // images.load();
+        loadTexts();
+        loadImages();
         
         includes.load();
         menus.load();
@@ -151,7 +150,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private Map<Integer, ImageDomainObject> getImagesMap() {
     	I18nLanguage language = I18nSupport.getCurrentLanguage();
     	
-    	return getImagesMap(language, true);
+    	return getImagesMap(language);
     }
     
     /**
@@ -161,11 +160,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      */
     
     // TODO: Refactor out into lazy loaded object and optimize 
-    private Map<Integer, ImageDomainObject> getImagesMap(I18nLanguage language,
-    		boolean load) {
+    private Map<Integer, ImageDomainObject> getImagesMap(I18nLanguage language) {
     	Map<Integer, ImageDomainObject> map = images.get(language);    	
     	
-    	if (map == null && load) {
+    	if (map == null) {
     		Integer metaId = getId();
     		
    			map = getOriginalImagesMap(language, metaId);
@@ -253,7 +251,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Removes all image.
      */
     public synchronized void removeAllImages() {
-    	images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
+        // we can not use images.clear() since all clones share same images;
+
+        images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
     }
 
     public void removeAllIncludes() {
@@ -269,7 +269,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void removeAllTexts() {
-    	texts = new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
+        // we can not use texts.clear() since all clones share same texts;
+
+        texts = new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
     }
 
     public void setInclude( int includeIndex, int includedDocumentId ) {
@@ -375,6 +377,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public void setLazilyLoadedImages(LazilyLoadedObject images) {
     	// TODO i18n: rewrite or remove latter.
+        // There is no lazy loaders for images
         //this.images = images ;
     }
 
@@ -384,6 +387,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public void setLazilyLoadedTexts(LazilyLoadedObject texts) {
     	// TODO i18n: rewrite or remove latter.
+        // There is no lazy loaders for texts
         //this.texts = texts;
     }
 
@@ -485,7 +489,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * @return Image id mapped to image for language specified.
      */
     public Map<Integer, ImageDomainObject> getImages(I18nLanguage language) {
-        return Collections.unmodifiableMap( getImagesMap(language, true) );
+        return Collections.unmodifiableMap( getImagesMap(language) );
     }    
     
 	/**
@@ -518,7 +522,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     		ImageDomainObject image) {
     	
     	Integer metaId = getId();    	
-    	Map<Integer, ImageDomainObject> map = getImagesMap(language, true);
+    	Map<Integer, ImageDomainObject> map = getImagesMap(language);
     	
     	ImageDomainObject existingImage = map.get(index);
     	
@@ -566,8 +570,74 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 					"can not be null.");			
 		}		
 		
-		Map<Integer, ImageDomainObject> map = getImagesMap(language, true);		
+		Map<Integer, ImageDomainObject> map = getImagesMap(language);		
 		
 		return map.get(index);
-	}	
+	}
+
+    private void loadTexts() {
+        for (I18nLanguage language: I18nSupport.getLanguages()) {
+            getTextsMap(language);
+        }
+    }
+
+    private void loadImages() {
+        for (I18nLanguage language: I18nSupport.getLanguages()) {
+            getImagesMap(language);
+        }
+    }
+
+    @Override
+    public void cloneShared() {
+        cloneTexts();
+        cloneImages();
+    }
+
+    private void cloneImages() {
+        int metaId = getId();
+        Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesClone
+    		= new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
+
+        for(Map.Entry<I18nLanguage, Map<Integer, ImageDomainObject>> languageEntry: images.entrySet()) {
+            Map<Integer, ImageDomainObject> imagesMap = languageEntry.getValue();
+            Map<Integer, ImageDomainObject> imagesMapClone = new HashMap<Integer, ImageDomainObject>();
+
+            imagesClone.put(languageEntry.getKey(), imagesMapClone);
+
+            for (Map.Entry<Integer, ImageDomainObject> imagesEntry: imagesMap.entrySet()) {
+                ImageDomainObject image = imagesEntry.getValue().clone();
+                //image.setModified(true);
+                image.setId(null);
+                //image.setMetaId(metaId);
+
+                imagesMapClone.put(imagesEntry.getKey(), image);
+            }
+        }
+
+        images = imagesClone;
+    }
+
+    private void cloneTexts() {
+        int metaId = getId();
+        Map<I18nLanguage, Map<Integer, TextDomainObject>> textsClone    
+    		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
+
+        for(Map.Entry<I18nLanguage, Map<Integer, TextDomainObject>> languageEntry: texts.entrySet()) {
+            Map<Integer, TextDomainObject> textsMap = languageEntry.getValue();
+            Map<Integer, TextDomainObject> textsMapClone = new HashMap<Integer, TextDomainObject>();
+
+            textsClone.put(languageEntry.getKey(), textsMapClone);
+
+            for (Map.Entry<Integer, TextDomainObject> textsEntry: textsMap.entrySet()) {
+                TextDomainObject text = textsEntry.getValue().clone();
+                text.setId(null);
+                //text.setMetaId(metaId);
+                text.setModified(true);
+
+                textsMapClone.put(textsEntry.getKey(), text);
+            }
+        }
+
+        texts = textsClone;
+    }
 }

@@ -446,9 +446,14 @@ public class DocumentMapper implements DocumentGetter {
     public void copyDocument(DocumentDomainObject document,
                              UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         String copyHeadlineSuffix = imcmsServices.getAdminTemplate(COPY_HEADLINE_SUFFIX_TEMPLATE, user, null);
-        document.setHeadline(document.getHeadline() + copyHeadlineSuffix);
+
         document.setAlias(null);
         makeDocumentLookNew(document, user);
+
+        for (I18nMeta i18nMeta: document.getMeta().getI18nMetas()) {
+            i18nMeta.setHeadline(i18nMeta.getHeadline() + copyHeadlineSuffix);
+        }
+
         saveNewDocument(document, user, true);
     }
 

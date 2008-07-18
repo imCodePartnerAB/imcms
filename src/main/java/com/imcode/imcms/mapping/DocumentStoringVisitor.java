@@ -125,36 +125,23 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         TextDao textDao = (TextDao)Imcms.getServices().getSpringBean("textDao");
         Integer metaId = textDocument.getId();
-     	I18nLanguage language = I18nSupport.getCurrentLanguage();
+
+        for (I18nLanguage language: I18nSupport.getLanguages()) {
     	     
-        Map<Integer, TextDomainObject> texts = textDocument.getTextsMap(language);
-        
-        for (Map.Entry<Integer, TextDomainObject> entry: texts.entrySet()) {
-        	Integer index = entry.getKey();
-            TextDomainObject text = entry.getValue();
-            
-            if (text.isModified()) {
-            	// legacy support:
-            	/*
-            	TextDomainObject oldText = textDao.getText(metaId, index, language.getId());
-            	String oldTextValue = oldText == null ? "" : oldText.getText();
-            	
-            	
-     			String lastHistoryTextValue = getLastHistoryTextValue(language, 
-     					textDocument.getId(), index, text.getType());
-     			
-     			// Legacy logic support: copy old text to history if it does not yet exists  
-     			if (!oldTextValue.equals(lastHistoryTextValue)) {
-     				sqlInsertTextHistory(language, oldTextDocument, index, oldText, user);
-     			}            	
-            	*/
-            	
-            	sqlInsertTextHistory(language, textDocument, index, text, user);      
-            	sqlDeleteText(language, textDocument, index, text);
-            	sqlInsertText(language, textDocument, index, text);   
+            Map<Integer, TextDomainObject> texts = textDocument.getTextsMap(language);
+
+            for (Map.Entry<Integer, TextDomainObject> entry: texts.entrySet()) {
+                Integer index = entry.getKey();
+                TextDomainObject text = entry.getValue();
+
+                if (text.isModified()) {
+                    sqlInsertTextHistory(language, textDocument, index, text, user);
+                    sqlDeleteText(language, textDocument, index, text);
+                    sqlInsertText(language, textDocument, index, text);
+                }
             }
-        }        
-}
+        }
+    }
     
     
     private String getLastHistoryTextValue(I18nLanguage language, int metaId, int name, int type) {

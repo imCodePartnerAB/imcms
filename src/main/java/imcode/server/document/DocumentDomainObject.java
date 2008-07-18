@@ -701,5 +701,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		}
 		
 		return i18nMeta;
-	}	
+	}
+
+    /**
+     * Document may have shared references which are not cloened by clone.
+     * @see DocumentSaver.saveNewDocument       
+     */
+    public void cloneShared() {}
 }

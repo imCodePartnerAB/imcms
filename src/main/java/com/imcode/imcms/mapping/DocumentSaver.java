@@ -156,6 +156,9 @@ class DocumentSaver {
         checkDocumentForSave(document);
 
         document.loadAllLazilyLoaded();
+        
+        // I18n: cloens shared references
+        document.cloneShared();
 
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 
@@ -166,7 +169,7 @@ class DocumentSaver {
             document.getPermissionSets().setRestricted1(document.getPermissionSetsForNewDocuments().getRestricted1());
             document.getPermissionSets().setRestricted2(document.getPermissionSetsForNewDocuments().getRestricted2());
         }
-
+        
         document.setId(newMetaId);
         
         Meta meta = document.getMeta();
@@ -191,7 +194,6 @@ class DocumentSaver {
         		}
         	}
         }
-        
 
         updateDocumentSectionsCategoriesKeywords(document);
 
