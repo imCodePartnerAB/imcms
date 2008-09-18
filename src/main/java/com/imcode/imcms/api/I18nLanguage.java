@@ -10,7 +10,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="i18n_languages_v")
+@Table(name="i18n_languages")
 @NamedQueries({
 	@NamedQuery(name="I18nLanguage.getDefaultLanguage", query="select l from I18nLanguage l where l.systemDefault is true"),
 	@NamedQuery(name="I18nLanguage.getByCode", query="select l from I18nLanguage l where l.code = :code"),

@@ -1,5 +1,5 @@
 ﻿--
--- Remove ambigous tables and view.
+-- Removes ambigous tables and view.
 --
 
 -- Current schema version
@@ -9,10 +9,6 @@ SET @database_version__minor__current = 0;
 -- New schema version
 SET @database_version__major__new = 5;
 SET @database_version__minor__new = 1;
-
---
--- TODO: Check if schema version is 5.0
---
 
 --
 -- The only i18n_%language% table which will stay.
@@ -76,37 +72,6 @@ ADD CONSTRAINT fk__texts__i18n_languages FOREIGN KEY(language_id) REFERENCES i18
 
 ALTER TABLE images
 ADD CONSTRAINT fk__images__i18n_languages FOREIGN KEY(language_id) REFERENCES i18n_languages (language_id);
-
-/* Changes for v 5.2
---
--- Replace i18n_keywords with new table
---
-
-CREATE TABLE keywords (
-  keywords_id int NOT NULL auto_increment,
-  meta_id int NOT NULL,
-  language_id smallint NOT NULL,
-  keyword_value varchar(128) NOT NULL,
-  PRIMARY KEY (keywords_id),
-  CONSTRAINT fk__keywords__meta FOREIGN KEY(meta_id) REFERENCES meta (meta_id),
-  CONSTRAINT fk__keywords__i18n_languages FOREIGN KEY(language_id) REFERENCES i18n_languages (language_id)
-);
-
-
-INSERT INTO keywords (
-  meta_id, language_id, keyword_value
-)
-SELECT
-  m.meta_id, m.language_id, k.keyword_value
-FROM
-  i18n_meta m
-INNER JOIN
-  i18n_keywords k
-ON
-  m.i18n_meta_id = k.i18n_meta_id;
-
-DROP TABLE i18n_keywords;
-*/
 
 --
 -- Update schema version
