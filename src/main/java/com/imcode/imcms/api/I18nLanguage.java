@@ -12,26 +12,23 @@ import javax.persistence.Table;
 @Entity
 @Table(name="i18n_languages")
 @NamedQueries({
-	@NamedQuery(name="I18nLanguage.getDefaultLanguage", query="select l from I18nLanguage l where l.systemDefault is true"),
+	@NamedQuery(name="I18nLanguage.getDefaultLanguage", query="select l from I18nLanguage l where l.default is true"),
 	@NamedQuery(name="I18nLanguage.getByCode", query="select l from I18nLanguage l where l.code = :code"),
 	@NamedQuery(name="I18nLanguage.missingMetaLanguages", query="select l from I18nLanguage l where l not in (select m.language from I18nMeta m where m.metaId = :metaId)")
 })
 public class I18nLanguage implements Serializable, Cloneable {
 
-	@Id
-	@Column(name="language_id")
+
     private Integer id;
 	
-	@Column(name="system_default")
 	private Boolean systemDefault;
+	
+	private Boolean enabled;	
     
-	@Column(name="language_code_iso_639_1")	
     private String code;
     
-	@Column(name="language_name")
     private String name;
     
-	@Column(name="language_native_name")
     private String nativeName;
 
 	@Override
@@ -59,6 +56,8 @@ public class I18nLanguage implements Serializable, Cloneable {
 		return getName();
 	}
 	
+	@Id
+	@Column(name="language_id")	
 	public Integer getId() {
 		return id;
 	}
@@ -83,19 +82,30 @@ public class I18nLanguage implements Serializable, Cloneable {
 		this.name = name;
 	}
 
+	@Column(name="native_name")	
 	public String getNativeName() {
 		return nativeName;
 	}
-
+	
 	public void setNativeName(String nativeName) {
 		this.nativeName = nativeName;
 	}
 
-	public Boolean getSystemDefault() {
+	@Column(name="is_default")	
+	public Boolean isDefault() {
 		return systemDefault;
 	}
 
-	public void setSystemDefault(Boolean systemDefault) {
+	public void setDefault(Boolean systemDefault) {
 		this.systemDefault = systemDefault;
+	}
+
+	@Column(name="is_enabled")	
+	public Boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
 	}	
 }

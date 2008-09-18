@@ -11,8 +11,8 @@ public class LanguageDaoImpl extends HibernateTemplate implements LanguageDao {
 
 	@Transactional
 	public void setDefaultLanguage(I18nLanguage language) {
-		bulkUpdate("update I18nLanguage l set l.systemDefault = false");
-		bulkUpdate("update I18nLanguage l set l.systemDefault = true where l.code = ?", 
+		bulkUpdate("update I18nLanguage l set l.default = false");
+		bulkUpdate("update I18nLanguage l set l.default = true where l.code = ?", 
 				language.getCode());
 	}
 

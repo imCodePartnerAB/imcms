@@ -15,7 +15,7 @@ SET @database_version__minor__new = 1;
 --
 CREATE TABLE i18n_languages_new (
   language_id smallint NOT NULL auto_increment,
-  code varchar(2) NOT NULL COMMENT 'Language code in ISO 639-1 format.',
+  code varchar(3) NOT NULL COMMENT 'Language code.',
   name varchar(128) NOT NULL,
   native_name varchar(128) default NULL,
   is_default boolean NOT NULL default false COMMENT 'Default language flag for application. Only one language can be set as default.',

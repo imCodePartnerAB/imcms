@@ -191,10 +191,12 @@ VALUES
 --
 
 INSERT INTO i18n_languages
-  (language_id, language_code_iso_639_1, language_name, language_native_name)
+  (language_id, code, name, native_name)
 VALUES
   (@language_id__english, 'en', 'English', 'English'),
   (@language_id__swedish, 'sv', 'Swedish', 'Svenska');
+
+UPDATE i18n_languages set is_default = true WHERE language_id = @language_id__default;
 
 --
 -- Data for table i18n_meta

@@ -220,11 +220,14 @@ CREATE TABLE frameset_docs (
 --
 
 CREATE TABLE i18n_languages (
-  language_id smallint(6) NOT NULL auto_increment,
-  language_code_iso_639_1 varchar(2) NOT NULL COMMENT 'Language code in ISO 639-1 format',
-  language_name varchar(128) NOT NULL,
-  language_native_name varchar(128) default NULL,
-  PRIMARY KEY  (language_id)
+  language_id smallint NOT NULL auto_increment,
+  code varchar(3) NOT NULL COMMENT 'Language code',
+  name varchar(128) NOT NULL,
+  native_name varchar(128) default NULL,
+  is_default boolean NOT NULL default false COMMENT 'Default language flag for application. Only one language can be set as default.',
+  is_enabled boolean NOT NULL default true COMMENT 'Language status for application. Reserved for future use.',
+  PRIMARY KEY (language_id)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
