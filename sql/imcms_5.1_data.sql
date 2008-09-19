@@ -196,7 +196,7 @@ VALUES
   (@language_id__english, 'en', 'English', 'English'),
   (@language_id__swedish, 'sv', 'Swedish', 'Svenska');
 
-UPDATE i18n_languages set is_default = true WHERE language_id = @language_id__default;
+UPDATE i18n_languages SET is_default = true WHERE language_id = @language_id__default;
 
 --
 -- Data for table i18n_meta

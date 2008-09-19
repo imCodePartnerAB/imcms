@@ -22,10 +22,12 @@
     <!-- Paths. Later ones are built on earlier ones. -->
 
     <!-- The directory to build in. -->
-	<!-- 
+	 
     <property name="build" value="${basedir}/build"/>
-    -->
+    
+	<!--
 	<property name="build" value="${basedir}/src/main/webapp"/>
+	-->
     <property name="dist" value="${basedir}/dist"/>
     <property name="tmp" value="${basedir}/tmp"/>
 	<property name="src.dir" value="${basedir}/src/main/java"/>
