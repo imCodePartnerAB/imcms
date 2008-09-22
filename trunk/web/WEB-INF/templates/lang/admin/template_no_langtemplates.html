@@ -1,0 +1,46 @@
+<html>
+<head>
+<title><? templates/sv/template_no_langtemplates.html/1 ?></title>
+
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+
+</head>
+<body onLoad="focusField(1, 'cancel')">
+
+#gui_outer_start()
+#gui_head( "<? templates/sv/template_no_langtemplates.html/1 ?>" )
+<table border="0" cellspacing="0" cellpadding="0">
+<form method="post" action="TemplateChange">
+<input type="HIDDEN" name="language" value="#language#">
+<input type="HIDDEN" name="cancel" value="Tillbaka">
+<tr> 
+	<td><input type="submit" class="imcmsFormBtn" name="cancel" value="<? global/back ?>"></td>
+	<td>&nbsp;</td>
+	<td><input type="button" class="imcmsFormBtn" value="<? global/help ?>" title="<? global/openthehelppage ?>" onClick="openHelpW('Templates')"></td>
+</tr>
+</form>
+</table>
+#gui_mid()
+
+<table border="0" cellspacing="0" cellpadding="0" width="500">
+<form method="post" action="TemplateChange">
+<input type="HIDDEN" name="language" value="#language#">
+<input type="HIDDEN" name="cancel" value="Tillbaka">
+<tr> 
+	<td><? templates/sv/template_no_langtemplates.html/2 ?></td>
+</tr>
+<tr> 
+	<td><? templates/sv/template_no_langtemplates.html/3 ?></td>
+</tr>
+<tr>
+	<td><input type="submit" class="imcmsFormBtn" name="cancel" value="<? templates/sv/template_no_langtemplates.html/2001 ?>"></td>
+</tr>
+</form>
+</table>
+#gui_bottom()
+#gui_outer_end()
+
+
+</body>
+</html>

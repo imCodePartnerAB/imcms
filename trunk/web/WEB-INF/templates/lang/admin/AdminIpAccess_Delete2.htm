@@ -1,0 +1,40 @@
+<html>
+<head>
+<title><? templates/sv/AdminIpAccess_Delete2.htm/1 ?> </title>
+
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+#gui_outer_start()
+#gui_head( "<? global/imcms_administration ?>" )
+#gui_head_help_and_back_buttons( "IPAccess"  "AdminIpAccess" "AdminIPAccess" "IP_CANCEL_DELETE" )
+#gui_mid()
+
+<form method="post" action="AdminIpAccess" name="AdminIPAccess">
+<table border="0" cellspacing="0" cellpadding="2" width="400">
+<tr>
+	<td>#gui_heading( "<? global/warning ?>" )</td>
+</tr>
+<tr>
+	<td><? templates/sv/AdminIpAccess_Delete2.htm/3 ?></td>
+</tr>
+<tr>
+	<td>#gui_hr( "blue" )</td>
+</tr>
+<tr>
+	<td align="right">
+	<input type="submit" class="imcmsFormBtn" name="DEL_IP_ACCESS" value="<? templates/sv/AdminIpAccess_Delete2.htm/2001 ?>">
+	<input type="submit" class="imcmsFormBtn" name="IP_CANCEL_DELETE" value="<? global/cancel ?>"></td>
+</tr>
+</table>
+</form>
+
+#gui_bottom()
+#gui_outer_end()
+
+</body>
+</html>
