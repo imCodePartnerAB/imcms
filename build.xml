@@ -3,7 +3,14 @@
 <!-- The Ant 'build.xml'-file for imCMS -->
 
 <project name="imCMS" default="dist">
-
+	
+	<!-- Ivy integration
+	xmlns:ivy="antlib:org.apache.ivy.ant"
+    <target name="resolve" description="ivy dependencies">
+        <ivy:retrieve />
+    </target>	
+    -->
+	
     <!-- Read in 'build.properties' and set the properties therein. -->
     <!-- Those properties are used as bases for latsproer properties in this file. -->
     <available file="build.properties" property="build.properties-available" />
@@ -30,7 +37,9 @@
 	-->
     <property name="dist" value="${basedir}/dist"/>
     <property name="tmp" value="${basedir}/tmp"/>
+	
 	<property name="src.dir" value="${basedir}/src/main/java"/>
+	<property name="resources.dir" value="${basedir}/src/main/resources"/>
 
     <!-- The webroot. Everything put here can be seen by any visitor. -->
     <property name="webroot" value="${build}"/>
@@ -69,13 +78,11 @@
     <path id="libraries">
         <fileset dir="lib">
             <include name="**/*.jar"/>
-            <exclude name="commons-logging*.jar"/>
         </fileset>
     </path>
 
     <path id="libraries-with-commons-logging">
         <path refid="libraries"/>
-        <fileset dir="lib" includes="commons-logging*.jar"/>
     </path>
 
     <path id="classes-and-libraries">
@@ -416,9 +423,10 @@
         <mkdir dir="${WEB-INF}/uploads"/>
     	<mkdir dir="${WEB-INF}/classes"/>
     	
-        <copy todir="${WEB-INF}" file="${src.dir}/applicationContext.xml" filtering="true"/>
-    	
-        <copy todir="${WEB-INF}/classes" file="${src.dir}/hibernate.cfg.xml" filtering="true"/>
+    	<!-- Copy resources -->
+        <copy todir="${WEB-INF}"         file="${resources.dir}/applicationContext.xml" filtering="true"/>    	
+        <copy todir="${WEB-INF}/classes" file="${resources.dir}/hibernate.cfg.xml" filtering="true"/>
+    	<copy todir="${WEB-INF}/classes" file="${resources.dir}/commons-logging.properties" filtering="true"/>
 
         <echo message="${version}" file="${versionfile}"/>
 
@@ -556,6 +564,9 @@
         depends="check-build-properties,init-version-properties">
 
         <filter token="defaultlanguage" value="${defaultlanguage}"/>
+    	<filter token="showHibernateSQL" value="${showHibernateSQL}"/>
+    	
+    	<filter filtersfile="build.filters.properties"/>
 
         <filter token="documentationwebappurl" value="http://${documentation-host}/${versionnumber}"/>
         <filter token="documentationurl" value="http://${documentation-host}/${versionnumber}"/>

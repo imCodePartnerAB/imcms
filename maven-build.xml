@@ -1,6 +1,8 @@
-<?xml version='1.0' encoding='iso-8859-1'?>
+<!-- 
+  Work in progress - this build file is not yet complete - do not try to build with it!!
+-->
 
-<!-- The Ant 'build.xml'-file for imCMS -->
+<?xml version='1.0' encoding='iso-8859-1'?>
 
 <project name="imCMS" default="dist">
 
@@ -22,10 +24,12 @@
     <!-- Paths. Later ones are built on earlier ones. -->
 
     <!-- The directory to build in. -->
-	<!-- 
-    <property name="build" value="${basedir}/build"/>
-    -->
+	
+    <property name="build" value="${basedir}/build"/>    
+    <!-- 
 	<property name="build" value="${basedir}/src/main/webapp"/>
+	-->
+	
     <property name="dist" value="${basedir}/dist"/>
     <property name="tmp" value="${basedir}/tmp"/>
 	<property name="src.dir" value="${basedir}/src/main/java"/>
