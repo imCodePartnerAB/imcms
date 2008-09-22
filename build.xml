@@ -654,4 +654,16 @@
                 location="javax/servlet/resources/web-app_2_3.dtd"/>
         </xmlvalidate>
     </target>
+	
+	<target name="mvn-deploy" depends="init-version-properties">
+		  <exec executable="mvn">
+		    <arg value="deploy:deploy-file"/>
+		  	<arg value="file="/>
+		  	<arg value="repositoryId="/>
+		  	<arg value="groupId="/>
+		    <arg value="artifactId="/>
+		    <arg value="generatePom=false"/>
+		  	<arg value="packaging=jar"/>
+		  </exec>		
+	</target>
 </project>
