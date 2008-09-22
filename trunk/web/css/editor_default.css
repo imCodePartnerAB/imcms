@@ -1,0 +1,64 @@
+
+/* *******************************************************************************************
+ *         Default settings for the Xinha Editor                                             *
+ ******************************************************************************************* */
+
+/*
+
+If you want to use your own CSS - remove the CSS-attibutes below and just use an @import statment. Eg:
+
+@import url(my_css.css);
+@import url(default.css.jsp?editor=true);
+
+*/
+
+
+BODY {
+	background-color: #ffffff;
+}
+
+BODY, P, TD, LI {
+	font: 11px Verdana,Geneva,sans-serif;
+	color: #000000;
+}
+
+LI {
+	padding-bottom: 0.4em;
+}
+
+H1 {
+	font: bold 20px Verdana,Geneva,sans-serif;
+	color: #000000;
+}
+H2 {
+	font: bold 18px Verdana,Geneva,sans-serif;
+	color: #000000;
+}
+H3 {
+	font: bold 16px Verdana,Geneva,sans-serif;
+	color: #000000;
+}
+H4 {
+	font: bold 14px Verdana,Geneva,sans-serif;
+	color: #000000;
+}
+H5 {
+	font: bold 12px Verdana,Geneva,sans-serif;
+	color: #000000;
+}
+H6 {
+	font: bold 11px Verdana,Geneva,sans-serif;
+	color: #000000;
+}
+
+H1, H2, H3, H4, H5, H6, P {
+	margin: 1.5em 0 0.5em 0;
+}
+
+A:link,
+A:visited,
+A:active,
+A:hover {
+	color: #0000cc;
+	text-decoration: underline;
+}

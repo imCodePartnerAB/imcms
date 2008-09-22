@@ -1,0 +1,55 @@
+/*
+ ******************************  Microsoft Word HTML-export classes  ******************************
+
+		With ".Mso" at the beginning of each class. (eg. <P class=".MsoNormal"></P>)
+		H1-H6 are converted to use the classes .MsoH1 - .MsoH6  (eg. <H3 class=".MsoH3"></H3>)
+		The HTML code that comes from the Word-application is converted so that it shouldn't
+		disturb the other stylesheets on the site. Word-pasted code can maintain the original
+		look from the application, almost, if this CSS is properly done.
+		If you have any Word-styles with swedish (ÅÄÖ), or other, special charatcters or blank-space,
+		Word will delete these characters in the CSS-class. (eg. "Brödtext" will become ".MsoBrdtext")
+		
+		Note!
+		- Remember to fill in the classes in the JavaScript-array "arrWordClassesName"
+			in the file "editor_config.js.jsp"! */
+
+
+.MsoNormal, .MsoBodyText, .MsoBrdtext { font: 12pt 'Times New Roman', Times, serif; color:black; }
+.MsoH1, .MsoRubrik1 { font: bold 17pt Arial, Helvetica, sans-serif; color:black; }
+.MsoH2, .MsoRubrik2 { font: bold italic 14pt Arial, Helvetica, sans-serif; color:black; }
+.MsoH3, .MsoRubrik3 { font: bold 13pt 'Times New Roman', Times, serif; color:black; }
+.MsoH4, .MsoRubrik4 { font: bold 12pt 'Times New Roman', Times, serif; color:black; }
+.MsoH5, .MsoRubrik5 { font: bold 12pt 'Times New Roman', Times, serif; color:black; }
+.MsoH6, .MsoRubrik6 { font: bold 12pt 'Times New Roman', Times, serif; color:black; }
+.MsoHeading7, .MsoRubrik7 { font: bold 12pt 'Times New Roman', Times, serif; color:black; }
+.MsoHeading8, .MsoRubrik8 { font: bold 12pt 'Times New Roman', Times, serif; color:black; }
+.MsoHeading9, .MsoRubrik9 { font: bold 12pt 'Times New Roman', Times, serif; color:black; }
+.MsoTabell, .MsoList { font: 10pt 'Times New Roman', Times, serif; color:black; }
+
+
+
+
+/* ***** default - don't edit! *****
+.MsoNormal, .MsoBodyText, .MsoBrdtext { font: 12pt 'Times New Roman', Times, serif; color:black; }
+.MsoH1, .MsoRubrik1 { font: bold 17pt Arial, Helvetica, sans-serif; color:black; }
+.MsoH2, .MsoRubrik2 { font: bold italic 14pt Arial, Helvetica, sans-serif; color:black; }
+.MsoH3, .MsoRubrik3 { font: bold 13pt 'Times New Roman', Times, serif; color:black; }
+.MsoH4, .MsoRubrik4 { font: bold 12pt 'Times New Roman', Times, serif; color:black; }
+.MsoH5, .MsoRubrik5 { font: bold 12pt 'Times New Roman', Times, serif; color:black; }
+.MsoH6, .MsoRubrik6 { font: bold 12pt 'Times New Roman', Times, serif; color:black; }
+.MsoHeading7, .MsoRubrik7 { font: bold 12pt 'Times New Roman', Times, serif; color:black; }
+.MsoHeading8, .MsoRubrik8 { font: bold 12pt 'Times New Roman', Times, serif; color:black; }
+.MsoHeading9, .MsoRubrik9 { font: bold 12pt 'Times New Roman', Times, serif; color:black; }
+.MsoTabell, .MsoList { font: 10pt 'Times New Roman', Times, serif; color:black; }
+ * ***** end default ***** */
+
+
+
+/* If you want a more screen-friendly look on the content - use Verdana instead!
+
+.MsoNormal, .MsoBodyText, .MsoBrdtext { font: 11px Verdana,Geneva,sans-serif; color:black; }
+.MsoH1, .MsoRubrik1 { font: bold 20px Verdana,Geneva,sans-serif; color:black; }
+.MsoH2, .MsoRubrik2 { font: bold 16px Verdana,Geneva,sans-sans-serif; color:black; }
+.MsoH3, .MsoRubrik3 { font: bold 14px Verdana,Geneva,sans-serif; color:black; }
+.MsoH4, .MsoRubrik4 { font: bold 12px Verdana,Geneva,sans-serif; color:black; }
+.MsoTabell { font: 10px Verdana,Geneva,sans-serif; color:black; } */
