@@ -1,0 +1,92 @@
+<style type="text/css">
+<!--
+/* changePage */
+
+#changePageDiv { padding: 0px 0px 10px 0px; }
+#changePageTable { border-right: 1px solid #000000; border-bottom: 1px solid #000000; background-color:#f5f5f7; }
+#changePageTdTop { padding: 2px; background-color:#20568D; }
+#changePageTd1, #changePageTd1 SPAN { font: 10px Verdana,Geneva,sans-serif; color:#ffffff; }
+#changePageTd2 {  }
+.changePageTdBottom TD { padding-top: 3px; }
+.changePageSelect { font: 10px Verdana,Geneva,sans-serif; color:#000000; }
+.changePageHeading { font: bold 11px Verdana,Geneva,sans-serif; color:#ccccee; }
+.changePageButton {
+	background-color:#e2e2e4;
+	font: 10px Tahoma, Arial, sans-serif;
+	color:#000000;
+	padding: 0px 4px;
+	border-width: 1px;
+	border-style: outset;
+	border-color: #cccccc #666666 #666666 #cccccc;
+    cursor:pointer;
+}
+INPUT.imcmsFormBtnSmall {
+	background-color: #20568D;
+	color: #ffffff;
+	font: 10px Tahoma, Arial, sans-serif;
+	border: 2px outset #668DB6;
+	border-color: #668DB6 #000000 #000000 #668DB6;
+    cursor:pointer;
+	padding: 0 2;
+}
+A.imLinkHelp:link, A.imLinkHelp:visited, A.imLinkHelp:active, A.imLinkHelp:hover {
+	font: bold 15px Arial, Tahoma,Verdana,sans-serif; color:#eeee00; text-decoration:none;
+}
+B { font-weight: bold; }
+-->
+</style>
+
+<script language="JavaScript">
+<!--
+function targetNewWindow() {
+	var exampelWindow = window.open("", "Exempelmall", "scrollbars=yes,toolbar=0,resizable=yes,location=0,directories=0,status=0,menubar=0,height=500,width=800") ;
+	document.changePageForm.target = "Exempelmall" ;
+	exampelWindow.focus() ;
+}
+function resetTarget() {
+	document.changePageForm.target = "" ;
+}
+//-->
+</script>
+<div id="changePageDiv">
+<table border="0" cellspacing="0" cellpadding="2" id="changePageTable">
+<form name="changePageForm" method="POST" action="SaveInPage">
+<input type="HIDDEN" name="meta_id" value="#getMetaId#">
+<tr>
+	<td colspan="9" id="changePageTdTop">
+	<table border="0" cellspacing="0" cellpadding="0" width="100%">
+	<tr>
+		<td id="changePageTd1">&nbsp;<span class="changePageHeading"><? templates/sv/textdoc/inPage_admin.html/1001 ?>&nbsp;</span> <? templates/sv/textdoc/inPage_admin.html/1002 ?></td>
+		<td id="changePageTd2" align="right"><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtnSmall" onClick="openHelpW('Appearance')"></td>
+	</tr>
+	</table></td>
+</tr>
+<tr class="changePageTdBottom">
+	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt=""></td>
+	
+	<td>
+	<select name="group" size="1" class="changePageSelect">
+		#getTemplateGroups#
+	</select></td>
+	
+	<td><input type="submit" name="change_group" value="<? templates/sv/textdoc/inPage_admin.html/2001 ?>" onClick="resetTarget()" class="changePageButton" width="90" style="width:90"></td>
+	
+	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt=""></td>
+	
+	<td>
+	<select name="template" size="1" class="changePageSelect">
+		#getTemplatesInGroup#
+		<option></option>
+	</select></td>
+	
+	<td><input type="submit" name="preview" value="<? templates/sv/textdoc/inPage_admin.html/2002 ?>" onClick="targetNewWindow()" class="changePageButton"></td>
+	
+	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt=""></td>
+	
+	<td><input type="submit" name="update" value="  <? templates/sv/textdoc/inPage_admin.html/2003 ?>  " onClick="resetTarget()" class="changePageButton"></td>
+	
+	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt=""></td>
+</tr>
+</form>
+</table></div>
+

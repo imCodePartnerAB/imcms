@@ -1,0 +1,61 @@
+<html>
+<head>
+<title><? templates/sv/AdminIpAccess_Add.htm/2 ?></title>
+
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+#gui_outer_start()
+#gui_head( "<? global/imcms_administration ?>" )
+#gui_head_help_and_back_buttons( "IPAccess"  "AdminIpAccess" "addIP" "CANCEL_ADD_IP" )
+#gui_mid()
+
+<form method="post" action="AdminIpAccess" name="addIP">
+<table border="0" cellspacing="0" cellpadding="2" width="400">
+<tr>
+	<td colspan="2">#gui_heading( "<? templates/sv/AdminIpAccess_Add.htm/2 ?>" )</td>
+</tr>
+<tr>
+	<td colspan="2"><? templates/sv/AdminIpAccess_Add.htm/3 ?></td>
+</tr>
+<tr>
+	<td colspan="2">#gui_hr( "cccccc" )</td>
+</tr>
+<tr>
+	<td><? templates/sv/AdminIpAccess_Add.htm/4 ?></td>
+	<td><select name="USER_ID" size="1">#USERS_LIST#</select></td>
+</tr>
+<tr>
+	<td><? templates/sv/AdminIpAccess_Add.htm/6 ?></td>
+	<td><input type="text" name="IP_START" size="15" maxlength="15"></td>
+</tr>
+<tr>
+	<td><? templates/sv/AdminIpAccess_Add.htm/7 ?></td>
+	<td><input type="text" name="IP_END" size="15" maxlength="15"></td>
+</tr>
+<tr>
+	<td colspan="2">#gui_hr( "cccccc" )</td>
+</tr>
+<tr>
+	<td colspan="2"><? templates/sv/AdminIpAccess_Add.htm/8 ?></td>
+</tr>
+<tr>
+	<td colspan="2">#gui_hr( "blue" )</td>
+</tr>
+<tr>
+	<td colspan="2" align="right">
+	<input type="submit" class="imcmsFormBtn" name="ADD_NEW_IP_ACCESS" value="<? templates/sv/AdminIpAccess_Add.htm/2001 ?>">
+	<input type="submit" class="imcmsFormBtn" name="CANCEL_ADD_IP" value="<? templates/sv/AdminIpAccess_Add.htm/2002 ?>"></td>
+</tr>
+</table>
+</form>
+
+#gui_bottom()
+#gui_outer_end()
+
+  </body>
+</html>

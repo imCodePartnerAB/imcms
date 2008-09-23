@@ -1,0 +1,42 @@
+Upgrading imCMS:
+
+* First check CHANGES.HTML to see if there's anything you have to do that is not noted in this file.
+
+* Stop tomcat.
+
+* Backup the imCMS database and the imCMS webapp directory ("tomcat/webapps/imcms")
+
+* Remove the imCMS webapp directory and any corresponding war-file from "tomcat/webapps".
+
+* If you have an imCMS version older than 3.0.0,
+  run the sql diff scripts appropriate for your imCMS versions on the database.
+  They can be found in the directory "tomcat/webapps/imcms/WEB-INF/sql/diff".
+  For example, if you have version 2.2.0 installed and
+  want to upgrade to 3.0.0, you'll need to run the script "diff-2-3.sql".
+  
+  There is no sql diff script from version 3 to 4,
+  as the database will be automatically upgraded on startup.
+
+* Install the new imCMS version according to "INSTALL.TXT".
+
+* Restore any files or directories you or your users have added, from the backup.
+  You'll probably need to look at at least these directories:
+    - /css
+    - /images
+    - /javascript
+    - /jsp
+    - /user
+    - /WEB-INF/includes
+    - /WEB-INF/logs   (new log files will be created, you may restore only log files you need)
+    - /WEB-INF/templates/text
+    - /WEB-INF/uploads
+  Note that this is not an exhaustive list.
+
+* Restart tomcat.
+
+* Make sure you did everything outlined as important in CHANGES.HTML.
+
+* Access "/servlet/RebuildIndex" as superadmin to rebuild the search index.
+
+
+You're done!
