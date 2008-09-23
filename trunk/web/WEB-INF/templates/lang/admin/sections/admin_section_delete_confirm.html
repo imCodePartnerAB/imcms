@@ -1,0 +1,40 @@
+#gui_start_of_page( "<? templates/sv/sections/admin_section_delete_confirm.html/1 ?>" "AdminSection" "submit" "SectionSiteDeleteAlert" "" )
+
+<form method="post" action="AdminSection">
+<input type="hidden" name="delete_section" value="#delete_section#">
+<table border="0" cellspacing="0" cellpadding="2" width="320">
+<tr>
+	<td colspan="2">#gui_heading( "<? templates/sv/sections/admin_section_delete_confirm.html/2 ?>" )</td>
+</tr>
+<tr>
+	<td colspan="2"><? templates/sv/sections/admin_section_delete_confirm.html/3 ?></td>
+</tr>
+<tr>
+	<td colspan="2">#gui_hr( "blue" )</td>
+</tr>
+<tr>
+	<td width="80"" align="right"><? templates/sv/sections/admin_section_delete_confirm.html/4 ?></td>
+	<td width="240">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td>
+		<select name="new_section_confirm">
+			<option value="-1" selected><? templates/sv/sections/admin_section_delete_confirm.html/5 ?></option>
+			#section_list#&gt;
+		</select></td>
+		<td>&nbsp;&nbsp;</td>
+		<td><input type="submit" name="delete_section_confirm" class="imcmsFormBtn" value="<? global/OK ?>"></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td colspan="2">#gui_hr( "blue" )</td>
+</tr>
+<tr>
+	<td colspan="2" align="right"><input type="submit" name="submit" class="imcmsFormBtn" value="<? global/cancel ?>"></td>
+</tr>
+</table>
+</form>
+
+#gui_end_of_page()
+

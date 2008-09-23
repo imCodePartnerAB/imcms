@@ -1,0 +1,44 @@
+<html>
+<head>
+<title><? templates/sv/sections/admin_section_name.html/1 ?></title>
+
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+
+</head>
+<body>
+
+#gui_outer_start()
+#gui_head( "<? templates/sv/sections/admin_section_name.html/1 ?>" )
+#gui_head_help_and_back_buttons( "SectionSiteNameChange"  "AdminSection" "" "" )
+#gui_mid()
+
+<form method="post" action="AdminSection">
+<table border="0" cellspacing="0" cellpadding="2" width="320">
+<tr>
+	<td width="80"><? templates/sv/sections/admin_section_name.html/3 ?></td>
+	<td width="240">
+	<select name="section_list">
+	#section_list#
+	</select></td>
+</tr>
+<tr>
+	<td><? templates/sv/sections/admin_section_name.html/5 ?></td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td><input type="text" name="new_section_name"></td>
+		<td>&nbsp;&nbsp;</td>
+		<td><input type="submit" class="imcmsFormBtnSmall" name="edit_section" value="<? templates/sv/sections/admin_section_name.html/2001 ?>"></td>
+	</tr>
+	</table></td>
+</tr>
+</table>
+</form>
+
+  #gui_bottom()
+  #gui_outer_end()
+
+</body>
+</html>
+
