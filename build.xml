@@ -647,34 +647,4 @@
                 location="javax/servlet/resources/web-app_2_3.dtd"/>
         </xmlvalidate>
     </target>
-	
-    <target name="mvn-deploy" depends="init-version-properties">
-        <exec executable="mvn">
-            <arg value="-e"/>
-            <arg value="deploy:deploy-file"/>
-            <arg value="-Dfile=dist/imcms-${version}.jar"/>
-            <arg value="-DrepositoryId=imcms"/>
-            <arg value="-DgroupId=com.imcode.imcms"/>
-            <arg value="-DartifactId=imcms"/> 
-            <arg value="-Dversion=${version}"/>
-            <arg value="-DgeneratePom=false"/>
-            <arg value="-Dpackaging=jar"/>
-            <arg value="-DgeneratePom=false"/>
-            <arg value="-Durl=scp://garm:/srv/www/apache/sites/repo.imcode.com/maven2"/> 
-       </exec>  
-    	
-        <exec executable="mvn">
-            <arg value="-e"/>
-            <arg value="deploy:deploy-file"/>
-            <arg value="-Dfile=dist/imcms-${version}.war"/>
-            <arg value="-DrepositoryId=imcms"/>
-            <arg value="-DgroupId=com.imcode.imcms"/>
-            <arg value="-DartifactId=imcms"/> 
-            <arg value="-Dversion=${version}"/>
-            <arg value="-DgeneratePom=false"/>
-            <arg value="-Dpackaging=war"/>
-            <arg value="-DgeneratePom=false"/>
-            <arg value="-Durl=scp://garm:/srv/www/apache/sites/repo.imcode.com/maven2"/> 
-       </exec>          	
-    </target>
 </project>
