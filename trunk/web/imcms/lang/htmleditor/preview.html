@@ -1,0 +1,168 @@
+<html>
+<head>
+<title><? install/htdocs/sv/htmleditor/editor/preview.html/1 ?></title>
+
+
+<SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="scripts/editor_config.js.jsp"></SCRIPT>
+<SCRIPT LANGUAGE="VBScript"   TYPE="text/vbscript"   SRC="scripts/editor_config.vbs.jsp"></SCRIPT>
+<SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="scripts/editor_functions.js"></SCRIPT>
+<SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="scripts/editor_help.js"></SCRIPT>
+<SCRIPT LANGUAGE="VBScript"   TYPE="text/vbscript"   SRC="scripts/editor_functions.vbs"></SCRIPT>
+<SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="scripts/editor_config_buttons.js"></SCRIPT>
+
+
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+/* Write extra JS */
+if (isWordEnabled) document.writeln('<SCR'+'IPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="scripts/editor_functions_wordsupport.js"></SCR'+'IPT>');
+
+/* Write the CSS's */
+for (var i = 0; i < arrCssPaths.length; i++) {
+	if (arrCssPaths[i] != '') document.writeln('<li' + 'nk rel="STYLESHEET" type="text/css" href="' + arrCssPaths[i] + '">');
+}
+if (isWordEnabled) {
+	for (var i = 0; i < arrCssWordPaths.length; i++) {
+		if (arrCssWordPaths[i] != '') document.writeln('<li' + 'nk rel="STYLESHEET" type="text/css" href="' + arrCssWordPaths[i] + '">');
+	}
+}
+//-->
+</SCRIPT>
+
+<link rel="STYLESHEET" type="text/css" href="css/editor.css">
+</head>
+<body bgcolor="#FFFFFF" style="margin: 0 0 10 0; border: 1px solid #D6D3CE;" onLoad="init(); checkWidth();" onResize="init();">
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function init() {
+	windowWidth          = document.body.offsetWidth;
+	windowHeight         = document.body.offsetHeight;
+	var theEditor        = parent.opener.document.getElementById("editorDiv");
+	var thePreview       = document.getElementById("previewDiv");
+	var theCode          = document.getElementById("theCodeDiv");
+	var theText          = document.getElementById("theTextDiv");
+	var theHTML          = theEditor.innerHTML;
+	theHTML              = fixHTML(theHTML);
+	thePreview.innerHTML = theHTML;
+	theCode.innerText    = theHTML;
+	theText.innerHTML    = theHTML;
+
+	//thePreview.style.height = windowHeight - 55;
+	var pof = parent.opener.document.forms.editorForm;
+	var previewWidth      = pof.previewWidth.value;
+	var previewBackground = pof.previewBackground.value;
+	var previewColor      = pof.previewColor.value;
+	var previewFontSize   = pof.previewFontSize.value;
+	var previewFontFamily = pof.previewFontFamily.value;
+
+	var origW = '';
+	if(previewWidth.indexOf('%') > 0){
+		if(previewWidth == '100%'){
+			origW = previewWidth;
+			previewWidth = '99%';
+		}
+		thePreview.style.width = previewWidth;
+	} else {
+		previewWidth = (previewWidth > windowWidth)? windowWidth : previewWidth
+		previewWidth = (previewWidth < 10)? 30 : previewWidth
+		thePreview.style.width = previewWidth;
+	}
+	thePreview.style.backgroundColor = previewBackground;
+	thePreview.style.color           = previewColor;
+	thePreview.style.fontSize        = previewFontSize;
+	thePreview.style.fontFamily      = previewFontFamily;
+	if(origW == '100%'){
+		previewWidth = '100%';
+	}
+	document.forms.previewForm.theWidth.value = previewWidth;
+}
+
+function setNewWidth(){
+	newWidth = document.forms[0].theWidth.value;
+	if(newWidth == '100%'){
+		newWidth = '99%';
+	}
+	document.getElementById("previewDiv").style.width = newWidth;
+}
+
+function copyCode(){
+	var theCode = document.getElementById("theCodeDiv");
+	theCode.focus();
+	document.execCommand("SelectAll");
+	document.execCommand("Copy");
+	document.execCommand("Unselect");
+}
+
+function copyText(){
+	var theText = document.getElementById("theTextDiv");
+	theText.focus();
+	document.execCommand("SelectAll");
+	document.execCommand("Copy");
+	document.execCommand("Unselect");
+}
+
+
+function checkWidth() {
+	var xcoord = document.location.toString();
+	if (xcoord.indexOf('?') != -1) {
+		xcoord = (xcoord.indexOf(',') != -1) ? parseInt(xcoord.split('?')[1].split(',')[0]) - 0 : 0;
+		if (xcoord > 10) {
+			document.forms.previewForm.theWidth.value = xcoord;
+			document.getElementById("previewDiv").style.width = xcoord;
+		}
+	}
+}
+//-->
+</SCRIPT>
+
+<DIV style="position:absolute; left:0; top:0" unselectable="on">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr bgcolor="#333366">
+	<td colspan="3" height="20" style="font: bold 12px Verdana,Geneva,Arial,Helvetica,sans-serif; color:#FFFFFF"><img src="images/1x1.gif" width="10" height="1"><? install/htdocs/sv/htmleditor/editor/preview.html/4 ?></td>
+</tr>
+<tr bgcolor="#D6D3CE">
+	<td height="30" style="font: bold 12px Verdana,Geneva,Arial,Helvetica,sans-serif; color:#000000"><img src="images/1x1.gif" width="10" height="1"><? install/htdocs/sv/htmleditor/editor/preview.html/5 ?></td>
+	<td>
+	<table border="0" cellpadding="0" cellspacing="0">
+	<form name="previewForm" onSubmit="setNewWidth(); return false">
+	<tr>
+		<td><? install/htdocs/sv/htmleditor/editor/preview.html/6 ?></td>
+		<td><img src="images/1x1.gif" width="10" height="1"></td>
+		<td><input type="text" name="theWidth" value="" size="5" maxlength="5"></td>
+		<td><img src="images/1x1.gif" width="10" height="1"></td>
+		<td><input type="submit" class="fButtonSmall" value="<? install/htdocs/sv/htmleditor/editor/preview.html/2001 ?>"></td>
+		<td><img src="images/1x1.gif" width="10" height="1"></td>
+		<td nowrap><SPAN CLASS="dim"><? install/htdocs/sv/htmleditor/editor/preview.html/7 ?></SPAN></td>
+		<td><img src="images/1x1.gif" width="25" height="1"></td>
+		<td><BUTTON class="fButtonSmall" onClick="copyCode();"><? install/htdocs/sv/htmleditor/editor/preview.html/8 ?></BUTTON></td>
+		<td><img src="images/1x1.gif" width="10" height="1"></td>
+		<td><BUTTON class="fButtonSmall" onClick="copyText();"><? install/htdocs/sv/htmleditor/editor/preview.html/9 ?></BUTTON></td>
+	</tr>
+	</form>
+	</table></td>
+	<td align="right">
+	<table border="0" cellpadding="0" cellspacing="0" align="right">
+	<form name="closeForm">
+	<tr>
+		<td><BUTTON class="fButtonSmall" onClick="window.close();"><? install/htdocs/sv/htmleditor/editor/preview.html/10 ?></BUTTON>&nbsp;</td>
+	</tr>
+	</form>
+	</table></td>
+</tr>
+<tr bgcolor="#FFFFFF">
+	<td colspan="3" background="images/img_ruler.gif" nowrap><img src="images/1x1.gif" width="10" height="1"><a href="preview.html"><img src="images/1x1.gif" width="100%" height="22" border="0" ismap style="cursor: e-resize"></a></td>
+</tr>
+</table></DIV>
+
+<div id="previewOuterDiv" style="position:absolute; left:10; top:71; padding: 0 0 10 0" unselectable="on">
+<div id="previewDiv" style="position:relative; width:100%; padding: 0 0; text-align:left; background-color:#ffffff; border: 1px dotted #cccccc" unselectable="on"></div><img src="images/1x1.gif" width="1" height="10"></div>
+
+
+<div id="theCodeDiv" contenteditable style="position:absolute; left:-5000; top:-5000"></div>
+<div id="theTextDiv" contenteditable style="position:absolute; left:-5000; top:-5000"></div>
+
+
+</body>
+</html>
+

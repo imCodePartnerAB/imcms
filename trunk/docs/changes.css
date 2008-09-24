@@ -1,0 +1,70 @@
+body {
+    width: 80ex;
+    font-size: 90%;
+    margin-left: 4em;
+    margin-top: 2em;
+}
+
+body > ul {
+    text-align: left;
+    margin-bottom: 5ex;
+}
+
+body > ul > li {
+    margin-bottom: 2ex;
+    list-style-type: disc;
+}
+
+p {
+    margin-top: 1ex;
+    margin-bottom: 1ex;
+}
+
+li {
+    padding-left: 1ex;
+    font-family: monospace;
+    list-style-type: square;
+}
+
+.change {
+
+}
+
+.config, .value, .path, .tag, .attr, .localfile, .class, .package, .method, .variable {
+    font-family: monospace;
+    background-color: #eee;
+}
+
+.config {
+    color: darkred;
+}
+.path, .localfile, .package {
+    color: darkgreen;
+}
+.tag, .class, .method, .variable {
+    color: darkblue;
+    white-space: nowrap;
+}
+.attr {
+    color: darkcyan;
+}
+.value {
+    color: #770;
+    white-space: nowrap;
+}
+
+.important {
+    color: red;
+}
+
+.issue {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.replace {
+    font-family: monospace;
+    font-variant: small-caps;
+    color: #502;
+    background-color: #fee;
+}
