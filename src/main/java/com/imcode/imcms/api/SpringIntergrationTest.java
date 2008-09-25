@@ -48,7 +48,7 @@ public class SpringIntergrationTest {
 	@Test public void getMeta() {
 		Meta meta = metaDao.getMeta(1001);
 		
-		I18nKeyword kw = new I18nKeyword();
+		Keyword kw = new Keyword();
 		
 		kw.setValue("xa");
 		

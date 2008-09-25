@@ -20,7 +20,7 @@
     	<mapping class="com.imcode.imcms.api.Meta"/>
     	<mapping class="com.imcode.imcms.api.I18nMeta"/>
     	<mapping class="com.imcode.imcms.api.I18nLanguage"/>
-    	<mapping class="com.imcode.imcms.api.I18nKeyword"/>
+    	<mapping class="com.imcode.imcms.api.Keyword"/>
     	<!-- 
     	<mapping class="com.imcode.imcms.api.TextHistory"/>
     	 -->

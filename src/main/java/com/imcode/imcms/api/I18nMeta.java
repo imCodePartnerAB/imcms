@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -47,8 +48,11 @@ public class I18nMeta implements Serializable, Cloneable {
 		
 	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	@JoinColumn(name="i18n_meta_id", referencedColumnName="i18n_meta_id")
-	private Set<I18nKeyword> keywords;
+	@JoinColumns({
+	    @JoinColumn(name="meta_id", referencedColumnName="meta_id"),
+	    @JoinColumn(name="language_id", referencedColumnName="language_id")
+	})
+	private Set<Keyword> keywords;
     
 	@Column(name="meta_headline")
     private String headline;
@@ -65,9 +69,9 @@ public class I18nMeta implements Serializable, Cloneable {
 			I18nMeta clone = (I18nMeta)super.clone();
 			
 			if (keywords != null) {
-				clone.keywords = new HashSet<I18nKeyword>();
+				clone.keywords = new HashSet<Keyword>();
 				
-				for (I18nKeyword keyword: keywords) {
+				for (Keyword keyword: keywords) {
 					clone.keywords.add(keyword.clone());
 				}
 			}		
@@ -138,18 +142,18 @@ public class I18nMeta implements Serializable, Cloneable {
 		this.enabled = enabled;
 	}
 
-	public Set<I18nKeyword> getKeywords() {
+	public Set<Keyword> getKeywords() {
 		return keywords;
 	}
 
-	public void setKeywords(Set<I18nKeyword> keywords) {
+	public void setKeywords(Set<Keyword> keywords) {
 		this.keywords = keywords;
 	}
 		
 	public Set<String> getKeywordsValues() {
     	Set<String> values = new HashSet<String>();
     	
-    	for (I18nKeyword keyword: keywords) {
+    	for (Keyword keyword: keywords) {
     		values.add(keyword.getValue());
     	}
 	
@@ -160,7 +164,7 @@ public class I18nMeta implements Serializable, Cloneable {
 		keywords.clear();
 		
 		for (String value: values) {
-			I18nKeyword keyword = new I18nKeyword(value);
+			Keyword keyword = new Keyword(metaId, language, value);
 			
 			keywords.add(keyword);
 		}

@@ -29,7 +29,7 @@ import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.I18nKeyword;
+import com.imcode.imcms.api.Keyword;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
@@ -184,10 +184,10 @@ class DocumentSaver {
         			i18nMeta.setId(null);
         			i18nMeta.setMetaId(newMetaId);
         			
-        			Set<I18nKeyword> keywords = i18nMeta.getKeywords();
+        			Set<Keyword> keywords = i18nMeta.getKeywords();
         			
         			if (keywords != null) {
-        				for (I18nKeyword keyword: keywords) {
+        				for (Keyword keyword: keywords) {
         					keyword.setId(null);
         				}
         			}
@@ -399,17 +399,20 @@ class DocumentSaver {
         getDatabase().execute(new SqlUpdateDatabaseCommand("INSERT INTO meta_section VALUES(?,?)", params));
     }
 
+   // TODO: classification and meta_classification is replaced by keywords table.
     private void deleteKeywordsFromDocument(int meta_id) {
         String sqlDeleteKeywordsFromDocument = "DELETE FROM meta_classification WHERE meta_id = ?";
         String[] params = new String[]{"" + meta_id};
         getDatabase().execute(new SqlUpdateCommand(sqlDeleteKeywordsFromDocument, params));
     }
 
+    // TODO: classification and meta_classification is replaced by keywords table.
     private void deleteUnusedKeywords() {
         String[] params = new String[0];
         getDatabase().execute(new SqlUpdateCommand("DELETE FROM classification WHERE class_id NOT IN (SELECT class_id FROM meta_classification)", params));
     }
 
+ // TODO: classification and meta_classification is replaced by keywords table.    
     private void addKeyword(String keyword) {
         String[] params = new String[]{keyword};
         getDatabase().execute(new SqlUpdateCommand("INSERT INTO classification (code) VALUES(?)", params));
@@ -420,6 +423,7 @@ class DocumentSaver {
         getDatabase().execute(new SqlUpdateCommand("DELETE FROM meta_section WHERE meta_id = ?", params));
     }
 
+ // TODO: classification and meta_classification is replaced by keywords table.    
     private void addExistingKeywordToDocument(int meta_id, String keyword) {
         String[] params1 = new String[]{
             keyword

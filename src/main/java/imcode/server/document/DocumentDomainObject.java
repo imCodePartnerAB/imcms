@@ -582,7 +582,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public void loadAllLazilyLoaded() {
         attributes.categoryIds.load();
         attributes.sectionIds.load();
-        attributes.keywords.load();
+        // TODO: remove all keywords reletad loading
+        //attributes.keywords.load();
         attributes.permissionSets.load();
         attributes.permissionSetsForNewDocuments.load();
         attributes.roleIdToDocumentPermissionSetTypeMappings.load();

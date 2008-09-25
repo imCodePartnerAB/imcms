@@ -30,6 +30,7 @@ import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.util.CountingIterator;
 
 public class DocumentInitializer {
+	// TODO: classification and meta_classification is replaced by keywords table. 
     private static final String SQL_GET_KEYWORDS = "SELECT mc.meta_id, c.code FROM classification c JOIN meta_classification mc ON mc.class_id = c.class_id WHERE mc.meta_id ";
     private static final String SQL_GET_DOCUMENT_PROPERTIES = "SELECT key_name, value FROM document_properties WHERE meta_id=?";
 
@@ -66,7 +67,7 @@ public class DocumentInitializer {
             LazilyLoadedObject permissionSetsForNew = new LazilyLoadedObject(new DocumentPermissionSetsLoader(documentIds, true, documentId));
             LazilyLoadedObject rolePermissionMappings = new LazilyLoadedObject(new DocumentRolePermissionsLoader(documentIds, documentId));
             LazilyLoadedObject sectionIds = new LazilyLoadedObject(new DocumentSectionIdsLoader(documentIds, documentId));
-            LazilyLoadedObject keywords = new LazilyLoadedObject(new DocumentKeywordsLoader(documentIds, documentId));
+            //LazilyLoadedObject keywords = new LazilyLoadedObject(new DocumentKeywordsLoader(documentIds, documentId));
             LazilyLoadedObject categoryIds = new LazilyLoadedObject(new DocumentCategoryIdsLoader(documentIds, documentId));
             LazilyLoadedObject properties = new LazilyLoadedObject(new DocumentPropertiesLoader(documentIds, documentId));
 
@@ -74,7 +75,7 @@ public class DocumentInitializer {
             document.setLazilyLoadedPermissionSetsForNew(permissionSetsForNew);
             document.setLazilyLoadedRoleIdsMappedToDocumentPermissionSetTypes(rolePermissionMappings);
             document.setLazilyLoadedSectionIds(sectionIds);
-            document.setLazilyLoadedKeywords(keywords);
+            //document.setLazilyLoadedKeywords(keywords);
             document.setLazilyLoadedCategoryIds(categoryIds);
             document.setLazilyLoadedProperties(properties);
 
@@ -156,7 +157,7 @@ public class DocumentInitializer {
             return new CopyableHashSet(documentKeywords);
         }
 
-        private void initDocumentsKeywords(Collection documentIds) {
+        private void initDocumentsKeywords(Collection documentIds) {        	
             if ( null != documentsKeywords ) {
                 return ;
             }
