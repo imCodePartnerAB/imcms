@@ -1,0 +1,43 @@
+Building imCMS:
+
+
+Prerequisites:
+
+    * Install the Java Development Kit version 1.4 or later.
+
+    * Install Apache Ant 1.6.2 or later.
+
+    * Make sure that junit is available in ant's classpath,
+      for example by putting a junit jar file in $ANT_HOME/lib.
+      
+      If you cannot do this, you can disable tests by setting the property
+      "no-junit-task-available" in "build.properties".
+
+      JUnit cannot be distributed with imCMS due to licensing issues.
+      
+
+Building:
+
+    * Copy "build.properties.template" to "build.properties"
+      (if "build.properties" does not already exist).
+      Edit "build.properties" and insert the proper values
+      for your deployroot, your database connection,
+      your imCMS-preferences, and your build-preferences.
+
+    * Run "ant dist" (or just "ant", since "dist" is the default) in this directory.
+      This will build imCMS in the "build"-directory
+      and generate a file named "imcms.war" in the "dist" directory.
+      This will also generate sql-scripts in the "build/WEB-INF/sql"-directory.
+
+      (For more possible ant-targets, run "ant -projecthelp".)
+
+
+Installing with Ant:
+
+    * If you inserted a value for "deployroot" in "build.properties", you may have ant install the war-file for you.
+
+      A. If you inserted a value for "deployroot", run "ant warinstall" to have ant install the war-file for you.
+         You may also instead run "ant install" to copy the webapp directory directly without making a war-file.
+
+      B. If you didn't insert a value for "deployroot", copy the war-file manually to the webapp-deployment directory
+         for your servlet engine. (For Tomcat, "webapps".)

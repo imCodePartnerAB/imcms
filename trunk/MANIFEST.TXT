@@ -1,0 +1,12 @@
+.cvsignore
+docs/**
+lib/*.*
+lib/noinstall/*.*
+server/**
+sql/**
+tools/**
+web/**
+MANIFEST.TXT
+build.properties.template
+build.xml
+imcms_*.properties

@@ -1,0 +1,47 @@
+<html>
+<head>
+<title><? templates/sv/include_bad_id.html/1 ?></title>
+
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+
+</head>
+<body onLoad="focusField(1, 'ok')">
+
+#gui_outer_start()
+#gui_head( "<? templates/sv/include_bad_id.html/1 ?>" )
+<table border="0" cellspacing="0" cellpadding="0">
+<form>
+<tr> 
+	<td><input type="button" class="imcmsFormBtn" name="back" value="<? global/back ?>" onClick="history.go(-1)"></td>
+	<td>&nbsp;</td>
+	<td><input type="button" class="imcmsFormBtn" value="<? global/help ?>" title="<? global/openthehelppage ?>" onClick="openHelpW('Include')"></td>
+</tr>
+</form>
+</table>
+#gui_mid()
+
+<table border="0" cellspacing="0" cellpadding="0" width="500">
+<form method="Get" action="AdminDoc">
+<input type="HIDDEN" name="meta_id" value="#meta_id#">
+<input type="HIDDEN" name="flags" value="1048576">
+<tr>
+	<td>#gui_heading( "<? templates/sv/include_bad_id.html/1 ?>" )</td>
+</tr>
+<tr>
+	<td><? templates/sv/include_bad_id.html/3 ?></td>
+</tr>
+<tr>
+	<td>#gui_hr( "blue" )</td>
+</tr>
+<tr>
+	<td align="right"><input type="submit" class="imcmsFormBtn" name="ok" value="<? templates/sv/include_bad_id.html/2001 ?>"></td>
+</tr>
+</form>
+</table>
+#gui_bottom()
+#gui_outer_end()
+
+
+</body>
+</html>
