@@ -26,6 +26,7 @@ import javax.persistence.Transient;
 public class Meta implements Serializable, Cloneable {
 	
 	// TODO i18n: refactor
+	// Disabled i18n_meta show mode
     // public static enum DisabledI18nDataShowMode {
 	//     SHOW_IN_DEFAULT_LANGUAGE,
 	//     DO_NOT_SHOW,

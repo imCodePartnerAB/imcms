@@ -272,10 +272,11 @@ CREATE TABLE images (
   imgurl varchar(255) NOT NULL,
   linkurl varchar(255) NOT NULL,
   type int(11) NOT NULL,
-  language_id smallint(6) default NULL,
+  language_id smallint(6) NOT NULL,
   image_id int(11) NOT NULL auto_increment,
   PRIMARY KEY  (image_id),
   KEY images_FK_meta_id_meta (meta_id),
+  CONSTRAINT ux__images__meta_id__lanfuage_id__name UNIQUE INDEX (meta_id, language_id, name),
   CONSTRAINT images_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -697,7 +698,7 @@ CREATE TABLE texts_history (
   modified_datetime datetime NOT NULL,
   user_id int(11) NOT NULL,
   counter int(11) NOT NULL auto_increment,
-  language_id smallint(6) default NULL,
+  language_id smallint(6) NOT NULL,
   PRIMARY KEY  (counter),
   KEY texts_history_FK_meta_id_meta (meta_id),
   KEY texts_history_FK_user_id_users (user_id),
