@@ -1,0 +1,432 @@
+<database name="imcms">
+    <table name="browser_docs">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="to_meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column default="0" name="browser_id" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>
+    <table name="browsers">
+        <column name="browser_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="name" required="true" size="50" type="VARCHAR" />
+        <column name="user_agent" required="true" size="50" type="VARCHAR" />
+        <column default="1" name="value" required="true" type="TINYINT" />
+    </table>
+    <table name="categories">
+        <column autoIncrement="true" name="category_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="category_type_id" required="true" type="INTEGER" />
+        <column name="name" required="true" size="50" type="VARCHAR" />
+        <column name="description" size="500" type="VARCHAR" required="false" />
+        <column default="" name="image" required="true" size="255" type="VARCHAR" />
+        <foreign-key foreignTable="category_types">
+            <reference foreign="category_type_id" local="category_type_id" />
+        </foreign-key>
+    </table>
+    <table name="category_types">
+        <column autoIncrement="true" name="category_type_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="name" required="true" size="50" type="VARCHAR" />
+        <column default="0" name="max_choices" required="true" type="INTEGER" />
+        <column name="inherited" required="true" type="BIT" />
+    </table>
+    <table name="childs">
+        <column name="to_meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="manual_sort_order" required="true" type="INTEGER" />
+        <column default="" name="tree_sort_index" required="true" size="64" type="VARCHAR" />
+        <column name="menu_id" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="to_meta_id" />
+        </foreign-key>
+        <foreign-key foreignTable="menus">
+            <reference foreign="menu_id" local="menu_id" />
+        </foreign-key>
+    </table>
+    <table name="classification">
+        <column autoIncrement="true" name="class_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="code" required="true" size="30" type="VARCHAR" />
+    </table>
+    <table name="doc_permission_sets_ex">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="set_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="permission_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="permission_data" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="permission_sets">
+            <reference foreign="set_id" local="set_id" />
+        </foreign-key>
+        <foreign-key foreignTable="doc_permission_sets">
+            <reference foreign="meta_id" local="meta_id" />
+            <reference foreign="set_id" local="set_id" />
+        </foreign-key>
+    </table>
+    <table name="doc_permission_sets">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="set_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="permission_id" required="true" type="INTEGER" />
+        <foreign-key foreignTable="permission_sets">
+            <reference foreign="set_id" local="set_id" />
+        </foreign-key>
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>
+    <table name="doc_permissions">
+        <column name="permission_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="doc_type" primaryKey="true" required="true" type="INTEGER" />
+        <column name="lang_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" />
+        <column name="description" required="true" size="50" type="VARCHAR" />
+    </table>
+    <table name="doc_types">
+        <column name="doc_type" primaryKey="true" required="true" type="INTEGER" />
+        <column default="swe" name="lang_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" />
+        <column name="type" size="50" type="VARCHAR" required="false" />
+    </table>
+    <table name="document_categories">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="category_id" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+        <foreign-key foreignTable="categories">
+            <reference foreign="category_id" local="category_id" />
+        </foreign-key>
+    </table>
+    <table name="fileupload_docs">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="variant_name" primaryKey="true" required="true" size="100" type="VARCHAR" />
+        <column name="filename" required="true" size="255" type="VARCHAR" />
+        <column name="mime" required="true" size="50" type="VARCHAR" />
+        <column name="created_as_image" required="true" type="INTEGER" />
+        <column default="0" name="default_variant" required="true" type="BIT" />
+    </table>
+    <table name="frameset_docs">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="frame_set" type="CLOB" required="false" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>
+    <table name="images">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="width" required="true" type="INTEGER" />
+        <column name="height" required="true" type="INTEGER" />
+        <column name="border" required="true" type="INTEGER" />
+        <column name="v_space" required="true" type="INTEGER" />
+        <column name="h_space" required="true" type="INTEGER" />
+        <column name="name" primaryKey="true" required="true" type="INTEGER" />
+        <column name="image_name" required="true" size="40" type="VARCHAR" />
+        <column name="target" required="true" size="15" type="VARCHAR" />
+        <column name="align" required="true" size="15" type="VARCHAR" />
+        <column name="alt_text" required="true" size="255" type="VARCHAR" />
+        <column name="low_scr" required="true" size="255" type="VARCHAR" />
+        <column name="imgurl" required="true" size="255" type="VARCHAR" />
+        <column name="linkurl" required="true" size="255" type="VARCHAR" />
+        <column name="type" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>
+    <table name="includes">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="include_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="included_meta_id" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="included_meta_id" />
+        </foreign-key>
+    </table>
+    <table name="ip_accesses">
+        <column autoIncrement="true" name="ip_access_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="user_id" required="true" type="INTEGER" />
+        <column name="ip_start" required="true" size="18" type="DECIMAL" />
+        <column name="ip_end" required="true" size="18" type="DECIMAL" />
+    </table>
+    <table name="lang_prefixes">
+        <column name="lang_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="lang_prefix" size="3" type="CHAR" required="false" />
+    </table>
+    <table name="languages">
+        <column name="lang_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" />
+        <column name="user_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" />
+        <column name="language" size="30" type="VARCHAR" required="false" />
+    </table>
+    <table name="menus">
+        <column autoIncrement="true" name="menu_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="meta_id" required="true" type="INTEGER" />
+        <column name="menu_index" required="true" type="INTEGER" />
+        <column name="sort_order" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+        <unique name="UQ_menus__meta_id__menu_index">
+            <unique-column name="meta_id"/>
+            <unique-column name="menu_index"/>
+        </unique>
+    </table>
+    <table name="meta_classification">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="class_id" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+        <foreign-key foreignTable="classification">
+            <reference foreign="class_id" local="class_id" />
+        </foreign-key>
+    </table>
+    <table name="meta_section">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="section_id" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+        <foreign-key foreignTable="sections">
+            <reference foreign="section_id" local="section_id" />
+        </foreign-key>
+    </table>
+    <table name="meta">
+        <column autoIncrement="true" name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="doc_type" required="true" type="INTEGER" />
+        <column name="meta_headline" required="true" size="255" type="VARCHAR" />
+        <column name="meta_text" required="true" size="1000" type="VARCHAR" />
+        <column name="meta_image" required="true" size="255" type="VARCHAR" />
+        <column name="owner_id" required="true" type="INTEGER" />
+        <column name="permissions" required="true" type="INTEGER" />
+        <column name="shared" required="true" type="INTEGER" />
+        <column name="show_meta" required="true" type="INTEGER" />
+        <column name="lang_prefix" required="true" size="3" type="VARCHAR" />
+        <column name="date_created" required="true" type="TIMESTAMP" />
+        <column name="date_modified" required="true" type="TIMESTAMP" />
+        <column name="disable_search" required="true" type="INTEGER" />
+        <column name="target" required="true" size="10" type="VARCHAR" />
+        <column name="activate" required="true" type="INTEGER" />
+        <column name="archived_datetime" type="TIMESTAMP" required="false" />
+        <column name="publisher_id" type="INTEGER" required="false" />
+        <column name="status" required="true" type="INTEGER" />
+        <column name="publication_start_datetime" type="TIMESTAMP" required="false" />
+        <column name="publication_end_datetime" type="TIMESTAMP" required="false" />
+        <foreign-key foreignTable="users">
+            <reference foreign="user_id" local="owner_id" />
+        </foreign-key>
+        <foreign-key foreignTable="users">
+            <reference foreign="user_id" local="publisher_id" />
+        </foreign-key>
+    </table>
+    <table name="mime_types">
+        <column name="mime_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="mime_name" required="true" size="50" type="VARCHAR" />
+        <column name="mime" required="true" size="50" type="VARCHAR" />
+        <column default="swe" name="lang_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" />
+    </table>
+    <table name="new_doc_permission_sets_ex">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="set_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="permission_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="permission_data" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="permission_sets">
+            <reference foreign="set_id" local="set_id" />
+        </foreign-key>
+        <foreign-key foreignTable="new_doc_permission_sets">
+            <reference foreign="meta_id" local="meta_id" />
+            <reference foreign="set_id" local="set_id" />
+        </foreign-key>
+    </table>
+    <table name="new_doc_permission_sets">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="set_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="permission_id" required="true" type="INTEGER" />
+        <foreign-key foreignTable="permission_sets">
+            <reference foreign="set_id" local="set_id" />
+        </foreign-key>
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>
+    <table name="permission_sets">
+        <column name="set_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="description" required="true" size="30" type="VARCHAR" />
+    </table>
+    <table name="permissions">
+        <column name="permission_id" primaryKey="true" required="true" type="TINYINT" />
+        <column default="swe" name="lang_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" />
+        <column name="description" required="true" size="50" type="VARCHAR" />
+    </table>
+    <table name="phones">
+        <column autoIncrement="true" name="phone_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="number" required="true" size="25" type="VARCHAR" />
+        <column name="user_id" primaryKey="true" required="true" type="INTEGER" />
+        <column default="0" name="phonetype_id" required="true" type="INTEGER" />
+        <foreign-key foreignTable="users">
+            <reference foreign="user_id" local="user_id" />
+        </foreign-key>
+    </table>
+    <table name="phonetypes">
+        <column name="phonetype_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="typename" required="true" size="12" type="VARCHAR" />
+        <column name="lang_id" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="lang_prefixes">
+            <reference foreign="lang_id" local="lang_id" />
+        </foreign-key>
+    </table>
+    <table name="roles_rights">
+        <column name="role_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="set_id" required="true" type="TINYINT" />
+        <foreign-key foreignTable="roles">
+            <reference foreign="role_id" local="role_id" />
+        </foreign-key>
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>
+    <table name="roles">
+        <column autoIncrement="true" name="role_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="role_name" required="true" size="60" type="VARCHAR" />
+        <column default="0" name="permissions" required="true" type="INTEGER" />
+        <column default="0" name="admin_role" required="true" type="INTEGER" />
+        <unique name="UQ_roles__role_name">
+            <unique-column name="role_name"/>
+        </unique>
+    </table>
+    <table name="sections">
+        <column autoIncrement="true" name="section_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="section_name" required="true" size="50" type="VARCHAR" />
+    </table>
+    <table name="stats">
+        <column name="name" primaryKey="true" required="true" size="120" type="VARCHAR" />
+        <column name="num" required="true" type="INTEGER" />
+    </table>
+    <table name="sys_data">
+        <column autoIncrement="true" name="sys_id" primaryKey="true" required="true" type="TINYINT" />
+        <column name="type_id" primaryKey="true" required="true" type="TINYINT" />
+        <column name="value" size="1000" type="VARCHAR" required="false" />
+        <foreign-key foreignTable="sys_types">
+            <reference foreign="type_id" local="type_id" />
+        </foreign-key>
+    </table>
+    <table name="sys_types">
+        <column name="type_id" primaryKey="true" required="true" type="TINYINT" />
+        <column name="name" size="50" type="VARCHAR" required="false" />
+    </table>
+    <table name="templategroups">
+        <column name="group_id" autoIncrement="true" primaryKey="true" required="true" type="INTEGER" />
+        <column name="group_name" required="true" size="50" type="VARCHAR" />
+        <unique name="UQ_templategroups__group_name">
+            <unique-column name="group_name"/>
+        </unique>
+    </table>
+    <table name="templates_cref">
+        <column name="group_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="template_id" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="templategroups">
+            <reference foreign="group_id" local="group_id" />
+        </foreign-key>
+        <foreign-key foreignTable="templates">
+            <reference foreign="template_id" local="template_id" />
+        </foreign-key>
+    </table>
+    <table name="templates">
+        <column name="template_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="template_name" required="true" size="80" type="VARCHAR" />
+        <column name="simple_name" required="true" size="80" type="VARCHAR" />
+        <column name="lang_prefix" required="true" size="3" type="VARCHAR" />
+        <column name="no_of_txt" type="INTEGER" required="false" />
+        <column name="no_of_img" type="INTEGER" required="false" />
+        <column name="no_of_url" type="INTEGER" required="false" />
+        <unique name="UQ_template__simple_name__lang_prefix">
+            <unique-column name="simple_name"/>
+            <unique-column name="lang_prefix"/>
+        </unique>
+    </table>
+    <table name="text_docs">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="template_id" required="true" type="INTEGER" />
+        <column default="1" name="group_id" required="true" type="INTEGER" />
+        <column default="(-1)" name="default_template_1" required="true" type="INTEGER" />
+        <column default="(-1)" name="default_template_2" required="true" type="INTEGER" />
+        <column name="default_template" type="INTEGER" required="false" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+        <foreign-key foreignTable="templates">
+            <reference foreign="template_id" local="template_id" />
+        </foreign-key>
+        <foreign-key foreignTable="templates">
+            <reference foreign="template_id" local="default_template" />
+        </foreign-key>
+    </table>
+    <table name="texts">
+        <column name="meta_id" required="true" type="INTEGER" />
+        <column name="name" required="true" type="INTEGER" />
+        <column name="text" required="true" type="CLOB" />
+        <column name="type" type="INTEGER" required="false" />
+        <column autoIncrement="true" name="counter" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>
+    <table name="url_docs">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="frame_name" required="true" size="80" type="VARCHAR" />
+        <column name="target" required="true" size="15" type="VARCHAR" />
+        <column name="url_ref" required="true" size="255" type="VARCHAR" />
+        <column name="url_txt" required="true" size="255" type="VARCHAR" />
+        <column name="lang_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" />
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>
+    <table name="useradmin_role_crossref">
+        <column name="user_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="role_id" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="roles">
+            <reference foreign="role_id" local="role_id" />
+        </foreign-key>
+        <foreign-key foreignTable="users">
+            <reference foreign="user_id" local="user_id" />
+        </foreign-key>
+    </table>
+    <table name="user_rights">
+        <column name="user_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="permission_id" primaryKey="true" required="true" type="TINYINT" />
+        <foreign-key foreignTable="users">
+            <reference foreign="user_id" local="user_id" />
+        </foreign-key>
+        <foreign-key foreignTable="meta">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>
+    <table name="user_roles_crossref">
+        <column name="user_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="role_id" primaryKey="true" required="true" type="INTEGER" />
+        <foreign-key foreignTable="users">
+            <reference foreign="user_id" local="user_id" />
+        </foreign-key>
+        <foreign-key foreignTable="roles">
+            <reference foreign="role_id" local="role_id" />
+        </foreign-key>
+    </table>
+    <table name="users">
+        <column name="user_id" autoIncrement="true" primaryKey="true" required="true" type="INTEGER" />
+        <column name="login_name" required="true" size="50" type="VARCHAR" />
+        <column name="login_password" required="true" size="15" type="VARCHAR" />
+        <column name="first_name" required="true" size="25" type="VARCHAR" />
+        <column name="last_name" required="true" size="30" type="VARCHAR" />
+        <column default="" name="title" required="true" size="30" type="VARCHAR" />
+        <column default="" name="company" required="true" size="30" type="VARCHAR" />
+        <column name="address" required="true" size="40" type="VARCHAR" />
+        <column name="city" required="true" size="30" type="VARCHAR" />
+        <column name="zip" required="true" size="15" type="VARCHAR" />
+        <column name="country" required="true" size="30" type="VARCHAR" />
+        <column name="county_council" required="true" size="30" type="VARCHAR" />
+        <column name="email" required="true" size="50" type="VARCHAR" />
+        <column name="external" required="true" type="INTEGER" />
+        <column default="1" name="active" required="true" type="INTEGER" />
+        <column name="create_date" required="true" type="TIMESTAMP" />
+        <column name="language" required="true" size="3" type="VARCHAR" />
+        <unique name="UQ__users__login_name">
+            <unique-column name="login_name"/>
+        </unique>
+    </table>
+</database>

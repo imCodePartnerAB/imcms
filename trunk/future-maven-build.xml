@@ -1,0 +1,643 @@
+<!-- 
+  Work in progress - this build file is not yet complete - do not try to build with it!!
+-->
+
+
+<?xml version='1.0' encoding='iso-8859-1'?>
+
+<project name="imCMS" default="dist">
+
+    <!-- Read in 'build.properties' and set the properties therein. -->
+    <!-- Those properties are used as bases for latsproer properties in this file. -->
+    <available file="build.properties" property="build.properties-available" />
+    <available file="build.properties" property="build.properties" value="build.properties"/>
+    <property name="build.properties" value="build.properties.template" />
+    <property file="${build.properties}"/>
+
+    <!-- The current version of imCMS. -->
+    <property name="svnurl" value="$URL: https://repo.imcode.com/imcode/imcms/trunk/build.xml $"/>
+
+    <!-- versionnumber : imCMS version without suffix, only the number (e.g. "1.2.3") -->
+    <property name="version" value=""/>
+    <property name="versionnumber" value=""/>
+    <property name="versionfilesuffix" value=""/>
+
+    <!-- Paths. Later ones are built on earlier ones. -->
+
+    <!-- The directory to build in. -->
+	
+    <property name="build" value="${basedir}/build"/>    
+    <!-- 
+	<property name="build" value="${basedir}/src/main/webapp"/>
+	-->
+	
+    <property name="dist" value="${basedir}/dist"/>
+    <property name="tmp" value="${basedir}/tmp"/>
+	<property name="src.dir" value="${basedir}/src/main/java"/>
+
+    <!-- The webroot. Everything put here can be seen by any visitor. -->
+    <property name="webroot" value="${build}"/>
+
+    <property name="login" value="${webroot}/login"/>
+
+    <property name="imcms" value="${webroot}/imcms"/>
+    <property name="docs" value="${imcms}/docs"/>
+    <property name="apisamples" value="${docs}/apisamples"/>
+    <property name="apidocs" value="${docs}/api"/>
+
+    <!-- 'WEB-INF' - Everything put here is private to the webapp -->
+    <property name="WEB-INF" value="${webroot}/WEB-INF"/>
+
+    <property name="versionfile" value="${WEB-INF}/version.txt"/>
+    <property name="checksumsfile" value="${WEB-INF}/checksums.txt"/>
+
+    <property name="srcincludes" value="MANIFEST.TXT"/>
+
+    <property name="conf" value="${WEB-INF}/conf"/>
+    <property name="classes" value="${tmp}/classes"/>
+    <property name="lib" value="${WEB-INF}/lib"/>
+    <property name="templates" value="${WEB-INF}/templates"/>
+    <property name="sql" value="${WEB-INF}/sql"/>
+    <property name="sql-diff" value="${sql}/diff"/>
+    <property name="sql-sprocs" value="${sql}/sprocs"/>
+
+    <!-- Paths for other templates -->
+    <property name="texttemplates" value="${templates}/text"/>
+    <property name="demotemplates" value="${texttemplates}/demo"/>
+
+    <property name="imcmsurl" value="${rooturl}/imcms"/>
+
+    <property name="imagespattern" value="**/*.png,**/*.jpg,**/*.gif"/>
+	
+	<property name="compile.classpath" value=""/>
+
+    <path id="libraries" path="${compile.classpath}"/>
+
+    <path id="libraries-with-commons-logging" path="${compile.classpath}"/>
+
+    <path id="classes-and-libraries">
+        <pathelement path="${classes}"/>
+        <path refid="libraries"/>
+    </path>
+
+    <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="libraries"/>
+    <taskdef name="checksumfiles" classname="com.imcode.ant.tasks.ChecksumFiles" classpathref="libraries"/>
+    <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask" classpathref="libraries"/>
+
+    <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="libraries"/>
+    <taskdef name="install" classname="org.apache.catalina.ant.InstallTask" classpathref="libraries"/>
+    <taskdef name="remove" classname="org.apache.catalina.ant.RemoveTask" classpathref="libraries"/>
+    <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" classpathref="libraries"/>
+
+    <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
+
+    <taskdef classname="org.apache.jasper.JspC" name="jasper2" classpathref="libraries-with-commons-logging"/>
+    <taskdef resource="checkstyletask.properties" classpathref="libraries-with-commons-logging"/>
+
+    <!-- Distribution targets -->
+
+    <target name="dist" depends="bindist,srcdist" description="Build all binary and source distributions."/>
+
+    <target name="bindist" depends="bindist-jar,bindist-api-jar,bindist-zip,bindist-tgz" description="Build all binary distributions."/>
+
+    <target name="bindist-zip" depends="bindist-war">
+        <mkdir dir="${dist}"/>
+        <mkdir dir="${tmp}/docs"/>
+        <fixcrlf srcdir="${basedir}/docs" destdir="${tmp}/docs" eol="dos"/>
+        <zip destfile="${bindist-zip}">
+            <fileset file="${war}"/>
+            <fileset dir="${dist}" includes="imcms*.sql"/>
+            <fileset dir="${tmp}/docs" includes="*.TXT,*.HTML,*.css"/>
+        </zip>
+    </target>
+
+    <target name="bindist-tgz" depends="bindist-war">
+        <mkdir dir="${dist}"/>
+        <mkdir dir="${tmp}/docs"/>
+        <fixcrlf srcdir="${basedir}/docs" destdir="${tmp}/docs" eol="unix"/>
+        <tar destfile="${bindist-tgz}" compression="gzip">
+            <tarfileset file="${war}"/>
+            <tarfileset dir="${dist}" includes="imcms*.sql"/>
+            <tarfileset dir="${tmp}/docs" includes="*.TXT,*.HTML,*.css"/>
+        </tar>
+    </target>
+
+    <target name="bindist-war" depends="build,apidocs,checksumsfile">
+        <mkdir dir="${dist}"/>
+        <war warfile="${war}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
+    </target>
+
+    <target name="bindist-jar" depends="build">
+        <mkdir dir="${dist}"/>
+        <copy file="${jar}" tofile="${bindist-jar}"/>
+    </target>
+    	
+    <target name="bindist-api-jar" depends="test">
+        <mkdir dir="${dist}"/>
+        <jar destfile="${bindist-api-jar}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>
+    </target>
+
+    <target name="srcdist" depends="srcdist-zip,srcdist-tgz" description="Build all source distributions."/>
+
+    <target name="srcdist-zip" depends="init">
+        <mkdir dir="${dist}"/>
+        <!-- <zip> will for some reason throw an IllegalArgumentException if the file exists.-->
+        <delete file="${srcdist-zip}"/>
+        <zip destfile="${srcdist-zip}">
+            <zipfileset includesfile="${srcincludes}" dir="${basedir}" prefix="imcms${versionfilesuffix}"/>
+        </zip>
+    </target>
+
+    <target name="srcdist-tgz" depends="init">
+        <mkdir dir="${dist}"/>
+        <dependset>
+            <srcfileset file="${srcincludes}"/>
+            <targetfileset file="${srcdist-tgz}"/>
+        </dependset>
+        <tar destfile="${srcdist-tgz}" compression="gzip">
+            <tarfileset includesfile="${srcincludes}" dir="${basedir}" prefix="imcms${versionfilesuffix}"/>
+        </tar>
+    </target>
+
+    <target name="distcheck" depends="distcheck-zip,distcheck-tgz" description="Test all source distributions."/>
+
+    <target name="distcheck-zip" depends="srcdist-zip">
+        <property name="srcdist-zip-check" value="${tmp}/srcdist-zip-check"/>
+        <unzip src="${srcdist-zip}" dest="${srcdist-zip-check}"/>
+        <copy file="${srcdist-zip-check}/imcms${versionfilesuffix}/build.properties.template" tofile="${srcdist-zip-check}/imcms${versionfilesuffix}/build.properties"/>
+        <ant dir="${srcdist-zip-check}/imcms${versionfilesuffix}" target="dist"/>
+    </target>
+
+    <target name="distcheck-tgz" depends="srcdist-tgz">
+        <property name="srcdist-tgz-check" value="${tmp}/srcdist-tgz-check"/>
+        <untar src="${srcdist-tgz}" dest="${srcdist-tgz-check}" compression="gzip"/>
+        <copy file="${srcdist-tgz-check}/imcms${versionfilesuffix}/build.properties.template" tofile="${srcdist-tgz-check}/imcms${versionfilesuffix}/build.properties"/>
+        <ant dir="${srcdist-tgz-check}/imcms${versionfilesuffix}" target="dist"/>
+    </target>
+
+    <!-- Development targets -->
+
+    <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
+    <target name="build"
+       depends="init,web,jspc,test,checkstyle,libraries,sql,jar"
+       description="Builds everything."/>
+
+    <target name="clean" description="Deletes everything for a fresh start.">
+
+        <delete dir="${build}"/>
+        <delete dir="${tmp}"/>
+        <delete dir="${dist}"/>
+
+    </target>
+
+    <target name="database-apply-diff" depends="init,sql">
+        <fail unless="db-diff-file">
+            Set "db-diff-file" in build.properties to the diff file you want to execute.
+        </fail>
+        <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
+            userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${sql-diff}/${db-diff-file}"/>
+    </target>
+
+    <target name="database-create" depends="init">
+
+        <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
+             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
+            CREATE DATABASE ${db-name}
+        </sql>
+
+        <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
+            userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
+            <transaction src="${sql}/imcms${versionfilesuffix}-${defaultlanguage}-${db-target}.sql"/>
+        </sql>
+
+    </target>
+
+    <target name="database-drop" depends="init">
+
+        <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
+             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
+            DROP DATABASE ${db-name}
+        </sql>
+
+    </target>
+
+    <target name="database-recreate" depends="init,database-drop,database-create"/>
+
+    <target name="install" depends="init,check-deployroot" description="Install files already built, without running 'build' first.">
+        <copy todir="${webapproot}">
+            <fileset dir="${build}"/>
+        </copy>
+    </target>
+
+	
+    <target name="jar" depends="classes">
+        <mkdir dir="${lib}"/>
+        <jar destfile="${jar}" basedir="${classes}">
+            <metainf dir="${WEB-INF}/tld"/>
+        </jar>
+    </target>
+	
+
+	<!-- 
+	Temporary disabled since language layer (v5.x) implementation broke many tests.
+	Additional time is required to recover and compatibility.  
+	-->
+    <target name="test" depends="check-junit-task-available,classes" description="Runs JUnit-tests.">
+		<!--
+        <junit haltonfailure="yes" haltonerror="yes" fork="yes" dir="${basedir}" forkmode="once">
+            <classpath refid="classes-and-libraries"/>
+
+            <formatter usefile="false" type="plain"/>
+
+            <batchtest>
+                <fileset dir="${classes}">
+                    <include name="Test*.class"/>
+                    <include name="**/Test*.class"/>
+                    <exclude name="**/*$*.class"/>
+                    <exclude name="**/external/*.class"/>
+                    <exclude name="**/casual/*.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+        -->
+    </target>
+
+    <target name="uninstall" depends="init-version-properties,check-deployroot" description="Removes the installed files from the deployroot, including the war-file.">
+        <delete dir="${webapproot}"/>
+        <delete file="${deployroot}/${warfilename}"/>
+    </target>
+
+    <target name="warinstall" depends="init,bindist-war,check-deployroot" description="Builds and installs the war-file.">
+        <copy file="${war}" todir="${deployroot}" overwrite="yes"/>
+    </target>
+
+    <!-- Tomcat targets -->
+
+    <target name="tomcat-deploy" description="Deploy in running instance of tomcat">
+        <install url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
+           path="/${webappname}" war="file:${tomcat-deployroot-local-directory}/${webappname}"/>
+    </target>
+
+    <target name="tomcat-undeploy" description="Remove build in running instance of tomcat">
+        <remove url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
+            path="/${webappname}"/>
+    </target>
+
+    <target name="tomcat-reload" description="Reloads the webapp in tomcat">
+        <reload url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
+            path="/${webappname}"/>
+    </target>
+
+    <!-- Component targets used in build -->
+
+    <target name="apidocs">
+        <javadoc sourcepath="${src.dir}/" destdir="${apidocs}"
+                 windowtitle="imCMS API" classpathref="libraries"
+                 encoding="iso-8859-1">
+            <fileset dir="${src.dir}/" defaultexcludes="yes">
+                <include name="com/imcode/imcms/api/**"/>
+                <include name="com/imcode/util/**"/>
+                <exclude name="**/Test*.java"/>
+                <exclude name="**/Mock*.java"/>
+            </fileset>
+        </javadoc>
+    </target>
+
+    <target name="changes">
+        <xslt in="docs/changes.xml" style="docs/changes.xsl" out="docs/CHANGES.HTML"/>
+    </target>
+
+    <target name="checksumsfile">
+        <checksumfiles destfile="${checksumsfile}" digest="MD5" append="true">
+            <fileset dir="${build}"/>
+        </checksumfiles>
+    </target>
+
+    <target name="checkstyle" depends="init">
+<!--
+        <checkstyle config="docs/checkstyle.xml">
+            <fileset dir="${src.dir}" includes="**/*.java"/>
+        </checkstyle>
+-->
+    </target>
+
+    <target name="classes" depends="init">
+
+        <mkdir dir="${classes}"/>
+
+        <javac destdir="${classes}"
+            debug="${debug}" optimize="${optimize}" deprecation="${deprecation}"
+            source="1.5" target="1.5"
+            encoding="iso-8859-1">
+
+            <src path="${src.dir}"/>
+
+            <exclude name="**/Test*.java" unless="junit-available"/>
+            <exclude name="**/*TestCase.java" unless="junit-available"/>
+
+            <classpath refid="libraries-with-commons-logging"/>
+
+        </javac>
+
+    </target>
+
+    <target name="jspc" depends="init,web,libraries,classes">
+	
+    	
+        <jasper2
+                validateXml="false"
+                verbose="9"
+                uriroot="${build}"
+                webXmlFragment="${tmp}/generated_web.xml"
+                outputDir="${tmp}/jsp"
+                classpath="${classes}"/>
+
+        <mkdir dir="${tmp}/jspc"/>
+
+        <javac srcdir="${tmp}/jsp" destdir="${tmp}/jspc"
+               classpathref="classes-and-libraries" fork="yes"
+               excludes="**/*_included_jsp.java"/>
+		
+    </target>
+
+    <!-- Copies the libraries (jar-files) needed for building. -->
+    <target name="libraries" depends="init" description="Copies the jar-files.">
+
+        <copy todir="${WEB-INF}/lib">
+            <fileset dir="lib" includes="*.jar"/>
+        </copy>
+
+    </target>
+
+    <target name="sql">
+    	
+        <copy todir="${sql-diff}">
+            <fileset dir="sql/diff" includes="diff-*.sql"/>
+        </copy>    	
+
+        <copy todir="${sql}">
+            <fileset file="sql/imcms_5.0_schema.sql"/>
+        </copy>
+    	
+        <copy todir="${sql}">
+            <fileset file="sql/imcms_5.0_data.sql"/>
+        </copy>    	
+
+        <copy todir="${sql-sprocs}">
+            <fileset dir="sql/sprocs" includes="*.prc"/>
+        </copy>
+    	
+    </target>
+
+    <!-- Creates the directories and copies the files that are to be public. -->
+    <target name="web"
+       depends="init,changes"
+       description="Translates and copies the webfiles.">
+
+        <dependset>
+            <srcfileset file="${build.properties}"/>
+            <targetfileset dir="${conf}"/>
+        </dependset>
+
+        <mkdir dir="${imcms}"/>
+        <mkdir dir="${login}"/>
+        <mkdir dir="${webroot}/css"/>
+        <mkdir dir="${webroot}/images"/>
+        <mkdir dir="${webroot}/javascript"/>
+        <mkdir dir="${webroot}/jsp"/>
+        <mkdir dir="${webroot}/user"/>
+
+        <mkdir dir="${lib}"/>
+        <mkdir dir="${WEB-INF}/includes"/>
+        <mkdir dir="${WEB-INF}/logs"/>
+        <mkdir dir="${WEB-INF}/uploads"/>
+    	<mkdir dir="${WEB-INF}/classes"/>
+    	
+        <copy todir="${WEB-INF}" file="${src.dir}/applicationContext.xml" filtering="true"/>
+    	
+        <copy todir="${WEB-INF}/classes" file="${src.dir}/hibernate.cfg.xml" filtering="true"/>
+
+        <echo message="${version}" file="${versionfile}"/>
+
+        <copy todir="${webroot}" filtering="true">
+            <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
+        </copy>
+
+        <copy todir="${webroot}">
+            <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern}"/>
+        </copy>
+
+        <antcall target="web-lang">
+            <param name="buildlanguage" value="swe"/>
+        </antcall>
+
+        <antcall target="web-lang">
+            <param name="buildlanguage" value="eng"/>
+        </antcall>
+
+        <mkdir dir="${demotemplates}"/>
+
+        <copy todir="${apisamples}" description="appending .txt on all jsp files making the source browsable">
+            <fileset dir="${apisamples}">
+               <include name="*.jsp"/>
+            </fileset>
+            <mapper type="glob" from="*" to="*.txt"/>
+        </copy>
+
+        <copy todir="${docs}">
+            <fileset dir="${basedir}/docs"/>
+        </copy>
+
+        <copy file="${conf}/${log4j-config}" tofile="${conf}/log4j.xml"/>
+
+    </target>
+
+    <target name="web-lang" depends="init">
+
+        <imtranslate bundle="web/WEB-INF/conf/imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${templates}/${buildlanguage}" filtering="true" encoding="utf-8">
+            <fileset dir="web/WEB-INF/templates/lang"/>
+        </imtranslate>
+
+        <imtranslate bundle="web/WEB-INF/conf/imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${imcms}/${buildlanguage}" filtering="true" encoding="utf-8">
+            <fileset dir="web/imcms/lang" excludes="${imagespattern}"/>
+        </imtranslate>
+
+        <copy todir="${imcms}/${buildlanguage}" filtering="false">
+            <fileset dir="web/imcms/lang" includes="${imagespattern}"/>
+        </copy>
+
+    </target>
+
+    <!-- Compound targets -->
+
+    <target name="build-install" depends="build,install" description="Copies the webapp directly into the webapp-directory in the deployroot."/>
+
+    <target name="build-install-tomcat-deploy" depends="build-install, tomcat-deploy" description="Build, install, and deploy in running instance of tomcat"/>
+
+    <target name="build-install-tomcat-reload" depends="build, install, tomcat-reload" description="Build, install, and reload the webapp in tomcat"/>
+
+    <target name="clean-build" depends="clean,build" description="Runs targets clean and build."/>
+
+    <target name="clean-build-install" depends="clean,build-install" description="Runs targets clean, build, and install."/>
+
+    <target name="clean-build-install-tomcat-reload" depends="clean-build-install, tomcat-reload" description="Build, install, and reload the webapp in tomcat"/>
+
+    <target name="web-install" depends="web,install" description="Run targets 'web', and 'install'"/>
+
+    <!-- Init targets -->
+
+    <target name="init" depends="copy-build.properties,init-version-properties,init-global-filters" description="Handy target for everything else to depend on.">
+
+        <record name="${basedir}/build.log"/>
+
+        <tstamp/>
+
+        <available classname="junit.framework.Test" classpathref="libraries" property="junit-available"/>
+    </target>
+
+    <target name="copy-build.properties" unless="build.properties-available">
+        <copy file="build.properties.template" tofile="build.properties"/>
+    </target>
+
+
+    <target name="init-version-properties">
+
+        <propertyregex property="version"
+            input="${svnurl}"
+            regexp=".URL: .*/tags/(.+)/[^/]+ ."
+            override="true"
+            replace="\1"
+            casesensitive="false"/>
+        <propertyregex property="versionnumber"
+            input="${version}"
+            regexp="^(.*?)(-.*)?$"
+            override="true"
+            replace="\1"
+            casesensitive="false"/>
+        <propertyregex property="versionfilesuffix"
+            input="${version}"
+            regexp="(.+)"
+            override="true"
+            replace="-\1"
+            casesensitive="false"/>
+    	
+    	<echo message="init-version-properties version: ${version}"/>
+    	<echo message="init-version-properties version: ${versionnumber}"/>
+    	<echo message="init-version-properties version: ${versionfilesuffix}"/>    		
+
+        <!-- Locations for the final packages -->
+        <property name="warfilename" value="imcms${versionfilesuffix}.war"/>
+        <property name="war" value="${dist}/${warfilename}"/>
+        <property name="jar" value="${lib}/imcms${versionfilesuffix}.jar"/>
+
+        <property name="sprocs-sql" value="${sql}/imcms-sprocs${versionfilesuffix}.sql"/>
+
+    	<property name="bindist-jar" value="${dist}/imcms${versionfilesuffix}.jar"/>
+        <property name="bindist-api-jar" value="${dist}/imcms${versionfilesuffix}-api.jar"/>
+        <property name="bindist-util-jar" value="${dist}/imcms${versionfilesuffix}-util.jar"/>
+
+        <property name="bindist-zip" value="${dist}/imcms${versionfilesuffix}.zip"/>
+        <property name="bindist-tgz" value="${dist}/imcms${versionfilesuffix}.tar.gz"/>
+
+        <property name="srcdist" value="imcms${versionfilesuffix}-src"/>
+        <property name="srcdist-zip" value="${dist}/${srcdist}.zip"/>
+        <property name="srcdist-tgz" value="${dist}/${srcdist}.tar.gz"/>
+
+    </target>
+
+    <target name="init-global-filters"
+        depends="check-build-properties,init-version-properties">
+
+        <filter token="defaultlanguage" value="${defaultlanguage}"/>
+
+        <filter token="documentationwebappurl" value="http://${documentation-host}/${versionnumber}"/>
+        <filter token="documentationurl" value="http://${documentation-host}/${versionnumber}"/>
+
+        <filter token="deny-multiple-user-login" value="${deny-multiple-user-login}"/>
+
+        <filter token="db-driver" value="${db-driver}"/>
+        <filter token="db-url" value="${db-url}"/>
+        <filter token="db-name" value="${db-name}"/>
+        <filter token="db-user" value="${db-user}"/>
+        <filter token="db-pass" value="${db-pass}"/>
+        <filter token="db-maxconnections" value="${db-maxconnections}"/>
+
+        <filter token="external-authenticator" value="${external-authenticator}"/>
+        <filter token="external-user-and-role-registry" value="${external-user-and-role-registry}"/>
+
+        <filter token="ldap-url" value="${ldap-url}"/>
+        <filter token="ldap-bind-dn" value="${ldap-bind-dn}"/>
+        <filter token="ldap-password" value="${ldap-password}"/>
+        <filter token="ldap-user-object-class" value="${ldap-user-object-class}"/>
+        <filter token="ldap-attribute-login-name" value="${ldap-attribute-login-name}"/>
+
+
+        <filter token="secondary-external-authenticator" value="${secondary-external-authenticator}"/>
+        <filter token="secondary-external-user-and-role-registry" value="${secondary-external-user-and-role-registry}"/>
+
+        <filter token="secondary-ldap-url" value="${secondary-ldap-url}"/>
+        <filter token="secondary-ldap-bind-dn" value="${secondary-ldap-bind-dn}"/>
+        <filter token="secondary-ldap-password" value="${secondary-ldap-password}"/>
+        <filter token="secondary-ldap-user-object-class" value="${secondary-ldap-user-object-class}"/>
+        <filter token="secondary-ldap-attribute-login-name" value="${secondary-ldap-attribute-login-name}"/>
+
+
+        <filter token="smtp-server" value="${smtp-server}"/>
+
+        <filter token="servermaster-name" value="${servermaster-name}"/>
+        <filter token="servermaster-email" value="${servermaster-email}"/>
+
+        <filter token="webmaster-name" value="${webmaster-name}"/>
+        <filter token="webmaster-email" value="${webmaster-email}"/>
+
+    	<filter token="i18n.defaultLanguage.code" value="${i18n.defaultLanguage.code}"/>
+    </target>
+
+    <!-- Check targets -->
+
+    <target name="check-build-properties" unless="build-properties-up-to-date">
+
+        <uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
+            <srcfiles dir="${basedir}" includes="build.properties.template"/>
+        </uptodate>
+
+        <fail unless="build-properties-up-to-date">
+            'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT for details.)
+            Copy 'build.properties.template' to 'build.properties' and edit it!
+        </fail>
+
+    </target>
+
+    <target name="check-deployroot" unless="deployroot">
+
+        <fail message="Set 'deployroot' in '${build.properties}'!"/>
+
+    </target>
+
+    <target name="check-junit-task-available" unless="no-junit-task-available">
+
+        <available classname="junit.framework.Test" property="junit-task-available"/>
+
+        <fail unless="junit-task-available">
+            The JUnit task is not available.
+            Please add junit.jar to ant's classpath,
+            for example by adding junit.jar to $ANT_HOME/lib.
+
+            If this is impossible, set the property "no-junit-task-available"
+            in build.properties. Note that this means that tests cannot be run!
+        </fail>
+
+    </target>
+
+    <target name="check-web-xml-valid">
+        <xmlvalidate file="web/WEB-INF/web.xml" classpathref="libraries">
+            <dtd
+                publicId="-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+                location="javax/servlet/resources/web-app_2_3.dtd"/>
+        </xmlvalidate>
+    </target>
+</project>
