@@ -3,6 +3,15 @@
 -- Replace i18n_keywords with new table
 --
 
+-- Current schema version
+SET @database_version__major__current = 5;
+SET @database_version__minor__current = 1;
+
+-- New schema version
+SET @database_version__major__new = 5;
+SET @database_version__minor__new = 2;
+
+
 CREATE TABLE keywords (
   keyword_id int NOT NULL auto_increment,
   meta_id int NULL,
@@ -27,9 +36,13 @@ ON
   m.i18n_meta_id = k.i18n_meta_id;
 
 DROP TABLE i18n_keywords;
-
--- DELETE FROM classification;
--- DELETE FROM meta_classification;
-
 DROP TABLE meta_classification;
 DROP TABLE classification;
+
+--
+-- Update schema version
+--
+UPDATE database_version
+SET
+  major = @database_version__major__new,
+  minor = @database_version__minor__new;

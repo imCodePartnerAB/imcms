@@ -45,7 +45,7 @@ public class I18nMeta implements Serializable, Cloneable {
 	@OneToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="language_id", referencedColumnName="language_id")
 	private I18nLanguage language;
-		
+			
 	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	@JoinColumns({
