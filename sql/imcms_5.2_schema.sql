@@ -53,8 +53,6 @@ CREATE TABLE meta (
   publication_end_datetime datetime default NULL,
   missing_i18n_show_rule varchar(32) default 'DO_NOT_SHOW',
   PRIMARY KEY  (meta_id),
-  KEY meta_FK_owner_id_users (owner_id),
-  KEY meta_FK_publisher_id_users (publisher_id),
   CONSTRAINT meta_FK_owner_id_users FOREIGN KEY (owner_id) REFERENCES users (user_id),
   CONSTRAINT meta_FK_publisher_id_users FOREIGN KEY (publisher_id) REFERENCES users (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -275,9 +273,11 @@ CREATE TABLE images (
   language_id smallint(6) NOT NULL,
   image_id int(11) NOT NULL auto_increment,
   PRIMARY KEY  (image_id),
-  KEY images_FK_meta_id_meta (meta_id),
-  CONSTRAINT ux__images__meta_id__lanfuage_id__name UNIQUE INDEX (meta_id, language_id, name),
-  CONSTRAINT images_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
+
+  CONSTRAINT fk__images__meta FOREIGN KEY  (meta_id) REFERENCES meta (meta_id),
+  CONSTRAINT fk__images__i18n_languages FOREIGN KEY  (language_id) REFERENCES i18n_languages (language_id),
+  CONSTRAINT ux__images__meta_id__name__language_id UNIQUE INDEX  (meta_id, name, language_id)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -679,11 +679,9 @@ CREATE TABLE texts (
   counter int(11) NOT NULL auto_increment,
   language_id smallint(6) NOT NULL default '1',
   PRIMARY KEY  (counter),
-  KEY texts_FK_meta_id_meta (meta_id),
-  KEY fk__texts__i18n_languages (language_id),
-  CONSTRAINT texts_ibfk_2 FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
-  CONSTRAINT texts_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id),
-  CONSTRAINT texts_ibfk_1 FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id)
+  CONSTRAINT fk__texts__i18n_languages FOREIGN KEY  (language_id) REFERENCES i18n_languages (language_id),
+  CONSTRAINT fk__texts__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id),
+  CONSTRAINT ux__texts__meta_id__name__language_id UNIQUE INDEX (meta_id, name, language_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -700,13 +698,11 @@ CREATE TABLE texts_history (
   counter int(11) NOT NULL auto_increment,
   language_id smallint(6) NOT NULL,
   PRIMARY KEY  (counter),
-  KEY texts_history_FK_meta_id_meta (meta_id),
-  KEY texts_history_FK_user_id_users (user_id),
-  KEY fk__texts_history__i18n_languages (language_id),
-  CONSTRAINT texts_history_ibfk_2 FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
-  CONSTRAINT texts_history_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id),
-  CONSTRAINT texts_history_FK_user_id_users FOREIGN KEY (user_id) REFERENCES users (user_id),
-  CONSTRAINT texts_history_ibfk_1 FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id)
+
+  CONSTRAINT fk__texts_history__i18n_languages FOREIGN KEY  (language_id) REFERENCES i18n_languages (language_id),
+  CONSTRAINT fk__texts_history__meta FOREIGN KEY  (meta_id) REFERENCES meta (meta_id),
+  CONSTRAINT fk__texts_history__users FOREIGN KEY  (user_id) REFERENCES users (user_id)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

@@ -50,14 +50,16 @@ FROM
 --
 
 SET FOREIGN_KEY_CHECKS = 0;
+
 DROP TABLE i18n_available_languages;
 DROP VIEW i18n_languages_v;
 
 -- workaroud
-RENAME TABLE i18n_languages TO i18n_languages_old;
+-- RENAME TABLE i18n_languages TO i18n_languages_old;
+DROP TABLE i18n_languages;
 RENAME TABLE i18n_languages_new TO i18n_languages;
 
-DROP TABLE i18n_languages_old;
+-- DROP TABLE i18n_languages_old;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -65,13 +67,18 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- Adds foreign keys
 --
 ALTER TABLE i18n_meta
-ADD CONSTRAINT fk__i18n_meta__i18n_languages FOREIGN KEY(language_id) REFERENCES i18n_languages (language_id);
+ADD CONSTRAINT fk__i18n_meta__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id);
 
 ALTER TABLE texts
-ADD CONSTRAINT fk__texts__i18n_languages FOREIGN KEY(language_id) REFERENCES i18n_languages (language_id);
+ADD CONSTRAINT fk__texts__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id);
+
+ALTER TABLE texts_history
+ADD CONSTRAINT fk__texts_history__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id);
 
 ALTER TABLE images
-ADD CONSTRAINT fk__images__i18n_languages FOREIGN KEY(language_id) REFERENCES i18n_languages (language_id);
+ADD CONSTRAINT fk__images__i18n_languages FOREIGN KEY  (language_id) REFERENCES i18n_languages (language_id);
+
+
 
 --
 -- Update schema version

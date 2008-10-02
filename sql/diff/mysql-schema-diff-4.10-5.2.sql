@@ -1,16 +1,10 @@
--- Current schema version
+﻿-- Current schema version
 SET @database_version__major__current = 4;
 SET @database_version__minor__current = 10;
 
 -- New schema version
 SET @database_version__major__new = 5;
 SET @database_version__minor__new = 2;
-
--- Predefined i18n language indentitity
-SET @language_id = 1;
-SET @language_code = 'sv';
-SET @language_name = 'Swedish';
-SET @language_native_name = 'Svenska';
 
 -- Create i18n_languages
 CREATE TABLE i18n_languages (
@@ -28,7 +22,7 @@ CREATE TABLE i18n_languages (
 INSERT INTO i18n_languages
   (language_id, code, name, native_name, is_default, is_enabled)
 VALUES
-  (@language_id, @language_code, @language_name, @language_native_name, true, true);
+  (1, 'sv', 'Swedish', 'Svenska', true, true);
 
 
 -- I18n meta table
@@ -41,14 +35,15 @@ CREATE TABLE i18n_meta (
   meta_text varchar(1000) default NULL,
   meta_image varchar(255) default NULL,
   PRIMARY KEY  (i18n_meta_id),
-  UNIQUE KEY ux__i18n_meta_part__language_id__meta_id (language_id,meta_id),
-  CONSTRAINT i18n_meta_ibfk_1 FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id)
+  CONSTRAINT ux__i18n_meta__meta_id__language_id UNIQUE KEY  (meta_id, language_id),
+  CONSTRAINT fk__i18n_meta__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id),
+  CONSTRAINT fk__i18n_meta__i18n_languages FOREIGN KEY   (language_id) REFERENCES i18n_languages (language_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 -- Copy i18n-ed data from meta table
 INSERT INTO i18n_meta (language_id, meta_id, meta_enabled, meta_headline, meta_text, meta_image)
-SELECT @language_id, meta_id, true, meta_headline, meta_text, meta_image
+SELECT 1, meta_id, true, meta_headline, meta_text, meta_image
 FROM meta;
 
 ﻿-- Drop columns from meta
@@ -56,36 +51,57 @@ ALTER TABLE meta
   DROP COLUMN meta_headline,
   DROP COLUMN meta_text,
   DROP COLUMN meta_image;
+
+
   
 -- Add disabled (at the document access level) language show rule 
 ALTER TABLE meta
   ADD COLUMN missing_i18n_show_rule varchar(32) default 'DO_NOT_SHOW';
--- Not in use
--- ADD CONSTRAINT chk__meta__missing_i18n_show_rule check missing_i18n_show_rule in ('SHOW_IN_DEFAULT_LANGUAGE', 'DO_NOT_SHOW');
-
--- Add surrogate primary key column to images table
-ALTER TABLE images 
-  ADD COLUMN image_id int auto_increment NOT NULL PRIMARY KEY;
-
-CREATE UNIQUE INDEX ux__images__meta_id__name ON images (meta_id, name);
 
 --
--- Add i18n support to related tables
+-- Receate images table
 --
-ALTER TABLE texts ADD COLUMN language_id smallint NOT NULL default @language_id;
-ALTER TABLE images ADD COLUMN language_id smallint NOT NULL default @language_id;
-ALTER TABLE texts_history ADD COLUMN language_id smallint NOT NULL default @language_id__default;
+CREATE TABLE images_new AS SELECT * FROM images;
+DROP TABLE images;
+RENAME TABLE images_new TO images;
 
-ALTER TABLE texts ALTER COLUMN language_id DROP DEFAULT;
-ALTER TABLE texts_history ALTER COLUMN language_id DROP DEFAULT;
+ALTER TABLE images
+  ADD COLUMN image_id int auto_increment NOT NULL PRIMARY KEY,
+  ADD COLUMN language_id smallint NOT NULL default 1,
+
+  ADD CONSTRAINT fk__images__meta FOREIGN KEY  (meta_id) REFERENCES meta (meta_id),
+  ADD CONSTRAINT fk__images__i18n_languages FOREIGN KEY  (language_id) REFERENCES i18n_languages (language_id),
+  ADD CONSTRAINT ux__images__meta_id__name__language_id UNIQUE INDEX  (meta_id, name, language_id);
+
 ALTER TABLE images ALTER COLUMN language_id DROP DEFAULT;
 
 --
--- Add forign keys to altered tables
+-- Receate texts table
 --
-ALTER TABLE texts ADD FOREIGN KEY fk__texts__i18n_languages(language_id) REFERENCES i18n_languages(language_id);
-ALTER TABLE texts_history ADD FOREIGN KEY fk__texts_history__i18n_languages(language_id) references i18n_languages(language_id);
-ALTER TABLE images ADD FOREIGN KEY fk__images__i18n_languages(language_id) references i18n_languages(language_id);
+-- Delete duplicates if any
+DELETE FROM texts l USING texts l, texts r WHERE l.meta_id = r.meta_id and l.name = r.name and l.counter < r.counter;
+
+CREATE TABLE texts_new AS SELECT * FROM texts;
+DROP TABLE texts;
+RENAME TABLE texts_new TO texts;
+
+ALTER TABLE texts
+  ADD COLUMN language_id smallint NOT NULL default 1,
+  MODIFY COLUMN counter int auto_increment PRIMARY KEY;
+
+ALTER TABLE texts
+  ADD CONSTRAINT fk__texts__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id),
+  ADD CONSTRAINT fk__texts__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages(language_id),
+  ADD CONSTRAINT ux__texts__meta_id__name__language_id UNIQUE INDEX  (meta_id, name, language_id);
+
+ALTER TABLE texts ALTER COLUMN language_id DROP DEFAULT;
+
+
+ALTER TABLE texts_history
+  ADD COLUMN language_id smallint NOT NULL default 1,
+  ADD CONSTRAINT fk__texts_history__i18n_languages FOREIGN KEY (language_id) references i18n_languages(language_id);
+
+ALTER TABLE texts_history ALTER COLUMN language_id DROP DEFAULT;
 
 
 --
@@ -99,16 +115,19 @@ CREATE TABLE keywords (
   language_id smallint NULL,
   value varchar(128) NOT NULL,
   PRIMARY KEY (keyword_id),
-  CONSTRAINT fk__keywords__meta FOREIGN KEY(meta_id) REFERENCES meta (meta_id),
-  CONSTRAINT fk__keywords__i18n_languages FOREIGN KEY(language_id) REFERENCES i18n_languages (language_id)
+  CONSTRAINT fk__keywords__meta FOREIGN KEY  (meta_id) REFERENCES meta (meta_id),
+  CONSTRAINT fk__keywords__i18n_languages FOREIGN KEY  (language_id) REFERENCES i18n_languages (language_id)
 );
 
 
 -- Move keywords to new keyword table 
 INSERT INTO keywords (meta_id, language_id, value)
-SELECT @language_id, mc.meta_id, c.code FROM meta_classification mc join classification c on mc.class_id = c.class_id
+SELECT mc.meta_id, 1, c.code FROM meta_classification mc join classification c on mc.class_id = c.class_id;
 
 -- Drop old tables
+DELETE FROM meta_classification;
+DELETE FROM classification;
+
 DROP TABLE meta_classification;
 DROP TABLE classification;
 

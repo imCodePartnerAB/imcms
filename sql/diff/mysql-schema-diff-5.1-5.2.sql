@@ -39,7 +39,7 @@ DROP TABLE i18n_keywords;
 DROP TABLE meta_classification;
 DROP TABLE classification;
 
-CREATE UNIQUE INDEX ux__images__meta_id__lanfuage_id__name ON images (meta_id, language_id, name);
+CREATE UNIQUE INDEX ux__images__meta_id__name__language_id ON images (meta_id, name, language_id);
 
 --
 -- Update schema version
