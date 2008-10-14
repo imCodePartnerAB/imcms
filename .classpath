@@ -57,5 +57,7 @@
 	<classpathentry kind="lib" path="lib/velocity-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/gnu-activation-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jta-1.0.1B.jar"/>
+	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
+	<classpathentry kind="lib" path="lib/groovy-all-1.5.6.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

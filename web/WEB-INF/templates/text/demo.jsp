@@ -76,6 +76,10 @@ LI { padding-bottom:5; }
             <imcms:include url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoContent" pre='<hr>' post='<hr>'/>
             <imcms:image no='3' label='Bild' pre='<br><br>' post='<br>'/><br>
             <imcms:include no='1' label='Dynamisk inkludering 1'/>
+            
+            <imcms:group no="1" itemCount="5">
+              <imcms:text no='2' label='<br>Text' post='<br><br>' />
+            </imcms:group>            
         </td>
     
 		<td width="10">&nbsp;</td>

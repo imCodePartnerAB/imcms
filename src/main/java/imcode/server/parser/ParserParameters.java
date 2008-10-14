@@ -83,6 +83,13 @@ public class ParserParameters implements Cloneable {
     public boolean isMenuMode() {
         return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS, TextDocumentPermissionSetDomainObject.EDIT_MENUS );
     }
+    
+    /**
+     * Please note there is no separate permissions for group editing. 
+     */
+    public boolean isGroupMode() {
+        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_GROUPS, TextDocumentPermissionSetDomainObject.EDIT_TEXTS );
+    }    
 
     public boolean isImageMode() {
         return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES, TextDocumentPermissionSetDomainObject.EDIT_IMAGES );

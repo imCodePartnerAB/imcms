@@ -164,7 +164,7 @@ public class Imcms {
             return basicDataSource;
         } catch ( SQLException ex ) {
             String message = "Could not connect to database "+ jdbcUrl + " with driver " + jdbcDriver + ": "+ex.getMessage()+" Error code: "
-                             + ex.getErrorCode() + " SQL State: " + ex.getSQLState();
+                             + ex.getErrorCode() + " SQL GroupData: " + ex.getSQLState();
             LOG.fatal(message, ex);
             throw new RuntimeException(message, ex);
         }

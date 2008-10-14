@@ -52,6 +52,11 @@
     </filter-mapping>
     
     <servlet>
+        <servlet-name>Groovy</servlet-name>
+        <servlet-class>groovy.servlet.GroovyServlet</servlet-class>
+    </servlet>
+    
+    <servlet>
         <servlet-name>RD</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.ReDirecter</servlet-class>
     </servlet>
@@ -285,6 +290,12 @@
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-class>
     </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>Groovy</servlet-name>
+        <url-pattern>*.groovy</url-pattern>
+    </servlet-mapping>    
+    
     
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>

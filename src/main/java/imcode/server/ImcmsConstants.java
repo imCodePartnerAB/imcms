@@ -46,7 +46,9 @@ public interface ImcmsConstants {
 
     /** Permission to change the includes of a text-document. **/
     public final static int PERM_EDIT_TEXT_DOCUMENT_INCLUDES   = (1 << 20) ; // 1048576
-
+    
+    /** Permission to change the includes of a text-document. **/
+    public final static int PERM_EDIT_TEXT_DOCUMENT_GROUPS   = (1 << 21); //  2097152
 
     /* Log instances. */
 
