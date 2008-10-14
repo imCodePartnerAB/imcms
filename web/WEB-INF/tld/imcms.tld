@@ -15,24 +15,12 @@ Library 1.2//EN"
         <tag-class>com.imcode.imcms.servlet.tags.GroupTag</tag-class>
         <body-content>JSP</body-content>
         
-        <variable>
-            <name-given>itemIndex</name-given>
-            <variable-class>java.lang.Integer</variable-class>
-            <scope>NESTED</scope>
-        </variable>        
-        
         <attribute>
             <name>no</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
-        
-        <attribute>
-            <name>itemCount</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-                
+                        
         <attribute>
             <name>document</name>
             <required>false</required>

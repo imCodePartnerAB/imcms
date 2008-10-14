@@ -1,4 +1,2 @@
-import imcode.server.parser.ParserParametersdef request = groupTag.pageContext.requestdef response = groupTag.pageContext.responsedef parserParameters = ParserParameters.fromRequest(request)
-
-if (!parserParameters.groupMode) {	} else {
-    }
+import imcode.server.parser.ParserParametersitemsCount = new Integer(10)def request = groupTag.pageContext.requestdef response = groupTag.pageContext.responsedef parserParameters = ParserParameters.fromRequest(request)
+if (!parserParameters.groupMode) return	def cmd = request.getParameter("cmd")if (cmd == null) returnif (cmd.equals("addFirst")) {    } else if (cmd.equals("addLast")) {    }

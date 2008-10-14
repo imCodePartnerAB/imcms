@@ -3,11 +3,9 @@ package com.imcode.imcms.servlet.tags;
 import groovy.lang.Binding;
 import groovy.util.GroovyScriptEngine;
 import imcode.server.parser.ParserParameters;
-import imcode.server.parser.TagParser;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +21,8 @@ public class GroupTag extends BodyTagSupport {
 	
 	class GroupData {
 		private int itemIndex = 0;
+		
+		private int itemsCount = 0;
 		
 		private Map<Integer, List<SimpleImcmsTag>> itemsMap = new LinkedHashMap<Integer, List<SimpleImcmsTag>>();
 		
@@ -44,14 +44,18 @@ public class GroupTag extends BodyTagSupport {
 		public int incItemIndex() {
 			return itemIndex++;
 		}
+
+		public int getItemsCount() {
+			return itemsCount;
+		}
+
+		public void setItemsCount(int itemCount) {
+			this.itemsCount = itemCount;
+		}
+		
 	}
 	
-    private int no;
-    
-    /**
-     * Group item count
-     */
-    private int itemCount = 1;
+    private int no;    
         
     private Properties attributes = new Properties();
     
@@ -67,7 +71,7 @@ public class GroupTag extends BodyTagSupport {
     public int doAfterBody() throws JspException {
     	GroupData groupData = (GroupData)pageContext.getAttribute("groupData");
     	
-    	return groupData.incItemIndex() < itemCount 
+    	return groupData.incItemIndex() < groupData.getItemsCount()
     	  ? EVAL_BODY_AGAIN
     	  : super.doAfterBody();
     }
@@ -75,34 +79,26 @@ public class GroupTag extends BodyTagSupport {
     
 
 	public int doStartTag() throws JspException {
-		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-		ParserParameters parserParameters = ParserParameters.fromRequest(request);
-		
-		if (parserParameters.isGroupMode()) {
-			String cmd = request.getParameter("cmd");
+    	// Prototype try-catch block
+    	try {
+			String scriptsRoot = pageContext.getServletContext().getRealPath("WEB-INF") + "/groovy";	
+			String[] roots = new String[] { scriptsRoot };
+			GroovyScriptEngine gse = new GroovyScriptEngine(roots);
+			Binding binding = new Binding();
+			binding.setVariable("groupTag", this);
+			gse.run("GroupTag.groovy", binding);
+			int itemsCount = (Integer)binding.getVariable("itemsCount");
 			
-			if (cmd != null) {
-				if (cmd.equals("addFirst")) {
-					
-				} else if (cmd.equals("addLast")) {
-					
-				}
-			}
-		}
-		
-		GroupData groupData = new GroupData();		
-		pageContext.setAttribute("groupData", groupData);
-		
-          HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
-		
-        try {
-		    //request.getSession().getServletContext().getRequestDispatcher("/WEB-INF/groovy/GroupTag.groovy").include(request, response);
-        	if (true) {}
+			GroupData groupData = new GroupData();		
+			pageContext.setAttribute("groupData", groupData);
+
+			
+			groupData.setItemsCount(itemsCount);
         } catch (Exception e) {
         	throw new JspException(e);
-        }
-		
-		return EVAL_BODY_BUFFERED;
+        }            
+										
+		return super.doStartTag();
 	}
 	
 	public int doEndTag() throws JspException {
@@ -113,8 +109,7 @@ public class GroupTag extends BodyTagSupport {
 		UserDomainObject user = Utility.getLoggedOnUser(request);
 		
 		ParserParameters parserParameters = ParserParameters.fromRequest(request);		
-				
-		//if (editing groups -> save group to db)
+
 		try {
 			if (parserParameters.isGroupMode()) {
 		        request.setAttribute("content", content);
@@ -130,53 +125,6 @@ public class GroupTag extends BodyTagSupport {
 		}
 		
 		return super.doEndTag();
-	}
-	
-	/*
-    public int doEndTag() throws JspException {
-        try {
-            String bodyContentString = null != getBodyContent() ? getBodyContent().getString() : "";
-            bodyContent = null ;
-            HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-            HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
-            ParserParameters parserParameters = ParserParameters.fromRequest(request);
-                        
-        	// Prototype try-catch block
-        	try {
-    			String scriptsRoot = pageContext.getServletContext().getRealPath("WEB-INF") + "/groovy";	
-    			String[] roots = new String[] { scriptsRoot };
-    			GroovyScriptEngine gse = new GroovyScriptEngine(roots);
-    			Binding binding = new Binding();
-    			binding.setVariable("groupTag", this);
-    			gse.run("GroupTag.groovy", binding);
-    			
-    			bodyContentString = (String)binding.getVariable("content");
-            } catch (Exception e) {
-            	throw new JspException(e);
-            }            
-            
-            
-            //bodyContentString = MenuParser.addMenuAdmin(no,
-            //                                            parserParameters.isMenuMode(),
-            //                                            bodyContentString, menu, request,response,label);
-            //
-
-            bodyContentString = TagParser.addPreAndPost(attributes, bodyContentString);
-            
-            pageContext.getOut().write(bodyContentString);
-        } catch ( IOException e ) {
-            throw new JspException(e);
-//        } catch ( ServletException e ) {
-//            throw new JspException(e);
-        } catch ( RuntimeException e ) {
-            throw new JspException(e);
-        }
-        return EVAL_PAGE;
-    }	
-    */
-	
-	protected String getContent(TagParser tagParser) {
-		return "I love you";
 	}
 	
 	
@@ -202,15 +150,5 @@ public class GroupTag extends BodyTagSupport {
 
     public void setPost(String post) {
         attributes.setProperty("post", post) ;
-    }
-
-
-	public int getItemCount() {
-		return itemCount;
-	}
-
-
-	public void setItemCount(int itemCount) {
-		this.itemCount = itemCount;
-	}	
+    }	
 }

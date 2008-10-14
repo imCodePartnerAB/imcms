@@ -77,7 +77,7 @@ LI { padding-bottom:5; }
             <imcms:image no='3' label='Bild' pre='<br><br>' post='<br>'/><br>
             <imcms:include no='1' label='Dynamisk inkludering 1'/>
             
-            <imcms:group no="1" itemCount="5">
+            <imcms:group no="1">
               <imcms:text no='2' label='<br>Text' post='<br><br>' />
             </imcms:group>            
         </td>
