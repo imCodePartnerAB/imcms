@@ -15,9 +15,10 @@ import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-public class GroupTag extends BodyTagSupport {
+public class ContentTag extends BodyTagSupport {
 	
 	class GroupData {
 		private int itemIndex = 0;
@@ -77,7 +78,7 @@ public class GroupTag extends BodyTagSupport {
     	int index = groupData.incItemIndex(); 
     	
     	pageContext.setAttribute(indexVar, baseIndex + index);
-    		
+    	
     	return index < groupData.getItemsCount()
     	  ? EVAL_BODY_AGAIN
     	  : super.doAfterBody();
@@ -94,8 +95,10 @@ public class GroupTag extends BodyTagSupport {
 			String[] roots = new String[] { scriptsRoot };
 			GroovyScriptEngine gse = new GroovyScriptEngine(roots);
 			Binding binding = new Binding();
-			binding.setVariable("groupTag", this);
-			gse.run("GroupTag.groovy", binding);
+			binding.setVariable("contentTag", this);
+			binding.setVariable("processCmd", true);
+			
+			gse.run("ContentTag.groovy", binding);
 			int itemsCount = (Integer)binding.getVariable("itemsCount");
 			
 			GroupData groupData = new GroupData();
@@ -123,7 +126,7 @@ public class GroupTag extends BodyTagSupport {
 		        request.setAttribute("content", content);
 		        request.setAttribute("label", label);
 		        request.setAttribute("groupNo", no);
-		        content = Utility.getContents("/imcms/"+user.getLanguageIso639_2()+"/jsp/docadmin/text/edit_group.jsp",
+		        content = Utility.getContents("/imcms/"+user.getLanguageIso639_2()+"/jsp/docadmin/text/edit_content.jsp",
 		                                   request, response) ;
 		        
 		        // If this is first time invocation - create DB entry
@@ -131,8 +134,9 @@ public class GroupTag extends BodyTagSupport {
 				String[] roots = new String[] { scriptsRoot };
 				GroovyScriptEngine gse = new GroovyScriptEngine(roots);
 				Binding binding = new Binding();
-				binding.setVariable("groupTag", this);
-				gse.run("GroupTag.groovy", binding);
+				binding.setVariable("contentTag", this);
+				binding.setVariable("processCmd", false);
+				gse.run("ContentTag.groovy", binding);
 			}
 			
 			pageContext.getOut().write(content);

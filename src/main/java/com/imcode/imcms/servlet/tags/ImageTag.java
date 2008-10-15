@@ -10,10 +10,10 @@ public class ImageTag extends SimpleImcmsTag {
 	 * Checks if tag inside of group tag...
 	 */
 	public int doStartTag() throws JspException {
-		GroupTag groupTag = (GroupTag)findAncestorWithClass(this, GroupTag.class);
+		ContentTag contentTag = (ContentTag)findAncestorWithClass(this, ContentTag.class);
 		
-		if (groupTag != null) {
-			groupTag.addGroupItem(this);
+		if (contentTag != null) {
+			contentTag.addGroupItem(this);
 		}
 		
 		return super.doStartTag();
