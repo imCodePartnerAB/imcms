@@ -25,8 +25,8 @@ public class GroupTag extends BodyTagSupport {
 		private int itemsCount = 0;
 		
 		private Map<Integer, List<SimpleImcmsTag>> itemsMap = new LinkedHashMap<Integer, List<SimpleImcmsTag>>();
-		
-		public void addGroupItem(TextTag tag) {
+				
+		public void addGroupItem(SimpleImcmsTag tag) {
 	    	List<SimpleImcmsTag> items = itemsMap.get(itemIndex);
 	    	
 	    	if (items == null) {
@@ -42,7 +42,7 @@ public class GroupTag extends BodyTagSupport {
 		}
 		
 		public int incItemIndex() {
-			return itemIndex++;
+			return ++itemIndex;
 		}
 
 		public int getItemsCount() {
@@ -55,13 +55,17 @@ public class GroupTag extends BodyTagSupport {
 		
 	}
 	
-    private int no;    
+    private int no;  
+    
+    private String indexVar;
+    
+    private int baseIndex;
         
     private Properties attributes = new Properties();
     
     private String label;  
     
-    public void addGroupItem(TextTag tag) {
+    public void addGroupItem(SimpleImcmsTag tag) {
 		GroupData groupData = (GroupData)pageContext.getAttribute("groupData");
 		
 		groupData.addGroupItem(tag);
@@ -70,8 +74,11 @@ public class GroupTag extends BodyTagSupport {
     
     public int doAfterBody() throws JspException {
     	GroupData groupData = (GroupData)pageContext.getAttribute("groupData");
+    	int index = groupData.incItemIndex(); 
     	
-    	return groupData.incItemIndex() < groupData.getItemsCount()
+    	pageContext.setAttribute(indexVar, baseIndex + index);
+    		
+    	return index < groupData.getItemsCount()
     	  ? EVAL_BODY_AGAIN
     	  : super.doAfterBody();
     }
@@ -79,6 +86,8 @@ public class GroupTag extends BodyTagSupport {
     
 
 	public int doStartTag() throws JspException {
+		pageContext.setAttribute(indexVar, baseIndex);
+		
     	// Prototype try-catch block
     	try {
 			String scriptsRoot = pageContext.getServletContext().getRealPath("WEB-INF") + "/groovy";	
@@ -89,9 +98,8 @@ public class GroupTag extends BodyTagSupport {
 			gse.run("GroupTag.groovy", binding);
 			int itemsCount = (Integer)binding.getVariable("itemsCount");
 			
-			GroupData groupData = new GroupData();		
+			GroupData groupData = new GroupData();
 			pageContext.setAttribute("groupData", groupData);
-
 			
 			groupData.setItemsCount(itemsCount);
         } catch (Exception e) {
@@ -117,6 +125,14 @@ public class GroupTag extends BodyTagSupport {
 		        request.setAttribute("groupNo", no);
 		        content = Utility.getContents("/imcms/"+user.getLanguageIso639_2()+"/jsp/docadmin/text/edit_group.jsp",
 		                                   request, response) ;
+		        
+		        // If this is first time invocation - create DB entry
+				String scriptsRoot = pageContext.getServletContext().getRealPath("WEB-INF") + "/groovy";	
+				String[] roots = new String[] { scriptsRoot };
+				GroovyScriptEngine gse = new GroovyScriptEngine(roots);
+				Binding binding = new Binding();
+				binding.setVariable("groupTag", this);
+				gse.run("GroupTag.groovy", binding);
 			}
 			
 			pageContext.getOut().write(content);
@@ -150,5 +166,24 @@ public class GroupTag extends BodyTagSupport {
 
     public void setPost(String post) {
         attributes.setProperty("post", post) ;
-    }	
+    }
+
+	public int getBaseIndex() {
+		return baseIndex;
+	}
+
+
+	public void setBaseIndex(int baseIndex) {
+		this.baseIndex = baseIndex;
+	}
+
+
+	public String getIndexVar() {
+		return indexVar;
+	}
+
+
+	public void setIndexVar(String indexVar) {
+		this.indexVar = indexVar;
+	}	
 }

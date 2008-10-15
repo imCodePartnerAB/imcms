@@ -7,7 +7,7 @@ import imcode.server.parser.TagParser;
 public class TextTag extends SimpleImcmsTag {
 	
 	/**
-	 * Checks if tag inside group tag...
+	 * Checks if tag inside of group tag...
 	 */
 	public int doStartTag() throws JspException {
 		GroupTag groupTag = (GroupTag)findAncestorWithClass(this, GroupTag.class);

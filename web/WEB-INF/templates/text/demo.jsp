@@ -77,8 +77,11 @@ LI { padding-bottom:5; }
             <imcms:image no='3' label='Bild' pre='<br><br>' post='<br>'/><br>
             <imcms:include no='1' label='Dynamisk inkludering 1'/>
             
-            <imcms:group no="1">
-              <imcms:text no='2' label='<br>Text' post='<br><br>' />
+            <imcms:group no="1" indexVar="entryIndex" baseIndex="10000">
+              <hr/>
+              <imcms:text no='${entryIndex + 2}' label='<br>Text' post='<br><br>' />
+              <imcms:image no='${entryIndex + 3}' label='Bild' pre='<br><br>' post='<br>'/><br>
+              <hr/>              
             </imcms:group>            
         </td>
     

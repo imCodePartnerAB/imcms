@@ -1,8 +1,9 @@
 ﻿create table groups (
   group_id int auto_increment primary key,
 
-  group_nr int not null,
-  meta_id int not null
+  group_no int not null,
+  meta_id int not null,
+  base_index int not null
 );
 
 

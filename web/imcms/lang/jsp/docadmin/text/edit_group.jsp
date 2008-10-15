@@ -19,16 +19,16 @@
   <tr>
     <td>
       <form method="get" action="<%=request.getRequestURL().toString()%>">
-        <input type="submit" value="Add first"/>
-        <input type="hidden" name="cmd" value="addFirst"/>
+        <input type="submit" value="Add last"/>
+        <input type="hidden" name="cmd" value="addLast"/>
         <input type="hidden" name="meta_id" value="<%=request.getParameter("meta_id")%>"/>
         <input type="hidden" name="flags" value="<%=request.getParameter("flags")%>"/>
       </form>  
     </td>
     <td>
       <form method="get" action="<%=request.getRequestURL().toString()%>">
-        <input type="submit" value="Add last"/>
-        <input type="hidden" name="cmd" value="addLast"/>
+        <input type="submit" value="Remove last"/>
+        <input type="hidden" name="cmd" value="removeLast"/>
         <input type="hidden" name="meta_id" value="<%=request.getParameter("meta_id")%>"/>
         <input type="hidden" name="flags" value="<%=request.getParameter("flags")%>"/>
       </form>  
