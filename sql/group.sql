@@ -11,6 +11,11 @@ create table content_loops (
   loop_id int auto_increment primary key,
   content_id int not null,
   loop_index int not null,
+  order_index int not null,
+
+  unique index ux__content_id__loop_index (content_id, loop_index),
+  unique index ux__content_id__order_index (content_id, order_index),
+  unique index ux__content_id__loop_index__order_index (content_id, loop_index, order_index),
   foreign key fk__content_loops__contents (content_id) references contents (content_id)
 );
 

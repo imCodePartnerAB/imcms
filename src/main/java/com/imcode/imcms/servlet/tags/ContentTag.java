@@ -6,6 +6,7 @@ import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,41 +21,47 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 public class ContentTag extends BodyTagSupport {
 	
+	public final static int STEP = 100000;
+	
+	/*
 	class GroupData {
-		private int itemIndex = 0;
+		private int iterationIndex = 0;
 		
-		private int itemsCount = 0;
+		private int iterationCount = 0;
+		
+		private List<Integer> orderedIndexes;
 		
 		private Map<Integer, List<SimpleImcmsTag>> itemsMap = new LinkedHashMap<Integer, List<SimpleImcmsTag>>();
 				
 		public void addGroupItem(SimpleImcmsTag tag) {
-	    	List<SimpleImcmsTag> items = itemsMap.get(itemIndex);
+	    	List<SimpleImcmsTag> items = itemsMap.get(iterationIndex);
 	    	
 	    	if (items == null) {
 	    		items = new LinkedList<SimpleImcmsTag>();
-	    		itemsMap.put(itemIndex, items);
+	    		itemsMap.put(iterationIndex, items);
 	    	}
 	    	
 	    	items.add(tag);			
 		}
 		
-		public int getItemIndex() {
-			return itemIndex;
+		public int getIterationIndex() {
+			return orderedIndexes.get(iterationIndex);
 		}
 		
-		public int incItemIndex() {
-			return ++itemIndex;
+		public int incIterationIndex() {
+			return ++iterationIndex;
 		}
 
-		public int getItemsCount() {
-			return itemsCount;
+		public int getIterationCount() {
+			return iterationCount;
 		}
 
-		public void setItemsCount(int itemCount) {
-			this.itemsCount = itemCount;
-		}
-		
+		public void setOrderedIndexes(List<Integer> orderedIndexes) {
+			this.orderedIndexes = orderedIndexes;
+			this.iterationCount = orderedIndexes.size();
+		}		
 	}
+	*/
 	
     private int no;  
     
@@ -67,28 +74,45 @@ public class ContentTag extends BodyTagSupport {
     private String label;  
     
     public void addGroupItem(SimpleImcmsTag tag) {
+    	/*
 		GroupData groupData = (GroupData)pageContext.getAttribute("groupData");
 		
 		groupData.addGroupItem(tag);
+		*/
     }
     
     
     public int doAfterBody() throws JspException {
-    	GroupData groupData = (GroupData)pageContext.getAttribute("groupData");
-    	int index = groupData.incItemIndex(); 
+    	Iterator<Integer> indexIterator = (Iterator<Integer>)pageContext.getAttribute("indexIterator");
     	
-    	pageContext.setAttribute(indexVar, baseIndex + index);
+    	//GroupData groupData = (GroupData)pageContext.getAttribute("groupData");
+    	//int index = groupData.incIterationIndex(); 
+    	// getLoopIndex
     	
-    	return index < groupData.getItemsCount()
+    	if (!indexIterator.hasNext()) {
+    		pageContext.removeAttribute(indexVar);
+    		
+    		return super.doAfterBody();
+    	}
+    	
+    	int index = baseIndex + (indexIterator.next() * STEP);
+    		
+    	pageContext.setAttribute(indexVar, index);
+    		
+    	return EVAL_BODY_AGAIN;
+    	
+    	//pageContext.setAttribute(indexVar, baseIndex + index + STEP);
+    	
+    	/*
+    	return index < groupData.getIterationCount()
     	  ? EVAL_BODY_AGAIN
     	  : super.doAfterBody();
+    	*/
     }
     
     
 
 	public int doStartTag() throws JspException {
-		pageContext.setAttribute(indexVar, baseIndex);
-		
     	// Prototype try-catch block
     	try {
 			String scriptsRoot = pageContext.getServletContext().getRealPath("WEB-INF") + "/groovy";	
@@ -98,12 +122,22 @@ public class ContentTag extends BodyTagSupport {
 			binding.setVariable("contentTag", this);			
 			gse.run("ContentTag.groovy", binding);
 			
-			int itemsCount = (Integer)binding.getVariable("itemsCount");
+			List<Integer> orderedIndexes = (List<Integer>)binding.getVariable("ordredLoopIndexes");
 			
+			Iterator<Integer> indexIterator = orderedIndexes.iterator(); 
+				
+			pageContext.setAttribute("indexIterator", indexIterator);
+						
+	    	int index = baseIndex + (indexIterator.next() * STEP);
+    		
+	    	pageContext.setAttribute(indexVar, index);			
+			
+			/*
 			GroupData groupData = new GroupData();
 			pageContext.setAttribute("groupData", groupData);
 			
-			groupData.setItemsCount(itemsCount);
+			groupData.setOrderedIndexes(orderedIndexes);
+			*/
         } catch (Exception e) {
         	throw new JspException(e);
         }            
