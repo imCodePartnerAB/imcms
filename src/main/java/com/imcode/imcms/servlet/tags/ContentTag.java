@@ -95,10 +95,9 @@ public class ContentTag extends BodyTagSupport {
 			String[] roots = new String[] { scriptsRoot };
 			GroovyScriptEngine gse = new GroovyScriptEngine(roots);
 			Binding binding = new Binding();
-			binding.setVariable("contentTag", this);
-			binding.setVariable("processCmd", true);
-			
+			binding.setVariable("contentTag", this);			
 			gse.run("ContentTag.groovy", binding);
+			
 			int itemsCount = (Integer)binding.getVariable("itemsCount");
 			
 			GroupData groupData = new GroupData();
@@ -128,15 +127,6 @@ public class ContentTag extends BodyTagSupport {
 		        request.setAttribute("groupNo", no);
 		        content = Utility.getContents("/imcms/"+user.getLanguageIso639_2()+"/jsp/docadmin/text/edit_content.jsp",
 		                                   request, response) ;
-		        
-		        // If this is first time invocation - create DB entry
-				String scriptsRoot = pageContext.getServletContext().getRealPath("WEB-INF") + "/groovy";	
-				String[] roots = new String[] { scriptsRoot };
-				GroovyScriptEngine gse = new GroovyScriptEngine(roots);
-				Binding binding = new Binding();
-				binding.setVariable("contentTag", this);
-				binding.setVariable("processCmd", false);
-				gse.run("ContentTag.groovy", binding);
 			}
 			
 			pageContext.getOut().write(content);
