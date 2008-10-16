@@ -96,7 +96,7 @@ ALTER TABLE texts
 
 ALTER TABLE texts ALTER COLUMN language_id DROP DEFAULT;
 
-
+-- TODO: Recreate instead of alter 
 ALTER TABLE texts_history
   ADD COLUMN language_id smallint NOT NULL default 1,
   ADD CONSTRAINT fk__texts_history__i18n_languages FOREIGN KEY (language_id) references i18n_languages(language_id);

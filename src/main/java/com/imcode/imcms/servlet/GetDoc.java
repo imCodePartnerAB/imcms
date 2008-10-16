@@ -231,7 +231,7 @@ public class GetDoc extends HttpServlet {
                                          + "; filename=\""
                                          + filename
                                          + "\"";
-            res.setHeader("Content-Disposition", content_disposition);
+            res.setHeader("ContentLoop-Disposition", content_disposition);
             try {
                 int bytes_read;
                 byte[] buffer = new byte[32768];

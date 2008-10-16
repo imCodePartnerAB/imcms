@@ -280,7 +280,7 @@ public class FileAdmin extends HttpServlet {
             File file = new File( dir, files[0] );
             try {
                 res.setContentType( "application/octet-stream" );
-                res.setHeader( "Content-Disposition", "attachment; filename=\"" + file.getName() + '\"' );
+                res.setHeader( "ContentLoop-Disposition", "attachment; filename=\"" + file.getName() + '\"' );
                 BufferedInputStream fin = new BufferedInputStream( new FileInputStream( file ) );
                 res.setContentLength( fin.available() );
                 byte[] buffer = new byte[BUFFER_SIZE];
