@@ -30,9 +30,14 @@ public class ContentLoopDaoImpl extends HibernateTemplate implements ContentLoop
 		Object[] nextIndexes = nextIndexesList.get(0);
 		Map<String, Integer> nextIndexesMap = new HashMap<String, Integer>();
 		
-		nextIndexesMap.put(NEXT_SEQUENCE_INDEX, (Integer)nextIndexes[0]);
-		nextIndexesMap.put(NEXT_HIGHER_ORDER_INDEX, (Integer)nextIndexes[1]);
-		nextIndexesMap.put(NEXT_LOWER_ORDER_INDEX, (Integer)nextIndexes[2]);
+		// in case of null defaults to 0
+		int si = nextIndexes[0] == null ? 0 : (Integer)nextIndexes[0];		
+		int hi = nextIndexes[1] == null ? 0 : (Integer)nextIndexes[1];
+		int li = nextIndexes[2] == null ? 0 : (Integer)nextIndexes[2]; 
+		
+		nextIndexesMap.put(NEXT_SEQUENCE_INDEX, si);
+		nextIndexesMap.put(NEXT_HIGHER_ORDER_INDEX, hi);
+		nextIndexesMap.put(NEXT_LOWER_ORDER_INDEX, li);
 		
 		return nextIndexesMap;		
 	} 

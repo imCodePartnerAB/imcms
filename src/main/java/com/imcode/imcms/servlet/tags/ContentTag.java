@@ -125,28 +125,26 @@ public class ContentTag extends BodyTagSupport {
 			List<Integer> orderedIndexes = (List<Integer>)binding.getVariable("ordredLoopIndexes");
 			
 			Iterator<Integer> indexIterator = orderedIndexes.iterator(); 
-				
+			
+			if (!indexIterator.hasNext()) {
+				return SKIP_BODY;
+			} 
+			
 			pageContext.setAttribute("indexIterator", indexIterator);
 						
 	    	int index = baseIndex + (indexIterator.next() * STEP);
     		
-	    	pageContext.setAttribute(indexVar, index);			
-			
-			/*
-			GroupData groupData = new GroupData();
-			pageContext.setAttribute("groupData", groupData);
-			
-			groupData.setOrderedIndexes(orderedIndexes);
-			*/
+	    	pageContext.setAttribute(indexVar, index);
+	    	
+	    	return super.doStartTag();
         } catch (Exception e) {
         	throw new JspException(e);
         }            
-										
-		return super.doStartTag();
 	}
 	
 	public int doEndTag() throws JspException {
-		String content = getBodyContent().getString();
+		BodyContent bodyContent = getBodyContent();		
+		String content = bodyContent == null ? "" : getBodyContent().getString();
 		
 		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
 		HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();

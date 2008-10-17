@@ -37,6 +37,10 @@ public class DaoTest {
 	
 
 	@Test public void getContentLoop() {
+		ContentLoop missingLoop = clDao.getContentLoop(-1, -11);
+		
+		Assert.assertNull(missingLoop);
+		
 		ContentLoop loop = clDao.getContentLoop(1001, 1);
 				
 		Assert.assertTrue(loop.getMetaId() == 1001);
