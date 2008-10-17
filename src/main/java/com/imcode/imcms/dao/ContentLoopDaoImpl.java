@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -292,5 +293,47 @@ public class ContentLoopDaoImpl extends HibernateTemplate implements ContentLoop
 				return newContent;
 			}						
 		});
+	}
+	
+	public Content getContent(ContentLoop loop, int sequenceIndex) {
+		return (Content)getSession().getNamedQuery("Content.getByLoopIdAndSequenceIndex")
+			.setParameter("loopId", loop.getId())
+			.setParameter("sequenceIndex", sequenceIndex)
+			.uniqueResult();		
+	}
+	
+	public Long getContentId(ContentLoop loop, int sequenceIndex) {
+		Content content = getContent(loop, sequenceIndex);
+		
+		evict(content);
+		
+		return content.getId();	
+	}	
+	
+	
+	@Transactional
+	public synchronized void deleteContent(ContentLoop loop, int sequenceIndex) {
+		deleteContent(loop, getContentId(loop, sequenceIndex));		
+	}
+	
+	@Transactional
+	public synchronized Content insertNewContentAfter(ContentLoop loop, int sequenceIndex) {
+		return insertNewContentAfter(loop, getContentId(loop, sequenceIndex));
+	}
+	
+	@Transactional
+	public synchronized Content insertNewContentBefore(ContentLoop loop, int sequenceIndex) {
+		return insertNewContentBefore(loop, getContentId(loop, sequenceIndex));
+	}
+	
+	@Transactional
+	public synchronized void moveContentDown(ContentLoop loop, int sequenceIndex) {
+		moveContentDown(loop, getContentId(loop, sequenceIndex));
+		
+	}
+	
+	@Transactional
+	public synchronized void moveContentUp(ContentLoop loop, int sequenceIndex) {
+		moveContentUp(loop, getContentId(loop, sequenceIndex));
 	}	
 }

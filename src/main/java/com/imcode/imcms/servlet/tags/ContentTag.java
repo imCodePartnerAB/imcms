@@ -95,9 +95,11 @@ public class ContentTag extends BodyTagSupport {
     		return super.doAfterBody();
     	}
     	
-    	int index = baseIndex + (indexIterator.next() * STEP);
+    	int sequenceIndex = indexIterator.next();
+    	int index = baseIndex + (sequenceIndex * STEP);
     		
     	pageContext.setAttribute(indexVar, index);
+    	pageContext.getRequest().setAttribute("sequenceIndex", sequenceIndex);
     		
     	return EVAL_BODY_AGAIN;
     	
@@ -131,10 +133,12 @@ public class ContentTag extends BodyTagSupport {
 			} 
 			
 			pageContext.setAttribute("indexIterator", indexIterator);
-						
-	    	int index = baseIndex + (indexIterator.next() * STEP);
-    		
+							    	
+	    	int sequenceIndex = indexIterator.next();
+	    	int index = baseIndex + (sequenceIndex * STEP);
+	    		
 	    	pageContext.setAttribute(indexVar, index);
+	    	pageContext.getRequest().setAttribute("sequenceIndex", sequenceIndex);	    	
 	    	
 	    	return super.doStartTag();
         } catch (Exception e) {
@@ -164,6 +168,8 @@ public class ContentTag extends BodyTagSupport {
 			pageContext.getOut().write(content);
 		} catch (Exception e) {
 			throw new JspException(e);
+		} finally {
+			pageContext.getRequest().removeAttribute("sequenceIndex");			
 		}
 		
 		return super.doEndTag();
