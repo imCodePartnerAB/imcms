@@ -13,14 +13,13 @@ public interface ContentLoopDao {
 	
 	Content addLastContent(ContentLoop loop);
 	
-	ContentLoop deleteContent(ContentLoop loop, long contentId);
+	void deleteContent(ContentLoop loop, long contentId);
 
+	void moveContentUp(ContentLoop loop, long contentId);
 	
-	/*
-	void deleteContent(Content content);
+	void moveContentDown(ContentLoop loop, long contentId);
 	
-	Content moveContentUp(Content content);
+	Content insertNewContentBefore(ContentLoop loop, long contentId);
 	
-	Content moveContentDown(Content content);
-	*/
+	Content insertNewContentAfter(ContentLoop loop, long contentId);	
 }

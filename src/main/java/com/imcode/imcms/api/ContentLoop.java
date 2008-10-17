@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -17,15 +18,18 @@ import javax.persistence.OrderBy;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.NamedNativeQueries;
+
 @Entity
 @Table(name="contents")
 @NamedQueries({
 	@NamedQuery(name="ContentLoop.getByMetaAndNo", 
 			query="SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.no = :no"),
 	@NamedQuery(name="ContentLoop.getNextContentIndexes", 
-			query="SELECT max(c.sequenceIndex) + 1 AS nextSequenceIndex, "    + 
-			             "max(c.orderIndex)    + 1 AS nextHigherOrderIndex, " + 
-			             "min(c.orderIndex)    - 1 AS nextLowerOrderIndex "   +
+			query="SELECT max(c.sequenceIndex) + 1 AS NEXT_SEQUENCE_INDEX, "    + 
+			             "max(c.orderIndex)    + 1 AS NEXT_HIGHER_ORDER_INDEX, " + 
+			             "min(c.orderIndex)    - 1 AS NEXT_LOWER_ORDER_INDEX "   +
   	               "FROM ContentLoop l JOIN l.contents c " +
 			       "WHERE l.id = :id")	
 })
@@ -50,7 +54,6 @@ public class ContentLoop {
 	private Integer metaId;
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-	//@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     @JoinColumn(name="content_id", referencedColumnName="content_id")
     @OrderBy("orderIndex")
 	private List<Content> contents;
