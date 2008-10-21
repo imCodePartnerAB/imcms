@@ -297,7 +297,7 @@ public class DocumentMapper implements DocumentGetter {
         return new CompositeDatabaseCommand(new DatabaseCommand[]{
             new DeleteWhereColumnsEqualDatabaseCommand("document_categories", metaIdColumn, metaIdStr),
             // TODO: classification and meta_classification is replaced by keywords table.
-            new DeleteWhereColumnsEqualDatabaseCommand("meta_classification", metaIdColumn, metaIdStr),
+            // new DeleteWhereColumnsEqualDatabaseCommand("meta_classification", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("childs", "to_meta_id", metaIdStr),
             new SqlUpdateDatabaseCommand("DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?)", new String[]{metaIdStr}),
             new DeleteWhereColumnsEqualDatabaseCommand("menus", metaIdColumn, metaIdStr),
@@ -501,10 +501,10 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     // TODO: classification and meta_classification is replaced by keywords table.
-    String[] getAllKeywords() {
-        String[] params = new String[0];
-        return (String[]) getDatabase().execute(new SqlQueryCommand("SELECT code FROM classification", params, Utility.STRING_ARRAY_HANDLER));
-    }
+//    String[] getAllKeywords() {
+//        String[] params = new String[0];
+//        return (String[]) getDatabase().execute(new SqlQueryCommand("SELECT code FROM classification", params, Utility.STRING_ARRAY_HANDLER));
+//    }
 
     public void setClock(Clock clock) {
         this.clock = clock;

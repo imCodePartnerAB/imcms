@@ -399,24 +399,24 @@ class DocumentSaver {
         getDatabase().execute(new SqlUpdateDatabaseCommand("INSERT INTO meta_section VALUES(?,?)", params));
     }
 
-   // TODO: classification and meta_classification is replaced by keywords table.
-    private void deleteKeywordsFromDocument(int meta_id) {
-        String sqlDeleteKeywordsFromDocument = "DELETE FROM meta_classification WHERE meta_id = ?";
-        String[] params = new String[]{"" + meta_id};
-        getDatabase().execute(new SqlUpdateCommand(sqlDeleteKeywordsFromDocument, params));
-    }
+//   // TODO: classification and meta_classification is replaced by keywords table.
+//    private void deleteKeywordsFromDocument(int meta_id) {
+//        String sqlDeleteKeywordsFromDocument = "DELETE FROM meta_classification WHERE meta_id = ?";
+//        String[] params = new String[]{"" + meta_id};
+//        getDatabase().execute(new SqlUpdateCommand(sqlDeleteKeywordsFromDocument, params));
+//    }
 
     // TODO: classification and meta_classification is replaced by keywords table.
-    private void deleteUnusedKeywords() {
-        String[] params = new String[0];
-        getDatabase().execute(new SqlUpdateCommand("DELETE FROM classification WHERE class_id NOT IN (SELECT class_id FROM meta_classification)", params));
-    }
+//    private void deleteUnusedKeywords() {
+//        String[] params = new String[0];
+//        getDatabase().execute(new SqlUpdateCommand("DELETE FROM classification WHERE class_id NOT IN (SELECT class_id FROM meta_classification)", params));
+//    }
 
  // TODO: classification and meta_classification is replaced by keywords table.    
-    private void addKeyword(String keyword) {
-        String[] params = new String[]{keyword};
-        getDatabase().execute(new SqlUpdateCommand("INSERT INTO classification (code) VALUES(?)", params));
-    }
+//    private void addKeyword(String keyword) {
+//        String[] params = new String[]{keyword};
+//        getDatabase().execute(new SqlUpdateCommand("INSERT INTO classification (code) VALUES(?)", params));
+//    }
 
     private void removeAllSectionsFromDocument(int metaId) {
         String[] params = new String[]{"" + metaId};
@@ -424,14 +424,14 @@ class DocumentSaver {
     }
 
  // TODO: classification and meta_classification is replaced by keywords table.    
-    private void addExistingKeywordToDocument(int meta_id, String keyword) {
-        String[] params1 = new String[]{
-            keyword
-        };
-        int keywordId = Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT class_id FROM classification WHERE code = ?", params1, Utility.SINGLE_STRING_HANDLER)));
-        String[] params = new String[]{"" + meta_id, "" + keywordId};
-        getDatabase().execute(new SqlUpdateCommand("INSERT INTO meta_classification (meta_id, class_id) VALUES(?,?)", params));
-    }
+//    private void addExistingKeywordToDocument(int meta_id, String keyword) {
+//        String[] params1 = new String[]{
+//            keyword
+//        };
+//        int keywordId = Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT class_id FROM classification WHERE code = ?", params1, Utility.SINGLE_STRING_HANDLER)));
+//        String[] params = new String[]{"" + meta_id, "" + keywordId};
+//        getDatabase().execute(new SqlUpdateCommand("INSERT INTO meta_classification (meta_id, class_id) VALUES(?,?)", params));
+//    }
 
     public void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
         Set<String> allAlias = documentMapper.getAllDocumentAlias() ;
