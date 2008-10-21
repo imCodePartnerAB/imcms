@@ -194,9 +194,9 @@ if (null != languages) { %>
               %> title="<? templates/sv/adminbuttons/adminbutton2_65536.html/2001 ?>" id="admBtnText" border="0" /></a><%
               
               // Group editing is under same permission
-              %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=2097152" id="admHrefText"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/btn_text.gif"<%
-              %> alt="?EditGroupAlt?"<%
-              %> title="?Groups?" id="admBtnGroup" border="0" /></a><%                            
+              %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=2097152" id="admHrefText"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/btn_contentloop.gif"<%
+              %> alt="ContentLoop"<%
+              %> title="ContentLoop" id="admBtnGroup" border="0" /></a><%                            
             }
             if( textDocumentPermissionSet.getEditImages() ) {
                 %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=131072" id="admHrefBild"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/btn_image.gif"<%
