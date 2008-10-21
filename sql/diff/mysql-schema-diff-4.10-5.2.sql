@@ -46,7 +46,7 @@ INSERT INTO i18n_meta (language_id, meta_id, meta_enabled, meta_headline, meta_t
 SELECT 1, meta_id, true, meta_headline, meta_text, meta_image
 FROM meta;
 
-﻿-- Drop columns from meta
+-- Drop columns from meta
 ALTER TABLE meta
   DROP COLUMN meta_headline,
   DROP COLUMN meta_text,
@@ -80,6 +80,9 @@ ALTER TABLE images ALTER COLUMN language_id DROP DEFAULT;
 --
 -- Delete duplicates if any
 DELETE FROM texts l USING texts l, texts r WHERE l.meta_id = r.meta_id and l.name = r.name and l.counter < r.counter;
+--
+-- Workaround for when you get error on the above on MySQL, will probably work all around but is untested by Anton.
+-- DELETE l FROM texts l INNER JOIN texts r WHERE l.meta_id = r.meta_id and l.name = r.name and l.counter < r.counter;
 
 CREATE TABLE texts_new AS SELECT * FROM texts;
 DROP TABLE texts;
