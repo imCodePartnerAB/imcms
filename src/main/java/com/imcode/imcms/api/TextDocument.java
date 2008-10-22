@@ -139,7 +139,7 @@ public class TextDocument extends Document {
         return new TextField(imcmsText);
     }
 
-    private TextDocumentDomainObject getInternalTextDocument() {
+    public TextDocumentDomainObject getInternalTextDocument() {
         return (TextDocumentDomainObject)getInternal();
     }
 
