@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+	 
+  <tx:annotation-driven transaction-manager="txManager"/>
+  
+  <!--
+    ${com.imcode.imcms.path} is a system property value which is initialized in
+    com.imcode.imcms.servlet.ContextListener   
+  -->
+  <bean id="propertyConfigurer"
+      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location" value="file:${com.imcode.imcms.path}/WEB-INF/conf/server.properties"/>
+  </bean>  
+	 
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="${JdbcDriver}"/>
+    <property name="url" value="${JdbcUrl}"/>
+    <property name="username" value="${User}"/>
+    <property name="password" value="${Password}"/>
+    <property name="testOnBorrow" value="true"/>
+    <property name="validationQuery" value="select 1"/>    
+    <property name="defaultAutoCommit" value="false"/>
+    <property name="maxActive" value="${MaxConnectionCount}"/>
+  </bean> 
+  
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+    <property name="configLocation" value="classpath:hibernate.cfg.xml"/>
+    
+    <property name="dataSource" ref="dataSource"/>    
+  </bean>  
+  
+    
+  <bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>  
+  
+  <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate" scope="protorype">
+  	<property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+  <bean id="metaDao" class="com.imcode.imcms.dao.MetaDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+  <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>  
+  
+  <bean id="imageDao" class="com.imcode.imcms.dao.ImageDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean> 
+  
+   <bean id="textDao" class="com.imcode.imcms.dao.TextDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+  <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>  
+</beans>

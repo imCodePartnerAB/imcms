@@ -1,0 +1,409 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </title>
+<link rel="STYLESHEET" type="text/css" href="css/editor.css">
+
+<script language="JavaScript" type="text/javascript">
+<!--
+function submitTableData(){
+	var f = document.forms[0];
+	if(!(f.FROWS.value > 0)){ irows = 1; } else { irows = f.FROWS.value; }
+	if(!(f.FCOLS.value > 0)){ icols = 1; } else { icols = f.FCOLS.value; }
+	if(!(f.FSPACING.value >= 0)){ ispacing = 0; } else { ispacing = f.FSPACING.value; }
+	if(!(f.FPADDING.value >= 0)){ ipadding = 0; } else { ipadding = f.FPADDING.value; }
+	if(!(f.FBORDER.value >= 0)){ iborder = 1; } else { iborder = f.FBORDER.value; }
+	if(!(f.FWIDTH.value > 0)){ iwidth = '100%'; } else { iwidth = f.FWIDTH.value; }
+	opener.createTable(irows,icols,ispacing,ipadding,iborder,iwidth);
+	window.close();
+}
+//-->
+</script>
+
+</head>
+<body bgcolor="#D6D3CE" style="border: 1px solid #D6D3CE;">
+
+
+<DIV style="position:absolute; left:0; top:0">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr bgcolor="#333366">
+	<td height="20" style="font: bold 12px Verdana,Geneva,Arial,Helvetica,sans-serif; color:#FFFFFF"><img src="images/1x1.gif" width="10" height="1"><? install/htdocs/sv/htmleditor/editor/input_table.html/2 ?></td>
+</tr>
+</table>
+		
+		<table border="0" cellspacing="2" cellpadding="0" align="center">
+		<form id="TableInfo">
+		<tr>
+			<td colspan="7"><img src="images/1x1.gif" width="1" height="5"></td>
+		</tr>
+		<tr>
+			<td class="fDesc"><? install/htdocs/sv/htmleditor/editor/input_table.html/1001 ?></td>
+			<td><img src="images/1x1.gif" width="10" height="1"></td>
+			<td align="right">
+			<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td><input type="TEXT" id="FROWS" size="2" maxlength="2" class="fField" value="1"></td>
+				<td><a href="#"><img src="images/btn_adjust_up_down.gif" width="15" height="21" alt="" border="0" usemap="#FROWS"></a></td>
+			</tr>
+			</table></td>
+			<td><img src="images/1x1.gif" width="20" height="1"></td>
+			<td class="fDesc"><? install/htdocs/sv/htmleditor/editor/input_table.html/1002 ?></td>
+			<td><img src="images/1x1.gif" width="10" height="1"></td>
+			<td>
+			<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td><input type="TEXT" id="FSPACING" size="2" maxlength="2" class="fField" value="0"></td>
+				<td><a href="#"><img src="images/btn_adjust_up_down.gif" width="15" height="21" alt="" border="0" usemap="#FSPACING"></a></td>
+			</tr>
+			</table></td>
+		</tr>
+		<tr>
+			<td class="fDesc"><? install/htdocs/sv/htmleditor/editor/input_table.html/1003 ?></td>
+			<td><img src="images/1x1.gif" width="1" height="1"></td>
+			<td align="right">
+			<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td><input type="TEXT" id="FCOLS" size="2" maxlength="2" class="fField" value="1"></td>
+				<td><a href="#"><img src="images/btn_adjust_up_down.gif" width="15" height="21" alt="" border="0" usemap="#FCOLS"></a></td>
+			</tr>
+			</table></td>
+			<td><img src="images/1x1.gif" width="1" height="1"></td>
+			<td class="fDesc"><? install/htdocs/sv/htmleditor/editor/input_table.html/1004 ?></td>
+			<td><img src="images/1x1.gif" width="10" height="1"></td>
+			<td>
+			<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td><input type="TEXT" id="FPADDING" size="2" maxlength="2" class="fField" value="2"></td>
+				<td><a href="#"><img src="images/btn_adjust_up_down.gif" width="15" height="21" alt="" border="0" usemap="#FPADDING"></a></td>
+			</tr>
+			</table></td>
+		</tr>
+		<tr>
+			<td class="fDesc"><? install/htdocs/sv/htmleditor/editor/input_table.html/1005 ?></td>
+			<td><img src="images/1x1.gif" width="1" height="1"></td>
+			<td align="right">
+			<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td><input type="TEXT" id="FWIDTH" size="4" maxlength="4" class="fField" value=""></td>
+				<td><a href="#"><img src="images/btn_adjust_up_down.gif" width="15" height="21" alt="" border="0" usemap="#FWIDTH"></a></td>
+			</tr>
+			</table></td>
+			<td><img src="images/1x1.gif" width="1" height="1"></td>
+			<td class="fDesc"><? install/htdocs/sv/htmleditor/editor/input_table.html/3 ?></td>
+			<td><img src="images/1x1.gif" width="1" height="1"></td>
+			<td>
+			<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td><input type="TEXT" id="FBORDER" size="2" maxlength="2" class="fField" value="1"></td>
+				<td><a href="#"><img src="images/btn_adjust_up_down.gif" width="15" height="21" alt="" border="0" usemap="#FBORDER"></a></td>
+			</tr>
+			</table></td>
+		</tr>
+		<tr>
+			<td colspan="7"><img src="images/1x1.gif" width="1" height="5"></td>
+		</tr>
+		<tr>
+			<td colspan="7" align="center">
+			<input type="BUTTON" value="<? install/htdocs/sv/htmleditor/editor/input_table.html/2001 ?>" onClick="window.close();" style="width:50" class="fButton"><img src="images/1x1.gif" width="10" height="1"><input type="SUBMIT" value="<? install/htdocs/sv/htmleditor/editor/input_table.html/2002 ?>" onClick="submitTableData(); return false" style="width:50" class="fButton"></td>
+		</tr>
+		</form>
+		</table></div>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+var mouseActiveUp = 0;
+var mouseActiveDn = 0;
+
+function FROWSUp(){
+	clearTimeout('timeDn');
+	mouseActiveDn = 0;
+	if(mouseActiveUp){
+		var iVal = document.forms[0].FROWS.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal < 30){
+			iVal += 1;
+		}
+		document.forms[0].FROWS.value = iVal;
+		var timeUp = setTimeout("FROWSUp()", 300);
+	}
+}
+
+function FROWSDn(){
+	clearTimeout('timeUp');
+	mouseActiveUp = 0;
+	if(mouseActiveDn){
+		var iVal = document.forms[0].FROWS.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal > 1){
+			iVal -= 1;
+		}
+		document.forms[0].FROWS.value = iVal;
+		var timeDn = setTimeout("FROWSDn()", 300);
+	}
+}
+//-->
+</SCRIPT>
+
+<map name="FROWS">
+	<area alt="" coords="0,0,14,9" 
+		href="#" onMouseDown="mouseActiveUp = 1; FROWSUp();" onMouseUp="mouseActiveUp = 0; clearTimeout('timeDn');">
+	<area alt="" coords="0,11,15,21" 
+		href="#" onMouseDown="mouseActiveDn = 1; FROWSDn();" onMouseUp="mouseActiveDn = 0; clearTimeout('timeUp');">
+</map>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+var mouseActiveUp = 0;
+var mouseActiveDn = 0;
+
+function FCOLSUp(){
+	clearTimeout('timeDn');
+	mouseActiveDn = 0;
+	if(mouseActiveUp){
+		var iVal = document.forms[0].FCOLS.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal < 20){
+			iVal += 1;
+		}
+		document.forms[0].FCOLS.value = iVal;
+		var timeUp = setTimeout("FCOLSUp()", 300);
+	}
+}
+
+function FCOLSDn(){
+	clearTimeout('timeUp');
+	mouseActiveUp = 0;
+	if(mouseActiveDn){
+		var iVal = document.forms[0].FCOLS.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal > 1){
+			iVal -= 1;
+		}
+		document.forms[0].FCOLS.value = iVal;
+		var timeDn = setTimeout("FCOLSDn()", 300);
+	}
+}
+//-->
+</SCRIPT>
+
+<map name="FCOLS">
+	<area alt="" coords="0,0,14,9" 
+		href="#" onMouseDown="mouseActiveUp = 1; FCOLSUp();" onMouseUp="mouseActiveUp = 0; clearTimeout('timeDn');">
+	<area alt="" coords="0,11,15,21" 
+		href="#" onMouseDown="mouseActiveDn = 1; FCOLSDn();" onMouseUp="mouseActiveDn = 0; clearTimeout('timeUp');">
+</map>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+var mouseActiveUp = 0;
+var mouseActiveDn = 0;
+
+function FWIDTHUp(){
+	clearTimeout('timeDn');
+	mouseActiveDn = 0;
+	if(mouseActiveUp){
+		var iVal = document.forms[0].FWIDTH.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal < 2000){
+			iVal += 100;
+		}
+		document.forms[0].FWIDTH.value = iVal;
+		var timeUp = setTimeout("FWIDTHUp()", 300);
+	}
+}
+
+function FWIDTHDn(){
+	clearTimeout('timeUp');
+	mouseActiveUp = 0;
+	if(mouseActiveDn){
+		var iVal = document.forms[0].FWIDTH.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal > 0){
+			iVal -= 100;
+		}
+		document.forms[0].FWIDTH.value = iVal;
+		var timeDn = setTimeout("FWIDTHDn()", 300);
+	}
+}
+//-->
+</SCRIPT>
+
+<map name="FWIDTH">
+	<area alt="" coords="0,0,14,9" 
+		href="#" onMouseDown="mouseActiveUp = 1; FWIDTHUp();" onMouseUp="mouseActiveUp = 0; clearTimeout('timeDn');">
+	<area alt="" coords="0,11,15,21" 
+		href="#" onMouseDown="mouseActiveDn = 1; FWIDTHDn();" onMouseUp="mouseActiveDn = 0; clearTimeout('timeUp');">
+</map>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+var mouseActiveUp = 0;
+var mouseActiveDn = 0;
+
+function FSPACINGUp(){
+	clearTimeout('timeDn');
+	mouseActiveDn = 0;
+	if(mouseActiveUp){
+		var iVal = document.forms[0].FSPACING.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal < 10){
+			iVal += 1;
+		}
+		document.forms[0].FSPACING.value = iVal;
+		var timeUp = setTimeout("FSPACINGUp()", 300);
+	}
+}
+
+function FSPACINGDn(){
+	clearTimeout('timeUp');
+	mouseActiveUp = 0;
+	if(mouseActiveDn){
+		var iVal = document.forms[0].FSPACING.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal > 0){
+			iVal -= 1;
+		}
+		document.forms[0].FSPACING.value = iVal;
+		var timeDn = setTimeout("FSPACINGDn()", 300);
+	}
+}
+//-->
+</SCRIPT>
+
+<map name="FSPACING">
+	<area alt="" coords="0,0,14,9" 
+		href="#" onMouseDown="mouseActiveUp = 1; FSPACINGUp();" onMouseUp="mouseActiveUp = 0; clearTimeout('timeDn');">
+	<area alt="" coords="0,11,15,21" 
+		href="#" onMouseDown="mouseActiveDn = 1; FSPACINGDn();" onMouseUp="mouseActiveDn = 0; clearTimeout('timeUp');">
+</map>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+var mouseActiveUp = 0;
+var mouseActiveDn = 0;
+
+function FPADDINGUp(){
+	clearTimeout('timeDn');
+	mouseActiveDn = 0;
+	if(mouseActiveUp){
+		var iVal = document.forms[0].FPADDING.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal < 10){
+			iVal += 1;
+		}
+		document.forms[0].FPADDING.value = iVal;
+		var timeUp = setTimeout("FPADDINGUp()", 300);
+	}
+}
+
+function FPADDINGDn(){
+	clearTimeout('timeUp');
+	mouseActiveUp = 0;
+	if(mouseActiveDn){
+		var iVal = document.forms[0].FPADDING.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal > 0){
+			iVal -= 1;
+		}
+		document.forms[0].FPADDING.value = iVal;
+		var timeDn = setTimeout("FPADDINGDn()", 300);
+	}
+}
+//-->
+</SCRIPT>
+
+<map name="FPADDING">
+	<area alt="" coords="0,0,14,9" 
+		href="#" onMouseDown="mouseActiveUp = 1; FPADDINGUp();" onMouseUp="mouseActiveUp = 0; clearTimeout('timeDn');">
+	<area alt="" coords="0,11,15,21" 
+		href="#" onMouseDown="mouseActiveDn = 1; FPADDINGDn();" onMouseUp="mouseActiveDn = 0; clearTimeout('timeUp');">
+</map>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+var mouseActiveUp = 0;
+var mouseActiveDn = 0;
+
+function FBORDERUp(){
+	clearTimeout('timeDn');
+	mouseActiveDn = 0;
+	if(mouseActiveUp){
+		var iVal = document.forms[0].FBORDER.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal < 10){
+			iVal += 1;
+		}
+		document.forms[0].FBORDER.value = iVal;
+		var timeUp = setTimeout("FBORDERUp()", 300);
+	}
+}
+
+function FBORDERDn(){
+	clearTimeout('timeUp');
+	mouseActiveUp = 0;
+	if(mouseActiveDn){
+		var iVal = document.forms[0].FBORDER.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal > 0){
+			iVal -= 1;
+		}
+		document.forms[0].FBORDER.value = iVal;
+		var timeDn = setTimeout("FBORDERDn()", 300);
+	}
+}
+//-->
+</SCRIPT>
+
+<map name="FBORDER">
+	<area alt="" coords="0,0,14,9" 
+		href="#" onMouseDown="mouseActiveUp = 1; FBORDERUp();" onMouseUp="mouseActiveUp = 0; clearTimeout('timeDn');">
+	<area alt="" coords="0,11,15,21" 
+		href="#" onMouseDown="mouseActiveDn = 1; FBORDERDn();" onMouseUp="mouseActiveDn = 0; clearTimeout('timeUp');">
+</map>
+
+
+
+</body>
+</html>
