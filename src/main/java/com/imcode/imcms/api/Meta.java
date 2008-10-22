@@ -70,6 +70,7 @@ public class Meta implements Serializable, Cloneable {
 			Meta clone = (Meta)super.clone();
 			
 			clone.metaMap = null;
+			clone.unavailableI18nDataSubstitution = unavailableI18nDataSubstitution;
 			
 			if (i18nMetas != null) {
 				clone.i18nMetas = new LinkedList<I18nMeta>();

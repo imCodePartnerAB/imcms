@@ -133,14 +133,12 @@ public class DocumentMapper implements DocumentGetter {
         newDocument.setId( 0 );
         
         Meta meta = newDocument.getMeta();
-        meta.setUnavailableI18nDataSubstitution(Meta.UnavailableI18nDataSubstitution.DO_NOT_SHOW);
         
         for (I18nMeta i18nMeta: meta.getI18nMetas()) {
         	i18nMeta.setHeadline("");
         	i18nMeta.setMenuText("");
         	i18nMeta.setMenuImageURL("");
         	i18nMeta.getKeywords().clear();
-        	i18nMeta.setEnabled(false);
         } 
                 
         newDocument.setProperties(new HashMap());
