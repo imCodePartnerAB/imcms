@@ -2,7 +2,7 @@
 
 <!-- The Ant 'build.xml'-file for imCMS -->
 
-<project name="imCMS" default="dist">
+<project name="imCMS" default="dist" xmlns:artifact="urn:maven-artifact-ant">
 	
     <!-- Read in 'build.properties' and set the properties therein. -->
     <!-- Those properties are used as bases for latsproer properties in this file. -->
@@ -24,10 +24,8 @@
     <!-- The directory to build in. -->
 	 
     <property name="build" value="${basedir}/build"/>
+	<property name="build.lib.dir" value="${build}/lib"/>
     
-	<!--
-	<property name="build" value="${basedir}/src/main/webapp"/>
-	-->
     <property name="dist" value="${basedir}/dist"/>
     <property name="tmp" value="${basedir}/tmp"/>
 	
@@ -67,21 +65,23 @@
     <property name="imcmsurl" value="${rooturl}/imcms"/>
 
     <property name="imagespattern" value="**/*.png,**/*.jpg,**/*.gif"/>
-
-    <path id="libraries">
-        <fileset dir="lib">
-            <include name="**/*.jar"/>
-        </fileset>
-    </path>
-
-    <path id="libraries-with-commons-logging">
-        <path refid="libraries"/>
-    </path>
+	
+	<!-- Maven integration -->
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" 
+          uri="urn:maven-artifact-ant"
+    	  classpath="lib/maven-ant-tasks-2.0.9.jar"/>
+      
+    <artifact:pom id="pom" file="imcms-pom.xml" />	
+	<artifact:dependencies pomRefId="pom" pathId="dependencies.classpath"/>
+	<!-- End of maven integration -->
+	
+    <path id="libraries" refid="dependencies.classpath"/>
 
     <path id="classes-and-libraries">
         <pathelement path="${classes}"/>
         <path refid="libraries"/>
     </path>
+	
 
     <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="libraries"/>
     <taskdef name="checksumfiles" classname="com.imcode.ant.tasks.ChecksumFiles" classpathref="libraries"/>
@@ -94,8 +94,8 @@
 
     <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
 
-    <taskdef classname="org.apache.jasper.JspC" name="jasper2" classpathref="libraries-with-commons-logging"/>
-    <taskdef resource="checkstyletask.properties" classpathref="libraries-with-commons-logging"/>
+    <taskdef classname="org.apache.jasper.JspC" name="jasper2" classpathref="libraries"/>
+    <taskdef resource="checkstyletask.properties" classpathref="libraries"/>
 
     <!-- Distribution targets -->
 
@@ -338,7 +338,7 @@
             <exclude name="**/Test*.java" unless="junit-available"/>
             <exclude name="**/*TestCase.java" unless="junit-available"/>
 
-            <classpath refid="libraries-with-commons-logging"/>
+            <classpath refid="libraries"/>
 
         </javac>
 
@@ -365,12 +365,31 @@
 
     <!-- Copies the libraries (jar-files) needed for building. -->
     <target name="libraries" depends="init" description="Copies the jar-files.">
-
-        <copy todir="${WEB-INF}/lib">
-            <fileset dir="lib" includes="*.jar"/>
+    	
+        <artifact:dependencies pomRefId="pom" 
+        	filesetId="runtime.dependencies.fileset" 
+        	useScope="runtime"/>
+    	
+        <copy todir="${WEB-INF}/lib">        	
+            <fileset refid="runtime.dependencies.fileset"/>
+            <mapper type="flatten"/>
         </copy>
 
     </target>
+	
+    <target name="copy-dependencies-to-project" description="Copies dependencies to project.">
+    	
+    	<delete dir="${build.lib.dir}"/>
+    	<mkdir dir="${build.lib.dir}"/>
+    	
+    	<artifact:dependencies pomRefId="pom" filesetId="dependencies.fileset"/>    	
+    	
+        <copy todir="${build.lib.dir}">            
+            <fileset refid="dependencies.fileset"/>
+            <mapper type="flatten"/>
+        </copy>
+
+    </target>	
 
     <target name="sql">
     	
