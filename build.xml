@@ -20,11 +20,12 @@
     <property name="versionfilesuffix" value=""/>
 
     <!-- Paths. Later ones are built on earlier ones. -->
+    
+	<!-- local lib dir -->
+	<property name="local.lib.dir" value="local/lib"/>
 
-    <!-- The directory to build in. -->
-	 
+	<!-- The directory to build in. -->	
     <property name="build" value="${basedir}/build"/>
-	<property name="build.lib.dir" value="${build}/lib"/>
     
     <property name="dist" value="${basedir}/dist"/>
     <property name="tmp" value="${basedir}/tmp"/>
@@ -377,14 +378,14 @@
 
     </target>
 	
-    <target name="copy-dependencies-to-project" description="Copies dependencies to project.">
+    <target name="copy-dependencies-to-project" description="Copies dependencies to project's local libraries dir.">
     	
-    	<delete dir="${build.lib.dir}"/>
-    	<mkdir dir="${build.lib.dir}"/>
+    	<delete dir="${local.lib.dir}"/>
+    	<mkdir dir="${local.lib.dir}"/>
     	
     	<artifact:dependencies pomRefId="pom" filesetId="dependencies.fileset"/>    	
     	
-        <copy todir="${build.lib.dir}">            
+        <copy todir="${local.lib.dir}">            
             <fileset refid="dependencies.fileset"/>
             <mapper type="flatten"/>
         </copy>
