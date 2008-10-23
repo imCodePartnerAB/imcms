@@ -1,3 +1,4 @@
+package com.imcode.imcms.dao;
 import java.util.List;
 
 import org.junit.Assert;
@@ -12,7 +13,7 @@ import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.dao.ContentLoopDao;
 
 
-public class DaoTest {
+public class ContentLoopDaoTest {
 	
 	private static ApplicationContext context;
 	

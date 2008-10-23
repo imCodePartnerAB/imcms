@@ -90,5 +90,6 @@
 	<classpathentry kind="lib" path="local/lib/velocity-1.4.jar"/>
 	<classpathentry kind="lib" path="local/lib/velocity-dep-1.4.jar"/>
 	<classpathentry kind="lib" path="local/lib/xml-apis-1.0.b2.jar"/>
+	<classpathentry kind="lib" path="local/groovy-bin"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
