@@ -6,6 +6,7 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 
+import imcode.server.document.textdocument.TextDocumentDomainObject
 import static org.junit.Assert.*
 public class DocumentDaoTest {
 	
@@ -27,7 +28,11 @@ public class DocumentDaoTest {
 	}
 	
 	@Test void insert() {
-		assertTrue(false)
+		def doc = new TextDocumentDomainObject()
+		
+		dao.insert(doc);
+		
+		//assertTrue(false)
 	}
 	
     @Test void update() {

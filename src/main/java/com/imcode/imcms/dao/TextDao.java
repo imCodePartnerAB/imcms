@@ -16,5 +16,12 @@ public interface TextDao {
 	 */
 	TextDomainObject getText(int metaId, int index, int languageId);
 	
+	// new methods to be implemented:
+	
+	void saveText(TextDomainObject text);
 	//void saveText(TextDomainObject text);
+	//void deleteText () ???
+	
+	//List<TextDomainObject> getAllTextsWithIndex(int metaId, int index);
+	//List<TextDomainObject> getAllTextsWithLanguage(int metaId, int languageId);
 }

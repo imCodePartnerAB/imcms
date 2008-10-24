@@ -10,13 +10,9 @@
      
   <tx:annotation-driven transaction-manager="txManager"/>
   
-  <!--
-    ${com.imcode.imcms.path} is a system property value which is initialized in
-    com.imcode.imcms.servlet.ContextListener   
-  -->
   <bean id="propertyConfigurer"
       class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="location" value="classpath:server.properties"/>
+    <property name="location" value="classpath:configuration.properties"/>
   </bean>  
      
   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -29,6 +25,17 @@
     <property name="defaultAutoCommit" value="false"/>
     <property name="maxActive" value="${MaxConnectionCount}"/>
   </bean> 
+  
+  <bean id="dataSourceWithAutoCommit" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="${JdbcDriver}"/>
+    <property name="url" value="${JdbcUrl}"/>
+    <property name="username" value="${User}"/>
+    <property name="password" value="${Password}"/>
+    <property name="testOnBorrow" value="true"/>
+    <property name="validationQuery" value="select 1"/>    
+    <property name="defaultAutoCommit" value="true"/>
+    <property name="maxActive" value="${MaxConnectionCount}"/>
+  </bean>  
   
   <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
     <property name="configLocation" value="classpath:hibernate.cfg.xml"/>

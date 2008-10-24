@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<dataset>
+  <meta meta_id="1001" doc_type="2" owner_id="1" permissions="0" shared="0" show_meta="0" lang_prefix="eng" date_created="2008-10-23 15:45:52.0" date_modified="2008-10-23 15:45:52.0" disable_search="0" target="_self" activate="1" status="2" publication_start_datetime="2008-10-23 15:45:52.0" missing_i18n_show_rule="DO_NOT_SHOW"/>
+
+  <i18n_meta i18n_meta_id="1" language_id="1" meta_id="1001" meta_enabled="true" meta_headline="Start page" meta_text="" meta_image=""/>
+  <i18n_meta i18n_meta_id="2" language_id="2" meta_id="1001" meta_enabled="true" meta_headline="Startsidan" meta_text="" meta_image=""/>
+
+  <i18n_languages language_id="1" code="en" name="English" native_name="English" is_default="true" is_enabled="true"/>
+  <i18n_languages language_id="2" code="sv" name="Swedish" native_name="Svenska" is_default="false" is_enabled="true"/>
+
+  <images meta_id="1001" width="0" height="0" border="0" v_space="0" h_space="0" name="3" image_name="" target="_blank" align="top" alt_text="" low_scr="" imgurl="imCMSpower.gif" linkurl="http://www.imcms.net" type="0" language_id="1" image_id="1"/>
+  <images meta_id="1001" width="0" height="0" border="0" v_space="0" h_space="0" name="3" image_name="" target="_blank" align="top" alt_text="" low_scr="" imgurl="imCMSpower.gif" linkurl="http://www.imcms.net" type="0" language_id="2" image_id="2"/>
+</dataset>

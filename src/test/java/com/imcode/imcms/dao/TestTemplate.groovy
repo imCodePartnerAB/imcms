@@ -7,6 +7,7 @@ import org.junit.BeforeClass
 import org.junit.Test
 
 import static org.junit.Assert.*
+//todo: Test named queries
 public class TestTemplate {
 	
 	static beanName = ""
@@ -24,7 +25,11 @@ public class TestTemplate {
 	}
 	
 	@After void tearDown() {
-	}	          
+	}	   
+	
+	@Test void test() {
+		assertTrue(false)
+	}
 	
 	static final junit.framework.Test suite(){
 		return new junit.framework.JUnit4TestAdapter(TestTemplate.class);

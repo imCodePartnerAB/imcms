@@ -380,7 +380,6 @@
     
     <target name="copy-dependencies-to-project" description="Copies dependencies to project's local libraries dir.">
         
-        <delete dir="${local.lib.dir}"/>
         <mkdir dir="${local.lib.dir}"/>
         
         <artifact:dependencies pomRefId="pom" filesetId="dependencies.fileset"/>        
