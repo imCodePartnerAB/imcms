@@ -55,6 +55,7 @@
   
   <bean id="imageDao" class="com.imcode.imcms.dao.ImageDaoImpl">
     <property name="sessionFactory" ref="sessionFactory"/>
+    <property name="languageDao" ref="languageDao"/>
   </bean> 
   
    <bean id="textDao" class="com.imcode.imcms.dao.TextDaoImpl">

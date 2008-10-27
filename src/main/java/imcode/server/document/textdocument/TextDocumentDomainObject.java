@@ -68,7 +68,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	Map<Integer, ImageDomainObject> map = new HashMap<Integer, ImageDomainObject>(); 
     	
    		ImageDao dao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
-   		List<ImageDomainObject> images = dao.getImages(metaId, language.getId());
+   		List<ImageDomainObject> images = dao.getDocumentImagesByLanguage(metaId, language.getId());
     		
 		for (ImageDomainObject image: images) {
 			int index = Integer.parseInt(image.getName()); 
@@ -383,12 +383,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public void setLazilyLoadedIncludes(LazilyLoadedObject includes) {
         this.includes = includes ;
-    }
-
-    public void setLazilyLoadedTexts(LazilyLoadedObject texts) {
-    	// TODO i18n: rewrite or remove latter.
-        // There is no lazy loaders for texts
-        //this.texts = texts;
     }
 
     public String getDefaultTemplateNameForRestricted1() {

@@ -23,6 +23,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.mapping.DocumentStoringVisitor;
 
+/**
+ * Document text field. 
+ */
 @Entity(name="I18nText")
 @Table(name="texts")
 @NamedQueries({
@@ -51,8 +54,7 @@ public class TextDomainObject implements Serializable, Cloneable {
 	private Integer metaId;	
 	
     /**
-     * 'name' is a legacy identifier. 
-     * Actually it is a part of natural key. 
+     * Text filed index in the document.
      */	
 	@Column(name="name")
 	Integer index;

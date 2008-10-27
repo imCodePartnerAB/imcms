@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<dataset>
+  <images meta_id="1001" width="0" height="0" border="0" v_space="0" h_space="0" name="1" image_name="" target="_blank" align="top" alt_text="" low_scr="" imgurl="imCMSpower.gif" linkurl="http://www.imcms.net" type="0" language_id="1" image_id="1"/>
+  <images meta_id="1001" width="0" height="0" border="0" v_space="0" h_space="0" name="1" image_name="" target="_blank" align="top" alt_text="" low_scr="" imgurl="imCMSpower.gif" linkurl="http://www.imcms.net" type="0" language_id="2" image_id="2"/>
+  
+  <images meta_id="1001" width="0" height="0" border="0" v_space="0" h_space="0" name="2" image_name="" target="_blank" align="top" alt_text="" low_scr="" imgurl="imCMSpower.gif" linkurl="http://www.imcms.net" type="0" language_id="1" image_id="3"/>
+  <images meta_id="1001" width="0" height="0" border="0" v_space="0" h_space="0" name="2" image_name="" target="_blank" align="top" alt_text="" low_scr="" imgurl="imCMSpower.gif" linkurl="http://www.imcms.net" type="0" language_id="2" image_id="4"/>
+  
+  <images meta_id="1001" width="0" height="0" border="0" v_space="0" h_space="0" name="3" image_name="" target="_blank" align="top" alt_text="" low_scr="" imgurl="imCMSpower.gif" linkurl="http://www.imcms.net" type="0" language_id="1" image_id="5"/>
+  <images meta_id="1001" width="0" height="0" border="0" v_space="0" h_space="0" name="3" image_name="" target="_blank" align="top" alt_text="" low_scr="" imgurl="imCMSpower.gif" linkurl="http://www.imcms.net" type="0" language_id="2" image_id="6"/>      
+</dataset>

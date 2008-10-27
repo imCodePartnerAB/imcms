@@ -90,5 +90,13 @@
 	<classpathentry kind="lib" path="local/lib/velocity-1.4.jar"/>
 	<classpathentry kind="lib" path="local/lib/velocity-dep-1.4.jar"/>
 	<classpathentry kind="lib" path="local/lib/xml-apis-1.0.b2.jar"/>
+	<classpathentry kind="lib" path="local/groovy-bin"/>
+	<classpathentry kind="lib" path="local/lib/dbunit-2.3.0.jar"/>
+	<classpathentry kind="lib" path="local/lib/slf4j-api-1.4.3.jar"/>
+	<classpathentry kind="lib" path="local/lib/slf4j-nop-1.4.3.jar"/>
+	<classpathentry kind="lib" path="local/lib/testng-5.8-jdk15.jar"/>
+	<classpathentry kind="lib" path="local/lib/junit-addons-1.4.jar"/>
+	<classpathentry kind="lib" path="local/lib/xercesImpl-2.6.2.jar"/>
+	<classpathentry kind="lib" path="local/lib/xmlParserAPIs-2.6.2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

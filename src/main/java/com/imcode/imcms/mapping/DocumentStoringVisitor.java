@@ -30,7 +30,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -136,8 +135,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
                 if (text.isModified()) {
                     sqlInsertTextHistory(language, textDocument, index, text, user);
-                    sqlDeleteText(language, textDocument, index, text);
-                    sqlInsertText(language, textDocument, index, text);
+                   
+                    textDao.insertOrUpdateText(text);
                 }
             }
         }
@@ -198,24 +197,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     }
 
-    private void sqlDeleteText(I18nLanguage language, TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
-    	Object[] parameters = new String[] {
-    			"" + language.getId(),
-    			"" + textDocument.getId(), 
-        		"" + textIndex, "" + text.getType()};
-    	
-        database.execute(new SqlUpdateCommand(
-        		"DELETE FROM texts WHERE language_id = ? AND meta_id = ? AND name = ? AND type = ?", parameters));
-    }
     
-    private void sqlInsertText(I18nLanguage language, TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
-        final Object[] parameters = new String[]{
-            "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType()
-            , "" + language.getId()
-        };
-        database.execute(new SqlUpdateCommand("INSERT INTO texts (meta_id, name, text, type, language_id) VALUES(?,?,?,?,?)", parameters));
-    }
-
     private void sqlInsertTextHistory(I18nLanguage language, TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text, UserDomainObject user) {
         SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING);
         final Object[] parameters = new String[]{
