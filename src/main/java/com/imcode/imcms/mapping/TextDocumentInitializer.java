@@ -41,9 +41,7 @@ public class TextDocumentInitializer {
     private final Database database;
     private final DocumentGetter documentGetter;
     private Map documentsMenuItems;
-    private Map documentsImages;
     private Map documentsIncludes;
-    private Map documentsTexts;
     private Map documentsTemplateIds;
 
     static final String SQL_GET_MENU_ITEMS = "SELECT meta_id, menus.menu_id, menu_index, sort_order, to_meta_id, manual_sort_order, tree_sort_index FROM menus,childs WHERE menus.menu_id = childs.menu_id AND meta_id ";
@@ -57,10 +55,11 @@ public class TextDocumentInitializer {
     public void initialize(TextDocumentDomainObject document) {
         Integer documentId = new Integer(document.getId()) ;
         document.setLazilyLoadedMenus(new LazilyLoadedObject(new MenusLoader(documentId)));
-        document.setLazilyLoadedTexts(new LazilyLoadedObject(new TextsLoader(documentId)));
-        document.setLazilyLoadedImages(new LazilyLoadedObject(new ImagesLoader(documentId)));
         document.setLazilyLoadedIncludes(new LazilyLoadedObject(new IncludesLoader(documentId)));
         document.setLazilyLoadedTemplateIds(new LazilyLoadedObject(new TemplateIdsLoader(documentId)));
+        
+        // document.setTexts???
+        // document.setImages???
     }
 
     private class MenusLoader implements LazilyLoadedObject.Loader {
@@ -150,154 +149,6 @@ public class TextDocumentInitializer {
                                 documentsIncludes.put(documentId, documentIncludesMap);
                             }
                             documentIncludesMap.put(includeIndex, includedDocumentId);
-                        }
-                        return null;
-                    }
-                });
-            }
-        }
-
-    }
-
-    private class ImagesLoader implements LazilyLoadedObject.Loader {
-
-        private final Integer documentId;
-
-        ImagesLoader(Integer documentId) {
-            this.documentId = documentId;
-        }
-
-        public LazilyLoadedObject.Copyable load() {
-            initDocumentsImages();
-            CopyableHashMap documentImagesMap = (CopyableHashMap) documentsImages.get(documentId);
-            if ( null == documentImagesMap ) {
-                documentImagesMap = new CopyableHashMap();
-            }
-            return documentImagesMap;
-        }
-
-        private void initDocumentsImages() {
-            if ( null == documentsImages ) {
-                documentsImages = new HashMap();
-                DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id,name,image_name,imgurl,"
-                                                                                 + "width,height,border,v_space,h_space,"
-                                                                                 + "target,align,alt_text,low_scr,linkurl,type "
-                                                                                 + "FROM images WHERE meta_id ", documentIds, new ResultSetHandler() {
-                    public Object handle(ResultSet rs) throws SQLException {
-                        while ( rs.next() ) {
-                            Integer documentId = new Integer(rs.getInt(1));
-                            Map imageMap = (Map) documentsImages.get(documentId);
-                            if ( null == imageMap ) {
-                                imageMap = new CopyableHashMap();
-                                documentsImages.put(documentId, imageMap);
-                            }
-                            Integer imageIndex = new Integer(rs.getInt(2));
-                            ImageDomainObject image = new ImageDomainObject();
-
-                            image.setName(rs.getString(3));
-                            String imageSource = rs.getString(4);
-                            image.setWidth(rs.getInt(5));
-                            image.setHeight(rs.getInt(6));
-                            image.setBorder(rs.getInt(7));
-                            image.setVerticalSpace(rs.getInt(8));
-                            image.setHorizontalSpace(rs.getInt(9));
-                            image.setTarget(rs.getString(10));
-                            image.setAlign(rs.getString(11));
-                            image.setAlternateText(rs.getString(12));
-                            image.setLowResolutionUrl(rs.getString(13));
-                            image.setLinkUrl(rs.getString(14));
-                            int imageType = rs.getInt(15);                          
-
-                            if ( StringUtils.isNotBlank(imageSource) ) {
-                                if ( ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {
-                                    try {
-                                        int fileDocumentId = Integer.parseInt(imageSource);
-                                        DocumentDomainObject document = documentGetter.getDocument(new Integer(fileDocumentId));
-                                        if ( null != document ) {
-                                            image.setSource(new FileDocumentImageSource(new DirectDocumentReference(document)));
-                                        }
-                                    } catch ( NumberFormatException nfe ) {
-                                        LOG.warn("Non-numeric document-id \"" + imageSource + "\" for image in database.");
-                                    } catch ( ClassCastException cce ) {
-                                        LOG.warn("Non-file-document-id \"" + imageSource + "\" for image in database.");
-                                    }
-                                } else if ( ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH == imageType ) {
-                                    image.setSource(new ImagesPathRelativePathImageSource(imageSource));
-                                }
-                            }
-                            imageMap.put(imageIndex, image);
-                        }
-                        return null;
-                    }
-                });
-            }
-
-        }
-    }
-
-    private class TextsLoader implements LazilyLoadedObject.Loader {
-
-        private final Integer documentId;
-
-        TextsLoader(Integer documentId) {
-            this.documentId = documentId;
-        }
-
-        public LazilyLoadedObject.Copyable load() {
-            initDocumentsTexts();
-            CopyableHashMap documentTexts = (CopyableHashMap) documentsTexts.get(documentId);
-            if ( null == documentTexts ) {
-                documentTexts = new CopyableHashMap();
-            }
-            return documentTexts;
-        }
-
-        private void initDocumentsTexts() {
-        	final I18nLanguage language = I18nSupport.getCurrentLanguage();
-        	
-        	if (LOG.isTraceEnabled()) {
-        		LOG.trace("Initializing document texts for language [" 
-        				+ language.getName() + "].");
-        	}
-        	
-        	if (documentsTexts != null) {
-            	if (LOG.isTraceEnabled()) {
-            		LOG.trace("Document texts for language [" 
-            				+ language.getName() + "] allready retrieved from database.");
-            	}        		
-        	} else {
-            	if (LOG.isTraceEnabled()) {
-            		LOG.trace("Quering databse for document texts. Language [" 
-        				+ language.getName() + "].");
-            	}            	
-            	
-             	if (language == null) {
-            		LOG.fatal("Language is not set.");
-            		throw new I18nException("Language is not set.");
-            	}
-            	
-            	LOG.trace("Current language is [" + language + "].");
-            	String sql = "SELECT meta_id, name, text, type FROM texts WHERE language_id=" + language.getId() + " and meta_id ";
-       
-            	
-                documentsTexts = new HashMap();
-                DocumentInitializer.executeWithAppendedIntegerInClause(database, sql, documentIds, new ResultSetHandler() {
-                    public Object handle(ResultSet rs) throws SQLException {
-                        while ( rs.next() ) {
-                            Integer documentId = new Integer(rs.getInt(1));
-                            Integer textIndex = new Integer(rs.getInt(2));
-                            String text = rs.getString(3);
-                            int textType = rs.getInt(4);
-                            CopyableHashMap documentTextsMap = (CopyableHashMap) documentsTexts.get(documentId);
-                            if ( null == documentTextsMap ) {
-                                documentTextsMap = new CopyableHashMap();
-                                documentsTexts.put(documentId, documentTextsMap);
-                            }
-                            
-                            TextDomainObject tdo = new TextDomainObject(text, textType);
-                            //tdo.setLanguageId(language.getId());
-                            
-                            documentTextsMap.put(textIndex, tdo);
                         }
                         return null;
                     }

@@ -14,7 +14,7 @@ public abstract class DaoTest {
         def dataSet = new FlatXmlDataSet(new FileReader(dataSetFilePath))
         
         tester = new DataSourceDatabaseTester(dataSource)
-        tester.setSetUpOperation DatabaseOperation.REFRESH
+        //tester.setSetUpOperation DatabaseOperation.REFRESH
         tester.setDataSet dataSet
 	}
 		

@@ -16,11 +16,13 @@ import com.imcode.imcms.api.I18nLanguage;
 
 public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 	
+	private LanguageDao languageDao;
+	
 	@Transactional
-	public synchronized List<ImageDomainObject> getImages(
-			List<I18nLanguage> languages, 
+	public synchronized List<ImageDomainObject> getDocumentImagesByIndex(
 			int metaId, int imageId, boolean createImageIfNotExists) {
-		
+
+		List<I18nLanguage> languages = languageDao.getAllLanguages();		
 		List<ImageDomainObject> images = new LinkedList<ImageDomainObject>();
 		
 		for (I18nLanguage language: languages) {
@@ -57,7 +59,7 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 	}
 
 	@Transactional
-	public synchronized List<ImageDomainObject> getImages(int metaId, int languageId) {
+	public synchronized List<ImageDomainObject> getDocumentImagesByLanguage(int metaId, int languageId) {
 		List<ImageDomainObject> images = findByNamedQueryAndNamedParam(
 				"Image.getAllDocumentImagesByLanguage", 
 					new String[] {"metaId", "languageId"}, 
@@ -97,5 +99,30 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		}
 				
 		return image;
+	}
+
+	public LanguageDao getLanguageDao() {
+		return languageDao;
+	}
+
+	public void setLanguageDao(LanguageDao languageDao) {
+		this.languageDao = languageDao;
+	}
+
+	
+	@Transactional
+	public List<ImageDomainObject> saveDocumentImages(int metaId,
+			List<ImageDomainObject> images) {
+		
+		// ??? set meta id ???
+		// ??? set id ???
+		
+		for (ImageDomainObject image: images) {
+            //image.setId(null);
+            image.setMetaId(metaId);
+            saveOrUpdate(image);
+		}		
+		
+		return images;
 	}
 }

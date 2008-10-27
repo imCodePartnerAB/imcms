@@ -12,13 +12,18 @@ public interface ImageDao {
 	/**
 	 * Returns all document's images for given language. 
 	 */
-	List<ImageDomainObject> getImages(int metaId, int languageId);
+	List<ImageDomainObject> getDocumentImagesByLanguage(int metaId, int languageId);
 	
 	/**
 	 * Returns document's images for every language.
 	 */
-	List<ImageDomainObject> getImages(List<I18nLanguage> languages, 
-			int metaId, int imageId, boolean createImageIfNotExists);		
+	List<ImageDomainObject> getDocumentImagesByIndex(int metaId, int imageId, boolean createImageIfNotExists);
+	
+	/**
+	 * Returns document's images for every language.
+	 */
+	List<ImageDomainObject> saveDocumentImages(int metaId, List<ImageDomainObject> images);		
+	
 		
 	/**
 	 * Saves text document's images. 

@@ -12,15 +12,26 @@ public interface TextDao {
 	List<TextDomainObject> getTexts(int metaId, int languageId);
 	
 	/**
-	 * Returns text;
+	 * Returns text or null if text does not exists.
 	 */
 	TextDomainObject getText(int metaId, int index, int languageId);
+
+	/**
+	 * Inserts or updates existing text.
+	 *   
+	 * @return reference to saved text.
+	 */
+	TextDomainObject insertOrUpdateText(TextDomainObject text);
 	
-	// new methods to be implemented:
+	/**
+	 * Saves new text.
+	 *   
+	 * @return reference to saved text.
+	 */
+	TextDomainObject insertText(TextDomainObject text);
 	
-	void saveText(TextDomainObject text);
-	//void saveText(TextDomainObject text);
-	//void deleteText () ???
+	
+	//void deleteText () 
 	
 	//List<TextDomainObject> getAllTextsWithIndex(int metaId, int index);
 	//List<TextDomainObject> getAllTextsWithLanguage(int metaId, int languageId);

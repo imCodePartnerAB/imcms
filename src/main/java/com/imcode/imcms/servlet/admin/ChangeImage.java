@@ -114,8 +114,7 @@ public class ChangeImage extends HttpServlet {
         ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
         LanguageDao languageDao = (LanguageDao)Imcms.getServices().getSpringBean("languageDao");
         
-        List<I18nLanguage> languages = languageDao.getAllLanguages();
-        List<ImageDomainObject> images = imageDao.getImages(languages, document.getId(), imageIndex, true);
+        List<ImageDomainObject> images = imageDao.getDocumentImagesByIndex(document.getId(), imageIndex, true);
         
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true);
