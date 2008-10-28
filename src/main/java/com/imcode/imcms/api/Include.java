@@ -5,14 +5,19 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity(name="Include")
 @Table(name="includes")
-public class IncludeDomainObject {
+@NamedQueries({
+	@NamedQuery(name="Include.getByMetaId", query="SELECT i FROM Include i WHERE i.metaId = :metaId"),
+	@NamedQuery(name="Include.getByMetaIdAndIndex", query="SELECT i FROM Include i WHERE i.metaId = :metaId AND i.index = :index")
+})
+public class Include implements Cloneable {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="rid")
 	private Long id;
 	
 	@Column(name="meta_id")
@@ -23,6 +28,15 @@ public class IncludeDomainObject {
 	
 	@Column(name="included_meta_id")
 	private Integer includedMetaId;
+	
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}	
 
 	public Long getId() {
 		return id;

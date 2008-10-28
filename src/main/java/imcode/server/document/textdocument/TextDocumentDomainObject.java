@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,8 +20,10 @@ import org.apache.commons.lang.UnhandledException;
 
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.Include;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.ImageDao;
+import com.imcode.imcms.dao.IncludeDao;
 import com.imcode.imcms.dao.TextDao;
 import com.imcode.imcms.mapping.DocumentMenusMap;
 
@@ -47,8 +50,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      */
     private Map<I18nLanguage, Map<Integer, TextDomainObject>> texts    
     		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
-        
-    private LazilyLoadedObject<CopyableHashMap> includes = new LazilyLoadedObject<CopyableHashMap>(new CopyableHashMapLoader());
+    
+    private List<Include> includes = new LinkedList<Include>();        
+    
+    private Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
+    
     private LazilyLoadedObject<DocumentMenusMap> menus = new LazilyLoadedObject<DocumentMenusMap>(new LazilyLoadedObject.Loader<DocumentMenusMap>() {
         public DocumentMenusMap load() {
             return new DocumentMenusMap();
@@ -92,6 +98,23 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		}
 		
     	return map;
+    } 
+    
+    
+    /**
+     * Returns texts map from the database.
+     */
+    public static Map<Integer, Include> getOrigianlIncludesMap(Integer metaId) {
+    	Map<Integer, Include> map = new HashMap<Integer, Include>(); 
+    	
+   		IncludeDao dao = (IncludeDao)Imcms.getServices().getSpringBean("includeDao");
+   		List<Include> includes = dao.getDocumentIncludes(metaId);
+    		
+		for (Include include: includes) {
+			map.put(include.getIndex(), include);
+		}
+		
+    	return map;
     }    
     
 
@@ -109,7 +132,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         loadTexts();
         loadImages();
         
-        includes.load();
         menus.load();
         templateNames.load();
     }
@@ -118,9 +140,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         TextDocumentDomainObject clone = (TextDocumentDomainObject)super.clone();
         
         //clone.texts = new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>(texts);
-        //clone.images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>(images);
+        //clone.images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>(images);        
+        //clone.includes =
         
-        clone.includes = (LazilyLoadedObject) includes.clone();
         clone.menus = (LazilyLoadedObject) menus.clone() ;
         clone.templateNames = (LazilyLoadedObject) templateNames.clone() ;
         
@@ -175,12 +197,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }    
     
     public Integer getIncludedDocumentId( int includeIndex ) {
-        return (Integer)getIncludesMap().get( new Integer( includeIndex ) );
+        return includesMap.get(includeIndex);
     }
-
-    private Map getIncludesMap() {
-        return (Map) includes.get();
-    }
+    
 
     public MenuDomainObject getMenu( int menuIndex ) {
         Map menusMap = (Map) menus.get();
@@ -256,8 +275,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
     }
 
+    // TODO: refactor
     public void removeAllIncludes() {
-        getIncludesMap().clear();
+    	// we can not use includes.clear() since all clones share same data
+    	
+        setIncludes(new LinkedList<Include>());
     }
 
     public void removeAllMenus() {
@@ -274,9 +296,31 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         texts = new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
     }
 
+    
+    // TODO: refactor
     public void setInclude( int includeIndex, int includedDocumentId ) {
-        getIncludesMap().put( new Integer( includeIndex ), new Integer( includedDocumentId ) );
+    	Include include = null; 
+    	
+    	for (Include i: includes) {
+    		if (i.getIndex().equals(includeIndex)) {
+    			include = i;
+    			break;
+    		}
+    	}
+    	
+    	if (include == null) {
+    		include = new Include();
+    		include.setMetaId(getId());    		
+    		include.setIndex(includeIndex);
+    		
+    		includes.add(include);
+    	}
+    	
+    	include.setIncludedMetaId(includedDocumentId);
+    	
+    	setIncludes(includes);
     }
+    
 
     public void setMenu( int menuIndex, MenuDomainObject menu ) {
         getMenusMap().put( new Integer( menuIndex ), menu );
@@ -323,8 +367,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	map.put(index, text);    	
     } 
     
-    public Map getIncludes() {
-        return Collections.unmodifiableMap( getIncludesMap() );
+    /**
+     * TODO: Refactor remove
+     * @return
+     */
+    @Deprecated
+    public Map getIncludesMap() {
+        return Collections.unmodifiableMap(includesMap);
     }
 
     public Map<Integer, MenuDomainObject> getMenus() {
@@ -368,21 +417,21 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void removeInclude( int includeIndex ) {
-        getIncludesMap().remove( new Integer( includeIndex )) ;
+    	int size = includes.size();
+    	
+    	for (int i = 0; i < size; i++) {
+    		Include include = includes.get(i);
+    		
+    		if (include.getIndex().equals(includeIndex)) {
+    			includes.remove(i);
+    			setIncludes(includes);
+    			break;
+    		}
+    	}
     }
 
     public void setLazilyLoadedMenus(LazilyLoadedObject menus) {
         this.menus = menus;
-    }
-
-    public void setLazilyLoadedImages(LazilyLoadedObject images) {
-    	// TODO i18n: rewrite or remove latter.
-        // There is no lazy loaders for images
-        //this.images = images ;
-    }
-
-    public void setLazilyLoadedIncludes(LazilyLoadedObject includes) {
-        this.includes = includes ;
     }
 
     public String getDefaultTemplateNameForRestricted1() {
@@ -580,11 +629,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
             getImagesMap(language);
         }
     }
-
+    
     @Override
     public void cloneShared() {
         cloneTexts();
         cloneImages();
+        cloneIncludes();
     }
 
     private void cloneImages() {
@@ -634,4 +684,38 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         texts = textsClone;
     }
+    
+    
+    private void cloneIncludes() {
+    	List<Include> includesClone = new LinkedList<Include>();
+    	
+    	for (Include include: includes) {
+        	Include includeClone = (Include)include.clone();
+        	
+        	includeClone.setId(null);
+        	includeClone.setMetaId(null);
+        	
+        	includesClone.add(includeClone);
+    	}
+    	
+    	setIncludes(includesClone);
+    }    
+    
+    
+    /**
+     * Temporal solution. Includes set by TextDocumentInitializer.
+     * TODO: refactor.  
+     */
+    public void setIncludes(List<Include> includes) {
+    	this.includes = includes;
+    	this.includesMap = new HashMap<Integer, Integer>();
+    	
+		for (Include include: includes) {
+			includesMap.put(include.getIndex(), include.getIncludedMetaId());
+		}
+    }
+
+	public List<Include> getIncludes() {
+		return includes;
+	}
 }

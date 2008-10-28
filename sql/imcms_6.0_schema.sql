@@ -317,13 +317,14 @@ CREATE TABLE images_history (
 --
 
 CREATE TABLE includes (
-  meta_id int(11) NOT NULL,
-  include_id int(11) NOT NULL,
-  included_meta_id int(11) NOT NULL,
-  PRIMARY KEY  (meta_id,include_id),
-  KEY includes_FK_included_meta_id_meta (included_meta_id),
-  CONSTRAINT includes_FK_included_meta_id_meta FOREIGN KEY (included_meta_id) REFERENCES meta (meta_id),
-  CONSTRAINT includes_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
+  id int auto_increment PRIMARY KEY,
+  meta_id int NULL,
+  include_id int NOT NULL,
+  included_meta_id int NULL,
+
+  UNIQUE INDEX ux__includes__meta_id__include_id(meta_id, include_id),
+  FOREIGN KEY fk__includes__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  FOREIGN KEY fk__includes__included_meta (included_meta_id) REFERENCES meta (meta_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

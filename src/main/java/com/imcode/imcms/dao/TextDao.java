@@ -21,15 +21,7 @@ public interface TextDao {
 	 *   
 	 * @return reference to saved text.
 	 */
-	TextDomainObject insertOrUpdateText(TextDomainObject text);
-	
-	/**
-	 * Saves new text.
-	 *   
-	 * @return reference to saved text.
-	 */
-	TextDomainObject insertText(TextDomainObject text);
-	
+	TextDomainObject saveText(TextDomainObject text);	
 	
 	//void deleteText () 
 	

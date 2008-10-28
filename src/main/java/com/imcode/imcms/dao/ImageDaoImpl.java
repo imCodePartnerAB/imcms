@@ -112,13 +112,8 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 	
 	@Transactional
 	public List<ImageDomainObject> saveDocumentImages(int metaId,
-			List<ImageDomainObject> images) {
-		
-		// ??? set meta id ???
-		// ??? set id ???
-		
+			List<ImageDomainObject> images) {		
 		for (ImageDomainObject image: images) {
-            //image.setId(null);
             image.setMetaId(metaId);
             saveOrUpdate(image);
 		}		

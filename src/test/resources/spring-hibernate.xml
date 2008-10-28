@@ -73,4 +73,8 @@
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>  
   
+  <bean id="includeDao" class="com.imcode.imcms.dao.IncludeDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>  
+  
 </beans>

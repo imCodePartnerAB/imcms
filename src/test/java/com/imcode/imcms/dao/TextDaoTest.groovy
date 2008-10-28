@@ -45,7 +45,7 @@ public class TextDaoTest extends DaoTest {
         
     	textDO.text = newText
     	    	
-    	textDao.insertOrUpdateText(textDO)
+    	textDao.saveText(textDO)
     	
     	textDO = textDao.getText(1001, 1, 1)
     	
@@ -79,7 +79,7 @@ public class TextDaoTest extends DaoTest {
 		text.setIndex(textIndex)
 		text.setLanguage(language)
 				
-		textDao.insertText(text)
+		textDao.saveText(text)
 		
 		text = textDao.getText(metaId, textIndex, language.id)
 		

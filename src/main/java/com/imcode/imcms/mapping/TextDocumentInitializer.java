@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import imcode.server.Imcms;
 import imcode.server.document.DirectDocumentReference;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.GetterDocumentReference;
@@ -21,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,6 +34,8 @@ import com.imcode.db.Database;
 import com.imcode.imcms.api.I18nException;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.Include;
+import com.imcode.imcms.dao.IncludeDao;
 
 public class TextDocumentInitializer {
 
@@ -41,7 +45,6 @@ public class TextDocumentInitializer {
     private final Database database;
     private final DocumentGetter documentGetter;
     private Map documentsMenuItems;
-    private Map documentsIncludes;
     private Map documentsTemplateIds;
 
     static final String SQL_GET_MENU_ITEMS = "SELECT meta_id, menus.menu_id, menu_index, sort_order, to_meta_id, manual_sort_order, tree_sort_index FROM menus,childs WHERE menus.menu_id = childs.menu_id AND meta_id ";
@@ -51,15 +54,21 @@ public class TextDocumentInitializer {
         this.documentGetter = documentGetter;
         this.documentIds = documentIds;
     }
-
+    
+    // TODO: refactor
     public void initialize(TextDocumentDomainObject document) {
         Integer documentId = new Integer(document.getId()) ;
         document.setLazilyLoadedMenus(new LazilyLoadedObject(new MenusLoader(documentId)));
-        document.setLazilyLoadedIncludes(new LazilyLoadedObject(new IncludesLoader(documentId)));
         document.setLazilyLoadedTemplateIds(new LazilyLoadedObject(new TemplateIdsLoader(documentId)));
         
         // document.setTexts???
         // document.setImages???
+        
+        // init includes    	     	
+   		IncludeDao dao = (IncludeDao)Imcms.getServices().getSpringBean("includeDao");
+   		List<Include> includes = dao.getDocumentIncludes(documentId);
+    				
+		document.setIncludes(includes);
     }
 
     private class MenusLoader implements LazilyLoadedObject.Loader {
@@ -114,48 +123,6 @@ public class TextDocumentInitializer {
                 });
             }
         }
-    }
-
-    private class IncludesLoader implements LazilyLoadedObject.Loader {
-
-        private final Integer documentId;
-
-        IncludesLoader(Integer documentId) {
-            this.documentId = documentId;
-        }
-
-        public LazilyLoadedObject.Copyable load() {
-            initDocumentsIncludes();
-            CopyableHashMap documentIncludesMap = (CopyableHashMap) documentsIncludes.get(documentId);
-            if ( null == documentIncludesMap ) {
-                documentIncludesMap = new CopyableHashMap();
-            }
-            return documentIncludesMap;
-        }
-
-        private void initDocumentsIncludes() {
-            if ( null == documentsIncludes ) {
-                documentsIncludes = new HashMap();
-                DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id, include_id, included_meta_id FROM includes WHERE meta_id ", documentIds, new ResultSetHandler() {
-                    public Object handle(ResultSet rs) throws SQLException {
-                        while ( rs.next() ) {
-                            Integer documentId = new Integer(rs.getInt(1));
-                            Integer includeIndex = new Integer(rs.getInt(2));
-                            Integer includedDocumentId = new Integer(rs.getInt(3));
-
-                            CopyableHashMap documentIncludesMap = (CopyableHashMap) documentsIncludes.get(documentId);
-                            if ( null == documentIncludesMap ) {
-                                documentIncludesMap = new CopyableHashMap();
-                                documentsIncludes.put(documentId, documentIncludesMap);
-                            }
-                            documentIncludesMap.put(includeIndex, includedDocumentId);
-                        }
-                        return null;
-                    }
-                });
-            }
-        }
-
     }
 
     private class TemplateIdsLoader implements LazilyLoadedObject.Loader {

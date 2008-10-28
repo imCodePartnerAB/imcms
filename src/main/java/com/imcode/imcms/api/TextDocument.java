@@ -109,7 +109,7 @@ public class TextDocument extends Document {
             }
         };
 
-        Map includeMap = getInternalTextDocument().getIncludes();
+        Map includeMap = getInternalTextDocument().getIncludesMap();
 
         return filterAndConvertValues(includeMap, predicate, fromDomainToAPITransformer);
 

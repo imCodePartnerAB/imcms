@@ -45,7 +45,9 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.TransactionDatabaseCommand;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.Include;
 import com.imcode.imcms.dao.ImageDao;
+import com.imcode.imcms.dao.IncludeDao;
 import com.imcode.imcms.dao.TextDao;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
@@ -136,7 +138,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 if (text.isModified()) {
                     sqlInsertTextHistory(language, textDocument, index, text, user);
                    
-                    textDao.insertOrUpdateText(text);
+                    // For copied documents we should set meta id!!!
+                    // TODO: refactor
+                    text.setMetaId(metaId);
+                    textDao.saveText(text);
                 }
             }
         }
@@ -153,22 +158,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-    	/*
-    	
-        Map images = textDocument.getImages();
-        String sqlDeleteImages = "DELETE FROM images WHERE meta_id = ?";
-        final Object[] parameters = new String[]{"" + textDocument.getId()};
-        database.execute(new SqlUpdateCommand(sqlDeleteImages, parameters));
-        for (Iterator iterator = images.keySet().iterator(); iterator.hasNext();) {
-            Integer imageIndex = (Integer) iterator.next();
-            ImageDomainObject image = (ImageDomainObject) images.get(imageIndex.intValue());
-            if(oldTextDocument != null && oldTextDocument.getImage(imageIndex.intValue())!=null && !oldTextDocument.getImage(imageIndex.intValue()).getSource().toStorageString().equals("") &&  !image.equals(oldTextDocument.getImage(imageIndex.intValue()))){
-                sqlInsertImageHistory(oldTextDocument, imageIndex.intValue(), user);
-            }
-            saveDocumentImage(textDocument.getId(), imageIndex.intValue(), image);
-        }
-        */
-    	
         ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
         
         imageDao.saveImagesMap(textDocument.getId(), textDocument.getAllImages());
@@ -185,16 +174,20 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         database.execute(new SqlUpdateCommand(makeSqlInsertString("images_history", columnNames), param.toArray(new String[param.size()])));
     }
 
+    // TODO: refactor
     void updateTextDocumentIncludes(TextDocumentDomainObject textDocument) {
-        Map includes = textDocument.getIncludes();
-        String sqlDeleteDocumentIncludes = "DELETE FROM includes WHERE meta_id = ?";
-        final Object[] parameters = new String[]{"" + textDocument.getId()};
-        database.execute(new SqlUpdateCommand(sqlDeleteDocumentIncludes, parameters));
-        for (Iterator iterator = includes.keySet().iterator(); iterator.hasNext();) {
-            Integer includeIndex = (Integer) iterator.next();
-            Integer includedDocumentId = (Integer) includes.get(includeIndex);
-            sqlInsertTextDocumentInclude(textDocument, includeIndex, includedDocumentId);
-        }
+    	
+    	IncludeDao dao = (IncludeDao)Imcms.getServices().getSpringBean("includeDao");
+    	int metaId = textDocument.getId();
+    	
+    	// TODO: delete orphans in one transaction
+    	dao.deleteDocumentIncludes(metaId);
+    	
+    	for (Include include: textDocument.getIncludes()) {
+    		// in case we are saving document copy metaId should be changed
+    		include.setMetaId(metaId);
+    		dao.saveInclude(include);
+    	}
     }
 
     
@@ -205,14 +198,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             ""+user.getId(), "" + language.getId()
         };
         database.execute(new SqlUpdateCommand("INSERT INTO texts_history (meta_id, name, text, type, modified_datetime, user_id, language_id) VALUES(?,?,?,?,?,?,?)", parameters));
-    }
-
-    private void sqlInsertTextDocumentInclude(TextDocumentDomainObject textDocument, Integer includeIndex,
-                                              Integer includedDocumentId) {
-        final Object[] parameters = new String[]{
-            "" + textDocument.getId(), "" + includeIndex, "" + includedDocumentId
-        };
-        database.execute(new SqlUpdateCommand("INSERT INTO includes (meta_id, include_id, included_meta_id) VALUES(?,?,?)", parameters));
     }
 
     public static void saveDocumentImage(int meta_id, int img_no, ImageDomainObject image) {

@@ -1,17 +1,10 @@
-CREATE TABLE meta_versions (
-
 CREATE TABLE document_versions (
-  rid,
+  id,
   meta_id,
-  version
+  version,
+  is_default
 )
 
-CREATE TABLE metas_current_versions (
-CREATE TABLE document_current_versions (
-  rid,
-  meta_id,
-  version
-)
 
 TABLE texts, images, etc
 
