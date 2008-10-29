@@ -30,6 +30,7 @@
     	 -->
     	<mapping class="imcode.server.document.textdocument.ImageDomainObject"/>
     	<mapping class="imcode.server.document.textdocument.TextDomainObject"/>
+    	<mapping class="imcode.server.document.textdocument.TemplateNames"/>
     </session-factory>
     
 </hibernate-configuration>

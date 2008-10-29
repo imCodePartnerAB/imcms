@@ -555,10 +555,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.sectionIds = sectionIds ;
     }
 
-    public void setLazilyLoadedKeywords(LazilyLoadedObject keywords) {
-        attributes.keywords = keywords ;
-    }
-
     public void setLazilyLoadedProperties(LazilyLoadedObject properties) {
         attributes.properties = properties ;
     }
@@ -582,8 +578,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public void loadAllLazilyLoaded() {
         attributes.categoryIds.load();
         attributes.sectionIds.load();
-        // TODO: remove all keywords reletad loading
-        //attributes.keywords.load();
         attributes.permissionSets.load();
         attributes.permissionSetsForNewDocuments.load();
         attributes.roleIdToDocumentPermissionSetTypeMappings.load();
@@ -633,7 +627,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private boolean linkedForUnauthorizedUsers;
 
         private LazilyLoadedObject categoryIds = new LazilyLoadedObject(new CopyableHashSetLoader());
-        private LazilyLoadedObject keywords = new LazilyLoadedObject(new CopyableHashSetLoader());
         private LazilyLoadedObject sectionIds = new LazilyLoadedObject(new CopyableHashSetLoader());
         private LazilyLoadedObject permissionSets = new LazilyLoadedObject(new DocumentPermissionSetsLoader());
         private LazilyLoadedObject permissionSetsForNewDocuments = new LazilyLoadedObject(new DocumentPermissionSetsLoader());
@@ -647,7 +640,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
         public Object clone() throws CloneNotSupportedException {
             Attributes clone = (Attributes)super.clone();
-            clone.keywords = (LazilyLoadedObject) keywords.clone();
             clone.properties = (LazilyLoadedObject) properties.clone();
             clone.sectionIds = (LazilyLoadedObject) sectionIds.clone();
             clone.categoryIds = (LazilyLoadedObject) categoryIds.clone();

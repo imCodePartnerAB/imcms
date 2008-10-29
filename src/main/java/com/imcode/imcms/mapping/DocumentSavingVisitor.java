@@ -35,25 +35,8 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     }
 
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
-        String sqlStr = "UPDATE text_docs SET template_name = ?, group_id = ?,\n"
-                        + "default_template = ?, default_template_1 = ?, default_template_2 = ? WHERE meta_id = ?";
-        String defaultTemplateId = textDocument.getDefaultTemplateName();
-        String defaultTemplateIdForRestricted1 = textDocument.getDefaultTemplateNameForRestricted1();
-        String defaultTemplateIdForRestricted2 = textDocument.getDefaultTemplateNameForRestricted2();
-
-        String templateId = textDocument.getTemplateName();
-        int templateGroupId = textDocument.getTemplateGroupId();
-
-        final Object[] parameters = new String[]{
-            "" + templateId,
-            "" + templateGroupId,
-            (null != defaultTemplateId ? "" + defaultTemplateId : null),
-            null != defaultTemplateIdForRestricted1 ? "" + defaultTemplateIdForRestricted1 : null,
-            null != defaultTemplateIdForRestricted2 ? "" + defaultTemplateIdForRestricted2 : null,
-            "" + textDocument.getId()
-        };
-        database.execute(new SqlUpdateCommand(sqlStr, parameters));
-
+        updateTextDocumentTemplateNames(textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
+        
         updateTextDocumentTexts( textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
         updateTextDocumentImages( textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
         updateTextDocumentIncludes( textDocument );

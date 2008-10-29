@@ -7,6 +7,7 @@ import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.TemplateNames;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -48,6 +49,7 @@ import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Include;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.IncludeDao;
+import com.imcode.imcms.dao.TemplateNamesDao;
 import com.imcode.imcms.dao.TextDao;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
@@ -120,6 +122,17 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     static String makeSqlInsertString(String tableName, String[] columnNames) {
         return "INSERT INTO " + tableName + " (" + StringUtils.join(columnNames, ",") + ")"
                 + "VALUES(?" + StringUtils.repeat(",?", columnNames.length - 1) + ")";
+    }
+    
+    // TODO i18n: refactor
+    void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
+        TemplateNamesDao dao = (TemplateNamesDao)Imcms.getServices().getSpringBean("templateNamesDao");
+        Integer metaId = textDocument.getId();
+        
+        TemplateNames templateNames = textDocument.getTemplateNames();
+        
+        templateNames.setMetaId(metaId);
+        dao.saveTemplateNames(templateNames);
     }
 
     // TODO i18n: refactor

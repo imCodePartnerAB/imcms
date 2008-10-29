@@ -8,6 +8,9 @@ SET @database_version__minor__current = 3;
 SET @database_version__major__new = 6;
 SET @database_version__minor__new = 0;
 
+--
+-- Includes table
+--
 CREATE TABLE includes_new (
   id int auto_increment PRIMARY KEY,
   meta_id int NULL,
@@ -24,6 +27,12 @@ RENAME TABLE includes_new TO includes;
 ALTER TABLE includes ADD UNIQUE INDEX ux__includes__meta_id__include_id(meta_id, include_id);
 ALTER TABLE includes ADD FOREIGN KEY fk__includes__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE;
 ALTER TABLE includes ADD FOREIGN KEY fk__includes__included_meta (included_meta_id) REFERENCES meta (meta_id);
+
+
+--
+-- Texts docs table
+--
+
 
 
 --

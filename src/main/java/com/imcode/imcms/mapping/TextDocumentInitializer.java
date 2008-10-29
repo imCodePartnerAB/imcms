@@ -11,6 +11,7 @@ import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TemplateNames;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.document.textdocument.TreeSortKeyDomainObject;
@@ -36,6 +37,7 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Include;
 import com.imcode.imcms.dao.IncludeDao;
+import com.imcode.imcms.dao.TemplateNamesDao;
 
 public class TextDocumentInitializer {
 
@@ -45,7 +47,6 @@ public class TextDocumentInitializer {
     private final Database database;
     private final DocumentGetter documentGetter;
     private Map documentsMenuItems;
-    private Map documentsTemplateIds;
 
     static final String SQL_GET_MENU_ITEMS = "SELECT meta_id, menus.menu_id, menu_index, sort_order, to_meta_id, manual_sort_order, tree_sort_index FROM menus,childs WHERE menus.menu_id = childs.menu_id AND meta_id ";
 
@@ -59,16 +60,19 @@ public class TextDocumentInitializer {
     public void initialize(TextDocumentDomainObject document) {
         Integer documentId = new Integer(document.getId()) ;
         document.setLazilyLoadedMenus(new LazilyLoadedObject(new MenusLoader(documentId)));
-        document.setLazilyLoadedTemplateIds(new LazilyLoadedObject(new TemplateIdsLoader(documentId)));
         
         // document.setTexts???
         // document.setImages???
         
         // init includes    	     	
-   		IncludeDao dao = (IncludeDao)Imcms.getServices().getSpringBean("includeDao");
-   		List<Include> includes = dao.getDocumentIncludes(documentId);
+   		IncludeDao includeDao = (IncludeDao)Imcms.getServices().getSpringBean("includeDao");
+   		List<Include> includes = includeDao.getDocumentIncludes(documentId);
+   		
+   		TemplateNamesDao tnDao = (TemplateNamesDao)Imcms.getServices().getSpringBean("templateNamesDao");
+   		TemplateNames templateNames = tnDao.getTemplateNames(documentId);  
     				
 		document.setIncludes(includes);
+		document.setTemplateNames(templateNames);
     }
 
     private class MenusLoader implements LazilyLoadedObject.Loader {
@@ -125,46 +129,6 @@ public class TextDocumentInitializer {
         }
     }
 
-    private class TemplateIdsLoader implements LazilyLoadedObject.Loader {
 
-        private final Integer documentId;
-
-        TemplateIdsLoader(Integer documentId) {
-            this.documentId = documentId;
-        }
-
-        public LazilyLoadedObject.Copyable load() {
-            initDocumentsTemplateIds();
-            TextDocumentDomainObject.TemplateNames templateNames = (TextDocumentDomainObject.TemplateNames) documentsTemplateIds.get(documentId) ;
-            if (null == templateNames ) {
-                templateNames = new TextDocumentDomainObject.TemplateNames();
-            }
-            return templateNames ;
-        }
-
-        private void initDocumentsTemplateIds() {
-            if ( null == documentsTemplateIds ) {
-                documentsTemplateIds = new HashMap();
-                DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id, template_name, group_id, default_template, default_template_1, default_template_2 FROM text_docs WHERE meta_id ", documentIds, new ResultSetHandler() {
-                    public Object handle(ResultSet rs) throws SQLException {
-                        while ( rs.next() ) {
-                            Integer documentId = new Integer(rs.getInt("meta_id"));
-                            TextDocumentDomainObject.TemplateNames templateNames = new TextDocumentDomainObject.TemplateNames();
-                            templateNames.setTemplateName(rs.getString("template_name"));
-                            templateNames.setTemplateGroupId(rs.getInt(3));
-                            templateNames.setDefaultTemplateName(rs.getString("default_template"));
-                            String defaultTemplateIdForR1 = rs.getString("default_template_1");
-                            String defaultTemplateIdForR2 = rs.getString("default_template_2");
-                            templateNames.setDefaultTemplateNameForRestricted1(defaultTemplateIdForR1);
-                            templateNames.setDefaultTemplateNameForRestricted2(defaultTemplateIdForR2);
-                            documentsTemplateIds.put(documentId, templateNames);
-                        }
-                        return null;
-                    }
-                });
-            }
-        }
-
-    }
 
 }

@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.UnhandledException;
-
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Include;
@@ -31,7 +29,8 @@ import com.imcode.imcms.mapping.DocumentMenusMap;
 // getTextsMap, getImagesMap, getText, getImage
 public class TextDocumentDomainObject extends DocumentDomainObject {
 	
-    /**
+	
+	/**
      * Holds map of loaded images.
      * 
      * Latter can be loaded as lazy object in loadAllLazyLoaded.
@@ -55,16 +54,14 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     
     private Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
     
+    private TemplateNames templateNames = new TemplateNames();
+    
+    
     private LazilyLoadedObject<DocumentMenusMap> menus = new LazilyLoadedObject<DocumentMenusMap>(new LazilyLoadedObject.Loader<DocumentMenusMap>() {
         public DocumentMenusMap load() {
             return new DocumentMenusMap();
         }
-    });
-    private LazilyLoadedObject<TemplateNames> templateNames = new LazilyLoadedObject<TemplateNames>(new LazilyLoadedObject.Loader<TemplateNames>() {
-        public TemplateNames load() {
-            return new TemplateNames();
-        }
-    });
+    });    
     
     
     /**
@@ -133,7 +130,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         loadImages();
         
         menus.load();
-        templateNames.load();
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -144,7 +140,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         //clone.includes =
         
         clone.menus = (LazilyLoadedObject) menus.clone() ;
-        clone.templateNames = (LazilyLoadedObject) templateNames.clone() ;
+        
+        clone.templateNames = (TemplateNames) templateNames.clone() ;
         
         return clone;
     }
@@ -381,15 +378,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public String getTemplateName() {
-        return getTemplateNames().getTemplateName();
-    }
-
-    private TemplateNames getTemplateNames() {
-        return (TemplateNames) templateNames.get();
+        return templateNames.getTemplateName();
     }
 
     public int getTemplateGroupId() {
-        return getTemplateNames().getTemplateGroupId();
+        return templateNames.getTemplateGroupId();
     }
 
     public Map<Integer, TextDomainObject> getTexts() {
@@ -401,19 +394,19 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }    
 
     public void setTemplateName( String templateName ) {
-        getTemplateNames().setTemplateName(templateName);
+    	templateNames.setTemplateName(templateName);
     }
 
     public void setTemplateGroupId( int v ) {
-        getTemplateNames().setTemplateGroupId(v);
+    	templateNames.setTemplateGroupId(v);
     }
 
     public String getDefaultTemplateName() {
-        return getTemplateNames().getDefaultTemplateName();
+        return templateNames.getDefaultTemplateName();
     }
 
     public void setDefaultTemplateId( String defaultTemplateId ) {
-        getTemplateNames().setDefaultTemplateName(defaultTemplateId);
+    	templateNames.setDefaultTemplateName(defaultTemplateId);
     }
 
     public void removeInclude( int includeIndex ) {
@@ -435,90 +428,19 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public String getDefaultTemplateNameForRestricted1() {
-        return getTemplateNames().getDefaultTemplateNameForRestricted1();
+        return templateNames.getDefaultTemplateNameForRestricted1();
     }
 
     public String getDefaultTemplateNameForRestricted2() {
-        return getTemplateNames().getDefaultTemplateNameForRestricted2();
+        return templateNames.getDefaultTemplateNameForRestricted2();
     }
 
     public void setDefaultTemplateIdForRestricted1(String defaultTemplateIdForRestricted1) {
-        getTemplateNames().setDefaultTemplateNameForRestricted1(defaultTemplateIdForRestricted1);
+    	templateNames.setDefaultTemplateNameForRestricted1(defaultTemplateIdForRestricted1);
     }
 
     public void setDefaultTemplateIdForRestricted2(String defaultTemplateIdForRestricted2) {
-        getTemplateNames().setDefaultTemplateNameForRestricted2(defaultTemplateIdForRestricted2);
-    }
-
-    public void setLazilyLoadedTemplateIds(LazilyLoadedObject templateIds) {
-        this.templateNames = templateIds;
-    }
-
-    private static class CopyableHashMapLoader implements LazilyLoadedObject.Loader<CopyableHashMap> {
-
-        public CopyableHashMap load() {
-            return new CopyableHashMap();
-        }
-    }
-
-    public static class TemplateNames implements LazilyLoadedObject.Copyable<TemplateNames>, Cloneable {
-        private String templateName;
-        private int templateGroupId;
-        private String defaultTemplateName;
-        private String defaultTemplateNameForRestricted1 ;
-        private String defaultTemplateNameForRestricted2 ;
-
-        public TemplateNames copy() {
-            return (TemplateNames) clone() ;
-        }
-
-        public Object clone() {
-            try {
-                return super.clone();
-            } catch ( CloneNotSupportedException e ) {
-                throw new UnhandledException(e);
-            }
-        }
-
-        public String getTemplateName() {
-            return templateName;
-        }
-
-        public void setTemplateName(String templateName) {
-            this.templateName = templateName;
-        }
-
-        public int getTemplateGroupId() {
-            return templateGroupId;
-        }
-
-        public void setTemplateGroupId(int templateGroupId) {
-            this.templateGroupId = templateGroupId;
-        }
-
-        public String getDefaultTemplateName() {
-            return defaultTemplateName;
-        }
-
-        public void setDefaultTemplateName(String defaultTemplateName) {
-            this.defaultTemplateName = defaultTemplateName;
-        }
-
-        public String getDefaultTemplateNameForRestricted1() {
-            return defaultTemplateNameForRestricted1;
-        }
-
-        public void setDefaultTemplateNameForRestricted1(String defaultTemplateNameForRestricted1) {
-            this.defaultTemplateNameForRestricted1 = defaultTemplateNameForRestricted1;
-        }
-
-        public String getDefaultTemplateNameForRestricted2() {
-            return defaultTemplateNameForRestricted2;
-        }
-
-        public void setDefaultTemplateNameForRestricted2(String defaultTemplateNameForRestricted2) {
-            this.defaultTemplateNameForRestricted2 = defaultTemplateNameForRestricted2;
-        }
+    	templateNames.setDefaultTemplateNameForRestricted2(defaultTemplateIdForRestricted2);
     }
 	
     /**
@@ -635,6 +557,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         cloneTexts();
         cloneImages();
         cloneIncludes();
+        cloneTemplateNames();
     }
 
     private void cloneImages() {
@@ -685,6 +608,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         texts = textsClone;
     }
     
+    private void cloneTemplateNames() {
+    	templateNames = (TemplateNames)templateNames.clone();
+    }
     
     private void cloneIncludes() {
     	List<Include> includesClone = new LinkedList<Include>();
@@ -717,5 +643,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
 	public List<Include> getIncludes() {
 		return includes;
+	}
+
+	public TemplateNames getTemplateNames() {
+		return templateNames;
+	}
+
+	public void setTemplateNames(TemplateNames templateNames) {
+		this.templateNames = templateNames;
 	}
 }
