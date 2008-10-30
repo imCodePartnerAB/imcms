@@ -1,19 +1,11 @@
 package com.imcode.imcms.mapping;
 
 import imcode.server.Imcms;
-import imcode.server.document.DirectDocumentReference;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.CopyableHashMap;
-import imcode.server.document.textdocument.FileDocumentImageSource;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TemplateNames;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.document.textdocument.TreeSortKeyDomainObject;
 import imcode.util.LazilyLoadedObject;
 import imcode.util.Utility;
@@ -28,38 +20,35 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.imcode.db.Database;
-import com.imcode.imcms.api.I18nException;
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Include;
 import com.imcode.imcms.dao.IncludeDao;
+import com.imcode.imcms.dao.MenuDao;
 import com.imcode.imcms.dao.TemplateNamesDao;
 
 public class TextDocumentInitializer {
 
     private final static Logger LOG = Logger.getLogger(TextDocumentInitializer.class);
 
-    private final Collection documentIds;
+    //private final Collection documentIds;
     private final Database database;
     private final DocumentGetter documentGetter;
-    private Map documentsMenuItems;
+    //private Map documentsMenuItems;
 
     static final String SQL_GET_MENU_ITEMS = "SELECT meta_id, menus.menu_id, menu_index, sort_order, to_meta_id, manual_sort_order, tree_sort_index FROM menus,childs WHERE menus.menu_id = childs.menu_id AND meta_id ";
 
     public TextDocumentInitializer(Database database, DocumentGetter documentGetter, Collection documentIds) {
         this.database = database;
         this.documentGetter = documentGetter;
-        this.documentIds = documentIds;
+        //this.documentIds = documentIds;
     }
     
     // TODO: refactor
     public void initialize(TextDocumentDomainObject document) {
         Integer documentId = new Integer(document.getId()) ;
-        document.setLazilyLoadedMenus(new LazilyLoadedObject(new MenusLoader(documentId)));
+        //document.setLazilyLoadedMenus(new LazilyLoadedObject(new MenusLoader(documentId)));
         
         // document.setTexts???
         // document.setImages???
@@ -73,8 +62,32 @@ public class TextDocumentInitializer {
     				
 		document.setIncludes(includes);
 		document.setTemplateNames(templateNames);
+		
+		MenuDao menuDao = (MenuDao)Imcms.getServices().getSpringBean("menuDao");
+		List<MenuDomainObject> menus = menuDao.getMenus(documentId);
+		
+        Set destinationDocumentIds = new HashSet();
+        BatchDocumentGetter batchDocumentGetter = new BatchDocumentGetter(destinationDocumentIds, documentGetter);
+        Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
+        
+        for (MenuDomainObject menu: menus) {
+        	menusMap.put(menu.getIndex(), menu);
+        	
+        	for (Map.Entry<Integer, MenuItemDomainObject> entry: menu.getItemsMap().entrySet()) {
+        		Integer destinationDocumentId = entry.getKey();
+        		MenuItemDomainObject menuItem = entry.getValue();
+        		
+        		GetterDocumentReference gtr = new GetterDocumentReference(destinationDocumentId, batchDocumentGetter);
+        		menuItem.setDocumentReference(gtr);     
+        		
+        		destinationDocumentIds.add(destinationDocumentId);
+        	}
+        }
+        
+        document.setMenusMap(menusMap);
     }
 
+    /*
     private class MenusLoader implements LazilyLoadedObject.Loader {
 
         private final Integer documentId;
@@ -128,7 +141,5 @@ public class TextDocumentInitializer {
             }
         }
     }
-
-
-
+	*/
 }

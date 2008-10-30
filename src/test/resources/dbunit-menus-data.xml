@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <menus menu_id="1" meta_id="1001" menu_index="1" sort_order="1"/>
+  
+  <childs menu_id="1" to_meta_id="1001" manual_sort_order="3" tree_sort_index="3"/>
+  <!--
+  <childs/>   
+   -->
+</dataset>

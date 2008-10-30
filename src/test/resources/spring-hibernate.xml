@@ -80,4 +80,8 @@
   <bean id="templateNamesDao" class="com.imcode.imcms.dao.TemplateNamesDaoImpl">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>  
+  
+  <bean id="menuDao" class="com.imcode.imcms.dao.MenuDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>  
 </beans>

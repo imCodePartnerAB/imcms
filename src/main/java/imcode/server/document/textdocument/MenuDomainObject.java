@@ -15,6 +15,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Table;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
@@ -22,11 +32,33 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+@Entity(name="Menu")
+@Table(name="menus")
 public class MenuDomainObject implements Cloneable, Serializable {
 
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="menu_id")
     private int id;
+	
+	@Column(name="sort_order")
     private int sortOrder;
-    private HashMap menuItems;
+	
+	@Column(name="menu_index")
+	private Integer index;
+	
+	@Column(name="meta_id")
+	private Integer metaId;
+    
+
+	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+	@JoinTable(
+	    name = "childs",
+	    joinColumns = @JoinColumn(name = "menu_id")
+	)	
+	@org.hibernate.annotations.MapKey(
+	   columns = @Column(name="to_meta_id")
+	)
+    private Map<Integer, MenuItemDomainObject> menuItems = new HashMap<Integer, MenuItemDomainObject>();
 
     public final static int MENU_SORT_ORDER__BY_HEADLINE = 1;
     public final static int MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED = 2;
@@ -36,6 +68,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
     public final static int MENU_SORT_ORDER__DEFAULT = MENU_SORT_ORDER__BY_HEADLINE;
 
     public final static int DEFAULT_SORT_KEY = 500;
+    
     private static final int DEFAULT_SORT_KEY_INCREMENT = 10;
 
     public MenuDomainObject() {
@@ -45,12 +78,11 @@ public class MenuDomainObject implements Cloneable, Serializable {
     public Object clone() throws CloneNotSupportedException {
         try {
             MenuDomainObject clone = (MenuDomainObject)super.clone() ;
-            clone.menuItems = new HashMap() ;
-            for ( Iterator iterator = menuItems.entrySet().iterator(); iterator.hasNext(); ) {
-                Map.Entry entry = (Map.Entry)iterator.next();
-                Integer documentId = (Integer)entry.getKey();
-                MenuItemDomainObject menuItem = (MenuItemDomainObject)entry.getValue();
-                clone.menuItems.put(documentId, menuItem.clone()) ;
+            clone.menuItems = new HashMap<Integer, MenuItemDomainObject>();
+            for (Map.Entry<Integer, MenuItemDomainObject> entry: menuItems.entrySet()) {
+                Integer documentId = entry.getKey();
+                MenuItemDomainObject menuItem = entry.getValue();
+                clone.menuItems.put(documentId, (MenuItemDomainObject)menuItem.clone()) ;
             }
             return clone ;
         } catch ( CloneNotSupportedException e ) {
@@ -61,7 +93,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
     public MenuDomainObject( int id, int sortOrder ) {
         this.id = id;
         this.sortOrder = sortOrder;
-        menuItems = new HashMap();
+        menuItems = new HashMap<Integer, MenuItemDomainObject>();
     }
 
     public int getId() {
@@ -204,4 +236,23 @@ public class MenuDomainObject implements Cloneable, Serializable {
         return new HashCodeBuilder().append(sortOrder).append(menuItems).toHashCode() ;
     }
 
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
+	}
+
+	public Integer getMetaId() {
+		return metaId;
+	}
+
+	public void setMetaId(Integer metaId) {
+		this.metaId = metaId;
+	}
+
+	public Map<Integer, MenuItemDomainObject> getItemsMap() {
+		return menuItems;
+	}
 }

@@ -55,13 +55,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
     
     private TemplateNames templateNames = new TemplateNames();
-    
-    
-    private LazilyLoadedObject<DocumentMenusMap> menus = new LazilyLoadedObject<DocumentMenusMap>(new LazilyLoadedObject.Loader<DocumentMenusMap>() {
-        public DocumentMenusMap load() {
-            return new DocumentMenusMap();
-        }
-    });    
+        
+    private Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();  
     
     
     /**
@@ -128,8 +123,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         loadTexts();
         loadImages();
-        
-        menus.load();
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -139,7 +132,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         //clone.images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>(images);        
         //clone.includes =
         
-        clone.menus = (LazilyLoadedObject) menus.clone() ;
+        //clone.menus = (LazilyLoadedObject) menus.clone() ;
         
         clone.templateNames = (TemplateNames) templateNames.clone() ;
         
@@ -198,13 +191,14 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
     
 
-    public MenuDomainObject getMenu( int menuIndex ) {
-        Map menusMap = (Map) menus.get();
-        MenuDomainObject menu = (MenuDomainObject) menusMap.get( new Integer( menuIndex ) );
+    public MenuDomainObject getMenu(int menuIndex) {
+        MenuDomainObject menu = menusMap.get(menuIndex);
+        /*
         if (null == menu) {
             menu = new MenuDomainObject() ;
             setMenu( menuIndex, menu );
         }
+        */
         return menu;
     }
 
@@ -280,11 +274,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void removeAllMenus() {
-        getMenusMap().clear();
-    }
-
-    private Map getMenusMap() {
-        return (Map) menus.get();
+        menusMap.clear();
     }
 
     public void removeAllTexts() {
@@ -320,7 +310,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     
 
     public void setMenu( int menuIndex, MenuDomainObject menu ) {
-        getMenusMap().put( new Integer( menuIndex ), menu );
+        menusMap.put(menuIndex, menu);
     }
     
         
@@ -374,7 +364,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public Map<Integer, MenuDomainObject> getMenus() {
-        return Collections.unmodifiableMap( getMenusMap() );
+        return Collections.unmodifiableMap(menusMap);
     }
 
     public String getTemplateName() {
@@ -421,10 +411,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     			break;
     		}
     	}
-    }
-
-    public void setLazilyLoadedMenus(LazilyLoadedObject menus) {
-        this.menus = menus;
     }
 
     public String getDefaultTemplateNameForRestricted1() {
@@ -651,5 +637,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
 	public void setTemplateNames(TemplateNames templateNames) {
 		this.templateNames = templateNames;
+	}
+
+	public void setMenusMap(Map<Integer, MenuDomainObject> menusMap) {
+		this.menusMap = menusMap;
 	}
 }
