@@ -76,7 +76,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
     private String linkUrl = "";
     
     @Column(name="imgurl")
-    private String imageUrl;
+    private String imageUrl = "";
     
     private Integer type;
     

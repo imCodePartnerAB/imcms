@@ -135,7 +135,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
                 if (text.isModified()) {
                     sqlInsertTextHistory(language, textDocument, index, text, user);
-                   
+                    text.setMetaId(metaId);
                     textDao.insertOrUpdateText(text);
                 }
             }

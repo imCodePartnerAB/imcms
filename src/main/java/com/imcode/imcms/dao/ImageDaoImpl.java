@@ -116,8 +116,9 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		
 		// ??? set meta id ???
 		// ??? set id ???
-		
 		for (ImageDomainObject image: images) {
+			image.setImageUrl(image.getSource().toStorageString());
+			//imageSource.toStorageString()
             //image.setId(null);
             image.setMetaId(metaId);
             saveOrUpdate(image);
