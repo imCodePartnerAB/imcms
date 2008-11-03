@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <document_properties meta_id="1001" key_name="a" value="1"/>
+  <document_properties meta_id="1001" key_name="b" value="2"/>
+  <document_properties meta_id="1001" key_name="c" value="3"/>
+</dataset>

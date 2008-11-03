@@ -128,6 +128,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
             int index = 1; 
             int documentId = resultSet.getInt(index++);
             document.setId(documentId);
+            
             //document.setHeadline(resultSet.getString(3));
             //document.setMenuText(resultSet.getString(4));
             //document.setMenuImage(resultSet.getString(5));

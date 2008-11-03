@@ -344,8 +344,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     protected void updateTextDocumentMenus(final TextDocumentDomainObject textDocument, final TextDocumentDomainObject oldTextDocument, final UserDomainObject savingUser) {
     	MenuDao dao = (MenuDao)Imcms.getServices().getSpringBean("menuDao");
 
-    	dao.saveMenu(textDocument.getId(), textDocument.getMenus());
+    	dao.saveDocumentMenus(textDocument.getId(), textDocument.getMenus());
     	
+    	/*
     	if (true) return;
     	
         database.execute( new TransactionDatabaseCommand() {
@@ -355,5 +356,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 return null ;
             }
         } );
+        */
     }
 }

@@ -2,6 +2,7 @@ package com.imcode.imcms.dao;
 
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TreeSortKeyDomainObject;
 
 import java.util.List;
 import java.util.Map;
@@ -30,12 +31,20 @@ public class MenuDaoImpl extends HibernateTemplate implements MenuDao {
 	public List<MenuDomainObject> getMenus(int metaId) {
 		String hql = "SELECT m FROM Menu m  WHERE m.metaId = :metaId";
 		
-		return (List<MenuDomainObject>)findByNamedParam(hql, "metaId", metaId);
+		List<MenuDomainObject> menus = (List<MenuDomainObject>)findByNamedParam(hql, "metaId", metaId);
+		
+		for (MenuDomainObject menu: menus) {
+			for (MenuItemDomainObject item: menu.getItemsMap().values()) {
+				item.setTreeSortKey(new TreeSortKeyDomainObject(item.getTreeSortIndex()));
+			}
+		}
+		
+		return menus;
 	}	
 	
 	
 	@Transactional
-	public Map<Integer, MenuDomainObject> saveMenu(int metaId, Map<Integer, MenuDomainObject> menusMap) {
+	public Map<Integer, MenuDomainObject> saveDocumentMenus(int metaId, Map<Integer, MenuDomainObject> menusMap) {
 		for (Map.Entry<Integer, MenuDomainObject> entry: menusMap.entrySet()) {
 			MenuDomainObject menu = entry.getValue();
 			

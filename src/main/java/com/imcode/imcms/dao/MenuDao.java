@@ -13,7 +13,7 @@ public interface MenuDao {
 	
 	List<MenuDomainObject> getMenus(int metaId);
 	
-	Map<Integer, MenuDomainObject> saveMenu(int metaId, Map<Integer, MenuDomainObject> menusMap);
+	Map<Integer, MenuDomainObject> saveDocumentMenus(int metaId, Map<Integer, MenuDomainObject> menusMap);
 	
 	void deleteMenu(MenuDomainObject menu);
 }

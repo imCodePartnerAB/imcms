@@ -608,12 +608,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
         private int creatorId;
 
-        private String headline = "";
+        //moved to i18n meta private String headline = "";
 
-        private String image;
+        //moved to i18n meta private String image;
         private String languageIso639_2;
+        
         private boolean linkableByOtherUsers;
-        private String menuText = "";
+        //moved to i18n meta private String menuText = "";
         private int id;
         private Date modifiedDatetime;
         private Date actualModifiedDatetime;

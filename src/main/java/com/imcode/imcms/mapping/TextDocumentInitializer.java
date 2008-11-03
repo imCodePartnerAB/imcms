@@ -33,14 +33,14 @@ public class TextDocumentInitializer {
     private final static Logger LOG = Logger.getLogger(TextDocumentInitializer.class);
 
     //private final Collection documentIds;
-    private final Database database;
+    //private final Database database;
     private final DocumentGetter documentGetter;
     //private Map documentsMenuItems;
 
     static final String SQL_GET_MENU_ITEMS = "SELECT meta_id, menus.menu_id, menu_index, sort_order, to_meta_id, manual_sort_order, tree_sort_index FROM menus,childs WHERE menus.menu_id = childs.menu_id AND meta_id ";
 
     public TextDocumentInitializer(Database database, DocumentGetter documentGetter, Collection documentIds) {
-        this.database = database;
+        //this.database = database;
         this.documentGetter = documentGetter;
         //this.documentIds = documentIds;
     }
@@ -78,9 +78,10 @@ public class TextDocumentInitializer {
         		MenuItemDomainObject menuItem = entry.getValue();
         		
         		GetterDocumentReference gtr = new GetterDocumentReference(destinationDocumentId, batchDocumentGetter);
-        		TreeSortKeyDomainObject tsk = new TreeSortKeyDomainObject(menuItem.getTreeSortIndex());
-        		menuItem.setDocumentReference(gtr); 
-        		menuItem.setTreeSortKey(tsk);
+        		menuItem.setDocumentReference(gtr);
+        		// moved to dao
+        		//TreeSortKeyDomainObject tsk = new TreeSortKeyDomainObject(menuItem.getTreeSortIndex());
+        		//menuItem.setTreeSortKey(tsk);
         		
         		destinationDocumentIds.add(destinationDocumentId);
         	}
