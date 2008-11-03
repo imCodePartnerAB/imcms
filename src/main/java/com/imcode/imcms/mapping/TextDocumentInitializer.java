@@ -66,7 +66,7 @@ public class TextDocumentInitializer {
 		MenuDao menuDao = (MenuDao)Imcms.getServices().getSpringBean("menuDao");
 		List<MenuDomainObject> menus = menuDao.getMenus(documentId);
 		
-        Set destinationDocumentIds = new HashSet();
+        Set<Integer> destinationDocumentIds = new HashSet<Integer>();
         BatchDocumentGetter batchDocumentGetter = new BatchDocumentGetter(destinationDocumentIds, documentGetter);
         Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
         
@@ -78,7 +78,9 @@ public class TextDocumentInitializer {
         		MenuItemDomainObject menuItem = entry.getValue();
         		
         		GetterDocumentReference gtr = new GetterDocumentReference(destinationDocumentId, batchDocumentGetter);
-        		menuItem.setDocumentReference(gtr);     
+        		TreeSortKeyDomainObject tsk = new TreeSortKeyDomainObject(menuItem.getTreeSortIndex());
+        		menuItem.setDocumentReference(gtr); 
+        		menuItem.setTreeSortKey(tsk);
         		
         		destinationDocumentIds.add(destinationDocumentId);
         	}

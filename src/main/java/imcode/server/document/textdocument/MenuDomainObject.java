@@ -38,7 +38,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="menu_id")
-    private int id;
+    private Long id;
 	
 	@Column(name="sort_order")
     private int sortOrder;
@@ -53,7 +53,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
 	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
 	@JoinTable(
 	    name = "childs",
-	    joinColumns = @JoinColumn(name = "menu_id")
+	    joinColumns = @JoinColumn(name="menu_id")
 	)	
 	@org.hibernate.annotations.MapKey(
 	   columns = @Column(name="to_meta_id")
@@ -72,10 +72,10 @@ public class MenuDomainObject implements Cloneable, Serializable {
     private static final int DEFAULT_SORT_KEY_INCREMENT = 10;
 
     public MenuDomainObject() {
-        this( 0, MENU_SORT_ORDER__DEFAULT );
+        this( null, MENU_SORT_ORDER__DEFAULT );
     }
 
-    public Object clone() throws CloneNotSupportedException {
+    public MenuDomainObject clone() {
         try {
             MenuDomainObject clone = (MenuDomainObject)super.clone() ;
             clone.menuItems = new HashMap<Integer, MenuItemDomainObject>();
@@ -90,17 +90,17 @@ public class MenuDomainObject implements Cloneable, Serializable {
         }
     }
 
-    public MenuDomainObject( int id, int sortOrder ) {
+    public MenuDomainObject( Long id, int sortOrder ) {
         this.id = id;
         this.sortOrder = sortOrder;
         menuItems = new HashMap<Integer, MenuItemDomainObject>();
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId( int id ) {
+    public void setId( Long id ) {
         this.id = id;
     }
 

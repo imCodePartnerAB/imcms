@@ -52,6 +52,8 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		for (Map<Integer, ImageDomainObject> map: imagesMap.values()) {
 			for (ImageDomainObject image: map.values()) {
                 //image.setId(null);
+				image.setImageUrl(image.getSource().toStorageString());
+				image.setType(image.getSource().getTypeId());
                 image.setMetaId(metaId);
                 saveOrUpdate(image);
 			}
@@ -112,8 +114,15 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 	
 	@Transactional
 	public List<ImageDomainObject> saveDocumentImages(int metaId,
-			List<ImageDomainObject> images) {		
+			List<ImageDomainObject> images) {
+		
+		// ??? set meta id ???
+		// ??? set id ???
 		for (ImageDomainObject image: images) {
+			image.setImageUrl(image.getSource().toStorageString());
+			image.setType(image.getSource().getTypeId());
+			//imageSource.toStorageString()
+            //image.setId(null);
             image.setMetaId(metaId);
             saveOrUpdate(image);
 		}		

@@ -1,6 +1,7 @@
 package com.imcode.imcms.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import imcode.server.document.textdocument.MenuDomainObject;
 
@@ -12,7 +13,7 @@ public interface MenuDao {
 	
 	List<MenuDomainObject> getMenus(int metaId);
 	
-	MenuDomainObject saveMenu(MenuDomainObject menu);
+	Map<Integer, MenuDomainObject> saveMenu(int metaId, Map<Integer, MenuDomainObject> menusMap);
 	
 	void deleteMenu(MenuDomainObject menu);
 }

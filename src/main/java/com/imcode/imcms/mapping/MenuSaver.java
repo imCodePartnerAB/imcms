@@ -53,7 +53,7 @@ public class MenuSaver {
     private void insertTextDocumentMenuHistory(TextDocumentDomainObject oldTextDocument, Integer menuIndex, MenuDomainObject oldMenu, UserDomainObject savingUser, ImcmsServices services) {
         SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING);
         database.execute(new InsertIntoTableDatabaseCommand("menus_history", new Object[][] {
-                { "menu_id", new Integer(oldMenu.getId())},
+                { "menu_id", oldMenu.getId()},
                 { "meta_id", new Integer(oldTextDocument.getId())},
                 { "menu_index", new Integer(menuIndex) },
                 { "sort_order", new Integer(oldMenu.getSortOrder()) },
@@ -71,7 +71,7 @@ public class MenuSaver {
     private void sqlInsertMenuItemHistory(MenuDomainObject oldMenu, MenuItemDomainObject menuItem) {
 
         database.execute(new InsertIntoTableDatabaseCommand("childs_history", new Object[][] {
-                { "menu_id", new Integer(oldMenu.getId())},
+                { "menu_id", oldMenu.getId()},
                 { "to_meta_id", new Integer(menuItem.getDocumentReference().getDocumentId())},
                 { "manual_sort_order", new Integer(menuItem.getSortKey()) },
                 { "tree_sort_index", menuItem.getTreeSortKey().toString() }
@@ -83,7 +83,8 @@ public class MenuSaver {
         if (!menus.isEmpty()) {
             Collection menuIds = CollectionUtils.collect(menus, new Transformer() {
                 public Object transform(Object input) {
-                    return new Integer(((MenuDomainObject) input).getId());
+                	// TODO: check prev return class was integer.
+                    return ( (MenuDomainObject) input).getId();
                 }
             });
             String sqlInMenuIds = StringUtils.join(menuIds.iterator(), ",");
@@ -149,7 +150,7 @@ public class MenuSaver {
                 { "menu_index", new Integer(menuIndex) },
                 { "sort_order", new Integer(menu.getSortOrder()) }
         }));
-        menu.setId( menuId.intValue() );
+        menu.setId( menuId.longValue() );
     }
 
 

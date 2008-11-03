@@ -28,5 +28,5 @@ public interface ImageDao {
 	/**
 	 * Saves text document's images. 
 	 */	
-	void saveImagesMap(int metaId, Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap);	
+	void saveImagesMap(int documentId, Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap);	
 }

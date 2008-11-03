@@ -21,7 +21,7 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
 	private Integer sortKey;
 	
 	@Column(name="tree_sort_index")
-	private Integer treeSortIndex;	
+	private String treeSortIndex;	
     
     @Transient
     private TreeSortKeyDomainObject treeSortKey;
@@ -92,11 +92,11 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
         this.treeSortKey = treeSortKey;
     }
 
-	public Integer getTreeSortIndex() {
+	public String getTreeSortIndex() {
 		return treeSortIndex;
 	}
 
-	public void setTreeSortIndex(Integer treeSortIndex) {
+	public void setTreeSortIndex(String treeSortIndex) {
 		this.treeSortIndex = treeSortIndex;
 	}
 

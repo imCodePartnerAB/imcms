@@ -49,6 +49,7 @@ import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Include;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.IncludeDao;
+import com.imcode.imcms.dao.MenuDao;
 import com.imcode.imcms.dao.TemplateNamesDao;
 import com.imcode.imcms.dao.TextDao;
 
@@ -341,6 +342,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     protected void updateTextDocumentMenus(final TextDocumentDomainObject textDocument, final TextDocumentDomainObject oldTextDocument, final UserDomainObject savingUser) {
+    	MenuDao dao = (MenuDao)Imcms.getServices().getSpringBean("menuDao");
+
+    	dao.saveMenu(textDocument.getId(), textDocument.getMenus());
+    	
+    	if (true) return;
+    	
         database.execute( new TransactionDatabaseCommand() {
             public Object executeInTransaction( DatabaseConnection connection ) {
                 MenuSaver menuSaver = new MenuSaver(new SingleConnectionDatabase(connection)) ;

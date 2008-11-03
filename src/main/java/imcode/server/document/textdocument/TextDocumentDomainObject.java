@@ -4,7 +4,6 @@ import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
-import imcode.util.LazilyLoadedObject;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -23,7 +22,6 @@ import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.IncludeDao;
 import com.imcode.imcms.dao.TextDao;
-import com.imcode.imcms.mapping.DocumentMenusMap;
 
 //TODO: Refactor out text and image loading logic into lazy load object and optimize:
 // getTextsMap, getImagesMap, getText, getImage
@@ -193,12 +191,14 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public MenuDomainObject getMenu(int menuIndex) {
         MenuDomainObject menu = menusMap.get(menuIndex);
-        /*
+        
+        //TODO: REPLACE with const MenuDomainObject()???
+        
         if (null == menu) {
             menu = new MenuDomainObject() ;
             setMenu( menuIndex, menu );
         }
-        */
+        
         return menu;
     }
 
@@ -215,7 +215,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	public TextDomainObject getText(I18nLanguage language, 
 			int index) {
 		
-		getMenu(0);
+		//WTF? - investigate
+		//getMenu(0);
 		
 		if (language == null) {
 			throw new IllegalArgumentException("language argument " +
@@ -274,7 +275,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void removeAllMenus() {
-        menusMap.clear();
+        menusMap = new HashMap<Integer, MenuDomainObject>();
     }
 
     public void removeAllTexts() {
@@ -544,10 +545,26 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         cloneImages();
         cloneIncludes();
         cloneTemplateNames();
+        cloneMenus();
+    }
+    
+    private void cloneMenus() {
+    	Map<Integer, MenuDomainObject> menusClone = new HashMap<Integer, MenuDomainObject>();
+    	
+    	for (Map.Entry<Integer, MenuDomainObject> entry: menusMap.entrySet()) {
+    		MenuDomainObject menu = entry.getValue();
+    		MenuDomainObject menuClone = menu.clone();
+    		
+    		menuClone.setId(null);
+    		menuClone.setMetaId(null);
+    		
+    		menusClone.put(entry.getKey(), menuClone);
+    	}
+    	
+    	menusMap = menusClone;
     }
 
     private void cloneImages() {
-        int metaId = getId();
         Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesClone
     		= new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
 
@@ -571,7 +588,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     private void cloneTexts() {
-        int metaId = getId();
         Map<I18nLanguage, Map<Integer, TextDomainObject>> textsClone    
     		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
 
@@ -596,6 +612,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     
     private void cloneTemplateNames() {
     	templateNames = (TemplateNames)templateNames.clone();
+    	templateNames.setMetaId(null);
     }
     
     private void cloneIncludes() {

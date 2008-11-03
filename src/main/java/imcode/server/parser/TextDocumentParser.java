@@ -113,7 +113,7 @@ public class TextDocumentParser {
 
             final String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
             if (null == template) {
-                throw new RuntimeException("TemplateNamesDao not found: "+templateName);
+                throw new RuntimeException("Template not found: "+templateName);
             } else if (template.getFileName().endsWith(".jsp") || template.getFileName().endsWith(".jspx")) {
                 try {
                     HttpServletRequest request = documentRequest.getHttpServletRequest();
