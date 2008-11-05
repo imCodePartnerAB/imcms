@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.CopyableHashSet;
 import imcode.server.document.DocumentDomainObject;
@@ -27,31 +28,32 @@ import org.apache.commons.dbutils.ResultSetHandler;
 
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.dao.IncludeDao;
+import com.imcode.imcms.dao.MetaDao;
 import com.imcode.util.CountingIterator;
 
 public class DocumentInitializer {
-    private static final String SQL_GET_DOCUMENT_PROPERTIES = "SELECT key_name, value FROM document_properties WHERE meta_id=?";
-
     private final DocumentMapper documentMapper;
-    public static final String SQL_GET_SECTION_IDS_FOR_DOCUMENT = "SELECT ms.meta_id, ms.section_id\n"
-                                                                  + "FROM meta_section ms\n"
-                                                                  + "WHERE ms.meta_id ";
+
     /** Permission to create child documents. * */
     public final static int PERM_CREATE_DOCUMENT = 8;
     private Database database;
 
-    MultiHashMap documentsSectionIds ;
-    MultiHashMap documentsCategoryIds ;
-    HashMap documentsProperties ;
-    HashMap documentsRolePermissionMappings ;
     HashMap documentsPermissionSets ;
     HashMap documentsPermissionSetsForNew ;
+    MetaDao metaDao;
 
     public DocumentInitializer(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
         this.database = documentMapper.getDatabase();
+        
+        metaDao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
     }
 
+    /**
+     * documents in list have some properties loaded with hibernate; 
+     */
     void initDocuments(DocumentList documentList) {
         Set documentIds = documentList.getMap().keySet();
 
@@ -62,17 +64,28 @@ public class DocumentInitializer {
 
             final LazilyLoadedObject permissionSets = new LazilyLoadedObject(new DocumentPermissionSetsLoader(documentIds, false, documentId));
             LazilyLoadedObject permissionSetsForNew = new LazilyLoadedObject(new DocumentPermissionSetsLoader(documentIds, true, documentId));
-            LazilyLoadedObject rolePermissionMappings = new LazilyLoadedObject(new DocumentRolePermissionsLoader(documentIds, documentId));
-            LazilyLoadedObject sectionIds = new LazilyLoadedObject(new DocumentSectionIdsLoader(documentIds, documentId));
-            LazilyLoadedObject categoryIds = new LazilyLoadedObject(new DocumentCategoryIdsLoader(documentIds, documentId));
-            LazilyLoadedObject properties = new LazilyLoadedObject(new DocumentPropertiesLoader(documentIds, documentId));
 
             document.setLazilyLoadedPermissionSets(permissionSets);
             document.setLazilyLoadedPermissionSetsForNew(permissionSetsForNew);
-            document.setLazilyLoadedRoleIdsMappedToDocumentPermissionSetTypes(rolePermissionMappings);
-            document.setLazilyLoadedSectionIds(sectionIds);
-            document.setLazilyLoadedCategoryIds(categoryIds);
-            document.setLazilyLoadedProperties(properties);
+            
+            Meta meta = document.getMeta();
+            
+            document.setSectionIds(meta.getSectionIds());
+            document.setCategoryIds(meta.getCategoryIds());
+            document.setProperties(meta.getProperties());
+            
+            //
+            RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings = 
+            	new RoleIdToDocumentPermissionSetTypeMappings();
+            
+            for (Map.Entry<Integer, Integer> roleRight: meta.getRoleRights().entrySet()) {
+            	rolePermissionMappings.setPermissionSetTypeForRole(
+            			new RoleId(roleRight.getKey()),
+            			DocumentPermissionSetTypeDomainObject.fromInt(roleRight.getValue()));
+            }
+            
+            document.setRoleIdsMappedToDocumentPermissionSetTypes(rolePermissionMappings);
+            
 
             document.accept(documentInitializingVisitor);
         }
@@ -94,128 +107,6 @@ public class DocumentInitializer {
         return documentIdsArray;
     }
 
-    private class DocumentSectionIdsLoader implements LazilyLoadedObject.Loader {
-
-        private final Collection documentIds;
-        private final Integer documentId;
-
-        DocumentSectionIdsLoader(Collection documentIds, Integer documentId
-        ) {
-            this.documentIds = documentIds;
-            this.documentId = documentId;
-        }
-
-        public LazilyLoadedObject.Copyable load() {
-            initDocumentsSectionIds(documentIds);
-            Collection sectionIds = (Collection) documentsSectionIds.get(documentId);
-            if ( null == sectionIds ) {
-                sectionIds = Collections.EMPTY_SET;
-            }
-            return new CopyableHashSet(sectionIds);
-        }
-
-        private void initDocumentsSectionIds(final Collection documentIds) {
-            if ( null != documentsSectionIds ) {
-                return ;
-            }
-            documentsSectionIds = new MultiHashMap();
-            executeWithAppendedIntegerInClause(DocumentInitializer.this.database, SQL_GET_SECTION_IDS_FOR_DOCUMENT, documentIds, new ResultSetHandler() {
-                public Object handle(ResultSet rs) throws SQLException {
-                    while ( rs.next() ) {
-                        int documentId = rs.getInt(1);
-                        int sectionId = rs.getInt(2);
-                        documentsSectionIds.put(new Integer(documentId), new Integer(sectionId));
-                    }
-                    return null;
-                }
-            });
-        }
-
-    }
-
-    private class DocumentPropertiesLoader implements LazilyLoadedObject.Loader {
-
-        private final Collection documentIds;
-        private final Integer documentId ;
-
-        DocumentPropertiesLoader(Collection documentIds, Integer documentId) {
-            this.documentIds = documentIds;
-            this.documentId = documentId;
-        }
-
-        public LazilyLoadedObject.Copyable load() {
-            initDocumentsProperties(documentIds);
-            Map documentProperties = (HashMap) documentsProperties.get(documentId);
-            if ( null == documentProperties ) {
-                documentProperties = new HashMap();
-            }
-            return new CopyableHashMap(documentProperties);
-        }
-
-        private void initDocumentsProperties(Collection documentIds) {
-            if ( null != documentsProperties ) {
-                return ;
-            }
-            documentsProperties = new HashMap();
-            StringBuffer sql = new StringBuffer(SQL_GET_DOCUMENT_PROPERTIES);
-            for ( Iterator iterator = documentIds.iterator(); iterator.hasNext(); ) {
-                final Integer documentId = (Integer) iterator.next();
-                database.execute(new SqlQueryCommand(sql.toString(), new String[] {documentId+""}, new ResultSetHandler() {
-                    public Object handle(ResultSet rs) throws SQLException {
-                        Map properties = new HashMap(rs.getFetchSize());
-                        while ( rs.next() ) {
-                            String keyName = rs.getString(1);
-                            String value = rs.getString(2);
-                            properties.put(keyName, value);
-                        }
-                        documentsProperties.put(documentId, properties);
-                        return null;
-                    }
-                }));
-            }
-        }
-
-    }
-
-
-    private class DocumentCategoryIdsLoader implements LazilyLoadedObject.Loader {
-
-        private final Collection documentIds;
-        private final Integer documentId;
-
-        DocumentCategoryIdsLoader(Collection documentIds, Integer documentId) {
-            this.documentIds = documentIds;
-            this.documentId = documentId;
-        }
-
-        public LazilyLoadedObject.Copyable load() {
-            initDocumentsCategoryIds(documentIds);
-            Collection documentCategoryIds = documentsCategoryIds.getCollection(documentId);
-            if ( null == documentCategoryIds ) {
-                documentCategoryIds = Collections.EMPTY_SET;
-            }
-            return new CopyableHashSet(documentCategoryIds);
-        }
-
-        private void initDocumentsCategoryIds(Collection documentIds) {
-            if (null != documentsCategoryIds) {
-                return ;
-            }
-            documentsCategoryIds = new MultiHashMap();
-            executeWithAppendedIntegerInClause(DocumentInitializer.this.database, CategoryMapper.SQL__GET_DOCUMENT_CATEGORIES, documentIds, new ResultSetHandler() {
-                public Object handle(ResultSet rs) throws SQLException {
-                    while ( rs.next() ) {
-                        int documentId = rs.getInt(1);
-                        int categoryId = rs.getInt(2);
-                        documentsCategoryIds.put(new Integer(documentId), new Integer(categoryId));
-                    }
-                    return null;
-                }
-            });
-        }
-
-    }
-
     static void executeWithAppendedIntegerInClause(Database database, String sqlString, Collection documentIds,
                                                    ResultSetHandler resultSetHandler
     ) {
@@ -227,54 +118,6 @@ public class DocumentInitializer {
         database.execute(new SqlQueryCommand(sql.toString(), parameters, resultSetHandler));
     }
 
-    private class DocumentRolePermissionsLoader implements LazilyLoadedObject.Loader {
-
-        private final Collection documentIds;
-        private final Integer documentId;
-
-        DocumentRolePermissionsLoader(Collection documentIds,
-                                      Integer documentId) {
-            this.documentIds = documentIds;
-            this.documentId = documentId;
-        }
-
-        public LazilyLoadedObject.Copyable load() {
-            initDocumentsRolePermissionMappings(documentIds);
-            RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings = (RoleIdToDocumentPermissionSetTypeMappings) documentsRolePermissionMappings.get(documentId);
-            if ( null == rolePermissionMappings ) {
-                rolePermissionMappings = new RoleIdToDocumentPermissionSetTypeMappings();
-            }
-            return rolePermissionMappings;
-        }
-
-        public void initDocumentsRolePermissionMappings(Collection documentIds) {
-            if ( null != documentsRolePermissionMappings ) {
-                return;
-            }
-            documentsRolePermissionMappings = new HashMap();
-
-            executeWithAppendedIntegerInClause(database, "SELECT "
-                                                         + "meta_id, role_id, set_id\n"
-                                                         + "FROM  roles_rights\n"
-                                                         + "WHERE meta_id ", documentIds, new ResultSetHandler() {
-                public Object handle(ResultSet rs) throws SQLException {
-                    while ( rs.next() ) {
-                        Integer documentId = new Integer(rs.getInt(1));
-                        int roleId = rs.getInt(2);
-                        int setId = rs.getInt(3);
-                        RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings = (RoleIdToDocumentPermissionSetTypeMappings) documentsRolePermissionMappings.get(documentId);
-                        if ( null == rolePermissionMappings ) {
-                            rolePermissionMappings = new RoleIdToDocumentPermissionSetTypeMappings();
-                            documentsRolePermissionMappings.put(documentId, rolePermissionMappings);
-                        }
-                        rolePermissionMappings.setPermissionSetTypeForRole(new RoleId(roleId), DocumentPermissionSetTypeDomainObject.fromInt(setId));
-                    }
-                    return null;
-                }
-            });
-
-        }
-    }
 
     private class DocumentPermissionSetsLoader implements LazilyLoadedObject.Loader {
 

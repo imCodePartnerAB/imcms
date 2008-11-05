@@ -9,8 +9,15 @@ import imcode.util.LazilyLoadedObject;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
@@ -99,7 +106,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public Set<Integer> getCategoryIds() {
-        return Collections.unmodifiableSet((Set<Integer>) attributes.categoryIds.get()) ;
+        return Collections.unmodifiableSet((Set<Integer>) attributes.categoryIds) ;
     }
 
     public Date getCreatedDatetime() {
@@ -231,25 +238,25 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     
 
     public void setProperties( Map properties ) {
-        attributes.properties.set(new CopyableHashMap(properties));
+        attributes.properties = properties;
     }
 
     public Map<String, String> getProperties() {
-        return Collections.unmodifiableMap((Map<String, String>)attributes.properties.get()) ;
+        return Collections.unmodifiableMap((Map<String, String>)attributes.properties) ;
     }
 
     public String getProperty(String key) {
-        Map<String,String> properties = (Map<String, String>) attributes.properties.get();
+        Map<String,String> properties = (Map<String, String>) attributes.properties;
         return properties.get(key);
     }
 
     public void setProperty(String key, String value) {
-        Map<String, String> properties = (Map<String, String>) attributes.properties.get();
+        Map<String, String> properties = (Map<String, String>) attributes.properties;
         properties.put(key, value);
     }
 
     public void removeProperty(String key) {
-        Map<String, String> properties = (Map<String, String>) attributes.properties.get();
+        Map<String, String> properties = (Map<String, String>) attributes.properties;
         properties.remove(key);
     }
 
@@ -347,20 +354,19 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     private RoleIdToDocumentPermissionSetTypeMappings getRolePermissionMappings() {
-        RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings = (RoleIdToDocumentPermissionSetTypeMappings) attributes.roleIdToDocumentPermissionSetTypeMappings.get();
-        return rolePermissionMappings;
+        return attributes.roleIdToDocumentPermissionSetTypeMappings;
     }
 
     public void setRoleIdsMappedToDocumentPermissionSetTypes( RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings ) {
-        attributes.roleIdToDocumentPermissionSetTypeMappings.set((LazilyLoadedObject.Copyable) roleIdToDocumentPermissionSetTypeMappings.clone());
+        attributes.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
     }
 
     public Set getSectionIds() {
-        return Collections.unmodifiableSet((Set) attributes.sectionIds.get()) ;
+        return Collections.unmodifiableSet((Set) attributes.sectionIds) ;
     }
 
     public void setSectionIds( Set sectionIds ) {
-        attributes.sectionIds.set(new CopyableHashSet(sectionIds));
+        attributes.sectionIds = sectionIds;
     }
 
     public Document.PublicationStatus getPublicationStatus() {
@@ -431,13 +437,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void addCategoryId( int categoryId ) {
-        Set categoryIds = (Set) attributes.categoryIds.get();
-        categoryIds.add( new Integer(categoryId) );
+        Set categoryIds = (Set) attributes.categoryIds;
+        categoryIds.add(categoryId);
     }
 
     public void addSectionId( int sectionId ) {
-        Set sectionIds = (Set) attributes.sectionIds.get();
-        sectionIds.add( new Integer(sectionId) );
+        Set sectionIds = (Set) attributes.sectionIds;
+        sectionIds.add( sectionId );
     }
 
     public boolean equals( Object o ) {
@@ -474,16 +480,16 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void removeAllCategories() {
-        attributes.categoryIds.set(new CopyableHashSet());
+        attributes.categoryIds = new HashSet<Integer>();
     }
 
     public void removeAllSections() {
-        attributes.sectionIds.set(new CopyableHashSet());
+        attributes.sectionIds = new HashSet<Integer>();
     }
 
     public void removeCategoryId( int categoryId ) {
-        Set categoryIds = (Set) attributes.categoryIds.get();
-        categoryIds.remove( new Integer(categoryId) );
+        Set categoryIds = (Set) attributes.categoryIds;
+        categoryIds.remove(categoryId);
     }
 
     public void setDocumentPermissionSetTypeForRoleId( RoleId roleId, DocumentPermissionSetTypeDomainObject permissionSetType ) {
@@ -551,21 +557,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return lifeCyclePhase ;
     }
 
-    public void setLazilyLoadedSectionIds(LazilyLoadedObject sectionIds) {
-        attributes.sectionIds = sectionIds ;
-    }
-
-    public void setLazilyLoadedProperties(LazilyLoadedObject properties) {
-        attributes.properties = properties ;
-    }
-
-    public void setLazilyLoadedCategoryIds(LazilyLoadedObject categoryIds) {
+    public void setCategoryIds(Set categoryIds) {
         attributes.categoryIds = categoryIds;
     }
 
-    public void setLazilyLoadedRoleIdsMappedToDocumentPermissionSetTypes(LazilyLoadedObject rolePermissionMappings) {
-        attributes.roleIdToDocumentPermissionSetTypeMappings = rolePermissionMappings ;
-    }
 
     public void setLazilyLoadedPermissionSets(LazilyLoadedObject permissionSets) {
         attributes.permissionSets = permissionSets ;
@@ -576,12 +571,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void loadAllLazilyLoaded() {
-        attributes.categoryIds.load();
-        attributes.sectionIds.load();
         attributes.permissionSets.load();
         attributes.permissionSetsForNewDocuments.load();
-        attributes.roleIdToDocumentPermissionSetTypeMappings.load();
-        attributes.properties.load();
     }
 
     public String getAlias() {
@@ -627,24 +618,38 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private String target;
         private boolean linkedForUnauthorizedUsers;
 
-        private LazilyLoadedObject categoryIds = new LazilyLoadedObject(new CopyableHashSetLoader());
-        private LazilyLoadedObject sectionIds = new LazilyLoadedObject(new CopyableHashSetLoader());
         private LazilyLoadedObject permissionSets = new LazilyLoadedObject(new DocumentPermissionSetsLoader());
         private LazilyLoadedObject permissionSetsForNewDocuments = new LazilyLoadedObject(new DocumentPermissionSetsLoader());
-        private LazilyLoadedObject properties = new LazilyLoadedObject(new CopyableHashMapLoader());
-
+        
+        // Replaced lazy loaded:
+        private Map<String, String> properties = new HashMap<String, String>();        
+        private Set<Integer> categoryIds = new HashSet<Integer>();                
+        private Set<Integer> sectionIds = new HashSet<Integer>();        
+        private RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings =
+        	new RoleIdToDocumentPermissionSetTypeMappings();
+        
+        /*
         private LazilyLoadedObject roleIdToDocumentPermissionSetTypeMappings = new LazilyLoadedObject(new LazilyLoadedObject.Loader() {
             public LazilyLoadedObject.Copyable load() {
                 return new RoleIdToDocumentPermissionSetTypeMappings();
             }
         });
+        */
+        
 
         public Object clone() throws CloneNotSupportedException {
             Attributes clone = (Attributes)super.clone();
-            clone.properties = (LazilyLoadedObject) properties.clone();
-            clone.sectionIds = (LazilyLoadedObject) sectionIds.clone();
-            clone.categoryIds = (LazilyLoadedObject) categoryIds.clone();
-            clone.roleIdToDocumentPermissionSetTypeMappings = (LazilyLoadedObject) roleIdToDocumentPermissionSetTypeMappings.clone();
+            
+            //clone.properties = (LazilyLoadedObject) properties.clone();
+            //clone.sectionIds = (LazilyLoadedObject) sectionIds.clone();
+            //clone.categoryIds = (LazilyLoadedObject) categoryIds.clone();
+            //clone.roleIdToDocumentPermissionSetTypeMappings = (LazilyLoadedObject) roleIdToDocumentPermissionSetTypeMappings.clone();
+            
+            clone.properties = new HashMap<String, String>(properties);
+            clone.sectionIds = new HashSet<Integer>(sectionIds);
+            clone.categoryIds = new HashSet<Integer>(categoryIds);
+            clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
+                                    
             clone.permissionSets = (LazilyLoadedObject) permissionSets.clone() ;
             clone.permissionSetsForNewDocuments = (LazilyLoadedObject) permissionSetsForNewDocuments.clone() ;
             return clone;

@@ -12,11 +12,11 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 
-public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, Cloneable, LazilyLoadedObject.Copyable {
+public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, Cloneable {
 
     HashMap map = new HashMap() ;
 
-    protected Object clone() {
+    protected RoleIdToDocumentPermissionSetTypeMappings clone() {
         try {
             RoleIdToDocumentPermissionSetTypeMappings clone = (RoleIdToDocumentPermissionSetTypeMappings) super.clone();
             clone.map = (HashMap) map.clone() ;
@@ -52,9 +52,6 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, 
         return (Mapping[]) pairs.toArray(new Mapping[pairs.size()]);
     }
 
-    public LazilyLoadedObject.Copyable copy() {
-        return (LazilyLoadedObject.Copyable) clone() ;
-    }
 
     public static class Mapping {
 

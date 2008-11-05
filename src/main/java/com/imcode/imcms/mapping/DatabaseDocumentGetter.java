@@ -56,20 +56,36 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
     }
 
     public List getDocuments(final Collection documentIds) {
+        // TODO: i18n refactor:
+        MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao");
+    	
+    	// Just for test:
+        /*
+    	if (documentIds.size() > 1) {
+    		throw new AssertionError("Too many getDocuments!!!: " + documentIds.size());
+    	}
+    	*/
+    	// end just for test    	
+    	
         if (documentIds.isEmpty()) {
             return Collections.EMPTY_LIST ;
         }
+        
+        // Replaced by meta initialization:
+        /*
         LinkedHashMap documentMap = new LinkedHashMap();
+                
         DocumentInitializer.executeWithAppendedIntegerInClause(database, SQL_GET_DOCUMENTS, documentIds, new CollectionHandler(new DocumentMapSet(documentMap), new DocumentFromRowFactory()));
-
+		*/
+        
+        LinkedHashMap<Integer, DocumentDomainObject> documentMap = 
+        	newInitDocuments(metaDao, documentIds);
+        
         DocumentList documentList = new DocumentList(documentMap);
-
+                        
         DocumentInitializer initializer = new DocumentInitializer(services.getDocumentMapper());
         initializer.initDocuments(documentList);
-        
-        // TODO: i18n refactor:
-        MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao");
-        
+                
         for (DocumentDomainObject document: documentList) {
         	Meta meta = metaDao.getMeta(document.getId());
         	
@@ -85,6 +101,58 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
 
         return new DocumentList(retMap);
     }
+    
+    
+    /**
+     * Initializes documents - hibernate version  
+     */
+    private LinkedHashMap newInitDocuments(MetaDao metaDao, Collection<Integer> documentIds) {
+    	LinkedHashMap<Integer, DocumentDomainObject> map = new LinkedHashMap<Integer, DocumentDomainObject>();
+    	
+    	for (Integer metaId: documentIds) {
+    		Meta meta = metaDao.getMeta(metaId);
+    		
+    		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+    		
+            document.setId(meta.getMetaId());
+            document.setCreatorId(meta.getCreatorId());
+            document.setRestrictedOneMorePrivilegedThanRestrictedTwo(meta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
+            
+            document.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());
+            document.setLinkedForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
+            
+            // Not related to i18nl language
+            String language = LanguageMapper.getAsIso639_2OrDefaultLanguage(
+            		meta.getLanguageIso639_2(), 
+            		services.getLanguageMapper().getDefaultLanguage());
+            
+            document.setLanguageIso639_2(language);
+            
+            document.setCreatedDatetime(meta.getCreatedDatetime());            
+            document.setModifiedDatetime(meta.getModifiedDatetime());            
+            document.setActualModifiedDatetime(meta.getModifiedDatetime());
+            
+            document.setSearchDisabled(meta.getSearchDisabled());
+            document.setTarget(meta.getTarget());
+            
+            document.setArchivedDatetime(meta.getArchivedDatetime());            
+            document.setPublisherId(meta.getPublisherId());
+            
+            Document.PublicationStatus publicationStatus = publicationStatusFromInt(
+            		meta.getPublicationStatusInt());            
+            document.setPublicationStatus(publicationStatus);
+            
+            document.setPublicationStartDatetime(meta.getPublicationStartDatetime());
+            document.setPublicationEndDatetime(meta.getPublicationEndDatetime());
+            
+            document.setMeta(meta);
+            
+            map.put(metaId, document);
+    	}
+    	
+    	return map;
+    }
+    
 
     private class DocumentMapSet extends AbstractSet {
 

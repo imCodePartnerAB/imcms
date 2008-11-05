@@ -18,12 +18,30 @@ public class MetaDaoTest extends DaoTest {
 	
 
     @Test void getMeta() {
-        def menu = dao.getMeta(1001)
+        def meta = dao.getMeta(1001)
         
-        assertNotNull(menu)
+        assertNotNull(meta)
         
-        menu.getProperties().each {k, v ->
+        meta.getProperties().each {k, v ->
         	println "property: ${k}=${v}" 
+        }
+        
+        
+        
+        meta.roleRights.each {k, v ->
+        	println "Role to set: ${k}=${v}"        	
+        }
+        
+        meta.permissionSetBits.each {k, v ->
+        	println "Perm set it to bits: ${k}=${v}"  
+        }
+
+        meta.docPermisionSetEx.each {
+        	println it.dump()
+        }
+        
+        meta.docPermisionSetExForNew.each {
+        	println it.dump()
         }
     }
 }

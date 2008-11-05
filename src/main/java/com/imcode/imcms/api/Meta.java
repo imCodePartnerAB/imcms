@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -30,6 +31,63 @@ import javax.persistence.Transient;
  * Document meta.
  */
 public class Meta implements Serializable, Cloneable {
+	
+	@Embeddable
+	static public class DocPermisionSetEx {
+		
+		@Column(name="set_id")
+		private Integer setId;
+		
+		@Column(name="permission_data")
+		//template or document
+		private Integer permissionData;
+		
+		@Column(name="permission_id")
+		private Integer permissionId;
+		
+		@Override
+		public boolean equals(Object o) {
+			return (this == o) || 
+				((o instanceof DocPermisionSetEx) && hashCode() == o.hashCode());
+		}
+		
+		@Override
+		public int hashCode() {
+			int iSetId = setId;
+			int iPermissionData = permissionData;
+			int iPermissionId = permissionId;
+			
+			int result = 5;
+			
+			return (((31 * result + iSetId) 
+					* 31 + iPermissionId) 
+						* 31 + iPermissionData);
+		}
+
+		public Integer getPermissionData() {
+			return permissionData;
+		}
+
+		public void setPermissionData(Integer documentTypeId) {
+			this.permissionData = documentTypeId;
+		}
+
+		public Integer getPermissionId() {
+			return permissionId;
+		}
+
+		public void setPermissionId(Integer permissionId) {
+			this.permissionId = permissionId;
+		}
+
+		public Integer getSetId() {
+			return setId;
+		}
+
+		public void setSetId(Integer setId) {
+			this.setId = setId;
+		}				
+	}
 	
 	// TODO i18n: refactor
 	// Disabled i18n_meta show mode
@@ -76,8 +134,9 @@ public class Meta implements Serializable, Cloneable {
 	// Attributes:
 	
 	@Column(name="doc_type", nullable=false)
+	// For processing after load:
 	// Discrimination column - from old code:
-	// DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
+	// DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(permissionData);
 	private Integer documentType;
 	
 	@Column(name="owner_id", nullable=false)
@@ -105,6 +164,7 @@ public class Meta implements Serializable, Cloneable {
     
     // NB! Same as modifiedDatetime
     @Transient
+    //For processing after load:
     //@Column(name="date_modified")
     //@Temporal(TemporalType.TIMESTAMP)
     private Date actualModifiedDatetime;
@@ -123,6 +183,7 @@ public class Meta implements Serializable, Cloneable {
     private Integer publisherId;
                   
     @Column(name="status", nullable=true)
+    // For processing after load:
     // Should be converted after set - old code: 
     // Document.PublicationStatus publicationStatus = publicationStatusFromInt(publicationStatusInt);
     // document.setPublicationStatus(publicationStatus); 
@@ -160,6 +221,51 @@ public class Meta implements Serializable, Cloneable {
     @Column(name = "section_id", nullable = false)    
     private Set<Integer> sectionIds = new HashSet<Integer>();
     
+    // For processing after load:
+    @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+    @JoinTable(
+    	name = "roles_rights",
+    	joinColumns = @JoinColumn(name = "meta_id"))    		
+    @org.hibernate.annotations.MapKey(columns = @Column(name="role_id"))    		
+    @Column(name = "set_id")    
+    private Map<Integer, Integer> roleRights = new HashMap<Integer, Integer>();
+    
+    // For processing after load:
+    // permisionId in the table actually is not an 'id' but a bit set value.
+    @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+    @JoinTable(
+    	name = "doc_permission_sets",
+    	joinColumns = @JoinColumn(name = "meta_id"))    		
+    @org.hibernate.annotations.MapKey(columns = @Column(name="set_id"))    		
+    @Column(name = "permission_id")    
+    private Map<Integer, Integer> permissionSetBits = new HashMap<Integer, Integer>();
+
+    
+    // For processing after load:
+    // permisionId in the table actually is not an 'id' but a bit set value.
+    @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+    @JoinTable(
+    	name = "new_doc_permission_sets",
+    	joinColumns = @JoinColumn(name = "meta_id"))    		
+    @org.hibernate.annotations.MapKey(columns = @Column(name="set_id"))    		
+    @Column(name = "permission_id")            
+    private Map<Integer, Integer> permissionSetBitsForNew = new HashMap<Integer, Integer>();
+
+    // For processing after load:
+	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+	@JoinTable(
+	    name = "doc_permission_sets_ex",
+	    joinColumns = @JoinColumn(name="meta_id"))
+	private Set<DocPermisionSetEx> docPermisionSetEx = new HashSet<DocPermisionSetEx>();
+	
+	
+    // For processing after load:
+	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+	@JoinTable(
+	    name = "new_doc_permission_sets_ex",
+	    joinColumns = @JoinColumn(name="meta_id"))    
+	private Set<DocPermisionSetEx> docPermisionSetExForNew = new HashSet<DocPermisionSetEx>();
+	
     
 	@Override
 	public Meta clone() {
@@ -376,5 +482,48 @@ public class Meta implements Serializable, Cloneable {
 
 	public void setSectionIds(Set<Integer> sectionIds) {
 		this.sectionIds = sectionIds;
+	}
+
+	// For processing after load:
+	public Map<Integer, Integer> getRoleRights() {
+		return roleRights;
+	}
+
+	public void setRoleRights(Map<Integer, Integer> roleRights) {
+		this.roleRights = roleRights;
+	}
+
+	public Map<Integer, Integer> getPermissionSetBits() {
+		return permissionSetBits;
+	}
+
+	public void setPermissionSetBits(Map<Integer, Integer> permissionSetBits) {
+		this.permissionSetBits = permissionSetBits;
+	}
+
+	public Map<Integer, Integer> getPermissionSetBitsForNew() {
+		return permissionSetBitsForNew;
+	}
+
+	public void setPermissionSetBitsForNew(
+			Map<Integer, Integer> permissionSetBitsForNew) {
+		this.permissionSetBitsForNew = permissionSetBitsForNew;
+	}
+
+	public Set<DocPermisionSetEx> getDocPermisionSetEx() {
+		return docPermisionSetEx;
+	}
+
+	public void setDocPermisionSetEx(Set<DocPermisionSetEx> docPermisionSetEx) {
+		this.docPermisionSetEx = docPermisionSetEx;
+	}
+
+	public Set<DocPermisionSetEx> getDocPermisionSetExForNew() {
+		return docPermisionSetExForNew;
+	}
+
+	public void setDocPermisionSetExForNew(
+			Set<DocPermisionSetEx> docPermisionSetExForNew) {
+		this.docPermisionSetExForNew = docPermisionSetExForNew;
 	}
 }
