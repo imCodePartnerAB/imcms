@@ -112,6 +112,4 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     public void visitTextDocument(final TextDocumentDomainObject document) {
         textDocumentInitializer.initialize(document) ;
     }
-
-
 }

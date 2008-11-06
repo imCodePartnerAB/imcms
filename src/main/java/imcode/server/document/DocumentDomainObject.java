@@ -589,13 +589,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
         private int creatorId;
 
-        //moved to i18n meta private String headline = "";
-
-        //moved to i18n meta private String image;
         private String languageIso639_2;
         
         private boolean linkableByOtherUsers;
-        //moved to i18n meta private String menuText = "";
+
         private int id;
         private Date modifiedDatetime;
         private Date actualModifiedDatetime;
@@ -608,11 +605,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private String target;
         private boolean linkedForUnauthorizedUsers;
 
+        // Replaced lazy loaded:
         private DocumentPermissionSets permissionSets = new DocumentPermissionSets();
         private DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
-        
-        
-        // Replaced lazy loaded:
+                  
         private Map<String, String> properties = new HashMap<String, String>();        
         private Set<Integer> categoryIds = new HashSet<Integer>();                
         private Set<Integer> sectionIds = new HashSet<Integer>();        

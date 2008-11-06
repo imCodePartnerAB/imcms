@@ -39,11 +39,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
 import com.imcode.db.Database;
-import com.imcode.db.DatabaseConnection;
-import com.imcode.db.SingleConnectionDatabase;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.db.commands.TransactionDatabaseCommand;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Include;
@@ -212,39 +209,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             ""+user.getId(), "" + language.getId()
         };
         database.execute(new SqlUpdateCommand("INSERT INTO texts_history (meta_id, name, text, type, modified_datetime, user_id, language_id) VALUES(?,?,?,?,?,?,?)", parameters));
-    }
-
-    public static void saveDocumentImage(int meta_id, int img_no, ImageDomainObject image) {
-        String sqlStr = "update images\n"
-                + "set imgurl  = ?, \n"
-                + "width       = ?, \n"
-                + "height      = ?, \n"
-                + "border      = ?, \n"
-                + "v_space     = ?, \n"
-                + "h_space     = ?, \n"
-                + "image_name  = ?, \n"
-                + "target      = ?, \n"
-                + "align       = ?, \n"
-                + "alt_text    = ?, \n"
-                + "low_scr     = ?, \n"
-                + "linkurl     = ?, \n"
-                + "type        = ?, \n"
-                + "language_id = ?  \n"
-                + "where meta_id = ? \n"
-                + "and name = ? \n";
-
-        int rowUpdateCount = sqlImageUpdateQuery(sqlStr, image, meta_id, img_no);
-        if (0 == rowUpdateCount) {
-            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, align, alt_text, low_scr, linkurl, type, language_id, meta_id, name)"
-                    + " values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?,?)";
-
-            sqlImageUpdateQuery(sqlStr, image, meta_id, img_no);
-        }
-    }
-
-    private static int sqlImageUpdateQuery(String sqlStr, ImageDomainObject image, int meta_id, int img_no) {
-        final String[] parameters = getSqlImageParameters(image, meta_id, img_no);
-        return ((Number)Imcms.getServices().getDatabase().execute(new SqlUpdateCommand(sqlStr, parameters))).intValue();
     }
 
     private static String[] getSqlImageParameters(ImageDomainObject image, int meta_id, int img_no) {

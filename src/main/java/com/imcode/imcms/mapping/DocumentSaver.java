@@ -10,7 +10,6 @@ import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -175,7 +174,6 @@ class DocumentSaver {
         //String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
     	
     	//@Immutable
-    	// temporal protection from saving
     	// currenlty they are instert by legacy queries
     	meta.getDocPermisionSetEx().clear();
     	meta.getDocPermisionSetExForNew().clear();
@@ -237,37 +235,6 @@ class DocumentSaver {
                     getDatabase().execute(new SqlUpdateCommand(SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID, params));
                 }
             }
-        }
-    }
-
-    static void makeBooleanSqlUpdateClause(String columnName, boolean bool, List sqlUpdateColumns,
-                                           List sqlUpdateValues) {
-        sqlUpdateColumns.add(columnName + " = ?");
-        sqlUpdateValues.add(bool ? "1" : "0");
-    }
-
-    static void makeDateSqlUpdateClause(String columnName, Date date, List sqlUpdateColumns,
-                                        List sqlUpdateValues) {
-        makeStringSqlUpdateClause(columnName, Utility.makeSqlStringFromDate(date), sqlUpdateColumns, sqlUpdateValues);
-    }
-
-    static void makeIntSqlUpdateClause(String columnName, Integer integer, ArrayList sqlUpdateColumns,
-                                       ArrayList sqlUpdateValues) {
-        if (null != integer) {
-            sqlUpdateColumns.add(columnName + " = ?");
-            sqlUpdateValues.add("" + integer);
-        } else {
-            sqlUpdateColumns.add(columnName + " = NULL");
-        }
-    }
-
-    static void makeStringSqlUpdateClause(String columnName, String value, List sqlUpdateColumns,
-                                          List sqlUpdateValues) {
-        if (null != value) {
-            sqlUpdateColumns.add(columnName + " = ?");
-            sqlUpdateValues.add(value);
-        } else {
-            sqlUpdateColumns.add(columnName + " = NULL");
         }
     }
 
