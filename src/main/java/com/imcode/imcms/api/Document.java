@@ -429,6 +429,10 @@ public class Document implements Serializable {
         public int hashCode() {
             return status;
         }
+        
+        public Integer asInt() {
+        	return status;
+        }
     }
 
     public static class LifeCyclePhase implements Serializable {

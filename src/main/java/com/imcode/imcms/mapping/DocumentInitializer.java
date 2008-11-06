@@ -38,15 +38,15 @@ public class DocumentInitializer {
 
     /** Permission to create child documents. * */
     public final static int PERM_CREATE_DOCUMENT = 8;
-    private Database database;
+    //private Database database;
 
-    HashMap documentsPermissionSets ;
-    HashMap documentsPermissionSetsForNew ;
+    //HashMap documentsPermissionSets ;
+    //HashMap documentsPermissionSetsForNew ;
     MetaDao metaDao;
 
     public DocumentInitializer(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
-        this.database = documentMapper.getDatabase();
+        //this.database = documentMapper.getDatabase();
         
         metaDao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
     }
@@ -60,13 +60,13 @@ public class DocumentInitializer {
         DocumentInitializingVisitor documentInitializingVisitor = new DocumentInitializingVisitor(documentMapper, documentIds, documentMapper);
         for ( Iterator iterator = documentList.iterator(); iterator.hasNext(); ) {
             final DocumentDomainObject document = (DocumentDomainObject) iterator.next();
-            final Integer documentId = new Integer(document.getId()) ;
+            //final Integer documentId = new Integer(document.getId()) ;
 
-            final LazilyLoadedObject permissionSets = new LazilyLoadedObject(new DocumentPermissionSetsLoader(documentIds, false, documentId));
-            LazilyLoadedObject permissionSetsForNew = new LazilyLoadedObject(new DocumentPermissionSetsLoader(documentIds, true, documentId));
+            //final LazilyLoadedObject permissionSets = new LazilyLoadedObject(new DocumentPermissionSetsLoader(documentIds, false, documentId));
+            //LazilyLoadedObject permissionSetsForNew = new LazilyLoadedObject(new DocumentPermissionSetsLoader(documentIds, true, documentId));
 
-            document.setLazilyLoadedPermissionSets(permissionSets);
-            document.setLazilyLoadedPermissionSetsForNew(permissionSetsForNew);
+            //document.setLazilyLoadedPermissionSets(permissionSets);
+            //document.setLazilyLoadedPermissionSetsForNew(permissionSetsForNew);
             
             Meta meta = document.getMeta();
             
@@ -74,7 +74,7 @@ public class DocumentInitializer {
             document.setCategoryIds(meta.getCategoryIds());
             document.setProperties(meta.getProperties());
             
-            //
+            // Initializing RoleId
             RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings = 
             	new RoleIdToDocumentPermissionSetTypeMappings();
             
@@ -85,11 +85,72 @@ public class DocumentInitializer {
             }
             
             document.setRoleIdsMappedToDocumentPermissionSetTypes(rolePermissionMappings);
+            // End of Initializing RoleId
             
-
+            // Initializing Permission set:
+            initDocumentsPermissionSets(document, meta);
+            initDocumentsPermissionSets(document, meta);
+            
+            initDocumentsPermissionSetsForNew(document, meta);
+            
             document.accept(documentInitializingVisitor);
         }
     }
+    
+    private void initDocumentsPermissionSets(DocumentDomainObject document, Meta meta) {
+    	DocumentPermissionSets permissionSets = new DocumentPermissionSets();
+    	Map<Integer, Integer> permissionSetBitsMap = meta.getPermissionSetBits();
+    	
+    	for (Meta.DocPermisionSetEx ex: meta.getDocPermisionSetEx()) {
+    		Integer setId = ex.getSetId();
+    		Integer permissionSetBits = permissionSetBitsMap.get(setId);
+    		DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
+    		        		
+            if ( 0 != permissionSetBits && restricted.isEmpty() ) {
+                restricted.setFromBits(permissionSetBits);
+            }
+            
+            setPermissionData(restricted, ex.getPermissionId(), ex.getPermissionData());        		
+    	}
+    	
+    	document.setPermissionSets(permissionSets);
+    }
+    
+    
+    private void initDocumentsPermissionSetsForNew(DocumentDomainObject document, Meta meta) {
+    	DocumentPermissionSets permissionSets = new DocumentPermissionSets();
+    	Map<Integer, Integer> permissionSetBitsMap = meta.getPermissionSetBitsForNew();
+    	
+    	for (Meta.DocPermisionSetEx ex: meta.getDocPermisionSetExForNew()) {
+    		Integer setId = ex.getSetId();
+    		Integer permissionSetBits = permissionSetBitsMap.get(setId);
+    		DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
+    		        		
+            if ( 0 != permissionSetBits && restricted.isEmpty() ) {
+                restricted.setFromBits(permissionSetBits);
+            }
+            
+            setPermissionData(restricted, ex.getPermissionId(), ex.getPermissionData());        		
+    	}
+    	
+    	document.setPermissionSetsForNew(permissionSets);
+    }
+    
+
+    private void setPermissionData(DocumentPermissionSetDomainObject permissionSet, Integer permissionId, Integer permissionData) {
+        if (null != permissionId) {
+            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) permissionSet ;
+            switch(permissionId.intValue()) {
+                case PERM_CREATE_DOCUMENT:
+                    textDocumentPermissionSet.addAllowedDocumentTypeId(permissionData.intValue());
+                    break;
+                case ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE:
+                    textDocumentPermissionSet.addAllowedTemplateGroupId(permissionData.intValue());
+                    break;
+                default:
+            }
+        }
+    }    
 
 
     private static Integer[] appendInClause(StringBuffer sql, Collection documentIds) {
@@ -118,7 +179,7 @@ public class DocumentInitializer {
         database.execute(new SqlQueryCommand(sql.toString(), parameters, resultSetHandler));
     }
 
-
+    /*
     private class DocumentPermissionSetsLoader implements LazilyLoadedObject.Loader {
 
         private final Integer documentId;
@@ -181,6 +242,46 @@ public class DocumentInitializer {
                 }
             });
         }
+        
+        private void initDocumentsPermissionSets(DocumentDomainObject document, Meta meta) {
+        	DocumentPermissionSets permissionSets = new DocumentPermissionSets();
+        	Map<Integer, Integer> permissionSetBitsMap = meta.getPermissionSetBits();
+        	
+        	for (Meta.DocPermisionSetEx ex: meta.getDocPermisionSetEx()) {
+        		Integer setId = ex.getSetId();
+        		Integer permissionSetBits = permissionSetBitsMap.get(setId);
+        		DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
+        		        		
+                if ( 0 != permissionSetBits && restricted.isEmpty() ) {
+                    restricted.setFromBits(permissionSetBits);
+                }
+                
+                setPermissionData(restricted, ex.getPermissionId(), ex.getPermissionData());        		
+        	}
+        	
+        	document.setPermissionSets(permissionSets);
+        }
+        
+        
+        private void initDocumentsPermissionSetsForNew(DocumentDomainObject document, Meta meta) {
+        	DocumentPermissionSets permissionSets = new DocumentPermissionSets();
+        	Map<Integer, Integer> permissionSetBitsMap = meta.getPermissionSetBitsForNew();
+        	
+        	for (Meta.DocPermisionSetEx ex: meta.getDocPermisionSetExForNew()) {
+        		Integer setId = ex.getSetId();
+        		Integer permissionSetBits = permissionSetBitsMap.get(setId);
+        		DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
+        		        		
+                if ( 0 != permissionSetBits && restricted.isEmpty() ) {
+                    restricted.setFromBits(permissionSetBits);
+                }
+                
+                setPermissionData(restricted, ex.getPermissionId(), ex.getPermissionData());        		
+        	}
+        	
+        	document.setPermissionSetsForNew(permissionSets);
+        }
+        
 
         private void setPermissionData(DocumentPermissionSetDomainObject permissionSet, Integer permissionId, Integer permissionData) {
             if (null != permissionId) {
@@ -198,4 +299,5 @@ public class DocumentInitializer {
         }
 
     }
+    */
 }

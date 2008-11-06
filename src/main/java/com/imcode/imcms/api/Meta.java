@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -16,6 +17,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -35,20 +38,20 @@ public class Meta implements Serializable, Cloneable {
 	@Embeddable
 	static public class DocPermisionSetEx {
 		
-		@Column(name="set_id")
+		@Column(name="set_id", updatable=false, insertable=false)
 		private Integer setId;
 		
-		@Column(name="permission_data")
+		@Column(name="permission_data", updatable=false, insertable=false)
 		//template or document
 		private Integer permissionData;
 		
-		@Column(name="permission_id")
+		@Column(name="permission_id", updatable=false, insertable=false)
 		private Integer permissionId;
 		
 		@Override
 		public boolean equals(Object o) {
 			return (this == o) || 
-				((o instanceof DocPermisionSetEx) && hashCode() == o.hashCode());
+				((o instanceof DocPermisionSetEx) && (hashCode() == o.hashCode()));
 		}
 		
 		@Override
@@ -112,13 +115,13 @@ public class Meta implements Serializable, Cloneable {
 	@Transient
 	private Map<I18nLanguage, I18nMeta> metaMap;
 
-	@Id
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="meta_id")
 	private Integer metaId;
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
 	@JoinColumn(name="meta_id", referencedColumnName="meta_id")		
-	private List<I18nMeta> i18nMetas;
+	private List<I18nMeta> i18nMetas = new LinkedList<I18nMeta>();
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="missing_i18n_show_rule")
@@ -126,38 +129,51 @@ public class Meta implements Serializable, Cloneable {
 	 * Please note, that currently this value must not be changed 
 	 * client API. It used internally to cache I18n data.
 	 */
-	private UnavailableI18nDataSubstitution unavailableI18nDataSubstitution;
+	private UnavailableI18nDataSubstitution unavailableI18nDataSubstitution =
+		UnavailableI18nDataSubstitution.DO_NOT_SHOW;
+	
+	// CHECKED	
+	// Some non updatable fields which is set to 1 when creating new document.
+	@Column(name="activate", nullable=false, updatable=false)
+	private Integer activate;
 	
 	
 	
 	
 	// Attributes:
-	
-	@Column(name="doc_type", nullable=false)
+	// CHECKED
+	@Column(name="doc_type", nullable=false, updatable=false)
 	// For processing after load:
 	// Discrimination column - from old code:
 	// DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(permissionData);
 	private Integer documentType;
 	
+	// CHECKED	
 	@Column(name="owner_id", nullable=false)
 	private Integer creatorId;
 	
+	// CHECKED	
 	@Column(name="permissions", nullable=false)
 	private Boolean restrictedOneMorePrivilegedThanRestrictedTwo;
 	
+	// CHECKED	
     @Column(name="shared", nullable=false)
     private Boolean linkableByOtherUsers;
     
+    // CHECKED	
     @Column(name="show_meta", nullable=false)
     private Boolean linkedForUnauthorizedUsers;
     
+    // CHECKED	
     @Column(name="lang_prefix", nullable=false)
     private String languageIso639_2;
     
+    // CHECKED	
     @Column(name="date_created", nullable=false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDatetime;
     
+    // CHECKED	
     @Column(name="date_modified", nullable=false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDatetime;
@@ -168,31 +184,38 @@ public class Meta implements Serializable, Cloneable {
     //@Column(name="date_modified")
     //@Temporal(TemporalType.TIMESTAMP)
     private Date actualModifiedDatetime;
-               
+        
+    // CHECKED	
     @Column(name="disable_search", nullable=false)
     private Boolean searchDisabled;
            
+    // CHECKED	
     @Column(name="target", nullable=false)
 	private String target;
-	                        
+	         
+    // CHECKED	
     @Column(name="archived_datetime", nullable=true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date archivedDatetime;
            
+    // CHECKED	
     @Column(name="publisher_id", nullable=true)
     private Integer publisherId;
-                  
+           
+    // CHECKED
     @Column(name="status", nullable=true)
     // For processing after load:
     // Should be converted after set - old code: 
     // Document.PublicationStatus publicationStatus = publicationStatusFromInt(publicationStatusInt);
     // document.setPublicationStatus(publicationStatus); 
     private Integer publicationStatusInt;
-                       
+        
+    // CHECKED
     @Column(name="publication_start_datetime", nullable=true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date publicationStartDatetime;
         
+    // CHECKED
     @Column(name="publication_end_datetime", nullable=true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date publicationEndDatetime;
@@ -203,14 +226,14 @@ public class Meta implements Serializable, Cloneable {
     	name = "document_properties",
     	joinColumns = @JoinColumn(name = "meta_id"))    		
     @org.hibernate.annotations.MapKey(columns = @Column(name="key_name"))    		
-    @Column(name = "value")    
+    @Column(name = "value", updatable=false)
     private Map<String, String> properties = new HashMap<String, String>();
     
     @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
    	@JoinTable(
     	name = "document_categories",
     	joinColumns = @JoinColumn(name = "meta_id"))
-    @Column(name = "category_id", nullable = false)    
+    @Column(name = "category_id", nullable = false, updatable=false)
     private Set<Integer> categoryIds = new HashSet<Integer>();
     
     
@@ -218,7 +241,7 @@ public class Meta implements Serializable, Cloneable {
    	@JoinTable(
     	name = "meta_section",
     	joinColumns = @JoinColumn(name = "meta_id"))
-    @Column(name = "section_id", nullable = false)    
+    @Column(name = "section_id", nullable = false, updatable=false)
     private Set<Integer> sectionIds = new HashSet<Integer>();
     
     // For processing after load:
@@ -227,7 +250,7 @@ public class Meta implements Serializable, Cloneable {
     	name = "roles_rights",
     	joinColumns = @JoinColumn(name = "meta_id"))    		
     @org.hibernate.annotations.MapKey(columns = @Column(name="role_id"))    		
-    @Column(name = "set_id")    
+    @Column(name = "set_id", updatable=false)
     private Map<Integer, Integer> roleRights = new HashMap<Integer, Integer>();
     
     // For processing after load:
@@ -237,7 +260,7 @@ public class Meta implements Serializable, Cloneable {
     	name = "doc_permission_sets",
     	joinColumns = @JoinColumn(name = "meta_id"))    		
     @org.hibernate.annotations.MapKey(columns = @Column(name="set_id"))    		
-    @Column(name = "permission_id")    
+    @Column(name = "permission_id", updatable=false)
     private Map<Integer, Integer> permissionSetBits = new HashMap<Integer, Integer>();
 
     
@@ -248,7 +271,7 @@ public class Meta implements Serializable, Cloneable {
     	name = "new_doc_permission_sets",
     	joinColumns = @JoinColumn(name = "meta_id"))    		
     @org.hibernate.annotations.MapKey(columns = @Column(name="set_id"))    		
-    @Column(name = "permission_id")            
+    @Column(name = "permission_id", updatable=false)
     private Map<Integer, Integer> permissionSetBitsForNew = new HashMap<Integer, Integer>();
 
     // For processing after load:
@@ -256,6 +279,7 @@ public class Meta implements Serializable, Cloneable {
 	@JoinTable(
 	    name = "doc_permission_sets_ex",
 	    joinColumns = @JoinColumn(name="meta_id"))
+	// UPDATABLE FALSE!!!    
 	private Set<DocPermisionSetEx> docPermisionSetEx = new HashSet<DocPermisionSetEx>();
 	
 	
@@ -263,7 +287,8 @@ public class Meta implements Serializable, Cloneable {
 	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
 	@JoinTable(
 	    name = "new_doc_permission_sets_ex",
-	    joinColumns = @JoinColumn(name="meta_id"))    
+	    joinColumns = @JoinColumn(name="meta_id")) 
+	// UPDATABLE FALSE!!!    
 	private Set<DocPermisionSetEx> docPermisionSetExForNew = new HashSet<DocPermisionSetEx>();
 	
     
@@ -525,5 +550,13 @@ public class Meta implements Serializable, Cloneable {
 	public void setDocPermisionSetExForNew(
 			Set<DocPermisionSetEx> docPermisionSetExForNew) {
 		this.docPermisionSetExForNew = docPermisionSetExForNew;
+	}
+
+	public Integer getActivate() {
+		return activate;
+	}
+
+	public void setActivate(Integer activate) {
+		this.activate = activate;
 	}
 }

@@ -540,15 +540,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
     
     @Override
-    public void cloneShared() {
-        cloneTexts();
-        cloneImages();
-        cloneIncludes();
-        cloneTemplateNames();
-        cloneMenus();
+    public void cloneSharedForNewDocument() {
+        cloneTextsForNewDocument();
+        cloneImagesForNewDocument();
+        cloneIncludesForNewDocument();
+        cloneTemplateNamesForNewDocument();
+        cloneMenusForNewDocument();
     }
     
-    private void cloneMenus() {
+    private void cloneMenusForNewDocument() {
     	Map<Integer, MenuDomainObject> menusClone = new HashMap<Integer, MenuDomainObject>();
     	
     	for (Map.Entry<Integer, MenuDomainObject> entry: menusMap.entrySet()) {
@@ -564,7 +564,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	menusMap = menusClone;
     }
 
-    private void cloneImages() {
+    private void cloneImagesForNewDocument() {
         Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesClone
     		= new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
 
@@ -587,7 +587,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         images = imagesClone;
     }
 
-    private void cloneTexts() {
+    private void cloneTextsForNewDocument() {
         Map<I18nLanguage, Map<Integer, TextDomainObject>> textsClone    
     		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
 
@@ -610,12 +610,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         texts = textsClone;
     }
     
-    private void cloneTemplateNames() {
+    private void cloneTemplateNamesForNewDocument() {
     	templateNames = (TemplateNames)templateNames.clone();
     	templateNames.setMetaId(null);
     }
     
-    private void cloneIncludes() {
+    private void cloneIncludesForNewDocument() {
     	List<Include> includesClone = new LinkedList<Include>();
     	
     	for (Include include: includes) {

@@ -1,11 +1,8 @@
 package imcode.server.document;
 
-import imcode.util.LazilyLoadedObject;
-import imcode.util.ShouldNotBeThrownException;
-
 import java.io.Serializable;
 
-public class DocumentPermissionSets implements Serializable, Cloneable, LazilyLoadedObject.Copyable {
+public class DocumentPermissionSets implements Serializable, Cloneable {
 
     private DocumentPermissionSetDomainObject[] permissionSets = new DocumentPermissionSetDomainObject[] {
             new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_1 ),
@@ -32,20 +29,18 @@ public class DocumentPermissionSets implements Serializable, Cloneable, LazilyLo
         return permissionSets[n-1] ;
     }
 
-    public Object clone() throws CloneNotSupportedException {
-        DocumentPermissionSets clone = (DocumentPermissionSets) super.clone();
-        clone.permissionSets = new DocumentPermissionSetDomainObject[] {
-                (DocumentPermissionSetDomainObject) permissionSets[0].clone(),
-                (DocumentPermissionSetDomainObject) permissionSets[1].clone()
-        };
-        return clone ;
-    }
-
-    public LazilyLoadedObject.Copyable copy() {
-        try {
-            return (LazilyLoadedObject.Copyable) clone() ;
-        } catch ( CloneNotSupportedException e ) {
-            throw new ShouldNotBeThrownException(e);
-        }
+    @Override
+    public DocumentPermissionSets clone() {
+    	try {
+	        DocumentPermissionSets clone = (DocumentPermissionSets) super.clone();
+	        clone.permissionSets = new DocumentPermissionSetDomainObject[] {
+	                (DocumentPermissionSetDomainObject) permissionSets[0].clone(),
+	                (DocumentPermissionSetDomainObject) permissionSets[1].clone()
+	        };
+	        
+	        return clone ;
+    	} catch (CloneNotSupportedException e) {
+    		throw new AssertionError(e);
+    	}    	
     }
 }

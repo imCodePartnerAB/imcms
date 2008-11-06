@@ -36,7 +36,9 @@ public class TextDaoImpl extends HibernateTemplate implements TextDao {
 	
 
 	@Transactional
-	public TextDomainObject saveText(TextDomainObject text) {
+	public TextDomainObject saveText(int metaId, TextDomainObject text) {
+		text.setMetaId(metaId);
+		
 		saveOrUpdate(text);
 		
 		return text;

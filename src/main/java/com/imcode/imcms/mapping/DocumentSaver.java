@@ -22,6 +22,7 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Immutable;
 
 import com.imcode.db.Database;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
@@ -61,7 +62,8 @@ class DocumentSaver {
                 document.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
             }
 
-            sqlUpdateMeta(document);
+            //Old code: sqlUpdateMeta(document);            
+            saveMeta(document);
 
             updateDocumentSectionsCategoriesKeywords(document);
 
@@ -74,20 +76,12 @@ class DocumentSaver {
             }
 
             document.accept(new DocumentSavingVisitor(oldDocument, getDatabase(), documentMapper.getImcmsServices(), user));
-            
-            //TODO i18n: Refactor
-        	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao"); 
-        	
-        	metaDao.updateMeta(document.getMeta());            
         } finally {
             documentMapper.invalidateDocument(document);
         }
     }
 
     private void sqlUpdateMeta(DocumentDomainObject document) {
-        String headline = document.getHeadline();
-        String text = document.getMenuText();
-
         StringBuffer sqlStr = new StringBuffer("update meta set ");
 
         ArrayList sqlUpdateColumns = new ArrayList();
@@ -158,11 +152,14 @@ class DocumentSaver {
         document.loadAllLazilyLoaded();
         
         // I18n: cloens shared references
-        document.cloneShared();
+        document.cloneSharedForNewDocument();
 
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 
-        int newMetaId = sqlInsertIntoMeta(document);
+        //int newMetaId = sqlInsertIntoMeta(document);
+        // ensure metaId is null after cloning
+        document.getMeta().setMetaId(null);
+        int newMetaId = saveMeta(document);
 
         boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(document) && !copying;
         if (inheritRestrictedPermissions) {
@@ -172,6 +169,7 @@ class DocumentSaver {
         
         document.setId(newMetaId);
         
+        /*
         Meta meta = document.getMeta();
         
         if (meta != null) {
@@ -194,6 +192,7 @@ class DocumentSaver {
         		}
         	}
         }
+        */
 
         updateDocumentSectionsCategoriesKeywords(document);
 
@@ -204,14 +203,81 @@ class DocumentSaver {
         documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
 
         document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
-
-        //TODO i18n: Refactor
-    	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao"); 
     	
-    	metaDao.updateMeta(document.getMeta()); 
+    	//saveMeta(document);
     	
         documentMapper.invalidateDocument(document);
     }
+    
+    
+    /**
+     * Temporary method
+     * Copies data from attributes to meta and stores meta.
+     * @return meta id
+     */
+    private int saveMeta(DocumentDomainObject document) {
+    	Meta meta = document.getMeta();
+    	
+    	meta.setCreatorId(document.getCreatorId());
+    	meta.setRestrictedOneMorePrivilegedThanRestrictedTwo(
+    			document.isRestrictedOneMorePrivilegedThanRestrictedTwo());
+    	
+    	meta.setLinkableByOtherUsers(document.isLinkableByOtherUsers());
+    	meta.setLinkedForUnauthorizedUsers(document.isLinkedForUnauthorizedUsers());
+    	meta.setLanguageIso639_2(document.getLanguageIso639_2());
+    	meta.setCreatedDatetime(document.getCreatedDatetime());
+    	meta.setModifiedDatetime(document.getModifiedDatetime());
+    	meta.setSearchDisabled(document.isSearchDisabled());
+    	meta.setTarget(document.getTarget());
+    	
+    	meta.setArchivedDatetime(document.getArchivedDatetime());
+    	meta.setPublisherId(document.getPublisherId());
+    	meta.setPublicationStatusInt(document.getPublicationStatus().asInt());
+    	meta.setPublicationStartDatetime(document.getPublicationStartDatetime());
+    	meta.setPublicationEndDatetime(document.getPublicationEndDatetime());
+    	
+    	Integer metaId = meta.getMetaId();
+    	
+    	if (metaId == null) {
+    		//insert
+        	meta.setDocumentType(document.getDocumentTypeId());
+        	meta.setActivate(1);
+        	
+        	// is required; -> when update do the same?? but assign meta id???
+        	List<I18nMeta> i18nMetas = meta.getI18nMetas();
+        	
+        	if (i18nMetas != null) {
+        		for (I18nMeta i18nMeta: i18nMetas) {
+        			i18nMeta.setId(null);
+        			i18nMeta.setMetaId(metaId);
+        			
+        			Set<Keyword> keywords = i18nMeta.getKeywords();
+        			
+        			if (keywords != null) {
+        				for (Keyword keyword: keywords) {
+        					keyword.setId(null);
+        				}
+        			}
+        		}
+        	}        	
+    	} 
+    	
+    	//@Immutable
+    	// temporal protection from saving
+    	// currenlty they are instert by legacy queries
+    	meta.getDocPermisionSetEx().clear();
+    	meta.getDocPermisionSetExForNew().clear();
+    	meta.getRoleRights().clear();
+    	meta.getPermissionSetBits().clear();
+    	meta.getPermissionSetBitsForNew().clear();
+    	
+    	
+    	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao");     	
+    	metaDao.updateMeta(document.getMeta());    	    	
+    	
+    	return meta.getMetaId();
+    }
+    
 
     private void checkDocumentForSave(DocumentDomainObject document) throws NoPermissionInternalException, DocumentSaveException {
 

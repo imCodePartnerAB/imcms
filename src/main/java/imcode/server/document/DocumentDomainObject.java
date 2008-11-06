@@ -14,11 +14,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -50,7 +45,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      * 
      * Introduced in v5 to replace meta properties previously stored in attributes.    
      */ 
-    private Meta meta;
+    private Meta meta = new Meta();
 
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -517,11 +512,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public DocumentPermissionSets getPermissionSets() {
-        return (DocumentPermissionSets) this.attributes.permissionSets.get();
+        return this.attributes.permissionSets;
     }
 
     public DocumentPermissionSets getPermissionSetsForNewDocuments() {
-        return (DocumentPermissionSets) this.attributes.permissionSetsForNewDocuments.get();
+        return attributes.permissionSetsForNewDocuments;
     }
 
     public Attributes getAttributes() {
@@ -562,17 +557,17 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
 
-    public void setLazilyLoadedPermissionSets(LazilyLoadedObject permissionSets) {
+    public void setPermissionSets(DocumentPermissionSets permissionSets) {
         attributes.permissionSets = permissionSets ;
     }
 
-    public void setLazilyLoadedPermissionSetsForNew(LazilyLoadedObject permissionSetsForNew) {
+    public void setPermissionSetsForNew(DocumentPermissionSets permissionSetsForNew) {
         attributes.permissionSetsForNewDocuments = permissionSetsForNew;
     }
 
     public void loadAllLazilyLoaded() {
-        attributes.permissionSets.load();
-        attributes.permissionSetsForNewDocuments.load();
+        //attributes.permissionSets.load();
+        //attributes.permissionSetsForNewDocuments.load();
     }
 
     public String getAlias() {
@@ -618,8 +613,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private String target;
         private boolean linkedForUnauthorizedUsers;
 
-        private LazilyLoadedObject permissionSets = new LazilyLoadedObject(new DocumentPermissionSetsLoader());
-        private LazilyLoadedObject permissionSetsForNewDocuments = new LazilyLoadedObject(new DocumentPermissionSetsLoader());
+        //private LazilyLoadedObject permissionSets = new LazilyLoadedObject(new DocumentPermissionSetsLoader());
+        //private LazilyLoadedObject permissionSetsForNewDocuments = new LazilyLoadedObject(new DocumentPermissionSetsLoader());
+        private DocumentPermissionSets permissionSets = new DocumentPermissionSets();
+        private DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
+        
         
         // Replaced lazy loaded:
         private Map<String, String> properties = new HashMap<String, String>();        
@@ -650,8 +648,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             clone.categoryIds = new HashSet<Integer>(categoryIds);
             clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
                                     
-            clone.permissionSets = (LazilyLoadedObject) permissionSets.clone() ;
-            clone.permissionSetsForNewDocuments = (LazilyLoadedObject) permissionSetsForNewDocuments.clone() ;
+            clone.permissionSets = permissionSets.clone() ;
+            clone.permissionSetsForNewDocuments = permissionSetsForNewDocuments.clone() ;
             return clone;
         }
 
@@ -669,12 +667,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             }
         }
 
+        /*
         private static class DocumentPermissionSetsLoader implements LazilyLoadedObject.Loader {
 
             public LazilyLoadedObject.Copyable load() {
                 return new DocumentPermissionSets() ;
             }
         }
+        */
     }
 
 	public Meta getMeta() {
@@ -703,8 +703,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
     /**
-     * Document may have shared references which are not cloened by clone.
+     * For legacy code support:
+     * When saving document copy as new document its shared references should be cloned.
+     *   
      * @see DocumentSaver.saveNewDocument       
      */
-    public void cloneShared() {}
+    public void cloneSharedForNewDocument() {}
 }

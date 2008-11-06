@@ -21,7 +21,7 @@ public interface TextDao {
 	 *   
 	 * @return reference to saved text.
 	 */
-	TextDomainObject saveText(TextDomainObject text);	
+	TextDomainObject saveText(int metaId, TextDomainObject text);	
 	
 	//void deleteText () 
 	

@@ -155,7 +155,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                     // For copied documents we should set meta id!!!
                     // TODO: refactor
                     text.setMetaId(metaId);
-                    textDao.saveText(text);
+                    textDao.saveText(metaId, text);
                 }
             }
         }
