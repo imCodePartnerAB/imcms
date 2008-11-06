@@ -14,24 +14,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Immutable;
 
 import com.imcode.db.Database;
-import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
-import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.Keyword;
 import com.imcode.imcms.api.I18nMeta;
+import com.imcode.imcms.api.Keyword;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
 
@@ -39,8 +32,6 @@ class DocumentSaver {
 
     private final DocumentMapper documentMapper ;
 
-    private static final int META_HEADLINE_MAX_LENGTH = 255;
-    private static final int META_TEXT_MAX_LENGTH = 1000;
     public static final String SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID = "DELETE FROM roles_rights WHERE role_id = ? AND meta_id = ?";
     public static final String SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID = "INSERT INTO roles_rights (role_id, meta_id, set_id) VALUES(?,?,?)";
 
@@ -62,12 +53,7 @@ class DocumentSaver {
                 document.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
             }
 
-            //Old code: sqlUpdateMeta(document);            
             saveMeta(document);
-
-            updateDocumentSectionsCategoriesKeywords(document);
-
-            updateDocumentProperties(document);
 
             if (user.canEditPermissionsFor(oldDocument)) {
                 updateDocumentRolePermissions(document, user, oldDocument);
@@ -81,47 +67,6 @@ class DocumentSaver {
         }
     }
 
-    private void sqlUpdateMeta(DocumentDomainObject document) {
-        StringBuffer sqlStr = new StringBuffer("update meta set ");
-
-        ArrayList sqlUpdateColumns = new ArrayList();
-        ArrayList sqlUpdateValues = new ArrayList();
-
-        makeDateSqlUpdateClause("publication_start_datetime", document.getPublicationStartDatetime(), sqlUpdateColumns, sqlUpdateValues);
-        makeDateSqlUpdateClause("publication_end_datetime", document.getPublicationEndDatetime(), sqlUpdateColumns, sqlUpdateValues);
-        makeDateSqlUpdateClause("archived_datetime", document.getArchivedDatetime(), sqlUpdateColumns, sqlUpdateValues);
-        makeDateSqlUpdateClause("date_created", document.getCreatedDatetime(), sqlUpdateColumns, sqlUpdateValues);
-        
-        //String headlineThatFitsInDB = headline.substring(0, Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
-        //makeStringSqlUpdateClause("meta_headline", headlineThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
-        
-        //makeStringSqlUpdateClause("meta_image", document.getMenuImage(), sqlUpdateColumns, sqlUpdateValues);
-        
-        makeDateSqlUpdateClause("date_modified", document.getModifiedDatetime(), sqlUpdateColumns, sqlUpdateValues);
-        makeStringSqlUpdateClause("target", document.getTarget(), sqlUpdateColumns, sqlUpdateValues);
-        
-        //String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
-        //makeStringSqlUpdateClause("meta_text", textThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
-        
-        makeStringSqlUpdateClause("lang_prefix", document.getLanguageIso639_2(), sqlUpdateColumns, sqlUpdateValues);
-        makeBooleanSqlUpdateClause("disable_search", document.isSearchDisabled(), sqlUpdateColumns, sqlUpdateValues);
-        makeBooleanSqlUpdateClause("shared", document.isLinkableByOtherUsers(), sqlUpdateColumns, sqlUpdateValues);
-        makeBooleanSqlUpdateClause("show_meta", document.isLinkedForUnauthorizedUsers(), sqlUpdateColumns, sqlUpdateValues);
-        makeBooleanSqlUpdateClause("permissions", document.isRestrictedOneMorePrivilegedThanRestrictedTwo(), sqlUpdateColumns, sqlUpdateValues);
-        makeIntSqlUpdateClause("publisher_id", document.getPublisherId(), sqlUpdateColumns,
-                                                                                 sqlUpdateValues);
-        makeIntSqlUpdateClause("owner_id", new Integer(document.getCreatorId()), sqlUpdateColumns,
-                                   sqlUpdateValues);
-        Document.PublicationStatus publicationStatus = document.getPublicationStatus();
-        int publicationStatusInt = convertPublicationStatusToInt(publicationStatus);
-        makeIntSqlUpdateClause("status", new Integer(publicationStatusInt), sqlUpdateColumns, sqlUpdateValues);
-
-        sqlStr.append(StringUtils.join(sqlUpdateColumns.iterator(), ","));
-        sqlStr.append(" where meta_id = ?");
-        sqlUpdateValues.add("" + document.getId());
-        String[] params = (String[]) sqlUpdateValues.toArray(new String[sqlUpdateValues.size()]);
-        getDatabase().execute(new SqlUpdateCommand(sqlStr.toString(), params));
-    }
 
     static int convertPublicationStatusToInt(Document.PublicationStatus publicationStatus) {
         int publicationStatusInt = Document.STATUS_NEW;
@@ -133,13 +78,6 @@ class DocumentSaver {
         return publicationStatusInt;
     }
 
-    private void updateDocumentSectionsCategoriesKeywords(DocumentDomainObject document) {
-        updateDocumentSections(document.getId(), document.getSectionIds());
-
-        new CategoryMapper(getDatabase()).updateDocumentCategories(document);
-
-        //updateDocumentKeywords(document);
-    }
 
     private Database getDatabase() {
         return documentMapper.getDatabase();
@@ -151,14 +89,13 @@ class DocumentSaver {
 
         document.loadAllLazilyLoaded();
         
-        // I18n: cloens shared references
-        document.cloneSharedForNewDocument();
+        // cloen shared references and
+        // set metaId to null after cloning
+        document.cloneSharedForNewDocument();       
+        document.getMeta().setMetaId(null);        
 
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 
-        //int newMetaId = sqlInsertIntoMeta(document);
-        // ensure metaId is null after cloning
-        document.getMeta().setMetaId(null);
         int newMetaId = saveMeta(document);
 
         boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(document) && !copying;
@@ -169,42 +106,11 @@ class DocumentSaver {
         
         document.setId(newMetaId);
         
-        /*
-        Meta meta = document.getMeta();
-        
-        if (meta != null) {
-        	meta.setMetaId(newMetaId);
-        	
-        	List<I18nMeta> i18nMetas = meta.getI18nMetas();
-        	
-        	if (i18nMetas != null) {
-        		for (I18nMeta i18nMeta: i18nMetas) {
-        			i18nMeta.setId(null);
-        			i18nMeta.setMetaId(newMetaId);
-        			
-        			Set<Keyword> keywords = i18nMeta.getKeywords();
-        			
-        			if (keywords != null) {
-        				for (Keyword keyword: keywords) {
-        					keyword.setId(null);
-        				}
-        			}
-        		}
-        	}
-        }
-        */
-
-        updateDocumentSectionsCategoriesKeywords(document);
-
-        updateDocumentProperties(document);
-
         updateDocumentRolePermissions(document, user, null);
 
         documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
 
         document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
-    	
-    	//saveMeta(document);
     	
         documentMapper.invalidateDocument(document);
     }
@@ -262,6 +168,12 @@ class DocumentSaver {
         	}        	
     	} 
     	
+    	//for update
+        //private static final int META_HEADLINE_MAX_LENGTH = 255;
+        //private static final int META_TEXT_MAX_LENGTH = 1000;
+        //String headlineThatFitsInDB = headline.substring(0, Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
+        //String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
+    	
     	//@Immutable
     	// temporal protection from saving
     	// currenlty they are instert by legacy queries
@@ -271,6 +183,10 @@ class DocumentSaver {
     	meta.getPermissionSetBits().clear();
     	meta.getPermissionSetBitsForNew().clear();
     	
+    	// WHAT TO DO WITH THIS on copy save and on base save?    	
+    	meta.setSectionIds(document.getSectionIds());
+    	meta.setCategoryIds(document.getCategoryIds());
+    	meta.setProperties(document.getProperties());
     	
     	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao");     	
     	metaDao.updateMeta(document.getMeta());    	    	
@@ -355,35 +271,6 @@ class DocumentSaver {
         }
     }
 
-    private int sqlInsertIntoMeta(DocumentDomainObject document) {
-
-        final Number documentId = (Number) getDatabase().execute(new InsertIntoTableDatabaseCommand("meta", new String[][]{
-            { "doc_type", document.getDocumentTypeId() + ""},
-            //{ "meta_headline", document.getHeadline()},
-            //{ "meta_text", document.getMenuText()},
-            //{ "meta_image", document.getMenuImage()},
-            { "owner_id", document.getCreatorId() + ""},
-            { "permissions", makeSqlStringFromBoolean(document.isRestrictedOneMorePrivilegedThanRestrictedTwo())},
-            { "shared", makeSqlStringFromBoolean(document.isLinkableByOtherUsers())},
-            { "show_meta", makeSqlStringFromBoolean(document.isLinkedForUnauthorizedUsers())},
-            { "lang_prefix", document.getLanguageIso639_2()},
-            { "date_created", Utility.makeSqlStringFromDate(document.getCreatedDatetime()) },
-            { "date_modified", Utility.makeSqlStringFromDate(document.getModifiedDatetime())},
-            { "disable_search", makeSqlStringFromBoolean(document.isSearchDisabled())},
-            { "target", document.getTarget()},
-            { "activate", "1"},
-            { "archived_datetime", Utility.makeSqlStringFromDate(document.getArchivedDatetime())},
-            { "publisher_id", null != document.getPublisherId() ? document.getPublisherId() + "" : null},
-            { "status", "" + document.getPublicationStatus()},
-            { "publication_start_datetime", Utility.makeSqlStringFromDate(document.getPublicationStartDatetime())},
-            { "publication_end_datetime", Utility.makeSqlStringFromDate(document.getPublicationEndDatetime())}
-        }));
-        return documentId.intValue();
-    }
-
-    private String makeSqlStringFromBoolean(final boolean bool) {
-        return bool ? "1" : "0";
-    }
 
     Set getDocumentsAddedWithoutPermission(TextDocumentDomainObject textDocument,
                                            TextDocumentDomainObject oldTextDocument,
@@ -417,87 +304,6 @@ class DocumentSaver {
         return result ;
     }
 
-    /*
-    void updateDocumentKeywords(DocumentDomainObject document) {
-        int meta_id = document.getId();
-        Set keywords = document.getKeywords();
-        Set allKeywords = new HashSet(Arrays.asList(documentMapper.getAllKeywords()));
-        deleteKeywordsFromDocument(meta_id);
-        for ( Iterator iterator = keywords.iterator(); iterator.hasNext(); ) {
-            String keyword = (String) iterator.next();
-            final boolean keywordExists = allKeywords.contains(keyword);
-            if (!keywordExists) {
-                addKeyword(keyword);
-            }
-            addExistingKeywordToDocument(meta_id, keyword);
-        }
-        deleteUnusedKeywords();
-    }
-    */
-
-    void updateDocumentProperties( DocumentDomainObject document ) {
-        int meta_id = document.getId();
-        Map properties = (Map) document.getProperties();
-        deletePropertiesFromDocumnet(meta_id);
-        for (Iterator iterator = properties.keySet().iterator(); iterator.hasNext();) {
-            String key = (String) iterator.next();
-            String[] params = new String[] {meta_id+"", key, (String) properties.get(key) } ;
-            getDatabase().execute(new SqlUpdateCommand("INSERT INTO document_properties (meta_id, key_name, value) VALUES(?,?,?)", params));
-        }
-    }
-
-    private void deletePropertiesFromDocumnet(int meta_id) {
-        String[] params = new String[] {meta_id + ""} ;
-        getDatabase().execute(new SqlUpdateCommand("DELETE FROM document_properties WHERE meta_id = ?", params));
-    }
-
-    void updateDocumentSections(int metaId,
-                                Set sectionIds) {
-        removeAllSectionsFromDocument(metaId);
-        for ( Iterator iterator = sectionIds.iterator(); iterator.hasNext(); ) {
-            Integer sectionId = (Integer) iterator.next();
-            addSectionIdToDocument(metaId, sectionId);
-        }
-    }
-
-    private void addSectionIdToDocument(int metaId, Integer sectionId) {
-        Integer[] params = new Integer[]{new Integer(metaId), sectionId };
-        getDatabase().execute(new SqlUpdateDatabaseCommand("INSERT INTO meta_section VALUES(?,?)", params));
-    }
-
-//   // TODO: classification and meta_classification is replaced by keywords table.
-//    private void deleteKeywordsFromDocument(int meta_id) {
-//        String sqlDeleteKeywordsFromDocument = "DELETE FROM meta_classification WHERE meta_id = ?";
-//        String[] params = new String[]{"" + meta_id};
-//        getDatabase().execute(new SqlUpdateCommand(sqlDeleteKeywordsFromDocument, params));
-//    }
-
-    // TODO: classification and meta_classification is replaced by keywords table.
-//    private void deleteUnusedKeywords() {
-//        String[] params = new String[0];
-//        getDatabase().execute(new SqlUpdateCommand("DELETE FROM classification WHERE class_id NOT IN (SELECT class_id FROM meta_classification)", params));
-//    }
-
- // TODO: classification and meta_classification is replaced by keywords table.    
-//    private void addKeyword(String keyword) {
-//        String[] params = new String[]{keyword};
-//        getDatabase().execute(new SqlUpdateCommand("INSERT INTO classification (code) VALUES(?)", params));
-//    }
-
-    private void removeAllSectionsFromDocument(int metaId) {
-        String[] params = new String[]{"" + metaId};
-        getDatabase().execute(new SqlUpdateCommand("DELETE FROM meta_section WHERE meta_id = ?", params));
-    }
-
- // TODO: classification and meta_classification is replaced by keywords table.    
-//    private void addExistingKeywordToDocument(int meta_id, String keyword) {
-//        String[] params1 = new String[]{
-//            keyword
-//        };
-//        int keywordId = Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT class_id FROM classification WHERE code = ?", params1, Utility.SINGLE_STRING_HANDLER)));
-//        String[] params = new String[]{"" + meta_id, "" + keywordId};
-//        getDatabase().execute(new SqlUpdateCommand("INSERT INTO meta_classification (meta_id, class_id) VALUES(?,?)", params));
-//    }
 
     public void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
         Set<String> allAlias = documentMapper.getAllDocumentAlias() ;

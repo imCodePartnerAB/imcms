@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -133,12 +132,8 @@ public class Meta implements Serializable, Cloneable {
 		UnavailableI18nDataSubstitution.DO_NOT_SHOW;
 	
 	// CHECKED	
-	// Some non updatable fields which is set to 1 when creating new document.
 	@Column(name="activate", nullable=false, updatable=false)
 	private Integer activate;
-	
-	
-	
 	
 	// Attributes:
 	// CHECKED
@@ -226,14 +221,14 @@ public class Meta implements Serializable, Cloneable {
     	name = "document_properties",
     	joinColumns = @JoinColumn(name = "meta_id"))    		
     @org.hibernate.annotations.MapKey(columns = @Column(name="key_name"))    		
-    @Column(name = "value", updatable=false)
+    @Column(name = "value", nullable = false)
     private Map<String, String> properties = new HashMap<String, String>();
     
     @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
    	@JoinTable(
     	name = "document_categories",
     	joinColumns = @JoinColumn(name = "meta_id"))
-    @Column(name = "category_id", nullable = false, updatable=false)
+    @Column(name = "category_id", nullable = false)
     private Set<Integer> categoryIds = new HashSet<Integer>();
     
     
@@ -241,7 +236,7 @@ public class Meta implements Serializable, Cloneable {
    	@JoinTable(
     	name = "meta_section",
     	joinColumns = @JoinColumn(name = "meta_id"))
-    @Column(name = "section_id", nullable = false, updatable=false)
+    @Column(name = "section_id", nullable = false)
     private Set<Integer> sectionIds = new HashSet<Integer>();
     
     // For processing after load:
@@ -299,6 +294,17 @@ public class Meta implements Serializable, Cloneable {
 			
 			clone.metaMap = null;
 			clone.unavailableI18nDataSubstitution = unavailableI18nDataSubstitution;
+
+			clone.docPermisionSetEx = new HashSet<DocPermisionSetEx>(docPermisionSetEx);
+			clone.docPermisionSetExForNew = new HashSet<DocPermisionSetEx>(docPermisionSetExForNew);
+			clone.permissionSetBits = new HashMap<Integer, Integer>(permissionSetBits);
+			clone.permissionSetBitsForNew = new HashMap<Integer, Integer>(permissionSetBitsForNew);
+			
+			clone.roleRights = new HashMap<Integer, Integer>(roleRights);		
+			
+			clone.sectionIds = new HashSet<Integer>(sectionIds);
+			clone.properties = new HashMap<String, String>(properties);
+			clone.categoryIds = new HashSet<Integer>(categoryIds);
 			
 			if (i18nMetas != null) {
 				clone.i18nMetas = new LinkedList<I18nMeta>();

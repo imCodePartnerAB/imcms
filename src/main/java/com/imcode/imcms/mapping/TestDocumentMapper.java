@@ -165,7 +165,7 @@ public class TestDocumentMapper extends TestCase {
         documentResultRows[0][1] = new Integer(textDocument.getDocumentTypeId()) ;
         documentResultRows[0][5] = new Integer(user.getId()) ;
         documentResultRows[0][16] = new Integer(DocumentSaver.convertPublicationStatusToInt(textDocument.getPublicationStatus())) ;
-        database.addExpectedSqlCall( new MockDatabase.StartsWithSqlCallPredicate( DatabaseDocumentGetter.SQL_GET_DOCUMENTS ), new MockResultSet(documentResultRows) );
+        
         ResultSet textDocsResultRow = new MockResultSet(new Object[][] { { ONE, ONE, ONE, ONE, ONE } } ) ;
         database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "FROM text_docs"), textDocsResultRow );
         DocumentDomainObject document = documentMapper.getDocument(textDocument.getId());

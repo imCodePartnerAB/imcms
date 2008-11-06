@@ -1,10 +1,8 @@
 package imcode.server.document;
 
-import imcode.server.document.textdocument.CopyableHashMap;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
-import imcode.util.LazilyLoadedObject;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -565,10 +563,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.permissionSetsForNewDocuments = permissionSetsForNew;
     }
 
-    public void loadAllLazilyLoaded() {
-        //attributes.permissionSets.load();
-        //attributes.permissionSetsForNewDocuments.load();
-    }
+    public void loadAllLazilyLoaded() {}
 
     public String getAlias() {
         return getProperty(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
@@ -613,8 +608,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private String target;
         private boolean linkedForUnauthorizedUsers;
 
-        //private LazilyLoadedObject permissionSets = new LazilyLoadedObject(new DocumentPermissionSetsLoader());
-        //private LazilyLoadedObject permissionSetsForNewDocuments = new LazilyLoadedObject(new DocumentPermissionSetsLoader());
         private DocumentPermissionSets permissionSets = new DocumentPermissionSets();
         private DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
         
@@ -625,24 +618,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private Set<Integer> sectionIds = new HashSet<Integer>();        
         private RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings =
         	new RoleIdToDocumentPermissionSetTypeMappings();
-        
-        /*
-        private LazilyLoadedObject roleIdToDocumentPermissionSetTypeMappings = new LazilyLoadedObject(new LazilyLoadedObject.Loader() {
-            public LazilyLoadedObject.Copyable load() {
-                return new RoleIdToDocumentPermissionSetTypeMappings();
-            }
-        });
-        */
-        
+                
 
         public Object clone() throws CloneNotSupportedException {
             Attributes clone = (Attributes)super.clone();
-            
-            //clone.properties = (LazilyLoadedObject) properties.clone();
-            //clone.sectionIds = (LazilyLoadedObject) sectionIds.clone();
-            //clone.categoryIds = (LazilyLoadedObject) categoryIds.clone();
-            //clone.roleIdToDocumentPermissionSetTypeMappings = (LazilyLoadedObject) roleIdToDocumentPermissionSetTypeMappings.clone();
-            
+                        
             clone.properties = new HashMap<String, String>(properties);
             clone.sectionIds = new HashSet<Integer>(sectionIds);
             clone.categoryIds = new HashSet<Integer>(categoryIds);
@@ -652,29 +632,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             clone.permissionSetsForNewDocuments = permissionSetsForNewDocuments.clone() ;
             return clone;
         }
-
-        private static class CopyableHashSetLoader implements LazilyLoadedObject.Loader {
-
-            public LazilyLoadedObject.Copyable load() {
-                return new CopyableHashSet();
-            }
-        }
-
-        private static class CopyableHashMapLoader implements LazilyLoadedObject.Loader {
-
-            public LazilyLoadedObject.Copyable load() {
-                return new CopyableHashMap();
-            }
-        }
-
-        /*
-        private static class DocumentPermissionSetsLoader implements LazilyLoadedObject.Loader {
-
-            public LazilyLoadedObject.Copyable load() {
-                return new DocumentPermissionSets() ;
-            }
-        }
-        */
     }
 
 	public Meta getMeta() {
