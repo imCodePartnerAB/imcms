@@ -34,15 +34,22 @@ import javax.persistence.Transient;
  */
 public class Meta implements Serializable, Cloneable {
 	
+	/**
+	 * Create (only create!) permission for template or a document type.
+	 * 
+	 * set_id -> set type id: can be restricted 1 or restricted 2   
+	 */
 	@Embeddable
 	static public class DocPermisionSetEx {
-		
+				
 		@Column(name="set_id", updatable=false, insertable=false)
 		private Integer setId;
 		
 		@Column(name="permission_data", updatable=false, insertable=false)
 		
-		//template or document
+		/**
+		 * Document type (1 2 5 7 8) or template (0)
+		 */
 		private Integer permissionData;
 		
 		@Column(name="permission_id", updatable=false, insertable=false)
@@ -280,6 +287,9 @@ public class Meta implements Serializable, Cloneable {
     @Column(name = "permission_id", updatable=false)
     private Map<Integer, Integer> permissionSetBitsForNewMap = new HashMap<Integer, Integer>();
 
+    /**
+     * 
+     */
     // For processing after load:
 	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
 	@JoinTable(

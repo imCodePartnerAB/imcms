@@ -64,7 +64,7 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
     public void setEditImages( boolean editImages ) {
         setPermission( EDIT_IMAGES, editImages );
     }
-
+    
     public void setFromBits(int permissionBits) {
         setEditDocumentInformation(0 != ( permissionBits & EDIT_DOCINFO_PERMISSION_ID ));
         setEditPermissions(0 != ( permissionBits & EDIT_PERMISSIONS_PERMISSION_ID ));

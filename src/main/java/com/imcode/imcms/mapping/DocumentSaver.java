@@ -5,23 +5,16 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-
 import com.imcode.db.Database;
-import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Keyword;
 import com.imcode.imcms.api.Meta;
@@ -30,9 +23,6 @@ import com.imcode.imcms.dao.MetaDao;
 class DocumentSaver {
 
     private final DocumentMapper documentMapper ;
-
-    public static final String SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID = "DELETE FROM roles_rights WHERE role_id = ? AND meta_id = ?";
-    public static final String SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID = "INSERT INTO roles_rights (role_id, meta_id, set_id) VALUES(?,?,?)";
 
     DocumentSaver(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
@@ -52,6 +42,7 @@ class DocumentSaver {
                 document.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
             }
 
+            // Make roles and other security components one-to-many with manual save???
             if (user.canEditPermissionsFor(oldDocument)) {
                 newUpdateDocumentRolePermissions(document, user, oldDocument);
             }
@@ -60,9 +51,7 @@ class DocumentSaver {
             
             
             if (user.canEditPermissionsFor(oldDocument)) {
-                //updateDocumentRolePermissions(document, user, oldDocument);
-
-                documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, oldDocument);
+                 documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, oldDocument);
             }
 
             document.accept(new DocumentSavingVisitor(oldDocument, getDatabase(), documentMapper.getImcmsServices(), user));
@@ -83,6 +72,7 @@ class DocumentSaver {
         
         // clone shared references and
         // set metaId to null after cloning
+        // remove all permissions after cloning?
         document.cloneSharedForNewDocument();       
         document.getMeta().setMetaId(null);
 
@@ -111,6 +101,7 @@ class DocumentSaver {
     /**
      * Temporary method
      * Copies data from attributes to meta and stores meta.
+     * 
      * @return meta id
      */
     private int saveMeta(DocumentDomainObject document) {
@@ -174,6 +165,7 @@ class DocumentSaver {
     	meta.getPermissionSetBitsForNewMap().clear();
     	
     	// Converted from legacy queries:
+    	// Should be handled separately from meta???
     	//meta.getRoleIdToPermissionSetIdMap();
     	
     	

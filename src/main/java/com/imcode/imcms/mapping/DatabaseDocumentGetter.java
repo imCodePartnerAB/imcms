@@ -22,6 +22,7 @@ import java.util.Set;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.api.Meta.DocPermisionSetEx;
 import com.imcode.imcms.dao.MetaDao;
 
 public class DatabaseDocumentGetter extends AbstractDocumentGetter {
@@ -139,43 +140,46 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
     }
     
     private void initDocumentsPermissionSets(DocumentDomainObject document, Meta meta) {
-    	DocumentPermissionSets permissionSets = new DocumentPermissionSets();
-    	Map<Integer, Integer> permissionSetBitsMap = meta.getPermissionSetBitsMap();
-    	
-    	for (Meta.DocPermisionSetEx ex: meta.getDocPermisionSetEx()) {
-    		Integer setId = ex.getSetId();
-    		Integer permissionSetBits = permissionSetBitsMap.get(setId);
-    		DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
-    		        		
-            if ( 0 != permissionSetBits && restricted.isEmpty() ) {
-                restricted.setFromBits(permissionSetBits);
-            }
-            
-            setPermissionData(restricted, ex.getPermissionId(), ex.getPermissionData());        		
-    	}
+    	DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
+    			meta.getPermissionSetBitsMap(), meta.getDocPermisionSetEx());
     	
     	document.setPermissionSets(permissionSets);
     }
     
     
     private void initDocumentsPermissionSetsForNew(DocumentDomainObject document, Meta meta) {
-    	DocumentPermissionSets permissionSets = new DocumentPermissionSets();
-    	Map<Integer, Integer> permissionSetBitsMap = meta.getPermissionSetBitsForNewMap();
-    	
-    	for (Meta.DocPermisionSetEx ex: meta.getDocPermisionSetExForNew()) {
-    		Integer setId = ex.getSetId();
-    		Integer permissionSetBits = permissionSetBitsMap.get(setId);
-    		DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
-    		        		
-            if ( 0 != permissionSetBits && restricted.isEmpty() ) {
-                restricted.setFromBits(permissionSetBits);
-            }
-            
-            setPermissionData(restricted, ex.getPermissionId(), ex.getPermissionData());        		
-    	}
+    	DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
+    			meta.getPermissionSetBitsForNewMap(), meta.getDocPermisionSetExForNew());
     	
     	document.setPermissionSetsForNew(permissionSets);
     }
+    
+    
+    private DocumentPermissionSets createDocumentsPermissionSets(
+    		Map<Integer, Integer> permissionSetBitsMap,
+    		Set<Meta.DocPermisionSetEx> permissionSetEx) {
+    	
+    	DocumentPermissionSets permissionSets = new DocumentPermissionSets();
+    	
+    	for (Map.Entry<Integer, Integer> permissionSetBitsEntry: permissionSetBitsMap.entrySet()) {
+    		Integer setId = permissionSetBitsEntry.getKey();
+    		Integer permissionSetBits = permissionSetBitsEntry.getValue();
+    		DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
+    		
+            if (permissionSetBits != 0 && restricted.isEmpty()) {
+                restricted.setFromBits(permissionSetBits);
+            }    		    		
+    	}    	
+    	
+    	for (Meta.DocPermisionSetEx ex: permissionSetEx) {
+    		Integer setId = ex.getSetId();
+    		DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
+    		        		
+            setPermissionData(restricted, ex.getPermissionId(), ex.getPermissionData());        		
+    	}
+    	
+    	return permissionSets;
+    }    
     
 
     private void setPermissionData(DocumentPermissionSetDomainObject permissionSet, Integer permissionId, Integer permissionData) {

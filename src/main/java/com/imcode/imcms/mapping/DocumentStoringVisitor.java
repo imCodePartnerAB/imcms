@@ -149,9 +149,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 if (text.isModified()) {
                     sqlInsertTextHistory(language, textDocument, index, text, user);
                    
-                    // For copied documents we should set meta id!!!
-                    // TODO: refactor
-                    text.setMetaId(metaId);
                     textDao.saveText(metaId, text);
                 }
             }
