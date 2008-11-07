@@ -45,7 +45,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
             return Collections.EMPTY_LIST ;
         }
                 
-        LinkedHashMap<Integer, DocumentDomainObject> documentsMap = initDocuments(documentIds);
+        Map<Integer, DocumentDomainObject> documentsMap = initDocuments(documentIds);
                                 
         initDocuments(documentsMap);
         
@@ -56,10 +56,10 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
     /**
      * Initializes documents - hibernate version  
      */
-    private LinkedHashMap initDocuments(Collection<Integer> documentIds) {
+    private Map<Integer, DocumentDomainObject> initDocuments(Collection<Integer> documentIds) {
     	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao");
     	
-    	LinkedHashMap<Integer, DocumentDomainObject> map = new LinkedHashMap<Integer, DocumentDomainObject>();
+    	Map<Integer, DocumentDomainObject> map = new LinkedHashMap<Integer, DocumentDomainObject>();
     	
     	for (Integer metaId: documentIds) {
     		Meta meta = metaDao.getMeta(metaId);
@@ -102,7 +102,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
             document.setCategoryIds(meta.getCategoryIds());
             document.setProperties(meta.getProperties());
             
-            initRoles(document, meta);
+            initRoleIdToPermissionSetIdMap(document, meta);
             initDocumentsPermissionSets(document, meta);
             initDocumentsPermissionSetsForNew(document, meta);            
             // end of moved from DocumentInitializer.initDocuments
@@ -124,15 +124,15 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
         return publicationStatus;
     }
     
-    // Moved from 
-    private void initRoles(DocumentDomainObject document, Meta meta) {
+    // Moved from  DocumentInitializer.initDocuments
+    private void initRoleIdToPermissionSetIdMap(DocumentDomainObject document, Meta meta) {
         RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings = 
         	new RoleIdToDocumentPermissionSetTypeMappings();
         
-        for (Map.Entry<Integer, Integer> roleRight: meta.getRoleRights().entrySet()) {
+        for (Map.Entry<Integer, Integer> roleIdToPermissionSetId: meta.getRoleIdToPermissionSetIdMap().entrySet()) {
         	rolePermissionMappings.setPermissionSetTypeForRole(
-        			new RoleId(roleRight.getKey()),
-        			DocumentPermissionSetTypeDomainObject.fromInt(roleRight.getValue()));
+        			new RoleId(roleIdToPermissionSetId.getKey()),
+        			DocumentPermissionSetTypeDomainObject.fromInt(roleIdToPermissionSetId.getValue()));
         }
         
         document.setRoleIdsMappedToDocumentPermissionSetTypes(rolePermissionMappings);    	
@@ -140,7 +140,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
     
     private void initDocumentsPermissionSets(DocumentDomainObject document, Meta meta) {
     	DocumentPermissionSets permissionSets = new DocumentPermissionSets();
-    	Map<Integer, Integer> permissionSetBitsMap = meta.getPermissionSetBits();
+    	Map<Integer, Integer> permissionSetBitsMap = meta.getPermissionSetBitsMap();
     	
     	for (Meta.DocPermisionSetEx ex: meta.getDocPermisionSetEx()) {
     		Integer setId = ex.getSetId();
@@ -160,7 +160,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
     
     private void initDocumentsPermissionSetsForNew(DocumentDomainObject document, Meta meta) {
     	DocumentPermissionSets permissionSets = new DocumentPermissionSets();
-    	Map<Integer, Integer> permissionSetBitsMap = meta.getPermissionSetBitsForNew();
+    	Map<Integer, Integer> permissionSetBitsMap = meta.getPermissionSetBitsForNewMap();
     	
     	for (Meta.DocPermisionSetEx ex: meta.getDocPermisionSetExForNew()) {
     		Integer setId = ex.getSetId();

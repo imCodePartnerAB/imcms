@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -21,7 +22,6 @@ import org.apache.commons.collections.Predicate;
 
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Keyword;
 import com.imcode.imcms.api.Meta;
@@ -52,10 +52,15 @@ class DocumentSaver {
                 document.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
             }
 
-            saveMeta(document);
-
             if (user.canEditPermissionsFor(oldDocument)) {
-                updateDocumentRolePermissions(document, user, oldDocument);
+                newUpdateDocumentRolePermissions(document, user, oldDocument);
+            }
+            
+            saveMeta(document);
+            
+            
+            if (user.canEditPermissionsFor(oldDocument)) {
+                //updateDocumentRolePermissions(document, user, oldDocument);
 
                 documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, oldDocument);
             }
@@ -65,18 +70,6 @@ class DocumentSaver {
             documentMapper.invalidateDocument(document);
         }
     }
-
-
-    static int convertPublicationStatusToInt(Document.PublicationStatus publicationStatus) {
-        int publicationStatusInt = Document.STATUS_NEW;
-        if ( Document.PublicationStatus.APPROVED.equals(publicationStatus) ) {
-            publicationStatusInt = Document.STATUS_PUBLICATION_APPROVED ;
-        } else if ( Document.PublicationStatus.DISAPPROVED.equals(publicationStatus) ) {
-            publicationStatusInt = Document.STATUS_PUBLICATION_DISAPPROVED ;
-        }
-        return publicationStatusInt;
-    }
-
 
     private Database getDatabase() {
         return documentMapper.getDatabase();
@@ -88,13 +81,15 @@ class DocumentSaver {
 
         document.loadAllLazilyLoaded();
         
-        // cloen shared references and
+        // clone shared references and
         // set metaId to null after cloning
         document.cloneSharedForNewDocument();       
-        document.getMeta().setMetaId(null);        
+        document.getMeta().setMetaId(null);
 
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 
+        newUpdateDocumentRolePermissions(document, user, null);
+        
         int newMetaId = saveMeta(document);
 
         boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(document) && !copying;
@@ -105,8 +100,6 @@ class DocumentSaver {
         
         document.setId(newMetaId);
         
-        updateDocumentRolePermissions(document, user, null);
-
         documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
 
         document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
@@ -174,12 +167,15 @@ class DocumentSaver {
         //String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
     	
     	//@Immutable
-    	// currenlty they are instert by legacy queries
+    	// inserted by legacy queries
     	meta.getDocPermisionSetEx().clear();
-    	meta.getDocPermisionSetExForNew().clear();
-    	meta.getRoleRights().clear();
-    	meta.getPermissionSetBits().clear();
-    	meta.getPermissionSetBitsForNew().clear();
+    	meta.getDocPermisionSetExForNew().clear();    	
+    	meta.getPermissionSetBitsMap().clear();
+    	meta.getPermissionSetBitsForNewMap().clear();
+    	
+    	// Converted from legacy queries:
+    	//meta.getRoleIdToPermissionSetIdMap();
+    	
     	
     	// WHAT TO DO WITH THIS on copy save and on base save?    	
     	meta.setSectionIds(document.getSectionIds());
@@ -199,78 +195,54 @@ class DocumentSaver {
         checkIfAliasAlreadyExist(document);
 
     }
+    
+    
+    /**
+     * Update meta roles to permissions set mapping.
+     * Modified copy of legacy updateDocumentRolePermissions method.  
+     * NB! Compared to legacy this method does not update database.
+     */
+    void newUpdateDocumentRolePermissions(DocumentDomainObject document, UserDomainObject user,
+            DocumentDomainObject oldDocument) {
 
-    void updateDocumentRolePermissions(DocumentDomainObject document, UserDomainObject user,
-                                       DocumentDomainObject oldDocument) {
-        RoleIdToDocumentPermissionSetTypeMappings mappings = new RoleIdToDocumentPermissionSetTypeMappings();
-
-        if (null != oldDocument) {
-            RoleIdToDocumentPermissionSetTypeMappings.Mapping[] oldDocumentMappings = oldDocument.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings();
-            for ( int i = 0; i < oldDocumentMappings.length; i++ ) {
-                RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = oldDocumentMappings[i];
-                mappings.setPermissionSetTypeForRole(mapping.getRoleId(), DocumentPermissionSetTypeDomainObject.NONE);
-            }
-        }
-
-        RoleIdToDocumentPermissionSetTypeMappings.Mapping[] documentMappings = document.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings() ;
-        for ( int i = 0; i < documentMappings.length; i++ ) {
-            RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = documentMappings[i];
-            mappings.setPermissionSetTypeForRole(mapping.getRoleId(), mapping.getDocumentPermissionSetType());
-        }
-
-        RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappingsArray = mappings.getMappings();
-        for ( int i = 0; i < mappingsArray.length; i++ ) {
-            RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = mappingsArray[i];
-            RoleId roleId = mapping.getRoleId();
-            DocumentPermissionSetTypeDomainObject documentPermissionSetType = mapping.getDocumentPermissionSetType();
-
-            if (null == oldDocument
-                || user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument)) {
-                String[] params1 = new String[]{"" + roleId,
-                                                "" + document.getId()};
-                getDatabase().execute(new SqlUpdateCommand(SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID, params1));
-                if ( !DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType) ) {
-                    String[] params = new String[]{
-                        "" + roleId.intValue(), "" + document.getId(), "" + documentPermissionSetType };
-                    getDatabase().execute(new SqlUpdateCommand(SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID, params));
-                }
-            }
-        }
-    }
-
-
-    Set getDocumentsAddedWithoutPermission(TextDocumentDomainObject textDocument,
-                                           TextDocumentDomainObject oldTextDocument,
-                                           final UserDomainObject user, DocumentGetter documentGetter) {
-        Set documentIdsAdded = getDocumentIdsAdded(textDocument, oldTextDocument);
-        List documents = documentGetter.getDocuments(documentIdsAdded);
-        Collection documentsAddedWithoutPermission = CollectionUtils.select(documents, new Predicate() {
-            public boolean evaluate(Object object) {
-                return !user.canAddDocumentToAnyMenu((DocumentDomainObject) object) ;
-            }
-        }) ;
-        return new HashSet(documentsAddedWithoutPermission);
-    }
-
-    private Set getDocumentIdsAdded(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument
-    ) {
-        Set documentIdsAdded;
-        if (null != oldTextDocument) {
-            documentIdsAdded = getChildDocumentIdsDifference(textDocument, oldTextDocument);
-        } else {
-            documentIdsAdded = textDocument.getChildDocumentIds() ;
-        }
-        return documentIdsAdded;
-    }
-
-    private Set getChildDocumentIdsDifference(TextDocumentDomainObject minuend, TextDocumentDomainObject subtrahend) {
-        Set minuendChildDocumentIds = minuend.getChildDocumentIds() ;
-        Set subtrahendChildDocumentIds = subtrahend.getChildDocumentIds() ;
-        Set result = new HashSet(minuendChildDocumentIds) ;
-        result.removeAll(subtrahendChildDocumentIds) ;
-        return result ;
-    }
-
+    	// Original (old) and modified or new document permission set type mapping.
+		RoleIdToDocumentPermissionSetTypeMappings mappings = new RoleIdToDocumentPermissionSetTypeMappings();
+		
+		// Copy original document' roles to mapping with NONE(4) permissions-set assigned
+		if (null != oldDocument) {
+			RoleIdToDocumentPermissionSetTypeMappings.Mapping[] oldDocumentMappings = oldDocument.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings();
+			for ( int i = 0; i < oldDocumentMappings.length; i++ ) {
+				RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = oldDocumentMappings[i];
+				mappings.setPermissionSetTypeForRole(mapping.getRoleId(), DocumentPermissionSetTypeDomainObject.NONE);
+			}
+		}
+		
+		// Copy modified or new document' roles to mapping
+		RoleIdToDocumentPermissionSetTypeMappings.Mapping[] documentMappings = document.getRoleIdsMappedToDocumentPermissionSetTypes().getMappings() ;
+		for ( int i = 0; i < documentMappings.length; i++ ) {
+			RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = documentMappings[i];
+			mappings.setPermissionSetTypeForRole(mapping.getRoleId(), mapping.getDocumentPermissionSetType());
+		}
+		
+		RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappingsArray = mappings.getMappings();
+		Map<Integer, Integer> roleIdToPermissionSetIdMap = document.getMeta().getRoleIdToPermissionSetIdMap();
+		
+		for ( int i = 0; i < mappingsArray.length; i++ ) {
+			RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = mappingsArray[i];
+			RoleId roleId = mapping.getRoleId();
+			DocumentPermissionSetTypeDomainObject documentPermissionSetType = mapping.getDocumentPermissionSetType();
+			
+			if (null == oldDocument
+					|| user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument)) {
+				
+				if (documentPermissionSetType.equals(DocumentPermissionSetTypeDomainObject.NONE)) {
+					roleIdToPermissionSetIdMap.remove(roleId.intValue());
+				} else {
+					roleIdToPermissionSetIdMap.put(roleId.intValue(), documentPermissionSetType.getId());
+				}
+			}
+		}
+	}
 
     public void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
         Set<String> allAlias = documentMapper.getAllDocumentAlias() ;
@@ -280,5 +252,4 @@ class DocumentSaver {
                                                                          + "' already exists");
         }
     }
-
 }

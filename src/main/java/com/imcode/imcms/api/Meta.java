@@ -41,6 +41,7 @@ public class Meta implements Serializable, Cloneable {
 		private Integer setId;
 		
 		@Column(name="permission_data", updatable=false, insertable=false)
+		
 		//template or document
 		private Integer permissionData;
 		
@@ -135,7 +136,7 @@ public class Meta implements Serializable, Cloneable {
 	@Column(name="activate", nullable=false, updatable=false)
 	private Integer activate;
 	
-	// Attributes:
+	// The following fields are mapped to document attributes:
 	// CHECKED
 	@Column(name="doc_type", nullable=false, updatable=false)
 	// For processing after load:
@@ -215,7 +216,7 @@ public class Meta implements Serializable, Cloneable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date publicationEndDatetime;
 
-    // Lazy loaded:
+    // Those fields were lazy loaded in previous version:
     @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(
     	name = "document_properties",
@@ -239,15 +240,21 @@ public class Meta implements Serializable, Cloneable {
     @Column(name = "section_id", nullable = false)
     private Set<Integer> sectionIds = new HashSet<Integer>();
     
+    // RoleId to permission-set id mapping.  
     // For processing after load:
     @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(
     	name = "roles_rights",
     	joinColumns = @JoinColumn(name = "meta_id"))    		
     @org.hibernate.annotations.MapKey(columns = @Column(name="role_id"))    		
-    @Column(name = "set_id", updatable=false)
-    private Map<Integer, Integer> roleRights = new HashMap<Integer, Integer>();
+    @Column(name = "set_id")
+    private Map<Integer, Integer> roleIdToPermissionSetIdMap = new HashMap<Integer, Integer>();
     
+    
+    /**
+     * Limited 1 permission set's bits for new document.
+     * Permission set id mapped to bits. 
+     */    
     // For processing after load:
     // permisionId in the table actually is not an 'id' but a bit set value.
     @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
@@ -256,9 +263,13 @@ public class Meta implements Serializable, Cloneable {
     	joinColumns = @JoinColumn(name = "meta_id"))    		
     @org.hibernate.annotations.MapKey(columns = @Column(name="set_id"))    		
     @Column(name = "permission_id", updatable=false)
-    private Map<Integer, Integer> permissionSetBits = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> permissionSetBitsMap = new HashMap<Integer, Integer>();
 
     
+    /**
+     * Limited 2 permission set's bits for new document.
+     * Permission set id mapped to bits.
+     */
     // For processing after load:
     // permisionId in the table actually is not an 'id' but a bit set value.
     @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
@@ -267,7 +278,7 @@ public class Meta implements Serializable, Cloneable {
     	joinColumns = @JoinColumn(name = "meta_id"))    		
     @org.hibernate.annotations.MapKey(columns = @Column(name="set_id"))    		
     @Column(name = "permission_id", updatable=false)
-    private Map<Integer, Integer> permissionSetBitsForNew = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> permissionSetBitsForNewMap = new HashMap<Integer, Integer>();
 
     // For processing after load:
 	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
@@ -297,10 +308,10 @@ public class Meta implements Serializable, Cloneable {
 
 			clone.docPermisionSetEx = new HashSet<DocPermisionSetEx>(docPermisionSetEx);
 			clone.docPermisionSetExForNew = new HashSet<DocPermisionSetEx>(docPermisionSetExForNew);
-			clone.permissionSetBits = new HashMap<Integer, Integer>(permissionSetBits);
-			clone.permissionSetBitsForNew = new HashMap<Integer, Integer>(permissionSetBitsForNew);
+			clone.permissionSetBitsMap = new HashMap<Integer, Integer>(permissionSetBitsMap);
+			clone.permissionSetBitsForNewMap = new HashMap<Integer, Integer>(permissionSetBitsForNewMap);
 			
-			clone.roleRights = new HashMap<Integer, Integer>(roleRights);		
+			clone.roleIdToPermissionSetIdMap = new HashMap<Integer, Integer>(roleIdToPermissionSetIdMap);		
 			
 			clone.sectionIds = new HashSet<Integer>(sectionIds);
 			clone.properties = new HashMap<String, String>(properties);
@@ -516,29 +527,29 @@ public class Meta implements Serializable, Cloneable {
 	}
 
 	// For processing after load:
-	public Map<Integer, Integer> getRoleRights() {
-		return roleRights;
+	public Map<Integer, Integer> getRoleIdToPermissionSetIdMap() {
+		return roleIdToPermissionSetIdMap;
 	}
 
-	public void setRoleRights(Map<Integer, Integer> roleRights) {
-		this.roleRights = roleRights;
+	public void setRoleIdToPermissionSetIdMap(Map<Integer, Integer> roleRights) {
+		this.roleIdToPermissionSetIdMap = roleRights;
 	}
 
-	public Map<Integer, Integer> getPermissionSetBits() {
-		return permissionSetBits;
+	public Map<Integer, Integer> getPermissionSetBitsMap() {
+		return permissionSetBitsMap;
 	}
 
-	public void setPermissionSetBits(Map<Integer, Integer> permissionSetBits) {
-		this.permissionSetBits = permissionSetBits;
+	public void setPermissionSetBitsMap(Map<Integer, Integer> permissionSetBits) {
+		this.permissionSetBitsMap = permissionSetBits;
 	}
 
-	public Map<Integer, Integer> getPermissionSetBitsForNew() {
-		return permissionSetBitsForNew;
+	public Map<Integer, Integer> getPermissionSetBitsForNewMap() {
+		return permissionSetBitsForNewMap;
 	}
 
-	public void setPermissionSetBitsForNew(
+	public void setPermissionSetBitsForNewMap(
 			Map<Integer, Integer> permissionSetBitsForNew) {
-		this.permissionSetBitsForNew = permissionSetBitsForNew;
+		this.permissionSetBitsForNewMap = permissionSetBitsForNew;
 	}
 
 	public Set<DocPermisionSetEx> getDocPermisionSetEx() {
