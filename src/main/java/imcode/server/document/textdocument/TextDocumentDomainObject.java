@@ -205,7 +205,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	public TextDomainObject getText(I18nLanguage language, 
 			int index) {
 		
-		getMenu(0);
+		//WTF? - investigate
+		//getMenu(0);
 		
 		if (language == null) {
 			throw new IllegalArgumentException("language argument " +
