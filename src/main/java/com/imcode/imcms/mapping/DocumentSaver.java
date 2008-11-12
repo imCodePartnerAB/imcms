@@ -3,6 +3,7 @@ package com.imcode.imcms.mapping;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.user.RoleId;
@@ -16,7 +17,6 @@ import java.util.Set;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.api.I18nMeta;
-import com.imcode.imcms.api.Keyword;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
 
@@ -48,6 +48,13 @@ class DocumentSaver {
                 documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, oldDocument);
             }
             
+            // Update inherited meta
+            switch (document.getDocumentType().getId()) {
+            	case DocumentTypeDomainObject.HTML_ID:
+            	case DocumentTypeDomainObject.URL_ID:
+            		document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
+            }             
+            
             saveMeta(document);
                         
             document.accept(new DocumentSavingVisitor(oldDocument, getDatabase(), documentMapper.getImcmsServices(), user));
@@ -75,7 +82,17 @@ class DocumentSaver {
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 
         newUpdateDocumentRolePermissions(document, user, null);
+
+        // Updates permissions - method does not saves but instead just updates meta 
+        documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
         
+        // Update inherited meta
+        switch (document.getDocumentType().getId()) {
+        	case DocumentTypeDomainObject.HTML_ID:
+        	case DocumentTypeDomainObject.URL_ID:
+        		document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
+        } 
+                
         int newMetaId = saveMeta(document);
 
         boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(document) && !copying;
@@ -86,8 +103,6 @@ class DocumentSaver {
         
         document.setId(newMetaId);
         
-        documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
-
         document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
     	
         documentMapper.invalidateDocument(document);

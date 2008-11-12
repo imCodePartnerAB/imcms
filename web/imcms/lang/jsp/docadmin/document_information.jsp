@@ -653,7 +653,7 @@ function setI18nCodeParameterValue(value) {
 		<table border="0" cellspacing="0" cellpadding="2" style="width:98%;">
 		<c:forEach items="${document.meta.i18nMetas}" var="i18nPart">
 		<c:set var="prefix" value="_${i18nPart.language.code}"/>
-		<c:set var="keywordsValues" value="${i18nPart.keywordsValues}"/>
+		<c:set var="keywordsValues" value="${i18nPart.keywords}"/>
 		<tr>
 			<td><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${i18nPart.language.code}.gif" alt="" style="border:0;" /></td>
 			<td class="imcmsAdmText" style="padding-left:10px; padding-right:25px;">${i18nPart.language.name}</td>

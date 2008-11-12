@@ -19,6 +19,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
@@ -29,6 +31,10 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name="meta")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@org.hibernate.annotations.DiscriminatorFormula(
+  "case when doc_type = 7 then 'HtmlMeta' when doc_type = 5 then 'UrlMeta' when doc_type = 2 then 'TextMeta' else 'Meta' end"
+)
 /**
  * Document meta.
  */
