@@ -15,7 +15,7 @@ CREATE TABLE includes_new (
   id int auto_increment PRIMARY KEY,
   meta_id int NULL,
   include_id int NOT NULL,
-  included_meta_id int NULL  
+  included_meta_id int NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO includes_new (meta_id, include_id, included_meta_id)
@@ -30,8 +30,119 @@ ALTER TABLE includes ADD FOREIGN KEY fk__includes__included_meta (included_meta_
 
 
 --
--- Texts docs table
+-- Table new_doc_permission_sets_ex
 --
+
+CREATE TABLE new_doc_permission_sets_ex_temp (
+  id int auto_increment PRIMARY KEY,
+  meta_id int(11) NOT NULL,
+  set_id int(11) NOT NULL,
+  permission_id int(11) NOT NULL,
+  permission_data int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO new_doc_permission_sets_ex_temp (
+  meta_id,
+  set_id,
+  permission_id,
+  permission_data
+) SELECT 
+  meta_id, set_id, permission_id, permission_data
+FROM new_doc_permission_sets_ex;
+
+DROP TABLE new_doc_permission_sets_ex;
+RENAME TABLE new_doc_permission_sets_ex_temp TO new_doc_permission_sets_ex;
+
+ALTER TABLE new_doc_permission_sets_ex
+  ADD UNIQUE INDEX ux__new_doc_permission_sets_ex__1 (meta_id, set_id, permission_id, permission_data),
+  ADD FOREIGN KEY  fk__new_doc_permission_sets_ex__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  ADD FOREIGN KEY  fk__new_doc_permission_sets_ex__permission_sets (set_id) REFERENCES permission_sets (set_id);
+
+
+
+CREATE TABLE doc_permission_sets_ex_temp (
+  id int auto_increment PRIMARY KEY,
+  meta_id int(11) NOT NULL,
+  set_id int(11) NOT NULL,
+  permission_id int(11) NOT NULL,
+  permission_data int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO doc_permission_sets_ex_temp (
+  meta_id,
+  set_id,
+  permission_id,
+  permission_data
+) SELECT
+  meta_id, set_id, permission_id, permission_data
+FROM doc_permission_sets_ex;
+
+DROP TABLE doc_permission_sets_ex;
+RENAME TABLE doc_permission_sets_ex_temp TO doc_permission_sets_ex;
+
+ALTER TABLE doc_permission_sets_ex
+  ADD UNIQUE INDEX ux__doc_permission_sets_ex__1 (meta_id, set_id, permission_id, permission_data),
+  ADD FOREIGN KEY  fk__doc_permission_sets_ex__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  ADD FOREIGN KEY  fk__doc_permission_sets_ex__permission_sets (set_id) REFERENCES permission_sets (set_id);
+
+
+CREATE TABLE new_doc_permission_sets_temp (
+  id int auto_increment PRIMARY KEY,
+  meta_id int(11) NOT NULL,
+  set_id int(11) NOT NULL,
+  permission_id int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+INSERT INTO new_doc_permission_sets_temp (
+  meta_id,
+  set_id,
+  permission_id
+) SELECT
+  meta_id, set_id, permission_id
+FROM new_doc_permission_sets;
+
+DROP TABLE new_doc_permission_sets;
+RENAME TABLE new_doc_permission_sets_temp TO new_doc_permission_sets;
+
+ALTER TABLE new_doc_permission_sets
+  ADD UNIQUE INDEX ux__new_doc_permission_sets__meta_id__set_id (meta_id, set_id),
+  ADD FOREIGN KEY  fk__new_doc_permission_sets__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  ADD FOREIGN KEY  fk__new_doc_permission_sets__permission_sets (set_id) REFERENCES permission_sets (set_id);
+
+--
+-- Update permissions:
+--
+
+CREATE TABLE doc_permission_sets_temp (
+  id int auto_increment PRIMARY KEY,
+  meta_id int(11) NOT NULL,
+  set_id int(11) NOT NULL,
+  permission_id int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO doc_permission_sets_temp (
+  meta_id,
+  set_id,
+  permission_id
+) SELECT 
+  meta_id, set_id, permission_id
+FROM doc_permission_sets;
+
+DROP TABLE doc_permission_sets;
+RENAME TABLE doc_permission_sets_temp TO doc_permission_sets;
+
+ALTER TABLE doc_permission_sets
+  ADD UNIQUE INDEX ux__doc_permission_sets__meta_id__set_id (meta_id, set_id),
+  ADD FOREIGN KEY  fk__doc_permission_sets__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  ADD FOREIGN KEY  fk__doc_permission_sets__permission_sets (set_id) REFERENCES permission_sets (set_id);
+
+
+--
+-- 
+--
+
+
 
 
 

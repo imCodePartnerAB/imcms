@@ -8,8 +8,10 @@ import imcode.server.user.UserDomainObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.imcode.db.Database;
@@ -17,15 +19,19 @@ import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.TransactionDatabaseCommand;
+import com.imcode.imcms.api.Meta;
 
+/**
+ * Copies documents permissions to meta. 
+ */
 public class DocumentPermissionSetMapper {
 
-    private Database database;
-    public static final String TABLE_NEW_DOC_PERMISSION_SETS = "new_doc_permission_sets";
-    public static final String TABLE_DOC_PERMISSION_SETS = "doc_permission_sets";
+    //private Database database;
+    //public static final String TABLE_NEW_DOC_PERMISSION_SETS = "new_doc_permission_sets";
+    //public static final String TABLE_DOC_PERMISSION_SETS = "doc_permission_sets";
 
     public DocumentPermissionSetMapper(Database database) {
-        this.database = database;
+        //this.database = database;
     }
 
 
@@ -69,7 +75,40 @@ public class DocumentPermissionSetMapper {
                 permissionBits |= permissionPair.bit;
             }
         }
+        
+        Meta meta = document.getMeta();
+        Set<Meta.PermisionSetEx> permisionSetEx = forNewDocuments
+            ? meta.getPermisionSetExForNew()
+            : meta.getPermisionSetEx();		
+        
+        Map<Integer, Integer> permissionSetBitsMap = forNewDocuments 
+        	? meta.getPermissionSetBitsForNewMap()
+        	: meta.getPermissionSetBitsMap();	
+        	        
+        Integer setId = documentPermissionSet.getType().getId();
+        
+        permissionSetBitsMap.put(setId, permissionBits);
+        
+        // -> sqlDeleteFromExtendedPermissionsTable db command block        
+        //TODO: Optimize - currently in prototype state: removes permisionSetEx 
+        // for current setId
+        Set<Meta.PermisionSetEx> filteredPermissionSetEx = new HashSet<Meta.PermisionSetEx>();
+        for (Meta.PermisionSetEx setEx: permisionSetEx) {
+        	if (!setEx.getSetId().equals(setId)) {
+        		filteredPermissionSetEx.add(setEx);
+        	}
+        }
 
+        permisionSetEx = filteredPermissionSetEx;
+        if (forNewDocuments) {
+        	meta.setPermisionSetExForNew(permisionSetEx);
+        } else {
+        	meta.setPermisionSetEx(permisionSetEx);
+        }
+        
+        //TODO: end of optimize
+                
+        /*        
         final int permissionBits1 = permissionBits;
         database.execute(new TransactionDatabaseCommand() {
             public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
@@ -86,19 +125,34 @@ public class DocumentPermissionSetMapper {
                 return null;
             }
         });
+        */
 
         if ( document instanceof TextDocumentDomainObject ) {
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) documentPermissionSet;
-            sqlSaveAllowedTemplateGroups(document, textDocumentPermissionSet, forNewDocuments);
-            sqlSaveAllowedDocumentTypes(document, textDocumentPermissionSet, forNewDocuments);
+            sqlSaveAllowedTemplateGroups(document, textDocumentPermissionSet, forNewDocuments, permisionSetEx);
+            sqlSaveAllowedDocumentTypes(document, textDocumentPermissionSet, forNewDocuments, permisionSetEx);
         }
     }
 
     private void sqlSaveAllowedTemplateGroups(DocumentDomainObject document,
                                               TextDocumentPermissionSetDomainObject textDocumentPermissionSet,
-                                              boolean forNewDocuments) {
-        String table = getExtendedPermissionsTable(forNewDocuments);
-        Set allowedTemplateGroupIds = textDocumentPermissionSet.getAllowedTemplateGroupIds();
+                                              boolean forNewDocuments, Set<Meta.PermisionSetEx> permisionSetEx) {
+    	
+    	Set<Integer> allowedTemplateGroupIds = textDocumentPermissionSet.getAllowedTemplateGroupIds();
+    	Integer setId = textDocumentPermissionSet.getType().getId(); 
+    	
+    	for (Integer allowedTemplateGroupId: allowedTemplateGroupIds) {
+    		Meta.PermisionSetEx setEx = new Meta.PermisionSetEx();
+    		
+    		setEx.setSetId(setId);
+    		setEx.setPermissionId(TextDocumentPermissionSetDomainObject.EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID);
+    		setEx.setPermissionData(allowedTemplateGroupId);
+    		
+    		permisionSetEx.add(setEx);
+    	}
+    	
+    	/*
+        String table = getExtendedPermissionsTable(forNewDocuments);        
         String sqlInsertAllowedTemplateGroupId = "INSERT INTO " + table + " VALUES(?,?,"
                                                  + TextDocumentPermissionSetDomainObject.EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID
                                                  + ",?)";
@@ -111,8 +165,11 @@ public class DocumentPermissionSetMapper {
             };
             database.execute(new SqlUpdateCommand(sqlInsertAllowedTemplateGroupId, parameters));
         }
+        */
+    	
     }
 
+    /*
     private void sqlDeleteFromExtendedPermissionsTable(DocumentDomainObject document,
                                                        DocumentPermissionSetDomainObject documentPermissionSet,
                                                        boolean forNewDocuments,
@@ -124,12 +181,26 @@ public class DocumentPermissionSetMapper {
                 "" + document.getId(), "" + documentPermissionSet.getType()
         });
     }
+    */
 
     private void sqlSaveAllowedDocumentTypes(DocumentDomainObject document,
                                              TextDocumentPermissionSetDomainObject textDocumentPermissionSet,
-                                             boolean forNewDocuments) {
-        String table = getExtendedPermissionsTable(forNewDocuments);
-        Set allowedDocumentTypeIds = textDocumentPermissionSet.getAllowedDocumentTypeIds();
+                                             boolean forNewDocuments, Set<Meta.PermisionSetEx> permisionSetEx) {
+    	Set<Integer> allowedDocumentTypeIds = textDocumentPermissionSet.getAllowedDocumentTypeIds();
+    	Integer setId = textDocumentPermissionSet.getType().getId();
+    	
+    	for (Integer allowedDocumentTypeId: allowedDocumentTypeIds) {
+    		Meta.PermisionSetEx setEx = new Meta.PermisionSetEx();
+    		
+    		setEx.setSetId(setId);
+    		setEx.setPermissionId(DatabaseDocumentGetter.PERM_CREATE_DOCUMENT);
+    		setEx.setPermissionData(allowedDocumentTypeId);
+    		
+    		permisionSetEx.add(setEx);
+    	}    	
+    	
+    	/*
+        String table = getExtendedPermissionsTable(forNewDocuments);        
         String sqlInsertCreatableDocumentTypeId = "INSERT INTO " + table + " VALUES(?,?,"
                                                   + DatabaseDocumentGetter.PERM_CREATE_DOCUMENT
                                                   + ",?)";
@@ -142,8 +213,10 @@ public class DocumentPermissionSetMapper {
             };
             database.execute(new SqlUpdateCommand(sqlInsertCreatableDocumentTypeId, parameters));
         }
+        */
     }
 
+    /*
     private String getExtendedPermissionsTable(boolean forNewDocuments) {
         String table = "doc_permission_sets_ex";
         if ( forNewDocuments ) {
@@ -151,7 +224,7 @@ public class DocumentPermissionSetMapper {
         }
         return table;
     }
-
+	*/
 
     private static class PermissionPair {
 

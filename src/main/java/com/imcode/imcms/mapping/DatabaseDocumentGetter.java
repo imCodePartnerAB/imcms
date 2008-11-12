@@ -35,11 +35,6 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
         this.services = services;
     }
 
-    /* Just for test:	  
-	if (documentIds.size() > 1) {
-		throw new AssertionError("Too many getDocuments!!!: " + documentIds.size());
-   	}
-    */
     public List getDocuments(final Collection documentIds) {
         if (documentIds.isEmpty()) {
             return Collections.EMPTY_LIST ;
@@ -140,7 +135,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
     
     private void initDocumentsPermissionSets(DocumentDomainObject document, Meta meta) {
     	DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-    			meta.getPermissionSetBitsMap(), meta.getDocPermisionSetEx());
+    			meta.getPermissionSetBitsMap(), meta.getPermisionSetEx());
     	
     	document.setPermissionSets(permissionSets);
     }
@@ -148,7 +143,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
     
     private void initDocumentsPermissionSetsForNew(DocumentDomainObject document, Meta meta) {
     	DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-    			meta.getPermissionSetBitsForNewMap(), meta.getDocPermisionSetExForNew());
+    			meta.getPermissionSetBitsForNewMap(), meta.getPermisionSetExForNew());
     	
     	document.setPermissionSetsForNew(permissionSets);
     }
@@ -156,7 +151,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
     
     private DocumentPermissionSets createDocumentsPermissionSets(
     		Map<Integer, Integer> permissionSetBitsMap,
-    		Set<Meta.DocPermisionSetEx> permissionSetEx) {
+    		Set<Meta.PermisionSetEx> permissionSetEx) {
     	
     	DocumentPermissionSets permissionSets = new DocumentPermissionSets();
     	
@@ -170,7 +165,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
             }    		    		
     	}    	
     	
-    	for (Meta.DocPermisionSetEx ex: permissionSetEx) {
+    	for (Meta.PermisionSetEx ex: permissionSetEx) {
     		Integer setId = ex.getSetId();
     		DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
     		        		

@@ -9,6 +9,10 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Probably should be abstract - API uses only ONE concrete implmentation:
+ * TextDocumentPermissionSetDomainObject
+ */
 public class DocumentPermissionSetDomainObject implements Serializable, LazilyLoadedObject.Copyable, Cloneable {
 
     public static final DocumentPermissionSetDomainObject NONE = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.NONE ) {

@@ -45,15 +45,11 @@ class DocumentSaver {
             // Make roles and other security components one-to-many with manual save???
             if (user.canEditPermissionsFor(oldDocument)) {
                 newUpdateDocumentRolePermissions(document, user, oldDocument);
+                documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, oldDocument);
             }
             
             saveMeta(document);
-            
-            
-            if (user.canEditPermissionsFor(oldDocument)) {
-                 documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, oldDocument);
-            }
-
+                        
             document.accept(new DocumentSavingVisitor(oldDocument, getDatabase(), documentMapper.getImcmsServices(), user));
         } finally {
             documentMapper.invalidateDocument(document);
@@ -150,16 +146,15 @@ class DocumentSaver {
         //String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
     	
     	//@Immutable
-    	// inserted by legacy queries
-    	meta.getDocPermisionSetEx().clear();
-    	meta.getDocPermisionSetExForNew().clear();    	
-    	meta.getPermissionSetBitsMap().clear();
-    	meta.getPermissionSetBitsForNewMap().clear();
+    	// inserted by legacy queries - not any more
     	
     	// Converted from legacy queries:
     	// Should be handled separately from meta???
     	//meta.getRoleIdToPermissionSetIdMap();
-    	
+    	//meta.getDocPermisionSetEx().clear();
+    	//meta.getDocPermisionSetExForNew().clear();    	
+    	//meta.getPermissionSetBitsMap().clear();
+    	//meta.getPermissionSetBitsForNewMap().clear();    	    	
     	
     	// WHAT TO DO WITH THIS on copy save and on base save?    	
     	meta.setSectionIds(document.getSectionIds());
@@ -219,6 +214,7 @@ class DocumentSaver {
 			if (null == oldDocument
 					|| user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument)) {
 				
+				// DB designed not to save NONE 
 				if (documentPermissionSetType.equals(DocumentPermissionSetTypeDomainObject.NONE)) {
 					roleIdToPermissionSetIdMap.remove(roleId.intValue());
 				} else {

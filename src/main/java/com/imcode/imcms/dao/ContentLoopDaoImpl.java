@@ -1,14 +1,11 @@
 package com.imcode.imcms.dao;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.IteratorUtils;
 import org.hibernate.HibernateException;
-import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -24,7 +21,7 @@ public class ContentLoopDaoImpl extends HibernateTemplate implements ContentLoop
 	public final static String NEXT_HIGHER_ORDER_INDEX = "NEXT_HIGHER_ORDER_INDEX";
 	public final static String NEXT_LOWER_ORDER_INDEX = "NEXT_LOWER_ORDER_INDEX";
 	
-	public Map<String, Integer> getNextIndexes(long loopId) {
+	private Map<String, Integer> getNextIndexes(long loopId) {
 		List<Object[]> nextIndexesList = (List<Object[]>)findByNamedQueryAndNamedParam(
 				"ContentLoop.getNextContentIndexes", "id", loopId); 
 
@@ -98,6 +95,7 @@ public class ContentLoopDaoImpl extends HibernateTemplate implements ContentLoop
 		}				
 	}
 
+	@Transactional
 	public ContentLoop getContentLoop(int metaId, int loopNo) {
 		List<ContentLoop> loops = findByNamedQueryAndNamedParam("ContentLoop.getByMetaAndNo", 
 				new String[] {"metaId", "no"}, new Object[] {metaId, loopNo});
@@ -295,14 +293,14 @@ public class ContentLoopDaoImpl extends HibernateTemplate implements ContentLoop
 		});
 	}
 	
-	public Content getContent(ContentLoop loop, int sequenceIndex) {
+	private Content getContent(ContentLoop loop, int sequenceIndex) {
 		return (Content)getSession().getNamedQuery("Content.getByLoopIdAndSequenceIndex")
 			.setParameter("loopId", loop.getId())
 			.setParameter("sequenceIndex", sequenceIndex)
 			.uniqueResult();		
 	}
 	
-	public Long getContentId(ContentLoop loop, int sequenceIndex) {
+	private Long getContentId(ContentLoop loop, int sequenceIndex) {
 		Content content = getContent(loop, sequenceIndex);
 		
 		evict(content);

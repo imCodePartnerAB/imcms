@@ -158,6 +158,8 @@ public class Imcms {
             basicDataSource.setMaxIdle(maxConnectionCount);
             basicDataSource.setDefaultAutoCommit(true);
             basicDataSource.setPoolPreparedStatements(true);
+            basicDataSource.setTestOnBorrow(true);
+            basicDataSource.setValidationQuery("select 1");
 
             logDatabaseVersion(basicDataSource);
 
