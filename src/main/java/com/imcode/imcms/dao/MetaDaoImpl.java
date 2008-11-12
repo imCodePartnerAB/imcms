@@ -51,15 +51,6 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 	
 	@Transactional
 	public synchronized void updateMeta(Meta meta) {
-        //String headlineThatFitsInDB = headline.substring(0, Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
-        //makeStringSqlUpdateClause("meta_headline", headlineThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
-        
-        //makeStringSqlUpdateClause("meta_image", document.getMenuImage(), sqlUpdateColumns, sqlUpdateValues);
-        
-        //String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
-        //makeStringSqlUpdateClause("meta_text", textThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
-		
-		
 		saveOrUpdate(meta);
 	}	
 }

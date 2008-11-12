@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,14 +11,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Cascade;
 
 /**
  * I18n-ed part of meta.
@@ -46,13 +41,16 @@ public class I18nMeta implements Serializable, Cloneable {
 	@JoinColumn(name="language_id", referencedColumnName="language_id")
 	private I18nLanguage language;
 			
-	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-	@JoinColumns({
-	    @JoinColumn(name="meta_id", referencedColumnName="meta_id"),
-	    @JoinColumn(name="language_id", referencedColumnName="language_id")
-	})
-	private Set<Keyword> keywords;
+	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+	@javax.persistence.JoinTable(
+		name = "keywords",
+		joinColumns={
+		    @JoinColumn(name="meta_id", referencedColumnName="meta_id"),
+		    @JoinColumn(name="language_id", referencedColumnName="language_id")
+		}
+	)
+	@Column(name = "value")
+	private Set<String> keywords = new HashSet<String>();	
     
 	@Column(name="meta_headline")
     private String headline;
@@ -69,11 +67,7 @@ public class I18nMeta implements Serializable, Cloneable {
 			I18nMeta clone = (I18nMeta)super.clone();
 			
 			if (keywords != null) {
-				clone.keywords = new HashSet<Keyword>();
-				
-				for (Keyword keyword: keywords) {
-					clone.keywords.add(keyword.clone());
-				}
+				clone.keywords = new HashSet<String>(keywords);
 			}		
 			
 			if (language != null) {
@@ -142,31 +136,11 @@ public class I18nMeta implements Serializable, Cloneable {
 		this.enabled = enabled;
 	}
 
-	public Set<Keyword> getKeywords() {
+	public Set<String> getKeywords() {
 		return keywords;
 	}
 
-	public void setKeywords(Set<Keyword> keywords) {
+	public void setKeywords(Set<String> keywords) {
 		this.keywords = keywords;
-	}
-		
-	public Set<String> getKeywordsValues() {
-    	Set<String> values = new HashSet<String>();
-    	
-    	for (Keyword keyword: keywords) {
-    		values.add(keyword.getValue());
-    	}
-	
-    	return values;
-	}
-	
-	public void setKeywordsValues(Set<String> values) {
-		keywords.clear();
-		
-		for (String value: values) {
-			Keyword keyword = new Keyword(metaId, language, value);
-			
-			keywords.add(keyword);
-		}
-	}
+	}	
 }

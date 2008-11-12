@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -262,26 +264,14 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             
             String[] values =  keywordsParser.parseKeywords( keywordsString );
             
-            i18nMeta.setKeywordsValues(new ArraySet<String>(values));
+            Set<String> keywords = new HashSet<String>();
+            for (String keyword: values) {
+            	keywords.add(keyword);
+            }
+                        
+            i18nMeta.setKeywords(keywords);
         }
-        
-
-        /* 
-         String keywordsString = request.getParameter( REQUEST_PARAMETER__KEYWORDS);
-         KeywordsParser keywordsParser = new KeywordsParser();
-         String[] keywords =  keywordsParser.parseKeywords( keywordsString );
-         document.setKeywords( new ArraySet(keywords) );
-            
-        String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE );
-        document.setHeadline( headline );
-
-        String menuText = request.getParameter( REQUEST_PARAMETER__MENUTEXT );
-        document.setMenuText( menuText );
-
-        String imageUrl = request.getParameter( REQUEST_PARAMETER__IMAGE );
-        document.setMenuImage( imageUrl );
-        */
-        
+                
         String missingI18nShowRule = request.getParameter(REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE); 
         
         meta.setUnavailableI18nDataSubstitution(Meta.UnavailableI18nDataSubstitution.valueOf(missingI18nShowRule));

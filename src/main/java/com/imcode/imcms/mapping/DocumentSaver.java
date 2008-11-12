@@ -139,14 +139,6 @@ class DocumentSaver {
         		for (I18nMeta i18nMeta: i18nMetas) {
         			i18nMeta.setId(null);
         			i18nMeta.setMetaId(metaId);
-        			
-        			Set<Keyword> keywords = i18nMeta.getKeywords();
-        			
-        			if (keywords != null) {
-        				for (Keyword keyword: keywords) {
-        					keyword.setId(null);
-        				}
-        			}
         		}
         	}        	
     	} 

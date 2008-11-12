@@ -22,7 +22,6 @@ import java.util.Set;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.api.Meta.DocPermisionSetEx;
 import com.imcode.imcms.dao.MetaDao;
 
 public class DatabaseDocumentGetter extends AbstractDocumentGetter {

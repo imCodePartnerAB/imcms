@@ -216,7 +216,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      * @return keywords 
      */
     public Set getKeywords(I18nLanguage language) {
-    	return getI18nMeta(language).getKeywordsValues();
+    	return getI18nMeta(language).getKeywords();
     }
     
     /* I18n disabled: unsafe method
@@ -226,7 +226,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     */
     
     public void setKeywords(I18nLanguage language, Set keywords ) {
-    	getI18nMeta(language).setKeywordsValues(keywords);
+    	getI18nMeta(language).setKeywords(keywords);
     }
     
 
