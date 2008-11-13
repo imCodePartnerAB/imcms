@@ -37,7 +37,7 @@ public class TextDocumentInitializer {
     private final DocumentGetter documentGetter;
     //private Map documentsMenuItems;
 
-    static final String SQL_GET_MENU_ITEMS = "SELECT meta_id, menus.menu_id, menu_index, sort_order, to_meta_id, manual_sort_order, tree_sort_index FROM menus,childs WHERE menus.menu_id = childs.menu_id AND meta_id ";
+    //static final String SQL_GET_MENU_ITEMS = "SELECT meta_id, menus.menu_id, menu_index, sort_order, to_meta_id, manual_sort_order, tree_sort_index FROM menus,childs WHERE menus.menu_id = childs.menu_id AND meta_id ";
 
     public TextDocumentInitializer(Database database, DocumentGetter documentGetter, Collection documentIds) {
         //this.database = database;

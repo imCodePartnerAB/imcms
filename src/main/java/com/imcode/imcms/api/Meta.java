@@ -29,12 +29,17 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-@Entity
-@Table(name="meta")
+import com.imcode.imcms.api.orm.OrmDocument;
+
+//@Entity
+//@Table(name="meta")
+/*
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @org.hibernate.annotations.DiscriminatorFormula(
-  "case when doc_type = 7 then 'HtmlMeta' when doc_type = 5 then 'UrlMeta' when doc_type = 2 then 'TextMeta' else 'Meta' end"
+  "case when doc_type = 7 then 'OrmHtmlDocument' when doc_type = 5 then 'OrmUrlDocument' when doc_type = 2 then 'OrmTextDocument' else 'Meta' end"
 )
+*/
+@Embeddable
 /**
  * Document meta.
  */
@@ -132,11 +137,14 @@ public class Meta implements Serializable, Cloneable {
 		DO_NOT_SHOW,		
 	}
 	
+	@org.hibernate.annotations.Parent
+	private OrmDocument ormDocument;
+	
 	@Transient
 	private Map<I18nLanguage, I18nMeta> metaMap;
 
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="meta_id")
+	//@Id// @GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="meta_id", insertable=false, updatable=false)
 	private Integer metaId;
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
@@ -598,5 +606,13 @@ public class Meta implements Serializable, Cloneable {
 
 	public void setActivate(Integer activate) {
 		this.activate = activate;
+	}
+
+	public OrmDocument getOrmDocument() {
+		return ormDocument;
+	}
+
+	public void setOrmDocument(OrmDocument ormDocument) {
+		this.ormDocument = ormDocument;
 	}
 }

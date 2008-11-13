@@ -14,10 +14,12 @@
     	<property name="hibernate.format_sql">true</property>
     	<property name="hibernate.use_sql_comments">true</property>
     	   	
-    	<mapping class="com.imcode.imcms.api.Meta"/>
-    	<mapping class="com.imcode.imcms.api.UrlMeta"/>
-    	<mapping class="com.imcode.imcms.api.HtmlMeta"/>
-    	<mapping class="com.imcode.imcms.api.TextMeta"/>
+        <mapping class="com.imcode.imcms.api.orm.OrmDocument"/> 
+        <mapping class="com.imcode.imcms.api.orm.OrmHtmlDocument"/>
+        <mapping class="com.imcode.imcms.api.orm.OrmTextDocument"/>
+        <mapping class="com.imcode.imcms.api.orm.OrmUrlDocument"/>
+        <mapping class="com.imcode.imcms.api.orm.OrmFileDocument"/>
+    	 	
     	<mapping class="com.imcode.imcms.api.I18nMeta"/>
     	<mapping class="com.imcode.imcms.api.I18nLanguage"/>
         <mapping class="com.imcode.imcms.api.Content"/>

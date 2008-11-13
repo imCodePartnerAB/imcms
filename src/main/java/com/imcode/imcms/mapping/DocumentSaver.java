@@ -18,6 +18,9 @@ import java.util.Set;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.api.orm.OrmDocument;
+import com.imcode.imcms.api.orm.OrmHtmlDocument;
+import com.imcode.imcms.api.orm.OrmUrlDocument;
 import com.imcode.imcms.dao.MetaDao;
 
 class DocumentSaver {
@@ -81,6 +84,12 @@ class DocumentSaver {
 
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 
+        boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(document) && !copying;
+        if (inheritRestrictedPermissions) {
+            document.getPermissionSets().setRestricted1(document.getPermissionSetsForNewDocuments().getRestricted1());
+            document.getPermissionSets().setRestricted2(document.getPermissionSetsForNewDocuments().getRestricted2());
+        }
+        
         newUpdateDocumentRolePermissions(document, user, null);
 
         // Updates permissions - method does not saves but instead just updates meta 
@@ -89,18 +98,25 @@ class DocumentSaver {
         // Update inherited meta
         switch (document.getDocumentType().getId()) {
         	case DocumentTypeDomainObject.HTML_ID:
+                OrmDocument ormDocument = new OrmHtmlDocument();        	
+            	ormDocument.setMeta(document.getMeta());
+            	document.getMeta().setOrmDocument(ormDocument);
+            	document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
+            	break;
         	case DocumentTypeDomainObject.URL_ID:
-        		document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
+                ormDocument = new OrmUrlDocument();        	
+            	ormDocument.setMeta(document.getMeta());
+            	document.getMeta().setOrmDocument(ormDocument);
+            	document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
+            	break;        		
+        	default:
+                ormDocument = new OrmDocument();        	
+            	ormDocument.setMeta(document.getMeta());
+            	document.getMeta().setOrmDocument(ormDocument);        		        		
         } 
-                
-        int newMetaId = saveMeta(document);
 
-        boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(document) && !copying;
-        if (inheritRestrictedPermissions) {
-            document.getPermissionSets().setRestricted1(document.getPermissionSetsForNewDocuments().getRestricted1());
-            document.getPermissionSets().setRestricted2(document.getPermissionSetsForNewDocuments().getRestricted2());
-        }
-        
+        int newMetaId = saveMeta(document);
+                
         document.setId(newMetaId);
         
         document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
@@ -177,7 +193,7 @@ class DocumentSaver {
     	meta.setProperties(document.getProperties());
     	
     	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao");     	
-    	metaDao.updateMeta(document.getMeta());    	    	
+    	metaDao.updateMeta(meta);    	    	
     	
     	return meta.getMetaId();
     }

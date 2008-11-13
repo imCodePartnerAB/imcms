@@ -44,6 +44,7 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Include;
+import com.imcode.imcms.api.orm.OrmFileDocument;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.IncludeDao;
 import com.imcode.imcms.dao.MenuDao;
@@ -230,6 +231,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
+    	/*
         Map fileDocumentFiles = fileDocument.getFiles();
 
         String sqlDelete = "DELETE FROM fileupload_docs WHERE meta_id = ?";
@@ -252,6 +254,41 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             saveFileDocumentFile( fileDocument.getId(), fileDocumentFile, fileId );
         }
         DocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;
+        */
+    	
+    	OrmFileDocument orm = (OrmFileDocument)fileDocument.getMeta().getOrmDocument();
+    	Map<String, OrmFileDocument.FileRef> fileRefsMap = orm.getFileRefsMap();
+    	
+        Map fileDocumentFiles = fileDocument.getFiles();
+
+        // DELETE
+        fileRefsMap.clear();
+
+        // Save point...
+        for ( Iterator iterator = fileDocumentFiles.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry entry = (Map.Entry)iterator.next();
+            String fileId = (String)entry.getKey();
+            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = (FileDocumentDomainObject.FileDocumentFile)entry.getValue();
+
+            String filename = fileDocumentFile.getFilename();
+            if ( filename.length() > DB_FIELD_MAX_LENGTH__FILENAME ) {
+                filename = truncateFilename( filename, DB_FIELD_MAX_LENGTH__FILENAME );
+            }
+
+            boolean isDefaultFile = fileId.equals( fileDocument.getDefaultFileId());
+            OrmFileDocument.FileRef fileRef = new OrmFileDocument.FileRef();
+            fileRef.setFilename(filename);
+            fileRef.setDefaultFileId(isDefaultFile);
+            fileRef.setMimeType(fileDocumentFile.getMimeType());
+            fileRef.setCreatedAsImage(fileDocumentFile.isCreatedAsImage());
+            
+            
+            fileRefsMap.put(fileId, fileRef);
+            
+            saveFileDocumentFile( fileDocument.getId(), fileDocumentFile, fileId );
+        }
+        
+        DocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;    	
     }
 
     private String truncateFilename(String filename, int length) {

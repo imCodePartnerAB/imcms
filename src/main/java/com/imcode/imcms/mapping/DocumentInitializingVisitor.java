@@ -13,6 +13,7 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.UnhandledException;
@@ -20,12 +21,15 @@ import org.apache.commons.lang.UnhandledException;
 import com.imcode.db.Database;
 import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.imcms.api.orm.OrmFileDocument;
+import com.imcode.imcms.api.orm.OrmHtmlDocument;
+import com.imcode.imcms.api.orm.OrmUrlDocument;
 
 class DocumentInitializingVisitor extends DocumentVisitor {
 
     private DocumentMapper documentMapper;
     private final Database database;
-    private static final String SQL__SELECT_FILE_DOCUMENT_FILES = "SELECT variant_name, filename, mime, created_as_image, default_variant FROM fileupload_docs WHERE meta_id = ? ORDER BY default_variant DESC, variant_name";
+    //private static final String SQL__SELECT_FILE_DOCUMENT_FILES = "SELECT variant_name, filename, mime, created_as_image, default_variant FROM fileupload_docs WHERE meta_id = ? ORDER BY default_variant DESC, variant_name";
 
     private TextDocumentInitializer textDocumentInitializer;
     
@@ -55,6 +59,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     }
 
     public void visitFileDocument(final FileDocumentDomainObject document) {
+    	/*
         Object[] parameters = new String[] {
                 "" + document.getId() };
         database.execute(new SqlQueryCommand(SQL__SELECT_FILE_DOCUMENT_FILES, parameters, new ResultSetHandler() {
@@ -84,9 +89,41 @@ class DocumentInitializingVisitor extends DocumentVisitor {
                 return null;
             }
         }));
+        */
+    	OrmFileDocument orm = (OrmFileDocument)document.getMeta().getOrmDocument();
+    	
+    	for (Map.Entry<String, OrmFileDocument.FileRef> entry: orm.getFileRefsMap().entrySet()) {
+            String fileId = entry.getKey();
+            OrmFileDocument.FileRef fileRef = entry.getValue();
+            FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
+            
+            file.setFilename(fileRef.getFilename());
+            file.setMimeType(fileRef.getMimeType());
+            file.setCreatedAsImage(fileRef.getCreatedAsImage());
+            
+            File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(document.getId(), fileId);
+            if ( !fileForFileDocument.exists() ) {
+                File oldlyNamedFileForFileDocument = new File(fileForFileDocument.getParentFile(),
+                                                              fileForFileDocument.getName()
+                                                              + "_se");
+                if ( oldlyNamedFileForFileDocument.exists() ) {
+                    fileForFileDocument = oldlyNamedFileForFileDocument;
+                }
+            }
+            
+            file.setInputStreamSource(new FileInputStreamSource(fileForFileDocument));
+            
+            document.addFile(fileId, file);
+            
+            if (fileRef.isDefaultFileId()) {
+                document.setDefaultFileId(fileId);
+            }
+    		
+    	}
     }
 
     public void visitHtmlDocument(HtmlDocumentDomainObject htmlDocument) {
+    	/*
         String html;
         try {
             String[] parameters = new String[] { "" + htmlDocument.getId() };
@@ -96,9 +133,13 @@ class DocumentInitializingVisitor extends DocumentVisitor {
             throw new UnhandledException(e);
         }
         htmlDocument.setHtml(html);
+        */
+    	OrmHtmlDocument orm = (OrmHtmlDocument)htmlDocument.getMeta().getOrmDocument();
+    	htmlDocument.setHtml(orm.getHtml());    	
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject document) {
+    	/*
         String url;
         try {
             String[] parameters = new String[] { "" + document.getId() };
@@ -107,6 +148,9 @@ class DocumentInitializingVisitor extends DocumentVisitor {
             throw new UnhandledException(e);
         }
         document.setUrl(url);
+        */
+    	OrmUrlDocument orm = (OrmUrlDocument)document.getMeta().getOrmDocument();
+    	document.setUrl(orm.getUrl());
     }
 
     public void visitTextDocument(final TextDocumentDomainObject document) {

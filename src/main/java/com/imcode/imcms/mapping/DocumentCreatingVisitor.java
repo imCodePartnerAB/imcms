@@ -8,8 +8,8 @@ import imcode.server.user.UserDomainObject;
 
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.imcms.api.HtmlMeta;
-import com.imcode.imcms.api.UrlMeta;
+import com.imcode.imcms.api.orm.OrmHtmlDocument;
+import com.imcode.imcms.api.orm.OrmUrlDocument;
 
 public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 	
@@ -39,7 +39,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
                                              };
         database.execute(new SqlUpdateCommand(sqlUrlDocsInsertStr, parameters));
         */
-    	HtmlMeta meta = (HtmlMeta)document.getMeta();
+    	OrmHtmlDocument meta = (OrmHtmlDocument)document.getMeta().getOrmDocument();
     	meta.setHtml(document.getHtml());    	
     }
 
@@ -57,7 +57,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
                                              };
         database.execute(new SqlUpdateCommand(sqlUrlDocsInsertStr, parameters));
         */
-    	UrlMeta meta = (UrlMeta)document.getMeta();
+    	OrmUrlDocument meta = (OrmUrlDocument)document.getMeta().getOrmDocument();
     	
     	meta.setUrlTarget("");
     	meta.setUrlText("");

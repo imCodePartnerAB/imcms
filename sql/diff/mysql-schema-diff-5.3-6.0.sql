@@ -139,11 +139,40 @@ ALTER TABLE doc_permission_sets
 
 
 --
--- 
+-- File upload table:
 --
+CREATE TABLE fileupload_docs_temp (
+  id int auto_increment PRIMARY KEY,
+  meta_id int NOT NULL,
+  variant_name varchar(100) NOT NULL,
+  filename varchar(255) NOT NULL,
+  mime varchar(50) NOT NULL,
+  created_as_image int(11) NOT NULL,
+  default_variant tinyint(1) NOT NULL default '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO fileupload_docs_temp (
+  meta_id,
+  variant_name,
+  filename,
+  mime,
+  created_as_image,
+  default_variant
+) SELECT 
+  meta_id,
+  variant_name,
+  filename,
+  mime,
+  created_as_image,
+  default_variant
+FROM fileupload_docs;
 
+DROP TABLE fileupload_docs;
+RENAME TABLE fileupload_docs_temp TO fileupload_docs;
 
+ALTER TABLE fileupload_docs
+  ADD UNIQUE INDEX ux__fileupload_docs__meta_id__variant_name (meta_id, variant_name),
+  ADD FOREIGN KEY fk__fileupload_docs__meta(meta_id) REFERENCES meta(meta_id) ON DELETE CASCADE;
 
 
 --

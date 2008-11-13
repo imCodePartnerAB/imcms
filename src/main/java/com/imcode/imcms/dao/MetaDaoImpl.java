@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.api.orm.OrmDocument;
 
 public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 
@@ -22,10 +23,18 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 	 */
 	@Transactional
 	public synchronized Meta getMeta(Integer metaId) {
+		/*
 		Query query = getSession().createQuery("select m from Meta m where m.metaId = :metaId")
 			.setParameter("metaId", metaId);
 		
 		Meta meta = (Meta)query.uniqueResult();
+		*/
+		
+		Query query = getSession().createQuery("select o from OrmDocument o where o.metaId = :metaId")
+			.setParameter("metaId", metaId);
+		
+		OrmDocument ormDocument = (OrmDocument)query.uniqueResult();
+		Meta meta = ormDocument.getMeta();
 		
 		List<I18nLanguage> languages = (List<I18nLanguage>)
 				findByNamedQueryAndNamedParam("I18nLanguage.missingMetaLanguages", "metaId", metaId);
@@ -51,6 +60,18 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 	
 	@Transactional
 	public synchronized void updateMeta(Meta meta) {
-		saveOrUpdate(meta);
-	}	
+		//saveOrUpdate(meta);
+		OrmDocument ormDocument = meta.getOrmDocument();
+		saveOrUpdate(ormDocument); 
+		meta.setMetaId(ormDocument.getMetaId());
+	}
+
+	@Transactional
+	public OrmDocument getDocument(Integer metaId) {		
+		return null;
+	}
+
+	@Transactional
+	public void updateDocument(OrmDocument ormDocument) {
+	}			
 }

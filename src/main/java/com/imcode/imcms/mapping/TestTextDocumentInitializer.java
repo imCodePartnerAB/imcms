@@ -20,6 +20,7 @@ public class TestTextDocumentInitializer extends TestCase {
                 new Integer(1002),
         });
         MockDatabase database = new MockDatabase();
+        /*
         database.addExpectedSqlCall(new MockDatabase.StartsWithSqlCallPredicate(TextDocumentInitializer.SQL_GET_MENU_ITEMS),
                                     new MockResultSet(new Object[][] { 
                                             { new Integer(1001), new Integer(1), new Integer(1), new Integer(1), new Integer(1002), new Integer(500), ""},
@@ -27,7 +28,7 @@ public class TestTextDocumentInitializer extends TestCase {
                                             { new Integer(1001), new Integer(1), new Integer(1), new Integer(1), new Integer(1005), new Integer(500), ""},
                                             { new Integer(1001), new Integer(2), new Integer(2), new Integer(1), new Integer(1002), new Integer(500), ""},
                                     }));
-
+*/
         MapDocumentGetter documentGetter = new MapDocumentGetter(new DocumentDomainObject[] {
                 new TextDocumentDomainObject(1001),
                 new TextDocumentDomainObject(1002),

@@ -1,12 +1,14 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.api.orm;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.SecondaryTable;
 
+import com.imcode.imcms.api.Meta;
+
 @Entity
 @SecondaryTable(name="url_docs")
-public class UrlMeta extends Meta {
+public class OrmUrlDocument extends OrmDocument {
 
 	@Column(name="frame_name", table="url_docs")
 	private String urlFrameName;

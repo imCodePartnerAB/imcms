@@ -2,6 +2,8 @@ package imcode.server.document;
 
 import org.apache.oro.text.perl.Perl5Util;
 
+import com.imcode.imcms.api.orm.OrmUrlDocument;
+
 public class UrlDocumentDomainObject extends DocumentDomainObject {
 
     private String url = "";
@@ -17,7 +19,7 @@ public class UrlDocumentDomainObject extends DocumentDomainObject {
         }
         return url;
     }
-
+    
     public void setUrl( String url ) {
         this.url = url;
     }

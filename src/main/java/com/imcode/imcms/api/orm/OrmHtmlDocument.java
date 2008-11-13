@@ -1,4 +1,4 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.api.orm;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -6,7 +6,7 @@ import javax.persistence.SecondaryTable;
 
 @Entity
 @SecondaryTable(name="frameset_docs")
-public class HtmlMeta extends Meta {
+public class OrmHtmlDocument extends OrmDocument {
 
 	@Column(name="frame_set", table="frameset_docs")
 	private String html;

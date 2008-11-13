@@ -22,6 +22,8 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.api.orm.OrmHtmlDocument;
+import com.imcode.imcms.api.orm.OrmUrlDocument;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
@@ -66,7 +68,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
         switch ( documentTypeId ) {
             case DocumentTypeDomainObject.TEXT_ID :
-                document = new TextDocumentDomainObject();
+                document = new TextDocumentDomainObject();                
                 break;
             case DocumentTypeDomainObject.URL_ID:
                 document = new UrlDocumentDomainObject();
