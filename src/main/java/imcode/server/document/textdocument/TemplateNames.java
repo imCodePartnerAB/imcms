@@ -1,39 +1,23 @@
-/**
- * 
- */
 package imcode.server.document.textdocument;
+
+import javax.persistence.Embeddable;
 
 import imcode.util.LazilyLoadedObject;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.UnhandledException;
 
-@Entity
-@Table(name="text_docs")
+@Embeddable
 public class TemplateNames implements LazilyLoadedObject.Copyable<TemplateNames>, Cloneable {
 
-	@Id
-	@Column(name="meta_id")
-    private Integer metaId;
-	
-	@Column(name="template_name")
     private String templateName;
 	
-	@Column(name="group_id")
     private int templateGroupId;
 	
-	@Column(name="default_template")
     private String defaultTemplateName;
 	
-	@Column(name="default_template_1")
-    private String defaultTemplateNameForRestricted1 ;
+    private String defaultTemplateNameForRestricted1;
 	
-	@Column(name="default_template_2")
-    private String defaultTemplateNameForRestricted2 ;
+    private String defaultTemplateNameForRestricted2;
 
     public TemplateNames copy() {
         return (TemplateNames) clone() ;
@@ -86,12 +70,4 @@ public class TemplateNames implements LazilyLoadedObject.Copyable<TemplateNames>
     public void setDefaultTemplateNameForRestricted2(String defaultTemplateNameForRestricted2) {
         this.defaultTemplateNameForRestricted2 = defaultTemplateNameForRestricted2;
     }
-
-	public Integer getMetaId() {
-		return metaId;
-	}
-
-	public void setMetaId(Integer metaId) {
-		this.metaId = metaId;
-	}
 }

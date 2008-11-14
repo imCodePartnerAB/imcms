@@ -20,14 +20,16 @@
     	<mapping class="com.imcode.imcms.api.I18nLanguage"/>
         <mapping class="com.imcode.imcms.api.Content"/>
         <mapping class="com.imcode.imcms.api.ContentLoop"/>
-        <mapping class="com.imcode.imcms.api.Include"/>
+        
                     	
     	<!--
+    	<mapping class="com.imcode.imcms.api.Include"/>
     	<mapping class="com.imcode.imcms.api.TextHistory"/>
+    	<mapping class="imcode.server.document.textdocument.TemplateNames"/>
     	 -->
     	<mapping class="imcode.server.document.textdocument.ImageDomainObject"/>
     	<mapping class="imcode.server.document.textdocument.TextDomainObject"/>
-    	<mapping class="imcode.server.document.textdocument.TemplateNames"/>
+    	
     	<mapping class="imcode.server.document.textdocument.MenuDomainObject"/>
     </session-factory>
     

@@ -6,7 +6,6 @@ import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.TemplateNames;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -42,12 +41,9 @@ import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.api.Include;
 import com.imcode.imcms.api.orm.OrmFileDocument;
 import com.imcode.imcms.dao.ImageDao;
-import com.imcode.imcms.dao.IncludeDao;
 import com.imcode.imcms.dao.MenuDao;
-import com.imcode.imcms.dao.TemplateNamesDao;
 import com.imcode.imcms.dao.TextDao;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
@@ -124,13 +120,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     
     // TODO i18n: refactor
     void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-        TemplateNamesDao dao = (TemplateNamesDao)Imcms.getServices().getSpringBean("templateNamesDao");
-        Integer metaId = textDocument.getId();
-        
-        TemplateNames templateNames = textDocument.getTemplateNames();
-        
-        templateNames.setMetaId(metaId);
-        dao.saveTemplateNames(templateNames);
     }
 
     // TODO i18n: refactor
@@ -184,18 +173,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     // TODO: refactor
     void updateTextDocumentIncludes(TextDocumentDomainObject textDocument) {
-    	
-    	IncludeDao dao = (IncludeDao)Imcms.getServices().getSpringBean("includeDao");
-    	int metaId = textDocument.getId();
-    	
-    	// TODO: delete orphans in one transaction
-    	dao.deleteDocumentIncludes(metaId);
-    	
-    	for (Include include: textDocument.getIncludes()) {
-    		// in case we are saving document copy metaId should be changed
-    		include.setMetaId(metaId);
-    		dao.saveInclude(include);
-    	}
     }
 
     

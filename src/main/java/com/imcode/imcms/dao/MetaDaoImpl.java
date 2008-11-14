@@ -23,13 +23,6 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 	 */
 	@Transactional
 	public synchronized Meta getMeta(Integer metaId) {
-		/*
-		Query query = getSession().createQuery("select m from Meta m where m.metaId = :metaId")
-			.setParameter("metaId", metaId);
-		
-		Meta meta = (Meta)query.uniqueResult();
-		*/
-		
 		Query query = getSession().createQuery("select o from OrmDocument o where o.metaId = :metaId")
 			.setParameter("metaId", metaId);
 		
@@ -60,7 +53,6 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 	
 	@Transactional
 	public synchronized void updateMeta(Meta meta) {
-		//saveOrUpdate(meta);
 		OrmDocument ormDocument = meta.getOrmDocument();
 		saveOrUpdate(ormDocument); 
 		meta.setMetaId(ormDocument.getMetaId());

@@ -10,17 +10,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.api.Include;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.ImageDao;
-import com.imcode.imcms.dao.IncludeDao;
 import com.imcode.imcms.dao.TextDao;
 
 //TODO: Refactor out text and image loading logic into lazy load object and optimize:
@@ -47,8 +44,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      */
     private Map<I18nLanguage, Map<Integer, TextDomainObject>> texts    
     		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
-    
-    private List<Include> includes = new LinkedList<Include>();        
     
     private Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
     
@@ -91,23 +86,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     } 
     
     
-    /**
-     * Returns texts map from the database.
-     */
-    public static Map<Integer, Include> getOrigianlIncludesMap(Integer metaId) {
-    	Map<Integer, Include> map = new HashMap<Integer, Include>(); 
-    	
-   		IncludeDao dao = (IncludeDao)Imcms.getServices().getSpringBean("includeDao");
-   		List<Include> includes = dao.getDocumentIncludes(metaId);
-    		
-		for (Include include: includes) {
-			map.put(include.getIndex(), include);
-		}
-		
-    	return map;
-    }    
-    
-
     public TextDocumentDomainObject() {
         this(ID_NEW) ;
     }
@@ -132,7 +110,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         
         //clone.menus = (LazilyLoadedObject) menus.clone() ;
         
-        clone.templateNames = (TemplateNames) templateNames.clone() ;
+        //clone.templateNames = (TemplateNames) templateNames.clone() ;
         
         return clone;
     }
@@ -269,9 +247,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     // TODO: refactor
     public void removeAllIncludes() {
-    	// we can not use includes.clear() since all clones share same data
-    	
-        setIncludes(new LinkedList<Include>());
+    	includesMap = new HashMap<Integer, Integer>();
     }
 
     public void removeAllMenus() {
@@ -287,26 +263,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     
     // TODO: refactor
     public void setInclude( int includeIndex, int includedDocumentId ) {
-    	Include include = null; 
-    	
-    	for (Include i: includes) {
-    		if (i.getIndex().equals(includeIndex)) {
-    			include = i;
-    			break;
-    		}
-    	}
-    	
-    	if (include == null) {
-    		include = new Include();
-    		include.setMetaId(getId());    		
-    		include.setIndex(includeIndex);
-    		
-    		includes.add(include);
-    	}
-    	
-    	include.setIncludedMetaId(includedDocumentId);
-    	
-    	setIncludes(includes);
+    	includesMap.put(includeIndex, includedDocumentId);
     }
     
 
@@ -355,11 +312,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	map.put(index, text);    	
     } 
     
-    /**
-     * TODO: Refactor remove
-     * @return
-     */
-    @Deprecated
     public Map getIncludesMap() {
         return Collections.unmodifiableMap(includesMap);
     }
@@ -401,17 +353,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void removeInclude( int includeIndex ) {
-    	int size = includes.size();
-    	
-    	for (int i = 0; i < size; i++) {
-    		Include include = includes.get(i);
-    		
-    		if (include.getIndex().equals(includeIndex)) {
-    			includes.remove(i);
-    			setIncludes(includes);
-    			break;
-    		}
-    	}
+    	includesMap.remove(includeIndex);
     }
 
     public String getDefaultTemplateNameForRestricted1() {
@@ -612,41 +554,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     
     private void cloneTemplateNamesForNewDocument() {
     	templateNames = (TemplateNames)templateNames.clone();
-    	templateNames.setMetaId(null);
     }
     
     private void cloneIncludesForNewDocument() {
-    	List<Include> includesClone = new LinkedList<Include>();
-    	
-    	for (Include include: includes) {
-        	Include includeClone = (Include)include.clone();
-        	
-        	includeClone.setId(null);
-        	includeClone.setMetaId(null);
-        	
-        	includesClone.add(includeClone);
-    	}
-    	
-    	setIncludes(includesClone);
+    	Map<Integer, Integer> newIncludesMap = new HashMap<Integer, Integer>(includesMap);
+    	includesMap = newIncludesMap;
     }    
-    
-    
-    /**
-     * Temporal solution. Includes set by TextDocumentInitializer.
-     * TODO: refactor.  
-     */
-    public void setIncludes(List<Include> includes) {
-    	this.includes = includes;
-    	this.includesMap = new HashMap<Integer, Integer>();
-    	
-		for (Include include: includes) {
-			includesMap.put(include.getIndex(), include.getIncludedMetaId());
-		}
-    }
 
-	public List<Include> getIncludes() {
-		return includes;
-	}
 
 	public TemplateNames getTemplateNames() {
 		return templateNames;
@@ -658,5 +572,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
 	public void setMenusMap(Map<Integer, MenuDomainObject> menusMap) {
 		this.menusMap = menusMap;
+	}
+
+	public void setIncludesMap(Map<Integer, Integer> includesMap) {
+		this.includesMap = includesMap;
 	}
 }

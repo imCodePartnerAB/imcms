@@ -6,6 +6,7 @@ import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -21,6 +22,7 @@ import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.api.orm.OrmDocument;
 import com.imcode.imcms.api.orm.OrmFileDocument;
 import com.imcode.imcms.api.orm.OrmHtmlDocument;
+import com.imcode.imcms.api.orm.OrmTextDocument;
 import com.imcode.imcms.api.orm.OrmUrlDocument;
 import com.imcode.imcms.dao.MetaDao;
 
@@ -56,7 +58,13 @@ class DocumentSaver {
             switch (document.getDocumentType().getId()) {
             	case DocumentTypeDomainObject.HTML_ID:
             	case DocumentTypeDomainObject.URL_ID:
+            	case DocumentTypeDomainObject.FILE_ID:	
             		document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
+            		break;
+            	default:
+	            	OrmTextDocument txtOrm = (OrmTextDocument)document.getMeta().getOrmDocument();
+	        	    txtOrm.setTemplateNames(((TextDocumentDomainObject)document).getTemplateNames());
+	        	    txtOrm.setIncludesMap(((TextDocumentDomainObject)document).getIncludesMap());
             }             
             
             saveMeta(document);
@@ -80,8 +88,9 @@ class DocumentSaver {
         // clone shared references and
         // set metaId to null after cloning
         // remove all permissions after cloning?
-        document.cloneSharedForNewDocument();       
-        document.getMeta().setMetaId(null);
+        document.cloneSharedForNewDocument(); 
+        Meta meta = document.getMeta();
+        meta.setMetaId(null);
 
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 
@@ -100,26 +109,28 @@ class DocumentSaver {
         switch (document.getDocumentType().getId()) {
         	case DocumentTypeDomainObject.HTML_ID:
                 OrmDocument ormDocument = new OrmHtmlDocument();        	
-            	ormDocument.setMeta(document.getMeta());
-            	document.getMeta().setOrmDocument(ormDocument);
+            	ormDocument.setMeta(meta);
+            	meta.setOrmDocument(ormDocument);
             	document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
             	break;
         	case DocumentTypeDomainObject.URL_ID:
                 ormDocument = new OrmUrlDocument();        	
-            	ormDocument.setMeta(document.getMeta());
-            	document.getMeta().setOrmDocument(ormDocument);
+            	ormDocument.setMeta(meta);
+            	meta.setOrmDocument(ormDocument);
             	document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
             	break;        		
         	case DocumentTypeDomainObject.FILE_ID:
 	            ormDocument = new OrmFileDocument();        	
-	        	ormDocument.setMeta(document.getMeta());
-	        	document.getMeta().setOrmDocument(ormDocument);
+	        	ormDocument.setMeta(meta);
+	        	meta.setOrmDocument(ormDocument);
 	        	document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
 	        	break;        		
         	default:
-                ormDocument = new OrmDocument();        	
-            	ormDocument.setMeta(document.getMeta());
-            	document.getMeta().setOrmDocument(ormDocument);        		        		
+        		OrmTextDocument txtOrm = new OrmTextDocument();
+        	    txtOrm.setTemplateNames(((TextDocumentDomainObject)document).getTemplateNames());   
+        	    txtOrm.setIncludesMap(((TextDocumentDomainObject)document).getIncludesMap());     	
+        	    txtOrm.setMeta(meta);
+        	    meta.setOrmDocument(txtOrm);      
         } 
 
         int newMetaId = saveMeta(document);

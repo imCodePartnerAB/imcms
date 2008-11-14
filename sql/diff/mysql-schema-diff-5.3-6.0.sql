@@ -13,7 +13,7 @@ DROP TABLE browser_docs;
 DROP TABLE browsers;
 DELETE FROM meta WHERE doc_type = 6;
 DELETE FROM doc_types WHERE doc_type = 6;
-DELETE FROM doc_permissions WHERE doc_type NOT IN (2,5,7,8)
+DELETE FROM doc_permissions WHERE doc_type NOT IN (2,5,7,8);
 
 --
 -- Includes table

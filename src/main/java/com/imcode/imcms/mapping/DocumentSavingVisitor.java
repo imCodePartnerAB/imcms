@@ -51,7 +51,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     }
 
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
-        updateTextDocumentTemplateNames(textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
+        //updateTextDocumentTemplateNames(textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
         
         updateTextDocumentTexts( textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
         updateTextDocumentImages( textDocument, (TextDocumentDomainObject)oldDocument, savingUser);

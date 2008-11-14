@@ -4,14 +4,8 @@ import imcode.server.Imcms;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TemplateNames;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TreeSortKeyDomainObject;
-import imcode.util.LazilyLoadedObject;
-import imcode.util.Utility;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,14 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
 
 import com.imcode.db.Database;
-import com.imcode.imcms.api.Include;
-import com.imcode.imcms.dao.IncludeDao;
+import com.imcode.imcms.api.orm.OrmTextDocument;
 import com.imcode.imcms.dao.MenuDao;
-import com.imcode.imcms.dao.TemplateNamesDao;
 
 public class TextDocumentInitializer {
 
@@ -48,20 +39,15 @@ public class TextDocumentInitializer {
     // TODO: refactor
     public void initialize(TextDocumentDomainObject document) {
         Integer documentId = new Integer(document.getId()) ;
+        OrmTextDocument orm = (OrmTextDocument)document.getMeta().getOrmDocument();
         //document.setLazilyLoadedMenus(new LazilyLoadedObject(new MenusLoader(documentId)));
         
         // document.setTexts???
         // document.setImages???
-        
-        // init includes    	     	
-   		IncludeDao includeDao = (IncludeDao)Imcms.getServices().getSpringBean("includeDao");
-   		List<Include> includes = includeDao.getDocumentIncludes(documentId);
-   		
-   		TemplateNamesDao tnDao = (TemplateNamesDao)Imcms.getServices().getSpringBean("templateNamesDao");
-   		TemplateNames templateNames = tnDao.getTemplateNames(documentId);  
-    				
-		document.setIncludes(includes);
-		document.setTemplateNames(templateNames);
+           		
+		document.setIncludesMap(orm.getIncludesMap());
+		document.setTemplateNames(orm.getTemplateNames());
+	
 		
 		MenuDao menuDao = (MenuDao)Imcms.getServices().getSpringBean("menuDao");
 		List<MenuDomainObject> menus = menuDao.getMenus(documentId);
