@@ -2,7 +2,6 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -24,7 +23,6 @@ import com.imcode.imcms.flow.CreateDocumentWithEditPageFlow;
 import com.imcode.imcms.flow.CreateTextDocumentPageFlow;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.DocumentPageFlow;
-import com.imcode.imcms.flow.EditBrowserDocumentPageFlow;
 import com.imcode.imcms.flow.EditFileDocumentPageFlow;
 import com.imcode.imcms.flow.EditHtmlDocumentPageFlow;
 import com.imcode.imcms.flow.EditUrlDocumentPageFlow;
@@ -69,8 +67,6 @@ public class DocumentCreator {
             pageFlow = new CreateDocumentWithEditPageFlow( new EditHtmlDocumentPageFlow( (HtmlDocumentDomainObject)document, returnCommand, saveDocumentCommand ) );
         } else if ( document instanceof FileDocumentDomainObject ) {
             pageFlow = new CreateDocumentWithEditPageFlow( new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, servletContext, returnCommand, saveDocumentCommand, null ) );
-        } else if ( document instanceof BrowserDocumentDomainObject ) {
-            pageFlow = new CreateDocumentWithEditPageFlow( new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, returnCommand, saveDocumentCommand ) );
         } else {
             return ;
         }

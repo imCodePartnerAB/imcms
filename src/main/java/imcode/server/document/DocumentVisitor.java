@@ -8,10 +8,6 @@ public class DocumentVisitor {
         visitOtherDocument( textDocument ) ;
     }
 
-    public void visitBrowserDocument( BrowserDocumentDomainObject browserDocument ) {
-        visitOtherDocument( browserDocument );
-    }
-
     public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
         visitOtherDocument( fileDocument );
     }

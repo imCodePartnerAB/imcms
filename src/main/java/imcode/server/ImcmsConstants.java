@@ -21,9 +21,6 @@ public interface ImcmsConstants {
     /** Permission to edit the url of an url-document. **/
     public final static int PERM_EDIT_URL_DOCUMENT             = PERM_EDIT_DOCUMENT ;
 
-    /** Permission to edit the mappings of a browser-document. **/
-    public final static int PERM_EDIT_BROWSER_DOCUMENT         = PERM_EDIT_DOCUMENT ;
-
     /** Permission to edit a html-document. **/
     public final static int PERM_EDIT_HTML_DOCUMENT            = PERM_EDIT_DOCUMENT ;
 
@@ -60,7 +57,6 @@ public interface ImcmsConstants {
     final static int PASSWORD_MINIMUM_LENGTH = 4;
 
     int DISPATCH_FLAG__DOCINFO_PAGE = PERM_EDIT_HEADLINE;
-    int DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT = PERM_EDIT_BROWSER_DOCUMENT;
     int DISPATCH_FLAG__EDIT_HTML_DOCUMENT = PERM_EDIT_HTML_DOCUMENT;
     int DISPATCH_FLAG__EDIT_URL_DOCUMENT = PERM_EDIT_URL_DOCUMENT;
     int DISPATCH_FLAG__EDIT_FILE_DOCUMENT = PERM_EDIT_FILE_DOCUMENT;

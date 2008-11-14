@@ -2,7 +2,6 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -310,33 +309,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             extensions = matcher.group();
         }
         return extensions;
-    }
-
-    public void visitBrowserDocument( BrowserDocumentDomainObject browserDocument ) {
-        deleteBrowserDocument( browserDocument );
-        saveNewBrowserDocument( browserDocument );
-    }
-
-    private void deleteBrowserDocument( BrowserDocumentDomainObject browserDocument ) {
-        String sqlStr = "DELETE FROM browser_docs WHERE meta_id = ?";
-        final Object[] parameters = new String[]{"" + browserDocument.getId()};
-        database.execute(new SqlUpdateCommand(sqlStr, parameters));
-    }
-
-    public void saveNewBrowserDocument( BrowserDocumentDomainObject document ) {
-        String[] browserDocumentColumns = {"meta_id", "to_meta_id", "browser_id"};
-
-        String sqlBrowserDocsInsertStr = makeSqlInsertString( "browser_docs", browserDocumentColumns );
-
-        Map browserDocumentMap = document.getBrowserDocumentIdMap();
-        for ( Iterator iterator = browserDocumentMap.keySet().iterator(); iterator.hasNext(); ) {
-            BrowserDocumentDomainObject.Browser browser = (BrowserDocumentDomainObject.Browser)iterator.next();
-            Integer metaIdForBrowser = (Integer)browserDocumentMap.get( browser );
-            final Object[] parameters = new String[]{
-                "" + document.getId(), "" + metaIdForBrowser, "" + browser.getId()
-            };
-            database.execute(new SqlUpdateCommand(sqlBrowserDocsInsertStr, parameters));
-        }
     }
 
     protected void updateTextDocumentMenus(final TextDocumentDomainObject textDocument, final TextDocumentDomainObject oldTextDocument, final UserDomainObject savingUser) {

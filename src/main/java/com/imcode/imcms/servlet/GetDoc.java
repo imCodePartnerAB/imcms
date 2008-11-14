@@ -5,7 +5,6 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.Revisits;
-import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
@@ -21,7 +20,6 @@ import java.io.InputStream;
 import java.net.SocketException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 
 import javax.servlet.ServletException;
@@ -37,7 +35,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
 
-import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
@@ -179,29 +176,6 @@ public class GetDoc extends HttpServlet {
         if ( document instanceof UrlDocumentDomainObject ) {
             String url_ref = ( (UrlDocumentDomainObject) document ).getUrl();
             res.sendRedirect(url_ref);
-            // Log to accesslog
-            TRACK_LOG.info(documentRequest);
-            return ;
-        } else if ( document instanceof BrowserDocumentDomainObject ) {
-
-            String br_id = req.getHeader("User-Agent");
-            if ( br_id == null ) {
-                br_id = "";
-            }
-            final Object[] parameters = new String[] { "" + document.getId(), br_id };
-            String destinationMetaId = (String) imcref.getDatabase().execute(new SqlQueryCommand("select to_meta_id\n"
-                                                                                                 + "from browser_docs\n"
-                                                                                                 + "join browsers on browsers.browser_id = browser_docs.browser_id\n"
-                                                                                                 + "where meta_id = ? and ? like user_agent order by value desc", parameters, Utility.SINGLE_STRING_HANDLER));
-            int toMetaId;
-            if ( destinationMetaId != null && !"".equals(destinationMetaId) ) {
-                toMetaId = Integer.parseInt(destinationMetaId);
-            } else {
-                Map browserDocumentIdMap = ( (BrowserDocumentDomainObject) document ).getBrowserDocumentIdMap();
-                toMetaId = ( (Integer) browserDocumentIdMap.get(BrowserDocumentDomainObject.Browser.DEFAULT) ).intValue();
-            }
-
-            res.sendRedirect("GetDoc?meta_id=" + toMetaId);
             // Log to accesslog
             TRACK_LOG.info(documentRequest);
             return ;

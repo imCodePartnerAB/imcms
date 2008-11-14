@@ -3,7 +3,6 @@ package com.imcode.imcms.mapping;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -30,7 +29,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.AbstractList;
 import java.util.AbstractSet;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -253,33 +251,6 @@ public class DocumentMapper implements DocumentGetter {
         return (String[]) getDatabase().execute(new SqlQueryCommand(sqlStr, params, Utility.STRING_ARRAY_HANDLER));
     }
 
-    public BrowserDocumentDomainObject.Browser[] getAllBrowsers() {
-        String sqlStr = "SELECT browser_id, name, value FROM browsers WHERE browser_id != 0";
-        String[] parameters = new String[0];
-        String[][] sqlResult = (String[][]) getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
-        List browsers = new ArrayList();
-        for (int i = 0; i < sqlResult.length; i++) {
-            browsers.add(createBrowserFromSqlRow(sqlResult[i]));
-        }
-        return (BrowserDocumentDomainObject.Browser[]) browsers.toArray(new BrowserDocumentDomainObject.Browser[browsers.size()]);
-    }
-
-    public BrowserDocumentDomainObject.Browser getBrowserById(int browserIdToGet) {
-        if (browserIdToGet == BrowserDocumentDomainObject.Browser.DEFAULT.getId()) {
-            return BrowserDocumentDomainObject.Browser.DEFAULT;
-        }
-        String sqlStr = "SELECT browser_id, name, value FROM browsers WHERE browser_id = ?";
-        String[] params = new String[]{"" + browserIdToGet};
-        String[] sqlRow = (String[]) getDatabase().execute(new SqlQueryCommand(sqlStr, params, Utility.STRING_ARRAY_HANDLER));
-        return createBrowserFromSqlRow(sqlRow);
-    }
-
-    protected BrowserDocumentDomainObject.Browser createBrowserFromSqlRow(String[] sqlRow) {
-        int browserId = Integer.parseInt(sqlRow[0]);
-        String browserName = sqlRow[1];
-        int browserSpecificity = Integer.parseInt(sqlRow[2]);
-        return new BrowserDocumentDomainObject.Browser(browserId, browserName, browserSpecificity);
-    }
 
     public void deleteDocument(final DocumentDomainObject document, UserDomainObject user) {
         DatabaseCommand deleteDocumentCommand = createDeleteDocumentCommand(document);
@@ -305,7 +276,6 @@ public class DocumentMapper implements DocumentGetter {
             new DeleteWhereColumnsEqualDatabaseCommand("roles_rights", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("user_rights", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("url_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("browser_docs", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("fileupload_docs", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("frameset_docs", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("new_doc_permission_sets_ex", metaIdColumn, metaIdStr),

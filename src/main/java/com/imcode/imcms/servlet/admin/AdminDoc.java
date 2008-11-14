@@ -4,7 +4,6 @@ import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -31,7 +30,6 @@ import org.apache.commons.lang.ObjectUtils;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.flow.EditBrowserDocumentPageFlow;
 import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.flow.EditDocumentPermissionsPageFlow;
 import com.imcode.imcms.flow.EditFileDocumentPageFlow;
@@ -90,9 +88,6 @@ public class AdminDoc extends HttpServlet {
         	pageFlow = new EditDocumentInformationPageFlow( document, returnCommand, saveDocumentCommand );
         } else if ( ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor( document ) ) {
             pageFlow = new EditDocumentPermissionsPageFlow( document, returnCommand, saveDocumentCommand );
-        } else if ( document instanceof BrowserDocumentDomainObject
-                    && ImcmsConstants.DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT == flags ) {
-            pageFlow = new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, returnCommand, saveDocumentCommand );
         } else if ( document instanceof HtmlDocumentDomainObject
                     && ImcmsConstants.DISPATCH_FLAG__EDIT_HTML_DOCUMENT == flags ) {
             pageFlow = new EditHtmlDocumentPageFlow( (HtmlDocumentDomainObject)document, returnCommand, saveDocumentCommand );

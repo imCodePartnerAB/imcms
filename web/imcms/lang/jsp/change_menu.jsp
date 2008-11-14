@@ -32,7 +32,6 @@
                                         new IdLocalizedNamePair( 0, new LocalizedMessage( "templates/sv/textdoc/existing_doc_name.html/internal_link" ) ),
                                         DocumentTypeDomainObject.URL,
                                         DocumentTypeDomainObject.FILE,
-                                        DocumentTypeDomainObject.BROWSER,
                                         DocumentTypeDomainObject.HTML,
                                 }));
                                 CollectionUtils.filter(docTypeIdsOrder, new Predicate() {

@@ -1,26 +1,17 @@
 package com.imcode.imcms.mapping;
 
-import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.util.Utility;
 import imcode.util.io.FileInputStreamSource;
 
 import java.io.File;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.lang.UnhandledException;
-
 import com.imcode.db.Database;
-import com.imcode.db.DatabaseException;
-import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.imcms.api.orm.OrmFileDocument;
 import com.imcode.imcms.api.orm.OrmHtmlDocument;
 import com.imcode.imcms.api.orm.OrmUrlDocument;
@@ -38,24 +29,6 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         this.database = documentMapper.getDatabase();
         this.documentMapper = documentMapper;
         textDocumentInitializer = new TextDocumentInitializer(database, documentGetter, documentIds);
-    }
-
-    public void visitBrowserDocument(BrowserDocumentDomainObject document) {
-        String[][] sqlResult;
-        try {
-            String[] parameters = new String[] { "" + document.getId() };
-            String sqlStr = "SELECT to_meta_id, browser_id FROM browser_docs WHERE meta_id = ?";
-            sqlResult = (String[][]) database.execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
-        } catch ( DatabaseException e ) {
-            throw new UnhandledException(e);
-        }
-        for ( int i = 0; i < sqlResult.length; i++ ) {
-            String[] sqlRow = sqlResult[i];
-            int toMetaId = Integer.parseInt(sqlRow[0]);
-            int browserId = Integer.parseInt(sqlRow[1]);
-            BrowserDocumentDomainObject.Browser browser = documentMapper.getBrowserById(browserId);
-            document.setBrowserDocumentId(browser, toMetaId);
-        }
     }
 
     public void visitFileDocument(final FileDocumentDomainObject document) {

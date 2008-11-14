@@ -73,9 +73,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             case DocumentTypeDomainObject.URL_ID:
                 document = new UrlDocumentDomainObject();
                 break;
-            case DocumentTypeDomainObject.BROWSER_ID:
-                document = new BrowserDocumentDomainObject();
-                break;
             case DocumentTypeDomainObject.FILE_ID:
                 document = new FileDocumentDomainObject();
                 break;

@@ -8,6 +8,13 @@ SET @database_version__minor__current = 3;
 SET @database_version__major__new = 6;
 SET @database_version__minor__new = 0;
 
+-- Delete browsers related data from database
+DROP TABLE browser_docs;
+DROP TABLE browsers;
+DELETE FROM meta WHERE doc_type = 6;
+DELETE FROM doc_types WHERE doc_type = 6;
+DELETE FROM doc_permissions WHERE doc_type NOT IN (2,5,7,8)
+
 --
 -- Includes table
 --

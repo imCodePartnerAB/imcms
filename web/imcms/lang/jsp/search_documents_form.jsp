@@ -109,8 +109,7 @@
                         DocumentTypeDomainObject.TEXT,
                         DocumentTypeDomainObject.FILE,
                         DocumentTypeDomainObject.URL,
-                        DocumentTypeDomainObject.HTML,
-                        DocumentTypeDomainObject.BROWSER
+                        DocumentTypeDomainObject.HTML
                     };
                     for ( int i = 0; i < documentTypes.length; i++ ) {
                         DocumentTypeDomainObject documentType = documentTypes[i] ;
