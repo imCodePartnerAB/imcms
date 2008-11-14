@@ -19,6 +19,7 @@ import com.imcode.db.Database;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.api.orm.OrmDocument;
+import com.imcode.imcms.api.orm.OrmFileDocument;
 import com.imcode.imcms.api.orm.OrmHtmlDocument;
 import com.imcode.imcms.api.orm.OrmUrlDocument;
 import com.imcode.imcms.dao.MetaDao;
@@ -109,6 +110,12 @@ class DocumentSaver {
             	document.getMeta().setOrmDocument(ormDocument);
             	document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
             	break;        		
+        	case DocumentTypeDomainObject.FILE_ID:
+	            ormDocument = new OrmFileDocument();        	
+	        	ormDocument.setMeta(document.getMeta());
+	        	document.getMeta().setOrmDocument(ormDocument);
+	        	document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
+	        	break;        		
         	default:
                 ormDocument = new OrmDocument();        	
             	ormDocument.setMeta(document.getMeta());
