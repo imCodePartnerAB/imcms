@@ -1,6 +1,5 @@
 package imcode.server.document.textdocument;
 
-import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
@@ -10,37 +9,22 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.dao.ImageDao;
-import com.imcode.imcms.dao.TextDao;
 
-//TODO: Refactor out text and image loading logic into lazy load object and optimize:
-// getTextsMap, getImagesMap, getText, getImage
 public class TextDocumentDomainObject extends DocumentDomainObject {
-	
-	
+		
 	/**
-     * Holds map of loaded images.
-     * 
-     * Latter can be loaded as lazy object in loadAllLazyLoaded.
-     *                  
-     * For now loaded only by demand.
+     * Images.
      */
     private Map<I18nLanguage, Map<Integer, ImageDomainObject>> images
     		= new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
     
     /**
-     * Holds map of loaded texts.
-     * 
-     * Latter can be loaded as lazy object in loadAllLazyLoaded.
-     * 
-     * For now loaded only by demand.
+     * Texts.
      */
     private Map<I18nLanguage, Map<Integer, TextDomainObject>> texts    
     		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
@@ -50,55 +34,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private TemplateNames templateNames = new TemplateNames();
         
     private Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();  
-    
-    
-    /**
-     * Returns images map from the database.
-     */
-    public static Map<Integer, ImageDomainObject> getOriginalImagesMap(I18nLanguage language, Integer metaId) {
-    	Map<Integer, ImageDomainObject> map = new HashMap<Integer, ImageDomainObject>(); 
-    	
-   		ImageDao dao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
-   		List<ImageDomainObject> images = dao.getDocumentImagesByLanguage(metaId, language.getId());
-    		
-		for (ImageDomainObject image: images) {
-			int index = Integer.parseInt(image.getName()); 
-			map.put(index, image);
-		}
-		
-    	return map;
-    }
         
-    /**
-     * Returns texts map from the database.
-     */
-    public static Map<Integer, TextDomainObject> getOrigianlTextsMap(I18nLanguage language, Integer metaId) {
-    	Map<Integer, TextDomainObject> map = new HashMap<Integer, TextDomainObject>(); 
-    	
-   		TextDao dao = (TextDao)Imcms.getServices().getSpringBean("textDao");
-   		List<TextDomainObject> texts = dao.getTexts(metaId, language.getId());
-    		
-		for (TextDomainObject text: texts) {
-			map.put(text.getIndex(), text);
-		}
-		
-    	return map;
-    } 
-    
-    
     public TextDocumentDomainObject() {
         this(ID_NEW) ;
     }
 
     public TextDocumentDomainObject(int documentId) {
         setId(documentId);
-    }
-
-    public void loadAllLazilyLoaded() {
-        super.loadAllLazilyLoaded();
-
-        loadTexts();
-        loadImages();
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -152,10 +94,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	Map<Integer, ImageDomainObject> map = images.get(language);    	
     	
     	if (map == null) {
-    		Integer metaId = getId();
-    		
-   			map = getOriginalImagesMap(language, metaId);
-   			
+   			map = new HashMap<Integer, ImageDomainObject>();   		
       		images.put(language, map);
     	}
     	
@@ -189,13 +128,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return text;
     }
     
-    
-	public TextDomainObject getText(I18nLanguage language, 
-			int index) {
-		
-		//WTF? - investigate
-		//getMenu(0);
-		
+    /**
+     * @return TextDomainObject or null if text can not be found.
+     */
+	public TextDomainObject getText(I18nLanguage language, int index) {
 		if (language == null) {
 			throw new IllegalArgumentException("language argument " +
 					"can not be null.");			
@@ -222,9 +158,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	Map<Integer, TextDomainObject> map = texts.get(language);
     	
     	if (map == null) {
-    		Meta meta = getMeta();
-    		Integer metaId = meta.getMetaId();
-    		map = getOrigianlTextsMap(language, metaId);    		
+    		map = new HashMap<Integer, TextDomainObject>();
     			
     		texts.put(language, map);
     	}
@@ -282,34 +216,20 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * Sets text.
      */   
-    public void setText(I18nLanguage language, int index,
-    		TextDomainObject text) {
-
-    	Integer metaId = getId();    	
+    public void setText(I18nLanguage language, int index, TextDomainObject text) {        	
     	Map<Integer, TextDomainObject> map = getTextsMap(language);
-    	TextDomainObject existingText = map.get(index);
-    	boolean modified = true;
-    	Long id = null;
+    	TextDomainObject oldText = map.get(index);
+    	TextDomainObject newText = text.clone();
     	
-    	if (existingText != null) {
-    		String oldValue = existingText.getText();
-    		String newValue = text.getText();    		
-    		int newType = text.getType(); 
-    		int oldType = existingText.getType(); 
-    		
-    		if (oldValue == null) oldValue = "";
-    		
-    		id = existingText.getId();
-    		modified = oldType != newType || !oldValue.equals(newValue);
+    	if (oldText != null) {
+    		newText.setId(oldText.getId());
     	}
     	
-    	text.setId(id);
-    	text.setMetaId(metaId);
-    	text.setIndex(index);
-    	text.setLanguage(language);
-    	text.setModified(modified);
+    	newText.setIndex(index);
+    	newText.setLanguage(language);
+    	newText.setModified(true);
     	
-    	map.put(index, text);    	
+    	map.put(index, newText);
     } 
     
     public Map getIncludesMap() {
@@ -388,6 +308,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     
 	/**
 	 * Sets images.
+	 * 
 	 * This method is only used by administration interface.
 	 */		
     public synchronized void setImages(int imageIndex, 
@@ -412,25 +333,20 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * Sets image.
      */   
-    public void setImage(I18nLanguage language, int index,
-    		ImageDomainObject image) {
-    	
-    	Integer metaId = getId();    	
+    public void setImage(I18nLanguage language, int index, ImageDomainObject image) {    	
     	Map<Integer, ImageDomainObject> map = getImagesMap(language);
-    	
-    	ImageDomainObject existingImage = map.get(index);
-    	
-    	if (existingImage != null) {    		
-    		image.setId(existingImage.getId());
-    	} else {    		
-        	image.setId(null);        	
-    	}
 
-    	image.setMetaId(metaId);
-    	image.setLanguage(language);
-    	image.setName("" + index);
+    	ImageDomainObject oldImage = map.get(index);
+    	ImageDomainObject newImage = image.clone();
     	
-    	map.put(index, image);
+    	if (oldImage != null) {
+    		newImage.setIndex(oldImage.getIndex());
+    	} 
+    	
+    	newImage.setLanguage(language);
+    	newImage.setIndex(index);
+    	
+    	map.put(index, newImage);
     }	
 	
     /**
@@ -442,9 +358,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	
 	/**
 	 * Returns i18n-ed image for language bound to the current thread. 
-	 * 
-	 * If image for that language is not exists
-	 * then returns image according to language rule set in meta. 
 	 *  
 	 * @return ImageDomainObject for language bound to the current thread. 
 	 */
@@ -468,18 +381,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		
 		return map.get(index);
 	}
-
-    private void loadTexts() {
-        for (I18nLanguage language: I18nSupport.getLanguages()) {
-            getTextsMap(language);
-        }
-    }
-
-    private void loadImages() {
-        for (I18nLanguage language: I18nSupport.getLanguages()) {
-            getImagesMap(language);
-        }
-    }
     
     @Override
     public void cloneSharedForNewDocument() {
@@ -541,7 +442,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
             for (Map.Entry<Integer, TextDomainObject> textsEntry: textsMap.entrySet()) {
                 TextDomainObject text = textsEntry.getValue().clone();
-                text.setId(null);
+                //text.setId(null);
                 //text.setMetaId(metaId);
                 text.setModified(true);
 
@@ -577,4 +478,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	public void setIncludesMap(Map<Integer, Integer> includesMap) {
 		this.includesMap = includesMap;
 	}
+
+	public void setTexts(Map<I18nLanguage, Map<Integer, TextDomainObject>> texts) {
+		this.texts = texts;
+	}
+	
+	public void setImages(Map<I18nLanguage, Map<Integer, ImageDomainObject>> images) {
+		this.images = images;
+	}	
 }

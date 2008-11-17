@@ -25,7 +25,6 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.util.ImageSize;
 
 @Entity(name="I18nImage")
-//@IdClass(ImageId.class)
 @Table(name="images")
 @NamedQueries({
 	@NamedQuery(name="Image.getByLanguageId", query="select i from I18nImage i where i.metaId = :metaId and i.language.id = :languageId"),
@@ -43,15 +42,12 @@ public class ImageDomainObject implements Serializable, Cloneable {
 	@Transient
 	private ImageSource source = new NullImageSource();
 	
-	//@Id
 	@Column(name="meta_id")
 	private int metaId;
 
     /**
-     * 'name' is a legacy identifier. 
-     * Actually it is a part of natural key. 
+     * Image index.
      */
-	//@Id
     private String name = "";
 	
     private int width;
@@ -249,10 +245,12 @@ public class ImageDomainObject implements Serializable, Cloneable {
         return source;
     }
 
+    @Override
     public boolean equals( Object obj ) {
         if ( !( obj instanceof ImageDomainObject ) ) {
             return false;
         }
+        
         final ImageDomainObject o = (ImageDomainObject)obj;
         return new EqualsBuilder().append(source.toStorageString(), o.getSource().toStorageString())
                 .append(name, o.getName())
@@ -266,6 +264,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
                 .append(horizontalSpace, o.getHorizontalSpace())
                 .append(target, o.getTarget())
                 .append(linkUrl, o.getLinkUrl())
+                .append(language, o.getLanguage())               
                 .isEquals();
    }
 
@@ -276,6 +275,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
                 .append(border).append(align).append(alternateText)
                 .append(lowResolutionUrl).append(verticalSpace).append(horizontalSpace)
                 .append(target).append(linkUrl)
+                .append(language)
                 .toHashCode();
     }
 
@@ -326,4 +326,17 @@ public class ImageDomainObject implements Serializable, Cloneable {
 	public void setType(Integer type) {
 		this.type = type;
 	}
+	
+	public Integer getIndex() {
+		return name == null ? null : new Integer(name);
+	}
+	
+	public void setIndex(Integer index) {
+		if (index == null) {
+			name = null;
+		} else {
+			name = index.toString();
+		}
+	}	
+	
 }

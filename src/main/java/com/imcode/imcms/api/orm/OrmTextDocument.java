@@ -1,9 +1,13 @@
 package com.imcode.imcms.api.orm;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TemplateNames;
+import imcode.server.document.textdocument.TextDomainObject;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -14,6 +18,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 
@@ -40,6 +45,14 @@ public class OrmTextDocument extends OrmDocument {
 	@Column(name = "included_meta_id")   
     private Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
 	
+	@OneToMany(fetch=FetchType.EAGER)
+	@JoinColumn(name="meta_id")
+	private Set<TextDomainObject> texts = new HashSet<TextDomainObject>();
+	
+	@OneToMany(fetch=FetchType.EAGER)
+	@JoinColumn(name="meta_id")
+	private Set<ImageDomainObject> images = new HashSet<ImageDomainObject>();	
+	
 	public TemplateNames getTemplateNames() {
 		return templateNames;
 	}
@@ -54,5 +67,21 @@ public class OrmTextDocument extends OrmDocument {
 
 	public void setIncludesMap(Map<Integer, Integer> includesMap) {
 		this.includesMap = includesMap;
+	}
+
+	public Set<TextDomainObject> getTexts() {
+		return texts;
+	}
+
+	public void setTexts(Set<TextDomainObject> texts) {
+		this.texts = texts;
+	}
+
+	public Set<ImageDomainObject> getImages() {
+		return images;
+	}
+
+	public void setImages(Set<ImageDomainObject> images) {
+		this.images = images;
 	}
 }

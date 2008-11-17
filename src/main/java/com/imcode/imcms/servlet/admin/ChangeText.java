@@ -55,7 +55,7 @@ public class ChangeText extends HttpServlet {
         
     	if (text == null) {
     		text = new TextDomainObject();
-    		text.setMetaId(metaId);
+    		//text.setMetaId(metaId);
     		text.setIndex(textIndex);
     		text.setLanguage(language);
     		text.setType(TextDomainObject.TEXT_TYPE_HTML);

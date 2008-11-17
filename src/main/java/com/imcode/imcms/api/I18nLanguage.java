@@ -9,6 +9,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 @Entity
 @Table(name="i18n_languages")
 @NamedQueries({
@@ -33,8 +36,18 @@ public class I18nLanguage implements Serializable, Cloneable {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof I18nLanguage
-			&& hashCode() == ((I18nLanguage) object).hashCode();
+        if ( !( object instanceof I18nLanguage ) ) {
+            return false;
+        }
+        
+        if (this == object) {
+        	return true;
+        }
+        
+        I18nLanguage that = (I18nLanguage)object;
+        
+        return new EqualsBuilder()
+			.append(code, that.code).isEquals();
 	}
 
 	@Override
@@ -48,7 +61,8 @@ public class I18nLanguage implements Serializable, Cloneable {
 	
 	@Override	
 	public int hashCode() {
-		return id;
+        return new HashCodeBuilder(11, 31)
+			.append(code).toHashCode();
 	}
 	
 	@Override 

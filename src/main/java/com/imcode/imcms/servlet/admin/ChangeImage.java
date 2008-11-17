@@ -112,7 +112,6 @@ public class ChangeImage extends HttpServlet {
         };
         
         ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
-        LanguageDao languageDao = (LanguageDao)Imcms.getServices().getSpringBean("languageDao");
         
         List<ImageDomainObject> images = imageDao.getDocumentImagesByIndex(document.getId(), imageIndex, true);
         

@@ -5,6 +5,7 @@ import imcode.util.Parser;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -36,6 +37,16 @@ import com.imcode.imcms.mapping.DocumentStoringVisitor;
 
 })
 public class TextDomainObject implements Serializable, Cloneable {
+	
+    /**
+     * Plain text, with linebreaks. *
+     */
+    public final static int TEXT_TYPE_PLAIN = 0;
+
+    /**
+     * HTML-code. *
+     */
+    public final static int TEXT_TYPE_HTML = 1;	
 
 	@Override
 	protected TextDomainObject clone() {
@@ -45,6 +56,7 @@ public class TextDomainObject implements Serializable, Cloneable {
 			throw new RuntimeException(e);
 		}
 	}
+	 
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="counter")
@@ -80,16 +92,6 @@ public class TextDomainObject implements Serializable, Cloneable {
     private I18nLanguage language;    
 
     /* Text-types. */
-
-    /**
-     * Plain text, with linebreaks. *
-     */
-    public final static int TEXT_TYPE_PLAIN = 0;
-
-    /**
-     * HTML-code. *
-     */
-    public final static int TEXT_TYPE_HTML = 1;
 
     public TextDomainObject() {
         this("");
@@ -177,18 +179,31 @@ public class TextDomainObject implements Serializable, Cloneable {
         return result;
     }
 
+	@Override 
     public boolean equals( Object obj ) {
         if ( !( obj instanceof TextDomainObject ) ) {
             return false;
         }
+        
+        if (this == obj) {
+        	return true;
+        }
+        
         final TextDomainObject o = (TextDomainObject)obj;
-        return new EqualsBuilder().append(text, o.getText())
-                .append(type, o.getType()).isEquals();
+        
+        return new EqualsBuilder()
+        		.append(text, o.getText())
+                .append(type, o.getType())
+                .append(index, o.getIndex())
+                .append(language, o.getLanguage()).isEquals();
         }
 
     public int hashCode() {
-        return new HashCodeBuilder().append(type)
-                .append(text).toHashCode();
+        return new HashCodeBuilder(33, 31)
+        		.append(text)
+        		.append(type)
+        		.append(index)
+                .append(language).toHashCode();
     }
 
 	public Long getId() {

@@ -1,14 +1,12 @@
 package com.imcode.imcms.dao;
 
+import static com.imcode.imcms.mapping.TextDocumentInitializer.setImageSource;
 import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,23 +84,6 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		return image;
 	}
 	
-	private ImageDomainObject setImageSource(ImageDomainObject image) {
-		if (image == null) {
-			return null;
-		}
-		
-		String url = image.getImageUrl();
-		
-		if (!StringUtils.isBlank(url)) {
-			ImageSource imageSource = new ImagesPathRelativePathImageSource(url);
-			image.setSource(imageSource);	
-			image.setImageUrl(url);
-			image.setType(imageSource.getTypeId());
-		}
-				
-		return image;
-	}
-
 	public LanguageDao getLanguageDao() {
 		return languageDao;
 	}
