@@ -562,8 +562,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.permissionSetsForNewDocuments = permissionSetsForNew;
     }
 
-    public void loadAllLazilyLoaded() {}
-
     public String getAlias() {
         return getProperty(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
     }

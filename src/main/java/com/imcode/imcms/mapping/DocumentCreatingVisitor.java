@@ -7,17 +7,12 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 import com.imcode.db.Database;
-import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.api.orm.OrmHtmlDocument;
 import com.imcode.imcms.api.orm.OrmUrlDocument;
 
 public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 	
 	private UserDomainObject currentUser;
-
-    public DocumentCreatingVisitor(Database database, ImcmsServices services) {
-        this(database, services, null);
-    }
     
     public DocumentCreatingVisitor(Database database, ImcmsServices services, UserDomainObject currentUser) {
         super(database, services);
@@ -28,6 +23,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     /**
      * Just set value(s) instead of SQL calls. 
      */
+    // requires transaction
     public void visitHtmlDocument( HtmlDocumentDomainObject document ) {
     	/*
         String[] htmlDocumentColumns = {"meta_id", "frame_set"};
@@ -40,7 +36,11 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         database.execute(new SqlUpdateCommand(sqlUrlDocsInsertStr, parameters));
         */
     	OrmHtmlDocument meta = (OrmHtmlDocument)document.getMeta().getOrmDocument();
-    	meta.setHtml(document.getHtml());    	
+    	meta.setHtml(document.getHtml());
+    	
+    	// hibernateTemplate.save(meta) <- AOP-ed or saved before
+    	// clone document if fields shoud be modified
+    	// hibernateTemplate.save(
     }
 
     /**

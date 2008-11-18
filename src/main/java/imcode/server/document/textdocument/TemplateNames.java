@@ -2,12 +2,10 @@ package imcode.server.document.textdocument;
 
 import javax.persistence.Embeddable;
 
-import imcode.util.LazilyLoadedObject;
-
 import org.apache.commons.lang.UnhandledException;
 
 @Embeddable
-public class TemplateNames implements LazilyLoadedObject.Copyable<TemplateNames>, Cloneable {
+public class TemplateNames implements Cloneable {
 
     private String templateName;
 	
@@ -19,9 +17,6 @@ public class TemplateNames implements LazilyLoadedObject.Copyable<TemplateNames>
 	
     private String defaultTemplateNameForRestricted2;
 
-    public TemplateNames copy() {
-        return (TemplateNames) clone() ;
-    }
 
     public Object clone() {
         try {

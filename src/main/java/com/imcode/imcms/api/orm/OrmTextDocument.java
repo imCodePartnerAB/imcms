@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.TemplateNames;
 import imcode.server.document.textdocument.TextDomainObject;
 
@@ -53,6 +54,10 @@ public class OrmTextDocument extends OrmDocument {
 	@JoinColumn(name="meta_id")
 	private Set<ImageDomainObject> images = new HashSet<ImageDomainObject>();	
 	
+	@OneToMany(fetch=FetchType.EAGER)
+	@JoinColumn(name="meta_id")
+	private Map<Integer, MenuDomainObject> menus = new HashMap<Integer, MenuDomainObject>();	
+	
 	public TemplateNames getTemplateNames() {
 		return templateNames;
 	}
@@ -83,5 +88,13 @@ public class OrmTextDocument extends OrmDocument {
 
 	public void setImages(Set<ImageDomainObject> images) {
 		this.images = images;
+	}
+
+	public Map<Integer, MenuDomainObject> getMenus() {
+		return menus;
+	}
+
+	public void setMenus(Map<Integer, MenuDomainObject> menus) {
+		this.menus = menus;
 	}
 }

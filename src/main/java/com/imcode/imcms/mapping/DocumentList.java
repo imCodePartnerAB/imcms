@@ -25,7 +25,7 @@ class DocumentList extends AbstractList<DocumentDomainObject> implements Seriali
 
     public synchronized DocumentDomainObject remove(int index) {
         DocumentDomainObject document = list.remove(index);
-        document.loadAllLazilyLoaded();
+        //document.loadAllLazilyLoaded();
         map.remove(new Integer(document.getId()));
         return document;
     }

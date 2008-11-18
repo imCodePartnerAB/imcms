@@ -34,11 +34,14 @@ class DocumentSaver {
         this.documentMapper = documentMapper;
     }
 
+    //@Transactional
+    // 1. Save meta
+    // 2. Save document
     void saveDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
                       final UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         checkDocumentForSave(document);
 
-        document.loadAllLazilyLoaded();
+        //document.loadAllLazilyLoaded();
         
         try {
             Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
@@ -54,12 +57,15 @@ class DocumentSaver {
                 documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, oldDocument);
             }
             
+            DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDocument, getDatabase(), documentMapper.getImcmsServices(), user);
+            // savingVisitor.saveMeta();
+            
             // Update inherited meta
             switch (document.getDocumentType().getId()) {
             	case DocumentTypeDomainObject.HTML_ID:
             	case DocumentTypeDomainObject.URL_ID:
             	case DocumentTypeDomainObject.FILE_ID:	
-            		document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
+            		document.accept(new DocumentSavingVisitor(oldDocument, getDatabase(), documentMapper.getImcmsServices(), user));
             		break;
             	default:
 	            	OrmTextDocument txtOrm = (OrmTextDocument)document.getMeta().getOrmDocument();
@@ -83,7 +89,7 @@ class DocumentSaver {
                          DocumentDomainObject document, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(document);
 
-        document.loadAllLazilyLoaded();
+        //document.loadAllLazilyLoaded();
         
         // clone shared references and
         // set metaId to null after cloning

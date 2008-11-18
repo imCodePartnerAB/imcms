@@ -2,6 +2,7 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -35,15 +36,19 @@ import java.util.regex.Pattern;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.api.orm.OrmFileDocument;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.MenuDao;
+import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.dao.TextDao;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
@@ -53,6 +58,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 			return rs.next() ? rs.getString(1) : null;
 		}
 	};
+	
+	/**
+	 * Hibernate template.
+	 */
+	//protected HibernateTemplate hibernateTemplate;
 
     protected Database database ;
     protected ImcmsServices services;
