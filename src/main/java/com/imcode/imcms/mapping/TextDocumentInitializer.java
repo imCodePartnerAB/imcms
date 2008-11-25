@@ -7,6 +7,7 @@ import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TemplateNames;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.document.textdocument.TreeSortKeyDomainObject;
@@ -23,6 +24,7 @@ import org.apache.log4j.Logger;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.orm.OrmInclude;
 import com.imcode.imcms.api.orm.OrmTextDocument;
 import com.imcode.imcms.dao.MenuDao;
 
@@ -44,9 +46,8 @@ public class TextDocumentInitializer {
         initTexts(document);
         initImages(document);
         initMenus(document);
-           		
-		document.setIncludesMap(orm.getIncludesMap());
-		document.setTemplateNames(orm.getTemplateNames());
+        initIncludes(document);
+        initTemplateNames(document);
     }
     
     private void initTexts(TextDocumentDomainObject document) {
@@ -68,6 +69,27 @@ public class TextDocumentInitializer {
     	
     	document.setTexts(textsMap);
     }
+    
+    
+    private void initIncludes(TextDocumentDomainObject document) {
+    	OrmTextDocument orm = (OrmTextDocument)document.getMeta().getOrmDocument();
+    	Set<OrmInclude> includes = orm.getIncludes();
+    	Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
+    	
+    	for (OrmInclude include: includes) {
+    		includesMap.put(include.getIndex(), include.getIncludedMetaId());
+    	}
+    	
+    	document.setIncludesMap(includesMap);
+    }
+    
+    
+    private void initTemplateNames(TextDocumentDomainObject document) {
+    	OrmTextDocument orm = (OrmTextDocument)document.getMeta().getOrmDocument();
+    	TemplateNames templateNames = orm.getTemplateNames();
+    	
+    	document.setTemplateNames(templateNames);
+    }    
     
     
     private void initImages(TextDocumentDomainObject document) {

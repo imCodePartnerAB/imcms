@@ -1,9 +1,12 @@
 package com.imcode.imcms.dao;
 
+import imcode.server.document.textdocument.TemplateNames;
+
 import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +14,8 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.api.orm.OrmDocument;
+import com.imcode.imcms.api.orm.OrmInclude;
+import com.imcode.imcms.api.orm.OrmTextDocument;
 
 public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 
@@ -65,5 +70,22 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 
 	@Transactional
 	public void updateDocument(OrmDocument ormDocument) {
+	}
+
+	@Transactional
+	public void saveIncludes(Integer metaId, Collection<OrmInclude> includes) {
+		bulkUpdate("delete from OrmInclude i where i.metaId = ?", metaId);
+		
+		//flush();
+		//clear();
+		for (OrmInclude include: includes) {
+			saveOrUpdate(include);
+		}
+	}
+
+	public void saveTemplateNames(Integer metaId, TemplateNames templateNames) {
+		// delete first?
+		
+		saveOrUpdate(templateNames);
 	}			
 }

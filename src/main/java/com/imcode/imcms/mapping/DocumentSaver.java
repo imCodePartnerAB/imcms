@@ -36,7 +36,7 @@ class DocumentSaver {
 
     //@Transactional
     // 1. Save meta
-    // 2. Save document
+    // 2. Save document elements
     void saveDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
                       final UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         checkDocumentForSave(document);
@@ -65,17 +65,17 @@ class DocumentSaver {
             	case DocumentTypeDomainObject.HTML_ID:
             	case DocumentTypeDomainObject.URL_ID:
             	case DocumentTypeDomainObject.FILE_ID:	
-            		document.accept(new DocumentSavingVisitor(oldDocument, getDatabase(), documentMapper.getImcmsServices(), user));
+            		document.accept(savingVisitor);
             		break;
             	default:
-	            	OrmTextDocument txtOrm = (OrmTextDocument)document.getMeta().getOrmDocument();
-	        	    txtOrm.setTemplateNames(((TextDocumentDomainObject)document).getTemplateNames());
-	        	    txtOrm.setIncludesMap(((TextDocumentDomainObject)document).getIncludesMap());
+	            	//OrmTextDocument txtOrm = (OrmTextDocument)document.getMeta().getOrmDocument();
+	        	    //txtOrm.setTemplateNames(((TextDocumentDomainObject)document).getTemplateNames());
+	        	    //txtOrm.setIncludesMap(((TextDocumentDomainObject)document).getIncludesMap());
             }             
             
             saveMeta(document);
                         
-            document.accept(new DocumentSavingVisitor(oldDocument, getDatabase(), documentMapper.getImcmsServices(), user));
+            document.accept(savingVisitor);
         } finally {
             documentMapper.invalidateDocument(document);
         }
@@ -133,8 +133,8 @@ class DocumentSaver {
 	        	break;        		
         	default:
         		OrmTextDocument txtOrm = new OrmTextDocument();
-        	    txtOrm.setTemplateNames(((TextDocumentDomainObject)document).getTemplateNames());   
-        	    txtOrm.setIncludesMap(((TextDocumentDomainObject)document).getIncludesMap());     	
+        	    //txtOrm.setTemplateNames(((TextDocumentDomainObject)document).getTemplateNames());   
+        	    //txtOrm.setIncludesMap(((TextDocumentDomainObject)document).getIncludesMap());     	
         	    txtOrm.setMeta(meta);
         	    meta.setOrmDocument(txtOrm);      
         } 

@@ -11,6 +11,7 @@
     	<property name="hibernate.use_sql_comments">@showHibernateSQL@</property>
     	   	
     	<mapping class="com.imcode.imcms.api.orm.OrmDocument"/> 
+    	<mapping class="com.imcode.imcms.api.orm.OrmInclude"/> 
     	<mapping class="com.imcode.imcms.api.orm.OrmHtmlDocument"/>
     	<mapping class="com.imcode.imcms.api.orm.OrmTextDocument"/>
     	<mapping class="com.imcode.imcms.api.orm.OrmUrlDocument"/>

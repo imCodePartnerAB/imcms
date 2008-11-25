@@ -232,7 +232,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	map.put(index, newText);
     } 
     
-    public Map getIncludesMap() {
+    public Map<Integer, Integer> getIncludesMap() {
         return Collections.unmodifiableMap(includesMap);
     }
 

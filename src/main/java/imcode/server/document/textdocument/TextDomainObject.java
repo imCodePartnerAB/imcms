@@ -196,8 +196,9 @@ public class TextDomainObject implements Serializable, Cloneable {
                 .append(type, o.getType())
                 .append(index, o.getIndex())
                 .append(language, o.getLanguage()).isEquals();
-        }
+    }
 
+	@Override 
     public int hashCode() {
         return new HashCodeBuilder(33, 31)
         		.append(text)

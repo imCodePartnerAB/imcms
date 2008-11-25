@@ -1,26 +1,43 @@
 package imcode.server.document.textdocument;
 
-import javax.persistence.Embeddable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.apache.commons.lang.UnhandledException;
 
-@Embeddable
+@Table(name="text_docs")
+@Entity
 public class TemplateNames implements Cloneable {
-
+	
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Long id;
+	
+	@Column(name="meta_id")
+	private Integer metaId;
+	
+	@Column(name="template_name")
     private String templateName;
 	
+	@Column(name="group_id")
     private int templateGroupId;
 	
+	@Column(name="default_template")
     private String defaultTemplateName;
 	
+	@Column(name="default_template_1")
     private String defaultTemplateNameForRestricted1;
 	
+	@Column(name="default_template_2")
     private String defaultTemplateNameForRestricted2;
 
-
-    public Object clone() {
+	@Override
+    public TemplateNames clone() {
         try {
-            return super.clone();
+            return (TemplateNames)super.clone();
         } catch ( CloneNotSupportedException e ) {
             throw new UnhandledException(e);
         }
@@ -65,4 +82,20 @@ public class TemplateNames implements Cloneable {
     public void setDefaultTemplateNameForRestricted2(String defaultTemplateNameForRestricted2) {
         this.defaultTemplateNameForRestricted2 = defaultTemplateNameForRestricted2;
     }
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Integer getMetaId() {
+		return metaId;
+	}
+
+	public void setMetaId(Integer metaId) {
+		this.metaId = metaId;
+	}
 }

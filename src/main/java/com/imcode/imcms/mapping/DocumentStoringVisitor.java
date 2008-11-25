@@ -7,6 +7,7 @@ import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.TemplateNames;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -27,9 +28,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,7 +48,10 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.api.orm.OrmDocument;
 import com.imcode.imcms.api.orm.OrmFileDocument;
+import com.imcode.imcms.api.orm.OrmInclude;
+import com.imcode.imcms.api.orm.OrmTextDocument;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.MenuDao;
 import com.imcode.imcms.dao.MetaDao;
@@ -127,10 +133,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         return "INSERT INTO " + tableName + " (" + StringUtils.join(columnNames, ",") + ")"
                 + "VALUES(?" + StringUtils.repeat(",?", columnNames.length - 1) + ")";
     }
-    
-    // TODO i18n: refactor
-    void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-    }
+   
 
     // TODO i18n: refactor
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
@@ -181,9 +184,35 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         database.execute(new SqlUpdateCommand(makeSqlInsertString("images_history", columnNames), param.toArray(new String[param.size()])));
     }
 
-    // TODO: refactor
+    
+    // TODO: transactional - new or can participate
     void updateTextDocumentIncludes(TextDocumentDomainObject textDocument) {
+    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
+    	
+    	Set<OrmInclude> includes = new HashSet<OrmInclude>();
+    	Integer metaId = textDocument.getId();
+    	
+    	for (Map.Entry<Integer, Integer> entry: textDocument.getIncludesMap().entrySet()) {
+    		OrmInclude include = new OrmInclude();
+    		include.setMetaId(metaId);
+    		include.setIndex(entry.getKey());
+    		include.setIncludedMetaId(entry.getValue());
+    		
+    		includes.add(include);
+    	}
+    	
+    	dao.saveIncludes(metaId, includes);
     }
+    
+    // TODO: transactional - new or can participate
+    void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
+    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
+    	
+    	TemplateNames templateNames = textDocument.getTemplateNames();
+    	Integer metaId = textDocument.getId();
+    	    	
+    	dao.saveTemplateNames(metaId, templateNames);    	
+    }    
 
     
     private void sqlInsertTextHistory(I18nLanguage language, TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text, UserDomainObject user) {

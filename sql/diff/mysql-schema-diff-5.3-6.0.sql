@@ -37,6 +37,28 @@ ALTER TABLE includes ADD FOREIGN KEY fk__includes__included_meta (included_meta_
 
 
 --
+-- text_docs (template names) table
+--
+
+CREATE TABLE text_docs_tmp (
+  id int auto_increment PRIMARY KEY,
+  meta_id int(11) NULL,
+  template_name varchar(255) NOT NULL,
+  group_id int(11) NOT NULL default '1',
+  default_template_1 varchar(255) default NULL,
+  default_template_2 varchar(255) default NULL,
+  default_template varchar(255) default NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO text_docs_tmp (meta_id, template_name, group_id, default_template_1, default_template_2, default_template)
+SELECT meta_id, template_name, group_id, default_template_1, default_template_2, default_template FROM text_docs;
+
+DROP TABLE text_docs;
+RENAME TABLE text_docs_tmp TO text_docs;
+ALTER TABLE text_docs ADD FOREIGN KEY fk__text_docs__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE;
+
+
+--
 -- Table new_doc_permission_sets_ex
 --
 
