@@ -94,13 +94,13 @@ class DocumentSaver {
         /*
         switch (document.getDocumentType().getId()) {
         	case DocumentTypeDomainObject.HTML_ID:
-                OrmDocument ormDocument = new OrmHtmlDocument();        	
+                OrmDocument ormDocument = new HtmlReference();        	
             	ormDocument.setMeta(meta);
             	meta.setOrmDocument(ormDocument);
             	document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
             	break;
         	case DocumentTypeDomainObject.URL_ID:
-                ormDocument = new OrmUrlDocument();        	
+                ormDocument = new UrlReference();        	
             	ormDocument.setMeta(meta);
             	meta.setOrmDocument(ormDocument);
             	document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));

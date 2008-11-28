@@ -1,7 +1,5 @@
 package com.imcode.imcms.dao;
 
-import imcode.server.document.textdocument.Include;
-import imcode.server.document.textdocument.TemplateNames;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,7 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.api.orm.OrmDocument;
+import com.imcode.imcms.mapping.orm.FileReference;
+import com.imcode.imcms.mapping.orm.HtmlReference;
+import com.imcode.imcms.mapping.orm.Include;
+import com.imcode.imcms.mapping.orm.TemplateNames;
+import com.imcode.imcms.mapping.orm.UrlReference;
 
 public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 
@@ -29,8 +31,7 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 		Query query = getSession().createQuery("select m from Meta m where m.metaId = :metaId")
 			.setParameter("metaId", metaId);
 		
-		OrmDocument ormDocument = (OrmDocument)query.uniqueResult();
-		Meta meta = ormDocument.getMeta();
+		Meta meta = (Meta)query.uniqueResult();
 		
 		List<I18nLanguage> languages = (List<I18nLanguage>)
 				findByNamedQueryAndNamedParam("I18nLanguage.missingMetaLanguages", "metaId", metaId);
@@ -88,5 +89,50 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 		return (TemplateNames)getSession().createQuery("select n from TemplateNames n where n.metaId = ?")
 			.setParameter(0, metaId)
 			.uniqueResult();
-	}			
+	}
+
+	@Transactional
+	public Collection<FileReference> getFileReferences(int metaId) {
+		return find("select f from FileReference f where f.metaId = ? ORDER BY f.defaultFileId DESC, f.fileId", metaId);
+	}
+
+	@Transactional
+	public FileReference saveFileReference(FileReference fileRef) {
+		saveOrUpdate(fileRef);
+		
+		return fileRef;
+	}
+
+	@Transactional
+	public int deleteFileReferences(int metaId) {
+		return bulkUpdate("delete from FileReference f where f.metaId = ?", metaId);
+	}
+
+	@Transactional
+	public HtmlReference getHtmlReference(int metaId) {
+		return (HtmlReference)getSession().createQuery("select h from HtmlReference h where h.metaId = ?")
+		.setParameter(0, metaId)
+		.uniqueResult();
+	}	
+	
+	@Transactional
+	public HtmlReference saveHtmlReference(HtmlReference reference) {
+		saveOrUpdate(reference);
+		
+		return reference;
+	}
+
+	@Transactional
+	public UrlReference getUrlReference(int metaId) {
+		return (UrlReference)getSession().createQuery("select u from UrlReference u where u.metaId = ?")
+		.setParameter(0, metaId)
+		.uniqueResult();
+	}
+
+	@Transactional
+	public UrlReference saveUrlReference(UrlReference reference) {
+		saveOrUpdate(reference);
+		
+		return reference;
+	}	
 }

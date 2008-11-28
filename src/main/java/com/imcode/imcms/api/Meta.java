@@ -27,8 +27,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import com.imcode.imcms.api.orm.OrmDocument;
-
 @Entity
 @Table(name="meta")
 /**

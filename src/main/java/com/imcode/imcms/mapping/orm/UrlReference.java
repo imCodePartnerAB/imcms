@@ -1,28 +1,30 @@
-package com.imcode.imcms.api.orm;
+package com.imcode.imcms.mapping.orm;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.SecondaryTable;
-
-import com.imcode.imcms.api.Meta;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
-@SecondaryTable(name="url_docs")
-public class OrmUrlDocument extends OrmDocument {
+@Table(name="url_docs")
+public class UrlReference {
+	
+	@Id @Column(name="meta_id")
+	private Integer metaId;		
 
-	@Column(name="frame_name", table="url_docs")
+	@Column(name="frame_name")
 	private String urlFrameName;
 	
-	@Column(name="target", table="url_docs")
+	@Column(name="target")
 	private String urlTarget;
 	
-	@Column(name="url_ref", table="url_docs")
+	@Column(name="url_ref")
 	private String url;
 	
-	@Column(name="url_txt", table="url_docs")
+	@Column(name="url_txt")
 	private String urlText;
 	
-	@Column(name="lang_prefix", table="url_docs")	
+	@Column(name="lang_prefix")	
 	private String urlLanguagePrefix;
 
 	public String getUrlFrameName() {
@@ -63,5 +65,13 @@ public class OrmUrlDocument extends OrmDocument {
 
 	public void setUrlLanguagePrefix(String urlLanguagePrefix) {
 		this.urlLanguagePrefix = urlLanguagePrefix;
+	}
+
+	public Integer getMetaId() {
+		return metaId;
+	}
+
+	public void setMetaId(Integer metaId) {
+		this.metaId = metaId;
 	}
 }

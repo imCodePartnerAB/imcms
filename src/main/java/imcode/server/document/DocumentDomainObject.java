@@ -22,8 +22,8 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.api.orm.OrmHtmlDocument;
-import com.imcode.imcms.api.orm.OrmUrlDocument;
+import com.imcode.imcms.mapping.orm.HtmlReference;
+import com.imcode.imcms.mapping.orm.UrlReference;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public abstract class DocumentDomainObject implements Cloneable, Serializable {

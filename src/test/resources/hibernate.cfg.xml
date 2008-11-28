@@ -14,30 +14,23 @@
     	<property name="hibernate.format_sql">true</property>
     	<property name="hibernate.use_sql_comments">true</property>
     	   	
-        <mapping class="com.imcode.imcms.api.orm.OrmDocument"/>
+        <mapping class="com.imcode.imcms.api.Meta"/>
         
-        <mapping class="imcode.server.document.textdocument.TemplateNames"/> 
-        <mapping class="imcode.server.document.textdocument.Include"/>
-        
-        <mapping class="com.imcode.imcms.api.orm.OrmHtmlDocument"/>
-        <mapping class="com.imcode.imcms.api.orm.OrmTextDocument"/>
-        <mapping class="com.imcode.imcms.api.orm.OrmUrlDocument"/>
-        <mapping class="com.imcode.imcms.api.orm.OrmFileDocument"/>
-    	 	
-    	<mapping class="com.imcode.imcms.api.I18nMeta"/>
-    	<mapping class="com.imcode.imcms.api.I18nLanguage"/>
+        <mapping class="com.imcode.imcms.mapping.orm.TemplateNames"/> 
+        <mapping class="com.imcode.imcms.mapping.orm.Include"/>
+        <mapping class="com.imcode.imcms.mapping.orm.FileReference"/>
+        <mapping class="com.imcode.imcms.mapping.orm.HtmlReference"/>
+        <mapping class="com.imcode.imcms.mapping.orm.UrlReference"/>
+            
+        <mapping class="com.imcode.imcms.api.I18nMeta"/>
+        <mapping class="com.imcode.imcms.api.I18nLanguage"/>
         <mapping class="com.imcode.imcms.api.Content"/>
         
         <mapping class="com.imcode.imcms.api.ContentLoop"/>
         
-    	<!-- 
-    	<mapping class="com.imcode.imcms.api.Include"/>
-         <mapping class="imcode.server.document.textdocument.TemplateNames"/>   	    
-    	<mapping class="com.imcode.imcms.api.TextHistory"/>
-    	 -->
-    	<mapping class="imcode.server.document.textdocument.ImageDomainObject"/>
-    	<mapping class="imcode.server.document.textdocument.TextDomainObject"/>
-    	<mapping class="imcode.server.document.textdocument.MenuDomainObject"/>
+        <mapping class="imcode.server.document.textdocument.ImageDomainObject"/>
+        <mapping class="imcode.server.document.textdocument.TextDomainObject"/>
+        <mapping class="imcode.server.document.textdocument.MenuDomainObject"/>
     </session-factory>
     
 </hibernate-configuration>

@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -8,8 +9,9 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 import com.imcode.db.Database;
-import com.imcode.imcms.api.orm.OrmHtmlDocument;
-import com.imcode.imcms.api.orm.OrmUrlDocument;
+import com.imcode.imcms.dao.MetaDao;
+import com.imcode.imcms.mapping.orm.HtmlReference;
+import com.imcode.imcms.mapping.orm.UrlReference;
 
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
@@ -26,29 +28,29 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     /**
      * Just set value(s) instead of SQL calls. 
      */
-    public void visitHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
-    	/*
-        String sqlStr = "UPDATE frameset_docs SET frame_set = ? WHERE meta_id = ?";
-        final Object[] parameters = new String[]{htmlDocument.getHtml(), "" + htmlDocument.getId()};
-        database.execute(new SqlUpdateCommand(sqlStr, parameters));
-        */
-    	//OrmHtmlDocument meta = (OrmHtmlDocument)htmlDocument.getMeta().getOrmDocument();
-    	//meta.setHtml(htmlDocument.getHtml());       	
+    public void visitHtmlDocument( HtmlDocumentDomainObject document ) {
+    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
+    	
+    	HtmlReference htmlReference = new HtmlReference();
+    	
+    	htmlReference.setMetaId(document.getId());
+    	htmlReference.setHtml(document.getHtml());
+    	    	
+    	dao.saveHtmlReference(htmlReference);
     }
 
-    /**
-     * Just set value(s) instead of SQL calls. 
-     */    
-    public void visitUrlDocument( UrlDocumentDomainObject urlDocument ) {
-    	/*
-        String sqlStr = "UPDATE url_docs SET url_ref = ? WHERE meta_id = ?";
-        final Object[] parameters = new String[]{urlDocument.getUrl(), "" + urlDocument.getId()};
-        database.execute(new SqlUpdateCommand(sqlStr, parameters));
-        */
-    	//OrmUrlDocument meta = (OrmUrlDocument)urlDocument.getMeta().getOrmDocument();    	
-    	//meta.setUrl(urlDocument.getUrl());    	
+    // TODO: make transacted   
+    public void visitUrlDocument( UrlDocumentDomainObject document ) {
+    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
+    	
+    	UrlReference reference = new UrlReference();
+    	reference.setMetaId(document.getId());
+    	reference.setUrl(document.getUrl());
+    	
+    	dao.saveUrlReference(reference);    	
     }
 
+    // TODO: make transacted   
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
         updateTextDocumentTemplateNames(textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
         

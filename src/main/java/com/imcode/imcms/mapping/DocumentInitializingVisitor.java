@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import imcode.server.Imcms;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -9,25 +10,22 @@ import imcode.util.io.FileInputStreamSource;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Map;
 
 import com.imcode.db.Database;
-import com.imcode.imcms.api.orm.OrmFileDocument;
-import com.imcode.imcms.api.orm.OrmHtmlDocument;
-import com.imcode.imcms.api.orm.OrmUrlDocument;
+import com.imcode.imcms.dao.MetaDao;
+import com.imcode.imcms.mapping.orm.FileReference;
+import com.imcode.imcms.mapping.orm.HtmlReference;
+import com.imcode.imcms.mapping.orm.UrlReference;
 
 class DocumentInitializingVisitor extends DocumentVisitor {
 
-    private DocumentMapper documentMapper;
     private final Database database;
-    //private static final String SQL__SELECT_FILE_DOCUMENT_FILES = "SELECT variant_name, filename, mime, created_as_image, default_variant FROM fileupload_docs WHERE meta_id = ? ORDER BY default_variant DESC, variant_name";
 
     private TextDocumentInitializer textDocumentInitializer;
     
     DocumentInitializingVisitor(DocumentGetter documentGetter, Collection documentIds,
                                 DocumentMapper documentMapper) {
         this.database = documentMapper.getDatabase();
-        this.documentMapper = documentMapper;
         textDocumentInitializer = new TextDocumentInitializer(database, documentGetter, documentIds);
     }
 
@@ -64,13 +62,12 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         }));
         */
     	
+    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
     	
-    	/*
-    	OrmFileDocument orm = (OrmFileDocument)document.getMeta().getOrmDocument();
+    	Collection<FileReference> fileReferences = dao.getFileReferences(document.getId());
     	
-    	for (Map.Entry<String, OrmFileDocument.FileRef> entry: orm.getFileRefsMap().entrySet()) {
-            String fileId = entry.getKey();
-            OrmFileDocument.FileRef fileRef = entry.getValue();
+    	for (FileReference fileRef: fileReferences) {
+            String fileId = fileRef.getFileId();           
             FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
             
             file.setFilename(fileRef.getFilename());
@@ -96,38 +93,20 @@ class DocumentInitializingVisitor extends DocumentVisitor {
             }
     		
     	}
-    	*/
     }
 
-    public void visitHtmlDocument(HtmlDocumentDomainObject htmlDocument) {
-    	/*
-        String html;
-        try {
-            String[] parameters = new String[] { "" + htmlDocument.getId() };
-            String sqlStr = "SELECT frame_set FROM frameset_docs WHERE meta_id = ?";
-            html = (String) database.execute(new SqlQueryCommand(sqlStr, parameters, Utility.SINGLE_STRING_HANDLER));
-        } catch ( DatabaseException e ) {
-            throw new UnhandledException(e);
-        }
-        htmlDocument.setHtml(html);
-        */
-    	//OrmHtmlDocument orm = (OrmHtmlDocument)htmlDocument.getMeta().getOrmDocument();
-    	//htmlDocument.setHtml(orm.getHtml());    	
+    public void visitHtmlDocument(HtmlDocumentDomainObject document) {
+    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
+    	
+    	HtmlReference html = dao.getHtmlReference(document.getId());
+    	document.setHtml(html.getHtml());    	
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject document) {
-    	/*
-        String url;
-        try {
-            String[] parameters = new String[] { "" + document.getId() };
-            url = (String) database.execute(new SqlQueryCommand("SELECT url_ref FROM url_docs WHERE meta_id = ?", parameters, Utility.SINGLE_STRING_HANDLER));
-        } catch ( DatabaseException e ) {
-            throw new UnhandledException(e);
-        }
-        document.setUrl(url);
-        */
-    	//OrmUrlDocument orm = (OrmUrlDocument)document.getMeta().getOrmDocument();
-    	//document.setUrl(orm.getUrl());
+    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
+    	
+    	UrlReference reference = dao.getUrlReference(document.getId());
+    	document.setUrl(reference.getUrl());    	
     }
 
     public void visitTextDocument(final TextDocumentDomainObject document) {

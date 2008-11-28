@@ -14,6 +14,7 @@ import java.util.Set;
 
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.mapping.orm.TemplateNames;
 
 public class TextDocumentDomainObject extends DocumentDomainObject {
 		

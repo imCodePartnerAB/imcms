@@ -5,10 +5,8 @@ import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
-import imcode.server.document.textdocument.Include;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TemplateNames;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.document.textdocument.TreeSortKeyDomainObject;
@@ -29,6 +27,8 @@ import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.MenuDao;
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.dao.TextDao;
+import com.imcode.imcms.mapping.orm.Include;
+import com.imcode.imcms.mapping.orm.TemplateNames;
 
 public class TextDocumentInitializer {
 

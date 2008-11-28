@@ -6,8 +6,6 @@ import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.Include;
-import imcode.server.document.textdocument.TemplateNames;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -45,11 +43,13 @@ import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.api.orm.OrmFileDocument;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.MenuDao;
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.dao.TextDao;
+import com.imcode.imcms.mapping.orm.FileReference;
+import com.imcode.imcms.mapping.orm.Include;
+import com.imcode.imcms.mapping.orm.TemplateNames;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
 	
@@ -266,15 +266,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         DocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;
         */
     	
-    	/*
-    	OrmFileDocument orm = (OrmFileDocument)fileDocument.getMeta().getOrmDocument();
-    	Map<String, OrmFileDocument.FileRef> fileRefsMap = orm.getFileRefsMap();
+    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
     	
         Map fileDocumentFiles = fileDocument.getFiles();
 
         // DELETE
-        fileRefsMap.clear();
+        dao.deleteFileReferences(fileDocument.getId());
 
+        
         // Save point...
         for ( Iterator iterator = fileDocumentFiles.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
@@ -287,20 +286,21 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             }
 
             boolean isDefaultFile = fileId.equals( fileDocument.getDefaultFileId());
-            OrmFileDocument.FileRef fileRef = new OrmFileDocument.FileRef();
+            FileReference fileRef = new FileReference();
+            fileRef.setMetaId(fileDocument.getId());
+            fileRef.setFileId(fileId);
             fileRef.setFilename(filename);
             fileRef.setDefaultFileId(isDefaultFile);
             fileRef.setMimeType(fileDocumentFile.getMimeType());
             fileRef.setCreatedAsImage(fileDocumentFile.isCreatedAsImage());
             
             
-            fileRefsMap.put(fileId, fileRef);
+            dao.saveFileReference(fileRef);
             
             saveFileDocumentFile( fileDocument.getId(), fileDocumentFile, fileId );
         }
         
         DocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;   
-        */ 	
     }
 
     private String truncateFilename(String filename, int length) {
@@ -330,8 +330,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     	dao.saveDocumentMenus(textDocument.getId(), textDocument.getMenus());
     	
     	/*
-    	if (true) return;
-    	
         database.execute( new TransactionDatabaseCommand() {
             public Object executeInTransaction( DatabaseConnection connection ) {
                 MenuSaver menuSaver = new MenuSaver(new SingleConnectionDatabase(connection)) ;

@@ -1,4 +1,4 @@
-package imcode.server.document.textdocument;
+package com.imcode.imcms.mapping.orm;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +9,9 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang.UnhandledException;
 
+/**
+ * Text document templates names. 
+ */
 @Entity
 @Table(name="text_docs")
 public class TemplateNames implements Cloneable {
