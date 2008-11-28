@@ -3,6 +3,7 @@ package com.imcode.imcms.dao;
 import static com.imcode.imcms.mapping.TextDocumentInitializer.setImageSource;
 import imcode.server.document.textdocument.ImageDomainObject;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -109,5 +110,10 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		}		
 		
 		return images;
+	}
+
+	@Transactional
+	public Collection<ImageDomainObject> getImages(int metaId) {
+		return find("select i from I18nImage i where i.metaId = ?", metaId);
 	}
 }

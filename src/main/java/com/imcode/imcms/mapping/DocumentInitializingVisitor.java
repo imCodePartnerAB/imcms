@@ -63,6 +63,9 @@ class DocumentInitializingVisitor extends DocumentVisitor {
             }
         }));
         */
+    	
+    	
+    	/*
     	OrmFileDocument orm = (OrmFileDocument)document.getMeta().getOrmDocument();
     	
     	for (Map.Entry<String, OrmFileDocument.FileRef> entry: orm.getFileRefsMap().entrySet()) {
@@ -93,6 +96,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
             }
     		
     	}
+    	*/
     }
 
     public void visitHtmlDocument(HtmlDocumentDomainObject htmlDocument) {
@@ -107,8 +111,8 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         }
         htmlDocument.setHtml(html);
         */
-    	OrmHtmlDocument orm = (OrmHtmlDocument)htmlDocument.getMeta().getOrmDocument();
-    	htmlDocument.setHtml(orm.getHtml());    	
+    	//OrmHtmlDocument orm = (OrmHtmlDocument)htmlDocument.getMeta().getOrmDocument();
+    	//htmlDocument.setHtml(orm.getHtml());    	
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject document) {
@@ -122,8 +126,8 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         }
         document.setUrl(url);
         */
-    	OrmUrlDocument orm = (OrmUrlDocument)document.getMeta().getOrmDocument();
-    	document.setUrl(orm.getUrl());
+    	//OrmUrlDocument orm = (OrmUrlDocument)document.getMeta().getOrmDocument();
+    	//document.setUrl(orm.getUrl());
     }
 
     public void visitTextDocument(final TextDocumentDomainObject document) {

@@ -19,8 +19,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
@@ -31,22 +29,15 @@ import javax.persistence.Transient;
 
 import com.imcode.imcms.api.orm.OrmDocument;
 
-//@Entity
-//@Table(name="meta")
-/*
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@org.hibernate.annotations.DiscriminatorFormula(
-  "case when doc_type = 7 then 'OrmHtmlDocument' when doc_type = 5 then 'OrmUrlDocument' when doc_type = 2 then 'OrmTextDocument' else 'Meta' end"
-)
-*/
-@Embeddable
+@Entity
+@Table(name="meta")
 /**
  * Document meta.
  */
 public class Meta implements Serializable, Cloneable {
 	
 	/**
-	 * Create (only create!) permission for template or a document type.
+	 * Create (create only!) permission for template or a document type.
 	 * 
 	 * set_id -> set type id: can be restricted 1 or restricted 2   
 	 * 
@@ -137,13 +128,10 @@ public class Meta implements Serializable, Cloneable {
 		DO_NOT_SHOW,		
 	}
 	
-	@org.hibernate.annotations.Parent
-	private OrmDocument ormDocument;
-	
 	@Transient
 	private Map<I18nLanguage, I18nMeta> metaMap;
 
-	//@Id// @GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="meta_id", insertable=false, updatable=false)
 	private Integer metaId;
 	
@@ -606,13 +594,5 @@ public class Meta implements Serializable, Cloneable {
 
 	public void setActivate(Integer activate) {
 		this.activate = activate;
-	}
-
-	public OrmDocument getOrmDocument() {
-		return ormDocument;
-	}
-
-	public void setOrmDocument(OrmDocument ormDocument) {
-		this.ormDocument = ormDocument;
 	}
 }

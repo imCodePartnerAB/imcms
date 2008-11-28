@@ -2,6 +2,7 @@ package com.imcode.imcms.dao;
 
 import imcode.server.document.textdocument.TextDomainObject;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -42,5 +43,10 @@ public class TextDaoImpl extends HibernateTemplate implements TextDao {
 
 		return text;
 		
+	}
+
+	@Transactional
+	public Collection<TextDomainObject> getTexts(int metaId) {
+		return find("select t from I18nText t where t.metaId = ?", metaId);
 	}	
 }

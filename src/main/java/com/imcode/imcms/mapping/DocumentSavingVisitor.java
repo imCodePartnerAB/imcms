@@ -32,8 +32,8 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         final Object[] parameters = new String[]{htmlDocument.getHtml(), "" + htmlDocument.getId()};
         database.execute(new SqlUpdateCommand(sqlStr, parameters));
         */
-    	OrmHtmlDocument meta = (OrmHtmlDocument)htmlDocument.getMeta().getOrmDocument();
-    	meta.setHtml(htmlDocument.getHtml());       	
+    	//OrmHtmlDocument meta = (OrmHtmlDocument)htmlDocument.getMeta().getOrmDocument();
+    	//meta.setHtml(htmlDocument.getHtml());       	
     }
 
     /**
@@ -45,12 +45,12 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         final Object[] parameters = new String[]{urlDocument.getUrl(), "" + urlDocument.getId()};
         database.execute(new SqlUpdateCommand(sqlStr, parameters));
         */
-    	OrmUrlDocument meta = (OrmUrlDocument)urlDocument.getMeta().getOrmDocument();    	
-    	meta.setUrl(urlDocument.getUrl());    	
+    	//OrmUrlDocument meta = (OrmUrlDocument)urlDocument.getMeta().getOrmDocument();    	
+    	//meta.setUrl(urlDocument.getUrl());    	
     }
 
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
-        //updateTextDocumentTemplateNames(textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
+        updateTextDocumentTemplateNames(textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
         
         updateTextDocumentTexts( textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
         updateTextDocumentImages( textDocument, (TextDocumentDomainObject)oldDocument, savingUser);

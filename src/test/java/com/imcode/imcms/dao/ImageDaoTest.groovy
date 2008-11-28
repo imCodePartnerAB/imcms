@@ -138,4 +138,11 @@ public class ImageDaoTest extends DaoTest {
 		assertNotNull(text)		
 	}
 	*/
+	
+    @Test void getImages() {
+        def metaId = 1001
+        def images = imageDao.getImages(metaId)
+        
+        assertTrue(images.size() > 0)
+    }	
 }

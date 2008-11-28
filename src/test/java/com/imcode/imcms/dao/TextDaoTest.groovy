@@ -85,4 +85,10 @@ public class TextDaoTest extends DaoTest {
 		
 		assertNotNull(text)		
 	}
+	
+	@Test void getTexts() {
+		def texts = textDao.getTexts(1001);
+	
+		assertTrue(texts.size() > 0)
+	}
 }

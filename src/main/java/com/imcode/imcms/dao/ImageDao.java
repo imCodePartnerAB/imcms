@@ -2,6 +2,7 @@ package com.imcode.imcms.dao;
 
 import imcode.server.document.textdocument.ImageDomainObject;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -28,5 +29,8 @@ public interface ImageDao {
 	/**
 	 * Saves text document's images. 
 	 */	
-	void saveImagesMap(int documentId, Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap);	
+	void saveImagesMap(int documentId, Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap);
+	
+	Collection<ImageDomainObject> getImages(int metaId);	
+	
 }

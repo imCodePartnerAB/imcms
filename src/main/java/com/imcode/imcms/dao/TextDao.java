@@ -2,6 +2,7 @@ package com.imcode.imcms.dao;
 
 import imcode.server.document.textdocument.TextDomainObject;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface TextDao {
@@ -27,4 +28,6 @@ public interface TextDao {
 	
 	//List<TextDomainObject> getAllTextsWithIndex(int metaId, int index);
 	//List<TextDomainObject> getAllTextsWithLanguage(int metaId, int languageId);
+	
+	Collection<TextDomainObject> getTexts(int metaId);
 }

@@ -35,8 +35,9 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
                                              };
         database.execute(new SqlUpdateCommand(sqlUrlDocsInsertStr, parameters));
         */
-    	OrmHtmlDocument meta = (OrmHtmlDocument)document.getMeta().getOrmDocument();
-    	meta.setHtml(document.getHtml());
+    	
+    	//OrmHtmlDocument meta = (OrmHtmlDocument)document.getMeta().getOrmDocument();
+    	//meta.setHtml(document.getHtml());
     	
     	// hibernateTemplate.save(meta) <- AOP-ed or saved before
     	// clone document if fields shoud be modified
@@ -57,6 +58,8 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
                                              };
         database.execute(new SqlUpdateCommand(sqlUrlDocsInsertStr, parameters));
         */
+    	
+    	/*
     	OrmUrlDocument meta = (OrmUrlDocument)document.getMeta().getOrmDocument();
     	
     	meta.setUrlTarget("");
@@ -64,6 +67,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     	meta.setUrlLanguagePrefix("");
     	meta.setUrlFrameName("");
     	meta.setUrl(document.getUrl());
+    	*/
     }
 
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {        

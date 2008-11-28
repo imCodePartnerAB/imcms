@@ -3,10 +3,8 @@ package com.imcode.imcms.mapping;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
-import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -19,11 +17,6 @@ import java.util.Set;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.api.orm.OrmDocument;
-import com.imcode.imcms.api.orm.OrmFileDocument;
-import com.imcode.imcms.api.orm.OrmHtmlDocument;
-import com.imcode.imcms.api.orm.OrmTextDocument;
-import com.imcode.imcms.api.orm.OrmUrlDocument;
 import com.imcode.imcms.dao.MetaDao;
 
 class DocumentSaver {
@@ -58,20 +51,6 @@ class DocumentSaver {
             }
             
             DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDocument, getDatabase(), documentMapper.getImcmsServices(), user);
-            // savingVisitor.saveMeta();
-            
-            // Update inherited meta
-            switch (document.getDocumentType().getId()) {
-            	case DocumentTypeDomainObject.HTML_ID:
-            	case DocumentTypeDomainObject.URL_ID:
-            	case DocumentTypeDomainObject.FILE_ID:	
-            		document.accept(savingVisitor);
-            		break;
-            	default:
-	            	//OrmTextDocument txtOrm = (OrmTextDocument)document.getMeta().getOrmDocument();
-	        	    //txtOrm.setTemplateNames(((TextDocumentDomainObject)document).getTemplateNames());
-	        	    //txtOrm.setIncludesMap(((TextDocumentDomainObject)document).getIncludesMap());
-            }             
             
             saveMeta(document);
                         
@@ -112,6 +91,7 @@ class DocumentSaver {
         documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
         
         // Update inherited meta
+        /*
         switch (document.getDocumentType().getId()) {
         	case DocumentTypeDomainObject.HTML_ID:
                 OrmDocument ormDocument = new OrmHtmlDocument();        	
@@ -138,6 +118,7 @@ class DocumentSaver {
         	    txtOrm.setMeta(meta);
         	    meta.setOrmDocument(txtOrm);      
         } 
+        */
 
         int newMetaId = saveMeta(document);
                 

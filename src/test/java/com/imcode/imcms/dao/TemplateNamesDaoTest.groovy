@@ -1,16 +1,16 @@
 package com.imcode.imcms.dao
 
 import org.dbunit.dataset.xml.FlatXmlDataSetimport org.testng.annotations.BeforeClassimport org.testng.annotations.Testimport org.testng.annotations.BeforeTest
-import static org.testng.Assert.*import imcode.server.document.textdocument.TextDomainObjectimport org.testng.Assertimport com.imcode.imcms.api.Includeimport com.imcode.imcms.dao.TextDao
+import static org.testng.Assert.*import imcode.server.document.textdocument.TextDomainObjectimport org.testng.Assertimport com.imcode.imcms.dao.TextDao
 import com.imcode.imcms.dao.LanguageDao
 
 //todo: Test named queries
 public class TemplateNamesDaoTest extends DaoTest {
 	
-	TemplateNamesDao dao;
+	MetaDao dao;
 	
 	@BeforeClass void init() {
-		dao = Context.getBean("templateNamesDao")
+		dao = Context.getBean("metaDao")
 	}		
 		
 	@Override
@@ -31,6 +31,7 @@ public class TemplateNamesDaoTest extends DaoTest {
         assertNotNull(tns)
     }   
     
+    /*
     @Test void updateTemplateNames() {
         def tns = dao.getTemplateNames(1001)        
         assertNotNull(tns)
@@ -64,5 +65,6 @@ public class TemplateNamesDaoTest extends DaoTest {
         dao.saveTemplateNames(tns);
         tns = dao.getTemplateNames(1001)        
         assertNotNull(tns)        
-    }    
+    }  
+    */  
 }

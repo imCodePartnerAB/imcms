@@ -1,12 +1,12 @@
 package com.imcode.imcms.dao;
 
+import imcode.server.document.textdocument.Include;
 import imcode.server.document.textdocument.TemplateNames;
 
 import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +14,6 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.api.orm.OrmDocument;
-import com.imcode.imcms.api.orm.OrmInclude;
-import com.imcode.imcms.api.orm.OrmTextDocument;
 
 public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 
@@ -28,7 +26,7 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 	 */
 	@Transactional
 	public synchronized Meta getMeta(Integer metaId) {
-		Query query = getSession().createQuery("select o from OrmDocument o where o.metaId = :metaId")
+		Query query = getSession().createQuery("select m from Meta m where m.metaId = :metaId")
 			.setParameter("metaId", metaId);
 		
 		OrmDocument ormDocument = (OrmDocument)query.uniqueResult();
@@ -58,34 +56,37 @@ public class MetaDaoImpl extends HibernateTemplate implements MetaDao {
 	
 	@Transactional
 	public synchronized void updateMeta(Meta meta) {
-		OrmDocument ormDocument = meta.getOrmDocument();
-		saveOrUpdate(ormDocument); 
-		meta.setMetaId(ormDocument.getMetaId());
+		saveOrUpdate(meta); 
 	}
 
-	@Transactional
-	public OrmDocument getDocument(Integer metaId) {		
-		return null;
-	}
 
 	@Transactional
-	public void updateDocument(OrmDocument ormDocument) {
-	}
-
-	@Transactional
-	public void saveIncludes(Integer metaId, Collection<OrmInclude> includes) {
-		bulkUpdate("delete from OrmInclude i where i.metaId = ?", metaId);
+	public void saveIncludes(Integer metaId, Collection<Include> includes) {
+		bulkUpdate("delete from Include i where i.metaId = ?", metaId);
 		
 		//flush();
 		//clear();
-		for (OrmInclude include: includes) {
+		for (Include include: includes) {
 			saveOrUpdate(include);
 		}
 	}
 
+	@Transactional
 	public void saveTemplateNames(Integer metaId, TemplateNames templateNames) {
 		// delete first?
-		
+				
 		saveOrUpdate(templateNames);
+	}
+
+	@Transactional
+	public Collection<Include> getIncludes(Integer metaId) {
+		return (Collection<Include>) find("select i from Include i where i.metaId = ?", metaId);
+	}
+
+	@Transactional
+	public TemplateNames getTemplateNames(Integer metaId) {
+		return (TemplateNames)getSession().createQuery("select n from TemplateNames n where n.metaId = ?")
+			.setParameter(0, metaId)
+			.uniqueResult();
 	}			
 }

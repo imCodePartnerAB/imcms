@@ -2,11 +2,11 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.Include;
 import imcode.server.document.textdocument.TemplateNames;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -39,19 +39,13 @@ import java.util.regex.Pattern;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.api.orm.OrmDocument;
 import com.imcode.imcms.api.orm.OrmFileDocument;
-import com.imcode.imcms.api.orm.OrmInclude;
-import com.imcode.imcms.api.orm.OrmTextDocument;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.MenuDao;
 import com.imcode.imcms.dao.MetaDao;
@@ -189,11 +183,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     void updateTextDocumentIncludes(TextDocumentDomainObject textDocument) {
     	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
     	
-    	Set<OrmInclude> includes = new HashSet<OrmInclude>();
+    	Set<Include> includes = new HashSet<Include>();
     	Integer metaId = textDocument.getId();
     	
     	for (Map.Entry<Integer, Integer> entry: textDocument.getIncludesMap().entrySet()) {
-    		OrmInclude include = new OrmInclude();
+    		Include include = new Include();
     		include.setMetaId(metaId);
     		include.setIndex(entry.getKey());
     		include.setIncludedMetaId(entry.getValue());
@@ -211,6 +205,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     	TemplateNames templateNames = textDocument.getTemplateNames();
     	Integer metaId = textDocument.getId();
     	    	
+    	templateNames.setMetaId(metaId);
     	dao.saveTemplateNames(metaId, templateNames);    	
     }    
 
@@ -271,6 +266,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         DocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;
         */
     	
+    	/*
     	OrmFileDocument orm = (OrmFileDocument)fileDocument.getMeta().getOrmDocument();
     	Map<String, OrmFileDocument.FileRef> fileRefsMap = orm.getFileRefsMap();
     	
@@ -303,7 +299,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             saveFileDocumentFile( fileDocument.getId(), fileDocumentFile, fileId );
         }
         
-        DocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;    	
+        DocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;   
+        */ 	
     }
 
     private String truncateFilename(String filename, int length) {

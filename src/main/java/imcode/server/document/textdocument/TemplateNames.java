@@ -9,8 +9,8 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang.UnhandledException;
 
-@Table(name="text_docs")
 @Entity
+@Table(name="text_docs")
 public class TemplateNames implements Cloneable {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)

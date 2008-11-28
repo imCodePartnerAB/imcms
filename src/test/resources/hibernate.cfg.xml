@@ -17,7 +17,8 @@
         <mapping class="com.imcode.imcms.api.orm.OrmDocument"/>
         
         <mapping class="imcode.server.document.textdocument.TemplateNames"/> 
-        <mapping class="com.imcode.imcms.api.orm.OrmInclude"/>
+        <mapping class="imcode.server.document.textdocument.Include"/>
+        
         <mapping class="com.imcode.imcms.api.orm.OrmHtmlDocument"/>
         <mapping class="com.imcode.imcms.api.orm.OrmTextDocument"/>
         <mapping class="com.imcode.imcms.api.orm.OrmUrlDocument"/>
