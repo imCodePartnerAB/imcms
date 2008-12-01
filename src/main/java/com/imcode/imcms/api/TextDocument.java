@@ -184,7 +184,7 @@ public class TextDocument extends Document {
     public Document getInclude(int includeIndexInDocument) {
         Integer includedDocumentId = getInternalTextDocument().getIncludedDocumentId(includeIndexInDocument);
         if (null != includedDocumentId) {
-            DocumentDomainObject includedDocument = getDocumentGetter().getDocument(new Integer(includedDocumentId.intValue()));
+            DocumentDomainObject includedDocument = getDocumentGetter().getDocument(includedDocumentId);
             if (null != includedDocument) {
                 return DocumentService.wrapDocumentDomainObject(includedDocument, contentManagementSystem );
             }

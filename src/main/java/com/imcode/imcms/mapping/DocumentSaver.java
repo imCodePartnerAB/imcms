@@ -94,13 +94,8 @@ public class DocumentSaver {
 
         //document.loadAllLazilyLoaded();
         
-        // clone shared references and
-        // set metaId to null after cloning
-        // remove all permissions after cloning?
-        
-        document.cloneSharedForNewDocument(); 
+        document.setDependenciesMetaIdToNull(); 
         Meta meta = document.getMeta();
-        meta.setMetaId(null);
 
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 

@@ -52,8 +52,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         setId(documentId);
     }
 
-    public Object clone() throws CloneNotSupportedException {
+    @Override
+    public TextDocumentDomainObject clone() {
         TextDocumentDomainObject clone = (TextDocumentDomainObject)super.clone();
+        
+        clone.images = cloneImages();
+        clone.includesMap = cloneIncludesMap();
+        clone.menusMap = cloneMenusMap();
+        clone.templateNames = cloneTemplateNames();
+        clone.texts = cloneTexts();
                 
         return clone;
     }
@@ -109,8 +116,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public MenuDomainObject getMenu(int menuIndex) {
         MenuDomainObject menu = menusMap.get(menuIndex);
-        
-        //TODO: REPLACE with const MenuDomainObject()???
         
         if (null == menu) {
             menu = new MenuDomainObject() ;
@@ -175,12 +180,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Removes all image.
      */
     public synchronized void removeAllImages() {
-        // we can not use images.clear() since all clones share same images;
-
         images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
     }
 
-    // TODO: refactor
     public void removeAllIncludes() {
     	includesMap = new HashMap<Integer, Integer>();
     }
@@ -190,19 +192,27 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void removeAllTexts() {
-        // we can not use texts.clear() since all clones share same texts;
-
         texts = new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
     }
 
     
-    // TODO: refactor
     public void setInclude( int includeIndex, int includedDocumentId ) {
     	includesMap.put(includeIndex, includedDocumentId);
     }
     
 
     public void setMenu( int menuIndex, MenuDomainObject menu ) {
+    	MenuDomainObject newMenu = menu.clone();
+    	MenuDomainObject oldMenu = menusMap.get(menuIndex);
+    	
+    	if (oldMenu != null) {
+    		newMenu.setId(oldMenu.getId());
+    	} else {
+    		newMenu.setId(null);
+    	}
+    	
+    	newMenu.setIndex(menuIndex);
+    	    	
         menusMap.put(menuIndex, menu);
     }
     
@@ -370,32 +380,50 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	}
     
     @Override
-    // TODO: refactor into visitor
-    public void cloneSharedForNewDocument() {
-        cloneTextsForNewDocument();
-        cloneImagesForNewDocument();
-        cloneIncludesForNewDocument();
-        cloneTemplateNamesForNewDocument();
-        cloneMenusForNewDocument();
+    public void setDependenciesMetaIdToNull() {
+    	super.setDependenciesMetaIdToNull();
+    	
+        for (Map<Integer, TextDomainObject> map: texts.values()) {
+        	for (TextDomainObject text: map.values()) {
+        		text.setId(null);
+        		text.setMetaId(null);
+        		text.setModified(true);
+        	}
+        }
+        
+        for (Map<Integer, ImageDomainObject> map: images.values()) {
+        	for (ImageDomainObject image: map.values()) {
+        		image.setId(null);
+        		image.setMetaId(null);
+        		image.setModified(true);
+        	}
+        }
+        
+    	for (MenuDomainObject menu: menusMap.values()) {
+    		menu.setId(null);
+    		menu.setMetaId(null);
+    		//menu.setModified(true);
+    	}
+        
+        templateNames.setId(null);
+        templateNames.setMetaId(null);
     }
     
-    private void cloneMenusForNewDocument() {
+    private Map<Integer, MenuDomainObject> cloneMenusMap() {
     	Map<Integer, MenuDomainObject> menusClone = new HashMap<Integer, MenuDomainObject>();
     	
     	for (Map.Entry<Integer, MenuDomainObject> entry: menusMap.entrySet()) {
     		MenuDomainObject menu = entry.getValue();
     		MenuDomainObject menuClone = menu.clone();
     		
-    		menuClone.setId(null);
-    		menuClone.setMetaId(null);
-    		
     		menusClone.put(entry.getKey(), menuClone);
     	}
     	
-    	menusMap = menusClone;
+    	return menusClone;
     }
-
-    private void cloneImagesForNewDocument() {
+    
+    
+    private Map<I18nLanguage, Map<Integer, ImageDomainObject>> cloneImages() {
         Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesClone
     		= new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
 
@@ -407,17 +435,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
             for (Map.Entry<Integer, ImageDomainObject> imagesEntry: imagesMap.entrySet()) {
                 ImageDomainObject image = imagesEntry.getValue().clone();
-                image.setModified(true);
-                image.setId(null);
 
                 imagesMapClone.put(imagesEntry.getKey(), image);
             }
         }
 
-        images = imagesClone;
-    }
+        return imagesClone;
+    }    
 
-    private void cloneTextsForNewDocument() {
+    private Map<I18nLanguage, Map<Integer, TextDomainObject>> cloneTexts() {
         Map<I18nLanguage, Map<Integer, TextDomainObject>> textsClone    
     		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
 
@@ -429,24 +455,24 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
             for (Map.Entry<Integer, TextDomainObject> textsEntry: textsMap.entrySet()) {
                 TextDomainObject text = textsEntry.getValue().clone();
-                text.setId(null);
-                text.setModified(true);
 
                 textsMapClone.put(textsEntry.getKey(), text);
             }
         }
 
-        texts = textsClone;
+        return textsClone;
     }
     
-    private void cloneTemplateNamesForNewDocument() {
-    	templateNames = (TemplateNames)templateNames.clone();
-    	templateNames.setId(null);
+    private TemplateNames cloneTemplateNames() {
+    	TemplateNames templateNamesClone = templateNames.clone();
+
+    	return templateNamesClone; 
     }
     
-    private void cloneIncludesForNewDocument() {
-    	Map<Integer, Integer> newIncludesMap = new HashMap<Integer, Integer>(includesMap);
-    	includesMap = newIncludesMap;
+    private Map<Integer, Integer> cloneIncludesMap() {
+    	Map<Integer, Integer> includesMapClone = new HashMap<Integer, Integer>(includesMap);
+    	
+    	return includesMapClone;
     }    
 
 

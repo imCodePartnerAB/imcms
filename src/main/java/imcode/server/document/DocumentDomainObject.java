@@ -44,12 +44,19 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     private Meta meta = new Meta();
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        DocumentDomainObject clone = (DocumentDomainObject)super.clone();
-        if ( null != attributes ) {
-            clone.attributes = (Attributes)attributes.clone();
-        }
-        
+    public DocumentDomainObject clone() {
+    	DocumentDomainObject clone;
+    	
+    	try {
+	        clone = (DocumentDomainObject)super.clone();
+	        
+	        if ( null != attributes ) {
+	            clone.attributes = (Attributes)attributes.clone();
+	        }
+    	} catch (CloneNotSupportedException e) {
+    		throw new RuntimeException(e);
+    	}
+	        
         if (clone.meta != null) {
         	clone.meta = meta.clone();
         }
@@ -643,10 +650,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
     /**
+     * // TODO: refactor into visitor
+     * 
      * For legacy code support:
-     * When saving document copy as new document its shared references should be cloned.
+     * When saving document copy as new document its dependencies meta should be set to null.
      *   
      * @see DocumentSaver.saveNewDocument       
      */
-    public void cloneSharedForNewDocument() {}
+    public void setDependenciesMetaIdToNull() {
+    	meta.setMetaId(null);
+    }
 }

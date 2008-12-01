@@ -44,7 +44,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
 	private ImageSource source = new NullImageSource();
 	
 	@Column(name="meta_id")
-	private int metaId;
+	private Integer metaId;
 
     /**
      * Image index.
@@ -296,11 +296,11 @@ public class ImageDomainObject implements Serializable, Cloneable {
 		this.language = language;
 	}
 
-	public int getMetaId() {
+	public Integer getMetaId() {
 		return metaId;
 	}
 
-	public void setMetaId(int metaId) {
+	public void setMetaId(Integer metaId) {
 		this.metaId = metaId;
 	}
 	

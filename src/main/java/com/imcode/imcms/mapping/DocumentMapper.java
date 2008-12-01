@@ -412,8 +412,9 @@ public class DocumentMapper implements DocumentGetter {
         return Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT MAX(meta_id) FROM meta", params, Utility.SINGLE_STRING_HANDLER)));
     }
 
-    public void copyDocument(DocumentDomainObject document,
+    public DocumentDomainObject copyDocument(DocumentDomainObject document,
                              UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+    	document = document.clone();
         String copyHeadlineSuffix = imcmsServices.getAdminTemplate(COPY_HEADLINE_SUFFIX_TEMPLATE, user, null);
 
         document.setAlias(null);
@@ -424,6 +425,8 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         saveNewDocument(document, user, true);
+        
+        return document;
     }
 
     public List getDocumentsWithPermissionsForRole(RoleDomainObject role) {
