@@ -14,13 +14,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
 
-class DocumentSaver {
+public class DocumentSaver {
 
     private DocumentMapper documentMapper;
     
@@ -28,6 +30,30 @@ class DocumentSaver {
     
     public DocumentSaver(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
+    }
+    
+    @Transactional     //experemental
+    public void saveDocumentFragment(DocumentDomainObject document, UserDomainObject user, HibernateCallback hibernateCallback) throws NoPermissionInternalException, DocumentSaveException {
+    	checkDocumentForSave(document);
+    	
+    	try {
+    		HibernateTemplate template = (HibernateTemplate)Imcms.getServices().getSpringBean("hibernateTemplate");
+    		
+    		template.execute(hibernateCallback); 
+
+            Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
+            Date modifiedDatetime = Utility.truncateDateToMinutePrecision(document.getModifiedDatetime());
+            boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
+            
+            if (modifiedDatetimeUnchanged) {            	
+            	modifiedDatetime = documentMapper.getClock().getCurrentDate();
+            }
+            
+    		template.bulkUpdate("update Meta m set m.modifiedDatetime = ? where m.metaId = ?", 
+    			new Object[] {modifiedDatetime, document.getId()});
+	    } finally {
+	        documentMapper.invalidateDocument(document);
+	    }    	
     }
 
     @Transactional
@@ -45,7 +71,6 @@ class DocumentSaver {
                 document.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
             }
 
-            // Make roles and other security components one-to-many with manual save???
             if (user.canEditPermissionsFor(oldDocument)) {
                 newUpdateDocumentRolePermissions(document, user, oldDocument);
                 documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, oldDocument);

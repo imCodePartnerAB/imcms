@@ -114,8 +114,15 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 }        		
         	}
         }
-    }    
+    } 
+    
+    // Transactional
+    public void updateTextDocumentText(TextDomainObject text, UserDomainObject user) {
+        TextDao textDao = (TextDao)services.getSpringBean("textDao");
 
+        textDao.saveText(text);
+        textDao.saveTextHistory(text.getMetaId(), text, user); 
+    }    
     
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
