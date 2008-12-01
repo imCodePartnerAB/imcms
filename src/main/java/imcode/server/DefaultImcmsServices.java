@@ -110,9 +110,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     /** Contructs an DefaultImcmsServices object. */
-    public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
+    public DefaultImcmsServices(WebApplicationContext webApplicationContext, Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor) {
-        this.database = database;
+        this.webApplicationContext = webApplicationContext;
+    	this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.procedureExecutor = procedureExecutor;
         this.fileLoader = fileLoader;
@@ -749,13 +750,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public WebApplicationContext getWebApplicationContext() {
 		return webApplicationContext;
-	}
-
-    /**
-     * Sets springframework WebApplicationContext. 
-     */
-	public void setWebApplicationContext(WebApplicationContext webApplicationContext) {
-		this.webApplicationContext = webApplicationContext;
 	}
 
 	public Object getSpringBean(String beanName) {		

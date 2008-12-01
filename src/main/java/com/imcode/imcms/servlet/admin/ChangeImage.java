@@ -72,7 +72,9 @@ public class ChangeImage extends HttpServlet {
             public void handle(List<ImageDomainObject> images) {
                 ImcmsServices services = Imcms.getServices();
                 
-                document.setImages(imageIndex, images);
+                for (ImageDomainObject image: images) {
+                	document.setImage(image.getLanguage(), imageIndex, image);
+                }
                 
                 try {
                     services.getDocumentMapper().saveDocument(document, user);
@@ -89,31 +91,11 @@ public class ChangeImage extends HttpServlet {
 
             }
             
-
-/*            public void handle2(ImageDomainObject image) {
-                ImcmsServices services = Imcms.getServices();
-                document.setImage(imageIndex, image);
-                try {
-                    services.getDocumentMapper().saveDocument(document, user);
-                } catch ( NoPermissionToEditDocumentException e ) {
-                    throw new ShouldHaveCheckedPermissionsEarlierException(e);
-                } catch ( NoPermissionToAddDocumentToMenuException e ) {
-                    throw new ConcurrentDocumentModificationException(e);
-                } catch ( DocumentSaveException e ) {
-                    throw new ShouldNotBeThrownException(e);
-                }
-                services.updateMainLog("ImageRef " + imageIndex + " =" + image.getUrlPathRelativeToContextPath() +
-                                       " in  " + "[" + document.getId() + "] modified by user: [" +
-                                       user.getFullName() + "]");
-
-            }*/
-            
-
         };
         
         ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
         
-        List<ImageDomainObject> images = imageDao.getDocumentImagesByIndex(document.getId(), imageIndex, true);
+        List<ImageDomainObject> images = imageDao.getImagesByIndex(document.getId(), imageIndex, true);
         
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true);

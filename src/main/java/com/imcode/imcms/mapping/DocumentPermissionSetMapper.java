@@ -15,10 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.imcode.db.Database;
-import com.imcode.db.DatabaseConnection;
-import com.imcode.db.DatabaseException;
-import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.db.commands.TransactionDatabaseCommand;
 import com.imcode.imcms.api.Meta;
 
 /**
@@ -26,14 +22,8 @@ import com.imcode.imcms.api.Meta;
  */
 public class DocumentPermissionSetMapper {
 
-    //private Database database;
-    //public static final String TABLE_NEW_DOC_PERMISSION_SETS = "new_doc_permission_sets";
-    //public static final String TABLE_DOC_PERMISSION_SETS = "doc_permission_sets";
-
     public DocumentPermissionSetMapper(Database database) {
-        //this.database = database;
     }
-
 
     public void saveRestrictedDocumentPermissionSets(DocumentDomainObject document, UserDomainObject user,
                                                      DocumentDomainObject oldDocument) {

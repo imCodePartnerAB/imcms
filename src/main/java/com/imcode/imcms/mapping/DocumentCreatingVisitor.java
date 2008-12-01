@@ -1,13 +1,11 @@
 package com.imcode.imcms.mapping;
 
-import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
-import com.imcode.db.Database;
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.mapping.orm.HtmlReference;
 import com.imcode.imcms.mapping.orm.UrlReference;
@@ -16,8 +14,8 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 	
 	private UserDomainObject currentUser;
     
-    public DocumentCreatingVisitor(Database database, ImcmsServices services, UserDomainObject currentUser) {
-        super(database, services);
+    public DocumentCreatingVisitor(ImcmsServices services, UserDomainObject currentUser) {
+        super(services);
         this.currentUser = currentUser;        
     }
     
@@ -28,7 +26,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     	reference.setMetaId(document.getId());
     	reference.setHtml(document.getHtml());
     	
-    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
+    	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
     	
     	dao.saveHtmlReference(reference);
     }
@@ -44,7 +42,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     	reference.setUrlFrameName("");
     	reference.setUrl(document.getUrl());
     	
-    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
+    	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
     	
     	dao.saveUrlReference(reference);    	
     }

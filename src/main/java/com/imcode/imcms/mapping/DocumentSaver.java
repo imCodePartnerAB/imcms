@@ -14,23 +14,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.imcode.db.Database;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
 
 class DocumentSaver {
 
-    private final DocumentMapper documentMapper ;
-
-    DocumentSaver(DocumentMapper documentMapper) {
+    private DocumentMapper documentMapper;
+    
+    public DocumentSaver() {}
+    
+    public DocumentSaver(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
     }
 
-    //@Transactional
-    // 1. Save meta
-    // 2. Save document elements
-    void saveDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
+    @Transactional
+    public void saveDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
                       final UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         checkDocumentForSave(document);
 
@@ -50,7 +51,7 @@ class DocumentSaver {
                 documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, oldDocument);
             }
             
-            DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDocument, getDatabase(), documentMapper.getImcmsServices(), user);
+            DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDocument, documentMapper.getImcmsServices(), user);
             
             saveMeta(document);
                         
@@ -60,11 +61,9 @@ class DocumentSaver {
         }
     }
 
-    private Database getDatabase() {
-        return documentMapper.getDatabase();
-    }
 
-    void saveNewDocument(UserDomainObject user,
+    @Transactional
+    public void saveNewDocument(UserDomainObject user,
                          DocumentDomainObject document, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(document);
 
@@ -73,6 +72,7 @@ class DocumentSaver {
         // clone shared references and
         // set metaId to null after cloning
         // remove all permissions after cloning?
+        
         document.cloneSharedForNewDocument(); 
         Meta meta = document.getMeta();
         meta.setMetaId(null);
@@ -90,41 +90,11 @@ class DocumentSaver {
         // Updates permissions - method does not saves but instead just updates meta 
         documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
         
-        // Update inherited meta
-        /*
-        switch (document.getDocumentType().getId()) {
-        	case DocumentTypeDomainObject.HTML_ID:
-                OrmDocument ormDocument = new HtmlReference();        	
-            	ormDocument.setMeta(meta);
-            	meta.setOrmDocument(ormDocument);
-            	document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
-            	break;
-        	case DocumentTypeDomainObject.URL_ID:
-                ormDocument = new UrlReference();        	
-            	ormDocument.setMeta(meta);
-            	meta.setOrmDocument(ormDocument);
-            	document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
-            	break;        		
-        	case DocumentTypeDomainObject.FILE_ID:
-	            ormDocument = new OrmFileDocument();        	
-	        	ormDocument.setMeta(meta);
-	        	meta.setOrmDocument(ormDocument);
-	        	document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
-	        	break;        		
-        	default:
-        		OrmTextDocument txtOrm = new OrmTextDocument();
-        	    //txtOrm.setTemplateNames(((TextDocumentDomainObject)document).getTemplateNames());   
-        	    //txtOrm.setIncludesMap(((TextDocumentDomainObject)document).getIncludesMap());     	
-        	    txtOrm.setMeta(meta);
-        	    meta.setOrmDocument(txtOrm);      
-        } 
-        */
-
         int newMetaId = saveMeta(document);
                 
         document.setId(newMetaId);
         
-        document.accept(new DocumentCreatingVisitor(getDatabase(), documentMapper.getImcmsServices(), user));
+        document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
     	
         documentMapper.invalidateDocument(document);
     }
@@ -268,4 +238,12 @@ class DocumentSaver {
                                                                          + "' already exists");
         }
     }
+
+	public DocumentMapper getDocumentMapper() {
+		return documentMapper;
+	}
+
+	public void setDocumentMapper(DocumentMapper documentMapper) {
+		this.documentMapper = documentMapper;
+	}
 }

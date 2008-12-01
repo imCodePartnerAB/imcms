@@ -22,8 +22,6 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.mapping.orm.HtmlReference;
-import com.imcode.imcms.mapping.orm.UrlReference;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
@@ -42,8 +40,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     
     /**
      * Document meta.
-     * 
-     * Introduced in v5 to replace meta properties previously stored in attributes.    
      */ 
     private Meta meta = new Meta();
 
@@ -156,15 +152,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     
 
     public int getId() {
-        return attributes.id;
+        return meta.getMetaId();
     }
 
     public void setId( int v ) {
-        attributes.id = v;
-        
-        if (meta != null) {
-        	meta.setMetaId(v);
-        }
+       	meta.setMetaId(v);
     }
 
     /**
@@ -448,7 +440,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
         final DocumentDomainObject document = (DocumentDomainObject)o;
 
-        return attributes.id == document.attributes.id;
+        return getId() == document.getId();
 
     }
 
@@ -463,7 +455,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public int hashCode() {
-        return attributes.id;
+        return getId();
     }
 
     private boolean hasBeenArchivedAtTime( Date time ) {
@@ -590,7 +582,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         
         private boolean linkableByOtherUsers;
 
-        private int id;
         private Date modifiedDatetime;
         private Date actualModifiedDatetime;
         private boolean restrictedOneMorePrivilegedThanRestrictedTwo;
@@ -632,16 +623,15 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public void setMeta(Meta meta) {
-		this.meta = meta;
+		if (meta == null) {
+			throw new NullPointerException("Meta argument can not be null.");
+		}
+		
+		this.meta = meta.clone();
 	}
 		
 	// TODO i18n refactor
-	public I18nMeta getI18nMeta(I18nLanguage language) {
-		if (meta == null) {
-			throw new I18nException("Meta for document [" 
-					+ getId() + "] is not set.");
-		}
-		
+	public I18nMeta getI18nMeta(I18nLanguage language) {		
 		I18nMeta i18nMeta = meta.getI18nMeta(language);
 		
 		if (i18nMeta == null) {

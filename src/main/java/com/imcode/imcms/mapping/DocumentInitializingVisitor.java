@@ -29,39 +29,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         textDocumentInitializer = new TextDocumentInitializer(database, documentGetter, documentIds);
     }
 
-    public void visitFileDocument(final FileDocumentDomainObject document) {
-    	/*
-        Object[] parameters = new String[] {
-                "" + document.getId() };
-        database.execute(new SqlQueryCommand(SQL__SELECT_FILE_DOCUMENT_FILES, parameters, new ResultSetHandler() {
-            public Object handle(ResultSet resultSet) throws SQLException {
-                while ( resultSet.next() ) {
-                    String fileId = resultSet.getString(1);
-                    FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
-                    file.setFilename(resultSet.getString(2));
-                    file.setMimeType(resultSet.getString(3));
-                    file.setCreatedAsImage(0 != resultSet.getInt(4));
-                    File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(document.getId(), fileId);
-                    if ( !fileForFileDocument.exists() ) {
-                        File oldlyNamedFileForFileDocument = new File(fileForFileDocument.getParentFile(),
-                                                                      fileForFileDocument.getName()
-                                                                      + "_se");
-                        if ( oldlyNamedFileForFileDocument.exists() ) {
-                            fileForFileDocument = oldlyNamedFileForFileDocument;
-                        }
-                    }
-                    file.setInputStreamSource(new FileInputStreamSource(fileForFileDocument));
-                    document.addFile(fileId, file);
-                    boolean isDefaultFile = 0 != resultSet.getInt(5);
-                    if ( isDefaultFile ) {
-                        document.setDefaultFileId(fileId);
-                    }
-                }
-                return null;
-            }
-        }));
-        */
-    	
+    public void visitFileDocument(final FileDocumentDomainObject document) {    	
     	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
     	
     	Collection<FileReference> fileReferences = dao.getFileReferences(document.getId());

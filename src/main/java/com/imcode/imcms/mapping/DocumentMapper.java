@@ -89,10 +89,14 @@ public class DocumentMapper implements DocumentGetter {
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
         documentCache = Collections.synchronizedMap(new LRUMap(documentCacheMaxSize)) ;
-        setDocumentGetter(new FragmentingDocumentGetter(new DatabaseDocumentGetter(database, services)));
+        //setDocumentGetter(new FragmentingDocumentGetter(new DatabaseDocumentGetter(services)));
+        setDocumentGetter(new DatabaseDocumentGetter(services));
         this.documentPermissionSetMapper = new DocumentPermissionSetMapper(database);
         this.categoryMapper = new CategoryMapper(database);
-        documentSaver = new DocumentSaver(this);
+        //documentSaver = new DocumentSaver(this);
+        this.documentSaver = (DocumentSaver)services.getSpringBean("documentSaver");
+        this.documentSaver.setDocumentMapper(this);
+        
         initSections();
     }
 
@@ -183,10 +187,6 @@ public class DocumentMapper implements DocumentGetter {
         }
         Arrays.sort(allSections, SECTION_NAME_COMPARATOR);
         return allSections;
-    }
-
-    public DocumentDomainObject getDocument(int documentId) {
-        return getDocument(new Integer(documentId)) ;
     }
 
     public DocumentReference getDocumentReference(DocumentDomainObject document) {

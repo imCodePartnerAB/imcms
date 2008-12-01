@@ -5,11 +5,9 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.DateConstants;
 import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.FileUtility;
 import imcode.util.io.InputStreamSource;
@@ -20,29 +18,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
-import com.imcode.db.Database;
-import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.MenuDao;
 import com.imcode.imcms.dao.MetaDao;
@@ -53,25 +38,12 @@ import com.imcode.imcms.mapping.orm.TemplateNames;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
 	
-	private final ResultSetHandler singleStringHandler = new ResultSetHandler() {
-		public Object handle(ResultSet rs) throws SQLException {
-			return rs.next() ? rs.getString(1) : null;
-		}
-	};
-	
-	/**
-	 * Hibernate template.
-	 */
-	//protected HibernateTemplate hibernateTemplate;
-
-    protected Database database ;
     protected ImcmsServices services;
 
     private static final int FILE_BUFFER_LENGTH = 2048;
-    private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
+    private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;    
 
-    public DocumentStoringVisitor(Database database, ImcmsServices services) {
-        this.database = database ;
+    public DocumentStoringVisitor(ImcmsServices services) {
         this.services = services ;
     }
 
@@ -128,60 +100,42 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 + "VALUES(?" + StringUtils.repeat(",?", columnNames.length - 1) + ")";
     }
    
-
-    // TODO i18n: refactor
+    
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-        TextDao textDao = (TextDao)Imcms.getServices().getSpringBean("textDao");
+        TextDao textDao = (TextDao)services.getSpringBean("textDao");
         Integer metaId = textDocument.getId();
 
-        for (I18nLanguage language: I18nSupport.getLanguages()) {
-    	     
-            Map<Integer, TextDomainObject> texts = textDocument.getTextsMap(language);
-
-            for (Map.Entry<Integer, TextDomainObject> entry: texts.entrySet()) {
-                Integer index = entry.getKey();
-                TextDomainObject text = entry.getValue();
-
-                if (text.isModified()) {
-                    sqlInsertTextHistory(language, textDocument, index, text, user);
-                   
-                    textDao.saveText(metaId, text);
-                }
-            }
+        for (Map<Integer, TextDomainObject> map: textDocument.getAllTexts().values()) {
+        	for (TextDomainObject text: map.values()) {
+                if (text.isModified()) {                	 
+                	text.setMetaId(metaId);
+                    textDao.saveText(text);
+                    textDao.saveTextHistory(metaId, text, user); 
+                }        		
+        	}
         }
-    }
-    
-    
-    private String getLastHistoryTextValue(I18nLanguage language, int metaId, int name, int type) {
-    	String sql = "SELECT text FROM texts_history WHERE counter = (" +
-    			"SELECT MAX(counter) FROM texts_history WHERE meta_id = ? AND name = ? AND type = ? and language_id = ?)";
-    	
-    	Object[] parameters = new Object[] {metaId, name, type, language.getId()};
-    	
-    	return (String)database.execute(new SqlQueryCommand(sql, parameters, singleStringHandler));
-    }
+    }    
 
+    
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-        ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
+        ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
+        Integer metaId = textDocument.getId();
         
-        imageDao.saveImagesMap(textDocument.getId(), textDocument.getAllImages());
+        for (Map<Integer, ImageDomainObject> map: textDocument.getAllImages().values()) {
+        	for (ImageDomainObject image: map.values()) {
+                if (image.isModified()) {                	 
+                	image.setMetaId(metaId);
+                    imageDao.saveImage(image);
+                    //imageDao.saveImageHistory(metaId, text, user); 
+                }        		
+        	}
+        }        
     }
-
-    private void sqlInsertImageHistory(TextDocumentDomainObject textDocument, Integer imageIndex, UserDomainObject user) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING);
-        String[] columnNames = new String[] {"imgurl", "width", "height", "border", "v_space", "h_space", "image_name", "target", "align", "alt_text", "low_scr", "linkurl", "type", "meta_id", "name", "modified_datetime", "user_id" };
-        ImageDomainObject image = textDocument.getImage(imageIndex.intValue());
-        final String[] parameters = getSqlImageParameters(image, textDocument.getId(), imageIndex.intValue());
-        List <String> param =  new ArrayList <String>( Arrays.asList(parameters) ) ;
-        param.add(dateFormat.format(new Date()));
-        param.add(""+user.getId());
-        database.execute(new SqlUpdateCommand(makeSqlInsertString("images_history", columnNames), param.toArray(new String[param.size()])));
-    }
-
+    
     
     // TODO: transactional - new or can participate
     void updateTextDocumentIncludes(TextDocumentDomainObject textDocument) {
-    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
+    	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
     	
     	Set<Include> includes = new HashSet<Include>();
     	Integer metaId = textDocument.getId();
@@ -200,7 +154,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     
     // TODO: transactional - new or can participate
     void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
+    	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
     	
     	TemplateNames templateNames = textDocument.getTemplateNames();
     	Integer metaId = textDocument.getId();
@@ -209,64 +163,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     	dao.saveTemplateNames(metaId, templateNames);    	
     }    
 
-    
-    private void sqlInsertTextHistory(I18nLanguage language, TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text, UserDomainObject user) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING);
-        final Object[] parameters = new String[]{
-            "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType(), dateFormat.format(new Date()), 
-            ""+user.getId(), "" + language.getId()
-        };
-        database.execute(new SqlUpdateCommand("INSERT INTO texts_history (meta_id, name, text, type, modified_datetime, user_id, language_id) VALUES(?,?,?,?,?,?,?)", parameters));
-    }
 
-    private static String[] getSqlImageParameters(ImageDomainObject image, int meta_id, int img_no) {
-        ImageSource imageSource = image.getSource();
-        return new String[] {
-            imageSource.toStorageString(),
-            "" + image.getWidth(),
-            "" + image.getHeight(),
-            "" + image.getBorder(),
-            "" + image.getVerticalSpace(),
-            "" + image.getHorizontalSpace(),
-            image.getName(),
-            image.getTarget(),
-            image.getAlign(),
-            image.getAlternateText(),
-            image.getLowResolutionUrl(),
-            image.getLinkUrl(),
-            "" + imageSource.getTypeId(),
-            "" + meta_id,
-            "" + img_no,
-        };
-    }
-
-    public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
-    	/*
-        Map fileDocumentFiles = fileDocument.getFiles();
-
-        String sqlDelete = "DELETE FROM fileupload_docs WHERE meta_id = ?";
-        final Object[] parameters1 = new String[]{"" + fileDocument.getId()};
-        database.execute(new SqlUpdateCommand(sqlDelete, parameters1));
-
-        for ( Iterator iterator = fileDocumentFiles.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)iterator.next();
-            String fileId = (String)entry.getKey();
-            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = (FileDocumentDomainObject.FileDocumentFile)entry.getValue();
-
-            String filename = fileDocumentFile.getFilename();
-            if ( filename.length() > DB_FIELD_MAX_LENGTH__FILENAME ) {
-                filename = truncateFilename( filename, DB_FIELD_MAX_LENGTH__FILENAME );
-            }
-            String sqlInsert = "INSERT INTO fileupload_docs (meta_id, variant_name, filename, mime, created_as_image, default_variant) VALUES(?,?,?,?,?,?)";
-            boolean isDefaultFile = fileId.equals( fileDocument.getDefaultFileId());
-            final Object[] parameters = new String[]{""+ fileDocument.getId(), fileId, filename, fileDocumentFile.getMimeType(), fileDocumentFile.isCreatedAsImage() ? "1" : "0", isDefaultFile ? "1" : "0"};
-            database.execute(new SqlUpdateCommand(sqlInsert, parameters));
-            saveFileDocumentFile( fileDocument.getId(), fileDocumentFile, fileId );
-        }
-        DocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;
-        */
-    	
-    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
+    public void visitFileDocument( FileDocumentDomainObject fileDocument ) {    	
+    	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
     	
         Map fileDocumentFiles = fileDocument.getFiles();
 
@@ -325,18 +224,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     protected void updateTextDocumentMenus(final TextDocumentDomainObject textDocument, final TextDocumentDomainObject oldTextDocument, final UserDomainObject savingUser) {
-    	MenuDao dao = (MenuDao)Imcms.getServices().getSpringBean("menuDao");
+    	MenuDao dao = (MenuDao)services.getSpringBean("menuDao");
 
     	dao.saveDocumentMenus(textDocument.getId(), textDocument.getMenus());
-    	
-    	/*
-        database.execute( new TransactionDatabaseCommand() {
-            public Object executeInTransaction( DatabaseConnection connection ) {
-                MenuSaver menuSaver = new MenuSaver(new SingleConnectionDatabase(connection)) ;
-                menuSaver.updateTextDocumentMenus(textDocument, services, oldTextDocument, savingUser);
-                return null ;
-            }
-        } );
-        */
     }
 }

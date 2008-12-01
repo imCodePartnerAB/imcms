@@ -22,6 +22,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.mapping.DocumentStoringVisitor;
 import com.imcode.util.ImageSize;
 
 @Entity(name="I18nImage")
@@ -76,6 +77,14 @@ public class ImageDomainObject implements Serializable, Cloneable {
     
     private Integer type;
     
+	/**
+	 * Altered if image was modified.
+	 * 
+	 * @see TextDocumentDomainObject.setText
+	 * @see DocumentStoringVisitor.updateTextDocumentTexts 
+	 */
+	@Transient
+	private boolean modified;    
     
     /**
      * i18n support 
@@ -337,6 +346,13 @@ public class ImageDomainObject implements Serializable, Cloneable {
 		} else {
 			name = index.toString();
 		}
-	}	
-	
+	}
+
+	public boolean isModified() {
+		return modified;
+	}
+
+	public void setModified(boolean modified) {
+		this.modified = modified;
+	}		
 }

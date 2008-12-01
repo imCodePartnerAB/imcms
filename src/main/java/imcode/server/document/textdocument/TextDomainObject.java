@@ -5,7 +5,6 @@ import imcode.util.Parser;
 import java.io.Serializable;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -39,7 +38,7 @@ import com.imcode.imcms.mapping.DocumentStoringVisitor;
 public class TextDomainObject implements Serializable, Cloneable {
 	
     /**
-     * Plain text, with linebreaks. *
+     * Plain text, with linebreaks.
      */
     public final static int TEXT_TYPE_PLAIN = 0;
 

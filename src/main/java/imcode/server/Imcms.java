@@ -15,6 +15,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.Database;
@@ -35,17 +36,20 @@ public class Imcms {
     private static ImcmsServices services;
     private static BasicDataSource apiDataSource;
     private static BasicDataSource dataSource;
-    private static File path;  
+    private static File path;
+    
+    // Worakround
+    public static WebApplicationContext webApplicationContext;
     
     private Imcms() {
     }
 
     public synchronized static ImcmsServices getServices() {
-        if ( null == services ) {
+        if ( null == services ) {        	
             start();
         }
         return services;
-    }
+    }   
 
     public static void setPath(File path) {
         Imcms.path = path;
@@ -64,13 +68,17 @@ public class Imcms {
     }
 
     private synchronized static ImcmsServices createServices() throws Exception {
+    	if (webApplicationContext == null) {
+    		throw new NullPointerException("Spring WebApplicationContext is not set.");
+    	}
+    	
         Properties serverprops = getServerProperties();
         LOG.debug("Creating main DataSource.");
         Database database = createDatabase(serverprops);
         LocalizedMessageProvider localizedMessageProvider = new CachingLocalizedMessageProvider(new ImcmsPrefsLocalizedMessageProvider());
                 
         final CachingFileLoader fileLoader = new CachingFileLoader();
-        return new DefaultImcmsServices(database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
+        return new DefaultImcmsServices(webApplicationContext, database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
     }
 
     private static Database createDatabase(Properties serverprops) {

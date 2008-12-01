@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
@@ -19,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.imcode.db.Database;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
@@ -31,7 +29,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
 
     private ImcmsServices services;
     
-    public DatabaseDocumentGetter(Database database, ImcmsServices services) {
+    public DatabaseDocumentGetter(ImcmsServices services) {
         this.services = services;
     }
 
@@ -49,10 +47,10 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
     
     
     /**
-     * Initializes documents - hibernate version  
+     * Initializes documents.
      */
     private Map<Integer, DocumentDomainObject> initDocuments(Collection<Integer> documentIds) {
-    	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao");
+    	MetaDao metaDao = (MetaDao)services.getSpringBean("metaDao");
     	
     	Map<Integer, DocumentDomainObject> map = new LinkedHashMap<Integer, DocumentDomainObject>();
     	

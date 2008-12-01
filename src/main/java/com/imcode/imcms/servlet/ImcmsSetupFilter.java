@@ -191,12 +191,8 @@ public class ImcmsSetupFilter implements Filter {
     private void initSpringframework(ServletContext servletContext) throws ServletException {
     	logger.info("Initializing springframework web application context.");
     	
-    	WebApplicationContext webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(
-    			servletContext);
-    	
-    	DefaultImcmsServices services = (DefaultImcmsServices)Imcms.getServices();
-    	
-    	services.setWebApplicationContext(webApplicationContext);    	
+    	Imcms.webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(
+    			servletContext);    	
     }
     
     /**
