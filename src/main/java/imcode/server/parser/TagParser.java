@@ -1,9 +1,14 @@
 package imcode.server.parser;
 
+import com.imcode.imcms.api.TextDocumentViewing;
+import com.imcode.imcms.servlet.ImcmsSetupFilter;
+import com.imcode.imcms.mapping.SectionFromIdTransformer;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.util.CountingIterator;
 import imcode.server.DocumentRequest;
-import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
+import imcode.server.Imcms;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.textdocument.FileDocumentImageSource;
@@ -11,13 +16,26 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.util.DateConstants;
 import imcode.util.Html;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.collections.iterators.TransformIterator;
+import org.apache.log4j.Logger;
+import org.apache.oro.text.regex.*;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,59 +44,10 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.collections.iterators.TransformIterator;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.UnhandledException;
-import org.apache.log4j.Logger;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.MatchResult;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.PatternMatcher;
-import org.apache.oro.text.regex.PatternMatcherInput;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
-import org.apache.oro.text.regex.StringSubstitution;
-import org.apache.oro.text.regex.Substitution;
-import org.apache.oro.text.regex.Util;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nMeta;
-import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.api.TextDocumentViewing;
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.SectionFromIdTransformer;
-import com.imcode.imcms.servlet.ImcmsSetupFilter;
-import com.imcode.util.CountingIterator;
+import java.util.*;
 
 public class TagParser {
-	
-	/**
-	 * Empty image.
-	 */
-	private static final ImageDomainObject EMPTY_IMAGE = new ImageDomainObject();
-	
+
     private static Pattern htmlPrebodyPattern;
     private static Pattern htmlPostbodyPattern;
     private static Pattern imcmsTagPattern;
@@ -425,11 +394,11 @@ public class TagParser {
         TextDomainObject text;
         if ( null == noStr ) {
             no = implicitTextNumber++;
-            text = getI18nText(textDocumentToUse, no);//textDocumentToUse.getText(no);
+            text = textDocumentToUse.getText(no);
         } else {
             noStr = noStr.trim();
             no = Integer.parseInt(noStr);
-            text = getI18nText(textDocumentToUse, no);//textDocumentToUse.getText(no);
+            text = textDocumentToUse.getText(no);
             implicitTextNumber = no + 1;
         }
         String result = "";
@@ -464,38 +433,6 @@ public class TagParser {
         }
 
         return result;
-    }
-    
-    
-    private TextDomainObject getI18nText(TextDocumentDomainObject textDDO, int index) {
-    	I18nLanguage language = I18nSupport.getCurrentLanguage();    	
-    	Meta meta = textDDO.getMeta();
-    	I18nMeta i18nMeta = meta.getI18nMeta(language);
-    	TextDomainObject textDO = null;
-    	    	
-    	if (i18nMeta.getEnabled()) {
-    		textDO = textDDO.getText(language, index);
-    	} else if (!I18nSupport.isDefault(language)) {
-   			language = I18nSupport.getDefaultLanguage();
-   			i18nMeta = meta.getI18nMeta(language);
-    			
-   			if (i18nMeta.getEnabled()
-   					&& meta.getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE) {
-   				textDO = textDDO.getText(language, index);
-   			}
-    	}
-    	
-    	return textDO;
-    	
-    	// if (document.isActive()) {
-    	//     return document.getText(index);
-    	// } else if (!I18nSupport.isDefault(document.getLanguage())) {
-    	//     if (defaultDocument.isActive()) {
-    	//         return document.getText(index);
-    	//     }
-    	// } else {
-    	//     return null;     
-    	// }
     }
 
     private static boolean shouldOutputNothingAccordingToMode(Properties attributes, boolean mode) {
@@ -558,7 +495,7 @@ public class TagParser {
             imageIndex = Integer.parseInt(noStr);
             implicitImageIndex[0] = imageIndex + 1;
         }
-        ImageDomainObject image = getI18nImage(textDocumentToUse, imageIndex); //textDocumentToUse.getImage(imageIndex) ;
+        ImageDomainObject image = textDocumentToUse.getImage(imageIndex) ;
         ImageSource imageSource = image.getSource();
         String imageTag = "" ;
         if ( !( imageSource instanceof FileDocumentImageSource )
@@ -581,32 +518,6 @@ public class TagParser {
 
         return imageTag;
     }
-    
-    
-    private ImageDomainObject getI18nImage(TextDocumentDomainObject textDDO, int index) {
-    	I18nLanguage language = I18nSupport.getCurrentLanguage();    	
-    	Meta meta = textDDO.getMeta();
-    	I18nMeta i18nMeta = meta.getI18nMeta(language);
-    	ImageDomainObject imageDO = null;
-    	    	
-    	if (i18nMeta.getEnabled()) {
-    		imageDO = textDDO.getImage(language, index);
-    	} else if (!I18nSupport.isDefault(language)) {
-   			language = I18nSupport.getDefaultLanguage();
-   			i18nMeta = meta.getI18nMeta(language);
-    			
-   			if (i18nMeta.getEnabled() && 
-   					meta.getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE) {
-   				imageDO = textDDO.getImage(language, index);
-   			}
-    	}
-    	
-    	if (imageDO == null) {
-    		imageDO = EMPTY_IMAGE;
-    	}
-    	
-    	return imageDO;
-    } 
 
     /**
      * Handle a <?imcms:datetime ...?> tag

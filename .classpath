@@ -95,5 +95,8 @@
 	<classpathentry kind="lib" path="local/lib/slf4j-api-1.4.3.jar"/>
 	<classpathentry kind="lib" path="local/lib/slf4j-nop-1.4.3.jar"/>
 	<classpathentry kind="lib" path="local/lib/testng-5.8-jdk15.jar"/>
+	<classpathentry kind="lib" path="local/lib/spring-aop-2.5.5.jar"/>
+	<classpathentry kind="lib" path="local/lib/aspectjrt-1.6.2.jar"/>
+	<classpathentry kind="lib" path="local/lib/aspectjweaver-1.6.2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

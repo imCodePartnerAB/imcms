@@ -1,5 +1,6 @@
 package imcode.server;
 
+import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.Prefs;
 
@@ -19,6 +20,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.Database;
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.User;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
@@ -38,8 +41,14 @@ public class Imcms {
     private static BasicDataSource dataSource;
     private static File path;
     
-    // Worakround
+    // Workaround
     public static WebApplicationContext webApplicationContext;
+    
+	/** 
+	 * When running in WEB container user is bound to current thread in
+	 * ServletFilter.  
+	 */
+	private final static ThreadLocal<UserDomainObject> users = new ThreadLocal<UserDomainObject>();    
     
     private Imcms() {
     }
@@ -186,4 +195,12 @@ public class Imcms {
             super(message, e) ;
         }
     }
+    
+    public static void setUser(UserDomainObject user) {
+    	users.set(user);
+    }
+    
+    public static UserDomainObject getUser() {
+    	return users.get();
+    }    
 }

@@ -593,4 +593,9 @@ public class Meta implements Serializable, Cloneable {
 	public void setActivate(Integer activate) {
 		this.activate = activate;
 	}
+	
+	public boolean getShowDisabledI18nDataInDefaultLanguage() {
+		return unavailableI18nDataSubstitution == 
+			UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;
+	}
 }

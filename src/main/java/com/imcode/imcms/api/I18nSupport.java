@@ -166,4 +166,12 @@ public class I18nSupport {
 	public static I18nLanguage getById(Integer id) {
 		return idMap.get(id);
 	}	
+	
+	public static boolean isEnabled() {
+		return defaultLanguage != null && currentLanguage != null;
+	}
+	
+	public static boolean getCurrentIsDefault() {
+		return getCurrentLanguage().equals(getDefaultLanguage());
+	}
 }

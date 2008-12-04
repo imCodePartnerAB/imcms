@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.DefaultImcmsServices;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -34,7 +33,6 @@ import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.imcode.imcms.api.I18nLanguage;
@@ -77,7 +75,15 @@ public class ImcmsSetupFilter implements Filter {
             Utility.makeUserLoggedIn(request, user);
         }
         
-        setCurrentLanguage(request, user);
+        Imcms.setUser(user);
+       
+        // Experimental
+        String modeValue = request.getParameter("mode");
+        if (modeValue != null) {
+        	user.setMode(UserDomainObject.Mode.valueOf(modeValue.toUpperCase()));
+        }
+        
+        setCurrentLanguage(request, user);        
 
         ResourceBundle resourceBundle = Utility.getResourceBundle(request);
         Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));

@@ -49,6 +49,7 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.oro.text.perl.Perl5Util;
+import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 
 import com.imcode.db.Database;
 import com.imcode.db.DatabaseCommand;
@@ -105,7 +106,13 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void setDocumentGetter(DocumentGetter documentGetter) {
-        this.documentGetter = new CachingDocumentGetter(documentGetter, documentCache);
+    	CachingDocumentGetter cachingDocumentGetter = new CachingDocumentGetter(documentGetter, documentCache);
+    	
+		AspectJProxyFactory factory = new AspectJProxyFactory(cachingDocumentGetter);
+		
+		factory.addAspect(com.imcode.imcms.mapping.aop.CachingDocumentGetterAspect.class);
+    	
+        this.documentGetter = factory.getProxy(); 
     }
 
     public DocumentSaver getDocumentSaver() {
@@ -445,7 +452,7 @@ public class DocumentMapper implements DocumentGetter {
         };
     }
 
-    public DocumentDomainObject getDocument(Integer documentId) {
+    public DocumentDomainObject getDocument(Integer documentId) { 
         return documentGetter.getDocument(documentId);
     }
 
