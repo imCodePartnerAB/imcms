@@ -638,6 +638,11 @@
         <exception-type>java.lang.Throwable</exception-type>
         <location>/imcms/internalerrorpage.jsp</location>
     </error-page>
+
+    <error-page>
+        <exception-type>com.imcode.imcms.api.I18nDisabledException</exception-type>
+        <location>/imcms/404.jsp</location>
+    </error-page>
     
     <error-page>
         <error-code>404</error-code>

@@ -35,9 +35,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
 
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.mapping.DocumentMapper;
 
 public class GetDoc extends HttpServlet {
@@ -94,20 +91,6 @@ public class GetDoc extends HttpServlet {
         HttpSession session = req.getSession(true);
         UserDomainObject user = Utility.getLoggedOnUser( req );
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        
-        if (document != null && user.getLoginName().equals("user")) {
-        	I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
-        	I18nLanguage defaultLanguage = I18nSupport.getDefaultLanguage();
-        	Meta meta = document.getMeta();
-        	
-        	if (!meta.getI18nMeta(currentLanguage).getEnabled()
-        		&& !document.substituteWithDefault(currentLanguage, defaultLanguage)) {
-        		LOG.debug("Document [" + document.getId() + "] is inactive for " + 
-        				currentLanguage + " language.");
-        		
-        		document = null;
-        	}
-        }
 
         if ( null == document ) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -205,7 +188,7 @@ public class GetDoc extends HttpServlet {
                                          + "; filename=\""
                                          + filename
                                          + "\"";
-            res.setHeader("ContentLoop-Disposition", content_disposition);
+            res.setHeader("Content-Disposition", content_disposition);
             try {
                 int bytes_read;
                 byte[] buffer = new byte[32768];

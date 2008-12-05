@@ -8,6 +8,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 
+import com.imcode.imcms.api.I18nDisabledException;
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 
@@ -25,7 +27,7 @@ public class CachingDocumentGetterAspect {
     			I18nMeta i18nMeta = document.getI18nMeta(I18nSupport.getCurrentLanguage());
             
     			if (!i18nMeta.getEnabled() && !document.getMeta().getShowDisabledI18nDataInDefaultLanguage()) {
-    				throw new RuntimeException("404"); // 404
+    				throw new I18nDisabledException(document, I18nSupport.getCurrentLanguage());
     			}
     		}
     	}
