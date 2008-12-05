@@ -31,12 +31,11 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
             	// experimental - TODO: Optimize
             	AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(document);            	
                 aspectJProxyFactory.setProxyTargetClass(true);
+                aspectJProxyFactory.addAspect(DocumentAspect.class);
                 
                 if (document instanceof TextDocumentDomainObject) {
                 	aspectJProxyFactory.addAspect(TextDocumentAspect.class);
-                } else {
-                	aspectJProxyFactory.addAspect(DocumentAspect.class);
-            	}
+                }
             	
             	document = aspectJProxyFactory.getProxy();
             	
