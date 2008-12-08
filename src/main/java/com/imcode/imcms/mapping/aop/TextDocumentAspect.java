@@ -31,13 +31,13 @@ public class TextDocumentAspect {
     	I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
     	I18nMeta currentI18nMeta = document.getI18nMeta(currentLanguage);
     	
-    	if (user.isInEditMode()  
+    	if (user.getDocumentShowMode().isIgnoreI18nContentShowMode()
     			|| currentI18nMeta.getEnabled()
     			|| I18nSupport.getCurrentIsDefault()) {
     		return pjp.proceed();
     	}
     	
-    	if (!document.getMeta().getShowDisabledI18nDataInDefaultLanguage()) {
+    	if (!document.getMeta().isShowDisabledI18nContentInDefaultLanguage()) {
     		return null;
     	} else {
         	I18nLanguage defaultLanguage = I18nSupport.getDefaultLanguage();
@@ -62,7 +62,7 @@ public class TextDocumentAspect {
     	I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
     	I18nMeta currentI18nMeta = document.getI18nMeta(currentLanguage);
     	
-    	if (user.isInEditMode()  
+    	if (user.getDocumentShowMode().isIgnoreI18nContentShowMode()
     			|| currentI18nMeta.getEnabled()
     			|| I18nSupport.getCurrentIsDefault()) {
     		return pjp.proceed();

@@ -12,6 +12,12 @@ import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import com.imcode.imcms.mapping.aop.DocumentAspect;
 import com.imcode.imcms.mapping.aop.TextDocumentAspect;
 
+/**
+ * TODO: 
+ *   cache -> published version cache
+ *   latestCache -> latest version cache
+ *   customCacle -> custom version cache.
+ */
 public class CachingDocumentGetter extends DocumentGetterWrapper {
 
     private Map cache;

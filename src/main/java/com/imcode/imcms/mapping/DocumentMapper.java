@@ -43,6 +43,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.naming.OperationNotSupportedException;
+
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -139,9 +141,11 @@ public class DocumentMapper implements DocumentGetter {
             throw new UnhandledException(e);
         }
         
-        newDocument.setId( 0 );
+        // TODO: Old code - check and remove!!
+        //newDocument.setId( 0 );
         
         Meta meta = newDocument.getMeta();
+        meta.setId(null);
         
         for (I18nMeta i18nMeta: meta.getI18nMetas()) {
         	i18nMeta.setHeadline("");
@@ -452,9 +456,23 @@ public class DocumentMapper implements DocumentGetter {
         };
     }
 
-    public DocumentDomainObject getDocument(Integer documentId) { 
-        return documentGetter.getDocument(documentId);
+    public DocumentDomainObject getDocument(Integer metaId) { 
+        return documentGetter.getDocument(metaId);
     }
+    
+    /**
+     * TODO: implement
+     * Returns document with given metaId and version.
+     * 
+     * @param metaId document meta id
+     * @param version document version 
+     * @return DocumentDomainObject
+     */
+    public DocumentDomainObject getDocument(Integer metaId, int version) 
+    throws OperationNotSupportedException { 
+        //return documentGetter.getDocument(documentId, version);
+    	return null;
+    }    
 
     public CategoryMapper getCategoryMapper() {
         return categoryMapper;

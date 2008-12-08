@@ -6,9 +6,9 @@ import java.util.Map;
 
 /**
  * I18n support.
- * 
  * This class intended to be used as a singleton and can not be instantiated.
  * 
+ * @see ImcmsSetupFilter
  * @author Anton Josua
  */
 public class I18nSupport {

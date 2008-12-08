@@ -12,6 +12,7 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 
+// TODO: prototype - refactor
 @Aspect
 public class DocumentAspect {
 	
@@ -46,7 +47,7 @@ public class DocumentAspect {
     	I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
     	I18nMeta currentI18nMeta = document.getI18nMeta(currentLanguage);
     	
-    	if (user.isInEditMode()  
+    	if (user.getDocumentShowMode().isIgnoreI18nContentShowMode()
     			|| currentI18nMeta.getEnabled()
     			|| I18nSupport.getCurrentIsDefault()) {
     		return document.getHeadline(currentLanguage);
@@ -77,7 +78,7 @@ public class DocumentAspect {
     	I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
     	I18nMeta currentI18nMeta = document.getI18nMeta(currentLanguage);
     	
-    	if (user.isInEditMode()  
+    	if (user.getDocumentShowMode().isIgnoreI18nContentShowMode()
     			|| currentI18nMeta.getEnabled()
     			|| I18nSupport.getCurrentIsDefault()) {
     		return document.getMenuImage(currentLanguage);    	
@@ -108,7 +109,7 @@ public class DocumentAspect {
     	I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
     	I18nMeta currentI18nMeta = document.getI18nMeta(currentLanguage);
     	
-    	if (user.isInEditMode()  
+    	if (user.getDocumentShowMode().isIgnoreI18nContentShowMode()
     			|| currentI18nMeta.getEnabled()
     			|| I18nSupport.getCurrentIsDefault()) {
     		return document.getMenuText(currentLanguage);    	

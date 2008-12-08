@@ -15,6 +15,86 @@ DELETE FROM meta WHERE doc_type = 6;
 DELETE FROM doc_types WHERE doc_type = 6;
 DELETE FROM doc_permissions WHERE doc_type NOT IN (2,5,7,8);
 
+/*
+CREATE TABLE new__meta (
+  id int auto_increment PRIMARY KEY,
+  meta_id int(11) NOT NULL,
+  meta_version int(11) NOT NULL DEFAULT 0,
+  doc_type int(11) NOT NULL,
+  owner_id int(11) NOT NULL,
+  permissions int(11) NOT NULL,
+  shared int(11) NOT NULL,
+  show_meta int(11) NOT NULL,
+  lang_prefix varchar(3) NOT NULL,
+  date_created datetime NOT NULL,
+  date_modified datetime NOT NULL,
+  disable_search int(11) NOT NULL,
+  target varchar(10) NOT NULL,
+  activate int(11) NOT NULL,
+  archived_datetime datetime default NULL,
+  publisher_id int(11) default NULL,
+  status int(11) NOT NULL,
+  publication_start_datetime datetime default NULL,
+  publication_end_datetime datetime default NULL,
+  missing_i18n_show_rule varchar(32) default 'DO_NOT_SHOW'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO new__meta (
+  meta_id,
+  meta_version,
+  doc_type,
+  owner_id,
+  permissions,
+  shared,
+  show_meta,
+  lang_prefix,
+  date_created,
+  date_modified,
+  disable_search,
+  target,
+  activate,
+  archived_datetime,
+  publisher_id,
+  status,
+  publication_start_datetime,
+  publication_end_datetime,
+  missing_i18n_show_rule
+) SELECT
+  meta_id,
+  meta_version,
+  doc_type,
+  owner_id,
+  permissions,
+  shared,
+  show_meta,
+  lang_prefix,
+  date_created,
+  date_modified,
+  disable_search,
+  target,
+  activate,
+  archived_datetime,
+  publisher_id,
+  status,
+  publication_start_datetime,
+  publication_end_datetime,
+  missing_i18n_show_rule
+FROM meta;
+
+*/
+
+alter table meta add column id int not null default 1;
+alter table meta add column version int not null default 1;
+
+create table id_generators (
+  id int auto_increment PRIMARY KEY,
+  generator_name varchar(128) NOT NULL,
+  generator_value int NOT NULL,
+  UNIQUE INDEX ux__generators__generator_name (generator_name)
+);
+
+INSERT INTO id_generators (generator_name, generator_value) VALUES ('meta', 1);
+
 --
 -- Includes table
 --

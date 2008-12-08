@@ -58,6 +58,9 @@ public class MetaDao extends HibernateTemplate {
 	@Transactional
 	public synchronized void updateMeta(Meta meta) {
 		saveOrUpdate(meta); 
+		
+		// select auto-generated values 
+		flush();
 	}
 
 

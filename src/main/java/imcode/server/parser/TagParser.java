@@ -53,6 +53,11 @@ public class TagParser {
     private static Pattern imcmsTagPattern;
     private static Pattern imcmsEndTagPattern;
     private static Pattern attributesPattern;
+    
+    /**
+     * Used as default image in tagImage when document.getImage returns null. 
+     */
+    private final static ImageDomainObject NULL_IMAGE = new ImageDomainObject(); 
 
     private final static Logger LOG = Logger.getLogger(TagParser.class.getName());
 
@@ -496,6 +501,11 @@ public class TagParser {
             implicitImageIndex[0] = imageIndex + 1;
         }
         ImageDomainObject image = textDocumentToUse.getImage(imageIndex) ;
+        
+        if (image == null) {
+        	image = NULL_IMAGE;
+        }
+        
         ImageSource imageSource = image.getSource();
         String imageTag = "" ;
         if ( !( imageSource instanceof FileDocumentImageSource )

@@ -23,9 +23,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 
 @Entity
 @Table(name="meta")
@@ -105,32 +109,26 @@ public class Meta implements Serializable, Cloneable {
 			this.setId = setId;
 		}				
 	}
-	
-	// TODO i18n: refactor
-	// Disabled i18n_meta show mode
-    // public static enum DisabledI18nDataShowMode {
-	//     SHOW_IN_DEFAULT_LANGUAGE,
-	//     DO_NOT_SHOW,
-	// }
-	
+		
 	/**
-	 * Substitution modes for disabled or missing i18n-ed data.
-	 * 
-	 * Data considered unavailable if inner accessor returns null.
-	 * Note: 
-	 *   ImageDomainObject instance also considered unavailable if its URL property is not set
-	 *   TextDomainObject instance also considered unavailable if its text property is empty or null   
+	 * Disabled i18n document's content show mode settings.
 	 */
 	public static enum UnavailableI18nDataSubstitution {
 		SHOW_IN_DEFAULT_LANGUAGE,
 		DO_NOT_SHOW,		
 	}
 	
-	@Transient
-	private Map<I18nLanguage, I18nMeta> metaMap;
-
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Id
+	@TableGenerator(name="meta", table="id_generators", 
+			pkColumnName="generator_name", valueColumnName="generator_value", allocationSize=10)
+	@GeneratedValue(generator="meta")	
+	private Long id;
+	
+	private Integer version;
+	
+	//@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="meta_id", insertable=false, updatable=false)
+	@Generated(GenerationTime.INSERT)
 	private Integer metaId;
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
@@ -234,7 +232,7 @@ public class Meta implements Serializable, Cloneable {
     @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(
     	name = "document_properties",
-    	joinColumns = @JoinColumn(name = "meta_id"))    		
+    	joinColumns = @JoinColumn(name = "meta_id", referencedColumnName="meta_id"))    		
     @org.hibernate.annotations.MapKey(columns = @Column(name="key_name"))    		
     @Column(name = "value", nullable = false)
     private Map<String, String> properties = new HashMap<String, String>();
@@ -242,7 +240,7 @@ public class Meta implements Serializable, Cloneable {
     @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
    	@JoinTable(
     	name = "document_categories",
-    	joinColumns = @JoinColumn(name = "meta_id"))
+    	joinColumns = @JoinColumn(name = "meta_id", referencedColumnName="meta_id"))
     @Column(name = "category_id", nullable = false)
     private Set<Integer> categoryIds = new HashSet<Integer>();
     
@@ -250,7 +248,7 @@ public class Meta implements Serializable, Cloneable {
     @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
    	@JoinTable(
     	name = "meta_section",
-    	joinColumns = @JoinColumn(name = "meta_id"))
+    	joinColumns = @JoinColumn(name = "meta_id", referencedColumnName="meta_id"))
     @Column(name = "section_id", nullable = false)
     private Set<Integer> sectionIds = new HashSet<Integer>();
     
@@ -261,7 +259,7 @@ public class Meta implements Serializable, Cloneable {
     @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(
     	name = "roles_rights",
-    	joinColumns = @JoinColumn(name = "meta_id"))    		
+    	joinColumns = @JoinColumn(name = "meta_id", referencedColumnName="meta_id"))    		
     @org.hibernate.annotations.MapKey(columns = @Column(name="role_id"))    		
     @Column(name = "set_id")
     private Map<Integer, Integer> roleIdToPermissionSetIdMap = new HashMap<Integer, Integer>();
@@ -276,7 +274,7 @@ public class Meta implements Serializable, Cloneable {
     @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(
     	name = "doc_permission_sets",
-    	joinColumns = @JoinColumn(name = "meta_id"))    		
+    	joinColumns = @JoinColumn(name = "meta_id", referencedColumnName="meta_id"))    		
     @org.hibernate.annotations.MapKey(columns = @Column(name="set_id"))    		
     @Column(name = "permission_id")
     private Map<Integer, Integer> permissionSetBitsMap = new HashMap<Integer, Integer>();
@@ -291,7 +289,7 @@ public class Meta implements Serializable, Cloneable {
     @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(
     	name = "new_doc_permission_sets",
-    	joinColumns = @JoinColumn(name = "meta_id"))    		
+    	joinColumns = @JoinColumn(name = "meta_id", referencedColumnName="meta_id"))    		
     @org.hibernate.annotations.MapKey(columns = @Column(name="set_id"))    		
     @Column(name = "permission_id")
     private Map<Integer, Integer> permissionSetBitsForNewMap = new HashMap<Integer, Integer>();
@@ -303,7 +301,7 @@ public class Meta implements Serializable, Cloneable {
 	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
 	@JoinTable(
 	    name = "doc_permission_sets_ex",
-	    joinColumns = @JoinColumn(name="meta_id"))    
+	    joinColumns = @JoinColumn(name="meta_id", referencedColumnName="meta_id"))    
 	private Set<PermisionSetEx> permisionSetEx = new HashSet<PermisionSetEx>();
 	
 	
@@ -311,10 +309,13 @@ public class Meta implements Serializable, Cloneable {
 	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
 	@JoinTable(
 	    name = "new_doc_permission_sets_ex",
-	    joinColumns = @JoinColumn(name="meta_id"))    
+	    joinColumns = @JoinColumn(name="meta_id", referencedColumnName="meta_id"))    
 	private Set<PermisionSetEx> permisionSetExForNew = new HashSet<PermisionSetEx>();
 	
-    
+	// TODO: remove!!
+	@Transient
+	private Map<I18nLanguage, I18nMeta> metaMap;
+	
 	@Override
 	public Meta clone() {
 		try {
@@ -364,15 +365,31 @@ public class Meta implements Serializable, Cloneable {
 		this.i18nMetas = i18nParts;		
 	}
 
+	@Deprecated
+	/**
+	 * Use getI18nContentShowMode instead.
+	 */
 	public UnavailableI18nDataSubstitution getUnavailableI18nDataSubstitution() {
 		return unavailableI18nDataSubstitution;
 	}
-
+	
+	@Deprecated
+	/**
+	 * Use setI18nContentShowMode instead.
+	 */
 	public void setUnavailableI18nDataSubstitution(UnavailableI18nDataSubstitution unavailableI18nDataSubstitution) {
 		this.unavailableI18nDataSubstitution = unavailableI18nDataSubstitution;
 	}
 	
-	// TODO i18n : refactor
+	public UnavailableI18nDataSubstitution getI18nContentShowMode() {
+		return getUnavailableI18nDataSubstitution();
+	}
+	
+	public void setI18nContentShowMode(UnavailableI18nDataSubstitution unavailableI18nDataSubstitution) {
+		setUnavailableI18nDataSubstitution(unavailableI18nDataSubstitution);
+	}			
+	
+	// TODO i18n : refactor, remove!!
 	public synchronized I18nMeta getI18nMeta(I18nLanguage language) {
 		if (metaMap == null) {
 			metaMap = new HashMap<I18nLanguage, I18nMeta>();
@@ -594,8 +611,30 @@ public class Meta implements Serializable, Cloneable {
 		this.activate = activate;
 	}
 	
+	@Deprecated
 	public boolean getShowDisabledI18nDataInDefaultLanguage() {
 		return unavailableI18nDataSubstitution == 
 			UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;
 	}
+	
+	public boolean isShowDisabledI18nContentInDefaultLanguage() {
+		return unavailableI18nDataSubstitution == 
+			UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}	
 }

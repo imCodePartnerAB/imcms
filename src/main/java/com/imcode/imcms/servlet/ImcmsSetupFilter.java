@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.user.DocumentShowMode;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
@@ -78,10 +79,17 @@ public class ImcmsSetupFilter implements Filter {
         Imcms.setUser(user);
        
         // Experimental
+        // TODO: refactor
         String modeValue = request.getParameter("mode");
         if (modeValue != null) {
-        	user.setMode(UserDomainObject.Mode.valueOf(modeValue.toUpperCase()));
+        	user.getDocumentShowMode().setIgnoreI18nContentShowMode(Boolean.parseBoolean(modeValue.toLowerCase()));
         }
+        
+        String versionValue = request.getParameter("version");
+        if (versionValue != null) {
+        	user.getDocumentShowMode().setVersionShowMode(DocumentShowMode.VersionShowMode.valueOf(versionValue.toUpperCase()));
+        }                
+        // End of experemental
         
         setCurrentLanguage(request, user);        
 

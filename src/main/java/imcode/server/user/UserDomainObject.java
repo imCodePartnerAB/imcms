@@ -28,15 +28,6 @@ import com.imcode.imcms.api.Meta;
 
 public class UserDomainObject implements Cloneable, Serializable {
 	
-	/**
-	 * User in edit mode is can edit documents and see disabled documents or 
-	 * disabled documents elements (text, images).  
-	 */
-	public static enum Mode {
-		VIEW,
-		EDIT
-	}
-
     public static final int DEFAULT_USER_ID = 2;
 
     protected int id;
@@ -67,7 +58,10 @@ public class UserDomainObject implements Cloneable, Serializable {
     RoleIds roleIds = createRolesSetWithUserRole();
     protected RoleIds userAdminRoleIds = new RoleIds();
     
-    private Mode mode = Mode.VIEW;
+    /**
+     * Document show mode.
+     */
+    private DocumentShowMode documentShowMode = new DocumentShowMode();        
 
     /** Http session id.*/
     private String sessionId;
@@ -775,23 +769,11 @@ public class UserDomainObject implements Cloneable, Serializable {
         }
     }
 
-	public Mode getMode() {
-		return mode;
+	public DocumentShowMode getDocumentShowMode() {
+		return documentShowMode;
 	}
 
-	public void setMode(Mode mode) {
-		if (mode == null) {
-			throw new NullPointerException("Document mode can not be set to null");
-		}
-		
-		this.mode = mode;
+	public void setDocumentShowMode(DocumentShowMode documentShowMode) {
+		this.documentShowMode = documentShowMode;
 	}
-	
-	public boolean isInViewMode() {
-		return mode == Mode.VIEW;
-	}
-	
-	public boolean isInEditMode() {
-		return mode == Mode.EDIT;
-	}	
 }

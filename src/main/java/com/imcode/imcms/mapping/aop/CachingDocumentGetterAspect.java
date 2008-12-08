@@ -9,7 +9,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 
 import com.imcode.imcms.api.I18nDisabledException;
-import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 
@@ -23,7 +22,7 @@ public class CachingDocumentGetterAspect {
     	if (document != null) {
     		UserDomainObject user = Imcms.getUser();
     		
-    		if (user != null && user.isInViewMode() && !I18nSupport.getCurrentIsDefault()) {            
+    		if (user != null && !I18nSupport.getCurrentIsDefault() && user.getDocumentShowMode().isIgnoreI18nContentShowMode() ) {            
     			I18nMeta i18nMeta = document.getI18nMeta(I18nSupport.getCurrentLanguage());
             
     			if (!i18nMeta.getEnabled() && !document.getMeta().getShowDisabledI18nDataInDefaultLanguage()) {
