@@ -59,7 +59,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
     		
     		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
     		
-            document.setId(meta.getMetaId());
+            document.setId(meta.getDocumentId());
             document.setCreatorId(meta.getCreatorId());
             document.setRestrictedOneMorePrivilegedThanRestrictedTwo(meta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
             

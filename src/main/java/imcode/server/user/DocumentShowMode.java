@@ -14,7 +14,7 @@ public class DocumentShowMode {
 	 * PUBLISHED mode is default.
 	 * 
 	 * In PUBLISHED mode a user sees published document content.
-	 * In LATEST mode a user sees latest document content.
+	 * In WORKING mode a user sees working (draft) document content.
 	 * In CUSTOM mode a user can choose document's version manually.
 	 * 
 	 * TODO: CUSTOM mode is not yet supported.
@@ -23,7 +23,7 @@ public class DocumentShowMode {
 	 */
 	public static enum VersionShowMode {
 		PUBLISHED,
-		LATEST,		
+		WORKING,		
 		// CUSTOM,
 	}	
 

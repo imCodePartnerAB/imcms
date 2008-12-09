@@ -83,6 +83,16 @@ FROM meta;
 
 */
 
+ALTER TABLE meta
+  ADD COLUMN doc_id int NULL AFTER meta_id,
+  ADD COLUMN doc_version int NOT NULL DEFAULT 1 AFTER doc_id,
+  ADD UNIQUE INDEX ux__meta__doc_id__doc_version (doc_id, doc_version);
+
+UPDATE meta SET doc_id = meta_id;
+
+ALTER TABLE meta MODIFY COLUMN doc_id int NOT NULL;
+
+/*
 alter table meta add column id int not null default 1;
 alter table meta add column version int not null default 1;
 
@@ -94,6 +104,7 @@ create table id_generators (
 );
 
 INSERT INTO id_generators (generator_name, generator_value) VALUES ('meta', 1);
+*/
 
 --
 -- Includes table

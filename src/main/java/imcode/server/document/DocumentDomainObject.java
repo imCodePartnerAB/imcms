@@ -142,11 +142,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public int getId() {
-		return meta.getMetaId();
+		return meta.getDocumentId();
 	}
 
 	public void setId(int v) {
-		meta.setMetaId(v);
+		meta.setDocumentId(v);
 	}
 
 	@Deprecated
@@ -635,6 +635,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	 * @see DocumentSaver.saveNewDocument
 	 */
 	public void setDependenciesMetaIdToNull() {
-		meta.setMetaId(null);
+		meta.setId(null);
 	}
 }

@@ -27,14 +27,51 @@ public class MetaDao extends HibernateTemplate {
 	 * @return Meta
 	 */
 	@Transactional
-	public synchronized Meta getMeta(Integer metaId) {
-		Query query = getSession().createQuery("select m from Meta m where m.metaId = :metaId")
-			.setParameter("metaId", metaId);
+	public synchronized Meta getMeta(int documentId, int documentVersion) {
+		Query query = getSession().createQuery("select m from Meta m where m.doc_id = :documentId AND m.doc_version = :documentVersion")
+			.setParameter("documentId", documentId)
+			.setParameter("documentVersion", documentVersion);
 		
 		Meta meta = (Meta)query.uniqueResult();
 		
 		List<I18nLanguage> languages = (List<I18nLanguage>)
-				findByNamedQueryAndNamedParam("I18nLanguage.missingMetaLanguages", "metaId", metaId);
+				findByNamedQueryAndNamedParam("I18nLanguage.missingMetaLanguages", "metaId", meta.getId());
+				
+		if (languages != null) {
+			Collection<I18nMeta> parts = meta.getI18nMetas();
+			
+			for (I18nLanguage language: languages) {
+				I18nMeta part = new I18nMeta();
+				
+				part.setLanguage(language);
+				part.setEnabled(false);
+				part.setHeadline("");
+				part.setMenuImageURL("");
+				part.setMenuText("");
+				
+				parts.add(part);
+			}
+		}
+		
+		return meta;
+	}
+	
+	/**
+	 * Returns meta for given meta id.
+	 * 
+	 * Checks and adds if necessary missing i18n-ed parts to meta. 
+	 * 
+	 * @return Meta
+	 */
+	@Transactional
+	public synchronized Meta getMeta(Integer metaId) {
+		Query query = getSession().createQuery("select m from Meta m where m.id = :id")
+			.setParameter("id", metaId.longValue());
+		
+		Meta meta = (Meta)query.uniqueResult();
+		
+		List<I18nLanguage> languages = (List<I18nLanguage>)
+				findByNamedQueryAndNamedParam("I18nLanguage.missingMetaLanguages", "metaId", metaId.longValue());
 				
 		if (languages != null) {
 			Collection<I18nMeta> parts = meta.getI18nMetas();

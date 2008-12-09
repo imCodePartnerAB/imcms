@@ -29,12 +29,15 @@ CREATE TABLE users (
   UNIQUE KEY UQ__users__login_name (login_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ### META_ID 
---
+-- #Changed
 -- Table meta
 --
+
 CREATE TABLE meta (
-  meta_id int(11) NOT NULL auto_increment,
+  id int(11) NOT NULL auto_increment PRIMARY KEY,
+  meta_id int(11) NOT NULL,
+  meta_version int NOT NULL DEFAULT 1,
+
   doc_type int(11) NOT NULL,
   owner_id int(11) NOT NULL,
   permissions int(11) NOT NULL,
@@ -52,10 +55,12 @@ CREATE TABLE meta (
   publication_start_datetime datetime default NULL,
   publication_end_datetime datetime default NULL,
   missing_i18n_show_rule varchar(32) default 'DO_NOT_SHOW',
-  PRIMARY KEY  (meta_id),
+
   CONSTRAINT meta_FK_owner_id_users FOREIGN KEY (owner_id) REFERENCES users (user_id),
   CONSTRAINT meta_FK_publisher_id_users FOREIGN KEY (publisher_id) REFERENCES users (user_id)
+  UNIQUE INDEX ux__meta__meta_id__meta_version (meta_id, meta_version)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 --
 -- Table category_types
@@ -118,10 +123,10 @@ CREATE TABLE doc_types (
   PRIMARY KEY  (doc_type,lang_prefix)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ### META_ID
 --
 -- Table document_categories
 --
+
 CREATE TABLE document_categories (
   meta_id int(11) NOT NULL,
   category_id int(11) NOT NULL,
@@ -131,11 +136,10 @@ CREATE TABLE document_categories (
   CONSTRAINT document_categories_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table document_properties
 --
+
 CREATE TABLE document_properties (
   id int(11) NOT NULL auto_increment,
   meta_id int(11) NOT NULL,
@@ -155,11 +159,10 @@ CREATE TABLE document_search_log (
   term varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table fileupload_docs
 --
+
 CREATE TABLE fileupload_docs (
   meta_id int(11) NOT NULL,
   variant_name varchar(100) NOT NULL,
@@ -170,11 +173,10 @@ CREATE TABLE fileupload_docs (
   PRIMARY KEY  (meta_id,variant_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table frameset_docs
 --
+
 CREATE TABLE frameset_docs (
   meta_id int(11) NOT NULL,
   frame_set longtext,
@@ -197,26 +199,24 @@ CREATE TABLE i18n_languages (
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table keywords
 --
+
 CREATE TABLE keywords (
   keyword_id int NOT NULL auto_increment,
-  meta_id int default NULL,          
+  meta_id int NULL,          
   language_id smallint NULL, 
   value varchar(128) NOT NULL,
   PRIMARY KEY (keyword_id),
-  CONSTRAINT fk__keywords__meta FOREIGN KEY(meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  CONSTRAINT fk__keywords__meta FOREIGN KEY(meta_id) REFERENCES meta (meta_id),
   CONSTRAINT fk__keywords__i18n_languages FOREIGN KEY(language_id) REFERENCES i18n_languages (language_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table i18n_meta
 --
+
 CREATE TABLE i18n_meta (
   i18n_meta_id int(11) NOT NULL auto_increment,
   language_id smallint(6) default NULL,
@@ -225,20 +225,17 @@ CREATE TABLE i18n_meta (
   meta_headline varchar(255) default NULL,
   meta_text varchar(1000) default NULL,
   meta_image varchar(255) default NULL,
-
-  PRIMARY KEY (i18n_meta_id),
-  UNIQUE INDEX ux__i18n_meta__meta_id__language_id(meta_id, language_id),
-  FOREIGN KEY fk__i18n_meta__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  FOREIGN KEY fk__i18n_meta__language (language_id) REFERENCES i18n_languages (language_id)
+  PRIMARY KEY  (i18n_meta_id),
+  UNIQUE KEY ux__i18n_meta_part__language_id__meta_id (language_id,meta_id),
+  CONSTRAINT i18n_meta_ibfk_1 FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table images
 --
+
 CREATE TABLE images (
-  meta_id int(11) NULL,
+  meta_id int(11) NOT NULL,
   width int(11) NOT NULL,
   height int(11) NOT NULL,
   border int(11) NOT NULL,
@@ -257,14 +254,12 @@ CREATE TABLE images (
   image_id int(11) NOT NULL auto_increment,
   PRIMARY KEY  (image_id),
 
-  FOREIGN KEY fk__images__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  FOREIGN KEY fk__images__i18n_languages (language_id) REFERENCES i18n_languages (language_id),
-  UNIQUE INDEX ux__images__meta_id__name__language_id (meta_id, name, language_id)
+  CONSTRAINT fk__images__meta FOREIGN KEY  (meta_id) REFERENCES meta (meta_id),
+  CONSTRAINT fk__images__i18n_languages FOREIGN KEY  (language_id) REFERENCES i18n_languages (language_id),
+  CONSTRAINT ux__images__meta_id__name__language_id UNIQUE INDEX  (meta_id, name, language_id)
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*
--- ### META_ID
 --
 -- Table images_history
 --
@@ -294,21 +289,19 @@ CREATE TABLE images_history (
   CONSTRAINT images_history_FK_user_id_users FOREIGN KEY (user_id) REFERENCES users (user_id),
   CONSTRAINT images_history_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-*/
 
--- ### META_ID
 --
 -- Table includes
 --
-CREATE TABLE includes (
-  id int auto_increment PRIMARY KEY,
-  meta_id int NULL,
-  include_id int NOT NULL,
-  included_meta_id int NULL,
 
-  UNIQUE INDEX ux__includes__meta_id__include_id(meta_id, include_id),
-  FOREIGN KEY fk__includes__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  FOREIGN KEY fk__includes__included_meta (included_meta_id) REFERENCES meta (meta_id)
+CREATE TABLE includes (
+  meta_id int(11) NOT NULL,
+  include_id int(11) NOT NULL,
+  included_meta_id int(11) NOT NULL,
+  PRIMARY KEY  (meta_id,include_id),
+  KEY includes_FK_included_meta_id_meta (included_meta_id),
+  CONSTRAINT includes_FK_included_meta_id_meta FOREIGN KEY (included_meta_id) REFERENCES meta (meta_id),
+  CONSTRAINT includes_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -344,11 +337,10 @@ CREATE TABLE languages (
   PRIMARY KEY  (lang_prefix,user_prefix)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table menus
 --
+
 CREATE TABLE menus (
   menu_id int(11) NOT NULL auto_increment,
   meta_id int(11) NOT NULL,
@@ -359,11 +351,10 @@ CREATE TABLE menus (
   CONSTRAINT menus_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table childs
 --
+
 CREATE TABLE childs (
   to_meta_id int(11) NOT NULL,
   manual_sort_order int(11) NOT NULL,
@@ -375,12 +366,10 @@ CREATE TABLE childs (
   CONSTRAINT childs_FK_to_meta_id_meta FOREIGN KEY (to_meta_id) REFERENCES meta (meta_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-/*
--- ### META_ID
 --
 -- Table menus_history
 --
+
 CREATE TABLE menus_history (
   menu_id int(11) NOT NULL,
   meta_id int(11) NOT NULL,
@@ -393,11 +382,10 @@ CREATE TABLE menus_history (
   CONSTRAINT menus_history_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table childs_history
 --
+
 CREATE TABLE childs_history (
   menu_id int(11) NOT NULL,
   to_meta_id int(11) NOT NULL,
@@ -408,11 +396,11 @@ CREATE TABLE childs_history (
   CONSTRAINT childs_history_FK_menu_id_menus_history FOREIGN KEY (menu_id) REFERENCES menus_history (menu_id),
   CONSTRAINT childs_history_FK_to_meta_id_meta FOREIGN KEY (to_meta_id) REFERENCES meta (meta_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-*/
 
 --
 -- Table mime_types
 --
+
 CREATE TABLE mime_types (
   mime_id int(11) NOT NULL,
   mime_name varchar(50) NOT NULL,
@@ -442,11 +430,10 @@ CREATE TABLE permissions (
   PRIMARY KEY  (permission_id,lang_prefix)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table doc_permission_sets
 --
+
 CREATE TABLE doc_permission_sets (
   meta_id int(11) NOT NULL,
   set_id int(11) NOT NULL,
@@ -457,11 +444,10 @@ CREATE TABLE doc_permission_sets (
   CONSTRAINT doc_permission_sets_FK_set_id_permission_sets FOREIGN KEY (set_id) REFERENCES permission_sets (set_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table new_doc_permission_sets
 --
+
 CREATE TABLE new_doc_permission_sets (
   meta_id int(11) NOT NULL,
   set_id int(11) NOT NULL,
@@ -472,11 +458,10 @@ CREATE TABLE new_doc_permission_sets (
   CONSTRAINT ndps_ps FOREIGN KEY (set_id) REFERENCES permission_sets (set_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table new_doc_permission_sets_ex
 --
+
 CREATE TABLE new_doc_permission_sets_ex (
   meta_id int(11) NOT NULL,
   set_id int(11) NOT NULL,
@@ -488,11 +473,10 @@ CREATE TABLE new_doc_permission_sets_ex (
   CONSTRAINT ndpse_ps FOREIGN KEY (set_id) REFERENCES permission_sets (set_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table doc_permission_sets_ex
 --
+
 CREATE TABLE doc_permission_sets_ex (
   meta_id int(11) NOT NULL,
   set_id int(11) NOT NULL,
@@ -555,11 +539,10 @@ CREATE TABLE roles (
   UNIQUE KEY UQ_roles__role_name (role_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table roles_rights
 --
+
 CREATE TABLE roles_rights (
   role_id int(11) NOT NULL,
   meta_id int(11) NOT NULL,
@@ -581,10 +564,10 @@ CREATE TABLE sections (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- ### META_ID
 --
 -- Table meta_section
 --
+
 CREATE TABLE meta_section (
   meta_id int(11) NOT NULL,
   section_id int(11) NOT NULL,
@@ -649,11 +632,10 @@ CREATE TABLE templates_cref (
   CONSTRAINT templates_cref_FK_group_id_templategroups FOREIGN KEY (group_id) REFERENCES templategroups (group_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table text_docs
 --
+
 CREATE TABLE text_docs (
   meta_id int(11) NOT NULL,
   template_name varchar(255) NOT NULL,
@@ -665,51 +647,48 @@ CREATE TABLE text_docs (
   CONSTRAINT text_docs_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table texts
 --
+
 CREATE TABLE texts (
-  meta_id int(11) default NULL,
+  meta_id int(11) NOT NULL,
   name int(11) NOT NULL,
   text longtext NOT NULL,
   type int(11) default NULL,
   counter int(11) NOT NULL auto_increment,
   language_id smallint(6) NOT NULL default '1',
   PRIMARY KEY  (counter),
-  FOREIGN KEY fk__texts__i18n_languages (language_id) REFERENCES i18n_languages (language_id),
-  FOREIGN KEY fk__texts__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  UNIQUE INDEX ux__texts__meta_id__name__language_id (meta_id, name, language_id)
+  CONSTRAINT fk__texts__i18n_languages FOREIGN KEY  (language_id) REFERENCES i18n_languages (language_id),
+  CONSTRAINT fk__texts__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id),
+  CONSTRAINT ux__texts__meta_id__name__language_id UNIQUE INDEX (meta_id, name, language_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table texts_history
 --
+
 CREATE TABLE texts_history (
-  meta_id int(11) default NULL,
+  meta_id int(11) NOT NULL,
   name int(11) NOT NULL,
   text longtext NOT NULL,
   type int(11) default NULL,
   modified_datetime datetime NOT NULL,
-  user_id int(11) default NULL,
+  user_id int(11) NOT NULL,
   counter int(11) NOT NULL auto_increment,
   language_id smallint(6) NOT NULL,
-  PRIMARY KEY (counter),
+  PRIMARY KEY  (counter),
 
-  FOREIGN KEY fk__texts_history__i18n_languages (language_id) REFERENCES i18n_languages (language_id),
-  FOREIGN KEY fk__texts_history__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  FOREIGN KEY fk__texts_history__users (user_id) REFERENCES users (user_id) ON DELETE SET NULL
+  CONSTRAINT fk__texts_history__i18n_languages FOREIGN KEY  (language_id) REFERENCES i18n_languages (language_id),
+  CONSTRAINT fk__texts_history__meta FOREIGN KEY  (meta_id) REFERENCES meta (meta_id),
+  CONSTRAINT fk__texts_history__users FOREIGN KEY  (user_id) REFERENCES users (user_id)
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table url_docs
 --
+
 CREATE TABLE url_docs (
   meta_id int(11) NOT NULL,
   frame_name varchar(80) NOT NULL,
@@ -721,11 +700,10 @@ CREATE TABLE url_docs (
   CONSTRAINT url_docs_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- ### META_ID
 --
 -- Table user_rights
 --
+
 CREATE TABLE user_rights (
   user_id int(11) NOT NULL,
   meta_id int(11) NOT NULL,
@@ -760,31 +738,4 @@ CREATE TABLE useradmin_role_crossref (
   KEY useradmin_role_crossref_FK_role_id_roles (role_id),
   CONSTRAINT useradmin_role_crossref_FK_user_id_users FOREIGN KEY (user_id) REFERENCES users (user_id),
   CONSTRAINT useradmin_role_crossref_FK_role_id_roles FOREIGN KEY (role_id) REFERENCES roles (role_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
--- ### META_ID
---
--- Tables for content loop data
---
-CREATE TABLE contents (
-  content_id int auto_increment PRIMARY KEY,
-  content_no int NOT NULL,
-  meta_id int NULL,
-  base_index int NOT NULL,
-
-  UNIQUE INDEX ux__meta_id__content_no (meta_id, content_no),
-  FOREIGN KEY fk__contents__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE content_loops (
-  loop_id int auto_increment PRIMARY KEY,
-  content_id int NOT NULL,
-  loop_index int NOT NULL,
-  order_index int NOT NULL,
-
-  UNIQUE INDEX ux__content_id__loop_index (content_id, loop_index),
-  UNIQUE INDEX ux__content_id__order_index (content_id, order_index),
-  UNIQUE INDEX ux__content_id__loop_index__order_index (content_id, loop_index, order_index),
-  FOREIGN KEY fk__content_loops__contents (content_id) REFERENCES contents (content_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

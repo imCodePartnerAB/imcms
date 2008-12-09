@@ -32,7 +32,7 @@ public class I18nMeta implements Serializable, Cloneable {
 	private Long id;
 	
 	@Column(name="meta_id")
-	private Integer metaId;
+	private Long metaId;
 	
 	@Column(name="meta_enabled")
 	private Boolean enabled;
@@ -120,11 +120,11 @@ public class I18nMeta implements Serializable, Cloneable {
 		this.id = id;
 	}
 
-	public Integer getMetaId() {
+	public Long getMetaId() {
 		return metaId;
 	}
 
-	public void setMetaId(Integer metaId) {
+	public void setMetaId(Long metaId) {
 		this.metaId = metaId;
 	}
 

@@ -234,6 +234,40 @@ public class DocumentMapper implements DocumentGetter {
         documentSaver.saveDocument(document, oldDocument, user);
 
     }
+    
+    
+    /**
+     * Publishes working version of a document.
+     * 
+     * TODO: Implement business logic
+     *  
+     * @param metaId working document version meta id 
+     */
+    public void publishWorkingVersion(int metaId) 
+    throws OperationNotSupportedException {
+    	// perform sanity and security check
+    	//
+    	// #begin transaction 
+    	//   un-publish published version
+    	//   publish working version 
+    	//   create new working version from published version  
+    	// #end transaction
+    	// 
+    	// remove published version from the cache
+    	// remove working version from the cache
+    }
+    
+    /**
+     * TODO: Implement business logic ????????
+     * 
+     * @param metaId document meta id
+     * @param version document version
+     */
+    public DocumentDomainObject copyCustomVersionToWorkingVersion(int metaId, int version) 
+    throws OperationNotSupportedException {
+    	return null;
+    }
+    
 
     public void invalidateDocument(DocumentDomainObject document) {
         documentIndex.indexDocument(document);

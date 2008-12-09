@@ -23,13 +23,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
 
 @Entity
 @Table(name="meta")
@@ -118,18 +114,15 @@ public class Meta implements Serializable, Cloneable {
 		DO_NOT_SHOW,		
 	}
 	
-	@Id
-	@TableGenerator(name="meta", table="id_generators", 
-			pkColumnName="generator_name", valueColumnName="generator_value", allocationSize=10)
-	@GeneratedValue(generator="meta")	
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="meta_id")
 	private Long id;
 	
-	private Integer version;
+	@Column(name="doc_id", insertable=false, updatable=false)
+	private Integer documentId;
 	
-	//@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="meta_id", insertable=false, updatable=false)
-	@Generated(GenerationTime.INSERT)
-	private Integer metaId;
+	@Column(name="doc_version", insertable=true, updatable=false)	
+	private Integer documentVersion;	
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
 	@JoinColumn(name="meta_id", referencedColumnName="meta_id")		
@@ -137,10 +130,6 @@ public class Meta implements Serializable, Cloneable {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="missing_i18n_show_rule")
-	/**
-	 * Please note, that currently this value must not be changed 
-	 * client API. It used internally to cache I18n data.
-	 */
 	private UnavailableI18nDataSubstitution unavailableI18nDataSubstitution =
 		UnavailableI18nDataSubstitution.DO_NOT_SHOW;
 	
@@ -228,7 +217,7 @@ public class Meta implements Serializable, Cloneable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date publicationEndDatetime;
 
-    // Those fields were lazy loaded in previous version:
+    // Those fields were lazy loaded in previous documentVersion:
     @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(
     	name = "document_properties",
@@ -349,12 +338,12 @@ public class Meta implements Serializable, Cloneable {
 		}
 	}	
 	
-	public Integer getMetaId() {
-		return metaId;
+	public Long getId() {
+		return id;
 	}
 
-	public void setMetaId(Integer metaId) {
-		this.metaId = metaId;
+	public void setId(Long metaId) {
+		this.id = metaId;
 	}
 
 	public List<I18nMeta> getI18nMetas() {
@@ -622,19 +611,19 @@ public class Meta implements Serializable, Cloneable {
 			UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;
 	}
 
-	public Long getId() {
-		return id;
+	public Integer getDocumentVersion() {
+		return documentVersion;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setDocumentVersion(Integer version) {
+		this.documentVersion = version;
 	}
 
-	public Integer getVersion() {
-		return version;
+	public Integer getDocumentId() {
+		return documentId;
 	}
 
-	public void setVersion(Integer version) {
-		this.version = version;
+	public void setDocumentId(Integer documentId) {
+		this.documentId = documentId;
 	}	
 }

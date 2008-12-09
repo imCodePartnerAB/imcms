@@ -110,9 +110,9 @@ public class DocumentSaver {
         // Updates permissions - method does not saves but instead just updates meta 
         documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
         
-        int newMetaId = saveMeta(document);
+        meta = saveMeta(document);
                 
-        document.setId(newMetaId);
+        document.setId(meta.getDocumentId());
         
         document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
     	
@@ -126,7 +126,7 @@ public class DocumentSaver {
      * 
      * @return meta id
      */
-    private int saveMeta(DocumentDomainObject document) {
+    private Meta saveMeta(DocumentDomainObject document) {
     	Meta meta = document.getMeta();
     	
     	meta.setCreatorId(document.getCreatorId());
@@ -147,7 +147,7 @@ public class DocumentSaver {
     	meta.setPublicationStartDatetime(document.getPublicationStartDatetime());
     	meta.setPublicationEndDatetime(document.getPublicationEndDatetime());
     	
-    	Integer metaId = meta.getMetaId();
+    	Long metaId = meta.getId();
     	
     	if (metaId == null) {
     		//insert
@@ -190,7 +190,7 @@ public class DocumentSaver {
     	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao");     	
     	metaDao.updateMeta(meta);    	    	
     	
-    	return meta.getMetaId();
+    	return meta;
     }
     
 
