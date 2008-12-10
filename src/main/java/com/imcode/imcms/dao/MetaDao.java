@@ -4,6 +4,8 @@ package com.imcode.imcms.dao;
 import java.util.Collection;
 import java.util.List;
 
+import javax.naming.OperationNotSupportedException;
+
 import org.hibernate.Query;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,17 +22,55 @@ import com.imcode.imcms.mapping.orm.UrlReference;
 public class MetaDao extends HibernateTemplate {
 
 	/**
-	 * Returns meta for given meta id.
+	 * TODO: Implement
+	 * @return Meta
+	 */
+	@Transactional
+	public synchronized Meta getMeta(int documentId, int documentVersion) 
+	throws OperationNotSupportedException {
+		return null;
+	}
+
+	
+	/**
+	 * Returns published document Meta for given document id. 
+	 * 
+	 * @param documentId document id.
+	 * 
+	 * @return published document meta.
+	 */
+	@Transactional
+	public synchronized Meta getPublishedDocumentMeta(Integer documentId) {
+		return getMeta(documentId, Meta.DocumentVersionStatus.PUBLISHED); 
+	}
+	
+	
+	/**
+	 * Returns working document Meta for given document id. 
+	 * 
+	 * @param documentId document id.
+	 * 
+	 * @return published document meta.
+	 */
+	@Transactional
+	public synchronized Meta getWorkingDocumentMeta(Integer documentId) {
+		return getMeta(documentId, Meta.DocumentVersionStatus.WORKING); 
+	} 
+
+	
+	
+	/**
+	 * Returns meta for given document id and and version status. 
 	 * 
 	 * Checks and adds if necessary missing i18n-ed parts to meta. 
 	 * 
 	 * @return Meta
 	 */
-	@Transactional
-	public synchronized Meta getMeta(int documentId, int documentVersion) {
-		Query query = getSession().createQuery("select m from Meta m where m.doc_id = :documentId AND m.doc_version = :documentVersion")
+	private Meta getMeta(Integer documentId, 
+			Meta.DocumentVersionStatus documentVersionStatus) {
+		Query query = getSession().createQuery("select m from Meta m where m.documentId = :documentId and m.documentVersionStatus = :documentVersionStatus")
 			.setParameter("documentId", documentId)
-			.setParameter("documentVersion", documentVersion);
+			.setParameter("documentVersionStatus", documentVersionStatus);
 		
 		Meta meta = (Meta)query.uniqueResult();
 		
@@ -56,53 +96,29 @@ public class MetaDao extends HibernateTemplate {
 		return meta;
 	}
 	
-	/**
-	 * Returns meta for given meta id.
-	 * 
-	 * Checks and adds if necessary missing i18n-ed parts to meta. 
-	 * 
-	 * @return Meta
-	 */
-	@Transactional
-	public synchronized Meta getMeta(Integer metaId) {
-		Query query = getSession().createQuery("select m from Meta m where m.id = :id")
-			.setParameter("id", metaId.longValue());
-		
-		Meta meta = (Meta)query.uniqueResult();
-		
-		List<I18nLanguage> languages = (List<I18nLanguage>)
-				findByNamedQueryAndNamedParam("I18nLanguage.missingMetaLanguages", "metaId", metaId.longValue());
-				
-		if (languages != null) {
-			Collection<I18nMeta> parts = meta.getI18nMetas();
-			
-			for (I18nLanguage language: languages) {
-				I18nMeta part = new I18nMeta();
-				
-				part.setLanguage(language);
-				part.setEnabled(false);
-				part.setHeadline("");
-				part.setMenuImageURL("");
-				part.setMenuText("");
-				
-				parts.add(part);
-			}
-		}
-		
-		return meta;
-	}
 	
 	@Transactional
 	public synchronized void updateMeta(Meta meta) {
-		saveOrUpdate(meta); 
+		// Increment and assign document id if inserting.  
+		if (meta.getId() == null) {
+			Query query = getSession().createQuery("select max(m.documentId) from Meta m");
+			Integer documentId = (Integer)query.uniqueResult();
+			
+			if (documentId != null) {
+				meta.setDocumentId(documentId + 1);				
+			} else {
+				meta.setDocumentId(1001);
+			}
+			
+			meta.setDocumentVersion(1);
+		}
 		
-		// select auto-generated values 
-		flush();
+		saveOrUpdate(meta); 
 	}
 
 
 	@Transactional
-	public void saveIncludes(Integer metaId, Collection<Include> includes) {
+	public void saveIncludes(Long metaId, Collection<Include> includes) {
 		bulkUpdate("delete from Include i where i.metaId = ?", metaId);
 		
 		//flush();
@@ -113,26 +129,26 @@ public class MetaDao extends HibernateTemplate {
 	}
 
 	@Transactional
-	public void saveTemplateNames(Integer metaId, TemplateNames templateNames) {
+	public void saveTemplateNames(Long metaId, TemplateNames templateNames) {
 		// delete first?
 				
 		saveOrUpdate(templateNames);
 	}
 
 	@Transactional
-	public Collection<Include> getIncludes(Integer metaId) {
+	public Collection<Include> getIncludes(Long metaId) {
 		return (Collection<Include>) find("select i from Include i where i.metaId = ?", metaId);
 	}
 
 	@Transactional
-	public TemplateNames getTemplateNames(Integer metaId) {
+	public TemplateNames getTemplateNames(Long metaId) {
 		return (TemplateNames)getSession().createQuery("select n from TemplateNames n where n.metaId = ?")
 			.setParameter(0, metaId)
 			.uniqueResult();
 	}
 
 	@Transactional
-	public Collection<FileReference> getFileReferences(int metaId) {
+	public Collection<FileReference> getFileReferences(Long metaId) {
 		return find("select f from FileReference f where f.metaId = ? ORDER BY f.defaultFileId DESC, f.fileId", metaId);
 	}
 
@@ -144,12 +160,12 @@ public class MetaDao extends HibernateTemplate {
 	}
 
 	@Transactional
-	public int deleteFileReferences(int metaId) {
+	public int deleteFileReferences(Long metaId) {
 		return bulkUpdate("delete from FileReference f where f.metaId = ?", metaId);
 	}
 
 	@Transactional
-	public HtmlReference getHtmlReference(int metaId) {
+	public HtmlReference getHtmlReference(Long metaId) {
 		return (HtmlReference)getSession().createQuery("select h from HtmlReference h where h.metaId = ?")
 		.setParameter(0, metaId)
 		.uniqueResult();
@@ -163,7 +179,7 @@ public class MetaDao extends HibernateTemplate {
 	}
 	
 	@Transactional
-	public UrlReference getUrlReference(int metaId) {
+	public UrlReference getUrlReference(Long metaId) {
 		return (UrlReference)getSession().createQuery("select u from UrlReference u where u.metaId = ?")
 		.setParameter(0, metaId)
 		.uniqueResult();

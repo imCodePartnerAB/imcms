@@ -27,12 +27,34 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-@Entity
-@Table(name="meta")
 /**
  * Document meta.
  */
+@Entity
+@Table(name="meta")
 public class Meta implements Serializable, Cloneable {
+	
+	/**
+	 * Document version status.
+	 * 
+	 * A document has one of the following status: 
+	 *   WORKING
+	 *   PUBLISHED
+	 *   LOCKED,
+	 *   LOCKED_INACESSIBLE
+	 * 
+	 * For every documentId there 
+	 *   - must be exactly one WORKING document version
+	 *   - might be at most one PUBLISHED document version
+	 *   - might be unlimited number of LOCKED document versions  
+	 *   - might be unlimited number of LOCKED_INACESSIBLE document versions.
+	 */
+	public static enum DocumentVersionStatus {
+		WORKING,		
+		PUBLISHED,		
+		LOCKED,
+		LOCKED_INACESSIBLE
+	}	
 	
 	/**
 	 * Create (create only!) permission for template or a document type.
@@ -107,7 +129,7 @@ public class Meta implements Serializable, Cloneable {
 	}
 		
 	/**
-	 * Disabled i18n document's content show mode settings.
+	 * Disabled i18n content show mode.
 	 */
 	public static enum UnavailableI18nDataSubstitution {
 		SHOW_IN_DEFAULT_LANGUAGE,
@@ -118,20 +140,24 @@ public class Meta implements Serializable, Cloneable {
 	@Column(name="meta_id")
 	private Long id;
 	
-	@Column(name="doc_id", insertable=false, updatable=false)
+	@Column(name="doc_id", updatable=false, nullable=false)
 	private Integer documentId;
 	
-	@Column(name="doc_version", insertable=true, updatable=false)	
-	private Integer documentVersion;	
-	
+	@Column(name="doc_version", updatable=false, nullable=false)
+	private Integer documentVersion;
+			
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
 	@JoinColumn(name="meta_id", referencedColumnName="meta_id")		
 	private List<I18nMeta> i18nMetas = new LinkedList<I18nMeta>();
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name="missing_i18n_show_rule")
+	@Column(name="missing_i18n_show_rule", nullable=false)
 	private UnavailableI18nDataSubstitution unavailableI18nDataSubstitution =
 		UnavailableI18nDataSubstitution.DO_NOT_SHOW;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name="doc_version_status", nullable=false)	
+	private DocumentVersionStatus documentVersionStatus;	
 	
 	// CHECKED	
 	@Column(name="activate", nullable=false, updatable=false)
@@ -312,6 +338,7 @@ public class Meta implements Serializable, Cloneable {
 			
 			clone.metaMap = null;
 			clone.unavailableI18nDataSubstitution = unavailableI18nDataSubstitution;
+			clone.documentVersionStatus = documentVersionStatus;
 
 			clone.permisionSetEx = new HashSet<PermisionSetEx>(permisionSetEx);
 			clone.permisionSetExForNew = new HashSet<PermisionSetEx>(permisionSetExForNew);
@@ -625,5 +652,13 @@ public class Meta implements Serializable, Cloneable {
 
 	public void setDocumentId(Integer documentId) {
 		this.documentId = documentId;
+	}
+
+	public DocumentVersionStatus getDocumentVersionStatus() {
+		return documentVersionStatus;
+	}
+
+	public void setDocumentVersionStatus(DocumentVersionStatus documentVersionStatus) {
+		this.documentVersionStatus = documentVersionStatus;
 	}	
 }

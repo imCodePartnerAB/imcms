@@ -19,7 +19,7 @@ public class ImageDao extends HibernateTemplate {
 	
 	@Transactional
 	public synchronized List<ImageDomainObject> getImagesByIndex(
-			int metaId, int imageId, boolean createImageIfNotExists) {
+			Long metaId, int imageId, boolean createImageIfNotExists) {
 
 		List<I18nLanguage> languages = languageDao.getAllLanguages();		
 		List<ImageDomainObject> images = new LinkedList<ImageDomainObject>();
@@ -44,6 +44,7 @@ public class ImageDao extends HibernateTemplate {
 	}
 
 
+	/*
 	@Transactional
 	public synchronized List<ImageDomainObject> getImagesByLanguage(int metaId, int languageId) {
 		List<ImageDomainObject> images = findByNamedQueryAndNamedParam(
@@ -57,9 +58,10 @@ public class ImageDao extends HibernateTemplate {
 		
 		return images;
 	}
+	*/
 	
 	public synchronized ImageDomainObject getImage(int languageId, 
-			int metaId, int index) {
+			Long metaId, int index) {
 		
 		ImageDomainObject image = (ImageDomainObject)getSession().createQuery("select i from I18nImage i where i.metaId = :metaId and i.name = :name and i.language.id = :languageId")
 			.setParameter("metaId", metaId)
@@ -81,7 +83,7 @@ public class ImageDao extends HibernateTemplate {
 	}
 	
 	@Transactional
-	public Collection<ImageDomainObject> getImages(int metaId) {
+	public Collection<ImageDomainObject> getImages(Long metaId) {
 		return find("select i from I18nImage i where i.metaId = ?", metaId);
 	}
 	

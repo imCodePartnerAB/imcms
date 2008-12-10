@@ -22,9 +22,9 @@ public class DocumentShowMode {
 	 * Only logged in user is allowed to change the mode.
 	 */
 	public static enum VersionShowMode {
-		PUBLISHED,
 		WORKING,		
-		// CUSTOM,
+		PUBLISHED,		
+		ARCHIVED
 	}	
 
 	/** 

@@ -141,11 +141,11 @@ public class DocumentMapper implements DocumentGetter {
             throw new UnhandledException(e);
         }
         
-        // TODO: Old code - check and remove!!
-        //newDocument.setId( 0 );
-        
         Meta meta = newDocument.getMeta();
+        
         meta.setId(null);
+        meta.setDocumentVersion(null);
+        meta.setDocumentVersionStatus(null);
         
         for (I18nMeta i18nMeta: meta.getI18nMetas()) {
         	i18nMeta.setHeadline("");
@@ -279,7 +279,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public String[][] getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
-        String sqlStr = "SELECT meta_id,menu_index FROM childs, menus WHERE menus.menu_id = childs.menu_id AND to_meta_id = ?";
+        String sqlStr = "SELECT meta_id,menu_index FROM childs, menus WHERE menus.menu_id = childs.menu_id AND doc_id = ?";
         String[] parameters = new String[]{"" + document.getId()};
         return (String[][]) getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
     }

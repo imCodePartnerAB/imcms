@@ -1,4 +1,4 @@
-﻿﻿-- Changes for v 6.0
+﻿-- Changes for v 6.0
 
 -- Current schema version
 SET @database_version__major__current = 5;
@@ -15,96 +15,51 @@ DELETE FROM meta WHERE doc_type = 6;
 DELETE FROM doc_types WHERE doc_type = 6;
 DELETE FROM doc_permissions WHERE doc_type NOT IN (2,5,7,8);
 
-/*
-CREATE TABLE new__meta (
-  id int auto_increment PRIMARY KEY,
-  meta_id int(11) NOT NULL,
-  meta_version int(11) NOT NULL DEFAULT 0,
-  doc_type int(11) NOT NULL,
-  owner_id int(11) NOT NULL,
-  permissions int(11) NOT NULL,
-  shared int(11) NOT NULL,
-  show_meta int(11) NOT NULL,
-  lang_prefix varchar(3) NOT NULL,
-  date_created datetime NOT NULL,
-  date_modified datetime NOT NULL,
-  disable_search int(11) NOT NULL,
-  target varchar(10) NOT NULL,
-  activate int(11) NOT NULL,
-  archived_datetime datetime default NULL,
-  publisher_id int(11) default NULL,
-  status int(11) NOT NULL,
-  publication_start_datetime datetime default NULL,
-  publication_end_datetime datetime default NULL,
-  missing_i18n_show_rule varchar(32) default 'DO_NOT_SHOW'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-INSERT INTO new__meta (
-  meta_id,
-  meta_version,
-  doc_type,
-  owner_id,
-  permissions,
-  shared,
-  show_meta,
-  lang_prefix,
-  date_created,
-  date_modified,
-  disable_search,
-  target,
-  activate,
-  archived_datetime,
-  publisher_id,
-  status,
-  publication_start_datetime,
-  publication_end_datetime,
-  missing_i18n_show_rule
-) SELECT
-  meta_id,
-  meta_version,
-  doc_type,
-  owner_id,
-  permissions,
-  shared,
-  show_meta,
-  lang_prefix,
-  date_created,
-  date_modified,
-  disable_search,
-  target,
-  activate,
-  archived_datetime,
-  publisher_id,
-  status,
-  publication_start_datetime,
-  publication_end_datetime,
-  missing_i18n_show_rule
-FROM meta;
-
-*/
-
 ALTER TABLE meta
   ADD COLUMN doc_id int NULL AFTER meta_id,
   ADD COLUMN doc_version int NOT NULL DEFAULT 1 AFTER doc_id,
+  ADD COLUMN doc_version_status varchar(12) NULL AFTER doc_version,
   ADD UNIQUE INDEX ux__meta__doc_id__doc_version (doc_id, doc_version);
 
 UPDATE meta SET doc_id = meta_id;
 
-ALTER TABLE meta MODIFY COLUMN doc_id int NOT NULL;
+-- Needs conditional update:
+--  if publication time < now
+--  if publication time > now
+--  assume status
+UPDATE meta SET doc_version_status = 'PUBLISHED';
+-- Copy all published to working ???
 
-/*
-alter table meta add column id int not null default 1;
-alter table meta add column version int not null default 1;
+ALTER TABLE meta 
+  MODIFY COLUMN doc_id int NOT NULL,
+  MODIFY COLUMN doc_version_status varchar(12) NOT NULL;
 
-create table id_generators (
+
+CREATE TABLE new__childs (
   id int auto_increment PRIMARY KEY,
-  generator_name varchar(128) NOT NULL,
-  generator_value int NOT NULL,
-  UNIQUE INDEX ux__generators__generator_name (generator_name)
-);
+  menu_id int(11) NOT NULL,
+  manual_sort_order int(11) NOT NULL,
+  tree_sort_index varchar(64) NOT NULL,
+  doc_id int(11) NOT NULL
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO id_generators (generator_name, generator_value) VALUES ('meta', 1);
-*/
+-- DROP childs_history
+
+INSERT INTO new__childs 
+  (menu_id, manual_sort_order, tree_sort_index, doc_id)
+SELECT
+  menu_id, manual_sort_order, tree_sort_index, to_meta_id
+FROM 
+  childs;
+
+DROP TABLE childs;
+RENAME TABLE new__childs TO childs;
+
+ALTER TABLE childs
+  ADD FOREIGN KEY fk__childs__menus (menu_id) REFERENCES menus (menu_id),
+  ADD FOREIGN KEY fk__childs__meta (doc_id) REFERENCES meta (doc_id),
+  ADD UNIQUE INDEX ux__childs__menu_id__doc_id (menu_id, doc_id);
+
 
 --
 -- Includes table
@@ -113,10 +68,10 @@ CREATE TABLE includes_new (
   id int auto_increment PRIMARY KEY,
   meta_id int NULL,
   include_id int NOT NULL,
-  included_meta_id int NULL
+  included_doc_id int NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO includes_new (meta_id, include_id, included_meta_id)
+INSERT INTO includes_new (meta_id, include_id, included_doc_id)
 SELECT meta_id, include_id, included_meta_id FROM includes;
 
 DROP TABLE includes;
@@ -124,7 +79,7 @@ RENAME TABLE includes_new TO includes;
 
 ALTER TABLE includes ADD UNIQUE INDEX ux__includes__meta_id__include_id(meta_id, include_id);
 ALTER TABLE includes ADD FOREIGN KEY fk__includes__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE;
-ALTER TABLE includes ADD FOREIGN KEY fk__includes__included_meta (included_meta_id) REFERENCES meta (meta_id);
+ALTER TABLE includes ADD FOREIGN KEY fk__includes__included_document (included_doc_id) REFERENCES meta (doc_id);
 
 
 --

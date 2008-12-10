@@ -51,7 +51,7 @@ public class TextDocumentInitializer {
     private void initTexts(TextDocumentDomainObject document) {
     	TextDao dao = (TextDao)Imcms.getServices().getSpringBean("textDao");
     	
-    	Collection<TextDomainObject> texts = dao.getTexts(document.getId());    	    
+    	Collection<TextDomainObject> texts = dao.getTexts(document.getMeta().getId());    	    
     	Map<I18nLanguage, Map<Integer, TextDomainObject>> textsMap = new HashMap<I18nLanguage, Map<Integer,TextDomainObject>>();
     	
     	for (TextDomainObject text: texts) {
@@ -73,12 +73,12 @@ public class TextDocumentInitializer {
     private void initIncludes(TextDocumentDomainObject document) {
     	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
     	
-    	Collection<Include> includes = dao.getIncludes(document.getId());
+    	Collection<Include> includes = dao.getIncludes(document.getMeta().getId());
     	
     	Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
     	
     	for (Include include: includes) {
-    		includesMap.put(include.getIndex(), include.getIncludedMetaId());
+    		includesMap.put(include.getIndex(), include.getIncludedDocumentId());
     	}
     	
     	document.setIncludesMap(includesMap);
@@ -88,7 +88,7 @@ public class TextDocumentInitializer {
     private void initTemplateNames(TextDocumentDomainObject document) {
     	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
     	
-    	TemplateNames templateNames = dao.getTemplateNames(document.getId());
+    	TemplateNames templateNames = dao.getTemplateNames(document.getMeta().getId());
     	
     	//if (templateNames == null) {
     	//	templateNames = new TemplateNames();
@@ -101,7 +101,7 @@ public class TextDocumentInitializer {
     private void initImages(TextDocumentDomainObject document) {
     	ImageDao dao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
     	
-    	Collection<ImageDomainObject> images = dao.getImages(document.getId());
+    	Collection<ImageDomainObject> images = dao.getImages(document.getMeta().getId());
     	
     	Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
     	
@@ -123,7 +123,7 @@ public class TextDocumentInitializer {
     
     private void initMenus(TextDocumentDomainObject document) {
     	MenuDao dao = (MenuDao)Imcms.getServices().getSpringBean("menuDao");
-    	Collection<MenuDomainObject> menus = dao.getMenus(document.getId());	
+    	Collection<MenuDomainObject> menus = dao.getMenus(document.getMeta().getId());	
     	Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
     	
     	//Set<Integer> destinationDocumentIds = new HashSet<Integer>();

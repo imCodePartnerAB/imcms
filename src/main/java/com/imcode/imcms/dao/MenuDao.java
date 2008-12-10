@@ -12,11 +12,14 @@ import imcode.server.document.textdocument.TreeSortKeyDomainObject;
 
 public class MenuDao extends HibernateTemplate {
 
+	/*
 	@Transactional
 	public MenuDomainObject getMenu(long id) {
 		return (MenuDomainObject)get(MenuDomainObject.class, id);
 	}
+	*/
 	
+	/*
 	@Transactional
 	public MenuDomainObject getMenu(int metaId, int index) {
 		String hql = "SELECT m FROM Menu m  WHERE m.metaId = :metaId AND m.index = :index";
@@ -26,9 +29,10 @@ public class MenuDao extends HibernateTemplate {
 			.setParameter("index", index)
 			.uniqueResult();
 	}
+	*/
 	
 	@Transactional
-	public List<MenuDomainObject> getMenus(int metaId) {
+	public List<MenuDomainObject> getMenus(Long metaId) {
 		String hql = "SELECT m FROM Menu m  WHERE m.metaId = :metaId";
 		
 		List<MenuDomainObject> menus = (List<MenuDomainObject>)findByNamedParam(hql, "metaId", metaId);
@@ -44,7 +48,7 @@ public class MenuDao extends HibernateTemplate {
 	
 	
 	@Transactional
-	public Map<Integer, MenuDomainObject> saveDocumentMenus(int metaId, Map<Integer, MenuDomainObject> menusMap) {
+	public Map<Integer, MenuDomainObject> saveDocumentMenus(Long metaId, Map<Integer, MenuDomainObject> menusMap) {
 		for (Map.Entry<Integer, MenuDomainObject> entry: menusMap.entrySet()) {
 			MenuDomainObject menu = entry.getValue();
 			

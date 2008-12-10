@@ -47,7 +47,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
 	private Integer index;
 	
 	@Column(name="meta_id")
-	private Integer metaId;
+	private Long metaId;
     
 
 	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
@@ -56,7 +56,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
 	    joinColumns = @JoinColumn(name="menu_id")
 	)	
 	@org.hibernate.annotations.MapKey(
-	   columns = @Column(name="to_meta_id")
+	   columns = @Column(name="doc_id")
 	)
     private Map<Integer, MenuItemDomainObject> menuItems = new HashMap<Integer, MenuItemDomainObject>();
 
@@ -244,11 +244,11 @@ public class MenuDomainObject implements Cloneable, Serializable {
 		this.index = index;
 	}
 
-	public Integer getMetaId() {
+	public Long getMetaId() {
 		return metaId;
 	}
 
-	public void setMetaId(Integer metaId) {
+	public void setMetaId(Long metaId) {
 		this.metaId = metaId;
 	}
 

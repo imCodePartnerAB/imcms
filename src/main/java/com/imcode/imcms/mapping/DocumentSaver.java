@@ -96,6 +96,10 @@ public class DocumentSaver {
         
         document.setDependenciesMetaIdToNull(); 
         Meta meta = document.getMeta();
+        
+        // Version
+        // if publicating aprowed - publish else ??? 
+        meta.setDocumentVersionStatus(Meta.DocumentVersionStatus.PUBLISHED);
 
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 

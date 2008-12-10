@@ -5,15 +5,13 @@ import imcode.server.user.UserDomainObject;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
-import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 
 public class TextDao extends HibernateTemplate {
 
+	/*
 	@Transactional
 	public synchronized List<TextDomainObject> getTexts(int metaId, int languageId) {
 		List<TextDomainObject> texts = findByNamedQueryAndNamedParam(
@@ -23,7 +21,9 @@ public class TextDao extends HibernateTemplate {
 			
 		return texts;
 	}
+	*/
 	
+	/*
 	@Transactional
 	public synchronized TextDomainObject getText(int metaId, int index, int languageId) {
 		Session session = getSession();
@@ -37,6 +37,7 @@ public class TextDao extends HibernateTemplate {
 		
 		return text;
 	}
+	*/
 	
 
 	@Transactional
@@ -48,12 +49,12 @@ public class TextDao extends HibernateTemplate {
 	}
 
 	@Transactional
-	public Collection<TextDomainObject> getTexts(int metaId) {
+	public Collection<TextDomainObject> getTexts(Long metaId) {
 		return find("select t from I18nText t where t.metaId = ?", metaId);
 	}
 	
 	@Transactional
-	public void saveTextHistory(int metaId, TextDomainObject text, UserDomainObject user) {
+	public void saveTextHistory(Long metaId, TextDomainObject text, UserDomainObject user) {
 		String sql = "INSERT INTO texts_history (meta_id, name, text, type, modified_datetime, user_id, language_id) VALUES " +
 		"(:metaId,:index,:text,:type,:modifiedDt,:userId,:languageId)";
 		

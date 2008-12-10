@@ -81,7 +81,7 @@ public class AdminDoc extends HttpServlet {
             //TODO Anton Josua: Document info: i18n. refactor
         	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao"); 
         	
-        	Meta meta = metaDao.getMeta(document.getId());
+        	Meta meta = metaDao.getPublishedDocumentMeta(document.getId());
         	
         	document.setMeta(meta);
         	

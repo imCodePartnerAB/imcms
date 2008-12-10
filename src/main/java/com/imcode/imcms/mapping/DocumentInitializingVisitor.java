@@ -32,7 +32,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     public void visitFileDocument(final FileDocumentDomainObject document) {    	
     	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
     	
-    	Collection<FileReference> fileReferences = dao.getFileReferences(document.getId());
+    	Collection<FileReference> fileReferences = dao.getFileReferences(document.getMeta().getId());
     	
     	for (FileReference fileRef: fileReferences) {
             String fileId = fileRef.getFileId();           
@@ -66,14 +66,14 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
     	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
     	
-    	HtmlReference html = dao.getHtmlReference(document.getId());
+    	HtmlReference html = dao.getHtmlReference(document.getMeta().getId());
     	document.setHtml(html.getHtml());    	
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject document) {
     	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
     	
-    	UrlReference reference = dao.getUrlReference(document.getId());
+    	UrlReference reference = dao.getUrlReference(document.getMeta().getId());
     	document.setUrl(reference.getUrl());    	
     }
 

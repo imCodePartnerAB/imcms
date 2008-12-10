@@ -238,7 +238,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     		newText.setId(null);
     	}
     	
-    	newText.setMetaId(getId());
+    	newText.setMetaId(getMeta().getId());
     	newText.setIndex(index);
     	newText.setLanguage(language);
     	newText.setModified(true);
@@ -345,7 +345,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     		newImage.setId(null);
     	}
     	
-    	newImage.setMetaId(getId());
+    	newImage.setMetaId(getMeta().getId());
     	newImage.setLanguage(language);
     	newImage.setIndex(index);
     	newImage.setModified(true);

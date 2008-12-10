@@ -103,7 +103,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
-        Integer metaId = textDocument.getId();
+        Long metaId = textDocument.getMeta().getId();
 
         for (Map<Integer, TextDomainObject> map: textDocument.getAllTexts().values()) {
         	for (TextDomainObject text: map.values()) {
@@ -131,7 +131,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         for (Map<Integer, ImageDomainObject> map: textDocument.getAllImages().values()) {
         	for (ImageDomainObject image: map.values()) {
                 if (image.isModified()) {                	 
-                	image.setMetaId(metaId);
+                	// TODO: remove
+                	image.setMetaId(textDocument.getMeta().getId()); 
                     imageDao.saveImage(image);
                     //imageDao.saveImageHistory(metaId, text, user); 
                 }        		
@@ -145,13 +146,13 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
     	
     	Set<Include> includes = new HashSet<Include>();
-    	Integer metaId = textDocument.getId();
+    	Long metaId = textDocument.getMeta().getId();
     	
     	for (Map.Entry<Integer, Integer> entry: textDocument.getIncludesMap().entrySet()) {
     		Include include = new Include();
     		include.setMetaId(metaId);
     		include.setIndex(entry.getKey());
-    		include.setIncludedMetaId(entry.getValue());
+    		include.setIncludedDocumentId(entry.getValue());
     		
     		includes.add(include);
     	}
@@ -164,9 +165,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
     	
     	TemplateNames templateNames = textDocument.getTemplateNames();
-    	Integer metaId = textDocument.getId();
+    	Long metaId = textDocument.getMeta().getId();
     	    	
     	templateNames.setMetaId(metaId);
+    	
     	dao.saveTemplateNames(metaId, templateNames);    	
     }    
 
@@ -177,7 +179,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         Map fileDocumentFiles = fileDocument.getFiles();
 
         // DELETE
-        dao.deleteFileReferences(fileDocument.getId());
+        dao.deleteFileReferences(fileDocument.getMeta().getId());
 
         
         // Save point...
@@ -193,7 +195,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
             boolean isDefaultFile = fileId.equals( fileDocument.getDefaultFileId());
             FileReference fileRef = new FileReference();
-            fileRef.setMetaId(fileDocument.getId());
+            fileRef.setMetaId(fileDocument.getMeta().getId());
             fileRef.setFileId(fileId);
             fileRef.setFilename(filename);
             fileRef.setDefaultFileId(isDefaultFile);
@@ -233,6 +235,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     protected void updateTextDocumentMenus(final TextDocumentDomainObject textDocument, final TextDocumentDomainObject oldTextDocument, final UserDomainObject savingUser) {
     	MenuDao dao = (MenuDao)services.getSpringBean("menuDao");
 
-    	dao.saveDocumentMenus(textDocument.getId(), textDocument.getMenus());
+    	dao.saveDocumentMenus(textDocument.getMeta().getId(), textDocument.getMenus());
     }
 }

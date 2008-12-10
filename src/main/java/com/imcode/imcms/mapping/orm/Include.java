@@ -21,10 +21,10 @@ public class Include {
 	private Long id;
 	
 	@Column(name="meta_id")
-	private Integer metaId;
+	private Long metaId;
 	
-	@Column(name="included_meta_id")
-	private Integer includedMetaId;
+	@Column(name="included_doc_id")
+	private Integer includedDocumentId;
 	
 	@Column(name="include_id")
 	private Integer index;
@@ -59,20 +59,20 @@ public class Include {
 		this.id = id;
 	}
 
-	public Integer getMetaId() {
+	public Long getMetaId() {
 		return metaId;
 	}
 
-	public void setMetaId(Integer metaId) {
+	public void setMetaId(Long metaId) {
 		this.metaId = metaId;
 	}
 
-	public Integer getIncludedMetaId() {
-		return includedMetaId;
+	public Integer getIncludedDocumentId() {
+		return includedDocumentId;
 	}
 
-	public void setIncludedMetaId(Integer includedMetaId) {
-		this.includedMetaId = includedMetaId;
+	public void setIncludedDocumentId(Integer includedMetaId) {
+		this.includedDocumentId = includedMetaId;
 	}
 
 	public Integer getIndex() {

@@ -20,7 +20,7 @@ public class TemplateNames implements Cloneable {
 	private Long id;
 	
 	@Column(name="meta_id")
-	private Integer metaId;
+	private Long metaId;
 	
 	@Column(name="template_name")
     private String templateName;
@@ -94,11 +94,11 @@ public class TemplateNames implements Cloneable {
 		this.id = id;
 	}
 
-	public Integer getMetaId() {
+	public Long getMetaId() {
 		return metaId;
 	}
 
-	public void setMetaId(Integer metaId) {
+	public void setMetaId(Long metaId) {
 		this.metaId = metaId;
 	}
 }

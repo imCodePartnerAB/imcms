@@ -33,6 +33,9 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
         this.services = services;
     }
 
+    /**
+     * Returns published documents.
+     */
     public List getDocuments(final Collection documentIds) {
         if (documentIds.isEmpty()) {
             return Collections.EMPTY_LIST ;
@@ -43,7 +46,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
         initDocuments(documentsMap);
         
         return new DocumentList(documentsMap);
-    }
+    }    
     
     
     /**
@@ -55,7 +58,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
     	Map<Integer, DocumentDomainObject> map = new LinkedHashMap<Integer, DocumentDomainObject>();
     	
     	for (Integer metaId: documentIds) {
-    		Meta meta = metaDao.getMeta(metaId);
+    		Meta meta = metaDao.getPublishedDocumentMeta(metaId);
     		
     		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
     		
