@@ -35,6 +35,9 @@ if (queryString == null) {
 	baseURL.append("?" + queryString + "&lang=");
 }
 
+// Versions:
+	
+
 pageContext.setAttribute("baseURL", baseURL);
 
 /* *******************************************************************************************
@@ -175,6 +178,30 @@ if (null != languages) { %>
 	</table></td>
 </tr><%
 } %>
+
+<%-- 
+Check if published version exists
+// replace symbolic version (working|published) with number 
+--%>
+
+<tr>
+  <td>
+    <table bolder="1">
+      <tr>
+        <td>
+          <a href="${baseURL}<%=currentLanguage.getCode()%>&version=WORKING">
+            #WORKING#
+          </a>  
+        </td>
+        <td>
+          <a href="${baseURL}<%=currentLanguage.getCode()%>&version=PUBLISHED">
+            #PUBLISHED#
+          </a>  
+        </td>
+      </tr>  
+    </table>  
+  </td>
+</tr>
 
 <tr>
 	<td class="adminPanelTd2" align="center" nowrap>
