@@ -7,10 +7,6 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +15,12 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import com.imcode.imcms.api.Content;
+import com.imcode.imcms.api.ContentLoop;
+
+/**
+ * Content tag prototype.
+ */
 public class ContentTag extends BodyTagSupport {
 	
 	public final static int STEP = 100000;
@@ -83,23 +85,25 @@ public class ContentTag extends BodyTagSupport {
     
     
     public int doAfterBody() throws JspException {
-    	Iterator<Integer> indexIterator = (Iterator<Integer>)pageContext.getAttribute("indexIterator");
+    	Iterator<Content> contentsIterator = (Iterator<Content>)pageContext.getAttribute("contentsIterator");
     	
     	//GroupData groupData = (GroupData)pageContext.getAttribute("groupData");
     	//int index = groupData.incIterationIndex(); 
     	// getLoopIndex
     	
-    	if (!indexIterator.hasNext()) {
+    	if (!contentsIterator.hasNext()) {
     		pageContext.removeAttribute(indexVar);
     		
     		return super.doAfterBody();
     	}
     	
-    	int sequenceIndex = indexIterator.next();
+    	Content content = contentsIterator.next();
+    	
+    	int sequenceIndex = content.getSequenceIndex();
     	int index = baseIndex + (sequenceIndex * STEP);
     		
     	pageContext.setAttribute(indexVar, index);
-    	pageContext.getRequest().setAttribute("sequenceIndex", sequenceIndex);
+    	pageContext.getRequest().setAttribute("contentId", content.getId());
     		
     	return EVAL_BODY_AGAIN;
     	
@@ -124,21 +128,22 @@ public class ContentTag extends BodyTagSupport {
 			binding.setVariable("contentTag", this);			
 			gse.run("ContentTag.groovy", binding);
 			
-			List<Integer> orderedIndexes = (List<Integer>)binding.getVariable("ordredLoopIndexes");
+			ContentLoop loop = (ContentLoop)binding.getVariable("loop");
+			Iterator<Content> contentsIterator = loop.getContents().iterator();
 			
-			Iterator<Integer> indexIterator = orderedIndexes.iterator(); 
-			
-			if (!indexIterator.hasNext()) {
+			if (!contentsIterator.hasNext()) {
 				return SKIP_BODY;
 			} 
 			
-			pageContext.setAttribute("indexIterator", indexIterator);
+			pageContext.setAttribute("contentsIterator", contentsIterator);
 							    	
-	    	int sequenceIndex = indexIterator.next();
+			Content content = contentsIterator.next();
+			
+			int sequenceIndex = content.getSequenceIndex();
 	    	int index = baseIndex + (sequenceIndex * STEP);
 	    		
 	    	pageContext.setAttribute(indexVar, index);
-	    	pageContext.getRequest().setAttribute("sequenceIndex", sequenceIndex);	    	
+	    	pageContext.getRequest().setAttribute("contentId", content.getId());
 	    	
 	    	return super.doStartTag();
         } catch (Exception e) {
@@ -169,7 +174,7 @@ public class ContentTag extends BodyTagSupport {
 		} catch (Exception e) {
 			throw new JspException(e);
 		} finally {
-			pageContext.getRequest().removeAttribute("sequenceIndex");			
+			pageContext.getRequest().removeAttribute("contentId");			
 		}
 		
 		return super.doEndTag();

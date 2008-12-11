@@ -1,23 +1,17 @@
 package com.imcode.imcms.servlet.tags;
 
-import groovy.lang.Binding;
-import groovy.util.GroovyScriptEngine;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+/**
+ * Content loop tag prototype.
+ */
 public class ContentLoopTag extends BodyTagSupport {
 		
 	public int doEndTag() throws JspException {

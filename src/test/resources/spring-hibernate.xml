@@ -8,7 +8,8 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
      
-  <tx:annotation-driven transaction-manager="txManager"/>
+    <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
+
   
   <bean id="propertyConfigurer"
       class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -48,41 +49,28 @@
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>  
   
-  <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate" scope="protorype">
+  <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
   
-  <bean id="metaDao" class="com.imcode.imcms.dao.MetaDaoImpl">
+  <bean id="metaDao" class="com.imcode.imcms.dao.MetaDao">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
   
-  <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDaoImpl">
+  <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDao">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>  
-  
-  <bean id="imageDao" class="com.imcode.imcms.dao.ImageDaoImpl">
-    <property name="sessionFactory" ref="sessionFactory"/>
-    <property name="languageDao" ref="languageDao"/>
-  </bean> 
-  
-   <bean id="textDao" class="com.imcode.imcms.dao.TextDaoImpl">
+    
+   <bean id="textDao" class="com.imcode.imcms.dao.TextDao">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
   
-  <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDaoImpl">
+  <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDao">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>        
+  
+  <bean id="menuDao" class="com.imcode.imcms.dao.MenuDao">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>  
   
-  <!-- 
-  <bean id="includeDao" class="com.imcode.imcms.dao.IncludeDaoImpl">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>  
-
-  <bean id="templateNamesDao" class="com.imcode.imcms.dao.TemplateNamesDaoImpl">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>   -->
-  
-  <bean id="menuDao" class="com.imcode.imcms.dao.MenuDaoImpl">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>  
 </beans>

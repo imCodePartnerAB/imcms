@@ -10,28 +10,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.NamedNativeQueries;
-
 @Entity
-@Table(name="contents")
+@Table(name="text_doc_content_loops")
 @NamedQueries({
-	@NamedQuery(name="ContentLoop.getByMetaAndNo", 
-			query="SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.no = :no"),
-	@NamedQuery(name="ContentLoop.getNextContentIndexes", 
-			query="SELECT max(c.sequenceIndex) + 1 AS NEXT_SEQUENCE_INDEX, "    + 
-			             "max(c.orderIndex)    + 1 AS NEXT_HIGHER_ORDER_INDEX, " + 
-			             "min(c.orderIndex)    - 1 AS NEXT_LOWER_ORDER_INDEX "   +
-  	               "FROM ContentLoop l JOIN l.contents c " +
-			       "WHERE l.id = :id")	
+	@NamedQuery(name="ContentLoop.getByMetaIdAndIndex", 
+			query="SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.no = :index")
 })
 public class ContentLoop {
 	
@@ -41,20 +30,19 @@ public class ContentLoop {
 	public static final int STEP = 100000;
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="content_id")
 	private Long id;
 
 	@Column(name="base_index")
 	private Integer baseIndex;
 	
-	@Column(name="content_no")
+	@Column(name="loop_index")
 	private Integer no;
 	
 	@Column(name="meta_id")
-	private Integer metaId;
+	private Long metaId;
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-    @JoinColumn(name="content_id", referencedColumnName="content_id")
+    @JoinColumn(name="loop_id")
     @OrderBy("orderIndex")
 	private List<Content> contents;
 	
@@ -82,11 +70,11 @@ public class ContentLoop {
 		this.no = no;
 	}
 
-	public Integer getMetaId() {
+	public Long getMetaId() {
 		return metaId;
 	}
 
-	public void setMetaId(Integer metaId) {
+	public void setMetaId(Long metaId) {
 		this.metaId = metaId;
 	}
 

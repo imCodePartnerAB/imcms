@@ -49,8 +49,8 @@ public class DocumentSaver {
             	modifiedDatetime = documentMapper.getClock().getCurrentDate();
             }
             
-    		template.bulkUpdate("update Meta m set m.modifiedDatetime = ? where m.metaId = ?", 
-    			new Object[] {modifiedDatetime, document.getId()});
+    		template.bulkUpdate("update Meta m set m.modifiedDatetime = ? where m.id = ?", 
+    			new Object[] {modifiedDatetime, document.getMeta().getId()});
 	    } finally {
 	        documentMapper.invalidateDocument(document);
 	    }    	

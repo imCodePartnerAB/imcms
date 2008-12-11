@@ -35,6 +35,72 @@ ALTER TABLE meta
   MODIFY COLUMN doc_version_status varchar(12) NOT NULL;
 
 
+/*
+
+--
+-- Tables for content loop data
+--
+CREATE TABLE contents (
+  content_id int auto_increment PRIMARY KEY,
+  content_no int NOT NULL,
+  meta_id int NULL,
+  base_index int NOT NULL,
+
+  UNIQUE INDEX ux__meta_id__content_no (meta_id, content_no),
+  FOREIGN KEY fk__contents__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE content_loops (
+  loop_id int auto_increment PRIMARY KEY,
+  content_id int NOT NULL,
+  loop_index int NOT NULL,
+  order_index int NOT NULL,
+
+  UNIQUE INDEX ux__content_id__loop_index (content_id, loop_index),
+  UNIQUE INDEX ux__content_id__order_index (content_id, order_index),
+  UNIQUE INDEX ux__content_id__loop_index__order_index (content_id, loop_index, order_index),
+  FOREIGN KEY fk__content_loops__contents (content_id) REFERENCES contents (content_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+*/
+
+-- contents becoms text_doc_content_loops
+CREATE TABLE text_doc_content_loops (
+  id int auto_increment PRIMARY KEY,
+  meta_id int NOT NULL,
+  loop_index int NOT NULL,
+  base_index int NOT NULL,
+  FOREIGN KEY fk__text_doc_content_loops__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  UNIQUE INDEX ux__text_doc_content_loops__meta_id__loop_index (meta_id, loop_index)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO text_doc_content_loops (meta_id, loop_index, base_index)
+SELECT meta_id, content_no, base_index
+FROM contents;
+
+-- content_loops becoms text_doc_contents
+CREATE TABLE text_doc_contents (
+  id int auto_increment PRIMARY KEY,
+  loop_id int NOT NULL,
+  sequence_index int NOT NULL,
+  order_index int NOT NULL,
+
+  UNIQUE INDEX ux__loop_id__sequence_index (loop_id, sequence_index),
+  UNIQUE INDEX ux__loop_id__order_index (loop_id, order_index),
+  FOREIGN KEY fk__text_doc_contents__text_doc_content_loops (loop_id) REFERENCES text_doc_content_loops (id) ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO text_doc_contents (loop_id, sequence_index, order_index)
+SELECT content_id, loop_index, order_index
+FROM content_loops;
+
+DROP TABLE content_loops;
+DROP TABLE contents;
+
+--
+-- Text docuemnt menu items
+--
 CREATE TABLE new__childs (
   id int auto_increment PRIMARY KEY,
   menu_id int(11) NOT NULL,

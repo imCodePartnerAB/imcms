@@ -10,25 +10,41 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="content_loops")
+@Table(name="text_doc_contents")
 @NamedQueries({
-	@NamedQuery(name="Content.getByLoopIdAndSequenceIndex", 
-			query="SELECT c FROM Content c WHERE c.loopId = :loopId AND c.sequenceIndex = :sequenceIndex")
+	@NamedQuery(name="Content.getByLoopIdAndOrderIndex", 
+		query="SELECT c FROM Content c " +
+				"WHERE c.loopId = :loopId AND c.orderIndex = :orderIndex"),
+								
+	@NamedQuery(name="Content.getNextIndexes", 
+		query="SELECT " +
+				 "min(c.orderIndex)    - 1, " +
+				 "max(c.orderIndex)    + 1, " + 
+			     "max(c.sequenceIndex) + 1  " + 
+               "FROM " +
+                 "ContentLoop l JOIN l.contents c " +
+		       "WHERE l.id = :loopId"),
+
+   	@NamedQuery(name="Content.updateOrderIndex", 
+		query="UPDATE Content c " +
+				"SET c.orderIndex = :orderIndex WHERE c.id = :id"),
+				
+   	@NamedQuery(name="Content.delete", 
+   			query="DELETE FROM Content c WHERE c.id = :id")
 })
 public class Content {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="loop_id")
 	private Long id;
 	
-	@Column(name="content_id")
+	@Column(name="loop_id")
 	private Long loopId;	
-	
-	@Column(name="loop_index")
-	private Integer sequenceIndex;
 	
 	@Column(name="order_index")
 	private Integer orderIndex;
+	
+	@Column(name="sequence_index", updatable=false)
+	private Integer sequenceIndex;	
 
 	public Long getId() {
 		return id;
@@ -36,14 +52,6 @@ public class Content {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Integer getSequenceIndex() {
-		return sequenceIndex;
-	}
-
-	public void setSequenceIndex(Integer index) {
-		this.sequenceIndex = index;
 	}
 
 	public Integer getOrderIndex() {
@@ -60,5 +68,13 @@ public class Content {
 
 	public void setLoopId(Long contentId) {
 		this.loopId = contentId;
+	}
+
+	public Integer getSequenceIndex() {
+		return sequenceIndex;
+	}
+
+	public void setSequenceIndex(Integer sequenceIndex) {
+		this.sequenceIndex = sequenceIndex;
 	}		
 }

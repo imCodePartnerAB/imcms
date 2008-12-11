@@ -21,7 +21,7 @@
       <form method="get" action="<%=request.getRequestURL().toString()%>">
         <input type="submit" value="Remove"/>
         <input type="hidden" name="cmd" value="remove"/>
-        <input type="hidden" name="sequenceIndex" value="${sequenceIndex}"/>
+        <input type="hidden" name="contentId" value="${contentId}"/>
         <input type="hidden" name="meta_id" value="<%=request.getParameter("meta_id")%>"/>
         <input type="hidden" name="flags" value="<%=request.getParameter("flags")%>"/>
       </form>  
@@ -30,7 +30,7 @@
       <form method="get" action="<%=request.getRequestURL().toString()%>">
         <input type="submit" value="Move Up"/>
         <input type="hidden" name="cmd" value="moveUp"/>
-        <input type="hidden" name="sequenceIndex" value="${sequenceIndex}"/>
+        <input type="hidden" name="contentId" value="${contentId}"/>
         <input type="hidden" name="meta_id" value="<%=request.getParameter("meta_id")%>"/>
         <input type="hidden" name="flags" value="<%=request.getParameter("flags")%>"/>
       </form>  
@@ -38,7 +38,7 @@
     <td>
       <form method="get" action="<%=request.getRequestURL().toString()%>">
         <input type="submit" value="Move Down"/>
-        <input type="hidden" name="sequenceIndex" value="${sequenceIndex}"/>
+        <input type="hidden" name="contentId" value="${contentId}"/>
         <input type="hidden" name="cmd" value="moveDown"/>
         <input type="hidden" name="meta_id" value="<%=request.getParameter("meta_id")%>"/>
         <input type="hidden" name="flags" value="<%=request.getParameter("flags")%>"/>
@@ -47,7 +47,7 @@
     <td>
       <form method="get" action="<%=request.getRequestURL().toString()%>">
         <input type="submit" value="Add Before"/>
-        <input type="hidden" name="sequenceIndex" value="${sequenceIndex}"/>
+        <input type="hidden" name="contentId" value="${contentId}"/>
         <input type="hidden" name="cmd" value="addBefore"/>
         <input type="hidden" name="meta_id" value="<%=request.getParameter("meta_id")%>"/>
         <input type="hidden" name="flags" value="<%=request.getParameter("flags")%>"/>
@@ -56,7 +56,7 @@
     <td>
       <form method="get" action="<%=request.getRequestURL().toString()%>">
         <input type="submit" value="Add After"/>
-        <input type="hidden" name="sequenceIndex" value="${sequenceIndex}"/>
+        <input type="hidden" name="contentId" value="${contentId}"/>
         <input type="hidden" name="cmd" value="addAfter"/>
         <input type="hidden" name="meta_id" value="<%=request.getParameter("meta_id")%>"/>
         <input type="hidden" name="flags" value="<%=request.getParameter("flags")%>"/>
