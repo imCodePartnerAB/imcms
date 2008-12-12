@@ -15,12 +15,17 @@ import com.imcode.imcms.mapping.aop.TextDocumentAspect;
 /**
  * TODO: 
  *   cache -> published version cache
- *   latestCache -> latest version cache
- *   customCacle -> custom version cache.
+ *   workingCache -> working version cache
+ *   customCacle -> custom version cache. by meta id
  */
 public class CachingDocumentGetter extends DocumentGetterWrapper {
 
     private Map cache;
+    
+    // Used by CGLIB proxy generator
+    public CachingDocumentGetter() {
+    	super(null);
+    }
     
     public CachingDocumentGetter(DocumentGetter documentGetter, Map cache) {
         super(documentGetter);
@@ -51,7 +56,8 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
                 
         return document;
     }
-
+            
+    
     public List getDocuments(Collection documentIds) {
         return super.getDocuments(documentIds) ;
     }    

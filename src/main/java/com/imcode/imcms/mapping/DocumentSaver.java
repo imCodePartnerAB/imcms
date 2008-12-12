@@ -22,9 +22,12 @@ import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
 
+// Instantiated using spring
 public class DocumentSaver {
 
     private DocumentMapper documentMapper;
+    
+    private MetaDao metaDao; 
     
     public DocumentSaver() {}
     
@@ -32,7 +35,8 @@ public class DocumentSaver {
         this.documentMapper = documentMapper;
     }
     
-    @Transactional     //experemental
+    //experemental
+    @Transactional     
     public void saveDocumentFragment(DocumentDomainObject document, UserDomainObject user, HibernateCallback hibernateCallback) throws NoPermissionInternalException, DocumentSaveException {
     	checkDocumentForSave(document);
     	
@@ -78,13 +82,43 @@ public class DocumentSaver {
             
             DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDocument, documentMapper.getImcmsServices(), user);
             
-            saveMeta(document);
+            saveMeta(document.getMeta().getId(), document);
                         
             document.accept(savingVisitor);
         } finally {
             documentMapper.invalidateDocument(document);
         }
     }
+    
+    
+    @Transactional
+    public void saveAsWorkingVersion(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        //checkDocumentForSave(document);
+        //document.loadAllLazilyLoaded();
+        
+    	Long metaId = document.getMeta().getId();
+    		
+    	document = document.clone();
+    	document.setDependenciesMetaIdToNull();
+    	document.getMeta().setDocumentVersionStatus(Meta.DocumentVersionStatus.WORKING);
+    	document.getMeta().setDocumentVersion(null);
+    	
+        //try {
+            Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
+            Date modifiedDatetime = Utility.truncateDateToMinutePrecision(document.getModifiedDatetime());
+            boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
+            if (modifiedDatetimeUnchanged) {
+                document.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
+            }
+            
+            saveMeta(metaId, document);
+            
+            document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
+        //} finally {
+        //    documentMapper.invalidateDocument(document);
+        //}
+    }
+    
 
 
     @Transactional
@@ -97,9 +131,10 @@ public class DocumentSaver {
         document.setDependenciesMetaIdToNull(); 
         Meta meta = document.getMeta();
         
-        // Version
-        // if publicating aprowed - publish else ??? 
+        // TODO: should be working
+        // 
         meta.setDocumentVersionStatus(Meta.DocumentVersionStatus.PUBLISHED);
+        meta.setDocumentVersion(null);
 
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 
@@ -114,10 +149,8 @@ public class DocumentSaver {
         // Updates permissions - method does not saves but instead just updates meta 
         documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
         
-        meta = saveMeta(document);
+        meta = saveMeta(null, document);
                 
-        document.setId(meta.getDocumentId());
-        
         document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
     	
         documentMapper.invalidateDocument(document);
@@ -130,7 +163,7 @@ public class DocumentSaver {
      * 
      * @return meta id
      */
-    private Meta saveMeta(DocumentDomainObject document) {
+    private Meta saveMeta(Long metaId, DocumentDomainObject document) {
     	Meta meta = document.getMeta();
     	
     	meta.setCreatorId(document.getCreatorId());
@@ -151,9 +184,7 @@ public class DocumentSaver {
     	meta.setPublicationStartDatetime(document.getPublicationStartDatetime());
     	meta.setPublicationEndDatetime(document.getPublicationEndDatetime());
     	
-    	Long metaId = meta.getId();
-    	
-    	if (metaId == null) {
+    	if (meta.getId() == null) {
     		//insert
         	meta.setDocumentType(document.getDocumentTypeId());
         	meta.setActivate(1);
@@ -164,7 +195,7 @@ public class DocumentSaver {
         	if (i18nMetas != null) {
         		for (I18nMeta i18nMeta: i18nMetas) {
         			i18nMeta.setId(null);
-        			i18nMeta.setMetaId(metaId);
+        			i18nMeta.setMetaId(null);
         		}
         	}        	
     	} 
@@ -191,8 +222,13 @@ public class DocumentSaver {
     	meta.setCategoryIds(document.getCategoryIds());
     	meta.setProperties(document.getProperties());
     	
-    	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao");     	
-    	metaDao.updateMeta(meta);    	    	
+    	if (metaId == null) {
+    		metaDao.insertFirstVersionMeta(meta);
+    	} else if (meta.getDocumentVersion() == null) {
+    		metaDao.insertNextVersionMeta(metaId, meta);
+    	} else {
+    		metaDao.updateMeta(meta);    		
+    	}
     	
     	return meta;
     }
@@ -269,5 +305,13 @@ public class DocumentSaver {
 
 	public void setDocumentMapper(DocumentMapper documentMapper) {
 		this.documentMapper = documentMapper;
+	}
+
+	public MetaDao getMetaDao() {
+		return metaDao;
+	}
+
+	public void setMetaDao(MetaDao metaDao) {
+		this.metaDao = metaDao;
 	}
 }

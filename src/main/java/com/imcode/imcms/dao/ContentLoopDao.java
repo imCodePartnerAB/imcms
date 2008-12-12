@@ -282,13 +282,4 @@ public class ContentLoopDao extends HibernateTemplate {
 		
 		return newContent;
 	}
-	
-	/*
-	private Content getContent(ContentLoop loop, Long contentId) {
-		return (Content)getSession().getNamedQuery("Content.getByLoopIdAndCondentId")
-			.setParameter("loopId", loop.getId())
-			.setParameter("contentId", contentId)
-			.uniqueResult();		
-	}
-	*/	
 }

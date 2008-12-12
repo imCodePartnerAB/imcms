@@ -40,7 +40,7 @@ public class MetaDao extends HibernateTemplate {
 	 * @return published document meta.
 	 */
 	@Transactional
-	public synchronized Meta getPublishedDocumentMeta(Integer documentId) {
+	public synchronized Meta getPublishedMeta(Integer documentId) {
 		return getMeta(documentId, Meta.DocumentVersionStatus.PUBLISHED); 
 	}
 	
@@ -53,7 +53,7 @@ public class MetaDao extends HibernateTemplate {
 	 * @return published document meta.
 	 */
 	@Transactional
-	public synchronized Meta getWorkingDocumentMeta(Integer documentId) {
+	public synchronized Meta getWorkingMeta(Integer documentId) {
 		return getMeta(documentId, Meta.DocumentVersionStatus.WORKING); 
 	} 
 
@@ -66,13 +66,18 @@ public class MetaDao extends HibernateTemplate {
 	 * 
 	 * @return Meta
 	 */
-	private Meta getMeta(Integer documentId, 
+	@Transactional
+	public Meta getMeta(Integer documentId, 
 			Meta.DocumentVersionStatus documentVersionStatus) {
 		Query query = getSession().createQuery("select m from Meta m where m.documentId = :documentId and m.documentVersionStatus = :documentVersionStatus")
 			.setParameter("documentId", documentId)
 			.setParameter("documentVersionStatus", documentVersionStatus);
 		
 		Meta meta = (Meta)query.uniqueResult();
+		
+		if (meta == null) {
+			return null;
+		}
 		
 		List<I18nLanguage> languages = (List<I18nLanguage>)
 				findByNamedQueryAndNamedParam("I18nLanguage.missingMetaLanguages", "metaId", meta.getId());
@@ -99,24 +104,39 @@ public class MetaDao extends HibernateTemplate {
 	
 	@Transactional
 	public synchronized void updateMeta(Meta meta) {
-		// Increment and assign document id if inserting.  
-		if (meta.getId() == null) {
-			Query query = getSession().createQuery("select max(m.documentId) from Meta m");
-			Integer documentId = (Integer)query.uniqueResult();
-			
-			if (documentId != null) {
-				meta.setDocumentId(documentId + 1);				
-			} else {
-				meta.setDocumentId(1001);
-			}
-			
-			meta.setDocumentVersion(1);
+		update(meta); 
+	}
+	
+	
+	@Transactional
+	public synchronized void insertFirstVersionMeta(Meta meta) {
+		Query query = getSession().createQuery("select max(m.documentId) from Meta m");
+		Integer documentId = (Integer)query.uniqueResult();
+		
+		if (documentId == null) {
+			documentId = 1001;
 		}
 		
-		saveOrUpdate(meta); 
+		meta.setDocumentId(documentId);
+		meta.setDocumentVersion(1);
+		
+		save(meta);
 	}
-
-
+	
+	
+	@Transactional
+	public synchronized void insertNextVersionMeta(Long metaId, Meta meta) {
+		Query query = getSession().createQuery("SELECT max(m.documentVersion) + 1 FROM Meta m WHERE m.id = ?")
+			.setLong(0, metaId);
+		
+		Integer version = (Integer)query.uniqueResult();
+		
+		meta.setDocumentVersion(version);
+		
+		save(meta);
+	}
+	
+	
 	@Transactional
 	public void saveIncludes(Long metaId, Collection<Include> includes) {
 		bulkUpdate("delete from Include i where i.metaId = ?", metaId);

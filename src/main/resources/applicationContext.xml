@@ -70,5 +70,8 @@
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>  
   
-  <bean id="documentSaver" class="com.imcode.imcms.mapping.DocumentSaver"/>
+  <bean id="documentSaver" class="com.imcode.imcms.mapping.DocumentSaver">
+    <property name="metaDao" ref="metaDao"/>
+  </bean>  
+  
 </beans>

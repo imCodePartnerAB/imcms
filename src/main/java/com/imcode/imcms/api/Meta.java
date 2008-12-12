@@ -129,7 +129,7 @@ public class Meta implements Serializable, Cloneable {
 	}
 		
 	/**
-	 * Disabled i18n content show mode.
+	 * Disabled i18n document show mode.
 	 */
 	public static enum UnavailableI18nDataSubstitution {
 		SHOW_IN_DEFAULT_LANGUAGE,
@@ -383,7 +383,7 @@ public class Meta implements Serializable, Cloneable {
 
 	@Deprecated
 	/**
-	 * Use getI18nContentShowMode instead.
+	 * Use getI18nShowMode instead.
 	 */
 	public UnavailableI18nDataSubstitution getUnavailableI18nDataSubstitution() {
 		return unavailableI18nDataSubstitution;
@@ -391,17 +391,17 @@ public class Meta implements Serializable, Cloneable {
 	
 	@Deprecated
 	/**
-	 * Use setI18nContentShowMode instead.
+	 * Use setI18nShowMode instead.
 	 */
 	public void setUnavailableI18nDataSubstitution(UnavailableI18nDataSubstitution unavailableI18nDataSubstitution) {
 		this.unavailableI18nDataSubstitution = unavailableI18nDataSubstitution;
 	}
 	
-	public UnavailableI18nDataSubstitution getI18nContentShowMode() {
+	public UnavailableI18nDataSubstitution getI18nShowMode() {
 		return getUnavailableI18nDataSubstitution();
 	}
 	
-	public void setI18nContentShowMode(UnavailableI18nDataSubstitution unavailableI18nDataSubstitution) {
+	public void setI18nShowMode(UnavailableI18nDataSubstitution unavailableI18nDataSubstitution) {
 		setUnavailableI18nDataSubstitution(unavailableI18nDataSubstitution);
 	}			
 	

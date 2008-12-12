@@ -65,6 +65,7 @@ import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.flow.DocumentPageFlow;
+import com.imcode.imcms.mapping.aop.DocumentMapperAspect;
 
 public class DocumentMapper implements DocumentGetter {
 
@@ -97,6 +98,7 @@ public class DocumentMapper implements DocumentGetter {
         this.documentPermissionSetMapper = new DocumentPermissionSetMapper(database);
         this.categoryMapper = new CategoryMapper(database);
         //documentSaver = new DocumentSaver(this);
+        // AOP transactions
         this.documentSaver = (DocumentSaver)services.getSpringBean("documentSaver");
         this.documentSaver.setDocumentMapper(this);
         
@@ -108,13 +110,17 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void setDocumentGetter(DocumentGetter documentGetter) {
-    	CachingDocumentGetter cachingDocumentGetter = new CachingDocumentGetter(documentGetter, documentCache);
-    	
-		AspectJProxyFactory factory = new AspectJProxyFactory(cachingDocumentGetter);
-		
-		factory.addAspect(com.imcode.imcms.mapping.aop.CachingDocumentGetterAspect.class);
-    	
-        this.documentGetter = factory.getProxy(); 
+        CachingDocumentGetter cachingDocumentGetter = new CachingDocumentGetter(documentGetter, documentCache);
+        
+    	// experimental - TODO: Optimize
+        DocumentMapperAspect aspect = new DocumentMapperAspect();
+        aspect.setDocumentMapper(this);
+        
+    	AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(cachingDocumentGetter);            	
+        aspectJProxyFactory.setProxyTargetClass(true);
+        aspectJProxyFactory.addAspect(aspect);
+        
+        this.documentGetter = aspectJProxyFactory.getProxy();
     }
 
     public DocumentSaver getDocumentSaver() {
@@ -234,6 +240,13 @@ public class DocumentMapper implements DocumentGetter {
         documentSaver.saveDocument(document, oldDocument, user);
 
     }
+    
+    // TODO: Check exceptions
+    public void saveAsWorkingWersion(DocumentDomainObject document, UserDomainObject user) 
+    throws DocumentSaveException, NoPermissionToEditDocumentException {	
+	    documentSaver.saveAsWorkingVersion(document, user);
+	}
+    
     
     
     /**
@@ -490,23 +503,14 @@ public class DocumentMapper implements DocumentGetter {
         };
     }
 
-    public DocumentDomainObject getDocument(Integer metaId) { 
-        return documentGetter.getDocument(metaId);
+    public DocumentDomainObject getDocument(Integer documentId) { 
+        return documentGetter.getDocument(documentId);
     }
     
-    /**
-     * TODO: implement
-     * Returns document with given metaId and version.
-     * 
-     * @param metaId document meta id
-     * @param version document version 
-     * @return DocumentDomainObject
-     */
-    public DocumentDomainObject getDocument(Integer metaId, int version) 
-    throws OperationNotSupportedException { 
-        //return documentGetter.getDocument(documentId, version);
-    	return null;
-    }    
+    public DocumentDomainObject getWorkingDocument(Integer documentId) { 
+        return documentGetter.getWorkingDocument(documentId);
+    }
+               
 
     public CategoryMapper getCategoryMapper() {
         return categoryMapper;

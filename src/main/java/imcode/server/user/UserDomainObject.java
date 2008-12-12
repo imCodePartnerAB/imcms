@@ -61,7 +61,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     /**
      * Document show mode.
      */
-    private DocumentShowMode documentShowMode = new DocumentShowMode();        
+    private DocumentShowSettings documentShowSettings = new DocumentShowSettings();        
 
     /** Http session id.*/
     private String sessionId;
@@ -769,11 +769,11 @@ public class UserDomainObject implements Cloneable, Serializable {
         }
     }
 
-	public DocumentShowMode getDocumentShowMode() {
-		return documentShowMode;
+	public DocumentShowSettings getDocumentShowSettings() {
+		return documentShowSettings;
 	}
 
-	public void setDocumentShowMode(DocumentShowMode documentShowMode) {
-		this.documentShowMode = documentShowMode;
+	public void setDocumentShowSettings(DocumentShowSettings documentShowSettings) {
+		this.documentShowSettings = documentShowSettings;
 	}
 }

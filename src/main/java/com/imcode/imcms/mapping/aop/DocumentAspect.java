@@ -47,7 +47,7 @@ public class DocumentAspect {
     	I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
     	I18nMeta currentI18nMeta = document.getI18nMeta(currentLanguage);
     	
-    	if (user.getDocumentShowMode().isIgnoreI18nContentShowMode()
+    	if (user.getDocumentShowSettings().isIgnoreI18nShowMode()
     			|| currentI18nMeta.getEnabled()
     			|| I18nSupport.getCurrentIsDefault()) {
     		return document.getHeadline(currentLanguage);
@@ -78,7 +78,7 @@ public class DocumentAspect {
     	I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
     	I18nMeta currentI18nMeta = document.getI18nMeta(currentLanguage);
     	
-    	if (user.getDocumentShowMode().isIgnoreI18nContentShowMode()
+    	if (user.getDocumentShowSettings().isIgnoreI18nShowMode()
     			|| currentI18nMeta.getEnabled()
     			|| I18nSupport.getCurrentIsDefault()) {
     		return document.getMenuImage(currentLanguage);    	
@@ -109,7 +109,7 @@ public class DocumentAspect {
     	I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
     	I18nMeta currentI18nMeta = document.getI18nMeta(currentLanguage);
     	
-    	if (user.getDocumentShowMode().isIgnoreI18nContentShowMode()
+    	if (user.getDocumentShowSettings().isIgnoreI18nShowMode()
     			|| currentI18nMeta.getEnabled()
     			|| I18nSupport.getCurrentIsDefault()) {
     		return document.getMenuText(currentLanguage);    	
