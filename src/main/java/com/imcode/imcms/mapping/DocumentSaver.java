@@ -18,6 +18,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
@@ -60,6 +61,12 @@ public class DocumentSaver {
 	    }    	
     }
 
+    
+    @Transactional
+    public void publishDocument(DocumentDomainObject document, UserDomainObject user) {
+    	metaDao.publishDocument(document.getMeta().getDocumentId());
+    }
+    
     @Transactional
     public void saveDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
                       final UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
@@ -100,7 +107,7 @@ public class DocumentSaver {
     		
     	document = document.clone();
     	document.setDependenciesMetaIdToNull();
-    	document.getMeta().setDocumentVersionStatus(Meta.DocumentVersionStatus.WORKING);
+    	document.getMeta().setDocumentVersionTag(DocumentVersionTag.WORKING);
     	document.getMeta().setDocumentVersion(null);
     	
         //try {
@@ -133,7 +140,7 @@ public class DocumentSaver {
         
         // TODO: should be working
         // 
-        meta.setDocumentVersionStatus(Meta.DocumentVersionStatus.PUBLISHED);
+        meta.setDocumentVersionTag(DocumentVersionTag.PUBLISHED);
         meta.setDocumentVersion(null);
 
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());

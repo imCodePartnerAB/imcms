@@ -27,15 +27,14 @@ DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetF
 String queryString = request.getQueryString();
 StringBuffer baseURL = request.getRequestURL();
 
+//TODO: experemental, refactor
 if (queryString == null) {
 	baseURL.append("?" + "lang=");
 } else {
-	// TODO 18n: refactor
+    queryString = queryString.replaceAll("&version=\\w*", "");	
 	queryString = queryString.replaceFirst("&?lang=..", "");
 	baseURL.append("?" + queryString + "&lang=");
 }
-
-// Versions:
 	
 
 pageContext.setAttribute("baseURL", baseURL);
@@ -186,19 +185,52 @@ Check if published version exists
 
 <tr>
   <td>
-    <table bolder="1">
+    <table bolder="1">    
       <tr>
         <td>
-          <a href="${baseURL}<%=currentLanguage.getCode()%>&version=WORKING">
-            #WORKING#
-          </a>  
+          <%
+          if (user.getDocumentShowSettings().getDocumentVersionTag() == DocumentVersionTag.PUBLISHED) {
+          %>
+              <b>#This is PUBLISHED version#<b>
+          <% 
+          } else { 
+          %>
+              <a href="${baseURL}<%=currentLanguage.getCode()%>&version=PUBLISHED">
+                [-Show PUBLISHED version-]
+             </a>
+          <% 
+          } 
+          %>       
         </td>
+      
         <td>
-          <a href="${baseURL}<%=currentLanguage.getCode()%>&version=PUBLISHED">
-            #PUBLISHED#
-          </a>  
+          <%
+          if (user.getDocumentShowSettings().getDocumentVersionTag() == DocumentVersionTag.WORKING) {
+          %>
+              <b>#This is WORKING version#<b>
+          <% 
+          } else { 
+          %>
+              <a href="${baseURL}<%=currentLanguage.getCode()%>&version=WORKING">
+                 [-Show WORKING version-]
+             </a>
+          <% 
+          } 
+          %>        
         </td>
-      </tr>  
+      
+	    <% 
+	    if (user.canEdit(document) && user.getDocumentShowSettings().getDocumentVersionTag() == DocumentVersionTag.WORKING) {
+	    %>
+         <td>
+           <a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId()%>&flags=4194304">
+             <b><font color="red">[-PUBLISH-]</font></b>
+           </a>
+         </td>
+	    <%	        	  
+	    }
+	    %>
+	  </tr>      
     </table>  
   </td>
 </tr>

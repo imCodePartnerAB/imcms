@@ -10,6 +10,7 @@ import org.hibernate.Query;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
@@ -41,7 +42,7 @@ public class MetaDao extends HibernateTemplate {
 	 */
 	@Transactional
 	public synchronized Meta getPublishedMeta(Integer documentId) {
-		return getMeta(documentId, Meta.DocumentVersionStatus.PUBLISHED); 
+		return getMeta(documentId, DocumentVersionTag.PUBLISHED); 
 	}
 	
 	
@@ -54,13 +55,13 @@ public class MetaDao extends HibernateTemplate {
 	 */
 	@Transactional
 	public synchronized Meta getWorkingMeta(Integer documentId) {
-		return getMeta(documentId, Meta.DocumentVersionStatus.WORKING); 
+		return getMeta(documentId, DocumentVersionTag.WORKING); 
 	} 
 
 	
 	
 	/**
-	 * Returns meta for given document id and and version status. 
+	 * Returns meta for given document id and and version tag. 
 	 * 
 	 * Checks and adds if necessary missing i18n-ed parts to meta. 
 	 * 
@@ -68,10 +69,10 @@ public class MetaDao extends HibernateTemplate {
 	 */
 	@Transactional
 	public Meta getMeta(Integer documentId, 
-			Meta.DocumentVersionStatus documentVersionStatus) {
-		Query query = getSession().createQuery("select m from Meta m where m.documentId = :documentId and m.documentVersionStatus = :documentVersionStatus")
+			DocumentVersionTag documentVersionTag) {
+		Query query = getSession().createQuery("select m from Meta m where m.documentId = :documentId and m.documentVersionTag = :documentVersionTag")
 			.setParameter("documentId", documentId)
-			.setParameter("documentVersionStatus", documentVersionStatus);
+			.setParameter("documentVersionTag", documentVersionTag);
 		
 		Meta meta = (Meta)query.uniqueResult();
 		
@@ -108,14 +109,35 @@ public class MetaDao extends HibernateTemplate {
 	}
 	
 	
+	/**
+	 * Returns next document id.
+	 * 
+	 * Counting begins from 1001.
+	 * 
+	 * @return next document id.
+	 */
+	private Integer getNextDocumentId() {
+		Integer maxId = (Integer)getSession().getNamedQuery("Meta.getMaxDocumentId")
+			.uniqueResult();
+		
+		return maxId == null ? 1001 : maxId + 1;
+	}
+	
+	/**
+	 * Returns next document version for a document.
+	 * 
+	 * @return next document version for a document.
+	 */
+	private Integer getNextDocumentVersion(Long existingMetaId) {
+		return (Integer)getSession().getNamedQuery("Meta.getNextDocumentVersion")
+			.setLong(0, existingMetaId)
+			.uniqueResult();
+	} 	
+	
+	
 	@Transactional
 	public synchronized void insertFirstVersionMeta(Meta meta) {
-		Query query = getSession().createQuery("select max(m.documentId) from Meta m");
-		Integer documentId = (Integer)query.uniqueResult();
-		
-		if (documentId == null) {
-			documentId = 1001;
-		}
+		Integer documentId = getNextDocumentId();
 		
 		meta.setDocumentId(documentId);
 		meta.setDocumentVersion(1);
@@ -125,15 +147,12 @@ public class MetaDao extends HibernateTemplate {
 	
 	
 	@Transactional
-	public synchronized void insertNextVersionMeta(Long metaId, Meta meta) {
-		Query query = getSession().createQuery("SELECT max(m.documentVersion) + 1 FROM Meta m WHERE m.id = ?")
-			.setLong(0, metaId);
+	public synchronized void insertNextVersionMeta(Long existingMetaId, Meta newMeta) {
+		Integer version = getNextDocumentVersion(existingMetaId);
 		
-		Integer version = (Integer)query.uniqueResult();
+		newMeta.setDocumentVersion(version);
 		
-		meta.setDocumentVersion(version);
-		
-		save(meta);
+		save(newMeta);
 	}
 	
 	
@@ -211,4 +230,21 @@ public class MetaDao extends HibernateTemplate {
 		
 		return reference;
 	}	
+	
+	@Transactional
+	public synchronized void publishDocument(Integer documentId) {
+		Query hql = getSession().createQuery("UPDATE Meta m SET m.documentVersionTag = :newVersionTag WHERE m.documentId = :documentId AND m.documentVersionTag = :oldVersionTag");
+		
+		hql.setParameter("documentId", documentId);
+		hql.setParameter("newVersionTag", DocumentVersionTag.ARCHIVED);
+		hql.setParameter("oldVersionTag", DocumentVersionTag.PUBLISHED);		
+		hql.executeUpdate();
+		
+		hql.setParameter("newVersionTag", DocumentVersionTag.PUBLISHED);
+		hql.setParameter("oldVersionTag", DocumentVersionTag.WORKING);
+		hql.executeUpdate();
+		
+		// TODO: Update menu items
+		// TODO: Update includes
+	}
 }

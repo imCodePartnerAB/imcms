@@ -21,6 +21,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -32,29 +34,11 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name="meta")
+@NamedQueries({
+	@NamedQuery(name="Meta.getMaxDocumentId", query="SELECT max(m.documentId) FROM Meta m"),
+	@NamedQuery(name="Meta.getNextDocumentVersion", query="SELECT max(m.documentVersion) + 1 FROM Meta m WHERE m.id = ?")
+})
 public class Meta implements Serializable, Cloneable {
-	
-	/**
-	 * Document version status.
-	 * 
-	 * A document has one of the following status: 
-	 *   WORKING
-	 *   PUBLISHED
-	 *   LOCKED,
-	 *   LOCKED_INACESSIBLE
-	 * 
-	 * For every documentId there 
-	 *   - must be exactly one WORKING document version
-	 *   - might be at most one PUBLISHED document version
-	 *   - might be unlimited number of LOCKED document versions  
-	 *   - might be unlimited number of LOCKED_INACESSIBLE document versions.
-	 */
-	public static enum DocumentVersionStatus {
-		WORKING,		
-		PUBLISHED,		
-		LOCKED,
-		LOCKED_INACESSIBLE
-	}	
 	
 	/**
 	 * Create (create only!) permission for template or a document type.
@@ -157,7 +141,7 @@ public class Meta implements Serializable, Cloneable {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="doc_version_status", nullable=false)	
-	private DocumentVersionStatus documentVersionStatus;	
+	private DocumentVersionTag documentVersionTag;	
 	
 	// CHECKED	
 	@Column(name="activate", nullable=false, updatable=false)
@@ -338,7 +322,7 @@ public class Meta implements Serializable, Cloneable {
 			
 			clone.metaMap = null;
 			clone.unavailableI18nDataSubstitution = unavailableI18nDataSubstitution;
-			clone.documentVersionStatus = documentVersionStatus;
+			clone.documentVersionTag = documentVersionTag;
 
 			clone.permisionSetEx = new HashSet<PermisionSetEx>(permisionSetEx);
 			clone.permisionSetExForNew = new HashSet<PermisionSetEx>(permisionSetExForNew);
@@ -654,11 +638,11 @@ public class Meta implements Serializable, Cloneable {
 		this.documentId = documentId;
 	}
 
-	public DocumentVersionStatus getDocumentVersionStatus() {
-		return documentVersionStatus;
+	public DocumentVersionTag getDocumentVersionTag() {
+		return documentVersionTag;
 	}
 
-	public void setDocumentVersionStatus(DocumentVersionStatus documentVersionStatus) {
-		this.documentVersionStatus = documentVersionStatus;
-	}	
+	public void setDocumentVersionTag(DocumentVersionTag documentVersionTag) {
+		this.documentVersionTag = documentVersionTag;
+	}
 }

@@ -33,7 +33,7 @@ public abstract class DocumentPageFlow extends PageFlow {
 
     public abstract DocumentDomainObject getDocument() ;
 
-    private synchronized void saveDocument( HttpServletRequest request ) {
+    protected synchronized void saveDocument( HttpServletRequest request ) {
         try {
             saveDocumentCommand.saveDocument( getDocument(), Utility.getLoggedOnUser( request ) );
         } catch ( NoPermissionToEditDocumentException e ) {

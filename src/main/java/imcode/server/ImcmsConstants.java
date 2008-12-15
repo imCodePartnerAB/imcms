@@ -46,6 +46,9 @@ public interface ImcmsConstants {
     
     /** Permission to change the includes of a text-document. **/
     public final static int PERM_EDIT_TEXT_DOCUMENT_GROUPS   = (1 << 21); //  2097152
+    
+    /** Permission to publish document. **/
+    public final static int PERM_PUBLISH   = (1 << 22); //  4194304  
 
     /* Log instances. */
 
@@ -63,4 +66,5 @@ public interface ImcmsConstants {
     int DISPATCH_FLAG__EDIT_MENU = PERM_EDIT_TEXT_DOCUMENT_MENUS;
     int DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES = PERM_EDIT_TEXT_DOCUMENT_IMAGES;
     int DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE = PERM_EDIT_PERMISSIONS;
+    int DISPATCH_FLAG__PUBLISH = PERM_PUBLISH;
 }

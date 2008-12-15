@@ -151,7 +151,7 @@ public class DocumentMapper implements DocumentGetter {
         
         meta.setId(null);
         meta.setDocumentVersion(null);
-        meta.setDocumentVersionStatus(null);
+        meta.setDocumentVersionTag(null);
         
         for (I18nMeta i18nMeta: meta.getI18nMetas()) {
         	i18nMeta.setHeadline("");
@@ -241,34 +241,22 @@ public class DocumentMapper implements DocumentGetter {
 
     }
     
+    /**
+     * Publishes working version of document.  
+     */
+    public void publishDocument(DocumentDomainObject document, UserDomainObject user) 
+    throws DocumentSaveException, NoPermissionToEditDocumentException {	
+	    documentSaver.publishDocument(document, user);
+	    documentCache.remove(document.getId());
+	}
+    
+    
     // TODO: Check exceptions
     public void saveAsWorkingWersion(DocumentDomainObject document, UserDomainObject user) 
     throws DocumentSaveException, NoPermissionToEditDocumentException {	
 	    documentSaver.saveAsWorkingVersion(document, user);
 	}
     
-    
-    
-    /**
-     * Publishes working version of a document.
-     * 
-     * TODO: Implement business logic
-     *  
-     * @param metaId working document version meta id 
-     */
-    public void publishWorkingVersion(int metaId) 
-    throws OperationNotSupportedException {
-    	// perform sanity and security check
-    	//
-    	// #begin transaction 
-    	//   un-publish published version
-    	//   publish working version 
-    	//   create new working version from published version  
-    	// #end transaction
-    	// 
-    	// remove published version from the cache
-    	// remove working version from the cache
-    }
     
     /**
      * TODO: Implement business logic ????????
@@ -629,6 +617,15 @@ public class DocumentMapper implements DocumentGetter {
             Imcms.getServices().getDocumentMapper().saveDocument(document, user);
         }
     }
+    
+    
+    public static class PublushDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
+
+        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+            Imcms.getServices().getDocumentMapper().publishDocument( document, user );
+        }
+    }
+    
 
     private static class FileDocumentFileFilter implements FileFilter {
 

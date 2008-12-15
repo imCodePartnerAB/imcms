@@ -12,14 +12,13 @@ import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.user.RoleId;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
 
@@ -38,11 +37,11 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     }
 
     public DocumentDomainObject getDocument(Integer documentId) {
-        return initDocument(loadDocument(documentId, Meta.DocumentVersionStatus.PUBLISHED));
+        return initDocument(loadDocument(documentId, DocumentVersionTag.PUBLISHED));
     }
 	
 	public DocumentDomainObject getWorkingDocument(Integer documentId) {
-		return initDocument(loadDocument(documentId, Meta.DocumentVersionStatus.WORKING));
+		return initDocument(loadDocument(documentId, DocumentVersionTag.WORKING));
 	}
 	
     /**
@@ -52,7 +51,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
         List<DocumentDomainObject> documents = new LinkedList<DocumentDomainObject>();
         
     	for (Integer documentId: documentIds) {
-    		DocumentDomainObject document = initDocument(loadDocument(documentId, Meta.DocumentVersionStatus.PUBLISHED));
+    		DocumentDomainObject document = initDocument(loadDocument(documentId, DocumentVersionTag.PUBLISHED));
     		
     		// ??? do not add in case of null
     		if (document != null) {
@@ -69,7 +68,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     /**
      * Loads document
      */
-    private DocumentDomainObject loadDocument(Integer documentId, Meta.DocumentVersionStatus versionStatus) {		
+    private DocumentDomainObject loadDocument(Integer documentId, DocumentVersionTag versionStatus) {		
     	MetaDao metaDao = (MetaDao)services.getSpringBean("metaDao");
     	Meta meta = metaDao.getMeta(documentId, versionStatus);
 		

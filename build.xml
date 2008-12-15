@@ -211,7 +211,8 @@
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
-            <transaction src="${sql}/imcms${versionfilesuffix}-${defaultlanguage}-${db-target}.sql"/>
+            <transaction src="sql/imcms_5.3_schema.sql"/>
+        	<transaction src="sql/imcms_5.3_data.sql"/>
         </sql>
 
     </target>

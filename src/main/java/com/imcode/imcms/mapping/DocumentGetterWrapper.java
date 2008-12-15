@@ -5,7 +5,6 @@ import imcode.server.document.DocumentDomainObject;
 import java.util.Collection;
 import java.util.List;
 
-import com.imcode.imcms.api.Meta.DocumentVersionStatus;
 
 public class DocumentGetterWrapper implements DocumentGetter {
 

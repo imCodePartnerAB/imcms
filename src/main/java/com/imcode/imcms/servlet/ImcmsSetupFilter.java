@@ -3,7 +3,6 @@ package com.imcode.imcms.servlet;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.user.DocumentShowSettings;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
@@ -36,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.dao.LanguageDao;
@@ -85,9 +85,9 @@ public class ImcmsSetupFilter implements Filter {
         	user.getDocumentShowSettings().setIgnoreI18nShowMode(Boolean.parseBoolean(modeValue.toLowerCase()));
         }
         
-        String versionValue = request.getParameter("version");
-        if (versionValue != null) {
-        	user.getDocumentShowSettings().setVersionShowMode(DocumentShowSettings.VersionShowMode.valueOf(versionValue.toUpperCase()));
+        String versionTagValue = request.getParameter("version");
+        if (versionTagValue != null) {
+        	user.getDocumentShowSettings().setDocumentVersionTag(DocumentVersionTag.valueOf(versionTagValue.toUpperCase()));
         }                
         // End of experemental
         

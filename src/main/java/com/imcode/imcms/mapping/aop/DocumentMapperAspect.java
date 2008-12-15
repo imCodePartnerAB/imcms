@@ -27,7 +27,7 @@ public class DocumentMapperAspect {
     	
     	DocumentDomainObject document = null; 
     		
-    	switch (showSettings.getShowVersionMode()) {
+    	switch (showSettings.getDocumentVersionTag()) {
 		case PUBLISHED:	
 			document = (DocumentDomainObject)pjp.proceed();
 			break;
