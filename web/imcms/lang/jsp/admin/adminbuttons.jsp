@@ -193,7 +193,7 @@ Check if published version exists
           %>
               <b>#This is PUBLISHED version#<b>
           <% 
-          } else { 
+          } else if (Imcms.getServices().getDocumentMapper().hasPublishedVersion(document.getId())) { 
           %>
               <a href="${baseURL}<%=currentLanguage.getCode()%>&version=PUBLISHED">
                 [-Show PUBLISHED version-]

@@ -37,8 +37,12 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     }
 
     public DocumentDomainObject getDocument(Integer documentId) {
-        return initDocument(loadDocument(documentId, DocumentVersionTag.PUBLISHED));
+        return getPublishedDocument(documentId);
     }
+	
+	public DocumentDomainObject getPublishedDocument(Integer documentId) {
+		return initDocument(loadDocument(documentId, DocumentVersionTag.PUBLISHED));
+	}
 	
 	public DocumentDomainObject getWorkingDocument(Integer documentId) {
 		return initDocument(loadDocument(documentId, DocumentVersionTag.WORKING));

@@ -14,6 +14,11 @@ public interface DocumentGetter {
      * Returns published document version. 
      */
     DocumentDomainObject getDocument(Integer documentId);
+    
+    /**
+     * Returns published document version. 
+     */
+    DocumentDomainObject getPublishedDocument(Integer documentId);    
 
     /**
      * Returns working document version.

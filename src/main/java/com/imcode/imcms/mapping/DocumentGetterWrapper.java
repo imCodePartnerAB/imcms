@@ -24,5 +24,9 @@ public class DocumentGetterWrapper implements DocumentGetter {
     
     public DocumentDomainObject getWorkingDocument(Integer documentId) {
         return documentGetter.getWorkingDocument(documentId) ;
-    }    
+    }
+
+	public DocumentDomainObject getPublishedDocument(Integer documentId) {
+		return documentGetter.getPublishedDocument(documentId);
+	}    
 }

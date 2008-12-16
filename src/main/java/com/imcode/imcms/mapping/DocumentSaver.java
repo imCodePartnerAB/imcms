@@ -140,7 +140,7 @@ public class DocumentSaver {
         
         // TODO: should be working
         // 
-        meta.setDocumentVersionTag(DocumentVersionTag.PUBLISHED);
+        meta.setDocumentVersionTag(DocumentVersionTag.WORKING);
         meta.setDocumentVersion(null);
 
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());

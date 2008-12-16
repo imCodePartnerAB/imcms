@@ -269,6 +269,14 @@ public class DocumentMapper implements DocumentGetter {
     	return null;
     }
     
+    public DocumentDomainObject getPublishedDocument(Integer documentId) {
+    	return documentGetter.getPublishedDocument(documentId);
+    }
+    
+    
+    public boolean hasPublishedVersion(Integer documentId) {
+    	return documentGetter.getPublishedDocument(documentId) != null;
+    }    
 
     public void invalidateDocument(DocumentDomainObject document) {
         documentIndex.indexDocument(document);
