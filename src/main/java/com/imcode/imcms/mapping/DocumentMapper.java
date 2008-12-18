@@ -15,6 +15,7 @@ import imcode.server.document.SectionDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.DocumentShowSettings;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Clock;
@@ -62,10 +63,14 @@ import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.I18nDisabledException;
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
+import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.flow.DocumentPageFlow;
-import com.imcode.imcms.mapping.aop.DocumentMapperAspect;
+import com.imcode.imcms.mapping.aop.DocumentAspect;
+import com.imcode.imcms.mapping.aop.TextDocumentAspect;
 
 public class DocumentMapper implements DocumentGetter {
 
@@ -109,18 +114,8 @@ public class DocumentMapper implements DocumentGetter {
         sections = new LazilyLoadedObject(new SectionsSetLoader());
     }
 
-    public void setDocumentGetter(DocumentGetter documentGetter) {
-        CachingDocumentGetter cachingDocumentGetter = new CachingDocumentGetter(documentGetter, documentCache);
-        
-    	// experimental - TODO: Optimize
-        DocumentMapperAspect aspect = new DocumentMapperAspect();
-        aspect.setDocumentMapper(this);
-        
-    	AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(cachingDocumentGetter);            	
-        aspectJProxyFactory.setProxyTargetClass(true);
-        aspectJProxyFactory.addAspect(aspect);
-        
-        this.documentGetter = aspectJProxyFactory.getProxy();
+    public void setDocumentGetter(DocumentGetter documentGetter) {       
+        this.documentGetter = new CachingDocumentGetter(documentGetter, documentCache);
     }
 
     public DocumentSaver getDocumentSaver() {
@@ -267,15 +262,11 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentDomainObject copyCustomVersionToWorkingVersion(int metaId, int version) 
     throws OperationNotSupportedException {
     	return null;
-    }
-    
-    public DocumentDomainObject getPublishedDocument(Integer documentId) {
-    	return documentGetter.getPublishedDocument(documentId);
-    }
+    }    
     
     
     public boolean hasPublishedVersion(Integer documentId) {
-    	return documentGetter.getPublishedDocument(documentId) != null;
+    	return documentGetter.getDocument(documentId) != null;
     }    
 
     public void invalidateDocument(DocumentDomainObject document) {
@@ -416,6 +407,26 @@ public class DocumentMapper implements DocumentGetter {
         return allDocumentAlias;
     }
 
+    public DocumentDomainObject getDocumentForViewing(String documentIdString) {
+        DocumentDomainObject document = null;
+
+        if (null != documentIdString) {
+            if ( NumberUtils.isDigits( documentIdString ) ) {
+                document = getDocument(new Integer(documentIdString));
+            }else{
+                String[] documentIds = (String[]) getDatabase().execute(
+                        new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
+                                new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdString.toLowerCase() },
+                                Utility.STRING_ARRAY_HANDLER));
+
+                if(documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {
+                    document = getDocument(new Integer(documentIds[0]));
+                }
+            }
+        }
+        return document;    	
+    }
+    
     public DocumentDomainObject getDocument(String documentIdString) {
         DocumentDomainObject document = null;
 
@@ -506,6 +517,106 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentDomainObject getWorkingDocument(Integer documentId) { 
         return documentGetter.getWorkingDocument(documentId);
     }
+    
+    // TODO: Refactor
+    public DocumentDomainObject getDocumentForShowing(String documentIdString) {
+        DocumentDomainObject document = null;
+
+        if (null != documentIdString) {
+            if ( NumberUtils.isDigits( documentIdString ) ) {
+                document = getDocumentForShowing(new Integer(documentIdString));
+            }else{
+                String[] documentIds = (String[]) getDatabase().execute(
+                        new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
+                                new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdString.toLowerCase() },
+                                Utility.STRING_ARRAY_HANDLER));
+
+                if(documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {
+                    document = getDocumentForShowing(Integer.valueOf(documentIds[0]));
+                }
+            }
+        }
+        return document;    	
+    }
+    
+    /** 
+     * TODO: pass user as parameter
+     * TODO: pass language as parameter
+     * 
+     * Returns published or working document depending on user's view settings
+     * and i18n meta settings. 
+     * 
+     * @param documentId document id.
+     *  
+     * @return document.
+     */
+    public DocumentDomainObject getDocumentForShowing(Integer documentId) {
+    	UserDomainObject user = Imcms.getUser();
+    	DocumentShowSettings showSettings = user.getDocumentShowSettings();    	
+    	
+    	DocumentDomainObject document = null; 
+		
+    	switch (showSettings.getDocumentVersionTag()) {
+		case PUBLISHED:	
+			document = getDocument(documentId);
+			break;
+			
+		case WORKING:
+			document = getWorkingDocument(documentId);
+			
+			if (document == null) {
+				document = getDocument(documentId);
+				
+				if (document != null) {
+					// clone
+					try {
+						saveAsWorkingWersion(document, user);
+					} catch (DocumentSaveException e) {
+						throw new RuntimeException(e);
+					}
+					
+					document = getWorkingDocument(documentId);
+				}
+			}
+			
+			break;			
+
+		default:
+			document = null;
+		}
+    	
+    	if (document != null) {
+    		I18nLanguage documentLanguage = I18nSupport.getCurrentLanguage();
+    		
+    		if (!I18nSupport.getCurrentIsDefault() && !showSettings.isIgnoreI18nShowMode() ) {            
+    			I18nMeta i18nMeta = document.getI18nMeta(I18nSupport.getCurrentLanguage());
+            
+    			if (!i18nMeta.getEnabled()) {
+    				if (document.getMeta().isShowDisabledI18nContentInDefaultLanguage()) {
+    					documentLanguage = I18nSupport.getDefaultLanguage();
+    				} else {
+    					throw new I18nDisabledException(document, I18nSupport.getCurrentLanguage());
+    					// 	return null
+    				}
+    			}
+    		}
+    		
+        	// experimental - TODO: Optimize
+    		I18nSupport.setDocumentLanguage(documentLanguage);
+    		
+        	AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(document);            	
+            aspectJProxyFactory.setProxyTargetClass(true);
+            aspectJProxyFactory.addAspect(DocumentAspect.class);       
+            
+            if (document instanceof TextDocumentDomainObject) {
+                aspectJProxyFactory.addAspect(TextDocumentAspect.class);            	
+            }
+                    	
+        	document = aspectJProxyFactory.getProxy();    		
+    	}
+    	
+    	return document;
+    }    
                
 
     public CategoryMapper getCategoryMapper() {

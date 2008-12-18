@@ -14,12 +14,16 @@ import java.util.Map;
 public class I18nSupport {
 
 	/** 
-	 * Language bound to current thread.
+	 * Current language.
 	 * 
-	 * When application running in container current language is bound
-	 * to thread using HTTP request filter. 
+	 * @see com.imcode.imcms.servlet.ImcmsSetupFilter 
 	 */
 	private static ThreadLocal<I18nLanguage> currentLanguage = new ThreadLocal<I18nLanguage>();
+	
+	/** 
+	 * Document language.
+	 */
+	private static ThreadLocal<I18nLanguage> documentLanguage = new ThreadLocal<I18nLanguage>();	
 
 	/**
 	 * Default language.  
@@ -59,7 +63,7 @@ public class I18nSupport {
 	public static void setDefaultLanguage(I18nLanguage language) 
 	throws IllegalArgumentException {
 		if (language == null) {
-			throw new IllegalArgumentException("Default language argument " +
+			throw new IllegalArgumentException("Language argument " +
 					"can not be null.");			
 		}
 		
@@ -89,8 +93,7 @@ public class I18nSupport {
 		I18nLanguage language = currentLanguage.get();
 		
 		if (language == null) {
-			throw new I18nException(
-			    "No I18nLanguage instance is bound to the current thread.");
+			throw new I18nException("Current language is not set.");
 		}
 		
 		return language;		
@@ -103,7 +106,7 @@ public class I18nSupport {
 	 * @throws IllegalArgumentException in case of attempt to 
 	 * assign null to current language. 
 	 */
-	public static void setCurrentLanguege(I18nLanguage language) 
+	public static void setCurrentLanguage(I18nLanguage language) 
 	throws IllegalArgumentException {
 		if (language == null) {
 			throw new IllegalArgumentException("Language argument " +
@@ -173,5 +176,24 @@ public class I18nSupport {
 	
 	public static boolean getCurrentIsDefault() {
 		return getCurrentLanguage().equals(getDefaultLanguage());
+	}
+
+	public static I18nLanguage getDocumentLanguage() {
+		I18nLanguage language = documentLanguage.get();
+		
+		if (language == null) {
+			throw new I18nException("Document language is not set.");
+		}
+		
+		return language;
+	}
+
+	public static void setDocumentLanguage(I18nLanguage language) {
+		if (language == null) {
+			throw new IllegalArgumentException("Language argument " +
+					"can not be null.");			
+		}
+		
+		documentLanguage.set(language);
 	}
 }

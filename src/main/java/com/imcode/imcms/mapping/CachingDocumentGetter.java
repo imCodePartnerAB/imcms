@@ -1,16 +1,10 @@
 package com.imcode.imcms.mapping;
 
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
-
-import com.imcode.imcms.mapping.aop.DocumentAspect;
-import com.imcode.imcms.mapping.aop.TextDocumentAspect;
 
 /**
  * TODO: 
@@ -39,16 +33,6 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
             document = super.getDocument(documentId) ;
             
             if (document != null) {
-            	// experimental - TODO: Optimize
-            	AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(document);            	
-                aspectJProxyFactory.setProxyTargetClass(true);
-                aspectJProxyFactory.addAspect(DocumentAspect.class);
-                
-                if (document instanceof TextDocumentDomainObject) {
-                	aspectJProxyFactory.addAspect(TextDocumentAspect.class);
-                }
-            	
-            	document = aspectJProxyFactory.getProxy();
             	
             	cache.put(documentId, document) ;
             }

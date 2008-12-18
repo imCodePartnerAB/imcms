@@ -11,6 +11,7 @@ import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
+import imcode.server.user.DocumentShowSettings;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -35,6 +36,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
 
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nMeta;
+import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.mapping.DocumentMapper;
 
 public class GetDoc extends HttpServlet {
@@ -60,7 +64,8 @@ public class GetDoc extends HttpServlet {
                          HttpServletResponse res) throws IOException, ServletException {
         ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument( documentId );
+        //DocumentDomainObject document = documentMapper.getDocument( documentId );
+        DocumentDomainObject document = documentMapper.getDocumentForShowing(documentId);
         if (null == document) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -95,7 +100,7 @@ public class GetDoc extends HttpServlet {
         if ( null == document ) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return ;
-        }
+        }                                
 
         Stack history = (Stack) req.getSession().getAttribute("history");
         if ( history == null ) {
@@ -155,7 +160,7 @@ public class GetDoc extends HttpServlet {
             imcref.getAdminTemplate(NO_ACTIVE_DOCUMENT_URL, user, null);
             return;
         }
-
+        
         if ( document instanceof UrlDocumentDomainObject ) {
             String url_ref = ( (UrlDocumentDomainObject) document ).getUrl();
             res.sendRedirect(url_ref);

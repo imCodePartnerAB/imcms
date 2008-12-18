@@ -78,13 +78,6 @@ public class AdminDoc extends HttpServlet {
 
         PageFlow pageFlow = null;
         if ( ImcmsConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags && user.canEditDocumentInformationFor( document ) ) {
-            //TODO Anton Josua: Document info: i18n. refactor
-        	MetaDao metaDao = (MetaDao) Imcms.getServices().getSpringBean("metaDao"); 
-        	
-        	Meta meta = metaDao.getPublishedMeta(document.getId());
-        	
-        	document.setMeta(meta);
-        	
         	pageFlow = new EditDocumentInformationPageFlow( document, returnCommand, saveDocumentCommand );
         } else if ( ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor( document ) ) {
             pageFlow = new EditDocumentPermissionsPageFlow( document, returnCommand, saveDocumentCommand );
@@ -119,7 +112,7 @@ public class AdminDoc extends HttpServlet {
             history.push( meta_int );
         }
 
-        DocumentDomainObject document = imcref.getDocumentMapper().getDocument( meta_id );
+        DocumentDomainObject document = imcref.getDocumentMapper().getDocumentForShowing( meta_id );
         if ( null == document ) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return ;

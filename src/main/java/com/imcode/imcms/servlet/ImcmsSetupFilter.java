@@ -116,7 +116,8 @@ public class ImcmsSetupFilter implements Filter {
         String documentIdString = getDocumentIdString(service, path);
         ServletContext servletContext = request.getSession().getServletContext();
         if ( null == servletContext.getResourcePaths(path) ) {
-            DocumentDomainObject document = service.getDocumentMapper().getDocument(documentIdString);
+            //DocumentDomainObject document = service.getDocumentMapper().getDocument(documentIdString);
+        	DocumentDomainObject document = service.getDocumentMapper().getDocumentForShowing(documentIdString);
             if (null != document) {
                 try {
                     GetDoc.viewDoc( document, request, (HttpServletResponse)response );
@@ -187,7 +188,7 @@ public class ImcmsSetupFilter implements Filter {
 		session.setAttribute("lang", language);    	
 		request.setAttribute("currentLanguage", language);
     	
-    	I18nSupport.setCurrentLanguege(language);
+    	I18nSupport.setCurrentLanguage(language);
     }
 
     /**
