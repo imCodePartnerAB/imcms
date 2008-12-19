@@ -54,8 +54,8 @@ public class AdminDoc extends HttpServlet {
         int flags = Integer.parseInt( (String)ObjectUtils.defaultIfNull( req.getParameter( PARAMETER__DISPATCH_FLAGS ), "0" ) );
 
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument( metaId );
-        UserDomainObject user = Utility.getLoggedOnUser( req );
+        UserDomainObject user = Utility.getLoggedOnUser( req );        
+        DocumentDomainObject document = documentMapper.getDocument( metaId , user.getDocumentShowSettings().getDocumentVersionTag());
         if ( !user.canEdit( document )) {
             flags = 0;
         }
@@ -112,7 +112,7 @@ public class AdminDoc extends HttpServlet {
             history.push( meta_int );
         }
 
-        DocumentDomainObject document = imcref.getDocumentMapper().getDocumentForShowing( meta_id );
+        DocumentDomainObject document = imcref.getDocumentMapper().getDocumentForShowing( meta_id, user );
         if ( null == document ) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return ;

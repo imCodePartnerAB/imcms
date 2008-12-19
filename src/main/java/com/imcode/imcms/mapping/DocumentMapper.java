@@ -63,6 +63,7 @@ import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.I18nDisabledException;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
@@ -406,26 +407,6 @@ public class DocumentMapper implements DocumentGetter {
         }
         return allDocumentAlias;
     }
-
-    public DocumentDomainObject getDocumentForViewing(String documentIdString) {
-        DocumentDomainObject document = null;
-
-        if (null != documentIdString) {
-            if ( NumberUtils.isDigits( documentIdString ) ) {
-                document = getDocument(new Integer(documentIdString));
-            }else{
-                String[] documentIds = (String[]) getDatabase().execute(
-                        new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
-                                new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdString.toLowerCase() },
-                                Utility.STRING_ARRAY_HANDLER));
-
-                if(documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {
-                    document = getDocument(new Integer(documentIds[0]));
-                }
-            }
-        }
-        return document;    	
-    }
     
     public DocumentDomainObject getDocument(String documentIdString) {
         DocumentDomainObject document = null;
@@ -509,22 +490,58 @@ public class DocumentMapper implements DocumentGetter {
             }
         };
     }
+    
+    public DocumentDomainObject getDocument(Integer documentId, DocumentVersionTag versionTag) {
+    	switch (versionTag) {
+		case PUBLISHED:
+			return getDocument(documentId);
+			
+		case WORKING:
+			return getWorkingDocument(documentId);			
+
+		default:
+			return null;
+		}
+    }    
 
     public DocumentDomainObject getDocument(Integer documentId) { 
         return documentGetter.getDocument(documentId);
     }
     
-    public DocumentDomainObject getWorkingDocument(Integer documentId) { 
-        return documentGetter.getWorkingDocument(documentId);
+    public DocumentDomainObject getWorkingDocument(Integer documentId) {
+    	return documentGetter.getWorkingDocument(documentId);
+    }
+    
+    /**
+     * If working document does not exists creates one from public version.
+     */
+    public DocumentDomainObject getWorkingDocument(Integer documentId,
+    		UserDomainObject user) {
+    	
+    	DocumentDomainObject document = documentGetter.getWorkingDocument(documentId);
+    	
+        if (document == null) {
+        	document = documentGetter.getDocument(documentId);
+        	
+        	if (document != null) {
+        		try {
+        			saveAsWorkingWersion(document, user);
+        		} catch (DocumentSaveException e) {
+        			throw new RuntimeException(e);
+        		}
+        	}
+        } 
+        
+        return document;
     }
     
     // TODO: Refactor
-    public DocumentDomainObject getDocumentForShowing(String documentIdString) {
+    public DocumentDomainObject getDocumentForShowing(String documentIdString, UserDomainObject user) {
         DocumentDomainObject document = null;
 
         if (null != documentIdString) {
             if ( NumberUtils.isDigits( documentIdString ) ) {
-                document = getDocumentForShowing(new Integer(documentIdString));
+                document = getDocumentForShowing(new Integer(documentIdString), user);
             }else{
                 String[] documentIds = (String[]) getDatabase().execute(
                         new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
@@ -532,7 +549,7 @@ public class DocumentMapper implements DocumentGetter {
                                 Utility.STRING_ARRAY_HANDLER));
 
                 if(documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {
-                    document = getDocumentForShowing(Integer.valueOf(documentIds[0]));
+                    document = getDocumentForShowing(Integer.valueOf(documentIds[0]), user);
                 }
             }
         }
@@ -550,11 +567,9 @@ public class DocumentMapper implements DocumentGetter {
      *  
      * @return document.
      */
-    public DocumentDomainObject getDocumentForShowing(Integer documentId) {
-    	UserDomainObject user = Imcms.getUser();
-    	DocumentShowSettings showSettings = user.getDocumentShowSettings();    	
-    	
-    	DocumentDomainObject document = null; 
+    public DocumentDomainObject getDocumentForShowing(Integer documentId, UserDomainObject user) {
+    	DocumentDomainObject document = null;
+    	DocumentShowSettings showSettings = user.getDocumentShowSettings();
 		
     	switch (showSettings.getDocumentVersionTag()) {
 		case PUBLISHED:	

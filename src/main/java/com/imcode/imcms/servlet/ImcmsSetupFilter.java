@@ -117,9 +117,10 @@ public class ImcmsSetupFilter implements Filter {
         ServletContext servletContext = request.getSession().getServletContext();
         if ( null == servletContext.getResourcePaths(path) ) {
             //DocumentDomainObject document = service.getDocumentMapper().getDocument(documentIdString);
-        	DocumentDomainObject document = service.getDocumentMapper().getDocumentForShowing(documentIdString);
+        	UserDomainObject user = Utility.getLoggedOnUser( request );
+        	DocumentDomainObject document = service.getDocumentMapper().getDocumentForShowing(documentIdString, user);
             if (null != document) {
-                try {
+                try {                	 
                     GetDoc.viewDoc( document, request, (HttpServletResponse)response );
                     return ;
                 } catch( NumberFormatException nfe ) {}

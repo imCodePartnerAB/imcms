@@ -32,7 +32,7 @@ public class ChangeMenu extends HttpServlet {
         final int documentId = Integer.parseInt(request.getParameter("documentId")) ;
 
         final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-        final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(documentId);
+        final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getWorkingDocument(documentId);
 
         final UserDomainObject user = Utility.getLoggedOnUser(request);
         TextDocumentPermissionSetDomainObject permissionSetFor = (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(document);

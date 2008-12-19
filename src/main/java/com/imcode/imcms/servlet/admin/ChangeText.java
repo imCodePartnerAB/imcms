@@ -34,7 +34,7 @@ public class ChangeText extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( request );
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         int documentId = Integer.parseInt( request.getParameter( "meta_id" ) );
-        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
+        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getWorkingDocument( documentId );
 
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( textDocument );
 

@@ -65,7 +65,8 @@ public class GetDoc extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         //DocumentDomainObject document = documentMapper.getDocument( documentId );
-        DocumentDomainObject document = documentMapper.getDocumentForShowing(documentId);
+        UserDomainObject user = Utility.getLoggedOnUser( req ); 
+        DocumentDomainObject document = documentMapper.getDocumentForShowing(documentId, user);
         if (null == document) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;

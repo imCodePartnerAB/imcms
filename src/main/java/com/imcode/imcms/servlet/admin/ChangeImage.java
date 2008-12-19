@@ -40,10 +40,10 @@ public class ChangeImage extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final ImcmsServices imcref = Imcms.getServices();
-        final DocumentMapper documentMapper = imcref.getDocumentMapper();
-        final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(Integer.parseInt(request.getParameter("meta_id")));
-        final int imageIndex = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__IMAGE_INDEX));        
         final UserDomainObject user = Utility.getLoggedOnUser(request);
+        final DocumentMapper documentMapper = imcref.getDocumentMapper();
+        final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getWorkingDocument(Integer.parseInt(request.getParameter("meta_id")));
+        final int imageIndex = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__IMAGE_INDEX));        
         
         /**
          * Image DTO. Holds generic properties such as size and border. 
