@@ -29,13 +29,16 @@ public class DatabaseDocumentGetter implements DocumentGetter {
 
     private ImcmsServices services;
     
-   // private MetaDao metaDao = (MetaDao)services.getSpringBean("metaDao");
+    private MetaDao metaDao;
     
-    public DatabaseDocumentGetter(ImcmsServices services) {
-        this.services = services;
-        //this.metaDao = (MetaDao)services.getSpringBean("metaDao");
+    public DocumentDomainObject getDocument(Long metaId) {
+    	return initDocument(loadDocument(metaId));
     }
 
+    public DocumentDomainObject getDocument(Integer documentId, Integer version) {
+    	return initDocument(loadDocument(documentId, version));
+    }	    
+        
     public DocumentDomainObject getDocument(Integer documentId) {
     	return initDocument(loadDocument(documentId, DocumentVersionTag.PUBLISHED));
     }	
@@ -63,15 +66,37 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     } 
     
     
-    
-    
+    /**
+     * Loads document
+     */
+    private DocumentDomainObject loadDocument(Long metaId) {
+    	Meta meta = metaDao.getMeta(metaId);
+				
+		return initMeta(meta);
+    }
+
     /**
      * Loads document
      */
     private DocumentDomainObject loadDocument(Integer documentId, DocumentVersionTag versionStatus) {		
-    	MetaDao metaDao = (MetaDao)services.getSpringBean("metaDao");
     	Meta meta = metaDao.getMeta(documentId, versionStatus);
 		
+		return initMeta(meta);
+    }
+    
+    /**
+     * Loads document
+     */
+    private DocumentDomainObject loadDocument(Integer documentId, Integer version) {		
+    	Meta meta = metaDao.getMeta(documentId, version);
+		
+		return initMeta(meta);
+    }    
+    
+    /**
+     * Loads document
+     */
+    private DocumentDomainObject initMeta(Meta meta) {		
 		if (meta == null) {
 			return null;
 		}
@@ -226,5 +251,21 @@ public class DatabaseDocumentGetter implements DocumentGetter {
         }
         
         return documents;
-    }      
+    }
+
+	public ImcmsServices getServices() {
+		return services;
+	}
+
+	public void setServices(ImcmsServices services) {
+		this.services = services;
+	}
+
+	public MetaDao getMetaDao() {
+		return metaDao;
+	}
+
+	public void setMetaDao(MetaDao metaDao) {
+		this.metaDao = metaDao;
+	}      
 }

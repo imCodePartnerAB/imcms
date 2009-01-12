@@ -4,12 +4,11 @@ package com.imcode.imcms.dao;
 import java.util.Collection;
 import java.util.List;
 
-import javax.naming.OperationNotSupportedException;
-
 import org.hibernate.Query;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
@@ -23,14 +22,31 @@ import com.imcode.imcms.mapping.orm.UrlReference;
 public class MetaDao extends HibernateTemplate {
 
 	/**
-	 * TODO: Implement
+	 * @return Meta with given primary key (meta id).
+	 */
+	@Transactional
+	public synchronized Meta getMeta(Long metaId) {
+		Meta meta = (Meta)get(Meta.class, metaId);
+		
+		return addMissingI18nMetas(meta);
+	}
+	
+	
+	/**
+	 * Returns meta for given document id and and version. 
+	 * 
 	 * @return Meta
 	 */
 	@Transactional
-	public synchronized Meta getMeta(int documentId, int documentVersion) 
-	throws OperationNotSupportedException {
-		return null;
-	}
+	public Meta getMeta(Integer documentId, Integer version) {
+		Query query = getSession().createQuery("select m from Meta m where m.documentId = :documentId and m.documentVersion = :documentVersion")
+			.setParameter("documentId", documentId)
+			.setParameter("documentVersion", version);
+		
+		Meta meta = (Meta)query.uniqueResult();
+		
+		return addMissingI18nMetas(meta);
+	}	
 
 	
 	/**
@@ -68,21 +84,27 @@ public class MetaDao extends HibernateTemplate {
 	 * @return Meta
 	 */
 	@Transactional
-	public Meta getMeta(Integer documentId, 
-			DocumentVersionTag documentVersionTag) {
+	public Meta getMeta(Integer documentId, DocumentVersionTag documentVersionTag) {
 		Query query = getSession().createQuery("select m from Meta m where m.documentId = :documentId and m.documentVersionTag = :documentVersionTag")
 			.setParameter("documentId", documentId)
 			.setParameter("documentVersionTag", documentVersionTag);
 		
 		Meta meta = (Meta)query.uniqueResult();
 		
+		return addMissingI18nMetas(meta);
+	}
+	
+	/** 
+	 * Checks and adds if necessary missing i18n-ed parts to meta.
+	 */ 
+	private Meta addMissingI18nMetas(Meta meta) {
 		if (meta == null) {
 			return null;
 		}
 		
 		List<I18nLanguage> languages = (List<I18nLanguage>)
-				findByNamedQueryAndNamedParam("I18nLanguage.missingMetaLanguages", "metaId", meta.getId());
-				
+		findByNamedQueryAndNamedParam("I18nLanguage.missingMetaLanguages", "metaId", meta.getId());
+		
 		if (languages != null) {
 			Collection<I18nMeta> parts = meta.getI18nMetas();
 			
@@ -99,9 +121,8 @@ public class MetaDao extends HibernateTemplate {
 			}
 		}
 		
-		return meta;
+		return meta;		
 	}
-	
 	
 	@Transactional
 	public synchronized void updateMeta(Meta meta) {
@@ -247,4 +268,12 @@ public class MetaDao extends HibernateTemplate {
 		// TODO: Update menu items
 		// TODO: Update includes
 	}
+	
+	
+	@Transactional
+	//@SuppressWarnings()
+	public List<DocumentVersion> getDocumentVersions(Integer documentId) {
+		return findByNamedQueryAndNamedParam("Meta.getDocumentVersions", 
+				"documentId", documentId);
+	}	
 }

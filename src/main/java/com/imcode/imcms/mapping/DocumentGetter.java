@@ -7,23 +7,26 @@ import java.util.List;
 
 public interface DocumentGetter {
     
-    /** Return a list of documents <em>in the same order</em> as the documentIds */ 
+    /** Return a list of published documents <em>in the same order</em> as the documentIds */ 
     List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds);
 
     /**
-     * Returns published document version. 
+     * Returns published version of a document. 
      */
     DocumentDomainObject getDocument(Integer documentId);
     
     /**
-     * Returns working document version.
+     * Returns working version of a document.
      */
     DocumentDomainObject getWorkingDocument(Integer documentId);
     
     /**
-     * TODO:
-     * Returns custom document version.
+     * Returns custom version of a document by its id (meta id).
      */
-    //DocumentDomainObject getDocument(Integer documentId, int version);
-    //DocumentDomainObject getDocument(Long metaId);
+    DocumentDomainObject getDocument(Long metaId);
+    
+    /**
+     * Returns custom document.
+     */
+    DocumentDomainObject getDocument(Integer documentId, Integer version);    
 }

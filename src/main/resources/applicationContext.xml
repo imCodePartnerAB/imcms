@@ -72,6 +72,10 @@
   
   <bean id="documentSaver" class="com.imcode.imcms.mapping.DocumentSaver">
     <property name="metaDao" ref="metaDao"/>
+  </bean>
+  
+  <bean id="databaseDocumentGetter" class="com.imcode.imcms.mapping.DatabaseDocumentGetter">
+    <property name="metaDao" ref="metaDao"/>
   </bean>  
   
 </beans>

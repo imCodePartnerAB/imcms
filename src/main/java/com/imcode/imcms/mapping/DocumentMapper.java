@@ -75,7 +75,7 @@ import com.imcode.imcms.mapping.aop.TextDocumentAspect;
 
 public class DocumentMapper implements DocumentGetter {
 
-    private static final String SQL_GET_ALL_SECTIONS = "SELECT section_id, section_name FROM sections";
+	private static final String SQL_GET_ALL_SECTIONS = "SELECT section_id, section_name FROM sections";
     private static final String SQL_GET_DOCUMENT_ID_FROM_PROPERTIES = "SELECT meta_id FROM document_properties WHERE key_name=? AND value=?";
 
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
@@ -100,7 +100,9 @@ public class DocumentMapper implements DocumentGetter {
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
         documentCache = Collections.synchronizedMap(new LRUMap(documentCacheMaxSize)) ;
         //setDocumentGetter(new FragmentingDocumentGetter(new DatabaseDocumentGetter(services)));
-        setDocumentGetter(new DatabaseDocumentGetter(services));
+        DatabaseDocumentGetter databaseDocumentGetter = (DatabaseDocumentGetter)services.getSpringBean("documentSaver");
+        databaseDocumentGetter.setServices(services);
+        setDocumentGetter(databaseDocumentGetter);
         this.documentPermissionSetMapper = new DocumentPermissionSetMapper(database);
         this.categoryMapper = new CategoryMapper(database);
         //documentSaver = new DocumentSaver(this);
@@ -248,6 +250,7 @@ public class DocumentMapper implements DocumentGetter {
     
     
     // TODO: Check exceptions
+    // What to to if working v. is exists?
     public void saveAsWorkingWersion(DocumentDomainObject document, UserDomainObject user) 
     throws DocumentSaveException, NoPermissionToEditDocumentException {	
 	    documentSaver.saveAsWorkingVersion(document, user);
@@ -264,6 +267,13 @@ public class DocumentMapper implements DocumentGetter {
     throws OperationNotSupportedException {
     	return null;
     }    
+    
+    /**
+     * TODO: Implement get similar routine for document showing. 
+     */
+    public DocumentDomainObject getDocument(Integer documentId, Integer version) {
+		return documentGetter.getDocument(documentId, version);
+	}
     
     
     public boolean hasPublishedVersion(Integer documentId) {
@@ -508,6 +518,12 @@ public class DocumentMapper implements DocumentGetter {
         return documentGetter.getDocument(documentId);
     }
     
+    
+    public DocumentDomainObject getDocument(Long metaId) { 
+        return documentGetter.getDocument(metaId);
+    }
+    
+    
     public DocumentDomainObject getWorkingDocument(Integer documentId) {
     	return documentGetter.getWorkingDocument(documentId);
     }
@@ -583,7 +599,8 @@ public class DocumentMapper implements DocumentGetter {
 				document = getDocument(documentId);
 				
 				if (document != null) {
-					// clone
+					document = document.clone();
+					
 					try {
 						saveAsWorkingWersion(document, user);
 					} catch (DocumentSaveException e) {
