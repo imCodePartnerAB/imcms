@@ -22,9 +22,28 @@ public class MetaDaoTest extends DaoTest {
 		assertTrue(versions.size() > 0)
 	}
 
-    @Test void getMeta() {
+    @Test void getPublishedMeta() {
         def meta = dao.getMeta(1001, DocumentVersionTag.PUBLISHED)
         
         assertNotNull(meta)        
     }
+    
+    @Test void getWorkingMeta() {
+        def meta = dao.getMeta(1001, DocumentVersionTag.WORKING)
+        
+        assertNotNull(meta)        
+    }    
+
+    @Test void getMetaById() {
+        def meta = dao.getMeta(1001L)
+        
+        assertNotNull(meta)        
+    }    
+
+    
+    @Test void getMetaByVersion() {
+        def meta = dao.getMeta(1001, 1)
+        
+        assertNotNull(meta)        
+    }    
 }

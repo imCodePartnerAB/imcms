@@ -36,7 +36,12 @@ public class ContentLoopDaoTest extends DaoTest {
         Assert.assertTrue(loop.getId() != null);
     }   
     
-
+    @Test public void getContentLoops() {
+        def loops = clDao.getContentLoops(1001L);
+                        
+        Assert.assertTrue(loops.size() > 0);
+    }
+    
     @Test public void getContentLoop() {
         ContentLoop missingLoop = clDao.getContentLoop(-1L, -11);
         

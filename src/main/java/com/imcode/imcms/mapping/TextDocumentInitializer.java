@@ -13,15 +13,16 @@ import imcode.server.document.textdocument.TreeSortKeyDomainObject;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.imcode.db.Database;
+import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.dao.ContentLoopDao;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.MenuDao;
 import com.imcode.imcms.dao.MetaDao;
@@ -46,6 +47,7 @@ public class TextDocumentInitializer {
         initMenus(document);
         initIncludes(document);
         initTemplateNames(document);
+        initContentLoops(document);
     }
     
     private void initTexts(TextDocumentDomainObject document) {
@@ -166,5 +168,18 @@ public class TextDocumentInitializer {
 		}
 				
 		return image;
-	}  		
+	} 
+	
+	
+	private void initContentLoops(TextDocumentDomainObject document) {
+		ContentLoopDao dao = (ContentLoopDao)Imcms.getServices().getSpringBean("contentLoopDao");
+		List<ContentLoop> loops = dao.getContentLoops(document.getMeta().getId());
+		Map<Integer, ContentLoop> loopsMap = new HashMap<Integer, ContentLoop>();
+		
+		for (ContentLoop loop: loops) {
+			loopsMap.put(loop.getIndex(), loop);
+		}
+		
+		document.setContentLoopsMap(loopsMap);
+	}	
 }

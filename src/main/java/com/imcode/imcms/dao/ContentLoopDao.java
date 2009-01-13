@@ -129,6 +129,21 @@ public class ContentLoopDao extends HibernateTemplate {
 			.setParameter("index", index)
 			.uniqueResult();
 	}
+	
+	
+	/**
+	 * Returns document content loops. 
+	 * 
+	 * @param metaId document's id.
+	 * 
+	 * @return document content loops. 
+	 */
+	@Transactional
+	public List<ContentLoop> getContentLoops(Long metaId) {
+		return findByNamedQueryAndNamedParam("ContentLoop.getByMetaId", 
+				"metaId", metaId);
+	}
+	
 
 	@Transactional
 	public synchronized void moveContentUp(ContentLoop loop, Long contentId) {

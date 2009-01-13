@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -20,9 +21,12 @@ import javax.persistence.Table;
 @Table(name="text_doc_content_loops")
 @NamedQueries({
 	@NamedQuery(name="ContentLoop.getByMetaIdAndIndex", 
-			query="SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.no = :index")
+			query="SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.no = :index"),
+	@NamedQuery(name="ContentLoop.getByMetaId", 
+			query="SELECT l FROM ContentLoop l WHERE l.metaId = :metaId")
+			
 })
-public class ContentLoop {
+public class ContentLoop implements Cloneable {
 	
 	/**
 	 * Loop step.
@@ -46,6 +50,27 @@ public class ContentLoop {
     @OrderBy("orderIndex")
 	private List<Content> contents;
 	
+	@Override
+	public ContentLoop clone() {
+		ContentLoop clone;
+		
+		try {
+			clone = (ContentLoop)super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+		
+		List<Content> contentsClone = new LinkedList<Content>();
+		
+		for (Content content: contents) {
+			contentsClone.add(content.clone());
+		}
+		
+		clone.setContents(contentsClone);
+								
+		return clone;
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -62,13 +87,23 @@ public class ContentLoop {
 		this.baseIndex = baseIndex;
 	}
 
+	@Deprecated
 	public Integer getNo() {
 		return no;
 	}
 
+	@Deprecated
 	public void setNo(Integer no) {
 		this.no = no;
 	}
+	
+	public Integer getIndex() {
+		return getNo();
+	}
+
+	public void setIndex(Integer index) {
+		setNo(index);
+	}	
 
 	public Long getMetaId() {
 		return metaId;

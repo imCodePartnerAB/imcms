@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.mapping.orm.TemplateNames;
@@ -31,11 +32,16 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     
     /**
      * Includes map.
+     * 
+     * Map key is include's order index in document.
+     * Map value is included document id. 
      */
     private Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
     
     /**
      * Menus map.
+     * 
+     * Map index is menu's order index in document.
      */
     private Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();  
     
@@ -43,6 +49,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Template names.
      */
     private TemplateNames templateNames = new TemplateNames();
+    
+    /**
+     * Content loops map.
+     * 
+     * Map key is content's order index in document.
+     */
+    private Map<Integer, ContentLoop> contentLoopsMap;
                 
     public TextDocumentDomainObject() {
         this(ID_NEW) ;
@@ -61,6 +74,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         clone.menusMap = cloneMenusMap();
         clone.templateNames = cloneTemplateNames();
         clone.texts = cloneTexts();
+        clone.contentLoopsMap = cloneContentLoopsMap();
                 
         return clone;
     }
@@ -475,6 +489,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	return includesMapClone;
     }    
 
+    private Map<Integer, ContentLoop> cloneContentLoopsMap() {
+    	Map<Integer, ContentLoop> contentLoopsMapClone = new HashMap<Integer, ContentLoop>();
+    	
+    	for (Map.Entry<Integer, ContentLoop> entry: contentLoopsMap.entrySet()) {
+    		contentLoopsMapClone.put(entry.getKey(), entry.getValue().clone());
+    	}
+    	
+    	return contentLoopsMapClone;
+    }    
 
 	public TemplateNames getTemplateNames() {
 		return templateNames;
@@ -512,5 +535,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	
 	public void setAllImages(Map<I18nLanguage, Map<Integer, ImageDomainObject>> images) {
 		this.images = images;
+	}
+
+	public Map<Integer, ContentLoop> getContentLoopsMap() {
+		return contentLoopsMap;
+	}
+
+	public void setContentLoopsMap(Map<Integer, ContentLoop> contentLoopsMap) {
+		this.contentLoopsMap = contentLoopsMap;
 	}	
 }

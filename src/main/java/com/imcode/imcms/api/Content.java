@@ -45,6 +45,16 @@ public class Content {
 	
 	@Column(name="sequence_index", updatable=false)
 	private Integer sequenceIndex;	
+	
+	
+	@Override
+	public Content clone() {
+		try {
+			return (Content)super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}		
+	}
 
 	public Long getId() {
 		return id;

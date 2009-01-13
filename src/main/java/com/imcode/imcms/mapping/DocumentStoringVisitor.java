@@ -28,6 +28,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
+import com.imcode.imcms.api.ContentLoop;
+import com.imcode.imcms.dao.ContentLoopDao;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.MenuDao;
 import com.imcode.imcms.dao.MetaDao;
@@ -115,6 +117,16 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         	}
         }
     } 
+    
+    public void updateTextDocumentContentLoops(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
+        ContentLoopDao dao = (ContentLoopDao)services.getSpringBean("contentLoopDao");
+        Long metaId = textDocument.getMeta().getId();
+        
+        for (ContentLoop loop: textDocument.getContentLoopsMap().values()) {
+        	loop.setMetaId(metaId);
+        	dao.saveOrUpdate(loop);
+        }  	
+    }
     
     // Transactional
     public void updateTextDocumentText(TextDomainObject text, UserDomainObject user) {
