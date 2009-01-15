@@ -24,47 +24,7 @@ import com.imcode.imcms.api.ContentLoop;
 public class ContentTag extends BodyTagSupport {
 	
 	public final static int STEP = 100000;
-	
-	/*
-	class GroupData {
-		private int iterationIndex = 0;
 		
-		private int iterationCount = 0;
-		
-		private List<Integer> orderedIndexes;
-		
-		private Map<Integer, List<SimpleImcmsTag>> itemsMap = new LinkedHashMap<Integer, List<SimpleImcmsTag>>();
-				
-		public void addGroupItem(SimpleImcmsTag tag) {
-	    	List<SimpleImcmsTag> items = itemsMap.get(iterationIndex);
-	    	
-	    	if (items == null) {
-	    		items = new LinkedList<SimpleImcmsTag>();
-	    		itemsMap.put(iterationIndex, items);
-	    	}
-	    	
-	    	items.add(tag);			
-		}
-		
-		public int getIterationIndex() {
-			return orderedIndexes.get(iterationIndex);
-		}
-		
-		public int incIterationIndex() {
-			return ++iterationIndex;
-		}
-
-		public int getIterationCount() {
-			return iterationCount;
-		}
-
-		public void setOrderedIndexes(List<Integer> orderedIndexes) {
-			this.orderedIndexes = orderedIndexes;
-			this.iterationCount = orderedIndexes.size();
-		}		
-	}
-	*/
-	
     private int no;  
     
     private String indexVar;
@@ -76,20 +36,11 @@ public class ContentTag extends BodyTagSupport {
     private String label;  
     
     public void addGroupItem(SimpleImcmsTag tag) {
-    	/*
-		GroupData groupData = (GroupData)pageContext.getAttribute("groupData");
-		
-		groupData.addGroupItem(tag);
-		*/
     }
     
     
     public int doAfterBody() throws JspException {
     	Iterator<Content> contentsIterator = (Iterator<Content>)pageContext.getAttribute("contentsIterator");
-    	
-    	//GroupData groupData = (GroupData)pageContext.getAttribute("groupData");
-    	//int index = groupData.incIterationIndex(); 
-    	// getLoopIndex
     	
     	if (!contentsIterator.hasNext()) {
     		pageContext.removeAttribute(indexVar);
@@ -106,20 +57,13 @@ public class ContentTag extends BodyTagSupport {
     	pageContext.getRequest().setAttribute("contentId", content.getId());
     		
     	return EVAL_BODY_AGAIN;
-    	
-    	//pageContext.setAttribute(indexVar, baseIndex + index + STEP);
-    	
-    	/*
-    	return index < groupData.getIterationCount()
-    	  ? EVAL_BODY_AGAIN
-    	  : super.doAfterBody();
-    	*/
     }
     
     
 
 	public int doStartTag() throws JspException {
     	// Prototype try-catch block
+		// TODO: Replace with real code 
     	try {
 			String scriptsRoot = pageContext.getServletContext().getRealPath("WEB-INF") + "/groovy";	
 			String[] roots = new String[] { scriptsRoot };

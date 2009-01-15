@@ -6,28 +6,34 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 
-import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.I18nLanguage;
 
 @Aspect
 public class DocumentAspect {
+	
+	private I18nLanguage language;
+	
+	public DocumentAspect(I18nLanguage language) {
+		this.language = language;
+	}
 			
     @Around("execution(* getHeadline())")
     public Object getHeadline(ProceedingJoinPoint pjp) throws Throwable {
     	return ((DocumentDomainObject)pjp.getTarget())
-    		.getHeadline(I18nSupport.getDocumentLanguage());
+    		.getHeadline(language);
     }
     
     
     @Around("execution(* getMenuImage())")
     public Object getMenuImage(ProceedingJoinPoint pjp) throws Throwable {
     	return ((DocumentDomainObject)pjp.getTarget())
-    		.getMenuImage(I18nSupport.getDocumentLanguage());
+    		.getMenuImage(language);
     }
     
     
     @Around("execution(* getMenuText())")
     public Object getMenuText(ProceedingJoinPoint pjp) throws Throwable {
     	return ((DocumentDomainObject)pjp.getTarget())
-    		.getMenuText(I18nSupport.getDocumentLanguage());
+    		.getMenuText(language);
     }	   
 }

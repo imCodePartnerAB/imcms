@@ -20,11 +20,6 @@ public class I18nSupport {
 	 */
 	private static ThreadLocal<I18nLanguage> currentLanguage = new ThreadLocal<I18nLanguage>();
 	
-	/** 
-	 * Document language.
-	 */
-	private static ThreadLocal<I18nLanguage> documentLanguage = new ThreadLocal<I18nLanguage>();	
-
 	/**
 	 * Default language.  
 	 */
@@ -176,24 +171,5 @@ public class I18nSupport {
 	
 	public static boolean getCurrentIsDefault() {
 		return getCurrentLanguage().equals(getDefaultLanguage());
-	}
-
-	public static I18nLanguage getDocumentLanguage() {
-		I18nLanguage language = documentLanguage.get();
-		
-		if (language == null) {
-			throw new I18nException("Document language is not set.");
-		}
-		
-		return language;
-	}
-
-	public static void setDocumentLanguage(I18nLanguage language) {
-		if (language == null) {
-			throw new IllegalArgumentException("Language argument " +
-					"can not be null.");			
-		}
-		
-		documentLanguage.set(language);
 	}
 }

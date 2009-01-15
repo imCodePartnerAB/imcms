@@ -23,7 +23,9 @@ import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
 
-// Instantiated using spring
+/**
+ * To enable transactions support this class must be instantiated using spring framework.
+ */
 public class DocumentSaver {
 
     private DocumentMapper documentMapper;
@@ -36,7 +38,13 @@ public class DocumentSaver {
         this.documentMapper = documentMapper;
     }
     
-    //experemental
+    /**
+     * --experimental--
+     * 
+     * Existing API saves whole document even if only a fragment of it 
+     * (say text field or image) was modified.
+     * 
+     */
     @Transactional     
     public void saveDocumentFragment(DocumentDomainObject document, UserDomainObject user, HibernateCallback hibernateCallback) throws NoPermissionInternalException, DocumentSaveException {
     	checkDocumentForSave(document);
@@ -54,6 +62,8 @@ public class DocumentSaver {
             	modifiedDatetime = documentMapper.getClock().getCurrentDate();
             }
             
+            // Bulk update is used for speed purposes. 
+            // Actually exactly one document's meta is updated.
     		template.bulkUpdate("update Meta m set m.modifiedDatetime = ? where m.id = ?", 
     			new Object[] {modifiedDatetime, document.getMeta().getId()});
 	    } finally {
@@ -138,8 +148,6 @@ public class DocumentSaver {
         document.setDependenciesMetaIdToNull(); 
         Meta meta = document.getMeta();
         
-        // TODO: should be working
-        // 
         meta.setDocumentVersionTag(DocumentVersionTag.WORKING);
         meta.setDocumentVersion(null);
 
@@ -287,7 +295,7 @@ public class DocumentSaver {
 			if (null == oldDocument
 					|| user.canSetDocumentPermissionSetTypeForRoleIdOnDocument(documentPermissionSetType, roleId, oldDocument)) {
 				
-				// DB designed not to save NONE 
+				// According to schema design NONE value can not be save into table 
 				if (documentPermissionSetType.equals(DocumentPermissionSetTypeDomainObject.NONE)) {
 					roleIdToPermissionSetIdMap.remove(roleId.intValue());
 				} else {

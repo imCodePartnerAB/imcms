@@ -47,6 +47,7 @@ import java.util.TreeMap;
 import javax.naming.OperationNotSupportedException;
 
 import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
@@ -100,7 +101,7 @@ public class DocumentMapper implements DocumentGetter {
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
         documentCache = Collections.synchronizedMap(new LRUMap(documentCacheMaxSize)) ;
         //setDocumentGetter(new FragmentingDocumentGetter(new DatabaseDocumentGetter(services)));
-        DatabaseDocumentGetter databaseDocumentGetter = (DatabaseDocumentGetter)services.getSpringBean("documentSaver");
+        DatabaseDocumentGetter databaseDocumentGetter = (DatabaseDocumentGetter)services.getSpringBean("databaseDocumentGetter");
         databaseDocumentGetter.setServices(services);
         setDocumentGetter(databaseDocumentGetter);
         this.documentPermissionSetMapper = new DocumentPermissionSetMapper(database);
@@ -269,10 +270,19 @@ public class DocumentMapper implements DocumentGetter {
     }    
     
     /**
-     * TODO: Implement get similar routine for document showing. 
+     * Returns document by id and version. 
      */
     public DocumentDomainObject getDocument(Integer documentId, Integer version) {
 		return documentGetter.getDocument(documentId, version);
+	}
+    
+    
+    /**
+     * TODO: implement 
+     * Returns document by document id and version for showing. 
+     */
+    public DocumentDomainObject getDocumentForShowing(Integer documentId, Integer version) {
+    	throw new NotImplementedException();
 	}
     
     
@@ -633,15 +643,13 @@ public class DocumentMapper implements DocumentGetter {
     			}
     		}
     		
-        	// experimental - TODO: Optimize
-    		I18nSupport.setDocumentLanguage(documentLanguage);
-    		
+        	// TODO: Optimize    		
         	AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(document);            	
             aspectJProxyFactory.setProxyTargetClass(true);
-            aspectJProxyFactory.addAspect(DocumentAspect.class);       
+            aspectJProxyFactory.addAspect(new DocumentAspect(documentLanguage));       
             
             if (document instanceof TextDocumentDomainObject) {
-                aspectJProxyFactory.addAspect(TextDocumentAspect.class);            	
+                aspectJProxyFactory.addAspect(new TextDocumentAspect(documentLanguage));            	
             }
                     	
         	document = aspectJProxyFactory.getProxy();    		
