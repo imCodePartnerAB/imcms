@@ -198,8 +198,9 @@
         <fail unless="db-diff-file">
             Set "db-diff-file" in build.properties to the diff file you want to execute.
         </fail>
+
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
-            userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${sql-diff}/${db-diff-file}"/>
+            userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" src="sql/diff/${db-diff-file}"/>
     </target>
 
     <target name="database-create" depends="init">
@@ -210,7 +211,7 @@
         </sql>
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
-            userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
+            userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" keepformat="true">
             <transaction src="sql/imcms_5.3_schema.sql"/>
         	<transaction src="sql/imcms_5.3_data.sql"/>
         </sql>
@@ -227,6 +228,8 @@
     </target>
 
     <target name="database-recreate" depends="init,database-drop,database-create"/>
+	
+	<target name="database-recreate-apply-diff" depends="init,database-drop,database-create,database-apply-diff"/>
 
     <target name="install" depends="init,check-deployroot" description="Install files already built, without running 'build' first.">
         <copy todir="${webapproot}">

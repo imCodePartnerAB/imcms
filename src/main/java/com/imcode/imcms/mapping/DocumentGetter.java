@@ -12,21 +12,22 @@ public interface DocumentGetter {
 
     /**
      * Returns published version of a document. 
+     * 
+     * @param metaId document's meta id.
      */
-    DocumentDomainObject getDocument(Integer documentId);
+    DocumentDomainObject getDocument(Integer documentId);       
     
     /**
      * Returns working version of a document.
+     * 
+     * @param documentId document's id.
      */
     DocumentDomainObject getWorkingDocument(Integer documentId);
-    
-    /**
-     * Returns custom version of a document by its id (meta id).
-     */
-    DocumentDomainObject getDocument(Long metaId);
-    
+        
     /**
      * Returns custom document.
+     * 
+     * @param documentId document's id.
      */
     DocumentDomainObject getDocument(Integer documentId, Integer version);    
 }

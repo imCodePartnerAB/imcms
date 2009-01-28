@@ -32,10 +32,10 @@ public class MenuDao extends HibernateTemplate {
 	*/
 	
 	@Transactional
-	public List<MenuDomainObject> getMenus(Long metaId) {
+	public List<MenuDomainObject> getMenus(Integer documentId) {
 		String hql = "SELECT m FROM Menu m  WHERE m.metaId = :metaId";
 		
-		List<MenuDomainObject> menus = (List<MenuDomainObject>)findByNamedParam(hql, "metaId", metaId);
+		List<MenuDomainObject> menus = (List<MenuDomainObject>)findByNamedParam(hql, "metaId", documentId);
 		
 		for (MenuDomainObject menu: menus) {
 			for (MenuItemDomainObject item: menu.getItemsMap().values()) {
@@ -48,11 +48,11 @@ public class MenuDao extends HibernateTemplate {
 	
 	
 	@Transactional
-	public Map<Integer, MenuDomainObject> saveDocumentMenus(Long metaId, Map<Integer, MenuDomainObject> menusMap) {
+	public Map<Integer, MenuDomainObject> saveDocumentMenus(Integer documentId, Map<Integer, MenuDomainObject> menusMap) {
 		for (Map.Entry<Integer, MenuDomainObject> entry: menusMap.entrySet()) {
 			MenuDomainObject menu = entry.getValue();
 			
-			menu.setMetaId(metaId);
+			menu.setMetaId(documentId);
 			menu.setIndex(entry.getKey());
 			
 			for (Map.Entry<Integer, MenuItemDomainObject> itemEntry: menu.getItemsMap().entrySet()) {

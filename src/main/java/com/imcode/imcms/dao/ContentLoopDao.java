@@ -96,10 +96,10 @@ public class ContentLoopDao extends HibernateTemplate {
 	}	
 
 	@Transactional
-	public ContentLoop createContentLoop(Long metaId, Integer loopIndex, Integer baseIndex) {
+	public ContentLoop createContentLoop(Integer documentId, Integer loopIndex, Integer baseIndex) {
 		ContentLoop loop = new ContentLoop();
-		loop.setMetaId(metaId);
-		loop.setNo(loopIndex);
+		loop.setMetaId(documentId);
+		loop.setIndex(loopIndex);
 		loop.setBaseIndex(baseIndex);
 		
 		save(loop);
@@ -123,9 +123,9 @@ public class ContentLoopDao extends HibernateTemplate {
 	 * @return loop or null if loop can not be found. 
 	 */
 	@Transactional
-	public ContentLoop getContentLoop(Long metaId, Integer index) {
+	public ContentLoop getContentLoop(Integer documentId, Integer index) {
 		return (ContentLoop)getSession().getNamedQuery("ContentLoop.getByMetaIdAndIndex")
-			.setParameter("metaId", metaId)
+			.setParameter("metaId", documentId)
 			.setParameter("index", index)
 			.uniqueResult();
 	}
@@ -139,9 +139,9 @@ public class ContentLoopDao extends HibernateTemplate {
 	 * @return document content loops. 
 	 */
 	@Transactional
-	public List<ContentLoop> getContentLoops(Long metaId) {
+	public List<ContentLoop> getContentLoops(Integer documentId) {
 		return findByNamedQueryAndNamedParam("ContentLoop.getByMetaId", 
-				"metaId", metaId);
+				"metaId", documentId);
 	}
 	
 

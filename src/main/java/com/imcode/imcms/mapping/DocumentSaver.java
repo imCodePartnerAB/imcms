@@ -71,11 +71,12 @@ public class DocumentSaver {
 	    }    	
     }
 
-    
+    /*
     @Transactional
     public void publishDocument(DocumentDomainObject document, UserDomainObject user) {
     	metaDao.publishDocument(document.getMeta().getDocumentId());
     }
+    */
     
     @Transactional
     public void saveDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
@@ -113,12 +114,12 @@ public class DocumentSaver {
         //checkDocumentForSave(document);
         //document.loadAllLazilyLoaded();
         
-    	Long metaId = document.getMeta().getId();
+    	Integer documentId = document.getMeta().getId();
     		
     	document = document.clone();
     	document.setDependenciesMetaIdToNull();
-    	document.getMeta().setDocumentVersionTag(DocumentVersionTag.WORKING);
-    	document.getMeta().setDocumentVersion(null);
+    	//document.getMeta().setDocumentVersionTag(DocumentVersionTag.WORKING);
+    	//document.getMeta().setDocumentVersion(null);
     	
         //try {
             Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
@@ -128,7 +129,7 @@ public class DocumentSaver {
                 document.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
             }
             
-            saveMeta(metaId, document);
+            saveMeta(documentId, document);
             
             document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
         //} finally {
@@ -148,8 +149,8 @@ public class DocumentSaver {
         document.setDependenciesMetaIdToNull(); 
         Meta meta = document.getMeta();
         
-        meta.setDocumentVersionTag(DocumentVersionTag.WORKING);
-        meta.setDocumentVersion(null);
+        //meta.setDocumentVersionTag(DocumentVersionTag.WORKING);
+        //meta.setDocumentVersion(null);
 
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 
@@ -178,7 +179,7 @@ public class DocumentSaver {
      * 
      * @return meta id
      */
-    private Meta saveMeta(Long metaId, DocumentDomainObject document) {
+    private Meta saveMeta(Integer documentId, DocumentDomainObject document) {
     	Meta meta = document.getMeta();
     	
     	meta.setCreatorId(document.getCreatorId());
@@ -237,10 +238,10 @@ public class DocumentSaver {
     	meta.setCategoryIds(document.getCategoryIds());
     	meta.setProperties(document.getProperties());
     	
-    	if (metaId == null) {
-    		metaDao.insertFirstVersionMeta(meta);
-    	} else if (meta.getDocumentVersion() == null) {
-    		metaDao.insertNextVersionMeta(metaId, meta);
+    	if (documentId == null) {
+    		//metaDao.insertFirstVersionMeta(meta);
+    	//} else if (meta.getDocumentVersion() == null) {
+    		//metaDao.insertNextVersionMeta(metaId, meta);
     	} else {
     		metaDao.updateMeta(meta);    		
     	}

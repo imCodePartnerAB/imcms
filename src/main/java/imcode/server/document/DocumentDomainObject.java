@@ -142,12 +142,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public int getId() {
-		Integer documentId = meta.getDocumentId(); 
-		return documentId == null ? 0 : documentId;
+		Integer id = meta.getId();
+		return id == null ? 0 : id.intValue();
+
 	}
 
 	public void setId(int v) {
-		meta.setDocumentId(v);
+		meta.setId(v);
 	}
 
 	@Deprecated
@@ -189,6 +190,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	/**
 	 * @return keywords
 	 */
+	@Deprecated
 	public Set getKeywords(I18nLanguage language) {
 		return getI18nMeta(language).getKeywords();
 	}
@@ -197,7 +199,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	 * I18n disabled: unsafe method public void setKeywords( Set keywords ) {
 	 * setKeywords(I18nSupport.getCurrentLanguage(), keywords); }
 	 */
-
+	@Deprecated
 	public void setKeywords(I18nLanguage language, Set keywords) {
 		getI18nMeta(language).setKeywords(keywords);
 	}
@@ -243,22 +245,15 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		return getMenuText(I18nSupport.getCurrentLanguage());
 	}
 
-	public boolean substituteWithDefault(I18nLanguage language,
-			I18nLanguage defaultLanguage) {
-		return !language.equals(defaultLanguage)
-				&& meta.getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE
-				&& getI18nMeta(defaultLanguage).getEnabled();
-	}
+	@Deprecated
+	public void setMenuText(String v) {
+		setMenuText(I18nSupport.getCurrentLanguage(), v);
+	}	
 
 	public String getMenuText(I18nLanguage language) {
 		return getI18nMeta(language).getMenuText();
 	}
 
-	/** Unsafe method */
-	@Deprecated
-	public void setMenuText(String v) {
-		setMenuText(I18nSupport.getCurrentLanguage(), v);
-	}
 
 	public void setMenuText(I18nLanguage language, String v) {
 		getI18nMeta(language).setMenuText(v);

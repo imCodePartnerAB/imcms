@@ -10,7 +10,7 @@ import javax.persistence.Table;
 public class HtmlReference {
 	
 	@Id @Column(name="meta_id")
-	private Long metaId;	
+	private Integer metaId;	
 
 	@Column(name="frame_set")
 	private String html;
@@ -23,11 +23,11 @@ public class HtmlReference {
 		this.html = text;
 	}
 
-	public Long getMetaId() {
+	public Integer getMetaId() {
 		return metaId;
 	}
 
-	public void setMetaId(Long metaId) {
+	public void setMetaId(Integer metaId) {
 		this.metaId = metaId;
 	}	
 }

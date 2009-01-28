@@ -43,7 +43,7 @@ public class ContentLoop implements Cloneable {
 	private Integer no;
 	
 	@Column(name="meta_id")
-	private Long metaId;
+	private Integer metaId;
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinColumn(name="loop_id")
@@ -105,11 +105,11 @@ public class ContentLoop implements Cloneable {
 		setNo(index);
 	}	
 
-	public Long getMetaId() {
+	public Integer getMetaId() {
 		return metaId;
 	}
 
-	public void setMetaId(Long metaId) {
+	public void setMetaId(Integer metaId) {
 		this.metaId = metaId;
 	}
 

@@ -49,17 +49,17 @@ public class TextDao extends HibernateTemplate {
 	}
 
 	@Transactional
-	public Collection<TextDomainObject> getTexts(Long metaId) {
-		return find("select t from I18nText t where t.metaId = ?", metaId);
+	public Collection<TextDomainObject> getTexts(Integer documentId) {
+		return find("select t from I18nText t where t.metaId = ?", documentId);
 	}
 	
 	@Transactional
-	public void saveTextHistory(Long metaId, TextDomainObject text, UserDomainObject user) {
+	public void saveTextHistory(Integer documentId, TextDomainObject text, UserDomainObject user) {
 		String sql = "INSERT INTO texts_history (meta_id, name, text, type, modified_datetime, user_id, language_id) VALUES " +
 		"(:metaId,:index,:text,:type,:modifiedDt,:userId,:languageId)";
 		
 		getSession().createSQLQuery(sql)
-			.setParameter("metaId", metaId)
+			.setParameter("metaId", documentId)
 			.setParameter("index", text.getIndex())
 			.setParameter("type", text.getType())
 			.setParameter("text", text.getText())

@@ -105,14 +105,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
-        Long metaId = textDocument.getMeta().getId();
+        Integer documentId = textDocument.getMeta().getId();
 
         for (Map<Integer, TextDomainObject> map: textDocument.getAllTexts().values()) {
         	for (TextDomainObject text: map.values()) {
                 if (text.isModified()) {                	 
-                	text.setMetaId(metaId);
+                	text.setMetaId(documentId);
                     textDao.saveText(text);
-                    textDao.saveTextHistory(metaId, text, user); 
+                    textDao.saveTextHistory(documentId, text, user); 
                 }        		
         	}
         }
@@ -120,10 +120,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     
     public void updateTextDocumentContentLoops(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ContentLoopDao dao = (ContentLoopDao)services.getSpringBean("contentLoopDao");
-        Long metaId = textDocument.getMeta().getId();
+        Integer documentId = textDocument.getMeta().getId();
         
         for (ContentLoop loop: textDocument.getContentLoopsMap().values()) {
-        	loop.setMetaId(metaId);
+        	loop.setMetaId(documentId);
         	dao.saveOrUpdate(loop);
         }  	
     }
@@ -158,18 +158,18 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
     	
     	Set<Include> includes = new HashSet<Include>();
-    	Long metaId = textDocument.getMeta().getId();
+    	Integer documentId = textDocument.getMeta().getId();
     	
     	for (Map.Entry<Integer, Integer> entry: textDocument.getIncludesMap().entrySet()) {
     		Include include = new Include();
-    		include.setMetaId(metaId);
+    		include.setMetaId(documentId);
     		include.setIndex(entry.getKey());
     		include.setIncludedDocumentId(entry.getValue());
     		
     		includes.add(include);
     	}
     	
-    	dao.saveIncludes(metaId, includes);
+    	dao.saveIncludes(documentId, includes);
     }
     
     // TODO: transactional - new or can participate
@@ -177,11 +177,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
     	
     	TemplateNames templateNames = textDocument.getTemplateNames();
-    	Long metaId = textDocument.getMeta().getId();
+    	Integer documentId = textDocument.getMeta().getId();
     	    	
-    	templateNames.setMetaId(metaId);
+    	templateNames.setMetaId(documentId);
     	
-    	dao.saveTemplateNames(metaId, templateNames);    	
+    	dao.saveTemplateNames(documentId, templateNames);    	
     }    
 
 

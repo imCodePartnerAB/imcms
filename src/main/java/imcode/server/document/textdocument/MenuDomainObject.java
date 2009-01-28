@@ -47,7 +47,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
 	private Integer index;
 	
 	@Column(name="meta_id")
-	private Long metaId;
+	private Integer metaId;
     
 
 	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
@@ -244,11 +244,11 @@ public class MenuDomainObject implements Cloneable, Serializable {
 		this.index = index;
 	}
 
-	public Long getMetaId() {
+	public Integer getMetaId() {
 		return metaId;
 	}
 
-	public void setMetaId(Long metaId) {
+	public void setMetaId(Integer metaId) {
 		this.metaId = metaId;
 	}
 

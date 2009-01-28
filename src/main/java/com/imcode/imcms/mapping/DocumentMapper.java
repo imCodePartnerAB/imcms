@@ -149,8 +149,8 @@ public class DocumentMapper implements DocumentGetter {
         Meta meta = newDocument.getMeta();
         
         meta.setId(null);
-        meta.setDocumentVersion(null);
-        meta.setDocumentVersionTag(null);
+        //meta.setDocumentVersion(null);
+        //meta.setDocumentVersionTag(null);
         
         for (I18nMeta i18nMeta: meta.getI18nMetas()) {
         	i18nMeta.setHeadline("");
@@ -245,7 +245,7 @@ public class DocumentMapper implements DocumentGetter {
      */
     public void publishDocument(DocumentDomainObject document, UserDomainObject user) 
     throws DocumentSaveException, NoPermissionToEditDocumentException {	
-	    documentSaver.publishDocument(document, user);
+	    //documentSaver.publishDocument(document, user);
 	    documentCache.remove(document.getId());
 	}
     
@@ -377,7 +377,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingDocument(DocumentDomainObject document) {
-        String sqlSelectMenus = "SELECT meta_id, menu_index FROM menus, childs WHERE menus.menu_id = childs.menu_id AND childs.to_meta_id = ? ORDER BY meta_id, menu_index";
+        String sqlSelectMenus = "SELECT meta_id, menu_index FROM menus, childs WHERE menus.menu_id = childs.menu_id AND childs.doc_id = ? ORDER BY meta_id, menu_index";
         String[] parameters = new String[]{"" + document.getId()};
         String[][] sqlRows = (String[][]) getDatabase().execute(new SqlQueryCommand(sqlSelectMenus, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
         TextDocumentMenuIndexPair[] documentMenuPairs = new TextDocumentMenuIndexPair[sqlRows.length];
@@ -527,12 +527,7 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentDomainObject getDocument(Integer documentId) { 
         return documentGetter.getDocument(documentId);
     }
-    
-    
-    public DocumentDomainObject getDocument(Long metaId) { 
-        return documentGetter.getDocument(metaId);
-    }
-    
+            
     
     public DocumentDomainObject getWorkingDocument(Integer documentId) {
     	return documentGetter.getWorkingDocument(documentId);

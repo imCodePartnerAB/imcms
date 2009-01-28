@@ -31,10 +31,6 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     
     private MetaDao metaDao;
     
-    public DocumentDomainObject getDocument(Long metaId) {
-    	return initDocument(loadDocument(metaId));
-    }
-
     public DocumentDomainObject getDocument(Integer documentId, Integer version) {
     	return initDocument(loadDocument(documentId, version));
     }	    
@@ -69,8 +65,8 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     /**
      * Loads document
      */
-    private DocumentDomainObject loadDocument(Long metaId) {
-    	Meta meta = metaDao.getMeta(metaId);
+    private DocumentDomainObject loadDocument(Integer documentId) {
+    	Meta meta = metaDao.getMeta(documentId);
 				
 		return initMeta(meta);
     }
@@ -78,8 +74,8 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     /**
      * Loads document
      */
-    private DocumentDomainObject loadDocument(Integer documentId, DocumentVersionTag versionStatus) {		
-    	Meta meta = metaDao.getMeta(documentId, versionStatus);
+    private DocumentDomainObject loadDocument(Integer documentId, DocumentVersionTag versionTag) {		
+    	Meta meta = metaDao.getMeta(documentId, versionTag);
 		
 		return initMeta(meta);
     }
@@ -103,7 +99,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
 		
 		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 		
-        document.setId(meta.getDocumentId());
+        //document.setId(meta.getDocumentId());
         document.setCreatorId(meta.getCreatorId());
         document.setRestrictedOneMorePrivilegedThanRestrictedTwo(meta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
         

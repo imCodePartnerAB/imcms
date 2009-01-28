@@ -19,7 +19,7 @@ public class FileReference {
 	private Long id;
 	
 	@Column(name="meta_id")
-	private Long metaId;	
+	private Integer metaId;	
 	
 	@Column(name="filename")
 	private String filename;
@@ -76,11 +76,11 @@ public class FileReference {
 		this.id = id;
 	}
 
-	public Long getMetaId() {
+	public Integer getMetaId() {
 		return metaId;
 	}
 
-	public void setMetaId(Long metaId) {
+	public void setMetaId(Integer metaId) {
 		this.metaId = metaId;
 	}
 

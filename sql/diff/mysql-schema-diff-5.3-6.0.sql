@@ -1,4 +1,5 @@
-﻿-- Changes for v 6.0
+
+-- Changes for v 6.0
 
 -- Current schema version
 SET @database_version__major__current = 5;
@@ -15,54 +16,23 @@ DELETE FROM meta WHERE doc_type = 6;
 DELETE FROM doc_types WHERE doc_type = 6;
 DELETE FROM doc_permissions WHERE doc_type NOT IN (2,5,7,8);
 
-ALTER TABLE meta
-  ADD COLUMN doc_id int NULL AFTER meta_id,
-  ADD COLUMN doc_version int NOT NULL DEFAULT 1 AFTER doc_id,
-  ADD COLUMN doc_version_status varchar(12) NULL AFTER doc_version,
-  ADD UNIQUE INDEX ux__meta__doc_id__doc_version (doc_id, doc_version);
+-- Document versions tracking table
+CREATE TABLE meta_version (
+  id INT auto_increment PRIMARY KEY,
+  meta_id INT NOT NULL,
+  version INT NOT NULL,
+  version_tag VARCHAR(12) NOT NULL
+  -- fk to meta
+);
 
-UPDATE meta SET doc_id = meta_id;
+-- for every document create version 1
+-- tag all documents as published
+-- tag all unpublished documents as archived?
 
--- Needs conditional update:
---  if publication time < now
---  if publication time > now
---  assume status
-UPDATE meta SET doc_version_status = 'PUBLISHED';
--- Copy all published to working ???
+INSERT INTO meta_version (
+  meta_id, version, version_tag
+) SELECT meta_id, 1, 'PUBLISHED' FROM meta;
 
-ALTER TABLE meta 
-  MODIFY COLUMN doc_id int NOT NULL,
-  MODIFY COLUMN doc_version_status varchar(12) NOT NULL;
-
-
-/*
-
---
--- Tables for content loop data
---
-CREATE TABLE contents (
-  content_id int auto_increment PRIMARY KEY,
-  content_no int NOT NULL,
-  meta_id int NULL,
-  base_index int NOT NULL,
-
-  UNIQUE INDEX ux__meta_id__content_no (meta_id, content_no),
-  FOREIGN KEY fk__contents__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE content_loops (
-  loop_id int auto_increment PRIMARY KEY,
-  content_id int NOT NULL,
-  loop_index int NOT NULL,
-  order_index int NOT NULL,
-
-  UNIQUE INDEX ux__content_id__loop_index (content_id, loop_index),
-  UNIQUE INDEX ux__content_id__order_index (content_id, order_index),
-  UNIQUE INDEX ux__content_id__loop_index__order_index (content_id, loop_index, order_index),
-  FOREIGN KEY fk__content_loops__contents (content_id) REFERENCES contents (content_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-*/
 
 -- contents becoms text_doc_content_loops
 CREATE TABLE text_doc_content_loops (
@@ -103,16 +73,16 @@ DROP TABLE contents;
 --
 CREATE TABLE new__childs (
   id int auto_increment PRIMARY KEY,
-  menu_id int(11) NOT NULL,
+  to_meta_id int(11) NOT NULL,
   manual_sort_order int(11) NOT NULL,
   tree_sort_index varchar(64) NOT NULL,
-  doc_id int(11) NOT NULL
+  menu_id int(11) NOT NULL
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- DROP childs_history
 
 INSERT INTO new__childs 
-  (menu_id, manual_sort_order, tree_sort_index, doc_id)
+  (menu_id, manual_sort_order, tree_sort_index, to_meta_id)
 SELECT
   menu_id, manual_sort_order, tree_sort_index, to_meta_id
 FROM 
@@ -123,8 +93,7 @@ RENAME TABLE new__childs TO childs;
 
 ALTER TABLE childs
   ADD FOREIGN KEY fk__childs__menus (menu_id) REFERENCES menus (menu_id),
-  ADD FOREIGN KEY fk__childs__meta (doc_id) REFERENCES meta (doc_id),
-  ADD UNIQUE INDEX ux__childs__menu_id__doc_id (menu_id, doc_id);
+  ADD UNIQUE INDEX ux__childs__menu_id__meta_id (menu_id, to_meta_id);
 
 
 --
@@ -134,10 +103,10 @@ CREATE TABLE includes_new (
   id int auto_increment PRIMARY KEY,
   meta_id int NULL,
   include_id int NOT NULL,
-  included_doc_id int NULL
+  included_meta_id int NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO includes_new (meta_id, include_id, included_doc_id)
+INSERT INTO includes_new (meta_id, include_id, included_meta_id)
 SELECT meta_id, include_id, included_meta_id FROM includes;
 
 DROP TABLE includes;
@@ -145,7 +114,7 @@ RENAME TABLE includes_new TO includes;
 
 ALTER TABLE includes ADD UNIQUE INDEX ux__includes__meta_id__include_id(meta_id, include_id);
 ALTER TABLE includes ADD FOREIGN KEY fk__includes__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE;
-ALTER TABLE includes ADD FOREIGN KEY fk__includes__included_document (included_doc_id) REFERENCES meta (doc_id);
+ALTER TABLE includes ADD FOREIGN KEY fk__includes__included_document (included_meta_id) REFERENCES meta (meta_id);
 
 
 --

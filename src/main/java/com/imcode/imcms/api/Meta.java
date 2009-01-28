@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +25,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -34,7 +37,9 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name="meta")
+@SecondaryTable(name="meta_version", pkJoinColumns={@PrimaryKeyJoinColumn(referencedColumnName="meta_id")})
 @NamedQueries({
+	/*
 	@NamedQuery(name="Meta.getMaxDocumentId", query="SELECT max(m.documentId) FROM Meta m"),
 	@NamedQuery(name="Meta.getNextDocumentVersion", query="SELECT max(m.documentVersion) + 1 FROM Meta m WHERE m.id = ?"),
 	@NamedQuery(name="Meta.getDocumentVersions", 
@@ -42,6 +47,7 @@ import javax.persistence.Transient;
 				    "m.id, m.documentVersion, m.documentVersionTag)" +
 				  " FROM Meta m WHERE m.documentId = :documentId" +
 				  "	ORDER BY m.documentVersion")
+				  */
 })
 public class Meta implements Serializable, Cloneable {
 	
@@ -127,14 +133,8 @@ public class Meta implements Serializable, Cloneable {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="meta_id")
-	private Long id;
-	
-	@Column(name="doc_id", updatable=false, nullable=false)
-	private Integer documentId;
-	
-	@Column(name="doc_version", updatable=false, nullable=false)
-	private Integer documentVersion;
-			
+	private Integer id;
+					
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
 	@JoinColumn(name="meta_id", referencedColumnName="meta_id")		
 	private List<I18nMeta> i18nMetas = new LinkedList<I18nMeta>();
@@ -144,9 +144,12 @@ public class Meta implements Serializable, Cloneable {
 	private UnavailableI18nDataSubstitution unavailableI18nDataSubstitution =
 		UnavailableI18nDataSubstitution.DO_NOT_SHOW;
 	
+	@Column(name="version", updatable=false, nullable=false, table="meta_version")
+	private Integer version;
+	
 	@Enumerated(EnumType.STRING)
-	@Column(name="doc_version_status", nullable=false)	
-	private DocumentVersionTag documentVersionTag;	
+	@Column(name="version_tag", nullable=false, table="meta_version")	
+	private DocumentVersionTag versionTag;	
 	
 	// CHECKED	
 	@Column(name="activate", nullable=false, updatable=false)
@@ -316,7 +319,9 @@ public class Meta implements Serializable, Cloneable {
 	    joinColumns = @JoinColumn(name="meta_id", referencedColumnName="meta_id"))    
 	private Set<PermisionSetEx> permisionSetExForNew = new HashSet<PermisionSetEx>();
 	
-	// TODO: remove!!
+	/**
+	 *   
+	 */
 	@Transient
 	private Map<I18nLanguage, I18nMeta> metaMap;
 	
@@ -325,9 +330,7 @@ public class Meta implements Serializable, Cloneable {
 		try {
 			Meta clone = (Meta)super.clone();
 			
-			clone.metaMap = null;
 			clone.unavailableI18nDataSubstitution = unavailableI18nDataSubstitution;
-			clone.documentVersionTag = documentVersionTag;
 
 			clone.permisionSetEx = new HashSet<PermisionSetEx>(permisionSetEx);
 			clone.permisionSetExForNew = new HashSet<PermisionSetEx>(permisionSetExForNew);
@@ -348,18 +351,20 @@ public class Meta implements Serializable, Cloneable {
 				}
 			}
 			
+			clone.initI18nMetaMapping();
+			
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
 	}	
 	
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long metaId) {
-		this.id = metaId;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public List<I18nMeta> getI18nMetas() {
@@ -392,20 +397,25 @@ public class Meta implements Serializable, Cloneable {
 	
 	public void setI18nShowMode(UnavailableI18nDataSubstitution unavailableI18nDataSubstitution) {
 		setUnavailableI18nDataSubstitution(unavailableI18nDataSubstitution);
-	}			
+	}	
 	
-	// TODO i18n : refactor, remove!!
-	public synchronized I18nMeta getI18nMeta(I18nLanguage language) {
-		if (metaMap == null) {
-			metaMap = new HashMap<I18nLanguage, I18nMeta>();
-			
-			if (i18nMetas != null) {
-				for (I18nMeta i18nMeta: i18nMetas) {
-					metaMap.put(i18nMeta.getLanguage(), i18nMeta);
-				}
-			}			
-		}
+	/**
+	 * Initializes language to i18n meta mapping. 
+	 */
+	public void initI18nMetaMapping() {
+		Map<I18nLanguage, I18nMeta> map = new HashMap<I18nLanguage, I18nMeta>();
 		
+		if (i18nMetas != null) {
+			for (I18nMeta i18nMeta: i18nMetas) {
+				map.put(i18nMeta.getLanguage(), i18nMeta);
+			}
+		}		
+		
+		metaMap = Collections.unmodifiableMap(map);
+	}
+	
+	
+	public I18nMeta getI18nMeta(I18nLanguage language) {
 		return metaMap.get(language);
 	}
 
@@ -627,27 +637,20 @@ public class Meta implements Serializable, Cloneable {
 			UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;
 	}
 
-	public Integer getDocumentVersion() {
-		return documentVersion;
+
+	public DocumentVersionTag getVersionTag() {
+		return versionTag;
 	}
 
-	public void setDocumentVersion(Integer version) {
-		this.documentVersion = version;
+	public void setVersionTag(DocumentVersionTag versionTag) {
+		this.versionTag = versionTag;
 	}
 
-	public Integer getDocumentId() {
-		return documentId;
+	public Integer getVersion() {
+		return version;
 	}
 
-	public void setDocumentId(Integer documentId) {
-		this.documentId = documentId;
-	}
-
-	public DocumentVersionTag getDocumentVersionTag() {
-		return documentVersionTag;
-	}
-
-	public void setDocumentVersionTag(DocumentVersionTag documentVersionTag) {
-		this.documentVersionTag = documentVersionTag;
+	public void setVersion(Integer version) {
+		this.version = version;
 	}
 }

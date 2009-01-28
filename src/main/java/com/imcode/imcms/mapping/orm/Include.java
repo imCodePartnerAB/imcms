@@ -21,9 +21,9 @@ public class Include {
 	private Long id;
 	
 	@Column(name="meta_id")
-	private Long metaId;
+	private Integer metaId;
 	
-	@Column(name="included_doc_id")
+	@Column(name="included_meta_id")
 	private Integer includedDocumentId;
 	
 	@Column(name="include_id")
@@ -59,11 +59,11 @@ public class Include {
 		this.id = id;
 	}
 
-	public Long getMetaId() {
+	public Integer getMetaId() {
 		return metaId;
 	}
 
-	public void setMetaId(Long metaId) {
+	public void setMetaId(Integer metaId) {
 		this.metaId = metaId;
 	}
 

@@ -10,7 +10,7 @@ import javax.persistence.Table;
 public class UrlReference {
 	
 	@Id @Column(name="meta_id")
-	private Long metaId;		
+	private Integer metaId;		
 
 	@Column(name="frame_name")
 	private String urlFrameName;
@@ -67,11 +67,11 @@ public class UrlReference {
 		this.urlLanguagePrefix = urlLanguagePrefix;
 	}
 
-	public Long getMetaId() {
+	public Integer getMetaId() {
 		return metaId;
 	}
 
-	public void setMetaId(Long metaId) {
+	public void setMetaId(Integer metaId) {
 		this.metaId = metaId;
 	}
 }
