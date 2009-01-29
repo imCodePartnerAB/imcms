@@ -54,7 +54,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.imcode.db.Database;
@@ -66,8 +65,6 @@ import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.aop.DocumentAspect;
-import com.imcode.imcms.mapping.aop.DocumentMapperAspect;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 

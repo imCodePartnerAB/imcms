@@ -25,14 +25,19 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.mapping.DocumentStoringVisitor;
 import com.imcode.util.ImageSize;
 
-@Entity(name="I18nImage")
+@Entity(name="Image")
 @Table(name="images")
 @NamedQueries({
-	@NamedQuery(name="Image.getByLanguageId", query="select i from I18nImage i where i.metaId = :metaId and i.language.id = :languageId"),
-	@NamedQuery(name="Image.getLanguagesToImagesByMetaId", query="select l, i from I18nImage i right join i.language l where (i.metaId = :metaId and i.name = :name) or i.metaId is null order by l.default desc"),
-	@NamedQuery(name="Image.getAllImages", query="select i from I18nImage i where i.metaId = :metaId"),
-	@NamedQuery(name="Image.getAllDocumentImagesByLanguage", query="select i from I18nImage i where i.metaId = :metaId and i.language.id = :languageId"),
-	@NamedQuery(name="Image.getDefaultImage", query="select i from I18nImage i where i.metaId = :metaId and i.name = :name and i.language.default is true")
+	@NamedQuery(name="Image.getByLanguageId", query="select i from Image i where i.metaId = :metaId and i.language.id = :languageId"),
+	@NamedQuery(name="Image.getLanguagesToImagesByMetaId", query="select l, i from Image i right join i.language l where (i.metaId = :metaId and i.name = :name) or i.metaId is null order by l.default desc"),
+	@NamedQuery(name="Image.getAllImages", query="select i from Image i where i.metaId = :metaId"),
+	@NamedQuery(name="Image.getAllDocumentImagesByLanguage", query="select i from Image i where i.metaId = :metaId and i.language.id = :languageId"),
+	@NamedQuery(name="Image.getDefaultImage", query="select i from Image i where i.metaId = :metaId and i.name = :name and i.language.default is true"),
+	
+	// Collection			
+	@NamedQuery(name="Image.getByDocumentIdAndDocumentVersion", 
+			query="SELECT i FROM Image i WHERE i.metaId = :documentId AND i.metaVersion = :documentVersion")
+	
 })
 public class ImageDomainObject implements Serializable, Cloneable {
 	
@@ -45,6 +50,9 @@ public class ImageDomainObject implements Serializable, Cloneable {
 	
 	@Column(name="meta_id")
 	private Integer metaId;
+	
+	@Column(name="meta_version")
+	private Integer metaVersion;	
 
     /**
      * Image index.
@@ -354,5 +362,13 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
 	public void setModified(boolean modified) {
 		this.modified = modified;
+	}
+
+	public Integer getMetaVersion() {
+		return metaVersion;
+	}
+
+	public void setMetaVersion(Integer metaVersion) {
+		this.metaVersion = metaVersion;
 	}		
 }

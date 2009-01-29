@@ -33,6 +33,16 @@ INSERT INTO meta_version (
   meta_id, version, version_tag
 ) SELECT meta_id, 1, 'PUBLISHED' FROM meta;
 
+ALTER TABLE texts 
+    ADD COLUMN meta_version INT NOT NULL DEFAULT 1;
+    -- DROP INDEX ux__texts__meta_id__name__language_id; 
+    
+-- alter history
+
+ALTER TABLE images 
+    ADD COLUMN meta_version INT NOT NULL DEFAULT 1;
+    -- DROP INDEX ux__images__meta_id__name__language_id; 
+-- alter history
 
 -- contents becoms text_doc_content_loops
 CREATE TABLE text_doc_content_loops (

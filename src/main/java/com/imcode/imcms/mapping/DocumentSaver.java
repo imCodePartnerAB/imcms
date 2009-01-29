@@ -5,6 +5,8 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -18,6 +20,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
@@ -62,10 +65,11 @@ public class DocumentSaver {
             	modifiedDatetime = documentMapper.getClock().getCurrentDate();
             }
             
+            // TODO: Fix - does not work!!
             // Bulk update is used for speed purposes. 
             // Actually exactly one document's meta is updated.
-    		template.bulkUpdate("update Meta m set m.modifiedDatetime = ? where m.id = ?", 
-    			new Object[] {modifiedDatetime, document.getMeta().getId()});
+    		//template.bulkUpdate("update Meta m set m.modifiedDatetime = ? where m.id = ?", 
+    		//	new Object[] {modifiedDatetime, document.getMeta().getId()});
 	    } finally {
 	        documentMapper.invalidateDocument(document);
 	    }    	
@@ -114,13 +118,14 @@ public class DocumentSaver {
         //checkDocumentForSave(document);
         //document.loadAllLazilyLoaded();
         
-    	Integer documentId = document.getMeta().getId();
+    	Meta meta = document.getMeta();
+    	Integer documentId = meta.getId();
     		
     	document = document.clone();
     	document.setDependenciesMetaIdToNull();
-    	//document.getMeta().setDocumentVersionTag(DocumentVersionTag.WORKING);
-    	//document.getMeta().setDocumentVersion(null);
-    	
+    	document.setId(documentId);
+
+    	/*
         //try {
             Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
             Date modifiedDatetime = Utility.truncateDateToMinutePrecision(document.getModifiedDatetime());
@@ -135,6 +140,16 @@ public class DocumentSaver {
         //} finally {
         //    documentMapper.invalidateDocument(document);
         //}
+        */  
+            
+        DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
+        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
+        
+        DocumentVersion documentVersion = metaDao.createNextVersion(documentId);
+        textDocument.getMeta().setDocumentVersion(documentVersion);
+        
+        visitor.updateTextDocumentTexts(textDocument, null, user);
+        visitor.updateTextDocumentImages(textDocument, null, user);        
     }
     
 
@@ -177,7 +192,7 @@ public class DocumentSaver {
      * Temporary method
      * Copies data from attributes to meta and stores meta.
      * 
-     * @return meta id
+     * @return saved document meta.
      */
     private Meta saveMeta(Integer documentId, DocumentDomainObject document) {
     	Meta meta = document.getMeta();
@@ -238,13 +253,7 @@ public class DocumentSaver {
     	meta.setCategoryIds(document.getCategoryIds());
     	meta.setProperties(document.getProperties());
     	
-    	if (documentId == null) {
-    		//metaDao.insertFirstVersionMeta(meta);
-    	//} else if (meta.getDocumentVersion() == null) {
-    		//metaDao.insertNextVersionMeta(metaId, meta);
-    	} else {
-    		metaDao.updateMeta(meta);    		
-    	}
+    	metaDao.updateMeta(meta);
     	
     	return meta;
     }

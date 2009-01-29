@@ -256,6 +256,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	newText.setIndex(index);
     	newText.setLanguage(language);
     	newText.setModified(true);
+    	newText.setMetaVersion(oldText.getMetaVersion());
     	
     	map.put(index, newText);
     } 

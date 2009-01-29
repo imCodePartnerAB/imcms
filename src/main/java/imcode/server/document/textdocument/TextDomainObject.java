@@ -26,14 +26,21 @@ import com.imcode.imcms.mapping.DocumentStoringVisitor;
 /**
  * Document text field. 
  */
-@Entity(name="I18nText")
+@Entity(name="Text")
 @Table(name="texts")
 @NamedQueries({
-	@NamedQuery(name="Text.getByMetaIdAndLanguageId", 
-			query="select t from I18nText t where t.metaId = :metaId and t.language.id = :languageId"),
-	@NamedQuery(name="Text.getByMetaIdAndIndexAndLanguageId", 
-			query="select t from I18nText t where t.metaId = :metaId and t.index = :index and t.language.id = :languageId")
-
+	
+	// Unique result
+	@NamedQuery(name="Text.getByDocumentIdAndDocumentVersionAndLanguageId", 
+			query="SELECT t FROM Text t WHERE t.metaId = :documentId AND t.metaVersion = :documentVersiob AND t.language.id = :languageId"),
+	
+	// Unique result
+	@NamedQuery(name="Text.getByDocumentIdAndDocumentVersionAndIndexAndLanguageId", 
+			query="SELECT t FROM Text t WHERE t.metaId = :documentId AND t.metaVersion = :documentVersion AND t.index = :index AND t.language.id = :languageId"),
+	
+	// Collection			
+	@NamedQuery(name="Text.getByDocumentIdAndDocumentVersion", 
+			query="SELECT t FROM Text t WHERE t.metaId = :documentId AND t.metaVersion = :documentVersion")
 })
 public class TextDomainObject implements Serializable, Cloneable {
 	
@@ -62,7 +69,10 @@ public class TextDomainObject implements Serializable, Cloneable {
 	private Long id;
 	
 	@Column(name="meta_id")
-	private Integer metaId;	
+	private Integer metaId;
+	
+	@Column(name="meta_version")
+	private Integer metaVersion;	
 	
     /**
      * Text filed index in the document.
@@ -247,5 +257,13 @@ public class TextDomainObject implements Serializable, Cloneable {
 
 	public void setModified(boolean modified) {
 		this.modified = modified;
+	}
+
+	public Integer getMetaVersion() {
+		return metaVersion;
+	}
+
+	public void setMetaVersion(Integer metaVersion) {
+		this.metaVersion = metaVersion;
 	}
 }

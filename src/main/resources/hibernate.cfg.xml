@@ -21,6 +21,7 @@
         <mapping class="com.imcode.imcms.api.I18nMeta"/>
         <mapping class="com.imcode.imcms.api.I18nLanguage"/>
         <mapping class="com.imcode.imcms.api.Content"/>
+        <mapping class="com.imcode.imcms.api.DocumentVersion"/>
         
         <mapping class="com.imcode.imcms.api.ContentLoop"/>
         

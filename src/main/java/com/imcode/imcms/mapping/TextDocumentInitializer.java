@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.ContentLoopDao;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.MenuDao;
@@ -52,8 +53,9 @@ public class TextDocumentInitializer {
     
     private void initTexts(TextDocumentDomainObject document) {
     	TextDao dao = (TextDao)Imcms.getServices().getSpringBean("textDao");
+    	Meta meta = document.getMeta();
     	
-    	Collection<TextDomainObject> texts = dao.getTexts(document.getMeta().getId());    	    
+    	Collection<TextDomainObject> texts = dao.getTexts(meta.getId(), meta.getDocumentVersion().getVersion());    	    
     	Map<I18nLanguage, Map<Integer, TextDomainObject>> textsMap = new HashMap<I18nLanguage, Map<Integer,TextDomainObject>>();
     	
     	for (TextDomainObject text: texts) {
@@ -102,8 +104,9 @@ public class TextDocumentInitializer {
     
     private void initImages(TextDocumentDomainObject document) {
     	ImageDao dao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
+    	Meta meta = document.getMeta();
     	
-    	Collection<ImageDomainObject> images = dao.getImages(document.getMeta().getId());
+    	Collection<ImageDomainObject> images = dao.getImages(meta.getId(), meta.getDocumentVersion().getVersion());
     	
     	Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
     	

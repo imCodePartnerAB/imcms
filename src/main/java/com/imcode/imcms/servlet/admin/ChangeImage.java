@@ -42,7 +42,11 @@ public class ChangeImage extends HttpServlet {
         final ImcmsServices imcref = Imcms.getServices();
         final UserDomainObject user = Utility.getLoggedOnUser(request);
         final DocumentMapper documentMapper = imcref.getDocumentMapper();
-        final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getWorkingDocument(Integer.parseInt(request.getParameter("meta_id")));
+        final Integer documentId = Integer.parseInt(request.getParameter("meta_id"));
+        
+        final TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(
+        		documentId, user.getDocumentShowSettings().getDocumentVersionTag());
+        
         final int imageIndex = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__IMAGE_INDEX));        
         
         /**

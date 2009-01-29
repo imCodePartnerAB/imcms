@@ -300,7 +300,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public String[][] getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
-        String sqlStr = "SELECT meta_id,menu_index FROM childs, menus WHERE menus.menu_id = childs.menu_id AND doc_id = ?";
+        String sqlStr = "SELECT meta_id,menu_index FROM childs, menus WHERE menus.menu_id = childs.menu_id AND to_meta_id = ?";
         String[] parameters = new String[]{"" + document.getId()};
         return (String[][]) getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
     }
@@ -511,6 +511,9 @@ public class DocumentMapper implements DocumentGetter {
         };
     }
     
+    /** 
+     * @return tagged version of document.
+     */
     public DocumentDomainObject getDocument(Integer documentId, DocumentVersionTag versionTag) {
     	switch (versionTag) {
 		case PUBLISHED:
@@ -520,7 +523,7 @@ public class DocumentMapper implements DocumentGetter {
 			return getWorkingDocument(documentId);			
 
 		default:
-			return null;
+			throw new NotImplementedException();
 		}
     }    
 
@@ -536,6 +539,7 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * If working document does not exists creates one from public version.
      */
+    /*
     public DocumentDomainObject getWorkingDocument(Integer documentId,
     		UserDomainObject user) {
     	
@@ -555,8 +559,14 @@ public class DocumentMapper implements DocumentGetter {
         
         return document;
     }
+    */
     
-    // TODO: Refactor
+    /**
+     * Returns document for showing.
+     * 
+     * @param documentIdString document's id or alias
+     * @param user an user requesting document    
+     */
     public DocumentDomainObject getDocumentForShowing(String documentIdString, UserDomainObject user) {
         DocumentDomainObject document = null;
 
@@ -579,7 +589,6 @@ public class DocumentMapper implements DocumentGetter {
     
     /** 
      * TODO: pass user as parameter
-     * TODO: pass language as parameter
      * 
      * Returns published or working document depending on user's view settings
      * and i18n meta settings. 

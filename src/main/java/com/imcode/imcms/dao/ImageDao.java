@@ -6,7 +6,6 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,9 +82,11 @@ public class ImageDao extends HibernateTemplate {
 	}
 	
 	@Transactional
-	public Collection<ImageDomainObject> getImages(Integer documentId) {
-		return find("select i from I18nImage i where i.metaId = ?", documentId);
-	}
+	public Collection<ImageDomainObject> getImages(Integer documentId, Integer documentVersion) {
+		return findByNamedQueryAndNamedParam("Image.getByDocumentIdAndDocumentVersion", 
+				new String[] {"documentId", "documentVersion"}, 
+				new Object[] {documentId, documentVersion}	
+		);	}
 	
 	public LanguageDao getLanguageDao() {
 		return languageDao;

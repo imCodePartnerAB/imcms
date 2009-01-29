@@ -49,8 +49,11 @@ public class TextDao extends HibernateTemplate {
 	}
 
 	@Transactional
-	public Collection<TextDomainObject> getTexts(Integer documentId) {
-		return find("select t from I18nText t where t.metaId = ?", documentId);
+	public Collection<TextDomainObject> getTexts(Integer documentId, Integer documentVersion) {
+		return findByNamedQueryAndNamedParam("Text.getByDocumentIdAndDocumentVersion", 
+				new String[] {"documentId", "documentVersion"}, 
+				new Object[] {documentId, documentVersion}	
+		);
 	}
 	
 	@Transactional

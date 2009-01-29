@@ -143,13 +143,9 @@ public class Meta implements Serializable, Cloneable {
 	@Column(name="missing_i18n_show_rule", nullable=false)
 	private UnavailableI18nDataSubstitution unavailableI18nDataSubstitution =
 		UnavailableI18nDataSubstitution.DO_NOT_SHOW;
-	
-	@Column(name="version", updatable=false, nullable=false, table="meta_version")
-	private Integer version;
-	
-	@Enumerated(EnumType.STRING)
-	@Column(name="version_tag", nullable=false, table="meta_version")	
-	private DocumentVersionTag versionTag;	
+
+	@Transient
+	private DocumentVersion documentVersion;	
 	
 	// CHECKED	
 	@Column(name="activate", nullable=false, updatable=false)
@@ -331,6 +327,7 @@ public class Meta implements Serializable, Cloneable {
 			Meta clone = (Meta)super.clone();
 			
 			clone.unavailableI18nDataSubstitution = unavailableI18nDataSubstitution;
+			clone.documentVersion = documentVersion.clone();
 
 			clone.permisionSetEx = new HashSet<PermisionSetEx>(permisionSetEx);
 			clone.permisionSetExForNew = new HashSet<PermisionSetEx>(permisionSetExForNew);
@@ -637,20 +634,11 @@ public class Meta implements Serializable, Cloneable {
 			UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;
 	}
 
-
-	public DocumentVersionTag getVersionTag() {
-		return versionTag;
+	public DocumentVersion getDocumentVersion() {
+		return documentVersion;
 	}
 
-	public void setVersionTag(DocumentVersionTag versionTag) {
-		this.versionTag = versionTag;
-	}
-
-	public Integer getVersion() {
-		return version;
-	}
-
-	public void setVersion(Integer version) {
-		this.version = version;
+	public void setDocumentVersion(DocumentVersion documentVersion) {
+		this.documentVersion = documentVersion;
 	}
 }

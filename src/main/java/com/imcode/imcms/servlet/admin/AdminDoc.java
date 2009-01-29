@@ -27,8 +27,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.ObjectUtils;
 
-import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.flow.EditDocumentPermissionsPageFlow;

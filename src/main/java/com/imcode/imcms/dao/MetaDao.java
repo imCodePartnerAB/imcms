@@ -22,32 +22,100 @@ import com.imcode.imcms.mapping.orm.UrlReference;
 public class MetaDao extends HibernateTemplate {
 
 	/**
-	 * @return Meta with given primary key (meta id).
+	 * @return Meta.
 	 */
 	@Transactional
-	public synchronized Meta getMeta(Integer metaId) {
-		Meta meta = (Meta)get(Meta.class, metaId);
+	public synchronized Meta getMeta(Integer documentId) {
+		Meta meta = (Meta)get(Meta.class, documentId);
 		
 		return initI18nMetas(meta);
 	}
 	
 	
 	/**
-	 * Returns meta for given document id and and version. 
+	 * TODO: Clarify how to handle latest version tag.
+	 * 
+	 * @return next document version.
+	 */
+	@Transactional
+	public synchronized DocumentVersion createNextVersion(Integer documentId) {
+		DocumentVersion nextVersion;
+		DocumentVersion latestVersion = (DocumentVersion)getSession().getNamedQuery("DocumentVersion.getLastVersion")
+			.setParameter("documentId", documentId)
+			.uniqueResult();
+		
+		if (latestVersion == null) {
+			nextVersion = new DocumentVersion(documentId, 1, DocumentVersionTag.WORKING);			
+		} else {
+			nextVersion = new DocumentVersion(documentId, 
+					latestVersion.getVersion() + 1, DocumentVersionTag.WORKING);
+			
+			if (latestVersion.getVersionTag() == DocumentVersionTag.WORKING) {
+				latestVersion.setVersionTag(DocumentVersionTag.ARCHIVED);
+			}
+			
+			update(latestVersion);
+		}
+		
+		save(nextVersion);
+		
+		return nextVersion;
+	}	
+	
+	
+	/**
+	 * Returns meta with version data. 
 	 * 
 	 * @return Meta
 	 */
 	@Transactional
 	public Meta getMeta(Integer id, Integer version) {
-		Query query = getSession().createQuery("select m from Meta m where m.id = :id and m.version = :version")
-			.setParameter("id", id)
-			.setParameter("version", version);
+		Meta meta = getMeta(id);
 		
-		Meta meta = (Meta)query.uniqueResult();
-		
+		if (meta != null) {
+			Query query = getSession().createQuery("SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId AND v.version = :version")
+				.setParameter("documentId", id)
+				.setParameter("version", version);
+			
+			DocumentVersion documentVersion = (DocumentVersion)query.uniqueResult();
+			
+			if (documentVersion != null) {
+				meta.setDocumentVersion(documentVersion);
+			} else {
+				meta = null;
+			}
+		}
+				
 		return initI18nMetas(meta);
 	}	
 
+	/**
+	 * Returns meta for given document id and and version tag. 
+	 * 
+	 * Checks and adds if necessary missing i18n-ed parts to meta. 
+	 * 
+	 * @return Meta
+	 */
+	@Transactional
+	public Meta getMeta(Integer id, DocumentVersionTag versionTag) {
+		Meta meta = getMeta(id);
+		
+		if (meta != null) {
+			Query query = getSession().createQuery("SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId AND v.versionTag = :versionTag")
+				.setParameter("documentId", id)
+				.setParameter("versionTag", versionTag);
+			
+			DocumentVersion documentVersion = (DocumentVersion)query.uniqueResult();
+			
+			if (documentVersion != null) {
+				meta.setDocumentVersion(documentVersion);
+			} else {
+				meta = null;
+			}
+		}
+				
+		return initI18nMetas(meta);		
+	}	
 	
 	/**
 	 * Returns published document Meta for given document id. 
@@ -74,25 +142,6 @@ public class MetaDao extends HibernateTemplate {
 		return getMeta(documentId, DocumentVersionTag.WORKING); 
 	} 
 
-	
-	
-	/**
-	 * Returns meta for given document id and and version tag. 
-	 * 
-	 * Checks and adds if necessary missing i18n-ed parts to meta. 
-	 * 
-	 * @return Meta
-	 */
-	@Transactional
-	public Meta getMeta(Integer id, DocumentVersionTag versionTag) {
-		Query query = getSession().createQuery("select m from Meta m where m.id = :id and m.versionTag = :versionTag")
-			.setParameter("id", id)
-			.setParameter("versionTag", versionTag);
-		
-		Meta meta = (Meta)query.uniqueResult();
-		
-		return initI18nMetas(meta);
-	}
 	
 	/** 
 	 * Checks and adds if necessary missing i18n-ed parts to meta.
