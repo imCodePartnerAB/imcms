@@ -75,12 +75,17 @@ public class DocumentSaver {
 	    }    	
     }
 
-    /*
-    @Transactional
+    /**
+     * Published working version of a document.
+     * 
+     * @param document working document.
+     * @param user
+     */
+    @Transactional    
     public void publishDocument(DocumentDomainObject document, UserDomainObject user) {
-    	metaDao.publishDocument(document.getMeta().getDocumentId());
+    	metaDao.publishDocument(document.getMeta().getId());
     }
-    */
+    
     
     @Transactional
     public void saveDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,

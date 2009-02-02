@@ -241,11 +241,12 @@ public class DocumentMapper implements DocumentGetter {
     }
     
     /**
-     * Publishes working version of document.  
+     * Published working version of a document.
      */
-    public void publishDocument(DocumentDomainObject document, UserDomainObject user) 
+    public void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) 
     throws DocumentSaveException, NoPermissionToEditDocumentException {	
-	    //documentSaver.publishDocument(document, user);
+	    documentSaver.publishDocument(document, user);
+	    // TODO: remove working document.
 	    documentCache.remove(document.getId());
 	}
     
@@ -527,6 +528,9 @@ public class DocumentMapper implements DocumentGetter {
 		}
     }    
 
+    /**
+     * Returns published version of document.
+     */
     public DocumentDomainObject getDocument(Integer documentId) { 
         return documentGetter.getDocument(documentId);
     }
@@ -785,7 +789,7 @@ public class DocumentMapper implements DocumentGetter {
     public static class PublushDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
 
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-            Imcms.getServices().getDocumentMapper().publishDocument( document, user );
+            Imcms.getServices().getDocumentMapper().publishWorkingDocument( document, user );
         }
     }
     

@@ -17,9 +17,18 @@ import javax.persistence.Table;
 @Entity(name="DocumentVersion")
 @Table(name="meta_version")
 @NamedQueries({
+	// Unique result
 	@NamedQuery(name="DocumentVersion.getLastVersion", 
 			query="SELECT v FROM DocumentVersion v WHERE v.id IN (" +
-					"SELECT max(v.id) FROM DocumentVersion v WHERE v.documentId = :documentId)")
+					"SELECT max(v.id) FROM DocumentVersion v WHERE v.documentId = :documentId)"),
+    // Unique result					
+	@NamedQuery(name="DocumentVersion.getByDocumentIdAndVersionTag", 
+			query="SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId " +
+					"AND v.versionTag = :versionTag"),
+    // Unique result				
+	@NamedQuery(name="DocumentVersion.getByDocumentIdAndVersion", 
+			query="SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId " +
+					"AND v.version = :version")										
 })
 public class DocumentVersion implements Cloneable {
 

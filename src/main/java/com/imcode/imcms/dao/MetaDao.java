@@ -303,21 +303,36 @@ public class MetaDao extends HibernateTemplate {
 		return reference;
 	}	
 	
+	/**
+	 * Publishes working version of a document.
+	 * 
+	 * Changes published version to archived and working version to published.
+	 * 
+	 * @param documentId document id to publish.
+	 * //TODO?: @param version, and select by version, not by tag ???
+	 * //TODO?: @param userId - user id ??? 
+	 * //TODO?: alter modification date ???
+	 */
 	@Transactional
 	public synchronized void publishDocument(Integer documentId) {
-		Query hql = getSession().createQuery("UPDATE Meta m SET m.documentVersionTag = :newVersionTag WHERE m.documentId = :documentId AND m.documentVersionTag = :oldVersionTag");
+		Query query = getSession().getNamedQuery("DocumentVersion.getByDocumentIdAndVersionTag")
+			.setParameter("documentId", documentId)
+			.setParameter("versionTag", DocumentVersionTag.PUBLISHED);
 		
-		hql.setParameter("documentId", documentId);
-		hql.setParameter("newVersionTag", DocumentVersionTag.ARCHIVED);
-		hql.setParameter("oldVersionTag", DocumentVersionTag.PUBLISHED);		
-		hql.executeUpdate();
+		DocumentVersion publishedVersion = (DocumentVersion)query.uniqueResult();
 		
-		hql.setParameter("newVersionTag", DocumentVersionTag.PUBLISHED);
-		hql.setParameter("oldVersionTag", DocumentVersionTag.WORKING);
-		hql.executeUpdate();
+		if (publishedVersion != null) {
+			publishedVersion.setVersionTag(DocumentVersionTag.ARCHIVED);
+			save(publishedVersion);
+		}
 		
-		// TODO: Update menu items
-		// TODO: Update includes
+		query.setParameter("versionTag", DocumentVersionTag.WORKING);
+		DocumentVersion workingVersion = (DocumentVersion)query.uniqueResult();
+		
+		if (workingVersion != null) {
+			workingVersion.setVersionTag(DocumentVersionTag.PUBLISHED);
+			save(workingVersion);
+		}
 	}
 	
 	
