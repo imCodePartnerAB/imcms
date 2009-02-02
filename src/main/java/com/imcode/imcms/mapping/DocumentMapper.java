@@ -251,24 +251,20 @@ public class DocumentMapper implements DocumentGetter {
 	}
     
     
-    // TODO: Check exceptions
-    // What to to if working v. is exists?
-    public void saveAsWorkingWersion(DocumentDomainObject document, UserDomainObject user) 
-    throws DocumentSaveException, NoPermissionToEditDocumentException {	
-	    documentSaver.saveAsWorkingVersion(document, user);
-	}
-    
-    
     /**
-     * TODO: Implement business logic ????????
+     * Creates working document from existing one.
      * 
-     * @param metaId document meta id
-     * @param version document version
+     * @param document
+     * @param user
+     * @throws DocumentSaveException
+     * @throws NoPermissionToEditDocumentException
      */
-    public DocumentDomainObject copyCustomVersionToWorkingVersion(int metaId, int version) 
-    throws OperationNotSupportedException {
-    	return null;
-    }    
+    // TODO: Check exceptions 
+    public void createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) 
+    throws DocumentSaveException, NoPermissionToEditDocumentException {	
+	    documentSaver.createWorkingDocumentFromExisting(document, user);
+	}
+            
     
     /**
      * Returns document by id and version. 
@@ -620,7 +616,7 @@ public class DocumentMapper implements DocumentGetter {
 					document = document.clone();
 					
 					try {
-						saveAsWorkingWersion(document, user);
+						createWorkingDocumentFromExisting(document, user);
 					} catch (DocumentSaveException e) {
 						throw new RuntimeException(e);
 					}

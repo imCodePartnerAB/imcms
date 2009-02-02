@@ -13,7 +13,8 @@
 	        org.apache.oro.text.perl.Perl5Util,
 	        org.apache.commons.lang.StringUtils,
 	        java.util.List,
-	        com.imcode.imcms.api.*"
+	        com.imcode.imcms.api.*,
+	        java.util.Set"
 	
 %><%@ taglib uri="imcmsvelocity" prefix="vel"
 %><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"
@@ -47,7 +48,7 @@ I18nLanguage defaultLanguage = I18nSupport.getDefaultLanguage() ;
 I18nLanguage currentLanguage = (null != session.getAttribute("lang")) ? (I18nLanguage)session.getAttribute("lang") : defaultLanguage ;
 
 Meta meta = document.getMeta() ;
-List<I18nMeta> i18nMetas = meta.getI18nMetas() ;
+Set<I18nMeta> i18nMetas = meta.getI18nMetas() ;
 
 /* *******************************************************************************************
  *         BROWSER SNIFFER                                                                   *

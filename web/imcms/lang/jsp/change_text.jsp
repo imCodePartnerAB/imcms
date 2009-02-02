@@ -9,6 +9,7 @@
 	        java.util.ArrayList,
 	        java.util.Arrays,
 	        java.util.List,
+	        java.util.Set,
 	        com.imcode.imcms.api.ContentManagementSystem"
 
     contentType="text/html; charset=UTF-8"
@@ -76,7 +77,7 @@ I18nLanguage currentLanguage = (null != session.getAttribute("lang")) ? (I18nLan
 DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper() ;
 DocumentDomainObject document = documentMapper.getDocument(textEditPage.getDocumentId()) ;
 Meta meta = document.getMeta() ;
-List<I18nMeta> i18nMetas = meta.getI18nMetas() ;
+Set<I18nMeta> i18nMetas = meta.getI18nMetas() ;
 
 %>
 <%@page import="com.imcode.imcms.api.I18nMeta, com.imcode.imcms.dao.LanguageDao, com.imcode.imcms.api.I18nLanguage, com.imcode.imcms.api.Meta, imcode.server.document.DocumentDomainObject, com.imcode.imcms.mapping.DocumentMapper"%>

@@ -25,7 +25,7 @@ public class MetaDao extends HibernateTemplate {
 	 * @return Meta.
 	 */
 	@Transactional
-	public synchronized Meta getMeta(Integer documentId) {
+	private synchronized Meta getMeta(Integer documentId) {
 		Meta meta = (Meta)get(Meta.class, documentId);
 		
 		return initI18nMetas(meta);
@@ -33,12 +33,14 @@ public class MetaDao extends HibernateTemplate {
 	
 	
 	/**
-	 * TODO: Clarify how to handle latest version tag.
+	 * Creates next working version of a document.
+	 * 
+	 * If document has a working version tag it as cancelled.  
 	 * 
 	 * @return next document version.
 	 */
 	@Transactional
-	public synchronized DocumentVersion createNextVersion(Integer documentId) {
+	public synchronized DocumentVersion createNextWorkingVersion(Integer documentId) {
 		DocumentVersion nextVersion;
 		DocumentVersion latestVersion = (DocumentVersion)getSession().getNamedQuery("DocumentVersion.getLastVersion")
 			.setParameter("documentId", documentId)
@@ -51,10 +53,9 @@ public class MetaDao extends HibernateTemplate {
 					latestVersion.getVersion() + 1, DocumentVersionTag.WORKING);
 			
 			if (latestVersion.getVersionTag() == DocumentVersionTag.WORKING) {
-				latestVersion.setVersionTag(DocumentVersionTag.ARCHIVED);
-			}
-			
-			update(latestVersion);
+				latestVersion.setVersionTag(DocumentVersionTag.CANCELLED);
+				update(latestVersion);
+			} 
 		}
 		
 		save(nextVersion);
@@ -70,7 +71,7 @@ public class MetaDao extends HibernateTemplate {
 	 */
 	@Transactional
 	public Meta getMeta(Integer id, Integer version) {
-		Meta meta = getMeta(id);
+		Meta meta = getMeta(id, version);
 		
 		if (meta != null) {
 			Query query = getSession().createQuery("SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId AND v.version = :version")
@@ -98,23 +99,19 @@ public class MetaDao extends HibernateTemplate {
 	 */
 	@Transactional
 	public Meta getMeta(Integer id, DocumentVersionTag versionTag) {
-		Meta meta = getMeta(id);
+		Query query = getSession().createQuery("SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId AND v.versionTag = :versionTag")
+			.setParameter("documentId", id)
+			.setParameter("versionTag", versionTag);
+	
+		DocumentVersion version = (DocumentVersion)query.uniqueResult();
 		
-		if (meta != null) {
-			Query query = getSession().createQuery("SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId AND v.versionTag = :versionTag")
-				.setParameter("documentId", id)
-				.setParameter("versionTag", versionTag);
-			
-			DocumentVersion documentVersion = (DocumentVersion)query.uniqueResult();
-			
-			if (documentVersion != null) {
-				meta.setDocumentVersion(documentVersion);
-			} else {
-				meta = null;
-			}
+		if (version == null) {
+			return null;
+		} else {
+			Meta meta = getMeta(id);
+			meta.setDocumentVersion(version);			
+			return initI18nMetas(meta);
 		}
-				
-		return initI18nMetas(meta);		
 	}	
 	
 	/**

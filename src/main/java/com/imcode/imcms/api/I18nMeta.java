@@ -79,6 +79,16 @@ public class I18nMeta implements Serializable, Cloneable {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	@Override
+	public int hashCode() {
+		return id == null ? 0 : id.intValue();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof I18nMeta && ((I18nMeta)o).hashCode() == hashCode(); 
+	} 	
 
 	public String getHeadline() {
 		return headline;

@@ -23,10 +23,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -37,7 +34,6 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name="meta")
-@SecondaryTable(name="meta_version", pkJoinColumns={@PrimaryKeyJoinColumn(referencedColumnName="meta_id")})
 @NamedQueries({
 	/*
 	@NamedQuery(name="Meta.getMaxDocumentId", query="SELECT max(m.documentId) FROM Meta m"),
@@ -137,7 +133,7 @@ public class Meta implements Serializable, Cloneable {
 					
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
 	@JoinColumn(name="meta_id", referencedColumnName="meta_id")		
-	private List<I18nMeta> i18nMetas = new LinkedList<I18nMeta>();
+	private Set<I18nMeta> i18nMetas = new HashSet<I18nMeta>();
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="missing_i18n_show_rule", nullable=false)
@@ -341,7 +337,7 @@ public class Meta implements Serializable, Cloneable {
 			clone.categoryIds = new HashSet<Integer>(categoryIds);
 			
 			if (i18nMetas != null) {
-				clone.i18nMetas = new LinkedList<I18nMeta>();
+				clone.i18nMetas = new HashSet<I18nMeta>();
 			
 				for (I18nMeta i18nMeta: i18nMetas) {
 					clone.i18nMetas.add(i18nMeta.clone());	
@@ -364,12 +360,12 @@ public class Meta implements Serializable, Cloneable {
 		this.id = id;
 	}
 
-	public List<I18nMeta> getI18nMetas() {
+	public Set<I18nMeta> getI18nMetas() {
 		return i18nMetas;
 	}
 	
-	public void setI18nMetas(List<I18nMeta> i18nParts) {
-		this.i18nMetas = i18nParts;		
+	public void setI18nMetas(Set<I18nMeta> i18nMetas) {
+		this.i18nMetas = i18nMetas;		
 	}
 
 	@Deprecated

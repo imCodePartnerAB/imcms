@@ -117,9 +117,16 @@ public class DocumentSaver {
         }
     }
     
-    
+    /**
+     * Creates working document from existing one.
+     * 
+     * @param document
+     * @param user
+     * @throws NoPermissionInternalException
+     * @throws DocumentSaveException
+     */
     @Transactional
-    public void saveAsWorkingVersion(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         //checkDocumentForSave(document);
         //document.loadAllLazilyLoaded();
         
@@ -150,7 +157,7 @@ public class DocumentSaver {
         DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
         
-        DocumentVersion documentVersion = metaDao.createNextVersion(documentId);
+        DocumentVersion documentVersion = metaDao.createNextWorkingVersion(documentId);
         textDocument.getMeta().setDocumentVersion(documentVersion);
         
         visitor.updateTextDocumentTexts(textDocument, null, user);
@@ -226,7 +233,7 @@ public class DocumentSaver {
         	meta.setActivate(1);
         	
         	// is required; -> when update do the same?? but assign meta id???
-        	List<I18nMeta> i18nMetas = meta.getI18nMetas();
+        	Set<I18nMeta> i18nMetas = meta.getI18nMetas();
         	
         	if (i18nMetas != null) {
         		for (I18nMeta i18nMeta: i18nMetas) {

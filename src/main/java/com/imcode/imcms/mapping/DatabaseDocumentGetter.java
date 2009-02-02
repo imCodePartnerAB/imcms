@@ -61,15 +61,6 @@ public class DatabaseDocumentGetter implements DocumentGetter {
         return documents;
     } 
     
-    
-    /**
-     * Loads document
-     */
-    private DocumentDomainObject loadDocument(Integer documentId) {
-    	Meta meta = metaDao.getMeta(documentId);
-				
-		return initMeta(meta);
-    }
 
     /**
      * Loads document

@@ -18,13 +18,13 @@ public class ImageDao extends HibernateTemplate {
 	
 	@Transactional
 	public synchronized List<ImageDomainObject> getImagesByIndex(
-			Integer documentId, int imageId, boolean createImageIfNotExists) {
+			Integer documentId, Integer documentVersion, int imageId, boolean createImageIfNotExists) {
 
 		List<I18nLanguage> languages = languageDao.getAllLanguages();		
 		List<ImageDomainObject> images = new LinkedList<ImageDomainObject>();
 		
 		for (I18nLanguage language: languages) {
-			ImageDomainObject image = getImage(language.getId(), documentId, imageId);
+			ImageDomainObject image = getImage(language.getId(), documentId, documentVersion, imageId);
 			
 			if (image == null && createImageIfNotExists) {
 					image = new ImageDomainObject();
@@ -59,11 +59,12 @@ public class ImageDao extends HibernateTemplate {
 	}
 	*/
 	
-	public synchronized ImageDomainObject getImage(int languageId, 
-			Integer documentId, int index) {
+	public synchronized ImageDomainObject getImage(int languageId,
+			Integer documentId, Integer documentVersion, int index) {
 		
-		ImageDomainObject image = (ImageDomainObject)getSession().createQuery("select i from I18nImage i where i.metaId = :metaId and i.name = :name and i.language.id = :languageId")
-			.setParameter("metaId", documentId)
+		ImageDomainObject image = (ImageDomainObject)getSession().createQuery("select i from Image i where i.metaId = :documentId AND i.metaVersion = :documentVersion and i.name = :name and i.language.id = :languageId")
+			.setParameter("documentId", documentId)
+			.setParameter("documentVersion", documentVersion)
 			.setParameter("name", "" + index)
 			.setParameter("languageId", languageId)
 			.uniqueResult();
