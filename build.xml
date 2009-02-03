@@ -47,6 +47,7 @@
     <property name="WEB-INF" value="${webroot}/WEB-INF"/>
 
     <property name="versionfile" value="${WEB-INF}/version.txt"/>
+	<property name="schema-versionfile" value="${WEB-INF}/schema-version.txt"/>
     <property name="checksumsfile" value="${WEB-INF}/checksums.txt"/>
 
     <property name="srcincludes" value="MANIFEST.TXT"/>
@@ -445,6 +446,7 @@
         <copy todir="${WEB-INF}/classes" file="${resources.dir}/commons-logging.properties" filtering="true"/>
 
         <echo message="${version}" file="${versionfile}"/>
+    	<echo message="${db.schema.version}" file="${schema-versionfile}"/>
 
         <copy todir="${webroot}" filtering="true">
             <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
@@ -524,6 +526,14 @@
         <tstamp/>
 
         <available classname="junit.framework.Test" classpathref="libraries" property="junit-available"/>
+    	
+  	    <fail message="Database schema version property [db.schema.version] must be set and must be in format major-version.minor-version where major-version and minor-version are digits.">
+	      <condition>
+	        <not>
+	       	  <matches string="${db.schema.version}" pattern="^\d\.\d\s*$"/>
+	        </not>
+	      </condition>
+	    </fail>    	
     </target>
 
     <target name="copy-build.properties" unless="build.properties-available">

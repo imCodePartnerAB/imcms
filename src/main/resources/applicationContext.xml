@@ -42,7 +42,11 @@
   </bean>  
   
   <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
-  	<property name="sessionFactory" ref="sessionFactory"/>
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>  
+  
+  <bean id="schemaVersionChecker" class="com.imcode.imcms.util.SchemaVersionChecker">
+  	<property name="hibernateTemplate" ref="hibernateTemplate"/>
   </bean>
   
   <bean id="metaDao" class="com.imcode.imcms.dao.MetaDao">

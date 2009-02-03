@@ -39,6 +39,8 @@ import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.dao.LanguageDao;
+import com.imcode.imcms.util.SchemaVersionChecker;
+import com.imcode.imcms.util.SchemaVersionCheckerException;
 
 public class ImcmsSetupFilter implements Filter {
 
@@ -202,6 +204,21 @@ public class ImcmsSetupFilter implements Filter {
     	ServletContext servletContext = config.getServletContext();
     	initSpringframework(servletContext);
     	initI18nSupport(servletContext);
+    	checkSchemaVersion(servletContext);
+    }
+    
+    private void checkSchemaVersion(ServletContext servletContext) throws ServletException {
+    	String schemaVersionFilePath = servletContext.getRealPath("WEB-INF/schema-version.txt");
+    	
+    	SchemaVersionChecker checker = (SchemaVersionChecker)Imcms.getServices()
+    		.getSpringBean("schemaVersionChecker");
+    	
+    	try {
+    		checker.checkSchemaVersion(schemaVersionFilePath);
+    	} catch (SchemaVersionCheckerException e) {
+    		logger.fatal(e);
+    		throw e;
+    	}
     }
     
     private void initSpringframework(ServletContext servletContext) throws ServletException {

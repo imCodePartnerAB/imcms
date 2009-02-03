@@ -35,6 +35,7 @@ INSERT INTO meta_version (
 
 ALTER TABLE texts 
     ADD COLUMN meta_version INT NOT NULL DEFAULT 1;
+
     -- DROP INDEX ux__texts__meta_id__name__language_id; 
     
 -- alter history
