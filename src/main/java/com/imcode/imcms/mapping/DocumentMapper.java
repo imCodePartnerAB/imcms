@@ -408,7 +408,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingDocument(DocumentDomainObject document) {
-        String sqlSelectMenus = "SELECT meta_id, menu_index FROM menus, childs WHERE menus.menu_id = childs.menu_id AND childs.doc_id = ? ORDER BY meta_id, menu_index";
+        String sqlSelectMenus = "SELECT meta_id, menu_index FROM menus, childs WHERE menus.menu_id = childs.menu_id AND childs.to_meta_id = ? ORDER BY meta_id, menu_index";
         String[] parameters = new String[]{"" + document.getId()};
         String[][] sqlRows = (String[][]) getDatabase().execute(new SqlQueryCommand(sqlSelectMenus, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
         TextDocumentMenuIndexPair[] documentMenuPairs = new TextDocumentMenuIndexPair[sqlRows.length];

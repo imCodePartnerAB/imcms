@@ -248,6 +248,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	
     	if (oldText != null) {
     		newText.setId(oldText.getId());
+    		newText.setMetaVersion(oldText.getMetaVersion());
     	} else {
     		newText.setId(null);
     	}
@@ -255,8 +256,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	newText.setMetaId(getMeta().getId());
     	newText.setIndex(index);
     	newText.setLanguage(language);
-    	newText.setModified(true);
-    	newText.setMetaVersion(oldText.getMetaVersion());
+    	newText.setModified(true);    	
     	
     	map.put(index, newText);
     } 
@@ -356,6 +356,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	
     	if (oldImage != null) {
     		newImage.setId(oldImage.getId());
+    		newImage.setMetaVersion(oldImage.getMetaVersion());
     	} else {
     		newImage.setId(null);
     	}
