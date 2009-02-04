@@ -32,7 +32,6 @@ import java.util.AbstractList;
 import java.util.AbstractSet;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,9 +43,6 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.naming.OperationNotSupportedException;
-
-import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -74,6 +70,25 @@ import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.aop.DocumentAspect;
 import com.imcode.imcms.mapping.aop.TextDocumentAspect;
 
+/**
+ * NOTES:
+ * 
+ * DocumentSaver is instantiated using SpringFramework factory
+ * in order to support declared (AOP) transactions.
+ *   
+ * DatabseDocumentGetter is instantiated using SpringFramework factory
+ * in order to support declared (AOP) transactions.
+ * 
+ * There is a major difference between 
+ * getDocument and getDocumentForShowing:
+ * 
+ * getDocument returns document instance unmodified.
+ * getDocumentForShowing will throw an exception if a user who have requested 
+ * the document does not has appropriate permissions or settings. 
+ * Additionally returned document instance is adviced using AOP interceptors 
+ * to provide workaround for legacy code which does not support translated 
+ * (i18n) content.        
+ */
 public class DocumentMapper implements DocumentGetter {
 
 	private static final String SQL_GET_ALL_SECTIONS = "SELECT section_id, section_name FROM sections";
@@ -84,10 +99,10 @@ public class DocumentMapper implements DocumentGetter {
     private Database database;
     private DocumentPermissionSetMapper documentPermissionSetMapper;
     private DocumentIndex documentIndex;
-    private Map documentCache ;
+    
     private Clock clock = new SystemClock();
     private ImcmsServices imcmsServices;
-    private DocumentGetter documentGetter ;
+    private CachingDocumentGetter cachingDocumentGetter ;
     private DocumentSaver documentSaver ;
     private CategoryMapper categoryMapper;
 
@@ -99,15 +114,20 @@ public class DocumentMapper implements DocumentGetter {
         this.database = database;
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
-        documentCache = Collections.synchronizedMap(new LRUMap(documentCacheMaxSize)) ;
+        
         //setDocumentGetter(new FragmentingDocumentGetter(new DatabaseDocumentGetter(services)));
+        // Document getter is used directly without Fragmented getter
+        // DatabseDocumentGetter is instantiated using SpringFramework factory
+        // in order to support declared (AOP) transactions.        
         DatabaseDocumentGetter databaseDocumentGetter = (DatabaseDocumentGetter)services.getSpringBean("databaseDocumentGetter");
-        databaseDocumentGetter.setServices(services);
-        setDocumentGetter(databaseDocumentGetter);
+        databaseDocumentGetter.setServices(services);        
+        this.cachingDocumentGetter = new CachingDocumentGetter(databaseDocumentGetter, documentCacheMaxSize);
+        
         this.documentPermissionSetMapper = new DocumentPermissionSetMapper(database);
         this.categoryMapper = new CategoryMapper(database);
-        //documentSaver = new DocumentSaver(this);
-        // AOP transactions
+        //documentSaver = new DocumentSaver(this); 
+        // DocumentSaver is instantiated using SpringFramework factory
+        // in order to support declared (AOP) transactions.
         this.documentSaver = (DocumentSaver)services.getSpringBean("documentSaver");
         this.documentSaver.setDocumentMapper(this);
         
@@ -116,10 +136,6 @@ public class DocumentMapper implements DocumentGetter {
 
     public void initSections() {
         sections = new LazilyLoadedObject(new SectionsSetLoader());
-    }
-
-    public void setDocumentGetter(DocumentGetter documentGetter) {       
-        this.documentGetter = new CachingDocumentGetter(documentGetter, documentCache);
     }
 
     public DocumentSaver getDocumentSaver() {
@@ -210,7 +226,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public DocumentReference getDocumentReference(int childId) {
-        return new GetterDocumentReference(childId, documentGetter);
+        return new GetterDocumentReference(childId, cachingDocumentGetter);
     }
 
     public SectionDomainObject getSectionById(int sectionId) {
@@ -246,8 +262,9 @@ public class DocumentMapper implements DocumentGetter {
     public void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) 
     throws DocumentSaveException, NoPermissionToEditDocumentException {	
 	    documentSaver.publishDocument(document, user);
-	    // TODO: remove working document.
-	    documentCache.remove(document.getId());
+	    
+	    cachingDocumentGetter.removePublishedDocumentFromCache(document.getId());
+	    cachingDocumentGetter.removeWorkingDocumentFromCache(document.getId());	    
 	}
     
     
@@ -270,13 +287,13 @@ public class DocumentMapper implements DocumentGetter {
      * Returns document by id and version. 
      */
     public DocumentDomainObject getDocument(Integer documentId, Integer version) {
-		return documentGetter.getDocument(documentId, version);
+		return cachingDocumentGetter.getDocument(documentId, version);
 	}
     
     
     /**
      * TODO: implement 
-     * Returns document by document id and version for showing. 
+     * Returns document for showing by document id and version. 
      */
     public DocumentDomainObject getDocumentForShowing(Integer documentId, Integer version) {
     	throw new NotImplementedException();
@@ -284,12 +301,13 @@ public class DocumentMapper implements DocumentGetter {
     
     
     public boolean hasPublishedVersion(Integer documentId) {
-    	return documentGetter.getDocument(documentId) != null;
+    	return cachingDocumentGetter.getDocument(documentId) != null;
     }    
 
     public void invalidateDocument(DocumentDomainObject document) {
         documentIndex.indexDocument(document);
-        documentCache.remove(new Integer(document.getId()));
+        
+        cachingDocumentGetter.removePublishedDocumentFromCache(document.getId());
     }
 
     public DocumentIndex getDocumentIndex() {
@@ -320,9 +338,11 @@ public class DocumentMapper implements DocumentGetter {
         getDatabase().execute(deleteDocumentCommand);
         document.accept(new DocumentDeletingVisitor());
         documentIndex.removeDocument(document);
-        documentCache.remove(new Integer(document.getId()));
+        
+        cachingDocumentGetter.removeDocumentFromCache(document.getId());
     }
 
+    // TODO: DELETE DOCUMENT
     private DatabaseCommand createDeleteDocumentCommand(final DocumentDomainObject document) {
         final String metaIdStr = "" + document.getId();
         final String metaIdColumn = "meta_id";
@@ -528,12 +548,12 @@ public class DocumentMapper implements DocumentGetter {
      * Returns published version of document.
      */
     public DocumentDomainObject getDocument(Integer documentId) { 
-        return documentGetter.getDocument(documentId);
+        return cachingDocumentGetter.getDocument(documentId);
     }
             
     
     public DocumentDomainObject getWorkingDocument(Integer documentId) {
-    	return documentGetter.getWorkingDocument(documentId);
+    	return cachingDocumentGetter.getWorkingDocument(documentId);
     }
     
     /**
@@ -543,10 +563,10 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentDomainObject getWorkingDocument(Integer documentId,
     		UserDomainObject user) {
     	
-    	DocumentDomainObject document = documentGetter.getWorkingDocument(documentId);
+    	DocumentDomainObject document = cachingDocumentGetter.getWorkingDocument(documentId);
     	
         if (document == null) {
-        	document = documentGetter.getDocument(documentId);
+        	document = cachingDocumentGetter.getDocument(documentId);
         	
         	if (document != null) {
         		try {
@@ -588,8 +608,6 @@ public class DocumentMapper implements DocumentGetter {
     }
     
     /** 
-     * TODO: pass user as parameter
-     * 
      * Returns published or working document depending on user's view settings
      * and i18n meta settings. 
      * 
@@ -704,7 +722,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public List getDocuments(Collection documentIds) {
-        return documentGetter.getDocuments(documentIds) ;
+        return cachingDocumentGetter.getDocuments(documentIds) ;
     }
 
     public Set getSections(Collection sectionIds) {
@@ -716,8 +734,8 @@ public class DocumentMapper implements DocumentGetter {
         return sections ;
     }
 
-    public DocumentGetter getDocumentGetter() {
-        return documentGetter;
+    public CachingDocumentGetter getDocumentGetter() {
+        return cachingDocumentGetter;
     }
 
     private void removeNonInheritedCategories(DocumentDomainObject document) {

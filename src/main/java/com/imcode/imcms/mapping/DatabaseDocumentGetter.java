@@ -90,14 +90,14 @@ public class DatabaseDocumentGetter implements DocumentGetter {
 		
 		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 		
-        //document.setId(meta.getDocumentId());
+        document.setId(meta.getId());
         document.setCreatorId(meta.getCreatorId());
         document.setRestrictedOneMorePrivilegedThanRestrictedTwo(meta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
         
         document.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());
         document.setLinkedForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
         
-        // Not related to i18nl language
+        // Not related to i18n language
         String language = LanguageMapper.getAsIso639_2OrDefaultLanguage(
         		meta.getLanguageIso639_2(), 
         		services.getLanguageMapper().getDefaultLanguage());
@@ -140,7 +140,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     	if (document == null) return null;
     	
     	DocumentMapper documentMapper = services.getDocumentMapper();    	
-        DocumentInitializingVisitor documentInitializingVisitor = new DocumentInitializingVisitor(documentMapper, null, documentMapper);
+        DocumentInitializingVisitor documentInitializingVisitor = new DocumentInitializingVisitor(documentMapper, null, documentMapper, metaDao);
         
         document.accept(documentInitializingVisitor);
         
@@ -228,17 +228,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
             }
         }
     }   
-    
-    private List<DocumentDomainObject> initDocuments(List<DocumentDomainObject> documents) {
-    	DocumentMapper documentMapper = services.getDocumentMapper();    	
-        DocumentInitializingVisitor documentInitializingVisitor = new DocumentInitializingVisitor(documentMapper, null, documentMapper);
-        
-        for (DocumentDomainObject document: documents) {
-            document.accept(documentInitializingVisitor);
-        }
-        
-        return documents;
-    }
+
 
 	public ImcmsServices getServices() {
 		return services;

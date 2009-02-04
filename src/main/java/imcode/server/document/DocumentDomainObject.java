@@ -119,11 +119,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	public void setAttributes(Attributes attributes) {
 		this.attributes = attributes;
 	}
-
-	@Deprecated
+	
 	/**
 	 * Use getHeadline(I18nLanguage language) instead
 	 */
+	@Deprecated	
 	public String getHeadline() {
 		return getHeadline(I18nSupport.getCurrentLanguage());
 	}
@@ -151,10 +151,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		meta.setId(v);
 	}
 
-	@Deprecated
+	
 	/**
 	 * Use getMenuImage(I18nLanguage language) instead
-	 */	
+	 */
+	@Deprecated
 	public String getMenuImage() {
 		return getMenuImage(I18nSupport.getCurrentLanguage());
 	}
@@ -610,7 +611,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		this.meta = meta.clone();
 	}
 
-	// TODO i18n refactor
+	/**
+	 * Returns I18nMeta for a language. 
+ 	 * 
+	 * Wraps method invocation to meta instance.
+	 * 
+	 * @throws I18nException if wrapped method call return null.
+	 */
 	public I18nMeta getI18nMeta(I18nLanguage language) {
 		I18nMeta i18nMeta = meta.getI18nMeta(language);
 
@@ -626,7 +633,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	 * // TODO: refactor into visitor
 	 * 
 	 * For legacy code support: When saving document copy as new document its
-	 * dependencies meta should be set to null.
+	 * dependencies metaId should be set to null.
 	 * 
 	 * @see DocumentSaver.saveNewDocument
 	 */

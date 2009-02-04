@@ -31,6 +31,7 @@ import com.imcode.imcms.dao.TextDao;
 import com.imcode.imcms.mapping.orm.Include;
 import com.imcode.imcms.mapping.orm.TemplateNames;
 
+// TODO: Move all separated across dao-s methods into the TextDocumentDao class.  
 public class TextDocumentInitializer {
 
     private final static Logger LOG = Logger.getLogger(TextDocumentInitializer.class);
@@ -154,7 +155,7 @@ public class TextDocumentInitializer {
     	document.setMenusMap(menusMap);
     }    
     
-    // Temporary used by ImageDaoImpl
+    // Temporary used by ImageDao
     // after refactoring make it private
 	public static ImageDomainObject setImageSource(ImageDomainObject image) {
 		if (image == null) {

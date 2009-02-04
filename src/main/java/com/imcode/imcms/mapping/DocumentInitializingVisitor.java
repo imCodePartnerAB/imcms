@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import imcode.server.Imcms;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -23,16 +22,18 @@ class DocumentInitializingVisitor extends DocumentVisitor {
 
     private TextDocumentInitializer textDocumentInitializer;
     
+    private MetaDao metaDao;
+    
     DocumentInitializingVisitor(DocumentGetter documentGetter, Collection documentIds,
-                                DocumentMapper documentMapper) {
+                                DocumentMapper documentMapper, MetaDao metaDao) {
         this.database = documentMapper.getDatabase();
+        this.metaDao = metaDao;
+        
         textDocumentInitializer = new TextDocumentInitializer(database, documentGetter, documentIds);
     }
 
     public void visitFileDocument(final FileDocumentDomainObject document) {    	
-    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
-    	
-    	Collection<FileReference> fileReferences = dao.getFileReferences(document.getMeta().getId());
+    	Collection<FileReference> fileReferences = metaDao.getFileReferences(document.getMeta().getId());
     	
     	for (FileReference fileRef: fileReferences) {
             String fileId = fileRef.getFileId();           
@@ -64,16 +65,12 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     }
 
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
-    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
-    	
-    	HtmlReference html = dao.getHtmlReference(document.getMeta().getId());
+    	HtmlReference html = metaDao.getHtmlReference(document.getMeta().getId());
     	document.setHtml(html.getHtml());    	
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject document) {
-    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
-    	
-    	UrlReference reference = dao.getUrlReference(document.getMeta().getId());
+    	UrlReference reference = metaDao.getUrlReference(document.getMeta().getId());
     	document.setUrl(reference.getUrl());    	
     }
 

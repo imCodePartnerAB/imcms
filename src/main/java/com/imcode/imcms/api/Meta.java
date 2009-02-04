@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,11 +58,10 @@ public class Meta implements Serializable, Cloneable {
 		@Column(name="set_id")
 		private Integer setId;
 		
-		@Column(name="permission_data")
-		
 		/**
 		 * Document type (1 2 5 7 8) or template group id 
 		 */
+		@Column(name="permission_data")		
 		private Integer permissionData;
 		
 		/** 
@@ -120,7 +117,11 @@ public class Meta implements Serializable, Cloneable {
 	}
 		
 	/**
-	 * Disabled i18n document show mode.
+	 * Document content show mode for disabled translation.
+	 * 
+	 * DiabledI18nContentShowMode would be more descriptive.
+	 * 
+	 * @see I18nMeta.getEnabled
 	 */
 	public static enum UnavailableI18nDataSubstitution {
 		SHOW_IN_DEFAULT_LANGUAGE,
@@ -186,10 +187,11 @@ public class Meta implements Serializable, Cloneable {
     private Date modifiedDatetime;
     
     // NB! Same as modifiedDatetime
-    @Transient
+    
     //For processing after load:
     //@Column(name="date_modified")
     //@Temporal(TemporalType.TIMESTAMP)
+    @Transient
     private Date actualModifiedDatetime;
         
     // CHECKED	
@@ -210,11 +212,12 @@ public class Meta implements Serializable, Cloneable {
     private Integer publisherId;
            
     // CHECKED
-    @Column(name="status", nullable=true)
+    
     // For processing after load:
     // Should be converted after set - old code: 
     // Document.PublicationStatus publicationStatus = publicationStatusFromInt(publicationStatusInt);
     // document.setPublicationStatus(publicationStatus); 
+    @Column(name="status", nullable=true)
     private Integer publicationStatusInt;
         
     // CHECKED
@@ -227,7 +230,7 @@ public class Meta implements Serializable, Cloneable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date publicationEndDatetime;
 
-    // Those fields were lazy loaded in previous documentVersion:
+    // These fields were lazy loaded in previous version:
     @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(
     	name = "document_properties",
@@ -368,18 +371,20 @@ public class Meta implements Serializable, Cloneable {
 		this.i18nMetas = i18nMetas;		
 	}
 
-	@Deprecated
+	
 	/**
 	 * Use getI18nShowMode instead.
 	 */
+	@Deprecated	
 	public UnavailableI18nDataSubstitution getUnavailableI18nDataSubstitution() {
 		return unavailableI18nDataSubstitution;
 	}
 	
-	@Deprecated
+	
 	/**
 	 * Use setI18nShowMode instead.
 	 */
+	@Deprecated
 	public void setUnavailableI18nDataSubstitution(UnavailableI18nDataSubstitution unavailableI18nDataSubstitution) {
 		this.unavailableI18nDataSubstitution = unavailableI18nDataSubstitution;
 	}
