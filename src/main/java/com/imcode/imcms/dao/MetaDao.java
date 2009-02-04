@@ -19,13 +19,14 @@ import com.imcode.imcms.mapping.orm.Include;
 import com.imcode.imcms.mapping.orm.TemplateNames;
 import com.imcode.imcms.mapping.orm.UrlReference;
 
+//TODO: convert in-line queries to named queries
 public class MetaDao extends HibernateTemplate {
 
 	/**
 	 * @return Meta.
 	 */
 	@Transactional
-	private synchronized Meta getMeta(Integer documentId) {
+	private Meta getMeta(Integer documentId) {
 		Meta meta = (Meta)get(Meta.class, documentId);
 		
 		return initI18nMetas(meta);
@@ -81,7 +82,7 @@ public class MetaDao extends HibernateTemplate {
 			DocumentVersion documentVersion = (DocumentVersion)query.uniqueResult();
 			
 			if (documentVersion != null) {
-				meta.setDocumentVersion(documentVersion);
+				meta.setVersion(documentVersion);
 			} else {
 				meta = null;
 			}
@@ -109,7 +110,7 @@ public class MetaDao extends HibernateTemplate {
 			return null;
 		} else {
 			Meta meta = getMeta(id);
-			meta.setDocumentVersion(version);			
+			meta.setVersion(version);			
 			return initI18nMetas(meta);
 		}
 	}	
@@ -122,7 +123,7 @@ public class MetaDao extends HibernateTemplate {
 	 * @return published document meta.
 	 */
 	@Transactional
-	public synchronized Meta getPublishedMeta(Integer documentId) {
+	public Meta getPublishedMeta(Integer documentId) {
 		return getMeta(documentId, DocumentVersionTag.PUBLISHED); 
 	}
 	
@@ -135,7 +136,7 @@ public class MetaDao extends HibernateTemplate {
 	 * @return published document meta.
 	 */
 	@Transactional
-	public synchronized Meta getWorkingMeta(Integer documentId) {
+	public Meta getWorkingMeta(Integer documentId) {
 		return getMeta(documentId, DocumentVersionTag.WORKING); 
 	} 
 
@@ -173,35 +174,10 @@ public class MetaDao extends HibernateTemplate {
 	}
 	
 	@Transactional
-	public synchronized void updateMeta(Meta meta) {
-		update(meta); 
+	public void saveMeta(Meta meta) {
+		saveOrUpdate(meta); 
 	}
-	
-	
-	/**
-	 * Returns next document id.
-	 * 
-	 * Counting begins from 1001.
-	 * 
-	 * @return next document id.
-	 */
-	private Integer getNextDocumentId() {
-		Integer maxId = (Integer)getSession().getNamedQuery("Meta.getMaxDocumentId")
-			.uniqueResult();
 		
-		return maxId == null ? 1001 : maxId + 1;
-	}
-	
-	/**
-	 * Returns next document version for a document.
-	 * 
-	 * @return next document version for a document.
-	 */
-	private Integer getNextDocumentVersion(Long existingMetaId) {
-		return (Integer)getSession().getNamedQuery("Meta.getNextDocumentVersion")
-			.setLong(0, existingMetaId)
-			.uniqueResult();
-	} 	
 	
 	/*
 	@Transactional
@@ -311,7 +287,7 @@ public class MetaDao extends HibernateTemplate {
 	 * //TODO?: alter modification date ???
 	 */
 	@Transactional
-	public synchronized void publishDocument(Integer documentId) {
+	public synchronized void publishWorkingDocument(Integer documentId) {
 		Query query = getSession().getNamedQuery("DocumentVersion.getByDocumentIdAndVersionTag")
 			.setParameter("documentId", documentId)
 			.setParameter("versionTag", DocumentVersionTag.PUBLISHED);

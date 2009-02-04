@@ -8,6 +8,10 @@ import org.aspectj.lang.annotation.Aspect;
 
 import com.imcode.imcms.api.I18nLanguage;
 
+/**
+ * Prototype implementation for showing translated document's fields
+ * in a chosen language.
+ */
 @Aspect
 public class TextDocumentAspect {
 

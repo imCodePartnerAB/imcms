@@ -9,7 +9,8 @@ public class I18nDisabledException extends I18nException {
 	private I18nLanguage language;
 	
 	public I18nDisabledException(DocumentDomainObject document, I18nLanguage language) {
-		// TODO Auto-generated constructor stub
+		this.document = document;
+		this.language = language;
 	}
 
 	public DocumentDomainObject getDocument() {

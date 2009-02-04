@@ -142,7 +142,7 @@ public class Meta implements Serializable, Cloneable {
 		UnavailableI18nDataSubstitution.DO_NOT_SHOW;
 
 	@Transient
-	private DocumentVersion documentVersion;	
+	private DocumentVersion version;	
 	
 	// CHECKED	
 	@Column(name="activate", nullable=false, updatable=false)
@@ -326,7 +326,7 @@ public class Meta implements Serializable, Cloneable {
 			Meta clone = (Meta)super.clone();
 			
 			clone.unavailableI18nDataSubstitution = unavailableI18nDataSubstitution;
-			clone.documentVersion = documentVersion.clone();
+			clone.version = version.clone();
 
 			clone.permisionSetEx = new HashSet<PermisionSetEx>(permisionSetEx);
 			clone.permisionSetExForNew = new HashSet<PermisionSetEx>(permisionSetExForNew);
@@ -635,11 +635,11 @@ public class Meta implements Serializable, Cloneable {
 			UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;
 	}
 
-	public DocumentVersion getDocumentVersion() {
-		return documentVersion;
+	public DocumentVersion getVersion() {
+		return version;
 	}
 
-	public void setDocumentVersion(DocumentVersion documentVersion) {
-		this.documentVersion = documentVersion;
+	public void setVersion(DocumentVersion documentVersion) {
+		this.version = documentVersion;
 	}
 }

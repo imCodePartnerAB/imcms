@@ -16,10 +16,12 @@ public class I18nSupport {
 	/** 
 	 * Current language.
 	 * 
+	 * Language selected by user or assigned by the system on a first run. 
+	 *  
 	 * @see com.imcode.imcms.servlet.ImcmsSetupFilter 
 	 */
 	private static ThreadLocal<I18nLanguage> currentLanguage = new ThreadLocal<I18nLanguage>();
-	
+		
 	/**
 	 * Default language.  
 	 */
@@ -96,7 +98,7 @@ public class I18nSupport {
 	
 	
 	/**
-	 * Bound I18nLanguage instance to the current thread.
+	 * Bounds I18nLanguage instance to the current thread.
 	 * 
 	 * @throws IllegalArgumentException in case of attempt to 
 	 * assign null to current language. 

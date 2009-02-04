@@ -106,7 +106,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
         Integer documentId = textDocument.getMeta().getId();
-        Integer documentVersion = textDocument.getMeta().getDocumentVersion().getVersion();
+        Integer documentVersion = textDocument.getMeta().getVersion().getVersion();
 
         for (Map<Integer, TextDomainObject> map: textDocument.getAllTexts().values()) {
         	for (TextDomainObject text: map.values()) {
@@ -141,7 +141,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
         Integer metaId = textDocument.getMeta().getId();
-        Integer documentVersion = textDocument.getMeta().getDocumentVersion().getVersion();
+        Integer documentVersion = textDocument.getMeta().getVersion().getVersion();
         
         for (Map<Integer, ImageDomainObject> map: textDocument.getAllImages().values()) {
         	for (ImageDomainObject image: map.values()) {

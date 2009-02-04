@@ -8,7 +8,7 @@ import java.util.Map;
 import org.apache.commons.collections.map.LRUMap;
 
 /**
- * TODO: ? customCacle -> custom version cache. by meta id
+ * TODO: ??? add cache for custom versions ???
  */
 public class CachingDocumentGetter extends DocumentGetterWrapper {
 
@@ -26,11 +26,6 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
      */
     private Map<Integer, DocumentDomainObject> workingDocumentsCache;
     
-    // TODO: remove?
-    // Used by CGLIB proxy generator
-    public CachingDocumentGetter() {
-    	super(null);
-    }
     
     public CachingDocumentGetter(DocumentGetter documentGetter, int cacheSize) {
         super(documentGetter);

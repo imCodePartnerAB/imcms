@@ -56,7 +56,7 @@ public class TextDocumentInitializer {
     	TextDao dao = (TextDao)Imcms.getServices().getSpringBean("textDao");
     	Meta meta = document.getMeta();
     	
-    	Collection<TextDomainObject> texts = dao.getTexts(meta.getId(), meta.getDocumentVersion().getVersion());    	    
+    	Collection<TextDomainObject> texts = dao.getTexts(meta.getId(), meta.getVersion().getVersion());    	    
     	Map<I18nLanguage, Map<Integer, TextDomainObject>> textsMap = new HashMap<I18nLanguage, Map<Integer,TextDomainObject>>();
     	
     	for (TextDomainObject text: texts) {
@@ -107,7 +107,7 @@ public class TextDocumentInitializer {
     	ImageDao dao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
     	Meta meta = document.getMeta();
     	
-    	Collection<ImageDomainObject> images = dao.getImages(meta.getId(), meta.getDocumentVersion().getVersion());
+    	Collection<ImageDomainObject> images = dao.getImages(meta.getId(), meta.getVersion().getVersion());
     	
     	Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
     	

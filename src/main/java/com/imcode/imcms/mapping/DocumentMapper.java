@@ -43,6 +43,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.transaction.NotSupportedException;
+
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -85,9 +87,9 @@ import com.imcode.imcms.mapping.aop.TextDocumentAspect;
  * getDocument returns document instance unmodified.
  * getDocumentForShowing will throw an exception if a user who have requested 
  * the document does not has appropriate permissions or settings. 
- * Additionally returned document instance is adviced using AOP interceptors 
+ * Additionally returned document instance is adviced using AOP interceptors  
  * to provide workaround for legacy code which does not support translated 
- * (i18n) content.        
+ * (i18n) content - currently this is a prototype implementation.
  */
 public class DocumentMapper implements DocumentGetter {
 
@@ -115,7 +117,9 @@ public class DocumentMapper implements DocumentGetter {
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
         
-        //setDocumentGetter(new FragmentingDocumentGetter(new DatabaseDocumentGetter(services)));
+        // old code:
+        // setDocumentGetter(new FragmentingDocumentGetter(new DatabaseDocumentGetter(services)));
+        
         // Document getter is used directly without Fragmented getter
         // DatabseDocumentGetter is instantiated using SpringFramework factory
         // in order to support declared (AOP) transactions.        
@@ -125,7 +129,9 @@ public class DocumentMapper implements DocumentGetter {
         
         this.documentPermissionSetMapper = new DocumentPermissionSetMapper(database);
         this.categoryMapper = new CategoryMapper(database);
-        //documentSaver = new DocumentSaver(this); 
+        // old code:
+        // documentSaver = new DocumentSaver(this);
+        
         // DocumentSaver is instantiated using SpringFramework factory
         // in order to support declared (AOP) transactions.
         this.documentSaver = (DocumentSaver)services.getSpringBean("documentSaver");
@@ -246,35 +252,43 @@ public class DocumentMapper implements DocumentGetter {
 
     }
 
+    /**
+     * Saves published or working document.
+     */
     public void saveDocument(DocumentDomainObject document,
                              final UserDomainObject user) throws DocumentSaveException , NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException
     {
 
-        DocumentDomainObject oldDocument = getDocument(document.getId());
+    	DocumentDomainObject oldDocument;
+    	
+    	switch (document.getMeta().getVersion().getVersionTag()) {
+		case PUBLISHED:
+			oldDocument = getDocument(document.getId());			
+			break;
 
-        documentSaver.saveDocument(document, oldDocument, user);
+		case WORKING:
+			oldDocument = getWorkingDocument(document.getId());			
+			break;
+			
+		default:
+			throw new NotImplementedException();
+		}
 
+        documentSaver.updateDocument(document, oldDocument, user);
     }
     
     /**
      * Published working version of a document.
      */
+    // TODO: Check exceptions 
     public void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) 
     throws DocumentSaveException, NoPermissionToEditDocumentException {	
-	    documentSaver.publishDocument(document, user);
-	    
-	    cachingDocumentGetter.removePublishedDocumentFromCache(document.getId());
-	    cachingDocumentGetter.removeWorkingDocumentFromCache(document.getId());	    
+	    documentSaver.publishWorkingDocument(document, user);	    
 	}
     
     
     /**
      * Creates working document from existing one.
-     * 
-     * @param document
-     * @param user
-     * @throws DocumentSaveException
-     * @throws NoPermissionToEditDocumentException
      */
     // TODO: Check exceptions 
     public void createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) 
@@ -307,7 +321,7 @@ public class DocumentMapper implements DocumentGetter {
     public void invalidateDocument(DocumentDomainObject document) {
         documentIndex.indexDocument(document);
         
-        cachingDocumentGetter.removePublishedDocumentFromCache(document.getId());
+        cachingDocumentGetter.removeDocumentFromCache(document.getId());
     }
 
     public DocumentIndex getDocumentIndex() {
@@ -649,15 +663,23 @@ public class DocumentMapper implements DocumentGetter {
 			document = null;
 		}
     	
+    	// TODO: prototype implementation - optimize     	    	
     	if (document != null) {
-    		I18nLanguage documentLanguage = I18nSupport.getCurrentLanguage();
+    		/*
+    		 * Current document language.
+    		 * 
+    		 * If an user is allowed to see a document's content in a current language
+    		 * then current document language is set current language otherwise
+    		 * it is set to default language. 
+    		 */
+    		I18nLanguage currentDocumentLanguage = I18nSupport.getCurrentLanguage();
     		
     		if (!I18nSupport.getCurrentIsDefault() && !showSettings.isIgnoreI18nShowMode() ) {            
     			I18nMeta i18nMeta = document.getI18nMeta(I18nSupport.getCurrentLanguage());
             
     			if (!i18nMeta.getEnabled()) {
     				if (document.getMeta().isShowDisabledI18nContentInDefaultLanguage()) {
-    					documentLanguage = I18nSupport.getDefaultLanguage();
+    					currentDocumentLanguage = I18nSupport.getDefaultLanguage();
     				} else {
     					throw new I18nDisabledException(document, I18nSupport.getCurrentLanguage());
     					// 	return null
@@ -665,13 +687,13 @@ public class DocumentMapper implements DocumentGetter {
     			}
     		}
     		
-        	// TODO: Optimize    		
+    		// TODO: prototype implementation - optimize 	
         	AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(document);            	
             aspectJProxyFactory.setProxyTargetClass(true);
-            aspectJProxyFactory.addAspect(new DocumentAspect(documentLanguage));       
+            aspectJProxyFactory.addAspect(new DocumentAspect(currentDocumentLanguage));       
             
             if (document instanceof TextDocumentDomainObject) {
-                aspectJProxyFactory.addAspect(new TextDocumentAspect(documentLanguage));            	
+                aspectJProxyFactory.addAspect(new TextDocumentAspect(currentDocumentLanguage));            	
             }
                     	
         	document = aspectJProxyFactory.getProxy();    		

@@ -3,16 +3,15 @@ package com.imcode.imcms.mapping;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,7 +20,6 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
@@ -47,6 +45,11 @@ public class DocumentSaver {
      * Existing API saves whole document even if only a fragment of it 
      * (say text field or image) was modified.
      * 
+     * TODO: Create concrete calls: 
+     *   saveText
+     *   saveImages
+     *   saveMenus,
+     *   etc 
      */
     @Transactional     
     public void saveDocumentFragment(DocumentDomainObject document, UserDomainObject user, HibernateCallback hibernateCallback) throws NoPermissionInternalException, DocumentSaveException {
@@ -77,18 +80,23 @@ public class DocumentSaver {
 
     /**
      * Published working version of a document.
-     * 
-     * @param document working document.
-     * @param user
      */
+    // TODO: handle DocumentSaveException, NoPermissionToEditDocumentException
     @Transactional    
-    public void publishDocument(DocumentDomainObject document, UserDomainObject user) {
-    	metaDao.publishDocument(document.getMeta().getId());
+    public void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) {
+    	try {
+    		metaDao.publishWorkingDocument(document.getMeta().getId());
+    	} finally {
+    		documentMapper.invalidateDocument(document);
+    	}
     }
     
     
+    /**
+     * Updates published or working document.
+     */
     @Transactional
-    public void saveDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
+    public void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
                       final UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         checkDocumentForSave(document);
 
@@ -109,7 +117,7 @@ public class DocumentSaver {
             
             DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDocument, documentMapper.getImcmsServices(), user);
             
-            saveMeta(document.getMeta().getId(), document);
+            saveMeta(document);
                         
             document.accept(savingVisitor);
         } finally {
@@ -118,21 +126,24 @@ public class DocumentSaver {
     }
     
     /**
-     * Creates working document from existing one.
+     * Creates working document version from existing document.
      * 
-     * @param document
-     * @param user
-     * @throws NoPermissionInternalException
-     * @throws DocumentSaveException
+     * Actually only texts and images are copied into new document.
+     * 
+     * @param document an instance of {@link TextDocumentDomainObject}
      */
     @Transactional
     public void createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         //checkDocumentForSave(document);
         //document.loadAllLazilyLoaded();
-        
+    	
+        //TODO: refactor - very ugly
+    	// save document id
     	Meta meta = document.getMeta();
     	Integer documentId = meta.getId();
     		
+    	//TODO: refactor - very ugly
+    	// clone document, reset its dependencies meta id and assign its documentId again  
     	document = document.clone();
     	document.setDependenciesMetaIdToNull();
     	document.setId(documentId);
@@ -158,7 +169,7 @@ public class DocumentSaver {
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
         
         DocumentVersion documentVersion = metaDao.createNextWorkingVersion(documentId);
-        textDocument.getMeta().setDocumentVersion(documentVersion);
+        textDocument.getMeta().setVersion(documentVersion);
         
         visitor.updateTextDocumentTexts(textDocument, null, user);
         visitor.updateTextDocumentImages(textDocument, null, user);        
@@ -172,13 +183,10 @@ public class DocumentSaver {
         checkDocumentForSave(document);
 
         //document.loadAllLazilyLoaded();
+                
+        //DocumentVersion version = metaDao.createNextWorkingVersion(documentId);
+        //document.getMeta().setVersion(version);
         
-        document.setDependenciesMetaIdToNull(); 
-        Meta meta = document.getMeta();
-        
-        //meta.setDocumentVersionTag(DocumentVersionTag.WORKING);
-        //meta.setDocumentVersion(null);
-
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 
         boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(document) && !copying;
@@ -192,7 +200,8 @@ public class DocumentSaver {
         // Updates permissions - method does not saves but instead just updates meta 
         documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
         
-        meta = saveMeta(null, document);
+        document.setDependenciesMetaIdToNull();         
+        saveMeta(document);
                 
         document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
     	
@@ -206,7 +215,7 @@ public class DocumentSaver {
      * 
      * @return saved document meta.
      */
-    private Meta saveMeta(Integer documentId, DocumentDomainObject document) {
+    private Meta saveMeta(DocumentDomainObject document) {
     	Meta meta = document.getMeta();
     	
     	meta.setCreatorId(document.getCreatorId());
@@ -265,7 +274,7 @@ public class DocumentSaver {
     	meta.setCategoryIds(document.getCategoryIds());
     	meta.setProperties(document.getProperties());
     	
-    	metaDao.updateMeta(meta);
+    	metaDao.saveMeta(meta);
     	
     	return meta;
     }
