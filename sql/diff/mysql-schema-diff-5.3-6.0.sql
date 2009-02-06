@@ -10,24 +10,32 @@ SET @database_version__major__new = 6;
 SET @database_version__minor__new = 0;
 
 -- Delete browsers related data from database
+/*
 DROP TABLE browser_docs;
 DROP TABLE browsers;
 DELETE FROM meta WHERE doc_type = 6;
 DELETE FROM doc_types WHERE doc_type = 6;
 DELETE FROM doc_permissions WHERE doc_type NOT IN (2,5,7,8);
 
--- Document versions tracking table
+DROP menus_history;
+DROP childs_history;
+*/
+
+--
+-- Meta version table
+--
 CREATE TABLE meta_version (
-  id INT auto_increment PRIMARY KEY,
-  meta_id INT NOT NULL,
-  version INT NOT NULL,
-  version_tag VARCHAR(12) NOT NULL
-  -- fk to meta
+  id int NOT NULL auto_increment,
+  meta_id int NOT NULL,
+  version int NOT NULL,
+  version_tag varchar(12) NOT NULL,
+  CONSTRAINT pk__meta_version PRIMARY KEY (id), 
+  CONSTRAINT fk__meta_version__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE
 );
 
 -- for every document create version 1
 -- tag all documents as published
--- tag all unpublished documents as archived?
+-- TODO: tag all unpublished documents as archived?
 
 INSERT INTO meta_version (
   meta_id, version, version_tag
@@ -38,11 +46,16 @@ ALTER TABLE texts
 
     -- DROP INDEX ux__texts__meta_id__name__language_id; 
     
+-- drop default 1
+
 -- alter history
 
 ALTER TABLE images 
     ADD COLUMN meta_version INT NOT NULL DEFAULT 1;
-    -- DROP INDEX ux__images__meta_id__name__language_id; 
+    -- DROP INDEX ux__images__meta_id__name__language_id;
+    
+-- drop default 1
+
 -- alter history
 
 -- contents becoms text_doc_content_loops

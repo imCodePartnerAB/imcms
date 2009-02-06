@@ -1,4 +1,5 @@
-﻿SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 -- ============================================================================
 -- Constants section
@@ -90,44 +91,10 @@ INSERT INTO meta
 VALUES
   (@start_document__meta_id, 2, @user_id__admin, 0, 0, 0, @'ui__language', NOW(), NOW(), 0, '_self', 1, NULL, NULL, 2, NOW(), NULL, 'DO_NOT_SHOW');
 
---
--- Data for table browsers
---
-
-INSERT INTO browsers
-  (browser_id, name, user_agent, value)
-VALUES
-  (1, 'Internet Explorer', '%MSIE%', 2),
-  (2, 'Netscape', 'Mozilla%(%;%[UIN][);]%', 2),
-  (3, 'Internet Explorer 3', '%MSIE 3%', 4),
-  (4, 'Internet Explorer 4', '%MSIE 4%', 4),
-  (5, 'Internet Explorer 5', '%MSIE 5%', 4),
-  (6, 'Internet Explorer 6', '%MSIE 6%', 4),
-  (7, 'Netscape 3', 'Mozilla/3%(%;%[UIN][ );]%', 4),
-  (8, 'Netscape 4', 'Mozilla/4%(%;%[UIN][ );]%', 4),
-  (9, 'Netscape 6', 'Mozilla/5%(%;%[UIN][ );]%', 4),
-  (10, 'Netscape 7', 'Mozilla%/5;%netscape/7%', 4),
-  (11, 'Windows', '%win%', 1),
-  (12, 'Macintosh', '%mac%', 1),
-  (13, 'Windows Internet Explorer', '%MSIE%win%', 3),
-  (14, 'Windows Internet Explorer 3', '%MSIE 3%win%', 5),
-  (15, 'Windows Internet Explorer 4', '%MSIE 4%win%', 5),
-  (16, 'Windows Internet Explorer 5.0', '%MSIE 5.0%win%', 5),
-  (17, 'Windows Internet Explorer 5.5', '%MSIE 5.5%win%', 5),
-  (18, 'Windows Internet Explorer 6', '%MSIE 6%win%', 5),
-  (19, 'Windows Netscape', 'Mozilla%(%win%;%[UIN][ );]%', 3),
-  (20, 'Windows Netscape 3', 'Mozilla/3%(%win%;%[UIN][ );]%', 5),
-  (21, 'Windows Netscape 4', 'Mozilla/4%(%win%;%[UIN][ );]%', 5),
-  (22, 'Windows Netscape 6', 'Mozilla/5%(%win%;%[UIN][ );]%', 5),
-  (23, 'Windows Netscape 7', 'Mozilla/5%(%win%netscape/7%', 5),
-  (24, 'Macintosh Internet Explorer', '%MSIE%mac%', 3),
-  (25, 'Macintosh Internet Explorer 3', '%MSIE 3%mac%', 5),
-  (26, 'Macintosh Internet Explorer 4', '%MSIE 4%mac%', 5),
-  (27, 'Macintosh Internet Explorer 5', '%MSIE 5%mac%', 5),
-  (28, 'Macintosh Netscape', 'Mozilla%(%mac%;%[UIN][ );]%', 3),
-  (29, 'Macintosh Netscape 3', 'Mozilla/3%(%mac%;%[UIN][ );]%', 5),
-  (30, 'Macintosh Netscape 4', 'Mozilla/4%(%mac%;%[UIN][ );]%', 5),
-  (31, 'Macintosh Netscape 6', 'Mozilla/5%(%mac%;%[UIN][ );]%', 5);
+-- Make demo document published
+INSERT INTO meta_version (
+  meta_id, version, version_tag
+) SELECT meta_id, 1, 'PUBLISHED' FROM meta;
 
 --
 -- Data for table database_version
@@ -149,16 +116,10 @@ VALUES
   (65536, 2, 'swe', '�ndra text'),
   (65536, 5, 'eng', 'Edit'),
   (65536, 5, 'swe', 'Redigera'),
-  (65536, 6, 'eng', 'Edit'),
-  (65536, 6, 'swe', 'Redigera'),
   (65536, 7, 'eng', 'Edit'),
   (65536, 7, 'swe', 'Redigera'),
   (65536, 8, 'eng', 'Edit'),
   (65536, 8, 'swe', 'Redigera'),
-  (65536, 101, 'eng', 'Edit'),
-  (65536, 101, 'swe', 'Redigera'),
-  (65536, 102, 'eng', 'Edit'),
-  (65536, 102, 'swe', 'Redigera'),
   (131072, 2, 'eng', 'Edit pictures'),
   (131072, 2, 'swe', '�ndra bild'),
   (262144, 2, 'eng', 'Edit menus'),
@@ -179,8 +140,6 @@ VALUES
   (2, 'swe', 'Textsida'),
   (5, 'eng', 'External link'),
   (5, 'swe', 'Extern l�nk'),
-  (6, 'eng', 'Browser controlled link'),
-  (6, 'swe', 'Browserkontroll'),
   (7, 'eng', 'HTML-document'),
   (7, 'swe', 'HTML-dokument'),
   (8, 'eng', 'File'),

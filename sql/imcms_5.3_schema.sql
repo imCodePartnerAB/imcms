@@ -278,8 +278,8 @@ CREATE TABLE images (
   PRIMARY KEY  (image_id),
 
   FOREIGN KEY fk__images__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  FOREIGN KEY fk__images__i18n_languages (language_id) REFERENCES i18n_languages (language_id) -- ,
-  -- UNIQUE INDEX ux__images__meta_id__name__language_id (meta_id, name, language_id)
+  FOREIGN KEY fk__images__i18n_languages (language_id) REFERENCES i18n_languages (language_id),
+  UNIQUE INDEX ux__images__meta_id__name__language_id (meta_id, name, language_id)
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -683,8 +683,8 @@ CREATE TABLE texts (
   language_id smallint(6) NOT NULL default '1',
   PRIMARY KEY  (counter),
   FOREIGN KEY fk__texts__i18n_languages (language_id) REFERENCES i18n_languages (language_id),
-  FOREIGN KEY fk__texts__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE -- ,
-  -- UNIQUE INDEX ux__texts__meta_id__name__language_id (meta_id, name, language_id)
+  FOREIGN KEY fk__texts__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  UNIQUE INDEX ux__texts__meta_id__name__language_id (meta_id, name, language_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
