@@ -7,6 +7,10 @@
 # Do *not* use back-slashes ('\'). Use forward-slashes ('/').
 # You only need this if you want to use "ant install" and "ant install-war".
 
+# Database schema version
+# This value is saved into <webapproot>/schema-version.txt file.
+db.schema.version = 6.0
+
 deployroot =
 
 

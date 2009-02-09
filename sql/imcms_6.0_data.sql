@@ -172,10 +172,10 @@ VALUES
 --
 
 INSERT INTO images
-  (image_id, meta_id, language_id, width, height, border, v_space, h_space, name, image_name, target, align, alt_text, low_scr, imgurl, linkurl, type)
+  (image_id, meta_id, meta_version, language_id, width, height, border, v_space, h_space, name, image_name, target, align, alt_text, low_scr, imgurl, linkurl, type)
 VALUES
-  (1, @start_document__meta_id, @language_id__english, 0, 0, 0, 0, 0, 3, '', '_blank', 'top', '', '', 'imCMSpower.gif', 'http://www.imcms.net', 0),
-  (2, @start_document__meta_id, @language_id__swedish, 0, 0, 0, 0, 0, 3, '', '_blank', 'top', '', '', 'imCMSpower.gif', 'http://www.imcms.net', 0);
+  (1, @start_document__meta_id, 1, @language_id__english, 0, 0, 0, 0, 0, 3, '', '_blank', 'top', '', '', 'imCMSpower.gif', 'http://www.imcms.net', 0),
+  (2, @start_document__meta_id, 1, @language_id__swedish, 0, 0, 0, 0, 0, 3, '', '_blank', 'top', '', '', 'imCMSpower.gif', 'http://www.imcms.net', 0);
 
 --
 -- Data for table lang_prefixes
@@ -373,21 +373,21 @@ VALUES
 --
 
 INSERT INTO texts
-  (counter, meta_id, language_id, name, text, type)
+  (counter, meta_id, meta_version, language_id, name, text, type)
 VALUES
-  (1, @start_document__meta_id, @language_id__english, 1, @'start_document__text1__english', 1),
-  (2, @start_document__meta_id, @language_id__english, 2, @'start_document__text2__english', 1),
-  (3, @start_document__meta_id, @language_id__swedish, 1, @'start_document__text1__swedish', 1),
-  (4, @start_document__meta_id, @language_id__swedish, 2, @'start_document__text2__swedish', 1);
+  (1, @start_document__meta_id, 1, @language_id__english, 1, @'start_document__text1__english', 1),
+  (2, @start_document__meta_id, 1, @language_id__english, 2, @'start_document__text2__english', 1),
+  (3, @start_document__meta_id, 1, @language_id__swedish, 1, @'start_document__text1__swedish', 1),
+  (4, @start_document__meta_id, 1, @language_id__swedish, 2, @'start_document__text2__swedish', 1);
 
 --
 -- Data for table texts_history
 --
 
 INSERT INTO texts_history
-  (meta_id, name, text, type, modified_datetime, user_id, language_id)
+  (meta_id, meta_version, name, text, type, modified_datetime, user_id, language_id)
 SELECT
-  meta_id, name, text, type, NOW(), @user_id__admin, language_id
+  meta_id, 1, name, text, type, NOW(), @user_id__admin, language_id
 FROM
   texts;
 

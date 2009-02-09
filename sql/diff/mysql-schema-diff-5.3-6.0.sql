@@ -17,6 +17,7 @@ DELETE FROM meta WHERE doc_type = 6;
 DELETE FROM doc_types WHERE doc_type = 6;
 DELETE FROM doc_permissions WHERE doc_type NOT IN (2,5,7,8);
 
+DROP images_history;
 DROP menus_history;
 DROP childs_history;
 */
