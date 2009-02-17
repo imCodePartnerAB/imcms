@@ -1,4 +1,4 @@
-
+﻿
 -- Changes for v 6.0
 
 -- Current schema version
@@ -9,18 +9,17 @@ SET @database_version__minor__current = 3;
 SET @database_version__major__new = 6;
 SET @database_version__minor__new = 0;
 
--- Delete browsers related data from database
-/*
+-- Delete unused tables and related data
+DROP TABLE images_history;
+DROP TABLE childs_history;
+DROP TABLE menus_history;
+
 DROP TABLE browser_docs;
 DROP TABLE browsers;
+
 DELETE FROM meta WHERE doc_type = 6;
 DELETE FROM doc_types WHERE doc_type = 6;
 DELETE FROM doc_permissions WHERE doc_type NOT IN (2,5,7,8);
-
-DROP images_history;
-DROP menus_history;
-DROP childs_history;
-*/
 
 --
 -- Meta version table
@@ -32,32 +31,171 @@ CREATE TABLE meta_version (
   version_tag varchar(12) NOT NULL,
   CONSTRAINT pk__meta_version PRIMARY KEY (id), 
   CONSTRAINT fk__meta_version__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- for every document create version 1
 -- tag all documents as published
--- TODO: tag all unpublished documents as archived?
-
+-- TODO?: tag all unpublished documents as archived?
 INSERT INTO meta_version (
   meta_id, version, version_tag
 ) SELECT meta_id, 1, 'PUBLISHED' FROM meta;
 
+--
+-- Recreate table texts:
+--
+CREATE TABLE __texts (
+  counter int NOT NULL auto_increment PRIMARY KEY,
+  meta_id int default NULL,
+  meta_version INT NOT NULL,
+  name int NOT NULL,
+  text longtext NOT NULL,
+  type int default NULL,
+  language_id smallint(6) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO __texts (
+  counter,
+  meta_id,
+  meta_version,
+  name,
+  text,
+  type,
+  language_id
+) SELECT
+  counter,
+  meta_id,
+  1,
+  name,
+  text,
+  type,
+  language_id
+FROM texts;
+
+DROP TABLE texts;
+RENAME TABLE __texts to texts;
+
 ALTER TABLE texts 
-    ADD COLUMN meta_version INT NOT NULL DEFAULT 1;
+  ADD CONSTRAINT fk__texts__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
+  ADD CONSTRAINT fk__texts__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  ADD CONSTRAINT uk__texts__meta_id__meta_version__name__language_id UNIQUE KEY (meta_id, meta_version, name, language_id);
 
-    -- DROP INDEX ux__texts__meta_id__name__language_id; 
+--
+-- Recreate table texts_history:
+--
+CREATE TABLE __texts_history (
+  counter int NOT NULL auto_increment PRIMARY KEY,
+  meta_id int default NULL,
+  meta_version INT NOT NULL,
+  name int NOT NULL,
+  text longtext NOT NULL,
+  type int default NULL,
+  modified_datetime datetime NOT NULL,
+  user_id int default NULL,
+  language_id smallint(6) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO __texts_history (
+  counter,
+  meta_id,
+  meta_version,
+  name,
+  text,
+  type,
+  modified_datetime,
+  user_id,
+  language_id
+) SELECT
+  counter,
+  meta_id,
+  1,
+  name,
+  text,
+  type,
+  modified_datetime,
+  user_id,
+  language_id
+FROM texts_history;
+
+DROP TABLE texts_history;
+RENAME TABLE __texts_history TO texts_history;
+
+ALTER TABLE texts_history
+  ADD CONSTRAINT fk__texts_history__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
+  ADD CONSTRAINT fk__texts_history__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  ADD CONSTRAINT fk__texts_history__users FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE SET NULL;
     
--- drop default 1
+--
+-- Recreate table images:
+--
+CREATE TABLE __images (
+  image_id int NOT NULL auto_increment PRIMARY KEY,
+  meta_id int NULL,
+  meta_version INT NOT NULL,
+  width int NOT NULL,
+  height int NOT NULL,
+  border int NOT NULL,
+  v_space int NOT NULL,
+  h_space int NOT NULL,
+  name int NOT NULL,
+  image_name varchar(40) NOT NULL default '',
+  target varchar(15) NOT NULL,
+  align varchar(15) NOT NULL,
+  alt_text varchar(255) NOT NULL,
+  low_scr varchar(255) NOT NULL,
+  imgurl varchar(255) NOT NULL,
+  linkurl varchar(255) NOT NULL,
+  type int NOT NULL,
+  language_id smallint(6) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- alter history
+INSERT INTO __images (
+  image_id,
+  meta_id,
+  meta_version,
+  width,
+  height,
+  border,
+  v_space,
+  h_space,
+  name,
+  image_name,
+  target,
+  align,
+  alt_text,
+  low_scr,
+  imgurl,
+  linkurl,
+  type,
+  language_id
+) SELECT 
+  image_id,
+  meta_id,
+  1,
+  width,
+  height,
+  border,
+  v_space,
+  h_space,
+  name,
+  image_name,
+  target,
+  align,
+  alt_text,
+  low_scr,
+  imgurl,
+  linkurl,
+  type,
+  language_id
+FROM images;
 
-ALTER TABLE images 
-    ADD COLUMN meta_version INT NOT NULL DEFAULT 1;
-    -- DROP INDEX ux__images__meta_id__name__language_id;
-    
--- drop default 1
+DROP TABLE images;
+RENAME TABLE __images TO images;
 
--- alter history
+ALTER TABLE images
+  ADD CONSTRAINT fk__images__meta FOREIGN KEY  (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  ADD CONSTRAINT fk__images__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
+  ADD CONSTRAINT uk__images__meta_id__meta_version__name__language_id UNIQUE KEY (meta_id, meta_version, name, language_id);
+
 
 -- contents becoms text_doc_content_loops
 CREATE TABLE text_doc_content_loops (
@@ -96,7 +234,7 @@ DROP TABLE contents;
 --
 -- Text docuemnt menu items
 --
-CREATE TABLE new__childs (
+CREATE TABLE __childs (
   id int auto_increment PRIMARY KEY,
   to_meta_id int(11) NOT NULL,
   manual_sort_order int(11) NOT NULL,
@@ -104,9 +242,7 @@ CREATE TABLE new__childs (
   menu_id int(11) NOT NULL
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- DROP childs_history
-
-INSERT INTO new__childs 
+INSERT INTO __childs 
   (menu_id, manual_sort_order, tree_sort_index, to_meta_id)
 SELECT
   menu_id, manual_sort_order, tree_sort_index, to_meta_id
@@ -114,7 +250,7 @@ FROM
   childs;
 
 DROP TABLE childs;
-RENAME TABLE new__childs TO childs;
+RENAME TABLE __childs TO childs;
 
 ALTER TABLE childs
   ADD FOREIGN KEY fk__childs__menus (menu_id) REFERENCES menus (menu_id),
@@ -124,18 +260,18 @@ ALTER TABLE childs
 --
 -- Includes table
 --
-CREATE TABLE includes_new (
+CREATE TABLE __includes (
   id int auto_increment PRIMARY KEY,
   meta_id int NULL,
   include_id int NOT NULL,
   included_meta_id int NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO includes_new (meta_id, include_id, included_meta_id)
+INSERT INTO __includes (meta_id, include_id, included_meta_id)
 SELECT meta_id, include_id, included_meta_id FROM includes;
 
 DROP TABLE includes;
-RENAME TABLE includes_new TO includes;
+RENAME TABLE __includes TO includes;
 
 ALTER TABLE includes ADD UNIQUE INDEX ux__includes__meta_id__include_id(meta_id, include_id);
 ALTER TABLE includes ADD FOREIGN KEY fk__includes__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE;
@@ -146,7 +282,7 @@ ALTER TABLE includes ADD FOREIGN KEY fk__includes__included_document (included_m
 -- text_docs (template names) table
 --
 
-CREATE TABLE text_docs_tmp (
+CREATE TABLE __text_docs (
   id int auto_increment PRIMARY KEY,
   meta_id int(11) NULL,
   template_name varchar(255) NOT NULL,
@@ -156,11 +292,11 @@ CREATE TABLE text_docs_tmp (
   default_template varchar(255) default NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO text_docs_tmp (meta_id, template_name, group_id, default_template_1, default_template_2, default_template)
+INSERT INTO __text_docs (meta_id, template_name, group_id, default_template_1, default_template_2, default_template)
 SELECT meta_id, template_name, group_id, default_template_1, default_template_2, default_template FROM text_docs;
 
 DROP TABLE text_docs;
-RENAME TABLE text_docs_tmp TO text_docs;
+RENAME TABLE __text_docs TO text_docs;
 ALTER TABLE text_docs ADD FOREIGN KEY fk__text_docs__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE;
 
 
@@ -168,7 +304,7 @@ ALTER TABLE text_docs ADD FOREIGN KEY fk__text_docs__meta (meta_id) REFERENCES m
 -- Table new_doc_permission_sets_ex
 --
 
-CREATE TABLE new_doc_permission_sets_ex_temp (
+CREATE TABLE __new_doc_permission_sets_ex (
   id int auto_increment PRIMARY KEY,
   meta_id int(11) NOT NULL,
   set_id int(11) NOT NULL,
@@ -176,7 +312,7 @@ CREATE TABLE new_doc_permission_sets_ex_temp (
   permission_data int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO new_doc_permission_sets_ex_temp (
+INSERT INTO __new_doc_permission_sets_ex (
   meta_id,
   set_id,
   permission_id,
@@ -186,7 +322,7 @@ INSERT INTO new_doc_permission_sets_ex_temp (
 FROM new_doc_permission_sets_ex;
 
 DROP TABLE new_doc_permission_sets_ex;
-RENAME TABLE new_doc_permission_sets_ex_temp TO new_doc_permission_sets_ex;
+RENAME TABLE __new_doc_permission_sets_ex TO new_doc_permission_sets_ex;
 
 ALTER TABLE new_doc_permission_sets_ex
   ADD UNIQUE INDEX ux__new_doc_permission_sets_ex__1 (meta_id, set_id, permission_id, permission_data),
@@ -195,7 +331,7 @@ ALTER TABLE new_doc_permission_sets_ex
 
 
 
-CREATE TABLE doc_permission_sets_ex_temp (
+CREATE TABLE __doc_permission_sets_ex (
   id int auto_increment PRIMARY KEY,
   meta_id int(11) NOT NULL,
   set_id int(11) NOT NULL,
@@ -203,7 +339,7 @@ CREATE TABLE doc_permission_sets_ex_temp (
   permission_data int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO doc_permission_sets_ex_temp (
+INSERT INTO __doc_permission_sets_ex (
   meta_id,
   set_id,
   permission_id,
@@ -213,7 +349,7 @@ INSERT INTO doc_permission_sets_ex_temp (
 FROM doc_permission_sets_ex;
 
 DROP TABLE doc_permission_sets_ex;
-RENAME TABLE doc_permission_sets_ex_temp TO doc_permission_sets_ex;
+RENAME TABLE __doc_permission_sets_ex TO doc_permission_sets_ex;
 
 ALTER TABLE doc_permission_sets_ex
   ADD UNIQUE INDEX ux__doc_permission_sets_ex__1 (meta_id, set_id, permission_id, permission_data),
@@ -221,7 +357,7 @@ ALTER TABLE doc_permission_sets_ex
   ADD FOREIGN KEY  fk__doc_permission_sets_ex__permission_sets (set_id) REFERENCES permission_sets (set_id);
 
 
-CREATE TABLE new_doc_permission_sets_temp (
+CREATE TABLE __new_doc_permission_sets (
   id int auto_increment PRIMARY KEY,
   meta_id int(11) NOT NULL,
   set_id int(11) NOT NULL,
@@ -229,7 +365,7 @@ CREATE TABLE new_doc_permission_sets_temp (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-INSERT INTO new_doc_permission_sets_temp (
+INSERT INTO __new_doc_permission_sets (
   meta_id,
   set_id,
   permission_id
@@ -238,7 +374,7 @@ INSERT INTO new_doc_permission_sets_temp (
 FROM new_doc_permission_sets;
 
 DROP TABLE new_doc_permission_sets;
-RENAME TABLE new_doc_permission_sets_temp TO new_doc_permission_sets;
+RENAME TABLE __new_doc_permission_sets TO new_doc_permission_sets;
 
 ALTER TABLE new_doc_permission_sets
   ADD UNIQUE INDEX ux__new_doc_permission_sets__meta_id__set_id (meta_id, set_id),
@@ -249,14 +385,14 @@ ALTER TABLE new_doc_permission_sets
 -- Update permissions:
 --
 
-CREATE TABLE doc_permission_sets_temp (
+CREATE TABLE __doc_permission_sets (
   id int auto_increment PRIMARY KEY,
   meta_id int(11) NOT NULL,
   set_id int(11) NOT NULL,
   permission_id int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO doc_permission_sets_temp (
+INSERT INTO __doc_permission_sets (
   meta_id,
   set_id,
   permission_id
@@ -265,7 +401,7 @@ INSERT INTO doc_permission_sets_temp (
 FROM doc_permission_sets;
 
 DROP TABLE doc_permission_sets;
-RENAME TABLE doc_permission_sets_temp TO doc_permission_sets;
+RENAME TABLE __doc_permission_sets TO doc_permission_sets;
 
 ALTER TABLE doc_permission_sets
   ADD UNIQUE INDEX ux__doc_permission_sets__meta_id__set_id (meta_id, set_id),
@@ -276,7 +412,7 @@ ALTER TABLE doc_permission_sets
 --
 -- File upload table:
 --
-CREATE TABLE fileupload_docs_temp (
+CREATE TABLE __fileupload_docs (
   id int auto_increment PRIMARY KEY,
   meta_id int NOT NULL,
   variant_name varchar(100) NOT NULL,
@@ -286,7 +422,7 @@ CREATE TABLE fileupload_docs_temp (
   default_variant tinyint(1) NOT NULL default '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO fileupload_docs_temp (
+INSERT INTO __fileupload_docs (
   meta_id,
   variant_name,
   filename,
@@ -303,7 +439,7 @@ INSERT INTO fileupload_docs_temp (
 FROM fileupload_docs;
 
 DROP TABLE fileupload_docs;
-RENAME TABLE fileupload_docs_temp TO fileupload_docs;
+RENAME TABLE __fileupload_docs TO fileupload_docs;
 
 ALTER TABLE fileupload_docs
   ADD UNIQUE INDEX ux__fileupload_docs__meta_id__variant_name (meta_id, variant_name),
