@@ -98,5 +98,6 @@
 	<classpathentry kind="lib" path="local/lib/spring-aop-2.5.5.jar"/>
 	<classpathentry kind="lib" path="local/lib/aspectjrt-1.6.2.jar"/>
 	<classpathentry kind="lib" path="local/lib/aspectjweaver-1.6.2.jar"/>
+	<classpathentry kind="lib" path="local/lib/easymock-2.0.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
