@@ -5,9 +5,14 @@ import imcode.server.user.UserDomainObject;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.api.I18nLanguage;
 
 public class TextDao extends HibernateTemplate {
 
@@ -69,4 +74,27 @@ public class TextDao extends HibernateTemplate {
 			.setParameter("modifiedDt", new Date())
 			.setParameter("userId", user.getId())
 			.setParameter("languageId", text.getLanguage().getId()).executeUpdate();
-	}}
+	}
+
+
+	@Transactional(propagation=Propagation.SUPPORTS)
+	public List<TextDomainObject> getTexts(Integer documentId, Integer index, I18nLanguage language, Collection<DocumentVersion> versions) {
+		String hql = String.format(
+			"SELECT t FROM Text t WHERE t.metaId = ? AND t.index = ? AND t.language.id = ? AND t.metaVersion IN (%s)",
+			createVersionString(versions));
+		
+		return find(hql, new Object[] {documentId, index, language.getId()});
+	}
+	
+	private String createVersionString(Collection<DocumentVersion> versions) {
+		StringBuilder versionString = new StringBuilder();
+		int i = 0;
+		for (DocumentVersion version: versions) {
+			if (i++ != 0) versionString.append(",");
+			
+			versionString.append(version.getVersion().toString());
+		}
+				
+		return versionString.toString();
+	}
+}

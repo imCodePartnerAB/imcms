@@ -12,9 +12,20 @@
   <i18n_languages language_id="1" code="en" name="English" native_name="English" is_default="true" is_enabled="true"/>
   <i18n_languages language_id="2" code="sv" name="Swedish" native_name="Svenska" is_default="false" is_enabled="true"/>
   -->
+  
+  <meta_version meta_id="1001" version="1" version_tag="ARCHIVED"/>   
+  <meta_version meta_id="1001" version="2" version_tag="ARCHIVED"/>
+  <meta_version meta_id="1001" version="3" version_tag="ARCHIVED"/>
+  <meta_version meta_id="1001" version="4" version_tag="PUBLISHED"/>
+  <meta_version meta_id="1001" version="5" version_tag="WORKING"/>
     
-  <texts meta_id="1001" name="1" text="text1" type="1" counter="1" language_id="1"/>
-  <texts meta_id="1001" name="2" text="text2" type="1" counter="2" language_id="1"/>
-  <texts meta_id="1001" name="1" text="text1" type="1" counter="3" language_id="2"/>
-  <texts meta_id="1001" name="2" text="text2" type="1" counter="4" language_id="2"/>  
+  <texts meta_id="1001" name="1" text="text1" type="1" counter="1" language_id="1" meta_version="1"/>
+  <texts meta_id="1001" name="1" text="text2" type="1" counter="2" language_id="1" meta_version="2"/>
+  <texts meta_id="1001" name="1" text="text3" type="1" counter="3" language_id="1" meta_version="3"/>
+  <texts meta_id="1001" name="1" text="text4" type="1" counter="4" language_id="1" meta_version="4"/>
+  <texts meta_id="1001" name="1" text="text5" type="1" counter="5" language_id="1" meta_version="5"/>
+  
+  <texts meta_id="1001" name="2" text="text2" type="1" counter="6" language_id="1" meta_version="1"/>    
+  <texts meta_id="1001" name="1" text="text1" type="1" counter="7" language_id="2" meta_version="1"/>
+  <texts meta_id="1001" name="2" text="text2" type="1" counter="8" language_id="2" meta_version="1"/>
 </dataset>

@@ -9,11 +9,14 @@ public class TextDaoTest extends DaoTest {
 	
 	TextDao textDao;
 	
+	MetaDao metaDao;
+	
 	LanguageDao languageDao;
 		
 	@BeforeClass void init() {
 		textDao = Context.getBean("textDao")
 		languageDao = Context.getBean("languageDao")
+		metaDao = Context.getBean("metaDao")
 	}		
 		
 	@Override
@@ -64,7 +67,7 @@ public class TextDaoTest extends DaoTest {
     	}
     }    
 	
-    
+    /*
 	@Test void insertText() {
 		def language = languageDao.defaultLanguage
 		def metaId = 1001
@@ -85,10 +88,19 @@ public class TextDaoTest extends DaoTest {
 		
 		assertNotNull(text)		
 	}
+	*/
 	
 	@Test void getTexts() {
 		def texts = textDao.getTexts(1001);
 	
 		assertTrue(texts.size() > 0)
 	}
+	
+    @Test void getTextsForDocument() {
+    	def versions = metaDao.getDocumentVersions(1001)
+    	def language = languageDao.defaultLanguage
+        def texts = textDao.getTexts(1001, 1, language, versions);
+    
+        assertTrue(texts.size() > 0)
+    }	
 }

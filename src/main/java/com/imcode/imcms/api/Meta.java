@@ -33,15 +33,6 @@ import javax.persistence.Transient;
 @Entity
 @Table(name="meta")
 @NamedQueries({
-	/*
-	@NamedQuery(name="Meta.getMaxDocumentId", query="SELECT max(m.documentId) FROM Meta m"),
-	@NamedQuery(name="Meta.getNextDocumentVersion", query="SELECT max(m.documentVersion) + 1 FROM Meta m WHERE m.id = ?"),
-	@NamedQuery(name="Meta.getDocumentVersions", 
-			query="SELECT NEW com.imcode.imcms.api.DocumentVersion(" +
-				    "m.id, m.documentVersion, m.documentVersionTag)" +
-				  " FROM Meta m WHERE m.documentId = :documentId" +
-				  "	ORDER BY m.documentVersion")
-				  */
 })
 public class Meta implements Serializable, Cloneable {
 	

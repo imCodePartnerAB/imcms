@@ -28,7 +28,11 @@ import javax.persistence.Table;
     // Unique result				
 	@NamedQuery(name="DocumentVersion.getByDocumentIdAndVersion", 
 			query="SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId " +
-					"AND v.version = :version")										
+					"AND v.version = :version"),
+					
+    // Unique result				
+	@NamedQuery(name="DocumentVersion.getByDocumentId", 
+			query="SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId")					
 })
 public class DocumentVersion implements Cloneable {
 

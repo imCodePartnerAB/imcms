@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.DocumentVersion;
@@ -309,10 +310,9 @@ public class MetaDao extends HibernateTemplate {
 	}
 	
 	
-	@Transactional
-	//@SuppressWarnings()
+	@Transactional(propagation=Propagation.SUPPORTS)
 	public List<DocumentVersion> getDocumentVersions(Integer documentId) {
-		return findByNamedQueryAndNamedParam("Meta.getDocumentVersions", 
+		return findByNamedQueryAndNamedParam("DocumentVersion.getByDocumentId", 
 				"documentId", documentId);
 	}	
 }
