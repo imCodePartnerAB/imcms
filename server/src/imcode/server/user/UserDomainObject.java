@@ -44,6 +44,8 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     /** Http session id.*/
     private String sessionId;
+    
+    private String rememberCd;
 
     public UserDomainObject() {
     }
@@ -432,6 +434,14 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+    }
+    
+    public String getRememberCd() {
+    	return rememberCd;
+    }
+    
+    public void setRememberCd(String rememberCd) {
+    	this.rememberCd = rememberCd;
     }
     
     public boolean isImcmsExternal() {

@@ -167,7 +167,7 @@ public class TextDocumentInitializer {
                 documentsImages = new HashMap();
                 DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id,name,image_name,imgurl,"
                                                                                  + "width,height,border,v_space,h_space,"
-                                                                                 + "target,align,alt_text,low_scr,linkurl,type "
+                                                                                 + "target,align,alt_text,low_scr,linkurl,type,archive_image_id "
                                                                                  + "FROM images WHERE meta_id ", documentIds, new ResultSetHandler() {
                     public Object handle(ResultSet rs) throws SQLException {
                         while ( rs.next() ) {
@@ -193,6 +193,7 @@ public class TextDocumentInitializer {
                             image.setLowResolutionUrl(rs.getString(13));
                             image.setLinkUrl(rs.getString(14));
                             int imageType = rs.getInt(15);
+                            image.setArchiveImageId((Long) rs.getObject(16));
 
                             if ( StringUtils.isNotBlank(imageSource) ) {
                                 if ( ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {
@@ -209,6 +210,8 @@ public class TextDocumentInitializer {
                                     }
                                 } else if ( ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH == imageType ) {
                                     image.setSource(new ImagesPathRelativePathImageSource(imageSource));
+                                } else if ( ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE == imageType) {
+                                	image.setSource(new ImageArchiveImageSource(imageSource));
                                 }
                             }
                             imageMap.put(imageIndex, image);

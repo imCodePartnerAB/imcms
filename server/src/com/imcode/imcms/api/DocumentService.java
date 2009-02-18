@@ -205,7 +205,7 @@ public class DocumentService {
     public CategoryType createNewCategoryType(String name,
                                               int maxChoices) throws NoPermissionException, CategoryTypeAlreadyExistsException {
         if ( getCategoryMapper().isUniqueCategoryTypeName(name) ) {
-            CategoryTypeDomainObject newCategoryTypeDO = new CategoryTypeDomainObject(0, name, maxChoices, false);
+        	CategoryTypeDomainObject newCategoryTypeDO = new CategoryTypeDomainObject(0, name, maxChoices, false, false);
             newCategoryTypeDO = getCategoryMapper().addCategoryTypeToDb(newCategoryTypeDO);
             return new CategoryType(newCategoryTypeDO);
         } else {

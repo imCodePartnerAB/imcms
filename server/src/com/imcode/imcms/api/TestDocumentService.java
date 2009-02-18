@@ -41,7 +41,7 @@ public class TestDocumentService extends TestCase {
     }
 
     public void testSaveCategory() throws CategoryAlreadyExistsException, NoPermissionException {
-        ResultSet allCategoryTypesResult = new MockResultSet(new Object[][] { { new Integer(1), "test", new Integer(0), new Integer(0) } });
+        ResultSet allCategoryTypesResult = new MockResultSet(new Object[][] { { new Integer(1), "test", new Integer(0), new Integer(0), new Integer(0) } });
         database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "SELECT category_types.category_type_id"), allCategoryTypesResult );
         CategoryType categoryType = documentService.getAllCategoryTypes()[0] ;
         assertEquals( false, categoryType.isInherited()) ;
@@ -54,7 +54,7 @@ public class TestDocumentService extends TestCase {
         documentService.saveCategory(category);
         database.assertExpectedSqlCalls();
 
-        ResultSet categoryResult = new MockResultSet(new Object[][] { { new Integer(1), category.getName(), category.getDescription(), category.getImage(), new Integer(categoryType.getId()), categoryType.getName(), new Integer(categoryType.getInternal().getMaxChoices()), new Integer(categoryType.isInherited() ? 1 : 0)}});
+        ResultSet categoryResult = new MockResultSet(new Object[][] { { new Integer(1), category.getName(), category.getDescription(), category.getImage(), new Integer(categoryType.getId()), categoryType.getName(), new Integer(categoryType.getInternal().getMaxChoices()), new Integer(categoryType.isInherited() ? 1 : 0), new Integer(categoryType.isImageArchive() ? 1 : 0)}});
         database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate(CategoryMapper.SQL__GET_CATEGORY_BY_NAME_AND_CATEGORY_TYPE_ID), categoryResult );
         Category otherCategory = new Category( categoryName, categoryType );
         try {

@@ -1,10 +1,14 @@
 package imcode.server;
 
-import org.apache.commons.lang.StringUtils;
+import imcode.server.user.RoleId;
 
 import java.io.File;
-import java.security.KeyStore;
 import java.nio.charset.Charset;
+import java.security.KeyStore;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 
 public class Config {
 
@@ -26,6 +30,11 @@ public class Config {
     private String workaroundUriEncoding;
     private boolean secureLoginRequired;
     private boolean denyMultipleUserLogin;
+    private String imageArchiveUrl;
+    private String imageArchiveAllowedRoleIds;
+    private List<RoleId> imageArchiveAllowedRoleIdList;
+    private File imageArchiveImagePath;
+    private String imageArchiveImageUrl;
 
     public String getWorkaroundUriEncoding() {
         return workaroundUriEncoding;
@@ -181,4 +190,56 @@ public class Config {
     public void setDenyMultipleUserLogin(boolean denyMultipleUserLogin) {
         this.denyMultipleUserLogin = denyMultipleUserLogin;
     }
+
+	public String getImageArchiveUrl() {
+		return imageArchiveUrl;
+	}
+
+	public void setImageArchiveUrl(String imageArchiveUrl) {
+		this.imageArchiveUrl = imageArchiveUrl;
+	}
+
+	public File getImageArchiveImagePath() {
+		return imageArchiveImagePath;
+	}
+
+	public void setImageArchiveImagePath(File imageArchiveImagePath) {
+		this.imageArchiveImagePath = imageArchiveImagePath;
+	}
+
+	public String getImageArchiveImageUrl() {
+		return imageArchiveImageUrl;
+	}
+
+	public void setImageArchiveImageUrl(String imageArchiveImageUrl) {
+		this.imageArchiveImageUrl = imageArchiveImageUrl;
+	}
+
+	public String getImageArchiveAllowedRoleIds() {
+		return imageArchiveAllowedRoleIds;
+	}
+
+	public void setImageArchiveAllowedRoleIds(String imageArchiveAllowedRoleIds) {
+		this.imageArchiveAllowedRoleIds = imageArchiveAllowedRoleIds;
+		
+		if (imageArchiveAllowedRoleIds != null) {
+			String[] ids = StringUtils.split(imageArchiveAllowedRoleIds, ',');
+			imageArchiveAllowedRoleIdList = new ArrayList<RoleId>(ids.length);
+			
+			for (String id : ids) {
+				try {
+					imageArchiveAllowedRoleIdList.add(new RoleId(Integer.parseInt(id.trim())));
+				} catch (Exception ex) {
+				}
+			}
+		}
+	}
+
+	public List<RoleId> getImageArchiveAllowedRoleIdList() {
+		return imageArchiveAllowedRoleIdList;
+	}
+
+	public void setImageArchiveAllowedRoleIdList(List<RoleId> imageArchiveAllowedRoleIdList) {
+		this.imageArchiveAllowedRoleIdList = imageArchiveAllowedRoleIdList;
+	}
 }

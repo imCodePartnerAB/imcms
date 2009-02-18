@@ -23,6 +23,7 @@ public class ImageDomainObject implements Serializable {
     private int horizontalSpace;
     private String target = "";
     private String linkUrl = "";
+    private Long archiveImageId;
 
     public String getName() {
         return name;
@@ -136,6 +137,14 @@ public class ImageDomainObject implements Serializable {
 
     public void setLinkUrl(String image_ref_link) {
         this.linkUrl = image_ref_link;
+    }
+    
+    public Long getArchiveImageId() {
+    	return archiveImageId;
+    }
+    
+    public void setArchiveImageId(Long archiveImageId) {
+    	this.archiveImageId = archiveImageId;
     }
 
     public void setSourceAndClearSize(ImageSource source) {

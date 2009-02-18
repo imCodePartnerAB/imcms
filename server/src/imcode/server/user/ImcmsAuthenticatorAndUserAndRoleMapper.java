@@ -34,7 +34,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private static final String SQL_SELECT_USERS = "SELECT user_id, login_name, login_password, first_name, last_name, "
                                                    + "title, company, address, city, zip, country, county_council, "
                                                    + "email, language, active, "
-                                                   + "create_date, external, session_id "
+                                                   + "create_date, external, session_id, remember_cd "
                                                    + "FROM users";
 
     public static final String SQL_ROLES_COLUMNS = "roles.role_id, roles.role_name, roles.admin_role, roles.permissions";
@@ -53,6 +53,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private static final String SQL_UPDATE_USER_SESSION = "update users set session_id = ? where user_id = ?";
 
     private static final String SQL_SELECT_USER_SESSION = "select session_id from users where user_id = ?";
+    
+    private static final String SQL_UPDATE_USER_REMEMBER_CD = "UPDATE users SET remember_cd = ? WHERE user_id = ?";
 
     private final ImcmsServices services;
 
@@ -116,6 +118,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         user.setCreateDate(Utility.parseDateFormat(dateFormat, sqlResult[15]));
         user.setImcmsExternal(0 != Integer.parseInt(sqlResult[16]));
         user.setSessionId(sqlResult[17]);
+        user.setRememberCd(sqlResult[18]);
     }
 
     private RoleId[] getRoleReferencesForUser(UserDomainObject user) {
@@ -134,6 +137,11 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }
+    }
+    
+    public void updateUserRememberCd(final UserDomainObject user) {
+    	services.getDatabase().execute(new SqlUpdateCommand(SQL_UPDATE_USER_REMEMBER_CD, 
+    			new Object[] { user.getRememberCd(), user.getId() }));
     }
 
     private RoleId getRoleReferenceFromSqlResult(String[] sqlRow) {

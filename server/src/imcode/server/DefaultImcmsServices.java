@@ -1,26 +1,48 @@
 package imcode.server;
 
-import com.imcode.db.Database;
-import com.imcode.db.commands.SqlUpdateDatabaseCommand;
-import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.imcms.db.DefaultProcedureExecutor;
-import com.imcode.imcms.db.ProcedureExecutor;
-import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
-import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.RebuildingDirectoryIndex;
 import imcode.server.document.index.IndexDocumentFactory;
+import imcode.server.document.index.RebuildingDirectoryIndex;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
-import imcode.server.user.*;
-import imcode.util.*;
+import imcode.server.user.Authenticator;
+import imcode.server.user.ChainedLdapUserAndRoleRegistry;
+import imcode.server.user.ExternalizedImcmsAuthenticatorAndUserRegistry;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.LdapUserAndRoleRegistry;
+import imcode.server.user.RoleGetter;
+import imcode.server.user.UserAndRoleRegistry;
+import imcode.server.user.UserDomainObject;
+import imcode.util.CachingFileLoader;
+import imcode.util.DateConstants;
+import imcode.util.Parser;
+import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 import imcode.util.net.SMTP;
+
+import java.beans.PropertyDescriptor;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.text.Collator;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
@@ -33,15 +55,17 @@ import org.apache.log4j.NDC;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import java.beans.PropertyDescriptor;
-import java.io.*;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.text.Collator;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.imcode.db.Database;
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.db.commands.SqlUpdateDatabaseCommand;
+import com.imcode.imcms.db.DefaultProcedureExecutor;
+import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
+import com.imcode.net.ldap.LdapClientException;
 
 final public class DefaultImcmsServices implements ImcmsServices {
 
@@ -716,5 +740,4 @@ final public class DefaultImcmsServices implements ImcmsServices {
             return FileUtility.getFileFromWebappRelativePath((String) value);
         }
     }
-
 }

@@ -194,7 +194,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     private void sqlInsertImageHistory(TextDocumentDomainObject textDocument, Integer imageIndex, UserDomainObject user) {
         SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING);
-        String[] columnNames = new String[] {"imgurl", "width", "height", "border", "v_space", "h_space", "image_name", "target", "align", "alt_text", "low_scr", "linkurl", "type", "meta_id", "name", "modified_datetime", "user_id" };
+        String[] columnNames = new String[] {"imgurl", "width", "height", "border", "v_space", "h_space", "image_name", "target", "align", "alt_text", "low_scr", "linkurl", "type", "archive_image_id", "meta_id", "name", "modified_datetime", "user_id" };
         ImageDomainObject image = textDocument.getImage(imageIndex.intValue());
         final String[] parameters = getSqlImageParameters(image, textDocument.getId(), imageIndex.intValue());
         List <String> param =  new ArrayList <String>( Arrays.asList(parameters) ) ;
@@ -248,26 +248,27 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     public static void saveDocumentImage(int meta_id, int img_no, ImageDomainObject image) {
         String sqlStr = "update images\n"
-                + "set imgurl  = ?, \n"
-                + "width       = ?, \n"
-                + "height      = ?, \n"
-                + "border      = ?, \n"
-                + "v_space     = ?, \n"
-                + "h_space     = ?, \n"
-                + "image_name  = ?, \n"
-                + "target      = ?, \n"
-                + "align       = ?, \n"
-                + "alt_text    = ?, \n"
-                + "low_scr     = ?, \n"
-                + "linkurl     = ?, \n"
-                + "type        = ?  \n"
+        	+ "set imgurl       = ?, \n"
+        	+ "width            = ?, \n"
+        	+ "height           = ?, \n"
+        	+ "border           = ?, \n"
+        	+ "v_space          = ?, \n"
+        	+ "h_space          = ?, \n"
+        	+ "image_name       = ?, \n"
+        	+ "target           = ?, \n"
+        	+ "align            = ?, \n"
+        	+ "alt_text         = ?, \n"
+        	+ "low_scr          = ?, \n"
+        	+ "linkurl          = ?, \n"
+        	+ "type             = ?, \n"
+        	+ "archive_image_id = ?  \n"
                 + "where meta_id = ? \n"
                 + "and name = ? \n";
 
         int rowUpdateCount = sqlImageUpdateQuery(sqlStr, image, meta_id, img_no);
         if (0 == rowUpdateCount) {
-            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, align, alt_text, low_scr, linkurl, type, meta_id, name)"
-                    + " values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)";
+            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, align, alt_text, low_scr, linkurl, type, archive_image_id, meta_id, name)"
+            	+ " values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?,?)";
 
             sqlImageUpdateQuery(sqlStr, image, meta_id, img_no);
         }
@@ -294,6 +295,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             image.getLowResolutionUrl(),
             image.getLinkUrl(),
             "" + imageSource.getTypeId(),
+            "" + image.getArchiveImageId(),
             "" + meta_id,
             "" + img_no,
         };

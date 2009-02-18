@@ -13,12 +13,14 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
     private String name ;
     private int maxChoices ;
     private boolean inherited;
+    private boolean imageArchive;
 
-    public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited) {
+    public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited, boolean imageArchive) {
         this.id = id;
         this.name = name;
         this.maxChoices = maxChoices;  // 0=single choice, 1=multi choice
         this.inherited = inherited;
+        this.imageArchive = imageArchive;
     }
 
     public int getId() {
@@ -47,6 +49,14 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
 
     public void setInherited( boolean inherited ) {
         this.inherited = inherited;
+    }
+    
+    public boolean isImageArchive() {
+    	return imageArchive;
+    }
+    
+    public void setImageArchive(boolean imageArchive) {
+    	this.imageArchive = imageArchive;
     }
 
     public boolean equals(Object o) {

@@ -33,3 +33,7 @@
                 <td><? install/htdocs/sv/jsp/category_admin/inherited ?></td>
                 <td><input type="checkbox" name="<%=AdminCategories.PARAMETER__INHERITED%>" value="1" <%= categoryTypeToEdit.isInherited() ? "checked" : "" %> ></td>
             </tr>
+            <tr>
+                <td><? install/htdocs/sv/jsp/category_admin/image_archive ?></td>
+                <td><input type="checkbox" name="<%=AdminCategories.PARAMETER__IMAGE_ARCHIVE%>" value="1" <%= categoryTypeToEdit.isImageArchive() ? "checked" : "" %> ></td>
+            </tr>

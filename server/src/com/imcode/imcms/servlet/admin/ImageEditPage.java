@@ -18,6 +18,7 @@ import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;
 import imcode.server.document.textdocument.*;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
@@ -39,8 +40,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ImageEditPage extends OkCancelPage {
 
@@ -64,6 +67,11 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__IMAGE_LOWSRC = "low_scr";
     public static final String REQUEST_PARAMETER__LINK_URL = "imageref_link";
     public static final String REQUEST_PARAMETER__LINK_TARGET = EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET;
+    public static final String REQUEST_PARAMETER__GO_TO_IMAGE_ARCHIVE_BUTTON = "goToImageArchive";
+    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE = "image_archive";
+    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID = "archive_img_id";
+    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_NAME = "archive_img_nm";
+    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME = "archive_file_nm";
     static final LocalizedMessage ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images");
     private final static String[] IMAGE_MIME_TYPES = new String[] { "image/jpeg", "image/png", "image/gif" };
 
@@ -99,13 +107,44 @@ public class ImageEditPage extends OkCancelPage {
     }
 
     protected void updateFromRequest(HttpServletRequest request) {
-        image = getImageFromRequest(request);
+    	if (request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE) != null) {
+    		getImageFromImageArchive(request);
+    	} else {
+    		image = getImageFromRequest(request);
+    	}
     }
 
     public String getLabel() {
         return label;
     }
 
+    private void getImageFromImageArchive(HttpServletRequest request) {
+    	String imageName = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_NAME));
+    	imageName = StringUtils.substring(imageName, 0, 40);
+    	String fileName = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME));
+    	String archiveImageIdStr = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID));
+    	
+    	Long archiveImageId = null;
+    	if (archiveImageIdStr != null) {
+    		try {
+    			archiveImageId = Long.parseLong(archiveImageIdStr, 10);
+    		} catch (NumberFormatException ex) {
+    		}
+    	}
+    	
+    	if (fileName != null) {
+    		fileName = fileName.replaceAll("/|\\\\", "");
+    		image.setSourceAndClearSize(new ImageArchiveImageSource(fileName));
+    		
+    		if (imageName != null) {
+    			image.setName(imageName);
+    		}
+    		if (archiveImageId != null) {
+    			image.setArchiveImageId(archiveImageId);
+    		}
+    	}
+    }
+    
     private ImageDomainObject getImageFromRequest(HttpServletRequest req) {
         ImageDomainObject image = new ImageDomainObject();
         try {
@@ -127,6 +166,10 @@ public class ImageEditPage extends OkCancelPage {
         try {
             image.setHorizontalSpace(Integer.parseInt(req.getParameter(REQUEST_PARAMETER__HORIZONTAL_SPACE)));
         } catch ( NumberFormatException ignored ) {
+        }
+        try {
+        	image.setArchiveImageId(Long.parseLong(req.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID)));
+        } catch (NumberFormatException ex) {
         }
         String imageUrl = req.getParameter(REQUEST_PARAMETER__IMAGE_URL);
         if ( null != imageUrl && imageUrl.startsWith(req.getContextPath()) ) {
@@ -161,11 +204,40 @@ public class ImageEditPage extends OkCancelPage {
             forward(request, response);
         } else if ( null != request.getParameter(REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON) ) {
             goToImageBrowser(request, response);
+        } else if (request.getParameter(REQUEST_PARAMETER__GO_TO_IMAGE_ARCHIVE_BUTTON) != null) {
+        	goToImageArchive(request, response);
+        } else if (request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE) != null) {
+        	forward(request, response);
         } else if ( null != request.getParameter(REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON) ) {
             goToImageSearch(documentMapper, request, response);
         } else if ( null != request.getParameter(REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON) ) {
             goToImageAdder(documentMapper, user, request, response);
         }
+    }
+    
+    private void goToImageArchive(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    	int port = request.getServerPort();
+    	
+    	StringBuilder builder = new StringBuilder();
+    	builder.append("http://");
+    	builder.append(request.getServerName());
+    	
+    	if (port != 80) {
+    		builder.append(":");
+    		builder.append(port);
+    	}
+    	
+    	builder.append(request.getContextPath());
+    	builder.append("/servlet/PageDispatcher?page=");
+    	builder.append(Utility.encodeUrl(getSessionAttributeName()));
+    	builder.append("&");
+    	builder.append(REQUEST_PARAMETER__IMAGE_ARCHIVE);
+    	builder.append("=yes&");
+    	
+    	String imageArchiveUrl = String.format("http://%s?returnTo=%s", Imcms.getServices().getConfig().getImageArchiveUrl(), 
+    			Utility.encodeUrl(builder.toString()));
+    	
+    	response.sendRedirect(imageArchiveUrl);
     }
 
     private void goToImageAdder(final DocumentMapper documentMapper,
@@ -222,6 +294,8 @@ public class ImageEditPage extends OkCancelPage {
             public void selectImageUrl(String imageUrl, HttpServletRequest request,
                                        HttpServletResponse response) throws IOException, ServletException {
                 image.setSourceAndClearSize(new ImagesPathRelativePathImageSource(imageUrl));
+                image.setArchiveImageId(0L);
+                image.setName(StringUtils.substring(imageUrl, 0, 40));
                 forward(request, response);
             }
         });
@@ -284,6 +358,20 @@ public class ImageEditPage extends OkCancelPage {
 
     public boolean canAddImageFiles(UserDomainObject user) {
         return user.canCreateDocumentOfTypeIdFromParent( DocumentTypeDomainObject.FILE_ID, document );
+    }
+    
+    public static boolean allowImageArchive(UserDomainObject user) {
+    	List<RoleId> allowedRoleIds = Imcms.getServices().getConfig().getImageArchiveAllowedRoleIdList();
+    	
+    	if (allowedRoleIds != null) {
+    		for (RoleId roleId : allowedRoleIds) {
+    			if (user.hasRoleId(roleId)) {
+    				return true;
+    			}
+    		}
+    	}
+    	
+    	return false;
     }
 
     public boolean isLinkable() {

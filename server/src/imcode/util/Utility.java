@@ -31,6 +31,7 @@ import org.w3c.dom.Document;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -43,9 +44,12 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -65,6 +69,8 @@ public class Utility {
     public static final ResultSetHandler STRING_ARRAY_HANDLER = new StringArrayResultSetHandler();
     public static final ResultSetHandler STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
     private static final String LOGGED_IN_USER = "logon.isDone";
+    private static final Pattern DOMAIN_PATTERN = Pattern.compile("^.*?([^.]+?\\.[^.]+)$");
+    private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
 
     private Utility() {
 
@@ -477,4 +483,71 @@ public class Utility {
         return Imcms.getServices().getLocalizedMessageProvider().getResourceBundle(Utility.getLoggedOnUser(request).getLanguageIso639_2());
     }
 
+    public static String hex(byte[] data) {
+    	StringBuilder builder = new StringBuilder();
+    	
+    	for (int i = 0; i < data.length; i++) {
+    		int halfByte = (data[i] >>> 4) & 0x0f;
+    		int twoHalfs = 0;
+    		
+    		do {
+    			if (0 <= halfByte && halfByte <= 9) {
+    				builder.append((char) ('0' + halfByte));
+    			} else {
+    				builder.append((char) ('a' + (halfByte - 10)));
+    			}
+    			halfByte = data[i] & 0x0f;
+    		} while (twoHalfs++ < 1);
+    	}
+    	
+    	return builder.toString();
+    }
+    
+    public static String shaHex(String data) {
+    	try {
+    		return hex(MessageDigest.getInstance("SHA").digest(data.getBytes()));
+    	} catch (NoSuchAlgorithmException ex) {
+    		throw new RuntimeException(ex.getMessage(), ex);
+    	}
+    }
+    
+    public static void setRememberCdCookie(HttpServletRequest request, HttpServletResponse response, String rememberCd) {
+    	Cookie cookie = new Cookie("im_remember_cd", rememberCd);
+    	cookie.setMaxAge(60 * 60 * 2);
+    	cookie.setPath("/");
+    	
+    	setCookieDomain(request, cookie);
+    	response.addCookie(cookie);
+    }
+    
+    public static void removeRememberCdCookie(HttpServletRequest request, HttpServletResponse response) {
+    	Cookie cookie = new Cookie("im_remember_cd", "");
+    	cookie.setMaxAge(0);
+    	cookie.setPath("/");
+    	
+    	setCookieDomain(request, cookie);
+    	response.addCookie(cookie);
+    }
+    
+    public static void setCookieDomain(HttpServletRequest request, Cookie cookie) {
+    	String serverName = request.getServerName();    	
+    	if (!IP_PATTERN.matcher(serverName).matches()) {
+    		Matcher matcher = DOMAIN_PATTERN.matcher(serverName);
+    		
+    		if (matcher.matches()) {
+    			cookie.setDomain("." + matcher.group(1));
+    		}
+    	}
+    }
+    
+    public static String encodeUrl(String value) {
+    	try {
+    		return URLEncoder.encode(value, "UTF-8");
+    	} catch (UnsupportedEncodingException ex) {
+    		log.warn(ex.getMessage(), ex);
+    		
+    		throw new RuntimeException(ex.getMessage(), ex);
+    	}
+    }
+    
 }
