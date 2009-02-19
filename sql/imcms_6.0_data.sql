@@ -93,8 +93,8 @@ VALUES
 
 -- Make demo document published
 INSERT INTO meta_version (
-  meta_id, version, version_tag
-) SELECT meta_id, 1, 'PUBLISHED' FROM meta;
+  meta_id, version, version_tag, user_id, created_dt
+) SELECT meta_id, 1, 'PUBLISHED', @user_id__admin, NOW() FROM meta;
 
 --
 -- Data for table database_version

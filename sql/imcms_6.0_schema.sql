@@ -61,7 +61,10 @@ CREATE TABLE meta_version (
   meta_id int NOT NULL,
   version int NOT NULL,
   version_tag varchar(12) NOT NULL,
-  CONSTRAINT pk__meta_version PRIMARY KEY (id), 
+  user_id int NULL,
+  created_dt datetime NOT NULL,
+  CONSTRAINT pk__meta_version PRIMARY KEY (id),
+  CONSTRAINT fk__meta_version__user FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE SET NULL,
   CONSTRAINT fk__meta_version__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE
 );
 

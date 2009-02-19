@@ -3,7 +3,6 @@ package com.imcode.imcms.mapping;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
-import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -168,7 +167,7 @@ public class DocumentSaver {
         DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
         
-        DocumentVersion documentVersion = metaDao.createNextWorkingVersion(documentId);
+        DocumentVersion documentVersion = metaDao.createNextWorkingVersion(documentId, user.getId());
         textDocument.getMeta().setVersion(documentVersion);
         
         visitor.updateTextDocumentTexts(textDocument, null, user);

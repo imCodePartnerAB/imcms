@@ -1,6 +1,4 @@
-﻿
 -- Changes for v 6.0
-
 -- Current schema version
 SET @database_version__major__current = 5;
 SET @database_version__minor__current = 3;
@@ -29,16 +27,19 @@ CREATE TABLE meta_version (
   meta_id int NOT NULL,
   version int NOT NULL,
   version_tag varchar(12) NOT NULL,
-  CONSTRAINT pk__meta_version PRIMARY KEY (id), 
+  user_id int NULL,
+  created_dt datetime NOT NULL,
+  CONSTRAINT pk__meta_version PRIMARY KEY (id),
+  CONSTRAINT fk__meta_version__user FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE SET NULL,
   CONSTRAINT fk__meta_version__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+);
 
 -- for every document create version 1
 -- tag all documents as published
 -- TODO?: tag all unpublished documents as archived?
 INSERT INTO meta_version (
-  meta_id, version, version_tag
-) SELECT meta_id, 1, 'PUBLISHED' FROM meta;
+  meta_id, version, version_tag, user_id, created_dt
+) SELECT meta_id, 1, 'PUBLISHED', owner_id, date_created FROM meta;
 
 --
 -- Recreate table texts:

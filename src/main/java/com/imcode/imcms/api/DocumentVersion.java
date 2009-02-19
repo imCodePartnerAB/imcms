@@ -1,5 +1,7 @@
 package com.imcode.imcms.api;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  * Document version.
@@ -40,11 +44,18 @@ public class DocumentVersion implements Cloneable {
 	@Column(name="id")
 	private Long id;
 
-	@Column(name="meta_id")
+	@Column(name="meta_id", updatable=false)
 	private Integer documentId;
 
 	@Column(name="version")	
 	private Integer version;
+	
+	@Column(name="user_id", updatable=false)	
+	private Integer userId;
+	
+	@Column(name="created_dt")	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date createdDt;	
 
 	@Enumerated(EnumType.STRING)
 	@Column(name="version_tag")
@@ -97,5 +108,21 @@ public class DocumentVersion implements Cloneable {
 
 	public void setVersionTag(DocumentVersionTag versionTag) {
 		this.versionTag = versionTag;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public Date getCreatedDt() {
+		return createdDt;
+	}
+
+	public void setCreatedDt(Date createdDt) {
+		this.createdDt = createdDt;
 	}
 }

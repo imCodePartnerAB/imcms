@@ -16,35 +16,9 @@ import com.imcode.imcms.api.I18nLanguage;
 
 public class TextDao extends HibernateTemplate {
 
-	/*
-	@Transactional
-	public synchronized List<TextDomainObject> getTexts(int metaId, int languageId) {
-		List<TextDomainObject> texts = findByNamedQueryAndNamedParam(
-				"Text.getByMetaIdAndLanguageId", 
-					new String[] {"metaId", "languageId"}, 
-					new Object[] {metaId, languageId});
-			
-		return texts;
-	}
-	*/
-	
-	/*
-	@Transactional
-	public synchronized TextDomainObject getText(int metaId, int index, int languageId) {
-		Session session = getSession();
-		
-		TextDomainObject text = (TextDomainObject)session
-			.getNamedQuery("Text.getByMetaIdAndIndexAndLanguageId")
-			.setParameter("metaId", metaId)
-			.setParameter("index", index)
-			.setParameter("languageId", languageId)
-			.uniqueResult();
-		
-		return text;
-	}
-	*/
-	
-
+	/**
+	 * Inserts or updates text. 
+	 */
 	@Transactional
 	public TextDomainObject saveText(TextDomainObject text) {
 		saveOrUpdate(text);
@@ -52,7 +26,21 @@ public class TextDao extends HibernateTemplate {
 		return text;
 		
 	}
+	
+	/**
+	 * Updates texts. 
+	 */
+	@Transactional
+	public void updateTexts(Collection<TextDomainObject> texts) {
+		for (TextDomainObject text: texts) {
+			update(text);
+		}
+	}
+	
 
+	/**
+	 * Returns all texts for given document id and version.
+	 */
 	@Transactional
 	public Collection<TextDomainObject> getTexts(Integer documentId, Integer documentVersion) {
 		return findByNamedQueryAndNamedParam("Text.getByDocumentIdAndDocumentVersion", 
@@ -61,13 +49,19 @@ public class TextDao extends HibernateTemplate {
 		);
 	}
 	
+	
+	/**
+	 * Saves text history.
+	 * TODO: Refactor out SQL call. 
+	 */
 	@Transactional
 	public void saveTextHistory(Integer documentId, TextDomainObject text, UserDomainObject user) {
-		String sql = "INSERT INTO texts_history (meta_id, name, text, type, modified_datetime, user_id, language_id) VALUES " +
-		"(:metaId,:index,:text,:type,:modifiedDt,:userId,:languageId)";
+		String sql = "INSERT INTO texts_history (meta_id, meta_version, name, text, type, modified_datetime, user_id, language_id) VALUES " +
+		"(:metaId,:metaVersion,:index,:text,:type,:modifiedDt,:userId,:languageId)";
 		
 		getSession().createSQLQuery(sql)
 			.setParameter("metaId", documentId)
+			.setParameter("metaVersion", text.getMetaVersion())
 			.setParameter("index", text.getIndex())
 			.setParameter("type", text.getType())
 			.setParameter("text", text.getText())
@@ -76,7 +70,10 @@ public class TextDao extends HibernateTemplate {
 			.setParameter("languageId", text.getLanguage().getId()).executeUpdate();
 	}
 
-
+	/**
+	 * Returns all texts for given document id, text index, text language and versions.
+	 * TODO: Reafactor out HQL call  
+	 */
 	@Transactional(propagation=Propagation.SUPPORTS)
 	public List<TextDomainObject> getTexts(Integer documentId, Integer index, I18nLanguage language, Collection<DocumentVersion> versions) {
 		String hql = String.format(
@@ -86,6 +83,10 @@ public class TextDao extends HibernateTemplate {
 		return find(hql, new Object[] {documentId, index, language.getId()});
 	}
 	
+	/**
+	 * Helper method.
+	 * TODO: replace
+	 */
 	private String createVersionString(Collection<DocumentVersion> versions) {
 		StringBuilder versionString = new StringBuilder();
 		int i = 0;

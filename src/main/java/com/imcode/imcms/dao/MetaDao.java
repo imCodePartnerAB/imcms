@@ -2,6 +2,7 @@ package com.imcode.imcms.dao;
 
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -42,7 +43,7 @@ public class MetaDao extends HibernateTemplate {
 	 * @return next document version.
 	 */
 	@Transactional
-	public synchronized DocumentVersion createNextWorkingVersion(Integer documentId) {
+	public synchronized DocumentVersion createNextWorkingVersion(Integer documentId, Integer userId) {
 		DocumentVersion nextVersion;
 		DocumentVersion latestVersion = (DocumentVersion)getSession().getNamedQuery("DocumentVersion.getLastVersion")
 			.setParameter("documentId", documentId)
@@ -59,6 +60,9 @@ public class MetaDao extends HibernateTemplate {
 				update(latestVersion);
 			} 
 		}
+		
+		nextVersion.setUserId(userId);
+		nextVersion.setCreatedDt(new Date());		
 		
 		save(nextVersion);
 		
@@ -179,28 +183,6 @@ public class MetaDao extends HibernateTemplate {
 		saveOrUpdate(meta); 
 	}
 		
-	
-	/*
-	@Transactional
-	public synchronized void insertFirstVersionMeta(Meta meta) {
-		Integer documentId = getNextDocumentId();
-		
-		meta.setDocumentId(documentId);
-		meta.setDocumentVersion(1);
-		
-		save(meta);
-	}
-	
-	
-	@Transactional
-	public synchronized void insertNextVersionMeta(Long existingMetaId, Meta newMeta) {
-		Integer version = getNextDocumentVersion(existingMetaId);
-		
-		newMeta.setDocumentVersion(version);
-		
-		save(newMeta);
-	}
-	*/
 	
 	@Transactional
 	public void saveIncludes(Integer documentId, Collection<Include> includes) {

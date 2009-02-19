@@ -56,7 +56,7 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
         
         if (null == document) {
         	// AOP?
-            document = super.getDocument(documentId) ;
+            document = super.getWorkingDocument(documentId) ;
             
             if (document != null) {            	
             	workingDocumentsCache.put(documentId, document) ;
