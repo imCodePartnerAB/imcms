@@ -1,4 +1,4 @@
--- Changes for v 6.0
+﻿-- Changes for v 6.0
 -- Current schema version
 SET @database_version__major__current = 5;
 SET @database_version__minor__current = 3;
@@ -54,6 +54,12 @@ CREATE TABLE __texts (
   language_id smallint(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- Remove dublicates
+DELETE FROM texts
+USING texts, texts AS self
+WHERE texts.counter < self.counter
+AND texts.meta_id = self.meta_id AND texts.name = self.name AND texts.language_id = self.language_id;
+
 INSERT INTO __texts (
   counter,
   meta_id,
@@ -75,7 +81,7 @@ FROM texts;
 DROP TABLE texts;
 RENAME TABLE __texts to texts;
 
-ALTER TABLE texts 
+ALTER TABLE texts
   ADD CONSTRAINT fk__texts__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
   ADD CONSTRAINT fk__texts__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
   ADD CONSTRAINT uk__texts__meta_id__meta_version__name__language_id UNIQUE KEY (meta_id, meta_version, name, language_id);
@@ -198,32 +204,44 @@ ALTER TABLE images
   ADD CONSTRAINT uk__images__meta_id__meta_version__name__language_id UNIQUE KEY (meta_id, meta_version, name, language_id);
 
 
--- contents becoms text_doc_content_loops
+--
+-- Tables for content loop data
+--
+
+-- cleanup
+delete from contents where not exists (select * from meta where meta_id = contents.meta_id);
+delete from content_loops where not exists (select * from contents where content_id = content_loops.content_id);
+
 CREATE TABLE text_doc_content_loops (
-  id int auto_increment PRIMARY KEY,
+  id int auto_increment,
   meta_id int NOT NULL,
   loop_index int NOT NULL,
   base_index int NOT NULL,
-  FOREIGN KEY fk__text_doc_content_loops__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  UNIQUE INDEX ux__text_doc_content_loops__meta_id__loop_index (meta_id, loop_index)
+  CONSTRAINT pk__text_doc_content_loops PRIMARY KEY (id) ,
+  CONSTRAINT fk__text_doc_content_loops__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  CONSTRAINT uk__text_doc_content_loops__meta_id__loop_index UNIQUE KEY (meta_id, loop_index)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO text_doc_content_loops (meta_id, loop_index, base_index)
-SELECT meta_id, content_no, base_index
-FROM contents;
 
--- content_loops becoms text_doc_contents
+--
+-- Tables for contents
+--
+
 CREATE TABLE text_doc_contents (
-  id int auto_increment PRIMARY KEY,
+  id int auto_increment,
   loop_id int NOT NULL,
   sequence_index int NOT NULL,
   order_index int NOT NULL,
 
-  UNIQUE INDEX ux__loop_id__sequence_index (loop_id, sequence_index),
-  UNIQUE INDEX ux__loop_id__order_index (loop_id, order_index),
-  FOREIGN KEY fk__text_doc_contents__text_doc_content_loops (loop_id) REFERENCES text_doc_content_loops (id) ON DELETE CASCADE
-
+  CONSTRAINT pk__text_doc_contents PRIMARY KEY (id),
+  CONSTRAINT uk__loop_id__sequence_index UNIQUE KEY (loop_id, sequence_index),
+  CONSTRAINT uk__loop_id__order_index UNIQUE KEY (loop_id, order_index),
+  CONSTRAINT fk__text_doc_contents__text_doc_content_loops FOREIGN KEY (loop_id) REFERENCES text_doc_content_loops (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO text_doc_content_loops (id, meta_id, loop_index, base_index)
+SELECT content_id, meta_id, content_no, base_index
+FROM contents;
 
 INSERT INTO text_doc_contents (loop_id, sequence_index, order_index)
 SELECT content_id, loop_index, order_index
@@ -254,8 +272,8 @@ DROP TABLE childs;
 RENAME TABLE __childs TO childs;
 
 ALTER TABLE childs
-  ADD FOREIGN KEY fk__childs__menus (menu_id) REFERENCES menus (menu_id),
-  ADD UNIQUE INDEX ux__childs__menu_id__meta_id (menu_id, to_meta_id);
+  ADD CONSTRAINT fk__childs__menus FOREIGN KEY  (menu_id) REFERENCES menus (menu_id),
+  ADD CONSTRAINT uk__childs__menu_id__meta_id UNIQUE INDEX  (menu_id, to_meta_id);
 
 
 --

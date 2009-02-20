@@ -546,4 +546,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	public void setContentLoopsMap(Map<Integer, ContentLoop> contentLoopsMap) {
 		this.contentLoopsMap = contentLoopsMap;
 	}	
+	
+	public ContentLoop getContentLoop(int loopIndex) {
+		return contentLoopsMap.get(loopIndex);
+	}
 }

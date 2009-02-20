@@ -677,7 +677,7 @@ CREATE TABLE texts (
   text longtext NOT NULL,
   type int(11) default NULL,
   counter int(11) NOT NULL auto_increment,
-  language_id smallint(6) NOT NULL default '1',
+  language_id smallint(6) NOT NULL,
   PRIMARY KEY  (counter),
   CONSTRAINT fk__texts__i18n_languages FOREIGN KEY  (language_id) REFERENCES i18n_languages (language_id),
   CONSTRAINT fk__texts__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id),

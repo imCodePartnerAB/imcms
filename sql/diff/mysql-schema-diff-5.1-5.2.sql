@@ -1,7 +1,4 @@
 ﻿-- Changes for v 5.2
---
--- Replace i18n_keywords with new table
---
 
 -- Current schema version
 SET @database_version__major__current = 5;
@@ -10,7 +7,6 @@ SET @database_version__minor__current = 1;
 -- New schema version
 SET @database_version__major__new = 5;
 SET @database_version__minor__new = 2;
-
 
 CREATE TABLE keywords (
   keyword_id int NOT NULL auto_increment,

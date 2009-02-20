@@ -1,23 +1,9 @@
 package com.imcode.imcms.servlet.tags;
 
-import javax.servlet.jsp.JspException;
-
 import imcode.server.parser.TagParser;
 
 public class TextTag extends SimpleImcmsTag {
 	
-	/**
-	 * Checks if tag inside of group tag...
-	 */
-	public int doStartTag() throws JspException {
-		ContentTag contentTag = (ContentTag)findAncestorWithClass(this, ContentTag.class);
-		
-		if (contentTag != null) {
-			contentTag.addGroupItem(this);
-		}
-		
-		return super.doStartTag();
-	}
 
     protected String getContent(TagParser tagParser) {
         return tagParser.tagText(attributes);

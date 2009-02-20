@@ -334,16 +334,6 @@ CREATE TABLE menus (
 --
 -- Table childs
 --
-
-CREATE TABLE new__childs (
-  id int auto_increment PRIMARY KEY,
-  to_meta_id int NOT NULL,
-  manual_sort_order int NOT NULL,
-  tree_sort_index varchar(64) NOT NULL,
-  menu_id int NOT NULL
-)ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
 CREATE TABLE childs (
   id int auto_increment, 
   to_meta_id int NOT NULL,
