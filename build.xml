@@ -96,7 +96,7 @@
 
     <target name="dist" depends="bindist,srcdist" description="Build all binary and source distributions."/>
 
-    <target name="bindist" depends="bindist-jar,bindist-zip,bindist-tgz" description="Build all binary distributions."/>
+    <target name="bindist" depends="bindist-jar,bindist-api-jar,bindist-zip,bindist-tgz" description="Build all binary distributions."/>
 
     <target name="bindist-zip" depends="bindist-war">
         <mkdir dir="${dist}"/>
@@ -125,7 +125,12 @@
         <war warfile="${war}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
     </target>
 
-    <target name="bindist-jar" depends="test">
+    <target name="bindist-jar" depends="build">
+        <mkdir dir="${dist}"/>
+        <copy file="${jar}" tofile="${bindist-jar}"/>
+    </target>
+        
+    <target name="bindist-api-jar" depends="test">
         <mkdir dir="${dist}"/>
         <jar destfile="${bindist-api-jar}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>
     </target>
@@ -520,6 +525,7 @@
 
         <property name="sprocs-sql" value="${sql}/imcms-sprocs${versionfilesuffix}.sql"/>
 
+        <property name="bindist-jar" value="${dist}/imcms${versionfilesuffix}.jar"/>        
         <property name="bindist-api-jar" value="${dist}/imcms${versionfilesuffix}-api.jar"/>
         <property name="bindist-util-jar" value="${dist}/imcms${versionfilesuffix}-util.jar"/>
 
