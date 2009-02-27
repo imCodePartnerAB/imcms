@@ -196,11 +196,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING);
         String[] columnNames = new String[] {"imgurl", "width", "height", "border", "v_space", "h_space", "image_name", "target", "align", "alt_text", "low_scr", "linkurl", "type", "archive_image_id", "meta_id", "name", "modified_datetime", "user_id" };
         ImageDomainObject image = textDocument.getImage(imageIndex.intValue());
-        final String[] parameters = getSqlImageParameters(image, textDocument.getId(), imageIndex.intValue());
-        List <String> param =  new ArrayList <String>( Arrays.asList(parameters) ) ;
+        final Object[] parameters = getSqlImageParameters(image, textDocument.getId(), imageIndex.intValue());
+        List <Object> param =  new ArrayList <Object>( Arrays.asList(parameters) ) ;
         param.add(dateFormat.format(new Date()));
-        param.add(""+user.getId());
-        database.execute(new SqlUpdateCommand(makeSqlInsertString("images_history", columnNames), param.toArray(new String[param.size()])));
+        param.add(user.getId());
+        database.execute(new SqlUpdateCommand(makeSqlInsertString("images_history", columnNames), param.toArray(new Object[param.size()])));
     }
 
     void updateTextDocumentIncludes(TextDocumentDomainObject textDocument) {
@@ -275,29 +275,29 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     private static int sqlImageUpdateQuery(String sqlStr, ImageDomainObject image, int meta_id, int img_no) {
-        final String[] parameters = getSqlImageParameters(image, meta_id, img_no);
+        final Object[] parameters = getSqlImageParameters(image, meta_id, img_no);
         return ((Number)Imcms.getServices().getDatabase().execute(new SqlUpdateCommand(sqlStr, parameters))).intValue();
     }
 
-    private static String[] getSqlImageParameters(ImageDomainObject image, int meta_id, int img_no) {
+    private static Object[] getSqlImageParameters(ImageDomainObject image, int meta_id, int img_no) {
         ImageSource imageSource = image.getSource();
-        return new String[] {
+        return new Object[] {
             imageSource.toStorageString(),
-            "" + image.getWidth(),
-            "" + image.getHeight(),
-            "" + image.getBorder(),
-            "" + image.getVerticalSpace(),
-            "" + image.getHorizontalSpace(),
+            image.getWidth(),
+            image.getHeight(),
+            image.getBorder(),
+            image.getVerticalSpace(),
+            image.getHorizontalSpace(),
             image.getName(),
             image.getTarget(),
             image.getAlign(),
             image.getAlternateText(),
             image.getLowResolutionUrl(),
             image.getLinkUrl(),
-            "" + imageSource.getTypeId(),
-            "" + image.getArchiveImageId(),
-            "" + meta_id,
-            "" + img_no,
+            imageSource.getTypeId(),
+            image.getArchiveImageId(),
+            meta_id,
+            img_no,
         };
     }
 
