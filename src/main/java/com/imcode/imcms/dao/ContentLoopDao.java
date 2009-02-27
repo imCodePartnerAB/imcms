@@ -76,6 +76,12 @@ public class ContentLoopDao extends HibernateTemplate {
 		return createContent(loopId, indexes.sequence, indexes.higher);
 	}
 	
+	@Transactional
+	public synchronized void saveContentLoop(Integer documentId, ContentLoop contentLoop) {		
+    	contentLoop.setMetaId(documentId);
+    	saveOrUpdate(contentLoop);		
+	} 
+	
 	/**
 	 * Creates and saves new content.
 	 * 

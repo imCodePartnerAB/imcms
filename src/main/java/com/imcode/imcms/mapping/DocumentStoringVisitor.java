@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.dao.ContentLoopDao;
@@ -120,13 +121,13 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     } 
     
+    //@Transactional
     public void updateTextDocumentContentLoops(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ContentLoopDao dao = (ContentLoopDao)services.getSpringBean("contentLoopDao");
         Integer documentId = textDocument.getMeta().getId();
         
         for (ContentLoop loop: textDocument.getContentLoopsMap().values()) {
-        	loop.setMetaId(documentId);
-        	dao.saveOrUpdate(loop);
+        	dao.saveContentLoop(documentId, loop);
         }  	
     }
     

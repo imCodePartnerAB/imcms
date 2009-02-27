@@ -32,7 +32,7 @@ import javax.persistence.Table;
    	@NamedQuery(name="Content.delete", 
    			query="DELETE FROM Content c WHERE c.id = :id")
 })
-public class Content {
+public class Content implements Cloneable {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;

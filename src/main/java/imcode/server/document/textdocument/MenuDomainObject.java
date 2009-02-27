@@ -56,7 +56,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
 	    joinColumns = @JoinColumn(name="menu_id")
 	)	
 	@org.hibernate.annotations.MapKey(
-	   columns = @Column(name="doc_id")
+	   columns = @Column(name="to_meta_id")
 	)
     private Map<Integer, MenuItemDomainObject> menuItems = new HashMap<Integer, MenuItemDomainObject>();
 

@@ -158,6 +158,7 @@ public class DocumentMapper implements DocumentGetter {
                 newTextDocument.removeAllImages();
                 newTextDocument.removeAllIncludes();
                 newTextDocument.removeAllMenus();
+                newTextDocument.removeAllContentLoops();
                 setTemplateForNewTextDocument( newTextDocument, user, parent );
             } else {
                 newDocument = DocumentDomainObject.fromDocumentTypeId(documentTypeId);

@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
@@ -55,7 +56,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * 
      * Map key is content's order index in document.
      */
-    private Map<Integer, ContentLoop> contentLoopsMap;
+    private Map<Integer, ContentLoop> contentLoopsMap = new HashMap<Integer, ContentLoop>();
                 
     public TextDocumentDomainObject() {
         this(ID_NEW) ;
@@ -203,6 +204,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public void removeAllMenus() {
         menusMap = new HashMap<Integer, MenuDomainObject>();
+    }
+    
+    public void removeAllContentLoops() {
+    	contentLoopsMap = new HashMap<Integer, ContentLoop>();
     }
 
     public void removeAllTexts() {
@@ -420,6 +425,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     		menu.setMetaId(null);
     		//menu.setModified(true);
     	}
+    	
+    	for (ContentLoop loop: contentLoopsMap.values()) {
+    		loop.setId(null);
+    		loop.setMetaId(null);
+    		
+    		for (Content content: loop.getContents()) {
+    			content.setId(null);
+    		}
+    	}    	
         
         templateNames.setId(null);
         templateNames.setMetaId(null);

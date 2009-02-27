@@ -45,7 +45,7 @@ public class ContentLoop implements Cloneable {
 	@Column(name="meta_id")
 	private Integer metaId;
 	
-	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
     @JoinColumn(name="loop_id")
     @OrderBy("orderIndex")
 	private List<Content> contents;

@@ -1,4 +1,4 @@
-﻿-- Changes for v 6.0
+-- Changes for v 6.0
 -- Current schema version
 SET @database_version__major__current = 5;
 SET @database_version__minor__current = 3;
@@ -229,13 +229,13 @@ CREATE TABLE text_doc_content_loops (
 
 CREATE TABLE text_doc_contents (
   id int auto_increment,
-  loop_id int NOT NULL,
+  loop_id int,
   sequence_index int NOT NULL,
   order_index int NOT NULL,
 
   CONSTRAINT pk__text_doc_contents PRIMARY KEY (id),
-  CONSTRAINT uk__loop_id__sequence_index UNIQUE KEY (loop_id, sequence_index),
-  CONSTRAINT uk__loop_id__order_index UNIQUE KEY (loop_id, order_index),
+  CONSTRAINT uk__id__loop_id__sequence_index UNIQUE KEY (id, loop_id, sequence_index),
+  CONSTRAINT uk__id__loop_id__order_index UNIQUE KEY (id, loop_id, order_index),
   CONSTRAINT fk__text_doc_contents__text_doc_content_loops FOREIGN KEY (loop_id) REFERENCES text_doc_content_loops (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
