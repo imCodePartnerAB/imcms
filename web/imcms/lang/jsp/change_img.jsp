@@ -55,15 +55,6 @@ BODY {
 
 <script type="text/javascript">
 <!--
-function addScrolling() {
-	if (window.opener) {
-		var obj = document.getElementById("outer_container") ;
-		obj.style.height = "100%" ;
-		obj.style.overflow = "scroll" ;
-		window.resizeTo(800,760) ;
-	}
-}
-
 function setDef() {
 	var f   = document.forms[0] ;
 	if (!hasDocumentLayers && f.imageref.value == "") f.image_align.selectedIndex = 0;
@@ -132,7 +123,7 @@ function checkLinkOnBlur() {<%
 </script>
 
 </head>
-<body id="body" bgcolor="#FFFFFF" onload="setDef(); addScrolling(); document.forms[0].imageref.focus();">
+<body id="body" bgcolor="#FFFFFF" onload="setDef(); document.forms[0].imageref.focus();">
 
 <div id="outer_container">
 	<div id="inner_container">
