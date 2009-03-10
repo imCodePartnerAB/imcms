@@ -2,6 +2,8 @@ package com.imcode.imcms.dao;
 
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.hibernate.Query;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,11 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
 
-// TODO: Refactor and optimize
 /**
  * Content loop DAO.
- * 
- * @author Anton Josua
  */
 public class ContentLoopDao extends HibernateTemplate {
 
@@ -38,7 +37,7 @@ public class ContentLoopDao extends HibernateTemplate {
 	 * @param loopId loop id.
 	 * @return new instance of ContentIndexes. 
 	 */
-	private ContentIndexes getNextContentIndexes(long loopId) {
+	private ContentIndexes getNextContentIndexes(Long loopId) {
 		List<Object[]> nextIndexesList = findByNamedQueryAndNamedParam(
 				"Content.getNextIndexes", "loopId", loopId); 
 
@@ -49,7 +48,7 @@ public class ContentLoopDao extends HibernateTemplate {
 
 		return new ContentIndexes(lower, higher, sequence); 
 	} 
-
+	
 	/**
 	 * Creates and adds new Content at the fist position of the loop.
 	 *  
@@ -62,6 +61,17 @@ public class ContentLoopDao extends HibernateTemplate {
 				
 		return createContent(loopId, indexes.sequence, indexes.lower);
 	}
+	
+	/**
+	 * Creates and adds new Content at the fist position of the loop.
+	 *  
+	 * @param loop content loop
+	 * @return new Content added at the fist position of the loop.
+	 */
+	@Transactional
+	public Content addFisrtContent(ContentLoop loop) {
+		return addFisrtContent(loop.getId());
+	}	
 
 	/**
 	 * Creates and adds new Content at the last position of the loop.
@@ -75,6 +85,18 @@ public class ContentLoopDao extends HibernateTemplate {
 		
 		return createContent(loopId, indexes.sequence, indexes.higher);
 	}
+	
+	/**
+	 * Creates and adds new Content at the last position of the loop.
+	 *  
+	 * @param loop content loop
+	 * @return new Content added at the last position of the loop.
+	 */	
+	@Transactional
+	public Content addLastContent(ContentLoop loop) {
+		return addLastContent(loop.getId());
+	}
+	
 	
 	@Transactional
 	public synchronized void saveContentLoop(Integer documentId, ContentLoop contentLoop) {		
@@ -119,6 +141,18 @@ public class ContentLoopDao extends HibernateTemplate {
 			.setParameter("id", id)
 			.executeUpdate();
 	}
+	
+	@Transactional
+	public synchronized void deleteContent(ContentLoop loop, int sequenceIndex) {
+		Long contentId = getContentId(loop.getId(), sequenceIndex);
+		deleteContent(contentId);
+	}
+	
+	
+	@Transactional
+	public void deleteContent(Content content) {
+		deleteContent(content.getId());
+	}	
 
 	/**
 	 * Returns loop or null if loop can not be found. 
@@ -150,7 +184,22 @@ public class ContentLoopDao extends HibernateTemplate {
 				"metaId", documentId);
 	}
 	
-
+	// TODO: Optimize
+	private Long getContentId(Long loopId, Integer sequenceIndex) {
+		return (Long)getSession().getNamedQuery("Content.getContentIdByLoopIdAndSequenceIndex")
+			.setParameter("loopId", loopId)
+			.setParameter("sequenceIndex", sequenceIndex)
+			.uniqueResult();
+	} 	
+	
+	@Transactional	
+	public synchronized void moveContentUp(ContentLoop loop, Integer sequenceIndex) {
+		Long contentId = getContentId(loop.getId(), sequenceIndex);
+		if (contentId != null) {
+			moveContentUp(loop, contentId);
+		}
+	}
+	
 	@Transactional
 	public synchronized void moveContentUp(ContentLoop loop, Long contentId) {
 		List<Content> contents = loop.getContents();
@@ -185,6 +234,15 @@ public class ContentLoopDao extends HibernateTemplate {
 				break;				
 			}			
 		}		
+	}
+	
+	
+	@Transactional	
+	public synchronized void moveContentDown(ContentLoop loop, Integer sequenceIndex) {
+		Long contentId = getContentId(loop.getId(), sequenceIndex);
+		if (contentId != null) {
+			moveContentDown(loop, contentId);
+		}
 	}
 	
 	@Transactional
@@ -222,6 +280,17 @@ public class ContentLoopDao extends HibernateTemplate {
 		}
 	}
 
+	
+	@Transactional	
+	public synchronized Content insertNewContentAfter(ContentLoop loop, Integer sequenceIndex) {
+		Long contentId = getContentId(loop.getId(), sequenceIndex);
+		
+		if (contentId == null) {
+			throw new RuntimeException(String.format("Content with loop id=%s and sequence index=%s does not exist.", loop.getId(), sequenceIndex));
+		}
+		
+		return insertNewContentAfter(loop, contentId);
+	}
 	
 	@Transactional
 	public synchronized Content insertNewContentAfter(ContentLoop loop, Long contentId) {
@@ -266,6 +335,16 @@ public class ContentLoopDao extends HibernateTemplate {
 		return newContent;
 	}
 
+	@Transactional	
+	public synchronized Content insertNewContentBefore(ContentLoop loop, Integer sequenceIndex) {
+		Long contentId = getContentId(loop.getId(), sequenceIndex);
+		
+		if (contentId == null) {
+			throw new RuntimeException(String.format("Content with loop id=%s and sequence index=%s does not exist.", loop.getId(), sequenceIndex));
+		}
+		
+		return insertNewContentBefore(loop, contentId);
+	}
 	
 	@Transactional
 	public synchronized Content insertNewContentBefore(ContentLoop loop, Long contentId) {

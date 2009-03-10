@@ -181,10 +181,7 @@ public class DocumentSaver {
                          DocumentDomainObject document, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(document);
 
-        //document.loadAllLazilyLoaded();
-                
-        //DocumentVersion version = metaDao.createNextWorkingVersion(documentId);
-        //document.getMeta().setVersion(version);
+        //document.loadAllLazilyLoaded();                
         
         documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
 
@@ -200,7 +197,10 @@ public class DocumentSaver {
         documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
         
         document.setDependenciesMetaIdToNull();         
-        saveMeta(document);
+        Meta meta = saveMeta(document);
+        
+        DocumentVersion version = metaDao.createNextWorkingVersion(meta.getId(), user.getId());
+        document.getMeta().setVersion(version);        
                 
         document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
     	
@@ -236,19 +236,8 @@ public class DocumentSaver {
     	meta.setPublicationEndDatetime(document.getPublicationEndDatetime());
     	
     	if (meta.getId() == null) {
-    		//insert
         	meta.setDocumentType(document.getDocumentTypeId());
         	meta.setActivate(1);
-        	
-        	// is required; -> when update do the same?? but assign meta id???
-        	Set<I18nMeta> i18nMetas = meta.getI18nMetas();
-        	
-        	if (i18nMetas != null) {
-        		for (I18nMeta i18nMeta: i18nMetas) {
-        			i18nMeta.setId(null);
-        			i18nMeta.setMetaId(null);
-        		}
-        	}        	
     	} 
     	
     	//for update

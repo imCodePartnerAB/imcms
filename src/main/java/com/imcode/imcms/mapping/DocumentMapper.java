@@ -811,7 +811,15 @@ public class DocumentMapper implements DocumentGetter {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            return getDocument(documentIds[index++]);
+            
+            int documentId = documentIds[index++];
+            DocumentDomainObject document = getDocument(documentId);
+            
+            if (document == null) {
+            	document = getWorkingDocument(documentId);
+            }
+            
+            return document;
         }
     }
 

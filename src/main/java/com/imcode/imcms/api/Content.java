@@ -30,7 +30,10 @@ import javax.persistence.Table;
 				"SET c.orderIndex = :orderIndex WHERE c.id = :id"),
 				
    	@NamedQuery(name="Content.delete", 
-   			query="DELETE FROM Content c WHERE c.id = :id")
+   			query="DELETE FROM Content c WHERE c.id = :id"),
+   			
+   	@NamedQuery(name="Content.getContentIdByLoopIdAndSequenceIndex", 
+   			query="SELECT c.id FROM Content c WHERE c.loopId = :loopId AND c.sequenceIndex = :sequenceIndex")   			
 })
 public class Content implements Cloneable {
 

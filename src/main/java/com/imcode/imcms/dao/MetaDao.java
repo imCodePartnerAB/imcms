@@ -62,7 +62,11 @@ public class MetaDao extends HibernateTemplate {
 		}
 		
 		nextVersion.setUserId(userId);
-		nextVersion.setCreatedDt(new Date());		
+		nextVersion.setCreatedDt(new Date());
+		
+		// Temp WO
+		// TODO:!!! remove this after debug.
+		nextVersion.setVersionTag(DocumentVersionTag.PUBLISHED);
 		
 		save(nextVersion);
 		
@@ -180,7 +184,18 @@ public class MetaDao extends HibernateTemplate {
 	
 	@Transactional
 	public void saveMeta(Meta meta) {
+		boolean setFk = meta.getId() == null;
+		
 		saveOrUpdate(meta); 
+		
+		if (setFk) {
+			//??? Cascading save does not insert foreign keys in certain cases ???
+			//??? temp workaround until bug/feature? is found
+			Integer fk = meta.getId();
+			for (I18nMeta i18nMeta: meta.getI18nMetas()) {
+				i18nMeta.setMetaId(fk);
+			}
+		}
 	}
 		
 	

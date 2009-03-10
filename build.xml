@@ -75,8 +75,11 @@
       
     <artifact:pom id="pom" file="imcms-pom.xml" />  
     <artifact:dependencies pomRefId="pom" pathId="dependencies.classpath"/>
+    <artifact:dependencies pomRefId="pom" filesetId="compile.dependencies.fileset" useScope="compile"/>
+    <artifact:dependencies pomRefId="pom" filesetId="runtime.dependencies.fileset" useScope="runtime"/>     
     <!-- End of maven integration -->
-    
+
+    <!-- legacy variable -->
     <path id="libraries" refid="dependencies.classpath"/>
 
     <path id="classes-and-libraries">
@@ -372,11 +375,7 @@
     <!-- Copies the libraries (jar-files) needed for building. -->
     <target name="libraries" depends="init" description="Copies the jar-files.">
         
-        <artifact:dependencies pomRefId="pom" 
-            filesetId="runtime.dependencies.fileset" 
-            useScope="runtime"/>
-        
-        <copy todir="${WEB-INF}/lib">           
+        <copy todir="${WEB-INF}/lib">
             <fileset refid="runtime.dependencies.fileset"/>
             <mapper type="flatten"/>
         </copy>
@@ -387,10 +386,10 @@
         
         <mkdir dir="${local.lib.dir}"/>
         
-        <artifact:dependencies pomRefId="pom" filesetId="dependencies.fileset"/>        
+
         
         <copy todir="${local.lib.dir}">            
-            <fileset refid="dependencies.fileset"/>
+            <fileset refid="compile.dependencies.fileset"/>
             <mapper type="flatten"/>
         </copy>
 
@@ -563,8 +562,8 @@
             casesensitive="false"/>
         
         <echo message="init-version-properties version: ${version}"/>
-        <echo message="init-version-properties version: ${versionnumber}"/>
-        <echo message="init-version-properties version: ${versionfilesuffix}"/>         
+        <echo message="init-version-properties versionnumber: ${versionnumber}"/>
+        <echo message="init-version-properties versionfilesuffix: ${versionfilesuffix}"/>         
 
         <!-- Locations for the final packages -->
         <property name="warfilename" value="imcms${versionfilesuffix}.war"/>
@@ -633,8 +632,6 @@
 
         <filter token="webmaster-name" value="${webmaster-name}"/>
         <filter token="webmaster-email" value="${webmaster-email}"/>
-
-        <filter token="i18n.defaultLanguage.code" value="${i18n.defaultLanguage.code}"/>
     </target>
 
     <!-- Check targets -->
@@ -680,4 +677,17 @@
                 location="javax/servlet/resources/web-app_2_3.dtd"/>
         </xmlvalidate>
     </target>
+	
+	<!-- Installs war and jar to the local maven repo -->
+	<target name="mvn-install-snapshot" depends="dist" description="Installs built artifact to the local maven repo.">
+        <artifact:install file="${war}" pomrefid="pom">
+        	<attach file="${jar}"/> 
+        </artifact:install>		
+	</target>
+	
+    <target name="bsh" description="Runs bean shell">
+        <java classname="bsh.Console"
+        	fork="true" 
+        	classpathref="dependencies.classpath"/>
+    </target>	
 </project>

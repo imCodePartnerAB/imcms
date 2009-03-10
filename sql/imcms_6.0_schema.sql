@@ -250,7 +250,7 @@ CREATE TABLE images (
   v_space int NOT NULL,
   h_space int NOT NULL,
   name int NOT NULL,
-  image_name varchar(40) NOT NULL,
+  image_name varchar(40) NOT NULL default '',
   target varchar(15) NOT NULL,
   align varchar(15) NOT NULL,
   alt_text varchar(255) NOT NULL,

@@ -31,6 +31,8 @@ import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -229,64 +231,50 @@ public class ImcmsSetupFilter implements Filter {
     }
     
     /**
-     * Default language can be set either in configuration file 
-     * or one (and only one) language in the database table i18n_languages
-     * should be flagged as default.
+     * Initializes I18N support.
+     * Reads languages from the database.
+     * Please note that one (and only one) language in the database table i18n_languages must be flagged as default.
      */
 	private void initI18nSupport(ServletContext servletContext) throws ServletException {
     	logger.info("Initializing i18n support.");
     	
     	LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao");    	    	
     	List<I18nLanguage> languages = languageDao.getAllLanguages();    
-    	I18nLanguage defaultLanguage = languageDao.getDefaultLanguage();
-    	
+
     	if (languages.size() == 0) {
     		String msg = "I18n configuration error. Database table i18n_languages must contain at least one record.";
     		logger.fatal(msg);
     		throw new ServletException(msg);
     	}
-    	    	
-    	Properties properties = Imcms.getServerProperties();    	
-    	String defaultLanguageCode = properties.getProperty("i18n.defaultLanguage.code");  
-    	
-    	if (StringUtils.isEmpty(defaultLanguageCode)) {
-    		logger.info("I18n configuration property [i18n.defaultLanguage.code] is not set.");    
-    		
-    		if (defaultLanguage == null) {
-        		String msg = "I18n configuration error. Default language is not set. Plese set configuration property [i18n.defaultLanguage.code].";
-        		logger.fatal(msg);
-        		throw new ServletException(msg);        			
-    		}
-    	} else {   
-    		logger.info("I18n configuration property [i18n.defaultLanguage.code] is set to [" + defaultLanguageCode + "].");    	
-    		
-    		I18nLanguage newDefaultLanguage = languageDao.getByCode(defaultLanguageCode);
-    		
-    		if (newDefaultLanguage == null) {
-        		String msg = "I18n configuration error. No language with code [" + defaultLanguageCode + "] was found in the database.";
-        		logger.fatal(msg);
-        		throw new ServletException(msg);    			
-    		}
-    		
-    		if (!newDefaultLanguage.equals(defaultLanguage)) {
-    			logger.info("Updating i18n default language database settings." +
-    					"Current default language: [" + defaultLanguage + "], " +
-    					"new default language: [" + newDefaultLanguage + "].");
-    			
-    			languageDao.setDefaultLanguage(newDefaultLanguage);
-    			defaultLanguage = newDefaultLanguage;
-    			languages = languageDao.getAllLanguages(); 
-    		}
-    	} 
-    	
+
+        int defaultLanguageRecordCount = CollectionUtils.countMatches(languages, new Predicate() {
+            public boolean evaluate(Object language) {
+                return ((I18nLanguage)language).isDefault();        
+            }
+        });
+
+        if (defaultLanguageRecordCount == 0) {
+    		String msg = "I18n configuration error. Default language is not set.";
+    		logger.fatal(msg);
+    		throw new ServletException(msg);
+        } else if (defaultLanguageRecordCount > 1) {
+            String msg = "I18n configuration error. Only one language must be set default.";
+            logger.fatal(msg);
+            throw new ServletException(msg);
+        }
+
+        I18nLanguage defaultLanguage = languageDao.getDefaultLanguage();
+
     	I18nSupport.setDefaultLanguage(defaultLanguage);
     	I18nSupport.setLanguages(languages);
     	
     	servletContext.setAttribute("defaultLanguage", defaultLanguage);
     	servletContext.setAttribute("languages", languages);	
-    	
+
+        // Read "virtual" hosts mapped to languages.
     	String prefix = "i18n.host.";
-    	int prefixLength = prefix.length(); 
+    	int prefixLength = prefix.length();
+        Properties properties = Imcms.getServerProperties();
     	
     	for (Entry entry: properties.entrySet()) {
     		String key = (String)entry.getKey();

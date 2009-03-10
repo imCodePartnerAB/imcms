@@ -4,10 +4,18 @@
   <groupId>com.imcode.imcms</groupId>
   <artifactId>imcms</artifactId>
   <packaging>war</packaging>
-  <version>5.0-SNAPSHOT</version>
+  <version>6.0.0-SNAPSHOT</version>
   <name>imCMS</name>
 
   <dependencies>
+    <!-- Not used in project, for local testings -->
+    <dependency>
+      <groupId>org.beanshell</groupId>
+      <artifactId>bsh</artifactId>
+      <version>2.0b4</version>
+      <scope>provided</scope>      
+    </dependency>  
+  
     <!-- TEST -->
     <dependency>
       <groupId>junit</groupId>

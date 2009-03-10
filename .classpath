@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="src/test/resources"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="local/lib/activation-1.1.jar"/>
 	<classpathentry kind="lib" path="local/lib/ant-1.5.jar"/>
@@ -13,8 +14,11 @@
 	<classpathentry kind="lib" path="local/lib/aopalliance-1.0.jar"/>
 	<classpathentry kind="lib" path="local/lib/asm-1.5.3.jar"/>
 	<classpathentry kind="lib" path="local/lib/asm-attrs-1.5.3.jar"/>
+	<classpathentry kind="lib" path="local/lib/aspectjrt-1.6.2.jar"/>
+	<classpathentry kind="lib" path="local/lib/aspectjweaver-1.6.2.jar"/>
 	<classpathentry kind="lib" path="local/lib/bcmail-jdk14-136.jar"/>
 	<classpathentry kind="lib" path="local/lib/bcprov-jdk14-136.jar"/>
+	<classpathentry kind="lib" path="local/lib/bsh-2.0b4.jar"/>
 	<classpathentry kind="lib" path="local/lib/catalina-5.5.23.jar"/>
 	<classpathentry kind="lib" path="local/lib/catalina-ant-5.5.23.jar"/>
 	<classpathentry kind="lib" path="local/lib/cglib-2.1_3.jar"/>
@@ -38,7 +42,9 @@
 	<classpathentry kind="lib" path="local/lib/commons-logging-api-1.1.jar"/>
 	<classpathentry kind="lib" path="local/lib/commons-modeler-2.0.jar"/>
 	<classpathentry kind="lib" path="local/lib/commons-pool-1.4.jar"/>
+	<classpathentry kind="lib" path="local/lib/dbunit-2.3.0.jar"/>
 	<classpathentry kind="lib" path="local/lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="local/lib/easymock-2.0.jar"/>
 	<classpathentry kind="lib" path="local/lib/ehcache-1.2.3.jar"/>
 	<classpathentry kind="lib" path="local/lib/ejb3-persistence-1.0.1.GA.jar"/>
 	<classpathentry kind="lib" path="local/lib/fontbox-0.1.0.jar"/>
@@ -67,7 +73,7 @@
 	<classpathentry kind="lib" path="local/lib/jstl-1.1.2.jar"/>
 	<classpathentry kind="lib" path="local/lib/jta-1.0.1B.jar"/>
 	<classpathentry kind="lib" path="local/lib/jtds-1.2.2.jar"/>
-	<classpathentry kind="lib" path="local/lib/junit-4.4.jar"/>
+	<classpathentry kind="lib" path="local/lib/junit-addons-1.4.jar"/>
 	<classpathentry kind="lib" path="local/lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="local/lib/lucene-1.4.3.jar"/>
 	<classpathentry kind="lib" path="local/lib/mail-1.4.jar"/>
@@ -79,7 +85,9 @@
 	<classpathentry kind="lib" path="local/lib/poi-3.1-FINAL.jar"/>
 	<classpathentry kind="lib" path="local/lib/poi-scratchpad-3.1-FINAL.jar"/>
 	<classpathentry kind="lib" path="local/lib/servlet-api-2.4.jar"/>
+	<classpathentry kind="lib" path="local/lib/slf4j-api-1.4.3.jar"/>
 	<classpathentry kind="lib" path="local/lib/spring-2.5.5.jar"/>
+	<classpathentry kind="lib" path="local/lib/spring-aop-2.5.5.jar"/>
 	<classpathentry kind="lib" path="local/lib/spring-beans-2.5.5.jar"/>
 	<classpathentry kind="lib" path="local/lib/spring-context-2.5.5.jar"/>
 	<classpathentry kind="lib" path="local/lib/spring-core-2.5.5.jar"/>
@@ -88,16 +96,9 @@
 	<classpathentry kind="lib" path="local/lib/spring-web-2.5.5.jar"/>
 	<classpathentry kind="lib" path="local/lib/standard-1.1.2.jar"/>
 	<classpathentry kind="lib" path="local/lib/velocity-1.4.jar"/>
-	<classpathentry kind="lib" path="local/lib/velocity-dep-1.4.jar"/>
+	<classpathentry kind="lib" path="local/lib/xercesImpl-2.6.2.jar"/>
 	<classpathentry kind="lib" path="local/lib/xml-apis-1.0.b2.jar"/>
-	<classpathentry kind="lib" path="local/groovy-bin"/>
-	<classpathentry kind="lib" path="local/lib/dbunit-2.3.0.jar"/>
-	<classpathentry kind="lib" path="local/lib/slf4j-api-1.4.3.jar"/>
-	<classpathentry kind="lib" path="local/lib/slf4j-nop-1.4.3.jar"/>
-	<classpathentry kind="lib" path="local/lib/testng-5.8-jdk15.jar"/>
-	<classpathentry kind="lib" path="local/lib/spring-aop-2.5.5.jar"/>
-	<classpathentry kind="lib" path="local/lib/aspectjrt-1.6.2.jar"/>
-	<classpathentry kind="lib" path="local/lib/aspectjweaver-1.6.2.jar"/>
-	<classpathentry kind="lib" path="local/lib/easymock-2.0.jar"/>
+	<classpathentry kind="lib" path="local/lib/xmlParserAPIs-2.6.2.jar"/>
+	<classpathentry kind="lib" path="/home/ajosua/.m2/repository/junit/junit/4.4/junit-4.4.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

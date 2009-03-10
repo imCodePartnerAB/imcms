@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="imcms">
+  <test verbose="2" name="com.imcode.imcms.dao.ContentLoopDaoTest" annotations="JDK">
+    <classes>
+      <class name="com.imcode.imcms.dao.ContentLoopDaoTest"/>
+    </classes>
+  </test>
+</suite>

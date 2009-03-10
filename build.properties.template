@@ -7,7 +7,8 @@
 # Do *not* use back-slashes ('\'). Use forward-slashes ('/').
 # You only need this if you want to use "ant install" and "ant install-war".
 
-# Database schema version
+# Required database schema version.
+# At startup time compared against value in database_version table - exact match is required.
 # This value is saved into <webapproot>/schema-version.txt file.
 db.schema.version = 6.0
 
@@ -40,13 +41,6 @@ db-port = 3306
 db-driver = com.mysql.jdbc.Driver
 db-url-without-db-name = jdbc:mysql://${db-host}:${db-port}/
 db-url = ${db-url-without-db-name}${db-name}?characterEncoding=utf8
-
-
-# I18N support settings
-
-# Default language code
-i18n.defaultLanguage.code =
-
 
 external-authenticator =
 external-user-and-role-registry =

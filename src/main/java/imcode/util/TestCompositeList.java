@@ -50,5 +50,4 @@ public class TestCompositeList extends TestCase {
         assertTrue(compositeList.isEmpty());
 
     }
-
 }

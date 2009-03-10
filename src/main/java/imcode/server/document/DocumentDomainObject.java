@@ -639,5 +639,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	 */
 	public void setDependenciesMetaIdToNull() {
 		meta.setId(null);
+		
+    	Set<I18nMeta> i18nMetas = meta.getI18nMetas();
+    	
+    	if (i18nMetas != null) {
+    		for (I18nMeta i18nMeta: i18nMetas) {
+    			i18nMeta.setId(null);
+    			i18nMeta.setMetaId(null);
+    		}
+    	}		
 	}
 }
