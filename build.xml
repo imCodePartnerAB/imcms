@@ -75,6 +75,7 @@
       
     <artifact:pom id="pom" file="imcms-pom.xml" />  
     <artifact:dependencies pomRefId="pom" pathId="dependencies.classpath"/>
+	<artifact:dependencies pomRefId="pom" filesetId="test.dependencies.fileset" useScope="test"/>
     <artifact:dependencies pomRefId="pom" filesetId="compile.dependencies.fileset" useScope="compile"/>
     <artifact:dependencies pomRefId="pom" filesetId="runtime.dependencies.fileset" useScope="runtime"/>     
     <!-- End of maven integration -->
@@ -216,8 +217,8 @@
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" keepformat="true">
-            <transaction src="sql/imcms_5.3_schema.sql"/>
-        	<transaction src="sql/imcms_5.3_data.sql"/>
+            <transaction src="sql/imcms_6.0_schema.sql"/>
+        	<transaction src="sql/imcms_6.0_data.sql"/>
         </sql>
 
     </target>
@@ -232,7 +233,7 @@
     </target>
 
     <target name="database-recreate" depends="init,database-drop,database-create"/>
-	
+		
 	<target name="database-recreate-apply-diff" depends="init,database-drop,database-create,database-apply-diff"/>
 
     <target name="install" depends="init,check-deployroot" description="Install files already built, without running 'build' first.">
@@ -392,6 +393,11 @@
             <fileset refid="compile.dependencies.fileset"/>
             <mapper type="flatten"/>
         </copy>
+    	
+        <copy todir="${local.lib.dir}">            
+            <fileset refid="test.dependencies.fileset"/>
+            <mapper type="flatten"/>
+        </copy>    	
 
     </target>   
 

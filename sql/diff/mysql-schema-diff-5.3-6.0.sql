@@ -8,10 +8,6 @@ SET @database_version__major__new = 6;
 SET @database_version__minor__new = 0;
 
 -- Delete unused tables and related data
-DROP TABLE images_history;
-DROP TABLE childs_history;
-DROP TABLE menus_history;
-
 DROP TABLE browser_docs;
 DROP TABLE browsers;
 
@@ -203,6 +199,36 @@ ALTER TABLE images
   ADD CONSTRAINT fk__images__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
   ADD CONSTRAINT uk__images__meta_id__meta_version__name__language_id UNIQUE KEY (meta_id, meta_version, name, language_id);
 
+--
+-- Recreate table images_history:
+--
+-- images history is not used, so data copying is not required.  
+DROP TABLE images_history;
+
+CREATE TABLE images_history (
+  id int auto_increment PRIMARY KEY,
+  meta_id int NOT NULL,
+  meta_version int NOT NULL,
+  width int NOT NULL,
+  height int NOT NULL,
+  border int NOT NULL,
+  v_space int NOT NULL,
+  h_space int NOT NULL,
+  name int NOT NULL,
+  image_name varchar(40) NOT NULL,
+  target varchar(15) NOT NULL,
+  align varchar(15) NOT NULL,
+  alt_text varchar(255) NOT NULL,
+  low_scr varchar(255) NOT NULL,
+  imgurl varchar(255) NOT NULL,
+  linkurl varchar(255) NOT NULL,
+  type int NOT NULL,
+  modified_datetime datetime NOT NULL,
+  user_id int NULL,
+  
+  CONSTRAINT fk__images_history__users FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE SET NULL,
+  CONSTRAINT fk__images_history__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)  
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Tables for content loop data

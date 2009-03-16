@@ -127,7 +127,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         Integer documentId = textDocument.getMeta().getId();
         
         for (ContentLoop loop: textDocument.getContentLoopsMap().values()) {
-        	dao.saveContentLoop(documentId, loop);
+        	if (loop.isModified()) {
+        		dao.saveContentLoop(documentId, loop);
+        	}
         }  	
     }
     

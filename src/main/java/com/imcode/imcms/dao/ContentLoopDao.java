@@ -2,9 +2,8 @@ package com.imcode.imcms.dao;
 
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.hibernate.Query;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,10 +97,39 @@ public class ContentLoopDao extends HibernateTemplate {
 	}
 	
 	
+	/**
+	 * Saves content loop.
+	 * 
+	 * If content loop allready exists delete it fist along with contents. 
+	 */
+	// TODO: refactor
 	@Transactional
-	public synchronized void saveContentLoop(Integer documentId, ContentLoop contentLoop) {		
+	public synchronized ContentLoop saveContentLoop(Integer documentId, ContentLoop contentLoop) {		
+		Long loopId = contentLoop.getId();
+		
+		// delete all contents and content
+		if (loopId != null) {
+			getSession().createQuery("DELETE FROM Content c WHERE c.loopId = :loopId")
+				.setParameter("loopId", loopId)
+				.executeUpdate();
+			
+			getSession().createQuery("DELETE FROM ContentLoop l WHERE l.id = :id")
+				.setParameter("id", loopId)
+				.executeUpdate();				
+		}
+		
+		// Cleaun-up
+		for (Content content: contentLoop.getContents()) {
+			content.setId(null);
+			content.setLoopId(null);
+		}
+		
+		contentLoop.setId(null);
     	contentLoop.setMetaId(documentId);
-    	saveOrUpdate(contentLoop);		
+    	
+    	save(contentLoop);
+    	
+    	return contentLoop;
 	} 
 	
 	/**

@@ -100,5 +100,7 @@
 	<classpathentry kind="lib" path="local/lib/xml-apis-1.0.b2.jar"/>
 	<classpathentry kind="lib" path="local/lib/xmlParserAPIs-2.6.2.jar"/>
 	<classpathentry kind="lib" path="/home/ajosua/.m2/repository/junit/junit/4.4/junit-4.4.jar"/>
+	<classpathentry kind="lib" path="/home/ajosua/projects/imcms/local/lib/testng-5.8-jdk15.jar"/>
+	<classpathentry kind="var" path="SLF"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

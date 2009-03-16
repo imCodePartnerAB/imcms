@@ -79,8 +79,8 @@ public class Content implements Cloneable {
 		return loopId;
 	}
 
-	public void setLoopId(Long contentId) {
-		this.loopId = contentId;
+	public void setLoopId(Long loopId) {
+		this.loopId = loopId;
 	}
 
 	public Integer getSequenceIndex() {

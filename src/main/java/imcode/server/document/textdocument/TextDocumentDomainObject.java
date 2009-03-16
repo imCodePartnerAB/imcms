@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -429,6 +430,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	for (ContentLoop loop: contentLoopsMap.values()) {
     		loop.setId(null);
     		loop.setMetaId(null);
+    		loop.setModified(true);
     		
     		for (Content content: loop.getContents()) {
     			content.setId(null);
@@ -558,10 +560,45 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	}
 
 	public void setContentLoopsMap(Map<Integer, ContentLoop> contentLoopsMap) {
-		this.contentLoopsMap = contentLoopsMap;
+		this.contentLoopsMap = new HashMap<Integer, ContentLoop>();
 	}	
 	
-	public ContentLoop getContentLoop(int loopIndex) {
-		return contentLoopsMap.get(loopIndex);
+	public ContentLoop getContentLoop(int index) {
+		return contentLoopsMap.get(index);
 	}
+	
+	/**
+	 * Sets content loop clone passed to the method. 
+	 * 
+	 * @param index content loop index in this document.
+	 * @param contentLoop content loop to set.
+	 * @return ContentLoop set to document.
+	 */
+	public ContentLoop setContentLoop(int index, ContentLoop contentLoop) {
+		ContentLoop oldContentLoop = getContentLoop(index);
+		ContentLoop newContentLoop = contentLoop.clone();
+		
+		Integer metaId;
+		Long loopId;
+		
+		if (oldContentLoop != null) {
+			metaId = getMeta().getId();
+			loopId = oldContentLoop.getId();
+		} else {
+			metaId = null;
+			loopId = null;
+		}
+		
+		newContentLoop.setModified(true);
+		newContentLoop.setMetaId(metaId);
+		newContentLoop.setId(loopId);		
+		newContentLoop.setIndex(index);
+		
+		for (Content content: newContentLoop.getContents()) {
+			content.setLoopId(loopId);
+			content.setId(null);
+		}
+		
+		return newContentLoop;
+	}	
 }

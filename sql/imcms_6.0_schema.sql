@@ -1,7 +1,6 @@
-﻿--
+--
 -- Table users
 --
-
 CREATE TABLE users (
   user_id int NOT NULL auto_increment,
   login_name varchar(128) NOT NULL,
@@ -265,6 +264,30 @@ CREATE TABLE images (
   CONSTRAINT fk__images__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
   CONSTRAINT uk__images__meta_id__meta_version__name__language_id UNIQUE KEY (meta_id, meta_version, name, language_id)
 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE images_history (
+  id int auto_increment PRIMARY KEY,
+  meta_id int NOT NULL,
+  width int NOT NULL,
+  height int NOT NULL,
+  border int NOT NULL,
+  v_space int NOT NULL,
+  h_space int NOT NULL,
+  name int NOT NULL,
+  image_name varchar(40) NOT NULL,
+  target varchar(15) NOT NULL,
+  align varchar(15) NOT NULL,
+  alt_text varchar(255) NOT NULL,
+  low_scr varchar(255) NOT NULL,
+  imgurl varchar(255) NOT NULL,
+  linkurl varchar(255) NOT NULL,
+  type int NOT NULL,
+  modified_datetime datetime NOT NULL,
+  user_id int NULL,
+  
+  CONSTRAINT fk__images_history__users FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE SET NULL,
+  CONSTRAINT fk__images_history__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -692,6 +715,40 @@ CREATE TABLE useradmin_role_crossref (
   CONSTRAINT fk__useradmin_role_crossref__users FOREIGN KEY (user_id) REFERENCES users (user_id),
   CONSTRAINT fk__useradmin_role_crossref__roles FOREIGN KEY (role_id) REFERENCES roles (role_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+--
+-- Table menus_history
+--
+
+CREATE TABLE menus_history (
+  menu_id int NOT NULL,
+  meta_id int NOT NULL,
+  menu_index int NOT NULL,
+  sort_order int NOT NULL,
+  modified_datetime datetime NOT NULL,
+  user_id int NOT NULL,
+  PRIMARY KEY  (menu_id),
+  KEY menus_history_FK_meta_id_meta (meta_id),
+  CONSTRAINT menus_history_FK_meta_id_meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table childs_history
+--
+
+CREATE TABLE childs_history (
+  menu_id int NOT NULL,
+  to_meta_id int NOT NULL,
+  manual_sort_order int NOT NULL,
+  tree_sort_index varchar(64) NOT NULL,
+  PRIMARY KEY  (menu_id,to_meta_id),
+  KEY childs_history_FK_to_meta_id_meta (to_meta_id),
+  CONSTRAINT childs_history_FK_menu_id_menus_history FOREIGN KEY (menu_id) REFERENCES menus_history (menu_id),
+  CONSTRAINT childs_history_FK_to_meta_id_meta FOREIGN KEY (to_meta_id) REFERENCES meta (meta_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 
 --
 -- Tables for content loop data
