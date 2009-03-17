@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -599,6 +598,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 			content.setLoopId(loopId);
 			content.setId(null);
 		}
+		
+		contentLoopsMap.put(index, newContentLoop);
 		
 		return newContentLoop;
 	}	
