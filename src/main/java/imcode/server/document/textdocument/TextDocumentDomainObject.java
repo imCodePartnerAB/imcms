@@ -401,6 +401,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		return map.get(index);
 	}
     
+	// TODO: RENAME: beforeSaveAsNewDocumentt
     @Override
     public void setDependenciesMetaIdToNull() {
     	super.setDependenciesMetaIdToNull();
@@ -560,7 +561,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	}
 
 	public void setContentLoopsMap(Map<Integer, ContentLoop> contentLoopsMap) {
-		this.contentLoopsMap = new HashMap<Integer, ContentLoop>();
+		this.contentLoopsMap = contentLoopsMap;
 	}	
 	
 	public ContentLoop getContentLoop(int index) {
