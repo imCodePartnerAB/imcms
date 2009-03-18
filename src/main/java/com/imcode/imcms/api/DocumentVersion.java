@@ -47,6 +47,9 @@ public class DocumentVersion implements Cloneable {
 	@Column(name="meta_id", updatable=false)
 	private Integer documentId;
 
+	/**
+	 * Version number
+	 */
 	@Column(name="version")	
 	private Integer version;
 	

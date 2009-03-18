@@ -78,6 +78,7 @@
 	<artifact:dependencies pomRefId="pom" filesetId="test.dependencies.fileset" useScope="test"/>
     <artifact:dependencies pomRefId="pom" filesetId="compile.dependencies.fileset" useScope="compile"/>
     <artifact:dependencies pomRefId="pom" filesetId="runtime.dependencies.fileset" useScope="runtime"/>     
+    <artifact:dependencies pomRefId="pom" pathId="provided.dependencies.classpath" useScope="provided"/>
     <!-- End of maven integration -->
 
     <!-- legacy variable -->
@@ -695,5 +696,43 @@
         <java classname="bsh.Console"
         	fork="true" 
         	classpathref="dependencies.classpath"/>
+    </target>	
+	
+	<!-- Jetty integration -->
+	<target name="build-jetty" depends="build, jetty"/>
+	<target name="web-jetty" depends="web, jetty"/>
+	
+    <target name="jetty" description="Runs application in jetty container">
+    	<property name="jetty.port" value="9090"/>
+		<property name="jetty.version" value="6.1.10"/>
+		
+		<artifact:dependencies pathId="jetty.plugin.classpath">
+			<dependency groupId="org.mortbay.jetty" artifactId="jetty-ant"       version="${jetty.version}"/>
+			<dependency groupId="org.mortbay.jetty" artifactId="jetty"           version="${jetty.version}"/>
+			<dependency groupId="org.mortbay.jetty" artifactId="jetty-util"      version="${jetty.version}"/>
+			<dependency groupId="org.mortbay.jetty" artifactId="jetty-plus"      version="${jetty.version}"/>
+			<dependency groupId="org.mortbay.jetty" artifactId="jetty-naming"    version="${jetty.version}"/>			
+			<dependency groupId="org.mortbay.jetty" artifactId="servlet-api-2.5" version="${jetty.version}"/>
+			<dependency groupId="org.mortbay.jetty" artifactId="jsp-api-2.1"     version="${jetty.version}"/>
+			<dependency groupId="org.mortbay.jetty" artifactId="jsp-2.1"         version="${jetty.version}"/>		
+			<dependency groupId="org.eclipse.jdt"   artifactId="core"            version="3.1.1"/>
+		</artifact:dependencies>
+	  	
+		<taskdef classpathref="jetty.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader"/>
+		
+		<typedef name="selectChannelConnector" classname="org.mortbay.jetty.nio.SelectChannelConnector"
+		    classpathref="jetty.plugin.classpath" loaderref="jetty.loader" />	
+    	    	
+        <jetty tempDirectory="${tmp}/jetty">     	
+            <systemProperties>
+                <systemProperty name="test" value="test"/>
+            </systemProperties>      	
+        	
+            <connectors>
+                <selectChannelConnector port="${jetty.port}" />
+            </connectors>
+        	
+            <webapp warfile="${webroot}" contextPath="/" name="${webappname}"/>
+        </jetty>	
     </target>	
 </project>
