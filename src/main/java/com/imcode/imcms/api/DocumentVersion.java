@@ -2,6 +2,7 @@ package com.imcode.imcms.api;
 
 import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -34,9 +35,9 @@ import javax.persistence.TemporalType;
 			query="SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId " +
 					"AND v.version = :version"),
 					
-    // Unique result				
+    // Collection				
 	@NamedQuery(name="DocumentVersion.getByDocumentId", 
-			query="SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId")					
+			query="SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId")	
 })
 public class DocumentVersion implements Cloneable {
 

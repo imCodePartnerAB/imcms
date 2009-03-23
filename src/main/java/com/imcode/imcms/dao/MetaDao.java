@@ -38,9 +38,12 @@ public class MetaDao extends HibernateTemplate {
 	/**
 	 * Creates next working version of a document.
 	 * 
-	 * If document has a working version tag it as cancelled.  
+	 * If document has a working version tag it as postponed.  
 	 * 
 	 * @return next document version.
+	 * 
+	 * @see DocumentMapper.saveNewDocument
+	 * @see DocumentMapper.createWorkingDocumentFromExisting
 	 */
 	@Transactional
 	public synchronized DocumentVersion createNextWorkingVersion(Integer documentId, Integer userId) {
@@ -56,18 +59,14 @@ public class MetaDao extends HibernateTemplate {
 					latestVersion.getVersion() + 1, DocumentVersionTag.WORKING);
 			
 			if (latestVersion.getVersionTag() == DocumentVersionTag.WORKING) {
-				latestVersion.setVersionTag(DocumentVersionTag.CANCELLED);
+				latestVersion.setVersionTag(DocumentVersionTag.POSTPONED);
 				update(latestVersion);
 			} 
 		}
 		
 		nextVersion.setUserId(userId);
 		nextVersion.setCreatedDt(new Date());
-		
-		// Temp WO
-		// TODO:!!! remove this after debug.
-		nextVersion.setVersionTag(DocumentVersionTag.PUBLISHED);
-		
+				
 		save(nextVersion);
 		
 		return nextVersion;
@@ -307,6 +306,11 @@ public class MetaDao extends HibernateTemplate {
 	}
 	
 	
+	/**
+	 * Retruns available versions for the document.
+	 * @param documentId document id.
+	 * @return available versions for the document.
+	 */
 	@Transactional(propagation=Propagation.SUPPORTS)
 	public List<DocumentVersion> getDocumentVersions(Integer documentId) {
 		return findByNamedQueryAndNamedParam("DocumentVersion.getByDocumentId", 

@@ -2,16 +2,24 @@ package com.imcode.imcms.api;
 
 /**
  * Document version tags.
- * 
+ *   
  * For every document there might be 
  *   - at most one WORKING version
  *   - at most one PUBLISHED version
- *   - unlimited numbers of CANCELLED versions
+ *   - unlimited numbers of POSTPONED versions
  *   - unlimited numbers of ARCHUVED versions   
  */
 public enum DocumentVersionTag {
+	
+	/** Working version. */
     WORKING,
-    CANCELLED,
+    
+    /** Postponed working version. */
+    POSTPONED,
+    
+    /** Published version. */
     PUBLISHED,		
+    
+    /** Archived version. */
     ARCHIVED,
 }

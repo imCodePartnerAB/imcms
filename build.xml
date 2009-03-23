@@ -729,7 +729,7 @@
             </systemProperties>      	
         	
             <connectors>
-                <selectChannelConnector port="${jetty.port}" />
+                <selectChannelConnector port="${jetty.port}"/>
             </connectors>
         	
             <webapp warfile="${webroot}" contextPath="/" name="${webappname}"/>

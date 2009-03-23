@@ -1,5 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
+  <meta_version meta_id="1001" version="1" version_tag="ARCHIVED" user_id="1" created_dt="2009-01-01"/>
+  <meta_version meta_id="1001" version="2" version_tag="PUBLISHED" user_id="1" created_dt="2009-01-01"/>
+  <meta_version meta_id="1001" version="3" version_tag="POSTPONED" user_id="1" created_dt="2009-01-01"/>
+  <meta_version meta_id="1001" version="4" version_tag="WORKING" user_id="1" created_dt="2009-01-01"/>
+  
   <document_properties meta_id="1001" key_name="a" value="1"/>
   <document_properties meta_id="1001" key_name="b" value="2"/>
   <document_properties meta_id="1001" key_name="c" value="3"/>
@@ -38,4 +43,5 @@
   <new_doc_permission_sets_ex meta_id="1001" set_id="2" permission_id="8" permission_data="6"/>
   <new_doc_permission_sets_ex meta_id="1001" set_id="2" permission_id="8" permission_data="7"/>  
   <new_doc_permission_sets_ex meta_id="1001" set_id="2" permission_id="8" permission_data="8"/>    
+  
 </dataset>

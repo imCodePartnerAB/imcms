@@ -171,7 +171,7 @@ public class DocumentSaver {
         textDocument.getMeta().setVersion(documentVersion);
         
         visitor.updateTextDocumentTexts(textDocument, null, user);
-        visitor.updateTextDocumentImages(textDocument, null, user);        
+        visitor.updateTextDocumentImages(textDocument, null, user);
     }
     
 

@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
@@ -30,6 +31,20 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     private ImcmsServices services;
     
     private MetaDao metaDao;
+    
+    /**
+     * Returns latest version of a document.
+     * 
+     * TODO: Prototype, optimize
+     */
+    public DocumentDomainObject getDocumentLatestVersion(Integer documentId) {
+    	List<DocumentVersion> versions = metaDao.getDocumentVersions(documentId);
+    	
+    	int size = versions.size();
+    	
+    	return size == 0 ? null : 
+    		initDocument(loadDocument(documentId, versions.get(size - 1).getVersion()));
+    }
     
     public DocumentDomainObject getDocument(Integer documentId, Integer version) {
     	return initDocument(loadDocument(documentId, version));
@@ -97,8 +112,8 @@ public class DatabaseDocumentGetter implements DocumentGetter {
         document.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());
         document.setLinkedForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
         
-        // Not related to i18n language
-        String language = LanguageMapper.getAsIso639_2OrDefaultLanguage(
+         //Not related to i18n language
+         String language = LanguageMapper.getAsIso639_2OrDefaultLanguage(
         		meta.getLanguageIso639_2(), 
         		services.getLanguageMapper().getDefaultLanguage());
         

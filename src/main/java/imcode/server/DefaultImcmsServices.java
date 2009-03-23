@@ -108,6 +108,14 @@ final public class DefaultImcmsServices implements ImcmsServices {
     static {
         mainLog.info("Main log started.");
     }
+    
+    /**
+     * Contructor for unit testing. 
+     */
+    public DefaultImcmsServices() {
+    	database = null;
+    	localizedMessageProvider = null;
+    }
 
     /** Contructs an DefaultImcmsServices object. */
     public DefaultImcmsServices(WebApplicationContext webApplicationContext, Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
@@ -759,5 +767,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
 		}
 		
 		return webApplicationContext.getBean(beanName);
+	}
+
+	public void setDocumentMapper(DocumentMapper documentMapper) {
+		this.documentMapper = documentMapper;
 	}    
 }

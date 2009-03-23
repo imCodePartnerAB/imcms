@@ -43,8 +43,6 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.transaction.NotSupportedException;
-
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -104,13 +102,28 @@ public class DocumentMapper implements DocumentGetter {
     
     private Clock clock = new SystemClock();
     private ImcmsServices imcmsServices;
-    private CachingDocumentGetter cachingDocumentGetter ;
+    
+    /**
+     * Gets docuemtns directly form a database.
+     */
+    private DatabaseDocumentGetter databaseDocumentGetter;
+    
+    /** 
+     * Decorates and delegates calls databaseDocumentGetter.
+     */
+    private CachingDocumentGetter cachingDocumentGetter;
+    
     private DocumentSaver documentSaver ;
     private CategoryMapper categoryMapper;
 
     private LazilyLoadedObject sections;
     private static final SectionNameComparator SECTION_NAME_COMPARATOR = new SectionNameComparator();
 
+    /**
+     * This constructor is inteded for unit testing. 
+     */
+    public DocumentMapper() {}
+    
     public DocumentMapper(ImcmsServices services, Database database) {
         this.imcmsServices = services;
         this.database = database;
@@ -123,7 +136,7 @@ public class DocumentMapper implements DocumentGetter {
         // Document getter is used directly without Fragmented getter
         // DatabseDocumentGetter is instantiated using SpringFramework factory
         // in order to support declared (AOP) transactions.        
-        DatabaseDocumentGetter databaseDocumentGetter = (DatabaseDocumentGetter)services.getSpringBean("databaseDocumentGetter");
+        databaseDocumentGetter = (DatabaseDocumentGetter)services.getSpringBean("databaseDocumentGetter");
         databaseDocumentGetter.setServices(services);        
         this.cachingDocumentGetter = new CachingDocumentGetter(databaseDocumentGetter, documentCacheMaxSize);
         
@@ -290,6 +303,8 @@ public class DocumentMapper implements DocumentGetter {
     
     /**
      * Creates working document from existing one.
+     * 
+     * Existing document can have any version.  
      */
     // TODO: Check exceptions 
     public void createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) 
@@ -560,13 +575,24 @@ public class DocumentMapper implements DocumentGetter {
     }    
 
     /**
+     * Returns latest vrsion of a document.
+     * 
+     * Returned documents are not cached.
+     */
+    public DocumentDomainObject getDocumentLatestVersion(Integer documentId) { 
+        return databaseDocumentGetter.getDocumentLatestVersion(documentId);
+    } 
+    
+    /**
      * Returns published version of document.
      */
     public DocumentDomainObject getDocument(Integer documentId) { 
         return cachingDocumentGetter.getDocument(documentId);
-    }
+    }    
             
-    
+    /**
+     * Returns working version of a document.
+     */
     public DocumentDomainObject getWorkingDocument(Integer documentId) {
     	return cachingDocumentGetter.getWorkingDocument(documentId);
     }
@@ -934,4 +960,16 @@ public class DocumentMapper implements DocumentGetter {
             }))) ;
         }
     }
+
+	public CachingDocumentGetter getCachingDocumentGetter() {
+		return cachingDocumentGetter;
+	}
+
+	public void setCachingDocumentGetter(CachingDocumentGetter cachingDocumentGetter) {
+		this.cachingDocumentGetter = cachingDocumentGetter;
+	}
+
+	public void setDocumentSaver(DocumentSaver documentSaver) {
+		this.documentSaver = documentSaver;
+	}
 }

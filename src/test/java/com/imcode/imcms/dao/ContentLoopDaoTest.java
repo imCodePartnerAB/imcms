@@ -9,8 +9,6 @@ import static com.imcode.imcms.dao.Utils.*;
 
 public class ContentLoopDaoTest extends DaoTest {
 
-	ContentLoopDao contentLoopDao = getContentLoopDao();
-
 	@Test
 	public void getExistingLoop() {
 		ContentLoop loop = getPredefinedLoop();
