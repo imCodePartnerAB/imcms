@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,16 +39,6 @@ public class TextDao extends HibernateTemplate {
 	}
 	
 
-	/**
-	 * Returns all texts for given document id and version.
-	 */
-	@Transactional
-	public Collection<TextDomainObject> getTexts(Integer documentId, Integer documentVersion) {
-		return findByNamedQueryAndNamedParam("Text.getByDocumentIdAndDocumentVersion", 
-				new String[] {"documentId", "documentVersion"}, 
-				new Object[] {documentId, documentVersion}	
-		);
-	}
 	
 	
 	/**
@@ -82,6 +73,52 @@ public class TextDao extends HibernateTemplate {
 		
 		return find(hql, new Object[] {documentId, index, language.getId()});
 	}
+	
+	@Transactional
+	public Collection<TextDomainObject> getTexts(Integer documentId, Integer documentVersion) {
+		return findByNamedQueryAndNamedParam("Text.getByDocumentIdAndDocumentVersion", 
+				new String[] {"documentId", "documentVersion"}, 
+				new Object[] {documentId, documentVersion}	
+		);
+	}
+
+	
+	/**
+	 * Returns text fields for the same document for all versions.
+	 */
+	public List<TextDomainObject> getTextsForAllVersions(Integer documentId, I18nLanguage language) {
+		String query = "SELECT t FROM Text t WHERE t.metaId = ? AND t.language = ?";
+		
+		return find(query, new Object [] {documentId, language});
+	}
+	
+	/**
+	 * eturns text fields for the same document in version range.
+	 */
+	public List<TextDomainObject> getTextsForVersionsInRange(Integer documentId, 
+			I18nLanguage language, Integer versionFrom, Integer versionTo) {
+		
+		String query = "SELECT t FROM Text t WHERE t.metaId=? AND t.language=?" +
+				" AND t.metaVersion BETWEEN ? AND ?";
+		
+		return find(query, new Object[] {documentId, language, versionFrom, versionTo});
+	}
+	
+
+	/**
+	 * Returns text fields for the same document in specific versions.
+	 */
+	public List<TextDomainObject> getTextsForVersions(Integer documentId, 
+			I18nLanguage language, Collection<Integer> versions) {
+		
+		String versionsString = StringUtils.join(versions, ",");
+		
+		String query = String.format(
+			"SELECT t FROM Text t WHERE t.metaId = ? AND t.language=? AND t.metaVersion IN (%s)",
+			versionsString);
+		
+		return find(query, new Object[] {documentId, language} );
+	}	
 	
 	/**
 	 * Helper method.

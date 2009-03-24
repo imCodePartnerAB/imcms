@@ -17,6 +17,10 @@ import com.imcode.imcms.mapping.DocumentSaver;
 	public final static ContentLoopDao contentLoopDao = 
 		(ContentLoopDao)getBean("contentLoopDao");
 	
+	public final static TextDao textDao = (TextDao)getBean("textDao");	
+	
+	public final static LanguageDao languageDao = (LanguageDao)getBean("languageDao");
+	
 	public final static DocumentSaver documentSaver = 
 		(DocumentSaver)getBean("documentSaver");	
 	

@@ -55,7 +55,7 @@ public class MetaDaoTest extends DaoTest {
 	 */
 	@Test
 	public void getDocumentVersions() {
-		List<DocumentVersion> versions = metaDao.getDocumentVersions(META_ID);
+		List<DocumentVersion> versions = documentMapper.getDocumentVersions(META_ID);
 		
 		assertEquals(4, versions.size());
 		

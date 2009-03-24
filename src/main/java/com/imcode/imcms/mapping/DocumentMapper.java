@@ -60,6 +60,7 @@ import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.I18nDisabledException;
 import com.imcode.imcms.api.I18nLanguage;
@@ -646,6 +647,13 @@ public class DocumentMapper implements DocumentGetter {
             }
         }
         return document;    	
+    }
+    
+    /**
+     * Returns document's versions 
+     */
+    public List<DocumentVersion> getDocumentVersions(Integer documentId) {
+    	return documentSaver.getMetaDao().getDocumentVersions(documentId);
     }
     
     /** 

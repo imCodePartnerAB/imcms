@@ -4,39 +4,69 @@ import com.imcode.imcms.mapping.*;
 DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 CachingDocumentGetter cachingDocumentGetter = documentMapper.getDocumentGetter();
 
+// Execute command if any
 def cmd = request.getParameter("cmd")
-
 if (cmd) {
     def metaId = request.getParameter("metaId")
-    def document = documentMapper.getDocument(Integer.parseInt(metaId))
     
-    documentMapper.invalidateDocument(document)
+    switch(cmd) {
+        case "remove":
+            def document = documentMapper.getDocument(Integer.parseInt(metaId))
+            documentMapper.invalidateDocument(document)
+            break
+            
+        case "removeAll":
+            break
+    }
 }
 
+def caches = [
+	"Published": cachingDocumentGetter.publishedDocumentsCache,  
+	"Working": cachingDocumentGetter.workingDocumentsCache
+]
 
 html.html {
     head {
         title("Cahced documents")
     }
     body {
-        div("Published documents cache")
-        table(border:1) {
-            tr {
-                th(align:"left", "Meta id")
-                th(align:"left", "Version")
-                th(align:"left", "Headline")
-                th(align:"left", "Options")                
-            }
-            tr {        
-                cachingDocumentGetter.publishedDocumentsCache.each {metaId, document ->
-                    td(align:"right", "${metaId}")
-                    td(align:"right", "${document.meta.version.version}")
-                    td("${document.headline}")
-                    td {
-                        a(href:"?cmd=remove&metaId=${metaId}", "Remove from cache")
-                    }
-                }    
-            } //tr  	    	  
-        } //table
+        // Shows cached documents in each cache
+        caches.each{cacheName, cache ->
+        	br()
+	        div(cacheName)
+	        table(border:1) {
+	            tr {
+	                th(align:"left", "Meta id")
+	                th(align:"left", "Version")
+	                th(align:"left", "Headline")
+	                th(align:"left", "Versions")
+	                th(align:"left", "Options") 
+	            }
+	            tr {        
+	                cache.each {metaId, document ->
+	                    td(align:"right", "${metaId}")
+	                    td(align:"right", "${document.meta.version.version}")
+	                    td("${document.headline}")
+	                    td {
+	                        table(border:1) {
+	                        
+	                             documentMapper.getDocumentVersions(metaId).each { v ->
+	                                 tr {
+	                                    td(v.version)
+	                                    td(v.versionTag)
+	                                 }
+	                             }
+	                            
+	                        }                        
+	                    }
+	                    
+	                    td {
+	                        a(href:"?cmd=remove&metaId=${metaId}", "Remove from cache")
+	                    }
+	                }
+	            } //tr  	    	  
+	        } //table
+	        
+	    } // caches.each   
     } // body        
 } //html

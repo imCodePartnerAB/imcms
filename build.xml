@@ -735,4 +735,12 @@
             <webapp warfile="${webroot}" contextPath="/" name="${webappname}"/>
         </jetty>	
     </target>	
+	
+	<!-- Temporary target. -->
+	<!-- Development time files, should be removed in production -->
+	<target name="copy-scripts-to-webapp">
+		<copy todir="${webroot}/mx">
+			<fileset dir="${basedir}/web/mx" includes="*"/>
+		</copy>
+	</target>
 </project>
