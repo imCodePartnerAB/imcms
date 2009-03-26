@@ -22,7 +22,7 @@
     <!-- Paths. Later ones are built on earlier ones. -->
     
     <!-- local lib dir -->
-    <property name="local.lib.dir" value="local/lib"/>
+    <property name="build.lib.dir" value="lib/build"/>
 
     <!-- The directory to build in. --> 
     <property name="build" value="${basedir}/build"/>
@@ -72,17 +72,36 @@
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" 
           uri="urn:maven-artifact-ant"
           classpath="lib/maven-ant-tasks-2.0.9.jar"/>
-      
-    <artifact:pom id="pom" file="imcms-pom.xml" />  
-    <artifact:dependencies pomRefId="pom" pathId="dependencies.classpath"/>
-	<artifact:dependencies pomRefId="pom" filesetId="test.dependencies.fileset" useScope="test"/>
-    <artifact:dependencies pomRefId="pom" filesetId="compile.dependencies.fileset" useScope="compile"/>
-    <artifact:dependencies pomRefId="pom" filesetId="runtime.dependencies.fileset" useScope="runtime"/>     
-    <artifact:dependencies pomRefId="pom" pathId="provided.dependencies.classpath" useScope="provided"/>
-    <!-- End of maven integration -->
+	
+	<artifact:pom id="pom" file="imcms-pom.xml"/>
+    <!-- End of maven integration -->	
+	
+	<!-- Jetty integration -->
+	<property name="jetty.port" value="9090"/>
+	<property name="jetty.version" value="6.1.10"/>
+	
+	<artifact:dependencies pathId="jetty.plugin.classpath" filesetid="jetty.plugin.fileset">
+		<dependency groupId="org.mortbay.jetty" artifactId="jetty-ant"       version="${jetty.version}"/>
+		<dependency groupId="org.mortbay.jetty" artifactId="jetty"           version="${jetty.version}"/>
+		<dependency groupId="org.mortbay.jetty" artifactId="jetty-util"      version="${jetty.version}"/>
+		<dependency groupId="org.mortbay.jetty" artifactId="jetty-plus"      version="${jetty.version}"/>
+		<dependency groupId="org.mortbay.jetty" artifactId="jetty-naming"    version="${jetty.version}"/>			
+		<dependency groupId="org.mortbay.jetty" artifactId="servlet-api-2.5" version="${jetty.version}"/>
+		<dependency groupId="org.mortbay.jetty" artifactId="jsp-api-2.1"     version="${jetty.version}"/>
+		<dependency groupId="org.mortbay.jetty" artifactId="jsp-2.1"         version="${jetty.version}"/>		
+		<dependency groupId="org.eclipse.jdt"   artifactId="core"            version="3.1.1"/>
+	</artifact:dependencies>
+	
+	<taskdef classpathref="jetty.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader"/>
+	
+	<typedef name="selectChannelConnector" classname="org.mortbay.jetty.nio.SelectChannelConnector"
+	    classpathref="jetty.plugin.classpath" loaderref="jetty.loader" />
+	
+	<!-- End of jetty integration -->
 
-    <!-- legacy variable -->
-    <path id="libraries" refid="dependencies.classpath"/>
+    <path id="libraries">
+    	<fileset dir="${build.lib.dir}" includes="*.jar"/>
+    </path>
 
     <path id="classes-and-libraries">
         <pathelement path="${classes}"/>
@@ -256,7 +275,7 @@
     Temporary disabled since language layer (v5.x) implementation broke many tests.
     Additional time is required to recover and compatibility.  
     -->
-    <target name="test" depends="check-junit-task-available,classes" description="Runs JUnit-tests.">
+    <target name="test" depends="classes" description="Runs JUnit-tests.">
         <!--
         <junit haltonfailure="yes" haltonerror="yes" fork="yes" dir="${basedir}" forkmode="once">
             <classpath refid="classes-and-libraries"/>
@@ -377,29 +396,18 @@
     <!-- Copies the libraries (jar-files) needed for building. -->
     <target name="libraries" depends="init" description="Copies the jar-files.">
         
-        <copy todir="${WEB-INF}/lib">
-            <fileset refid="runtime.dependencies.fileset"/>
-            <mapper type="flatten"/>
-        </copy>
+        <exec executable="mvn" failonerror="true">
+            <arg line="-f ${basedir}/imcms-pom.xml dependency:copy-dependencies -DexcludeTransitive=true -DoutputDirectory=${lib} -DincludeScope=runtime"/>
+        </exec>    	
 
     </target>
     
     <target name="copy-dependencies-to-project" description="Copies dependencies to project's local libraries dir.">
-        
-        <mkdir dir="${local.lib.dir}"/>
-        
-
-        
-        <copy todir="${local.lib.dir}">            
-            <fileset refid="compile.dependencies.fileset"/>
-            <mapper type="flatten"/>
-        </copy>
+        <mkdir dir="${build.lib.dir}"/>
     	
-        <copy todir="${local.lib.dir}">            
-            <fileset refid="test.dependencies.fileset"/>
-            <mapper type="flatten"/>
-        </copy>    	
-
+        <exec executable="mvn" failonerror="true">
+            <arg line="-f ${basedir}/imcms-pom.xml dependency:copy-dependencies -DexcludeTransitive=true -DoutputDirectory=${build.lib.dir}"/>
+        </exec>
     </target>   
 
     <target name="sql">
@@ -525,14 +533,12 @@
 
     <!-- Init targets -->
 
-    <target name="init" depends="copy-build.properties,init-version-properties,init-global-filters" description="Handy target for everything else to depend on.">
+    <target name="init" depends="copy-build.properties,init-version-properties,init-global-filters,copy-dependencies-to-project" description="Handy target for everything else to depend on.">
 
         <record name="${basedir}/build.log"/>
 
         <tstamp/>
 
-        <available classname="junit.framework.Test" classpathref="libraries" property="junit-available"/>
-    	
   	    <fail message="Database schema version property [db.schema.version] must be set and must be in format major-version.minor-version where major-version and minor-version are digits.">
 	      <condition>
 	        <not>
@@ -662,21 +668,6 @@
 
     </target>
 
-    <target name="check-junit-task-available" unless="no-junit-task-available">
-
-        <available classname="junit.framework.Test" property="junit-task-available"/>
-
-        <fail unless="junit-task-available">
-            The JUnit task is not available.
-            Please add junit.jar to ant's classpath,
-            for example by adding junit.jar to $ANT_HOME/lib.
-
-            If this is impossible, set the property "no-junit-task-available"
-            in build.properties. Note that this means that tests cannot be run!
-        </fail>
-
-    </target>
-
     <target name="check-web-xml-valid">
         <xmlvalidate file="web/WEB-INF/web.xml" classpathref="libraries">
             <dtd
@@ -695,7 +686,7 @@
     <target name="bsh" description="Runs bean shell">
         <java classname="bsh.Console"
         	fork="true" 
-        	classpathref="dependencies.classpath"/>
+        	classpathref="classpath"/>
     </target>	
 	
 	<!-- Jetty integration -->
@@ -703,26 +694,6 @@
 	<target name="web-jetty" depends="web, jetty"/>
 	
     <target name="jetty" description="Runs application in jetty container">
-    	<property name="jetty.port" value="9090"/>
-		<property name="jetty.version" value="6.1.10"/>
-		
-		<artifact:dependencies pathId="jetty.plugin.classpath">
-			<dependency groupId="org.mortbay.jetty" artifactId="jetty-ant"       version="${jetty.version}"/>
-			<dependency groupId="org.mortbay.jetty" artifactId="jetty"           version="${jetty.version}"/>
-			<dependency groupId="org.mortbay.jetty" artifactId="jetty-util"      version="${jetty.version}"/>
-			<dependency groupId="org.mortbay.jetty" artifactId="jetty-plus"      version="${jetty.version}"/>
-			<dependency groupId="org.mortbay.jetty" artifactId="jetty-naming"    version="${jetty.version}"/>			
-			<dependency groupId="org.mortbay.jetty" artifactId="servlet-api-2.5" version="${jetty.version}"/>
-			<dependency groupId="org.mortbay.jetty" artifactId="jsp-api-2.1"     version="${jetty.version}"/>
-			<dependency groupId="org.mortbay.jetty" artifactId="jsp-2.1"         version="${jetty.version}"/>		
-			<dependency groupId="org.eclipse.jdt"   artifactId="core"            version="3.1.1"/>
-		</artifact:dependencies>
-	  	
-		<taskdef classpathref="jetty.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader"/>
-		
-		<typedef name="selectChannelConnector" classname="org.mortbay.jetty.nio.SelectChannelConnector"
-		    classpathref="jetty.plugin.classpath" loaderref="jetty.loader" />	
-    	    	
         <jetty tempDirectory="${tmp}/jetty">     	
             <systemProperties>
                 <systemProperty name="test" value="test"/>

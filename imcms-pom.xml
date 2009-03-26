@@ -153,6 +153,8 @@
 	  <groupId>org.dbunit</groupId>
 	    <artifactId>dbunit</artifactId>
 	    <version>2.3.0</version>
+
+	    
     </dependency>     
     
     <dependency>
@@ -362,7 +364,14 @@
     <dependency>
       <groupId>velocity</groupId>
       <artifactId>velocity</artifactId>
-      <version>1.4</version>        
+      <version>1.4</version> 
+      
+      <exclusions>
+        <exclusion>
+          <groupId>velocity</groupId>
+          <artifactId>velocity-dep</artifactId>
+        </exclusion>
+       </exclusions>
     </dependency>
     
     <!-- PROVIDED -->  
