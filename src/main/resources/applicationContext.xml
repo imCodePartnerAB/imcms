@@ -14,6 +14,12 @@
     ${com.imcode.imcms.path} is a system property value which is initialized in
     com.imcode.imcms.servlet.ContextListener   
   -->
+  
+  <bean id="properties"
+      class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+    <property name="location" value="classpath:server.properties"/>
+  </bean>
+    
   <bean id="propertyConfigurer"
       class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="location" value="classpath:server.properties"/>
@@ -33,7 +39,11 @@
   <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
     <property name="configLocation" value="classpath:hibernate.cfg.xml"/>
     
-    <property name="dataSource" ref="dataSource"/>    
+    <property name="dataSource" ref="dataSource"/> 
+    
+    <property name="hibernateProperties">
+      <ref bean="properties"/>
+    </property>       
   </bean>  
   
     

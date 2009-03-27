@@ -5,10 +5,12 @@
 <hibernate-configuration>
 
     <session-factory>
+        <!-- 
         <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
     	<property name="hibernate.show_sql">@showHibernateSQL@</property>
     	<property name="hibernate.format_sql">@showHibernateSQL@</property>
     	<property name="hibernate.use_sql_comments">@showHibernateSQL@</property>
+    	-->
     	   	
         <mapping class="com.imcode.imcms.api.Meta"/>
         
