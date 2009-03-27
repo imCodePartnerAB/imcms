@@ -73,6 +73,11 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
+            <name>version</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>        
+        <attribute>
             <name>label</name>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
@@ -112,6 +117,11 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
+        <attribute>
+            <name>version</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>        
         <attribute>
             <name>id</name>
             <rtexprvalue>true</rtexprvalue>

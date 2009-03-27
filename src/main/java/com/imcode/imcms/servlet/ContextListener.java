@@ -20,10 +20,10 @@ public class ContextListener implements ServletContextListener {
         ServletContext servletContext = servletContextEvent.getServletContext();
         final File realPathToWebApp = new File(servletContext.getRealPath("/"));
 
-        File configPath = new File(realPathToWebApp, "WEB-INF/conf");
+        File configPath = new File(realPathToWebApp, "WEB-INF/classes");
         Prefs.setConfigPath(configPath);
 
-        configureLogging(servletContext, realPathToWebApp, configPath);
+        configureLogging(servletContext, realPathToWebApp);
 
         Logger log = Logger.getLogger(ContextListener.class);
         try {
@@ -55,10 +55,8 @@ public class ContextListener implements ServletContextListener {
         }
     }
 
-    private void configureLogging(ServletContext servletContext, File root, File configPath) {
+    private void configureLogging(ServletContext servletContext, File root) {
         System.setProperty("com.imcode.imcms.path", root.toString());
-        File configFile = new File(configPath, "log4j.xml");
-        DOMConfigurator.configure(configFile.toString());
         Logger log = Logger.getLogger(ContextListener.class);
         log.info("Logging started");
         logPlatformInfo(servletContext, log);

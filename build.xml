@@ -3,13 +3,15 @@
 <!-- The Ant 'build.xml'-file for imCMS -->
 
 <project name="imCMS" default="dist" xmlns:artifact="urn:maven-artifact-ant">
-    
+	
     <!-- Read in 'build.properties' and set the properties therein. -->
     <!-- Those properties are used as bases for latsproer properties in this file. -->
     <available file="build.properties" property="build.properties-available" />
     <available file="build.properties" property="build.properties" value="build.properties"/>
     <property name="build.properties" value="build.properties.template" />
     <property file="${build.properties}"/>
+	
+	<import file="${catalina.home}/bin/catalina-tasks.xml"/>
 
     <!-- The current version of imCMS. -->
     <property name="svnurl" value="$URL$"/>
@@ -31,7 +33,6 @@
     <property name="tmp" value="${basedir}/tmp"/>
     
     <property name="src.dir" value="${basedir}/src/main/java"/>
-    <property name="resources.dir" value="${basedir}/src/main/resources"/>
 
     <!-- The webroot. Everything put here can be seen by any visitor. -->
     <property name="webroot" value="${build}"/>
@@ -47,13 +48,14 @@
     <property name="WEB-INF" value="${webroot}/WEB-INF"/>
 
     <property name="versionfile" value="${WEB-INF}/version.txt"/>
-	<property name="schema-versionfile" value="${WEB-INF}/schema-version.txt"/>
     <property name="checksumsfile" value="${WEB-INF}/checksums.txt"/>
 
     <property name="srcincludes" value="MANIFEST.TXT"/>
 
-    <property name="conf" value="${WEB-INF}/conf"/>
-    <property name="classes" value="${tmp}/classes"/>
+	<property name="main.resources.dir" value="${basedir}/src/main/resources"/>
+	
+    <property name="classes" value="${tmp}/classes"/>	
+    <property name="conf" value="${WEB-INF}/classes"/>
     <property name="lib" value="${WEB-INF}/lib"/>
     <property name="templates" value="${WEB-INF}/templates"/>
     <property name="sql" value="${WEB-INF}/sql"/>
@@ -120,7 +122,9 @@
 
     <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
 
+	<!--
     <taskdef classname="org.apache.jasper.JspC" name="jasper2" classpathref="pom.classpath"/>
+    -->
     <taskdef resource="checkstyletask.properties" classpathref="pom.classpath"/>
 
     <!-- Distribution targets -->
@@ -376,7 +380,9 @@
 
     <target name="jspc" depends="init,web,libraries,classes">
     
-        
+    	<mkdir dir="${tmp}/jspc"/>
+    	
+        <!-- deprecated
         <jasper2
                 validateXml="false"
                 verbose="9"
@@ -385,12 +391,44 @@
                 outputDir="${tmp}/jsp"
                 classpath="${classes}"/>
 
-        <mkdir dir="${tmp}/jspc"/>
-
         <javac srcdir="${tmp}/jsp" destdir="${tmp}/jspc"
                classpathref="classes-and-libraries" fork="yes"
                excludes="**/*_included_jsp.java"/>
-        
+        -->
+    	
+    	
+    	<!-- ERRORS
+        <jasper2
+                validateXml="false"
+                verbose="9"
+                uriroot="${build}"
+                webXmlFragment="${tmp}/generated_web.xml"
+                outputDir="${tmp}/jsp"
+                classpath="${classes}"/>    	
+    	
+        <javac destdir="${tmp}/jspc"
+               optimize="off"
+               debug="on" failonerror="true"
+               srcdir="${tmp}/jsp" 
+    	   excludes="**/*.smap">
+          <classpath>
+          	<pathelement path="${classes}"/>
+
+            <fileset dir="${lib}">
+              <include name="*.jar"/>
+            </fileset>
+          	
+            <fileset dir="${catalina.home}/lib">
+              <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${catalina.home}/bin"> 
+              <include name="*.jar"/> 
+            </fileset> 
+          </classpath>
+          <include name="**" />
+          <exclude name="tags/**" />
+        </javac>
+   		-->
     </target>
 
     <!-- Copies the libraries (jar-files) needed for building. -->
@@ -437,7 +475,11 @@
 
         <dependset>
             <srcfileset file="${build.properties}"/>
-            <targetfileset dir="${conf}"/>
+            <targetfileset dir="${conf}">
+            	<include name="logj4*"/>
+            	<include name="imcms_*"/>
+            	<include name="server.properties"/>
+            </targetfileset>
         </dependset>
 
         <mkdir dir="${imcms}"/>
@@ -455,12 +497,13 @@
         <mkdir dir="${WEB-INF}/classes"/>
         
         <!-- Copy resources -->
-        <copy todir="${WEB-INF}"         file="${resources.dir}/applicationContext.xml" filtering="true"/>      
-        <copy todir="${WEB-INF}/classes" file="${resources.dir}/hibernate.cfg.xml" filtering="true"/>
-        <copy todir="${WEB-INF}/classes" file="${resources.dir}/commons-logging.properties" filtering="true"/>
-
+        <copy todir="${WEB-INF}" file="${main.resources.dir}/applicationContext.xml" filtering="true"/>      
+    	
+    	<copy todir="${WEB-INF}/classes" filtering="true">
+    		<fileset dir="${main.resources.dir}" includes="**/*"/>
+    	</copy>
+    	
         <echo message="${version}" file="${versionfile}"/>
-    	<echo message="${db.schema.version}" file="${schema-versionfile}"/>
 
         <copy todir="${webroot}" filtering="true">
             <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
@@ -497,13 +540,13 @@
 
     <target name="web-lang" depends="init">
 
-        <imtranslate bundle="web/WEB-INF/conf/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="${main.resources.dir}/imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${templates}/${buildlanguage}" filtering="true" encoding="utf-8">
             <fileset dir="web/WEB-INF/templates/lang"/>
         </imtranslate>
 
-        <imtranslate bundle="web/WEB-INF/conf/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="${main.resources.dir}/imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${imcms}/${buildlanguage}" filtering="true" encoding="utf-8">
             <fileset dir="web/imcms/lang" excludes="${imagespattern}"/>
@@ -533,7 +576,7 @@
 
     <!-- Init targets -->
 
-    <target name="init" depends="copy-build.properties,init-version-properties,init-global-filters,copy-dependencies-to-project" description="Handy target for everything else to depend on.">
+    <target name="init" depends="copy-build.properties,init-version-properties,init-global-filters" description="Handy target for everything else to depend on.">
 
         <record name="${basedir}/build.log"/>
 
@@ -600,12 +643,13 @@
 
     <target name="init-global-filters"
         depends="check-build-properties,init-version-properties">
-
-        <filter token="defaultlanguage" value="${defaultlanguage}"/>
+    	<filter filtersfile="build.filters.properties"/>
+    	
         <filter token="showHibernateSQL" value="${showHibernateSQL}"/>
+    	<filter token="defaultlanguage" value="${defaultlanguage}"/>
+    	
+    	<filter token="db.schema.version" value="${db.schema.version}"/>
         
-        <filter filtersfile="build.filters.properties"/>
-
         <filter token="documentationwebappurl" value="http://${documentation-host}/${versionnumber}"/>
         <filter token="documentationurl" value="http://${documentation-host}/${versionnumber}"/>
 

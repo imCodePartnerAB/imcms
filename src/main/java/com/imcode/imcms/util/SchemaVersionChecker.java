@@ -25,13 +25,12 @@ public class SchemaVersionChecker {
 	 * Schema version stored in file has the format major.minor where major and
 	 * minor are digits. 
 	 * 
-	 * @param schemaVersionFilePath schema version file.
+	 * @param expectedSchemaVersion expected schema version.
 	 * @throws SchemaVersionCheckerException in case of failure.
 	 */
-	public void checkSchemaVersion(String schemaVersionFilePath) {
-		try {
-			String expectedVersion = FileUtils.readFileToString(
-					new File(schemaVersionFilePath)).trim();
+	public void checkSchemaVersion(String expectedVersion) {
+		try { 
+			expectedVersion = expectedVersion.trim();
 			
 			String realVersion = getSchemaVersion().trim();
 			
@@ -42,10 +41,6 @@ public class SchemaVersionChecker {
 			}
 		} catch (SchemaVersionCheckerException e) {
 			throw e;
-		} catch (FileNotFoundException e) {
-			throw new SchemaVersionCheckerException(String.format(
-					"Schema version file [%s] is not found.", schemaVersionFilePath)
-					, e);
 		} catch (Exception e) {
 			throw new SchemaVersionCheckerException("Uncategorized error.", e);
 		}

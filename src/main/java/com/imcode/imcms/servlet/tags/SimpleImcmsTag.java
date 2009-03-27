@@ -37,6 +37,10 @@ public abstract class SimpleImcmsTag extends TagSupport {
     public void setNo(int no) {
         attributes.setProperty("no", ""+no) ;
     }
+    
+    public void setVersion(int version) {
+        attributes.setProperty("version", "" + version) ;
+    }    
 
     public void setLabel(String label) {
         attributes.setProperty("label", label) ;

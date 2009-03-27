@@ -800,16 +800,28 @@ public class TagParser {
         return stringWriter.toString();
     }
 
+    // TODO: replace getDocument: getDocumentForShowing
     private TextDocumentDomainObject getTextDocumentToUse(Properties attributes) {
         String documentName = attributes.getProperty("document");
+        String documentVersionStr = attributes.getProperty("version");
+        Integer documentVersion = documentVersionStr == null ? null : new Integer(documentVersionStr);
         TextDocumentDomainObject textDocumentToUse = document;
-        if(StringUtils.isNotBlank(documentName)) {
-            textDocumentToUse = null;
-            try{
-                textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocument(documentName);
-            }catch(ClassCastException e ){/* return null */}
-        }
-       return textDocumentToUse;
+        
+        try {
+	        if(StringUtils.isNotBlank(documentName)) {
+	            textDocumentToUse = null;
+	            textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocument(documentName, documentVersion);
+	        } else if (documentVersion != null) {
+	        	Integer docmentId = textDocumentToUse.getId();
+	        	
+	        	textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocument(docmentId, documentVersion);
+	        }
+        } catch (ClassCastException e) {
+        	/* return null */
+		}
+	        
+        
+        return textDocumentToUse;
     }
 
     public class MetaIdHeaderHttpServletRequest extends HttpServletRequestWrapper {

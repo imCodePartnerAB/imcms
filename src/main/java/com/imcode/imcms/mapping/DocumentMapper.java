@@ -318,7 +318,9 @@ public class DocumentMapper implements DocumentGetter {
      * Returns document by id and version. 
      */
     public DocumentDomainObject getDocument(Integer documentId, Integer version) {
-		return cachingDocumentGetter.getDocument(documentId, version);
+    	return version == null 
+    		? getDocument(documentId)
+    		: cachingDocumentGetter.getDocument(documentId, version);
 	}
     
     
@@ -477,24 +479,38 @@ public class DocumentMapper implements DocumentGetter {
     }
     
     public DocumentDomainObject getDocument(String documentIdString) {
+    	return getDocument(documentIdString, null);
+    }
+    
+    public DocumentDomainObject getDocument(String documentIdString, Integer documentVersion) {
         DocumentDomainObject document = null;
 
         if (null != documentIdString) {
             if ( NumberUtils.isDigits( documentIdString ) ) {
-                document = getDocument(new Integer(documentIdString));
-            }else{
+            	Integer documentId = new Integer(documentIdString);
+            	
+                document = documentVersion == null
+                	? getDocument(documentId)
+                	: getDocument(documentId, documentVersion); 
+            } else {
                 String[] documentIds = (String[]) getDatabase().execute(
                         new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
                                 new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdString.toLowerCase() },
                                 Utility.STRING_ARRAY_HANDLER));
 
                 if(documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {
-                    document = getDocument(new Integer(documentIds[0]));
+                	Integer documentId = new Integer(documentIds[0]);
+                	
+                    document = documentVersion == null
+                    	? getDocument(documentId)
+                    	: getDocument(documentId, documentVersion);
                 }
             }
         }
+        
         return document;
-    }
+    }    
+
 
     static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
         File filePath = Imcms.getServices().getConfig().getFilePath();

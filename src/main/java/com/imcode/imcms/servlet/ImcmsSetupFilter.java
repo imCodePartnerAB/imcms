@@ -210,13 +210,12 @@ public class ImcmsSetupFilter implements Filter {
     }
     
     private void checkSchemaVersion(ServletContext servletContext) throws ServletException {
-    	String schemaVersionFilePath = servletContext.getRealPath("WEB-INF/schema-version.txt");
-    	
     	SchemaVersionChecker checker = (SchemaVersionChecker)Imcms.getServices()
     		.getSpringBean("schemaVersionChecker");
     	
     	try {
-    		checker.checkSchemaVersion(schemaVersionFilePath);
+    		String expectedSchemaVersion = Imcms.getServerProperties().getProperty("db.schema.version", "");
+    		checker.checkSchemaVersion(expectedSchemaVersion);
     	} catch (SchemaVersionCheckerException e) {
     		logger.fatal(e);
     		throw e;
