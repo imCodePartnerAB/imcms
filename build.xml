@@ -11,8 +11,10 @@
     <property name="build.properties" value="build.properties.template" />
     <property file="${build.properties}"/>
 	
+	<!--
 	<import file="${catalina.home}/bin/catalina-tasks.xml"/>
-
+	-->
+	
     <!-- The current version of imCMS. -->
     <property name="svnurl" value="$URL$"/>
 
