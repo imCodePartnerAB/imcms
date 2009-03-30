@@ -19,31 +19,21 @@ List<DocumentVersion> documentVersions = dm.getDocumentVersions(documentId);
 
 <div>
   <table border="1">
-    <tr><th colspan="2">Versions for document <%=documentId%></th></tr>
-    <tr><td>Version nr</td><td>Version tag</td></tr>  
+    <tr><th colspan="3">Versions for document <%=documentId%></th></tr>
+    <tr>
+      <td>Version nr</td>
+      <td>Version tag</td>
+      <td>Text field <%=textIndex%> content</td>
+    </tr>  
 	<%	
 	for (DocumentVersion version: documentVersions) {
 		%>
 		<tr>
 		  <td><%=version.getVersion()%></td>
 		  <td><%=version.getVersionTag()%></td>
-		</tr>
-		<%	
-	}
-	%>
-  </table>
-</div>
-
-<div>
-  <table border="1">
-    <tr><th colspan="2">Text <%=textIndex%> for document <%=documentId%></th></tr>
-    <tr><td>Version nr</td><td>Text</td></tr>  
-	<%
-	for (DocumentVersion version: documentVersions) {
-		%>
-		<tr>
-		  <td><%=version.getVersion()%></td>
-		  <td><imcms:text no='<%=textIndex%>' version="<%=version.getVersion()%>"/></td>
+		  <td>
+		    <imcms:text no='<%=textIndex%>' version="<%=version.getVersion()%>"/>
+		  </td>		  
 		</tr>
 		<%	
 	}
