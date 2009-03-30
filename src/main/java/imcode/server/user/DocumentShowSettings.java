@@ -24,7 +24,7 @@ public class DocumentShowSettings {
 	 * 
 	 * In PUBLISHED mode a user sees published document content.
 	 * In WORKING mode a user sees working document content.
-	 * In ARCHIVED mode a user can choose archived document version manually.
+	 * In CUSTOM mode a user can choose archived document version manually - implementation was not requested.
 	 *
 	 * PUBLISHED mode is default.
 	 * 

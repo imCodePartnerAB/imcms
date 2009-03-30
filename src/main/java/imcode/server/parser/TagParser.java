@@ -800,8 +800,10 @@ public class TagParser {
         return stringWriter.toString();
     }
 
-    // TODO: replace getDocument: getDocumentForShowing
+    
     private TextDocumentDomainObject getTextDocumentToUse(Properties attributes) {
+    	UserDomainObject user = Imcms.getUser();
+    	
         String documentName = attributes.getProperty("document");
         String documentVersionStr = attributes.getProperty("version");
         Integer documentVersion = documentVersionStr == null ? null : new Integer(documentVersionStr);
@@ -809,15 +811,15 @@ public class TagParser {
         
         try {
 	        if(StringUtils.isNotBlank(documentName)) {
-	            textDocumentToUse = null;
-	            textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocument(documentName, documentVersion);
+	            textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocumentForShowing(documentName, documentVersion, user);
 	        } else if (documentVersion != null) {
 	        	Integer docmentId = textDocumentToUse.getId();
 	        	
-	        	textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocument(docmentId, documentVersion);
+	        	textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocumentForShowing(docmentId, documentVersion, user);
 	        }
         } catch (ClassCastException e) {
         	/* return null */
+        	textDocumentToUse = null;
 		}
 	        
         

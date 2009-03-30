@@ -325,11 +325,13 @@ public class DocumentMapper implements DocumentGetter {
     
     
     /**
-     * TODO: implement 
+     * 
      * Returns document for showing by document id and version. 
      */
-    public DocumentDomainObject getDocumentForShowing(Integer documentId, Integer version) {
-    	throw new NotImplementedException();
+    public DocumentDomainObject getDocumentForShowing(Integer documentId, Integer version, UserDomainObject user) {
+    	DocumentDomainObject document = getDocument(documentId, version);
+    	
+    	return createDocumentShowInterceptor(document, user);
 	}
     
     
@@ -482,6 +484,13 @@ public class DocumentMapper implements DocumentGetter {
     	return getDocument(documentIdString, null);
     }
     
+    
+    public DocumentDomainObject getDocumentForShowing(String documentIdString, Integer documentVersion, UserDomainObject user) {
+    	DocumentDomainObject document = getDocument(documentIdString, documentVersion);
+    	
+    	return createDocumentShowInterceptor(document, user);
+    }
+    
     public DocumentDomainObject getDocument(String documentIdString, Integer documentVersion) {
         DocumentDomainObject document = null;
 
@@ -593,11 +602,14 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * Returns latest vrsion of a document.
+     *  
+     * Please note this call is expenisve since reeturned document is not cached.
      * 
-     * Returned documents are not cached.
+     * @param documentId document id
+     * @returns latest version of a document
      */
-    public DocumentDomainObject getDocumentLatestVersion(Integer documentId) { 
-        return databaseDocumentGetter.getDocumentLatestVersion(documentId);
+    public DocumentDomainObject getLatestDocumentVersion(Integer documentId) { 
+        return databaseDocumentGetter.getLatestDocumentVersion(documentId);
     } 
     
     /**
@@ -672,6 +684,12 @@ public class DocumentMapper implements DocumentGetter {
     	return documentSaver.getMetaDao().getDocumentVersions(documentId);
     }
     
+    
+    public void getDocumentForShowingXXX() {
+    	
+    }
+    
+    
     /** 
      * Returns published or working document depending on user's view settings
      * and i18n meta settings. 
@@ -714,7 +732,17 @@ public class DocumentMapper implements DocumentGetter {
 			document = null;
 		}
     	
-    	// TODO: prototype implementation - optimize     	    	
+    	return createDocumentShowInterceptor(document, user);    	
+    } 
+    
+    /**
+     * Creates document interceptor based on document show settings.
+     * 
+     * TODO: prototype implementation - optimize 
+     */
+    private DocumentDomainObject createDocumentShowInterceptor(DocumentDomainObject document, UserDomainObject user) {    	
+    	DocumentShowSettings showSettings = user.getDocumentShowSettings();
+    	
     	if (document != null) {
     		/*
     		 * Current document language.
@@ -751,7 +779,8 @@ public class DocumentMapper implements DocumentGetter {
     	}
     	
     	return document;
-    }    
+    	
+    }
                
 
     public CategoryMapper getCategoryMapper() {

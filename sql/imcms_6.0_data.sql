@@ -1,4 +1,3 @@
-
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 -- ============================================================================
@@ -91,10 +90,18 @@ INSERT INTO meta
 VALUES
   (@start_document__meta_id, 2, @user_id__admin, 0, 0, 0, @'ui__language', NOW(), NOW(), 0, '_self', 1, NULL, NULL, 2, NOW(), NULL, 'DO_NOT_SHOW');
 
--- Make demo document published
-INSERT INTO meta_version (
-  meta_id, version, version_tag, user_id, created_dt
-) SELECT meta_id, 1, 'PUBLISHED', @user_id__admin, NOW() FROM meta;
+--
+-- Create demo document versions
+--
+
+-- ARCHIVED
+INSERT INTO meta_version
+  (meta_id, version, version_tag, user_id, created_dt)
+VALUES 
+  (@start_document__meta_id, 1, 'ARCHIVED',  @user_id__admin, NOW()),
+  (@start_document__meta_id, 2, 'POSTPONED', @user_id__admin, NOW()),
+  (@start_document__meta_id, 3, 'PUBLISHED', @user_id__admin, NOW()),
+  (@start_document__meta_id, 4, 'WORKING',   @user_id__admin, NOW());
 
 --
 -- Data for table database_version
@@ -172,10 +179,23 @@ VALUES
 --
 
 INSERT INTO images
-  (image_id, meta_id, meta_version, language_id, width, height, border, v_space, h_space, name, image_name, target, align, alt_text, low_scr, imgurl, linkurl, type)
+  (meta_id, meta_version, language_id, width, height, border, v_space, h_space, name, image_name, target, align, alt_text, low_scr, imgurl, linkurl, type)
 VALUES
-  (1, @start_document__meta_id, 1, @language_id__english, 0, 0, 0, 0, 0, 3, '', '_blank', 'top', '', '', 'imCMSpower.gif', 'http://www.imcms.net', 0),
-  (2, @start_document__meta_id, 1, @language_id__swedish, 0, 0, 0, 0, 0, 3, '', '_blank', 'top', '', '', 'imCMSpower.gif', 'http://www.imcms.net', 0);
+  -- ARCHIVED VERSION
+  (@start_document__meta_id, 1, @language_id__english, 0, 0, 0, 0, 0, 3, '', '_blank', 'top', '', '', 'imCMSpower.gif', 'http://www.imcms.net', 0),
+  (@start_document__meta_id, 1, @language_id__swedish, 0, 0, 0, 0, 0, 3, '', '_blank', 'top', '', '', 'imCMSpower.gif', 'http://www.imcms.net', 0),
+  
+  -- POSTPONED VERSION
+  (@start_document__meta_id, 2, @language_id__english, 0, 0, 0, 0, 0, 3, '', '_blank', 'top', '', '', 'imCMSpower.gif', 'http://www.imcms.net', 0),
+  (@start_document__meta_id, 2, @language_id__swedish, 0, 0, 0, 0, 0, 3, '', '_blank', 'top', '', '', 'imCMSpower.gif', 'http://www.imcms.net', 0),
+  
+  -- PUBLISHED VERSION
+  (@start_document__meta_id, 3, @language_id__english, 0, 0, 0, 0, 0, 3, '', '_blank', 'top', '', '', 'imCMSpower.gif', 'http://www.imcms.net', 0),
+  (@start_document__meta_id, 3, @language_id__swedish, 0, 0, 0, 0, 0, 3, '', '_blank', 'top', '', '', 'imCMSpower.gif', 'http://www.imcms.net', 0),
+  
+  -- WORKING VERSION
+  (@start_document__meta_id, 4, @language_id__english, 0, 0, 0, 0, 0, 3, '', '_blank', 'top', '', '', 'imCMSpower.gif', 'http://www.imcms.net', 0),
+  (@start_document__meta_id, 4, @language_id__swedish, 0, 0, 0, 0, 0, 3, '', '_blank', 'top', '', '', 'imCMSpower.gif', 'http://www.imcms.net', 0);
 
 --
 -- Data for table lang_prefixes
@@ -373,12 +393,34 @@ VALUES
 --
 
 INSERT INTO texts
-  (counter, meta_id, meta_version, language_id, name, text, type)
+  (meta_id, meta_version, language_id, name, text, type)
 VALUES
-  (1, @start_document__meta_id, 1, @language_id__english, 1, @'start_document__text1__english', 1),
-  (2, @start_document__meta_id, 1, @language_id__english, 2, @'start_document__text2__english', 1),
-  (3, @start_document__meta_id, 1, @language_id__swedish, 1, @'start_document__text1__swedish', 1),
-  (4, @start_document__meta_id, 1, @language_id__swedish, 2, @'start_document__text2__swedish', 1);
+  -- ARCHIVED VERSION
+  (@start_document__meta_id, 1, @language_id__english, 1, @'start_document__text1__english', 1),
+  (@start_document__meta_id, 1, @language_id__english, 2, @'start_document__text2__english', 1),
+  (@start_document__meta_id, 1, @language_id__swedish, 1, @'start_document__text1__swedish', 1),
+  (@start_document__meta_id, 1, @language_id__swedish, 2, @'start_document__text2__swedish', 1),
+  
+  -- POSTPONED VERSION
+  (@start_document__meta_id, 2, @language_id__english, 1, @'start_document__text1__english', 1),
+  (@start_document__meta_id, 2, @language_id__english, 2, @'start_document__text2__english', 1),
+  (@start_document__meta_id, 2, @language_id__swedish, 1, @'start_document__text1__swedish', 1),
+  (@start_document__meta_id, 2, @language_id__swedish, 2, @'start_document__text2__swedish', 1), 
+  
+  -- PUBLISHED VERSION
+  (@start_document__meta_id, 3, @language_id__english, 1, @'start_document__text1__english', 1),
+  (@start_document__meta_id, 3, @language_id__english, 2, @'start_document__text2__english', 1),
+  (@start_document__meta_id, 3, @language_id__swedish, 1, @'start_document__text1__swedish', 1),
+  (@start_document__meta_id, 3, @language_id__swedish, 2, @'start_document__text2__swedish', 1),
+  
+  -- WORKING VERSION
+  (@start_document__meta_id, 4, @language_id__english, 1, @'start_document__text1__english', 1),
+  (@start_document__meta_id, 4, @language_id__english, 2, @'start_document__text2__english', 1),
+  (@start_document__meta_id, 4, @language_id__swedish, 1, @'start_document__text1__swedish', 1),
+  (@start_document__meta_id, 4, @language_id__swedish, 2, @'start_document__text2__swedish', 1);     
+
+-- Add document version number before texts
+UPDATE texts SET text = concat(text, ' (V.', CAST(meta_version AS CHAR), ')');
 
 --
 -- Data for table texts_history
@@ -387,7 +429,7 @@ VALUES
 INSERT INTO texts_history
   (meta_id, meta_version, name, text, type, modified_datetime, user_id, language_id)
 SELECT
-  meta_id, 1, name, text, type, NOW(), @user_id__admin, language_id
+  meta_id, meta_version, name, text, type, NOW(), @user_id__admin, language_id
 FROM
   texts;
 

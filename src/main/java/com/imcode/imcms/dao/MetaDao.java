@@ -80,7 +80,7 @@ public class MetaDao extends HibernateTemplate {
 	 */
 	@Transactional
 	public Meta getMeta(Integer id, Integer version) {
-		Meta meta = getMeta(id, version);
+		Meta meta = getMeta(id);
 		
 		if (meta != null) {
 			Query query = getSession().createQuery("SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId AND v.version = :version")

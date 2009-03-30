@@ -251,7 +251,7 @@
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
              userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
-            DROP DATABASE ${db-name}
+            DROP DATABASE IF EXISTS ${db-name}
         </sql>
 
     </target>
