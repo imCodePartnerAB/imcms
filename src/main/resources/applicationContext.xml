@@ -34,7 +34,11 @@
     <property name="validationQuery" value="select 1"/>    
     <property name="defaultAutoCommit" value="false"/>
     <property name="maxActive" value="${MaxConnectionCount}"/>
-  </bean> 
+  </bean>
+  
+  <bean id="dataSourceWithAutoCommit" parent="dataSource">  
+    <property name="defaultAutoCommit" value="true"/>
+  </bean>   
   
   <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
     <property name="configLocation" value="classpath:hibernate.cfg.xml"/>

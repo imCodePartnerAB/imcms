@@ -1,6 +1,5 @@
 package imcode.server.user;
 
-import com.imcode.imcms.api.DocumentVersionTag;
 
 /**
  * Document show mode.
@@ -8,6 +7,15 @@ import com.imcode.imcms.api.DocumentVersionTag;
  * @author Anton Josua
  */
 public class DocumentShowSettings {
+	
+	/**
+	 * Document's version show mode. 
+	 */
+	public static enum VersionShowMode {
+		PUBLISHED,
+		WORKING,
+		CUSTOM
+	}
 	
 	/** 
 	 * When set to true then Meta.getI18nShowMode value
@@ -18,30 +26,36 @@ public class DocumentShowSettings {
 	 * Only logged in user is allowed to change the value.
 	 */	
 	private boolean ignoreI18nShowMode = false;
+	
+	/**
+	 * Document version.
+	 * Taken into account only when version tag is set to custom. 
+	 */
+	private Integer version;
 		
 	/**
-	 * Document version tag.
+	 * Document version mode.
 	 * 
-	 * In PUBLISHED mode a user sees published document content.
-	 * In WORKING mode a user sees working document content.
-	 * In CUSTOM mode a user can choose archived document version manually - implementation was not requested.
+	 * In PUBLISHED mode an user sees published document content.
+	 * In WORKING mode an user sees working document content.
+	 * In CUSTOM mode an user sees document specified in version field. 
 	 *
 	 * PUBLISHED mode is default.
 	 * 
 	 * Only logged in user is allowed to change the value.
 	 */
-	private DocumentVersionTag documentVersionTag = DocumentVersionTag.PUBLISHED;
+	private VersionShowMode versionShowMode = VersionShowMode.PUBLISHED;
 
-	public DocumentVersionTag getDocumentVersionTag() {
-		return documentVersionTag;
+	public VersionShowMode getVersionShowMode() {
+		return versionShowMode;
 	}
 
-	public void setDocumentVersionTag(DocumentVersionTag documentVersionTag) {
-		if (documentVersionTag == null) {
-			throw new NullPointerException("Version tag can not be set to null.");
+	public void setVersionShowMode(VersionShowMode versionShowMode) {
+		if (versionShowMode == null) {
+			throw new NullPointerException("Version mode can not be set to null.");
 		}
 		
-		this.documentVersionTag = documentVersionTag;
+		this.versionShowMode = versionShowMode;
 	}
 	
 	public boolean isIgnoreI18nShowMode() {
@@ -50,5 +64,13 @@ public class DocumentShowSettings {
 
 	public void setIgnoreI18nShowMode(boolean ignoreI18nShowMode) {
 		this.ignoreI18nShowMode = ignoreI18nShowMode;
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
 	}
 }

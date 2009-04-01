@@ -21,5 +21,5 @@ public enum DocumentVersionTag {
     PUBLISHED,		
     
     /** Archived version. */
-    ARCHIVED,
+    ARCHIVED,    
 }

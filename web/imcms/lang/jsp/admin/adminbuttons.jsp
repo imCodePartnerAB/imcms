@@ -13,6 +13,8 @@
 	        org.apache.oro.text.perl.Perl5Util,
 	        org.apache.commons.lang.StringUtils,
 	        java.util.List,
+	        com.imcode.imcms.mapping.DocumentMapper,
+	        com.imcode.imcms.api.DocumentVersion,
 	        com.imcode.imcms.api.*,
 	        java.util.Set"
 	
@@ -28,7 +30,7 @@ DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetF
 String queryString = request.getQueryString();
 StringBuffer baseURL = request.getRequestURL();
 
-//TODO: experemental, refactor
+//TODO: dirty implementation, refactor
 if (queryString == null) {
 	baseURL.append("?" + "lang=");
 } else {
@@ -39,6 +41,12 @@ if (queryString == null) {
 	
 
 pageContext.setAttribute("baseURL", baseURL);
+
+/* *******************************************************************************************
+ *         Available document's versions                                                     *
+ ******************************************************************************************* */
+DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+List<DocumentVersion> versions = documentMapper.getDocumentVersions(document.getId());
 
 /* *******************************************************************************************
  *         Get languages                                                                     *
@@ -231,7 +239,27 @@ Check if published version exists
 	    <%	        	  
 	    }
 	    %>
-	  </tr>      
+	  </tr>   
+	  <tr>
+	    <td>
+	      <table border="1">
+	        <tr>
+			  <% 
+			  for (DocumentVersion version: versions) {
+			      %>
+			      <td>
+			        <a href="${baseURL}<%=currentLanguage.getCode()%>&version=<%=version.getVersion()%>">
+			          <%=version.getVersion()%>:<%=version.getVersionTag()%>
+			        </a>  
+			      </td>
+			      <td>&nbsp;|&nbsp;</td>			          
+			      <%	  
+			  }
+			  %>
+			</tr>
+		  </table>	  
+		</td>  
+	  </tr>   
     </table>  
   </td>
 </tr>

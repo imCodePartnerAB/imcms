@@ -448,6 +448,10 @@
         <exec executable="mvn" failonerror="true">
             <arg line="-f ${basedir}/imcms-pom.xml dependency:copy-dependencies -DexcludeTransitive=true -DoutputDirectory=${build.lib.dir}"/>
         </exec>
+    	
+        <exec executable="mvn" failonerror="true">
+            <arg line="-f ${basedir}/imcms-pom.xml dependency:copy-dependencies -DexcludeTransitive=true -DoutputDirectory=${build.lib.dir} -DincludeScope=test"/>
+        </exec>    	
     </target>   
 
     <target name="sql">

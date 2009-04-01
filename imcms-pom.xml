@@ -50,7 +50,23 @@
       <groupId> org.easymock</groupId>
       <artifactId>easymock</artifactId>
       <version>2.0</version>
-    </dependency>      
+      <scope>test</scope>
+    </dependency> 
+    
+     <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.5.6</version>
+        <scope>test</scope>
+    </dependency>
+    <!-- concrete Log4J Implementation for SLF4J API-->
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>1.5.6</version>
+        <scope>test</scope>
+    </dependency>
+         
     
     <!-- REQUIRED -->
     <dependency>

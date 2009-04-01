@@ -601,9 +601,9 @@ public class DocumentMapper implements DocumentGetter {
     }    
 
     /**
-     * Returns latest vrsion of a document.
+     * Returns latest version of a document.
      *  
-     * Please note this call is expenisve since reeturned document is not cached.
+     * Please note this call is expenisve since returned document is not cached.
      * 
      * @param documentId document id
      * @returns latest version of a document
@@ -1024,5 +1024,14 @@ public class DocumentMapper implements DocumentGetter {
 
 	public void setDocumentSaver(DocumentSaver documentSaver) {
 		this.documentSaver = documentSaver;
+	}
+
+	public DatabaseDocumentGetter getDatabaseDocumentGetter() {
+		return databaseDocumentGetter;
+	}
+
+	public void setDatabaseDocumentGetter(
+			DatabaseDocumentGetter databaseDocumentGetter) {
+		this.databaseDocumentGetter = databaseDocumentGetter;
 	}
 }

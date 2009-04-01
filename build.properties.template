@@ -132,8 +132,10 @@ deprecation = on
 log4j-config = log4j-nodebug.xml
 
 
-# Tomcat settings for quick deployment during development
+# Catalina home -required for JSPs pre compilation.
+catalina.home = 
 
+# Tomcat settings for quick deployment during development
 tomcat-admin-username = admin
 tomcat-admin-password =
 tomcat-webapp-manager-url = http://localhost:8080/manager

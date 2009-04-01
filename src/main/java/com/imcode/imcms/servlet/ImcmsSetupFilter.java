@@ -81,21 +81,9 @@ public class ImcmsSetupFilter implements Filter {
         }
         
         Imcms.setUser(user);
-       
-        // Experimental
-        // TODO: refactor
-        String modeValue = request.getParameter("mode");
-        if (modeValue != null) {
-        	user.getDocumentShowSettings().setIgnoreI18nShowMode(Boolean.parseBoolean(modeValue.toLowerCase()));
-        }
         
-        String versionTagValue = request.getParameter("version");
-        if (versionTagValue != null) {
-        	user.getDocumentShowSettings().setDocumentVersionTag(DocumentVersionTag.valueOf(versionTagValue.toUpperCase()));
-        }                
-        // End of experemental
-        
-        setCurrentLanguage(request, user);        
+        setCurrentLanguage(request, user);
+        setShowSettings(request, user);
 
         ResourceBundle resourceBundle = Utility.getResourceBundle(request);
         Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
@@ -227,6 +215,22 @@ public class ImcmsSetupFilter implements Filter {
     	
     	Imcms.webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(
     			servletContext);    	
+    }
+    
+    /**
+     * Experemental
+     * TODO: refactor
+     */
+    private void setShowSettings(HttpServletRequest request, UserDomainObject user) {
+        String modeValue = request.getParameter("mode");
+        if (modeValue != null) {
+        	user.getDocumentShowSettings().setIgnoreI18nShowMode(Boolean.parseBoolean(modeValue.toLowerCase()));
+        }
+        
+        String versionTagValue = request.getParameter("version");
+        if (versionTagValue != null) {
+        	user.getDocumentShowSettings().setDocumentVersionTag(DocumentVersionTag.valueOf(versionTagValue.toUpperCase()));
+        }                 	
     }
     
     /**

@@ -43,6 +43,7 @@ public class MetaDaoTest extends DaoTest {
 		documentMapper.setCachingDocumentGetter(
 			new CachingDocumentGetter(databaseDocumentGetter, 100)				
 		);
+		documentMapper.setDatabaseDocumentGetter(databaseDocumentGetter);
 		
 		DefaultImcmsServices services = new DefaultImcmsServices();
 		services.setDocumentMapper(documentMapper);
@@ -119,6 +120,16 @@ public class MetaDaoTest extends DaoTest {
 		assertTrue(archivedVersion.getVersion() == publishedWorkingVersion.getVersion() - 1);
 	}
 
+	@Test
+	public void getLatestDocumentVersion() {
+		List<DocumentVersion> versions = documentMapper.getDocumentVersions(META_ID);
+		DocumentVersion latestVersion = versions.get(versions.size() - 1);
+		
+		DocumentDomainObject latestDocumentVersion = documentMapper.getLatestDocumentVersion(META_ID);		
+		
+		assertEquals(latestVersion.getVersion(), latestDocumentVersion.getMeta().getVersion().getVersion());
+				
+	} 
 	
 	@Override
 	protected String getDataSetFileName() {
