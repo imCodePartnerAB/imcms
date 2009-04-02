@@ -3,8 +3,6 @@ package imcode.server.user;
 
 /**
  * Document show mode.
- * 
- * @author Anton Josua
  */
 public class DocumentShowSettings {
 	

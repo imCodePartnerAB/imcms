@@ -53,7 +53,7 @@ public class AdminDoc extends HttpServlet {
 
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         UserDomainObject user = Utility.getLoggedOnUser( req );        
-        DocumentDomainObject document = documentMapper.getDocument( metaId , user.getDocumentShowSettings().getDocumentVersionTag());
+        DocumentDomainObject document = documentMapper.getDocument( metaId , user.getDocumentShowSettings().getVersionShowMode());
         if ( !user.canEdit( document )) {
             flags = 0;
         }

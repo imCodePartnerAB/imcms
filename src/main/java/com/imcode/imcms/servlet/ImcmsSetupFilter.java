@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.user.DocumentShowSettings;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
@@ -227,9 +228,9 @@ public class ImcmsSetupFilter implements Filter {
         	user.getDocumentShowSettings().setIgnoreI18nShowMode(Boolean.parseBoolean(modeValue.toLowerCase()));
         }
         
-        String versionTagValue = request.getParameter("version");
-        if (versionTagValue != null) {
-        	user.getDocumentShowSettings().setDocumentVersionTag(DocumentVersionTag.valueOf(versionTagValue.toUpperCase()));
+        String versionShowModeStr = request.getParameter("version");
+        if (versionShowModeStr != null) {
+        	user.getDocumentShowSettings().setVersionShowMode(DocumentShowSettings.VersionShowMode.valueOf(versionShowModeStr.toUpperCase()));
         }                 	
     }
     

@@ -1,6 +1,7 @@
 package com.imcode.imcms.flow;
 
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.user.DocumentShowSettings;
 import imcode.server.user.UserDomainObject;
 
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class PublishDocumentPageFlow extends DocumentPageFlow {
 	@Override
 	protected void dispatchToFirstPage(HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
 	    saveDocument( request );
-		user.getDocumentShowSettings().setDocumentVersionTag(DocumentVersionTag.PUBLISHED);
+		user.getDocumentShowSettings().setVersionShowMode(DocumentShowSettings.VersionShowMode.PUBLISHED);
     	dispatchReturn( request, response );		
 	}
 	

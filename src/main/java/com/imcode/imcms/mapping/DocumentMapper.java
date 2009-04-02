@@ -584,6 +584,23 @@ public class DocumentMapper implements DocumentGetter {
         };
     }
     
+    
+    /** 
+     * @return tagged version of document.
+     */
+    public DocumentDomainObject getDocument(Integer documentId, DocumentShowSettings.VersionShowMode versionShowMode) {
+    	switch (versionShowMode) {
+		case PUBLISHED:
+			return getDocument(documentId);
+			
+		case WORKING:
+			return getWorkingDocument(documentId);			
+
+		default:
+			throw new NotImplementedException();
+		}
+    }
+    
     /** 
      * @return tagged version of document.
      */
@@ -702,7 +719,7 @@ public class DocumentMapper implements DocumentGetter {
     	DocumentDomainObject document = null;
     	DocumentShowSettings showSettings = user.getDocumentShowSettings();
 		
-    	switch (showSettings.getDocumentVersionTag()) {
+    	switch (showSettings.getVersionShowMode()) {
 		case PUBLISHED:	
 			document = getDocument(documentId);
 			break;
