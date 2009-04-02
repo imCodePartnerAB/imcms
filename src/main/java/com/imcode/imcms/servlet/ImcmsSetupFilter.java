@@ -32,10 +32,12 @@ import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.pdfbox.examples.signature.ShowSignature;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.imcode.imcms.api.DocumentVersionTag;
@@ -228,9 +230,15 @@ public class ImcmsSetupFilter implements Filter {
         	user.getDocumentShowSettings().setIgnoreI18nShowMode(Boolean.parseBoolean(modeValue.toLowerCase()));
         }
         
-        String versionShowModeStr = request.getParameter("version");
-        if (versionShowModeStr != null) {
-        	user.getDocumentShowSettings().setVersionShowMode(DocumentShowSettings.VersionShowMode.valueOf(versionShowModeStr.toUpperCase()));
+        String version = request.getParameter("version");
+        if (version != null) {
+        	DocumentShowSettings settings = user.getDocumentShowSettings();
+        	if (NumberUtils.isDigits(version)) {
+        		settings.setVersionShowMode(DocumentShowSettings.VersionShowMode.CUSTOM);
+        		settings.setVersion(Integer.valueOf(version));
+        	} else {        	
+        		settings.setVersionShowMode(DocumentShowSettings.VersionShowMode.valueOf(version.toUpperCase()));
+        	}
         }                 	
     }
     

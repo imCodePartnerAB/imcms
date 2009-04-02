@@ -70,6 +70,7 @@ boolean isIE7   = re.match("/(MSIE 7)/i", uAgent) ;
 boolean isGecko = re.match("/Gecko/i", uAgent) ;
 
 %>
+<%@page import="imcode.server.user.DocumentShowSettings"%>
 <vel:velocity>
 <style type="text/css">
 /*<![CDATA[*/
@@ -198,7 +199,7 @@ Check if published version exists
       <tr>
         <td>
           <%
-          if (user.getDocumentShowSettings().getDocumentVersionTag() == DocumentVersionTag.PUBLISHED) {
+          if (user.getDocumentShowSettings().getVersionShowMode() == DocumentShowSettings.VersionShowMode.PUBLISHED) {
           %>
               <b>#This is PUBLISHED version#<b>
           <% 
@@ -214,7 +215,7 @@ Check if published version exists
       
         <td>
           <%
-          if (user.getDocumentShowSettings().getDocumentVersionTag() == DocumentVersionTag.WORKING) {
+          if (user.getDocumentShowSettings().getVersionShowMode() == DocumentShowSettings.VersionShowMode.WORKING) {
           %>
               <b>#This is WORKING version#<b>
           <% 
@@ -229,7 +230,7 @@ Check if published version exists
         </td>
       
 	    <% 
-	    if (user.canEdit(document) && user.getDocumentShowSettings().getDocumentVersionTag() == DocumentVersionTag.WORKING) {
+	    if (user.canEdit(document) && user.getDocumentShowSettings().getVersionShowMode() == DocumentShowSettings.VersionShowMode.WORKING) {
 	    %>
          <td>
            <a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId()%>&flags=4194304">

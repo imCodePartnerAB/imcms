@@ -745,6 +745,10 @@ public class DocumentMapper implements DocumentGetter {
 			
 			break;			
 
+		case CUSTOM:
+			document = getDocument(documentId, showSettings.getVersion());
+			break;
+			
 		default:
 			document = null;
 		}
