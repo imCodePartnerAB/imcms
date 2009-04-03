@@ -52,8 +52,15 @@ public class AdminDoc extends HttpServlet {
         int flags = Integer.parseInt( (String)ObjectUtils.defaultIfNull( req.getParameter( PARAMETER__DISPATCH_FLAGS ), "0" ) );
 
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-        UserDomainObject user = Utility.getLoggedOnUser( req );        
+        UserDomainObject user = Utility.getLoggedOnUser( req );    
+        
         DocumentDomainObject document = documentMapper.getDocument( metaId , user.getDocumentShowSettings().getVersionShowMode());
+        
+        // An admin may be in published mode, but published version may not exist.
+        if (document == null) {
+        	document = documentMapper.getLatestDocumentVersion(metaId);        	
+        }
+        
         if ( !user.canEdit( document )) {
             flags = 0;
         }
@@ -95,6 +102,10 @@ public class AdminDoc extends HttpServlet {
         return pageFlow;
     }
 
+    /**
+     * Returns document for show mode. 
+     * e.g document preview is awailable to user. 
+     */
     public static void adminDoc(int meta_id, UserDomainObject user, HttpServletRequest req,
                                 HttpServletResponse res, ServletContext servletContext) throws IOException, ServletException {
         final ImcmsServices imcref = Imcms.getServices();
@@ -111,6 +122,11 @@ public class AdminDoc extends HttpServlet {
         }
 
         DocumentDomainObject document = imcref.getDocumentMapper().getDocumentForShowing( meta_id, user );
+        
+        if (document == null) {
+        	document = imcref.getDocumentMapper().getLatestDocumentVersionForShowing(meta_id, user);
+        }
+        
         if ( null == document ) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return ;

@@ -627,7 +627,21 @@ public class DocumentMapper implements DocumentGetter {
      */
     public DocumentDomainObject getLatestDocumentVersion(Integer documentId) { 
         return databaseDocumentGetter.getLatestDocumentVersion(documentId);
-    } 
+    }
+    
+    /**
+     * Returns latest version of a document.
+     *  
+     * Please note this call is expenisve since returned document is not cached.
+     * 
+     * @param documentId document id
+     * @returns latest version of a document
+     */
+    public DocumentDomainObject getLatestDocumentVersionForShowing(Integer documentId, UserDomainObject user) { 
+        DocumentDomainObject document = getLatestDocumentVersion(documentId);
+        
+        return document == null ? null : createDocumentShowInterceptor(document, user);
+    }    
     
     /**
      * Returns published version of document.
@@ -702,9 +716,6 @@ public class DocumentMapper implements DocumentGetter {
     }
     
     
-    public void getDocumentForShowingXXX() {
-    	
-    }
     
     
     /** 
