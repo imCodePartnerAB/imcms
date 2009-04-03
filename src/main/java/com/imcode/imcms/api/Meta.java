@@ -29,6 +29,8 @@ import javax.persistence.Transient;
 
 /**
  * Document meta.
+ * 
+ * Every document in a system have a meta.   
  */
 @Entity
 @Table(name="meta")
@@ -39,7 +41,7 @@ public class Meta implements Serializable, Cloneable {
 	/**
 	 * Create (create only!) permission for template or a document type.
 	 * 
-	 * set_id -> set type id: can be restricted 1 or restricted 2   
+	 * set_id (actually it is a 'set type id') can be: restricted 1 or restricted 2   
 	 * 
 	 * Mapped to doc_permission_set and new_doc_permission_set
 	 */
@@ -110,7 +112,7 @@ public class Meta implements Serializable, Cloneable {
 	/**
 	 * Document content show mode for disabled translation.
 	 * 
-	 * DiabledI18nContentShowMode would be more descriptive.
+	 * The name 'DiabledI18nContentShowMode' would be more descriptive.
 	 * 
 	 * @see I18nMeta.getEnabled
 	 */
@@ -123,6 +125,9 @@ public class Meta implements Serializable, Cloneable {
 	@Column(name="meta_id")
 	private Integer id;
 					
+	/**
+	 * I18n-ized parts of the meta.
+	 */
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
 	@JoinColumn(name="meta_id", referencedColumnName="meta_id")		
 	private Set<I18nMeta> i18nMetas = new HashSet<I18nMeta>();
@@ -132,6 +137,14 @@ public class Meta implements Serializable, Cloneable {
 	private UnavailableI18nDataSubstitution unavailableI18nDataSubstitution =
 		UnavailableI18nDataSubstitution.DO_NOT_SHOW;
 
+	/**
+	 * In the current imcms release, meta does not have version - e.g.
+	 * all document's versions have the same meta. But technically it 
+	 * is convinient to have reference to version in meta. It is possible
+	 * because cached documents do not share single meta object.   
+	 * 
+	 * NB! In the future meta fields will be also versioned. 
+	 */
 	@Transient
 	private DocumentVersion version;	
 	
@@ -306,7 +319,10 @@ public class Meta implements Serializable, Cloneable {
 	private Set<PermisionSetEx> permisionSetExForNew = new HashSet<PermisionSetEx>();
 	
 	/**
-	 *   
+	 * Workaround.
+	 * Map provides quicker access to I18n metas than list.
+	 * Initilized by MetaDAO API, when document is requested.
+	 * TODO: Rewrite initializing logic.
 	 */
 	@Transient
 	private Map<I18nLanguage, I18nMeta> metaMap;
