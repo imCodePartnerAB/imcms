@@ -6,11 +6,15 @@
           imcode.server.document.FileDocumentDomainObject,
           imcode.server.document.textdocument.FileDocumentImageSource,
           imcode.server.document.textdocument.ImageDomainObject,
+          imcode.server.document.textdocument.ImageDomainObject.CropRegion,
           imcode.server.document.textdocument.ImageSource,
+          imcode.server.document.textdocument.TextDocumentDomainObject,
           imcode.server.user.UserDomainObject,
           imcode.util.Html,
           imcode.util.ImcmsImageUtils,
           imcode.util.Utility,
+          imcode.util.image.Format, 
+          imcode.util.image.ImageInfo, 
           org.apache.commons.lang.StringEscapeUtils,
           org.apache.commons.lang.StringUtils, java.util.Properties"
 
@@ -20,11 +24,13 @@
 
     ImageEditPage imageEditPage = ImageEditPage.getFromRequest(request);
     assert null != imageEditPage;
+    TextDocumentDomainObject document = imageEditPage.getDocument();
     ImageDomainObject image = imageEditPage.getImage();
     assert null != image;
     ImageSize realImageSize = image.getRealImageSize();
     assert null != realImageSize;
     UserDomainObject user = Utility.getLoggedOnUser( request );
+    CropRegion cropRegion = image.getCropRegion();
 
 %><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <vel:velocity>
@@ -128,6 +134,35 @@ function checkLinkOnBlur() {<%
 	}<%
 	} %>
 }
+
+function resetCrop() {
+    var cell = document.getElementById("crop_cell");
+    var cropButton = document.getElementById("crop_btn");
+
+    cell.removeChild(cell.getElementsByTagName("table")[0]);
+
+    document.getElementById("h_crop_x1").value = "-1";
+    document.getElementById("h_crop_y1").value = "-1";
+    document.getElementById("h_crop_x2").value = "-1";
+    document.getElementById("h_crop_y2").value = "-1";
+
+    var forcedWidth = parseInt(document.getElementById("forced_width").value, 10), 
+        forcedHeight = parseInt(document.getElementById("forced_height").value, 10);
+
+    if (forcedWidth > 0) {
+    	document.getElementById("image_width").value = forcedWidth;
+    } else {
+    	document.getElementById("image_width").readOnly = false;
+    }
+
+    if (forcedHeight > 0) {
+    	document.getElementById("image_height").value = forcedHeight;
+    } else {
+    	document.getElementById("image_height").readOnly = false;
+    }
+
+    cropButton.style.display = "inline";
+}
 //-->
 </script>
 
@@ -140,6 +175,12 @@ function checkLinkOnBlur() {<%
 #gui_head( "<? global/imcms_administration ?>" )
 <form method="POST" action="<%= request.getContextPath() %>/servlet/PageDispatcher" onsubmit="checkLinkType();">
 <%= Page.htmlHidden(request) %>
+    <input type="hidden" id="forced_width" value="<%= imageEditPage.getForcedWidth() %>"/>
+    <input type="hidden" id="forced_height" value="<%= imageEditPage.getForcedHeight() %>"/>
+    <input type="hidden" id="h_crop_x1" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_X1 %>" value="<%= cropRegion.getCropX1() %>"/>
+    <input type="hidden" id="h_crop_y1" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y1 %>" value="<%= cropRegion.getCropY1() %>"/>
+    <input type="hidden" id="h_crop_x2" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_X2 %>" value="<%= cropRegion.getCropX2() %>"/>
+    <input type="hidden" id="h_crop_y2" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y2 %>" value="<%= cropRegion.getCropY2() %>"/>
     
     <table border="0" cellspacing="0" cellpadding="0">
     <tr>
@@ -169,7 +210,7 @@ function checkLinkOnBlur() {<%
 		if (!image.isEmpty()) { %>
 		<tr>
 			<td colspan="2" align="center">
-			<div id="previewDiv"><%= !image.isEmpty() ? ImcmsImageUtils.getImageHtmlTag( image, request, new Properties()) : "" %></div></td>
+			<div id="previewDiv"><%= !image.isEmpty() ? ImcmsImageUtils.getImageHtmlTag((document != null ? document.getId() : null), imageEditPage.getImageIndex(), image, request, new Properties()) : "" %></div></td>
 		</tr><%
 				ImageSource imageSource = image.getSource();
 				if ( imageSource instanceof FileDocumentImageSource) { %>
@@ -249,7 +290,7 @@ function checkLinkOnBlur() {<%
 						%>size="4" maxlength="4" value="<%
 						if (image.getWidth() > 0) {
 							%><%= image.getWidth() %><%
-						} %>"></td>
+						} %>" <%= (cropRegion.isValid() || imageEditPage.getForcedWidth() > 0 ? "readonly='readonly'" : "") %> ></td>
 						<td>&nbsp;X&nbsp;</td>
 						<td><input type="text" <%
 						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>" <%
@@ -257,7 +298,7 @@ function checkLinkOnBlur() {<%
 						%>size="4" maxlength="4" value="<%
 						if (image.getHeight() > 0) {
 							%><%= image.getHeight() %><%
-						} %>"></td>
+						} %>" <%= (cropRegion.isValid() || imageEditPage.getForcedHeight() > 0 ? "readonly='readonly'" : "") %> ></td>
 						<td>&nbsp;</td>
 						<td><input type="text" <%
 						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>" <%
@@ -275,6 +316,69 @@ function checkLinkOnBlur() {<%
 					</tr>
 					</table></td>
 				</tr>
+        <% if (!image.isEmpty() && imageEditPage.getForcedWidth() <= realImageSize.getWidth() 
+        	      && imageEditPage.getForcedHeight() <= realImageSize.getHeight()) { %>
+            <tr>
+                <td nowrap><? templates/sv/change_img.html/4003 ?></td>
+                <td id="crop_cell">
+                    <% if (cropRegion.isValid()) { %>
+                        <table cellspacing="0" cellpadding="0" border="0">
+                            <tr>
+                                <td>
+                                    <label for="crop_x1"><b><? templates/sv/change_img.html/4004 ?></b></label>
+                                </td>
+                                <td>
+                                    <label for="crop_y1"><b><? templates/sv/change_img.html/4005 ?></b></label>
+                                </td>
+                                <td>&nbsp;&nbsp;</td>
+                                <td>
+                                    <label for="crop_x2"><b><? templates/sv/change_img.html/4006 ?></b></label>
+                                </td>
+                                <td>
+                                    <label for="crop_y2"><b><? templates/sv/change_img.html/4007 ?></b></label>
+                                </td>
+                                <td>&nbsp;&nbsp;</td>
+                                <td></td>
+                                <td>&nbsp;</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><input id="crop_x1" type="text" value="<%= cropRegion.getCropX1() %>" readonly="readonly" size="4" maxlength="4"/></td>
+                                <td><input id="crop_y1" type="text" value="<%= cropRegion.getCropY1() %>" readonly="readonly" size="4" maxlength="4"/></td>
+                                <td>&nbsp;&nbsp;</td>
+                                <td><input id="crop_x2" type="text" value="<%= cropRegion.getCropX2() %>" readonly="readonly" size="4" maxlength="4"/></td>
+                                <td><input id="crop_y2" type="text" value="<%= cropRegion.getCropY2() %>" readonly="readonly" size="4" maxlength="4"/></td>
+                                <td>&nbsp;&nbsp;</td>
+                                <td>
+                                    <input type="submit" name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_CROP_IMAGE %>" 
+                                           class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/4002 ?>"/>
+                                </td>
+                                <td>&nbsp;</td>
+                                <td>
+                                    <input type="button" class="imcmsFormBtnSmall" onclick="resetCrop();" value="<? templates/sv/change_img.html/4008 ?>"/>
+                                </td>
+                            </tr>
+                        </table>
+                    <% } %>
+                    
+                    <input id="crop_btn" type="submit" name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_CROP_IMAGE %>"
+                           style='<%= (cropRegion.isValid() ? "display:none;" : "") %>' 
+                           class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/4002 ?>"/>
+                </td>
+            </tr>
+        <% } %>
+        <tr>
+            <td nowrap><label for="format"><? templates/sv/change_img.html/4009 ?></label></td>
+            <td>
+                <select id="format" name="<%= ImageEditPage.REQUEST_PARAMETER__FORMAT %>">
+                    <% for (Format format : ImageEditPage.ALLOWED_FORMATS) { %>
+                        <option value="<%= format.getOrdinal() %>" <% if (format == image.getFormat()) { %> selected="selected" <% } %>>
+                            <%= format.getFormat() %>
+                        </option>
+                    <% } %>
+                </select>
+            </td>
+        </tr>
         <tr>
             <td nowrap><? templates/sv/change_img.html/25 ?></td>
             <td>

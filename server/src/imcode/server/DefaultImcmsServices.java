@@ -9,6 +9,7 @@ import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.DocumentDomainObject;
@@ -68,6 +69,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private ExternalizedImcmsAuthenticatorAndUserRegistry externalizedImcmsAuthAndMapper;
     private DocumentMapper documentMapper;
     private TemplateMapper templateMapper;
+    private ImageCacheMapper imageCacheMapper;
     private KeyStore keyStore;
 
     private Map velocityEngines = new TreeMap();
@@ -94,6 +96,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         initAuthenticatorsAndUserAndRoleMappers(props);
         initDocumentMapper();
         initTemplateMapper();
+        initImageCacheMapper();
         initTextDocParser();
     }
 
@@ -204,6 +207,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private void initTemplateMapper() {
         templateMapper = new TemplateMapper(this);
+    }
+    
+    private void initImageCacheMapper() {
+    	imageCacheMapper = new ImageCacheMapper(database);
     }
 
     private void initAuthenticatorsAndUserAndRoleMappers(Properties props) {
@@ -694,6 +701,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return documentMapper.getCategoryMapper();
     }
 
+    public ImageCacheMapper getImageCacheMapper() {
+    	return imageCacheMapper;
+    }
+    
     public LanguageMapper getLanguageMapper() {
         return this.languageMapper;
     }

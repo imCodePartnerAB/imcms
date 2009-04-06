@@ -1,14 +1,9 @@
 package imcode.server.parser;
 
-import com.imcode.imcms.api.TextDocumentViewing;
-import com.imcode.imcms.servlet.ImcmsSetupFilter;
-import com.imcode.imcms.mapping.SectionFromIdTransformer;
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.util.CountingIterator;
 import imcode.server.DocumentRequest;
+import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
-import imcode.server.Imcms;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.textdocument.FileDocumentImageSource;
@@ -16,26 +11,13 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Html;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.collections.iterators.TransformIterator;
-import org.apache.log4j.Logger;
-import org.apache.oro.text.regex.*;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,7 +26,47 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.iterators.TransformIterator;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.log4j.Logger;
+import org.apache.oro.text.regex.MalformedPatternException;
+import org.apache.oro.text.regex.MatchResult;
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.PatternMatcher;
+import org.apache.oro.text.regex.PatternMatcherInput;
+import org.apache.oro.text.regex.Perl5Compiler;
+import org.apache.oro.text.regex.Perl5Matcher;
+import org.apache.oro.text.regex.StringSubstitution;
+import org.apache.oro.text.regex.Substitution;
+import org.apache.oro.text.regex.Util;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+
+import com.imcode.imcms.api.TextDocumentViewing;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.SectionFromIdTransformer;
+import com.imcode.imcms.servlet.ImcmsSetupFilter;
+import com.imcode.util.CountingIterator;
 
 public class TagParser {
 
@@ -53,6 +75,9 @@ public class TagParser {
     private static Pattern imcmsTagPattern;
     private static Pattern imcmsEndTagPattern;
     private static Pattern attributesPattern;
+    
+    private static Pattern widthPattern;
+    private static Pattern heightPattern;
 
     private final static Logger LOG = Logger.getLogger(TagParser.class.getName());
 
@@ -71,6 +96,10 @@ public class TagParser {
                                                                               | Perl5Compiler.READ_ONLY_MASK);
             attributesPattern = patComp.compile("\\s+(\\w+)\\s*=\\s*([\"'])(.*?)\\2", Perl5Compiler.SINGLELINE_MASK
                                                                                       | Perl5Compiler.READ_ONLY_MASK);
+            
+            widthPattern = patComp.compile("(?:^|[\\s;])width\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
+            
+            heightPattern = patComp.compile("(?:^|[\\s;])height\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
         } catch ( MalformedPatternException ignored ) {
             // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
             LOG.fatal("Danger, Will Robinson!", ignored);
@@ -501,7 +530,7 @@ public class TagParser {
         if ( !( imageSource instanceof FileDocumentImageSource )
              || imageMode
              || user.canAccess(( (FileDocumentImageSource) imageSource ).getFileDocument()) ) {
-            imageTag = ImcmsImageUtils.getImageHtmlTag(image, httpServletRequest, attributes);
+            imageTag = ImcmsImageUtils.getImageHtmlTag(textDocumentToUse.getId(), imageIndex, image, httpServletRequest, attributes);
         }
 
         if ( imageMode ) {
@@ -512,8 +541,29 @@ public class TagParser {
             } else {               // data in the db-field.
                 admin_template_file = "textdoc/admin_image.frag";
             }
-
-            imageTag = service.getAdminTemplate(admin_template_file, user, Arrays.asList(replace_tags));
+            
+            String imageWidth = "0";
+            String imageHeight = "0";
+            String style = (String) attributes.get("style");
+            if (style != null) {
+            	PatternMatcher matcher = new Perl5Matcher();
+            	if (matcher.contains(style, widthPattern)) {
+            		imageWidth = matcher.getMatch().group(1);
+            	}
+            	if (matcher.contains(style, heightPattern)) {
+            		imageHeight = matcher.getMatch().group(1);
+            	}
+            }
+            
+            
+            List<String> replaceTags = new ArrayList<String>(replace_tags.length + 4);
+            CollectionUtils.addAll(replaceTags, replace_tags);
+            replaceTags.add("#image_width#");
+            replaceTags.add(imageWidth);
+            replaceTags.add("#image_height#");
+            replaceTags.add(imageHeight);
+            
+            imageTag = service.getAdminTemplate(admin_template_file, user, replaceTags);
         }
 
         return imageTag;

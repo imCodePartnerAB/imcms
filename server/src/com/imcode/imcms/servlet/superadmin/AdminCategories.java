@@ -12,6 +12,8 @@ import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.image.ImageInfo;
+
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;

@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.servlet.WebComponent;
 import imcode.util.HttpSessionUtils;
+import imcode.util.image.ImageInfo;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +22,7 @@ public class ImageBrowser extends WebComponent {
 
     public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( this, request, REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER);
-        ImageBrowse.browse( null, request, response );
+        ImageBrowse.browse( null, false, request, response );
     }
 
     public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {

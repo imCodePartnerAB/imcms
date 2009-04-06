@@ -18,13 +18,17 @@ import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;
 import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
+import imcode.util.image.Format;
+import imcode.util.image.ImageInfo;
 import imcode.util.io.InputStreamSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanQuery;
@@ -36,6 +40,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.awt.image.CropImageFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -47,6 +53,7 @@ public class ImageEditPage extends OkCancelPage {
     public final static String REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON = "goToImageSearch";
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON = "goToImageBrowser";
     public static final String REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON = "goToAddRestrictedImage";
+    public static final String REQUEST_PARAMETER__GO_TO_CROP_IMAGE = "goToCropImage";
     public static final String REQUEST_PARAMETER__PREVIEW_BUTTON = "show_img";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
     public static final String REQUEST_PARAMETER__DELETE_BUTTON = "delete";
@@ -64,29 +71,56 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__IMAGE_LOWSRC = "low_scr";
     public static final String REQUEST_PARAMETER__LINK_URL = "imageref_link";
     public static final String REQUEST_PARAMETER__LINK_TARGET = EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET;
+    public static final String REQUEST_PARAMETER__FORMAT = "format";
+    public static final String REQUEST_PARAMETER__CROP_X1 = "crop_x1";
+    public static final String REQUEST_PARAMETER__CROP_Y1 = "crop_y1";
+    public static final String REQUEST_PARAMETER__CROP_X2 = "crop_x2";
+    public static final String REQUEST_PARAMETER__CROP_Y2 = "crop_y2";
     static final LocalizedMessage ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images");
+    static final LocalizedMessage ERROR_MESSAGE__FILE_NOT_IMAGE = new LocalizedMessage("error/servlet/images/file_not_image");
     private final static String[] IMAGE_MIME_TYPES = new String[] { "image/jpeg", "image/png", "image/gif" };
+    public static final Format[] ALLOWED_FORMATS = new Format[] { Format.BMP, Format.GIF, Format.JPEG, Format.PNG };
 
     private TextDocumentDomainObject document;
     private ImageDomainObject image;
+    private Integer imageIndex;
     private String label;
     private final ServletContext servletContext;
     private final Handler<ImageDomainObject> imageCommand;
     private final LocalizedMessage heading;
     private boolean linkable;
+    private int forcedWidth;
+    private int forcedHeight;
 
-    public ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image,
+    public ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image, Integer imageIndex, 
                          LocalizedMessage heading, String label, ServletContext servletContext,
                          Handler<ImageDomainObject> imageCommand,
-                         DispatchCommand returnCommand, boolean linkable) {
+                         DispatchCommand returnCommand, boolean linkable, 
+                         int forcedWidth, int forcedHeight) {
         super(returnCommand, returnCommand);
         this.document = document;
         this.image = image;
+        this.imageIndex = imageIndex;
         this.label = label;
         this.servletContext = servletContext;
         this.imageCommand = imageCommand;
         this.heading = heading ;
         this.linkable = linkable ;
+        this.forcedWidth = forcedWidth;
+        this.forcedHeight = forcedHeight;
+        
+        forceWidthHeight();
+    }
+    
+    private void forceWidthHeight() {
+    	if (image != null && !image.getCropRegion().isValid()) {
+        	if (forcedWidth > 0) {
+        		image.setWidth(forcedWidth);
+        	}
+        	if (forcedHeight > 0) {
+        		image.setHeight(forcedHeight);
+        	}
+        }
     }
 
     public ImageDomainObject getImage() {
@@ -128,6 +162,16 @@ public class ImageEditPage extends OkCancelPage {
             image.setHorizontalSpace(Integer.parseInt(req.getParameter(REQUEST_PARAMETER__HORIZONTAL_SPACE)));
         } catch ( NumberFormatException ignored ) {
         }
+        
+        CropRegion region = new CropRegion();
+        region.setCropX1(NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__CROP_X1), -1));
+        region.setCropY1(NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__CROP_Y1), -1));
+        region.setCropX2(NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__CROP_X2), -1));
+        region.setCropY2(NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__CROP_Y2), -1));
+        region.updateValid();
+        image.setCropRegion(region);
+
+        
         String imageUrl = req.getParameter(REQUEST_PARAMETER__IMAGE_URL);
         if ( null != imageUrl && imageUrl.startsWith(req.getContextPath()) ) {
             imageUrl = imageUrl.substring(req.getContextPath().length());
@@ -135,6 +179,15 @@ public class ImageEditPage extends OkCancelPage {
         ImageSource imageSource = ImcmsImageUtils.createImageSourceFromString(imageUrl);
 
         image.setSource(imageSource);
+        
+        ImageInfo imageInfo = image.getImageInfo();
+        image.setFormat((imageInfo != null ? imageInfo.getFormat() : null));
+        
+        Format format = Format.findFormat(NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__FORMAT), 0));
+        if (format != null) {
+        	image.setFormat(format);
+        }
+        
         image.setName(StringUtils.trim(req.getParameter(REQUEST_PARAMETER__IMAGE_NAME)));
         image.setAlign(req.getParameter(REQUEST_PARAMETER__IMAGE_ALIGN));
         image.setAlternateText(req.getParameter(REQUEST_PARAMETER__IMAGE_ALT));
@@ -165,6 +218,8 @@ public class ImageEditPage extends OkCancelPage {
             goToImageSearch(documentMapper, request, response);
         } else if ( null != request.getParameter(REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON) ) {
             goToImageAdder(documentMapper, user, request, response);
+        } else if ( null != request.getParameter(REQUEST_PARAMETER__GO_TO_CROP_IMAGE) ) {
+        	goToCropImage(request, response);
         }
     }
 
@@ -190,7 +245,7 @@ public class ImageEditPage extends OkCancelPage {
                         fileDocument.setHeadline(file.getFilename());
                         fileDocument.setPublicationStatus(Document.PublicationStatus.APPROVED);
                         documentMapper.saveNewDocument(document, user, false);
-                        image.setSourceAndClearSize(new FileDocumentImageSource(documentMapper.getDocumentReference(fileDocument)));
+                        setNewSourceAndClearSize(new FileDocumentImageSource(documentMapper.getDocumentReference(fileDocument)));
                     }
                 }
             };
@@ -221,11 +276,39 @@ public class ImageEditPage extends OkCancelPage {
         imageBrowser.setSelectImageUrlCommand(new ImageBrowser.SelectImageUrlCommand() {
             public void selectImageUrl(String imageUrl, HttpServletRequest request,
                                        HttpServletResponse response) throws IOException, ServletException {
-                image.setSourceAndClearSize(new ImagesPathRelativePathImageSource(imageUrl));
+            	setNewSourceAndClearSize(new ImagesPathRelativePathImageSource(imageUrl));
                 forward(request, response);
             }
         });
         imageBrowser.forward(request, response);
+    }
+    
+    private void goToCropImage(final HttpServletRequest request, final HttpServletResponse response) 
+    		throws IOException, ServletException {
+    	DispatchCommand returnCommand = new DispatchCommand() {
+			public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+				forward(request, response);		
+			}
+		};
+		
+		Handler<CropRegion> cropHandler = new Handler<CropRegion>() {
+			public void handle(CropRegion cropRegion) {
+				image.setCropRegion(cropRegion);
+				
+				if (cropRegion.isValid()) {
+					image.setWidth(cropRegion.getWidth());
+					image.setHeight(cropRegion.getHeight());
+				} else {
+					image.setWidth(0);
+					image.setHeight(0);
+					
+					forceWidthHeight();
+				}
+			}
+		};
+		
+		ImageCropPage cropPage = new ImageCropPage(returnCommand, cropHandler, image, forcedWidth, forcedHeight);
+		cropPage.forward(request, response);
     }
 
     private void goToImageSearch(final DocumentMapper documentMapper,
@@ -242,7 +325,7 @@ public class ImageEditPage extends OkCancelPage {
         documentFinder.setSelectDocumentCommand(new Handler<Integer>() {
             public void handle(Integer documentIdFound){
                 if ( null != documentIdFound ) {
-                    image.setSourceAndClearSize(new FileDocumentImageSource(documentMapper.getDocumentReference(documentIdFound)));
+                	setNewSourceAndClearSize(new FileDocumentImageSource(documentMapper.getDocumentReference(documentIdFound)));
                 }
             }
         });
@@ -252,6 +335,22 @@ public class ImageEditPage extends OkCancelPage {
         documentFinder.forward(request, response);
     }
 
+    private void setNewSourceAndClearSize(ImageSource imageSource) {
+    	image.setSourceAndClearSize(imageSource);
+        image.setFormat(image.getImageInfo().getFormat());
+        image.setCropRegion(new CropRegion());
+        forceWidthHeight();
+        
+        Format imageFormat = image.getImageInfo().getFormat();
+        boolean allowed = false;
+        for (Format allowedFormat : ALLOWED_FORMATS) {
+        	if (imageFormat == allowedFormat) {
+        		allowed = true;
+        	}
+        }
+        image.setFormat((allowed ? imageFormat : Format.PNG));
+    }
+    
     static boolean userHasImagePermissionsOnDocument(UserDomainObject user, TextDocumentDomainObject document) {
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(document);
         return textDocumentPermissionSet.getEditImages();
@@ -290,7 +389,35 @@ public class ImageEditPage extends OkCancelPage {
         return linkable;
     }
 
-    private static class HeadlineWildcardQueryParser implements QueryParser {
+    public int getForcedWidth() {
+		return forcedWidth;
+	}
+
+	public void setForcedWidth(int forcedWidth) {
+		this.forcedWidth = forcedWidth;
+	}
+
+	public int getForcedHeight() {
+		return forcedHeight;
+	}
+
+	public void setForcedHeight(int forcedHeight) {
+		this.forcedHeight = forcedHeight;
+	}
+
+	public TextDocumentDomainObject getDocument() {
+		return document;
+	}
+
+	public void setImage(ImageDomainObject image) {
+		this.image = image;
+	}
+
+	public Integer getImageIndex() {
+		return imageIndex;
+	}
+
+	private static class HeadlineWildcardQueryParser implements QueryParser {
         public Query parse(String queryString) {
             String[] queryStrings = StringUtils.split(queryString);
             BooleanQuery wildcardsQuery = new BooleanQuery();

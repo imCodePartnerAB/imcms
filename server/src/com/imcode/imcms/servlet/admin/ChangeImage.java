@@ -16,6 +16,7 @@ import imcode.util.Utility;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.ShouldNotBeThrownException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,6 +28,8 @@ public class ChangeImage extends HttpServlet {
 
     public static final String REQUEST_PARAMETER__IMAGE_INDEX = "img";
     public static final String REQUEST_PARAMETER__LABEL = "label";
+    public static final String REQUEST_PARAMETER__WIDTH = "width";
+    public static final String REQUEST_PARAMETER__HEIGHT = "height";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final ImcmsServices imcref = Imcms.getServices();
@@ -35,6 +38,10 @@ public class ChangeImage extends HttpServlet {
         final int imageIndex = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__IMAGE_INDEX));
         final ImageDomainObject image = document.getImage(imageIndex);
         final UserDomainObject user = Utility.getLoggedOnUser(request);
+        int forcedWidth = NumberUtils.toInt(request.getParameter(REQUEST_PARAMETER__WIDTH));
+        int forcedHeight = NumberUtils.toInt(request.getParameter(REQUEST_PARAMETER__HEIGHT));
+        forcedWidth = Math.max(forcedWidth, 0);
+        forcedHeight = Math.max(forcedHeight, 0);
 
         // Check if user has image rights
         if ( !ImageEditPage.userHasImagePermissionsOnDocument(user, document) ) {
@@ -71,7 +78,9 @@ public class ChangeImage extends HttpServlet {
 
         };
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
-        ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true);
+        ImageEditPage imageEditPage = new ImageEditPage(document, image, imageIndex, heading, 
+        		StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, 
+        		returnCommand, true, forcedWidth, forcedHeight);
         imageEditPage.forward(request, response);
 
     }

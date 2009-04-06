@@ -12,6 +12,9 @@ public class Config {
     private File includePath;
     private File filePath;
     private File imagePath;
+    private File imageCachePath;
+    private String imageCacheAllowedPaths;
+    private long imageCacheMaxSize;
     private String imageUrl;
     private String smtpServer;
     private int smtpPort;
@@ -181,4 +184,28 @@ public class Config {
     public void setDenyMultipleUserLogin(boolean denyMultipleUserLogin) {
         this.denyMultipleUserLogin = denyMultipleUserLogin;
     }
+
+	public File getImageCachePath() {
+		return imageCachePath;
+	}
+
+	public void setImageCachePath(File imageCachePath) {
+		this.imageCachePath = imageCachePath;
+	}
+
+	public String getImageCacheAllowedPaths() {
+		return imageCacheAllowedPaths;
+	}
+
+	public void setImageCacheAllowedPaths(String imageCacheAllowedPaths) {
+		this.imageCacheAllowedPaths = imageCacheAllowedPaths;
+	}
+
+	public long getImageCacheMaxSize() {
+		return imageCacheMaxSize;
+	}
+
+	public void setImageCacheMaxSize(long imageCacheMaxSize) {
+		this.imageCacheMaxSize = imageCacheMaxSize;
+	}
 }

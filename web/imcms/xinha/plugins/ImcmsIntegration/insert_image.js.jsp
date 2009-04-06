@@ -13,12 +13,33 @@ Xinha.prototype._insertImage = function(image)
     }
     if ( image )
     {
+        var rel = image.getAttribute("rel"), 
+            url, format, width, height, cropX1, cropY1, cropX2, cropY2;
+        if (rel) {
+            var parts = rel.split(";");
+            if (parts.length == 8) {
+                url = decodeURIComponent(parts[0]);
+                format = parts[1];
+                width = parts[2];
+                height = parts[3];
+                cropX1 = parts[4];
+                cropY1 = parts[5];
+                cropX2 = parts[6];
+                cropY2 = parts[7];
+            }
+        }
+    
         outparam =
         {
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>' : Xinha.is_ie ? editor.stripBaseURL(image.src) : image.getAttribute("src"),
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>' : url, 
+            '<%= ImageEditPage.REQUEST_PARAMETER__FORMAT %>' : format, 
+            '<%= ImageEditPage.REQUEST_PARAMETER__CROP_X1 %>' : cropX1, 
+            '<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y1 %>' : cropY1, 
+            '<%= ImageEditPage.REQUEST_PARAMETER__CROP_X2 %>' : cropX2, 
+            '<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y2 %>' : cropY2, 
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>' : image.alt || image.title,
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>'  : image.style.width.replace(/px/, '') || image.width,
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>'  : image.style.height.replace(/px/, '') || image.height,
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>'  : width || 0,
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>'  : height || 0,
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>' : (image.style.borderWidth || image.border || '').replace(/px/, ''),
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>'  : image.align,
             '<%= ImageEditPage.REQUEST_PARAMETER__VERTICAL_SPACE %>'   : (image.style.marginTop || image.vspace || '').replace(/px/, ''),
@@ -107,6 +128,9 @@ Xinha.prototype._insertImage = function(image)
                             break;
                         case "name":
                             img.id = value;
+                            break;
+                        case "rel":
+                            img.setAttribute("rel", value);
                             break;
                     }
                 }

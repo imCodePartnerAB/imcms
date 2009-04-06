@@ -43,6 +43,9 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -65,6 +68,7 @@ public class Utility {
     public static final ResultSetHandler STRING_ARRAY_HANDLER = new StringArrayResultSetHandler();
     public static final ResultSetHandler STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
     private static final String LOGGED_IN_USER = "logon.isDone";
+    private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
 
     private Utility() {
 
@@ -477,4 +481,30 @@ public class Utility {
         return Imcms.getServices().getLocalizedMessageProvider().getResourceBundle(Utility.getLoggedOnUser(request).getLanguageIso639_2());
     }
 
+    // collects a set of "public static final" constants from a class into a map, 
+    // which then can be exposed to an JSP as a scoped variable
+    public static Map<String, Object> getConstants(Class<?> klass) {
+    	Map<String, Object> constants = new HashMap<String, Object>();
+    	for (Field field : klass.getFields()) {
+    		if ((field.getModifiers() & STATIC_FINAL_MODIFIER_MASK) == STATIC_FINAL_MODIFIER_MASK) {
+    			try {
+    				constants.put(field.getName(), field.get(null));
+    			} catch (Exception ex) {
+    				log.warn(ex.getMessage(), ex);
+				}
+    		}
+    	}
+    	
+    	return constants;
+    }
+    
+    public static String encodeURL(String value) {
+    	try {
+    		return URLEncoder.encode(value, "UTF-8");
+    	} catch (UnsupportedEncodingException ex) {
+    		log.warn(ex.getMessage(), ex);
+    	}
+    	
+    	return null;
+    }
 }

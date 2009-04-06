@@ -6,6 +6,9 @@ import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import imcode.util.image.Format;
+import imcode.util.image.ImageInfo;
+
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -23,6 +26,8 @@ public class ImageDomainObject implements Serializable {
     private int horizontalSpace;
     private String target = "";
     private String linkUrl = "";
+    private Format format;
+    private CropRegion cropRegion = new CropRegion();
 
     public String getName() {
         return name;
@@ -52,6 +57,16 @@ public class ImageDomainObject implements Serializable {
             } catch ( IOException ignored ) {}
         }
         return imageSize;
+    }
+    
+    public ImageInfo getImageInfo() {
+    	if (!isEmpty()) {
+    		try {
+    			return source.getImageInfo();
+    		} catch (IOException ex) {}
+    	}
+    	
+    	return null;
     }
 
     public int getWidth() {
@@ -94,7 +109,11 @@ public class ImageDomainObject implements Serializable {
         return linkUrl;
     }
 
-    public void setName(String image_name) {
+	public Format getFormat() {
+		return format;
+	}
+
+	public void setName(String image_name) {
         this.name = image_name;
     }
 
@@ -138,7 +157,11 @@ public class ImageDomainObject implements Serializable {
         this.linkUrl = image_ref_link;
     }
 
-    public void setSourceAndClearSize(ImageSource source) {
+    public void setFormat(Format format) {
+		this.format = format;
+	}
+
+	public void setSourceAndClearSize(ImageSource source) {
         setSource( source );
         setWidth( 0 );
         setHeight( 0 );
@@ -185,11 +208,20 @@ public class ImageDomainObject implements Serializable {
         return source;
     }
 
-    public boolean equals( Object obj ) {
+    public CropRegion getCropRegion() {
+		return cropRegion;
+	}
+
+	public void setCropRegion(CropRegion cropRegion) {
+		this.cropRegion = cropRegion;
+	}
+
+	public boolean equals( Object obj ) {
         if ( !( obj instanceof ImageDomainObject ) ) {
             return false;
         }
         final ImageDomainObject o = (ImageDomainObject)obj;
+        CropRegion otherCropRegion = o.getCropRegion();
         return new EqualsBuilder().append(source.toStorageString(), o.getSource().toStorageString())
                 .append(name, o.getName())
                 .append(width, o.getWidth())
@@ -202,6 +234,11 @@ public class ImageDomainObject implements Serializable {
                 .append(horizontalSpace, o.getHorizontalSpace())
                 .append(target, o.getTarget())
                 .append(linkUrl, o.getLinkUrl())
+                .append(format, o.getFormat())
+                .append(cropRegion.getCropX1(), otherCropRegion.getCropX1())
+                .append(cropRegion.getCropY1(), otherCropRegion.getCropY1())
+                .append(cropRegion.getCropX2(), otherCropRegion.getCropX2())
+                .append(cropRegion.getCropY2(), otherCropRegion.getCropY2())
                 .isEquals();
    }
 
@@ -211,8 +248,128 @@ public class ImageDomainObject implements Serializable {
                 .append(name).append(width).append(height)
                 .append(border).append(align).append(alternateText)
                 .append(lowResolutionUrl).append(verticalSpace).append(horizontalSpace)
-                .append(target).append(linkUrl)
+                .append(target).append(linkUrl).append(format)
+                .append(cropRegion.getCropX1()).append(cropRegion.getCropY1())
+                .append(cropRegion.getCropX2()).append(cropRegion.getCropY2())
                 .toHashCode();
     }
 
+    
+    public static class CropRegion implements Serializable {
+    	private static final long serialVersionUID = -586488435877347784L;
+    	
+    	private int cropX1;
+    	private int cropY1;
+    	private int cropX2;
+    	private int cropY2;
+    	
+    	private boolean valid;
+    	
+    	
+    	public CropRegion() {
+    		cropX1 = -1;
+    		cropY1 = -1;
+    		cropX2 = -1;
+    		cropY2 = -1;
+    	}
+    	
+    	public CropRegion(int cropX1, int cropY1, int cropX2, int cropY2) {
+    		if (cropX1 > cropX2) {
+    			this.cropX1 = cropX2;
+    			this.cropX2 = cropX1;
+    		} else {
+    			this.cropX1 = cropX1;
+    			this.cropX2 = cropX2;
+    		}
+    		
+    		if (cropY1 > cropY2) {
+    			this.cropY1 = cropY2;
+    			this.cropY2 = cropY1;
+    		} else {
+    			this.cropY1 = cropY1;
+    			this.cropY2 = cropY2;
+    		}
+    		
+    		updateValid();
+    	}
+    	
+    	public void updateValid() {
+    		valid = (cropX1 >= 0 && cropY1 >= 0 && cropX2 >= 0 && cropY2 >= 0 
+					&& cropX1 != cropX2 && cropY1 != cropY2);
+    	}
+    	
+    	public boolean isValid() {
+    		return valid;
+    	}
+    	
+    	public int getCropX1() {
+    		return cropX1;
+    	}
+
+    	public void setCropX1(int cropX1) {
+    		this.cropX1 = cropX1;
+    	}
+
+    	public int getCropY1() {
+    		return cropY1;
+    	}
+
+    	public void setCropY1(int cropY1) {
+    		this.cropY1 = cropY1;
+    	}
+
+    	public int getCropX2() {
+    		return cropX2;
+    	}
+
+    	public void setCropX2(int cropX2) {
+    		this.cropX2 = cropX2;
+    	}
+
+    	public int getCropY2() {
+    		return cropY2;
+    	}
+
+    	public void setCropY2(int cropY2) {
+    		this.cropY2 = cropY2;
+    	}
+    	
+    	public int getWidth() {
+    		return isValid() ? cropX2 - cropX1 : 0;
+    	}
+    	
+    	public int getHeight() {
+    		return isValid() ? cropY2 - cropY1 : 0;
+    	}
+
+    	
+    	@Override
+    	public int hashCode() {
+    		final int prime = 31;
+    		int result = 1;
+    		result = prime * result + cropX1;
+    		result = prime * result + cropY1;
+    		result = prime * result + cropX2;
+    		result = prime * result + cropY2;
+    		
+    		return result;
+    	}
+
+    	@Override
+    	public boolean equals(Object obj) {
+    		if (this == obj) {
+    		    return true;
+    		} else if (obj == null || getClass() != obj.getClass()) {
+    		    return false;
+    		}
+    		
+    		CropRegion other = (CropRegion) obj;
+    		if (cropX1 != other.cropX1 || cropY1 != other.cropY1 || 
+    		        cropX2 != other.cropX2 || cropY2 != other.cropY2) {
+    		    return false;
+    		}
+    		
+    		return true;
+    	}
+    }
 }

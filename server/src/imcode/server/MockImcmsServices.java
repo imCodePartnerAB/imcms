@@ -5,6 +5,8 @@ import com.imcode.db.mock.MockDatabase;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.ImageCacheMapper;
+
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -35,6 +37,7 @@ public class MockImcmsServices implements ImcmsServices {
     private DocumentMapper documentMapper;
     private CategoryMapper categoryMapper;
     private LanguageMapper languageMapper = new LanguageMapper(null, null);
+    private ImageCacheMapper imageCacheMapper;
     private RoleGetter roleGetter;
     private ProcedureExecutor procedureExecutor;
     private Config config = new Config();
@@ -153,6 +156,10 @@ public class MockImcmsServices implements ImcmsServices {
     public LanguageMapper getLanguageMapper() {
         return languageMapper;
     }
+    
+    public ImageCacheMapper getImageCacheMapper() {
+    	return imageCacheMapper;
+    }
 
     public CachingFileLoader getFileCache() {
         return null ;
@@ -213,5 +220,9 @@ public class MockImcmsServices implements ImcmsServices {
 
     public void setProcedureExecutor(ProcedureExecutor procedureExecutor) {
         this.procedureExecutor = procedureExecutor;
+    }
+    
+    public void setImageCacheMapper(ImageCacheMapper mapper) {
+        this.imageCacheMapper = mapper;
     }
 }

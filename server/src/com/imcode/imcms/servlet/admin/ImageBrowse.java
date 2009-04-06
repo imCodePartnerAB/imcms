@@ -6,8 +6,13 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
+import imcode.util.image.Format;
+import imcode.util.image.ImageInfo;
+import imcode.util.image.ImageOp;
 import imcode.util.io.FileUtility;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
@@ -51,13 +56,32 @@ public class ImageBrowse extends HttpServlet {
             imageBrowser.cancel( request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__OK_BUTTON )
                     && null != imageUrl ) {
-            imageBrowser.selectImageUrl( imageUrl, request, response );
+        	verifyImage(imageUrl, imageBrowser, request, response);
         } else {
-            browse( imageUrl, request, response );
+            browse( imageUrl, false, request, response );
+        }
+    }
+    
+    public static void verifyImage(String imageUrl, ImageBrowser imageBrowser,
+    		HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	File imagesRoot = Imcms.getServices().getConfig().getImagePath();
+    	File selectedImage = null;
+    	File image = new File( imagesRoot, imageUrl );
+        if ( FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, image.getParentFile() ) ) {
+            selectedImage = image;
+        }
+        
+        if (selectedImage != null) {
+        	ImageInfo info = ImageOp.getImageInfo(image);
+        	if (info == null) {
+        		browse(imageUrl, true, request, response);
+        	} else {
+        		imageBrowser.selectImageUrl( imageUrl, request, response );
+        	}
         }
     }
 
-    public static void browse( String imageUrl, HttpServletRequest request,
+    public static void browse( String imageUrl, boolean fileNotImageError, HttpServletRequest request,
                                HttpServletResponse response ) throws ServletException, IOException {
         File imagesRoot = Imcms.getServices().getConfig().getImagePath();
         boolean changeDirectoryButtonWasPressed = null
@@ -83,6 +107,10 @@ public class ImageBrowse extends HttpServlet {
         if ( null != request.getParameter( REQUEST_PARAMETER__UPLOAD_BUTTON ) ) {
             upload( request, selectedDirectory, page );
         }
+        
+        if (fileNotImageError) {
+        	page.setErrorMessage(ImageEditPage.ERROR_MESSAGE__FILE_NOT_IMAGE);
+        }
 
         page.setLabel( StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__LABEL ) ) );
         page.forward(request,response) ;
@@ -100,12 +128,25 @@ public class ImageBrowse extends HttpServlet {
             } else if ( destinationFile.exists() ) {
                 page.setErrorMessage(ERROR_MESSAGE__FILE_EXISTS) ;
             } else if ( underImagesRoot ) {
+            	File tempFile = null;
                 try {
-                    fileItem.write( destinationFile );
-                    page.setCurrentImage( destinationFile ) ;
+                	tempFile = File.createTempFile("upload_img", null);
+                	fileItem.write(tempFile);
+                	ImageInfo info = ImageOp.getImageInfo(tempFile);
+                	
+                	if (info != null) {
+                		FileUtils.copyFile(tempFile, destinationFile);
+                        page.setCurrentImage( destinationFile ) ;
+                	} else {
+                		page.setErrorMessage(ImageEditPage.ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES) ;
+                	}
                 } catch ( Exception e ) {
                     throw new UnhandledException( "Failed to write file " + destinationFile
                                                   + ". Possible permissions problem?", e );
+                } finally {
+                	if (tempFile != null) {
+                		tempFile.delete();
+                	}
                 }
             } else {
                 LOG.info( "User " + Utility.getLoggedOnUser( request ) + " was denied uploading to file "
@@ -180,7 +221,7 @@ public class ImageBrowse extends HttpServlet {
             return imageUrl;
         }
 
-        public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+		public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
             request.setAttribute( REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE, this );
             UserDomainObject user = Utility.getLoggedOnUser( request );
             String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP__IMAGE_BROWSE;

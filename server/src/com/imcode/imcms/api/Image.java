@@ -4,8 +4,9 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.util.ImcmsImageUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Properties;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class Image {
 
@@ -16,7 +17,7 @@ public class Image {
     }
 
     public Image() {
-        this( new ImageDomainObject() );
+        this( new ImageDomainObject());
     }
 
     public String getName() {    // html imagetag name
@@ -132,11 +133,11 @@ public class Image {
         return internalImage.getUrlPath( contextPath ) ;
     }
 
-    public String toHtmlTag(HttpServletRequest request, Properties attributes, boolean absolute) {
-        return ImcmsImageUtils.getImageHtmlTag(internalImage, request, attributes, absolute);
+    public String toHtmlTag(HttpServletRequest request, Properties attributes, Integer documentId, Integer imageIndex, boolean absolute) {
+        return ImcmsImageUtils.getImageHtmlTag(documentId, imageIndex, internalImage, request, attributes, absolute);
     }
 
-    public String toHtmlTag(HttpServletRequest request, Properties attributes) {
-        return toHtmlTag(request, attributes, false);
+    public String toHtmlTag(HttpServletRequest request, Properties attributes, Integer documentId, Integer imageIndex) {
+        return toHtmlTag(request, attributes, documentId, imageIndex, false);
     }
 }

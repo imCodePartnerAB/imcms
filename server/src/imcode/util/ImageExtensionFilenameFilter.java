@@ -10,7 +10,13 @@ public class ImageExtensionFilenameFilter implements FilenameFilter {
         boolean jpeg = name.endsWith( ".jpg" ) || name.endsWith( ".jpeg" );
         boolean gif = name.endsWith( ".gif" );
         boolean png = name.endsWith( ".png" );
-        return jpeg || gif || png ;
+        boolean psd = name.endsWith(".psd");
+        boolean svg = name.endsWith(".svg");
+        boolean tiff = name.endsWith(".tif");
+        boolean xcf = name.endsWith(".xcf");
+        boolean pict = name.endsWith(".pct");
+        
+        return jpeg || gif || png || psd || svg || tiff || xcf || pict;
     }
 
 }

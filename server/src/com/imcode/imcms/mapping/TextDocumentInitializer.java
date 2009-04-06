@@ -5,8 +5,11 @@ import imcode.server.document.DirectDocumentReference;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.util.LazilyLoadedObject;
 import imcode.util.Utility;
+import imcode.util.image.Format;
+
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -167,7 +170,8 @@ public class TextDocumentInitializer {
                 documentsImages = new HashMap();
                 DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id,name,image_name,imgurl,"
                                                                                  + "width,height,border,v_space,h_space,"
-                                                                                 + "target,align,alt_text,low_scr,linkurl,type "
+                                                                                 + "target,align,alt_text,low_scr,linkurl,type,"
+                                                                                 + "format, crop_x1, crop_y1, crop_x2, crop_y2  "
                                                                                  + "FROM images WHERE meta_id ", documentIds, new ResultSetHandler() {
                     public Object handle(ResultSet rs) throws SQLException {
                         while ( rs.next() ) {
@@ -193,6 +197,10 @@ public class TextDocumentInitializer {
                             image.setLowResolutionUrl(rs.getString(13));
                             image.setLinkUrl(rs.getString(14));
                             int imageType = rs.getInt(15);
+                            image.setFormat(Format.findFormat(rs.getShort(16)));
+                            
+                            CropRegion region = new CropRegion(rs.getInt(17), rs.getInt(18), rs.getInt(19), rs.getInt(20));
+                            image.setCropRegion(region);
 
                             if ( StringUtils.isNotBlank(imageSource) ) {
                                 if ( ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {

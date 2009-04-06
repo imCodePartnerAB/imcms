@@ -27,7 +27,7 @@ public class EditImage extends HttpServlet {
                 request.getRequestDispatcher(returnPath).forward(request, response);
             }
         };
-        ImageEditPage imageEditPage = new ImageEditPage(null, null, null, "", getServletContext(), imageCommand, returnCommand, false);
+        ImageEditPage imageEditPage = new ImageEditPage(null, null, null, null, "", getServletContext(), imageCommand, returnCommand, false, 0, 0);
         imageEditPage.updateFromRequest(request);
         imageEditPage.forward(request, response);
     }

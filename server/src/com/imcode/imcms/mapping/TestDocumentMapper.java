@@ -57,6 +57,8 @@ public class TestDocumentMapper extends TestCase {
         documentMapper.setDocumentIndex(documentIndex);
         services.setDocumentMapper(documentMapper);
         services.setCategoryMapper(categoryMapper);
+        ImageCacheMapper imageCacheMapper = new ImageCacheMapper(database);
+        services.setImageCacheMapper(imageCacheMapper);
     }
 
     private TextDocumentDomainObject createTextDocument(int documentId) {

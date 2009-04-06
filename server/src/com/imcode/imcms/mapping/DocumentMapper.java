@@ -253,6 +253,12 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     private DatabaseCommand createDeleteDocumentCommand(final DocumentDomainObject document) {
+    	if (document instanceof TextDocumentDomainObject) {
+    		TextDocumentDomainObject textDoc = (TextDocumentDomainObject) document;
+    		
+    		imcmsServices.getImageCacheMapper().deleteDocumentImagesCache(document.getId(), textDoc.getImages());
+    	}
+    	
         final String metaIdStr = "" + document.getId();
         final String metaIdColumn = "meta_id";
         return new CompositeDatabaseCommand(new DatabaseCommand[]{

@@ -4,6 +4,7 @@ import com.imcode.db.Database;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
@@ -90,6 +91,8 @@ public interface ImcmsServices {
     CategoryMapper getCategoryMapper();
 
     LanguageMapper getLanguageMapper();
+    
+    ImageCacheMapper getImageCacheMapper();
 
     CachingFileLoader getFileCache();
 
