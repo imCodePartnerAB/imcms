@@ -2,7 +2,6 @@ package com.imcode.imcms.api;
 
 import java.util.Date;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -17,7 +16,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- * Document version.
+ * Represents document's version.
  */
 @Entity(name="DocumentVersion")
 @Table(name="meta_version")
@@ -30,7 +29,7 @@ import javax.persistence.TemporalType;
 	@NamedQuery(name="DocumentVersion.getByDocumentIdAndVersionTag", 
 			query="SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId " +
 					"AND v.versionTag = :versionTag"),
-    // Unique result				
+    // Unique result				o
 	@NamedQuery(name="DocumentVersion.getByDocumentIdAndVersion", 
 			query="SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId " +
 					"AND v.version = :version"),
@@ -98,20 +97,71 @@ public class DocumentVersion implements Cloneable {
 		this.documentId = documentId;
 	}
 
+	
+	/**
+	 * Use getNumber instead
+	 */
+	@Deprecated
 	public Integer getVersion() {
 		return version;
 	}
 
+	
+	/**
+	 * Use setNumber instead
+	 */	
+	@Deprecated
 	public void setVersion(Integer version) {
 		this.version = version;
 	}
+	
+	/**
+	 * @return verswion number.
+	 */
+	public Integer getNumber() {
+		return getVersion();
+	}
 
+	
+	/**
+	 * Sets version number.
+	 * 
+	 * @param number version number
+	 */	
+	public void setNumber(Integer number) {
+		setVersion(number);
+	}	
+
+	/**
+	 * Use getTag instead
+	 */	
+	@Deprecated	
 	public DocumentVersionTag getVersionTag() {
 		return versionTag;
 	}
 
+	/**
+	 * Use setTag instead
+	 */	
+	@Deprecated	
 	public void setVersionTag(DocumentVersionTag versionTag) {
 		this.versionTag = versionTag;
+	}
+	
+	/** 
+	 * @return document version tag.
+	 */
+	public DocumentVersionTag getTag() {
+		return versionTag;
+	}
+
+	/** 
+	 * Sets document version tag.
+	 * 
+	 * @param tag document version tag.
+	 */
+	public void setTag(DocumentVersionTag tag) {
+		setVersionTag(tag);
 	}
 
 	public Integer getUserId() {

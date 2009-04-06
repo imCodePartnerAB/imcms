@@ -3,7 +3,7 @@ package com.imcode.imcms.api;
 /**
  * Document version tags.
  *   
- * For every document there might be 
+ * For every document version in the system have: 
  *   - at most one WORKING version
  *   - at most one PUBLISHED version
  *   - unlimited numbers of POSTPONED versions

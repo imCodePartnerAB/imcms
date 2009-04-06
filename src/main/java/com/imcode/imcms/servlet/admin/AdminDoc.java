@@ -54,7 +54,7 @@ public class AdminDoc extends HttpServlet {
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         UserDomainObject user = Utility.getLoggedOnUser( req );    
         
-        DocumentDomainObject document = documentMapper.getDocument( metaId , user.getDocumentShowSettings().getVersionShowMode());
+        DocumentDomainObject document = documentMapper.getDocument( metaId , user.getDocumentShowSettings().getVersionSpecifier());
         
         // An admin may be in published mode, but published version may not exist.
         if (document == null) {

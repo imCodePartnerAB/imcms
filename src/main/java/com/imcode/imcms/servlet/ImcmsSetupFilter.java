@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.imcode.imcms.api.DocumentVersionSpecifier;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.dao.LanguageDao;
@@ -232,10 +233,9 @@ public class ImcmsSetupFilter implements Filter {
         if (version != null) {
         	DocumentShowSettings settings = user.getDocumentShowSettings();
         	if (NumberUtils.isDigits(version)) {
-        		settings.setVersionShowMode(DocumentShowSettings.VersionShowMode.CUSTOM);
-        		settings.setVersion(Integer.valueOf(version));
+        		settings.setVersionSpecifier(DocumentVersionSpecifier.createCustomSpecifier(Integer.valueOf(version)));
         	} else {        	
-        		settings.setVersionShowMode(DocumentShowSettings.VersionShowMode.valueOf(version.toUpperCase()));
+        		settings.setVersionSpecifier(DocumentVersionSpecifier.createUniqueSpecifier(version));
         	}
         }                 	
     }

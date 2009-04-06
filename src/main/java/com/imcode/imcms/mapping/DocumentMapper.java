@@ -61,7 +61,7 @@ import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.DocumentVersionTag;
+import com.imcode.imcms.api.DocumentVersionSpecifier;
 import com.imcode.imcms.api.I18nDisabledException;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
@@ -105,23 +105,29 @@ public class DocumentMapper implements DocumentGetter {
     private ImcmsServices imcmsServices;
     
     /**
-     * Gets docuemtns directly form a database.
+     * Gets documentns directly form a database bypassing cache.
+     * Instantiated using SpringFramework.
      */
     private DatabaseDocumentGetter databaseDocumentGetter;
     
     /** 
-     * Decorates and delegates calls databaseDocumentGetter.
+     * Decorates and delegates calls to databaseDocumentGetter.
      */
     private CachingDocumentGetter cachingDocumentGetter;
     
+    /**
+     * Provides document saving and updating routines. 
+     * Instantiated using SpringFramework.
+     */
     private DocumentSaver documentSaver ;
+    
     private CategoryMapper categoryMapper;
 
     private LazilyLoadedObject sections;
     private static final SectionNameComparator SECTION_NAME_COMPARATOR = new SectionNameComparator();
 
     /**
-     * This constructor is inteded for unit testing. 
+     * Empty constructor for unit testing. 
      */
     public DocumentMapper() {}
     
@@ -328,8 +334,8 @@ public class DocumentMapper implements DocumentGetter {
      * 
      * Returns document for showing by document id and version. 
      */
-    public DocumentDomainObject getDocumentForShowing(Integer documentId, Integer version, UserDomainObject user) {
-    	DocumentDomainObject document = getDocument(documentId, version);
+    public DocumentDomainObject getDocumentForShowing(Integer documentId, Integer versionNumber, UserDomainObject user) {
+    	DocumentDomainObject document = getDocument(documentId, versionNumber);
     	
     	return createDocumentShowInterceptor(document, user);
 	}
@@ -485,22 +491,22 @@ public class DocumentMapper implements DocumentGetter {
     }
     
     
-    public DocumentDomainObject getDocumentForShowing(String documentIdString, Integer documentVersion, UserDomainObject user) {
-    	DocumentDomainObject document = getDocument(documentIdString, documentVersion);
+    public DocumentDomainObject getDocumentForShowing(String documentIdString, Integer versionNumber, UserDomainObject user) {
+    	DocumentDomainObject document = getDocument(documentIdString, versionNumber);
     	
     	return createDocumentShowInterceptor(document, user);
     }
     
-    public DocumentDomainObject getDocument(String documentIdString, Integer documentVersion) {
+    public DocumentDomainObject getDocument(String documentIdString, Integer versionNumber) {
         DocumentDomainObject document = null;
 
         if (null != documentIdString) {
             if ( NumberUtils.isDigits( documentIdString ) ) {
             	Integer documentId = new Integer(documentIdString);
             	
-                document = documentVersion == null
+                document = versionNumber == null
                 	? getDocument(documentId)
-                	: getDocument(documentId, documentVersion); 
+                	: getDocument(documentId, versionNumber); 
             } else {
                 String[] documentIds = (String[]) getDatabase().execute(
                         new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
@@ -510,9 +516,9 @@ public class DocumentMapper implements DocumentGetter {
                 if(documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {
                 	Integer documentId = new Integer(documentIds[0]);
                 	
-                    document = documentVersion == null
+                    document = versionNumber == null
                     	? getDocument(documentId)
-                    	: getDocument(documentId, documentVersion);
+                    	: getDocument(documentId, versionNumber);
                 }
             }
         }
@@ -586,10 +592,11 @@ public class DocumentMapper implements DocumentGetter {
     
     
     /** 
-     * @return tagged version of document.
+     * @return adviced??? published, working or custom document version depending on user's view settings
+     * or null if document does not exist
      */
-    public DocumentDomainObject getDocument(Integer documentId, DocumentShowSettings.VersionShowMode versionShowMode) {
-    	switch (versionShowMode) {
+    public DocumentDomainObject getDocument(Integer documentId, DocumentVersionSpecifier versionSpecifier) {
+    	switch (versionSpecifier.getTagSpecifier()) {
 		case PUBLISHED:
 			return getDocument(documentId);
 			
@@ -603,7 +610,7 @@ public class DocumentMapper implements DocumentGetter {
     
     /** 
      * @return tagged version of document.
-     */
+
     public DocumentDomainObject getDocument(Integer documentId, DocumentVersionTag versionTag) {
     	switch (versionTag) {
 		case PUBLISHED:
@@ -616,7 +623,8 @@ public class DocumentMapper implements DocumentGetter {
 			throw new NotImplementedException();
 		}
     }    
-
+     */
+    
     /**
      * Returns latest version of a document.
      *  
@@ -644,7 +652,11 @@ public class DocumentMapper implements DocumentGetter {
     }    
     
     /**
-     * Returns published version of document.
+     * Returns published version of a document.
+     * 
+     * @param documentId document id
+     * 
+     * @return published version of a document or null if document does not exist
      */
     public DocumentDomainObject getDocument(Integer documentId) { 
         return cachingDocumentGetter.getDocument(documentId);
@@ -652,6 +664,10 @@ public class DocumentMapper implements DocumentGetter {
             
     /**
      * Returns working version of a document.
+     * 
+     * @param documentId document id
+     * 
+     * @return published version of a document or null if document does not exist
      */
     public DocumentDomainObject getWorkingDocument(Integer documentId) {
     	return cachingDocumentGetter.getWorkingDocument(documentId);
@@ -683,10 +699,12 @@ public class DocumentMapper implements DocumentGetter {
     */
     
     /**
-     * Returns document for showing.
+     * Returns publlished or working (depending on user show settings) document for showing.
      * 
      * @param documentIdString document's id or alias
-     * @param user an user requesting document    
+     * @param user an user requesting a document 
+     * 
+     * @return publlished or working adviced document or null if document does not exist.  
      */
     public DocumentDomainObject getDocumentForShowing(String documentIdString, UserDomainObject user) {
         DocumentDomainObject document = null;
@@ -694,43 +712,44 @@ public class DocumentMapper implements DocumentGetter {
         if (null != documentIdString) {
             if ( NumberUtils.isDigits( documentIdString ) ) {
                 document = getDocumentForShowing(new Integer(documentIdString), user);
-            }else{
+            } else {
                 String[] documentIds = (String[]) getDatabase().execute(
                         new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
                                 new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdString.toLowerCase() },
                                 Utility.STRING_ARRAY_HANDLER));
 
-                if(documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {
+                if (documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {
                     document = getDocumentForShowing(Integer.valueOf(documentIds[0]), user);
                 }
             }
         }
+        
         return document;    	
     }
     
     /**
-     * Returns document's versions 
+     * @return all document's versions 
      */
     public List<DocumentVersion> getDocumentVersions(Integer documentId) {
     	return documentSaver.getMetaDao().getDocumentVersions(documentId);
     }
     
-    
-    
-    
+        
     /** 
-     * Returns published or working document depending on user's view settings
+     * Returns published, working or custom document version depending on user's view settings
      * and i18n meta settings. 
      * 
-     * @param documentId document id.
+     * @param documentId document id
+     * @param user an user requesting a document 
      *  
-     * @return document.
+     * @return adviced published, working or custom document version depending on user's view settings
+     * or null if document does not exist
      */
     public DocumentDomainObject getDocumentForShowing(Integer documentId, UserDomainObject user) {
     	DocumentDomainObject document = null;
     	DocumentShowSettings showSettings = user.getDocumentShowSettings();
 		
-    	switch (showSettings.getVersionShowMode()) {
+    	switch (showSettings.getVersionSpecifier().getTagSpecifier()) {
 		case PUBLISHED:	
 			document = getDocument(documentId);
 			break;
@@ -757,7 +776,7 @@ public class DocumentMapper implements DocumentGetter {
 			break;			
 
 		case CUSTOM:
-			document = getDocument(documentId, showSettings.getVersion());
+			document = getDocument(documentId, showSettings.getVersionSpecifier().getVersionNumber());
 			break;
 			
 		default:
