@@ -360,7 +360,7 @@
 -->
     </target>
 
-    <target name="classes" depends="init">
+    <target name="classes" depends="init, copy-dependencies-to-project">
 
         <mkdir dir="${classes}"/>
 
