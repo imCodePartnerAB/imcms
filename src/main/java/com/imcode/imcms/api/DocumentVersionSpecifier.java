@@ -12,13 +12,13 @@ public class DocumentVersionSpecifier {
 	/**
 	 * Predefined PUBLISHED document specifier.
 	 */
-	public static final DocumentVersionSpecifier PUBLISHED_VERSION_SPECIFIER = 
+	public static final DocumentVersionSpecifier PUBLISHED = 
 		new DocumentVersionSpecifier(TagSpecifier.PUBLISHED, null);
 	
 	/**
 	 * Predefined WORKING document specifier.
 	 */	
-	public static final DocumentVersionSpecifier WORKING_VERSION_SPECIFIER = 
+	public static final DocumentVersionSpecifier WORKING = 
 		new DocumentVersionSpecifier(TagSpecifier.WORKING, null);	
 	
 	/**
@@ -84,9 +84,9 @@ public class DocumentVersionSpecifier {
 		uniueTagSpecifierName = uniueTagSpecifierName.toUpperCase();
 		
 		if (uniueTagSpecifierName.equals(TagSpecifier.PUBLISHED.name())) {
-			return PUBLISHED_VERSION_SPECIFIER;
+			return PUBLISHED;
 		} else if (uniueTagSpecifierName.equals(TagSpecifier.WORKING.name())) {
-			return WORKING_VERSION_SPECIFIER;
+			return WORKING;
 		}
 		
 		throw new IllegalArgumentException(String.format("%s is not a unique tag specifier name. Legal values are: %s and %s", uniueTagSpecifierName, TagSpecifier.PUBLISHED, TagSpecifier.WORKING));

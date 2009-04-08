@@ -199,9 +199,9 @@ Check if published version exists
       <tr>
         <td>
           <%
-          if (user.getDocumentShowSettings().getVersionShowMode() == DocumentShowSettings.VersionShowMode.PUBLISHED) {
+          if (user.getDocumentShowSettings().getVersionSpecifier() == DocumentVersionSpecifier.PUBLISHED) {
           %>
-              <b>#This is PUBLISHED version#<b>
+              <b>#This is PUBLISHED version#</b>
           <% 
           } else if (Imcms.getServices().getDocumentMapper().hasPublishedVersion(document.getId())) { 
           %>
@@ -215,9 +215,9 @@ Check if published version exists
       
         <td>
           <%
-          if (user.getDocumentShowSettings().getVersionShowMode() == DocumentShowSettings.VersionShowMode.WORKING) {
+          if (user.getDocumentShowSettings().getVersionSpecifier() == DocumentVersionSpecifier.WORKING) {
           %>
-              <b>#This is WORKING version#<b>
+              <b>#This is WORKING version#</b>
           <% 
           } else { 
           %>
@@ -230,7 +230,7 @@ Check if published version exists
         </td>
       
 	    <% 
-	    if (user.canEdit(document) && user.getDocumentShowSettings().getVersionShowMode() == DocumentShowSettings.VersionShowMode.WORKING) {
+	    if (user.canEdit(document) && user.getDocumentShowSettings().getVersionSpecifier() == DocumentVersionSpecifier.WORKING) {
 	    %>
          <td>
            <a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId()%>&flags=4194304">

@@ -24,7 +24,7 @@ public class DocumentShowSettings {
 	 * 
 	 * Only logged in user with appropriate permissions can change the value.
 	 */
-	private DocumentVersionSpecifier versionSpecifier = DocumentVersionSpecifier.PUBLISHED_VERSION_SPECIFIER;
+	private DocumentVersionSpecifier versionSpecifier = DocumentVersionSpecifier.PUBLISHED;
 
 	public DocumentVersionSpecifier getVersionSpecifier() {
 		return versionSpecifier;
