@@ -107,13 +107,13 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
         Integer documentId = textDocument.getMeta().getId();
-        Integer documentVersion = textDocument.getMeta().getVersion().getVersion();
+        Integer documentVersionNumber = textDocument.getMeta().getVersion().getNumber();
 
         for (Map<Integer, TextDomainObject> map: textDocument.getAllTexts().values()) {
         	for (TextDomainObject text: map.values()) {
                 if (text.isModified()) {                	 
                 	text.setMetaId(documentId);
-                	text.setMetaVersion(documentVersion);
+                	text.setMetaVersion(documentVersionNumber);
                     textDao.saveText(text);
                     textDao.saveTextHistory(documentId, text, user); 
                 }        		

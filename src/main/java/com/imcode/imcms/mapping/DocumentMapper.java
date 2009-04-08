@@ -86,7 +86,7 @@ import com.imcode.imcms.mapping.aop.TextDocumentAspect;
  * getDocument returns document instance unmodified.
  * getDocumentForShowing will throw an exception if a user who have requested 
  * the document does not has appropriate permissions or settings. 
- * Additionally returned document instance is adviced using AOP interceptors  
+ * Additionally returned document instance is advised using AOP interceptors  
  * to provide workaround for legacy code which does not support translated 
  * (i18n) content - currently this is a prototype implementation.
  */
@@ -105,7 +105,7 @@ public class DocumentMapper implements DocumentGetter {
     private ImcmsServices imcmsServices;
     
     /**
-     * Gets documentns directly form a database bypassing cache.
+     * Gets documents directly form a database bypassing cache.
      * Instantiated using SpringFramework.
      */
     private DatabaseDocumentGetter databaseDocumentGetter;
@@ -275,6 +275,7 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * Saves published or working document.
+     * @throws NotImplementedException if document has a custom version.
      */
     public void saveDocument(DocumentDomainObject document,
                              final UserDomainObject user) throws DocumentSaveException , NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException
@@ -282,7 +283,7 @@ public class DocumentMapper implements DocumentGetter {
 
     	DocumentDomainObject oldDocument;
     	
-    	switch (document.getMeta().getVersion().getVersionTag()) {
+    	switch (document.getMeta().getVersion().getTag()) {
 		case PUBLISHED:
 			oldDocument = getDocument(document.getId());			
 			break;
@@ -309,30 +310,40 @@ public class DocumentMapper implements DocumentGetter {
     
     
     /**
-     * Creates working document from existing one.
+     * Creates document's working version from previous (existing) version.
      * 
-     * Existing document can have any version.  
+     * @param documentId document id
+     * @param documentVersion any existing document version
+     * 
+     * @return new working version of a document from previous (existing) version.
      */
     // TODO: Check exceptions 
-    public void createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) 
-    throws DocumentSaveException, NoPermissionToEditDocumentException {	
+    public void createWorkingDocument(Integer documentId, Integer documentVersion, UserDomainObject user) 
+    throws DocumentSaveException, NoPermissionToEditDocumentException {
+    	DocumentDomainObject document = getDocument(documentId, documentVersion);
+    	
 	    documentSaver.createWorkingDocumentFromExisting(document, user);
 	}
             
     
     /**
-     * Returns document by id and version. 
+     * Returns document by its id and version.
+     * 
+     * Expensive call - returned document is not cached.
+     * 
+     * @param documentId document id
+     * @param documentVersion document version. If not given (null) then published version is returned.
+     * @return document or null if document can not be found.  
      */
-    public DocumentDomainObject getDocument(Integer documentId, Integer version) {
-    	return version == null 
-    		? getDocument(documentId)
-    		: cachingDocumentGetter.getDocument(documentId, version);
+    public DocumentDomainObject getDocument(Integer documentId, Integer documentVersion) {
+    	return databaseDocumentGetter.getDocument(documentId, documentVersion);
 	}
     
     
     /**
-     * 
      * Returns document for showing by document id and version. 
+     * 
+     * Expensive call - returned document is not cached.
      */
     public DocumentDomainObject getDocumentForShowing(Integer documentId, Integer versionNumber, UserDomainObject user) {
     	DocumentDomainObject document = getDocument(documentId, versionNumber);
@@ -592,8 +603,7 @@ public class DocumentMapper implements DocumentGetter {
     
     
     /** 
-     * @return adviced??? published, working or custom document version depending on user's view settings
-     * or null if document does not exist
+     * @return document of version according to version specifier.
      */
     public DocumentDomainObject getDocument(Integer documentId, DocumentVersionSpecifier versionSpecifier) {
     	switch (versionSpecifier.getTagSpecifier()) {
@@ -603,32 +613,15 @@ public class DocumentMapper implements DocumentGetter {
 		case WORKING:
 			return getWorkingDocument(documentId);			
 
-		default:
-			throw new NotImplementedException();
+		default: // CUSTOM:
+			return getDocument(documentId, versionSpecifier.getVersionNumber());
 		}
     }
-    
-    /** 
-     * @return tagged version of document.
-
-    public DocumentDomainObject getDocument(Integer documentId, DocumentVersionTag versionTag) {
-    	switch (versionTag) {
-		case PUBLISHED:
-			return getDocument(documentId);
-			
-		case WORKING:
-			return getWorkingDocument(documentId);			
-
-		default:
-			throw new NotImplementedException();
-		}
-    }    
-     */
     
     /**
      * Returns latest version of a document.
      *  
-     * Please note this call is expenisve since returned document is not cached.
+     * Please note this call is expensive since returned document is not cached.
      * 
      * @param documentId document id
      * @returns latest version of a document
@@ -640,7 +633,7 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Returns latest version of a document.
      *  
-     * Please note this call is expenisve since returned document is not cached.
+     * Please note this call is expensive since returned document is not cached.
      * 
      * @param documentId document id
      * @returns latest version of a document
@@ -667,11 +660,11 @@ public class DocumentMapper implements DocumentGetter {
      * 
      * @param documentId document id
      * 
-     * @return published version of a document or null if document does not exist
+     * @return working version of a document or null if document does not exist
      */
     public DocumentDomainObject getWorkingDocument(Integer documentId) {
     	return cachingDocumentGetter.getWorkingDocument(documentId);
-    }
+    }    
     
     /**
      * If working document does not exists creates one from public version.
@@ -742,7 +735,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param documentId document id
      * @param user an user requesting a document 
      *  
-     * @return adviced published, working or custom document version depending on user's view settings
+     * @return advised published, working or custom document version depending on user's view settings
      * or null if document does not exist
      */
     public DocumentDomainObject getDocumentForShowing(Integer documentId, UserDomainObject user) {
@@ -760,11 +753,9 @@ public class DocumentMapper implements DocumentGetter {
 			if (document == null) {
 				document = getDocument(documentId);
 				
-				if (document != null) {
-					document = document.clone();
-					
+				if (document != null) {					
 					try {
-						createWorkingDocumentFromExisting(document, user);
+						createWorkingDocument(documentId, document.getMeta().getVersion().getNumber(), user);
 					} catch (DocumentSaveException e) {
 						throw new RuntimeException(e);
 					}

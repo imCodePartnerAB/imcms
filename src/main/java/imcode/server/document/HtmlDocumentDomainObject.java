@@ -19,5 +19,4 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
     public void accept( DocumentVisitor documentVisitor ) {
         documentVisitor.visitHtmlDocument( this );
     }
-
 }

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.api.DocumentVersionSpecifier;
 import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
@@ -36,9 +37,9 @@ public class MetaDao extends HibernateTemplate {
 	
 	
 	/**
-	 * Creates next working version of a document.
+	 * Creates and returns working version of a document.
 	 * 
-	 * If document has a working version tag it as postponed.  
+	 * Tags existing working version as postponed if it is already present.
 	 * 
 	 * @return next document version.
 	 * 
@@ -46,7 +47,7 @@ public class MetaDao extends HibernateTemplate {
 	 * @see DocumentMapper.createWorkingDocumentFromExisting
 	 */
 	@Transactional
-	public synchronized DocumentVersion createNextWorkingVersion(Integer documentId, Integer userId) {
+	public synchronized DocumentVersion createWorkingVersion(Integer documentId, Integer userId) {
 		DocumentVersion nextVersion;
 		DocumentVersion latestVersion = (DocumentVersion)getSession().getNamedQuery("DocumentVersion.getLastVersion")
 			.setParameter("documentId", documentId)
@@ -56,10 +57,10 @@ public class MetaDao extends HibernateTemplate {
 			nextVersion = new DocumentVersion(documentId, 1, DocumentVersionTag.WORKING);			
 		} else {
 			nextVersion = new DocumentVersion(documentId, 
-					latestVersion.getVersion() + 1, DocumentVersionTag.WORKING);
+					latestVersion.getNumber() + 1, DocumentVersionTag.WORKING);
 			
-			if (latestVersion.getVersionTag() == DocumentVersionTag.WORKING) {
-				latestVersion.setVersionTag(DocumentVersionTag.POSTPONED);
+			if (latestVersion.getTag() == DocumentVersionTag.WORKING) {
+				latestVersion.setTag(DocumentVersionTag.POSTPONED);
 				update(latestVersion);
 			} 
 		}
@@ -107,19 +108,15 @@ public class MetaDao extends HibernateTemplate {
 	 * @return Meta
 	 */
 	@Transactional
-	public Meta getMeta(Integer id, DocumentVersionTag versionTag) {
-		Query query = getSession().createQuery("SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId AND v.versionTag = :versionTag")
-			.setParameter("documentId", id)
-			.setParameter("versionTag", versionTag);
-	
-		DocumentVersion version = (DocumentVersion)query.uniqueResult();
-		
-		if (version == null) {
-			return null;
-		} else {
-			Meta meta = getMeta(id);
-			meta.setVersion(version);			
-			return initI18nMetas(meta);
+	public Meta getMeta(Integer documentId, DocumentVersionSpecifier versionSpecifier) {
+		switch (versionSpecifier.getTagSpecifier()) {
+			case PUBLISHED:
+				return getPublishedMeta(documentId);
+			case WORKING:
+				return getWorkingMeta(documentId);	
+			default: // CUSTOM:
+				return getMeta(documentId, versionSpecifier.getVersionNumber());
+				
 		}
 	}	
 	
@@ -132,7 +129,7 @@ public class MetaDao extends HibernateTemplate {
 	 */
 	@Transactional
 	public Meta getPublishedMeta(Integer documentId) {
-		return getMeta(documentId, DocumentVersionTag.PUBLISHED); 
+		return getMeta(documentId, DocumentVersionSpecifier.PUBLISHED); 
 	}
 	
 	
@@ -145,7 +142,7 @@ public class MetaDao extends HibernateTemplate {
 	 */
 	@Transactional
 	public Meta getWorkingMeta(Integer documentId) {
-		return getMeta(documentId, DocumentVersionTag.WORKING); 
+		return getMeta(documentId, DocumentVersionSpecifier.WORKING); 
 	} 
 
 	

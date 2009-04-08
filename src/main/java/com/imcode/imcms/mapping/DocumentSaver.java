@@ -19,12 +19,13 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
 
 /**
  * To enable transactions support this class must be instantiated using spring framework.
+ * 
+ * This class acts as DocumentMapper's helper and its API must not be used directly.  
  */
 public class DocumentSaver {
 
@@ -80,11 +81,14 @@ public class DocumentSaver {
     /**
      * Published working version of a document.
      */
-    // TODO: handle DocumentSaveException, NoPermissionToEditDocumentException
+    // TODO: Should throw NoPermissionToEditDocumentException ?
     @Transactional    
-    public void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) {
+    public void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) 
+    throws DocumentSaveException {
     	try {
     		metaDao.publishWorkingDocument(document.getMeta().getId());
+    	} catch (RuntimeException e) {
+    		throw new DocumentSaveException(e);
     	} finally {
     		documentMapper.invalidateDocument(document);
     	}
@@ -167,7 +171,7 @@ public class DocumentSaver {
         DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
         
-        DocumentVersion documentVersion = metaDao.createNextWorkingVersion(documentId, user.getId());
+        DocumentVersion documentVersion = metaDao.createWorkingVersion(documentId, user.getId());
         textDocument.getMeta().setVersion(documentVersion);
         
         visitor.updateTextDocumentTexts(textDocument, null, user);
@@ -199,7 +203,7 @@ public class DocumentSaver {
         document.setDependenciesMetaIdToNull();         
         Meta meta = saveMeta(document);
         
-        DocumentVersion version = metaDao.createNextWorkingVersion(meta.getId(), user.getId());
+        DocumentVersion version = metaDao.createWorkingVersion(meta.getId(), user.getId());
         document.getMeta().setVersion(version);        
                 
         document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
@@ -268,6 +272,13 @@ public class DocumentSaver {
     }
     
 
+    /**
+     * Various non security checks. 
+     * 
+     * @param document
+     * @throws NoPermissionInternalException
+     * @throws DocumentSaveException
+     */
     private void checkDocumentForSave(DocumentDomainObject document) throws NoPermissionInternalException, DocumentSaveException {
 
         documentMapper.getCategoryMapper().checkMaxDocumentCategoriesOfType(document);

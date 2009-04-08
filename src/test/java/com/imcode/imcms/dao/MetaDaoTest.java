@@ -92,7 +92,7 @@ public class MetaDaoTest extends DaoTest {
 		assertNotNull(publishedDocument);
 		
 		// create working version
-		documentMapper.createWorkingDocumentFromExisting(publishedDocument, user);
+		documentMapper.createWorkingDocument(META_ID, publishedDocument.getMeta().getVersion().getNumber(), user);
 		
 		// now there should be a working version		
 		workingDocument = documentMapper.getWorkingDocument(META_ID);		
@@ -102,12 +102,12 @@ public class MetaDaoTest extends DaoTest {
 		DocumentVersion publishedVersion = publishedDocument.getMeta().getVersion();
 		DocumentVersion workingVersion = workingDocument.getMeta().getVersion();
 		
-		assertTrue(workingVersion.getVersion() == publishedVersion.getVersion() - 1);
+		assertTrue(workingVersion.getNumber() == publishedVersion.getNumber() - 1);
 				
 		documentMapper.publishWorkingDocument(workingDocument, user);		
 		// check if it was published and published version archived
 		
-		DocumentDomainObject archivedDocument = documentMapper.getDocument(META_ID, publishedVersion.getVersion());
+		DocumentDomainObject archivedDocument = documentMapper.getDocument(META_ID, publishedVersion.getNumber());
 		DocumentDomainObject publishedWorkingDocument = documentMapper.getDocument(META_ID);
 		
 		assertNotNull(archivedDocument);
@@ -117,7 +117,7 @@ public class MetaDaoTest extends DaoTest {
 		DocumentVersion archivedVersion = archivedDocument.getMeta().getVersion();
 		DocumentVersion publishedWorkingVersion = publishedWorkingDocument.getMeta().getVersion();		
 		
-		assertTrue(archivedVersion.getVersion() == publishedWorkingVersion.getVersion() - 1);
+		assertTrue(archivedVersion.getNumber() == publishedWorkingVersion.getNumber() - 1);
 	}
 
 	@Test

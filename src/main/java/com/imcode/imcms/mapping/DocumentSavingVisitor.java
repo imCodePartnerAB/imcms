@@ -12,6 +12,9 @@ import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.mapping.orm.HtmlReference;
 import com.imcode.imcms.mapping.orm.UrlReference;
 
+/**
+ * Not a public API. Must not be used directly.
+ */
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     private DocumentDomainObject oldDocument;
