@@ -118,9 +118,6 @@
     <taskdef name="checksumfiles" classname="com.imcode.ant.tasks.ChecksumFiles" classpathref="pom.classpath"/>
     <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask" classpathref="pom.classpath"/>
     <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="pom.classpath"/>
-    <taskdef name="install" classname="org.apache.catalina.ant.InstallTask" classpathref="pom.classpath"/>
-    <taskdef name="remove" classname="org.apache.catalina.ant.RemoveTask" classpathref="pom.classpath"/>
-    <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" classpathref="pom.classpath"/>
 
     <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
 
@@ -310,23 +307,6 @@
         <copy file="${war}" todir="${deployroot}" overwrite="yes"/>
     </target>
 
-    <!-- Tomcat targets -->
-
-    <target name="tomcat-deploy" description="Deploy in running instance of tomcat">
-        <install url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
-           path="/${webappname}" war="file:${tomcat-deployroot-local-directory}/${webappname}"/>
-    </target>
-
-    <target name="tomcat-undeploy" description="Remove build in running instance of tomcat">
-        <remove url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
-            path="/${webappname}"/>
-    </target>
-
-    <target name="tomcat-reload" description="Reloads the webapp in tomcat">
-        <reload url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
-            path="/${webappname}"/>
-    </target>
-
     <!-- Component targets used in build -->
 
     <target name="apidocs">
@@ -503,7 +483,8 @@
         <mkdir dir="${WEB-INF}/classes"/>
         
         <!-- Copy resources -->
-        <copy todir="${WEB-INF}" file="${main.resources.dir}/applicationContext.xml" filtering="true"/>      
+        <copy todir="${WEB-INF}" file="${main.resources.dir}/applicationContext.xml" filtering="false"/>     
+    	<copy todir="${WEB-INF}" file="${main.resources.dir}/spring-servlet.xml" filtering="false"/>      
     	
     	<copy todir="${WEB-INF}/classes" filtering="true">
     		<fileset dir="${main.resources.dir}" includes="**/*"/>
@@ -568,15 +549,9 @@
 
     <target name="build-install" depends="build,install" description="Copies the webapp directly into the webapp-directory in the deployroot."/>
 
-    <target name="build-install-tomcat-deploy" depends="build-install, tomcat-deploy" description="Build, install, and deploy in running instance of tomcat"/>
-
-    <target name="build-install-tomcat-reload" depends="build, install, tomcat-reload" description="Build, install, and reload the webapp in tomcat"/>
-
     <target name="clean-build" depends="clean,build" description="Runs targets clean and build."/>
 
     <target name="clean-build-install" depends="clean,build-install" description="Runs targets clean, build, and install."/>
-
-    <target name="clean-build-install-tomcat-reload" depends="clean-build-install, tomcat-reload" description="Build, install, and reload the webapp in tomcat"/>
 
     <target name="web-install" depends="web,install" description="Run targets 'web', and 'install'"/>
 

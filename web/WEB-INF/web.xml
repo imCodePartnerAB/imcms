@@ -11,6 +11,7 @@
         <listener-class>com.imcode.imcms.servlet.ContextListener</listener-class>
     </listener>
          
+    <!-- Springframework context loader listener -->
     <listener>
     	<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
@@ -50,6 +51,15 @@
         <filter-name>SuperAdminFilter</filter-name>
         <url-pattern>/imcms/docs/apisamples/*</url-pattern>
     </filter-mapping>
+    
+    <!-- Not mapped -->
+    <servlet>
+      <servlet-name>spring</servlet-name>
+        <servlet-class>
+          org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>    
     
     <servlet>
         <servlet-name>Groovy</servlet-name>

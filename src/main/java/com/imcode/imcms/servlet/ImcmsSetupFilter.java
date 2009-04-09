@@ -84,8 +84,8 @@ public class ImcmsSetupFilter implements Filter {
         
         Imcms.setUser(user);
         
-        setCurrentLanguage(request, user);
-        setShowSettings(request, user);
+        updateUserI18nSetting(request, user);
+        updateUserShowSettings(request, user);
 
         ResourceBundle resourceBundle = Utility.getResourceBundle(request);
         Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
@@ -147,9 +147,17 @@ public class ImcmsSetupFilter implements Filter {
     }
     
     /**
-     * Sets current language.
+     * Updates I18n setting for current user.
+     * Changes user's language if requested.
+     * Bounds user's language to session.
+     * 
+     * @param request servlet request
+     * @param user authenticated user
+     * 
+     * @throws ServletException in case of an error.
+     * @see I18nSupport
      */
-    private void setCurrentLanguage(HttpServletRequest request, UserDomainObject user) 
+    private void updateUserI18nSetting(HttpServletRequest request, UserDomainObject user) 
     throws ServletException {
     	HttpSession session = request.getSession();
     	I18nLanguage language = (I18nLanguage)session.getAttribute("lang");
@@ -170,7 +178,7 @@ public class ImcmsSetupFilter implements Filter {
     	}    	    	        	
     	
     	// TODO: if session does not contain language
-    	// do not allow any admin operation and forward to front page!!!
+    	// do not allow admin operation and forward to front page ??
     	
     	if (language == null) {
     		language = I18nSupport.getDefaultLanguage();
@@ -220,10 +228,13 @@ public class ImcmsSetupFilter implements Filter {
     }
     
     /**
-     * Experemental
-     * TODO: refactor
+     * Updates logged in user's show settings. 
+     * 
+     * @param request servlet request
+     * @param user authenticated user 
      */
-    private void setShowSettings(HttpServletRequest request, UserDomainObject user) {
+    // TODO: Add security check
+    private void updateUserShowSettings(HttpServletRequest request, UserDomainObject user) {
         String modeValue = request.getParameter("mode");
         if (modeValue != null) {
         	user.getDocumentShowSettings().setIgnoreI18nShowMode(Boolean.parseBoolean(modeValue.toLowerCase()));
@@ -243,7 +254,7 @@ public class ImcmsSetupFilter implements Filter {
     /**
      * Initializes I18N support.
      * Reads languages from the database.
-     * Please note that one (and only one) language in the database table i18n_languages must be flagged as default.
+     * Please note that one (and only one) language in the database table i18n_languages must be set as default.
      */
 	private void initI18nSupport(ServletContext servletContext) throws ServletException {
     	logger.info("Initializing i18n support.");

@@ -127,9 +127,24 @@ public class MetaDao extends HibernateTemplate {
 	 * 
 	 * @return published document meta.
 	 */
+	// TODO: refactor
 	@Transactional
 	public Meta getPublishedMeta(Integer documentId) {
-		return getMeta(documentId, DocumentVersionSpecifier.PUBLISHED); 
+		Meta meta = getMeta(documentId);
+		
+		if (meta != null) {
+			Query query = getSession().createQuery("SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId AND v.versionTag = :versionTag")
+			  .setParameter("documentId", documentId)
+			  .setParameter("versionTag", DocumentVersionTag.PUBLISHED);
+			
+			DocumentVersion documentVersion = (DocumentVersion)query.uniqueResult();
+			
+			if (documentVersion == null) return null;
+			
+			meta.setVersion(documentVersion);
+		}
+		
+		return initI18nMetas((meta));
 	}
 	
 	
@@ -140,9 +155,24 @@ public class MetaDao extends HibernateTemplate {
 	 * 
 	 * @return published document meta.
 	 */
+	// TODO: refactor
 	@Transactional
 	public Meta getWorkingMeta(Integer documentId) {
-		return getMeta(documentId, DocumentVersionSpecifier.WORKING); 
+		Meta meta = getMeta(documentId);
+		
+		if (meta != null) {
+			Query query = getSession().createQuery("SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId AND v.versionTag = :versionTag")
+			  .setParameter("documentId", documentId)
+			  .setParameter("versionTag", DocumentVersionTag.WORKING);
+			
+			DocumentVersion documentVersion = (DocumentVersion)query.uniqueResult();
+			
+			if (documentVersion == null) return null;
+			
+			meta.setVersion(documentVersion);
+		}
+		
+		return initI18nMetas((meta));
 	} 
 
 	
