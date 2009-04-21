@@ -5,7 +5,7 @@
 <hibernate-configuration>
 
     <session-factory>
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
+        <property name="hibernate.dialect">@hibernate-dialect@</property>
     	<property name="hibernate.show_sql">false</property>
     	<property name="hibernate.format_sql">false</property>
     	<property name="hibernate.use_sql_comments">false</property>
@@ -18,6 +18,27 @@
         <mapping class="com.imcode.imcms.api.ContentLoop"/>    	
     	<mapping class="imcode.server.document.textdocument.ImageDomainObject"/>
     	<mapping class="imcode.server.document.textdocument.TextDomainObject"/>
+        
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.Images"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.ExifPK"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.Exif"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.Roles"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.CategoryTypes"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.Categories"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.CategoryRolesPK"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.CategoryRoles"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.ImageCategoriesPK"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.ImageCategories"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.Keywords"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.ImageKeywordsPK"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.ImageKeywords"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.Libraries"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.LibraryRolesPK"/>
+        <mapping class="com.imcode.imcms.addon.imagearchive.entity.LibraryRoles"/>
+        
+        <mapping resource="com/imcode/imcms/addon/imagearchive/hbm/Images.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/addon/imagearchive/hbm/Roles.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/addon/imagearchive/hbm/Libraries.hbm.xml"/>
     </session-factory>
     
 </hibernate-configuration>

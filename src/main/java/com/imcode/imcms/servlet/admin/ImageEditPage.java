@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.textdocument.ImageArchiveImageSource;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
@@ -14,6 +15,7 @@ import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,6 +54,11 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__LINK_URL = "imageref_link";
     public static final String REQUEST_PARAMETER__LINK_TARGET = EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET;
     public static final String REQUEST_PARAMETER__I18N_CODE = "i18nCode";
+    public static final String REQUEST_PARAMETER__GO_TO_IMAGE_ARCHIVE_BUTTON = "goToImageArchive";
+    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE = "image_archive";
+    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID = "archive_img_id";
+    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_NAME = "archive_img_nm";
+    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME = "archive_file_nm";
     static final LocalizedMessage ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images");
     
     public static final String REQUEST_PARAMETER__SHARE_IMAGE = "share_image";
@@ -97,11 +104,55 @@ public class ImageEditPage extends OkCancelPage {
     }
 
     protected void updateFromRequest(HttpServletRequest request) {
-        image = getImageFromRequest(request);
+        if (request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE) != null) {
+            getImageFromImageArchive(request);
+        } else {
+            image = getImageFromRequest(request);
+        }
     }
 
     public String getLabel() {
         return label;
+    }
+    
+    private void getImageFromImageArchive(HttpServletRequest request) {
+        String imageName = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_NAME));
+        imageName = StringUtils.substring(imageName, 0, 40);
+        String fileName = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME));
+        String archiveImageIdStr = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID));
+        String lang = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__I18N_CODE));
+        
+        ImageSource source = null;
+        String urlPath = null;
+        if (fileName != null) {
+            fileName = fileName.replaceAll("/|\\\\", "");
+            source = new ImageArchiveImageSource(fileName);
+            urlPath = source.getUrlPathRelativeToContextPath();
+        }
+        
+        Long archiveImageId = null;
+        if (archiveImageIdStr != null) {
+            try {
+                archiveImageId = Long.parseLong(archiveImageIdStr);
+            } catch (NumberFormatException ex) {
+            }
+        }
+        
+        for (ImageDomainObject img : images) {
+            boolean save = shareImages || img.getLanguage().getCode().equals(lang);         
+            if (fileName != null && save) {
+                img.setImageUrl(urlPath);
+                img.setSource(source);
+            }
+            if (imageName != null && save) {
+                img.setImageName(imageName);
+            }
+            if (archiveImageId != null && save) {
+                img.setArchiveImageId(archiveImageId);
+            }
+        }
+        
+        image = getImages().get(0);
     }
 
     private ImageDomainObject getImageFromRequest(HttpServletRequest req) {
@@ -150,8 +201,11 @@ public class ImageEditPage extends OkCancelPage {
         
         shareImages = req.getParameter(REQUEST_PARAMETER__SHARE_IMAGE) != null;
         
+        clearArchivePropertiesIfNullSource(image);
+        
         int index = 0;
         ImageDomainObject firstImage = images.get(0);
+        
         
         for (ImageDomainObject i18nImage: images) {
     		String suffix = "_" + i18nImage.getLanguage().getCode();
@@ -172,7 +226,9 @@ public class ImageEditPage extends OkCancelPage {
             i18nImage.setImageUrl(imageUrl);
             i18nImage.setType(imageSource.getTypeId());
             i18nImage.setAlternateText(alternateText);
-            i18nImage.setSource(imageSource);  
+            i18nImage.setSource(imageSource);
+            
+            clearArchivePropertiesIfNullSource(i18nImage);
             
             i18nImage.setWidth(image.getWidth());
             i18nImage.setHeight(image.getHeight());
@@ -191,6 +247,13 @@ public class ImageEditPage extends OkCancelPage {
         return image;
     }
 
+    private static void clearArchivePropertiesIfNullSource(ImageDomainObject image) {
+        if (image.getSource() instanceof NullImageSource) {
+            image.setArchiveImageId(null);
+            image.setImageName("");
+        }
+    }
+    
     protected void dispatchOther(HttpServletRequest request,
                                  HttpServletResponse response) throws IOException, ServletException {
         UserDomainObject user = Utility.getLoggedOnUser(request);
@@ -213,9 +276,35 @@ public class ImageEditPage extends OkCancelPage {
             forward(request, response);
         } else if ( null != request.getParameter(REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON) ) {
             goToImageBrowser(request, response);
+        } else if (request.getParameter(REQUEST_PARAMETER__GO_TO_IMAGE_ARCHIVE_BUTTON) != null) {
+            goToImageArchive(request, response);
+        } else if (request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE) != null) {
+            forward(request, response);
         }
     }
 
+    private void goToImageArchive(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        StringBuilder builder = new StringBuilder();
+        
+        builder.append(request.getContextPath());
+        builder.append("/servlet/PageDispatcher?page=");
+        builder.append(URLEncoder.encode(getSessionAttributeName(), "UTF-8"));
+        builder.append("&");
+        builder.append(REQUEST_PARAMETER__IMAGE_ARCHIVE);
+        builder.append("=yes&");
+        builder.append(REQUEST_PARAMETER__I18N_CODE);
+        builder.append("=");
+        
+        String code = request.getParameter(REQUEST_PARAMETER__I18N_CODE);
+        if (code == null) {
+            throw new RuntimeException("Language code is not set.");
+        }
+        builder.append(code);
+        
+        String imageArchiveUrl = String.format("%s/web/archive?returnTo=%s", request.getContextPath(), URLEncoder.encode(builder.toString(), "UTF-8"));
+        
+        response.sendRedirect(imageArchiveUrl);
+    }
 
     private void goToImageBrowser(
             final HttpServletRequest request,

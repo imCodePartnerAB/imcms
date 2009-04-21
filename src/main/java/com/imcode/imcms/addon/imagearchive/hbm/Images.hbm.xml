@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+<hibernate-mapping>
+    <query name="updateImageData">
+        <![CDATA[
+        UPDATE
+          Images im 
+        SET
+          im.imageNm = :imageNm, 
+          im.uploadedBy = :uploadedBy, 
+          im.licenseDt = :licenseDt, 
+          im.licenseEndDt = :licenseEndDt, 
+          im.publishDt = :publishDt, 
+          im.archiveDt = :archiveDt, 
+          im.publishEndDt = :publishEndDt, 
+          im.status = :statusActive, 
+          im.updatedDt = current_timestamp() 
+        WHERE
+          im.id = :id
+        ]]>
+    </query>
+    <query name="updateFullImageData">
+        <![CDATA[
+        UPDATE
+          Images im
+        SET
+          im.imageNm = :imageNm, 
+          im.width = :width, 
+          im.height = :height, 
+          im.fileSize = :fileSize, 
+          im.format = :format, 
+          im.uploadedBy = :uploadedBy, 
+          im.licenseDt = :licenseDt, 
+          im.licenseEndDt = :licenseEndDt, 
+          im.publishDt = :publishDt, 
+          im.archiveDt = :archiveDt, 
+          im.publishEndDt = :publishEndDt, 
+          im.status = :statusActive, 
+          im.updatedDt = current_timestamp() 
+        WHERE
+          im.id = :id
+        ]]>
+    </query>
+    <query name="updateImageExif">
+        <![CDATA[
+        UPDATE 
+          Exif e 
+        SET 
+          e.artist = :artist, 
+          e.description = :description, 
+          e.copyright = :copyright, 
+          e.updatedDt = current_timestamp() 
+        WHERE 
+              e.imageId = :imageId 
+          AND e.type = :changedType
+        ]]>
+    </query>
+    <query name="updateImageExifFull">
+        <![CDATA[
+        UPDATE 
+          Exif e 
+        SET 
+          e.artist = :artist, 
+          e.description = :description, 
+          e.copyright = :copyright, 
+          e.resolution = :resolution, 
+          e.updatedDt = current_timestamp() 
+        WHERE 
+              e.imageId = :imageId 
+          AND e.type = :exifType
+        ]]>
+    </query>
+    <query name="availableImageCategories">
+        <![CDATA[
+        SELECT 
+          c.id AS id, 
+          c.name AS name 
+        FROM 
+          CategoryRoles cr 
+        INNER JOIN 
+          cr.category c 
+        WHERE 
+              cr.roleId IN (:roleIds) 
+          AND NOT EXISTS (FROM
+                            ImageCategories ic 
+                          WHERE
+                                ic.imageId = :imageId 
+                            AND ic.categoryId = cr.categoryId)
+          AND c.type.imageArchive IS TRUE 
+        ]]>
+    </query>
+    <query name="availableKeywords">
+        <![CDATA[
+        SELECT 
+          k.keywordNm 
+        FROM 
+          Keywords k 
+        WHERE  
+              NOT EXISTS (FROM 
+                            ImageKeywords ik 
+                          WHERE 
+                                ik.imageId = :imageId 
+                            AND ik.keywordId = k.id) 
+        ORDER BY 
+          k.keywordNm
+        ]]>
+    </query>
+    <query name="keywordsUsedByImages">
+        <![CDATA[
+        SELECT DISTINCT
+          k.id AS id, 
+          k.keywordNm AS keywordNm
+        FROM
+          ImageKeywords ik
+        INNER JOIN
+          ik.keyword k
+        ORDER BY
+          k.keywordNm
+        ]]>
+    </query>
+</hibernate-mapping>

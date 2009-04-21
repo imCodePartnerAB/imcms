@@ -44,6 +44,14 @@ public class EditImage extends HttpServlet {
         imageEditPage.getImages().add(image);
         
         imageEditPage.updateFromRequest(request);
+        
+        ImageDomainObject mainImage = imageEditPage.getImage();
+        
+        image.setImageUrl(mainImage.getImageUrl());
+        image.setAlternateText(mainImage.getAlternateText());
+        image.setSource(mainImage.getSource());
+        image.setType(image.getSource().getTypeId());
+        
         imageEditPage.forward(request, response);
     }
 

@@ -186,7 +186,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 		</script>
 	</head>
 	<body id="body" bgcolor="#FFFFFF"
-		onload="setDef(); addScrolling(); document.forms[0].imageref.focus();">
+		onload="setDef(); document.forms[0].imageref.focus();" style="overflow-x:visible;">
 
 	<div id="outer_container">
 	<div id="inner_container">
@@ -195,7 +195,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 	<form method="POST"
 		action="<%= request.getContextPath() %>/servlet/PageDispatcher"
 		onsubmit="checkLinkType();" name="mainForm"><%=Page.htmlHidden(request)%>
-
+      
 	  <%-- 
       Hidden language code parameter.
       
@@ -308,7 +308,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 
 						<%-- Browse Image button --%>
 						<td style="padding-left:10px;"><input type="submit"
-							name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>"
+							name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_ARCHIVE_BUTTON %>"
 							class="imcmsFormBtnSmall" style="width:180px"
 							value="<? templates/sv/change_img.html/2004 ?>"
 							onClick="setI18nCodeParameterValue('${image.language.code}')"/></td>

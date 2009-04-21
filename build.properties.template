@@ -37,6 +37,11 @@ db-driver = com.mysql.jdbc.Driver
 db-url-without-db-name = jdbc:mysql://${db-host}:${db-port}/
 db-url = ${db-url-without-db-name}${db-name}?characterEncoding=utf8
 
+# For MSSQL
+# hibernate-dialect = com.imcode.imcms.addon.imagearchive.util.SQLServerDialect
+
+# For MySQL
+hibernate-dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 
 # I18N support settings
 
@@ -148,3 +153,30 @@ tomcat-admin-username = admin
 tomcat-admin-password =
 tomcat-webapp-manager-url = http://localhost:8080/manager
 tomcat-deployroot-local-directory =
+
+# This is where all the images that are uploaded to image archive will be stored, can be relative or absolute
+# for example: /var/image_archive
+image-archive-storage-path = 
+
+# Temporary images that are being processed are stored here. Change this if your not running on 
+# an unix based platform.
+image-archive-temp-path = /tmp
+
+# Images from image archive that are being used by imCMS will be stored here, can relative or absolute
+image-archive-images-path = new_images/
+
+# Path to libraries, can be relative or absolute
+# Each folder in this directory will become a library in image archive -- these folders can be created using 
+# imCMS file manager. Each library can contain one or more raw images which can be activated in image archive.
+image-archive-libraries-path = WEB-INF/libraries/
+image-archive-users-library-folder = users
+
+# Absolute or relative paths separated by ;
+# Each path will become an library in image archive
+image-archive-old-library-paths = 
+
+# Maximum size of an uploaded image in bytes
+image-archive-max-image-upload-size = 262144000
+
+# Maximum size of an uploaded ZIP archive in bytes
+image-archive-max-zip-upload-size = 262144000

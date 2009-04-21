@@ -1,0 +1,150 @@
+package com.imcode.imcms.addon.imagearchive.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+@Entity
+@Table(name="archive_library_roles")
+@IdClass(LibraryRolesPK.class)
+public class LibraryRoles implements Serializable {
+    private static final long serialVersionUID = 5775826104758310402L;
+    
+    public static final int PERMISSION_USE = 0;
+    public static final int PERMISSION_CHANGE = (1 << 1);
+    
+    
+    @Id    
+    @Column(name="library_id", nullable=false)
+    private int libraryId;
+    
+    @ManyToOne
+    @JoinColumn(name="library_id", referencedColumnName="id", insertable=false, updatable=false)
+    private Libraries library;
+    
+    @Id
+    @Column(name="role_id", nullable=false)
+    private int roleId;
+    
+    @ManyToOne
+    @JoinColumn(name="role_id", referencedColumnName="role_id", insertable=false, updatable=false)
+    private Roles role;
+    
+    @Column(name="permissions", nullable=false)
+    private int permissions;
+    
+    @Column(name="created_dt", nullable=false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDt = new Date();
+    
+    @Column(name="updated_dt", nullable=false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedDt = new Date();
+    
+    
+    public LibraryRoles() {
+    }
+    
+    
+    public Libraries getLibrary() {
+        return library;
+    }
+
+    public void setLibrary(Libraries library) {
+        this.library = library;
+    }
+
+    public int getLibraryId() {
+        return libraryId;
+    }
+
+    public void setLibraryId(int libraryId) {
+        this.libraryId = libraryId;
+    }
+
+    public int getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(int permissions) {
+        this.permissions = permissions;
+    }
+
+    public Roles getRole() {
+        return role;
+    }
+
+    public void setRole(Roles role) {
+        this.role = role;
+    }
+
+    public int getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
+    }
+
+    public Date getCreatedDt() {
+        return createdDt;
+    }
+
+    public void setCreatedDt(Date createdDt) {
+        this.createdDt = createdDt;
+    }
+
+    public Date getUpdatedDt() {
+        return updatedDt;
+    }
+
+    public void setUpdatedDt(Date updatedDt) {
+        this.updatedDt = updatedDt;
+    }
+
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        
+        final LibraryRoles other = (LibraryRoles) obj;
+        if (this.libraryId != other.libraryId) {
+            return false;
+        }
+        
+        if (this.roleId != other.roleId) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + this.libraryId;
+        hash = 59 * hash + this.roleId;
+        
+        return hash;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("com.imcode.imcms.addon.imagearchive.entity.LibraryRoles[libraryId: %d, roleId: %d]", 
+                libraryId, roleId);
+    }
+}

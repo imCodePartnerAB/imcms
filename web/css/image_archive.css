@@ -1,0 +1,231 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-size: 62.5%;
+    color: #222;
+}
+input, select, th, td {
+    font-size: 1em;
+}
+
+.right {
+    float: right !important;
+}
+
+.left {
+    float: left !important;
+}
+
+.clearboth {
+    clear: both !important;
+}
+
+.center {
+    text-align: center !important;
+}
+
+.clearheight {
+    clear: both;
+    height: 0;
+    overflow: hidden;
+}
+
+.clearfix:after {
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;
+    visibility: hidden;
+}
+
+.clearfix {
+    display: inline-block;
+}
+
+.clearfix {
+    display: block;
+}
+
+.m10t {
+    margin-top: 10px !important;
+}
+
+.m15t {
+    margin-top: 15px !important;
+}
+
+.m10b {
+    margin-bottom: 10px !important;
+}
+
+.h10 {
+    height: 10px !important;
+}
+
+.red {
+    color: red;
+}
+
+a {
+    color: #06f;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+img, table {
+    border: 0 none;
+}
+
+h4 {
+    color: #444;
+    font-size: 1em;
+}
+h3 {
+	font-size: 1.25em;
+}
+h1 {
+	font-size: 1.583em;
+}
+
+div.hr {
+    width:100%;
+    margin-top: 5px;
+    background-color: #bbb;
+    clear: both !important;
+    font-size: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+a.btnBlue span, input.btnBlue {
+    font-family: Tahoma, Arial, sans-serif;
+    font-size: 1em;
+    color: #fff;
+    background-color: #20568D;
+    border: 1px outset #668DB6;
+    border-color: #466D96 #333333 #333333 #466D96;
+    padding: 2px 6px;
+    cursor: pointer;
+}
+
+a.btnBlue {
+    text-decoration: none;
+}
+
+/* fix for IE streched buttons */
+input.btnBlue {
+	width: 0;
+	overflow: visible;
+}
+input.btnBlue[class] { /* IE ignores this */
+	width:auto;
+}
+
+a.btnBlue.small span, input.btnBlue.small {
+    font-size: 0.916em;
+    padding: 1px 2px;
+}
+
+a.btnBlue.disabled span, input.btnBlue.disabled {
+    background-color: #B8C6D5;
+    border: 1px outset #DAE4EF;
+    border-color: #DAE4EF #999999 #999999 #DAE4EF;
+}
+
+.btnBack {
+	float: left !important;
+}
+.btnBack span {
+	display: block;
+	text-align: center;
+	
+	min-width: 50px;
+	width: auto !important;
+	width: 50px;
+}
+
+#containerTop, #containerContent {
+    width: 984px;
+    margin: 0 auto !important;
+    padding-right: 20px;
+    padding-left: 20px;
+    font-size: 1.2em;
+}
+
+#containerContent {
+    clear: both !important;
+    padding-top: 10px;
+}
+
+#containerTop {
+    background-color: #20568D;
+    color: #fff;
+}
+
+ul.tabs {
+    list-style-type:none;
+    font-size: 0.7916em;
+    font-weight: 600;
+}
+ul.tabs li {
+    float: left !important;
+    font-family: Tahoma, Arial, sans-serif;
+    text-align: center;
+    color: #fff;
+    background-color: #4076ad;
+    border: 1px outset #668DB6;
+    border-color: #fff #002f5f #333333 #fff;
+    border-bottom: 1px solid #20568D;
+    padding: 2px 6px;
+    cursor: pointer;
+    
+    min-width: 80px;
+    width: auto !important;
+    width: 80px;
+}
+ul.tabs li.sel {
+    background-color: #fff;
+    border: 1px solid #fff;
+    border-color: #fff #bababd #fff #fff;
+    color: #4076ad;
+    cursor: default;
+}
+ul.tabs a {
+    text-decoration: none;
+    color: #fff;
+}
+li.sel a {
+	color: #4076ad;
+}
+
+.pageHeading {
+    font-family: Tahoma,Arial,Verdana,sans-serif;
+    font-weight: bold;
+    font-size: 1.416em;
+}
+
+.minH30 {
+	min-height: 30px;
+	height: auto !important;
+	height: 30px;
+}
+
+.minH20 {
+	min-height: 20px;
+	height: auto !important;
+	height: 20px;
+}
+
+.minW60 {
+	min-width: 60px;
+	width: auto !important;
+	width: 60px;
+}

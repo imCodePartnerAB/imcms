@@ -53,6 +53,7 @@ public class AdminCategories extends HttpServlet {
     public static final String PARAMETER_CATEGORY_TYPE_ADD = "category_type_add";
     private static final String PARAMETER__ADD_CATEGORY_BUTTON = "category_add";
     public static final String PARAMETER__INHERITED = "inherited";
+    public static final String PARAMETER__IMAGE_ARCHIVE = "image_archive";
     public static final String PARAMETER__CATEGORY_DELETE = "category_delete";
 
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
@@ -289,6 +290,7 @@ public class AdminCategories extends HttpServlet {
                 categoryTypeToEdit.setMaxChoices( maxChoices );
                 boolean inherited = getInheritedParameterFromRequest(req);
                 categoryTypeToEdit.setInherited( inherited );
+                categoryTypeToEdit.setImageArchive(getImageArchiveParameterFromRequest(req)); 
                 categoryMapper.updateCategoryType( categoryTypeToEdit );
             }
         }
@@ -315,12 +317,17 @@ public class AdminCategories extends HttpServlet {
         String categoryTypeName = req.getParameter( PARAMETER__NAME ).trim();
         int maxChoices = Integer.parseInt( req.getParameter( PARAMETER__MAX_CHOICES ) );
         boolean inherited = getInheritedParameterFromRequest(req ) ;
-        CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject( 0, categoryTypeName, maxChoices, inherited );
+        boolean imageArchive = getImageArchiveParameterFromRequest(req);
+        CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject( 0, categoryTypeName, maxChoices, inherited, imageArchive);
         return categoryType;
     }
 
     private boolean getInheritedParameterFromRequest( HttpServletRequest request ) {
         return null != request.getParameter(PARAMETER__INHERITED) ;
+    }
+    
+    private boolean getImageArchiveParameterFromRequest(HttpServletRequest request) {
+        return request.getParameter(PARAMETER__IMAGE_ARCHIVE) != null;
     }
 
     public static String createHtmlOptionListOfCategoryTypes( CategoryTypeDomainObject selectedType ) {

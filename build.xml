@@ -436,7 +436,11 @@
         <mkdir dir="${WEB-INF}/classes"/>
         
         <!-- Copy resources -->
-        <copy todir="${WEB-INF}"         file="${resources.dir}/applicationContext.xml" filtering="true"/>      
+        <copy todir="${WEB-INF}"         file="${resources.dir}/applicationContext.xml" filtering="true"/>
+        <copy todir="${WEB-INF}"         file="${resources.dir}/web-servlet.xml" filtering="true"/>
+        <copy todir="${WEB-INF}"         file="${resources.dir}/views.xml" filtering="true"/>
+        <copy todir="${WEB-INF}/conf"    file="${resources.dir}/configContext.xml" filtering="true"/>
+        <copy todir="${WEB-INF}/conf"    file="${resources.dir}/beansContext.xml" filtering="true"/>
         <copy todir="${WEB-INF}/classes" file="${resources.dir}/hibernate.cfg.xml" filtering="true"/>
         <copy todir="${WEB-INF}/classes" file="${resources.dir}/commons-logging.properties" filtering="true"/>
 
@@ -473,6 +477,9 @@
 
         <copy file="${conf}/${log4j-config}" tofile="${conf}/log4j.xml"/>
 
+        <copy todir="${WEB-INF}/classes">
+          <fileset dir="${src.dir}" includes="**/*.xml"/>
+        </copy>
     </target>
 
     <target name="web-lang" depends="init">
@@ -591,6 +598,8 @@
         <filter token="db-user" value="${db-user}"/>
         <filter token="db-pass" value="${db-pass}"/>
         <filter token="db-maxconnections" value="${db-maxconnections}"/>
+        
+        <filter token="hibernate-dialect" value="${hibernate-dialect}"/>
 
         <filter token="external-authenticator" value="${external-authenticator}"/>
         <filter token="external-user-and-role-registry" value="${external-user-and-role-registry}"/>
@@ -621,6 +630,15 @@
         <filter token="webmaster-email" value="${webmaster-email}"/>
 
         <filter token="i18n.defaultLanguage.code" value="${i18n.defaultLanguage.code}"/>
+	
+	<filter token="image-archive-storage-path" value="${image-archive-storage-path}"/>
+	<filter token="image-archive-temp-path" value="${image-archive-temp-path}"/>
+	<filter token="image-archive-images-path" value="${image-archive-images-path}"/>
+	<filter token="image-archive-libraries-path" value="${image-archive-libraries-path}"/>
+	<filter token="image-archive-users-library-folder" value="${image-archive-users-library-folder}"/>
+	<filter token="image-archive-old-library-paths" value="${image-archive-old-library-paths}"/>
+	<filter token="image-archive-max-image-upload-size" value="${image-archive-max-image-upload-size}"/>
+	<filter token="image-archive-max-zip-upload-size" value="${image-archive-max-zip-upload-size}"/>
     </target>
 
     <!-- Check targets -->

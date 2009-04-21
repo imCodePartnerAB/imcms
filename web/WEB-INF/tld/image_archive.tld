@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib version="2.0" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd">
+  <tlib-version>1.0</tlib-version>
+  <jsp-version>1.1</jsp-version>
+  <short-name>archive</short-name>
+  <uri>archive</uri>
+  
+  <function>
+      <name>newlineToBr</name>
+      <function-class>com.imcode.imcms.addon.imagearchive.tag.func.Functions</function-class>
+      <function-signature>java.lang.String newlineToBr(java.lang.String)</function-signature>
+  </function>
+  <function>
+      <name>abbreviate</name>
+      <function-class>com.imcode.imcms.addon.imagearchive.tag.func.Functions</function-class>
+      <function-signature>java.lang.String abbreviate(java.lang.String, int)</function-signature>
+  </function>
+  <function>
+      <name>join</name>
+      <function-class>com.imcode.imcms.addon.imagearchive.tag.func.Functions</function-class>
+      <function-signature>java.lang.String join(java.util.Collection, java.lang.String)</function-signature>
+  </function>
+  
+  <tag>
+      <name>param</name>
+      <tagclass>com.imcode.imcms.addon.imagearchive.tag.param.ParamTag</tagclass>
+      <body-content>empty</body-content>
+      
+      <attribute>
+          <name>value</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+  </tag>
+  <tag>
+      <name>params</name>
+      <tagclass>com.imcode.imcms.addon.imagearchive.tag.param.ParamsTag</tagclass>
+      <body-content>JSP</body-content>
+      
+      <attribute>
+          <name>var</name>
+          <required>true</required>
+      </attribute>
+  </tag>
+  
+  <tag>
+      <name>pagination</name>
+      <tagclass>com.imcode.imcms.addon.imagearchive.tag.pagination.PaginationTag</tagclass>
+      <body-content>JSP</body-content>
+      
+      <attribute>
+          <name>pageUrl</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>onchange</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>pag</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>currentPage</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>pageCount</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>pagesBeforeEllipse</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>capacity</name>
+          <required>true</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+          <name>nextText</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>prevText</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+          <name>contClass</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>contStyle</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+          <name>currentPageClass</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      <attribute>
+          <name>currentPageStyle</name>
+          <required>false</required>
+          <rtexprvalue>true</rtexprvalue>
+      </attribute>
+  </tag>
+</taglib>

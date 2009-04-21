@@ -53,6 +53,9 @@ public class ImageDomainObject implements Serializable, Cloneable {
      */
 	//@Id
     private String name = "";
+    
+    @Column(name="image_name", length=40, nullable=false)
+    private String imageName = "";
 	
     private int width;
     private int height;
@@ -79,6 +82,9 @@ public class ImageDomainObject implements Serializable, Cloneable {
     private String imageUrl = "";
     
     private Integer type;
+    
+    @Column(name="archive_image_id")
+    private Long archiveImageId;
     
     
     /**
@@ -326,4 +332,20 @@ public class ImageDomainObject implements Serializable, Cloneable {
 	public void setType(Integer type) {
 		this.type = type;
 	}
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
+    public Long getArchiveImageId() {
+        return archiveImageId;
+    }
+
+    public void setArchiveImageId(Long archiveImageId) {
+        this.archiveImageId = archiveImageId;
+    }
 }

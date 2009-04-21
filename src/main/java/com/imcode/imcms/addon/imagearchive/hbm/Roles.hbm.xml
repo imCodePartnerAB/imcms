@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+<hibernate-mapping>
+    <query name="artistsByRoleIds">
+        <![CDATA[
+        SELECT DISTINCT
+          lower(e.artist) AS artist 
+        FROM 
+          CategoryRoles cr, 
+          ImageCategories ic, 
+          Images im, 
+          Exif e
+        WHERE 
+              cr.roleId IN (:roleIds) 
+          AND ic.categoryId = cr.categoryId 
+          AND (ic.imageId = im.id OR im.usersId = :userId) 
+          AND e.imageId = im.id 
+          AND e.type = :changedType 
+          AND cr.category.type.imageArchive IS TRUE 
+          AND lower(e.artist) <> '' 
+        ORDER BY 
+          lower(e.artist) 
+        ]]>
+    </query>
+</hibernate-mapping>
+

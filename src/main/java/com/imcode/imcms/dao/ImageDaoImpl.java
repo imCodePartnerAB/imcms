@@ -1,5 +1,6 @@
 package com.imcode.imcms.dao;
 
+import imcode.server.document.textdocument.ImageArchiveImageSource;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
@@ -94,8 +95,14 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		String url = image.getImageUrl();
 		
 		if (!StringUtils.isBlank(url)) {
-			ImageSource imageSource = new ImagesPathRelativePathImageSource(url);
-			image.setSource(imageSource);	
+		    ImageSource imageSource = null;
+		    if (image.getType() == ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE) {
+		        imageSource = new ImageArchiveImageSource(url);
+		    } else {
+		        imageSource = new ImagesPathRelativePathImageSource(url);
+		    }
+		    
+			image.setSource(imageSource);
 			image.setImageUrl(url);
 			image.setType(imageSource.getTypeId());
 		}

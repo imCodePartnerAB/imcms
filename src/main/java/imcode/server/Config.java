@@ -26,6 +26,7 @@ public class Config {
     private String workaroundUriEncoding;
     private boolean secureLoginRequired;
     private boolean denyMultipleUserLogin;
+    private File imageArchiveImagesPath;
 
     public String getWorkaroundUriEncoding() {
         return workaroundUriEncoding;
@@ -180,5 +181,13 @@ public class Config {
 
     public void setDenyMultipleUserLogin(boolean denyMultipleUserLogin) {
         this.denyMultipleUserLogin = denyMultipleUserLogin;
+    }
+
+    public File getImageArchiveImagesPath() {
+        return imageArchiveImagesPath;
+    }
+
+    public void setImageArchiveImagesPath(File imageArchiveImagesPath) {
+        this.imageArchiveImagesPath = imageArchiveImagesPath;
     }
 }

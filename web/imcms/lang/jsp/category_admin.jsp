@@ -134,7 +134,7 @@ if (inDefaultMode) {
         }
         %>
         <input type="hidden" name="<%= AdminCategories.PARAMETER_MODE__ADD_CATEGORY_TYPE %>" value="1">
-        <% request.setAttribute( "categoryType", new CategoryTypeDomainObject( 0,"",1,true) );
+        <% request.setAttribute( "categoryType", new CategoryTypeDomainObject( 0,"",1,true, false) );
          %><jsp:include page="category_admin_category_type.jsp"/>
 
         <%if( messageToUser.length() > 0 ) { %>

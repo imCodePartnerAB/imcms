@@ -28,7 +28,7 @@ public class CategoryMapper {
     private static final int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
 
     private static final String SQL__CATEGORY__COLUMNS = "categories.category_id, categories.name, categories.description, categories.image";
-    public static final String SQL__CATEGORY_TYPE__COLUMNS = "category_types.category_type_id, category_types.name, category_types.max_choices, category_types.inherited";
+    public static final String SQL__CATEGORY_TYPE__COLUMNS = "category_types.category_type_id, category_types.name, category_types.max_choices, category_types.inherited, category_types.is_image_archive";
     public static final String SQL_GET_ALL_CATEGORIES_OF_TYPE = "SELECT "+SQL__CATEGORY__COLUMNS+"\n"
                                                                 + "FROM categories\n"
                                                                 + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
@@ -133,6 +133,7 @@ public class CategoryMapper {
                 { "name", categoryType.getName() },
                 { "max_choices", new Integer(categoryType.getMaxChoices()) },
                 { "inherited", new Integer(categoryType.isInherited() ? 1 : 0) },
+                { "is_image_archive", new Integer(categoryType.isImageArchive() ? 1 : 0) },
         };
     }
 
@@ -271,7 +272,8 @@ public class CategoryMapper {
             String name = resultSet.getString(offset+2);
             int maxChoices = resultSet.getInt(offset+3);
             boolean inherited = 0 != resultSet.getInt(offset+4);
-            return new CategoryTypeDomainObject(id, name, maxChoices, inherited) ;
+            boolean imageArchive = 0 != resultSet.getInt(offset+5);
+            return new CategoryTypeDomainObject(id, name, maxChoices, inherited, imageArchive) ;
         }
 
         public Class getClassOfCreatedObjects() {
