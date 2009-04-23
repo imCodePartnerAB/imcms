@@ -12,20 +12,33 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 
+/**
+ * The main task of this listener is to detect real and configuration 
+ * paths of the application.
+ * 
+ * TODO: Move spring and other initialization code from ImcmsSetupFilter
+ * to the listener. 
+ */
 public class ContextListener implements ServletContextListener {
 
+	/**
+	 * Detects real and configuration paths of the application.
+	 * Logs environment and application properties.
+	 */
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         ServletContext servletContext = servletContextEvent.getServletContext();
         final File realPathToWebApp = new File(servletContext.getRealPath("/"));
 
-        File configPath = new File(realPathToWebApp, "WEB-INF/classes");
+        File configPath = new File(realPathToWebApp, "WEB-INF/conf");
         Prefs.setConfigPath(configPath);
 
-        configureLogging(servletContext, realPathToWebApp);
+        System.setProperty("com.imcode.imcms.path", realPathToWebApp.toString());
 
         Logger log = Logger.getLogger(ContextListener.class);
+        log.info("Logging started");
+        logPlatformInfo(servletContext, log);
+        
         try {
             Imcms.setPath(realPathToWebApp);
             log.info("imCMS initialized.");
@@ -34,6 +47,11 @@ public class ContextListener implements ServletContextListener {
         }
     }
 
+    /**
+     * Stops the application and shuts down logging.
+     * 
+     * TODO: investigate why logging is being shut-down - is this really required?.    
+     */
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         Logger log = Logger.getLogger(ContextListener.class);
         log.debug("Stopping imCMS.");
@@ -53,13 +71,6 @@ public class ContextListener implements ServletContextListener {
         } catch (Exception e) {
             System.err.println(e);
         }
-    }
-
-    private void configureLogging(ServletContext servletContext, File root) {
-        System.setProperty("com.imcode.imcms.path", root.toString());
-        Logger log = Logger.getLogger(ContextListener.class);
-        log.info("Logging started");
-        logPlatformInfo(servletContext, log);
     }
 
     private void logPlatformInfo(ServletContext application, Logger log) {

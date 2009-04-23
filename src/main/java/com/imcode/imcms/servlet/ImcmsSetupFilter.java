@@ -46,6 +46,10 @@ import com.imcode.imcms.dao.LanguageDao;
 import com.imcode.imcms.util.SchemaVersionChecker;
 import com.imcode.imcms.util.SchemaVersionCheckerException;
 
+/**
+ * init method of the filter contains application initialization
+ * which probably should be moved into ContextListener.  
+ */
 public class ImcmsSetupFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
@@ -54,6 +58,12 @@ public class ImcmsSetupFilter implements Filter {
     
     private Map<String, I18nLanguage> i18nHosts = new HashMap<String, I18nLanguage>();
     
+    /**
+     * Check if a user is logged in.
+     * Sets user's language and show settings. 
+     *
+     * Intercepts and modifies in necessary document's request URL. 
+     */
     public void doFilter( ServletRequest r, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
         r.setCharacterEncoding(Imcms.DEFAULT_ENCODING);
         

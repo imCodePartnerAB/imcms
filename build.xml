@@ -57,7 +57,8 @@
 	<property name="main.resources.dir" value="${basedir}/src/main/resources"/>
 	
     <property name="classes" value="${tmp}/classes"/>	
-    <property name="conf" value="${WEB-INF}/classes"/>
+    <property name="conf" value="${WEB-INF}/conf"/>
+	<property name="webinf.classes" value="${WEB-INF}/classes"/>
     <property name="lib" value="${WEB-INF}/lib"/>
     <property name="templates" value="${WEB-INF}/templates"/>
     <property name="sql" value="${WEB-INF}/sql"/>
@@ -462,11 +463,17 @@
         <dependset>
             <srcfileset file="${build.properties}"/>
             <targetfileset dir="${conf}">
-            	<include name="logj4*"/>
             	<include name="imcms_*"/>
             	<include name="server.properties"/>
             </targetfileset>
         </dependset>
+    	
+        <dependset>
+            <srcfileset file="${build.properties}"/>
+            <targetfileset dir="${webinf.classes}">
+            	<include name="logj4*"/>
+            </targetfileset>
+        </dependset>    	
 
         <mkdir dir="${imcms}"/>
         <mkdir dir="${login}"/>
@@ -487,8 +494,12 @@
     	<copy todir="${WEB-INF}" file="${main.resources.dir}/spring-servlet.xml" filtering="false"/>      
     	
     	<copy todir="${WEB-INF}/classes" filtering="true">
-    		<fileset dir="${main.resources.dir}" includes="**/*"/>
+    		<fileset dir="${main.resources.dir}" includes="**/*log*, **/*hibernate*"/>
     	</copy>
+    	
+    	<copy todir="${WEB-INF}/conf" filtering="true">
+    		<fileset dir="${main.resources.dir}" includes="**/*" excludes="**/*log*"/>
+    	</copy>    	
     	
         <echo message="${version}" file="${versionfile}"/>
 
@@ -521,7 +532,7 @@
             <fileset dir="${basedir}/docs"/>
         </copy>
 
-        <copy file="${conf}/${log4j-config}" tofile="${conf}/log4j.xml"/>
+        <copy file="${webinf.classes}/${log4j-config}" tofile="${webinf.classes}/log4j.xml"/>
 
     </target>
 
