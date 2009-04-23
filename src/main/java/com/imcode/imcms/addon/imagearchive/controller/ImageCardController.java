@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.imcode.imcms.addon.imagearchive.Config;
 import com.imcode.imcms.addon.imagearchive.command.ChangeImageDataCommand;
 import com.imcode.imcms.addon.imagearchive.command.ExportImageCommand;
 import com.imcode.imcms.addon.imagearchive.command.ImageCardChangeActionCommand;
@@ -57,6 +58,9 @@ public class ImageCardController {
     
     @Autowired
     private Facade facade;
+    
+    @Autowired
+    private Config config;
     
     
     @RequestMapping({"/archive/image/*", "/archive/image/*/"})
@@ -165,7 +169,7 @@ public class ImageCardController {
             tempFile = facade.getFileService().createTemporaryFile("export");
             File originalFile = facade.getFileService().getImageOriginalFile(imageId);
 
-            ImageOp op = new ImageOp().input(originalFile);
+            ImageOp op = new ImageOp(config).input(originalFile);
 
             Integer width = command.getWidth();
             Integer height = command.getHeight();

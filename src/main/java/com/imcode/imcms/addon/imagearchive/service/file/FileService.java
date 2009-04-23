@@ -76,16 +76,16 @@ public class FileService {
         try {
             FileUtils.copyFile(tempFile, originalFile);
             
-            new ImageOp().input(originalFile)
+            new ImageOp(config).input(originalFile)
                     .outputFormat(Format.JPEG)
                     .processToFile(fullFile);
             
-            new ImageOp().input(fullFile)
+            new ImageOp(config).input(fullFile)
                     .resizeProportional(ThumbSize.SMALL.getWidth(), ThumbSize.SMALL.getHeight(), Color.WHITE, Gravity.CENTER)
                     .outputFormat(Format.JPEG)
                     .processToFile(thumbSmallFile);
             
-            new ImageOp().input(fullFile)
+            new ImageOp(config).input(fullFile)
                     .resizeProportional(ThumbSize.MEDIUM.getWidth(), ThumbSize.MEDIUM.getHeight(), Color.WHITE, Gravity.CENTER)
                     .outputFormat(Format.JPEG)
                     .processToFile(thumbMedFile);

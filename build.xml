@@ -633,6 +633,7 @@
 	
 	<filter token="image-archive-storage-path" value="${image-archive-storage-path}"/>
 	<filter token="image-archive-temp-path" value="${image-archive-temp-path}"/>
+	<filter token="image-archive-image-magick-path" value="${image-archive-image-magick-path}"/>
 	<filter token="image-archive-images-path" value="${image-archive-images-path}"/>
 	<filter token="image-archive-libraries-path" value="${image-archive-libraries-path}"/>
 	<filter token="image-archive-users-library-folder" value="${image-archive-users-library-folder}"/>

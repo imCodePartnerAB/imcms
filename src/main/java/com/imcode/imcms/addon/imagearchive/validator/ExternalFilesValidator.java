@@ -76,7 +76,7 @@ public class ExternalFilesValidator implements Validator {
                 }
                 
                 if (!zipFile) {
-                    ImageInfo info = ImageOp.getImageInfo(tempFile);
+                    ImageInfo info = ImageOp.getImageInfo(facade.getConfig(), tempFile);
                     if (info == null) {
                         errors.rejectValue("file", "archive.externalFiles.fileError");
                         

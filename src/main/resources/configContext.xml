@@ -19,6 +19,7 @@
     <bean id="config" class="com.imcode.imcms.addon.imagearchive.Config">
         <property name="storagePath" value="${ImageArchiveStoragePath}"/>
         <property name="tmpPath" value="${ImageArchiveTempPath}"/>
+        <property name="imageMagickPath" value="${ImageArchiveImageMagickPath}"/>
         <property name="imagesPath" value="${ImageArchiveImagesPath}"/>
         <property name="librariesPath" value="${ImageArchiveLibrariesPath}"/>
         <property name="oldLibraryPaths" value="${ImageArchiveOldLibraryPaths}"/>

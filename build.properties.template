@@ -162,6 +162,9 @@ image-archive-storage-path =
 # an unix based platform.
 image-archive-temp-path = /tmp
 
+# This should only be specified on windows, for example: c:/program files/imagemagick-6.4.9-q16
+image-archive-image-magick-path = 
+
 # Images from image archive that are being used by imCMS will be stored here, can relative or absolute
 image-archive-images-path = new_images/
 

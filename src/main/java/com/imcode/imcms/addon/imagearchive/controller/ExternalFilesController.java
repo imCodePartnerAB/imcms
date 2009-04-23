@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.imcode.imcms.addon.imagearchive.Config;
 import com.imcode.imcms.addon.imagearchive.command.ChangeImageDataCommand;
 import com.imcode.imcms.addon.imagearchive.command.ExternalFilesCommand;
 import com.imcode.imcms.addon.imagearchive.command.ExternalFilesSaveImageCommand;
@@ -56,6 +57,9 @@ public class ExternalFilesController {
     
     @Autowired
     private Facade facade;
+    
+    @Autowired
+    private Config config;
     
     
     @RequestMapping("/archive/external-files")
@@ -191,7 +195,7 @@ public class ExternalFilesController {
                     try {
                         File imageFile = facade.getFileService().getImageFileFromLibrary(library, fileName);
                         ImageInfo imageInfo = null;
-                        if (imageFile == null || (imageInfo = ImageOp.getImageInfo(imageFile)) == null) {
+                        if (imageFile == null || (imageInfo = ImageOp.getImageInfo(config, imageFile)) == null) {
                             continue;
                         }
                         
@@ -264,7 +268,7 @@ public class ExternalFilesController {
     private Images activateImage(LibrariesDto library, String fileName, User user) {
         File imageFile = facade.getFileService().getImageFileFromLibrary(library, fileName);
         ImageInfo imageInfo = null;
-        if (imageFile == null || (imageInfo = ImageOp.getImageInfo(imageFile)) == null) {
+        if (imageFile == null || (imageInfo = ImageOp.getImageInfo(config, imageFile)) == null) {
             return null;
         }
         
@@ -387,7 +391,7 @@ public class ExternalFilesController {
             if (name != null) {
                 File imageFile = facade.getFileService().getImageFileFromLibrary(library, name);
                 if (imageFile != null) {
-                    imageInfo = ImageOp.getImageInfo(imageFile);
+                    imageInfo = ImageOp.getImageInfo(config, imageFile);
                 }
             }
         }
@@ -435,7 +439,7 @@ public class ExternalFilesController {
         }
         
         try {
-            byte[] data = new ImageOp().input(imageFile)
+            byte[] data = new ImageOp(config).input(imageFile)
                     .outputFormat(Format.JPEG)
                     .processToByteArray();
             

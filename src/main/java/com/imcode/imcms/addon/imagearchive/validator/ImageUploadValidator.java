@@ -49,7 +49,7 @@ public class ImageUploadValidator implements Validator {
             try {
                 file.transferTo(tempFile);
                 
-                imageInfo = ImageOp.getImageInfo(tempFile);
+                imageInfo = ImageOp.getImageInfo(facade.getConfig(), tempFile);
                 if (imageInfo == null || imageInfo.getFormat() == null 
                         || imageInfo.getWidth() < 1 || imageInfo.getHeight() < 1) {
                     errors.rejectValue("file", "archive.addImage.invalidImageError");

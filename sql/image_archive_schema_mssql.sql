@@ -81,8 +81,8 @@ CREATE TABLE archive_libraries (
     created_dt datetime NOT NULL DEFAULT getdate(), 
     updated_dt datetime NOT NULL DEFAULT getdate(), 
     
-    CONSTRAINT archive_libraries_pk PRIMARY KEY (id), 
-    CONSTRAINT archive_libraries_folder_nm_filepath_unq UNIQUE (folder_nm, filepath)
+    CONSTRAINT archive_libraries_pk PRIMARY KEY (id)--, 
+    --CONSTRAINT archive_libraries_folder_nm_filepath_unq UNIQUE (folder_nm, filepath)
 );
 
 CREATE TABLE archive_library_roles (

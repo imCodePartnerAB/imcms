@@ -5,6 +5,7 @@ import java.io.File;
 public class Config {
     private File storagePath;
     private File tmpPath;
+    private File imageMagickPath;
     private File imagesPath;
     private File librariesPath;
     private String usersLibraryFolder;
@@ -80,5 +81,13 @@ public class Config {
 
     public void setMaxZipUploadSize(long maxZipUploadSize) {
         this.maxZipUploadSize = maxZipUploadSize;
+    }
+
+    public File getImageMagickPath() {
+        return imageMagickPath;
+    }
+
+    public void setImageMagickPath(File imageMagickPath) {
+        this.imageMagickPath = imageMagickPath;
     }
 }
