@@ -144,7 +144,9 @@ public class DocumentMapper implements DocumentGetter {
         // DatabseDocumentGetter is instantiated using SpringFramework factory
         // in order to support declared (AOP) transactions.        
         databaseDocumentGetter = (DatabaseDocumentGetter)services.getSpringBean("databaseDocumentGetter");
-        databaseDocumentGetter.setServices(services);        
+        databaseDocumentGetter.setServices(services);
+        databaseDocumentGetter.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
+        
         this.cachingDocumentGetter = new CachingDocumentGetter(databaseDocumentGetter, documentCacheMaxSize);
         
         this.documentPermissionSetMapper = new DocumentPermissionSetMapper(database);

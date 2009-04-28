@@ -10,27 +10,20 @@ import imcode.util.io.FileInputStreamSource;
 import java.io.File;
 import java.util.Collection;
 
-import com.imcode.db.Database;
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.mapping.orm.FileReference;
 import com.imcode.imcms.mapping.orm.HtmlReference;
 import com.imcode.imcms.mapping.orm.UrlReference;
 
+/**
+ * Initializes document fields depending on document's type.
+ * Document's fields are queried from the database.
+ */
 class DocumentInitializingVisitor extends DocumentVisitor {
-
-    private final Database database;
 
     private TextDocumentInitializer textDocumentInitializer;
     
     private MetaDao metaDao;
-    
-    DocumentInitializingVisitor(DocumentGetter documentGetter, Collection documentIds,
-                                DocumentMapper documentMapper, MetaDao metaDao) {
-        this.database = documentMapper.getDatabase();
-        this.metaDao = metaDao;
-        
-        textDocumentInitializer = new TextDocumentInitializer(database, documentGetter, documentIds);
-    }
 
     public void visitFileDocument(final FileDocumentDomainObject document) {    	
     	Collection<FileReference> fileReferences = metaDao.getFileReferences(document.getMeta().getId());
@@ -77,4 +70,21 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     public void visitTextDocument(final TextDocumentDomainObject document) {
         textDocumentInitializer.initialize(document) ;
     }
+
+	public MetaDao getMetaDao() {
+		return metaDao;
+	}
+
+	public void setMetaDao(MetaDao metaDao) {
+		this.metaDao = metaDao;
+	}
+
+	public TextDocumentInitializer getTextDocumentInitializer() {
+		return textDocumentInitializer;
+	}
+
+	public void setTextDocumentInitializer(
+			TextDocumentInitializer textDocumentInitializer) {
+		this.textDocumentInitializer = textDocumentInitializer;
+	}
 }

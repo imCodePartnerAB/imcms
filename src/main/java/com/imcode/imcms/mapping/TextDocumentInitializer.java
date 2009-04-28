@@ -36,11 +36,17 @@ public class TextDocumentInitializer {
 
     private final static Logger LOG = Logger.getLogger(TextDocumentInitializer.class);
 
-    private final DocumentGetter documentGetter;
-
-    public TextDocumentInitializer(Database database, DocumentGetter documentGetter, Collection documentIds) {
-        this.documentGetter = documentGetter;
-    }
+    private DocumentGetter documentGetter;
+    
+    private MetaDao metaDao;
+    
+    private TextDao textDao;
+    
+    private MenuDao menuDao;
+    
+    private ImageDao imageDao;
+    
+    private ContentLoopDao contentLoopDao;
     
     // TODO: refactor
     public void initialize(TextDocumentDomainObject document) {
@@ -53,10 +59,9 @@ public class TextDocumentInitializer {
     }
     
     private void initTexts(TextDocumentDomainObject document) {
-    	TextDao dao = (TextDao)Imcms.getServices().getSpringBean("textDao");
-    	Meta meta = document.getMeta();
+     	Meta meta = document.getMeta();
     	
-    	Collection<TextDomainObject> texts = dao.getTexts(meta.getId(), meta.getVersion().getVersion());    	    
+    	Collection<TextDomainObject> texts = textDao.getTexts(meta.getId(), meta.getVersion().getVersion());    	    
     	Map<I18nLanguage, Map<Integer, TextDomainObject>> textsMap = new HashMap<I18nLanguage, Map<Integer,TextDomainObject>>();
     	
     	for (TextDomainObject text: texts) {
@@ -76,9 +81,7 @@ public class TextDocumentInitializer {
     
     
     private void initIncludes(TextDocumentDomainObject document) {
-    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
-    	
-    	Collection<Include> includes = dao.getIncludes(document.getMeta().getId());
+    	Collection<Include> includes = metaDao.getIncludes(document.getMeta().getId());
     	
     	Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
     	
@@ -91,9 +94,7 @@ public class TextDocumentInitializer {
     
     
     private void initTemplateNames(TextDocumentDomainObject document) {
-    	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
-    	
-    	TemplateNames templateNames = dao.getTemplateNames(document.getMeta().getId());
+    	TemplateNames templateNames = metaDao.getTemplateNames(document.getMeta().getId());
     	
     	//if (templateNames == null) {
     	//	templateNames = new TemplateNames();
@@ -104,10 +105,9 @@ public class TextDocumentInitializer {
     
     
     private void initImages(TextDocumentDomainObject document) {
-    	ImageDao dao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
     	Meta meta = document.getMeta();
     	
-    	Collection<ImageDomainObject> images = dao.getImages(meta.getId(), meta.getVersion().getVersion());
+    	Collection<ImageDomainObject> images = imageDao.getImages(meta.getId(), meta.getVersion().getVersion());
     	
     	Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
     	
@@ -128,8 +128,7 @@ public class TextDocumentInitializer {
     
     
     private void initMenus(TextDocumentDomainObject document) {
-    	MenuDao dao = (MenuDao)Imcms.getServices().getSpringBean("menuDao");
-    	Collection<MenuDomainObject> menus = dao.getMenus(document.getMeta().getId());	
+    	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getMeta().getId());	
     	Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
     	
     	//Set<Integer> destinationDocumentIds = new HashSet<Integer>();
@@ -176,8 +175,7 @@ public class TextDocumentInitializer {
 	
 	
 	private void initContentLoops(TextDocumentDomainObject document) {
-		ContentLoopDao dao = (ContentLoopDao)Imcms.getServices().getSpringBean("contentLoopDao");
-		List<ContentLoop> loops = dao.getContentLoops(document.getMeta().getId());
+		List<ContentLoop> loops = contentLoopDao.getContentLoops(document.getMeta().getId());
 		Map<Integer, ContentLoop> loopsMap = new HashMap<Integer, ContentLoop>();
 		
 		for (ContentLoop loop: loops) {
@@ -185,5 +183,53 @@ public class TextDocumentInitializer {
 		}
 		
 		document.setContentLoopsMap(loopsMap);
+	}
+
+	public MetaDao getMetaDao() {
+		return metaDao;
+	}
+
+	public void setMetaDao(MetaDao metaDao) {
+		this.metaDao = metaDao;
+	}
+
+	public TextDao getTextDao() {
+		return textDao;
+	}
+
+	public void setTextDao(TextDao textDao) {
+		this.textDao = textDao;
+	}
+
+	public MenuDao getMenuDao() {
+		return menuDao;
+	}
+
+	public void setMenuDao(MenuDao menuDao) {
+		this.menuDao = menuDao;
+	}
+
+	public ImageDao getImageDao() {
+		return imageDao;
+	}
+
+	public void setImageDao(ImageDao imageDao) {
+		this.imageDao = imageDao;
+	}
+
+	public ContentLoopDao getContentLoopDao() {
+		return contentLoopDao;
+	}
+
+	public void setContentLoopDao(ContentLoopDao contentLoopDao) {
+		this.contentLoopDao = contentLoopDao;
+	}
+
+	public DocumentGetter getDocumentGetter() {
+		return documentGetter;
+	}
+
+	public void setDocumentGetter(DocumentGetter documentGetter) {
+		this.documentGetter = documentGetter;
 	}	
 }

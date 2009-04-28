@@ -12,13 +12,7 @@
     http://www.springframework.org/schema/context
     http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 	 
-  <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
-  
-  <context:component-scan base-package="com.imcode.imcms.web" />
-    
-  <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
-  <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
-    
+  <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>    
   
   <!--
     ${com.imcode.imcms.path} is a system property value which is initialized in
@@ -104,6 +98,20 @@
   
   <bean id="databaseDocumentGetter" class="com.imcode.imcms.mapping.DatabaseDocumentGetter">
     <property name="metaDao" ref="metaDao"/>
-  </bean>  
+    <property name="documentInitializingVisitor" ref="documentInitializingVisitor"/>
+  </bean> 
   
+  <bean id="textDocumentInitializer" class="com.imcode.imcms.mapping.TextDocumentInitializer">
+    <property name="metaDao" ref="metaDao"/>
+    <property name="textDao" ref="textDao"/>
+    <property name="imageDao" ref="imageDao"/>
+    <property name="menuDao" ref="menuDao"/>
+    <property name="contentLoopDao" ref="contentLoopDao"/>
+  </bean>
+  
+  <bean id="documentInitializingVisitor" class="com.imcode.imcms.mapping.DocumentInitializingVisitor">
+    <property name="metaDao" ref="metaDao"/>
+    <property name="textDocumentInitializer" ref="textDocumentInitializer"/>
+  </bean>  
+    
 </beans>

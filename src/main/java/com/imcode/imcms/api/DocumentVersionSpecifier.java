@@ -1,6 +1,5 @@
 package com.imcode.imcms.api;
 
-import javax.servlet.jsp.tagext.TagVariableInfo;
 
 /**
  * Specifies document's version in document retrieving API.
@@ -46,7 +45,7 @@ public class DocumentVersionSpecifier {
 	private final Integer versionNumber;
 	
 	/**
-	 * Can not be instatntiated directly.
+	 * Can not be instantiated directly.
 	 * Use factories.
 	 */
 	private DocumentVersionSpecifier(TagSpecifier tagSpecifier, Integer versionNumber) {
@@ -71,7 +70,7 @@ public class DocumentVersionSpecifier {
 	/**
 	 * Creates unique tag specifier.
 	 * 
-	 * @param uniueTagSpecifierName unique tag specifier name.
+	 * @param uniueTagSpecifierName unique tag specifier name (WORKING or PUBLISHED).
 	 * @return unique specifier.
 	 * 
 	 * @throws IllegalArgumentException

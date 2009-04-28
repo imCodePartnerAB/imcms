@@ -23,6 +23,10 @@ import com.imcode.imcms.api.DocumentVersionSpecifier;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
 
+/**
+ * Retrieves documents from the database. 
+ * Instantiated by spring-framework and initialized in DocumentMapper constructor. 
+ */
 public class DatabaseDocumentGetter implements DocumentGetter {
 	
     /** Permission to create child documents. * */
@@ -33,9 +37,14 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     private MetaDao metaDao;
     
     /**
+     * Initializes doucment's fields.
+     */
+    private DocumentInitializingVisitor documentInitializingVisitor;
+    
+    /**
      * Returns latest version of a document.
      * 
-     * TODO: Prototype, optimize
+     * TODO: Optimize
      */
     public DocumentDomainObject getLatestDocumentVersion(Integer documentId) {
     	List<DocumentVersion> versions = metaDao.getDocumentVersions(documentId);
@@ -43,7 +52,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     	int size = versions.size();
     	
     	return size == 0 ? null : 
-    		initDocument(loadDocument(documentId, versions.get(size - 1).getVersion()));
+    		initDocument(loadDocument(documentId, versions.get(size - 1).getNumber()));
     }
     
     public DocumentDomainObject getDocument(Integer documentId, Integer version) {
@@ -96,7 +105,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     }    
     
     /**
-     * Loads document
+     * Initializes document's meta.
      */
     private DocumentDomainObject initMeta(Meta meta) {		
 		if (meta == null) {
@@ -104,59 +113,34 @@ public class DatabaseDocumentGetter implements DocumentGetter {
 		}
 		
 		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+		document.setMeta(meta);
 		
-        document.setId(meta.getId());
-        document.setCreatorId(meta.getCreatorId());
-        document.setRestrictedOneMorePrivilegedThanRestrictedTwo(meta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
-        
-        document.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());
-        document.setLinkedForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
-        
-         //Not related to i18n language
-         String language = LanguageMapper.getAsIso639_2OrDefaultLanguage(
+		document.setActualModifiedDatetime(meta.getModifiedDatetime());
+		        
+        //Not related to i18n language
+        String language = LanguageMapper.getAsIso639_2OrDefaultLanguage(
         		meta.getLanguageIso639_2(), 
         		services.getLanguageMapper().getDefaultLanguage());
         
         document.setLanguageIso639_2(language);
         
-        document.setCreatedDatetime(meta.getCreatedDatetime());            
-        document.setModifiedDatetime(meta.getModifiedDatetime());            
-        document.setActualModifiedDatetime(meta.getModifiedDatetime());
-        
-        document.setSearchDisabled(meta.getSearchDisabled());
-        document.setTarget(meta.getTarget());
-        
-        document.setArchivedDatetime(meta.getArchivedDatetime());            
-        document.setPublisherId(meta.getPublisherId());
-        
         Document.PublicationStatus publicationStatus = publicationStatusFromInt(
         		meta.getPublicationStatusInt());            
         document.setPublicationStatus(publicationStatus);
-        
-        document.setPublicationStartDatetime(meta.getPublicationStartDatetime());
-        document.setPublicationEndDatetime(meta.getPublicationEndDatetime());
-                    
-        // moved from DocumentInitializer.initDocuments
-        document.setSectionIds(meta.getSectionIds());
-        document.setCategoryIds(meta.getCategoryIds());
-        document.setProperties(meta.getProperties());
-        
+                
         initRoleIdToPermissionSetIdMap(document, meta);
         initDocumentsPermissionSets(document, meta);
         initDocumentsPermissionSetsForNew(document, meta);            
-        // end of moved from DocumentInitializer.initDocuments
-                    
-        document.setMeta(meta);
         
         return document;
     }
     
+    /**
+     * Initializes document's fields.
+     */
     private DocumentDomainObject initDocument(DocumentDomainObject document) {
     	if (document == null) return null;
-    	
-    	DocumentMapper documentMapper = services.getDocumentMapper();    	
-        DocumentInitializingVisitor documentInitializingVisitor = new DocumentInitializingVisitor(documentMapper, null, documentMapper, metaDao);
-        
+    	        
         document.accept(documentInitializingVisitor);
         
         return document;
@@ -259,5 +243,14 @@ public class DatabaseDocumentGetter implements DocumentGetter {
 
 	public void setMetaDao(MetaDao metaDao) {
 		this.metaDao = metaDao;
+	}
+
+	public DocumentInitializingVisitor getDocumentInitializingVisitor() {
+		return documentInitializingVisitor;
+	}
+
+	public void setDocumentInitializingVisitor(
+			DocumentInitializingVisitor documentInitializingVisitor) {
+		this.documentInitializingVisitor = documentInitializingVisitor;
 	}      
 }

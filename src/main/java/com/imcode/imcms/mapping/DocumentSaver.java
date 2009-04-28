@@ -221,23 +221,7 @@ public class DocumentSaver {
     private Meta saveMeta(DocumentDomainObject document) {
     	Meta meta = document.getMeta();
     	
-    	meta.setCreatorId(document.getCreatorId());
-    	meta.setRestrictedOneMorePrivilegedThanRestrictedTwo(
-    			document.isRestrictedOneMorePrivilegedThanRestrictedTwo());
-    	
-    	meta.setLinkableByOtherUsers(document.isLinkableByOtherUsers());
-    	meta.setLinkedForUnauthorizedUsers(document.isLinkedForUnauthorizedUsers());
-    	meta.setLanguageIso639_2(document.getLanguageIso639_2());
-    	meta.setCreatedDatetime(document.getCreatedDatetime());
-    	meta.setModifiedDatetime(document.getModifiedDatetime());
-    	meta.setSearchDisabled(document.isSearchDisabled());
-    	meta.setTarget(document.getTarget());
-    	
-    	meta.setArchivedDatetime(document.getArchivedDatetime());
-    	meta.setPublisherId(document.getPublisherId());
     	meta.setPublicationStatusInt(document.getPublicationStatus().asInt());
-    	meta.setPublicationStartDatetime(document.getPublicationStartDatetime());
-    	meta.setPublicationEndDatetime(document.getPublicationEndDatetime());
     	
     	if (meta.getId() == null) {
         	meta.setDocumentType(document.getDocumentTypeId());
@@ -262,9 +246,9 @@ public class DocumentSaver {
     	//meta.getPermissionSetBitsForNewMap().clear();    	    	
     	
     	// WHAT TO DO WITH THIS on copy save and on base save?    	
-    	meta.setSectionIds(document.getSectionIds());
-    	meta.setCategoryIds(document.getCategoryIds());
-    	meta.setProperties(document.getProperties());
+    	//meta.setSectionIds(document.getSectionIds());
+    	//meta.setCategoryIds(document.getCategoryIds());
+    	//meta.setProperties(document.getProperties());
     	
     	metaDao.saveMeta(meta);
     	
