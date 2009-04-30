@@ -42,8 +42,8 @@ html.html {
 	                th(align:"left", "Versions")
 	                th(align:"left", "Options") 
 	            }
-	            tr {        
-	                cache.each {metaId, document ->
+	            cache.each { metaId, document ->
+	                tr {        	                
 	                    td(align:"right", "${metaId}")
 	                    td(align:"right", "${document.meta.version.version}")
 	                    td("${document.headline}")
@@ -63,8 +63,8 @@ html.html {
 	                    td {
 	                        a(href:"?cmd=remove&metaId=${metaId}", "Remove from cache")
 	                    }
-	                }
-	            } //tr  	    	  
+	                } //tr
+	            } // cache.each  	    	  
 	        } //table
 	        
 	    } // caches.each   

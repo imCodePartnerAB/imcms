@@ -334,7 +334,7 @@ public class MetaDao extends HibernateTemplate {
 	
 	
 	/**
-	 * Retruns available versions for the document.
+	 * Returns available versions for the document.
 	 * @param documentId document id.
 	 * @return available versions for the document.
 	 */

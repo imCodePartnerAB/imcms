@@ -23,7 +23,7 @@ import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
 
 /**
- * To enable transactions support this class must be instantiated using spring framework.
+ * This class is instantiated using spring framework.
  * 
  * This class acts as DocumentMapper's helper and its API must not be used directly.  
  */
@@ -31,13 +31,7 @@ public class DocumentSaver {
 
     private DocumentMapper documentMapper;
     
-    private MetaDao metaDao; 
-    
-    public DocumentSaver() {}
-    
-    public DocumentSaver(DocumentMapper documentMapper) {
-        this.documentMapper = documentMapper;
-    }
+    private MetaDao metaDao;
     
     /**
      * --experimental--
@@ -197,7 +191,7 @@ public class DocumentSaver {
         
         newUpdateDocumentRolePermissions(document, user, null);
 
-        // Updates permissions - method does not saves but instead just updates meta 
+        // Update permissions
         documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
         
         document.setDependenciesMetaIdToNull();         
@@ -233,9 +227,6 @@ public class DocumentSaver {
         //private static final int META_TEXT_MAX_LENGTH = 1000;
         //String headlineThatFitsInDB = headline.substring(0, Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
         //String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
-    	
-    	//@Immutable
-    	// inserted by legacy queries - not any more
     	
     	// Converted from legacy queries:
     	// Should be handled separately from meta???

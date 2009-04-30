@@ -17,7 +17,14 @@ import com.imcode.imcms.mapping.orm.UrlReference;
  */
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
+	/**
+	 * Current version of a document.
+	 */
     private DocumentDomainObject oldDocument;
+    
+    /**
+     * An user performing save operation. 
+     */
     private UserDomainObject savingUser;
 
     public DocumentSavingVisitor(DocumentDomainObject documentInDatabase,
@@ -27,7 +34,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         savingUser = user;
     }
 
-    // TODO: make transacted   
+    // runs inside transaction   
     public void visitHtmlDocument( HtmlDocumentDomainObject document ) {
     	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
     	
@@ -39,7 +46,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     	dao.saveHtmlReference(htmlReference);
     }
 
-    // TODO: make transacted   
+    // runs inside transaction   
     public void visitUrlDocument( UrlDocumentDomainObject document ) {
     	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
     	
@@ -50,7 +57,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     	dao.saveUrlReference(reference);    	
     }
 
-    // TODO: make transacted   
+    // runs inside transaction 
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
         updateTextDocumentTemplateNames(textDocument, (TextDocumentDomainObject)oldDocument, savingUser);        
         updateTextDocumentTexts( textDocument, (TextDocumentDomainObject)oldDocument, savingUser);

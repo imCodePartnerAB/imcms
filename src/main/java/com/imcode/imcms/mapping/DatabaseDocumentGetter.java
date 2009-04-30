@@ -37,7 +37,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     private MetaDao metaDao;
     
     /**
-     * Initializes doucment's fields.
+     * Initializes document's fields.
      */
     private DocumentInitializingVisitor documentInitializingVisitor;
     

@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.dao.ContentLoopDao;
@@ -39,6 +38,9 @@ import com.imcode.imcms.mapping.orm.FileReference;
 import com.imcode.imcms.mapping.orm.Include;
 import com.imcode.imcms.mapping.orm.TemplateNames;
 
+/**
+ * Not a public API. Must not be used directly.
+ */
 public class DocumentStoringVisitor extends DocumentVisitor {
 	
     protected ImcmsServices services;
@@ -121,7 +123,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     } 
     
-    //@Transactional
+    // runs inside transaction
     public void updateTextDocumentContentLoops(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ContentLoopDao dao = (ContentLoopDao)services.getSpringBean("contentLoopDao");
         Integer documentId = textDocument.getMeta().getId();
@@ -133,7 +135,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }  	
     }
     
-    // Transactional
+    // runs inside transaction
     public void updateTextDocumentText(TextDomainObject text, UserDomainObject user) {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
 
@@ -141,6 +143,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         textDao.saveTextHistory(text.getMetaId(), text, user); 
     }    
     
+    // runs inside transaction
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
         Integer metaId = textDocument.getMeta().getId();
@@ -160,7 +163,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
     
     
-    // TODO: transactional - new or can participate
+    // runs inside transaction
     void updateTextDocumentIncludes(TextDocumentDomainObject textDocument) {
     	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
     	
@@ -179,7 +182,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     	dao.saveIncludes(documentId, includes);
     }
     
-    // TODO: transactional - new or can participate
+    // runs inside transaction
     void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
     	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
     	

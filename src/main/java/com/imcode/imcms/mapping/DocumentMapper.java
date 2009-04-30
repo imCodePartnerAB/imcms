@@ -80,8 +80,7 @@ import com.imcode.imcms.mapping.aop.TextDocumentAspect;
  * DatabseDocumentGetter is instantiated using SpringFramework factory
  * in order to support declared (AOP) transactions.
  * 
- * There is a major difference between 
- * getDocument and getDocumentForShowing:
+ * There is a big difference between getDocument and getDocumentForShowing:
  * 
  * getDocument returns document instance unmodified.
  * getDocumentForShowing will throw an exception if a user who have requested 
@@ -111,12 +110,12 @@ public class DocumentMapper implements DocumentGetter {
     private DatabaseDocumentGetter databaseDocumentGetter;
     
     /** 
-     * Decorates and delegates calls to databaseDocumentGetter.
+     * Provides documents caching. Wraps databaseDocumentGetter.
      */
     private CachingDocumentGetter cachingDocumentGetter;
     
     /**
-     * Provides document saving and updating routines. 
+     * Contain document saving and updating routines. 
      * Instantiated using SpringFramework.
      */
     private DocumentSaver documentSaver ;
@@ -154,8 +153,8 @@ public class DocumentMapper implements DocumentGetter {
         // old code:
         // documentSaver = new DocumentSaver(this);
         
-        // DocumentSaver is instantiated using SpringFramework factory
-        // in order to support declared (AOP) transactions.
+        // DocumentSaver is instantiated using SpringFramework
+        // in order to support declarative (AOP) transactions.
         this.documentSaver = (DocumentSaver)services.getSpringBean("documentSaver");
         this.documentSaver.setDocumentMapper(this);
         
@@ -276,27 +275,14 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     /**
-     * Saves published or working document.
-     * @throws NotImplementedException if document has a custom version.
+     * Updates existing document.
      */
     public void saveDocument(DocumentDomainObject document,
                              final UserDomainObject user) throws DocumentSaveException , NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException
     {
 
-    	DocumentDomainObject oldDocument;
-    	
-    	switch (document.getMeta().getVersion().getTag()) {
-		case PUBLISHED:
-			oldDocument = getDocument(document.getId());			
-			break;
-
-		case WORKING:
-			oldDocument = getWorkingDocument(document.getId());			
-			break;
-			
-		default:
-			throw new NotImplementedException();
-		}
+    	DocumentDomainObject oldDocument = 
+    		getDocument(document.getId(), document.getMeta().getVersion().getNumber());
 
         documentSaver.updateDocument(document, oldDocument, user);
     }

@@ -14,19 +14,14 @@
 	 
   <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>    
   
-  <!--
-    ${com.imcode.imcms.path} is a system property value which is initialized in
-    com.imcode.imcms.servlet.ContextListener   
-  -->
-  
   <bean id="properties"
       class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-    <property name="location" value="file:${com.imcode.imcms.path}/WEB-INF/conf/server.properties"/>
+    <property name="location" value="/WEB-INF/conf/server.properties"/>
   </bean>
     
   <bean id="propertyConfigurer"
       class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="location" value="file:${com.imcode.imcms.path}/WEB-INF/conf/server.properties"/>
+    <property name="location" value="/WEB-INF/conf/server.properties"/>
   </bean>  
 	 
   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
