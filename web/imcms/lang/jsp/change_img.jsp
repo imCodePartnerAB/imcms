@@ -149,16 +149,18 @@ function resetCrop() {
     var forcedWidth = parseInt(document.getElementById("forced_width").value, 10), 
         forcedHeight = parseInt(document.getElementById("forced_height").value, 10);
 
+    var widthInput = document.getElementById("image_width");
     if (forcedWidth > 0) {
-    	document.getElementById("image_width").value = forcedWidth;
+        widthInput.value = forcedWidth;
     } else {
-    	document.getElementById("image_width").readOnly = false;
+        widthInput.readOnly = false;
     }
 
+    var heightInput = document.getElementById("image_height");
     if (forcedHeight > 0) {
-    	document.getElementById("image_height").value = forcedHeight;
+        heightInput.value = forcedHeight;
     } else {
-    	document.getElementById("image_height").readOnly = false;
+        heightInput.readOnly = false;
     }
 
     cropButton.style.display = "inline";
@@ -290,7 +292,7 @@ function resetCrop() {
 						%>size="4" maxlength="4" value="<%
 						if (image.getWidth() > 0) {
 							%><%= image.getWidth() %><%
-						} %>" <%= (imageEditPage.getForcedWidth() > 0 ? "readonly='readonly'" : "") %> ></td>
+						} %>" <%= (imageEditPage.getForcedWidth() > 0 ? "readonly='readonly' class='imcmsDisabled'" : "") %> ></td>
 						<td>&nbsp;X&nbsp;</td>
 						<td><input type="text" <%
 						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>" <%
@@ -298,7 +300,7 @@ function resetCrop() {
 						%>size="4" maxlength="4" value="<%
 						if (image.getHeight() > 0) {
 							%><%= image.getHeight() %><%
-						} %>" <%= (imageEditPage.getForcedHeight() > 0 ? "readonly='readonly'" : "") %> ></td>
+						} %>" <%= (imageEditPage.getForcedHeight() > 0 ? "readonly='readonly' class='imcmsDisabled'" : "") %> ></td>
 						<td>&nbsp;</td>
 						<td><input type="text" <%
 						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>" <%
@@ -342,11 +344,11 @@ function resetCrop() {
                                 <td></td>
                             </tr>
                             <tr>
-                                <td><input id="crop_x1" type="text" value="<%= cropRegion.getCropX1() %>" readonly="readonly" size="4" maxlength="4"/></td>
-                                <td><input id="crop_y1" type="text" value="<%= cropRegion.getCropY1() %>" readonly="readonly" size="4" maxlength="4"/></td>
+                                <td><input id="crop_x1" type="text" value="<%= cropRegion.getCropX1() %>" readonly="readonly" class="imcmsDisabled" size="4" maxlength="4"/></td>
+                                <td><input id="crop_y1" type="text" value="<%= cropRegion.getCropY1() %>" readonly="readonly" class="imcmsDisabled" size="4" maxlength="4"/></td>
                                 <td>&nbsp;&nbsp;</td>
-                                <td><input id="crop_x2" type="text" value="<%= cropRegion.getCropX2() %>" readonly="readonly" size="4" maxlength="4"/></td>
-                                <td><input id="crop_y2" type="text" value="<%= cropRegion.getCropY2() %>" readonly="readonly" size="4" maxlength="4"/></td>
+                                <td><input id="crop_x2" type="text" value="<%= cropRegion.getCropX2() %>" readonly="readonly" class="imcmsDisabled" size="4" maxlength="4"/></td>
+                                <td><input id="crop_y2" type="text" value="<%= cropRegion.getCropY2() %>" readonly="readonly" class="imcmsDisabled" size="4" maxlength="4"/></td>
                                 <td>&nbsp;&nbsp;</td>
                                 <td>
                                     <input type="submit" name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_CROP_IMAGE %>" 

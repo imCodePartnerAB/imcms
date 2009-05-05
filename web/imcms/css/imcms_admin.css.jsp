@@ -91,6 +91,7 @@ if (isGecko) {
 .imcmsAdmBgHead { background-color:#20568D; color:#ffffff; }
 .imcmsAdmBgCont { background-color:#f5f5f7; color:#000000; }
 .imcmsAdmBorder { background-color:#e1ded9; }
+input.imcmsDisabled { background-color:#ccc; }
 
 <%
 /* *******************************************************************************************

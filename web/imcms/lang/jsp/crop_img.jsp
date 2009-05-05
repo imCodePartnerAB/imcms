@@ -175,17 +175,17 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td><input id="crop_x1" name="${const.PARAM_CROP_X1}" type="text" readonly="readonly" size="4" maxlength="4" value="${region.valid ? region.cropX1 : ''}"/></td>
+                                            <td><input id="crop_x1" name="${const.PARAM_CROP_X1}" type="text" class="imcmsDisabled" readonly="readonly" size="4" maxlength="4" value="${region.valid ? region.cropX1 : ''}"/></td>
                                             <td>&nbsp;</td>
-                                            <td><input id="crop_y1" name="${const.PARAM_CROP_Y1}" type="text" readonly="readonly" size="4" maxlength="4" value="${region.valid ? region.cropY1 : ''}"/></td>
+                                            <td><input id="crop_y1" name="${const.PARAM_CROP_Y1}" type="text" class="imcmsDisabled" readonly="readonly" size="4" maxlength="4" value="${region.valid ? region.cropY1 : ''}"/></td>
                                             <td>&nbsp;</td>
-                                            <td><input id="crop_x2" name="${const.PARAM_CROP_X2}" type="text" readonly="readonly" size="4" maxlength="4" value="${region.valid ? region.cropX2 : ''}"/></td>
+                                            <td><input id="crop_x2" name="${const.PARAM_CROP_X2}" type="text" class="imcmsDisabled" readonly="readonly" size="4" maxlength="4" value="${region.valid ? region.cropX2 : ''}"/></td>
                                             <td>&nbsp;</td>
-                                            <td><input id="crop_y2" name="${const.PARAM_CROP_Y2}" type="text" readonly="readonly" size="4" maxlength="4" value="${region.valid ? region.cropY2 : ''}"/></td>
+                                            <td><input id="crop_y2" name="${const.PARAM_CROP_Y2}" type="text" class="imcmsDisabled" readonly="readonly" size="4" maxlength="4" value="${region.valid ? region.cropY2 : ''}"/></td>
                                             <td>&nbsp;&nbsp;</td>
-                                            <td><input id="width" type="text" readonly="readonly" size="4" maxlength="4" value="${region.width}"/></td>
+                                            <td><input id="width" type="text" class="imcmsDisabled" readonly="readonly" size="4" maxlength="4" value="${region.width}"/></td>
                                             <td>&nbsp;X&nbsp;</td>
-                                            <td><input id="height" type="text" readonly="readonly" size="4" maxlength="4" value="${region.height}"/></td>
+                                            <td><input id="height" type="text" class="imcmsDisabled" readonly="readonly" size="4" maxlength="4" value="${region.height}"/></td>
                                         </tr>
                                     </table>
                                 </td>
