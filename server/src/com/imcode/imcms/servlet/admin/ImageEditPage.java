@@ -113,7 +113,7 @@ public class ImageEditPage extends OkCancelPage {
     }
     
     private void forceWidthHeight() {
-    	if (image != null && !image.getCropRegion().isValid()) {
+    	if (image != null) {
         	if (forcedWidth > 0) {
         		image.setWidth(forcedWidth);
         	}
@@ -294,16 +294,7 @@ public class ImageEditPage extends OkCancelPage {
 		Handler<CropRegion> cropHandler = new Handler<CropRegion>() {
 			public void handle(CropRegion cropRegion) {
 				image.setCropRegion(cropRegion);
-				
-				if (cropRegion.isValid()) {
-					image.setWidth(cropRegion.getWidth());
-					image.setHeight(cropRegion.getHeight());
-				} else {
-					image.setWidth(0);
-					image.setHeight(0);
-					
-					forceWidthHeight();
-				}
+				forceWidthHeight();
 			}
 		};
 		

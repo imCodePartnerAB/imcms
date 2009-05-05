@@ -290,7 +290,7 @@ function resetCrop() {
 						%>size="4" maxlength="4" value="<%
 						if (image.getWidth() > 0) {
 							%><%= image.getWidth() %><%
-						} %>" <%= (cropRegion.isValid() || imageEditPage.getForcedWidth() > 0 ? "readonly='readonly'" : "") %> ></td>
+						} %>" <%= (imageEditPage.getForcedWidth() > 0 ? "readonly='readonly'" : "") %> ></td>
 						<td>&nbsp;X&nbsp;</td>
 						<td><input type="text" <%
 						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>" <%
@@ -298,7 +298,7 @@ function resetCrop() {
 						%>size="4" maxlength="4" value="<%
 						if (image.getHeight() > 0) {
 							%><%= image.getHeight() %><%
-						} %>" <%= (cropRegion.isValid() || imageEditPage.getForcedHeight() > 0 ? "readonly='readonly'" : "") %> ></td>
+						} %>" <%= (imageEditPage.getForcedHeight() > 0 ? "readonly='readonly'" : "") %> ></td>
 						<td>&nbsp;</td>
 						<td><input type="text" <%
 						%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>" <%
@@ -316,8 +316,7 @@ function resetCrop() {
 					</tr>
 					</table></td>
 				</tr>
-        <% if (!image.isEmpty() && imageEditPage.getForcedWidth() <= realImageSize.getWidth() 
-        	      && imageEditPage.getForcedHeight() <= realImageSize.getHeight()) { %>
+        <% if (!image.isEmpty()) { %>
             <tr>
                 <td nowrap><? templates/sv/change_img.html/4003 ?></td>
                 <td id="crop_cell">

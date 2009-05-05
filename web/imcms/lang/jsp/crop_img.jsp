@@ -73,15 +73,13 @@
                             displayOnInit: true
                         };
 
-                        if (${forcedWidth gt 0}) {
-                        	options.minWidth = ${forcedWidth} / scale;
-                            options.maxWidth = ${forcedWidth} / scale;
+                        if (${image.width gt 0 and image.height gt 0}) {
+                            options.ratioDim = {
+                                x: ${image.width}, 
+                                y: ${image.height}
+                            };
                         }
-                        if (${forcedHeight gt 0}) {
-                        	options.minHeight = ${forcedHeight} / scale;
-                            options.maxHeight = ${forcedHeight} / scale;
-                        }
-
+                        
                         if (${region.valid}) {
                             options.onloadCoords = {
                                 x1: Math.floor(${region.cropX1} / scale), 

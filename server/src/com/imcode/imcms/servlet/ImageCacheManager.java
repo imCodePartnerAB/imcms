@@ -132,15 +132,16 @@ public class ImageCacheManager {
 				int cropHeight = cropRegion.getHeight();
 				
 				operation.crop(cropRegion.getCropX1(), cropRegion.getCropY1(), cropWidth, cropHeight);
-			} else if (width > 0 || height > 0) {
-				
-				Integer w = (width > 0 ? width : null);
-				Integer h = (height > 0 ? height : null);
-				Resize resize = (width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
-				
-				operation.filter(Filter.LANCZOS);
-				operation.resize(w, h, resize);
 			}
+			
+			if (width > 0 || height > 0) {
+                Integer w = (width > 0 ? width : null);
+                Integer h = (height > 0 ? height : null);
+                Resize resize = (width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
+                
+                operation.filter(Filter.LANCZOS);
+                operation.resize(w, h, resize);
+	        }
 			
 			if (imageCache.getFormat() != null) {
 				operation.outputFormat(imageCache.getFormat());

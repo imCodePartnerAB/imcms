@@ -45,6 +45,7 @@ public class ImageCropPage extends OkCancelPage {
 		this.forcedWidth = forcedWidth;
 		this.forcedHeight = forcedHeight;
 		
+		
 		if (forcedWidth > 0) {
 			image.setWidth(forcedWidth);
 		}
