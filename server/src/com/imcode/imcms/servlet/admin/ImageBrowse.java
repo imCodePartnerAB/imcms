@@ -134,11 +134,24 @@ public class ImageBrowse extends HttpServlet {
                 	fileItem.write(tempFile);
                 	ImageInfo info = ImageOp.getImageInfo(tempFile);
                 	
-                	if (info != null) {
-                		FileUtils.copyFile(tempFile, destinationFile);
+                	boolean validImage = false;
+                	
+                	if (info != null && info.getFormat() != null) {
+                	    Format imageFormat = info.getFormat();
+                	    
+                	    for (Format allowedFormat : ImageEditPage.ALLOWED_FORMATS) {
+                	        if (imageFormat == allowedFormat) {
+                	            validImage = true;
+                	            break;
+                	        }
+                	    }
+                	}
+                	
+                	if (validImage) {
+                	    FileUtils.copyFile(tempFile, destinationFile);
                         page.setCurrentImage( destinationFile ) ;
                 	} else {
-                		page.setErrorMessage(ImageEditPage.ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES) ;
+                	    page.setErrorMessage(ImageEditPage.ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES) ;
                 	}
                 } catch ( Exception e ) {
                     throw new UnhandledException( "Failed to write file " + destinationFile

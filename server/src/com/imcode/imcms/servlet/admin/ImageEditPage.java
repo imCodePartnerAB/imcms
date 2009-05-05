@@ -79,7 +79,7 @@ public class ImageEditPage extends OkCancelPage {
     static final LocalizedMessage ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images");
     static final LocalizedMessage ERROR_MESSAGE__FILE_NOT_IMAGE = new LocalizedMessage("error/servlet/images/file_not_image");
     private final static String[] IMAGE_MIME_TYPES = new String[] { "image/jpeg", "image/png", "image/gif" };
-    public static final Format[] ALLOWED_FORMATS = new Format[] { Format.BMP, Format.GIF, Format.JPEG, Format.PNG };
+    public static final Format[] ALLOWED_FORMATS = new Format[] { Format.GIF, Format.JPEG, Format.PNG };
 
     private TextDocumentDomainObject document;
     private ImageDomainObject image;
