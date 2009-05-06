@@ -89,7 +89,25 @@
                             };
                         }
                         
-                        new Cropper.Img("image", options);
+                        var cropper = new Cropper.Img("image", options);
+
+                        Event.observe("reset", "click", function() {
+                            var options = cropper.options;
+                            options.onloadCoords = null;
+                            options.displayOnInit = false;
+                            
+                            cropper.reset();
+
+                            var startCoords = { x1: 0, y1: 0, x2: 0, y2: 0 };
+                            cropper.setAreaCoords( startCoords, false, false, 1);
+                            
+                            $("crop_x1").value = 0;
+                            $("crop_y1").value = 0;
+                            $("crop_x2").value = 0;
+                            $("crop_y2").value = 0;
+                            $("width").value = 0;
+                            $("height").value = 0;
+                        });
                     }
                 );
             </script>
@@ -173,6 +191,8 @@
                                                     <b><? web/imcms/lang/jsp/crop_img.jsp/height ?></b>
                                                 </label>
                                             </td>
+                                            <td>&nbsp;</td>
+                                            <td></td>
                                         </tr>
                                         <tr>
                                             <td><input id="crop_x1" name="${const.PARAM_CROP_X1}" type="text" class="imcmsDisabled" readonly="readonly" size="4" maxlength="4" value="${region.valid ? region.cropX1 : ''}"/></td>
@@ -186,6 +206,8 @@
                                             <td><input id="width" type="text" class="imcmsDisabled" readonly="readonly" size="4" maxlength="4" value="${region.width}"/></td>
                                             <td>&nbsp;X&nbsp;</td>
                                             <td><input id="height" type="text" class="imcmsDisabled" readonly="readonly" size="4" maxlength="4" value="${region.height}"/></td>
+                                            <td>&nbsp;&nbsp;</td>
+                                            <td><input id="reset" type="button" class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/4008 ?>"/></td>
                                         </tr>
                                     </table>
                                 </td>

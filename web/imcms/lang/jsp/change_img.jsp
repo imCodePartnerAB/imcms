@@ -141,6 +141,12 @@ function resetCrop() {
 
     cell.removeChild(cell.getElementsByTagName("table")[0]);
 
+    var croppedSizeRow = document.getElementById("croppedSize");
+    var croppedSizeLabelRow = document.getElementById("croppedSizeLabel");
+
+    croppedSizeRow.parentNode.removeChild(croppedSizeRow);
+    croppedSizeLabelRow.parentNode.removeChild(croppedSizeLabelRow);
+
     document.getElementById("h_crop_x1").value = "-1";
     document.getElementById("h_crop_y1").value = "-1";
     document.getElementById("h_crop_x2").value = "-1";
@@ -307,14 +313,8 @@ function resetCrop() {
 						%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>" <%
 						%>size="4" maxlength="4" value="<%= image.getBorder() %>"></td>
 						<td>&nbsp;</td>
-						<td><? templates/sv/change_img.html/size_explanation ?></td>
-					</tr>
-					<tr>
-						<td height="20">&nbsp;<%= realImageSize.getWidth() %></td>
-						<td>&nbsp;X&nbsp;</td>
-						<td>&nbsp;<%= realImageSize.getHeight() %></td>
-						<td>&nbsp;</td>
-						<td colspan="3"><? templates/sv/change_img.html/originalSize ?></td>
+						<td><input type="submit" name="<%= ImageEditPage.REQUEST_PARAMETER__PREVIEW_BUTTON %>" 
+                                   class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/2006 ?>"/></td>
 					</tr>
 					</table></td>
 				</tr>
@@ -368,6 +368,37 @@ function resetCrop() {
                 </td>
             </tr>
         <% } %>
+        <tr>
+            <td nowrap>
+                <table cellspacing="0" cellpadding="0" border="0">
+                    <% if (cropRegion.isValid()) { %>
+                    <tr id="croppedSizeLabel">
+                        <td height="25"><? templates/sv/change_img.html/4010 ?></td>
+                    </tr>
+                    <% } %>
+                    <tr>
+                        <td height="25"><? templates/sv/change_img.html/4011 ?></td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table cellspacing="0" cellpadding="0" border="0">
+                    <% if (cropRegion.isValid()) { %>
+                    <tr id="croppedSize">
+                        <td height="25"><%= cropRegion.getWidth() %></td>
+                        <td>&nbsp;&nbsp;X&nbsp;&nbsp;</td>
+                        <td><%= cropRegion.getHeight() %></td>
+                    </tr>
+                    <% } %>
+                    <tr>
+                        <td height="25"><%= realImageSize.getWidth() %></td>
+                        <td>&nbsp;&nbsp;X&nbsp;&nbsp;</td>
+                        <td><%= realImageSize.getHeight() %></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        
         <tr>
             <td nowrap><label for="format"><? templates/sv/change_img.html/4009 ?></label></td>
             <td>
