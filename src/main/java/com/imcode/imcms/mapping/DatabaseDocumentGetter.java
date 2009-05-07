@@ -116,13 +116,6 @@ public class DatabaseDocumentGetter implements DocumentGetter {
 		document.setMeta(meta);
 		
 		document.setActualModifiedDatetime(meta.getModifiedDatetime());
-		        
-        //Not related to i18n language
-        String language = LanguageMapper.getAsIso639_2OrDefaultLanguage(
-        		meta.getLanguageIso639_2(), 
-        		services.getLanguageMapper().getDefaultLanguage());
-        
-        document.setLanguageIso639_2(language);
         
         Document.PublicationStatus publicationStatus = publicationStatusFromInt(
         		meta.getPublicationStatusInt());            

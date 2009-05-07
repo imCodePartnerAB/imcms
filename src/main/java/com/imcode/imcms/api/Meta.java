@@ -177,10 +177,6 @@ public class Meta implements Serializable, Cloneable {
     private Boolean linkedForUnauthorizedUsers;
     
     // CHECKED	
-    @Column(name="lang_prefix", nullable=false)
-    private String languageIso639_2;
-    
-    // CHECKED	
     @Column(name="date_created", nullable=false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDatetime;
@@ -464,14 +460,6 @@ public class Meta implements Serializable, Cloneable {
 
 	public void setLinkedForUnauthorizedUsers(Boolean linkedForUnauthorizedUsers) {
 		this.linkedForUnauthorizedUsers = linkedForUnauthorizedUsers;
-	}
-
-	public String getLanguageIso639_2() {
-		return languageIso639_2;
-	}
-
-	public void setLanguageIso639_2(String languageIso639_2) {
-		this.languageIso639_2 = languageIso639_2;
 	}
 
 	public Date getCreatedDatetime() {

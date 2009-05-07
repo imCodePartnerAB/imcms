@@ -1,6 +1,5 @@
 package com.imcode.imcms.dao;
 
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +21,6 @@ import com.imcode.imcms.mapping.orm.Include;
 import com.imcode.imcms.mapping.orm.TemplateNames;
 import com.imcode.imcms.mapping.orm.UrlReference;
 
-//TODO: convert in-line queries to named queries
 public class MetaDao extends HibernateTemplate {
 
 	/**
@@ -49,6 +47,7 @@ public class MetaDao extends HibernateTemplate {
 	@Transactional
 	public synchronized DocumentVersion createWorkingVersion(Integer documentId, Integer userId) {
 		DocumentVersion nextVersion;
+		
 		DocumentVersion latestVersion = (DocumentVersion)getSession().getNamedQuery("DocumentVersion.getLastVersion")
 			.setParameter("documentId", documentId)
 			.uniqueResult();
@@ -84,12 +83,10 @@ public class MetaDao extends HibernateTemplate {
 		Meta meta = getMeta(id);
 		
 		if (meta != null) {
-			Query query = getSession().createQuery("SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId AND v.version = :version")
+			DocumentVersion documentVersion = (DocumentVersion)getSession().getNamedQuery("DocumentVersion.getByDocumentIdAndVersion")
 				.setParameter("documentId", id)
-				.setParameter("version", version);
-			
-			DocumentVersion documentVersion = (DocumentVersion)query.uniqueResult();
-			
+				.setParameter("version", version)
+				.uniqueResult();			
 			if (documentVersion != null) {
 				meta.setVersion(documentVersion);
 			} else {
@@ -133,7 +130,7 @@ public class MetaDao extends HibernateTemplate {
 		Meta meta = getMeta(documentId);
 		
 		if (meta != null) {
-			Query query = getSession().createQuery("SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId AND v.versionTag = :versionTag")
+			Query query = getSession().getNamedQuery("DocumentVersion.getByDocumentIdAndVersionTag")
 			  .setParameter("documentId", documentId)
 			  .setParameter("versionTag", DocumentVersionTag.PUBLISHED);
 			
@@ -161,7 +158,7 @@ public class MetaDao extends HibernateTemplate {
 		Meta meta = getMeta(documentId);
 		
 		if (meta != null) {
-			Query query = getSession().createQuery("SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId AND v.versionTag = :versionTag")
+			Query query = getSession().getNamedQuery("DocumentVersion.getByDocumentIdAndVersionTag")
 			  .setParameter("documentId", documentId)
 			  .setParameter("versionTag", DocumentVersionTag.WORKING);
 			
@@ -319,7 +316,7 @@ public class MetaDao extends HibernateTemplate {
 		DocumentVersion publishedVersion = (DocumentVersion)query.uniqueResult();
 		
 		if (publishedVersion != null) {
-			publishedVersion.setVersionTag(DocumentVersionTag.ARCHIVED);
+			publishedVersion.setTag(DocumentVersionTag.ARCHIVED);
 			save(publishedVersion);
 		}
 		
@@ -327,7 +324,7 @@ public class MetaDao extends HibernateTemplate {
 		DocumentVersion workingVersion = (DocumentVersion)query.uniqueResult();
 		
 		if (workingVersion != null) {
-			workingVersion.setVersionTag(DocumentVersionTag.PUBLISHED);
+			workingVersion.setTag(DocumentVersionTag.PUBLISHED);
 			save(workingVersion);
 		}
 	}

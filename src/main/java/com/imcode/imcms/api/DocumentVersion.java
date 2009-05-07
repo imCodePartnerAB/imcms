@@ -20,6 +20,7 @@ import javax.persistence.TemporalType;
  */
 @Entity(name="DocumentVersion")
 @Table(name="meta_version")
+/*
 @NamedQueries({
 	// Unique result
 	@NamedQuery(name="DocumentVersion.getLastVersion", 
@@ -38,6 +39,7 @@ import javax.persistence.TemporalType;
 	@NamedQuery(name="DocumentVersion.getByDocumentId", 
 			query="SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId")	
 })
+*/
 public class DocumentVersion implements Cloneable {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)

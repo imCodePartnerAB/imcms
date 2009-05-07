@@ -202,10 +202,6 @@ public class Document implements Serializable {
         internalDocument.setCreator( creator.getInternal() );
     }
 
-    public Language getLanguage() {
-        return Language.getLanguageByISO639_2( internalDocument.getLanguageIso639_2() );
-    }
-
     public void addCategory( Category category ) {
         internalDocument.addCategoryId( category.getId() );
     }
@@ -353,10 +349,6 @@ public class Document implements Serializable {
     /** @deprecated Use {@link #setPublicationStatus} instead. */
     public void setStatus( int status ) {
         internalDocument.setPublicationStatus( new PublicationStatus(status) );
-    }
-
-    public void setLanguage( Language language ) {
-        internalDocument.setLanguageIso639_2( language.getIsoCode639_2() );
     }
 
     public void setPublicationEndDatetime( Date datetime ) {

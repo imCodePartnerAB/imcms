@@ -55,6 +55,7 @@
     <property name="srcincludes" value="MANIFEST.TXT"/>
 
 	<property name="main.resources.dir" value="${basedir}/src/main/resources"/>
+	<property name="main.java.dir" value="${basedir}/src/main/java"/>
 	
     <property name="classes" value="${tmp}/classes"/>	
     <property name="conf" value="${WEB-INF}/conf"/>
@@ -496,6 +497,10 @@
     	<copy todir="${WEB-INF}/classes" filtering="true">
     		<fileset dir="${main.resources.dir}" includes="**/*log*, **/*hibernate*"/>
     	</copy>
+    	
+    	<copy todir="${WEB-INF}/classes" filtering="true">
+    		<fileset dir="${main.java.dir}" includes="*.xml"/>
+    	</copy>    	
     	
     	<copy todir="${WEB-INF}/conf" filtering="true">
     		<fileset dir="${main.resources.dir}" includes="**/*" excludes="**/*log*"/>

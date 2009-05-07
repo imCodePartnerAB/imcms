@@ -42,7 +42,7 @@ Sections:
          %><%=section.getName()%>&nbsp;[id = <%=section.getId()%>]<br><%
      }
 %>
-Language: "<%=document.getLanguage()%>"
+
 Categories:
 <%
     Category[] categories = document.getCategories();

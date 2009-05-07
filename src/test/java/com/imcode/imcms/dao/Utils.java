@@ -6,7 +6,7 @@ import com.imcode.imcms.mapping.DatabaseDocumentGetter;
 import com.imcode.imcms.mapping.DocumentSaver;
 public class Utils {
 
-	public static final ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
+	public static final ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext("testApplicationContext.xml");
 	
 	// Essential, well known meta id.
 	public final static Integer META_ID = 1001;

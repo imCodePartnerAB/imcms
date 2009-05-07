@@ -662,18 +662,6 @@ public class TagParser {
         return StringUtils.join(categoryStrings, separator);
     }
 
-    private String tagLanguage(Properties attributes) {
-        String representation = attributes.getProperty("representation");
-        if ( null == representation ) {
-            return service.getLanguageMapper().getCurrentLanguageNameInUsersLanguage(documentRequest.getUser(), document.getLanguageIso639_2());
-        } else if ( LanguageMapper.ISO639_2.equalsIgnoreCase(representation) ) {
-            return document.getLanguageIso639_2();
-        } else {
-            return "<!-- <?imcms:language ... representation=\"" + representation
-                   + "\" is empty, wrong or does not exist! -->";
-        }
-    }
-
     private String singleTag(String tagname, Properties attributes, String entireMatch,
                              PatternMatcher patMat, boolean insideText) {
         String tagResult = entireMatch;
@@ -697,8 +685,6 @@ public class TagParser {
                 tagResult = tagSections(attributes);
             } else if ( "user".equals(tagname) ) {
                 tagResult = tagUser(attributes);
-            } else if ( "documentlanguage".equals(tagname) ) {
-                tagResult = tagLanguage(attributes);
             } else if ( "documentcategories".equals(tagname) ) {
                 tagResult = tagCategories(attributes);
             }

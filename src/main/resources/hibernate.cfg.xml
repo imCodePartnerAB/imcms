@@ -5,13 +5,6 @@
 <hibernate-configuration>
 
     <session-factory>
-        <!-- 
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
-    	<property name="hibernate.show_sql">@showHibernateSQL@</property>
-    	<property name="hibernate.format_sql">@showHibernateSQL@</property>
-    	<property name="hibernate.use_sql_comments">@showHibernateSQL@</property>
-    	-->
-    	   	
         <mapping class="com.imcode.imcms.api.Meta"/>
         
         <mapping class="com.imcode.imcms.mapping.orm.TemplateNames"/> 
@@ -30,6 +23,9 @@
         <mapping class="imcode.server.document.textdocument.ImageDomainObject"/>
         <mapping class="imcode.server.document.textdocument.TextDomainObject"/>
         <mapping class="imcode.server.document.textdocument.MenuDomainObject"/>
+        
+        <!-- Named queries -->
+        <mapping resource="DocumentVersion.hbm.xml"/>
 
     </session-factory>
     

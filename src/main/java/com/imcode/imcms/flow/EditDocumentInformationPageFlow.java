@@ -56,7 +56,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__SECTIONS = "change_section";
     public static final String REQUEST_PARAMETER__PUBLICATION_END_DATE = "publication_end_date";
     public static final String REQUEST_PARAMETER__PUBLICATION_END_TIME = "publication_end_time";
-    public static final String REQUEST_PARAMETER__LANGUAGE = "lang_prefix";
     public static final String REQUEST_PARAMETER__CATEGORIES = "categories";
     public static final String REQUEST_PARAMETER__CATEGORY_IDS_TO_REMOVE = "categories_to_remove";
     public static final String REQUEST_PARAMETER__CATEGORY_IDS_TO_ADD = "categories_to_add";
@@ -301,9 +300,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             int sectionId = Integer.parseInt( sectionIds[i] );
             document.addSectionId( sectionId );
         }
-
-        String languageIso639_2 = request.getParameter( REQUEST_PARAMETER__LANGUAGE );
-        document.setLanguageIso639_2( languageIso639_2 );
 
         //*** Remove all categories except multi without picture
         CategoryTypeDomainObject[] categoryTypes = categoryMapper.getAllCategoryTypes() ;

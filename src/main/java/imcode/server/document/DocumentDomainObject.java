@@ -236,14 +236,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		properties.remove(key);
 	}
 
-	public String getLanguageIso639_2() {
-		return meta.getLanguageIso639_2();
-	}
-
-	public void setLanguageIso639_2(String languageIso639_2) {
-		meta.setLanguageIso639_2(languageIso639_2);
-	}
-
 	@Deprecated
 	// TODO: throw OperationNotSupported
 	/**
