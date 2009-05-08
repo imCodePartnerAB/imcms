@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+	 
+  <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>    
+  
+  <bean id="properties"
+      class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+    <property name="location" value="classpath:test.properties"/>
+  </bean>
+    
+  <bean id="propertyConfigurer"
+      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location" value="classpath:test.properties"/>
+  </bean>  
+	 
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="${JdbcDriver}"/>
+    <property name="url" value="${JdbcUrl}"/>
+    <property name="username" value="${User}"/>
+    <property name="password" value="${Password}"/>
+    <property name="testOnBorrow" value="true"/>
+    <property name="validationQuery" value="select 1"/>    
+    <property name="defaultAutoCommit" value="false"/>
+    <property name="maxActive" value="${MaxConnectionCount}"/>
+  </bean>
+  
+  <bean id="dataSourceWithAutoCommit" parent="dataSource">  
+    <property name="defaultAutoCommit" value="true"/>
+  </bean>   
+  
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+    <property name="configLocation" value="classpath:hibernate.cfg.xml"/>
+    
+    <property name="dataSource" ref="dataSource"/> 
+    
+    <property name="hibernateProperties">
+      <ref bean="properties"/>
+    </property>       
+  </bean>  
+  
+    
+  <bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>  
+  
+  <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>  
+  
+  <bean id="schemaVersionChecker" class="com.imcode.imcms.util.SchemaVersionChecker">
+  	<property name="hibernateTemplate" ref="hibernateTemplate"/>
+  </bean>
+  
+  <bean id="metaDao" class="com.imcode.imcms.dao.MetaDao">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+  <bean id="languageDao" class="com.imcode.imcms.dao.LanguageDao">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>  
+  
+  <bean id="imageDao" class="com.imcode.imcms.dao.ImageDao">
+    <property name="sessionFactory" ref="sessionFactory"/>
+    <property name="languageDao" ref="languageDao"/>
+  </bean> 
+  
+   <bean id="textDao" class="com.imcode.imcms.dao.TextDao">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+  <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDao">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>        
+  
+  <bean id="menuDao" class="com.imcode.imcms.dao.MenuDao">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>  
+  
+  <bean id="documentSaver" class="com.imcode.imcms.mapping.DocumentSaver">
+    <property name="metaDao" ref="metaDao"/>
+  </bean>
+  
+  <bean id="databaseDocumentGetter" class="com.imcode.imcms.mapping.DatabaseDocumentGetter">
+    <property name="metaDao" ref="metaDao"/>
+    <property name="documentInitializingVisitor" ref="documentInitializingVisitor"/>
+  </bean> 
+  
+  <bean id="textDocumentInitializer" class="com.imcode.imcms.mapping.TextDocumentInitializer">
+    <property name="metaDao" ref="metaDao"/>
+    <property name="textDao" ref="textDao"/>
+    <property name="imageDao" ref="imageDao"/>
+    <property name="menuDao" ref="menuDao"/>
+    <property name="contentLoopDao" ref="contentLoopDao"/>
+  </bean>
+  
+  <bean id="documentInitializingVisitor" class="com.imcode.imcms.mapping.DocumentInitializingVisitor">
+    <property name="metaDao" ref="metaDao"/>
+    <property name="textDocumentInitializer" ref="textDocumentInitializer"/>
+  </bean>  
+    
+</beans>

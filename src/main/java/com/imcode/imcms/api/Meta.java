@@ -34,8 +34,6 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name="meta")
-@NamedQueries({
-})
 public class Meta implements Serializable, Cloneable {
 	
 	/**
@@ -175,6 +173,12 @@ public class Meta implements Serializable, Cloneable {
     // CHECKED	
     @Column(name="show_meta", nullable=false)
     private Boolean linkedForUnauthorizedUsers;
+    
+    // Not a property. 
+    // TODO: Delete this field from the database table
+    @Column(name="lang_prefix", nullable=false)
+    @SuppressWarnings("unused")
+    private String lang_prefix = "";
     
     // CHECKED	
     @Column(name="date_created", nullable=false)

@@ -496,22 +496,6 @@ function setI18nCodeParameterValue(value) {
 	}
 
 	/* *******************************************************************************************
-	 *         LANGUAGE                                                                          *
-	 ******************************************************************************************* */
-	 %>
-	<tr>
-		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/26 ?></td>
-		<td class="imcmsAdmText">
-		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__LANGUAGE %>" size="1" onFocus="selFocused = true;">
-			<%= service.getLanguageMapper().createLanguagesOptionList( user, document.getLanguageIso639_2() ) %>
-		</select>
-		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_language ?> <%= service.getLanguageMapper().getCurrentLanguageNameInUsersLanguage( user, document.getLanguageIso639_2() )%></td>
-	</tr>
-	<tr>
-		<td colspan="2">#gui_hr( "cccccc" )</td>
-	</tr><%
-
-	/* *******************************************************************************************
 	 *         CATEGORIES                                                                        *
 	 ******************************************************************************************* */
 
