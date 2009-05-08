@@ -66,7 +66,6 @@ function addScrolling() {
 		var obj = document.getElementById("outer_container") ;
 		obj.style.height = "100%" ;
 		obj.style.overflow = "scroll" ;
-		window.resizeTo(800,760) ;
 	}
 }
 

@@ -135,5 +135,9 @@ Xinha.prototype._insertImage = function(image)
                     }
                 }
             },
-            outparam);
+            outparam, {
+                scrollbars: "yes", 
+                width: screen.availWidth, 
+                height: screen.availHeight
+            });
 };

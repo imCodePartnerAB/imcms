@@ -5641,9 +5641,9 @@ return null;
  *                    after the dialog is closed, with the return value of the dialog.
  *  @param {Mixed} init A variable that is passed to the popup window to pass arbitrary data
  */
-Xinha.prototype._popupDialog = function(url, action, init)
+Xinha.prototype._popupDialog = function(url, action, init, attributes)
 {
-Dialog(this.popupURL(url), action, init);
+Dialog(this.popupURL(url), action, init, attributes);
 };
 
 /** Creates a path in the form _editor_url + "plugins/" + plugin + "/img/" + file
