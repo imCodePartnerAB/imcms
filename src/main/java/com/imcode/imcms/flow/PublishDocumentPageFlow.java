@@ -10,7 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.imcode.imcms.api.DocumentVersionSpecifier;
+import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.flow.DocumentPageFlow.SaveDocumentCommand;
 
@@ -53,7 +53,7 @@ public class PublishDocumentPageFlow extends DocumentPageFlow {
 	@Override
 	protected void dispatchToFirstPage(HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
 	    saveDocument( request );
-		user.getDocumentShowSettings().setVersionSpecifier(DocumentVersionSpecifier.PUBLISHED);
+		user.getDocumentShowSettings().setVersionSelector(DocumentVersionSelector.PUBLISHED);
     	dispatchReturn( request, response );		
 	}
 	

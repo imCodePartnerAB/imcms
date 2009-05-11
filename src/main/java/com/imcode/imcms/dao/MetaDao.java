@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.DocumentVersionSpecifier;
+import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
@@ -105,14 +105,14 @@ public class MetaDao extends HibernateTemplate {
 	 * @return Meta
 	 */
 	@Transactional
-	public Meta getMeta(Integer documentId, DocumentVersionSpecifier versionSpecifier) {
-		switch (versionSpecifier.getTagSpecifier()) {
+	public Meta getMeta(Integer documentId, DocumentVersionSelector versionSpecifier) {
+		switch (versionSpecifier.getTag()) {
 			case PUBLISHED:
 				return getPublishedMeta(documentId);
 			case WORKING:
 				return getWorkingMeta(documentId);	
 			default: // CUSTOM:
-				return getMeta(documentId, versionSpecifier.getVersionNumber());
+				return getMeta(documentId, versionSpecifier.getNumber());
 				
 		}
 	}	

@@ -19,7 +19,7 @@ import java.util.Set;
 
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.DocumentVersionSpecifier;
+import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
 
@@ -60,11 +60,11 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     }	    
         
     public DocumentDomainObject getDocument(Integer documentId) {
-    	return initDocument(loadDocument(documentId, DocumentVersionSpecifier.PUBLISHED));
+    	return initDocument(loadDocument(documentId, DocumentVersionSelector.PUBLISHED));
     }	
 	
 	public DocumentDomainObject getWorkingDocument(Integer documentId) {
-		return initDocument(loadDocument(documentId, DocumentVersionSpecifier.WORKING));
+		return initDocument(loadDocument(documentId, DocumentVersionSelector.WORKING));
 	}
 	
     /**
@@ -74,7 +74,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
         List<DocumentDomainObject> documents = new LinkedList<DocumentDomainObject>();
         
     	for (Integer documentId: documentIds) {
-    		DocumentDomainObject document = initDocument(loadDocument(documentId, DocumentVersionSpecifier.PUBLISHED));
+    		DocumentDomainObject document = initDocument(loadDocument(documentId, DocumentVersionSelector.PUBLISHED));
     		
     		// ??? do not add in case of null
     		if (document != null) {
@@ -89,7 +89,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     /**
      * Loads document
      */
-    private DocumentDomainObject loadDocument(Integer documentId, DocumentVersionSpecifier versionSpecifier) {		
+    private DocumentDomainObject loadDocument(Integer documentId, DocumentVersionSelector versionSpecifier) {		
     	Meta meta = metaDao.getMeta(documentId, versionSpecifier);
 		
 		return initMeta(meta);

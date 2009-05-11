@@ -61,7 +61,7 @@ import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.DocumentVersionSpecifier;
+import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.api.I18nDisabledException;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
@@ -591,10 +591,10 @@ public class DocumentMapper implements DocumentGetter {
     
     
     /** 
-     * @return document of version according to version specifier.
+     * @return document of version according to version selector.
      */
-    public DocumentDomainObject getDocument(Integer documentId, DocumentVersionSpecifier versionSpecifier) {
-    	switch (versionSpecifier.getTagSpecifier()) {
+    public DocumentDomainObject getDocument(Integer documentId, DocumentVersionSelector versionSelector) {
+    	switch (versionSelector.getTag()) {
 		case PUBLISHED:
 			return getDocument(documentId);
 			
@@ -602,7 +602,7 @@ public class DocumentMapper implements DocumentGetter {
 			return getWorkingDocument(documentId);			
 
 		default: // CUSTOM:
-			return getDocument(documentId, versionSpecifier.getVersionNumber());
+			return getDocument(documentId, versionSelector.getNumber());
 		}
     }
     
@@ -730,7 +730,7 @@ public class DocumentMapper implements DocumentGetter {
     	DocumentDomainObject document = null;
     	DocumentShowSettings showSettings = user.getDocumentShowSettings();
 		
-    	switch (showSettings.getVersionSpecifier().getTagSpecifier()) {
+    	switch (showSettings.getVersionSelector().getTag()) {
 		case PUBLISHED:	
 			document = getDocument(documentId);
 			break;
@@ -755,7 +755,7 @@ public class DocumentMapper implements DocumentGetter {
 			break;			
 
 		case CUSTOM:
-			document = getDocument(documentId, showSettings.getVersionSpecifier().getVersionNumber());
+			document = getDocument(documentId, showSettings.getVersionSelector().getNumber());
 			break;
 			
 		default:

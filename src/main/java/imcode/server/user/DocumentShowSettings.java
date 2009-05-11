@@ -1,6 +1,6 @@
 package imcode.server.user;
 
-import com.imcode.imcms.api.DocumentVersionSpecifier;
+import com.imcode.imcms.api.DocumentVersionSelector;
 
 /**
  * Document show settings.
@@ -24,18 +24,18 @@ public class DocumentShowSettings {
 	 * 
 	 * Only logged in user with appropriate permissions can change the value.
 	 */
-	private DocumentVersionSpecifier versionSpecifier = DocumentVersionSpecifier.PUBLISHED;
+	private DocumentVersionSelector versionSelector = DocumentVersionSelector.PUBLISHED;
 
-	public DocumentVersionSpecifier getVersionSpecifier() {
-		return versionSpecifier;
+	public DocumentVersionSelector getVersionSelector() {
+		return versionSelector;
 	}
 
-	public void setVersionSpecifier(DocumentVersionSpecifier versionSpecifier) {
-		if (versionSpecifier == null) {
-			throw new IllegalArgumentException("versionSpecifier can not be set to null.");
+	public void setVersionSelector(DocumentVersionSelector versionSelector) {
+		if (versionSelector == null) {
+			throw new IllegalArgumentException("versionSelector can not be set to null.");
 		}
 		
-		this.versionSpecifier = versionSpecifier;
+		this.versionSelector = versionSelector;
 	}
 	
 	public boolean isIgnoreI18nShowMode() {

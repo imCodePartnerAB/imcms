@@ -41,7 +41,7 @@ public class ChangeText extends HttpServlet {
         int documentId = Integer.parseInt( request.getParameter( "meta_id" ) );
         
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument(
-        		documentId, user.getDocumentShowSettings().getVersionSpecifier());
+        		documentId, user.getDocumentShowSettings().getVersionSelector());
                 
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( textDocument );
 

@@ -45,7 +45,7 @@ public class ChangeImage extends HttpServlet {
         final Integer documentId = Integer.parseInt(request.getParameter("meta_id"));
         
         final TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(
-        		documentId, user.getDocumentShowSettings().getVersionSpecifier());
+        		documentId, user.getDocumentShowSettings().getVersionSelector());
         
         final int imageIndex = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__IMAGE_INDEX));        
         

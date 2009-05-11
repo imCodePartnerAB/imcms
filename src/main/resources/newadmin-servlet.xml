@@ -10,10 +10,18 @@
         http://www.springframework.org/schema/lang/spring-lang-2.5.xsd        
         http://www.springframework.org/schema/context 
         http://www.springframework.org/schema/context/spring-context-2.5.xsd">
-
-  <context:component-scan base-package="com.imcode.imcms.web" />
-
-  <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
-  <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
         
+  <context:component-scan base-package="com.imcode.imcms.web.admin"/>
+
+  <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
+  <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+        
+  <!-- Scripted beans -->
+  <!-- 
+  <lang:groovy id="SystemInfo" refresh-check-delay="3000"
+      script-source="/WEB-INF/groovy/script.groovy">     
+    <lang:property name="" ref=""/>
+  </lang:groovy>
+  -->
+          
 </beans>
