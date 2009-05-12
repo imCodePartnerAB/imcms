@@ -36,6 +36,17 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Table(name="menus")
 public class MenuDomainObject implements Cloneable, Serializable {
 
+    public final static int MENU_SORT_ORDER__BY_HEADLINE = 1;
+    public final static int MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED = 2;
+    public final static int MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED = 3;
+    public final static int MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER = 4;
+    public final static int MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED = 5;
+    public final static int MENU_SORT_ORDER__DEFAULT = MENU_SORT_ORDER__BY_HEADLINE;
+
+    public final static int DEFAULT_SORT_KEY = 500;
+    
+    private static final int DEFAULT_SORT_KEY_INCREMENT = 10;
+    
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="menu_id")
     private Long id;
@@ -59,17 +70,6 @@ public class MenuDomainObject implements Cloneable, Serializable {
 	   columns = @Column(name="to_meta_id")
 	)
     private Map<Integer, MenuItemDomainObject> menuItems = new HashMap<Integer, MenuItemDomainObject>();
-
-    public final static int MENU_SORT_ORDER__BY_HEADLINE = 1;
-    public final static int MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED = 2;
-    public final static int MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED = 3;
-    public final static int MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER = 4;
-    public final static int MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED = 5;
-    public final static int MENU_SORT_ORDER__DEFAULT = MENU_SORT_ORDER__BY_HEADLINE;
-
-    public final static int DEFAULT_SORT_KEY = 500;
-    
-    private static final int DEFAULT_SORT_KEY_INCREMENT = 10;
 
     public MenuDomainObject() {
         this( null, MENU_SORT_ORDER__DEFAULT );

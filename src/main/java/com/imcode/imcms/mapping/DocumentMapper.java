@@ -489,7 +489,9 @@ public class DocumentMapper implements DocumentGetter {
     	return getDocument(documentIdString, null);
     }
     
-    
+    /**
+     * @return custom document's version for showing.
+     */
     public DocumentDomainObject getDocumentForShowing(String documentIdString, Integer versionNumber, UserDomainObject user) {
     	DocumentDomainObject document = getDocument(documentIdString, versionNumber);
     	
@@ -591,7 +593,7 @@ public class DocumentMapper implements DocumentGetter {
     
     
     /** 
-     * @return document of version according to version selector.
+     * @return custom version of a document.
      */
     public DocumentDomainObject getDocument(Integer documentId, DocumentVersionSelector versionSelector) {
     	switch (versionSelector.getTag()) {

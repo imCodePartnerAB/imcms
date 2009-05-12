@@ -3,13 +3,14 @@ package imcode.server.user;
 import com.imcode.imcms.api.DocumentVersionSelector;
 
 /**
- * Document show settings.
+ * User's document show settings.
+ * 
+ * Settings specifies how document should be showed (displayed) for an user.
  */
 public class DocumentShowSettings {
 		
 	/** 
-	 * When set to true then Meta.getI18nShowMode value
-	 * is not taken into account.
+	 * When set to true then Meta.getI18nShowMode value is not taken into account.
 	 *  
 	 * Default is false.
 	 * 
@@ -18,9 +19,9 @@ public class DocumentShowSettings {
 	private boolean ignoreI18nShowMode = false;
 		
 	/**
-	 * Specifies document version for showed documents.
+	 * Document version selector. 
 	 *
-	 * PUBLISHED_SPECIFIER is default.
+	 * PUBLISHED selector is default.
 	 * 
 	 * Only logged in user with appropriate permissions can change the value.
 	 */

@@ -103,8 +103,8 @@ public class AdminDoc extends HttpServlet {
     }
 
     /**
-     * Returns document for show mode. 
-     * e.g document preview is awailable to user. 
+     * Returns document to display.  
+     * e.g document preview is available to user. 
      */
     public static void adminDoc(int meta_id, UserDomainObject user, HttpServletRequest req,
                                 HttpServletResponse res, ServletContext servletContext) throws IOException, ServletException {
