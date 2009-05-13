@@ -47,7 +47,7 @@ public class SaveInPage extends HttpServlet {
         DocumentMapper documentMapper = services.getDocumentMapper();
 
         int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
-        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
+        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getPublishedDocument( documentId );
 
         TemplateMapper templateMapper = services.getTemplateMapper();
 

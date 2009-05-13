@@ -14,11 +14,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
 @Table(name="i18n_languages")
-@NamedQueries({
-	@NamedQuery(name="I18nLanguage.getDefaultLanguage", query="select l from I18nLanguage l where l.default is true"),
-	@NamedQuery(name="I18nLanguage.getByCode", query="select l from I18nLanguage l where l.code = :code"),
-	@NamedQuery(name="I18nLanguage.missingMetaLanguages", query="select l from I18nLanguage l where l not in (select m.language from I18nMeta m where m.metaId = :metaId)")
-})
 public class I18nLanguage implements Serializable, Cloneable {
 
 

@@ -638,7 +638,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     /** get doctype */
     public int getDocType(int meta_id) {
-        DocumentDomainObject document = documentMapper.getDocument(meta_id);
+        DocumentDomainObject document = documentMapper.getPublishedDocument(meta_id);
         if ( null != document ) {
             return document.getDocumentTypeId();
         } else {

@@ -88,7 +88,7 @@ public class MetaDaoTest extends DaoTest {
 		assertNull(workingDocument);
 		
 		// there should be published version
-		DocumentDomainObject publishedDocument = documentMapper.getDocument(META_ID);		
+		DocumentDomainObject publishedDocument = documentMapper.getPublishedDocument(META_ID);		
 		assertNotNull(publishedDocument);
 		
 		// create working version
@@ -108,7 +108,7 @@ public class MetaDaoTest extends DaoTest {
 		// check if it was published and published version archived
 		
 		DocumentDomainObject archivedDocument = documentMapper.getDocument(META_ID, publishedVersion.getNumber());
-		DocumentDomainObject publishedWorkingDocument = documentMapper.getDocument(META_ID);
+		DocumentDomainObject publishedWorkingDocument = documentMapper.getPublishedDocument(META_ID);
 		
 		assertNotNull(archivedDocument);
 		assertNotNull(publishedWorkingDocument);
@@ -125,9 +125,9 @@ public class MetaDaoTest extends DaoTest {
 		List<DocumentVersion> versions = documentMapper.getDocumentVersions(META_ID);
 		DocumentVersion latestVersion = versions.get(versions.size() - 1);
 		
-		DocumentDomainObject latestDocumentVersion = documentMapper.getLatestDocumentVersion(META_ID);		
+		DocumentDomainObject latestDocumentVersion = documentMapper.getDocument(META_ID);		
 		
-		assertEquals(latestVersion.getVersion(), latestDocumentVersion.getMeta().getVersion().getVersion());
+		assertEquals(latestVersion.getNumber(), latestDocumentVersion.getMeta().getVersion().getNumber());
 				
 	} 
 	

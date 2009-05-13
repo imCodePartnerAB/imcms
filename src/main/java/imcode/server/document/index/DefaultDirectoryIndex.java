@@ -162,7 +162,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
         for ( int i = 0; i < documentIds.length; i++ ) {
             try {
-                addDocumentToIndex( documentMapper.getDocument( documentIds[i] ), indexWriter );
+                addDocumentToIndex( documentMapper.getPublishedDocument( documentIds[i] ), indexWriter );
             } catch ( Exception ex ) {
                 log.error( "Could not index document with meta_id " + documentIds[i] + ", trying next document.", ex );
             }

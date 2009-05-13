@@ -2,7 +2,6 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.LanguageMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -46,7 +45,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
      * 
      * TODO: Optimize
      */
-    public DocumentDomainObject getLatestDocumentVersion(Integer documentId) {
+    public DocumentDomainObject getDocument(Integer documentId) {
     	List<DocumentVersion> versions = metaDao.getDocumentVersions(documentId);
     	
     	int size = versions.size();
@@ -59,22 +58,23 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     	return initDocument(loadDocument(documentId, version));
     }	    
         
-    public DocumentDomainObject getDocument(Integer documentId) {
-    	return initDocument(loadDocument(documentId, DocumentVersionSelector.PUBLISHED));
+    public DocumentDomainObject getPublishedDocument(Integer documentId) {
+    	return initDocument(loadDocument(documentId, DocumentVersionSelector.PUBLISHED_SELECTOR));
     }	
 	
 	public DocumentDomainObject getWorkingDocument(Integer documentId) {
-		return initDocument(loadDocument(documentId, DocumentVersionSelector.WORKING));
+		return initDocument(loadDocument(documentId, DocumentVersionSelector.WORKING_SELECTOR));
 	}
 	
     /**
-     * Returns published documents.
+     * TODO: Investigate what documents to return 
+     * Returns published/latest documents.
      */
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
         List<DocumentDomainObject> documents = new LinkedList<DocumentDomainObject>();
         
     	for (Integer documentId: documentIds) {
-    		DocumentDomainObject document = initDocument(loadDocument(documentId, DocumentVersionSelector.PUBLISHED));
+    		DocumentDomainObject document = initDocument(loadDocument(documentId, DocumentVersionSelector.PUBLISHED_SELECTOR));
     		
     		// ??? do not add in case of null
     		if (document != null) {

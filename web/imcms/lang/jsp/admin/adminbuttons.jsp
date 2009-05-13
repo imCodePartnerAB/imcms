@@ -199,7 +199,7 @@ Check if published version exists
       <tr>
         <td>
           <%
-          if (user.getDocumentShowSettings().getVersionSpecifier() == DocumentVersionSpecifier.PUBLISHED) {
+          if (user.getDocumentShowSettings().getVersionSelector() == DocumentVersionSelector.PUBLISHED_SELECTOR) {
           %>
               <b>#This is PUBLISHED version#</b>
           <% 
@@ -215,7 +215,7 @@ Check if published version exists
       
         <td>
           <%
-          if (user.getDocumentShowSettings().getVersionSpecifier() == DocumentVersionSpecifier.WORKING) {
+          if (user.getDocumentShowSettings().getVersionSelector() == DocumentVersionSelector.WORKING_SELECTOR) {
           %>
               <b>#This is WORKING version#</b>
           <% 
@@ -230,7 +230,7 @@ Check if published version exists
         </td>
       
 	    <% 
-	    if (user.canEdit(document) && user.getDocumentShowSettings().getVersionSpecifier() == DocumentVersionSpecifier.WORKING) {
+	    if (user.canEdit(document) && user.getDocumentShowSettings().getVersionSelector() == DocumentVersionSelector.WORKING_SELECTOR) {
 	    %>
          <td>
            <a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId()%>&flags=4194304">

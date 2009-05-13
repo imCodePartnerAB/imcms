@@ -26,6 +26,7 @@
         
         <!-- Named queries -->
         <mapping resource="DocumentVersion.hbm.xml"/>
+        <mapping resource="I18nLanguage.hbm.xml"/>
 
     </session-factory>
     

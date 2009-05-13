@@ -219,7 +219,7 @@ public class AdminCategories extends HttpServlet {
             if ( req.getParameter( PARAMETER__CATEGORY_DELETE ) != null ) {
                 DocumentDomainObject document;
                 for ( int i = 0; i < documentsOfOneCategory.length; i++ ) {
-                    document = documentMapper.getDocument( Integer.parseInt( documentsOfOneCategory[i] ) );
+                    document = documentMapper.getPublishedDocument( Integer.parseInt( documentsOfOneCategory[i] ) );
                     categoryMapper.deleteOneCategoryFromDocument( document, categoryToEdit );
                 }
                 categoryMapper.deleteCategoryFromDb( categoryToEdit );

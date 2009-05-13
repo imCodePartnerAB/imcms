@@ -7,15 +7,23 @@ import java.util.List;
 
 public interface DocumentGetter {
     
-    /** Return a list of published documents <em>in the same order</em> as the documentIds */ 
+    /** TODO: define what to return:
+     * @return list of published ????? latest ????? */ 
     List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds);
 
+    /**
+     * Returns latest version of a document. 
+     * 
+     * @param metaId document's meta id.
+     */
+    DocumentDomainObject getDocument(Integer documentId);
+    
     /**
      * Returns published version of a document. 
      * 
      * @param metaId document's meta id.
      */
-    DocumentDomainObject getDocument(Integer documentId);       
+    DocumentDomainObject getPublishedDocument(Integer documentId);    
     
     /**
      * Returns working version of a document.

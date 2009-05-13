@@ -106,13 +106,13 @@ public class MetaDao extends HibernateTemplate {
 	 */
 	@Transactional
 	public Meta getMeta(Integer documentId, DocumentVersionSelector versionSpecifier) {
-		switch (versionSpecifier.getTag()) {
+		switch (versionSpecifier.getType()) {
 			case PUBLISHED:
 				return getPublishedMeta(documentId);
 			case WORKING:
 				return getWorkingMeta(documentId);	
 			default: // CUSTOM:
-				return getMeta(documentId, versionSpecifier.getNumber());
+				return getMeta(documentId, versionSpecifier.getVersionNumber());
 				
 		}
 	}	

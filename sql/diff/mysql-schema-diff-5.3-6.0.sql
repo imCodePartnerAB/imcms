@@ -28,7 +28,7 @@ CREATE TABLE meta_version (
   CONSTRAINT pk__meta_version PRIMARY KEY (id),
   CONSTRAINT fk__meta_version__user FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE SET NULL,
   CONSTRAINT fk__meta_version__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- for every document create version 1
 -- tag all documents as published

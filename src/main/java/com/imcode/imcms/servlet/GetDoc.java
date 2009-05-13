@@ -119,7 +119,7 @@ public class GetDoc extends HttpServlet {
         Perl5Util perlrx = new Perl5Util();
         if ( null != referrer && perlrx.match("/meta_id=(\\d+)/", referrer) ) {
             int referring_meta_id = Integer.parseInt(perlrx.group(1));
-            referringDocument = documentMapper.getDocument(referring_meta_id);
+            referringDocument = documentMapper.getPublishedDocument(referring_meta_id);
         }
 
         DocumentRequest documentRequest = new DocumentRequest(imcref, user, document, referringDocument, req, res);

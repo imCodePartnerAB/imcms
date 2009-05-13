@@ -53,7 +53,7 @@ public class PublishDocumentPageFlow extends DocumentPageFlow {
 	@Override
 	protected void dispatchToFirstPage(HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
 	    saveDocument( request );
-		user.getDocumentShowSettings().setVersionSelector(DocumentVersionSelector.PUBLISHED);
+		user.getDocumentShowSettings().setVersionSelector(DocumentVersionSelector.PUBLISHED_SELECTOR);
     	dispatchReturn( request, response );		
 	}
 	

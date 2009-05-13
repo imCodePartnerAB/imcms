@@ -256,7 +256,7 @@ public class ImcmsSetupFilter implements Filter {
         	if (NumberUtils.isDigits(version)) {
         		settings.setVersionSelector(DocumentVersionSelector.createCustomSelector(Integer.valueOf(version)));
         	} else {        	
-        		settings.setVersionSelector(DocumentVersionSelector.getUniqueSelector(version));
+        		settings.setVersionSelector(DocumentVersionSelector.getPredefinedSelector(version));
         	}
         }                 	
     }

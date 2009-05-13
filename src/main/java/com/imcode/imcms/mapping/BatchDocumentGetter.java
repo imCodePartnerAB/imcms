@@ -18,7 +18,7 @@ public class BatchDocumentGetter extends DocumentGetterWrapper {
         this.documentIds = documentIds;
     }
 
-    public DocumentDomainObject getDocument(Integer documentId) {
+    public DocumentDomainObject getPublishedDocument(Integer documentId) {
         if (null == documentsMap) {
             documentsMap = new HashMap();
             List documents = super.getDocuments(documentIds);
@@ -29,7 +29,7 @@ public class BatchDocumentGetter extends DocumentGetterWrapper {
         }
         DocumentDomainObject document = (DocumentDomainObject) documentsMap.remove(documentId);
         if (null == document) {
-            document = super.getDocument(documentId) ;
+            document = super.getPublishedDocument(documentId) ;
         }
         return document ;
     }

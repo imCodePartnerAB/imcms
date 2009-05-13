@@ -27,6 +27,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.ObjectUtils;
 
+import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.flow.EditDocumentPermissionsPageFlow;
@@ -54,12 +55,13 @@ public class AdminDoc extends HttpServlet {
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         UserDomainObject user = Utility.getLoggedOnUser( req );    
         
-        DocumentDomainObject document = documentMapper.getDocument( metaId , user.getDocumentShowSettings().getVersionSelector());
+        DocumentVersionSelector versionSelector = user.getDocumentShowSettings().getVersionSelector();
+        DocumentDomainObject document = documentMapper.getDocument(metaId, versionSelector);
         
         // An admin may be in published mode, but published version may not exist.
-        if (document == null) {
-        	document = documentMapper.getLatestDocumentVersion(metaId);        	
-        }
+        //if (document == null && !versionSelector.getTag().equals(DocumentVersionSelector.WORKING)) {
+        //	document = documentMapper.getDocument(metaId);        	
+        //}
         
         if ( !user.canEdit( document )) {
             flags = 0;
