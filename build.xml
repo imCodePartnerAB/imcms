@@ -492,7 +492,7 @@
         
         <!-- Copy resources -->
         <copy todir="${WEB-INF}" file="${main.resources.dir}/applicationContext.xml" filtering="false"/>     
-    	<copy todir="${WEB-INF}" file="${main.resources.dir}/spring-servlet.xml" filtering="false"/>      
+    	<copy todir="${WEB-INF}" file="${main.resources.dir}/newadmin-servlet.xml" filtering="false"/>      
     	
     	<copy todir="${WEB-INF}/classes" filtering="true">
     		<fileset dir="${main.resources.dir}" includes="**/*log*, **/*hibernate*"/>
