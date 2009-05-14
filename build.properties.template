@@ -80,6 +80,8 @@ secondary-ldap-attribute-login-name = uid
 #secondary-ldap-user-object-class = user
 #secondary-ldap-attribute-login-name = sAMAccountName
 
+# This should only be specified on windows, for example: c:/program files/imagemagick-6.4.9-q16
+image-magick-path = 
 
 # The smtp-server used for sending mails.
 

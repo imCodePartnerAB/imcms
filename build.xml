@@ -574,6 +574,7 @@
         <filter token="secondary-ldap-user-object-class" value="${secondary-ldap-user-object-class}"/>
         <filter token="secondary-ldap-attribute-login-name" value="${secondary-ldap-attribute-login-name}"/>
 
+	<filter token="image-magick-path" value="${image-magick-path}"/>
 
         <filter token="smtp-server" value="${smtp-server}"/>
 

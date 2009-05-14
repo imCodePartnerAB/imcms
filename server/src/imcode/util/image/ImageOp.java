@@ -1,5 +1,7 @@
 package imcode.util.image;
 
+import imcode.server.Config;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,14 +31,26 @@ public class ImageOp {
     private Format outputFormat;
     
     
-    public ImageOp() {
-    	if (PLATFORM_WINDOWS) {
-            args.add("cmd");
-            args.add("/c");
-            args.add("convert");
-        } else {
-            args.add("convert");
+    public ImageOp(Config config) {
+        args.add(addQuotes(getApplicationPath(config, "convert")));
+    }
+    
+    private static final String getApplicationPath(Config config, String appName) {
+        File magickPath = config.getImageMagickPath();
+        
+        if (magickPath != null) {
+            return new File(magickPath, appName).getAbsolutePath();
         }
+        
+        return appName;
+    }
+    
+    private static final String addQuotes(String input) {
+        if (PLATFORM_WINDOWS) {
+            return "\"" + input + "\"";
+        }
+        
+        return input;
     }
     
     public ImageOp input(byte[] data) {
@@ -47,20 +62,20 @@ public class ImageOp {
     
     public ImageOp input(InputStream input) {
         dataStream = input;
-        args.add("-[0]");
+        args.add(addQuotes("-[0]"));
 
         return this;
     }
     
     public ImageOp input(File file) {
-        args.add(file.getAbsolutePath() + "[0]");
+        args.add(addQuotes(file.getAbsolutePath() + "[0]"));
         
         return this;
     }
     
     public ImageOp filter(Filter filter) {
         args.add("-filter");
-        args.add(filter.getFilter());
+        args.add(addQuotes(filter.getFilter()));
         
         return this;
     }
@@ -73,21 +88,21 @@ public class ImageOp {
     
     public ImageOp size(int width, int height) {
         args.add("-size");
-        args.add(String.format("%dx%d", width, height));
+        args.add(addQuotes(String.format("%dx%d", width, height)));
         
         return this;
     }
     
     public ImageOp rawImage(Color color, int width, int height) {
         this.size(width, height);
-        args.add("xc:" + color.getColor());
+        args.add(addQuotes("xc:" + color.getColor()));
         
         return this;
     }
     
     public ImageOp swap(int index1, int index2) {
         args.add("-swap");
-        args.add(String.format("%d,%d", index1, index2));
+        args.add(addQuotes(String.format("%d,%d", index1, index2)));
         
         return this;
     }
@@ -106,7 +121,7 @@ public class ImageOp {
     
     public ImageOp gravity(Gravity gravity) {
         args.add("-gravity");
-        args.add(gravity.getGravity());
+        args.add(addQuotes(gravity.getGravity()));
         
         return this;
     }
@@ -116,17 +131,18 @@ public class ImageOp {
         quality = Math.min(quality, 100);
         
         args.add("-quality");
-        args.add(Integer.toString(quality, 10));
+        args.add(addQuotes(Integer.toString(quality, 10)));
         
         return this;
     }
     
     public ImageOp crop(int x, int y, int width, int height) {
-    	args.add("-crop");
-    	
-    	args.add(String.format("%dx%d+%d+%d!", width, height, x, y));
-    	
-    	return this;
+        args.add("-crop");
+        
+        String cropParam = String.format("%dx%d+%d+%d!", width, height, x, y);
+        args.add(addQuotes(cropParam));
+        
+        return this;
     }
     
     public ImageOp resize(Integer width, Integer height, Resize type) {
@@ -142,7 +158,7 @@ public class ImageOp {
         }
         
         size += type.getModifier();
-        args.add(size);
+        args.add(addQuotes(size));
         
         return this;
     }
@@ -168,7 +184,7 @@ public class ImageOp {
         String out = (outputFormat != null ? outputFormat.getFormat() + ":-" : "-");
         
         List<String> arguments = new ArrayList<String>(args);
-        arguments.add(out);
+        arguments.add(addQuotes(out));
         
         try {
             Process process = new ProcessBuilder(arguments).start();
@@ -207,7 +223,7 @@ public class ImageOp {
         }
         
         List<String> arguments = new ArrayList<String>(args);
-        arguments.add(out);
+        arguments.add(addQuotes(out));
         
         try {
             Process process = new ProcessBuilder(arguments).start();
@@ -257,9 +273,9 @@ public class ImageOp {
         }
     }
     
-    public static ImageInfo getImageInfo(InputStream inputStream) {
+    public static ImageInfo getImageInfo(Config config, InputStream inputStream) {
         try {
-            Process process = new ProcessBuilder(getIdentifyProcessArgs("-[0]")).start();
+            Process process = new ProcessBuilder(getIdentifyProcessArgs(config, "-[0]")).start();
             StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());
             StringInputStreamHandler inputHandler = new StringInputStreamHandler(process.getInputStream());
             errorHandler.start();
@@ -285,9 +301,10 @@ public class ImageOp {
         return null;
     }
 
-    public static ImageInfo getImageInfo(File file) {
+    public static ImageInfo getImageInfo(Config config, File file) {
         try {
-            Process process = new ProcessBuilder(getIdentifyProcessArgs(file.getAbsolutePath() + "[0]")).start();
+            String fileToIdentify = addQuotes(file.getAbsolutePath() + "[0]");
+            Process process = new ProcessBuilder(getIdentifyProcessArgs(config, fileToIdentify)).start();
             StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());
             StringInputStreamHandler inputHandler = new StringInputStreamHandler(process.getInputStream());
             errorHandler.start();
@@ -303,27 +320,19 @@ public class ImageOp {
         return null;
     }
     
-    private static String[] getIdentifyProcessArgs(String... arguments) {
-        String[] args = null;
-        int startIndex = 1;
+    private static String[] getIdentifyProcessArgs(Config config, String... arguments) {
+        String[] args = new String[4 + arguments.length];
 
-        if (PLATFORM_WINDOWS) {
-            args = new String[6 + arguments.length];
-            args[0] = "cmd";
-            args[1] = "/c";
-            args[2] = "identify";
-            startIndex = 3;
-        } else {
-            args = new String[4 + arguments.length];
-            args[0] = "identify";
-        }
+        args[0] = addQuotes(getApplicationPath(config, "identify"));
 
-        args[startIndex] = "-quiet";
-        args[startIndex + 1] = "-format";
-        args[startIndex + 2] = "format:'%m'width:'%w'height:'%h'";
+        args[1] = "-quiet";
+        args[2] = "-format";
+        args[3] = "format:'%m'width:'%w'height:'%h'";
 
-        for (int i = 0; i < arguments.length; i++) {
-            args[startIndex + 3 + i] = arguments[i];
+        int startIndex = 4;
+        
+        for (String arg : arguments) {
+            args[startIndex++] = arg;
         }
 
         return args;

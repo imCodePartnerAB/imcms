@@ -121,7 +121,7 @@ public class ImageCacheManager {
 		File cacheFile = new File(bucketFile, imageCache.getId());
 		
 		try {
-			ImageOp operation = new ImageOp().input(imageFile);
+			ImageOp operation = new ImageOp(Imcms.getServices().getConfig()).input(imageFile);
 			
 			CropRegion cropRegion = imageCache.getCropRegion();
 			int width = imageCache.getWidth();

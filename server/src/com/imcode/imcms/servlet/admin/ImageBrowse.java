@@ -1,31 +1,37 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.util.HumanReadable;
-import com.imcode.util.MultipartHttpServletRequest;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import imcode.util.*;
+import imcode.util.Html;
+import imcode.util.HttpSessionUtils;
+import imcode.util.ImageExtensionFilenameFilter;
+import imcode.util.ToStringPairTransformer;
+import imcode.util.Utility;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
 import imcode.util.io.FileUtility;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.UnhandledException;
-import org.apache.log4j.Logger;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.log4j.Logger;
+
+import com.imcode.imcms.util.l10n.LocalizedMessage;
+import com.imcode.util.HumanReadable;
+import com.imcode.util.MultipartHttpServletRequest;
 
 /**
  * Browse images in image-directory.
@@ -72,7 +78,7 @@ public class ImageBrowse extends HttpServlet {
         }
         
         if (selectedImage != null) {
-        	ImageInfo info = ImageOp.getImageInfo(image);
+        	ImageInfo info = ImageOp.getImageInfo(Imcms.getServices().getConfig(), image);
         	if (info == null) {
         		browse(imageUrl, true, request, response);
         	} else {
@@ -132,7 +138,7 @@ public class ImageBrowse extends HttpServlet {
                 try {
                 	tempFile = File.createTempFile("upload_img", null);
                 	fileItem.write(tempFile);
-                	ImageInfo info = ImageOp.getImageInfo(tempFile);
+                	ImageInfo info = ImageOp.getImageInfo(Imcms.getServices().getConfig(), tempFile);
                 	
                 	boolean validImage = false;
                 	

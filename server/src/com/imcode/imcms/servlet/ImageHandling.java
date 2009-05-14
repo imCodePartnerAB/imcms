@@ -143,7 +143,7 @@ public class ImageHandling extends HttpServlet {
 			return;
 		}
 		
-		ImageInfo imageInfo = ImageOp.getImageInfo(imageFile);
+		ImageInfo imageInfo = ImageOp.getImageInfo(Imcms.getServices().getConfig(), imageFile);
 		if (imageInfo == null || (format == null && !imageInfo.getFormat().isWritable())) {
 			if (deleteFile) {
 				imageFile.delete();
