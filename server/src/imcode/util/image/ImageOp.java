@@ -1,6 +1,7 @@
 package imcode.util.image;
 
 import imcode.server.Config;
+import imcode.server.Imcms;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -38,7 +39,7 @@ public class ImageOp {
     private static final String getApplicationPath(Config config, String appName) {
         File magickPath = config.getImageMagickPath();
         
-        if (magickPath != null) {
+        if (magickPath != null && !magickPath.equals(Imcms.getPath())) {
             return new File(magickPath, appName).getAbsolutePath();
         }
         
