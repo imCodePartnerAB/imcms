@@ -1,18 +1,23 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.db.Database;
 import imcode.server.document.DirectDocumentReference;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.CopyableHashMap;
+import imcode.server.document.textdocument.FileDocumentImageSource;
+import imcode.server.document.textdocument.ImageArchiveImageSource;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
+import imcode.server.document.textdocument.MenuDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.TreeSortKeyDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.util.LazilyLoadedObject;
 import imcode.util.Utility;
 import imcode.util.image.Format;
-
-import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +26,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import com.imcode.db.Database;
 
 public class TextDocumentInitializer {
 
@@ -170,8 +181,8 @@ public class TextDocumentInitializer {
                 documentsImages = new HashMap();
                 DocumentInitializer.executeWithAppendedIntegerInClause(database, "SELECT meta_id,name,image_name,imgurl,"
                                                                                  + "width,height,border,v_space,h_space,"
-                                                                                 + "target,align,alt_text,low_scr,linkurl,type,"
-                                                                                 + "format, crop_x1, crop_y1, crop_x2, crop_y2  "
+                                                                                 + "target,align,alt_text,low_scr,linkurl,type,archive_image_id, "
+																				 + "format, crop_x1, crop_y1, crop_x2, crop_y2  "
                                                                                  + "FROM images WHERE meta_id ", documentIds, new ResultSetHandler() {
                     public Object handle(ResultSet rs) throws SQLException {
                         while ( rs.next() ) {
@@ -197,9 +208,10 @@ public class TextDocumentInitializer {
                             image.setLowResolutionUrl(rs.getString(13));
                             image.setLinkUrl(rs.getString(14));
                             int imageType = rs.getInt(15);
-                            image.setFormat(Format.findFormat(rs.getShort(16)));
+                            image.setArchiveImageId((Long) rs.getObject(16));
+                            image.setFormat(Format.findFormat(rs.getShort(17)));
                             
-                            CropRegion region = new CropRegion(rs.getInt(17), rs.getInt(18), rs.getInt(19), rs.getInt(20));
+                            CropRegion region = new CropRegion(rs.getInt(18), rs.getInt(19), rs.getInt(20), rs.getInt(21));
                             image.setCropRegion(region);
 
                             if ( StringUtils.isNotBlank(imageSource) ) {
@@ -217,6 +229,8 @@ public class TextDocumentInitializer {
                                     }
                                 } else if ( ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH == imageType ) {
                                     image.setSource(new ImagesPathRelativePathImageSource(imageSource));
+                                } else if ( ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE == imageType) {
+                                	image.setSource(new ImageArchiveImageSource(imageSource));
                                 }
                             }
                             imageMap.put(imageIndex, image);

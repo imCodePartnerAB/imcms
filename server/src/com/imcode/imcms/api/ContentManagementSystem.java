@@ -7,6 +7,9 @@ import imcode.util.Utility;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
 
 public abstract class ContentManagementSystem {
 
@@ -41,7 +44,7 @@ public abstract class ContentManagementSystem {
      * @param password
      * @return The new ContentManagementSystem, or null if the login failed.
      */
-    public static ContentManagementSystem login(HttpServletRequest request, String username, String password) {
+    public static ContentManagementSystem login(HttpServletRequest request, HttpServletResponse response, String username, String password) {
         ImcmsServices services = Imcms.getServices();
         UserDomainObject user = services.verifyUser(username, password);
 
@@ -56,6 +59,12 @@ public abstract class ContentManagementSystem {
             currentUser.setSessionId(request.getSession().getId());
             cms.getUserService().updateUserSession(currentUser);
         }
+        
+        String rememberCd = user.getRememberCd();
+        if (StringUtils.isEmpty(rememberCd)) {
+        	cms.getUserService().updateUserRememberCd(user);
+        }
+        Utility.setRememberCdCookie(request, response, user.getRememberCd());
         
         Utility.makeUserLoggedIn(request, user);
 

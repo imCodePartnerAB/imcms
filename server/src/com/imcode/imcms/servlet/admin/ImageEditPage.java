@@ -1,24 +1,24 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.api.Document;
-import com.imcode.imcms.flow.*;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.DocumentSaveException;
-import com.imcode.imcms.mapping.NoPermissionInternalException;
-import com.imcode.imcms.servlet.DocumentFinder;
-import com.imcode.imcms.servlet.SearchDocumentsPage;
-import com.imcode.imcms.servlet.superadmin.AdminManager;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
-import com.imcode.util.HumanReadable;
-import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.NoPermissionToCreateDocumentException;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.FileDocumentImageSource;
+import imcode.server.document.textdocument.ImageArchiveImageSource;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
@@ -26,6 +26,18 @@ import imcode.util.Utility;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.io.InputStreamSource;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.NumberUtils;
@@ -36,17 +48,22 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.awt.image.CropImageFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.flow.CreateDocumentPageFlow;
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.DocumentPageFlow;
+import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
+import com.imcode.imcms.flow.EditFileDocumentPageFlow;
+import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.NoPermissionInternalException;
+import com.imcode.imcms.servlet.DocumentFinder;
+import com.imcode.imcms.servlet.SearchDocumentsPage;
+import com.imcode.imcms.servlet.superadmin.AdminManager;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
+import com.imcode.util.HumanReadable;
+import com.imcode.util.ImageSize;
 
 public class ImageEditPage extends OkCancelPage {
 
@@ -71,6 +88,11 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__IMAGE_LOWSRC = "low_scr";
     public static final String REQUEST_PARAMETER__LINK_URL = "imageref_link";
     public static final String REQUEST_PARAMETER__LINK_TARGET = EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET;
+    public static final String REQUEST_PARAMETER__GO_TO_IMAGE_ARCHIVE_BUTTON = "goToImageArchive";
+    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE = "image_archive";
+    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID = "archive_img_id";
+    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_NAME = "archive_img_nm";
+    public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME = "archive_file_nm";
     public static final String REQUEST_PARAMETER__FORMAT = "format";
     public static final String REQUEST_PARAMETER__CROP_X1 = "crop_x1";
     public static final String REQUEST_PARAMETER__CROP_Y1 = "crop_y1";
@@ -133,13 +155,44 @@ public class ImageEditPage extends OkCancelPage {
     }
 
     protected void updateFromRequest(HttpServletRequest request) {
-        image = getImageFromRequest(request);
+    	if (request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE) != null) {
+    		getImageFromImageArchive(request);
+    	} else {
+    		image = getImageFromRequest(request);
+    	}
     }
 
     public String getLabel() {
         return label;
     }
 
+    private void getImageFromImageArchive(HttpServletRequest request) {
+    	String imageName = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_NAME));
+    	imageName = StringUtils.substring(imageName, 0, 40);
+    	String fileName = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME));
+    	String archiveImageIdStr = StringUtils.trimToNull(request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID));
+    	
+    	Long archiveImageId = null;
+    	if (archiveImageIdStr != null) {
+    		try {
+    			archiveImageId = Long.parseLong(archiveImageIdStr, 10);
+    		} catch (NumberFormatException ex) {
+    		}
+    	}
+    	
+    	if (fileName != null) {
+    		fileName = fileName.replaceAll("/|\\\\", "");
+    		setNewSourceAndClearSize(new ImageArchiveImageSource(fileName));
+    		
+    		if (imageName != null) {
+    			image.setName(imageName);
+    		}
+    		if (archiveImageId != null) {
+    			image.setArchiveImageId(archiveImageId);
+    		}
+    	}
+    }
+    
     private ImageDomainObject getImageFromRequest(HttpServletRequest req) {
         ImageDomainObject image = new ImageDomainObject();
         try {
@@ -161,6 +214,10 @@ public class ImageEditPage extends OkCancelPage {
         try {
             image.setHorizontalSpace(Integer.parseInt(req.getParameter(REQUEST_PARAMETER__HORIZONTAL_SPACE)));
         } catch ( NumberFormatException ignored ) {
+        }
+        try {
+        	image.setArchiveImageId(Long.parseLong(req.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID)));
+        } catch (NumberFormatException ex) {
         }
         
         CropRegion region = new CropRegion();
@@ -214,6 +271,10 @@ public class ImageEditPage extends OkCancelPage {
             forward(request, response);
         } else if ( null != request.getParameter(REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON) ) {
             goToImageBrowser(request, response);
+        } else if (request.getParameter(REQUEST_PARAMETER__GO_TO_IMAGE_ARCHIVE_BUTTON) != null) {
+        	goToImageArchive(request, response);
+        } else if (request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE) != null) {
+        	forward(request, response);
         } else if ( null != request.getParameter(REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON) ) {
             goToImageSearch(documentMapper, request, response);
         } else if ( null != request.getParameter(REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON) ) {
@@ -221,6 +282,31 @@ public class ImageEditPage extends OkCancelPage {
         } else if ( null != request.getParameter(REQUEST_PARAMETER__GO_TO_CROP_IMAGE) ) {
         	goToCropImage(request, response);
         }
+    }
+    
+    private void goToImageArchive(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    	int port = request.getServerPort();
+    	
+    	StringBuilder builder = new StringBuilder();
+    	builder.append("http://");
+    	builder.append(request.getServerName());
+    	
+    	if (port != 80) {
+    		builder.append(":");
+    		builder.append(port);
+    	}
+    	
+    	builder.append(request.getContextPath());
+    	builder.append("/servlet/PageDispatcher?page=");
+    	builder.append(Utility.encodeUrl(getSessionAttributeName()));
+    	builder.append("&");
+    	builder.append(REQUEST_PARAMETER__IMAGE_ARCHIVE);
+    	builder.append("=yes&");
+    	
+    	String imageArchiveUrl = String.format("http://%s?returnTo=%s", Imcms.getServices().getConfig().getImageArchiveUrl(), 
+    			Utility.encodeUrl(builder.toString()));
+    	
+    	response.sendRedirect(imageArchiveUrl);
     }
 
     private void goToImageAdder(final DocumentMapper documentMapper,
@@ -374,6 +460,20 @@ public class ImageEditPage extends OkCancelPage {
 
     public boolean canAddImageFiles(UserDomainObject user) {
         return user.canCreateDocumentOfTypeIdFromParent( DocumentTypeDomainObject.FILE_ID, document );
+    }
+    
+    public static boolean allowImageArchive(UserDomainObject user) {
+    	List<RoleId> allowedRoleIds = Imcms.getServices().getConfig().getImageArchiveAllowedRoleIdList();
+    	
+    	if (allowedRoleIds != null) {
+    		for (RoleId roleId : allowedRoleIds) {
+    			if (user.hasRoleId(roleId)) {
+    				return true;
+    			}
+    		}
+    	}
+    	
+    	return false;
     }
 
     public boolean isLinkable() {

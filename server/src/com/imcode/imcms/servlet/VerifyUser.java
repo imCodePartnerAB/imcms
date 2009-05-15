@@ -41,7 +41,7 @@ public class VerifyUser extends HttpServlet {
         String name = req.getParameter(REQUEST_PARAMETER__USERNAME);
         String passwd = req.getParameter(REQUEST_PARAMETER__PASSWORD);
 
-        ContentManagementSystem cms = ContentManagementSystem.login(req, name, passwd);
+        ContentManagementSystem cms = ContentManagementSystem.login(req, res, name, passwd);
 
         if ( null != cms ) {
             User currentUser = cms.getCurrentUser();

@@ -182,6 +182,7 @@ function resetCrop() {
 #gui_head( "<? global/imcms_administration ?>" )
 <form method="POST" action="<%= request.getContextPath() %>/servlet/PageDispatcher" onsubmit="checkLinkType();">
 <%= Page.htmlHidden(request) %>
+    <input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID %>" value="<%= image.getArchiveImageId() %>"/>
     <input type="hidden" id="forced_width" value="<%= imageEditPage.getForcedWidth() %>"/>
     <input type="hidden" id="forced_height" value="<%= imageEditPage.getForcedHeight() %>"/>
     <input type="hidden" id="h_crop_x1" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_X1 %>" value="<%= cropRegion.getCropX1() %>"/>
@@ -235,21 +236,17 @@ function resetCrop() {
 		<tr>
 			<td colspan="2" align="center">
 			<table>
-			<tr><%
-					if (imageEditPage.canAddImageFiles(user)) { %>
+			<tr>
+                <% if (ImageEditPage.allowImageArchive(user)) { %>
+                <td><input type="submit" <%
+                    %>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_ARCHIVE_BUTTON %>" <%
+                    %>class="imcmsFormBtnSmall" style="width:200px" <%
+                    %>value="<? templates/sv/change_img.html/2010 ?>"></td>
+                <% } %>
 				<td><input type="submit" <%
-							%>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON %>" <%
-							%>class="imcmsFormBtnSmall" style="width:200px" <%
-							%>value="<? web/imcms/lang/jsp/change_img.jsp/add_restricted_image ?>" ></td><%
-					} %>
-				<td><input type="submit" <%
-						%>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON %>" <%
+						%>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>" <%
 						%>class="imcmsFormBtnSmall" style="width:200px" <%
-						%>value="<? web/imcms/lang/jsp/change_img.jsp/image_search ?>" ></td>
-				<td><input type="submit" <%
-					%>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>" <%
-					%>class="imcmsFormBtnSmall" style="width:200px" <%
-					%>value="<? templates/sv/change_img.html/2004 ?>"></td>
+						%>value="<? templates/sv/change_img.html/2004 ?>" ></td>
 			</tr>
 			</table></td>
 		</tr>

@@ -31,4 +31,8 @@ public class CategoryType {
     public boolean isInherited() {
         return internalCategoryType.isInherited();
     }
+    
+    public boolean isImageArchive() {
+    	return internalCategoryType.isImageArchive();
+    }
 }

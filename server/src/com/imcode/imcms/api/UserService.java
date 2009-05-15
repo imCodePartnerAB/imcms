@@ -4,14 +4,20 @@ import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.NameTooLongException;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 public class UserService {
 
     private ContentManagementSystem contentManagementSystem;
+    
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     public UserService( ContentManagementSystem contentManagementSystem ) {
         this.contentManagementSystem = contentManagementSystem;
@@ -170,6 +176,19 @@ public class UserService {
 
     public void updateUserSession(User user) {
         getMapper().updateUserSessionId(user.getInternal());
+    }
+    
+    public void updateUserRememberCd(UserDomainObject user) {
+    	long rand = 0L;
+    	
+    	synchronized (RANDOM) {
+    		rand = RANDOM.nextLong();
+    	}
+    	
+    	String code = DigestUtils.shaHex(Integer.toString(user.getId()) + Long.toString(rand));
+    	user.setRememberCd(code);
+    	
+    	getMapper().updateUserRememberCd(user);
     }
 
     /**

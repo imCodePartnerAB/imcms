@@ -5,6 +5,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.FileDocumentImageSource;
+import imcode.server.document.textdocument.ImageArchiveImageSource;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
@@ -128,7 +129,7 @@ public class ImcmsImageUtils {
         	builder.append(source.getFileDocument().getId());
         } else {
         	builder.append("path=");
-        	builder.append(Utility.encodeURL(image.getUrlPathRelativeToContextPath()));
+        	builder.append(Utility.encodeUrl(image.getUrlPathRelativeToContextPath()));
         }
         
         if (metaId != null && imageIndex != null) {
@@ -173,11 +174,20 @@ public class ImcmsImageUtils {
             if ( document instanceof FileDocumentDomainObject ) {
                 imageSource = new FileDocumentImageSource(documentMapper.getDocumentReference(document));
             } else {
-                String imagesPath = ImagesPathRelativePathImageSource.getImagesUrlPath();
-                if (imageUrl.startsWith(imagesPath)) {
-                    imageUrl = imageUrl.substring(imagesPath.length());
-                }
-                imageSource = new ImagesPathRelativePathImageSource(imageUrl);
+            	String imageArchiveImageUrl = ImageArchiveImageSource.getImagesUrlPath();
+            	String imagesPath = ImagesPathRelativePathImageSource.getImagesUrlPath();
+            	
+            	if (imageUrl.startsWith(imageArchiveImageUrl)) {
+            		imageUrl = imageUrl.substring(imageArchiveImageUrl.length());
+            		
+            		imageSource = new ImageArchiveImageSource(imageUrl);
+            	} else {
+            		if (imageUrl.startsWith(imagesPath)) {
+            			imageUrl = imageUrl.substring(imagesPath.length());
+            		}
+            		
+            		imageSource = new ImagesPathRelativePathImageSource(imageUrl);
+            	}
             }
         }
         return imageSource;

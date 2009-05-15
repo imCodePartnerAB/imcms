@@ -46,6 +46,12 @@ public interface ImcmsConstants {
 
     /** Permission to change the includes of a text-document. **/
     public final static int PERM_EDIT_TEXT_DOCUMENT_INCLUDES   = (1 << 20) ; // 1048576
+    
+    /** Permission to use images in image archive */
+    public final static int PERM_IMAGE_ARCHIVE_USE_IMAGE = (1 << 22);
+    
+    /** Permission to change images in image archive */
+    public final static int PERM_IMAGE_ARCHIVE_CHANGE_IMAGE = (1 << 23);
 
 
     /* Log instances. */

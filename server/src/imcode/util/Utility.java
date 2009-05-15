@@ -1,48 +1,14 @@
 package imcode.util;
 
-import com.imcode.imcms.api.ContentManagementSystem;
-import com.imcode.imcms.api.DefaultContentManagementSystem;
-import com.imcode.imcms.servlet.VerifyUser;
-import com.imcode.imcms.db.StringFromRowFactory;
-import com.imcode.imcms.db.StringArrayResultSetHandler;
-import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
-import com.imcode.db.handlers.SingleObjectHandler;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
-import org.apache.commons.collections.Factory;
-import org.apache.commons.collections.MultiMap;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.SetUtils;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.iterators.ObjectArrayIterator;
-import org.apache.commons.collections.iterators.TransformIterator;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
-import org.w3c.dom.Document;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -53,9 +19,61 @@ import java.security.cert.Certificate;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Pattern;
+import java.util.AbstractMap;
+import java.util.AbstractSet;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.apache.commons.collections.Factory;
+import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.SetUtils;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.iterators.ObjectArrayIterator;
+import org.apache.commons.collections.iterators.TransformIterator;
+import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
+import org.w3c.dom.Document;
+
+import com.imcode.db.handlers.SingleObjectHandler;
+import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.api.DefaultContentManagementSystem;
+import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
+import com.imcode.imcms.db.StringArrayResultSetHandler;
+import com.imcode.imcms.db.StringFromRowFactory;
+import com.imcode.imcms.servlet.VerifyUser;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class Utility {
 
@@ -68,6 +86,8 @@ public class Utility {
     public static final ResultSetHandler STRING_ARRAY_HANDLER = new StringArrayResultSetHandler();
     public static final ResultSetHandler STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
     private static final String LOGGED_IN_USER = "logon.isDone";
+    private static final Pattern DOMAIN_PATTERN = Pattern.compile("^.*?([^.]+?\\.[^.]+)$");
+    private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
     private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
 
     private Utility() {
@@ -480,8 +500,37 @@ public class Utility {
     public static ResourceBundle getResourceBundle(HttpServletRequest request) {
         return Imcms.getServices().getLocalizedMessageProvider().getResourceBundle(Utility.getLoggedOnUser(request).getLanguageIso639_2());
     }
+    
+    public static void setRememberCdCookie(HttpServletRequest request, HttpServletResponse response, String rememberCd) {
+    	Cookie cookie = new Cookie("im_remember_cd", rememberCd);
+    	cookie.setMaxAge(60 * 60 * 2);
+    	cookie.setPath("/");
+    	
+    	setCookieDomain(request, cookie);
+    	response.addCookie(cookie);
+    }
+    
+    public static void removeRememberCdCookie(HttpServletRequest request, HttpServletResponse response) {
+    	Cookie cookie = new Cookie("im_remember_cd", "");
+    	cookie.setMaxAge(0);
+    	cookie.setPath("/");
+    	
+    	setCookieDomain(request, cookie);
+    	response.addCookie(cookie);
+    }
+    
+    public static void setCookieDomain(HttpServletRequest request, Cookie cookie) {
+    	String serverName = request.getServerName();    	
+    	if (!IP_PATTERN.matcher(serverName).matches()) {
+    		Matcher matcher = DOMAIN_PATTERN.matcher(serverName);
+    		
+    		if (matcher.matches()) {
+    			cookie.setDomain("." + matcher.group(1));
+    		}
+    	}
+    }
 
-    // collects a set of "public static final" constants from a class into a map, 
+	// collects a set of "public static final" constants from a class into a map, 
     // which then can be exposed to an JSP as a scoped variable
     public static Map<String, Object> getConstants(Class<?> klass) {
     	Map<String, Object> constants = new HashMap<String, Object>();
@@ -497,14 +546,15 @@ public class Utility {
     	
     	return constants;
     }
-    
-    public static String encodeURL(String value) {
+
+    public static String encodeUrl(String value) {
     	try {
     		return URLEncoder.encode(value, "UTF-8");
     	} catch (UnsupportedEncodingException ex) {
     		log.warn(ex.getMessage(), ex);
+    		
+    		throw new RuntimeException(ex.getMessage(), ex);
     	}
-    	
-    	return null;
     }
+    
 }

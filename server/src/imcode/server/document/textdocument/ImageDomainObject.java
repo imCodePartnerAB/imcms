@@ -26,6 +26,7 @@ public class ImageDomainObject implements Serializable {
     private int horizontalSpace;
     private String target = "";
     private String linkUrl = "";
+    private Long archiveImageId;
     private Format format;
     private CropRegion cropRegion = new CropRegion();
 
@@ -155,6 +156,14 @@ public class ImageDomainObject implements Serializable {
 
     public void setLinkUrl(String image_ref_link) {
         this.linkUrl = image_ref_link;
+    }
+    
+    public Long getArchiveImageId() {
+    	return archiveImageId;
+    }
+    
+    public void setArchiveImageId(Long archiveImageId) {
+    	this.archiveImageId = archiveImageId;
     }
 
     public void setFormat(Format format) {
