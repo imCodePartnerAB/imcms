@@ -12,9 +12,98 @@
 
 <div id="containerContent">
     <h4>
+        <spring:message code="archive.preferences.createNewCategory" htmlEscape="true"/>
+    </h4><div class="hr"></div>
+    <c:url var="preferencesUrl" value="/web/archive/preferences"/>
+
+    <form:form action="${preferencesUrl}" commandName="createCategory" method="post" cssClass="m15t clearfix">
+        <div class="minH30 clearfix">
+            <span class="left" style="width:65px;">
+                <label for="createCategoryName"><spring:message code="archive.preferences.name" htmlEscape="true"/>:</label>
+            </span>
+            
+            <div class="left">
+                <form:input path="createCategoryName" id="createCategoryName" maxlength="128" cssStyle="width:180px;"/><br/>
+                <form:errors path="createCategoryName" cssClass="red"/>
+            </div>
+        </div>
+
+        <div class="minH30">
+            <span class="left" style="width:65px;">
+                <label for="createCategoryType"><spring:message code="archive.preferences.type" htmlEscape="true"/>:</label>
+            </span>
+            <div class="left" style="width:184px;">
+                <select id="createCategoryType" name="createCategoryType" style="width:184px;">
+                    <c:forEach var="type" items="${categoryTypes}">
+                        <option value="${type.id}" ${type.id eq createCategory.createCategoryType ? 'selected="selected"' : ''} ><c:out value="${type.name}"/></option>
+                    </c:forEach>
+                </select><br/>
+                
+                <spring:message var="createText" code="archive.preferences.create" htmlEscape="true"/>
+                <input type="submit" name="createCategoryAction" value="${createText}" class="btnBlue right" style="margin-top:9px;"/>
+            </div>
+        </div>
+    </form:form>
+
+    <h4 class="m15t">
+        <spring:message code="archive.preferences.editCategory" htmlEscape="true"/>
+    </h4><div class="hr"></div>
+    <c:url var="preferencesUrl" value="/web/archive/preferences"/>
+
+    <form:form action="${preferencesUrl}" commandName="editCategory" method="post" cssClass="m15t clearfix">
+        <form:hidden path="showEditCategory"/>
+
+        <div class="minH30 clearfix">
+            <span class="left" style="width:80px;">
+                <label for="editCategoryId"><spring:message code="archive.preferences.category" htmlEscape="true"/>:</label>
+            </span>
+
+            <select class="left" id="editCategoryId" name="editCategoryId" style="width:184px;">
+                <c:forEach var="category" items="${categories}">
+                    <option value="${category.id}" ${category.id eq editCategory.editCategoryId ? 'selected="selected"' : ''}><c:out value="${category.name}"/></option>
+                </c:forEach>
+            </select>
+
+            <spring:message var="editText" code="archive.preferences.edit" htmlEscape="true"/>
+            <input type="submit" name="editCategoryAction" value="${editText}" class="btnBlue left" style="margin-left:5px;"/>
+        </div>
+        <c:if test="${editCategory.showEditCategory}">
+            <div class="minH30 clearfix">
+                <span class="left" style="width:80px;">
+                    <label for="editCategoryName"><spring:message code="archive.preferences.name" htmlEscape="true"/>:</label>
+                </span>
+
+                <div class="left clearfix">
+                    <form:input path="editCategoryName" id="editCategoryName" maxlength="128" cssStyle="width:180px;"/><br/>
+                    <form:errors path="editCategoryName" cssClass="red"/>
+                </div>
+            </div>
+
+            <div class="minH30 clearfix">
+                <span class="left" style="width:80px;">
+                    <label for="editCategoryType"><spring:message code="archive.preferences.type" htmlEscape="true"/>:</label>
+                </span>
+                <div class="left" style="width:184px;">
+                    <select id="editCategoryType" name="editCategoryType" style="width:184px;">
+                        <c:forEach var="type" items="${categoryTypes}">
+                            <option value="${type.id}" ${type.id eq editCategory.editCategoryType ? 'selected="selected"' : ''} ><c:out value="${type.name}"/></option>
+                        </c:forEach>
+                    </select><br/>
+                    
+                    <spring:message var="removeText" code="archive.preferences.remove" htmlEscape="true"/>
+                    <input type="submit" name="removeCategoryAction" value="${removeText}" class="btnBlue right" style="margin-top:9px;"/>
+
+                    <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
+                    <input type="submit" name="saveCategoryAction" value="${saveText}" class="btnBlue right" style="margin:9px 5px 0 0;"/>
+                </div>
+            </div>
+        </c:if>
+    </form:form>
+
+    <h4 class="m15t">
         <spring:message code="archive.preferences.changeRole" htmlEscape="true"/>
     </h4><div class="hr"></div>
-    <c:url var="saveCategoriesUrl" value="/web/archive/preferences/role/save"/>
+    <c:url var="saveCategoriesUrl" value="/web/archive/preferences"/>
     <form:form action="${saveCategoriesUrl}" commandName="saveCategories" method="post" cssClass="m15t clearfix">
         <input type="hidden" id="categoryIds" name="categoryIds" value=""/>
 
@@ -75,15 +164,15 @@
 
             <div class="clearboth m10t" style="text-align:center;">
                 <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
-                <input id="saveCategories" type="submit" value="${saveText}" class="btnBlue"/>
+                <input id="saveCategories" type="submit" name="saveRoleCategoriesAction" value="${saveText}" class="btnBlue"/>
             </div>
         </div>
     </form:form>
     
-    <h4>
+    <h4 class="m15t">
         <spring:message code="archive.preferences.libraries.changeLibraryRoles" htmlEscape="true"/>
     </h4><div class="hr"></div>
-    <c:url var="saveLibraryUrl" value="/web/archive/preferences/library/save"/>
+    <c:url var="saveLibraryUrl" value="/web/archive/preferences"/>
     <form:form action="${saveLibraryUrl}" commandName="saveLibraryRoles" method="post" cssClass="m15t clearfix">
         <c:choose>
             <c:when test="${currentLibrary eq null}">
@@ -164,7 +253,7 @@
 
                 <div class="clearboth m10t" style="text-align:center">
                     <spring:message var="saveText" code="archive.save" htmlEscape="true"/>
-                    <input id="saveLibraryRoles" type="submit" value="${saveText}" class="btnBlue"/>
+                    <input id="saveLibraryRoles" type="submit" name="saveLibraryRolesAction" value="${saveText}" class="btnBlue"/>
                 </div>
             </c:otherwise>
         </c:choose>

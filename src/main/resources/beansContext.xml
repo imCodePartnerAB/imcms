@@ -12,4 +12,5 @@
     <bean id="imageService" class="com.imcode.imcms.addon.imagearchive.service.ImageService"/>
     <bean id="roleService" class="com.imcode.imcms.addon.imagearchive.service.RoleService"/>
     <bean id="libraryService" class="com.imcode.imcms.addon.imagearchive.service.LibraryService"/>
+    <bean id="categoryService" class="com.imcode.imcms.addon.imagearchive.service.CategoryService"/>
 </beans>
