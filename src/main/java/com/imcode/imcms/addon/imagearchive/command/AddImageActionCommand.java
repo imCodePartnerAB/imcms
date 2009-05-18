@@ -10,6 +10,8 @@ public class AddImageActionCommand implements Serializable {
     private String useAction;
     private String imageCardAction;
     private String discontinueAction;
+    private String rotateLeft;
+    private String rotateRight;
     
     
     public AddImageActionCommand() {
@@ -34,6 +36,10 @@ public class AddImageActionCommand implements Serializable {
     
     public boolean isDiscontinue() {
         return discontinueAction != null;
+    }
+    
+    public boolean isRotate() {
+        return rotateLeft != null || rotateRight != null;
     }
     
     public String getSaveAction() {
@@ -74,5 +80,21 @@ public class AddImageActionCommand implements Serializable {
     
     public void setDiscontinueAction(String discontinueAction) {
         this.discontinueAction = discontinueAction;
+    }
+
+    public String getRotateLeft() {
+        return rotateLeft;
+    }
+
+    public void setRotateLeft(String rotateLeft) {
+        this.rotateLeft = rotateLeft;
+    }
+
+    public String getRotateRight() {
+        return rotateRight;
+    }
+
+    public void setRotateRight(String rotateRight) {
+        this.rotateRight = rotateRight;
     }
 }

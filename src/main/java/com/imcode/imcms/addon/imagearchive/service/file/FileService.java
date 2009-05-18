@@ -49,6 +49,11 @@ public class FileService {
     
     public static final Pattern FILENAME_PATTERN = Pattern.compile("^.*?/?([^/\\:]+?)$");
     
+    private static final String IMAGE_ORIGINAL_INFIX = "orig";
+    private static final String IMAGE_FULL_INFIX = "full";
+    private static final String IMAGE_SMALL_THUMB_INFIX = ThumbSize.SMALL.getName();
+    private static final String IMAGE_MEDIUM_THUMB_INFIX = ThumbSize.MEDIUM.getName();
+    
     
     @Autowired
     private Config config;
@@ -64,14 +69,29 @@ public class FileService {
         return null;
     }
     
-    public boolean storeImage(File tempFile, long imageId, boolean temporary) {
-        String temp = (temporary ? "_tmp" : "");
-        File rootPath = new File(config.getStoragePath(), Long.toString(imageId));
+    public File getImageRootPath(long imageId) {
+        return new File(config.getStoragePath(), Long.toString(imageId));
+    }
+    
+    public File getImageFile(long imageId, String infix, boolean temporary) {
+        StringBuilder filenameBuilder = new StringBuilder();
         
-        File originalFile = new File(rootPath, String.format("%d_orig%s", imageId, temp));
-        File fullFile = new File(rootPath, String.format("%d_full%s", imageId, temp));
-        File thumbSmallFile = new File(rootPath, String.format("%d_%s%s", imageId, ThumbSize.SMALL.getName(), temp));
-        File thumbMedFile = new File(rootPath, String.format("%d_%s%s", imageId, ThumbSize.MEDIUM.getName(), temp));
+        filenameBuilder.append(imageId);
+        filenameBuilder.append("_");
+        filenameBuilder.append(infix);
+        
+        if (temporary) {
+            filenameBuilder.append("_tmp");
+        }
+        
+        return new File(getImageRootPath(imageId), filenameBuilder.toString());
+    }    
+    
+    public boolean storeImage(File tempFile, long imageId, boolean temporary) {
+        File originalFile = getImageFile(imageId, IMAGE_ORIGINAL_INFIX, temporary);
+        File fullFile = getImageFile(imageId, IMAGE_FULL_INFIX, temporary);
+        File thumbSmallFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, temporary);
+        File thumbMedFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, temporary);
         
         try {
             FileUtils.copyFile(tempFile, originalFile);
@@ -80,15 +100,8 @@ public class FileService {
                     .outputFormat(Format.JPEG)
                     .processToFile(fullFile);
             
-            new ImageOp(config).input(fullFile)
-                    .resizeProportional(ThumbSize.SMALL.getWidth(), ThumbSize.SMALL.getHeight(), Color.WHITE, Gravity.CENTER)
-                    .outputFormat(Format.JPEG)
-                    .processToFile(thumbSmallFile);
-            
-            new ImageOp(config).input(fullFile)
-                    .resizeProportional(ThumbSize.MEDIUM.getWidth(), ThumbSize.MEDIUM.getHeight(), Color.WHITE, Gravity.CENTER)
-                    .outputFormat(Format.JPEG)
-                    .processToFile(thumbMedFile);
+            generateThumbnail(fullFile, thumbSmallFile, ThumbSize.SMALL);
+            generateThumbnail(fullFile, thumbMedFile, ThumbSize.MEDIUM);
             
             return true;
         } catch (IOException ex) {
@@ -103,46 +116,78 @@ public class FileService {
         return false;
     }
     
-    public void moveTempImageToCurrent(long imageId) {
-        File rootPath = new File(config.getStoragePath(), Long.toString(imageId));
+    private void generateThumbnail(File inputFile, File outputFile, ThumbSize thumbnailSize) {
+        new ImageOp(config).input(inputFile)
+            .resizeProportional(thumbnailSize.getWidth(), thumbnailSize.getHeight(), Color.WHITE, Gravity.CENTER)
+            .outputFormat(Format.JPEG)
+            .processToFile(outputFile);
+    }
+    
+    public void rotateImage(long imageId, int angle, boolean temporary) {
+        File fullFile = getImageFile(imageId, IMAGE_FULL_INFIX, temporary);
+        File thumbSmallFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, temporary);
+        File thumbMedFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, temporary);
         
-        String originalPath = String.format("%d_orig", imageId);
-        String fullPath = String.format("%d_full", imageId);
-        String thumbSmallPath = String.format("%d_%s", imageId, ThumbSize.SMALL.getName());
-        String thumbMedPath = String.format("%d_%s", imageId, ThumbSize.MEDIUM.getName());
+        new ImageOp(config).input(fullFile)
+                .rotate(angle)
+                .processToFile(fullFile);
         
-        File originalFile = new File(rootPath, originalPath);
-        File fullFile = new File(rootPath, fullPath);
-        File thumbSmallFile = new File(rootPath, thumbSmallPath);
-        File thumbMedFile = new File(rootPath, thumbMedPath);
+        generateThumbnail(fullFile, thumbSmallFile, ThumbSize.SMALL);
+        generateThumbnail(fullFile, thumbMedFile, ThumbSize.MEDIUM);
+    }
+    
+    public void copyTemporaryImageToCurrent(long imageId) {
+        File originalFile = getImageFile(imageId, IMAGE_ORIGINAL_INFIX, false);
+        File fullFile = getImageFile(imageId, IMAGE_FULL_INFIX, false);
+        File thumbSmallFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, false);
+        File thumbMedFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, false);
         
-        File originalTempFile = new File(rootPath, originalPath + "_tmp");
-        File fullTempFile = new File(rootPath, fullPath + "_tmp");
-        File thumbSmallTempFile = new File(rootPath, thumbSmallPath + "_tmp");
-        File thumbMedTempFile = new File(rootPath, thumbMedPath + "_tmp");
+        File originalTempFile = getImageFile(imageId, IMAGE_ORIGINAL_INFIX, true);
+        File fullTempFile = getImageFile(imageId, IMAGE_FULL_INFIX, true);
+        File thumbSmallTempFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, true);
+        File thumbMedTempFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, true);
         
         try {
             FileUtils.copyFile(originalTempFile, originalFile);
             FileUtils.copyFile(fullTempFile, fullFile);
             FileUtils.copyFile(thumbSmallTempFile, thumbSmallFile);
             FileUtils.copyFile(thumbMedTempFile, thumbMedFile);
-        } catch (IOException ex) {
-            log.warn(ex.getMessage(), ex);
-        } finally {
-            originalTempFile.delete();
-            fullTempFile.delete();
-            thumbSmallTempFile.delete();
-            thumbMedTempFile.delete();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
     
-    public void deleteTempImage(long imageId) {
-        File rootPath = new File(config.getStoragePath(), Long.toString(imageId));
+    public void createTemporaryCopyOfCurrentImage(long imageId) {
+        File originalFile = getImageFile(imageId, IMAGE_ORIGINAL_INFIX, false);
+        File fullFile = getImageFile(imageId, IMAGE_FULL_INFIX, false);
+        File thumbSmallFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, false);
+        File thumbMedFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, false);
         
-        File originalTempFile = new File(rootPath, String.format("%d_orig_tmp", imageId));
-        File fullTempFile = new File(rootPath, String.format("%d_full_tmp", imageId));
-        File thumbSmallTempFile = new File(rootPath, String.format("%d_%s_tmp", imageId, ThumbSize.SMALL.getName()));
-        File thumbMedTempFile = new File(rootPath, String.format("%d_%s_tmp", imageId, ThumbSize.MEDIUM.getName()));
+        File originalTempFile = getImageFile(imageId, IMAGE_ORIGINAL_INFIX, true);
+        File fullTempFile = getImageFile(imageId, IMAGE_FULL_INFIX, true);
+        File thumbSmallTempFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, true);
+        File thumbMedTempFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, true);
+        
+        try {
+            FileUtils.copyFile(originalFile, originalTempFile);
+            FileUtils.copyFile( fullFile, fullTempFile);
+            FileUtils.copyFile(thumbSmallFile, thumbSmallTempFile);
+            FileUtils.copyFile(thumbMedFile, thumbMedTempFile);
+        } catch (Exception ex) {
+            FileUtils.deleteQuietly(originalTempFile);
+            FileUtils.deleteQuietly(fullTempFile);
+            FileUtils.deleteQuietly(thumbSmallTempFile);
+            FileUtils.deleteQuietly(thumbMedTempFile);
+            
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public void deleteTemporaryImage(long imageId) {
+        File originalTempFile = getImageFile(imageId, IMAGE_ORIGINAL_INFIX, true);
+        File fullTempFile = getImageFile(imageId, IMAGE_FULL_INFIX, true);
+        File thumbSmallTempFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, true);
+        File thumbMedTempFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, true);
         
         originalTempFile.delete();
         fullTempFile.delete();

@@ -21,14 +21,24 @@
     <c:url var="thumbUrl" value="/web/archive/thumb">
         <c:param name="id" value="${image.id}"/>
         <c:param name="size" value="medium"/>
-        <c:param name="tmp" value="${changeData.changedFile eq true}"/>
+        <c:param name="tmp" value="${action eq 'change'}"/>
     </c:url>
     <div style="margin:30px 0;text-align:center;">
         <c:url var="previewUrl" value="/web/archive/preview">
             <c:param name="id" value="${image.id}"/>
-            <c:param name="tmp" value="${changeData.changedFile eq true}"/>
+            <c:param name="tmp" value="${action eq 'change'}"/>
         </c:url>
-        <a href="${previewUrl}" onclick="showPreview(${image.id}, ${image.width}, ${image.height}, ${changeData.changedFile eq true});return false;" target="_blank"><img src="${thumbUrl}" width="300" height="225"/></a>
+        <a href="${previewUrl}" onclick="showPreview(${image.id}, ${image.width}, ${image.height}, ${action eq 'change'});return false;" target="_blank"><img src="${thumbUrl}" width="300" height="225"/></a><br/>
+
+        <c:if test="${action eq 'change'}">
+            <form action="/" style="margin-top:5px;">
+                <spring:message var="rotateLeftText" code="archive.rotateLeft" htmlEscape="true"/>
+                <input type="button" class="btnBlue small" id="rotateLeft" value="${rotateLeftText}"/>
+
+                <spring:message var="rotateRightText" code="archive.rotateRight" htmlEscape="true"/>
+                <input type="button" class="btnBlue small" id="rotateRight" value="${rotateRightText}"/>
+            </form>
+        </c:if>
     </div>
     <div style="text-align:center;margin-bottom:20px;">
         <% pageContext.setAttribute("user", ContentManagementSystem.fromRequest(request).getCurrentUser()); %>

@@ -10,13 +10,15 @@ public class ImageCardChangeActionCommand implements Serializable {
     private String useAction;
     private String imageCardAction;
     private String cancelAction;
+    private String rotateLeft;
+    private String rotateRight;
     
     
     public ImageCardChangeActionCommand() {
     }
     
     public boolean isSet() {
-        return isUpload() || isSave() || isUse() || isImageCard() || isCancel();
+        return isUpload() || isSave() || isUse() || isImageCard() || isCancel() || isRotate();
     }
     
     public boolean isUpload() {
@@ -37,6 +39,10 @@ public class ImageCardChangeActionCommand implements Serializable {
     
     public boolean isCancel() {
         return cancelAction != null;
+    }
+    
+    public boolean isRotate() {
+        return rotateLeft != null || rotateRight != null;
     }
     
     public String getUploadAction() {
@@ -77,5 +83,21 @@ public class ImageCardChangeActionCommand implements Serializable {
     
     public void setCancelAction(String cancelAction) {
         this.cancelAction = cancelAction;
+    }
+
+    public String getRotateLeft() {
+        return rotateLeft;
+    }
+
+    public void setRotateLeft(String rotateLeft) {
+        this.rotateLeft = rotateLeft;
+    }
+
+    public String getRotateRight() {
+        return rotateRight;
+    }
+
+    public void setRotateRight(String rotateRight) {
+        this.rotateRight = rotateRight;
     }
 }

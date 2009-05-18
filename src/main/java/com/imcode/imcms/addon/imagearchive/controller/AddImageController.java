@@ -182,7 +182,13 @@ public class AddImageController {
         mav.addObject("keywords", keywords);
         mav.addObject("imageKeywords", imageKeywords);
         
-        if (result.hasErrors()) {
+        if (action.getRotateLeft() != null) {
+            facade.getFileService().rotateImage(image.getId(), -90, false);
+        } else if (action.getRotateRight() != null) {
+            facade.getFileService().rotateImage(image.getId(), 90, false);
+        }
+        
+        if (result.hasErrors() || action.isRotate()) {
             mav.addObject("upload", new AddImageUploadCommand());
             mav.addObject("categories", facade.getImageService().findAvailableImageCategories(image.getId(), user));
             mav.addObject("imageCategories", facade.getImageService().findImageCategories(image.getId()));

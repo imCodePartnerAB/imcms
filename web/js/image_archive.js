@@ -227,6 +227,19 @@ var setupChangeData = function() {
             $(this).blur();
         });
     }
+    
+    $("#rotateRight").click(function() {
+        var form = $("#changeData");
+        
+        form.append("<input type='hidden' name='rotateRight' value='r'/>");
+        form.submit();
+    });
+    $("#rotateLeft").click(function() {
+        var form = $("#changeData");
+        
+        form.append("<input type='hidden' name='rotateLeft' value='l'/>");
+        form.submit();
+    });
 };
 
 var initAddImage = function() {

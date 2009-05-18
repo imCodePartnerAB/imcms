@@ -44,7 +44,15 @@
             </c:url>
             <a href="${previewUrl}" onclick="showPreview(${image.id}, ${image.width}, ${image.height});return false;" target="_blank">
                 <img src="${thumbUrl}" width="300" height="225"/>
-            </a>
+            </a><br/>
+
+            <form action="/" style="margin-top:5px;">
+                <spring:message var="rotateLeftText" code="archive.rotateLeft" htmlEscape="true"/>
+                <input type="button" class="btnBlue small" id="rotateLeft" value="${rotateLeftText}"/>
+                
+                <spring:message var="rotateRightText" code="archive.rotateRight" htmlEscape="true"/>
+                <input type="button" class="btnBlue small" id="rotateRight" value="${rotateRightText}"/>
+            </form>
         </div>
     
         <h4>

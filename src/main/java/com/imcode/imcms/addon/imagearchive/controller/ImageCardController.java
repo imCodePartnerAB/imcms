@@ -310,6 +310,8 @@ public class ImageCardController {
             changeData.fromImage(image);
             mav.addObject("image", image);
             
+            facade.getFileService().createTemporaryCopyOfCurrentImage(image.getId());
+            
             mav.addObject("categories", facade.getImageService().findAvailableImageCategories(image.getId(), user));
             mav.addObject("imageCategories", facade.getImageService().findImageCategories(image.getId()));
             
@@ -329,9 +331,7 @@ public class ImageCardController {
             if (action.isCancel()) {
                 session.remove(IMAGE_KEY);
                 
-                if (changeData.isChangedFile()) {
-                    facade.getFileService().deleteTempImage(imageId);
-                }
+                facade.getFileService().deleteTemporaryImage(imageId);
                 
                 return new ModelAndView("redirect:/web/archive/image/" + image.getId());
             }
@@ -399,23 +399,32 @@ public class ImageCardController {
             ChangeImageDataValidator validator = new ChangeImageDataValidator(facade, user);
             ValidationUtils.invokeValidator(validator, changeData, result);
             
-            if (!result.hasErrors()) {
+            if (action.getRotateLeft() != null) {
+                facade.getFileService().rotateImage(image.getId(), -90, true);
+                
+            } else if (action.getRotateRight() != null) {
+                facade.getFileService().rotateImage(image.getId(), 90, true);
+                
+            } else if (!result.hasErrors()) {
                 changeData.toImage(image);
                 
                 if (changeData.isChangedFile()) {
                     facade.getImageService().updateFullData(image, changeData.getCategoryIds(), imageKeywords);
-                    facade.getFileService().moveTempImageToCurrent(imageId);
-                    
                     changeData.setChangedFile(false);
+                    
                 } else {
                     facade.getImageService().updateData(image, changeData.getCategoryIds(), imageKeywords);
                 }
                 
+                facade.getFileService().copyTemporaryImageToCurrent(imageId);
+                
                 if (action.isUse()) {
+                    facade.getFileService().deleteTemporaryImage(image.getId());
                     session.remove(IMAGE_KEY);
                     
                     return new ModelAndView("redirect:/web/archive/use?id=" + image.getId());
                 } else if (action.isImageCard()) {
+                    facade.getFileService().deleteTemporaryImage(image.getId());
                     session.remove(IMAGE_KEY);
                     
                     return new ModelAndView("redirect:/web/archive/image/" + image.getId());

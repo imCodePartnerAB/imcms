@@ -323,7 +323,18 @@ public class ExternalFilesController {
         mav.addObject("keywords", keywords);
         mav.addObject("imageKeywords", imageKeywords);
         
-        if (result.hasErrors()) {
+        if (saveCommand.getRotateLeft() != null || saveCommand.getRotateRight() != null) {
+            if (saveCommand.getRotateLeft() != null) {
+                facade.getFileService().rotateImage(image.getId(), -90, false);
+            } else {
+                facade.getFileService().rotateImage(image.getId(), 90, false);
+            }
+            
+            mav.addObject("categories", facade.getImageService().findAvailableImageCategories(image.getId(), user));
+            mav.addObject("imageCategories", facade.getImageService().findImageCategories(image.getId()));
+            
+            return mav;
+        } else if (result.hasErrors()) {
             mav.addObject("categories", facade.getImageService().findAvailableImageCategories(image.getId(), user));
             mav.addObject("imageCategories", facade.getImageService().findImageCategories(image.getId()));
             

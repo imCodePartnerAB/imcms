@@ -136,6 +136,13 @@ public class ImageOp {
         return this;
     }
     
+    public ImageOp rotate(int angle) {
+        args.add("-rotate");
+        args.add(addQuotes(Integer.toString(angle)));
+        
+        return this;
+    }
+    
     public ImageOp resize(Integer width, Integer height, Resize type) {
         args.add("-resize");
         

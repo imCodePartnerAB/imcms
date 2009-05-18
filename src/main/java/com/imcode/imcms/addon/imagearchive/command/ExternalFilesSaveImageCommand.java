@@ -10,6 +10,8 @@ public class ExternalFilesSaveImageCommand implements Serializable {
     private String saveUse;
     private String saveImageCard;
     private String cancel;
+    private String rotateRight;
+    private String rotateLeft;
 
     
     public ExternalFilesSaveImageCommand() {
@@ -54,5 +56,21 @@ public class ExternalFilesSaveImageCommand implements Serializable {
 
     public void setSaveUse(String saveUse) {
         this.saveUse = saveUse;
+    }
+
+    public String getRotateRight() {
+        return rotateRight;
+    }
+
+    public void setRotateRight(String rotateRight) {
+        this.rotateRight = rotateRight;
+    }
+
+    public String getRotateLeft() {
+        return rotateLeft;
+    }
+
+    public void setRotateLeft(String rotateLeft) {
+        this.rotateLeft = rotateLeft;
     }
 }
