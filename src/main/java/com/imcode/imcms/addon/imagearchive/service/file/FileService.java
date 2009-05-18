@@ -85,7 +85,15 @@ public class FileService {
         }
         
         return new File(getImageRootPath(imageId), filenameBuilder.toString());
-    }    
+    }
+    
+    public File getImageOriginalFile(long imageId, boolean temporary) {
+        return getImageFile(imageId, IMAGE_ORIGINAL_INFIX, temporary);
+    }
+    
+    public File getImageFullFile(long imageId, boolean temporary) {
+        return getImageFile(imageId, IMAGE_FULL_INFIX, temporary);
+    }
     
     public boolean storeImage(File tempFile, long imageId, boolean temporary) {
         File originalFile = getImageFile(imageId, IMAGE_ORIGINAL_INFIX, temporary);
@@ -249,12 +257,6 @@ public class FileService {
         }
         
         return null;
-    }
-    
-    public File getImageOriginalFile(long imageId) {
-        File rootPath = new File(config.getStoragePath(), Long.toString(imageId));
-        
-        return new File(rootPath, String.format("%d_orig", imageId));
     }
     
     public String transferImageToImcms(long imageId) {

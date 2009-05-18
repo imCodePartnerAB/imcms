@@ -116,7 +116,7 @@ public class ImageCardController {
         File tempFile = null;
         try {
             tempFile = facade.getFileService().createTemporaryFile("export");
-            File originalFile = facade.getFileService().getImageOriginalFile(imageId);
+            File originalFile = facade.getFileService().getImageOriginalFile(imageId, false);
 
             ImageOp op = new ImageOp(config).input(originalFile);
 

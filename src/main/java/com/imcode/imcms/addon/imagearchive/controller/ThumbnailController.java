@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.imcode.imcms.addon.imagearchive.Config;
 import com.imcode.imcms.addon.imagearchive.service.Facade;
 import com.imcode.imcms.addon.imagearchive.service.file.ThumbSize;
 import com.imcode.imcms.addon.imagearchive.util.Utils;
@@ -22,6 +24,9 @@ import com.imcode.imcms.addon.imagearchive.util.Utils;
 public class ThumbnailController {
     @Autowired
     private Facade facade;
+    
+    @Autowired
+    private Config config;
     
     
     @RequestMapping("/archive/thumb")
@@ -75,6 +80,26 @@ public class ThumbnailController {
     
     @RequestMapping("/archive/preview")
     public String previewHandler(
+            @RequestParam(required=false) Long id, 
+            @RequestParam(required=false) Boolean tmp, 
+            HttpServletResponse response, 
+            Map<String, Object> model) {
+        if (id == null) {
+            Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
+            
+            return null;
+        }
+        
+        tmp = (tmp != null ? tmp.booleanValue() : false);
+        
+        model.put("imageId", id);
+        model.put("temporary", tmp);
+        
+        return "image_archive/pages/preview";
+    }
+    
+    @RequestMapping("/archive/preview_img")
+    public String previewImageHandler(
             @RequestParam(required=false) Long id, 
             @RequestParam(required=false) Boolean tmp, 
             HttpServletResponse response) {

@@ -449,11 +449,17 @@ var initExternalFiles = function() {
 };
 
 var showPreview = function(id, width, height, temp) {
-    width = Math.min(screen.availWidth, width + 20);
-    height = Math.min(screen.availHeight, height + 20);
+    var WINDOW_BORDERS = 40, 
+        ERROR_MARGIN = 20;
     
-    var left = Math.floor((screen.availWidth - width) * 0.5), 
-        top = Math.floor((screen.availHeight - height) * 0.5);
+    var imageWidth = Math.min(screen.availWidth - WINDOW_BORDERS, width);
+    var imageHeight = Math.min(screen.availHeight - WINDOW_BORDERS, height);
+    
+    var windowWidth = Math.min(screen.availWidth, imageWidth + ERROR_MARGIN);
+    var windowHeight = Math.min(screen.availHeight, imageHeight + ERROR_MARGIN);
+    
+    var left = Math.floor((screen.availWidth - windowWidth) * 0.5), 
+        top = Math.floor((screen.availHeight - windowHeight) * 0.5);
     
     left = Math.max(left, 0);
     top = Math.max(top, 0);
@@ -466,7 +472,17 @@ var showPreview = function(id, width, height, temp) {
     }
     
     var url = common.getRelativeUrl("/web/archive/preview", params);
-    var attrs = "left=" + left + ",top=" + top + ",width=" + width + ",height=" + height + ",directories=no,location=no,menubar=no,resizable=yes,scrollbars=yes,toolbar=no";
+    var attrs = "left=" + left + ",top=" + top + ",width=" + windowWidth + ",height=" + windowHeight + ",directories=no,location=no,menubar=no,resizable=yes,scrollbars=yes,toolbar=no";
+    
+    window.imageNewWidth = imageWidth;
     
     window.open(url, "preview", attrs);
+};
+
+var initImagePreview = function() {
+    $(function() {
+        if (window.opener && window.opener.imageNewWidth) {
+            $("#image").css("width", window.opener.imageNewWidth + "px");
+        }
+    });
 };
