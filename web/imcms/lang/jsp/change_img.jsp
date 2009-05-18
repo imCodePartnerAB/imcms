@@ -315,7 +315,7 @@ function resetCrop() {
 					</table></td>
 				</tr>
         <% if (!image.isEmpty()) { %>
-            <tr>
+            <tr height="38">
                 <td nowrap><? templates/sv/change_img.html/4003 ?></td>
                 <td id="crop_cell">
                     <% if (cropRegion.isValid()) { %>
