@@ -1,7 +1,56 @@
 <%@ include file="/WEB-INF/jsp/image_archive/includes/taglibs.jsp" %>
-<h4>
-    <spring:message code="archive.imageCard.imageInfo" htmlEscape="true"/>
-</h4><div class="hr"></div>
+<%@ page import="com.imcode.imcms.api.*" %>
+<% pageContext.setAttribute("user", ContentManagementSystem.fromRequest(request).getCurrentUser()); %>
+
+<div class="clearfix">
+    <h4 class="left">
+        <spring:message code="archive.imageCard.imageInfo" htmlEscape="true"/>
+    </h4>
+    
+    <c:if test="${not user.defaultUser and not image.archived}">
+        <c:url var="exportUrl" value="/web/archive/image/${image.id}"/>
+        <form:form action="${exportUrl}" commandName="exportImage" method="post" cssClass="right" cssStyle="margin-right:30px;display:inline;">
+            <label for="width" class="left">
+                <spring:message code="archive.imageCard.export.width" htmlEscape="true"/>
+            </label>
+            <form:input id="width" path="width" cssClass="left" cssStyle="width:80px;margin-left:5px;"/>
+        
+        
+            <label for="height" class="left" style="margin-left:20px;">
+                <spring:message code="archive.imageCard.export.height" htmlEscape="true"/>
+            </label>
+            <form:input id="height" path="height" cssClass="left" cssStyle="width:80px;margin-left:5px;"/>
+            
+        
+            <label for="fileFormat" class="left" style="margin-left:20px;">
+                <spring:message code="archive.imageCard.export.fileFormat" htmlEscape="true"/>
+            </label>
+            <select id="fileFormat" name="fileFormat" class="left" style="width:80px;margin-left:5px;">
+                <c:forEach var="format" items="${exportImage.fileFormats}">
+                    <option value="${format.imageFormat}" ${exportImage.fileFormat eq format.imageFormat ? 'selected="selected"' : ''} >
+                        <c:out value="${fn:toLowerCase(format.format)}"/>
+                    </option>
+                </c:forEach>
+            </select>
+        
+            <label for="quality" class="left" style="margin-left:20px;">
+                <spring:message code="archive.imageCard.export.quality" htmlEscape="true"/>
+            </label>
+            <select id="quality" name="quality" class="left" style="width:80px;margin-left:5px;">
+                <c:forEach var="quality" items="${exportImage.qualities}">
+                    <option value="${quality}" ${exportImage.quality eq quality ? 'selected="selected"' : ''} >${quality}%</option>
+                </c:forEach>
+            </select>
+        
+            <spring:message var="exportText" code="archive.imageCard.export.exportButton" htmlEscape="true"/>
+            <input type="submit" class="left btnBlue small" style="margin-left:20px;" name="export" value="${exportText}"/>
+        </form:form>
+    </c:if>
+</div>
+
+<div class="hr"></div>
+
+
 <div class="m15t minH20">
     <span class="left" style="width:130px;">
         <spring:message code="archive.changeData.imageName" htmlEscape="true"/>

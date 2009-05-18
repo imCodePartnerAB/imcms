@@ -64,7 +64,11 @@ public class ImageCardController {
     
     
     @RequestMapping({"/archive/image/*", "/archive/image/*/"})
-    public ModelAndView indexHandler(HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView indexHandler(
+            @ModelAttribute("exportImage") ExportImageCommand command, 
+            BindingResult result, 
+            HttpServletRequest request, 
+            HttpServletResponse response) {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -74,6 +78,28 @@ public class ImageCardController {
         if (imageId == null || (image = facade.getImageService().findById(imageId, user)) == null) {
             return new ModelAndView("redirect:/web/archive/");
         }
+        
+        if (command.getExport() != null && !image.isArchived()) {
+            
+            ExportImageValidator validator = new ExportImageValidator();
+            ValidationUtils.invokeValidator(validator, command, result);
+            
+            Format imageFormat = Format.findFormatByImageFormat(command.getFileFormat());            
+            
+            if (imageFormat != null && imageFormat.isWritable() && !result.hasErrors()) {
+                if (processExport(imageId, image, imageFormat, command, response)) {
+                    return null;
+                }
+            }
+            
+        } else {
+            
+            Format format = Format.findFormatByImageFormat(image.getFormat());
+            if (format.isWritable()) {
+                command.setFileFormat(format.getImageFormat());
+            }
+        }
+        
         facade.getImageService().setImageMetaIds(image);
         
         ModelAndView mav = new ModelAndView("image_archive/pages/image_card/image_card");
@@ -84,84 +110,8 @@ public class ImageCardController {
         return mav;
     }
     
-    private static String getCategories(Images image) {
-        List<Categories> categories = image.getCategories();
-        StringBuilder categoryBuilder = new StringBuilder();
-        for (int i = 0, len = categories.size(); i < len; i++) {
-            Categories category = categories.get(i);
-            categoryBuilder.append(category.getName());
-            
-            if (i < (len - 1)) {
-                categoryBuilder.append(", ");
-            }
-        }
-        
-        return categoryBuilder.toString();
-    }
-    
-    private static String getKeywords(Images image) {
-        List<Keywords> keywords = image.getKeywords();
-        StringBuilder keywordBuilder = new StringBuilder();
-        for (int i = 0, len = keywords.size(); i < len; i++) {
-            keywordBuilder.append(keywords.get(i).getKeywordNm());
-            
-            if (i < (len - 1)) {
-                keywordBuilder.append(", ");
-            }
-        }
-        
-        return keywordBuilder.toString();
-    }
-    
-    @RequestMapping("/archive/image/*/export")
-    public ModelAndView exportHandler(
-            @ModelAttribute("exportImage") ExportImageCommand command, 
-            BindingResult result, 
-            HttpServletRequest request, 
-            HttpServletResponse response) {
-        ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
-        User user = cms.getCurrentUser();
-        
-        if (user.isDefaultUser()) {
-            Utils.redirectToLogin(request, response, facade);
-            
-            return null;
-        }
-        
-        Long imageId = getImageId(request);
-        Images image = null;
-        if (imageId == null || (image = facade.getImageService().findById(imageId, user)) == null) {
-            return new ModelAndView("redirect:/web/archive");
-        } else if (image.isArchived()) {
-            return new ModelAndView("redirect:/web/archive/image/" + imageId);
-        }
-        
-        ModelAndView mav = new ModelAndView("image_archive/pages/image_card/image_card");
-        mav.addObject("action", "export");
-        mav.addObject("image", image);
-        mav.addObject("categories", getCategories(image));
-        mav.addObject("keywords", getKeywords(image));
-        
-        if (command.getExport() == null) {
-            Format format = Format.findFormatByImageFormat(image.getFormat());
-            if (format.isWritable()) {
-                command.setFileFormat(format.getImageFormat());
-            }
-
-            return mav;
-        }
-        
-        ExportImageValidator validator = new ExportImageValidator();
-        ValidationUtils.invokeValidator(validator, command, result);
-        
-        if (result.hasErrors()) {
-            return mav;
-        }
-        
-        Format imageFormat = Format.findFormatByImageFormat(command.getFileFormat());
-        if (imageFormat == null || !imageFormat.isWritable()) {
-            return mav;
-        }
+    private boolean processExport(Long imageId, Images image, Format imageFormat, 
+            ExportImageCommand command, HttpServletResponse response) {
         
         File tempFile = null;
         try {
@@ -182,7 +132,7 @@ public class ImageCardController {
             op.outputFormat(imageFormat);
             
             if (!op.processToFile(tempFile)) {
-                return mav;
+                return false;
             }
             
             if (imageFormat == Format.JPEG) {
@@ -229,7 +179,36 @@ public class ImageCardController {
             }
         }
         
-        return null;
+        return true;
+    }
+    
+    private static String getCategories(Images image) {
+        List<Categories> categories = image.getCategories();
+        StringBuilder categoryBuilder = new StringBuilder();
+        for (int i = 0, len = categories.size(); i < len; i++) {
+            Categories category = categories.get(i);
+            categoryBuilder.append(category.getName());
+            
+            if (i < (len - 1)) {
+                categoryBuilder.append(", ");
+            }
+        }
+        
+        return categoryBuilder.toString();
+    }
+    
+    private static String getKeywords(Images image) {
+        List<Keywords> keywords = image.getKeywords();
+        StringBuilder keywordBuilder = new StringBuilder();
+        for (int i = 0, len = keywords.size(); i < len; i++) {
+            keywordBuilder.append(keywords.get(i).getKeywordNm());
+            
+            if (i < (len - 1)) {
+                keywordBuilder.append(", ");
+            }
+        }
+        
+        return keywordBuilder.toString();
     }
     
     @RequestMapping("/archive/image/*/exif")

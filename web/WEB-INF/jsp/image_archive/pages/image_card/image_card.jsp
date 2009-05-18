@@ -57,10 +57,6 @@
             <span><spring:message code="archive.imageCard.showImageDataExif" htmlEscape="true"/></span>
         </a>
         <c:if test="${not user.defaultUser and not image.archived}">
-            <c:url var="exportUrl" value="/web/archive/image/${image.id}/export"/>
-            <a href="${exportUrl}" style="margin-right:2px;" class="btnBlue">
-                <span><spring:message code="archive.imageCard.export" htmlEscape="true"/></span>
-            </a>
             <c:set var="disabled" value="${!image.canChange}"/>
             <c:url var="eraseUrl" value="/web/archive/image/${image.id}/erase"/>
             <a href="${eraseUrl}" class="btnBlue ${disabled ? 'disabled' : ''}" onclick="${disabled ? 'return false;' : ''}">
@@ -78,9 +74,6 @@
         </c:when>
         <c:when test="${action eq 'exif'}">
             <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/exif.jsp" %>
-        </c:when>
-        <c:when test="${action eq 'export'}">
-            <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/export.jsp" %>
         </c:when>
         <c:otherwise>
             <%@ include file="/WEB-INF/jsp/image_archive/pages/image_card/info.jsp" %>

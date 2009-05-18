@@ -22,21 +22,24 @@ public class ExportImageValidator implements Validator {
             int w = width.intValue();
             
             if (w < 1) {
-                errors.rejectValue("width", "archive.imageCard.export.tooSmallError", new Object[] {1}, "???");
+                width = 1;
             } else if (w > 10000) {
-                errors.rejectValue("width", "archive.imageCard.export.tooBigError", new Object[] {10000}, "???");
+                width = 10000;
             }
         }
+        command.setWidth(width);
+        
         Integer height = command.getHeight();
         if (height != null) {
             int h = height.intValue();
             
             if (h < 1) {
-                errors.rejectValue("height", "archive.imageCard.export.tooSmallError", new Object[] {1}, "???");
+                height = 1;
             } else if (h > 10000) {
-                errors.rejectValue("height", "archive.imageCard.export.tooBigError", new Object[] {10000}, "???");
+                height = 10000;
             }
         }
+        command.setHeight(height);
     }
     
     @SuppressWarnings("unchecked")
