@@ -164,21 +164,21 @@
                             </c:url>
                             <a href="${imageCardUrl}"><img src="${thumbUrl}" width="150" height="113"/></a>
                         </div>
+
                         <div style="min-height:16px;" class="m10t center">
-                            <span title="${fn:escapeXml(image.imageNm)}"><c:out value="${archive:abbreviate(image.imageNm, 23)}"/></span>
-                        </div>
-                        <div style="min-height:16px;" class="center">
-                            <c:set var="size" value="${image.width}x${image.height}"/>
-                            <span title="${size}">${archive:abbreviate(size, 23)}</span>
-                        </div>
-                        <c:if test="${not empty image.changedExif.artist}">
-	                        <div style="min-height:16px;" class="center">
-	                            <span title="${fn:escapeXml(image.changedExif.artist)}"><c:out value="${archive:abbreviate(image.changedExif.artist, 23)}"/></span>
-	                        </div>
-                        </c:if>
-                        <div style="min-height:16px;" class="center">
-                            <spring:message code="archive.usedInImcms" htmlEscape="true"/>:
-                            <spring:message code="archive.searchImage.usedInImcmsYesNo" arguments="${image.usedInImcms ? 1 : 0}" htmlEscape="true"/>
+                            <a href="${imageCardUrl}">
+                                <span title="${fn:escapeXml(image.imageNm)}"><c:out value="${archive:abbreviate(image.imageNm, 23)}"/></span><br/>
+    
+                                <c:set var="size" value="${image.width}x${image.height}"/>
+                                <span title="${size}">${archive:abbreviate(size, 23)}</span><br/>
+    
+                                <c:if test="${not empty image.changedExif.artist}">
+                                    <span title="${fn:escapeXml(image.changedExif.artist)}"><c:out value="${archive:abbreviate(image.changedExif.artist, 23)}"/></span><br/>
+                                </c:if>
+        
+                                <spring:message code="archive.usedInImcms" htmlEscape="true"/>:
+                                <spring:message code="archive.searchImage.usedInImcmsYesNo" arguments="${image.usedInImcms ? 1 : 0}" htmlEscape="true"/>
+                            </a>
                         </div>
                     </div>
                     
