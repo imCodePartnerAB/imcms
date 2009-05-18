@@ -1,6 +1,7 @@
 package com.imcode.imcms.addon.imagearchive.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class LibraryEntryDto implements Serializable {
     private static final long serialVersionUID = 1795450778722286059L;
@@ -40,6 +41,10 @@ public class LibraryEntryDto implements Serializable {
 
     public void setLastModified(long lastModified) {
         this.lastModified = lastModified;
+    }
+    
+    public Date getLastModifiedDate() {
+        return new Date(lastModified);
     }
 
     

@@ -41,10 +41,14 @@
                                         <spring:message var="fileSize" code="archive.fileSizeKB" arguments="${entry.fileSize div 1024.0}"/>
                                     </c:otherwise>
                                 </c:choose>
+                                
+                                <spring:message var="lastModifiedText" code="archive.dateTimeFormat" arguments="${entry.lastModifiedDate}"/>
+
                                 <archive:params var="fileNameArgs">
                                     <archive:param value="${entry.fileName}"/>
-                                    <archive:param value="${fileSize}"/>
+                                    <archive:param value="${lastModifiedText}  ${fileSize}"/>
                                 </archive:params>
+
                                 <spring:message var="fileNameText" code="archive.externalFiles.fileName" arguments="${fileNameArgs}" htmlEscape="true"/>
                                 <option value="${fn:escapeXml(entry.fileName)}" title="${fileNameText}">
                                     ${fileNameText}
