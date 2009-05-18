@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,6 +23,7 @@ import com.imcode.imcms.addon.imagearchive.entity.Categories;
 import com.imcode.imcms.addon.imagearchive.entity.Libraries;
 import com.imcode.imcms.addon.imagearchive.entity.Roles;
 import com.imcode.imcms.addon.imagearchive.service.Facade;
+import com.imcode.imcms.addon.imagearchive.util.ArchiveSession;
 import com.imcode.imcms.addon.imagearchive.util.Utils;
 import com.imcode.imcms.addon.imagearchive.validator.SaveLibraryRolesValidator;
 import com.imcode.imcms.api.ContentManagementSystem;
@@ -41,7 +41,8 @@ public class PreferencesController {
     
     
     @RequestMapping("/archive/preferences")
-    public ModelAndView indexHandler(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public ModelAndView indexHandler(HttpServletRequest request, HttpServletResponse response) {
+        ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -93,8 +94,9 @@ public class PreferencesController {
     public String changeCurrentRoleHandler(
             @RequestParam(required=false) Integer id, 
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
+        
+        ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -108,7 +110,7 @@ public class PreferencesController {
         
         Roles role = null;
         if (id != null && (role = facade.getRoleService().findRoleById(id)) != null) {
-            session.setAttribute(ROLE_KEY, role);
+            session.put(ROLE_KEY, role);
         }
         
         return "redirect:/web/archive/preferences";
@@ -118,8 +120,9 @@ public class PreferencesController {
     public String changeCurrentLibraryHander(
             @RequestParam(required=false) Integer id, 
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
+        
+        ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -133,7 +136,7 @@ public class PreferencesController {
         
         Libraries library = null;
         if (id != null && (library = facade.getLibraryService().findLibraryById(id)) != null) {
-            session.setAttribute(LIBRARY_KEY, library);
+            session.put(LIBRARY_KEY, library);
         }
         
         return "redirect:/web/archive/preferences";
@@ -144,8 +147,9 @@ public class PreferencesController {
             @ModelAttribute("saveLibraryRoles") SaveLibraryRolesCommand command, 
             BindingResult result, 
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
+        
+        ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -214,8 +218,9 @@ public class PreferencesController {
     public ModelAndView saveRoleCategoriesHandler(
             @ModelAttribute("saveCategories") SaveRoleCategoriesCommand command,
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
+        
+        ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -243,21 +248,21 @@ public class PreferencesController {
     }
     
     
-    private static Roles getRole(HttpSession session, List<Roles> roles) {
-        Roles role = (Roles) session.getAttribute(ROLE_KEY);
+    private static Roles getRole(ArchiveSession session, List<Roles> roles) {
+        Roles role = (Roles) session.get(ROLE_KEY);
         if (role == null && roles != null) {
             role = roles.get(0);
-            session.setAttribute(ROLE_KEY, role);
+            session.put(ROLE_KEY, role);
         }
         
         return role;
     }
     
-    private static Libraries getLibrary(HttpSession session, List<Libraries> libraries) {
-        Libraries library = (Libraries) session.getAttribute(LIBRARY_KEY);
+    private static Libraries getLibrary(ArchiveSession session, List<Libraries> libraries) {
+        Libraries library = (Libraries) session.get(LIBRARY_KEY);
         if (library == null && libraries != null && !libraries.isEmpty()) {
             library = libraries.get(0);
-            session.setAttribute(LIBRARY_KEY, library);
+            session.put(LIBRARY_KEY, library);
         }
         
         return library;

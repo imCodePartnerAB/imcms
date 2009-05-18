@@ -39,8 +39,7 @@ public class GeneralController {
             @RequestParam(required=false) String lang, 
             @RequestParam(required=false) String redir, 
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
         lang = StringUtils.trimToNull(lang);
         redir = StringUtils.trimToNull(redir);
         

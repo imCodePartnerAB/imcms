@@ -475,8 +475,12 @@ public class ImageService {
                 builder.append("c.id IN (:categoryIds) ");
             }
             
+            if (!categoryIds.isEmpty() && !user.isDefaultUser()) {
+                builder.append("OR ");
+            }
+            
             if (!user.isDefaultUser()) {
-                builder.append("OR im.usersId = :usersId ");
+                builder.append("im.usersId = :usersId ");
             }
             
             builder.append(") ");
@@ -665,6 +669,13 @@ public class ImageService {
     public List<Categories> findAvailableImageCategories(final long imageId, final User user) {
         return template.executeFind(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                if (user.isSuperAdmin()) {
+                    return session.getNamedQuery("availableImageCategoriesAdmin")
+                            .setLong("imageId", imageId)
+                            .setResultTransformer(Transformers.aliasToBean(Categories.class))
+                            .list();
+                }
+                
                 List<Integer> roleIds = UserService.getRoleIdsWithPermission(user, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
                 if (roleIds.isEmpty()) {
                     return Collections.EMPTY_LIST;
@@ -683,6 +694,10 @@ public class ImageService {
     public boolean canUseCategories(final User user, final List<Integer> categoryIds) {
         return (Boolean) template.execute(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                if (user.isSuperAdmin()) {
+                    return true;
+                }
+                
                 List<Integer> roleIds = UserService.getRoleIdsWithPermission(user, RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
                 if (roleIds.isEmpty()) {
                     return false;

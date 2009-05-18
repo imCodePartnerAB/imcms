@@ -127,7 +127,14 @@ public class RoleService {
         return template.executeFind(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 List<Integer> roleIds = null;
-                if (user.isDefaultUser()) {
+                
+                if (user.isSuperAdmin()) {
+                    return session.createQuery(
+                            "SELECT DISTINCT c.id AS id, c.name AS name FROM Categories c " +
+                            "WHERE c.type.imageArchive IS TRUE ORDER BY c.name")
+                            .setResultTransformer(Transformers.aliasToBean(Categories.class))
+                            .list();
+                } else if (user.isDefaultUser()) {
                     roleIds = new ArrayList<Integer>();
                     roleIds.add(Roles.USERS_ID);
                 } else {
@@ -170,13 +177,16 @@ public class RoleService {
         return (Boolean) template.execute(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 List<Integer> roleIds = null;
-                if (user.isDefaultUser()) {
+                
+                if (user.isSuperAdmin()) {
+                    return true;
+                } else if (user.isDefaultUser()) {
                     roleIds = new ArrayList<Integer>(1);
                     roleIds.add(Roles.USERS_ID);
                 } else {
                     roleIds = UserService.getRoleIdsWithPermission(user, permissions);
                     if (roleIds.isEmpty()) {
-                        return Collections.EMPTY_LIST;
+                        return false;
                     }
                 }
                 

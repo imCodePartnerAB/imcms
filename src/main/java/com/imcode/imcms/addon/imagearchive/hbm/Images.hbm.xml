@@ -73,6 +73,22 @@
           AND e.type = :exifType
         ]]>
     </query>
+    <query name="availableImageCategoriesAdmin">
+        <![CDATA[
+        SELECT 
+          c.id AS id, 
+          c.name AS name 
+        FROM 
+          Categories c 
+        WHERE 
+              c.type.imageArchive IS TRUE 
+          AND NOT EXISTS (FROM 
+                            ImageCategories ic 
+                          WHERE 
+                                ic.imageId = :imageId
+                            AND ic.categoryId = c.id)
+        ]]>
+    </query>
     <query name="availableImageCategories">
         <![CDATA[
         SELECT 

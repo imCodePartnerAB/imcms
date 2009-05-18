@@ -11,7 +11,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +34,7 @@ import com.imcode.imcms.addon.imagearchive.dto.LibraryEntryDto;
 import com.imcode.imcms.addon.imagearchive.entity.Images;
 import com.imcode.imcms.addon.imagearchive.service.Facade;
 import com.imcode.imcms.addon.imagearchive.service.file.LibrarySort;
+import com.imcode.imcms.addon.imagearchive.util.ArchiveSession;
 import com.imcode.imcms.addon.imagearchive.util.Utils;
 import com.imcode.imcms.addon.imagearchive.util.image.Format;
 import com.imcode.imcms.addon.imagearchive.util.image.ImageInfo;
@@ -65,8 +65,8 @@ public class ExternalFilesController {
     @RequestMapping("/archive/external-files")
     public ModelAndView indexHandler(
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
+        ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -79,9 +79,6 @@ public class ExternalFilesController {
         ModelAndView mav = new ModelAndView("image_archive/pages/external_files/external_files");
         
         List<LibrariesDto> libraries = facade.getLibraryService().findLibraries(user);
-        if (libraries.isEmpty()) {
-            return mav;
-        }
         
         LibrariesDto library = getLibrary(session, user, libraries);
         LibrarySort sortBy = getSortBy(session);
@@ -100,8 +97,8 @@ public class ExternalFilesController {
     public String changeLibraryHandler(
             @RequestParam(required=false) Integer id,
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
+        ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -118,7 +115,7 @@ public class ExternalFilesController {
             } else {
                 library = facade.getLibraryService().findLibraryById(user, id);
             }
-            session.setAttribute(LIBRARY_KEY, library);
+            session.put(LIBRARY_KEY, library);
         }
         
         return "redirect:/web/archive/external-files";
@@ -127,11 +124,13 @@ public class ExternalFilesController {
     @RequestMapping("/archive/external-files/sort")
     public String changeSortByHandler(
             @RequestParam(required=false) String sortBy, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletRequest request, 
+            HttpServletResponse response) {
+        ArchiveSession session = ArchiveSession.getSession(request);
+        
         LibrarySort sort = null;
         if (sortBy != null && (sort = LibrarySort.findByName(sortBy)) != null) {
-            session.setAttribute(SORT_KEY, sort);
+            session.put(SORT_KEY, sort);
         }
         
         return "redirect:/web/archive/external-files";
@@ -142,8 +141,8 @@ public class ExternalFilesController {
             @ModelAttribute("externalFiles") ExternalFilesCommand command, 
             BindingResult result, 
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
+        ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -174,7 +173,7 @@ public class ExternalFilesController {
                     
                     return mav;
                 }
-                session.setAttribute(IMAGE_KEY, image);
+                session.put(IMAGE_KEY, image);
                 
                 ChangeImageDataCommand changeData = new ChangeImageDataCommand();
                 changeData.fromImage(image);
@@ -183,8 +182,8 @@ public class ExternalFilesController {
 
                 List<String> keywords = facade.getImageService().findAvailableKeywords(image.getId());
                 List<String> imageKeywords = facade.getImageService().findImageKeywords(image.getId());
-                session.setAttribute(KEYWORDS_KEY, keywords);
-                session.setAttribute(IMAGE_KEYWORDS_KEY, imageKeywords);
+                session.put(KEYWORDS_KEY, keywords);
+                session.put(IMAGE_KEYWORDS_KEY, imageKeywords);
 
                 mav.addObject("keywords", keywords);
                 mav.addObject("imageKeywords", imageKeywords);
@@ -287,12 +286,12 @@ public class ExternalFilesController {
             BindingResult result, 
             ExternalFilesSaveImageCommand saveCommand, 
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
+        ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
-        Images image = (Images) session.getAttribute(IMAGE_KEY);
+        Images image = (Images) session.get(IMAGE_KEY);
         if (user.isDefaultUser()) {
             Utils.redirectToLogin(request, response, facade);
             
@@ -303,9 +302,9 @@ public class ExternalFilesController {
         
         if (saveCommand.getCancel() != null) {
             facade.getImageService().deleteImage(image.getId());
-            session.removeAttribute(IMAGE_KEY);
-            session.removeAttribute(KEYWORDS_KEY);
-            session.removeAttribute(IMAGE_KEYWORDS_KEY);
+            session.remove(IMAGE_KEY);
+            session.remove(KEYWORDS_KEY);
+            session.remove(IMAGE_KEYWORDS_KEY);
             
             return new ModelAndView("redirect:/web/archive/external-files");
         }
@@ -319,8 +318,8 @@ public class ExternalFilesController {
         
         List<String> keywords = changeData.getKeywordNames();
         List<String> imageKeywords = changeData.getImageKeywordNames();
-        session.setAttribute(KEYWORDS_KEY, keywords);
-        session.setAttribute(IMAGE_KEYWORDS_KEY, imageKeywords);
+        session.put(KEYWORDS_KEY, keywords);
+        session.put(IMAGE_KEYWORDS_KEY, imageKeywords);
         mav.addObject("keywords", keywords);
         mav.addObject("imageKeywords", imageKeywords);
         
@@ -337,21 +336,21 @@ public class ExternalFilesController {
             facade.getImageService().updateData(image, changeData.getCategoryIds(), imageKeywords);
             
             if (saveCommand.getSaveActivate() != null) {
-                session.removeAttribute(IMAGE_KEY);
-                session.removeAttribute(KEYWORDS_KEY);
-                session.removeAttribute(IMAGE_KEYWORDS_KEY);
+                session.remove(IMAGE_KEY);
+                session.remove(KEYWORDS_KEY);
+                session.remove(IMAGE_KEYWORDS_KEY);
                 
                 return new ModelAndView("redirect:/web/archive/external-files");
             } else if (saveCommand.getSaveUse() != null) {
-                session.removeAttribute(IMAGE_KEY);
-                session.removeAttribute(KEYWORDS_KEY);
-                session.removeAttribute(IMAGE_KEYWORDS_KEY);
+                session.remove(IMAGE_KEY);
+                session.remove(KEYWORDS_KEY);
+                session.remove(IMAGE_KEYWORDS_KEY);
                 
                 return new ModelAndView("redirect:/web/archive/use?id=" + image.getId());
             } else if (saveCommand.getSaveImageCard() != null) {
-                session.removeAttribute(IMAGE_KEY);
-                session.removeAttribute(KEYWORDS_KEY);
-                session.removeAttribute(IMAGE_KEYWORDS_KEY);
+                session.remove(IMAGE_KEY);
+                session.remove(KEYWORDS_KEY);
+                session.remove(IMAGE_KEYWORDS_KEY);
                 
                 return new ModelAndView("redirect:/web/archive/image/" + image.getId());
             }
@@ -372,8 +371,8 @@ public class ExternalFilesController {
             @RequestParam(required=false) Integer id, 
             @RequestParam(required=false) String name, 
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
+        
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -410,8 +409,8 @@ public class ExternalFilesController {
             @RequestParam(required=false) Integer id, 
             @RequestParam(required=false) String name, 
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
+        
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -471,24 +470,28 @@ public class ExternalFilesController {
         return null;
     }
     
-    private LibrariesDto getLibrary(HttpSession session, User user, List<LibrariesDto> libraries) {
-        LibrariesDto library = (LibrariesDto) session.getAttribute(LIBRARY_KEY);
+    private LibrariesDto getLibrary(ArchiveSession session, User user, List<LibrariesDto> libraries) {
+        LibrariesDto library = (LibrariesDto) session.get(LIBRARY_KEY);
         if (library != null && !library.isUserLibrary()) {
             library = facade.getLibraryService().findLibraryById(user, library.getId());
         }
-        if (library == null && libraries != null) {
+        if (library == null && libraries != null && !libraries.isEmpty()) {
             library = facade.getLibraryService().findLibraryById(user, libraries.get(0).getId());
-            session.setAttribute(LIBRARY_KEY, library);
+            session.put(LIBRARY_KEY, library);
+        }
+        if (library == null) {
+            library = LibrariesDto.userLibrary(user);
+            session.put(LIBRARY_KEY, library);
         }
         
         return library;
     }
     
-    private static LibrarySort getSortBy(HttpSession session) {
-        LibrarySort sortBy = (LibrarySort) session.getAttribute(SORT_KEY);
+    private static LibrarySort getSortBy(ArchiveSession session) {
+        LibrarySort sortBy = (LibrarySort) session.get(SORT_KEY);
         if (sortBy == null) {
             sortBy = LibrarySort.DATE;
-            session.setAttribute(SORT_KEY, sortBy);
+            session.put(SORT_KEY, sortBy);
         }
         
         return sortBy;

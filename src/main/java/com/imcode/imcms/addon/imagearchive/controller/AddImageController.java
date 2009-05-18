@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,6 +20,7 @@ import com.imcode.imcms.addon.imagearchive.command.AddImageUploadCommand;
 import com.imcode.imcms.addon.imagearchive.command.ChangeImageDataCommand;
 import com.imcode.imcms.addon.imagearchive.entity.Images;
 import com.imcode.imcms.addon.imagearchive.service.Facade;
+import com.imcode.imcms.addon.imagearchive.util.ArchiveSession;
 import com.imcode.imcms.addon.imagearchive.util.Utils;
 import com.imcode.imcms.addon.imagearchive.validator.ChangeImageDataValidator;
 import com.imcode.imcms.addon.imagearchive.validator.ImageUploadValidator;
@@ -41,7 +41,8 @@ public class AddImageController {
     
     @SuppressWarnings("unchecked")
     @RequestMapping("/archive/add-image")
-    public ModelAndView indexHandler(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public ModelAndView indexHandler(HttpServletRequest request, HttpServletResponse response) {
+        ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -55,9 +56,9 @@ public class AddImageController {
         
         mav.addObject("upload", new AddImageUploadCommand());
         
-        Images image = (Images) session.getAttribute(IMAGE_KEY);
-        List<String> keywords = (List<String>) session.getAttribute(KEYWORDS_KEY);
-        List<String> imageKeywords = (List<String>) session.getAttribute(IMAGE_KEYWORDS_KEY);
+        Images image = (Images) session.get(IMAGE_KEY);
+        List<String> keywords = (List<String>) session.get(KEYWORDS_KEY);
+        List<String> imageKeywords = (List<String>) session.get(IMAGE_KEYWORDS_KEY);
         if (image != null) {
             mav.addObject("image", image);
             
@@ -85,8 +86,8 @@ public class AddImageController {
             @ModelAttribute("upload") AddImageUploadCommand command, 
             BindingResult result,
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
+        ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -110,7 +111,7 @@ public class AddImageController {
                 if (image == null) {
                     result.rejectValue("file", "archive.addImage.invalidImageError");
                 } else {
-                    session.setAttribute(IMAGE_KEY, image);
+                    session.put(IMAGE_KEY, image);
                     mav.addObject("image", image);
                     
                     ChangeImageDataCommand changeData = new ChangeImageDataCommand();
@@ -120,8 +121,8 @@ public class AddImageController {
                     
                     List<String> keywords = facade.getImageService().findAvailableKeywords(image.getId());
                     List<String> imageKeywords = facade.getImageService().findImageKeywords(image.getId());
-                    session.setAttribute(KEYWORDS_KEY, keywords);
-                    session.setAttribute(IMAGE_KEYWORDS_KEY, imageKeywords);
+                    session.put(KEYWORDS_KEY, keywords);
+                    session.put(IMAGE_KEYWORDS_KEY, imageKeywords);
                     
                     mav.addObject("keywords", keywords);
                     mav.addObject("imageKeywords", imageKeywords);
@@ -143,8 +144,8 @@ public class AddImageController {
             BindingResult result,
             @ModelAttribute AddImageActionCommand action,
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
+        ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -154,16 +155,16 @@ public class AddImageController {
             return null;
         }
         
-        Images image = (Images) session.getAttribute(IMAGE_KEY);
+        Images image = (Images) session.get(IMAGE_KEY);
         if (image == null) {
             return new ModelAndView("redirect:/web/archive/add-image");
         }
         
         if (action.isDiscontinue()) {
             facade.getImageService().deleteImage(image.getId());
-            session.removeAttribute(IMAGE_KEY);
-            session.removeAttribute(KEYWORDS_KEY);
-            session.removeAttribute(IMAGE_KEYWORDS_KEY);
+            session.remove(IMAGE_KEY);
+            session.remove(KEYWORDS_KEY);
+            session.remove(IMAGE_KEYWORDS_KEY);
             
             return new ModelAndView("redirect:/web/archive/add-image");
         }
@@ -176,8 +177,8 @@ public class AddImageController {
         
         List<String> keywords = changeData.getKeywordNames();
         List<String> imageKeywords = changeData.getImageKeywordNames();
-        session.setAttribute(KEYWORDS_KEY, keywords);
-        session.setAttribute(IMAGE_KEYWORDS_KEY, imageKeywords);
+        session.put(KEYWORDS_KEY, keywords);
+        session.put(IMAGE_KEYWORDS_KEY, imageKeywords);
         mav.addObject("keywords", keywords);
         mav.addObject("imageKeywords", imageKeywords);
         
@@ -195,21 +196,21 @@ public class AddImageController {
             facade.getImageService().updateData(image, changeData.getCategoryIds(), imageKeywords);
             
             if (action.isAdd()) {
-                session.removeAttribute(IMAGE_KEY);
-                session.removeAttribute(KEYWORDS_KEY);
-                session.removeAttribute(IMAGE_KEYWORDS_KEY);
+                session.remove(IMAGE_KEY);
+                session.remove(KEYWORDS_KEY);
+                session.remove(IMAGE_KEYWORDS_KEY);
                 
                 return new ModelAndView("redirect:/web/archive/add-image");
             } else if (action.isUse()) {
-                session.removeAttribute(IMAGE_KEY);
-                session.removeAttribute(KEYWORDS_KEY);
-                session.removeAttribute(IMAGE_KEYWORDS_KEY);
+                session.remove(IMAGE_KEY);
+                session.remove(KEYWORDS_KEY);
+                session.remove(IMAGE_KEYWORDS_KEY);
                 
                 return new ModelAndView("redirect:/web/archive/use?id=" + image.getId());
             } else if (action.isImageCard()) {
-                session.removeAttribute(IMAGE_KEY);
-                session.removeAttribute(KEYWORDS_KEY);
-                session.removeAttribute(IMAGE_KEYWORDS_KEY);
+                session.remove(IMAGE_KEY);
+                session.remove(KEYWORDS_KEY);
+                session.remove(IMAGE_KEYWORDS_KEY);
                 
                 return new ModelAndView("redirect:/web/archive/image/" + image.getId());
             }

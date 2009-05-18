@@ -25,6 +25,7 @@ import com.imcode.imcms.addon.imagearchive.entity.Categories;
 import com.imcode.imcms.addon.imagearchive.entity.Images;
 import com.imcode.imcms.addon.imagearchive.entity.Roles;
 import com.imcode.imcms.addon.imagearchive.service.Facade;
+import com.imcode.imcms.addon.imagearchive.util.ArchiveSession;
 import com.imcode.imcms.addon.imagearchive.util.Pagination;
 import com.imcode.imcms.addon.imagearchive.util.Utils;
 import com.imcode.imcms.addon.imagearchive.validator.SearchImageValidator;
@@ -56,19 +57,20 @@ public class SearchImageController {
             session.setAttribute(SessionConstants.IMCMS_RETURN_URL, returnTo);
         }
         
+        ArchiveSession archiveSession = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
         ModelAndView mav = new ModelAndView("image_archive/pages/search_image");
-        Pagination pag = getPagination(session);
+        Pagination pag = getPagination(archiveSession);
         
         if (request.getParameter("show") == null) {
-            SearchImageCommand cmd = (SearchImageCommand) session.getAttribute(COMMAND_KEY);
+            SearchImageCommand cmd = (SearchImageCommand) archiveSession.get(COMMAND_KEY);
             if (cmd != null) {
                 command.copyFrom(cmd);
             }
         } else {
-            session.setAttribute(COMMAND_KEY, command);
+            archiveSession.put(COMMAND_KEY, command);
             pag.setCurrentPage(0);
         }
         mav.addObject("search", command);
@@ -85,7 +87,7 @@ public class SearchImageController {
             return mav;
         }
         
-        session.setAttribute(COMMAND_KEY, command);
+        archiveSession.put(COMMAND_KEY, command);
         
         List<Integer> categoryIds = new ArrayList<Integer>(categories.size());
         for (Categories category : categories) {
@@ -106,11 +108,12 @@ public class SearchImageController {
     }
     
     @RequestMapping("/archive/page/*")
-    public ModelAndView pageHandler(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public ModelAndView pageHandler(HttpServletRequest request, HttpServletResponse response) {
+        ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
-        SearchImageCommand command = (SearchImageCommand) session.getAttribute(COMMAND_KEY);
+        SearchImageCommand command = (SearchImageCommand) session.get(COMMAND_KEY);
         if (command == null) {
             return new ModelAndView("redirect:/web/archive/");
         }
@@ -143,11 +146,11 @@ public class SearchImageController {
         return mav;
     }
     
-    private static Pagination getPagination(HttpSession session) {
-        Pagination pag = (Pagination) session.getAttribute(PAGINATION_KEY);
+    private static Pagination getPagination(ArchiveSession session) {
+        Pagination pag = (Pagination) session.get(PAGINATION_KEY);
         if (pag == null) {
             pag = new Pagination(SearchImageCommand.DEFAULT_PAGE_SIZE);
-            session.setAttribute(PAGINATION_KEY, pag);
+            session.put(PAGINATION_KEY, pag);
         }
         
         return pag;

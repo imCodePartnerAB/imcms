@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,8 +29,7 @@ public class ThumbnailController {
             @RequestParam(required=false) Long id, 
             @RequestParam(required=false) String size, 
             @RequestParam(required=false) Boolean tmp, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
         size = StringUtils.trimToNull(size);
         ThumbSize thumbSize = null;
         
@@ -79,8 +77,7 @@ public class ThumbnailController {
     public String previewHandler(
             @RequestParam(required=false) Long id, 
             @RequestParam(required=false) Boolean tmp, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
         if (id == null) {
             Utils.sendErrorCode(response, HttpServletResponse.SC_NOT_FOUND);
             

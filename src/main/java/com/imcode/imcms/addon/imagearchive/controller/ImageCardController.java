@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +34,7 @@ import com.imcode.imcms.addon.imagearchive.entity.Exif;
 import com.imcode.imcms.addon.imagearchive.entity.Images;
 import com.imcode.imcms.addon.imagearchive.entity.Keywords;
 import com.imcode.imcms.addon.imagearchive.service.Facade;
+import com.imcode.imcms.addon.imagearchive.util.ArchiveSession;
 import com.imcode.imcms.addon.imagearchive.util.Utils;
 import com.imcode.imcms.addon.imagearchive.util.exif.ExifData;
 import com.imcode.imcms.addon.imagearchive.util.exif.ExifUtils;
@@ -64,7 +64,7 @@ public class ImageCardController {
     
     
     @RequestMapping({"/archive/image/*", "/archive/image/*/"})
-    public ModelAndView indexHandler(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    public ModelAndView indexHandler(HttpServletRequest request, HttpServletResponse response) {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -118,8 +118,7 @@ public class ImageCardController {
             @ModelAttribute("exportImage") ExportImageCommand command, 
             BindingResult result, 
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -234,8 +233,7 @@ public class ImageCardController {
     }
     
     @RequestMapping("/archive/image/*/exif")
-    public ModelAndView exifHandler(HttpServletRequest request, HttpServletResponse response, 
-            HttpSession session) {
+    public ModelAndView exifHandler(HttpServletRequest request, HttpServletResponse response) {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -260,8 +258,7 @@ public class ImageCardController {
     public ModelAndView eraseHandler(
             @RequestParam(required=false) Boolean delete, 
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -300,8 +297,8 @@ public class ImageCardController {
             BindingResult result, 
             @ModelAttribute ImageCardChangeActionCommand action,  
             HttpServletRequest request, 
-            HttpServletResponse response, 
-            HttpSession session) {
+            HttpServletResponse response) {
+        ArchiveSession session = ArchiveSession.getSession(request);
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(request);
         User user = cms.getCurrentUser();
         
@@ -328,7 +325,7 @@ public class ImageCardController {
                 return new ModelAndView("redirect:/web/archive/image/" + imageId);
             }
             
-            session.setAttribute(IMAGE_KEY, image);
+            session.put(IMAGE_KEY, image);
             changeData.fromImage(image);
             mav.addObject("image", image);
             
@@ -340,7 +337,7 @@ public class ImageCardController {
             mav.addObject("keywords", keywords);
             mav.addObject("imageKeywords", imageKeywords);
         } else {
-            Images image = (Images) session.getAttribute(IMAGE_KEY);
+            Images image = (Images) session.get(IMAGE_KEY);
             if (image == null) {
                 return new ModelAndView("redirect:/web/archive/");
             } else if (!image.isCanChange()) {
@@ -349,7 +346,7 @@ public class ImageCardController {
             mav.addObject("image", image);
             
             if (action.isCancel()) {
-                session.removeAttribute(IMAGE_KEY);
+                session.remove(IMAGE_KEY);
                 
                 if (changeData.isChangedFile()) {
                     facade.getFileService().deleteTempImage(imageId);
@@ -434,11 +431,11 @@ public class ImageCardController {
                 }
                 
                 if (action.isUse()) {
-                    session.removeAttribute(IMAGE_KEY);
+                    session.remove(IMAGE_KEY);
                     
                     return new ModelAndView("redirect:/web/archive/use?id=" + image.getId());
                 } else if (action.isImageCard()) {
-                    session.removeAttribute(IMAGE_KEY);
+                    session.remove(IMAGE_KEY);
                     
                     return new ModelAndView("redirect:/web/archive/image/" + image.getId());
                 }
