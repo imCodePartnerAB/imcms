@@ -42,7 +42,7 @@
                                     </c:otherwise>
                                 </c:choose>
                                 
-                                <spring:message var="lastModifiedText" code="archive.dateTimeFormat" arguments="${entry.lastModifiedDate}"/>
+                                <spring:message var="lastModifiedText" code="archive.dateFormat" arguments="${entry.lastModifiedDate}"/>
 
                                 <archive:params var="fileNameArgs">
                                     <archive:param value="${entry.fileName}"/>
