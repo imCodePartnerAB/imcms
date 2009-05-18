@@ -281,6 +281,8 @@ public class ImageCardController {
             mav.addObject("action", "erase");
             mav.addObject("image", image);
             
+            facade.getImageService().setImageMetaIds(image);
+            
             return mav;
         } else if (delete.booleanValue()) {
             facade.getImageService().archiveImage(imageId);

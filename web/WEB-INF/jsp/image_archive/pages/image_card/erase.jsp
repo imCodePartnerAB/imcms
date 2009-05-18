@@ -3,7 +3,20 @@
 <form action="${eraseUrl}" method="post" style="text-align:center;margin-top:40px;">
     <input id="delete" type="hidden" name="delete" value=""/>
     
-    <h3><spring:message code="archive.imageCard.eraseConfirm" htmlEscape="true"/></h3><br/><br/>
+    <h3>
+        <spring:message code="archive.imageCard.eraseConfirm" htmlEscape="false" arguments="<br/>"/>
+    </h3><br/>
+    
+    <c:if test="${not empty image.metaIds}">
+        <archive:params var="infoParams">
+            <archive:param value="${archive:join(image.metaIds, ', ')}"/>
+            <archive:param value="<br/>"/>
+        </archive:params>
+
+        <span><spring:message code="archive.imageCard.eraseConfirmInfo" arguments="${infoParams}"/></span><br/><br/>
+    </c:if>
+
+    <br/>
     
     <c:set var="noOnclick" value="$('#delete').val('no');"/>
     <spring:message var="noText" code="archive.imageCard.no" htmlEscape="true"/>
