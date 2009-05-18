@@ -129,8 +129,12 @@
                     <spring:message var="entryDateText" code="archive.searchImage.entryDate"/>
                     <form:option value="2" label="${entryDateText}"/>
                 </form:select>
-                <spring:message var="searchText" code="archive.searchImage.search" htmlEscape="true"/>
             </div>
+            
+            <spring:message var="clearText" code="archive.searchImage.clear" htmlEscape="true"/>
+            <input type="submit" name="clearAction" value="${clearText}" class="btnBlue"/>
+
+            <spring:message var="searchText" code="archive.searchImage.search" htmlEscape="true"/>
             <input type="submit" value="${searchText}" class="btnBlue"/>
         </div>
     </form:form>

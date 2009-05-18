@@ -73,6 +73,11 @@ public class SearchImageController {
             archiveSession.put(COMMAND_KEY, command);
             pag.setCurrentPage(0);
         }
+        
+        if (command.isClear()) {
+            command.copyFrom(new SearchImageCommand());
+        }
+        
         mav.addObject("search", command);
         
         List<Categories> categories = facade.getRoleService().findCategories(user, Roles.ALL_PERMISSIONS);

@@ -31,6 +31,7 @@ public class SearchImageCommand implements Serializable {
     private String activeEndDt;
     private int resultsPerPage = DEFAULT_PAGE_SIZE;
     private short sortBy = SORT_BY_ARTIST;
+    private String clearAction;
     
     private Date licenseDate;
     private Date licenseEndDate;
@@ -61,6 +62,10 @@ public class SearchImageCommand implements Serializable {
         this.activeEndDate = command.getActiveEndDate();
     }
     
+    
+    public boolean isClear() {
+        return clearAction != null;
+    }
     
     public String getActiveDt() {
         return activeDt;
@@ -180,5 +185,13 @@ public class SearchImageCommand implements Serializable {
 
     public void setArtist(String artist) {
         this.artist = artist;
+    }
+
+    public String getClearAction() {
+        return clearAction;
+    }
+
+    public void setClearAction(String clearAction) {
+        this.clearAction = clearAction;
     }
 }
