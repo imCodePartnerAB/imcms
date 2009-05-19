@@ -3,17 +3,18 @@ package com.imcode.imcms.web.admin;
 /**
  * Application info controller.
  */
+import org.apache.commons.lang.NotImplementedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+/**
+ * Profile controller.
+ */
 @Controller
-public class Info {
+public class ProfileController {
 
-	/**
-	 * Cached documents.
-	 */
-	@RequestMapping(value="/cache.html")
+	@RequestMapping(value="/profile.html")
 	public String documentsCache() {
-		return "forward:/WEB-INF/groovy/DocumentsCache.groovy";
+		throw new NotImplementedException();
 	}
 }

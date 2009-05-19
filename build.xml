@@ -724,6 +724,7 @@
         </artifact:install>		
 	</target>
 	
+	<!-- Util tagrget -->
     <target name="bsh" description="Runs bean shell">
         <java classname="bsh.Console"
         	fork="true" 
@@ -731,6 +732,7 @@
     </target>	
 	
 	<!-- Jetty integration -->
+	<!-- WARNING!! imCMS behaviour in Jetty differs from behaviour in Tomcat-->
 	<target name="build-jetty" depends="build, jetty"/>
 	<target name="web-jetty" depends="web, jetty"/>
 	
@@ -748,11 +750,4 @@
         </jetty>	
     </target>	
 	
-	<!-- Temporary target. -->
-	<!-- Development time files, should be removed in production -->
-	<target name="copy-scripts-to-webapp">
-		<copy todir="${webroot}/mx">
-			<fileset dir="${basedir}/web/mx" includes="*"/>
-		</copy>
-	</target>
 </project>
