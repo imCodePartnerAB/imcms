@@ -41,7 +41,7 @@ public class MetaDaoTest extends DaoTest {
 		
 		documentMapper.setDocumentSaver(documentSaver);
 		documentMapper.setCachingDocumentGetter(
-			new CachingDocumentGetter(databaseDocumentGetter, 100)				
+			new CachingDocumentGetter(databaseDocumentGetter, metaDao, 100)				
 		);
 		documentMapper.setDatabaseDocumentGetter(databaseDocumentGetter);
 		

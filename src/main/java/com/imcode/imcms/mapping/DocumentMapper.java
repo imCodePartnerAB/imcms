@@ -62,11 +62,13 @@ import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionSelector;
+import com.imcode.imcms.api.DocumentVersionSupport;
 import com.imcode.imcms.api.I18nDisabledException;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.aop.DocumentAspect;
 import com.imcode.imcms.mapping.aop.TextDocumentAspect;
@@ -92,8 +94,6 @@ import com.imcode.imcms.mapping.aop.TextDocumentAspect;
 public class DocumentMapper implements DocumentGetter {
 
 	private static final String SQL_GET_ALL_SECTIONS = "SELECT section_id, section_name FROM sections";
-    private static final String SQL_GET_DOCUMENT_ID_FROM_PROPERTIES = "SELECT meta_id FROM document_properties WHERE key_name=? AND value=?";
-
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
 
     private Database database;
@@ -146,7 +146,9 @@ public class DocumentMapper implements DocumentGetter {
         databaseDocumentGetter.setServices(services);
         databaseDocumentGetter.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
         
-        this.cachingDocumentGetter = new CachingDocumentGetter(databaseDocumentGetter, documentCacheMaxSize);
+        MetaDao metaDao = (MetaDao)services.getSpringBean("metaDao");
+        
+        this.cachingDocumentGetter = new CachingDocumentGetter(databaseDocumentGetter, metaDao, documentCacheMaxSize);
         
         this.documentPermissionSetMapper = new DocumentPermissionSetMapper(database);
         this.categoryMapper = new CategoryMapper(database);
@@ -160,6 +162,14 @@ public class DocumentMapper implements DocumentGetter {
         
         initSections();
     }
+    
+    /**
+     * @param documentId document id.
+     * @return version support for a given document or null if document does not exist.
+     */
+    public DocumentVersionSupport getDocumentVersionSupport(Integer documentId) {
+    	return cachingDocumentGetter.getDocumentVersionSupport(documentId);
+    }
 
     public void initSections() {
         sections = new LazilyLoadedObject(new SectionsSetLoader());
@@ -168,6 +178,8 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentSaver getDocumentSaver() {
         return documentSaver ;
     }
+    
+    
 
     public DocumentDomainObject createDocumentOfTypeFromParent(int documentTypeId, final DocumentDomainObject parent, UserDomainObject user) {
         DocumentDomainObject newDocument;
@@ -317,14 +329,14 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Returns document by its id and version.
      * 
-     * Expensive call - returned document is not cached.
+     * Expensive call - returned document may not be cached.
      * 
      * @param documentId document id
      * @param documentVersion document version. If not given (null) then published version is returned.
      * @return document or null if document can not be found.  
      */
     public DocumentDomainObject getDocument(Integer documentId, Integer documentVersion) {
-    	return databaseDocumentGetter.getDocument(documentId, documentVersion);
+    	return cachingDocumentGetter.getDocument(documentId, documentVersion);
 	}
     
     
@@ -485,8 +497,13 @@ public class DocumentMapper implements DocumentGetter {
         return allDocumentAlias;
     }
     
-    public DocumentDomainObject getDocument(String documentIdString) {
-        Integer documentId = getDocumentId(documentIdString);
+    /** 
+     * @param documentIdentity document id or alias.
+     * 
+     * @return latest version of a document or null if document can not be found.
+     */
+    public DocumentDomainObject getDocument(String documentIdentity) {
+        Integer documentId = toDocumentId(documentIdentity);
         
         return documentId == null 
         	? null
@@ -502,34 +519,34 @@ public class DocumentMapper implements DocumentGetter {
     	return createDocumentShowInterceptor(document, user);
     }
     
-    public DocumentDomainObject getDocument(String documentIdString, Integer versionNumber) {
-        Integer documentId = getDocumentId(documentIdString);
+    /** 
+     * @param documentIdentity document id or alias.
+     * @param versionNumber document version number.
+     * 
+     * @return document or null if document can not be found. 
+     */
+    public DocumentDomainObject getDocument(String documentIdentity, Integer versionNumber) {
+        Integer documentId = toDocumentId(documentIdentity);
         
         return documentId == null 
         	? null
         	: getDocument(documentId, versionNumber);
     }    
     
-    private Integer getDocumentId(String documentIdString) {
-    	if (documentIdString == null) {
+    /** 
+     * @param documentIdentity document id or alias
+     * @return document id or null if there is no document with such identity.
+     */
+    private Integer toDocumentId(String documentIdentity) {
+    	if (documentIdentity == null) {
     		return null;
     	}
-    	
-        if (NumberUtils.isDigits(documentIdString)) {
-        	return Integer.valueOf(documentIdString);
-        }
-        
-
-        String[] documentIds = (String[]) getDatabase().execute(
-                new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
-                        new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdString.toLowerCase() },
-                        Utility.STRING_ARRAY_HANDLER));
-
-        if (documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {
-        	return Integer.valueOf(documentIds[0]);
-        } else {
-        	return null;
-        }    	
+    	 
+    	try {
+    		return Integer.valueOf(documentIdentity);
+    	} catch (NumberFormatException e) {
+    		return cachingDocumentGetter.getDocumentIdByAlias(documentIdentity);
+    	}
     }
 
 
@@ -612,20 +629,8 @@ public class DocumentMapper implements DocumentGetter {
      * @param documentId document id
      * @returns latest version of a document
      */
-    private DocumentDomainObject getLatestDocumentVersion(Integer documentId) { 
-        return databaseDocumentGetter.getDocument(documentId);
-    }
-    
-    /**
-     * Returns latest version of a document.
-     *  
-     * Please note this call is expensive since returned document is not cached.
-     * 
-     * @param documentId document id
-     * @returns latest version of a document
-     */
     public DocumentDomainObject getLatestDocumentVersionForShowing(Integer documentId, UserDomainObject user) { 
-        DocumentDomainObject document = getLatestDocumentVersion(documentId);
+        DocumentDomainObject document = getDocument(documentId);
         
         return document == null ? null : createDocumentShowInterceptor(document, user);
     }    
@@ -636,12 +641,9 @@ public class DocumentMapper implements DocumentGetter {
      * @param documentId document id
      * 
      * @return latest version of the document or null if document does not exist.
-     * 
-     * TODO: optimize, use cache
      */
     public DocumentDomainObject getDocument(Integer documentId) { 
-        //return cachingDocumentGetter.getDocument(documentId);
-    	return getLatestDocumentVersion(documentId);
+        return cachingDocumentGetter.getDocument(documentId);
     } 
     
     /**
@@ -694,15 +696,15 @@ public class DocumentMapper implements DocumentGetter {
     */
     
     /**
-     * Returns publlished or working (depending on user show settings) document for showing.
+     * Returns published or working (depending on user show settings) document for showing.
      * 
-     * @param documentIdString document's id or alias
+     * @param documentIdentity document's id or alias
      * @param user an user requesting a document 
      * 
      * @return published or working AOP adviced document or null if document does not exist.  
      */
-    public DocumentDomainObject getDocumentForShowing(String documentIdString, UserDomainObject user) {
-        Integer documentId = getDocumentId(documentIdString);
+    public DocumentDomainObject getDocumentForShowing(String documentIdentity, UserDomainObject user) {
+        Integer documentId = toDocumentId(documentIdentity);
         
         return documentId == null
         	? null
@@ -865,10 +867,6 @@ public class DocumentMapper implements DocumentGetter {
             sections.add(getSectionById(sectionId.intValue())) ;
         }
         return sections ;
-    }
-
-    public CachingDocumentGetter getDocumentGetter() {
-        return cachingDocumentGetter;
     }
 
     private void removeNonInheritedCategories(DocumentDomainObject document) {
@@ -1045,6 +1043,10 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
+	public CachingDocumentGetter getDocumentGetter() {
+		return cachingDocumentGetter;
+	}
+	
 	public CachingDocumentGetter getCachingDocumentGetter() {
 		return cachingDocumentGetter;
 	}

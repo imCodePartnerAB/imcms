@@ -14,12 +14,12 @@ public enum DocumentVersionTag {
 	/** Working version. */
     WORKING,
     
-    /** Postponed working version. */
+    /** Postponed working version - never been published. */
     POSTPONED,
     
     /** Published version. */
     PUBLISHED,		
     
-    /** Archived version. */
+    /** Archived version - previously been published. */
     ARCHIVED,    
 }

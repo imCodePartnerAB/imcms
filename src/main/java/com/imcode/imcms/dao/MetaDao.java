@@ -1,5 +1,7 @@
 package com.imcode.imcms.dao;
 
+import imcode.server.document.DocumentDomainObject;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -331,7 +333,8 @@ public class MetaDao extends HibernateTemplate {
 	
 	
 	/**
-	 * Returns available versions for the document.
+	 * Returns all versions for the document.
+	 * 
 	 * @param documentId document id.
 	 * @return available versions for the document.
 	 */
@@ -340,4 +343,12 @@ public class MetaDao extends HibernateTemplate {
 		return findByNamedQueryAndNamedParam("DocumentVersion.getByDocumentId", 
 				"documentId", documentId);
 	}	
+	
+	@Transactional(propagation=Propagation.SUPPORTS)
+	public Integer getDocumentIdByAlias(String alias) {
+		return (Integer)getSession().getNamedQuery("DocumentProperty.getDocumentIdByAlias")
+			.setParameter("name", DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)
+			.setParameter("value", alias.toLowerCase())
+			.uniqueResult();
+	}
 }

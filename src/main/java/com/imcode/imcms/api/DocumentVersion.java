@@ -9,8 +9,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -20,26 +18,6 @@ import javax.persistence.TemporalType;
  */
 @Entity(name="DocumentVersion")
 @Table(name="meta_version")
-/*
-@NamedQueries({
-	// Unique result
-	@NamedQuery(name="DocumentVersion.getLastVersion", 
-			query="SELECT v FROM DocumentVersion v WHERE v.id IN (" +
-					"SELECT max(v.id) FROM DocumentVersion v WHERE v.documentId = :documentId)"),
-    // Unique result					
-	@NamedQuery(name="DocumentVersion.getByDocumentIdAndVersionTag", 
-			query="SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId " +
-					"AND v.versionTag = :versionTag"),
-    // Unique result				o
-	@NamedQuery(name="DocumentVersion.getByDocumentIdAndVersion", 
-			query="SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId " +
-					"AND v.version = :version"),
-					
-    // Collection				
-	@NamedQuery(name="DocumentVersion.getByDocumentId", 
-			query="SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId")	
-})
-*/
 public class DocumentVersion implements Cloneable {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
