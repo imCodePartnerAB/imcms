@@ -18,6 +18,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.imcode.imcms.api.DocumentProperty;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
@@ -142,6 +143,7 @@ public class DocumentSaver {
     	//TODO: refactor - very ugly
     	// clone document, reset its dependencies meta id and assign its documentId again  
     	document = document.clone();
+    	document.setAlias(null);
     	document.setDependenciesMetaIdToNull();
     	document.setId(documentId);
 
@@ -311,12 +313,19 @@ public class DocumentSaver {
 	}
 
     public void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
-        Set<String> allAlias = documentMapper.getAllDocumentAlias() ;
-        String alias = document.getAlias();
-        if(allAlias.contains(alias) && !documentMapper.getDocument(alias).equals(document) ) {
-            throw new AliasAlreadyExistsInternalException("A document with alias '" + document.getAlias()
-                                                                         + "' already exists");
-        }
+    	String alias = document.getAlias();
+    	
+    	if (alias != null) {
+    		DocumentProperty property = metaDao.getAliasProperty(alias);
+    		if (property != null) {
+    			Integer documentId = document.getId();
+    			
+    			if (!property.getDocumentId().equals(documentId)) {
+                    throw new AliasAlreadyExistsInternalException(
+                    		String.format("Alias %s is allready given to document %d.", alias, documentId));    				
+    			}			
+    		}
+    	}
     }
 
 	public DocumentMapper getDocumentMapper() {

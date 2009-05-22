@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import imcode.server.document.DocumentDomainObject;
-import imcode.util.Utility;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,9 +10,7 @@ import java.util.Map;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.collections.map.LRUMap;
-import org.apache.commons.lang.math.NumberUtils;
 
-import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionSupport;
 import com.imcode.imcms.dao.MetaDao;

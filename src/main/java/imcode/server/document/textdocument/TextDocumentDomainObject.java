@@ -58,6 +58,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      */
     private Map<Integer, ContentLoop> contentLoopsMap = new HashMap<Integer, ContentLoop>();
                 
+    
     public TextDocumentDomainObject() {
         this(ID_NEW) ;
     }

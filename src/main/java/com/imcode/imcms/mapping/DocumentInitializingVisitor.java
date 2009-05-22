@@ -19,7 +19,7 @@ import com.imcode.imcms.mapping.orm.UrlReference;
  * Initializes document fields depending on document's type.
  * Document's fields are queried from the database.
  */
-class DocumentInitializingVisitor extends DocumentVisitor {
+public class DocumentInitializingVisitor extends DocumentVisitor {
 
     private TextDocumentInitializer textDocumentInitializer;
     
@@ -67,6 +67,10 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     	document.setUrl(reference.getUrl());    	
     }
 
+    
+    /**
+     * 
+     */
     public void visitTextDocument(final TextDocumentDomainObject document) {
         textDocumentInitializer.initialize(document) ;
     }

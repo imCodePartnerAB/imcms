@@ -43,6 +43,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -488,13 +490,18 @@ public class DocumentMapper implements DocumentGetter {
         return documentIds;
     }
 
+    // TODO: refactor
     public Set<String> getAllDocumentAlias() {
-        Set<String> allDocumentAlias = new HashSet<String>();
-        String[] allAlias = (String[]) getDatabase().execute(new SqlQueryCommand("SELECT value FROM document_properties where key_name = ? ORDER BY value", new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS}, Utility.STRING_ARRAY_HANDLER));
-        for (int i = 0; i < allAlias.length; i ++) {
-            allDocumentAlias.add(allAlias[i].toLowerCase()) ;
-        }
-        return allDocumentAlias;
+    	List<String> aliasesList = databaseDocumentGetter.getMetaDao().getAllAliases();
+    	Set<String> aliasesSet = new HashSet<String>();
+    	Transformer transformer = new Transformer() {
+    		public String transform(Object alias) {
+    			return ((String)alias).toLowerCase();
+    		}
+    	};
+    	
+    	return (Set<String>)CollectionUtils.collect(
+    			aliasesList, transformer, aliasesSet);
     }
     
     /** 

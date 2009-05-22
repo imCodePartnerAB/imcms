@@ -11,6 +11,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.imcode.imcms.api.DocumentProperty;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.api.DocumentVersionTag;
@@ -351,4 +352,19 @@ public class MetaDao extends HibernateTemplate {
 			.setParameter("value", alias.toLowerCase())
 			.uniqueResult();
 	}
+	
+	@Transactional(propagation=Propagation.SUPPORTS)
+	public List<String> getAllAliases() {
+		return findByNamedQueryAndNamedParam(
+				"DocumentProperty.getAllAliases", "name", 
+				DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+	}	
+	
+	@Transactional(propagation=Propagation.SUPPORTS)
+	public DocumentProperty getAliasProperty(String alias) {
+		return (DocumentProperty)getSession().getNamedQuery("DocumentProperty.getAliasProperty")
+			.setParameter("name", DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)
+			.setParameter("value", alias)
+			.uniqueResult();
+	}	
 }

@@ -21,8 +21,8 @@ if (cmd) {
 }
 
 def caches = [
-	"Published": cachingDocumentGetter.publishedDocumentsCache,  
-	"Working": cachingDocumentGetter.workingDocumentsCache
+	"Published": cachingDocumentGetter.publishedDocuments,  
+	"Working": cachingDocumentGetter.workingDocuments
 ]
 
 html.html {

@@ -48,7 +48,9 @@ public class TextDocumentInitializer {
     
     private ContentLoopDao contentLoopDao;
     
-    // TODO: refactor
+    /**
+	 * Initializes text document.
+     */
     public void initialize(TextDocumentDomainObject document) {
         initTexts(document);
         initImages(document);
@@ -58,7 +60,7 @@ public class TextDocumentInitializer {
         initContentLoops(document);
     }
     
-    private void initTexts(TextDocumentDomainObject document) {
+    public void initTexts(TextDocumentDomainObject document) {
      	Meta meta = document.getMeta();
     	
     	Collection<TextDomainObject> texts = textDao.getTexts(meta.getId(), meta.getVersion().getVersion());    	    
@@ -80,7 +82,7 @@ public class TextDocumentInitializer {
     }
     
     
-    private void initIncludes(TextDocumentDomainObject document) {
+    public void initIncludes(TextDocumentDomainObject document) {
     	Collection<Include> includes = metaDao.getIncludes(document.getMeta().getId());
     	
     	Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
@@ -93,7 +95,7 @@ public class TextDocumentInitializer {
     }
     
     
-    private void initTemplateNames(TextDocumentDomainObject document) {
+    public void initTemplateNames(TextDocumentDomainObject document) {
     	TemplateNames templateNames = metaDao.getTemplateNames(document.getMeta().getId());
     	
     	//if (templateNames == null) {
@@ -104,7 +106,7 @@ public class TextDocumentInitializer {
     }    
     
     
-    private void initImages(TextDocumentDomainObject document) {
+    public void initImages(TextDocumentDomainObject document) {
     	Meta meta = document.getMeta();
     	
     	Collection<ImageDomainObject> images = imageDao.getImages(meta.getId(), meta.getVersion().getVersion());
@@ -127,7 +129,7 @@ public class TextDocumentInitializer {
     }
     
     
-    private void initMenus(TextDocumentDomainObject document) {
+    public void initMenus(TextDocumentDomainObject document) {
     	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getMeta().getId());	
     	Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
     	
@@ -174,7 +176,7 @@ public class TextDocumentInitializer {
 	} 
 	
 	
-	private void initContentLoops(TextDocumentDomainObject document) {
+	public void initContentLoops(TextDocumentDomainObject document) {
 		List<ContentLoop> loops = contentLoopDao.getContentLoops(document.getMeta().getId());
 		Map<Integer, ContentLoop> loopsMap = new HashMap<Integer, ContentLoop>();
 		

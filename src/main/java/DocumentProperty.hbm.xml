@@ -18,6 +18,25 @@
 		FROM DocumentProperty p 
 		WHERE p.name = :name AND value= :value
     ]]>
+  </query> 
+  
+  <!-- Collection -->
+  <query name="DocumentProperty.getAllAliases">
+    <![CDATA[
+		SELECT p.value
+		FROM DocumentProperty p 
+		WHERE p.name = :name
+		ORDER BY p.value
+    ]]>
+  </query> 
+  
+  <!-- Unique -->
+  <query name="DocumentProperty.getAliasProperty">
+    <![CDATA[
+		SELECT p FROM 
+		DocumentProperty p 
+		WHERE p.name = :name AND lower(p.value) = lower(:value)
+    ]]>
   </query>   
  
 </hibernate-mapping>

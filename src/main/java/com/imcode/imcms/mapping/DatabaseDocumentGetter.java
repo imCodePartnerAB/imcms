@@ -6,6 +6,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.DocumentPermissionSets;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.user.RoleId;
@@ -16,11 +17,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
+
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
+import com.imcode.imcms.mapping.aop.FileDocumentLazyLoadingAspect;
+import com.imcode.imcms.mapping.aop.HtmlDocumentLazyLoadingAspect;
+import com.imcode.imcms.mapping.aop.TextDocumentLazyLoadingAspect;
+import com.imcode.imcms.mapping.aop.UrlDocumentLazyLoadingAspect;
 
 /**
  * Retrieves documents from the database. 
@@ -31,9 +38,14 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     /** Permission to create child documents. * */
     public final static int PERM_CREATE_DOCUMENT = 8;	
 
+    /** Injected by DocumentMapper. */
     private ImcmsServices services;
     
     private MetaDao metaDao;
+    
+    /*
+    private DocumentLoadingAspect documentLoadingAspect;
+    */
     
     /**
      * Initializes document's fields.
@@ -130,13 +142,38 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     
     /**
      * Initializes document's fields.
+     * 
+     * TODO: Refactor out AOP aspects creation and copy-paste.
      */
     private DocumentDomainObject initDocument(DocumentDomainObject document) {
     	if (document == null) return null;
-    	        
-        document.accept(documentInitializingVisitor);
+    	
+    	AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(document); 
+    	aspectJProxyFactory.setProxyTargetClass(true);
+    	
+    	switch (document.getMeta().getDocumentType()) {
+    	case DocumentTypeDomainObject.TEXT_ID:
+            aspectJProxyFactory.addAspect(new TextDocumentLazyLoadingAspect(
+            		documentInitializingVisitor.getTextDocumentInitializer()));       
+           break;
+            
+    	case DocumentTypeDomainObject.FILE_ID:
+            aspectJProxyFactory.addAspect(new FileDocumentLazyLoadingAspect(documentInitializingVisitor));
+            break;
+            
+    	case DocumentTypeDomainObject.URL_ID:
+            aspectJProxyFactory.addAspect(new UrlDocumentLazyLoadingAspect(documentInitializingVisitor));
+            break;    
+            
+    	case DocumentTypeDomainObject.HTML_ID:
+            aspectJProxyFactory.addAspect(new HtmlDocumentLazyLoadingAspect(documentInitializingVisitor));
+            break;            
+    		
+        default:
+        	throw new AssertionError("Unknown document type id: " + document.getMeta().getDocumentType());
+    	}
         
-        return document;
+        return aspectJProxyFactory.getProxy();
     }  
     
     private Document.PublicationStatus publicationStatusFromInt(int publicationStatusInt) {
