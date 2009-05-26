@@ -1,9 +1,14 @@
 package com.imcode.imcms.mapping;
 
+import imcode.server.Imcms;
+import imcode.server.document.DirectDocumentReference;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.FileDocumentImageSource;
+import imcode.server.document.textdocument.ImageArchiveImageSource;
 import imcode.server.document.textdocument.ImageCacheDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.util.image.Format;
 
@@ -11,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +24,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.imcode.db.Database;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
@@ -26,6 +34,8 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.servlet.ImageCacheManager;
 
 public class ImageCacheMapper {
+    private static final Logger log = Logger.getLogger(ImageCacheMapper.class);
+    
 	private Database database;
 	
 	private static final String SQL__UPDATE_FREQUENCY = "UPDATE images_cache SET frequency = frequency + 1 WHERE " +
@@ -229,6 +239,66 @@ public class ImageCacheMapper {
 	
 	public void incrementFrequency(String cacheId) {
 		database.execute(new SqlUpdateCommand(SQL__UPDATE_FREQUENCY, new Object[] { cacheId }));
+	}
+	
+	public Map<Integer, Map<Integer, ImageDomainObject>> getAllDocumentImages() {
+	    final Map<Integer, Map<Integer, ImageDomainObject>> documentImages = new HashMap<Integer, Map<Integer, ImageDomainObject>>();
+	    
+	    final DocumentGetter documentGetter = Imcms.getServices().getDocumentMapper().getDocumentGetter();
+	    
+	    ResultSetHandler imageHandler = new ResultSetHandler() {
+            public Object handle(ResultSet rs) throws SQLException {
+                while (rs.next()) {
+                    int metaId = rs.getInt(1);
+                    int index = rs.getInt(2);
+                    
+                    Map<Integer, ImageDomainObject> images = documentImages.get(metaId);
+                    if (images == null) {
+                        images = new HashMap<Integer, ImageDomainObject>();
+                        documentImages.put(metaId, images);
+                    }
+                    
+                    ImageDomainObject image = new ImageDomainObject();
+                    images.put(index, image);
+                    
+                    image.setWidth(rs.getInt(3));
+                    image.setHeight(rs.getInt(4));
+                    image.setFormat(Format.findFormat(rs.getShort(5)));
+                    
+                    CropRegion region = new CropRegion(rs.getInt(6), rs.getInt(7), rs.getInt(8), rs.getInt(9));
+                    image.setCropRegion(region);
+                    
+                    String imageSource = rs.getString(10);
+                    int imageType = rs.getInt(11);
+                    
+                    if (StringUtils.isNotBlank(imageSource)) {
+                        if (imageType == ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT) {
+                            try {
+                                int fileDocumentId = Integer.parseInt(imageSource);
+                                DocumentDomainObject document = documentGetter.getDocument(new Integer(fileDocumentId));
+                                
+                                if ( null != document ) {
+                                    image.setSource(new FileDocumentImageSource(new DirectDocumentReference(document)));
+                                }
+                            } catch (NumberFormatException ex) {
+                                log.warn("Failed to set image source for file document with id: " + imageSource);
+                            }
+                        } else if (imageType == ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH) {
+                            image.setSource(new ImagesPathRelativePathImageSource(imageSource));
+                        } else if (imageType == ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE) {
+                            image.setSource(new ImageArchiveImageSource(imageSource));
+                        }
+                    }
+                }
+                
+                return null;
+            }
+        };
+        
+        database.execute(new SqlQueryCommand(
+                "SELECT meta_id, name, width, height, format, crop_x1, crop_y1, crop_x2, crop_y2, imgurl, type FROM images", new Object[] {}, imageHandler));
+	    
+	    return documentImages;
 	}
 	
 	private static Object[][] getColumnNamesAndValues(ImageCacheDomainObject cache) {

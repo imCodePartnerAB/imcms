@@ -216,7 +216,7 @@ public class ImageHandling extends HttpServlet {
 		}
 	}
 	
-	private static ImageCacheDomainObject createImageCacheObject(String path, String url, int fileId, int metaId, int imageIndex, 
+	static ImageCacheDomainObject createImageCacheObject(String path, String url, int fileId, int metaId, int imageIndex, 
 			Format format, int width, int height, CropRegion cropRegion) {
 		ImageCacheDomainObject imageCache = new ImageCacheDomainObject();
 		
@@ -249,7 +249,7 @@ public class ImageHandling extends HttpServlet {
 	
 	
 	
-	private static File getLocalFile(String filepath) {
+	static File getLocalFile(String filepath) {
 		File root = Imcms.getPath();
 		File localFile = new File(root, sanitiseFilepath(filepath));
 		
@@ -309,7 +309,7 @@ public class ImageHandling extends HttpServlet {
 		return null;
 	}
 	
-	private static File getFileDocument(int metaId) {
+	static File getFileDocument(int metaId) {
 		DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument(metaId);
 		
 		if (document == null || !(document instanceof FileDocumentDomainObject)) {

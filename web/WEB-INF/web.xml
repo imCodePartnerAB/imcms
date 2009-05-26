@@ -291,6 +291,11 @@
         <servlet-class>com.imcode.imcms.servlet.ImageHandling</servlet-class>
     </servlet>
     
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.RebuildImageCache</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.RebuildImageCache</servlet-class>
+    </servlet>
+    
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
         <url-pattern>/imcms/admin/profile/*</url-pattern>
@@ -539,6 +544,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.ImageHandling</servlet-name>
         <url-pattern>/imagehandling/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.RebuildImageCache</servlet-name>
+        <url-pattern>/servlet/RebuildImageCache</url-pattern>
     </servlet-mapping>
 
     <session-config>
