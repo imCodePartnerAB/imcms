@@ -463,17 +463,25 @@ public class ImageEditPage extends OkCancelPage {
     }
     
     public static boolean allowImageArchive(UserDomainObject user) {
-    	List<RoleId> allowedRoleIds = Imcms.getServices().getConfig().getImageArchiveAllowedRoleIdList();
-    	
-    	if (allowedRoleIds != null) {
-    		for (RoleId roleId : allowedRoleIds) {
-    			if (user.hasRoleId(roleId)) {
-    				return true;
-    			}
-    		}
-    	}
-    	
-    	return false;
+        return allowAccess(user, Imcms.getServices().getConfig().getImageArchiveAllowedRoleIdList());
+    }
+    
+    public static boolean allowChooseFile(UserDomainObject user) {
+        return allowAccess(user, Imcms.getServices().getConfig().getChooseFileAllowedRoleIdsList());
+    }
+    
+    private static boolean allowAccess(UserDomainObject user, List<RoleId> roleIds) {
+        if (roleIds.isEmpty()) {
+            return true;
+        }
+        
+        for (RoleId roleId : roleIds) {
+            if (user.hasRoleId(roleId)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     public boolean isLinkable() {

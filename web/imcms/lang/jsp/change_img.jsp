@@ -235,6 +235,7 @@ function resetCrop() {
 		} %>
 		<tr>
 			<td colspan="2" align="center">
+            <% if (ImageEditPage.allowImageArchive(user) || ImageEditPage.allowChooseFile(user)) { %>
 			<table>
 			<tr>
                 <% if (ImageEditPage.allowImageArchive(user)) { %>
@@ -243,12 +244,16 @@ function resetCrop() {
                     %>class="imcmsFormBtnSmall" style="width:200px" <%
                     %>value="<? templates/sv/change_img.html/2010 ?>"></td>
                 <% } %>
+                <% if (ImageEditPage.allowChooseFile(user)) { %>
 				<td><input type="submit" <%
 						%>name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>" <%
 						%>class="imcmsFormBtnSmall" style="width:200px" <%
 						%>value="<? templates/sv/change_img.html/2004 ?>" ></td>
+                <% } %>
 			</tr>
-			</table></td>
+			</table>
+            <% } %>
+            </td>
 		</tr>
         <tr>
             <td colspan="2">#gui_hr( "blue" )</td>

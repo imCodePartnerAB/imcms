@@ -7,6 +7,7 @@ import imcode.server.user.RoleId;
 import java.io.File;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.nio.charset.Charset;
 
@@ -35,7 +36,9 @@ public class Config {
     private boolean denyMultipleUserLogin;
     private String imageArchiveUrl;
     private String imageArchiveAllowedRoleIds;
-    private List<RoleId> imageArchiveAllowedRoleIdList;
+    private List<RoleId> imageArchiveAllowedRoleIdList = Collections.emptyList();
+    private String chooseFileAllowedRoleIds;
+    private List<RoleId> chooseFileAllowedRoleIdsList = Collections.emptyList();
     private File imageArchiveImagePath;
     private String imageArchiveImageUrl;
     private File imageMagickPath;
@@ -227,15 +230,7 @@ public class Config {
 		this.imageArchiveAllowedRoleIds = imageArchiveAllowedRoleIds;
 		
 		if (imageArchiveAllowedRoleIds != null) {
-			String[] ids = StringUtils.split(imageArchiveAllowedRoleIds, ',');
-			imageArchiveAllowedRoleIdList = new ArrayList<RoleId>(ids.length);
-			
-			for (String id : ids) {
-				try {
-					imageArchiveAllowedRoleIdList.add(new RoleId(Integer.parseInt(id.trim())));
-				} catch (Exception ex) {
-				}
-			}
+			imageArchiveAllowedRoleIdList = convertRoleIds(imageArchiveAllowedRoleIds);
 		}
 	}
 
@@ -247,7 +242,41 @@ public class Config {
 		this.imageArchiveAllowedRoleIdList = imageArchiveAllowedRoleIdList;
 	}
 
-	public File getImageCachePath() {
+	public String getChooseFileAllowedRoleIds() {
+        return chooseFileAllowedRoleIds;
+    }
+
+    public void setChooseFileAllowedRoleIds(String chooseFileAllowedRoleIds) {
+        this.chooseFileAllowedRoleIds = chooseFileAllowedRoleIds;
+        
+        if (chooseFileAllowedRoleIds != null) {
+            chooseFileAllowedRoleIdsList = convertRoleIds(chooseFileAllowedRoleIds);
+        }
+    }
+    
+    public List<RoleId> getChooseFileAllowedRoleIdsList() {
+        return chooseFileAllowedRoleIdsList;
+    }
+    
+    private static List<RoleId> convertRoleIds(String roleIdsString) {
+        String[] ids = StringUtils.split(roleIdsString, ',');
+        List<RoleId> roleIds = new ArrayList<RoleId>(ids.length);
+        
+        for (String id : ids) {
+            try {
+                roleIds.add(new RoleId(Integer.parseInt(id.trim())));
+            } catch (NumberFormatException ex) {
+            }
+        }
+        
+        return roleIds;
+    }
+
+    public void setChooseFileAllowedRoleIdsList(List<RoleId> chooseFileAllowedRoleIdsList) {
+        this.chooseFileAllowedRoleIdsList = chooseFileAllowedRoleIdsList;
+    }
+
+    public File getImageCachePath() {
 		return imageCachePath;
 	}
 
