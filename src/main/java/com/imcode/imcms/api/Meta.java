@@ -27,6 +27,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * Document meta.
  * 
@@ -71,15 +73,11 @@ public class Meta implements Serializable, Cloneable {
 		
 		@Override
 		public int hashCode() {
-			int iSetId = setId;
-			int iPermissionData = permissionData;
-			int iPermissionId = permissionId;
-			
-			int result = 5;
-			
-			return (((31 * result + iSetId) 
-					* 31 + iPermissionId) 
-						* 31 + iPermissionData);
+			return new HashCodeBuilder(17, 31)
+				.append(setId)
+				.append(permissionId)
+				.append(permissionData)
+				.toHashCode();
 		}
 
 		public Integer getPermissionData() {
@@ -136,12 +134,13 @@ public class Meta implements Serializable, Cloneable {
 		UnavailableI18nDataSubstitution.DO_NOT_SHOW;
 
 	/**
-	 * In the current imcms release, meta does not have version - e.g.
-	 * all document's versions have the same meta. But technically it 
-	 * is convinient to have reference to version in meta. It is possible
-	 * because cached documents do not share single meta object.   
+	 * In the current imcms release, version is not a logical part of meta
+	 * since meta does not have version itself.
+	 * All versions of a particular document have the same meta. 
+	 * But technically every loaded (cached) document instance also loads
+	 * and references its own meta object.   
 	 * 
-	 * NB! In the future meta fields will be also versioned. 
+	 * NB! In the future most of meta fields will be also version-ed. 
 	 */
 	@Transient
 	private DocumentVersion version;	

@@ -778,20 +778,21 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Creates document interceptor based on document show settings.
      * 
-     * TODO: prototype implementation - optimize 
+     * TODO: optimize proxy creation - pooling might be possible solution. 
+     * TODO: Implement two strategies - with intercepting for multilangual projects 
+     * and w/o intercepting for single-language projects.
      */
     private DocumentDomainObject createDocumentShowInterceptor(DocumentDomainObject document, UserDomainObject user) {    	
-    	DocumentShowSettings showSettings = user.getDocumentShowSettings();
-    	
     	if (document != null) {
     		/*
-    		 * Current document language.
+    		 * Determines document's content language.
     		 * 
     		 * If an user is allowed to see a document's content in a current language
-    		 * then current document language is set current language otherwise
+    		 * then document language is set to current language, otherwise
     		 * it is set to default language. 
     		 */
     		I18nLanguage currentDocumentLanguage = I18nSupport.getCurrentLanguage();
+    		DocumentShowSettings showSettings = user.getDocumentShowSettings();
     		
     		if (!I18nSupport.getCurrentIsDefault() && !showSettings.isIgnoreI18nShowMode() ) {            
     			I18nMeta i18nMeta = document.getI18nMeta(I18nSupport.getCurrentLanguage());
@@ -801,7 +802,6 @@ public class DocumentMapper implements DocumentGetter {
     					currentDocumentLanguage = I18nSupport.getDefaultLanguage();
     				} else {
     					throw new I18nDisabledException(document, I18nSupport.getCurrentLanguage());
-    					// 	return null
     				}
     			}
     		}

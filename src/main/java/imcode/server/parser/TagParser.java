@@ -797,7 +797,7 @@ public class TagParser {
         
         try {
 	        if(StringUtils.isNotBlank(documentName)) {
-	            textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocumentForShowing(documentName, documentVersion, user);
+	            textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocumentForShowing(documentName, user);
 	        } else if (documentVersion != null) {
 	        	Integer docmentId = textDocumentToUse.getId();
 	        	

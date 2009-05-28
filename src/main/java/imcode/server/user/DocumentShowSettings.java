@@ -17,9 +17,9 @@ public class DocumentShowSettings {
 	 * Only logged in user with appropriate permissions can change the value.
 	 */	
 	private boolean ignoreI18nShowMode = false;
-		
+	
 	/**
-	 * Document version selector. 
+	 * 'Main' document version selector. 
 	 *
 	 * PUBLISHED selector is default.
 	 * 
