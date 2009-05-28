@@ -172,9 +172,6 @@ class RebuildImageCacheThread extends Thread {
         }
         
         Format format = imageDomainObject.getFormat();
-        if (format == null || !format.isWritable()) {
-            format = Format.PNG;
-        }
         
         ImageCacheDomainObject imageCacheObject = ImageHandling.createImageCacheObject(path, null, fileId, metaId, imageIndex, 
                 format, imageDomainObject.getWidth(), imageDomainObject.getHeight(), imageDomainObject.getCropRegion());
@@ -189,6 +186,10 @@ class RebuildImageCacheThread extends Thread {
             deleteFile = true;
         }
         
+        if (imageFile == null) {
+            return;
+        }
+        
         ImageInfo imageInfo = ImageOp.getImageInfo(config, imageFile);
         if (imageInfo == null) {
             log.warn(String.format("Failed to create cache of image, meta_id: %d, image_index: %d. Not an image", metaId, imageIndex));
@@ -198,6 +199,10 @@ class RebuildImageCacheThread extends Thread {
             }
             
             return;
+        }
+        
+        if (format == null || !format.isWritable()) {
+            format = Format.PNG;
         }
         
         File cacheFile = ImageCacheManager.storeImage(imageCacheObject, imageFile, deleteFile);

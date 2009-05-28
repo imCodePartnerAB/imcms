@@ -132,11 +132,15 @@ public class Image {
     public String getSrc(String contextPath) { // image srcurl relative webapp ( /imcms/images/theimage.gif )
         return internalImage.getUrlPath( contextPath ) ;
     }
-
+    
+    public String toHtmlUrl(HttpServletRequest request, Integer documentId, Integer imageIndex) {
+        return ImcmsImageUtils.getImageUrl(documentId, imageIndex, internalImage, request);
+    }
+    
     public String toHtmlTag(HttpServletRequest request, Properties attributes, Integer documentId, Integer imageIndex, boolean absolute) {
         return ImcmsImageUtils.getImageHtmlTag(documentId, imageIndex, internalImage, request, attributes, absolute);
     }
-
+    
     public String toHtmlTag(HttpServletRequest request, Properties attributes, Integer documentId, Integer imageIndex) {
         return toHtmlTag(request, attributes, documentId, imageIndex, false);
     }
