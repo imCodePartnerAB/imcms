@@ -11,10 +11,6 @@
     <property name="build.properties" value="build.properties.template" />
     <property file="${build.properties}"/>
 	
-	<!--
-	<import file="${catalina.home}/bin/catalina-tasks.xml"/>
-	-->
-	
     <!-- The current version of imCMS. -->
     <property name="svnurl" value="$URL$"/>
 
@@ -29,7 +25,8 @@
     <property name="build.lib.dir" value="${basedir}/lib/build"/>
 
     <!-- The directory to build in. --> 
-    <property name="build" value="${basedir}/build"/>
+    <property name="build.dir" value="${basedir}/build"/>
+	<property name="target.dir" value="${basedir}/target"/>
     
     <property name="dist" value="${basedir}/dist"/>
     <property name="tmp" value="${basedir}/tmp"/>
@@ -37,17 +34,17 @@
     <property name="src.dir" value="${basedir}/src/main/java"/>
 
     <!-- The webroot. Everything put here can be seen by any visitor. -->
-    <property name="webroot" value="${build}"/>
+    <property name="webroot.dir" value="${target.dir}/imcms"/>
 
-    <property name="login" value="${webroot}/login"/>
+    <property name="login" value="${webroot.dir}/login"/>
 
-    <property name="imcms" value="${webroot}/imcms"/>
+    <property name="imcms" value="${webroot.dir}/imcms"/>
     <property name="docs" value="${imcms}/docs"/>
     <property name="apisamples" value="${docs}/apisamples"/>
     <property name="apidocs" value="${docs}/api"/>
 
     <!-- 'WEB-INF' - Everything put here is private to the webapp -->
-    <property name="WEB-INF" value="${webroot}/WEB-INF"/>
+    <property name="WEB-INF" value="${webroot.dir}/WEB-INF"/>
 
     <property name="versionfile" value="${WEB-INF}/version.txt"/>
     <property name="checksumsfile" value="${WEB-INF}/checksums.txt"/>
@@ -79,34 +76,11 @@
           uri="urn:maven-artifact-ant"
           classpath="lib/maven-ant-tasks-2.0.9.jar"/>
 	
-	<artifact:pom id="pom" file="imcms-pom.xml"/>	
+	<artifact:pom id="pom" file="pom.xml"/>	
 	<artifact:dependencies pathid="pom.classpath" pomrefid="pom"/>
 	
     <!-- End of maven integration -->	
-	
-	<!-- Jetty integration -->
-	<property name="jetty.port" value="9090"/>
-	<property name="jetty.version" value="6.1.10"/>
-	
-	<artifact:dependencies pathId="jetty.plugin.classpath" filesetid="jetty.plugin.fileset">
-		<dependency groupId="org.mortbay.jetty" artifactId="jetty-ant"       version="${jetty.version}"/>
-		<dependency groupId="org.mortbay.jetty" artifactId="jetty"           version="${jetty.version}"/>
-		<dependency groupId="org.mortbay.jetty" artifactId="jetty-util"      version="${jetty.version}"/>
-		<dependency groupId="org.mortbay.jetty" artifactId="jetty-plus"      version="${jetty.version}"/>
-		<dependency groupId="org.mortbay.jetty" artifactId="jetty-naming"    version="${jetty.version}"/>			
-		<dependency groupId="org.mortbay.jetty" artifactId="servlet-api-2.5" version="${jetty.version}"/>
-		<dependency groupId="org.mortbay.jetty" artifactId="jsp-api-2.1"     version="${jetty.version}"/>
-		<dependency groupId="org.mortbay.jetty" artifactId="jsp-2.1"         version="${jetty.version}"/>		
-		<dependency groupId="org.eclipse.jdt"   artifactId="core"            version="3.1.1"/>
-	</artifact:dependencies>
-	
-	<taskdef classpathref="jetty.plugin.classpath" resource="tasks.properties" loaderref="jetty.loader"/>
-	
-	<typedef name="selectChannelConnector" classname="org.mortbay.jetty.nio.SelectChannelConnector"
-	    classpathref="jetty.plugin.classpath" loaderref="jetty.loader" />
-	
-	<!-- End of jetty integration -->
-
+		
     <path id="libraries">
     	<fileset dir="${build.lib.dir}" includes="*.jar"/>
     </path>
@@ -120,7 +94,7 @@
     <taskdef name="checksumfiles" classname="com.imcode.ant.tasks.ChecksumFiles" classpathref="pom.classpath"/>
     <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask" classpathref="pom.classpath"/>
     <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="pom.classpath"/>
-
+	
     <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
 
 	<!--
@@ -158,7 +132,7 @@
 
     <target name="bindist-war" depends="build,apidocs,checksumsfile">
         <mkdir dir="${dist}"/>
-        <war warfile="${war}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
+        <war warfile="${war}" basedir="${build.dir}" webxml="${WEB-INF}/web.xml"/>
     </target>
 
     <target name="bindist-jar" depends="build">
@@ -218,7 +192,7 @@
 
     <target name="clean" description="Deletes everything for a fresh start.">
 
-        <delete dir="${build}"/>
+        <delete dir="${build.dir}"/>
         <delete dir="${tmp}"/>
         <delete dir="${dist}"/>
 
@@ -263,7 +237,7 @@
 
     <target name="install" depends="init,check-deployroot" description="Install files already built, without running 'build' first.">
         <copy todir="${webapproot}">
-            <fileset dir="${build}"/>
+            <fileset dir="${build.dir}"/>
         </copy>
     </target>
 
@@ -330,7 +304,7 @@
 
     <target name="checksumsfile">
         <checksumfiles destfile="${checksumsfile}" digest="MD5" append="true">
-            <fileset dir="${build}"/>
+            <fileset dir="${build.dir}"/>
         </checksumfiles>
     </target>
 
@@ -370,7 +344,7 @@
         <jasper2
                 validateXml="false"
                 verbose="9"
-                uriroot="${build}"
+                uriroot="${build.dir}"
                 webXmlFragment="${tmp}/generated_web.xml"
                 outputDir="${tmp}/jsp"
                 classpath="${classes}"/>
@@ -385,7 +359,7 @@
         <jasper2
                 validateXml="false"
                 verbose="9"
-                uriroot="${build}"
+                uriroot="${build.dir}"
                 webXmlFragment="${tmp}/generated_web.xml"
                 outputDir="${tmp}/jsp"
                 classpath="${classes}"/>    	
@@ -478,11 +452,11 @@
 
         <mkdir dir="${imcms}"/>
         <mkdir dir="${login}"/>
-        <mkdir dir="${webroot}/css"/>
-        <mkdir dir="${webroot}/images"/>
-        <mkdir dir="${webroot}/javascript"/>
-        <mkdir dir="${webroot}/jsp"/>
-        <mkdir dir="${webroot}/user"/>
+        <mkdir dir="${webroot.dir}/css"/>
+        <mkdir dir="${webroot.dir}/images"/>
+        <mkdir dir="${webroot.dir}/javascript"/>
+        <mkdir dir="${webroot.dir}/jsp"/>
+        <mkdir dir="${webroot.dir}/user"/>
 
         <mkdir dir="${lib}"/>
         <mkdir dir="${WEB-INF}/includes"/>
@@ -508,11 +482,11 @@
     	
         <echo message="${version}" file="${versionfile}"/>
 
-        <copy todir="${webroot}" filtering="true">
+        <copy todir="${webroot.dir}" filtering="true">
             <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
         </copy>
 
-        <copy todir="${webroot}">
+        <copy todir="${webroot.dir}">
             <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern}"/>
         </copy>
 
@@ -594,7 +568,12 @@
 
 
     <target name="init-version-properties">
+    	
+    	<pathconvert targetos="unix" property="wl.path.unix" refid="pom.classpath"/>
 
+    	
+    	<echo file="out.txt" message="cp:***${wl.path.unix}"/>
+    	
         <propertyregex property="version"
             input="${svnurl}"
             regexp=".URL: .*/tags/(.+)/[^/]+ ."
@@ -729,25 +708,6 @@
         <java classname="bsh.Console"
         	fork="true" 
         	classpathref="classpath"/>
-    </target>	
-	
-	<!-- Jetty integration -->
-	<!-- WARNING!! imCMS behaviour in Jetty differs from behaviour in Tomcat-->
-	<target name="build-jetty" depends="build, jetty"/>
-	<target name="web-jetty" depends="web, jetty"/>
-	
-    <target name="jetty" description="Runs application in jetty container">
-        <jetty tempDirectory="${tmp}/jetty">     	
-            <systemProperties>
-                <systemProperty name="test" value="test"/>
-            </systemProperties>      	
-        	
-            <connectors>
-                <selectChannelConnector port="${jetty.port}"/>
-            </connectors>
-        	
-            <webapp warfile="${webroot}" contextPath="/" name="${webappname}"/>
-        </jetty>	
     </target>	
 	
 </project>

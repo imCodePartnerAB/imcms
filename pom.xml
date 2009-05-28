@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-<!-- Currently this pom is used ONLY for dependency management -->
-<!-- It is NOT intended for building -->
-
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.imcode.imcms</groupId>
   <artifactId>imcms</artifactId>
@@ -39,7 +36,7 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.4</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     
     <dependency>
@@ -420,9 +417,24 @@
       <groupId>ant-contrib</groupId>
       <artifactId>ant-contrib</artifactId>
       <!--version>0.6</version-->
-      <version>1.0b2</version>
+      <version>1.0b3</version>
       <scope>provided</scope>
     </dependency>
+    
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant-nodeps</artifactId>
+      <version>1.7.1</version>
+      <scope>provided</scope>
+    </dependency>
+	
+	<dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.7.1</version>
+      <scope>provided</scope>
+    </dependency>
+	    
     
     <dependency>
       <groupId>tomcat</groupId>
@@ -518,26 +530,48 @@
   <build>
     <finalName>imcms</finalName>
     <plugins>    
+	  <plugin>
+	    <artifactId>maven-compiler-plugin</artifactId>
+		  <configuration>
+		    <source>1.5</source>
+		    <target>1.5</target>
+		  </configuration>
+  	    </plugin>
+  	        
 		<plugin>
-			<artifactId>maven-compiler-plugin</artifactId>
+	      <groupId>org.mortbay.jetty</groupId>
+	      <artifactId>maven-jetty-plugin</artifactId>
+	      <configuration>
+	        <connectors>
+	          <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+	            <port>9090</port>
+	            <maxIdleTime>60000</maxIdleTime>
+	          </connector>
+	        </connectors>
+	        <webApp>${basedir}/target/imcms</webApp>		          
+	      </configuration>
+		</plugin>
+		 
+        <plugin>
+		  <groupId>org.codehaus.mojo</groupId>
+		  <artifactId>exec-maven-plugin</artifactId>
+		  <version>1.1</version>
+		  <executions>
+		    <execution>
+		    <phase>process-resources</phase>
+		    <goals>
+		      <goal>exec</goal>
+		    </goals>
 			<configuration>
-				<source>1.5</source>
-				<target>1.5</target>
-			</configuration>
-		</plugin>    
-		<plugin>
-		        <groupId>org.mortbay.jetty</groupId>
-		        <artifactId>maven-jetty-plugin</artifactId>
-		        <configuration>
-		         <connectors>
-		            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-		              <port>9090</port>
-		              <maxIdleTime>60000</maxIdleTime>
-		            </connector>
-		          </connectors>
-		          <webApp>${basedir}/build</webApp>		          
-		        </configuration>
-		</plugin>    
+              <executable>ant</executable>                        
+              <arguments>
+                <argument>web</argument>
+              </arguments>
+            </configuration>
+		  </execution>
+		</executions>
+	  </plugin>
+	  			 
     </plugins>
   </build>      
 </project>
