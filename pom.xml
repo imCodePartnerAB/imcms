@@ -525,7 +525,9 @@
       </releases>              
     </repository> 
               
-  </repositories>   
+  </repositories>  
+  
+  archiveClasses 
       
   <build>
     <finalName>imcms</finalName>
@@ -535,8 +537,32 @@
 		  <configuration>
 		    <source>1.5</source>
 		    <target>1.5</target>
+		    
+            <excludes>
+              <exclude>**/Test*.java</exclude>
+              <exclude>**/*TestCase.java</exclude>
+            </excludes>
 		  </configuration>
   	    </plugin>
+  	    
+	    <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <configuration>
+            <archiveClasses>true</archiveClasses>
+          </configuration>
+        </plugin> 
+        
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.3</version>
+          
+          <configuration>
+            <!--
+            <updateReleaseInfo>true</updateReleaseInfo>
+            -->
+          </configuration>
+        </plugin>         	    
   	        
 		<plugin>
 	      <groupId>org.mortbay.jetty</groupId>
@@ -547,31 +573,31 @@
 	            <port>9090</port>
 	            <maxIdleTime>60000</maxIdleTime>
 	          </connector>
-	        </connectors>
-	        <webApp>${basedir}/target/imcms</webApp>		          
+	        </connectors>		          
 	      </configuration>
 		</plugin>
 		 
+		<!--  
         <plugin>
 		  <groupId>org.codehaus.mojo</groupId>
 		  <artifactId>exec-maven-plugin</artifactId>
 		  <version>1.1</version>
 		  <executions>
 		    <execution>
-		    <phase>process-resources</phase>
+		    <phase>process-sources</phase>
 		    <goals>
 		      <goal>exec</goal>
 		    </goals>
 			<configuration>
               <executable>ant</executable>                        
               <arguments>
-                <argument>web</argument>
+                <argument>process-webapp-sources</argument>
               </arguments>
             </configuration>
 		  </execution>
 		</executions>
 	  </plugin>
-	  			 
+	   -->			 
     </plugins>
   </build>      
 </project>
