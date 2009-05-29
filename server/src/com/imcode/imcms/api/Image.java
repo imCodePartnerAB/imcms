@@ -133,8 +133,8 @@ public class Image {
         return internalImage.getUrlPath( contextPath ) ;
     }
     
-    public String toHtmlUrl(HttpServletRequest request, Integer documentId, Integer imageIndex) {
-        return ImcmsImageUtils.getImageUrl(documentId, imageIndex, internalImage, request);
+    public String toHtmlUrl(String contextPath, Integer documentId, Integer imageIndex) {
+        return ImcmsImageUtils.getImageUrl(documentId, imageIndex, internalImage, contextPath);
     }
     
     public String toHtmlTag(HttpServletRequest request, Properties attributes, Integer documentId, Integer imageIndex, boolean absolute) {

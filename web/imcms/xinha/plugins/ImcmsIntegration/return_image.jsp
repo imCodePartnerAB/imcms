@@ -27,7 +27,7 @@
         %>
     
         param = new Object();
-        param.src = '<%= StringEscapeUtils.escapeJavaScript(ImcmsImageUtils.getImageUrl(null, null, image, request)) %>';
+        param.src = '<%= StringEscapeUtils.escapeJavaScript(ImcmsImageUtils.getImageUrl(null, null, image, request.getContextPath())) %>';
         param.rel = '<%= StringEscapeUtils.escapeJavaScript(rel) %>';
         param["alt"] = '<%= StringEscapeUtils.escapeJavaScript(image.getAlternateText())%>';
         <% if (StringUtils.isNotBlank(image.getAlign())) { %>

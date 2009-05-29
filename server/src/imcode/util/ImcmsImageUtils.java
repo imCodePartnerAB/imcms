@@ -43,7 +43,7 @@ public class ImcmsImageUtils {
                 imageTagBuffer.append('>');
             }
             
-            String urlEscapedImageUrl = getImageUrl(metaId, imageIndex, image, request);
+            String urlEscapedImageUrl = getImageUrl(metaId, imageIndex, image, request.getContextPath());
             if (absoluteUrl) {
                 StringBuffer requestURL = request.getRequestURL();
                 urlEscapedImageUrl = requestURL.substring(0,StringUtils.ordinalIndexOf(requestURL.toString(), "/", 3))+urlEscapedImageUrl;
@@ -118,9 +118,9 @@ public class ImcmsImageUtils {
         return imageTagBuffer.toString();
     }
     
-    public static String getImageUrl(Integer metaId, Integer imageIndex, ImageDomainObject image, HttpServletRequest request) {
+    public static String getImageUrl(Integer metaId, Integer imageIndex, ImageDomainObject image, String contextPath) {
     	StringBuilder builder = new StringBuilder();
-        builder.append(request.getContextPath());
+        builder.append(contextPath);
         builder.append("/imagehandling?");
         
         if (image.getSource() instanceof FileDocumentImageSource) {
