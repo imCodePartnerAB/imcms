@@ -666,30 +666,30 @@
 	
 	<target name="deploy">
 		<exec executable="${ant.maven.executable}" failonerror="true"> 
-	        <arg value="-e"/>
 	        <arg value="deploy:deploy-file"/>
-			<arg value="-Dfile=${target.dir}/imcms.war"/>
+			
 	        <arg value="-DrepositoryId=${maven.repo.id}"/>
+	        <arg value="-Durl=${maven.repo.url}"/>						
+			<arg value="-Dfile=${target.dir}/imcms.war"/>
+			
 	        <arg value="-DgroupId=com.imcode.imcms"/>
 	        <arg value="-DartifactId=imcms"/> 
 	        <arg value="-Dversion=${pom.version}"/>
-	        <arg value="-DgeneratePom=false"/>
-	        <arg value="-Dpackaging=war"/>
-	        <arg value="-Durl=${maven.repo.url}"/>
 		</exec>	
 		
         <exec executable="${ant.maven.executable}" failonerror="true">            
-            <arg value="-e"/>
             <arg value="deploy:deploy-file"/>
-            <arg value="-Dfile=${dist.file.path}.jar"/>
-            <arg value="-DrepositoryId=${maven.repo.id}"/>
-            <arg value="-DgroupId=com.imcode.imcms"/>
-            <arg value="-DartifactId=imcms"/> 
-            <arg value="-Dversion=${pom.version}"/>
-            <arg value="-DgeneratePom=false"/>
+        	
+	        <arg value="-DrepositoryId=${maven.repo.id}"/>
+	        <arg value="-Durl=${maven.repo.url}"/>						
+        	<arg value="-Dfile=${target.dir}/imcms/WEB-INF/lib/imcms.jar"/>
+        	
+	        <arg value="-DgroupId=com.imcode.imcms"/>
+	        <arg value="-DartifactId=imcms"/> 
+	        <arg value="-Dversion=${pom.version}"/>
+
             <arg value="-Dpackaging=jar"/>
         	<arg value="-Dclassifier=classes"/>
-            <arg value="-Durl=${maven.repo.url}"/>
         </exec>		
 	</target>
 </project>
