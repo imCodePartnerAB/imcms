@@ -7,6 +7,10 @@
 # Do *not* use back-slashes ('\'). Use forward-slashes ('/').
 # You only need this if you want to use "ant install" and "ant install-war".
 
+# imCMS internal maven repo settings
+maven.repo.url=scp://garm.imcode.com:/srv/www/apache/sites/repo.imcode.com/maven2
+maven.repo.id=imcode
+ 
 # Required database schema version.
 # At startup time compared against value in database_version table - exact match is required.
 # This value is saved into <webapproot>/schema-version.txt file.

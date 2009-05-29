@@ -523,14 +523,11 @@
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>              
-    </repository> 
-              
+    </repository>               
   </repositories>  
-  
-  archiveClasses 
       
   <build>
-    <finalName>imcms</finalName>
+    <finalName>${project.artifactId}</finalName>
     <plugins>    
 	  <plugin>
 	    <artifactId>maven-compiler-plugin</artifactId>
@@ -548,7 +545,17 @@
 	    <plugin>
           <artifactId>maven-war-plugin</artifactId>
           <configuration>
+          	<!--  
             <archiveClasses>true</archiveClasses>
+            -->
+            <!-- 
+            <webResources>
+	          <resource>
+	            <directory>src/main/resources-webinf/</directory>
+                <targetPath>WEB-INF</targetPath>            
+	          </resource>
+	        </webResources>
+	        -->
           </configuration>
         </plugin> 
         
@@ -599,5 +606,14 @@
 	  </plugin>
 	   -->			 
     </plugins>
-  </build>      
+  </build> 
+  
+  <distributionManagement>
+    <repository>
+      <id>imcode</id>
+      <name>imCode Internal Repository</name>
+      <url>scp://garm.imcode.com:/srv/www/apache/sites/repo.imcode.com/maven2</url>
+    </repository>
+  </distributionManagement>
+       
 </project>

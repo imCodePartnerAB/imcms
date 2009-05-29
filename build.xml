@@ -1,8 +1,6 @@
 <?xml version='1.0' encoding='iso-8859-1'?>
 
-<!-- The Ant 'build.xml'-file for imCMS -->
-
-<project name="imCMS" default="dist" xmlns:artifact="urn:maven-artifact-ant">
+<project name="imCMS" default="mvn-package" xmlns:artifact="urn:maven-artifact-ant">
 	
     <!-- Read in 'build.properties' and set the properties therein. -->
     <!-- Those properties are used as bases for latsproer properties in this file. -->
@@ -19,19 +17,12 @@
     <property name="versionnumber" value=""/>
     <property name="versionfilesuffix" value=""/>
 	
-	<property name="maven.repo.url" value="scp://garm.imcode.com:/srv/www/apache/sites/repo.imcode.com/maven2"/>
-	<property name="maven.repo.id" value="imcode"/>
-
     <!-- ant build directories. --> 
     <property name="build.dir" value="${basedir}/build"/>    
-    <property name="dist.dir" value="${basedir}/dist"/>
     <property name="temp.dir" value="${basedir}/temp"/>
 	<property name="lib.dir" value="${basedir}/lib"/>
 
-	<!-- -->
-	<!-- maven directories -->
-	<!-- -->
-	
+	<!-- maven model directories -->	
 	<property name="main.java.dir" value="${basedir}/src/main/java"/>
 	<property name="main.resources.dir" value="${basedir}/src/main/resources"/>
 	
@@ -39,19 +30,18 @@
 	<property name="main.webapp.login.dir" value="${main.webapp.dir}/login"/>
     <property name="main.webapp.imcms.dir" value="${main.webapp.dir}/imcms"/>	
     
-	<property name="main.webapp.web-inf.dir" value="${main.webapp.dir}/WEB-INF"/>
+	<property name="main.webapp.webinf.dir" value="${main.webapp.dir}/WEB-INF"/>
 	
-    <property name="versionfile" value="${main.webapp.web-inf.dir}/version.txt"/>
-    <property name="checksumsfile" value="${main.webapp.web-inf.dir}/checksums.txt"/>
+    <property name="versionfile" value="${main.webapp.webinf.dir}/version.txt"/>
+    <property name="checksumsfile" value="${main.webapp.webinf.dir}/checksums.txt"/>
 
     <property name="srcincludes" value="MANIFEST.TXT"/>
 	
     <property name="classes" value="${temp.dir}/classes"/>	
-    <property name="conf" value="${main.webapp.web-inf.dir}/conf"/>
-	<property name="webinf.classes" value="${main.webapp.web-inf.dir}/classes"/>
-    <property name="lib" value="${main.webapp.web-inf.dir}/lib"/>
-    <property name="templates" value="${main.webapp.web-inf.dir}/templates"/>
-    <property name="sql" value="${main.webapp.web-inf.dir}/sql"/>
+    <property name="webinf.conf.dir" value="${main.webapp.webinf.dir}/conf"/>
+	<property name="webinf.classes.dir" value="${main.webapp.webinf.dir}/classes"/>
+    <property name="templates" value="${main.webapp.webinf.dir}/templates"/>
+    <property name="sql" value="${main.webapp.webinf.dir}/sql"/>
     <property name="sql-diff" value="${sql}/diff"/>
     <property name="sql-sprocs" value="${sql}/sprocs"/>
     
@@ -81,103 +71,13 @@
     -->
     <taskdef resource="checkstyletask.properties" classpathref="pom.classpath"/>
 
-    <!-- Distribution targets -->
-
-    <target name="dist" depends="bindist,srcdist" description="Build all binary and source distributions."/>
-
-    <target name="bindist" depends="bindist-jar,bindist-api-jar,bindist-zip,bindist-tgz" description="Build all binary distributions."/>
-
-    <target name="bindist-zip" depends="bindist-war">
-        <mkdir dir="${dist.dir}"/>
-        <mkdir dir="${temp.dir}/docs"/>
-        <fixcrlf srcdir="${basedir}/docs" destdir="${temp.dir}/docs" eol="dos"/>
-        <zip destfile="${bindist-zip}">
-            <fileset file="${war}"/>
-            <fileset dir="${dist.dir}" includes="imcms*.sql"/>
-            <fileset dir="${temp.dir}/docs" includes="*.TXT,*.HTML,*.css"/>
-        </zip>
-    </target>
-
-    <target name="bindist-tgz" depends="bindist-war">
-        <mkdir dir="${dist.dir}"/>
-        <mkdir dir="${temp.dir}/docs"/>
-        <fixcrlf srcdir="${basedir}/docs" destdir="${temp.dir}/docs" eol="unix"/>
-        <tar destfile="${bindist-tgz}" compression="gzip">
-            <tarfileset file="${war}"/>
-            <tarfileset dir="${dist.dir}" includes="imcms*.sql"/>
-            <tarfileset dir="${temp.dir}/docs" includes="*.TXT,*.HTML,*.css"/>
-        </tar>
-    </target>
-
-    <target name="bindist-war" depends="build,apidocs,checksumsfile">
-        <mkdir dir="${dist.dir}"/>
-        <war warfile="${war}" basedir="${build.dir}" webxml="${main.webapp.web-inf.dir}/web.xml"/>
-    </target>
-
-    <target name="bindist-jar" depends="build">
-        <mkdir dir="${dist.dir}"/>
-        <copy file="${jar}" tofile="${bindist-jar}"/>
-    </target>
-        
-    <target name="bindist-api-jar" depends="mvn-compile">
-        <mkdir dir="${dist.dir}"/>
-        <jar destfile="${bindist-api-jar}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>
-    </target>
-
-    <target name="srcdist" depends="srcdist-zip,srcdist-tgz" description="Build all source distributions."/>
-
-    <target name="srcdist-zip" depends="init">
-        <mkdir dir="${dist.dir}"/>
-        <!-- <zip> will for some reason throw an IllegalArgumentException if the file exists.-->
-        <delete file="${srcdist-zip}"/>
-        <zip destfile="${srcdist-zip}">
-            <zipfileset includesfile="${srcincludes}" dir="${basedir}" prefix="imcms${versionfilesuffix}"/>
-        </zip>
-    </target>
-
-    <target name="srcdist-tgz" depends="init">
-        <mkdir dir="${dist.dir}"/>
-        <dependset>
-            <srcfileset file="${srcincludes}"/>
-            <targetfileset file="${srcdist-tgz}"/>
-        </dependset>
-        <tar destfile="${srcdist-tgz}" compression="gzip">
-            <tarfileset includesfile="${srcincludes}" dir="${basedir}" prefix="imcms${versionfilesuffix}"/>
-        </tar>
-    </target>
-
-    <target name="distcheck" depends="distcheck-zip,distcheck-tgz" description="Test all source distributions."/>
-
-    <target name="distcheck-zip" depends="srcdist-zip">
-        <property name="srcdist-zip-check" value="${temp.dir}/srcdist-zip-check"/>
-        <unzip src="${srcdist-zip}" dest="${srcdist-zip-check}"/>
-        <copy file="${srcdist-zip-check}/imcms${versionfilesuffix}/build.properties.template" tofile="${srcdist-zip-check}/imcms${versionfilesuffix}/build.properties"/>
-        <ant dir="${srcdist-zip-check}/imcms${versionfilesuffix}" target="dist"/>
-    </target>
-
-    <target name="distcheck-tgz" depends="srcdist-tgz">
-        <property name="srcdist-tgz-check" value="${temp.dir}/srcdist-tgz-check"/>
-        <untar src="${srcdist-tgz}" dest="${srcdist-tgz-check}" compression="gzip"/>
-        <copy file="${srcdist-tgz-check}/imcms${versionfilesuffix}/build.properties.template" tofile="${srcdist-tgz-check}/imcms${versionfilesuffix}/build.properties"/>
-        <ant dir="${srcdist-tgz-check}/imcms${versionfilesuffix}" target="dist"/>
-    </target>
-
-    <!-- Development targets -->
-
-    <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
-    <target name="build"
-       depends="init,process-webapp-sources,jspc,checkstyle,mvn-compile,sql,jar"
-       description="Builds everything."/>
-
-    <target name="clean" description="Deletes everything for a fresh start.">
-
+    <target name="clean" description="Deletes everything for a fresh start." depends="mvn-clean">
         <delete dir="${build.dir}"/>
         <delete dir="${temp.dir}"/>
-        <delete dir="${dist.dir}"/>
-    	<delete dir="${main.webapp.web-inf.dir}"/>
-
+    	<delete dir="${main.webapp.webinf.dir}"/>
     </target>
 
+	
     <target name="database-apply-diff" depends="init,sql">
         <fail unless="db-diff-file">
             Set "db-diff-file" in build.properties to the diff file you want to execute.
@@ -188,7 +88,6 @@
     </target>
 
     <target name="database-create" depends="init">
-
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
              userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
             CREATE DATABASE ${db-name}
@@ -199,46 +98,32 @@
             <transaction src="sql/imcms_6.0_schema.sql"/>
         	<transaction src="sql/imcms_6.0_data.sql"/>
         </sql>
-
     </target>
 
+	
     <target name="database-drop" depends="init">
-
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
              userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
             DROP DATABASE IF EXISTS ${db-name}
         </sql>
-
     </target>
 
+	
     <target name="database-recreate" depends="init,database-drop,database-create"/>
-		
-	<target name="database-recreate-apply-diff" depends="init,database-drop,database-create,database-apply-diff"/>
 
+	
     <target name="install" depends="init,check-deployroot" description="Install files already built, without running 'build' first.">
         <copy todir="${webapproot}">
             <fileset dir="${maven.build.webapp.dir}"/>
         </copy>
     </target>
 
-    
-    <target name="jar" depends="mvn-compile">
-        <mkdir dir="${lib}"/>
-        <jar destfile="${jar}" basedir="${classes}">
-            <metainf dir="${main.webapp.web-inf.dir}/tld"/>
-        </jar>
-    </target>
-
+	
     <target name="uninstall" depends="init-version-properties,check-deployroot" description="Removes the installed files from the deployroot, including the war-file.">
         <delete dir="${webapproot}"/>
         <delete file="${deployroot}/${warfilename}"/>
     </target>
 
-    <target name="warinstall" depends="init,bindist-war,check-deployroot" description="Builds and installs the war-file.">
-        <copy file="${war}" todir="${deployroot}" overwrite="yes"/>
-    </target>
-
-    <!-- Component targets used in build -->
 
     <target name="apidocs">
         <javadoc sourcepath="${main.java.dir}/" destdir="${apidocs}"
@@ -253,26 +138,29 @@
         </javadoc>
     </target>
 
+	
     <target name="changes">
         <xslt in="docs/changes.xml" style="docs/changes.xsl" out="docs/CHANGES.HTML"/>
     </target>
 
+	
     <target name="checksumsfile">
         <checksumfiles destfile="${checksumsfile}" digest="MD5" append="true">
             <fileset dir="${build.dir}"/>
         </checksumfiles>
     </target>
 
+	
     <target name="checkstyle" depends="init">
-<!--
+		<!--
         <checkstyle config="docs/checkstyle.xml">
             <fileset dir="${main.java.dir}" includes="**/*.java"/>
         </checkstyle>
--->
+		-->
     </target>
 
 	
-    <target name="jspc" depends="init,process-webapp-sources">
+    <target name="jspc" depends="process-webapp-sources">
     	<!--
     	<mkdir dir="${temp.dir}/jspc"/>
     	
@@ -324,9 +212,9 @@
         </javac>
        	-->   		
     </target>   
+
 	
-    <target name="sql">
-        
+    <target name="sql">        
         <copy todir="${sql-diff}">
             <fileset dir="sql/diff" includes="diff-*.sql"/>
         </copy>     
@@ -341,14 +229,12 @@
 
         <copy todir="${sql-sprocs}">
             <fileset dir="sql/sprocs" includes="*.prc"/>
-        </copy>
-        
+        </copy>        
     </target>
 
-    <!--  -->
-    <target name="process-webapp-sources"
-       depends="init,changes"
-       description="Translates and copies the webapp sources.">
+	
+    <target name="process-webapp-sources" depends="init,changes"
+            description="Translates and copies the webapp sources.">
 
         <property name="texttemplates" value="${templates}/text"/>
         <property name="demotemplates" value="${texttemplates}/demo"/>
@@ -357,10 +243,10 @@
         <property name="docs" value="${main.webapp.imcms.dir}/docs"/>
         <property name="apisamples" value="${docs}/apisamples"/>
         <property name="apidocs" value="${docs}/api"/>
-    	
+    	<!--???-->
         <dependset>
             <srcfileset file="${build.properties}"/>
-            <targetfileset dir="${conf}">
+            <targetfileset dir="${webinf.conf.dir}">
             	<include name="imcms_*"/>
             	<include name="server.properties"/>
             </targetfileset>
@@ -368,7 +254,7 @@
     	
         <dependset>
             <srcfileset file="${build.properties}"/>
-            <targetfileset dir="${webinf.classes}">
+            <targetfileset dir="${webinf.classes.dir}">
             	<include name="logj4*"/>
             </targetfileset>
         </dependset>    	
@@ -381,28 +267,26 @@
         <mkdir dir="${main.webapp.dir}/jsp"/>
         <mkdir dir="${main.webapp.dir}/user"/>
 
-        <mkdir dir="${lib}"/>
-        <mkdir dir="${main.webapp.web-inf.dir}/includes"/>
-        <mkdir dir="${main.webapp.web-inf.dir}/logs"/>
-        <mkdir dir="${main.webapp.web-inf.dir}/uploads"/>
-        <mkdir dir="${main.webapp.web-inf.dir}/classes"/>
+        <mkdir dir="${main.webapp.webinf.dir}/includes"/>
+        <mkdir dir="${main.webapp.webinf.dir}/logs"/>
+        <mkdir dir="${main.webapp.webinf.dir}/uploads"/>
+        <!--mkdir dir="${main.webapp.webinf.dir}/classes"/-->
         
-        <!-- Copy resources -->
-        <copy todir="${main.webapp.web-inf.dir}" file="${main.resources.dir}/applicationContext.xml" filtering="false"/>     
-    	<copy todir="${main.webapp.web-inf.dir}" file="${main.resources.dir}/newadmin-servlet.xml" filtering="false"/>      
-    	
-    	<copy todir="${main.webapp.web-inf.dir}/classes" filtering="true">
-    		<fileset dir="${main.resources.dir}" includes="**/*log*, **/*hibernate*"/>
-    	</copy>
-    	
-    	<copy todir="${main.webapp.web-inf.dir}/classes" filtering="true">
-    		<fileset dir="${main.java.dir}" includes="*.xml"/>
+        <!-- Copy and filter webinf, conf and classes resources -->   
+    	<copy todir="${main.webapp.webinf.dir}" filtering="true">
+    		<fileset dir="src/main/resources-webinf"/>
     	</copy>    	
     	
-    	<copy todir="${main.webapp.web-inf.dir}/conf" filtering="true">
-    		<fileset dir="${main.resources.dir}" includes="**/*" excludes="**/*log*"/>
+    	<copy todir="${webinf.classes.dir}" filtering="true">
+    		<fileset dir="src/main/resources-classes"/>
     	</copy>    	
+    	<copy file="${webinf.classes.dir}/${log4j-config}" tofile="${webinf.classes.dir}/log4j.xml"/>
+    	    
+    	<copy todir="${webinf.conf.dir}" filtering="true">
+    		<fileset dir="src/main/resources-conf"/>
+    	</copy>    	   	
     	
+    		
         <echo message="${version}" file="${versionfile}"/>
 
         <copy todir="${main.webapp.dir}" filtering="true">
@@ -433,13 +317,10 @@
         <copy todir="${docs}">
             <fileset dir="${basedir}/docs"/>
         </copy>
-
-        <copy file="${webinf.classes}/${log4j-config}" tofile="${webinf.classes}/log4j.xml"/>
-
     </target>
 
+	
     <target name="web-lang" depends="init">
-
         <imtranslate bundle="${main.resources.dir}/imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${templates}/${buildlanguage}" filtering="true" encoding="utf-8">
@@ -455,21 +336,12 @@
         <copy todir="${main.webapp.imcms.dir}/${buildlanguage}" filtering="false">
             <fileset dir="web/imcms/lang" includes="${imagespattern}"/>
         </copy>
-
     </target>
 
-    <!-- Compound targets -->
-
-    <target name="build-install" depends="mvn-package,install" description="Copies the webapp directly into the webapp-directory in the deployroot."/>
-
-    <target name="clean-build" depends="clean,build" description="Runs targets clean and build."/>
-
-    <target name="clean-build-install" depends="clean,build-install" description="Runs targets clean, build, and install."/>
-
-    <!-- Init targets -->
-
-    <target name="init" depends="copy-build.properties,init-version-properties,init-global-filters" description="Handy target for everything else to depend on.">
-
+	
+    <target name="init" depends="create-build.properties,init-version-properties,init-global-filters" 
+    		description="Handy target for everything else to depend on.">
+    	
         <record name="${basedir}/build.log"/>
 
         <tstamp/>
@@ -483,18 +355,13 @@
 	    </fail>    	
     </target>
 
-    <target name="copy-build.properties" unless="build.properties-available">
+	
+    <target name="create-build.properties" unless="build.properties-available">
         <copy file="build.properties.template" tofile="build.properties"/>
     </target>
-
+	
 
     <target name="init-version-properties">
-    	
-    	<pathconvert targetos="unix" property="wl.path.unix" refid="pom.classpath"/>
-
-    	
-    	<echo file="out.txt" message="cp:***${wl.path.unix}"/>
-    	
         <propertyregex property="version"
             input="${svnurl}"
             regexp=".URL: .*/tags/(.+)/[^/]+ ."
@@ -514,23 +381,7 @@
             replace="-\1"
             casesensitive="false"/>
         
-        <!-- Locations for the final packages -->
-        <property name="warfilename" value="imcms${versionfilesuffix}.war"/>
-        <property name="war" value="${dist.dir}/${warfilename}"/>
-        <property name="jar" value="${lib}/imcms${versionfilesuffix}.jar"/>
-
         <property name="sprocs-sql" value="${sql}/imcms-sprocs${versionfilesuffix}.sql"/>
-
-        <property name="bindist-jar" value="${dist.dir}/imcms${versionfilesuffix}.jar"/>
-        <property name="bindist-api-jar" value="${dist.dir}/imcms${versionfilesuffix}-api.jar"/>
-        <property name="bindist-util-jar" value="${dist.dir}/imcms${versionfilesuffix}-util.jar"/>
-
-        <property name="bindist-zip" value="${dist.dir}/imcms${versionfilesuffix}.zip"/>
-        <property name="bindist-tgz" value="${dist.dir}/imcms${versionfilesuffix}.tar.gz"/>
-
-        <property name="srcdist" value="imcms${versionfilesuffix}-src"/>
-        <property name="srcdist-zip" value="${dist.dir}/${srcdist}.zip"/>
-        <property name="srcdist-tgz" value="${dist.dir}/${srcdist}.tar.gz"/>
     	
     	<if>
     	 <equals arg1="${version}" arg2="" />
@@ -548,11 +399,10 @@
  	   <echo message="init-version-properties: maven.artifact.version: ${maven.artifact.version}"/>
     </target>
 
+	
     <target name="init-global-filters"
-        depends="check-build-properties,init-version-properties">
-    	<filter filtersfile="build.filters.properties"/>
+        	depends="check-build-properties,init-version-properties">
     	
-        <filter token="showHibernateSQL" value="${showHibernateSQL}"/>
     	<filter token="defaultlanguage" value="${defaultlanguage}"/>
     	
     	<filter token="db.schema.version" value="${db.schema.version}"/>
@@ -598,10 +448,8 @@
         <filter token="webmaster-email" value="${webmaster-email}"/>
     </target>
 
-    <!-- Check targets -->
-
+	
     <target name="check-build-properties" unless="build-properties-up-to-date">
-
         <uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
             <srcfiles dir="${basedir}" includes="build.properties.template"/>
         </uptodate>
@@ -610,15 +458,14 @@
             'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT for details.)
             Copy 'build.properties.template' to 'build.properties' and edit it!
         </fail>
-
     </target>
+	
 
     <target name="check-deployroot" unless="deployroot">
-
         <fail message="Set 'deployroot' in '${build.properties}'!"/>
-
     </target>
 
+	
     <target name="check-web-xml-valid">
         <xmlvalidate file="web/WEB-INF/web.xml" classpathref="libraries">
             <dtd
@@ -647,9 +494,13 @@
         </sequential>
     </macrodef>
 			
+	<target name="mvn-clean">
+		<maven goal="clean"/>
+	</target>
+	
 	<target name="mvn-compile">
 		<maven goal="compile"/>
-	</target>
+	</target>	
 	
 	<target name="mvn-package" depends="process-webapp-sources">
 		<maven goal="package"/>
@@ -717,4 +568,8 @@
         	<arg value="-Dclassifier=classes"/>
         </exec>		
 	</target>
+	
+    <!-- Compound targets -->
+    <target name="build-install" depends="mvn-package,install" description="Copies the webapp directly into the webapp-directory in the deployroot."/>
+    <target name="clean-build-install" depends="clean,build-install" description="Runs targets clean, build, and install."/>	
 </project>
