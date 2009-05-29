@@ -675,7 +675,7 @@
 	        <arg value="-DgroupId=com.imcode.imcms"/>
 	        <arg value="-DartifactId=imcms"/> 
 	        <arg value="-Dversion=${pom.version}"/>
-			<arg value="-Dpackaging=war"/>
+	        <arg value="-Dpackaging=war"/>
 		</exec>	
 		
         <exec executable="${ant.maven.executable}" failonerror="true">            
