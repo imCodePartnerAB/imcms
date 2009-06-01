@@ -16,17 +16,18 @@
     <property name="version" value=""/>
     <property name="versionnumber" value=""/>
     <property name="versionfilesuffix" value=""/>
-	
-    <!-- ant build directories. -->    
+	    
 	<property name="lib.dir" value="${basedir}/lib"/>
 	<property name="sql.dir" value="${basedir}/sql"/>
 	<property name="web.dir" value="${basedir}/web"/>
 
-	<!-- maven model directories -->	
+	<!-- Resources common for both main and test -->
+	<property name="resources.dir" value="${basedir}/src/resources"/>
+		
 	<property name="main.java.dir" value="${basedir}/src/main/java"/>
 	<property name="main.resources.dir" value="${basedir}/src/main/resources"/>
 	<property name="main.resources-conf.dir" value="${basedir}/src/main/resources-conf"/>
-	<property name="main.resources-webinf.dir" value="${basedir}/src/main/resources-webinf"/>
+	<property name="main.resources-webinf.dir" value="${basedir}/src/main/resources-webinf"/>	
 	
 	<property name="main.webapp.dir" value="${basedir}/src/main/webapp"/>	
 	<property name="main.webapp.login.dir" value="${main.webapp.dir}/login"/>
@@ -204,24 +205,23 @@
         <mkdir dir="${main.webapp.webinf.dir}/includes"/>
         <mkdir dir="${main.webapp.webinf.dir}/logs"/>
         <mkdir dir="${main.webapp.webinf.dir}/uploads"/>
+    	
+    	<echo message="${version}" file="${versionfile}"/>
         
-        <!-- Copy and filter webinf, conf and classes resources -->   
+        <!-- Copy and filter webinf, conf and classes resources to main webapp dir -->   
     	<copy todir="${main.webapp.webinf.dir}" filtering="true">
-    		<fileset dir="src/main/resources-webinf"/>
+    		<fileset dir="${main.resources-webinf.dir}"/>
     	</copy>    	
     	
     	<copy todir="${webinf.classes.dir}" filtering="true">
-    		<fileset dir="src/main/resources-classes"/>
+    		<fileset dir="${resources.dir}"/>
     	</copy>    	
-    	<copy file="${webinf.classes.dir}/${log4j-config}" tofile="${webinf.classes.dir}/log4j.xml"/>
+    	<copy file="${resources.dir}/${log4j-config}" tofile="${webinf.classes.dir}/log4j.xml"/>
     	    
     	<copy todir="${webinf.conf.dir}" filtering="true">
-    		<fileset dir="src/main/resources-conf"/>
+    		<fileset dir="${main.resources-conf.dir}"/>
     	</copy>    	   	
-    	
-    		
-        <echo message="${version}" file="${versionfile}"/>
-
+    	    		
         <copy todir="${main.webapp.dir}" filtering="true">
             <fileset dir="${web.dir}" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
         </copy>
