@@ -77,6 +77,10 @@ public class ImageCacheMapper {
 			cacheIds.add(imageCache.getId());
 		}
 		
+		if (cacheIds.isEmpty()) {
+			return;
+		}
+		
 		database.execute(new SqlUpdateCommand(getDeleteDocumentImagesCacheSQL(cacheIds), new Object[] { metaId }));
 		
 		String existingSQL = getExistingDocumentCacheIdsSQL(cacheIds);
