@@ -9,29 +9,14 @@
   <name>imCMS</name>
 
   <dependencies>
-    <!-- Not used in project, for local testings -->
+    <!-- TEST -->
     <dependency>
       <groupId>org.beanshell</groupId>
       <artifactId>bsh</artifactId>
       <version>2.0b4</version>
       <scope>provided</scope>      
-    </dependency>  
-    
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
-      <version>6.1.5</version>
-      <scope>provided</scope>
-    </dependency>  
-    
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty-ant</artifactId>
-      <version>6.1.5</version>
-      <scope>provided</scope>
-    </dependency>      
-  
-    <!-- TEST -->
+    </dependency>           
+      
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -68,7 +53,7 @@
         <scope>test</scope>
     </dependency>
          
-    
+             
     <!-- REQUIRED -->
     <dependency>
       <groupId>antlr</groupId>
@@ -168,10 +153,8 @@
     
     <dependency>
 	  <groupId>org.dbunit</groupId>
-	    <artifactId>dbunit</artifactId>
-	    <version>2.3.0</version>
-
-	    
+      <artifactId>dbunit</artifactId>
+	  <version>2.3.0</version>
     </dependency>     
     
     <dependency>
@@ -180,7 +163,7 @@
       <version>1.6.1</version>        
     </dependency>
 
-    <!-- put to local repo -->  
+    <!-- imCode Internal Repository dependencies -->  
     <dependency>
       <groupId>gnu-activation</groupId>
       <artifactId>gnu-activation</artifactId>
@@ -216,7 +199,7 @@
       <artifactId>gnu-mail-providers</artifactId>
       <version>1.0</version>              
     </dependency>
-    <!-- End of put to local repo -->
+    <!-- imCode Internal Repository dependencies -->
     
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
@@ -334,7 +317,7 @@
     </dependency>
     
     <dependency>
-      <groupId>org.apache.poi</groupId> <!-- groupId>poi</groupId-->
+      <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
       <version>3.1-FINAL</version>        
     </dependency>
@@ -416,37 +399,13 @@
     <dependency>
       <groupId>ant-contrib</groupId>
       <artifactId>ant-contrib</artifactId>
-      <!--version>0.6</version-->
       <version>1.0b3</version>
       <scope>provided</scope>
     </dependency>
-    
-    <dependency>
-      <groupId>org.apache.ant</groupId>
-      <artifactId>ant-nodeps</artifactId>
-      <version>1.7.1</version>
-      <scope>provided</scope>
-    </dependency>
-	
-	<dependency>
-      <groupId>org.apache.ant</groupId>
-      <artifactId>ant</artifactId>
-      <version>1.7.1</version>
-      <scope>provided</scope>
-    </dependency>
-	    
-    
-    <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>catalina-ant</artifactId>
-      <version>5.5.23</version>
-      <scope>provided</scope>
-    </dependency>
-    
+         
     <dependency>
       <groupId>checkstyle</groupId>
       <artifactId>checkstyle</artifactId>
-      <!--version>4.3</version-->
       <version>4.4</version>
       <scope>provided</scope>
     </dependency>
@@ -470,21 +429,7 @@
       <artifactId>jakarta-regexp</artifactId>
       <version>1.4</version>
     </dependency>
-        
-    <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-compiler</artifactId>
-      <version>5.5.23</version>
-      <scope>provided</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-runtime</artifactId>
-      <version>5.5.23</version>
-      <scope>provided</scope>
-    </dependency>
-    
+             
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
       <artifactId>jsp-api</artifactId>
@@ -529,6 +474,7 @@
   <build>
     <finalName>${project.artifactId}</finalName>
     <plugins>    
+      <!-- TODO: Add (Jetty?) Jspc plugin for jsps verification? -->
 	  <plugin>
 	    <artifactId>maven-compiler-plugin</artifactId>
 		  <configuration>
@@ -542,12 +488,19 @@
 		  </configuration>
   	    </plugin>
   	    
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.4.2</version>
+          <configuration>
+            <skipTests>true</skipTests>
+          </configuration>
+        </plugin>
+  	      	    
 	    <plugin>
           <artifactId>maven-war-plugin</artifactId>
-          <configuration>
-          	<!--  
-            <archiveClasses>true</archiveClasses>
-            -->
+          <configuration>          	  
+            <archiveClasses>true</archiveClasses>            
             <!-- 
             <webResources>
 	          <resource>

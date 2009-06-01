@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='iso-8859-1'?>
 
-<project name="imCMS" default="mvn-package" xmlns:artifact="urn:maven-artifact-ant">
+<project name="imCMS" default="package" xmlns:artifact="urn:maven-artifact-ant">
 	
     <!-- Read in 'build.properties' and set the properties therein. -->
     <!-- Those properties are used as bases for latsproer properties in this file. -->
@@ -10,7 +10,7 @@
     <property file="${build.properties}"/>
 	
     <!-- The current version of imCMS. -->
-    <property name="svnurl" value="$URL$"/>
+    <property name="svnurl" value="$URL: https://repo.imcode.com/imcode/imcms/trunk/build.xml $"/>
 
     <!-- versionnumber : imCMS version without suffix, only the number (e.g. "1.2.3") -->
     <property name="version" value=""/>
@@ -21,6 +21,7 @@
     <property name="build.dir" value="${basedir}/build"/>    
     <property name="temp.dir" value="${basedir}/temp"/>
 	<property name="lib.dir" value="${basedir}/lib"/>
+	<property name="sql.dir" value="${basedir}/sql"/>
 
 	<!-- maven model directories -->	
 	<property name="main.java.dir" value="${basedir}/src/main/java"/>
@@ -28,22 +29,20 @@
 	
 	<property name="main.webapp.dir" value="${basedir}/src/main/webapp"/>	
 	<property name="main.webapp.login.dir" value="${main.webapp.dir}/login"/>
-    <property name="main.webapp.imcms.dir" value="${main.webapp.dir}/imcms"/>	
-    
+    <property name="main.webapp.imcms.dir" value="${main.webapp.dir}/imcms"/>	    
 	<property name="main.webapp.webinf.dir" value="${main.webapp.dir}/WEB-INF"/>
 	
     <property name="versionfile" value="${main.webapp.webinf.dir}/version.txt"/>
     <property name="checksumsfile" value="${main.webapp.webinf.dir}/checksums.txt"/>
 
     <property name="srcincludes" value="MANIFEST.TXT"/>
-	
-    <property name="classes" value="${temp.dir}/classes"/>	
+		
     <property name="webinf.conf.dir" value="${main.webapp.webinf.dir}/conf"/>
 	<property name="webinf.classes.dir" value="${main.webapp.webinf.dir}/classes"/>
-    <property name="templates" value="${main.webapp.webinf.dir}/templates"/>
-    <property name="sql" value="${main.webapp.webinf.dir}/sql"/>
-    <property name="sql-diff" value="${sql}/diff"/>
-    <property name="sql-sprocs" value="${sql}/sprocs"/>
+    <property name="webinf.templates.dir" value="${main.webapp.webinf.dir}/templates"/>
+    <property name="webinf.sql.dir" value="${main.webapp.webinf.dir}/sql"/>
+    <property name="webinf.sql-diff.dir" value="${webinf.sql.dir}/diff"/>
+    <property name="webinf.sql-sprocs.dir" value="${webinf.sql.dir}/sprocs"/>
     
     <!-- Maven integration -->
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" 
@@ -66,17 +65,15 @@
 	
     <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
 
-	<!--
-    <taskdef classname="org.apache.jasper.JspC" name="jasper2" classpathref="pom.classpath"/>
-    -->
     <taskdef resource="checkstyletask.properties" classpathref="pom.classpath"/>
 
-    <target name="clean" description="Deletes everything for a fresh start." depends="mvn-clean">
+    <target name="clean" description="Deletes everything for a fresh start.">
+    	<maven goal="clean"/>
+    	
         <delete dir="${build.dir}"/>
         <delete dir="${temp.dir}"/>
     	<delete dir="${main.webapp.webinf.dir}"/>
     </target>
-
 	
     <target name="database-apply-diff" depends="init,sql">
         <fail unless="db-diff-file">
@@ -84,7 +81,7 @@
         </fail>
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
-            userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" src="sql/diff/${db-diff-file}"/>
+            userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" src="${sql.dir}/diff/${db-diff-file}"/>
     </target>
 
     <target name="database-create" depends="init">
@@ -95,8 +92,8 @@
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" keepformat="true">
-            <transaction src="sql/imcms_6.0_schema.sql"/>
-        	<transaction src="sql/imcms_6.0_data.sql"/>
+            <transaction src="${sql.dir}/imcms_6.0_schema.sql"/>
+        	<transaction src="${sql.dir}/imcms_6.0_data.sql"/>
         </sql>
     </target>
 
@@ -112,14 +109,16 @@
     <target name="database-recreate" depends="init,database-drop,database-create"/>
 
 	
-    <target name="install" depends="init,check-deployroot" description="Install files already built, without running 'build' first.">
+    <target name="tomcat-install" depends="init,check-deployroot" 
+    		description="Install files already built, without running 'build' first.">
+    	
         <copy todir="${webapproot}">
             <fileset dir="${maven.build.webapp.dir}"/>
         </copy>
     </target>
 
 	
-    <target name="uninstall" depends="init-version-properties,check-deployroot" description="Removes the installed files from the deployroot, including the war-file.">
+    <target name="tomcat-uninstall" depends="init-version-properties,check-deployroot" description="Removes the installed files from the deployroot, including the war-file.">
         <delete dir="${webapproot}"/>
         <delete file="${deployroot}/${warfilename}"/>
     </target>
@@ -157,86 +156,32 @@
             <fileset dir="${main.java.dir}" includes="**/*.java"/>
         </checkstyle>
 		-->
-    </target>
-
-	
-    <target name="jspc" depends="process-webapp-sources">
-    	<!--
-    	<mkdir dir="${temp.dir}/jspc"/>
-    	
-        // deprecated
-        <jasper2
-                validateXml="false"
-                verbose="9"
-                uriroot="${build.dir}"
-                webXmlFragment="${temp.dir}/generated_web.xml"
-                outputDir="${temp.dir}/jsp"
-                classpath="${classes}"/>
-
-        <javac srcdir="${temp.dir}/jsp" destdir="${temp.dir}/jspc"
-               classpathref="classes-and-libraries" fork="yes"
-               excludes="**/*_included_jsp.java"/>
-        
-    	
-    	
-    	// ERRORS
-        <jasper2
-                validateXml="false"
-                verbose="9"
-                uriroot="${build.dir}"
-                webXmlFragment="${temp.dir}/generated_web.xml"
-                outputDir="${temp.dir}/jsp"
-                classpath="${classes}"/>    	
-    	
-        <javac destdir="${temp.dir}/jspc"
-               optimize="off"
-               debug="on" failonerror="true"
-               srcdir="${temp.dir}/jsp" 
-    	   excludes="**/*.smap">
-          <classpath>
-          	<pathelement path="${classes}"/>
-
-            <fileset dir="${lib}">
-              <include name="*.jar"/>
-            </fileset>
-          	
-            <fileset dir="${catalina.home}/lib">
-              <include name="*.jar"/>
-            </fileset>
-            <fileset dir="${catalina.home}/bin"> 
-              <include name="*.jar"/> 
-            </fileset> 
-          </classpath>
-          <include name="**" />
-          <exclude name="tags/**" />
-        </javac>
-       	-->   		
     </target>   
 
 	
     <target name="sql">        
-        <copy todir="${sql-diff}">
-            <fileset dir="sql/diff" includes="diff-*.sql"/>
+        <copy todir="${webinf.sql-diff.dir}">
+            <fileset dir="${sql.dir}/diff" includes="diff-*.sql"/>
         </copy>     
 
-        <copy todir="${sql}">
-            <fileset file="sql/imcms_5.0_schema.sql"/>
+        <copy todir="${webinf.sql.dir}">
+            <fileset file="${sql.dir}/imcms_6.0_schema.sql"/>
         </copy>
         
-        <copy todir="${sql}">
-            <fileset file="sql/imcms_5.0_data.sql"/>
+        <copy todir="${webinf.sql.dir}">
+            <fileset file="${sql.dir}/imcms_6.0_data.sql"/>
         </copy>     
 
-        <copy todir="${sql-sprocs}">
-            <fileset dir="sql/sprocs" includes="*.prc"/>
+        <copy todir="${webinf.sql-sprocs.dir}">
+            <fileset dir="${sql.dir}/sprocs" includes="*.prc"/>
         </copy>        
     </target>
 
 	
     <target name="process-webapp-sources" depends="init,changes"
-            description="Translates and copies the webapp sources.">
+            description="Translates and copies the webapp sources to webapp.">
 
-        <property name="texttemplates" value="${templates}/text"/>
+        <property name="texttemplates" value="${webinf.templates.dir}/text"/>
         <property name="demotemplates" value="${texttemplates}/demo"/>
         <property name="imagespattern" value="**/*.png,**/*.jpg,**/*.gif"/>
     	
@@ -270,7 +215,6 @@
         <mkdir dir="${main.webapp.webinf.dir}/includes"/>
         <mkdir dir="${main.webapp.webinf.dir}/logs"/>
         <mkdir dir="${main.webapp.webinf.dir}/uploads"/>
-        <!--mkdir dir="${main.webapp.webinf.dir}/classes"/-->
         
         <!-- Copy and filter webinf, conf and classes resources -->   
     	<copy todir="${main.webapp.webinf.dir}" filtering="true">
@@ -323,7 +267,7 @@
     <target name="web-lang" depends="init">
         <imtranslate bundle="${main.resources.dir}/imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${templates}/${buildlanguage}" filtering="true" encoding="utf-8">
+            todir="${webinf.templates.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
             <fileset dir="web/WEB-INF/templates/lang"/>
         </imtranslate>
 
@@ -381,7 +325,7 @@
             replace="-\1"
             casesensitive="false"/>
         
-        <property name="sprocs-sql" value="${sql}/imcms-sprocs${versionfilesuffix}.sql"/>
+        <property name="sprocs-sql" value="${webinf.sql.dir}/imcms-sprocs${versionfilesuffix}.sql"/>
     	
     	<if>
     	 <equals arg1="${version}" arg2="" />
@@ -493,28 +437,29 @@
             </exec>
         </sequential>
     </macrodef>
-			
-	<target name="mvn-clean">
-		<maven goal="clean"/>
-	</target>
-	
-	<target name="mvn-compile">
+				
+	<target name="compile">
 		<maven goal="compile"/>
 	</target>	
 	
-	<target name="mvn-package" depends="process-webapp-sources">
+	<target name="package" depends="process-webapp-sources">
 		<maven goal="package"/>
 	</target>
 	
-	<target name="mvn-install" depends="process-webapp-sources">
+	<target name="install" depends="process-webapp-sources">
 		<maven goal="install"/>
 	</target>
 	
-	<target name="mvn-deploy" depends="process-webapp-sources">
+	<target name="deploy" depends="process-webapp-sources">
 		<maven goal="deploy"/>
+	</target>
+	
+	<target name="jetty" depends="process-webapp-sources"
+			description="Runs built webapp under jetty on port 9090">
+		<maven goal="jetty:run"/>
 	</target>	
 	
-	<target name="mvn-install-all" depends="mvn-package">
+	<target name="install-include-classes" depends="package">
         <exec executable="${ant.maven.executable}" failonerror="true">            
         	<arg value="install:install-file"/>
         	
@@ -539,7 +484,7 @@
         </exec>		
 	</target>
 	
-	<target name="mvn-deploy-all" depends="mvn-package">
+	<target name="deploy-include-classes" depends="package">
 		<exec executable="${ant.maven.executable}" failonerror="true"> 
 	        <arg value="deploy:deploy-file"/>
 			
@@ -570,6 +515,6 @@
 	</target>
 	
     <!-- Compound targets -->
-    <target name="build-install" depends="mvn-package,install" description="Copies the webapp directly into the webapp-directory in the deployroot."/>
-    <target name="clean-build-install" depends="clean,build-install" description="Runs targets clean, build, and install."/>	
+    <target name="build-tomcat-install" depends="package,tomcat-install" description="Copies the webapp directly into the webapp-directory in the deployroot."/>
+    <target name="clean-build-tomcat-install" depends="clean,build-tomcat-install" description="Runs targets clean, build, and install."/>	
 </project>
