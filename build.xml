@@ -17,15 +17,16 @@
     <property name="versionnumber" value=""/>
     <property name="versionfilesuffix" value=""/>
 	
-    <!-- ant build directories. --> 
-    <property name="build.dir" value="${basedir}/build"/>    
-    <property name="temp.dir" value="${basedir}/temp"/>
+    <!-- ant build directories. -->    
 	<property name="lib.dir" value="${basedir}/lib"/>
 	<property name="sql.dir" value="${basedir}/sql"/>
+	<property name="web.dir" value="${basedir}/web"/>
 
 	<!-- maven model directories -->	
 	<property name="main.java.dir" value="${basedir}/src/main/java"/>
 	<property name="main.resources.dir" value="${basedir}/src/main/resources"/>
+	<property name="main.resources-conf.dir" value="${basedir}/src/main/resources-conf"/>
+	<property name="main.resources-webinf.dir" value="${basedir}/src/main/resources-webinf"/>
 	
 	<property name="main.webapp.dir" value="${basedir}/src/main/webapp"/>	
 	<property name="main.webapp.login.dir" value="${main.webapp.dir}/login"/>
@@ -33,7 +34,6 @@
 	<property name="main.webapp.webinf.dir" value="${main.webapp.dir}/WEB-INF"/>
 	
     <property name="versionfile" value="${main.webapp.webinf.dir}/version.txt"/>
-    <property name="checksumsfile" value="${main.webapp.webinf.dir}/checksums.txt"/>
 
     <property name="srcincludes" value="MANIFEST.TXT"/>
 		
@@ -59,7 +59,6 @@
     <!-- End of maven integration -->		
     
     <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="pom.classpath"/>
-    <taskdef name="checksumfiles" classname="com.imcode.ant.tasks.ChecksumFiles" classpathref="pom.classpath"/>
     <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask" classpathref="pom.classpath"/>
     <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="pom.classpath"/>
 	
@@ -69,9 +68,6 @@
 
     <target name="clean" description="Deletes everything for a fresh start.">
     	<maven goal="clean"/>
-    	
-        <delete dir="${build.dir}"/>
-        <delete dir="${temp.dir}"/>
     	<delete dir="${main.webapp.webinf.dir}"/>
     </target>
 	
@@ -140,13 +136,6 @@
 	
     <target name="changes">
         <xslt in="docs/changes.xml" style="docs/changes.xsl" out="docs/CHANGES.HTML"/>
-    </target>
-
-	
-    <target name="checksumsfile">
-        <checksumfiles destfile="${checksumsfile}" digest="MD5" append="true">
-            <fileset dir="${build.dir}"/>
-        </checksumfiles>
     </target>
 
 	
@@ -234,11 +223,11 @@
         <echo message="${version}" file="${versionfile}"/>
 
         <copy todir="${main.webapp.dir}" filtering="true">
-            <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
+            <fileset dir="${web.dir}" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
         </copy>
 
         <copy todir="${main.webapp.dir}">
-            <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern}"/>
+            <fileset dir="${web.dir}" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern}"/>
         </copy>
 
         <antcall target="web-lang">
@@ -265,20 +254,20 @@
 
 	
     <target name="web-lang" depends="init">
-        <imtranslate bundle="${main.resources.dir}/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${webinf.templates.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
-            <fileset dir="web/WEB-INF/templates/lang"/>
+            <fileset dir="${web.dir}/WEB-INF/templates/lang"/>
         </imtranslate>
 
-        <imtranslate bundle="${main.resources.dir}/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${main.webapp.imcms.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
-            <fileset dir="web/imcms/lang" excludes="${imagespattern}"/>
+            <fileset dir="${web.dir}/imcms/lang" excludes="${imagespattern}"/>
         </imtranslate>
 
         <copy todir="${main.webapp.imcms.dir}/${buildlanguage}" filtering="false">
-            <fileset dir="web/imcms/lang" includes="${imagespattern}"/>
+            <fileset dir="${web.dir}/imcms/lang" includes="${imagespattern}"/>
         </copy>
     </target>
 
@@ -305,7 +294,8 @@
     </target>
 	
 
-    <target name="init-version-properties">
+    <target name="init-version-properties"
+    		description="Extracts artifact version from svn url.">
         <propertyregex property="version"
             input="${svnurl}"
             regexp=".URL: .*/tags/(.+)/[^/]+ ."
