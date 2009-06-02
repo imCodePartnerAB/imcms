@@ -42,11 +42,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     private ImcmsServices services;
     
     private MetaDao metaDao;
-    
-    /*
-    private DocumentLoadingAspect documentLoadingAspect;
-    */
-    
+        
     /**
      * Initializes document's fields.
      */
@@ -73,8 +69,8 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     		initDocument(loadDocument(documentId, versions.get(size - 1).getNumber()));
     }
     
-    public DocumentDomainObject getDocument(Integer documentId, Integer version) {
-    	return initDocument(loadDocument(documentId, version));
+    public DocumentDomainObject getDocument(Integer documentId, Integer versionNumber) {
+    	return initDocument(loadDocument(documentId, versionNumber));
     }	    
         
     public DocumentDomainObject getPublishedDocument(Integer documentId) {
@@ -117,8 +113,8 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     /**
      * Loads document
      */
-    private DocumentDomainObject loadDocument(Integer documentId, Integer version) {		
-    	Meta meta = metaDao.getMeta(documentId, version);
+    private DocumentDomainObject loadDocument(Integer documentId, Integer versionNumber) {		
+    	Meta meta = metaDao.getMeta(documentId, versionNumber);
 		
 		return initMeta(meta);
     }    

@@ -45,11 +45,9 @@ import java.util.TreeMap;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.oro.text.perl.Perl5Util;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 
@@ -70,7 +68,6 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.aop.DocumentAspect;
 import com.imcode.imcms.mapping.aop.TextDocumentAspect;
@@ -143,15 +140,12 @@ public class DocumentMapper implements DocumentGetter {
         
         // Document getter is used directly without Fragmented getter
         // DatabseDocumentGetter is instantiated using SpringFramework factory
-        // in order to support declared (AOP) transactions.        
+        // in order to support declarative (AOP) transactions.        
         databaseDocumentGetter = (DatabaseDocumentGetter)services.getSpringBean("databaseDocumentGetter");
         databaseDocumentGetter.setServices(services);
         databaseDocumentGetter.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
         
-        MetaDao metaDao = (MetaDao)services.getSpringBean("metaDao");
-        
-        this.cachingDocumentGetter = new CachingDocumentGetter(databaseDocumentGetter, metaDao, documentCacheMaxSize);
-        
+        this.cachingDocumentGetter = new CachingDocumentGetter(databaseDocumentGetter, documentCacheMaxSize);        
         this.documentPermissionSetMapper = new DocumentPermissionSetMapper(database);
         this.categoryMapper = new CategoryMapper(database);
         // old code:

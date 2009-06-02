@@ -82,13 +82,13 @@ public class MetaDao extends HibernateTemplate {
 	 * @return Meta
 	 */
 	@Transactional
-	public Meta getMeta(Integer id, Integer version) {
+	public Meta getMeta(Integer id, Integer versionNumber) {
 		Meta meta = getMeta(id);
 		
 		if (meta != null) {
 			DocumentVersion documentVersion = (DocumentVersion)getSession().getNamedQuery("DocumentVersion.getByDocumentIdAndVersion")
 				.setParameter("documentId", id)
-				.setParameter("version", version)
+				.setParameter("version", versionNumber)
 				.uniqueResult();			
 			if (documentVersion != null) {
 				meta.setVersion(documentVersion);
@@ -108,14 +108,14 @@ public class MetaDao extends HibernateTemplate {
 	 * @return Meta
 	 */
 	@Transactional
-	public Meta getMeta(Integer documentId, DocumentVersionSelector versionSpecifier) {
-		switch (versionSpecifier.getType()) {
+	public Meta getMeta(Integer documentId, DocumentVersionSelector versionSelector) {
+		switch (versionSelector.getType()) {
 			case PUBLISHED:
 				return getPublishedMeta(documentId);
 			case WORKING:
 				return getWorkingMeta(documentId);	
 			default: // CUSTOM:
-				return getMeta(documentId, versionSpecifier.getVersionNumber());
+				return getMeta(documentId, versionSelector.getVersionNumber());
 				
 		}
 	}	
