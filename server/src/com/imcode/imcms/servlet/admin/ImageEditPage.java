@@ -18,6 +18,7 @@ import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
+import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
@@ -98,6 +99,7 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__CROP_Y1 = "crop_y1";
     public static final String REQUEST_PARAMETER__CROP_X2 = "crop_x2";
     public static final String REQUEST_PARAMETER__CROP_Y2 = "crop_y2";
+    public static final String REQUEST_PARAMETER__ROTATE_ANGLE = "rotate_angle";
     static final LocalizedMessage ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images");
     static final LocalizedMessage ERROR_MESSAGE__FILE_NOT_IMAGE = new LocalizedMessage("error/servlet/images/file_not_image");
     private final static String[] IMAGE_MIME_TYPES = new String[] { "image/jpeg", "image/png", "image/gif" };
@@ -219,6 +221,9 @@ public class ImageEditPage extends OkCancelPage {
         	image.setArchiveImageId(Long.parseLong(req.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID)));
         } catch (NumberFormatException ex) {
         }
+        
+        int rotateAngle = NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__ROTATE_ANGLE));
+        image.setRotateDirection(RotateDirection.getByAngleDefaultIfNull(rotateAngle));
         
         CropRegion region = new CropRegion();
         region.setCropX1(NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__CROP_X1), -1));
@@ -384,7 +389,9 @@ public class ImageEditPage extends OkCancelPage {
 			}
 		};
 		
-		ImageCropPage cropPage = new ImageCropPage(returnCommand, cropHandler, image, forcedWidth, forcedHeight);
+		Integer metaId = (document != null ? document.getId() : null);
+		
+		ImageCropPage cropPage = new ImageCropPage(returnCommand, cropHandler, metaId, imageIndex, image, forcedWidth, forcedHeight);
 		cropPage.forward(request, response);
     }
 

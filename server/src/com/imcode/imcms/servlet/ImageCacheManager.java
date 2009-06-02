@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.ImageCacheDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
+import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.util.image.Filter;
 import imcode.util.image.ImageOp;
 import imcode.util.image.Resize;
@@ -122,6 +123,11 @@ public class ImageCacheManager {
 		
 		try {
 			ImageOp operation = new ImageOp(Imcms.getServices().getConfig()).input(imageFile);
+			
+			RotateDirection rotateDirection = imageCache.getRotateDirection();
+			if (rotateDirection != RotateDirection.NORTH) {
+			    operation.rotate(rotateDirection.getAngle());
+			}
 			
 			CropRegion cropRegion = imageCache.getCropRegion();
 			int width = imageCache.getWidth();

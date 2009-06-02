@@ -11,6 +11,8 @@ import imcode.util.image.ImageInfo;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ImageDomainObject implements Serializable {
     private ImageSource source = new NullImageSource();
@@ -29,6 +31,7 @@ public class ImageDomainObject implements Serializable {
     private Long archiveImageId;
     private Format format;
     private CropRegion cropRegion = new CropRegion();
+    private RotateDirection rotateDirection = RotateDirection.NORTH;
 
     public String getName() {
         return name;
@@ -113,6 +116,10 @@ public class ImageDomainObject implements Serializable {
 	public Format getFormat() {
 		return format;
 	}
+	
+	public RotateDirection getRotateDirection() {
+        return rotateDirection;
+    }
 
 	public void setName(String image_name) {
         this.name = image_name;
@@ -169,6 +176,10 @@ public class ImageDomainObject implements Serializable {
     public void setFormat(Format format) {
 		this.format = format;
 	}
+    
+    public void setRotateDirection(RotateDirection rotateDirection) {
+        this.rotateDirection = rotateDirection;
+    }
 
 	public void setSourceAndClearSize(ImageSource source) {
         setSource( source );
@@ -248,6 +259,7 @@ public class ImageDomainObject implements Serializable {
                 .append(cropRegion.getCropY1(), otherCropRegion.getCropY1())
                 .append(cropRegion.getCropX2(), otherCropRegion.getCropX2())
                 .append(cropRegion.getCropY2(), otherCropRegion.getCropY2())
+                .append(rotateDirection, o.getRotateDirection())
                 .isEquals();
    }
 
@@ -260,6 +272,7 @@ public class ImageDomainObject implements Serializable {
                 .append(target).append(linkUrl).append(format)
                 .append(cropRegion.getCropX1()).append(cropRegion.getCropY1())
                 .append(cropRegion.getCropX2()).append(cropRegion.getCropY2())
+                .append(rotateDirection)
                 .toHashCode();
     }
 
@@ -380,5 +393,58 @@ public class ImageDomainObject implements Serializable {
     		
     		return true;
     	}
+    	
+    	@Override
+    	public String toString() {
+    		return String.format("%s(%d, %d, %d, %d)", CropRegion.class.getName(), cropX1, cropY1, cropX2, cropY2);
+    	}
+    }
+    
+    public enum RotateDirection {
+        NORTH(0, -90, 90), 
+        EAST(90, 0, 180), 
+        SOUTH(180, 90, -90), 
+        WEST(-90, 180, 0);
+        
+        private static final Map<Integer, RotateDirection> ANGLE_MAP = 
+            new HashMap<Integer, RotateDirection>(RotateDirection.values().length);
+        
+        static {
+            for (RotateDirection direction : RotateDirection.values()) {
+                ANGLE_MAP.put(direction.getAngle(), direction);
+            }
+        }
+        
+        private final int angle;
+        private final int leftAngle;
+        private final int rightAngle;
+        
+        private RotateDirection(int angle, int leftAngle, int rightAngle) {
+            this.angle = angle;
+            this.leftAngle = leftAngle;
+            this.rightAngle = rightAngle;
+        }
+        
+        public int getAngle() {
+            return angle;
+        }
+        
+        public RotateDirection getLeftDirection() {
+            return getByAngle(leftAngle);
+        }
+        
+        public RotateDirection getRightDirection() {
+            return getByAngle(rightAngle);
+        }
+        
+        public static RotateDirection getByAngle(int angle) {
+            return ANGLE_MAP.get(angle);
+        }
+        
+        public static RotateDirection getByAngleDefaultIfNull(int angle) {
+            RotateDirection direction = getByAngle(angle);
+            
+            return (direction != null ? direction : RotateDirection.NORTH);
+        }
     }
 }

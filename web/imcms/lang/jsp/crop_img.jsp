@@ -144,7 +144,17 @@
                         <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
                             <tr>
                                 <td colspan="2" align="center">
-                                    <c:url var="imageUrl" value="${image.urlPathRelativeToContextPath}"/>
+                                    <c:url var="imageUrl" value="/imagehandling">
+                                        <c:param name="path" value="${image.urlPathRelativeToContextPath}"/>
+                                        
+                                        <c:if test="${cropPage.metaId ne null}">
+                                            <c:param name="meta_id" value="${cropPage.metaId}"/>
+                                            <c:param name="image_index" value="${cropPage.imageIndex}"/>
+                                        </c:if>
+
+                                        <c:param name="rangle" value="${image.rotateDirection.angle}"/>
+                                    </c:url>
+                                    
                                     <c:set var="alternateText" value="${fn:escapeXml(image.alternateText)}"/>
                                     <img id="image" src="${fn:escapeXml(imageUrl)}" alt="${alternateText}" title="${alternateText}"/>
                                 </td>
@@ -193,6 +203,10 @@
                                             </td>
                                             <td>&nbsp;</td>
                                             <td></td>
+                                            <td>&nbsp;</td>
+                                            <td></td>
+                                            <td>&nbsp;</td>
+                                            <td></td>
                                         </tr>
                                         <tr>
                                             <td><input id="crop_x1" name="${const.PARAM_CROP_X1}" type="text" class="imcmsDisabled" readonly="readonly" size="4" maxlength="4" value="${region.valid ? region.cropX1 : ''}"/></td>
@@ -208,6 +222,11 @@
                                             <td><input id="height" type="text" class="imcmsDisabled" readonly="readonly" size="4" maxlength="4" value="${region.height}"/></td>
                                             <td>&nbsp;&nbsp;</td>
                                             <td><input id="reset" type="button" class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/4008 ?>"/></td>
+
+                                            <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                            <td><input type="submit" class="imcmsFormBtnSmall" name="${const.REQUEST_PARAMETER__ROTATE_LEFT}" value="<? web/imcms/lang/jsp/crop_img.jsp/rotate_left ?>"/></td>
+                                            <td>&nbsp;</td>
+                                            <td><input type="submit" class="imcmsFormBtnSmall" name="${const.REQUEST_PARAMETER__ROTATE_RIGHT}" value="<? web/imcms/lang/jsp/crop_img.jsp/rotate_right ?>"/></td>
                                         </tr>
                                     </table>
                                 </td>

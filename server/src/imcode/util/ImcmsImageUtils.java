@@ -161,6 +161,9 @@ public class ImcmsImageUtils {
             builder.append(region.getCropY2());
         }
         
+        builder.append("&rangle=");
+        builder.append(image.getRotateDirection().getAngle());
+        
         return builder.toString();
     }
 

@@ -174,7 +174,8 @@ class RebuildImageCacheThread extends Thread {
         Format format = imageDomainObject.getFormat();
         
         ImageCacheDomainObject imageCacheObject = ImageHandling.createImageCacheObject(path, null, fileId, metaId, imageIndex, 
-                format, imageDomainObject.getWidth(), imageDomainObject.getHeight(), imageDomainObject.getCropRegion());
+                format, imageDomainObject.getWidth(), imageDomainObject.getHeight(), imageDomainObject.getCropRegion(), 
+                imageDomainObject.getRotateDirection());
         
         File imageFile = null;
         boolean deleteFile = false;

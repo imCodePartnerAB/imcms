@@ -189,6 +189,7 @@ function resetCrop() {
     <input type="hidden" id="h_crop_y1" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y1 %>" value="<%= cropRegion.getCropY1() %>"/>
     <input type="hidden" id="h_crop_x2" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_X2 %>" value="<%= cropRegion.getCropX2() %>"/>
     <input type="hidden" id="h_crop_y2" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y2 %>" value="<%= cropRegion.getCropY2() %>"/>
+    <input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__ROTATE_ANGLE %>" value="<%= image.getRotateDirection().getAngle() %>"/>
     
     <table border="0" cellspacing="0" cellpadding="0">
     <tr>

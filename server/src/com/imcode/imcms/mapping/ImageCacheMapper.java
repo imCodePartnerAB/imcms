@@ -10,6 +10,7 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
+import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.util.image.Format;
 
 import java.sql.ResultSet;
@@ -62,6 +63,7 @@ public class ImageCacheMapper {
 			imageCache.setHeight(image.getHeight());
 			imageCache.setFormat(image.getFormat());
 			imageCache.setCropRegion(image.getCropRegion());
+			imageCache.setRotateDirection(image.getRotateDirection());
 			
 			ImageSource source = image.getSource();
 			if (source instanceof FileDocumentImageSource) {
@@ -272,8 +274,10 @@ public class ImageCacheMapper {
                     CropRegion region = new CropRegion(rs.getInt(6), rs.getInt(7), rs.getInt(8), rs.getInt(9));
                     image.setCropRegion(region);
                     
-                    String imageSource = rs.getString(10);
-                    int imageType = rs.getInt(11);
+                    image.setRotateDirection(RotateDirection.getByAngleDefaultIfNull(rs.getShort(10)));
+                    
+                    String imageSource = rs.getString(11);
+                    int imageType = rs.getInt(12);
                     
                     if (StringUtils.isNotBlank(imageSource)) {
                         if (imageType == ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT) {
@@ -300,7 +304,7 @@ public class ImageCacheMapper {
         };
         
         database.execute(new SqlQueryCommand(
-                "SELECT meta_id, name, width, height, format, crop_x1, crop_y1, crop_x2, crop_y2, imgurl, type FROM images", new Object[] {}, imageHandler));
+                "SELECT meta_id, name, width, height, format, crop_x1, crop_y1, crop_x2, crop_y2, rotate_angle, imgurl, type FROM images", new Object[] {}, imageHandler));
 	    
 	    return documentImages;
 	}
@@ -326,6 +330,7 @@ public class ImageCacheMapper {
 				{ "crop_y1", (valid ? region.getCropY1() : -1) }, 
 				{ "crop_x2", (valid ? region.getCropX2() : -1) }, 
 				{ "crop_y2", (valid ? region.getCropY2() : -1) }, 
+				{ "rotate_angle", cache.getRotateDirection().getAngle() }, 
 				{ "created_dt", cache.getCreatedDate() }
 		};
 	}

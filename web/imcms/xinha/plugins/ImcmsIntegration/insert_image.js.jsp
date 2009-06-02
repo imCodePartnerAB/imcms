@@ -14,19 +14,19 @@ Xinha.prototype._insertImage = function(image)
     if ( image )
     {
         var rel = image.getAttribute("rel"), 
-            url, format, width, height, cropX1, cropY1, cropX2, cropY2;
+            url, format, width, height, cropX1, cropY1, cropX2, cropY2, rotateAngle;
         if (rel) {
             var parts = rel.split(";");
-            if (parts.length == 8) {
-                url = decodeURIComponent(parts[0]);
-                format = parts[1];
-                width = parts[2];
-                height = parts[3];
-                cropX1 = parts[4];
-                cropY1 = parts[5];
-                cropX2 = parts[6];
-                cropY2 = parts[7];
-            }
+            
+            url = decodeURIComponent(parts[0]);
+            format = parts[1];
+            width = parts[2];
+            height = parts[3];
+            cropX1 = parts[4];
+            cropY1 = parts[5];
+            cropX2 = parts[6];
+            cropY2 = parts[7];
+            rotateAngle = parts[8];
         }
     
         outparam =
@@ -37,6 +37,7 @@ Xinha.prototype._insertImage = function(image)
             '<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y1 %>' : cropY1, 
             '<%= ImageEditPage.REQUEST_PARAMETER__CROP_X2 %>' : cropX2, 
             '<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y2 %>' : cropY2, 
+            '<%= ImageEditPage.REQUEST_PARAMETER__ROTATE_ANGLE %>' : rotateAngle || 0, 
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>' : image.alt || image.title,
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>'  : width || 0,
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>'  : height || 0,

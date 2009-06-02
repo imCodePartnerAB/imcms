@@ -8,6 +8,7 @@ import imcode.server.document.FileDocumentDomainObject.FileDocumentFile;
 import imcode.server.document.textdocument.ImageCacheDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
+import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.image.Format;
@@ -109,9 +110,12 @@ public class ImageHandling extends HttpServlet {
 		int cropY2 = NumberUtils.toInt(request.getParameter("crop_y2"), -1);
 		
 		CropRegion cropRegion = new CropRegion(cropX1, cropY1, cropX2, cropY2);
+		
+		int rotateAngle = NumberUtils.toInt(request.getParameter("rangle"));
+		RotateDirection rotateDirection = RotateDirection.getByAngleDefaultIfNull(rotateAngle);
 		 
 		ImageCacheDomainObject imageCache = createImageCacheObject(path, url, fileId, metaId, imageIndex, 
-				format, width, height, cropRegion);
+				format, width, height, cropRegion, rotateDirection);
 		String cacheId = imageCache.getId();
 		
 		File cacheFile = ImageCacheManager.getCacheFile(imageCache);
@@ -217,7 +221,7 @@ public class ImageHandling extends HttpServlet {
 	}
 	
 	static ImageCacheDomainObject createImageCacheObject(String path, String url, int fileId, int metaId, int imageIndex, 
-			Format format, int width, int height, CropRegion cropRegion) {
+			Format format, int width, int height, CropRegion cropRegion, RotateDirection rotateDirection) {
 		ImageCacheDomainObject imageCache = new ImageCacheDomainObject();
 		
 		if (path != null) {
@@ -242,6 +246,7 @@ public class ImageHandling extends HttpServlet {
 		imageCache.setWidth(width);
 		imageCache.setHeight(height);
 		imageCache.setCropRegion(cropRegion);
+		imageCache.setRotateDirection(rotateDirection);
 		imageCache.generateId();
 		
 		return imageCache;

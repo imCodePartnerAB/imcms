@@ -22,8 +22,8 @@
                 cropY2 = region.getCropY2();
             }
             
-            String rel = String.format("%s;%d;%d;%d;%d;%d;%d;%d", Utility.encodeUrl(url), format, 
-            	    image.getWidth(), image.getHeight(), cropX1, cropY1, cropX2, cropY2);
+            String rel = String.format("%s;%d;%d;%d;%d;%d;%d;%d;%d", Utility.encodeUrl(url), format, 
+            	    image.getWidth(), image.getHeight(), cropX1, cropY1, cropX2, cropY2, image.getRotateDirection().getAngle());
         %>
     
         param = new Object();

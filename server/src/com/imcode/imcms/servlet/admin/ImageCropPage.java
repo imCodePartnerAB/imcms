@@ -2,10 +2,12 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
+import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.image.ImageInfo;
 
+import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.Map;
 
@@ -21,6 +23,9 @@ import com.imcode.imcms.flow.OkCancelPage;
 public class ImageCropPage extends OkCancelPage {
 	private static final long serialVersionUID = 2032206435742139836L;
 	
+	public static final String REQUEST_PARAMETER__ROTATE_LEFT = "rotateLeft";
+	public static final String REQUEST_PARAMETER__ROTATE_RIGHT = "rotateRight";
+	
 	public static final String PARAM_CROP_X1 = "crop_x1";
 	public static final String PARAM_CROP_Y1 = "crop_y1";
 	public static final String PARAM_CROP_X2 = "crop_x2";
@@ -30,27 +35,41 @@ public class ImageCropPage extends OkCancelPage {
 	
 	private Handler<CropRegion> selectRegionCommand;
 	private CropRegion region;
+	private Integer metaId;
+	private Integer imageIndex;
 	private ImageDomainObject image;
+	private int imageWidth;
+	private int imageHeight;
 	private int forcedWidth;
 	private int forcedHeight;
 
 	
-	public ImageCropPage(DispatchCommand okCancelCommand, Handler<CropRegion> selectRegionCommand, ImageDomainObject image, 
-			int forcedWidth, int forcedHeight) {
+	public ImageCropPage(DispatchCommand okCancelCommand, Handler<CropRegion> selectRegionCommand, Integer metaId, Integer imageIndex, 
+	        ImageDomainObject image, int forcedWidth, int forcedHeight) {
 		super(okCancelCommand, okCancelCommand);
 		
 		this.selectRegionCommand = selectRegionCommand;
 		this.image = image;
 		this.region = image.getCropRegion();
+		this.metaId = metaId;
+		this.imageIndex = imageIndex;
 		this.forcedWidth = forcedWidth;
 		this.forcedHeight = forcedHeight;
-		
 		
 		if (forcedWidth > 0) {
 			image.setWidth(forcedWidth);
 		}
 		if (forcedHeight > 0) {
 			image.setHeight(forcedHeight);
+		}
+		
+		ImageInfo imageInfo = image.getImageInfo();
+		imageWidth = imageInfo.getWidth();
+		imageHeight = imageInfo.getHeight();
+		
+		RotateDirection rotateDirection = image.getRotateDirection();
+		if (rotateDirection == RotateDirection.EAST || rotateDirection == RotateDirection.WEST) {
+			exchangeImageWidthAndHeight();
 		}
 	}
 	
@@ -61,9 +80,8 @@ public class ImageCropPage extends OkCancelPage {
 		request.setAttribute("region", region);
 		request.setAttribute("image", image);
 		
-		ImageInfo imageInfo = image.getImageInfo();
-		request.setAttribute("imageWidth", imageInfo.getWidth());
-		request.setAttribute("imageHeight", imageInfo.getHeight());
+		request.setAttribute("imageWidth", imageWidth);
+		request.setAttribute("imageHeight", imageHeight);
 		request.setAttribute("forcedWidth", forcedWidth);
 		request.setAttribute("forcedHeight", forcedHeight);
 		
@@ -82,7 +100,51 @@ public class ImageCropPage extends OkCancelPage {
 	
 	@Override
 	protected void dispatchOther(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	    if (request.getParameter(REQUEST_PARAMETER__ROTATE_LEFT) != null) {
+	        image.setRotateDirection(image.getRotateDirection().getLeftDirection());
+	        rotateCropRegion(false);
+	        exchangeImageWidthAndHeight();
+	        
+	    } else if (request.getParameter(REQUEST_PARAMETER__ROTATE_RIGHT) != null) {
+	        image.setRotateDirection(image.getRotateDirection().getRightDirection());
+	        rotateCropRegion(true);
+	        exchangeImageWidthAndHeight();
+	        
+	    }
+	    
 		forward(request, response);
+	}
+	
+	private void rotateCropRegion(boolean toRight) {
+		if (image.getWidth() > 0 && image.getHeight() > 0) {
+			return;
+		}
+		
+		AffineTransform rotateTransform = null;
+		AffineTransform translateTransform = null;
+		
+		if (toRight) {
+			rotateTransform = AffineTransform.getRotateInstance(Math.PI / 2.0);
+			translateTransform = AffineTransform.getTranslateInstance(imageHeight, 0.0);
+			
+		} else {
+			rotateTransform = AffineTransform.getRotateInstance(- Math.PI / 2.0);
+			translateTransform = AffineTransform.getTranslateInstance(0.0, imageWidth);
+			
+		}
+		
+		translateTransform.concatenate(rotateTransform);
+		
+		float[] src = { region.getCropX1(), region.getCropY1(), region.getCropX2(), region.getCropY2() };
+		translateTransform.transform(src, 0, src, 0, src.length / 2);
+		
+		region = new CropRegion((int) src[0], (int) src[1], (int) src[2], (int) src[3]);
+	}
+	
+	private void exchangeImageWidthAndHeight() {
+	    int temp = imageWidth;
+        imageWidth = imageHeight;
+        imageHeight = temp;
 	}
 	
 	@Override
@@ -104,4 +166,12 @@ public class ImageCropPage extends OkCancelPage {
 	public ImageDomainObject getImage() {
 		return image;
 	}
+	
+	public Integer getMetaId() {
+        return metaId;
+    }
+	
+	public Integer getImageIndex() {
+        return imageIndex;
+    }
 }

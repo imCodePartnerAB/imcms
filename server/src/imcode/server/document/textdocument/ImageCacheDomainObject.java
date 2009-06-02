@@ -1,6 +1,7 @@
 package imcode.server.document.textdocument;
 
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
+import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.util.image.Format;
 
 import java.io.Serializable;
@@ -29,6 +30,7 @@ public class ImageCacheDomainObject implements Serializable {
 	private int width;
 	private int height;
 	CropRegion cropRegion;
+	private RotateDirection rotateDirection;
     private Timestamp createdDate = new Timestamp(new Date().getTime());
     
     
@@ -36,7 +38,8 @@ public class ImageCacheDomainObject implements Serializable {
 	}
     
 	public ImageCacheDomainObject(String id, int metaId, int imageIndex, String resource,  
-			short type, int fileSize, int frequency, Format format, int width, int height, CropRegion cropRegion, Timestamp createdDate) {
+			short type, int fileSize, int frequency, Format format, int width, int height, 
+			CropRegion cropRegion, RotateDirection rotateDirection, Timestamp createdDate) {
 		this.id = id;
 		this.metaId = metaId;
 		this.imageIndex = imageIndex;
@@ -48,6 +51,7 @@ public class ImageCacheDomainObject implements Serializable {
 		this.width = width;
 		this.height = height;
 		this.cropRegion = cropRegion;
+		this.rotateDirection = rotateDirection;
 		this.createdDate = createdDate;
 	}
 	
@@ -66,6 +70,10 @@ public class ImageCacheDomainObject implements Serializable {
 			builder.append(cropRegion.getCropY2());
 		} else {
 			builder.append("-1-1-1-1");
+		}
+		
+		if (rotateDirection != RotateDirection.NORTH) {
+		    builder.append(rotateDirection.getAngle());
 		}
 		
 		id = DigestUtils.shaHex(builder.toString());
@@ -171,7 +179,15 @@ public class ImageCacheDomainObject implements Serializable {
 		this.frequency = frequency;
 	}
 
-	@Override
+	public RotateDirection getRotateDirection() {
+        return rotateDirection;
+    }
+
+    public void setRotateDirection(RotateDirection rotateDirection) {
+        this.rotateDirection = rotateDirection;
+    }
+
+    @Override
 	public int hashCode() {
 		return new HashCodeBuilder()
 				.append(id)

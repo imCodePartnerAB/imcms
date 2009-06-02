@@ -195,7 +195,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     private void sqlInsertImageHistory(TextDocumentDomainObject textDocument, Integer imageIndex, UserDomainObject user) {
         SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING);
-        String[] columnNames = new String[] {"imgurl", "width", "height", "border", "v_space", "h_space", "image_name", "target", "align", "alt_text", "low_scr", "linkurl", "type", "archive_image_id", "format", "crop_x1", "crop_y1", "crop_x2", "crop_y2", "meta_id", "name", "modified_datetime", "user_id" };
+        String[] columnNames = new String[] {"imgurl", "width", "height", "border", "v_space", "h_space", "image_name", "target", "align", "alt_text", "low_scr", "linkurl", "type", "archive_image_id", "format", "crop_x1", "crop_y1", "crop_x2", "crop_y2", "rotate_angle", "meta_id", "name", "modified_datetime", "user_id" };
         ImageDomainObject image = textDocument.getImage(imageIndex.intValue());
         final Object[] parameters = getSqlImageParameters(image, textDocument.getId(), imageIndex.intValue());
         List <Object> param =  new ArrayList <Object>( Arrays.asList(parameters) ) ;
@@ -267,14 +267,15 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             + "crop_x1     		= ?, \n"
             + "crop_y1     		= ?, \n"
             + "crop_x2     		= ?, \n"
-            + "crop_y2     		= ?  \n"
+            + "crop_y2     		= ?, \n"
+            + "rotate_angle     = ?  \n"
             + "where meta_id = ? \n"
             + "and name = ? \n";
 
         int rowUpdateCount = sqlImageUpdateQuery(sqlStr, image, meta_id, img_no);
         if (0 == rowUpdateCount) {
-            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, align, alt_text, low_scr, linkurl, type, archive_image_id, format, crop_x1, crop_y1, crop_x2, crop_y2, meta_id, name)"
-            	+ " values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?,?)";
+            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, align, alt_text, low_scr, linkurl, type, archive_image_id, format, crop_x1, crop_y1, crop_x2, crop_y2, rotate_angle, meta_id, name)"
+            	+ " values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?,?,?)";
 
             sqlImageUpdateQuery(sqlStr, image, meta_id, img_no);
         }
@@ -310,6 +311,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             (region.isValid() ? region.getCropY1() : -1),
             (region.isValid() ? region.getCropX2() : -1),
             (region.isValid() ? region.getCropY2() : -1),
+            image.getRotateDirection().getAngle(), 
             meta_id,
             img_no,
         };
