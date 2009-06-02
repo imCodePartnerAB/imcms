@@ -1,7 +1,10 @@
 package com.imcode.imcms.mapping.aop;
 
+import imcode.server.document.DocumentVisitor;
 import imcode.server.document.UrlDocumentDomainObject;
 
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 
@@ -29,4 +32,9 @@ public class UrlDocumentLazyLoadingAspect {
 			loaded = true;
 		}
 	}
+	
+	@Around("execution(public void accept(..)) && args(documentVisitor)")
+	public void accept(ProceedingJoinPoint pjp, DocumentVisitor documentVisitor) {
+		documentVisitor.visitUrlDocument((UrlDocumentDomainObject)pjp.getThis());
+	}		
 }

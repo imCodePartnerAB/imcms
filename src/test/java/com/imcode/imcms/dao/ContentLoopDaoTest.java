@@ -1,11 +1,14 @@
 package com.imcode.imcms.dao;
 
+import static com.imcode.imcms.dao.Utils.contentLoopDao;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.testng.annotations.Test;
 
 import com.imcode.imcms.api.ContentLoop;
-
-import static org.junit.Assert.*;
-import static com.imcode.imcms.dao.Utils.*;
 
 public class ContentLoopDaoTest extends DaoTest {
 

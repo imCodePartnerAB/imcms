@@ -1,35 +1,21 @@
 package com.imcode.imcms.dao;
 
 import static com.imcode.imcms.dao.Utils.META_ID;
-import static com.imcode.imcms.dao.Utils.databaseDocumentGetter;
-import static com.imcode.imcms.dao.Utils.documentSaver;
+import static com.imcode.imcms.dao.Utils.languageDao;
 import static com.imcode.imcms.dao.Utils.metaDao;
 import static com.imcode.imcms.dao.Utils.textDao;
-import static com.imcode.imcms.dao.Utils.languageDao;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
-import imcode.server.DefaultImcmsServices;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.user.UserDomainObject;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.betwixt.expression.CollectionUpdater;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.testng.annotations.Test;
 
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.mapping.CachingDocumentGetter;
-import com.imcode.imcms.mapping.DocumentMapper;
 
 public class TextDaoTest extends DaoTest {
 	

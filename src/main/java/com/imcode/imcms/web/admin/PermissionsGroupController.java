@@ -5,7 +5,6 @@ package com.imcode.imcms.web.admin;
  */
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Permissions groups controller.

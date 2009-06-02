@@ -20,8 +20,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.Database;
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.User;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;

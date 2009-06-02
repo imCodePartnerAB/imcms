@@ -14,7 +14,6 @@ import org.apache.commons.collections.map.LRUMap;
 
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionSupport;
-import com.imcode.imcms.dao.MetaDao;
 
 /**
  * Cache for wrapped DatabaseDocumentGetter.
@@ -59,6 +58,8 @@ public class CachingDocumentGetter implements DocumentGetter {
      */
     private BidiMap aliasesBidiMap; 
     
+    private Map<Integer, Map<Integer, DocumentDomainObject>> customDocuments;
+    
     /**
      * Database document getter.    
      */
@@ -71,6 +72,7 @@ public class CachingDocumentGetter implements DocumentGetter {
         latestDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
         workingDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
         publishedDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
+        customDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
         
         aliasesBidiMap = new DualHashBidiMap();
     }
@@ -79,7 +81,8 @@ public class CachingDocumentGetter implements DocumentGetter {
     	DocumentVersionSupport versionSupport = versionsSupports.get(documentId);
     	
     	if (versionSupport == null) {
-    		List<DocumentVersion> versions =  metaDao.getDocumentVersions(documentId);
+    		List<DocumentVersion> versions =  databaseDocumentGetter.getMetaDao()
+    			.getDocumentVersions(documentId);
     		
     		if (versions.size() > 0) {
     			versionSupport = new DocumentVersionSupport(documentId, versions);    		
@@ -118,12 +121,35 @@ public class CachingDocumentGetter implements DocumentGetter {
 			return getPublishedDocument(documentId);
 			
 		default:
-			return databaseDocumentGetter.getDocument(documentId, versionNumber);
+			Map<Integer, DocumentDomainObject> documents = customDocuments.get(documentId);
+			DocumentDomainObject document;
+			
+			if (documents == null) {
+				documents = new HashMap<Integer, DocumentDomainObject>();
+				customDocuments.put(documentId, documents);
+				
+				document = databaseDocumentGetter.getDocument(documentId, versionNumber);
+
+				if (document != null) {
+					documents.put(versionNumber, document);
+				}
+			} else {
+				document = documents.get(versionNumber);
+				
+				if (document == null) {
+					document = databaseDocumentGetter.getDocument(documentId, versionNumber);
+					
+					if (document != null) {
+						documents.put(versionNumber, document);
+					}
+				}
+			}
+			
+			return document;
 		}
     }
     
     
-
     public DocumentDomainObject getPublishedDocument(Integer documentId) {
         DocumentDomainObject document = publishedDocuments.get(documentId) ;
         
@@ -190,6 +216,7 @@ public class CachingDocumentGetter implements DocumentGetter {
     	latestDocuments.clear();
     	versionsSupports.clear();
     	aliasesBidiMap.clear();
+    	customDocuments.clear();
     }
     
     
@@ -199,6 +226,7 @@ public class CachingDocumentGetter implements DocumentGetter {
     	latestDocuments.remove(documentId);
     	versionsSupports.remove(documentId);
     	aliasesBidiMap.remove(documentId);
+    	customDocuments.remove(documentId);
     } 
     
     /**

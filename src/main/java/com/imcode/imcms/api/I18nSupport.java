@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.imcode.imcms.servlet.ImcmsSetupFilter;
+
 /**
  * I18n support.
  * This class intended to be used as a singleton and can not be instantiated.

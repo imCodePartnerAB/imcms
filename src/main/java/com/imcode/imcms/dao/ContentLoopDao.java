@@ -3,7 +3,6 @@ package com.imcode.imcms.dao;
 import java.util.List;
 
 import org.hibernate.Query;
-import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 

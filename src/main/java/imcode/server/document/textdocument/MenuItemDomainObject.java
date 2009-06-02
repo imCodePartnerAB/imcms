@@ -2,7 +2,6 @@ package imcode.server.document.textdocument;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentReference;
-import imcode.server.document.GetterDocumentReference;
 
 import java.io.Serializable;
 

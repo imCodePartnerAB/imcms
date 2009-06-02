@@ -26,7 +26,6 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.dao.TextDao;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.mapping.DocumentStoringVisitor;

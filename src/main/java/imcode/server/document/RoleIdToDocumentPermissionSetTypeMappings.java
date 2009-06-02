@@ -1,7 +1,6 @@
 package imcode.server.document;
 
 import imcode.server.user.RoleId;
-import imcode.util.LazilyLoadedObject;
 import imcode.util.ShouldNotBeThrownException;
 
 import java.io.Serializable;

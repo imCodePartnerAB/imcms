@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import imcode.server.Imcms;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
@@ -19,7 +18,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.imcode.db.Database;
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.Meta;

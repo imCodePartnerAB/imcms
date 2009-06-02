@@ -12,7 +12,6 @@ import imcode.util.Utility;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;

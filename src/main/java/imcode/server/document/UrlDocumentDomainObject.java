@@ -2,8 +2,6 @@ package imcode.server.document;
 
 import org.apache.oro.text.perl.Perl5Util;
 
-import com.imcode.imcms.mapping.orm.UrlReference;
-
 public class UrlDocumentDomainObject extends DocumentDomainObject {
 
     private String url = "";

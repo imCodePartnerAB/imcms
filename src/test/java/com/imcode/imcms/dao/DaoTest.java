@@ -6,11 +6,9 @@ import javax.sql.DataSource;
 
 import org.dbunit.DataSourceDatabaseTester;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
-
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 
 public abstract class DaoTest {
 	

@@ -1,14 +1,8 @@
 package imcode.server.parser;
 
-import com.imcode.imcms.api.TextDocumentViewing;
-import com.imcode.imcms.servlet.ImcmsSetupFilter;
-import com.imcode.imcms.mapping.SectionFromIdTransformer;
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.util.CountingIterator;
 import imcode.server.DocumentRequest;
-import imcode.server.ImcmsServices;
-import imcode.server.LanguageMapper;
 import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.textdocument.FileDocumentImageSource;
@@ -16,26 +10,13 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Html;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.Utility;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.collections.iterators.TransformIterator;
-import org.apache.log4j.Logger;
-import org.apache.oro.text.regex.*;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,7 +25,47 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.collections.iterators.TransformIterator;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.log4j.Logger;
+import org.apache.oro.text.regex.MalformedPatternException;
+import org.apache.oro.text.regex.MatchResult;
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.PatternMatcher;
+import org.apache.oro.text.regex.PatternMatcherInput;
+import org.apache.oro.text.regex.Perl5Compiler;
+import org.apache.oro.text.regex.Perl5Matcher;
+import org.apache.oro.text.regex.StringSubstitution;
+import org.apache.oro.text.regex.Substitution;
+import org.apache.oro.text.regex.Util;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+
+import com.imcode.imcms.api.TextDocumentViewing;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.SectionFromIdTransformer;
+import com.imcode.imcms.servlet.ImcmsSetupFilter;
+import com.imcode.util.CountingIterator;
 
 public class TagParser {
 

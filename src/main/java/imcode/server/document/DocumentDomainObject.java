@@ -7,7 +7,6 @@ import imcode.server.user.UserDomainObject;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +21,7 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.mapping.DocumentSaver;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public abstract class DocumentDomainObject implements Cloneable, Serializable {

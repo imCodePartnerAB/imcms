@@ -1,10 +1,7 @@
 package com.imcode.imcms.util;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.sql.SQLException;
 
-import org.apache.commons.io.FileUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
