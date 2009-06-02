@@ -91,6 +91,11 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
     } 
     
     @Override
+    public DocumentDomainObject getDocument(Integer documentId) {
+    	return getPublishedDocument(documentId);
+    }
+    
+    @Override
     public DocumentDomainObject getPublishedDocument(Integer documentId) {
         DocumentDomainObject document = publishedDocuments.get(documentId) ;
         
@@ -151,7 +156,7 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
     /**
      * Returns latest document.
      */
-    public DocumentDomainObject getDocument(Integer documentId) {
+    public DocumentDomainObject getLatestDocumentVersion(Integer documentId) {
     	DocumentDomainObject document = latestDocuments.get(documentId);
     	
         if (null == document) {

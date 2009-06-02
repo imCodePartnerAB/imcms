@@ -500,8 +500,11 @@
   	      	    
 	    <plugin>
           <artifactId>maven-war-plugin</artifactId>
-          <configuration>          	  
-            <archiveClasses>true</archiveClasses>            
+          <version>2.1-beta-1</version>
+          <configuration>      
+            <attachClasses>true</attachClasses>  	  
+            <archiveClasses>true</archiveClasses>           
+                         
             <!-- 
             <webResources>
 	          <resource>

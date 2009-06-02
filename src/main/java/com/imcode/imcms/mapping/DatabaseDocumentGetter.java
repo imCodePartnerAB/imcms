@@ -53,11 +53,18 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     private DocumentInitializingVisitor documentInitializingVisitor;
     
     /**
+     * 
+     */
+    public DocumentDomainObject getDocument(Integer documentId) {
+    	return getPublishedDocument(documentId);
+    }
+    
+    /**
      * Returns latest version of a document.
      * 
      * TODO: Optimize
      */
-    public DocumentDomainObject getDocument(Integer documentId) {
+    public DocumentDomainObject getLatestDocumentVersion(Integer documentId) {
     	List<DocumentVersion> versions = metaDao.getDocumentVersions(documentId);
     	
     	int size = versions.size();
