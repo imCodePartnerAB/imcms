@@ -56,7 +56,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
      * 
      */
     public DocumentDomainObject getDocument(Integer documentId) {
-    	return getPublishedDocument(documentId);
+    	return getLatestDocumentVersion(documentId);
     }
     
     /**

@@ -92,7 +92,8 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
     
     @Override
     public DocumentDomainObject getDocument(Integer documentId) {
-    	return getPublishedDocument(documentId);
+    	//return getPublishedDocument(documentId);
+    	return getLatestDocumentVersion(documentId);
     }
     
     @Override
@@ -161,7 +162,7 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
     	
         if (null == document) {
         	// AOP?
-            document = super.getDocument(documentId) ;
+            document = super.getLatestDocumentVersion(documentId) ;
             
             if (document != null) {            	
             	latestDocuments.put(documentId, document) ;

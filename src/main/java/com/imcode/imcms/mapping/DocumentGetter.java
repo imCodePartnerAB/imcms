@@ -19,6 +19,13 @@ public interface DocumentGetter {
     DocumentDomainObject getDocument(Integer documentId);
     
     /**
+     * Returns latest version of a document. 
+     * 
+     * @param metaId document's meta id.
+     */
+    DocumentDomainObject getLatestDocumentVersion(Integer documentId);    
+    
+    /**
      * Returns published version of a document. 
      * 
      * @param metaId document's meta id.

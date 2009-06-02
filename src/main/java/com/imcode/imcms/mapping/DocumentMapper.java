@@ -312,12 +312,12 @@ public class DocumentMapper implements DocumentGetter {
     
     
     /**
-     * Creates document's working version from previous (existing) version.
+     * Creates document's working version from any previous version.
      * 
-     * @param documentId document id
-     * @param documentVersion any existing document version
+     * @param documentId existing document id
+     * @param documentVersion any previous document version.
      * 
-     * @return new working version of a document from previous (existing) version.
+     * @return new working version which is a copy of any previous version.
      */
     // TODO: Check exceptions 
     public void createWorkingDocument(Integer documentId, Integer documentVersion, UserDomainObject user) 
@@ -659,7 +659,8 @@ public class DocumentMapper implements DocumentGetter {
      * @return published version of a document or null if document does not exist.
      */
     public DocumentDomainObject getDocument(Integer documentId) { 
-        return getPublishedDocument(documentId);
+        //return getPublishedDocument(documentId);
+    	return getLatestDocumentVersion(documentId);
     }    
     
     /**
