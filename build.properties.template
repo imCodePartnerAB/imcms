@@ -80,9 +80,6 @@ secondary-ldap-attribute-login-name = uid
 #secondary-ldap-user-object-class = user
 #secondary-ldap-attribute-login-name = sAMAccountName
 
-# This should only be specified on windows, for example: c:/program files/imagemagick-6.4.9-q16
-image-magick-path = 
-
 # The smtp-server used for sending mails.
 
 smtp-server =
@@ -152,3 +149,27 @@ tomcat-admin-username = admin
 tomcat-admin-password =
 tomcat-webapp-manager-url = http://localhost:8080/manager
 tomcat-deployroot-local-directory =
+
+
+# URL to the separate image archive application, as seen by the clients browser.
+# For example: test.com/image-archive/archive
+# 
+# <host> [":" <port>] "/" <context-path> "/archive"
+image-archive-url = 
+
+# IDs of the roles that are allowed to see the "Choose from image archive" button in image edit page, delimited by ",".
+# If not specified, everyone is allowed.
+image-archive-allowed-role-ids = 
+
+# IDs of the roles that are allowed to see the "Choose file" (old archive) button in image edit page, delimited by ",".
+# If not specified, everyone is allowed.
+choose-file-allowed-role-ids = 
+
+# ImageMagick is a software suite for creating, editing and composing images. It can be downloaded from http://www.imagemagick.org. 
+# It is used by both image archive and image handling. 
+# This path should lead to where ImageMagick is installed, and is required only on windows.
+# For example: c:/program files/imagemagick-6.4.9-q16
+image-magick-path = 
+
+# Maximum size in bytes of cache for images created in the text editor (xinha). By default 500 MB.
+image-cache-max-size = 524288000
