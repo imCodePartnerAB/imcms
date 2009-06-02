@@ -272,7 +272,7 @@
     </target>
 
 	
-    <target name="init" depends="create-build.properties,init-version-properties,init-global-filters" 
+    <target name="init" depends="create-build.properties,init-global-filters" 
     		description="Handy target for everything else to depend on.">
     	
         <record name="${basedir}/build.log"/>
@@ -320,7 +320,7 @@
     	<if>
     	 <equals arg1="${version}" arg2="" />
     	 <then>
-    	 	<property name="maven.artifact.version" value="${pom.version}"/>
+    	 	<property name="maven.artifact.version" value="${imcms.version}"/>
     	 </then>
     	 <else>
     	 	<property name="maven.artifact.version" value="${version}"/>
@@ -423,6 +423,8 @@
         <sequential>
             <exec executable="${ant.maven.executable}" failonerror="true">
                 <arg value="-Dmaven.test.skip=true"/>
+            	<arg value="-Dimcms.version=${maven.artifact.version}"/>
+            	
             	<arg value="@{goal}"/>
             </exec>
         </sequential>
@@ -448,62 +450,7 @@
 			description="Runs built webapp under jetty on port 9090">
 		<maven goal="jetty:run"/>
 	</target>	
-	
-	<target name="install-include-classes" depends="package">
-        <exec executable="${ant.maven.executable}" failonerror="true">            
-        	<arg value="install:install-file"/>
-        	
-        	<arg value="-Dfile=${maven.build.war}"/>
-        	<arg value="-DgroupId=${pom.groupId}"/>
-        	<arg value="-DartifactId=${pom.artifactId}"/> 
-        	<arg value="-Dversion=${maven.artifact.version}"/>
-        	
-        	<arg value="-Dpackaging=war"/>        	
-        </exec>		
 		
-        <exec executable="${ant.maven.executable}" failonerror="true">            
-        	<arg value="install:install-file"/>
-        	
-        	<arg value="-Dfile=${maven.build.jar}"/>
-        	<arg value="-DgroupId=${pom.groupId}"/>
-        	<arg value="-DartifactId=${pom.artifactId}"/> 
-        	<arg value="-Dversion=${maven.artifact.version}"/>
-        	
-        	<arg value="-Dclassifier=classes"/>
-        	<arg value="-Dpackaging=jar"/>        	
-        </exec>		
-	</target>
-	
-	<target name="deploy-include-classes" depends="package">
-		<exec executable="${ant.maven.executable}" failonerror="true"> 
-	        <arg value="deploy:deploy-file"/>
-			
-	        <arg value="-DrepositoryId=${maven.repo.id}"/>
-	        <arg value="-Durl=${maven.repo.url}"/>						
-			<arg value="-Dfile=${maven.build.war}"/>
-			
-			<arg value="-DgroupId=${pom.groupId}"/>
-			<arg value="-DartifactId=${pom.artifactId}"/> 
-	        <arg value="-Dversion=${maven.artifact.version}"/>
-	        <arg value="-Dpackaging=war"/>
-		</exec>	
-		
-        <exec executable="${ant.maven.executable}" failonerror="true">            
-            <arg value="deploy:deploy-file"/>
-        	
-	        <arg value="-DrepositoryId=${maven.repo.id}"/>
-	        <arg value="-Durl=${maven.repo.url}"/>						
-        	<arg value="-Dfile=${maven.build.jar}"/>
-        	
-        	<arg value="-DgroupId=${pom.groupId}"/>
-	        <arg value="-DartifactId=${pom.artifactId}"/> 
-	        <arg value="-Dversion=${maven.artifact.version}"/>
-
-            <arg value="-Dpackaging=jar"/>
-        	<arg value="-Dclassifier=classes"/>
-        </exec>		
-	</target>
-	
     <!-- Compound targets -->
     <target name="build-tomcat-install" depends="package,tomcat-install" description="Copies the webapp directly into the webapp-directory in the deployroot."/>
     <target name="clean-build-tomcat-install" depends="clean,build-tomcat-install" description="Runs targets clean, build, and install."/>	
