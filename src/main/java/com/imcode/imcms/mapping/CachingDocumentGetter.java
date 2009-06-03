@@ -151,6 +151,17 @@ public class CachingDocumentGetter implements DocumentGetter {
     
     
     public DocumentDomainObject getPublishedDocument(Integer documentId) {
+    	if (publishedDocuments.containsKey(documentId)) {
+    		return publishedDocuments.get(documentId);
+    	} else {
+	        DocumentDomainObject document = databaseDocumentGetter.getPublishedDocument(documentId);
+        	publishedDocuments.put(documentId, document) ;
+        	
+        	return document;
+    	}
+    }      
+    
+/*    public DocumentDomainObject getPublishedDocument(Integer documentId) {
         DocumentDomainObject document = publishedDocuments.get(documentId) ;
         
         if (null == document) {
@@ -163,7 +174,7 @@ public class CachingDocumentGetter implements DocumentGetter {
         }
                 
         return document;
-    }    
+    } */   
     
 
     public DocumentDomainObject getWorkingDocument(Integer documentId) {

@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -726,7 +727,15 @@ public class DocumentMapper implements DocumentGetter {
      * @return all document's versions 
      */
     public List<DocumentVersion> getDocumentVersions(Integer documentId) {
-    	return documentSaver.getMetaDao().getDocumentVersions(documentId);
+    	DocumentVersionSupport support = getDocumentVersionSupport(documentId);
+    	
+    	if (support != null) {
+    		return support.getVersions();
+    	} else {
+    		return new LinkedList<DocumentVersion>();
+    	}
+    	
+    	//return documentSaver.getMetaDao().getDocumentVersions(documentId);
     }
     
         
@@ -782,11 +791,11 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Creates document interceptor based on document show settings.
      * 
-     * TODO: optimize proxy creation - pooling might be possible solution. 
-     * TODO: Implement two strategies - with intercepting for multilangual projects 
+     * TODO: optimize proxy creation - pooling is possible solution. 
+     * TODO: Implement two strategies - with intercepting for multi-langual projects 
      * and w/o intercepting for single-language projects.
      */
-    private DocumentDomainObject createDocumentShowInterceptor(DocumentDomainObject document, UserDomainObject user) {    	
+    private DocumentDomainObject createDocumentShowInterceptor(DocumentDomainObject document, UserDomainObject user) {
     	if (document != null) {
     		/*
     		 * Determines document's content language.
