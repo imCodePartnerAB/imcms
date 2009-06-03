@@ -34,6 +34,7 @@ public class TextDocumentInitializer {
 
     private final static Logger LOG = Logger.getLogger(TextDocumentInitializer.class);
 
+    /** Set to documentMapper */
     private DocumentGetter documentGetter;
     
     private MetaDao metaDao;
@@ -131,28 +132,26 @@ public class TextDocumentInitializer {
     	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getMeta().getId());	
     	Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
     	
-    	//Set<Integer> destinationDocumentIds = new HashSet<Integer>();
-    	//BatchDocumentGetter batchDocumentGetter = new BatchDocumentGetter(destinationDocumentIds, documentGetter);
-    	
     	for (MenuDomainObject menu: menus) {
-	    	for (Map.Entry<Integer, MenuItemDomainObject> entry: menu.getItemsMap().entrySet()) {
-	    		Integer destinationDocumentId = entry.getKey();
-	    		MenuItemDomainObject menuItem = entry.getValue();
-	    		
-	    		//GetterDocumentReference gtr = new GetterDocumentReference(destinationDocumentId, batchDocumentGetter);
-	    		GetterDocumentReference gtr = new GetterDocumentReference(destinationDocumentId, documentGetter);
-	    		
-	    		menuItem.setDocumentReference(gtr);
-	    		menuItem.setTreeSortKey(new TreeSortKeyDomainObject(menuItem.getTreeSortIndex()));
-	    		
-	    		//destinationDocumentIds.add(destinationDocumentId);
-	    	}
+    		initMenuItems(menu, documentGetter);
 	    	
 	    	menusMap.put(menu.getIndex(), menu);
     	}
     	
     	document.setMenusMap(menusMap);
-    }    
+    }   
+    
+    public static void initMenuItems(MenuDomainObject menu, DocumentGetter documentGetter) {
+    	for (Map.Entry<Integer, MenuItemDomainObject> entry: menu.getItemsMap().entrySet()) {
+    		Integer destinationDocumentId = entry.getKey();
+    		MenuItemDomainObject menuItem = entry.getValue();
+    		
+    		GetterDocumentReference gtr = new GetterDocumentReference(destinationDocumentId, documentGetter);
+    		
+    		menuItem.setDocumentReference(gtr);
+    		menuItem.setTreeSortKey(new TreeSortKeyDomainObject(menuItem.getTreeSortIndex()));
+    	}    	
+    }
     
     // Temporary used by ImageDao
     // after refactoring make it private

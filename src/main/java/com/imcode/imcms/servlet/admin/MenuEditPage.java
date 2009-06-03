@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.NoPermissionToCreateDocumentException;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.textdocument.MenuDomainObject;
@@ -33,11 +34,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.UnhandledException;
 
+import com.imcode.imcms.dao.MenuDao;
 import com.imcode.imcms.flow.CreateDocumentPageFlow;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.TextDocumentInitializer;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class MenuEditPage extends OkCancelPage {
@@ -56,7 +59,7 @@ public class MenuEditPage extends OkCancelPage {
     private int menuIndex;
     public static final String SORT_ORDER = "sortOrder";
     public static final String SORT = "sort";
-
+    
     public MenuEditPage(DispatchCommand okDispatchCommand, DispatchCommand cancelDispatchCommand,
                         TextDocumentDomainObject textDocument, int menuIndex, ServletContext servletContext) {
         super(okDispatchCommand, cancelDispatchCommand);
@@ -79,12 +82,12 @@ public class MenuEditPage extends OkCancelPage {
                             forward(request, response);
                         }
                     }, servletContext);
-                    try {
-                        documentCreator.createDocumentAndDispatchToCreatePageFlow(documentTypeId, textDocument, request, response);
-                        return;
-                    } catch ( NoPermissionToCreateDocumentException e ) {
-                        throw new UnhandledException(e);
-                    }
+                try {
+                    documentCreator.createDocumentAndDispatchToCreatePageFlow(documentTypeId, textDocument, request, response);
+                    return;
+                } catch ( NoPermissionToCreateDocumentException e ) {
+                    throw new UnhandledException(e);
+                }
             }
         }
 
@@ -250,7 +253,7 @@ public class MenuEditPage extends OkCancelPage {
             this.parentDocument = parentDocument;
             this.parentMenuIndex = parentMenuIndex;
         }
-
+        //should be transacted
         public synchronized void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
             if ( null != savedDocument ) {
                 return;

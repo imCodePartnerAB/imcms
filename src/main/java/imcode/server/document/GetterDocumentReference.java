@@ -7,22 +7,35 @@ import java.io.ObjectInputStream;
 
 import com.imcode.imcms.mapping.DocumentGetter;
 
+/**
+ * Document reference using document getter.
+ * 
+ * Prototype implementation.
+ */
 public class GetterDocumentReference extends DocumentReference {
-
+	
     private transient DocumentGetter documentGetter;
 
-    public GetterDocumentReference( int documentId, DocumentGetter documentGetter ) {
+    public GetterDocumentReference(int documentId, DocumentGetter documentGetter) {
         super(documentId) ;
         this.documentGetter = documentGetter;
     }
 
+    /**
+     * Optimize.
+     */
     public DocumentDomainObject getDocument() {
-        return documentGetter.getPublishedDocument(getDocumentId()) ;
+		DocumentDomainObject document = documentGetter.getPublishedDocument(getDocumentId());
+		
+		if (document != null) {
+			return document;
+		} else {
+			return documentGetter.getDocument(getDocumentId());
+		}
     }
 
     public void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         documentGetter = Imcms.getServices().getDocumentMapper().getDocumentGetter() ;
         ois.defaultReadObject();
     }
-
 }

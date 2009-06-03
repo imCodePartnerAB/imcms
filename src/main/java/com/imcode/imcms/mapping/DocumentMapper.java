@@ -261,6 +261,7 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentReference getDocumentReference(DocumentDomainObject document) {
         return getDocumentReference(document.getId());
     }
+    
 
     public DocumentReference getDocumentReference(int childId) {
         return new GetterDocumentReference(childId, cachingDocumentGetter);
