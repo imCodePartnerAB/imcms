@@ -644,19 +644,9 @@ public class DocumentMapper implements DocumentGetter {
      * 
      * @return latest version of the document or null if document does not exist.
      */
-    public DocumentDomainObject getLatestDocumentVersion(Integer documentId) { 
-        return cachingDocumentGetter.getLatestDocumentVersion(documentId);
-    } 
-    
-    /**
-     * @param documentId document id
-     * 
-     * @return published version of a document or null if document does not exist.
-     */
     public DocumentDomainObject getDocument(Integer documentId) { 
-        //return getPublishedDocument(documentId);
-    	return getLatestDocumentVersion(documentId);
-    }    
+        return cachingDocumentGetter.getDocument(documentId);
+    }     
     
     /**
      * Returns published version of a document.

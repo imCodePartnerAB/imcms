@@ -78,26 +78,22 @@ public class CachingDocumentGetter implements DocumentGetter {
     }
     
     public DocumentVersionSupport getDocumentVersionSupport(Integer documentId) {
-    	DocumentVersionSupport versionSupport = versionsSupports.get(documentId);
-    	
-    	if (versionSupport == null) {
-    		List<DocumentVersion> versions =  databaseDocumentGetter.getMetaDao()
+    	if (versionsSupports.containsKey(documentId)) {
+    		return versionsSupports.get(documentId);
+    	} 
+
+    	DocumentVersionSupport versionSupport = null;
+   		List<DocumentVersion> versions =  databaseDocumentGetter.getMetaDao()
     			.getDocumentVersions(documentId);
     		
-    		if (versions.size() > 0) {
-    			versionSupport = new DocumentVersionSupport(documentId, versions);    		
-        		versionsSupports.put(documentId, versionSupport);
-    		}    		
+   		if (versions.size() > 0) {
+   			versionSupport = new DocumentVersionSupport(documentId, versions);    		
     	}
-    	
+   		
+   		versionsSupports.put(documentId, versionSupport);
+   		    	
     	return versionSupport;
     } 
-    
-
-    public DocumentDomainObject getDocument(Integer documentId) {
-    	//return getPublishedDocument(documentId);
-    	return getLatestDocumentVersion(documentId);
-    }
     
 
     public DocumentDomainObject getDocument(Integer documentId, Integer versionNumber) {
@@ -121,32 +117,31 @@ public class CachingDocumentGetter implements DocumentGetter {
 			return getPublishedDocument(documentId);
 			
 		default:
-			Map<Integer, DocumentDomainObject> documents = customDocuments.get(documentId);
-			DocumentDomainObject document;
+			return getCustomDocument(documentId, versionNumber);
+    	}
+    }
+    
+    
+    private DocumentDomainObject getCustomDocument(Integer documentId, Integer versionNumber) {
+		Map<Integer, DocumentDomainObject> documents = customDocuments.get(documentId);
+		DocumentDomainObject document;
+		
+		if (documents == null) {
+			documents = new HashMap<Integer, DocumentDomainObject>();
+			customDocuments.put(documentId, documents);
 			
-			if (documents == null) {
-				documents = new HashMap<Integer, DocumentDomainObject>();
-				customDocuments.put(documentId, documents);
-				
-				document = databaseDocumentGetter.getDocument(documentId, versionNumber);
-
-				if (document != null) {
-					documents.put(versionNumber, document);
-				}
-			} else {
+			document = databaseDocumentGetter.getDocument(documentId, versionNumber);
+			documents.put(versionNumber, document);
+		} else {
+			if (documents.containsKey(versionNumber)) {
 				document = documents.get(versionNumber);
-				
-				if (document == null) {
-					document = databaseDocumentGetter.getDocument(documentId, versionNumber);
-					
-					if (document != null) {
-						documents.put(versionNumber, document);
-					}
-				}
+			} else {
+				document = databaseDocumentGetter.getDocument(documentId, versionNumber);				
+				documents.put(versionNumber, document);
 			}
-			
-			return document;
 		}
+		
+		return document;    	
     }
     
     
@@ -159,7 +154,39 @@ public class CachingDocumentGetter implements DocumentGetter {
         	
         	return document;
     	}
-    }      
+    }
+    
+    public DocumentDomainObject getWorkingDocument(Integer documentId) {
+    	if (workingDocuments.containsKey(documentId)) {
+    		return workingDocuments.get(documentId);
+    	} else {
+	        DocumentDomainObject document = databaseDocumentGetter.getWorkingDocument(documentId);
+	        workingDocuments.put(documentId, document) ;
+        	
+        	return document;
+    	}
+    } 
+    
+    /**
+     * Returns latest document.
+     */
+    public DocumentDomainObject getDocument(Integer documentId) {
+    	if (latestDocuments.containsKey(documentId)) {
+    		return latestDocuments.get(documentId);
+    	}
+
+    	DocumentDomainObject document = null;
+    	DocumentVersionSupport versionSupport = getDocumentVersionSupport(documentId);        
+        
+    	if (versionSupport != null) {
+    		document = databaseDocumentGetter.getDocument(documentId, versionSupport.getLatestVersion().getNumber());
+    	}
+            
+       	latestDocuments.put(documentId, document) ;
+                
+        return document;    	
+    }    
+    
     
 /*    public DocumentDomainObject getPublishedDocument(Integer documentId) {
         DocumentDomainObject document = publishedDocuments.get(documentId) ;
@@ -174,9 +201,8 @@ public class CachingDocumentGetter implements DocumentGetter {
         }
                 
         return document;
-    } */   
+    }
     
-
     public DocumentDomainObject getWorkingDocument(Integer documentId) {
         DocumentDomainObject document = workingDocuments.get(documentId) ;
         
@@ -192,9 +218,6 @@ public class CachingDocumentGetter implements DocumentGetter {
         return document;
     } 
     
-    /**
-     * Returns latest document.
-     */
     public DocumentDomainObject getLatestDocumentVersion(Integer documentId) {
     	DocumentDomainObject document = latestDocuments.get(documentId);
     	
@@ -214,7 +237,9 @@ public class CachingDocumentGetter implements DocumentGetter {
         }
                 
         return document;    	
-    }
+    }    
+    
+*/       
     
     public List getDocuments(Collection documentIds) {
         return databaseDocumentGetter.getDocuments(documentIds) ;
