@@ -141,7 +141,7 @@ public class MenuEditPage extends OkCancelPage {
 
                     for ( String selectedChildIdStr : selectedChildrenIds ) {
                         int selectedChildId = Integer.parseInt(selectedChildIdStr);
-                        DocumentDomainObject selectedChild = documentMapper.getPublishedDocument(selectedChildId);
+                        DocumentDomainObject selectedChild = documentMapper.getDocument(selectedChildId);
                         DocumentDomainObject selectedChildCopy = documentMapper.copyDocument(selectedChild, user);
                         menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(selectedChildCopy)));
                     }

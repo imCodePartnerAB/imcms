@@ -138,6 +138,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     private DocumentDomainObject initDocument(DocumentDomainObject document) {
     	if (document == null) return null;
     	
+    	/*
     	AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(document); 
     	aspectJProxyFactory.setProxyTargetClass(true);
     	
@@ -164,6 +165,10 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     	}
         
         return aspectJProxyFactory.getProxy();
+        */
+        document.accept(documentInitializingVisitor);
+        
+        return document;
     }  
     
     private Document.PublicationStatus publicationStatusFromInt(int publicationStatusInt) {
