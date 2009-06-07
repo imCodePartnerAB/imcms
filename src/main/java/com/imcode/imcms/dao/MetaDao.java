@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.Query;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,41 +38,46 @@ public class MetaDao extends HibernateTemplate {
 	
 	
 	/**
-	 * Creates and returns working version of a document.
+	 * Creates and returns a new working version of a document.
 	 * 
 	 * Tags existing working version as postponed if it is already present.
 	 * 
 	 * @return next document version.
 	 * 
 	 * @see DocumentMapper.saveNewDocument
-	 * @see DocumentMapper.createWorkingDocumentFromExisting
+	 * @see DocumentMapper.publishWorkingDocument
+	 * @see DocumentMapper.createWorkingDocumentFromExisting 
+	 * 
+	 * @return new working version of a document
 	 */
 	@Transactional
-	public synchronized DocumentVersion createWorkingVersion(Integer documentId, Integer userId) {
-		DocumentVersion nextVersion;
+	public DocumentVersion createWorkingVersion(Integer documentId, Integer userId) {
+		DocumentVersion workingVersion;
 		
-		DocumentVersion latestVersion = (DocumentVersion)getSession().getNamedQuery("DocumentVersion.getLastVersion")
+		DocumentVersion latestVersion = (DocumentVersion)getSession()
+			.getNamedQuery("DocumentVersion.getLastVersion")
 			.setParameter("documentId", documentId)
 			.uniqueResult();
 		
 		if (latestVersion == null) {
-			nextVersion = new DocumentVersion(documentId, 1, DocumentVersionTag.WORKING);			
+			workingVersion = new DocumentVersion(documentId, 1, DocumentVersionTag.WORKING);			
 		} else {
-			nextVersion = new DocumentVersion(documentId, 
-					latestVersion.getNumber() + 1, DocumentVersionTag.WORKING);
-			
 			if (latestVersion.getTag() == DocumentVersionTag.WORKING) {
 				latestVersion.setTag(DocumentVersionTag.POSTPONED);
 				update(latestVersion);
-			} 
+			}
+			
+			workingVersion = new DocumentVersion(documentId, 
+					latestVersion.getNumber() + 1, 
+					DocumentVersionTag.WORKING);			
 		}
 		
-		nextVersion.setUserId(userId);
-		nextVersion.setCreatedDt(new Date());
+		workingVersion.setUserId(userId);
+		workingVersion.setCreatedDt(new Date());
 				
-		save(nextVersion);
+		save(workingVersion);
 		
-		return nextVersion;
+		return workingVersion;
 	}	
 	
 	
@@ -87,9 +91,9 @@ public class MetaDao extends HibernateTemplate {
 		Meta meta = getMeta(id);
 		
 		if (meta != null) {
-			DocumentVersion documentVersion = (DocumentVersion)getSession().getNamedQuery("DocumentVersion.getByDocumentIdAndVersion")
+			DocumentVersion documentVersion = (DocumentVersion)getSession().getNamedQuery("DocumentVersion.getByDocumentIdAndVersionNumber")
 				.setParameter("documentId", id)
-				.setParameter("version", versionNumber)
+				.setParameter("versionNumber", versionNumber)
 				.uniqueResult();			
 			if (documentVersion != null) {
 				meta.setVersion(documentVersion);
@@ -134,15 +138,14 @@ public class MetaDao extends HibernateTemplate {
 		Meta meta = getMeta(documentId);
 		
 		if (meta != null) {
-			Query query = getSession().getNamedQuery("DocumentVersion.getByDocumentIdAndVersionTag")
-			  .setParameter("documentId", documentId)
-			  .setParameter("versionTag", DocumentVersionTag.PUBLISHED);
+			DocumentVersion publishedVersion = (DocumentVersion)getSession()
+				.getNamedQuery("DocumentVersion.getPublishedVersion")
+			    .setParameter("documentId", documentId)
+			    .uniqueResult();
 			
-			DocumentVersion documentVersion = (DocumentVersion)query.uniqueResult();
+			if (publishedVersion == null) return null;
 			
-			if (documentVersion == null) return null;
-			
-			meta.setVersion(documentVersion);
+			meta.setVersion(publishedVersion);
 		}
 		
 		return initI18nMetas((meta));
@@ -162,15 +165,14 @@ public class MetaDao extends HibernateTemplate {
 		Meta meta = getMeta(documentId);
 		
 		if (meta != null) {
-			Query query = getSession().getNamedQuery("DocumentVersion.getByDocumentIdAndVersionTag")
-			  .setParameter("documentId", documentId)
-			  .setParameter("versionTag", DocumentVersionTag.WORKING);
+			DocumentVersion workingVersion = (DocumentVersion)getSession()
+				.getNamedQuery("DocumentVersion.getWorkingVersion")
+			    .setParameter("documentId", documentId)
+			    .uniqueResult();
 			
-			DocumentVersion documentVersion = (DocumentVersion)query.uniqueResult();
+			if (workingVersion == null) return null;
 			
-			if (documentVersion == null) return null;
-			
-			meta.setVersion(documentVersion);
+			meta.setVersion(workingVersion);
 		}
 		
 		return initI18nMetas((meta));
@@ -312,21 +314,22 @@ public class MetaDao extends HibernateTemplate {
 	 * //TODO?: alter modification date ???
 	 */
 	@Transactional
-	public synchronized void publishWorkingDocument(Integer documentId) {
-		Query query = getSession().getNamedQuery("DocumentVersion.getByDocumentIdAndVersionTag")
+	public void publishWorkingVersion(Integer documentId) {
+		DocumentVersion publishedVersion = (DocumentVersion)getSession()
+			.getNamedQuery("DocumentVersion.getPublishedVersion")
 			.setParameter("documentId", documentId)
-			.setParameter("versionTag", DocumentVersionTag.PUBLISHED);
-		
-		DocumentVersion publishedVersion = (DocumentVersion)query.uniqueResult();
+			.uniqueResult();
 		
 		if (publishedVersion != null) {
 			publishedVersion.setTag(DocumentVersionTag.ARCHIVED);
 			save(publishedVersion);
 		}
 		
-		query.setParameter("versionTag", DocumentVersionTag.WORKING);
-		DocumentVersion workingVersion = (DocumentVersion)query.uniqueResult();
-		
+		DocumentVersion workingVersion = (DocumentVersion)getSession()
+			.getNamedQuery("DocumentVersion.getWorkingVersion")
+			.setParameter("documentId", documentId)
+			.uniqueResult();
+				
 		if (workingVersion != null) {
 			workingVersion.setTag(DocumentVersionTag.PUBLISHED);
 			save(workingVersion);

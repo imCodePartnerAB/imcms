@@ -62,7 +62,7 @@ public class TextDocumentInitializer {
     public void initTexts(TextDocumentDomainObject document) {
      	Meta meta = document.getMeta();
     	
-    	Collection<TextDomainObject> texts = textDao.getTexts(meta.getId(), meta.getVersion().getVersion());    	    
+    	Collection<TextDomainObject> texts = textDao.getTexts(meta.getId(), meta.getVersion().getNumber());    	    
     	Map<I18nLanguage, Map<Integer, TextDomainObject>> textsMap = new HashMap<I18nLanguage, Map<Integer,TextDomainObject>>();
     	
     	for (TextDomainObject text: texts) {
@@ -108,7 +108,7 @@ public class TextDocumentInitializer {
     public void initImages(TextDocumentDomainObject document) {
     	Meta meta = document.getMeta();
     	
-    	Collection<ImageDomainObject> images = imageDao.getImages(meta.getId(), meta.getVersion().getVersion());
+    	Collection<ImageDomainObject> images = imageDao.getImages(meta.getId(), meta.getVersion().getNumber());
     	
     	Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
     	

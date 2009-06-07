@@ -147,14 +147,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
         Integer metaId = textDocument.getMeta().getId();
-        Integer documentVersion = textDocument.getMeta().getVersion().getVersion();
+        Integer documentVersionNumber = textDocument.getMeta().getVersion().getNumber();
         
         for (Map<Integer, ImageDomainObject> map: textDocument.getAllImages().values()) {
         	for (ImageDomainObject image: map.values()) {
                 if (image.isModified()) {                	 
                 	// TODO: remove
                 	image.setMetaId(metaId);
-                	image.setMetaVersion(documentVersion);
+                	image.setMetaVersion(documentVersionNumber);
                     imageDao.saveImage(image);
                     //imageDao.saveImageHistory(metaId, text, user); 
                 }        		

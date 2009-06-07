@@ -31,7 +31,7 @@ public class TextDaoTest extends DaoTest {
 				
 		Set<Integer> documentVersions = (HashSet<Integer>)CollectionUtils.collect(versions, new Transformer() {
 			public Object transform(Object object) {
-				return ((DocumentVersion)object).getVersion();
+				return ((DocumentVersion)object).getNumber();
 			}
 		}, new HashSet<Integer>());
 		
@@ -56,7 +56,7 @@ public class TextDaoTest extends DaoTest {
 				
 		Set<Integer> documentVersions = (HashSet<Integer>)CollectionUtils.collect(versions, new Transformer() {
 			public Object transform(Object object) {
-				return ((DocumentVersion)object).getVersion();
+				return ((DocumentVersion)object).getNumber();
 			}
 		}, new HashSet<Integer>());
 		
@@ -83,14 +83,14 @@ public class TextDaoTest extends DaoTest {
 				
 		Set<Integer> documentVersions = (HashSet<Integer>)CollectionUtils.collect(versions, new Transformer() {
 			public Object transform(Object object) {
-				return ((DocumentVersion)object).getVersion();
+				return ((DocumentVersion)object).getNumber();
 			}
 		}, new HashSet<Integer>());
 		
 		List<TextDomainObject> texts = textDao.getTextsForVersionsInRange(META_ID, 
 				language, 
-				versions.get(0).getVersion(),
-				versions.get(versions.size() - 1).getVersion());
+				versions.get(0).getNumber(),
+				versions.get(versions.size() - 1).getNumber());
 
 		Set<Integer> textVersions = (HashSet<Integer>)CollectionUtils.collect(texts, new Transformer() {
 			public Object transform(Object object) {

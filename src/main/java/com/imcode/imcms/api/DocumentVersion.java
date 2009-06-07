@@ -31,7 +31,7 @@ public class DocumentVersion implements Cloneable {
 	 * Version number
 	 */
 	@Column(name="version")	
-	private Integer version;
+	private Integer number;
 	
 	@Column(name="user_id", updatable=false)	
 	private Integer userId;
@@ -42,14 +42,14 @@ public class DocumentVersion implements Cloneable {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name="version_tag")
-	private DocumentVersionTag versionTag;
+	private DocumentVersionTag tag;
 	
 	public DocumentVersion() {}
 	
-	public DocumentVersion(Integer documentId, Integer version, DocumentVersionTag versionTag) {
+	public DocumentVersion(Integer documentId, Integer versionNumber, DocumentVersionTag versionTag) {
 		this.documentId = documentId;
-		this.version = version;
-		this.versionTag = versionTag;
+		this.number = versionNumber;
+		this.tag = versionTag;
 	}	
 	
 	@Override
@@ -83,7 +83,7 @@ public class DocumentVersion implements Cloneable {
 	 */
 	@Deprecated
 	public Integer getVersion() {
-		return version;
+		return number;
 	}
 
 	
@@ -92,11 +92,11 @@ public class DocumentVersion implements Cloneable {
 	 */	
 	@Deprecated
 	public void setVersion(Integer version) {
-		this.version = version;
+		this.number = version;
 	}
 	
 	/**
-	 * @return verswion number.
+	 * @return version number.
 	 */
 	public Integer getNumber() {
 		return getVersion();
@@ -117,7 +117,7 @@ public class DocumentVersion implements Cloneable {
 	 */	
 	@Deprecated	
 	public DocumentVersionTag getVersionTag() {
-		return versionTag;
+		return tag;
 	}
 
 	/**
@@ -125,14 +125,14 @@ public class DocumentVersion implements Cloneable {
 	 */	
 	@Deprecated	
 	public void setVersionTag(DocumentVersionTag versionTag) {
-		this.versionTag = versionTag;
+		this.tag = versionTag;
 	}
 	
 	/** 
 	 * @return document version tag.
 	 */
 	public DocumentVersionTag getTag() {
-		return versionTag;
+		return getVersionTag();
 	}
 
 	/** 

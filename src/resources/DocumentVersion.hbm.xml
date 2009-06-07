@@ -4,22 +4,6 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
  
 <hibernate-mapping>
-  <!--
-  <query name="">
-    <![CDATA[
-    ]]>
-  </query>    
-  -->
-  
-  <!-- Collection -->
-  <query name="DocumentVersion.getByDocumentIdAndVersionTag">
-    <![CDATA[
-      SELECT v FROM DocumentVersion v 
-      WHERE 
-        v.documentId = :documentId AND 
-        v.versionTag = :versionTag    
-    ]]>
-  </query>   
   
   <!-- Unique -->
   <query name="DocumentVersion.getLastVersion">
@@ -30,15 +14,29 @@
 	    WHERE v.documentId = :documentId)
 	  )    
     ]]>
-  </query>  
-  
+  </query>
+    
   <!-- Unique -->
-  <query name="DocumentVersion.getByDocumentIdAndVersion">
+  <query name="DocumentVersion.getWorkingVersion">
     <![CDATA[
 	  SELECT v FROM DocumentVersion v 
-	  WHERE 
-	    v.documentId = :documentId AND
-		v.version    = :version    
+	  WHERE v.tag = 'WORKING' AND v.documentId = :documentId     
+    ]]>
+  </query>
+  
+  <!-- Unique -->
+  <query name="DocumentVersion.getPublishedVersion">
+    <![CDATA[
+	  SELECT v FROM DocumentVersion v 
+	  WHERE v.tag = 'PUBLISHED' AND v.documentId = :documentId     
+    ]]>
+  </query>    
+  
+  <!-- Unique -->
+  <query name="DocumentVersion.getByDocumentIdAndVersionNumber">
+    <![CDATA[
+	  SELECT v FROM DocumentVersion v 
+	  WHERE v.documentId = :documentId AND v.number = :versionNumber    
     ]]>
   </query>  
 
@@ -48,4 +46,15 @@
       SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId   
     ]]>
   </query>
+  
+  <!-- Collection -->
+  <query name="DocumentVersion.getByDocumentIdAndVersionTag">
+    <![CDATA[
+      SELECT v FROM DocumentVersion v 
+      WHERE 
+        v.documentId = :documentId AND 
+        v.tag = :versionTag    
+    ]]>
+  </query>   
+  
 </hibernate-mapping>

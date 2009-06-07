@@ -3,6 +3,7 @@ package com.imcode.imcms.mapping;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -80,7 +81,22 @@ public class DocumentSaver {
     public void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) 
     throws DocumentSaveException {
     	try {
-    		metaDao.publishWorkingDocument(document.getMeta().getId());
+    		Integer documentId = document.getMeta().getId();
+    		metaDao.publishWorkingVersion(documentId);
+    		DocumentVersion documentVersion = metaDao.createWorkingVersion(documentId, user.getId());
+    		
+    		if (document.getDocumentTypeId() == DocumentTypeDomainObject.TEXT_ID) {
+    			TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document.clone();
+    			
+    			textDocument.setDependenciesMetaIdToNull();
+    			textDocument.setId(documentId);    			
+    	        textDocument.getMeta().setVersion(documentVersion);    			
+    			
+    	        DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
+    	            	        
+    	        visitor.updateTextDocumentTexts(textDocument, null, user);
+    	        visitor.updateTextDocumentImages(textDocument, null, user);
+    		}
     	} catch (RuntimeException e) {
     		throw new DocumentSaveException(e);
     	} finally {
@@ -141,10 +157,9 @@ public class DocumentSaver {
     		
     	//TODO: refactor - very ugly
     	// clone document, reset its dependencies meta id and assign its documentId again  
-    	document = document.clone();
-    	document.setAlias(null);
-    	document.setDependenciesMetaIdToNull();
-    	document.setId(documentId);
+    	TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document.clone();
+    	textDocument.setDependenciesMetaIdToNull();
+    	textDocument.setId(documentId);
 
     	/*
         //try {
@@ -162,13 +177,12 @@ public class DocumentSaver {
         //    documentMapper.invalidateDocument(document);
         //}
         */  
-            
-        DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
-        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
         
         DocumentVersion documentVersion = metaDao.createWorkingVersion(documentId, user.getId());
         textDocument.getMeta().setVersion(documentVersion);
-        
+    	
+        DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
+                
         visitor.updateTextDocumentTexts(textDocument, null, user);
         visitor.updateTextDocumentImages(textDocument, null, user);
     }

@@ -12,7 +12,7 @@ public interface DocumentGetter {
     List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds);
 
     /**
-     * Returns latest version of a document. 
+     * Returns latest (working) version of a document. 
      * 
      * @param metaId document's meta id.
      */
@@ -26,14 +26,14 @@ public interface DocumentGetter {
     DocumentDomainObject getPublishedDocument(Integer documentId);    
     
     /**
-     * Returns working version of a document.
+     * Returns working (latest) version of a document.
      * 
      * @param documentId document's id.
      */
     DocumentDomainObject getWorkingDocument(Integer documentId);
         
     /**
-     * Returns custom document.
+     * Returns custom version of a document.
      * 
      * @param documentId document's id.
      */

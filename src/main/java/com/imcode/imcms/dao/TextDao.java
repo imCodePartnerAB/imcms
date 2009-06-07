@@ -130,7 +130,7 @@ public class TextDao extends HibernateTemplate {
 		for (DocumentVersion version: versions) {
 			if (i++ != 0) versionString.append(",");
 			
-			versionString.append(version.getVersion().toString());
+			versionString.append(version.getNumber().toString());
 		}
 				
 		return versionString.toString();

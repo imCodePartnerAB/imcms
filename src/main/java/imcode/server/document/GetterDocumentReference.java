@@ -25,13 +25,7 @@ public class GetterDocumentReference extends DocumentReference {
      * Optimize.
      */
     public DocumentDomainObject getDocument() {
-		DocumentDomainObject document = documentGetter.getPublishedDocument(getDocumentId());
-		
-		if (document != null) {
-			return document;
-		} else {
-			return documentGetter.getDocument(getDocumentId());
-		}
+		return documentGetter.getDocument(getDocumentId());
     }
 
     public void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {

@@ -741,40 +741,9 @@ public class DocumentMapper implements DocumentGetter {
      * or null if document does not exist
      */
     public DocumentDomainObject getDocumentForShowing(Integer documentId, UserDomainObject user) {
-    	DocumentDomainObject document = null;
     	DocumentShowSettings showSettings = user.getDocumentShowSettings();
-		
-    	switch (showSettings.getVersionSelector().getType()) {
-		case PUBLISHED:	
-			document = getPublishedDocument(documentId);
-			break;
-			
-		case WORKING:
-			document = getWorkingDocument(documentId);
-			
-			if (document == null) {
-				document = getPublishedDocument(documentId);
-				
-				if (document != null) {					
-					try {
-						createWorkingDocument(documentId, document.getMeta().getVersion().getNumber(), user);
-					} catch (DocumentSaveException e) {
-						throw new RuntimeException(e);
-					}
-					
-					document = getWorkingDocument(documentId);
-				}
-			}
-			
-			break;			
-
-		case CUSTOM:
-			document = getDocument(documentId, showSettings.getVersionSelector().getVersionNumber());
-			break;
-			
-		default:
-			document = null;
-		}
+    	DocumentDomainObject document = showSettings.getVersionSelector()
+    		.getDocument(this, documentId);
     	
     	return createDocumentShowInterceptor(document, user);    	
     } 

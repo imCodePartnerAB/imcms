@@ -28,13 +28,6 @@ public class CachingDocumentGetter implements DocumentGetter {
 	private Map<Integer, DocumentVersionSupport> versionsSupports;
 	
 	/**
-	 * Latest documents cache.
-	 * 
-     * Cache key is a document id. 
-	 */
-	private Map<Integer, DocumentDomainObject> latestDocuments;
-
-	/**
 	 * Published documents cache.
 	 * 
      * Cache key is a document id.
@@ -69,7 +62,6 @@ public class CachingDocumentGetter implements DocumentGetter {
         this.databaseDocumentGetter = databaseDocumentGetter;
         
         versionsSupports = new HashMap<Integer, DocumentVersionSupport>();
-        latestDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
         workingDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
         publishedDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
         customDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
@@ -168,79 +160,12 @@ public class CachingDocumentGetter implements DocumentGetter {
     } 
     
     /**
-     * Returns latest document.
+     * Returns latest (working) document.
      */
     public DocumentDomainObject getDocument(Integer documentId) {
-    	if (latestDocuments.containsKey(documentId)) {
-    		return latestDocuments.get(documentId);
-    	}
-
-    	DocumentDomainObject document = null;
-    	DocumentVersionSupport versionSupport = getDocumentVersionSupport(documentId);        
-        
-    	if (versionSupport != null) {
-    		document = databaseDocumentGetter.getDocument(documentId, versionSupport.getLatestVersion().getNumber());
-    	}
-            
-       	latestDocuments.put(documentId, document) ;
-                
-        return document;    	
+    	return getWorkingDocument(documentId);
     }    
-    
-    
-/*    public DocumentDomainObject getPublishedDocument(Integer documentId) {
-        DocumentDomainObject document = publishedDocuments.get(documentId) ;
-        
-        if (null == document) {
-        	// AOP?
-            document = databaseDocumentGetter.getPublishedDocument(documentId) ;
             
-            if (document != null) {            	
-            	publishedDocuments.put(documentId, document) ;
-            }
-        }
-                
-        return document;
-    }
-    
-    public DocumentDomainObject getWorkingDocument(Integer documentId) {
-        DocumentDomainObject document = workingDocuments.get(documentId) ;
-        
-        if (null == document) {
-        	// AOP?
-            document = databaseDocumentGetter.getWorkingDocument(documentId) ;
-            
-            if (document != null) {            	
-            	workingDocuments.put(documentId, document) ;
-            }
-        }
-                
-        return document;
-    } 
-    
-    public DocumentDomainObject getLatestDocumentVersion(Integer documentId) {
-    	DocumentDomainObject document = latestDocuments.get(documentId);
-    	
-        if (null == document) {
-        	DocumentVersionSupport versionSupport = getDocumentVersionSupport(documentId);
-        	
-        	if (versionSupport == null) {
-        		return null;
-        	}
-        	
-        	// AOP?
-            document = databaseDocumentGetter.getDocument(documentId, versionSupport.getLatestVersion().getNumber());
-            
-            if (document != null) {            	
-            	latestDocuments.put(documentId, document) ;
-            }
-        }
-                
-        return document;    	
-    }    
-    
-*/       
-    
     public List getDocuments(Collection documentIds) {
         return databaseDocumentGetter.getDocuments(documentIds) ;
     }	
@@ -249,7 +174,6 @@ public class CachingDocumentGetter implements DocumentGetter {
     public void clearCache() {
     	publishedDocuments.clear();
     	workingDocuments.clear();  
-    	latestDocuments.clear();
     	versionsSupports.clear();
     	aliasesBidiMap.clear();
     	customDocuments.clear();
@@ -259,7 +183,6 @@ public class CachingDocumentGetter implements DocumentGetter {
     public void removeDocumentFromCache(Integer documentId) {
     	publishedDocuments.remove(documentId);
     	workingDocuments.remove(documentId);
-    	latestDocuments.remove(documentId);
     	versionsSupports.remove(documentId);
     	aliasesBidiMap.remove(documentId);
     	customDocuments.remove(documentId);
