@@ -7,7 +7,7 @@ import imcode.server.user.UserDomainObject;
 public class User {
     private UserDomainObject internalUser;
 
-    imcode.server.user.UserDomainObject getInternal() {
+    public UserDomainObject getInternal() {
         return internalUser;
     }
 
