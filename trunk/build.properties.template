@@ -1,0 +1,141 @@
+# This is the properties-file for building imCMS with ant.
+# You just have to fill in the blanks.
+# You shouldn't change any defaults unless you know what you are doing.
+
+
+# The deployment directory (parent of the webapp directory).
+# Do *not* use back-slashes ('\'). Use forward-slashes ('/').
+# You only need this if you want to use "ant install" and "ant install-war".
+
+# imCMS artifact version
+imcms.version=6.0.0-SNAPSHOT
+ 
+# Required database schema version.
+# At startup time compared against value in database_version table - exact match is required.
+# This value is saved into <webapproot>/schema-version.txt file.
+db.schema.version = 6.0
+
+deployroot =
+
+
+# The name of the webapp. Used for filenames and URIs.
+
+webappname = imcms
+
+
+# The deployed web application diretory
+
+webapproot = ${deployroot}/${webappname}
+
+# Denies multiple login for same user. To enable this option change property value to true. 
+deny-multiple-user-login = false
+
+# Database parameters
+
+db-host = localhost
+db-name = imcms
+db-user = root
+db-pass = root
+db-maxconnections = 20
+
+# For MySQL
+db-target = mysql
+db-port = 3306
+db-driver = com.mysql.jdbc.Driver
+db-url-without-db-name = jdbc:mysql://${db-host}:${db-port}/
+db-url = ${db-url-without-db-name}${db-name}?characterEncoding=utf8
+
+external-authenticator =
+external-user-and-role-registry =
+
+# LDAP-authentication-parameters
+
+ldap-url = ldap://localhost:389/CN=Users,DC=example,DC=com
+ldap-bind-dn =
+ldap-password =
+ldap-test-user =
+ldap-test-password =
+ldap-user-object-class = inetOrgPerson
+ldap-attribute-login-name = uid
+
+# For Microsoft Active Directory
+#ldap-user-object-class = user
+#ldap-attribute-login-name = sAMAccountName
+
+secondary-external-authenticator =
+secondary-external-user-and-role-registry =
+
+# Secondary LDAP-authentication-parameters
+
+secondary-ldap-url = ldap://localhost:389/CN=Users,DC=example,DC=com
+secondary-ldap-bind-dn =
+secondary-ldap-password =
+secondary-ldap-test-user =
+secondary-ldap-test-password =
+secondary-ldap-user-object-class = inetOrgPerson
+secondary-ldap-attribute-login-name = uid
+
+# For Microsoft Active Directory
+#secondary-ldap-user-object-class = user
+#secondary-ldap-attribute-login-name = sAMAccountName
+
+
+# The smtp-server used for sending mails.
+
+smtp-server =
+
+
+# The name and e-mail-address of the servermaster.
+
+servermaster-name  =
+servermaster-email =
+
+
+# The name and e-mail-address of the webmaster.
+# Defaults to the values for the servermaster.
+
+webmaster-name  = ${servermaster-name}
+webmaster-email = ${servermaster-email}
+
+
+# The default language to use when build the webapp ( swe | eng )
+
+defaultlanguage = eng
+
+
+# The root-URI of the webapp, relative to the server root-URI (/).
+
+rooturl = /${webappname}
+
+
+# The imCMS documents is usually on the imCMS public site, http://doc.imcms.net/
+# If you want to install a local server for handling (modifying) the documents
+# change this:
+
+documentation-host = doc.imcms.net
+
+
+# Whether the build should be optimized or not.
+
+optimize = on
+
+
+# Whether to leave debug info in or not.
+
+debug = on
+
+
+# Whether to compile with deprecation warnings on or not.
+
+deprecation = on
+
+# Which log4j-config-file to use.
+# You might want to change this to log4j-debug.xml to turn on debug-logs.
+
+log4j-config = log4j-nodebug.xml
+
+# Tomcat settings for quick deployment during development
+tomcat-admin-username = admin
+tomcat-admin-password =
+tomcat-webapp-manager-url = http://localhost:8080/manager
+tomcat-deployroot-local-directory =

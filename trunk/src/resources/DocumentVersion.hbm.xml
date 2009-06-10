@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+<hibernate-mapping>
+  
+  <!-- Unique -->
+  <query name="DocumentVersion.getLastVersion">
+    <![CDATA[
+	  SELECT v FROM DocumentVersion v 
+	  WHERE v.id IN (
+	    SELECT max(v.id) FROM DocumentVersion v 
+	    WHERE v.documentId = :documentId)
+	  )    
+    ]]>
+  </query>
+    
+  <!-- Unique -->
+  <query name="DocumentVersion.getWorkingVersion">
+    <![CDATA[
+	  SELECT v FROM DocumentVersion v 
+	  WHERE v.tag = 'WORKING' AND v.documentId = :documentId     
+    ]]>
+  </query>
+  
+  <!-- Unique -->
+  <query name="DocumentVersion.getPublishedVersion">
+    <![CDATA[
+	  SELECT v FROM DocumentVersion v 
+	  WHERE v.tag = 'PUBLISHED' AND v.documentId = :documentId     
+    ]]>
+  </query>    
+  
+  <!-- Unique -->
+  <query name="DocumentVersion.getByDocumentIdAndVersionNumber">
+    <![CDATA[
+	  SELECT v FROM DocumentVersion v 
+	  WHERE v.documentId = :documentId AND v.number = :versionNumber    
+    ]]>
+  </query>  
+
+  <!-- Collection -->
+  <query name="DocumentVersion.getByDocumentId">
+    <![CDATA[
+      SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId   
+    ]]>
+  </query>
+  
+  <!-- Collection -->
+  <query name="DocumentVersion.getByDocumentIdAndVersionTag">
+    <![CDATA[
+      SELECT v FROM DocumentVersion v 
+      WHERE 
+        v.documentId = :documentId AND 
+        v.tag = :versionTag    
+    ]]>
+  </query>   
+  
+</hibernate-mapping>

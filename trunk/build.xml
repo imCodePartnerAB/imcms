@@ -1,0 +1,456 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+
+<project name="imCMS" default="package" xmlns:artifact="urn:maven-artifact-ant">
+	
+    <!-- Read in 'build.properties' and set the properties therein. -->
+    <!-- Those properties are used as bases for latsproer properties in this file. -->
+    <available file="build.properties" property="build.properties-available" />
+    <available file="build.properties" property="build.properties" value="build.properties"/>
+    <property name="build.properties" value="build.properties.template" />
+    <property file="${build.properties}"/>
+	
+    <!-- The current version of imCMS. -->
+    <property name="svnurl" value="$URL: https://repo.imcode.com/imcode/imcms/trunk/build.xml $"/>
+
+    <!-- versionnumber : imCMS version without suffix, only the number (e.g. "1.2.3") -->
+    <property name="version" value=""/>
+    <property name="versionnumber" value=""/>
+    <property name="versionfilesuffix" value=""/>
+	    
+	<property name="lib.dir" value="${basedir}/lib"/>
+	<property name="sql.dir" value="${basedir}/sql"/>
+	<property name="web.dir" value="${basedir}/web"/>
+
+	<!-- Resources common for both main and test -->
+	<property name="resources.dir" value="${basedir}/src/resources"/>
+		
+	<property name="main.java.dir" value="${basedir}/src/main/java"/>
+	<property name="main.resources.dir" value="${basedir}/src/main/resources"/>
+	<property name="main.resources-conf.dir" value="${basedir}/src/main/resources-conf"/>
+	<property name="main.resources-webinf.dir" value="${basedir}/src/main/resources-webinf"/>	
+	
+	<property name="main.webapp.dir" value="${basedir}/src/main/webapp"/>	
+	<property name="main.webapp.login.dir" value="${main.webapp.dir}/login"/>
+    <property name="main.webapp.imcms.dir" value="${main.webapp.dir}/imcms"/>	    
+	<property name="main.webapp.webinf.dir" value="${main.webapp.dir}/WEB-INF"/>
+	
+    <property name="versionfile" value="${main.webapp.webinf.dir}/version.txt"/>
+
+    <property name="srcincludes" value="MANIFEST.TXT"/>
+		
+    <property name="webinf.conf.dir" value="${main.webapp.webinf.dir}/conf"/>
+	<property name="webinf.classes.dir" value="${main.webapp.webinf.dir}/classes"/>
+    <property name="webinf.templates.dir" value="${main.webapp.webinf.dir}/templates"/>
+    <property name="webinf.sql.dir" value="${main.webapp.webinf.dir}/sql"/>
+    <property name="webinf.sql-diff.dir" value="${webinf.sql.dir}/diff"/>
+    <property name="webinf.sql-sprocs.dir" value="${webinf.sql.dir}/sprocs"/>
+    
+    <!-- Maven integration -->
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" 
+          uri="urn:maven-artifact-ant"
+          classpath="${lib.dir}/maven-ant-tasks-2.0.9.jar"/>
+	
+	<artifact:pom id="pom" file="pom.xml"/>	
+	<artifact:dependencies pathid="pom.classpath" pomrefid="pom"/>
+	
+	<property name="maven.build.dir" value="${pom.build.directory}"/>
+	<property name="maven.build.webapp.dir" value="${maven.build.dir}/${pom.artifactId}"/>
+	<property name="maven.build.war" value="${maven.build.dir}/${pom.artifactId}.war"/>
+	<property name="maven.build.jar" value="${maven.build.webapp.dir}/WEB-INF/lib/${pom.artifactId}.jar"/>
+    <!-- End of maven integration -->		
+    
+    <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="pom.classpath"/>
+    <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask" classpathref="pom.classpath"/>
+    <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="pom.classpath"/>
+    <taskdef resource="checkstyletask.properties" classpathref="pom.classpath"/>
+	
+    <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
+
+    <target name="clean" description="Deletes everything for a fresh start.">
+    	<maven goal="clean"/>
+    	<delete dir="${main.webapp.webinf.dir}"/>
+    </target>
+	
+    <target name="database-apply-diff" depends="init,sql">
+        <fail unless="db-diff-file">
+            Set "db-diff-file" in build.properties to the diff file you want to execute.
+        </fail>
+
+        <sql classpathref="pom.classpath" driver="${db-driver}" url="${db-url}"
+            userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" src="${sql.dir}/diff/${db-diff-file}"/>
+    </target>
+
+    <target name="database-create" depends="init">
+        <sql classpathref="pom.classpath" driver="${db-driver}" url="${db-url-without-db-name}"
+             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
+            CREATE DATABASE ${db-name}
+        </sql>
+
+        <sql classpathref="pom.classpath" driver="${db-driver}" url="${db-url}"
+            userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" keepformat="true">
+            <transaction src="${sql.dir}/imcms_6.0_schema.sql"/>
+        	<transaction src="${sql.dir}/imcms_6.0_data.sql"/>
+        </sql>
+    </target>
+
+	
+    <target name="database-drop" depends="init">
+        <sql classpathref="pom.classpath" driver="${db-driver}" url="${db-url-without-db-name}"
+             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
+            DROP DATABASE IF EXISTS ${db-name}
+        </sql>
+    </target>
+
+	
+    <target name="database-recreate" depends="init,database-drop,database-create"/>
+
+	
+    <target name="tomcat-install" depends="init,check-deployroot" 
+    		description="Install files already built, without running 'build' first.">
+    	
+        <copy todir="${webapproot}">
+            <fileset dir="${maven.build.webapp.dir}"/>
+        </copy>
+    </target>
+
+	
+    <target name="tomcat-uninstall" depends="init-version-properties,check-deployroot" description="Removes the installed files from the deployroot, including the war-file.">
+        <delete dir="${webapproot}"/>
+        <delete file="${deployroot}/${warfilename}"/>
+    </target>
+
+
+    <target name="apidocs">
+        <javadoc sourcepath="${main.java.dir}/" destdir="${apidocs}"
+                 windowtitle="imCMS API" classpathref="libraries"
+                 encoding="iso-8859-1">
+            <fileset dir="${main.java.dir}/" defaultexcludes="yes">
+                <include name="com/imcode/imcms/api/**"/>
+                <include name="com/imcode/util/**"/>
+                <exclude name="**/Test*.java"/>
+                <exclude name="**/Mock*.java"/>
+            </fileset>
+        </javadoc>
+    </target>
+
+	
+    <target name="changes">
+        <xslt in="docs/changes.xml" style="docs/changes.xsl" out="docs/CHANGES.HTML"/>
+    </target>
+
+	
+    <target name="checkstyle" depends="init">
+		<!--
+        <checkstyle config="docs/checkstyle.xml">
+            <fileset dir="${main.java.dir}" includes="**/*.java"/>
+        </checkstyle>
+		-->
+    </target>   
+
+	
+    <target name="sql">        
+        <copy todir="${webinf.sql-diff.dir}">
+            <fileset dir="${sql.dir}/diff" includes="diff-*.sql"/>
+        </copy>     
+
+        <copy todir="${webinf.sql.dir}">
+            <fileset file="${sql.dir}/imcms_6.0_schema.sql"/>
+        </copy>
+        
+        <copy todir="${webinf.sql.dir}">
+            <fileset file="${sql.dir}/imcms_6.0_data.sql"/>
+        </copy>     
+
+        <copy todir="${webinf.sql-sprocs.dir}">
+            <fileset dir="${sql.dir}/sprocs" includes="*.prc"/>
+        </copy>        
+    </target>
+
+	
+    <target name="process-webapp-sources" depends="init,changes,sql"
+            description="Translates and copies the webapp sources to webapp.">
+
+        <property name="texttemplates" value="${webinf.templates.dir}/text"/>
+        <property name="demotemplates" value="${texttemplates}/demo"/>
+        <property name="imagespattern" value="**/*.png,**/*.jpg,**/*.gif"/>
+    	
+        <property name="docs" value="${main.webapp.imcms.dir}/docs"/>
+        <property name="apisamples" value="${docs}/apisamples"/>
+        <property name="apidocs" value="${docs}/api"/>
+    	<!--???-->
+        <dependset>
+            <srcfileset file="${build.properties}"/>
+            <targetfileset dir="${webinf.conf.dir}">
+            	<include name="imcms_*"/>
+            	<include name="server.properties"/>
+            </targetfileset>
+        </dependset>
+    	
+        <dependset>
+            <srcfileset file="${build.properties}"/>
+            <targetfileset dir="${webinf.classes.dir}">
+            	<include name="logj4*"/>
+            </targetfileset>
+        </dependset>    	
+
+        <mkdir dir="${main.webapp.imcms.dir}"/>
+        <mkdir dir="${main.webapp.login.dir}"/>
+        <mkdir dir="${main.webapp.dir}/css"/>
+        <mkdir dir="${main.webapp.dir}/images"/>
+        <mkdir dir="${main.webapp.dir}/javascript"/>
+        <mkdir dir="${main.webapp.dir}/jsp"/>
+        <mkdir dir="${main.webapp.dir}/user"/>
+
+        <mkdir dir="${main.webapp.webinf.dir}/includes"/>
+        <mkdir dir="${main.webapp.webinf.dir}/logs"/>
+        <mkdir dir="${main.webapp.webinf.dir}/uploads"/>
+    	
+    	<echo message="${version}" file="${versionfile}"/>
+        
+        <!-- Copy and filter webinf, conf and classes resources to main webapp dir -->   
+    	<copy todir="${main.webapp.webinf.dir}" filtering="true">
+    		<fileset dir="${main.resources-webinf.dir}"/>
+    	</copy>    	
+    	
+    	<copy todir="${webinf.classes.dir}" filtering="true">
+    		<fileset dir="${resources.dir}"/>
+    	</copy>    	
+    	<copy file="${resources.dir}/${log4j-config}" tofile="${webinf.classes.dir}/log4j.xml"/>
+    	    
+    	<copy todir="${webinf.conf.dir}" filtering="true">
+    		<fileset dir="${main.resources-conf.dir}"/>
+    	</copy>    	   	
+    	    		
+        <copy todir="${main.webapp.dir}" filtering="true">
+            <fileset dir="${web.dir}" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
+        </copy>
+
+        <copy todir="${main.webapp.dir}">
+            <fileset dir="${web.dir}" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern}"/>
+        </copy>
+
+        <antcall target="web-lang">
+            <param name="buildlanguage" value="swe"/>
+        </antcall>
+
+        <antcall target="web-lang">
+            <param name="buildlanguage" value="eng"/>
+        </antcall>
+
+        <mkdir dir="${demotemplates}"/>
+
+        <copy todir="${apisamples}" description="appending .txt on all jsp files making the source browsable">
+            <fileset dir="${apisamples}">
+               <include name="*.jsp"/>
+            </fileset>
+            <mapper type="glob" from="*" to="*.txt"/>
+        </copy>
+
+        <copy todir="${docs}">
+            <fileset dir="${basedir}/docs"/>
+        </copy>
+    </target>
+
+	
+    <target name="web-lang" depends="init">
+        <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${webinf.templates.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
+            <fileset dir="${web.dir}/WEB-INF/templates/lang"/>
+        </imtranslate>
+
+        <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${main.webapp.imcms.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
+            <fileset dir="${web.dir}/imcms/lang" excludes="${imagespattern}"/>
+        </imtranslate>
+
+        <copy todir="${main.webapp.imcms.dir}/${buildlanguage}" filtering="false">
+            <fileset dir="${web.dir}/imcms/lang" includes="${imagespattern}"/>
+        </copy>
+    </target>
+
+	
+    <target name="init" depends="create-build.properties,init-global-filters" 
+    		description="Handy target for everything else to depend on.">
+    	
+        <record name="${basedir}/build.log"/>
+
+        <tstamp/>
+
+  	    <fail message="Database schema version property [db.schema.version] must be set and must be in format major-version.minor-version where major-version and minor-version are digits.">
+	      <condition>
+	        <not>
+	       	  <matches string="${db.schema.version}" pattern="^\d\.\d\s*$"/>
+	        </not>
+	      </condition>
+	    </fail>    	
+    </target>
+
+	
+    <target name="create-build.properties" unless="build.properties-available">
+        <copy file="build.properties.template" tofile="build.properties"/>
+    </target>
+	
+
+    <target name="init-version-properties"
+    		description="Extracts artifact version from svn url.">
+        <propertyregex property="version"
+            input="${svnurl}"
+            regexp=".URL: .*/tags/(.+)/[^/]+ ."
+            override="true"
+            replace="\1"
+            casesensitive="false"/>
+        <propertyregex property="versionnumber"
+            input="${version}"
+            regexp="^(.*?)(-.*)?$"
+            override="true"
+            replace="\1"
+            casesensitive="false"/>
+        <propertyregex property="versionfilesuffix"
+            input="${version}"
+            regexp="(.+)"
+            override="true"
+            replace="-\1"
+            casesensitive="false"/>
+        
+        <property name="sprocs-sql" value="${webinf.sql.dir}/imcms-sprocs${versionfilesuffix}.sql"/>
+    	
+    	<if>
+    	 <equals arg1="${version}" arg2="" />
+    	 <then>
+    	 	<property name="maven.artifact.version" value="${imcms.version}"/>
+    	 </then>
+    	 <else>
+    	 	<property name="maven.artifact.version" value="${version}"/>
+    	 </else>
+    	</if>
+    	
+       <echo message="init-version-properties: version: ${version}"/>
+       <echo message="init-version-properties: versionnumber: ${versionnumber}"/>
+       <echo message="init-version-properties: versionfilesuffix: ${versionfilesuffix}"/>             	
+ 	   <echo message="init-version-properties: maven.artifact.version: ${maven.artifact.version}"/>
+    </target>
+
+	
+    <target name="init-global-filters"
+        	depends="check-build-properties,init-version-properties">
+    	
+    	<filter token="defaultlanguage" value="${defaultlanguage}"/>
+    	
+    	<filter token="db.schema.version" value="${db.schema.version}"/>
+        
+        <filter token="documentationwebappurl" value="http://${documentation-host}/${versionnumber}"/>
+        <filter token="documentationurl" value="http://${documentation-host}/${versionnumber}"/>
+
+        <filter token="deny-multiple-user-login" value="${deny-multiple-user-login}"/>
+
+        <filter token="db-driver" value="${db-driver}"/>
+        <filter token="db-url" value="${db-url}"/>
+        <filter token="db-name" value="${db-name}"/>
+        <filter token="db-user" value="${db-user}"/>
+        <filter token="db-pass" value="${db-pass}"/>
+        <filter token="db-maxconnections" value="${db-maxconnections}"/>
+
+        <filter token="external-authenticator" value="${external-authenticator}"/>
+        <filter token="external-user-and-role-registry" value="${external-user-and-role-registry}"/>
+
+        <filter token="ldap-url" value="${ldap-url}"/>
+        <filter token="ldap-bind-dn" value="${ldap-bind-dn}"/>
+        <filter token="ldap-password" value="${ldap-password}"/>
+        <filter token="ldap-user-object-class" value="${ldap-user-object-class}"/>
+        <filter token="ldap-attribute-login-name" value="${ldap-attribute-login-name}"/>
+
+
+        <filter token="secondary-external-authenticator" value="${secondary-external-authenticator}"/>
+        <filter token="secondary-external-user-and-role-registry" value="${secondary-external-user-and-role-registry}"/>
+
+        <filter token="secondary-ldap-url" value="${secondary-ldap-url}"/>
+        <filter token="secondary-ldap-bind-dn" value="${secondary-ldap-bind-dn}"/>
+        <filter token="secondary-ldap-password" value="${secondary-ldap-password}"/>
+        <filter token="secondary-ldap-user-object-class" value="${secondary-ldap-user-object-class}"/>
+        <filter token="secondary-ldap-attribute-login-name" value="${secondary-ldap-attribute-login-name}"/>
+
+
+        <filter token="smtp-server" value="${smtp-server}"/>
+
+        <filter token="servermaster-name" value="${servermaster-name}"/>
+        <filter token="servermaster-email" value="${servermaster-email}"/>
+
+        <filter token="webmaster-name" value="${webmaster-name}"/>
+        <filter token="webmaster-email" value="${webmaster-email}"/>
+    </target>
+
+	
+    <target name="check-build-properties" unless="build-properties-up-to-date">
+        <uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
+            <srcfiles dir="${basedir}" includes="build.properties.template"/>
+        </uptodate>
+
+        <fail unless="build-properties-up-to-date">
+            'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT for details.)
+            Copy 'build.properties.template' to 'build.properties' and edit it!
+        </fail>
+    </target>
+	
+
+    <target name="check-deployroot" unless="deployroot">
+        <fail message="Set 'deployroot' in '${build.properties}'!"/>
+    </target>
+
+	
+    <target name="check-web-xml-valid">
+        <xmlvalidate file="web/WEB-INF/web.xml" classpathref="libraries">
+            <dtd
+                publicId="-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+                location="javax/servlet/resources/web-app_2_3.dtd"/>
+        </xmlvalidate>
+    </target>
+	
+	
+	<!-- ======================================================= -->
+	<!-- Maven based tasks -->
+	<!-- ======================================================= -->
+    <condition property="ant.maven.executable" value="mvn.bat">
+        <os family="windows"/>
+    </condition>
+
+    <property name="ant.maven.executable" value="mvn"/>
+
+    <macrodef name="maven">
+        <attribute name="goal"/>
+        <sequential>
+            <exec executable="${ant.maven.executable}" failonerror="true">
+                <arg value="-Dmaven.test.skip=true"/>
+            	<arg value="-Dimcms.version=${maven.artifact.version}"/>
+            	
+            	<arg value="@{goal}"/>
+            </exec>
+        </sequential>
+    </macrodef>
+				
+	<target name="compile">
+		<maven goal="compile"/>
+	</target>	
+	
+	<target name="package" depends="process-webapp-sources">
+		<maven goal="package"/>
+	</target>
+	
+	<target name="install" depends="process-webapp-sources">
+		<maven goal="install"/>
+	</target>
+	
+	<target name="deploy" depends="process-webapp-sources">
+		<maven goal="deploy"/>
+	</target>
+	
+	<target name="jetty" depends="process-webapp-sources"
+			description="Runs built webapp under jetty on port 9090">
+		<maven goal="jetty:run"/>
+	</target>	
+		
+    <!-- Compound targets -->
+    <target name="build-tomcat-install" depends="package,tomcat-install" description="Copies the webapp directly into the webapp-directory in the deployroot."/>
+    <target name="clean-build-tomcat-install" depends="clean,build-tomcat-install" description="Runs targets clean, build, and install."/>	
+</project>

@@ -1,0 +1,124 @@
+/* NORMAL FONTS */
+
+BODY, TH, TD, P, .norm {
+	font-weight: normal;
+	font-size: 13px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+.normWhite {
+	font-weight: normal;
+	font-size: 13px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color: #ffffff;
+}
+
+.heading {
+	font-weight: bold;
+	font-size: 13px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+.sub {
+	font-weight: bold;
+	font-size: 13px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+.small {
+	font-weight: normal;
+	font-size: 9px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+
+/* FORMS */
+
+INPUT, SELECT, TEXTAREA, .formNorm {
+	font-weight: normal;
+	font-size: 13px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+.formMid {
+	font-weight: normal;
+	font-size: 12px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+.formSmall {
+	font-weight: normal;
+	font-size: 11px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+.formBtn {
+	font-weight: normal;
+	font-size: 11px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color: #000000;
+	height: 22px;
+}
+
+.formBtnBlue {
+	font-weight: bold;
+	font-size: 11px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color: #000099;
+	height: 22px;
+}
+
+.formBtnNorm {
+	font-weight: normal;
+	font-size: 11px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color: #000000;
+	height: 22px;
+}
+
+.formBtnSmall {
+	font-weight: normal;
+	font-size: 9px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color: #000000;
+	height: 19px;
+}
+
+
+/* LINKS */
+
+A:link { color: #0000CC; text-decoration: underline; }
+A:visited { color: #0000CC; text-decoration: underline; }
+A:active { color: #CC0000; text-decoration: underline; }
+A:hover { color: #0000FF; text-decoration: underline; }
+
+A.helpLink:link, A.helpLink:visited, A.helpLink:active, A.helpLink:hover {
+	font-weight: bold;
+	font-size: 11px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+}
+
+
+/* MISC */
+
+B { font-weight: bold; }
+I { font-style: italic; }
+U { text-decoration: underline; }
+
+.grey { background-color: #bababa }
+
+
+/* GUI */
+
+BODY { background-color: #ffffff; margin: 10 0; }	/* body bgcolor */
+.AdminTable { background: #D6D3CE; }							/* bgcolor: main */
+.AdminTableHeading { background: #333366; }				/* bgcolor: heading */
+
+.heading { color: #ffffff; }											/* font-color: heading */
+.norm, BODY, TH, TD, P { color: #000000; }				/* font-color: normal text */
+.sub { color: #333333; }													/* font-color: subheading */
+.dim { color: #999999; }													/* font-color: dimmed text */
+A.helpLink:link, A.helpLink:visited, A.helpLink:active, A.helpLink:hover {
+	color: #FFFF33;																	/* font-color: help-popup link */
+}
