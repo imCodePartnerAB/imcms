@@ -55,13 +55,7 @@ public class AdminDoc extends HttpServlet {
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         UserDomainObject user = Utility.getLoggedOnUser( req );    
         
-        DocumentVersionSelector versionSelector = user.getDocumentShowSettings().getVersionSelector();
-        DocumentDomainObject document = documentMapper.getDocument(metaId, versionSelector);
-        
-        // An admin may be in published mode, but published version may not exist.
-        //if (document == null && !versionSelector.getTag().equals(DocumentVersionSelector.WORKING)) {
-        //	document = documentMapper.getDocument(metaId);        	
-        //}
+        DocumentDomainObject document = documentMapper.getDocument(metaId);        
         
         if ( !user.canEdit( document )) {
             flags = 0;
@@ -123,11 +117,7 @@ public class AdminDoc extends HttpServlet {
             history.push( meta_int );
         }
 
-        DocumentDomainObject document = imcref.getDocumentMapper().getDocumentForShowing( meta_id, user );
-        
-        if (document == null) {
-        	document = imcref.getDocumentMapper().getLatestDocumentVersionForShowing(meta_id, user);
-        }
+        DocumentDomainObject document = imcref.getDocumentMapper().getLatestDocumentVersionForShowing(meta_id, user);
         
         if ( null == document ) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);

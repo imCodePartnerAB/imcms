@@ -26,6 +26,8 @@
 UserDomainObject user = (UserDomainObject)request.getAttribute("user") ;
 DocumentDomainObject document = (DocumentDomainObject)request.getAttribute("document") ;
 DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetFor( document ) ;
+DocumentVersionSupport versionSupport = Imcms.getServices().getDocumentMapper().getDocumentVersionSupport(document.getId());
+DocumentVersion version = document.getMeta().getVersion();
 
 String queryString = request.getQueryString();
 StringBuffer baseURL = request.getRequestURL();
@@ -71,7 +73,9 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 
 %>
 <%@page import="imcode.server.user.DocumentShowSettings"%>
-<vel:velocity>
+
+<%@page import="org.apache.commons.collections.iterators.ReverseListIterator"%>
+<%@page import="java.util.Iterator"%><vel:velocity>
 <style type="text/css">
 /*<![CDATA[*/
 .imcms_label,
@@ -188,82 +192,55 @@ if (null != languages) { %>
 </tr><%
 } %>
 
-<%-- 
-Check if published version exists
-// replace symbolic version (working|published) with number 
---%>
-
+<%
+boolean isWorkingVersion = versionSupport.isWorkingVersionNumber(version.getNumber());
+String sFlags = request.getParameter("flags");
+if (sFlags != null && sFlags.equals("1")) {
+} else {
+	Iterator iterator = new ReverseListIterator(versionSupport.getVersions());
+%>
 <tr>
   <td>
     <table bolder="1">    
-      <tr>
-        <td>
-          <%
-          if (user.getDocumentShowSettings().getVersionSelector() == DocumentVersionSelector.PUBLISHED_SELECTOR) {
-          %>
-              <b>#This is PUBLISHED version#</b>
-          <% 
-          } else if (Imcms.getServices().getDocumentMapper().hasPublishedVersion(document.getId())) { 
-          %>
-              <a href="${baseURL}<%=currentLanguage.getCode()%>&version=PUBLISHED">
-                [-Show PUBLISHED version-]
-             </a>
-          <% 
-          } 
-          %>       
-        </td>
-      
-        <td>
-          <%
-          if (user.getDocumentShowSettings().getVersionSelector() == DocumentVersionSelector.WORKING_SELECTOR) {
-          %>
-              <b>#This is WORKING version#</b>
-          <% 
-          } else { 
-          %>
-              <a href="${baseURL}<%=currentLanguage.getCode()%>&version=WORKING">
-                 [-Show WORKING version-]
-             </a>
-          <% 
-          } 
-          %>        
-        </td>
-      
+      <tr>     
+        <td>	
+          <form action="$contextPath/servlet/GetDoc">
+          <input type="hidden" name="lang" value="<%=currentLanguage.getCode()%>"/>
+          <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
+          <select name="version">          
+            <% while (iterator.hasNext()) {
+            	DocumentVersion v = (DocumentVersion)iterator.next();
+            	String sSelected = v.getNumber().equals(version.getNumber()) ? " selected=\"selected\"" : "";
+                %>            
+            	<option value="<%=v.getNumber()%>" <%= sSelected %>>
+            		<%=v.getNumber()%> <%=(v.getTag().toString())%>
+            	</option>
+            <% }%>              
+          </select>
+          <input type="submit" name="cmd" value="Change"/>
+          </form>
+		</td>
 	    <% 
-	    if (user.canEdit(document) && user.getDocumentShowSettings().getVersionSelector() == DocumentVersionSelector.WORKING_SELECTOR) {
+	    if (user.canEdit(document) && isWorkingVersion) {
 	    %>
-         <td>
-           <a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId()%>&flags=4194304">
-             <b><font color="red">[-PUBLISH-]</font></b>
-           </a>
-         </td>
+        <td>	
+          <form action="$contextPath/servlet/AdminDoc">
+          <input type="hidden" name="lang" value="<%=currentLanguage.getCode()%>"/>
+          <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
+          <input type="hidden" name="flags" value="4194304"/>
+          <input type="submit" name="cmd" value="Publish"/>
+          </form>
+		</td>         
 	    <%	        	  
 	    }
 	    %>
-	  </tr>   
-	  <tr>
-	    <td>
-	      <table border="1">
-	        <tr>
-			  <% 
-			  for (DocumentVersion version: versions) {
-			      %>
-			      <td>
-			        <a href="${baseURL}<%=currentLanguage.getCode()%>&version=<%=version.getVersion()%>">
-			          <%=version.getVersion()%>:<%=version.getVersionTag()%>
-			        </a>  
-			      </td>
-			      <td>&nbsp;|&nbsp;</td>			          
-			      <%	  
-			  }
-			  %>
-			</tr>
-		  </table>	  
-		</td>  
-	  </tr>   
+	  </tr>	  
     </table>  
   </td>
 </tr>
+<%
+}
+%>
 
 <tr>
 	<td class="adminPanelTd2" align="center" nowrap>
@@ -277,7 +254,7 @@ Check if published version exists
         }
         if( document instanceof TextDocumentDomainObject) {
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet ;
-            if( textDocumentPermissionSet.getEditTexts() ) {
+            if( textDocumentPermissionSet.getEditTexts()   && isWorkingVersion) {
                 %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=65536" id="admHrefText"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/btn_text.gif"<%
               %> alt="<? templates/sv/adminbuttons/adminbutton2_65536.html/2001 ?>"<%
               %> title="<? templates/sv/adminbuttons/adminbutton2_65536.html/2001 ?>" id="admBtnText" border="0" /></a><%
@@ -287,28 +264,28 @@ Check if published version exists
               %> alt="ContentLoop"<%
               %> title="ContentLoop" id="admBtnGroup" border="0" /></a><%                            
             }
-            if( textDocumentPermissionSet.getEditImages() ) {
+            if( textDocumentPermissionSet.getEditImages()  && isWorkingVersion) {
                 %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=131072" id="admHrefBild"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/btn_image.gif"<%
               %> alt="<? templates/sv/adminbuttons/adminbutton2_131072.html/2001 ?>"<%
               %> title="<? templates/sv/adminbuttons/adminbutton2_131072.html/2001 ?>" id="admBtnBild" border="0" /></a><%
             }
-            if( textDocumentPermissionSet.getEditMenus() ) {
+            if( textDocumentPermissionSet.getEditMenus()  && isWorkingVersion) {
                 %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=262144" id="admHrefLank"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/meny.gif"<%
               %> alt="<? templates/sv/adminbuttons/adminbutton2_262144.html/2001 ?>"<%
               %> title="<? templates/sv/adminbuttons/adminbutton2_262144.html/2001 ?>" id="admBtnLank" border="0" /></a><%
             }
-            if( textDocumentPermissionSet.getEditTemplates() ) {
+            if( textDocumentPermissionSet.getEditTemplates()  && isWorkingVersion) {
                 %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=524288" id="admHrefUtseende"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/utseende.gif"<%
               %> alt="<? templates/sv/adminbuttons/adminbutton2_524288.html/2001 ?>"<%
               %> title="<? templates/sv/adminbuttons/adminbutton2_524288.html/2001 ?>" id="admBtnUtseende" border="0" /></a><%
             }
-            if( textDocumentPermissionSet.getEditIncludes() ) {
+            if( textDocumentPermissionSet.getEditIncludes()  && isWorkingVersion) {
                 %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=1048576" id="admHrefInclude"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/include.gif"<%
               %> alt="<? templates/sv/adminbuttons/adminbutton2_1048576.html/2001 ?>"<%
               %> title="<? templates/sv/adminbuttons/adminbutton2_1048576.html/2001 ?>" id="admBtnInclude" border="0" /></a><%
             }
         } else {
-            if( documentPermissionSet.getEdit() ) {
+            if( documentPermissionSet.getEdit()) {
                 %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=65536" id="admHrefRedigera"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/redigera.gif"<%
               %> alt="<? templates/sv/adminbuttons/adminbutton7_65536.html/2001 ?>"<%
               %> title="<? templates/sv/adminbuttons/adminbutton7_65536.html/2001 ?>" id="admBtnRedigera" border="0" /></a><%

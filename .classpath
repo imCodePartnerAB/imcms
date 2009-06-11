@@ -1,77 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" path="src/test/resources"/>
-	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="src" path="src/main/resources"/>
-	<classpathentry kind="src" path="src.main.groovy"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/build/ant-contrib-1.0b2.jar"/>
-	<classpathentry kind="lib" path="lib/build/antlr-2.7.7.jar"/>
-	<classpathentry kind="lib" path="lib/build/aspectjrt-1.6.2.jar"/>
-	<classpathentry kind="lib" path="lib/build/aspectjweaver-1.6.2.jar"/>
-	<classpathentry kind="lib" path="lib/build/bsh-2.0b4.jar"/>
-	<classpathentry kind="lib" path="lib/build/catalina-ant-5.5.23.jar"/>
-	<classpathentry kind="lib" path="lib/build/cglib-nodep-2.1_3.jar"/>
-	<classpathentry kind="lib" path="lib/build/checkstyle-4.4.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-beanutils-1.7.0.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-betwixt-0.8.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-collections-3.2.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-dbcp-1.2.2.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-dbutils-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-digester-1.8.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-el-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-email-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-fileupload-1.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-httpclient-2.0.2.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-io-1.4.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-lang-2.4.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-logging-api-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/build/commons-pool-1.4.jar"/>
-	<classpathentry kind="lib" path="lib/build/dbunit-2.3.0.jar"/>
-	<classpathentry kind="lib" path="lib/build/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/build/easymock-2.0.jar"/>
-	<classpathentry kind="lib" path="lib/build/gnu-activation-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/build/gnu-crypto-javax-security-2.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/build/gnu-inetlib-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/build/gnu-mail-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/build/gnu-mail-providers-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/build/groovy-all-1.5.7.jar"/>
-	<classpathentry kind="lib" path="lib/build/hibernate-3.2.6.ga.jar"/>
-	<classpathentry kind="lib" path="lib/build/hibernate-annotations-3.3.1.GA.jar"/>
-	<classpathentry kind="lib" path="lib/build/hibernate-commons-annotations-3.3.0.ga.jar"/>
-	<classpathentry kind="lib" path="lib/build/imcode-ant-tasks-1.3.jar"/>
-	<classpathentry kind="lib" path="lib/build/imcode-db-0.3.jar"/>
-	<classpathentry kind="lib" path="lib/build/imcode-ldap-0.1.jar"/>
-	<classpathentry kind="lib" path="lib/build/imcode-util-2.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/build/jakarta-regexp-1.4.jar"/>
-	<classpathentry kind="lib" path="lib/build/jasper-compiler-5.5.23.jar"/>
-	<classpathentry kind="lib" path="lib/build/jasper-runtime-5.5.23.jar"/>
-	<classpathentry kind="lib" path="lib/build/jetty-6.1.5.jar"/>
-	<classpathentry kind="lib" path="lib/build/jetty-ant-6.1.5.jar"/>
-	<classpathentry kind="lib" path="lib/build/jsp-api-2.0.jar"/>
-	<classpathentry kind="lib" path="lib/build/jstl-1.1.2.jar"/>
-	<classpathentry kind="lib" path="lib/build/jta-1.0.1B.jar"/>
-	<classpathentry kind="lib" path="lib/build/jtds-1.2.2.jar"/>
-	<classpathentry kind="lib" path="lib/build/junit-4.4.jar"/>
-	<classpathentry kind="lib" path="lib/build/log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="lib/build/lucene-1.4.3.jar"/>
-	<classpathentry kind="lib" path="lib/build/mysql-connector-java-5.1.6.jar"/>
-	<classpathentry kind="lib" path="lib/build/oro-2.0.8.jar"/>
-	<classpathentry kind="lib" path="lib/build/pdfbox-0.7.3.jar"/>
-	<classpathentry kind="lib" path="lib/build/persistence-api-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/build/poi-3.1-FINAL.jar"/>
-	<classpathentry kind="lib" path="lib/build/poi-scratchpad-3.1-FINAL.jar"/>
-	<classpathentry kind="lib" path="lib/build/servlet-api-2.4.jar"/>
-	<classpathentry kind="lib" path="lib/build/spring-2.5.5.jar"/>
-	<classpathentry kind="lib" path="lib/build/spring-aop-2.5.5.jar"/>
-	<classpathentry kind="lib" path="lib/build/spring-core-2.5.5.jar"/>
-	<classpathentry kind="lib" path="lib/build/spring-orm-2.5.5.jar"/>
-	<classpathentry kind="lib" path="lib/build/spring-web-2.5.5.jar"/>
-	<classpathentry kind="lib" path="lib/build/standard-1.1.2.jar"/>
-	<classpathentry kind="lib" path="lib/build/testng-5.8-jdk15.jar"/>
-	<classpathentry kind="lib" path="lib/build/velocity-1.4.jar"/>
-	<classpathentry kind="lib" path="lib/build/spring-webmvc-2.5.5.jar"/>
+	<classpathentry kind="src" output="target/classes" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/webapp"/>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources"/>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
+	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources"/>
+	<classpathentry kind="src" path="src/main/resources-webinf"/>
+	<classpathentry kind="src" path="src/main/resources-conf"/>
+	<classpathentry kind="src" path="src/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/1.6.0.10"/>
+	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
+	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
