@@ -24,7 +24,6 @@ ALTER TABLE meta_version
   ADD CONSTRAINT fk__meta_version__user FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE SET NULL,
   ADD CONSTRAINT fk__meta_version__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE;
 
-
 -- Adds working version (as latest) to all documents which do not have it 
 INSERT INTO meta_version (meta_id, version, version_tag, user_id, created_dt) 
 	SELECT meta_id, version + 1, 'WORKING', 1, now() 

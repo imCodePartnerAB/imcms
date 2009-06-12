@@ -27,7 +27,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.ObjectUtils;
 
-import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.flow.EditDocumentPermissionsPageFlow;
@@ -38,6 +37,9 @@ import com.imcode.imcms.flow.PageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.GetDoc;
 
+/**
+ * Handles admin buttons actions.  
+ */
 public class AdminDoc extends HttpServlet {
 
     private static final String PARAMETER__META_ID = "meta_id";
@@ -47,6 +49,9 @@ public class AdminDoc extends HttpServlet {
         doPost( req, res );
     }
 
+    /**
+     * 
+     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         int metaId = Integer.parseInt( req.getParameter( PARAMETER__META_ID ) );
@@ -73,6 +78,13 @@ public class AdminDoc extends HttpServlet {
         }
     }
 
+    /** 
+     * @param document base document for a flow 
+     * @param flags conforms to a command
+     * @param user 
+     * 
+     * @return new page flow
+     */
     private PageFlow createFlow( DocumentDomainObject document, int flags, UserDomainObject user ) {
         RedirectToDocumentCommand returnCommand = new RedirectToDocumentCommand( document );
         DocumentMapper.SaveEditedDocumentCommand saveDocumentCommand = new DocumentMapper.SaveEditedDocumentCommand();
@@ -99,8 +111,7 @@ public class AdminDoc extends HttpServlet {
     }
 
     /**
-     * Returns document to display.  
-     * e.g document preview is available to user. 
+     * Dispatches to working version view
      */
     public static void adminDoc(int meta_id, UserDomainObject user, HttpServletRequest req,
                                 HttpServletResponse res, ServletContext servletContext) throws IOException, ServletException {

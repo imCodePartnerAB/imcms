@@ -56,11 +56,13 @@ public class GetDoc extends HttpServlet {
         viewDoc(documentId, req, res);
     }
 
+    /**
+     * Renders document.
+     */
     public static void viewDoc(String documentId, HttpServletRequest req,
                          HttpServletResponse res) throws IOException, ServletException {
         ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        //DocumentDomainObject document = documentMapper.getDocument( documentId );
         UserDomainObject user = Utility.getLoggedOnUser( req ); 
         DocumentDomainObject document = documentMapper.getDocumentForShowing(documentId, user);
         if (null == document) {

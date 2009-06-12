@@ -76,12 +76,15 @@ public class MenuEditPage extends OkCancelPage {
             if ( 0 == documentTypeId ) {
                 addExistingDocPage( textDocument.getId(), menuIndex, request, response );
             } else {
-                DocumentCreator documentCreator = new DocumentCreator(new SaveNewDocumentAndAddToMenuCommand(textDocument, menuIndex), new DispatchCommand() {
-                        public void dispatch(HttpServletRequest request,
-                                             HttpServletResponse response) throws IOException, ServletException {
-                            forward(request, response);
-                        }
-                    }, servletContext);
+                DocumentCreator documentCreator = new DocumentCreator(
+                	new SaveNewDocumentAndAddToMenuCommand(textDocument, menuIndex), 
+                		new DispatchCommand() {
+                			public void dispatch(HttpServletRequest request,
+                					HttpServletResponse response) throws IOException, ServletException {
+                				forward(request, response);
+                			}
+                    	}, 
+                    servletContext);
                 try {
                     documentCreator.createDocumentAndDispatchToCreatePageFlow(documentTypeId, textDocument, request, response);
                     return;
