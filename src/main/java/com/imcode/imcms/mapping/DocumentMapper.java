@@ -258,13 +258,13 @@ public class DocumentMapper implements DocumentGetter {
         return allSections;
     }
 
-    public DocumentReference getDocumentReference(DocumentDomainObject document) {
-        return getDocumentReference(document.getId());
+    public DocumentReference getDocumentReference(DocumentDomainObject document, DocumentVersionSelector versionSelector) {
+        return getDocumentReference(document.getId(), versionSelector);
     }
     
 
-    public DocumentReference getDocumentReference(int childId) {
-        return new GetterDocumentReference(childId, cachingDocumentGetter);
+    public DocumentReference getDocumentReference(int childId, DocumentVersionSelector versionSelector) {
+        return new GetterDocumentReference(childId, cachingDocumentGetter, versionSelector);
     }
 
     public SectionDomainObject getSectionById(int sectionId) {
@@ -713,6 +713,22 @@ public class DocumentMapper implements DocumentGetter {
         	? null
         	: getDocumentForShowing(documentId, user);	
     }
+    
+    public DocumentDomainObject getPublishedDocumentForShowing(String documentIdentity, UserDomainObject user) {
+        Integer documentId = toDocumentId(documentIdentity);
+        
+        return documentId == null
+        	? null
+        	: getPublishedDocument(documentId);	
+    }  
+    
+    public DocumentDomainObject getWorkingDocumentForShowing(String documentIdentity, UserDomainObject user) {
+        Integer documentId = toDocumentId(documentIdentity);
+        
+        return documentId == null
+        	? null
+        	: getWorkingDocument(documentId);	
+    }    
     
     /**
      * @return all document's versions 

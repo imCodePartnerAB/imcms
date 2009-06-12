@@ -79,10 +79,6 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
 
     public DocumentDomainObject getDocument() {
         return documentReference.getDocument();
-    }
-    
-    public DocumentDomainObject getDocument(DocumentVersionSelector versionSelector) {
-        return documentReference.getDocument(versionSelector);
     }    
 
     public int getDocumentId() {

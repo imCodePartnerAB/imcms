@@ -16,9 +16,7 @@ public abstract class DocumentReference implements Serializable {
         return documentId;
     }
 
-    public abstract DocumentDomainObject getDocument() ;
-    
-    public abstract DocumentDomainObject getDocument(DocumentVersionSelector versionSelector);
+    public abstract DocumentDomainObject getDocument() ;   
 
     public int hashCode() {
         return documentId ;

@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import com.imcode.util.ImageSize;
@@ -125,7 +126,7 @@ public class ImcmsImageUtils {
             String documentIdString = ImcmsSetupFilter.getDocumentIdString(services, imageUrl);
             DocumentDomainObject document = documentMapper.getDocument(documentIdString);
             if ( document instanceof FileDocumentDomainObject ) {
-                imageSource = new FileDocumentImageSource(documentMapper.getDocumentReference(document));
+                imageSource = new FileDocumentImageSource(documentMapper.getDocumentReference(document, DocumentVersionSelector.WORKING_SELECTOR));
             } else {
                 String imagesPath = ImagesPathRelativePathImageSource.getImagesUrlPath();
                 if (imageUrl.startsWith(imagesPath)) {

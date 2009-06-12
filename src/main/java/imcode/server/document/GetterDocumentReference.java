@@ -18,20 +18,19 @@ import com.imcode.imcms.mapping.DocumentGetter;
 public class GetterDocumentReference extends DocumentReference {
 	
     private transient DocumentGetter documentGetter;
+    
+    private transient DocumentVersionSelector versionSelector;
 
-    public GetterDocumentReference(int documentId, DocumentGetter documentGetter) {
+    public GetterDocumentReference(int documentId, DocumentGetter documentGetter, DocumentVersionSelector versionSelector) {
         super(documentId) ;
         this.documentGetter = documentGetter;
+        this.versionSelector = versionSelector;
     }
 
     public DocumentDomainObject getDocument() {
-		return documentGetter.getDocument(getDocumentId());
+		return versionSelector.getDocument(documentGetter, getDocumentId());
     }
     
-    public DocumentDomainObject getDocument(DocumentVersionSelector versionSelector) {
-    	return versionSelector.getDocument(documentGetter, getDocumentId());
-    }    
-
     public void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         documentGetter = Imcms.getServices().getDocumentMapper().getDocumentGetter() ;
         ois.defaultReadObject();

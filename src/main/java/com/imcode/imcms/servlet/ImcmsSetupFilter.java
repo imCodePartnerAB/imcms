@@ -244,6 +244,7 @@ public class ImcmsSetupFilter implements Filter {
      * @param user authenticated user 
      */
     // TODO: Add security check
+    // View settings - comment about WORKING/|PUB mode
     private void updateUserShowSettings(HttpServletRequest request, UserDomainObject user) {
         String modeValue = request.getParameter("mode");
         if (modeValue != null) {

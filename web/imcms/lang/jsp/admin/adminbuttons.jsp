@@ -211,8 +211,14 @@ if (sFlags != null && sFlags.equals("1")) {
             <% while (iterator.hasNext()) {
             	DocumentVersion v = (DocumentVersion)iterator.next();
             	String sSelected = v.getNumber().equals(version.getNumber()) ? " selected=\"selected\"" : "";
+            	// !!NB VERY IMPORTANT - if version tag name is WORKING OR PUBLISHED
+            	// then tag name should be used instead of number.           
+            	DocumentVersionTag tag = v.getTag();
+            	String sVersion = tag == DocumentVersionTag.PUBLISHED || tag == DocumentVersionTag.WORKING
+            		? sVersion = tag.name()
+            		: v.getNumber().toString();            		
                 %>            
-            	<option value="<%=v.getNumber()%>" <%= sSelected %>>
+            	<option value="<%=sVersion%>" <%= sSelected %>>
             		<%=v.getNumber()%> <%=(v.getTag().toString())%>
             	</option>
             <% }%>              
