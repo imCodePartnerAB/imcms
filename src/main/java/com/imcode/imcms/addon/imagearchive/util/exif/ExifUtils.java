@@ -4,7 +4,10 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.regex.Pattern;
+
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.sanselan.ImageFormat;
@@ -27,6 +30,7 @@ import org.apache.sanselan.formats.tiff.write.TiffOutputSet;
 public class ExifUtils {
     private static final Log log = LogFactory.getLog(ExifUtils.class);
     
+    private static final Pattern HTML_ENTITY_PATTERN = Pattern.compile("&#[0-9a-z]+;");
     
     public static ExifData getExifData(File file) {
         try {
@@ -68,18 +72,47 @@ public class ExifUtils {
                     imageDescription = imageDescription.trim();
                     userComment = userComment.trim();
                     
-                    data.setDescription(userComment.length() > imageDescription.length() ? userComment : imageDescription);
+                    String value = userComment.length() > imageDescription.length() ? userComment : imageDescription;
+                    if (containsHtmlEntities(value)) {
+                    	value = StringEscapeUtils.unescapeHtml(value);
+                    }
+                    
+                    data.setDescription(value);
                 } else if (imageDescription != null) {
-                    data.setDescription(imageDescription.trim());
+                	imageDescription = imageDescription.trim();
+                	
+                	if (containsHtmlEntities(imageDescription)) {
+                		imageDescription = StringEscapeUtils.unescapeHtml(imageDescription);
+                	}
+                	
+                    data.setDescription(imageDescription);
                 } else {
-                    data.setDescription(userComment.trim());
+                	userComment = userComment.trim();
+                	
+                	if (containsHtmlEntities(userComment)) {
+                		userComment = StringEscapeUtils.unescapeHtml(userComment);
+                	}
+                	
+                    data.setDescription(userComment);
                 }
             }
             if (copyright != null) {
-                data.setCopyright(copyright.trim());
+            	copyright = copyright.trim();
+            	
+            	if (containsHtmlEntities(copyright)) {
+            		copyright = StringEscapeUtils.unescapeHtml(copyright);
+            	}
+            	
+                data.setCopyright(copyright);
             }
             if (artist != null) {
-                data.setArtist(artist.trim());
+            	artist = artist.trim();
+            	
+            	if (containsHtmlEntities(artist)) {
+            		artist = StringEscapeUtils.unescapeHtml(artist);
+            	}
+            	
+                data.setArtist(artist);
             }
             if (resolution != null && resolution.intValue() > 0) {
                 data.setResolution(resolution.intValue());
@@ -199,6 +232,10 @@ public class ExifUtils {
         }
         
         return null;
+    }
+    
+    private static boolean containsHtmlEntities(String value) {
+    	return value != null && HTML_ENTITY_PATTERN.matcher(value).find();
     }
     
     private ExifUtils() {

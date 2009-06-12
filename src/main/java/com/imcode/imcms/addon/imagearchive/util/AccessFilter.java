@@ -19,6 +19,8 @@ public class AccessFilter implements Filter {
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException,
             ServletException {
+    	setUTF8CharacterEncoding(req, resp);
+    	
         if (req instanceof HttpServletRequest) {
             setRequestUrl((HttpServletRequest) req);
         }
@@ -35,5 +37,10 @@ public class AccessFilter implements Filter {
         }
         
         request.setAttribute("requestUrl", url);
+    }
+    
+    private void setUTF8CharacterEncoding(ServletRequest request, ServletResponse response) throws IOException {
+    	request.setCharacterEncoding("UTF-8");
+    	response.setCharacterEncoding("UTF-8");
     }
 }

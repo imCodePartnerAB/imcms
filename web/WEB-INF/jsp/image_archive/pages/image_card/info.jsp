@@ -61,11 +61,11 @@
     <span class="left" style="width:130px;">
         <spring:message code="archive.changeData.description" htmlEscape="true"/>
     </span>
-    <p class="left">
+    <p class="left" style="width:60%;">
         ${archive:newlineToBr(fn:escapeXml(image.changedExif.description))}
     </p>
 </div>
-<div class="minH20">
+<div class="minH20 clearboth">
     <span class="left" style="width:130px;">
         <spring:message code="archive.changeData.category" htmlEscape="true"/>
     </span>
