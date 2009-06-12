@@ -640,6 +640,7 @@ CREATE TABLE texts (
   CONSTRAINT fk__texts__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
   CONSTRAINT fk__texts__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
   CONSTRAINT uk__texts__meta_id__meta_version__name__language_id UNIQUE KEY (meta_id, meta_version, name, language_id)
+  -- CONSTRAINT -> meta_version -> meta_version
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
