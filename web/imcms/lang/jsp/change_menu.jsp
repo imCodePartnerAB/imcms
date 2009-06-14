@@ -106,7 +106,7 @@
             </div>
             #gui_hr("cccccc")
             <div style="text-align: right;">
-                <input type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>" value="<? global/OK ?>" class="imcmsFormBtn">
+                <input type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>" value="<? global/save ?>" class="imcmsFormBtn">
                 <input type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__CANCEL %>" value="<? global/cancel ?>" class="imcmsFormBtn">
             </div>
 

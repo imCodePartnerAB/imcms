@@ -47,7 +47,7 @@ public class ChangeMenu extends HttpServlet {
                                  HttpServletResponse response) throws IOException, ServletException {
                 try {
                     documentMapper.saveDocument(document, user);
-                    cancelCommand.dispatch(request, response);
+                    //cancelCommand.dispatch(request, response);
                 } catch ( NoPermissionToAddDocumentToMenuException e ) {
                     throw new UnhandledException(e);
                 } catch ( NoPermissionToEditDocumentException e ) {

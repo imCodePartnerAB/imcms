@@ -69,6 +69,12 @@ public class MenuEditPage extends OkCancelPage {
         menu = textDocument.getMenu(menuIndex);
         this.servletContext = servletContext;
     }
+    
+    @Override
+    protected void dispatchOk( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+        okCommand.dispatch( request, response );
+        dispatchOther( request, response );        
+    }    
 
     protected void dispatchOther(HttpServletRequest request,
                                  HttpServletResponse response) throws IOException, ServletException {

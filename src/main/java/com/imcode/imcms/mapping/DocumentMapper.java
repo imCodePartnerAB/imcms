@@ -242,7 +242,7 @@ public class DocumentMapper implements DocumentGetter {
         document.setPublicationStartDatetime(now);
         document.setArchivedDatetime(null);
         document.setPublicationEndDatetime(null);
-        document.setPublicationStatus(Document.PublicationStatus.NEW);
+        document.setPublicationStatus(Document.PublicationStatus.DISAPPROVED);
     }
 
     public SectionDomainObject[] getAllSections() {
