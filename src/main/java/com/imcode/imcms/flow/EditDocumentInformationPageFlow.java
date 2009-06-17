@@ -94,7 +94,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
     public EditDocumentInformationPageFlow( DocumentDomainObject document, DispatchCommand returnCommand,
                                             SaveDocumentCommand saveDocumentCommand ) {
-        super( document, returnCommand, saveDocumentCommand );
+        super( document, returnCommand, saveDocumentCommand );       
     }
 
     protected void dispatchFromEditPage( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {

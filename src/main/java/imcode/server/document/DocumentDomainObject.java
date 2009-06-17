@@ -31,7 +31,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 	protected Attributes attributes = new Attributes();
 	private static Logger log = Logger.getLogger(DocumentDomainObject.class);
-
+	
+	/**
+	 * Workaround.
+	 */
+	//private boolean publishOnSave???
+	
 	/**
 	 * Document meta.
 	 */

@@ -280,6 +280,14 @@ function setI18nCodeParameterValue(value) {
 	<tr>
 		<td colspan="2">#gui_hr( 'cccccc' )</td>
 	</tr>
+	<% if (creatingNewDocument) { %>
+	<tr>
+		<td><input type="checkbox" name="publish">Publish on save</td>
+	</tr>	
+	<tr>
+		<td colspan="2">#gui_hr( 'cccccc' )</td>
+	</tr>		
+	<%}%>
 	<tr>
 		<td class="imcmsAdmText" valign="top">
 		<? install/htdocs/sv/jsp/docadmin/document_information.jsp/status ?></td>

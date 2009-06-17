@@ -242,7 +242,7 @@ public class DocumentMapper implements DocumentGetter {
         document.setPublicationStartDatetime(now);
         document.setArchivedDatetime(null);
         document.setPublicationEndDatetime(null);
-        document.setPublicationStatus(Document.PublicationStatus.DISAPPROVED);
+        document.setPublicationStatus(Document.PublicationStatus.NEW);
     }
 
     public SectionDomainObject[] getAllSections() {
@@ -281,7 +281,10 @@ public class DocumentMapper implements DocumentGetter {
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         documentSaver.saveNewDocument(user, document, copying);
-
+        
+        if (document.getMeta().getPublicationStatusInt() == Document.PublicationStatus.APPROVED.asInt()) {
+        	publishWorkingDocument(document.clone(), user);
+        }
     }
 
     /**
@@ -295,6 +298,17 @@ public class DocumentMapper implements DocumentGetter {
     		getDocument(document.getId(), document.getMeta().getVersion().getNumber());
 
         documentSaver.updateDocument(document, oldDocument, user);
+        
+        Meta meta = document.getMeta();        
+        
+        if (meta.getPublicationStatusInt() == Document.PublicationStatus.APPROVED.asInt()) {
+        	Integer documentId = meta.getId();
+        	DocumentVersionSupport versionSupport = getDocumentVersionSupport(documentId);
+        	if (!versionSupport.hasPublishedVersion()) {
+            	document = getWorkingDocument(document.getMeta().getId());
+            	publishWorkingDocument(document.clone(), user);
+        	}
+        }        
     }
     
     /**

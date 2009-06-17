@@ -151,6 +151,14 @@ public class MetaDao extends HibernateTemplate {
 		return initI18nMetas((meta));
 	}
 	
+	@Transactional
+	public DocumentVersion getPublishedVersion(Integer documentId) {
+		return (DocumentVersion)getSession()
+			.getNamedQuery("DocumentVersion.getPublishedVersion")
+		    .setParameter("documentId", documentId)
+		    .uniqueResult();
+	}	
+	
 	
 	/**
 	 * Returns working document Meta for given document id. 
