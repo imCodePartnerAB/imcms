@@ -2,8 +2,6 @@ package imcode.server.document;
 
 import java.io.Serializable;
 
-import com.imcode.imcms.api.DocumentVersionSelector;
-
 public abstract class DocumentReference implements Serializable {
 
     private final int documentId;

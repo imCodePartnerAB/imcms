@@ -153,16 +153,16 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
     }
 
-    public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
+    public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         try {
-            List documents = index.search(query, searchingUser);
+            List<DocumentDomainObject> documents = index.search(query, searchingUser);
             if ( index.isInconsistent() ) {
                 rebuildBecauseOfError("Index is inconsistent.", null);
             }
             return documents;
         } catch ( IndexException ex ) {
             rebuildBecauseOfError("Search failed.", ex);
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 

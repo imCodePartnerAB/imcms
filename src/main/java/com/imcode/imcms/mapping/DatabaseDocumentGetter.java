@@ -6,7 +6,6 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.DocumentPermissionSets;
-import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.user.RoleId;
@@ -17,17 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
-
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.MetaDao;
-import com.imcode.imcms.mapping.aop.FileDocumentLazyLoadingAspect;
-import com.imcode.imcms.mapping.aop.HtmlDocumentLazyLoadingAspect;
-import com.imcode.imcms.mapping.aop.TextDocumentLazyLoadingAspect;
-import com.imcode.imcms.mapping.aop.UrlDocumentLazyLoadingAspect;
 
 /**
  * Retrieves documents from the database. 
@@ -50,7 +42,6 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     
     /**
      * Returns latest (working) version of a document.
-     * TODO: OPTIMIZE!!
      */
     public DocumentDomainObject getDocument(Integer documentId) {
     	return getWorkingDocument(documentId);
@@ -69,10 +60,27 @@ public class DatabaseDocumentGetter implements DocumentGetter {
 	}
 	
     /**
-     * TODO: Investigate what documents to return 
-     * Returns published/latest documents.
+     * @return working documents.
      */
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
+        List<DocumentDomainObject> documents = new LinkedList<DocumentDomainObject>();
+        
+    	for (Integer documentId: documentIds) {
+    		DocumentDomainObject document = initDocument(loadDocument(documentId, DocumentVersionSelector.WORKING_SELECTOR));
+    		
+    		// ??? do not add in case of null
+    		if (document != null) {
+    			documents.add(document);    			
+    		}
+    	}
+                                
+        return documents;
+    } 
+    
+    /**
+     * @return published` documents.
+     */
+    public List<DocumentDomainObject> getPublishedDocuments(Collection<Integer> documentIds) {
         List<DocumentDomainObject> documents = new LinkedList<DocumentDomainObject>();
         
     	for (Integer documentId: documentIds) {
@@ -85,7 +93,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     	}
                                 
         return documents;
-    } 
+    }    
     
 
     /**

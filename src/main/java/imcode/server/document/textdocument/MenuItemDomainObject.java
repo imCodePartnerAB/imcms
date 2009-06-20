@@ -9,8 +9,6 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
-import com.imcode.imcms.api.DocumentVersionSelector;
-
 //TODO: refactor equals, hashcode
 @Embeddable
 public class MenuItemDomainObject implements Cloneable, Serializable {

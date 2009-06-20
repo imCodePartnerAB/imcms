@@ -51,7 +51,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         this.indexDocumentFactory = indexDocumentFactory;
     }
 
-    public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
+    public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         try {
             IndexSearcher indexSearcher = new IndexSearcher( directory.toString() );
             try {
@@ -59,7 +59,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
                 searchStopWatch.start();
                 Hits hits = indexSearcher.search( query.getQuery(), query.getSort() );
                 long searchTime = searchStopWatch.getTime();
-                List documentList = getDocumentListForHits( hits, searchingUser );
+                List<DocumentDomainObject> documentList = getDocumentListForHits( hits, searchingUser );
                 if (log.isDebugEnabled()) {
                     log.debug( "Search for " + query.getQuery().toString() + ": " + searchTime + "ms. Total: "
                            + searchStopWatch.getTime()
@@ -82,12 +82,12 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         }
     }
 
-    private List getDocumentListForHits( final Hits hits, final UserDomainObject searchingUser ) {
+    private List<DocumentDomainObject> getDocumentListForHits( final Hits hits, final UserDomainObject searchingUser ) {
         DocumentGetter documentGetter = Imcms.getServices().getDocumentMapper().getDocumentGetter();
-        List documentIds = new DocumentIdHitsList(hits) ;
+        List<Integer> documentIds = new DocumentIdHitsList(hits) ;
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        List documentList = documentGetter.getDocuments(documentIds) ;
+        List<DocumentDomainObject> documentList = documentGetter.getDocuments(documentIds) ;
         stopWatch.stop();
         if (log.isDebugEnabled()) {
             log.debug("Got "+documentList.size()+" documents in "+stopWatch.getTime()+"ms.");
@@ -162,7 +162,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
         for ( int i = 0; i < documentIds.length; i++ ) {
             try {
-                addDocumentToIndex( documentMapper.getPublishedDocument( documentIds[i] ), indexWriter );
+                addDocumentToIndex( documentMapper.getDocument( documentIds[i] ), indexWriter );
             } catch ( Exception ex ) {
                 log.error( "Could not index document with meta_id " + documentIds[i] + ", trying next document.", ex );
             }
@@ -236,7 +236,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         return directory.hashCode();
     }
 
-    private static class DocumentIdHitsList extends AbstractList {
+    private static class DocumentIdHitsList extends AbstractList<Integer> {
 
         private final Hits hits;
 
@@ -244,9 +244,9 @@ class DefaultDirectoryIndex implements DirectoryIndex {
             this.hits = hits;
         }
 
-        public Object get(int index) {
+        public Integer get(int index) {
             try {
-                return new Integer(Integer.parseInt( hits.doc( index ).get( DocumentIndex.FIELD__META_ID ) )) ;
+                return Integer.valueOf( hits.doc(index).get(DocumentIndex.FIELD__META_ID) ) ;
             } catch ( IOException e ) {
                 throw new IndexException(e);
             }

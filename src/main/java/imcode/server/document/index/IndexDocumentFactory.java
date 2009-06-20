@@ -26,6 +26,9 @@ import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 
+/**
+ * Create lucene index from document's fields.
+ */
 public class IndexDocumentFactory {
 
     private CategoryMapper categoryMapper ;
@@ -36,6 +39,9 @@ public class IndexDocumentFactory {
         this.categoryMapper = categoryMapper;
     }
 
+    /**
+     * @return lucene document.
+     */
     public Document createIndexDocument( DocumentDomainObject document ) {
         log.trace("Indexing document "+document.getId());
         Document indexDocument = new Document();

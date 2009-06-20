@@ -3,7 +3,6 @@ package com.imcode.imcms.dao;
 import static com.imcode.imcms.dao.Utils.META_ID;
 import static com.imcode.imcms.dao.Utils.databaseDocumentGetter;
 import static com.imcode.imcms.dao.Utils.documentSaver;
-import static com.imcode.imcms.dao.Utils.metaDao;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;

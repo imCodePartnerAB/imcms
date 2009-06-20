@@ -166,9 +166,13 @@ public class CachingDocumentGetter implements DocumentGetter {
     	return getWorkingDocument(documentId);
     }    
             
-    public List getDocuments(Collection documentIds) {
+    public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
         return databaseDocumentGetter.getDocuments(documentIds) ;
-    }	
+    }
+    
+    public List<DocumentDomainObject> getPublishedDocuments(Collection<Integer> documentIds) {
+        return databaseDocumentGetter.getPublishedDocuments(documentIds) ;
+    }    
 
     
     public void clearCache() {

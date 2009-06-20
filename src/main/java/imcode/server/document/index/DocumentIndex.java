@@ -44,7 +44,7 @@ public interface DocumentIndex {
 
     void removeDocument( DocumentDomainObject document ) throws IndexException;
 
-    List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
+    List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
 
     void rebuild() throws IndexException;
 }

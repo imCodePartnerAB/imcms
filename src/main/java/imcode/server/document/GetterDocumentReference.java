@@ -5,8 +5,6 @@ import imcode.server.Imcms;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.mapping.DocumentGetter;
 

@@ -368,10 +368,12 @@ public class DocumentMapper implements DocumentGetter {
     	return cachingDocumentGetter.getPublishedDocument(documentId) != null;
     }    
 
-    public void invalidateDocument(DocumentDomainObject document) {
-        documentIndex.indexDocument(document);
+    public void invalidateDocument(DocumentDomainObject document) {        
+        Integer documentId = document.getId();
         
-        cachingDocumentGetter.removeDocumentFromCache(document.getId());
+        cachingDocumentGetter.removeDocumentFromCache(documentId);
+        document = getDocument(documentId);        
+        documentIndex.indexDocument(document);        
     }
 
     public DocumentIndex getDocumentIndex() {
@@ -866,9 +868,13 @@ public class DocumentMapper implements DocumentGetter {
         this.documentIndex = documentIndex;
     }
 
-    public List getDocuments(Collection documentIds) {
+    public List getDocuments(Collection<Integer> documentIds) {
         return cachingDocumentGetter.getDocuments(documentIds) ;
     }
+    
+    public List getPublishedDocuments(Collection<Integer> documentIds) {
+        return cachingDocumentGetter.getPublishedDocuments(documentIds) ;
+    }    
 
     public Set getSections(Collection sectionIds) {
         Set sections = new HashSet() ;

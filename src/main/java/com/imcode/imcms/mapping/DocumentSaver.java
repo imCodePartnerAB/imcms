@@ -18,7 +18,6 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentProperty;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.Meta;

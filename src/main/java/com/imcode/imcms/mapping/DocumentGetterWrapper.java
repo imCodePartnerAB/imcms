@@ -14,9 +14,13 @@ public class DocumentGetterWrapper implements DocumentGetter {
         this.documentGetter = documentGetter;
     }
 
-    public List getDocuments(Collection documentIds) {
+    public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
         return documentGetter.getDocuments(documentIds) ;
     }
+    
+    public List<DocumentDomainObject> getPublishedDocuments(Collection<Integer> documentIds) {
+        return documentGetter.getPublishedDocuments(documentIds) ;
+    }    
 
     public DocumentDomainObject getDocument(Integer documentId) {
         return documentGetter.getDocument(documentId) ;

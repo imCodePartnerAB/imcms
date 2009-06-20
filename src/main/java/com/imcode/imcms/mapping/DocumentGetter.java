@@ -7,9 +7,15 @@ import java.util.List;
 
 public interface DocumentGetter {
     
-    /** TODO: define what to return:
-     * @return list of published ????? latest ????? */ 
+    /** 
+     * @return list of working documents. 
+     */ 
     List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds);
+    
+    /** 
+     * @return list of published documents. 
+     */ 
+    List<DocumentDomainObject> getPublishedDocuments(Collection<Integer> documentIds);    
 
     /**
      * Returns latest (working) version of a document. 
