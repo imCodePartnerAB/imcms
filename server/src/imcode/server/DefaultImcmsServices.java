@@ -1,27 +1,48 @@
 package imcode.server;
 
-import com.imcode.db.Database;
-import com.imcode.db.commands.SqlUpdateDatabaseCommand;
-import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.imcms.db.DefaultProcedureExecutor;
-import com.imcode.imcms.db.ProcedureExecutor;
-import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
-import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.ImageCacheMapper;
-import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
-import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.RebuildingDirectoryIndex;
 import imcode.server.document.index.IndexDocumentFactory;
+import imcode.server.document.index.RebuildingDirectoryIndex;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
-import imcode.server.user.*;
-import imcode.util.*;
+import imcode.server.user.Authenticator;
+import imcode.server.user.ChainedLdapUserAndRoleRegistry;
+import imcode.server.user.ExternalizedImcmsAuthenticatorAndUserRegistry;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.LdapUserAndRoleRegistry;
+import imcode.server.user.RoleGetter;
+import imcode.server.user.UserAndRoleRegistry;
+import imcode.server.user.UserDomainObject;
+import imcode.util.CachingFileLoader;
+import imcode.util.DateConstants;
+import imcode.util.Parser;
+import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 import imcode.util.net.SMTP;
+
+import java.beans.PropertyDescriptor;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.text.Collator;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
@@ -34,15 +55,18 @@ import org.apache.log4j.NDC;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import java.beans.PropertyDescriptor;
-import java.io.*;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.text.Collator;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.imcode.db.Database;
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.db.commands.SqlUpdateDatabaseCommand;
+import com.imcode.imcms.db.DefaultProcedureExecutor;
+import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
+import com.imcode.imcms.mapping.CategoryMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.ImageCacheMapper;
+import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
+import com.imcode.net.ldap.LdapClientException;
 
 final public class DefaultImcmsServices implements ImcmsServices {
 
@@ -54,8 +78,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private SystemData sysData;
 
-    private Date sessionCounterDate;
-    private int sessionCounter = 0;
     private CachingFileLoader fileLoader ;
 
     private final static Logger mainLog = Logger.getLogger(ImcmsConstants.MAIN_LOG);
@@ -171,6 +193,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initSessionCounter() {
+        int sessionCounter;
+        Date sessionCounterDate;
+    	
         try {
             sessionCounter = getSessionCounterFromDb();
             sessionCounterDate = getSessionCounterDateFromDb();
@@ -178,9 +203,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
             log.fatal("Failed to get SessionCounter from db.", ex);
             throw ex;
         }
-
+		
         log.info("SessionCounter: " + sessionCounter);
-        log.info("SessionCounterDate: " + sessionCounterDate);
+        log.info("SessionCounterDate: " + sessionCounterDate);        
     }
 
     private Date getSessionCounterDateFromDb() {
@@ -339,13 +364,13 @@ final public class DefaultImcmsServices implements ImcmsServices {
     
 
     public synchronized int getSessionCounter() {
-        return sessionCounter;
+        return getSessionCounterFromDb();
     }
 
     public String getSessionCounterDateAsString() {
         DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
 
-        return dateFormat.format(sessionCounterDate);
+        return dateFormat.format(getSessionCounterDateFromDb());
     }
 
     public UserDomainObject verifyUserByIpOrDefault(String remoteAddr) {
@@ -401,10 +426,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public synchronized void incrementSessionCounter() {
-        sessionCounter++;
-        final Object[] parameters = new String[] { ""
-                                                   + sessionCounter };
-        getDatabase().execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 1", parameters));
+        getDatabase().execute(new SqlUpdateCommand("UPDATE sys_data SET value = value + 1 WHERE type_id = 1", new Object[] {}));
     }
 
     private UserAndRoleRegistry initExternalUserAndRoleMapper(String externalUserAndRoleMapperName,
@@ -578,7 +600,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     /** Set session counter. */
     public synchronized void setSessionCounter(int value) {
         setSessionCounterInDb(value);
-        sessionCounter = getSessionCounterFromDb();
     }
 
     private void setSessionCounterInDb(int value) {
@@ -590,7 +611,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     /** Set session counter date. */
     public void setSessionCounterDate(Date date) {
         setSessionCounterDateInDb(date);
-        sessionCounterDate = getSessionCounterDateFromDb();
     }
 
     private void setSessionCounterDateInDb(Date date) {
@@ -601,7 +621,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     /** Get session counter date. */
     public Date getSessionCounterDate() {
-        return sessionCounterDate;
+        return getSessionCounterDateFromDb();
     }
 
     /** get doctype */
