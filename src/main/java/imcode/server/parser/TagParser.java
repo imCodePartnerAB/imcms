@@ -63,7 +63,6 @@ import org.apache.velocity.app.VelocityEngine;
 
 import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.mapping.SectionFromIdTransformer;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import com.imcode.util.CountingIterator;
 
@@ -144,20 +143,6 @@ public class TagParser {
     /** Handle a <?imcms:metaid?> tag. */
     private String tagMetaId() {
         return "" + document.getId();
-    }
-
-    /** Handle a <?imcms:section?> tag. */
-    private String tagSection(Properties attributes) {
-        return tagSections(attributes);
-    }
-
-    /** Handle a <?imcms:section?> tag. */
-    private String tagSections(Properties attributes) {
-        Set sectionIds = document.getSectionIds();
-        Iterator sectionsIterator = new TransformIterator(sectionIds.iterator(), new SectionFromIdTransformer(service));
-        String separator = attributes.getProperty("separator", ",");
-
-        return StringUtils.join(sectionsIterator, separator);
     }
 
     /**
@@ -700,10 +685,6 @@ public class TagParser {
                 tagResult = tagMetaId();
             } else if ( "datetime".equals(tagname) ) {
                 tagResult = tagDatetime(attributes);
-            } else if ( "section".equals(tagname) ) {
-                tagResult = tagSection(attributes);
-            } else if ( "sections".equals(tagname) ) {
-                tagResult = tagSections(attributes);
             } else if ( "user".equals(tagname) ) {
                 tagResult = tagUser(attributes);
             } else if ( "documentcategories".equals(tagname) ) {

@@ -50,7 +50,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__PUBLICATION_START_TIME = "activated_time";
     public static final String REQUEST_PARAMETER__ARCHIVED_DATE = "archived_date";
     public static final String REQUEST_PARAMETER__ARCHIVED_TIME = "archived_time";
-    public static final String REQUEST_PARAMETER__SECTIONS = "change_section";
     public static final String REQUEST_PARAMETER__PUBLICATION_END_DATE = "publication_end_date";
     public static final String REQUEST_PARAMETER__PUBLICATION_END_TIME = "publication_end_time";
     public static final String REQUEST_PARAMETER__CATEGORIES = "categories";
@@ -290,13 +289,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         document.setPublicationStartDatetime( publicationStartDatetime );
         document.setArchivedDatetime( archivedDatetime );
         document.setPublicationEndDatetime( publicationEndDatetime );
-
-        document.removeAllSections();
-        String[] sectionIds = request.getParameterValues( REQUEST_PARAMETER__SECTIONS );
-        for ( int i = 0; null != sectionIds && i < sectionIds.length; i++ ) {
-            int sectionId = Integer.parseInt( sectionIds[i] );
-            document.addSectionId( sectionId );
-        }
 
         //*** Remove all categories except multi without picture
         CategoryTypeDomainObject[] categoryTypes = categoryMapper.getAllCategoryTypes() ;

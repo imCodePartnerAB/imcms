@@ -12,8 +12,7 @@ class AnalyzerImpl extends Analyzer {
 
     public TokenStream tokenStream( String fieldName, Reader reader ) {
         Tokenizer tokenizer;
-        if ( DocumentIndex.FIELD__SECTION.equals( fieldName )
-             || DocumentIndex.FIELD__KEYWORD.equals( fieldName ) ) {
+        if ( DocumentIndex.FIELD__KEYWORD.equals( fieldName ) ) {
             tokenizer = new NullTokenizer( reader );
         } else {
             tokenizer = new LetterOrDigitTokenizer( reader );

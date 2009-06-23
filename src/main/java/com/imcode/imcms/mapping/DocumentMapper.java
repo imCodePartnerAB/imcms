@@ -11,7 +11,6 @@ import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.document.SectionDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -19,20 +18,14 @@ import imcode.server.user.DocumentShowSettings;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Clock;
-import imcode.util.LazilyLoadedObject;
 import imcode.util.SystemClock;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.AbstractList;
-import java.util.AbstractSet;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,8 +51,6 @@ import com.imcode.db.commands.CompositeDatabaseCommand;
 import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateDatabaseCommand;
-import com.imcode.db.handlers.CollectionHandler;
-import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionSelector;
@@ -93,11 +84,9 @@ import com.imcode.imcms.mapping.aop.TextDocumentAspect;
  */
 public class DocumentMapper implements DocumentGetter {
 
-	private static final String SQL_GET_ALL_SECTIONS = "SELECT section_id, section_name FROM sections";
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
 
     private Database database;
-    private DocumentPermissionSetMapper documentPermissionSetMapper;
     private DocumentIndex documentIndex;
     
     private Clock clock = new SystemClock();
@@ -122,9 +111,6 @@ public class DocumentMapper implements DocumentGetter {
     
     private CategoryMapper categoryMapper;
 
-    private LazilyLoadedObject sections;
-    private static final SectionNameComparator SECTION_NAME_COMPARATOR = new SectionNameComparator();
-
     /**
      * Empty constructor for unit testing. 
      */
@@ -147,7 +133,6 @@ public class DocumentMapper implements DocumentGetter {
         databaseDocumentGetter.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
         
         this.cachingDocumentGetter = new CachingDocumentGetter(databaseDocumentGetter, documentCacheMaxSize);        
-        this.documentPermissionSetMapper = new DocumentPermissionSetMapper(database);
         this.categoryMapper = new CategoryMapper(database);
         // old code:
         // documentSaver = new DocumentSaver(this);
@@ -156,8 +141,6 @@ public class DocumentMapper implements DocumentGetter {
         // in order to support declarative (AOP) transactions.
         this.documentSaver = (DocumentSaver)services.getSpringBean("documentSaver");
         this.documentSaver.setDocumentMapper(this);
-        
-        initSections();
     }
     
     /**
@@ -166,10 +149,6 @@ public class DocumentMapper implements DocumentGetter {
      */
     public DocumentVersionSupport getDocumentVersionSupport(Integer documentId) {
     	return cachingDocumentGetter.getDocumentVersionSupport(documentId);
-    }
-
-    public void initSections() {
-        sections = new LazilyLoadedObject(new SectionsSetLoader());
     }
 
     public DocumentSaver getDocumentSaver() {
@@ -245,19 +224,6 @@ public class DocumentMapper implements DocumentGetter {
         document.setPublicationStatus(Document.PublicationStatus.NEW);
     }
 
-    public SectionDomainObject[] getAllSections() {
-        String[] parameters = new String[0];
-        String[][] sqlRows = (String[][]) getDatabase().execute(new SqlQueryCommand(SQL_GET_ALL_SECTIONS, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
-        SectionDomainObject[] allSections = new SectionDomainObject[sqlRows.length];
-        for (int i = 0; i < sqlRows.length; i++) {
-            int sectionId = Integer.parseInt(sqlRows[i][0]);
-            String sectionName = sqlRows[i][1];
-            allSections[i] = new SectionDomainObject(sectionId, sectionName);
-        }
-        Arrays.sort(allSections, SECTION_NAME_COMPARATOR);
-        return allSections;
-    }
-
     public DocumentReference getDocumentReference(DocumentDomainObject document, DocumentVersionSelector versionSelector) {
         return getDocumentReference(document.getId(), versionSelector);
     }
@@ -265,16 +231,6 @@ public class DocumentMapper implements DocumentGetter {
 
     public DocumentReference getDocumentReference(int childId, DocumentVersionSelector versionSelector) {
         return new GetterDocumentReference(childId, cachingDocumentGetter, versionSelector);
-    }
-
-    public SectionDomainObject getSectionById(int sectionId) {
-        SectionsSet sectionsSet = (SectionsSet) sections.get();
-        return sectionsSet.getSectionById(sectionId) ;
-    }
-
-    public SectionDomainObject getSectionByName(String name) {
-        SectionsSet sectionsSet = (SectionsSet) sections.get();
-        return sectionsSet.getSectionByName(name) ;
     }
 
     public void saveNewDocument(DocumentDomainObject document, UserDomainObject user, boolean copying)
@@ -400,48 +356,11 @@ public class DocumentMapper implements DocumentGetter {
 
 
     public void deleteDocument(final DocumentDomainObject document, UserDomainObject user) {
-        DatabaseCommand deleteDocumentCommand = createDeleteDocumentCommand(document);
-        getDatabase().execute(deleteDocumentCommand);
+        documentSaver.getMetaDao().deleteDocument(document.getId());
         document.accept(new DocumentDeletingVisitor());
         documentIndex.removeDocument(document);
         
         cachingDocumentGetter.removeDocumentFromCache(document.getId());
-    }
-
-    // TODO: DELETE DOCUMENT
-    private DatabaseCommand createDeleteDocumentCommand(final DocumentDomainObject document) {
-        final String metaIdStr = "" + document.getId();
-        final String metaIdColumn = "meta_id";
-        return new CompositeDatabaseCommand(new DatabaseCommand[]{
-            new DeleteWhereColumnsEqualDatabaseCommand("document_categories", metaIdColumn, metaIdStr),
-            // TODO: classification and meta_classification is replaced by keywords table.
-            // new DeleteWhereColumnsEqualDatabaseCommand("meta_classification", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("childs", "to_meta_id", metaIdStr),
-            new SqlUpdateDatabaseCommand("DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?)", new String[]{metaIdStr}),
-            new DeleteWhereColumnsEqualDatabaseCommand("menus", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("text_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("texts", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("images", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("roles_rights", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("user_rights", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("url_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("fileupload_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("frameset_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("new_doc_permission_sets_ex", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("new_doc_permission_sets", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("doc_permission_sets_ex", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("doc_permission_sets", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("includes", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("includes", "included_meta_id", metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("texts_history", metaIdColumn, metaIdStr ),
-            new DeleteWhereColumnsEqualDatabaseCommand("images_history", metaIdColumn, metaIdStr ),
-            new DeleteWhereColumnsEqualDatabaseCommand("childs_history", "to_meta_id", metaIdStr ),
-            new SqlUpdateDatabaseCommand("DELETE FROM childs_history WHERE menu_id IN (SELECT menu_id FROM menus_history WHERE meta_id = ?)", new String[] {metaIdStr} ),
-            new DeleteWhereColumnsEqualDatabaseCommand("menus_history", metaIdColumn, metaIdStr ),
-            new DeleteWhereColumnsEqualDatabaseCommand("document_properties", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("meta_section", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("meta", metaIdColumn, metaIdStr)
-        });
     }
 
     public Map getAllDocumentTypeIdsAndNamesInUsersLanguage(UserDomainObject user) {
@@ -581,9 +500,6 @@ public class DocumentMapper implements DocumentGetter {
         deleteFileDocumentFilesAccordingToFileFilter(new FileDocumentFileFilter(fileDocument));
     }
 
-    public DocumentPermissionSetMapper getDocumentPermissionSetMapper() {
-        return documentPermissionSetMapper;
-    }
 
     static void deleteOtherFileDocumentFiles(final FileDocumentDomainObject fileDocument) {
         deleteFileDocumentFilesAccordingToFileFilter(new SuperfluousFileDocumentFilesFileFilter(fileDocument));
@@ -688,32 +604,7 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentDomainObject getWorkingDocument(Integer documentId) {
     	return cachingDocumentGetter.getWorkingDocument(documentId);
     }    
-    
-    /**
-     * If working document does not exists creates one from public version.
-     */
-    /*
-    public DocumentDomainObject getWorkingDocument(Integer documentId,
-    		UserDomainObject user) {
-    	
-    	DocumentDomainObject document = cachingDocumentGetter.getWorkingDocument(documentId);
-    	
-        if (document == null) {
-        	document = cachingDocumentGetter.getDocument(documentId);
-        	
-        	if (document != null) {
-        		try {
-        			saveAsWorkingWersion(document, user);
-        		} catch (DocumentSaveException e) {
-        			throw new RuntimeException(e);
-        		}
-        	}
-        } 
-        
-        return document;
-    }
-    */
-    
+      
     /**
      * Returns published or working (depending on user show settings) document for showing.
      * 
@@ -860,30 +751,18 @@ public class DocumentMapper implements DocumentGetter {
         this.clock = clock;
     }
 
-    public void setDocumentPermissionSetMapper(DocumentPermissionSetMapper documentPermissionSetMapper) {
-        this.documentPermissionSetMapper = documentPermissionSetMapper;
-    }
-
     public void setDocumentIndex(DocumentIndex documentIndex) {
         this.documentIndex = documentIndex;
     }
 
-    public List getDocuments(Collection<Integer> documentIds) {
+    public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
         return cachingDocumentGetter.getDocuments(documentIds) ;
     }
     
-    public List getPublishedDocuments(Collection<Integer> documentIds) {
+    public List<DocumentDomainObject> getPublishedDocuments(Collection<Integer> documentIds) {
         return cachingDocumentGetter.getPublishedDocuments(documentIds) ;
     }    
 
-    public Set getSections(Collection sectionIds) {
-        Set sections = new HashSet() ;
-        for ( Iterator iterator = sectionIds.iterator(); iterator.hasNext(); ) {
-            Integer sectionId = (Integer) iterator.next();
-            sections.add(getSectionById(sectionId.intValue())) ;
-        }
-        return sections ;
-    }
 
     private void removeNonInheritedCategories(DocumentDomainObject document) {
         Set categories = getCategoryMapper().getCategories(document.getCategoryIds());
@@ -998,64 +877,6 @@ public class DocumentMapper implements DocumentGetter {
             boolean fileDocumentHasFile = null != fileDocument.getFile(fileId);
             return super.accept(file, fileDocumentId, fileId)
                    && (!correctFileForFileDocumentFile || !fileDocumentHasFile);
-        }
-    }
-
-    private static class SectionNameComparator implements Comparator {
-
-        public int compare(Object o1, Object o2) {
-            SectionDomainObject section1 = (SectionDomainObject) o1;
-            SectionDomainObject section2 = (SectionDomainObject) o2;
-            return section1.getName().compareToIgnoreCase(section2.getName());
-        }
-    }
-
-    private static class SectionsSet extends AbstractSet implements LazilyLoadedObject.Copyable {
-
-        private Map byId = new HashMap() ;
-        private Map byName = new HashMap() ;
-
-        public boolean add(Object o) {
-            SectionDomainObject section = (SectionDomainObject) o ;
-            byName.put(section.getName().toLowerCase(), section) ;
-            return null == byId.put(new Integer(section.getId()), section) ;
-        }
-
-        public int size() {
-            return byId.size() ;
-        }
-
-        public Iterator iterator() {
-            return byId.values().iterator() ;
-        }
-
-        public SectionDomainObject getSectionById(int sectionId) {
-            return (SectionDomainObject) byId.get(new Integer(sectionId)) ;
-        }
-
-        public SectionDomainObject getSectionByName(String name) {
-            return (SectionDomainObject) byName.get(name.toLowerCase()) ;
-        }
-
-        public LazilyLoadedObject.Copyable copy() {
-            return this ;
-        }
-    }
-
-    private class SectionsSetLoader implements LazilyLoadedObject.Loader {
-
-        public LazilyLoadedObject.Copyable load() {
-            return (SectionsSet) getDatabase().execute(new SqlQueryCommand("SELECT section_id, section_name FROM sections", null, new CollectionHandler(new SectionsSet(), new RowTransformer() {
-                public Object createObjectFromResultSetRow(ResultSet rs) throws SQLException {
-                    int sectionId = rs.getInt(1);
-                    String sectionName = rs.getString(2);
-                    return new SectionDomainObject(sectionId, sectionName);
-                }
-
-                public Class getClassOfCreatedObjects() {
-                    return SectionDomainObject.class;
-                }
-            }))) ;
         }
     }
 

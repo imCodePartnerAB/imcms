@@ -12,8 +12,6 @@ public interface DocumentIndex {
     String FIELD__NONSTRIPPED_TEXT = "nonstripped_text";
     String FIELD__TEXT = "text";
     String FIELD__KEYWORD = "keyword";
-    String FIELD__SECTION = "section";
-    String FIELD__SECTION_ID = "section_id";
     String FIELD__ACTIVATED_DATETIME = "activated_datetime";
     String FIELD__ARCHIVED_DATETIME = "archived_datetime";
     String FIELD__CATEGORY = "category";

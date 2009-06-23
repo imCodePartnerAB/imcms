@@ -2,14 +2,21 @@ package com.imcode.imcms.dao;
 
 import imcode.server.document.DocumentDomainObject;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.springframework.orm.hibernate3.HibernateAccessor;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
+import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.imcms.api.DocumentProperty;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionSelector;
@@ -379,4 +386,43 @@ public class MetaDao extends HibernateTemplate {
 			.setParameter("value", alias)
 			.uniqueResult();
 	}	
+	
+	@Transactional
+	public void deleteDocument(final Integer metaId) {
+		String[] sqls = {
+			"DELETE FROM document_categories WHERE meta_id = ?", 
+			// delete form keywords ???
+			"DELETE FROM childs WHERE to_meta_id = ?", 
+			"DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?)",	
+			"DELETE FROM menus WHERE meta_id = ?", 
+			"DELETE FROM text_docs WHERE meta_id = ?", 
+			"DELETE FROM texts WHERE meta_id = ?", 
+			"DELETE FROM images WHERE meta_id = ?", 
+			"DELETE FROM roles_rights WHERE meta_id = ?", 
+			"DELETE FROM user_rights WHERE meta_id = ?", 
+			"DELETE FROM url_docs WHERE meta_id = ?", 
+			"DELETE FROM fileupload_docs WHERE meta_id = ?", 
+			"DELETE FROM frameset_docs WHERE meta_id = ?", 
+			"DELETE FROM new_doc_permission_sets_ex WHERE meta_id = ?", 
+			"DELETE FROM new_doc_permission_sets WHERE meta_id = ?", 
+			"DELETE FROM doc_permission_sets_ex WHERE meta_id = ?", 
+			"DELETE FROM doc_permission_sets WHERE meta_id = ?", 
+			"DELETE FROM includes WHERE meta_id = ?", 
+			"DELETE FROM includes WHERE included_meta_id = ?", 
+			"DELETE FROM texts_history WHERE meta_id = ?", 
+			"DELETE FROM images_history WHERE meta_id = ?", 
+			"DELETE FROM childs_history WHERE to_meta_id = ?", 
+			"DELETE FROM childs_history WHERE menu_id IN (SELECT menu_id FROM menus_history WHERE meta_id = ?)",
+			"DELETE FROM menus_history WHERE meta_id = ?", 
+			"DELETE FROM document_properties WHERE meta_id = ?", 	
+			"DELETE FROM i18n_meta WHERE meta_id = ?", 	
+			"DELETE FROM meta WHERE meta_id = ?", 	
+		};
+		
+		Session session = getSession();
+		
+		for (String sql: sqls) {
+			int i = session.createSQLQuery(sql).setParameter(0, metaId).executeUpdate();
+		}								
+	}
 }

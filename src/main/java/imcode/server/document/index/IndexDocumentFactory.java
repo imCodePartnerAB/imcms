@@ -4,7 +4,6 @@ import imcode.server.Imcms;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.SectionDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
 
@@ -64,13 +63,6 @@ public class IndexDocumentFactory {
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__CREATOR_ID, "" + document.getCreatorId()) );
         if ( null != document.getPublisherId() ){
             indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__PUBLISHER_ID, "" + document.getPublisherId()) );
-        }
-        Set sectionIds = document.getSectionIds();
-        for ( Iterator iterator = sectionIds.iterator(); iterator.hasNext(); ) {
-            Integer sectionId = (Integer) iterator.next();
-            SectionDomainObject section = Imcms.getServices().getDocumentMapper().getSectionById(sectionId.intValue());
-            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__SECTION, section.getName() ) );
-            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__SECTION_ID, sectionId.toString())) ;
         }
 
         addDateFieldToIndexDocument( documentId, indexDocument, DocumentIndex.FIELD__CREATED_DATETIME, document.getCreatedDatetime() );

@@ -34,6 +34,8 @@ public class DocumentSaver {
     
     private MetaDao metaDao;
     
+    private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
+    
     /**
      * --experimental--
      * 
@@ -125,7 +127,7 @@ public class DocumentSaver {
 
             if (user.canEditPermissionsFor(oldDocument)) {
                 newUpdateDocumentRolePermissions(document, user, oldDocument);
-                documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, oldDocument);
+                documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(document, user, oldDocument);
             }
             
             DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDocument, documentMapper.getImcmsServices(), user);
@@ -207,7 +209,7 @@ public class DocumentSaver {
         newUpdateDocumentRolePermissions(document, user, null);
 
         // Update permissions
-        documentMapper.getDocumentPermissionSetMapper().saveRestrictedDocumentPermissionSets(document, user, null);
+        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(document, user, null);
         
         document.setDependenciesMetaIdToNull();         
         Meta meta = saveMeta(document);
@@ -252,7 +254,6 @@ public class DocumentSaver {
     	//meta.getPermissionSetBitsForNewMap().clear();    	    	
     	
     	// WHAT TO DO WITH THIS on copy save and on base save?    	
-    	//meta.setSectionIds(document.getSectionIds());
     	//meta.setCategoryIds(document.getCategoryIds());
     	//meta.setProperties(document.getProperties());
     	

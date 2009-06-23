@@ -306,30 +306,6 @@ public class Document implements Serializable {
         internalDocument.setPublisher( user.getInternal() );
     }
 
-    /**
-     * @return An array of Sections, an empty array if none found.
-     */
-    public Section[] getSections() {
-        Set sectionIds = internalDocument.getSectionIds();
-        Section[] sections = new Section[sectionIds.size()];
-        DocumentService documentService = contentManagementSystem.getDocumentService();
-        for ( CountingIterator iterator = new CountingIterator(sectionIds.iterator()); iterator.hasNext(); ) {
-            Integer sectionId = (Integer) iterator.next();
-            sections[iterator.getCount() - 1] = documentService.getSection(sectionId.intValue()) ;
-        }
-        return sections;
-    }
-
-    public void setSections( Section[] sections ) {
-        Set sectionIds = new HashSet();
-        for ( int i = 0; i < sections.length; i++ ) {
-            Section section = sections[i];
-            int sectionId = section.getId();
-            sectionIds.add(new Integer(sectionId)) ;
-        }
-        internalDocument.setSectionIds( sectionIds );
-    }
-
     public Date getModifiedDatetime() {
         return internalDocument.getModifiedDatetime();
     }
@@ -340,10 +316,6 @@ public class Document implements Serializable {
 
     public Date getCreatedDatetime() {
         return internalDocument.getCreatedDatetime();
-    }
-
-    public void addSection( Section section ) {
-        internalDocument.addSectionId( section.getId() );
     }
 
     /** @deprecated Use {@link #setPublicationStatus} instead. */

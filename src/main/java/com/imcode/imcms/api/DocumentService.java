@@ -7,7 +7,6 @@ import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
-import imcode.server.document.SectionDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.XmlDocumentBuilder;
 import imcode.server.document.index.DocumentQuery;
@@ -223,22 +222,7 @@ public class DocumentService {
         }
     }
 
-    public Section getSection(int sectionId) {
-        SectionDomainObject section = getDocumentMapper().getSectionById(sectionId);
-        if ( null == section ) {
-            return null;
-        }
-        return new Section(section);
-    }
 
-    /** @since 2.0 */
-    public Section getSection(String name) {
-        SectionDomainObject section = getDocumentMapper().getSectionByName(name);
-        if ( null == section ) {
-            return null;
-        }
-        return new Section(section);
-    }
 
     public List getDocuments(final SearchQuery query) throws SearchException {
         try {

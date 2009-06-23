@@ -2,7 +2,6 @@ package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.SectionDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
@@ -47,7 +46,6 @@ import com.imcode.imcms.servlet.superadmin.AdminManager;
 
 public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderPage {
 
-    public static final String REQUEST_PARAMETER__SECTION_ID = "section_id";
     public static final String REQUEST_PARAMETER__DOCUMENTS_PER_PAGE = "num";
     public static final String REQUEST_PARAMETER__QUERY_STRING = "q";
     public static final String REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX = "start";
@@ -67,7 +65,6 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
     private final static Logger log = Logger.getLogger( SearchDocumentsPage.class.getName() );
 
     private String queryString;
-    private Set sections = new HashSet();
     private String[] phases;
     private int[] documentTypeIds;
     private String userDocumentsRestriction;
@@ -114,17 +111,6 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
         boolean gotNewFirstDocumentIndex = Utility.parameterIsSet( request, REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX );
         boolean notBrowsingResultList = !gotNewFirstDocumentIndex || documentsFound == null ;
         if ( notBrowsingResultList ) {
-            try {
-                sections.clear();
-                int[] sectionIds = Utility.getParameterInts( request, REQUEST_PARAMETER__SECTION_ID );
-                for ( int i = 0; i < sectionIds.length; i++ ) {
-                    int sectionId = sectionIds[i];
-                    SectionDomainObject section = documentMapper.getSectionById( sectionId );
-                    sections.add( section );
-                }
-            } catch ( NumberFormatException nfe ) {
-            }
-
             phases = Utility.getParameterValues( request, REQUEST_PARAMETER__PHASE );
 
             documentTypeIds = Utility.getParameterInts(request, REQUEST_PARAMETER__DOCUMENT_TYPE_ID);
@@ -190,15 +176,6 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
             } catch ( ParseException e ) {
                 log.debug( e.getMessage() + " in search-string " + queryString, e );
             }
-        }
-
-        if ( !sections.isEmpty() ) {
-            BooleanQuery sectionQueries = new BooleanQuery();
-            for ( Iterator iterator = sections.iterator(); iterator.hasNext(); ) {
-                SectionDomainObject section = (SectionDomainObject)iterator.next();
-                sectionQueries.add( new TermQuery( new Term( DocumentIndex.FIELD__SECTION, section.getName().toLowerCase() ) ), false, false );
-            }
-            newQuery.add( sectionQueries, true, false );
         }
 
         if ( null != phases && phases.length > 0 ) {
@@ -320,10 +297,6 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
     public String getPath(HttpServletRequest request) {
         UserDomainObject user = Utility.getLoggedOnUser( request );
         return "/imcms/" + user.getLanguageIso639_2() + "/jsp/search_documents.jsp";
-    }
-
-    public Set getSections() {
-        return Collections.unmodifiableSet( sections );
     }
 
     public List getDocumentsFound() {

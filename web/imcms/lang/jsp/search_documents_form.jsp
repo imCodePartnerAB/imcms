@@ -3,7 +3,6 @@
                  imcode.server.Imcms,
                  imcode.server.document.DocumentTypeDomainObject,
                  imcode.server.document.LifeCyclePhase,
-                 imcode.server.document.SectionDomainObject,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Html,
                  com.imcode.imcms.util.l10n.LocalizedMessage,
@@ -39,27 +38,6 @@
         <tr>
             <td colspan="4"><img src="<%= IMG_PATH %>/1x1_cccccc.gif" width="100%" height="1" vspace="8"></td>
         </tr>
-        <%
-            SectionDomainObject[] sections = Imcms.getServices().getDocumentMapper().getAllSections() ;
-            if (sections.length > 0) {
-        %>
-            <tr>
-                <td><? web/imcms/lang/jsp/search_documents_form.jsp/sections ?></td>
-                <td colspan="3">
-                    <select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__SECTION_ID %>" size="4" multiple>
-                        <%
-                           Set selectedSections = searchDocumentsPage.getSections() ;
-                           for ( int i = 0; i < sections.length; i++ ) {
-                                SectionDomainObject section = sections[i];
-                                %><option value="<%= section.getId() %>" <% if (selectedSections.contains(section)) { %>selected<% } %>><%= StringEscapeUtils.escapeHtml( section.getName() ) %></option>
-                        <% } %>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="4"><img src="<%= IMG_PATH %>/1x1_cccccc.gif" width="100%" height="1" vspace="8"></td>
-            </tr>
-        <% } %>
         <% if (!user.isDefaultUser()) { %>
         <tr>
             <td height="20"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/3 ?></td>

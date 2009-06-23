@@ -248,14 +248,6 @@ public class Meta implements Serializable, Cloneable {
     @Column(name = "category_id", nullable = false)
     private Set<Integer> categoryIds = new HashSet<Integer>();
     
-    
-    @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
-   	@JoinTable(
-    	name = "meta_section",
-    	joinColumns = @JoinColumn(name = "meta_id", referencedColumnName="meta_id"))
-    @Column(name = "section_id", nullable = false)
-    private Set<Integer> sectionIds = new HashSet<Integer>();
-    
     // Set id is either restricted 1 or restricted 2
     // Roles are user defined or system predefined roles
     // RoleId to permission-set id mapping.  
@@ -340,7 +332,6 @@ public class Meta implements Serializable, Cloneable {
 			
 			clone.roleIdToPermissionSetIdMap = new HashMap<Integer, Integer>(roleIdToPermissionSetIdMap);		
 			
-			clone.sectionIds = new HashSet<Integer>(sectionIds);
 			clone.properties = new HashMap<String, String>(properties);
 			clone.categoryIds = new HashSet<Integer>(categoryIds);
 			
@@ -560,14 +551,6 @@ public class Meta implements Serializable, Cloneable {
 
 	public void setCategoryIds(Set<Integer> categoryIds) {
 		this.categoryIds = categoryIds;
-	}
-
-	public Set<Integer> getSectionIds() {
-		return sectionIds;
-	}
-
-	public void setSectionIds(Set<Integer> sectionIds) {
-		this.sectionIds = sectionIds;
 	}
 
 	// For processing after load:

@@ -125,11 +125,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminSection</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminSection</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminSystemInfo</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminSystemInfo</servlet-class>
     </servlet>
@@ -374,11 +369,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminSearchTerms</servlet-name>
         <url-pattern>/servlet/AdminSearchTerms</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminSection</servlet-name>
-        <url-pattern>/servlet/AdminSection</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

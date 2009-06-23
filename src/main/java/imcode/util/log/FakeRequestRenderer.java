@@ -15,8 +15,6 @@ import org.apache.commons.collections.iterators.TransformIterator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.or.ObjectRenderer;
 
-import com.imcode.imcms.mapping.SectionFromIdTransformer;
-
 public class FakeRequestRenderer implements ObjectRenderer {
 
     private final static String REDIRECT_PREFIX = "/RD";
@@ -50,19 +48,13 @@ public class FakeRequestRenderer implements ObjectRenderer {
 
     private String renderDocument( DocumentDomainObject document ) {
 
-        Set sectionIds = document.getSectionIds();
         int metaId = document.getId();
         int docType = document.getDocumentTypeId();
         String headline = document.getHeadline();
 
         StringBuffer result = new StringBuffer();
         result.append( '/' );
-        if ( !sectionIds.isEmpty() ) {
-            Iterator sectionsIterator = new TransformIterator(sectionIds.iterator(), new SectionFromIdTransformer(Imcms.getServices()));
-            result.append( lossyUrlEncode( StringUtils.join( sectionsIterator, "," ) ) );
-        } else {
-            result.append( '_' );
-        }
+        result.append( '_' );
         result.append( '/' );
         result.append( metaId );
         result.append( '/' );

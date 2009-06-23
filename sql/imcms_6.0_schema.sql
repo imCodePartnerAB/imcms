@@ -531,29 +531,6 @@ CREATE TABLE roles_rights (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table sections
---
-
-CREATE TABLE sections (
-  section_id int NOT NULL auto_increment,
-  section_name varchar(50) NOT NULL,
-  CONSTRAINT pk__sections PRIMARY KEY  (section_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
---
--- Table meta_section
---
-
-CREATE TABLE meta_section (
-  meta_id int NOT NULL,
-  section_id int NOT NULL,
-  CONSTRAINT pk__meta_section PRIMARY KEY  (meta_id,section_id),
-  CONSTRAINT fk__meta_section__sections FOREIGN KEY (section_id) REFERENCES sections (section_id),
-  CONSTRAINT fk__meta_section__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
 -- Table stats
 --
 

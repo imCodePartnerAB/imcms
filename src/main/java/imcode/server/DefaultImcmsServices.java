@@ -78,8 +78,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private SystemData sysData;
 
-    private Date sessionCounterDate;
-    private int sessionCounter = 0;
     private CachingFileLoader fileLoader ;
 
     private final static Logger mainLog = Logger.getLogger(ImcmsConstants.MAIN_LOG);
@@ -110,14 +108,14 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
     
     /**
-     * Contructor for unit testing. 
+     * Constructor for unit testing. 
      */
     public DefaultImcmsServices() {
     	database = null;
     	localizedMessageProvider = null;
     }
 
-    /** Contructs an DefaultImcmsServices object. */
+    /** Constructs an DefaultImcmsServices object. */
     public DefaultImcmsServices(WebApplicationContext webApplicationContext, Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor) {
         this.webApplicationContext = webApplicationContext;
@@ -207,6 +205,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initSessionCounter() {
+        int sessionCounter;
+        Date sessionCounterDate;
+        
         try {
             sessionCounter = getSessionCounterFromDb();
             sessionCounterDate = getSessionCounterDateFromDb();
@@ -371,13 +372,13 @@ final public class DefaultImcmsServices implements ImcmsServices {
     
 
     public synchronized int getSessionCounter() {
-        return sessionCounter;
+        return getSessionCounterFromDb();
     }
 
     public String getSessionCounterDateAsString() {
         DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
 
-        return dateFormat.format(sessionCounterDate);
+        return dateFormat.format(getSessionCounterDate());
     }
 
     public UserDomainObject verifyUserByIpOrDefault(String remoteAddr) {
@@ -432,11 +433,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
         }
     }
 
-    public synchronized void incrementSessionCounter() {
-        sessionCounter++;
-        final Object[] parameters = new String[] { ""
-                                                   + sessionCounter };
-        getDatabase().execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 1", parameters));
+    public void incrementSessionCounter() {
+        getDatabase().execute(new SqlUpdateCommand("UPDATE sys_data SET value = value + 1 WHERE type_id = 1", new Object[] {}));
     }
 
     private UserAndRoleRegistry initExternalUserAndRoleMapper(String externalUserAndRoleMapperName,
@@ -610,7 +608,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     /** Set session counter. */
     public synchronized void setSessionCounter(int value) {
         setSessionCounterInDb(value);
-        sessionCounter = getSessionCounterFromDb();
     }
 
     private void setSessionCounterInDb(int value) {
@@ -622,7 +619,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     /** Set session counter date. */
     public void setSessionCounterDate(Date date) {
         setSessionCounterDateInDb(date);
-        sessionCounterDate = getSessionCounterDateFromDb();
     }
 
     private void setSessionCounterDateInDb(Date date) {
@@ -633,7 +629,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     /** Get session counter date. */
     public Date getSessionCounterDate() {
-        return sessionCounterDate;
+        return getSessionCounterDateFromDb();
     }
 
     /** get doctype */

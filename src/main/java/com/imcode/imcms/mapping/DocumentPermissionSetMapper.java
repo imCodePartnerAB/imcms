@@ -14,16 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.imcode.db.Database;
 import com.imcode.imcms.api.Meta;
 
 /**
  * Copies documents permissions to meta. 
  */
 public class DocumentPermissionSetMapper {
-
-    public DocumentPermissionSetMapper(Database database) {
-    }
 
     public void saveRestrictedDocumentPermissionSets(DocumentDomainObject document, UserDomainObject user,
                                                      DocumentDomainObject oldDocument) {

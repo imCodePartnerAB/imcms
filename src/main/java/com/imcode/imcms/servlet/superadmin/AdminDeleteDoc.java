@@ -92,7 +92,7 @@ public class AdminDeleteDoc extends HttpServlet {
 
                 // Ok, Lets delete the meta id
                 DocumentMapper documentMapper = imcref.getDocumentMapper();
-                DocumentDomainObject document = documentMapper.getPublishedDocument(metaId);
+                DocumentDomainObject document = documentMapper.getDocument(metaId);
                 documentMapper.deleteDocument(document, user);
                 imcref.updateMainLog("Document  " + "[" + document.getId() +
                                      "] ALL deleted by user: [" + user.getFullName() + "]");

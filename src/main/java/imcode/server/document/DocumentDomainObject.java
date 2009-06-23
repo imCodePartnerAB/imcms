@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.I18nException;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
@@ -31,11 +32,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 	protected Attributes attributes = new Attributes();
 	private static Logger log = Logger.getLogger(DocumentDomainObject.class);
-	
-	/**
-	 * Workaround.
-	 */
-	//private boolean publishOnSave???
 	
 	/**
 	 * Document meta.
@@ -62,6 +58,18 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 		return clone;
 	}
+	
+	/**
+	 * Returns this document's version.
+	 * 
+	 * TODO: Refactor - document version is a property of a document
+	 * not a meta!!
+	 */
+	public DocumentVersion getVersion() {
+		return meta == null ? null : meta.getVersion();
+	}
+	
+	
 
 	/**
 	 * Factory method. Creates new document.
@@ -323,14 +331,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 				.clone();
 	}
 
-	public Set getSectionIds() {
-		return Collections.unmodifiableSet((Set) meta.getSectionIds());
-	}
-
-	public void setSectionIds(Set sectionIds) {
-		meta.setSectionIds(sectionIds);
-	}
-
 	public Document.PublicationStatus getPublicationStatus() {
 		return attributes.publicationStatus;
 	}
@@ -403,11 +403,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		categoryIds.add(categoryId);
 	}
 
-	public void addSectionId(int sectionId) {
-		Set sectionIds = (Set) meta.getSectionIds();
-		sectionIds.add(sectionId);
-	}
-
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -443,10 +438,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 	public void removeAllCategories() {
 		meta.setCategoryIds(new HashSet<Integer>());
-	}
-
-	public void removeAllSections() {
-		meta.setSectionIds(new HashSet<Integer>());
 	}
 
 	public void removeCategoryId(int categoryId) {

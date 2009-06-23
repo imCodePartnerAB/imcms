@@ -5,36 +5,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="text_doc_contents")
-@NamedQueries({
-	@NamedQuery(name="Content.getByLoopIdAndOrderIndex", 
-		query="SELECT c FROM Content c " +
-				"WHERE c.loopId = :loopId AND c.orderIndex = :orderIndex"),
-								
-	@NamedQuery(name="Content.getNextIndexes", 
-		query="SELECT " +
-				 "min(c.orderIndex)    - 1, " +
-				 "max(c.orderIndex)    + 1, " + 
-			     "max(c.sequenceIndex) + 1  " + 
-               "FROM " +
-                 "ContentLoop l JOIN l.contents c " +
-		       "WHERE l.id = :loopId"),
-
-   	@NamedQuery(name="Content.updateOrderIndex", 
-		query="UPDATE Content c " +
-				"SET c.orderIndex = :orderIndex WHERE c.id = :id"),
-				
-   	@NamedQuery(name="Content.delete", 
-   			query="DELETE FROM Content c WHERE c.id = :id"),
-   			
-   	@NamedQuery(name="Content.getContentIdByLoopIdAndSequenceIndex", 
-   			query="SELECT c.id FROM Content c WHERE c.loopId = :loopId AND c.sequenceIndex = :sequenceIndex")   			
-})
 public class Content implements Cloneable {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)

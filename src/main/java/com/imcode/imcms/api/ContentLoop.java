@@ -11,8 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -20,13 +18,6 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name="text_doc_content_loops")
-@NamedQueries({
-	@NamedQuery(name="ContentLoop.getByMetaIdAndIndex", 
-			query="SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.no = :index"),
-	@NamedQuery(name="ContentLoop.getByMetaId", 
-			query="SELECT l FROM ContentLoop l WHERE l.metaId = :metaId")
-			
-})
 public class ContentLoop implements Cloneable {
 	
 	/**

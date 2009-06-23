@@ -12,7 +12,6 @@
             imcode.server.document.CategoryDomainObject,
             imcode.server.document.CategoryTypeDomainObject,
             imcode.server.document.DocumentDomainObject,
-            imcode.server.document.SectionDomainObject,
             imcode.server.document.textdocument.TextDocumentDomainObject,
             imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper,
             imcode.server.user.UserDomainObject,
@@ -458,42 +457,6 @@ function setI18nCodeParameterValue(value) {
 <tr>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0"><%
-
-	/* *******************************************************************************************
-	 *         SECTIONS                                                                          *
-	 ******************************************************************************************* */
-
-
-		SectionDomainObject[] sections = documentMapper.getAllSections() ;
-		Arrays.sort(sections) ;
-		Set documentSectionIds = document.getSectionIds() ;
-        Set documentSections = documentMapper.getSections(documentSectionIds) ;
-	if (sections != null && sections.length > 0) { %>
-	<tr>
-		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/22 ?></td>
-		<td class="imcmsAdmText">
-		<a href="$contextPath/imcms/$language/jsp/section_descriptions.jsp" target="_blank"><? global/view ?> info</a><br>
-		<img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3" alt=""><br>
-		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SECTIONS %>" size="<%= (sections.length > 5) ? 5 : sections.length %>" multiple><%
-		ToStringPairTransformer sectionToStrings = new ToStringPairTransformer() {
-			public String[] transformToStringPair( Object o ) {
-				SectionDomainObject section = (SectionDomainObject) o ;
-				return new String[] { ""+section.getId(), section.getName() } ;
-			}
-		} ; %>
-		<%= Html.createOptionList( Arrays.asList( sections ), documentSections, sectionToStrings ) %>
-		</select>
-		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_section ?>
-		<%=
-		documentSections.isEmpty()
-		? "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/no_section ?>"
-		: StringUtils.join(documentSections.iterator(), ", ")
-		%></td>
-	</tr>
-	<tr>
-		<td colspan="2">#gui_hr( "cccccc" )</td>
-	</tr><%
-	}
 
 	/* *******************************************************************************************
 	 *         CATEGORIES                                                                        *

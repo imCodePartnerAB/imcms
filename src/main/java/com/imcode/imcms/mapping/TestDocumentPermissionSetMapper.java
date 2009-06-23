@@ -19,7 +19,7 @@ public class TestDocumentPermissionSetMapper extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         database = new MockDatabase();
-        documentPermissionSetMapper = new DocumentPermissionSetMapper( database);
+        documentPermissionSetMapper = new DocumentPermissionSetMapper();
         textDocument = new TextDocumentDomainObject();
         textDocumentPermissionSet = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_1 );
     }

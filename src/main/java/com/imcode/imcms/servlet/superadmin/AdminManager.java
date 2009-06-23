@@ -610,8 +610,6 @@ public class AdminManager extends HttpServlet {
             url += "ListDocuments";
         } else if ( whichButton.equalsIgnoreCase( "FileAdmin" ) ) {
             url += "FileAdmin";
-        } else if ( whichButton.equalsIgnoreCase( "AdminSection" ) ) {
-            url += "AdminSection";
         } else if ( whichButton.equalsIgnoreCase( "AdminCategories" ) ) {
             url += "AdminCategories";
         } else if ( whichButton.equals( "AdminProfiles" ) ) {
