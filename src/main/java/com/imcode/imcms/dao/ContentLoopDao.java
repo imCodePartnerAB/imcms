@@ -99,11 +99,12 @@ public class ContentLoopDao extends HibernateTemplate {
 	/**
 	 * Saves content loop.
 	 * 
-	 * If content loop allready exists delete it fist along with contents. 
+	 * If content loop already exists delete it fist along with contents. 
 	 */
 	// TODO: refactor
 	@Transactional
-	public synchronized ContentLoop saveContentLoop(Integer documentId, ContentLoop contentLoop) {		
+	public synchronized ContentLoop saveContentLoop(Integer documentId, ContentLoop contentLoop) {	
+		
 		Long loopId = contentLoop.getId();
 		
 		// delete all contents and content
@@ -190,9 +191,10 @@ public class ContentLoopDao extends HibernateTemplate {
 	 * @return loop or null if loop can not be found. 
 	 */
 	@Transactional
-	public ContentLoop getContentLoop(Integer documentId, Integer index) {
-		return (ContentLoop)getSession().getNamedQuery("ContentLoop.getByMetaIdAndIndex")
+	public ContentLoop getContentLoop(Integer documentId, Integer documentVersion, Integer index) {
+		return (ContentLoop)getSession().getNamedQuery("ContentLoop.getByMetaIdAndMetaVersionAndIndex")
 			.setParameter("metaId", documentId)
+			.setParameter("metaVersion", documentVersion)
 			.setParameter("index", index)
 			.uniqueResult();
 	}
@@ -206,9 +208,9 @@ public class ContentLoopDao extends HibernateTemplate {
 	 * @return document content loops. 
 	 */
 	@Transactional
-	public List<ContentLoop> getContentLoops(Integer documentId) {
-		return findByNamedQueryAndNamedParam("ContentLoop.getByMetaId", 
-				"metaId", documentId);
+	public List<ContentLoop> getContentLoops(Integer documentId, Integer documentVersion) {
+		return findByNamedQueryAndNamedParam("ContentLoop.getByMetaIdAndMetaVersion", 
+				new String[] {"metaId", "metaVersion"}, new Object[] {documentId, documentVersion });
 	}
 	
 	// TODO: Optimize

@@ -11,9 +11,4 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 public class SystemPermissionsGroupController {
-
-	//@RequestMapping(value="")
-	public String documentsCache() {
-		throw new NotImplementedException();
-	}
 }

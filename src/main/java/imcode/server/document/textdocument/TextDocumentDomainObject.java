@@ -15,6 +15,7 @@ import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.mapping.orm.TemplateNames;
 
 public class TextDocumentDomainObject extends DocumentDomainObject {
@@ -247,24 +248,27 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * Sets text.
      */   
-    public void setText(I18nLanguage language, int index, TextDomainObject text) {        	
+    public TextDomainObject setText(I18nLanguage language, int index, TextDomainObject text) {        	
     	Map<Integer, TextDomainObject> map = getTextsMap(language);
     	TextDomainObject oldText = map.get(index);
     	TextDomainObject newText = text.clone();
+    	Integer metaVersion = getMeta().getVersion().getNumber();
     	
     	if (oldText != null) {
     		newText.setId(oldText.getId());
-    		newText.setMetaVersion(oldText.getMetaVersion());
     	} else {
-    		newText.setId(null);
+    		newText.setId(null);    		
     	}
     	
+    	newText.setMetaVersion(metaVersion);
     	newText.setMetaId(getMeta().getId());
     	newText.setIndex(index);
     	newText.setLanguage(language);
     	newText.setModified(true);    	
     	
     	map.put(index, newText);
+    	
+    	return newText;
     } 
     
     public Map<Integer, Integer> getIncludesMap() {
@@ -579,19 +583,20 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		ContentLoop oldContentLoop = getContentLoop(index);
 		ContentLoop newContentLoop = contentLoop.clone();
 		
-		Integer metaId;
-		Long loopId;
+		Meta meta = getMeta();		
+		
+		Integer metaId = meta == null ? null : meta.getId();
+		Long loopId = null;
+		Integer metaVersion = meta == null ? null : meta.getVersion().getNumber();
 		
 		if (oldContentLoop != null) {
-			metaId = getMeta().getId();
 			loopId = oldContentLoop.getId();
-		} else {
-			metaId = null;
-			loopId = null;
+			metaVersion = oldContentLoop.getMetaVersion();
 		}
 		
 		newContentLoop.setModified(true);
 		newContentLoop.setMetaId(metaId);
+		newContentLoop.setMetaVersion(metaVersion);
 		newContentLoop.setId(loopId);		
 		newContentLoop.setIndex(index);
 		

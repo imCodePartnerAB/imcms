@@ -2,21 +2,15 @@ package com.imcode.imcms.dao;
 
 import imcode.server.document.DocumentDomainObject;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateAccessor;
-import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
-import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.imcms.api.DocumentProperty;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionSelector;
@@ -37,8 +31,8 @@ public class MetaDao extends HibernateTemplate {
 	 * @return Meta.
 	 */
 	@Transactional
-	private Meta getMeta(Integer documentId) {
-		Meta meta = (Meta)get(Meta.class, documentId);
+	public Meta getMeta(Integer metaId) {
+		Meta meta = (Meta)get(Meta.class, metaId);
 		
 		return initI18nMetas(meta);
 	}

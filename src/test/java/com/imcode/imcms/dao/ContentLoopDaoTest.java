@@ -46,6 +46,6 @@ public class ContentLoopDaoTest extends DaoTest {
 	}
 
 	private ContentLoop getPredefinedLoop() {
-		return contentLoopDao.getContentLoop(1001, 1);
+		return contentLoopDao.getContentLoop(1001, 1, 1);
 	}
 }

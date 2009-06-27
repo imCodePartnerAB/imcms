@@ -32,15 +32,18 @@ public class ContentLoop implements Cloneable {
 	private Integer baseIndex;
 	
 	@Column(name="loop_index")
-	private Integer no;
+	private Integer index;
 	
 	@Column(name="meta_id")
 	private Integer metaId;
 	
+	@Column(name="meta_version")
+	private Integer metaVersion;	
+	
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
     @JoinColumn(name="loop_id")
     @OrderBy("orderIndex")
-	private List<Content> contents;
+	private List<Content> contents = new LinkedList<Content>();
 	
 	/**
 	 * Modified flag.
@@ -88,12 +91,12 @@ public class ContentLoop implements Cloneable {
 
 	@Deprecated
 	public Integer getNo() {
-		return no;
+		return index;
 	}
 
 	@Deprecated
 	public void setNo(Integer no) {
-		this.no = no;
+		this.index = no;
 	}
 	
 	public Integer getIndex() {
@@ -126,5 +129,13 @@ public class ContentLoop implements Cloneable {
 
 	public void setModified(boolean modified) {
 		this.modified = modified;
+	}
+
+	public Integer getMetaVersion() {
+		return metaVersion;
+	}
+
+	public void setMetaVersion(Integer metaVersion) {
+		this.metaVersion = metaVersion;
 	}
 }

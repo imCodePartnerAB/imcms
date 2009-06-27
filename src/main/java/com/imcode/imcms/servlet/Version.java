@@ -20,7 +20,7 @@ import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
 
 /**
- * Move versoin info to the manifest file
+ * Move version info to the manifest file
  */
 public class Version extends HttpServlet {
 

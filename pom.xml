@@ -202,6 +202,12 @@
     <!-- imCode Internal Repository dependencies -->
     
     <dependency>
+      <groupId>org.jruby</groupId>
+      <artifactId>jruby</artifactId>
+      <version>1.3.1</version> 
+    </dependency>
+          
+    <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
       <version>1.5.7</version> 

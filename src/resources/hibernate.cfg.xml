@@ -30,7 +30,7 @@
         <mapping resource="I18nLanguage.hbm.xml"/>
         <mapping resource="DocumentProperty.hbm.xml"/>
         <mapping resource="ContentLoop.hbm.xml"/>
-
+        <mapping resource="Text.hbm.xml"/>
     </session-factory>
     
 </hibernate-configuration>

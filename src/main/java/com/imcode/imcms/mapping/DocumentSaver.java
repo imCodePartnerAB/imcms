@@ -7,6 +7,7 @@ import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -14,8 +15,6 @@ import imcode.util.Utility;
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.DocumentProperty;
@@ -37,34 +36,20 @@ public class DocumentSaver {
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
     
     /**
-     * --experimental--
-     * 
      * Existing API saves whole document even if only a fragment of it 
-     * (say text field or image) was modified.
+     * (text, image or menu) was modified.
      * 
-     * TODO: Create concrete calls: 
-     *   saveText
+     * TODO: Create methods for other doc's fields: 
      *   saveImages
      *   saveMenus,
      *   etc 
      */
     @Transactional     
-    public void saveDocumentFragment(DocumentDomainObject document, UserDomainObject user, HibernateCallback hibernateCallback) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveText(DocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
     	checkDocumentForSave(document);
     	
     	try {
-    		HibernateTemplate template = (HibernateTemplate)Imcms.getServices().getSpringBean("hibernateTemplate");
-    		
-    		template.execute(hibernateCallback); 
-
-            Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
-            Date modifiedDatetime = Utility.truncateDateToMinutePrecision(document.getModifiedDatetime());
-            boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
-            
-            if (modifiedDatetimeUnchanged) {            	
-            	modifiedDatetime = documentMapper.getClock().getCurrentDate();
-            }
-            
+    		new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentText(text, user);            
             // TODO: Fix - does not work!!
             // Bulk update is used for speed purposes. 
             // Actually exactly one document's meta is updated.
@@ -80,7 +65,7 @@ public class DocumentSaver {
      */
     // TODO: Should throw NoPermissionToEditDocumentException ?
     @Transactional    
-    public void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) 
+    protected void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) 
     throws DocumentSaveException {
     	try {
     		Integer documentId = document.getMeta().getId();
@@ -101,8 +86,6 @@ public class DocumentSaver {
     		}
     	} catch (RuntimeException e) {
     		throw new DocumentSaveException(e);
-    	} finally {
-    		documentMapper.invalidateDocument(document);
     	}
     }
     
@@ -111,33 +94,29 @@ public class DocumentSaver {
      * Updates published or working document.
      */
     @Transactional
-    public void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
+    protected void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
                       final UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         checkDocumentForSave(document);
 
         //document.loadAllLazilyLoaded();
         
-        try {
-            Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
-            Date modifiedDatetime = Utility.truncateDateToMinutePrecision(document.getModifiedDatetime());
-            boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
-            if (modifiedDatetimeUnchanged) {
-                document.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
-            }
-
-            if (user.canEditPermissionsFor(oldDocument)) {
-                newUpdateDocumentRolePermissions(document, user, oldDocument);
-                documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(document, user, oldDocument);
-            }
-            
-            DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDocument, documentMapper.getImcmsServices(), user);
-            
-            saveMeta(document);
-                        
-            document.accept(savingVisitor);
-        } finally {
-            documentMapper.invalidateDocument(document);
+        Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
+        Date modifiedDatetime = Utility.truncateDateToMinutePrecision(document.getModifiedDatetime());
+        boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
+        if (modifiedDatetimeUnchanged) {
+            document.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
         }
+
+        if (user.canEditPermissionsFor(oldDocument)) {
+            newUpdateDocumentRolePermissions(document, user, oldDocument);
+            documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(document, user, oldDocument);
+        }
+        
+        DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDocument, documentMapper.getImcmsServices(), user);
+        
+        saveMeta(document);
+                    
+        document.accept(savingVisitor);
     }
     
     /**

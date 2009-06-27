@@ -28,6 +28,14 @@ public class TextDao extends HibernateTemplate {
 		
 	}
 	
+	@Transactional
+	public int deleteTexts(Integer documentId, Integer documentVersion) {
+		return getSession().getNamedQuery("Text.deleteTexts")
+			.setParameter("metaId", documentId)
+			.setParameter("metaVersion", documentVersion)
+			.executeUpdate();
+	}
+	
 	/**
 	 * Updates texts. 
 	 */

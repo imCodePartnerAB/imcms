@@ -10,15 +10,15 @@
     ]]>
   </query>    
   -->
-  <query name="ContentLoop.getByMetaIdAndIndex">
+  <query name="ContentLoop.getByMetaIdAndMetaVersionAndIndex">
     <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.no = :index
+    SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.metaVersion = :metaVersion AND l.index = :index
     ]]>
   </query>  
   
-  <query name="ContentLoop.getByMetaId">
+  <query name="ContentLoop.getByMetaIdAndMetaVersion">
     <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.metaId = :metaId
+    SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.metaVersion = :metaVersion
     ]]>
   </query>   
   

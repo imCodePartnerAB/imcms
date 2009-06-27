@@ -105,9 +105,9 @@ public class Meta implements Serializable, Cloneable {
 	}
 		
 	/**
-	 * Document content show mode for disabled translation.
+	 * Document show mode for disabled language.
 	 * 
-	 * The name 'DiabledI18nContentShowMode' would be more descriptive.
+	 * The name 'DisabledI18nShowMode' would be more descriptive.
 	 * 
 	 * @see I18nMeta.getEnabled
 	 */
@@ -127,6 +127,9 @@ public class Meta implements Serializable, Cloneable {
 	@JoinColumn(name="meta_id", referencedColumnName="meta_id")		
 	private Set<I18nMeta> i18nMetas = new HashSet<I18nMeta>();
 	
+	/**
+	 * Disabled language's content show rule.
+	 */
 	@Enumerated(EnumType.STRING)
 	@Column(name="missing_i18n_show_rule", nullable=false)
 	private UnavailableI18nDataSubstitution unavailableI18nDataSubstitution =

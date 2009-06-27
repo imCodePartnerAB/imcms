@@ -111,31 +111,39 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         Integer documentId = textDocument.getMeta().getId();
         Integer documentVersionNumber = textDocument.getMeta().getVersion().getNumber();
 
+        textDao.deleteTexts(documentId, documentVersionNumber);
+        
         for (Map<Integer, TextDomainObject> map: textDocument.getAllTexts().values()) {
         	for (TextDomainObject text: map.values()) {
+        		text.setId(null);
+            	text.setMetaId(documentId);
+            	text.setMetaVersion(documentVersionNumber);
+                textDao.saveText(text);
+                
                 if (text.isModified()) {                	 
-                	text.setMetaId(documentId);
-                	text.setMetaVersion(documentVersionNumber);
-                    textDao.saveText(text);
                     textDao.saveTextHistory(documentId, text, user); 
                 }        		
         	}
         }
     } 
     
-    // runs inside transaction
+    // should be run inside transaction
     public void updateTextDocumentContentLoops(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ContentLoopDao dao = (ContentLoopDao)services.getSpringBean("contentLoopDao");
         Integer documentId = textDocument.getMeta().getId();
+        Integer documentVersion = textDocument.getVersion().getNumber();
+        
+        // delete all loops for meta and version
         
         for (ContentLoop loop: textDocument.getContentLoopsMap().values()) {
-        	//if (loop.isModified()) {
-        		dao.saveContentLoop(documentId, loop);
-        	//}
+        	loop.setMetaId(documentId);
+        	loop.setMetaVersion(documentVersion);
+        	
+        	dao.saveContentLoop(documentId, loop);
         }  	
     }
     
-    // runs inside transaction
+    // should be run inside transaction
     public void updateTextDocumentText(TextDomainObject text, UserDomainObject user) {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
 

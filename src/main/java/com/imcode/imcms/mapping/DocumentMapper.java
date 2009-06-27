@@ -253,7 +253,11 @@ public class DocumentMapper implements DocumentGetter {
     	DocumentDomainObject oldDocument = 
     		getDocument(document.getId(), document.getMeta().getVersion().getNumber());
 
-        documentSaver.updateDocument(document, oldDocument, user);
+    	try {
+    		documentSaver.updateDocument(document, oldDocument, user);
+    	} finally {
+    		invalidateDocument(document);
+    	}
         
         Meta meta = document.getMeta();        
         
@@ -273,7 +277,11 @@ public class DocumentMapper implements DocumentGetter {
     // TODO: Check exceptions 
     public void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) 
     throws DocumentSaveException, NoPermissionToEditDocumentException {	
-	    documentSaver.publishWorkingDocument(document, user);	    
+    	try {
+    		documentSaver.publishWorkingDocument(document, user);
+    	} finally {
+    		invalidateDocument(document);
+    	}
 	}
     
     
@@ -328,7 +336,7 @@ public class DocumentMapper implements DocumentGetter {
         Integer documentId = document.getId();
         
         cachingDocumentGetter.removeDocumentFromCache(documentId);
-        document = getDocument(documentId);        
+        //document = getDocument(documentId);        
         documentIndex.indexDocument(document);        
     }
 

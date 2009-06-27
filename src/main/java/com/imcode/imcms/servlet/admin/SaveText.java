@@ -14,21 +14,16 @@ import imcode.util.ShouldNotBeThrownException;
 import imcode.util.Utility;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
-import com.imcode.imcms.mapping.DocumentStoringVisitor;
 
 public final class SaveText extends HttpServlet {
 
@@ -88,20 +83,13 @@ public final class SaveText extends HttpServlet {
 
     }
 
-    private void saveText(DocumentMapper documentMapper, final TextDomainObject text, final TextDocumentDomainObject document,
+    private void saveText(DocumentMapper documentMapper, TextDomainObject text, TextDocumentDomainObject document,
                           final int txt_no, final ImcmsServices imcref, int meta_id,
                           final UserDomainObject user) {
-        document.setText(I18nSupport.getCurrentLanguage(), txt_no, text );
+        text = document.setText(I18nSupport.getCurrentLanguage(), txt_no, text );
 
         try {
-            //documentMapper.saveDocument( document, user );
-        	documentMapper.getDocumentSaver().saveDocumentFragment(document, user, new HibernateCallback() {
-				public Object doInHibernate(Session session) throws HibernateException, SQLException {
-					new DocumentStoringVisitor(imcref).updateTextDocumentText(document.getText(I18nSupport.getCurrentLanguage(), txt_no), user);
-					
-					return null;
-				}        		
-        	});
+        	documentMapper.getDocumentSaver().saveText(document, text, user);        
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
         } catch ( NoPermissionToAddDocumentToMenuException e ) {

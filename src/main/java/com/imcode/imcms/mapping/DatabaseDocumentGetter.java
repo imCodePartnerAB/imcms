@@ -40,6 +40,10 @@ public class DatabaseDocumentGetter implements DocumentGetter {
      */
     private DocumentInitializingVisitor documentInitializingVisitor;
     
+    public Meta getMeta(Integer metaId) {
+    	return metaDao.getMeta(metaId); 	
+    }
+    
     /**
      * Returns latest (working) version of a document.
      */
@@ -102,7 +106,7 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     private DocumentDomainObject loadDocument(Integer documentId, DocumentVersionSelector versionSpecifier) {		
     	Meta meta = metaDao.getMeta(documentId, versionSpecifier);
 		
-		return initMeta(meta);
+		return createDocument(meta);
     }
     
     /**
@@ -111,13 +115,13 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     private DocumentDomainObject loadDocument(Integer documentId, Integer versionNumber) {		
     	Meta meta = metaDao.getMeta(documentId, versionNumber);
 		
-		return initMeta(meta);
+		return createDocument(meta);
     }    
     
     /**
      * Initializes document's meta.
      */
-    private DocumentDomainObject initMeta(Meta meta) {		
+    private DocumentDomainObject createDocument(Meta meta) {		
 		if (meta == null) {
 			return null;
 		}

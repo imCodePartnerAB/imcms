@@ -56,13 +56,13 @@ CREATE TABLE meta (
 -- Meta version table
 --
 CREATE TABLE meta_version (
-  id int NOT NULL auto_increment,
+  id int NOT NULL auto_increment PRIMARY KEY,
   meta_id int NOT NULL,
   version int NOT NULL,
   version_tag varchar(12) NOT NULL,
   user_id int NULL,
   created_dt datetime NOT NULL,
-  CONSTRAINT pk__meta_version PRIMARY KEY (id),
+  CONSTRAINT uk__meta_version__meta_id__version UNIQUE KEY (meta_id, version),
   CONSTRAINT fk__meta_version__user FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE SET NULL,
   CONSTRAINT fk__meta_version__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -262,7 +262,8 @@ CREATE TABLE images (
   CONSTRAINT pk__images PRIMARY KEY  (image_id),
   CONSTRAINT fk__images__meta FOREIGN KEY  (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
   CONSTRAINT fk__images__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
-  CONSTRAINT uk__images__meta_id__meta_version__name__language_id UNIQUE KEY (meta_id, meta_version, name, language_id)
+  CONSTRAINT uk__images__meta_id__meta_version__name__language_id UNIQUE KEY (meta_id, meta_version, name, language_id),
+  CONSTRAINT fk__images__meta_id__meta_version FOREIGN KEY (meta_id, meta_version) REFERENCES meta_version (meta_id, version) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -616,8 +617,8 @@ CREATE TABLE texts (
   CONSTRAINT pk__texts PRIMARY KEY  (counter),
   CONSTRAINT fk__texts__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
   CONSTRAINT fk__texts__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  CONSTRAINT uk__texts__meta_id__meta_version__name__language_id UNIQUE KEY (meta_id, meta_version, name, language_id)
-  -- CONSTRAINT -> meta_version -> meta_version
+  CONSTRAINT uk__texts__meta_id__meta_version__name__language_id UNIQUE KEY (meta_id, meta_version, name, language_id),
+  CONSTRAINT fk__texts__meta_id__meta_version FOREIGN KEY (meta_id, meta_version) REFERENCES meta_version (meta_id, version) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -733,13 +734,13 @@ CREATE TABLE childs_history (
 --
 
 CREATE TABLE text_doc_content_loops (
-  id int auto_increment,
+  id int auto_increment PRIMARY KEY,
   meta_id int NOT NULL,
+  meta_version int NOT NULL,
   loop_index int NOT NULL,
   base_index int NOT NULL,
-  CONSTRAINT pk__text_doc_content_loops PRIMARY KEY (id) ,
-  CONSTRAINT fk__text_doc_content_loops__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  CONSTRAINT uk__text_doc_content_loops__meta_id__loop_index UNIQUE KEY (meta_id, loop_index)
+  CONSTRAINT fk__text_doc_content_loops__meta_id__meta_version FOREIGN KEY (meta_id, meta_version) REFERENCES meta_version (meta_id, version) ON DELETE CASCADE,
+  CONSTRAINT uk__text_doc_content_loops__meta_id__meta_version__loop_index UNIQUE KEY (meta_id, meta_version, loop_index)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -748,13 +749,12 @@ CREATE TABLE text_doc_content_loops (
 --
 
 CREATE TABLE text_doc_contents (
-  id int auto_increment,
+  id int auto_increment PRIMARY KEY,
   loop_id int,
   sequence_index int NOT NULL,
   order_index int NOT NULL,
 
-  CONSTRAINT pk__text_doc_contents PRIMARY KEY (id),
-  CONSTRAINT uk__id__loop_id__sequence_index UNIQUE KEY (id, loop_id, sequence_index),
-  CONSTRAINT uk__id__loop_id__order_index UNIQUE KEY (id, loop_id, order_index),
+  CONSTRAINT uk__loop_id__sequence_index UNIQUE KEY (loop_id, sequence_index),
+  CONSTRAINT uk__loop_id__order_index UNIQUE KEY (loop_id, order_index),
   CONSTRAINT fk__text_doc_contents__text_doc_content_loops FOREIGN KEY (loop_id) REFERENCES text_doc_content_loops (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -18,6 +18,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.api.DocumentVersionTag;
@@ -182,11 +183,22 @@ public class TextDocumentInitializer {
 	
 	
 	public void initContentLoops(TextDocumentDomainObject document) {
-		List<ContentLoop> loops = contentLoopDao.getContentLoops(document.getMeta().getId());
+		List<ContentLoop> loops = contentLoopDao.getContentLoops(document.getMeta().getId(), document.getVersion().getNumber());
 		Map<Integer, ContentLoop> loopsMap = new HashMap<Integer, ContentLoop>();
 		
 		for (ContentLoop loop: loops) {
 			loopsMap.put(loop.getIndex(), loop);
+			// Loops should have at lest one content.
+			List<Content> contents = loop.getContents();
+			if (contents.size() == 0) {
+				Content content = new Content();
+				
+				content.setLoopId(loop.getId());
+				content.setOrderIndex(0);
+				content.setSequenceIndex(0);
+				
+				contents.add(content);
+			}
 		}
 		
 		document.setContentLoopsMap(loopsMap);

@@ -61,7 +61,7 @@ html.html {
 	                    }
 	                    
 	                    td {
-	                        a(href:"?cmd=remove&metaId=${metaId}", "Remove from cache")
+	                        a(href:"?cmd=remove&metaId=${metaId}", "Remove from the cache")
 	                    }
 	                } //tr
 	            } // cache.each  	    	  
