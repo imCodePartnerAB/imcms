@@ -111,6 +111,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         Integer documentId = textDocument.getMeta().getId();
         Integer documentVersionNumber = textDocument.getMeta().getVersion().getNumber();
 
+        // delete all texts for meta and version
         textDao.deleteTexts(documentId, documentVersionNumber);
         
         for (Map<Integer, TextDomainObject> map: textDocument.getAllTexts().values()) {
@@ -132,8 +133,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         ContentLoopDao dao = (ContentLoopDao)services.getSpringBean("contentLoopDao");
         Integer documentId = textDocument.getMeta().getId();
         Integer documentVersion = textDocument.getVersion().getNumber();
+        Integer documentVersionNumber = textDocument.getMeta().getVersion().getNumber();
         
         // delete all loops for meta and version
+        dao.deleteLoops(documentId, documentVersionNumber);
         
         for (ContentLoop loop: textDocument.getContentLoopsMap().values()) {
         	loop.setMetaId(documentId);

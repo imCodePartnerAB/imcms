@@ -411,4 +411,16 @@ public class ContentLoopDao extends HibernateTemplate {
 		
 		return newContent;
 	}
+	
+	// Very ineffective - optimize
+	@Transactional
+	public synchronized int deleteLoops(Integer documentId, Integer documentVersion) {
+		List<ContentLoop> loops = getContentLoops(documentId, documentVersion);
+		
+		for (ContentLoop loop: loops) {
+			delete(loop);
+		}
+
+		return loops.size();
+	}	
 }

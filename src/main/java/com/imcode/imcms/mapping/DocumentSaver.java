@@ -83,6 +83,7 @@ public class DocumentSaver {
     	            	        
     	        visitor.updateTextDocumentTexts(textDocument, null, user);
     	        visitor.updateTextDocumentImages(textDocument, null, user);
+    	        visitor.updateTextDocumentContentLoops(textDocument, null, user);
     		}
     	} catch (RuntimeException e) {
     		throw new DocumentSaveException(e);
@@ -166,6 +167,7 @@ public class DocumentSaver {
                 
         visitor.updateTextDocumentTexts(textDocument, null, user);
         visitor.updateTextDocumentImages(textDocument, null, user);
+        visitor.updateTextDocumentContentLoops(textDocument, null, user);
     }
     
 
