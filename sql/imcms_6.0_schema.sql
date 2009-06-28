@@ -72,11 +72,10 @@ CREATE TABLE meta_version (
 --
 
 CREATE TABLE category_types (
-  category_type_id int NOT NULL auto_increment,
+  category_type_id int NOT NULL auto_increment PRIMARY KEY,
   name varchar(128) NOT NULL,
   max_choices int NOT NULL default '0',
-  inherited tinyint(1) NOT NULL,
-  CONSTRAINT pk__category_types PRIMARY KEY  (category_type_id)
+  inherited tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

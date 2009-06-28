@@ -25,6 +25,9 @@
         <mapping class="imcode.server.document.textdocument.TextDomainObject"/>
         <mapping class="imcode.server.document.textdocument.MenuDomainObject"/>
         
+        <mapping class="imcode.server.document.CategoryTypeDomainObject"/>
+        
+        
         <!-- Named queries -->
         <mapping resource="DocumentVersion.hbm.xml"/>
         <mapping resource="I18nLanguage.hbm.xml"/>

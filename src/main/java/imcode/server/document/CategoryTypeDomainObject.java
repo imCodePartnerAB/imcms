@@ -4,16 +4,32 @@ import imcode.server.Imcms;
 
 import java.io.Serializable;
 
-/**
- * @author kreiger
- */
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity(name="Category")
+@Table(name="category_types")
 public class CategoryTypeDomainObject implements Comparable, Serializable {
 
-    private final int id;
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="category_type_id")	
+    private int id;
+	
+	@Column(name="name")
     private String name ;
+	
+	@Column(name="max_choices")
     private int maxChoices ;
+	
+	@Column(name="inherited")
     private boolean inherited;
 
+	public CategoryTypeDomainObject() {}
+			
     public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited) {
         this.id = id;
         this.name = name;
@@ -50,17 +66,9 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
     }
 
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof CategoryTypeDomainObject)) {
-            return false;
-        }
-
-        final CategoryTypeDomainObject categoryTypeDomainObject = (CategoryTypeDomainObject) o;
-
-        return id==categoryTypeDomainObject.id ;
-
+    	return this == o 
+    		|| (o instanceof CategoryTypeDomainObject && 
+    		   ((CategoryTypeDomainObject)o).id == id);
     }
 
     public int hashCode() {
@@ -87,5 +95,4 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
         }
         return hasImages;
     }
-
 }
