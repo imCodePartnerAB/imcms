@@ -14,6 +14,7 @@ import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.DocumentShowSettings;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -749,11 +750,13 @@ public class DocumentMapper implements DocumentGetter {
         document.setActualModifiedDatetime(now);
     }
 
-    // TODO: classification and meta_classification is replaced by keywords table.
-//    String[] getAllKeywords() {
-//        String[] params = new String[0];
-//        return (String[]) getDatabase().execute(new SqlQueryCommand("SELECT code FROM classification", params, Utility.STRING_ARRAY_HANDLER));
-//    }
+    public void saveText(DocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    	try {
+    		documentSaver.saveText(document, text, user);            
+	    } finally {
+	        invalidateDocument(document);
+	    }    	
+    }
 
     public void setClock(Clock clock) {
         this.clock = clock;

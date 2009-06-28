@@ -442,3 +442,20 @@ INSERT INTO user_roles_crossref
 VALUES
   (@user_id__admin, @role_id__superadmin),
   (@user_id__user, @role_id__users);
+  
+      
+INSERT INTO text_doc_content_loops 
+	(id, meta_id, meta_version, loop_index, base_index) 
+VALUES 
+	(1, 1001, 1, 1, 1000000),
+    (2, 1001, 2, 1, 1000000),
+    (3, 1001, 3, 1, 1000000),
+    (4, 1001, 4, 1, 1000000);
+
+INSERT INTO text_doc_contents (loop_id, sequence_index, order_index) 
+	VALUES 
+		(1, 1, 1), (1, 2, 2), (1, 3, 3),
+		(2, 1, 1), (2, 2, 2), (2, 3, 3),
+		(3, 1, 1), (3, 2, 2), (3, 3, 3),
+		(4, 1, 1), (4, 2, 2), (4, 3, 3);
+    

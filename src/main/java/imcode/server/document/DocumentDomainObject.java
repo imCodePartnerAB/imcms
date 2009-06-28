@@ -61,9 +61,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	
 	/**
 	 * Returns this document's version.
-	 * 
-	 * TODO: Refactor - document version is a property of a document
-	 * not a meta!!
 	 */
 	public DocumentVersion getVersion() {
 		return meta == null ? null : meta.getVersion();

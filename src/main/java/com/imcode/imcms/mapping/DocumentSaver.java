@@ -25,7 +25,7 @@ import com.imcode.imcms.dao.MetaDao;
 /**
  * This class is instantiated using spring framework.
  * 
- * This class acts as DocumentMapper's helper and its API must not be used directly.  
+ * Used by DocumentMapper. API must not be invoked directly.  
  */
 public class DocumentSaver {
 
@@ -45,19 +45,12 @@ public class DocumentSaver {
      *   etc 
      */
     @Transactional     
-    public void saveText(DocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    void saveText(DocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
     	checkDocumentForSave(document);
     	
-    	try {
-    		new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentText(text, user);            
-            // TODO: Fix - does not work!!
-            // Bulk update is used for speed purposes. 
-            // Actually exactly one document's meta is updated.
-    		//template.bulkUpdate("update Meta m set m.modifiedDatetime = ? where m.id = ?", 
-    		//	new Object[] {modifiedDatetime, document.getMeta().getId()});
-	    } finally {
-	        documentMapper.invalidateDocument(document);
-	    }    	
+    	new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentText(text, user);
+    	
+    	// TODO: update meta modified time
     }
 
     /**
@@ -65,7 +58,7 @@ public class DocumentSaver {
      */
     // TODO: Should throw NoPermissionToEditDocumentException ?
     @Transactional    
-    protected void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) 
+    void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) 
     throws DocumentSaveException {
     	try {
     		Integer documentId = document.getMeta().getId();
@@ -95,7 +88,7 @@ public class DocumentSaver {
      * Updates published or working document.
      */
     @Transactional
-    protected void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
+    void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
                       final UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         checkDocumentForSave(document);
 
@@ -128,7 +121,7 @@ public class DocumentSaver {
      * @param document an instance of {@link TextDocumentDomainObject}
      */
     @Transactional
-    public void createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    void createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         //checkDocumentForSave(document);
         //document.loadAllLazilyLoaded();
     	
@@ -173,7 +166,7 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void saveNewDocument(UserDomainObject user,
+    void saveNewDocument(UserDomainObject user,
                          DocumentDomainObject document, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(document);
 
@@ -264,7 +257,7 @@ public class DocumentSaver {
      * Modified copy of legacy updateDocumentRolePermissions method.  
      * NB! Compared to legacy this method does not update database.
      */
-    void newUpdateDocumentRolePermissions(DocumentDomainObject document, UserDomainObject user,
+    private void newUpdateDocumentRolePermissions(DocumentDomainObject document, UserDomainObject user,
             DocumentDomainObject oldDocument) {
 
     	// Original (old) and modified or new document permission set type mapping.
@@ -307,7 +300,7 @@ public class DocumentSaver {
 		}
 	}
 
-    public void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
+    private void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
     	String alias = document.getAlias();
     	
     	if (alias != null) {

@@ -5,8 +5,6 @@ import imcode.server.Imcms;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.imcode.imcms.mapping.CachingDocumentGetter;
-
 /**
  * Cache controller.
  */

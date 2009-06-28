@@ -89,7 +89,7 @@ public final class SaveText extends HttpServlet {
         text = document.setText(I18nSupport.getCurrentLanguage(), txt_no, text );
 
         try {
-        	documentMapper.getDocumentSaver().saveText(document, text, user);        
+        	documentMapper.saveText(document, text, user);        
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
         } catch ( NoPermissionToAddDocumentToMenuException e ) {
