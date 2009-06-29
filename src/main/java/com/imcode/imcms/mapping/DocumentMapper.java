@@ -20,7 +20,6 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Clock;
 import imcode.util.SystemClock;
-import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 
 import java.io.File;
@@ -36,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
@@ -48,7 +46,6 @@ import org.apache.oro.text.perl.Perl5Util;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 
 import com.imcode.db.Database;
-import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionSelector;
@@ -348,9 +345,15 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public String[][] getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
-        String sqlStr = "SELECT meta_id,menu_index FROM childs, menus WHERE menus.menu_id = childs.menu_id AND to_meta_id = ?";
-        String[] parameters = new String[]{"" + document.getId()};
-        return (String[][]) getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+    	List<String[]> listOfPairs = nativeQueriesDao.getParentDocumentAndMenuIdsForDocument(document.getId());
+    	
+    	String[][] result = new String[listOfPairs.size()][]; 
+    	
+    	for (int i = 0; i < result.length; i++) {
+    		result[i] = listOfPairs.get(i);
+    	}
+    	
+    	return result;
     }
 
     public String[][] getAllMimeTypesWithDescriptions(UserDomainObject user) {
@@ -378,37 +381,29 @@ public class DocumentMapper implements DocumentGetter {
         cachingDocumentGetter.removeDocumentFromCache(document.getId());
     }
 
-    public Map getAllDocumentTypeIdsAndNamesInUsersLanguage(UserDomainObject user) {
-        String[] parameters = new String[]{
-            user.getLanguageIso639_2()
-        };
-        String[][] rows = (String[][]) getDatabase().execute(new SqlQueryCommand("SELECT doc_type, type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type", parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
-        Map allDocumentTypeIdsAndNamesInUsersLanguage = new TreeMap();
-        for (int i = 0; i < rows.length; i++) {
-            String[] row = rows[i];
-            Integer documentTypeId = Integer.valueOf(row[0]);
-            String documentTypeNameInUsersLanguage = row[1];
-            allDocumentTypeIdsAndNamesInUsersLanguage.put(documentTypeId, documentTypeNameInUsersLanguage);
-        }
-        return allDocumentTypeIdsAndNamesInUsersLanguage;
+    public Map<Integer, String> getAllDocumentTypeIdsAndNamesInUsersLanguage(UserDomainObject user) {
+        return nativeQueriesDao.getAllDocumentTypeIdsAndNamesInUsersLanguage(user.getLanguageIso639_2());
     }
 
     public TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingDocument(DocumentDomainObject document) {
-        String sqlSelectMenus = "SELECT meta_id, menu_index FROM menus, childs WHERE menus.menu_id = childs.menu_id AND childs.to_meta_id = ? ORDER BY meta_id, menu_index";
-        String[] parameters = new String[]{"" + document.getId()};
-        String[][] sqlRows = (String[][]) getDatabase().execute(new SqlQueryCommand(sqlSelectMenus, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
-        TextDocumentMenuIndexPair[] documentMenuPairs = new TextDocumentMenuIndexPair[sqlRows.length];
-        for (int i = 0; i < sqlRows.length; i++) {
-            String[] sqlRow = sqlRows[i];
-            int containingDocumentId = Integer.parseInt(sqlRow[0]);
-            int menuIndex = Integer.parseInt(sqlRow[1]);
+        List<Integer[]> rows = nativeQueriesDao.getDocumentMenuPairsContainingDocument(document.getId());
+        
+        TextDocumentMenuIndexPair[] documentMenuPairs = new TextDocumentMenuIndexPair[rows.size()];
+        
+        for (int i = 0; i < documentMenuPairs.length; i++) {
+        	Integer[] row = rows.get(i);
+        	
+            int containingDocumentId = row[0];
+            int menuIndex = row[1];
+            
             TextDocumentDomainObject containingDocument = (TextDocumentDomainObject) getPublishedDocument(containingDocumentId);
             documentMenuPairs[i] = new TextDocumentMenuIndexPair(containingDocument, menuIndex);
         }
+        
         return documentMenuPairs;
     }
 
-    public Iterator getDocumentsIterator(final IntRange idRange) {
+    public Iterator<DocumentDomainObject> getDocumentsIterator(final IntRange idRange) {
         return new DocumentsIterator(getDocumentIds(idRange));
     }
    
@@ -539,18 +534,17 @@ public class DocumentMapper implements DocumentGetter {
         return document;
     }
 
-    public List getDocumentsWithPermissionsForRole(RoleDomainObject role) {
-        String sqlStr = "SELECT meta_id FROM roles_rights WHERE role_id = ? ORDER BY meta_id";
-        final Object[] parameters = new String[]{"" + role.getId()};
-        String[] documentIdStrings = (String[]) getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_HANDLER));
-        final int[] documentIds = Utility.convertStringArrayToIntArray(documentIdStrings);
-        return new AbstractList() {
-            public Object get(int index) {
-                return getPublishedDocument(documentIds[index]);
+    public List<DocumentDomainObject> getDocumentsWithPermissionsForRole(final RoleDomainObject role) {
+    	
+        return new AbstractList<DocumentDomainObject>() {
+        	private List<Integer> documentIds = nativeQueriesDao.getDocumentsWithPermissionsForRole(role.getId().intValue()); 
+            
+        	public DocumentDomainObject get(int index) {
+                return getPublishedDocument(documentIds.get(index));
             }
 
             public int size() {
-                return documentIds.length;
+                return documentIds.size();
             }
         };
     }
@@ -774,9 +768,8 @@ public class DocumentMapper implements DocumentGetter {
 
 
     private void removeNonInheritedCategories(DocumentDomainObject document) {
-        Set categories = getCategoryMapper().getCategories(document.getCategoryIds());
-        for ( Iterator iterator = categories.iterator(); iterator.hasNext(); ) {
-            CategoryDomainObject category = (CategoryDomainObject)iterator.next();
+        Set<CategoryDomainObject> categories = getCategoryMapper().getCategories(document.getCategoryIds());
+        for (CategoryDomainObject category: categories) {
             if (!category.getType().isInherited()) {
                 document.removeCategoryId(category.getId());
             }
@@ -802,7 +795,7 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    private class DocumentsIterator implements Iterator {
+    private class DocumentsIterator implements Iterator<DocumentDomainObject> {
 
         int[] documentIds;
         int index;
@@ -819,19 +812,15 @@ public class DocumentMapper implements DocumentGetter {
             return index < documentIds.length;
         }
 
-        public Object next() {
+        public DocumentDomainObject next() {
+        	
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
             
             int documentId = documentIds[index++];
-            DocumentDomainObject document = getPublishedDocument(documentId);
             
-            if (document == null) {
-            	document = getWorkingDocument(documentId);
-            }
-            
-            return document;
+            return getDocument(documentId);
         }
     }
 

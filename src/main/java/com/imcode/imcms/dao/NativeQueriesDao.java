@@ -1,17 +1,25 @@
 package com.imcode.imcms.dao;
 
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
+import java.util.AbstractList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.imcms.mapping.DocumentMapper.TextDocumentMenuIndexPair;
 
 /**
  * Temporal native queries - moved from the DocumentMapper.
+ * TODO: Rewrite native queries using HQL
  */
 public class NativeQueriesDao extends HibernateTemplate {
 
@@ -32,10 +40,40 @@ public class NativeQueriesDao extends HibernateTemplate {
 	}
 	
 	@Transactional
-    public String[][] getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
-        //String sqlStr = "SELECT meta_id,menu_index FROM childs, menus WHERE menus.menu_id = childs.menu_id AND to_meta_id = ?";
-        //String[] parameters = new String[]{"" + document.getId()};
-        //return (String[][]) getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
-		return null;
-    }	
+    public List<String[]> getParentDocumentAndMenuIdsForDocument(Integer documentId) {
+        String sqlStr = "SELECT meta_id,menu_index FROM childs, menus WHERE menus.menu_id = childs.menu_id AND to_meta_id = ?";
+        
+	     return getSession().createSQLQuery(sqlStr)
+	     	.setParameter(0, documentId)
+	     	.list();        
+    }
+    
+    @Transactional
+    public List<Integer> getDocumentsWithPermissionsForRole(Integer roleId) {
+        String sqlStr = "SELECT meta_id FROM roles_rights WHERE role_id = ? ORDER BY meta_id";
+        
+        return getSession().createSQLQuery(sqlStr).setParameter(0, roleId).list();
+    }   
+    
+    
+    @Transactional
+    public Map<Integer, String> getAllDocumentTypeIdsAndNamesInUsersLanguage(String languageIso639_2) {
+    	String sql = "SELECT doc_type, type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type";
+    	
+    	List<Object[]> rows = getSession().createSQLQuery(sql).setParameter(0, languageIso639_2).list();
+    	Map<Integer, String> allDocumentTypeIdsAndNamesInUsersLanguage = new TreeMap<Integer, String>();
+    	
+    	for (Object[] row: rows) {
+    		allDocumentTypeIdsAndNamesInUsersLanguage.put((Integer)row[0], (String)row[1]);
+    	}
+    		
+        return allDocumentTypeIdsAndNamesInUsersLanguage;
+    }
+    
+    @Transactional
+    public List<Integer[]> getDocumentMenuPairsContainingDocument(Integer documentId) {
+        String sqlSelectMenus = "SELECT meta_id, menu_index FROM menus, childs WHERE menus.menu_id = childs.menu_id AND childs.to_meta_id = ? ORDER BY meta_id, menu_index";
+                
+        return getSession().createSQLQuery(sqlSelectMenus).setParameter(0, documentId).list();
+    }    
 }

@@ -233,15 +233,16 @@ public class CategoryMapper extends HibernateTemplate {
         }
     }
 
-    public Set getCategories(Collection categoryIds) {
-        Set categories = new HashSet() ;
-        for ( Iterator iterator = categoryIds.iterator(); iterator.hasNext(); ) {
-            Integer categoryId = (Integer) iterator.next();
+    public Set<CategoryDomainObject> getCategories(Collection<Integer> categoryIds) {
+        Set<CategoryDomainObject> categories = new HashSet<CategoryDomainObject>() ;
+        
+        for (Integer categoryId: categoryIds) {
             CategoryDomainObject category = getCategoryById(categoryId.intValue()) ;
             if (null != category) {
                 categories.add(category) ;
             }
         }
+        
         return categories;
     }
 
