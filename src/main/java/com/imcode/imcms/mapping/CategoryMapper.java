@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.springframework.orm.hibernate3.HibernateTemplate;
+
 import com.imcode.db.Database;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
@@ -23,7 +25,8 @@ import com.imcode.db.handlers.RowTransformer;
 import com.imcode.db.handlers.SingleObjectHandler;
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
 
-public class CategoryMapper {
+public class CategoryMapper extends HibernateTemplate {
+	
     private Database database;
     private static final int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
 
@@ -59,7 +62,7 @@ public class CategoryMapper {
     private static final SingleObjectHandler SINGLE_CATEGORY_HANDLER = new SingleObjectHandler(new CategoryFromRowFactory());
     private static final ObjectArrayHandler CATEGORY_TYPE_ARRAY_HANDLER = new ObjectArrayHandler(new CategoryTypeFromRowFactory());
 
-    public CategoryMapper(Database database) {
+    public void setDatabse(Database database) {
         this.database = database ;
     }
 

@@ -4,11 +4,30 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
  
 <hibernate-mapping>
-  <!--
-  <query name="">
+  <query name="Meta.getAllDocumentIds">
     <![CDATA[
-    ]]>
-  </query>    
-  -->
-  </query>      
+    SELECT m.id FROM Meta m ORDER BY m.id
+    ]]>  
+  </query>   
+  
+  <query name="Meta.getDocumentIdsInRange">
+    <![CDATA[
+    SELECT m.id FORM Meta m 
+    WHERE m.id 
+    BETWEEN :min AND :max 
+    ORDER BY m.id
+    ]]>  
+  </query>   
+  
+  <query name="Meta.getMaxDocumentId">
+    <![CDATA[
+    SELECT max(m.id) FROM Meta m
+    ]]>  
+  </query> 
+  
+  <query name="Meta.getMinDocumentId">
+    <![CDATA[
+    SELECT min(m.id) FROM Meta m
+    ]]>  
+  </query>     
 </hibernate-mapping>

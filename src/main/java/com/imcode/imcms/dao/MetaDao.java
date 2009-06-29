@@ -420,4 +420,30 @@ public class MetaDao extends HibernateTemplate {
 			int i = session.createSQLQuery(sql).setParameter(0, metaId).executeUpdate();
 		}								
 	}
+	
+	@Transactional
+	public List<Integer> getAllDocumentIds() {
+		return (List<Integer>)getSession().getNamedQuery("Meta.getAllDocumentIds")
+			.list();
+	}
+	
+	@Transactional
+	public List<Integer> getDocumentIdsInRange(Integer min, Integer max) {
+		return (List<Integer>)getSession().getNamedQuery("Meta.getAllDocumentIds")
+			.setParameter("min", min)
+			.setParameter("max", max)
+			.list();
+	}
+	
+	@Transactional
+	public Integer getMaxDocumentId() {
+		return (Integer)getSession().getNamedQuery("Meta.getMaxDocumentId")
+			.uniqueResult();
+	}
+	
+	@Transactional
+	public Integer getMinDocumentId() {
+		return (Integer)getSession().getNamedQuery("Meta.getMinDocumentId")
+			.uniqueResult();
+	}	
 }

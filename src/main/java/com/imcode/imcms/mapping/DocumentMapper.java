@@ -40,6 +40,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
@@ -47,11 +48,7 @@ import org.apache.oro.text.perl.Perl5Util;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 
 import com.imcode.db.Database;
-import com.imcode.db.DatabaseCommand;
-import com.imcode.db.commands.CompositeDatabaseCommand;
-import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionSelector;
@@ -61,6 +58,7 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.dao.NativeQueriesDao;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.aop.DocumentAspect;
 import com.imcode.imcms.mapping.aop.TextDocumentAspect;
@@ -93,6 +91,8 @@ public class DocumentMapper implements DocumentGetter {
     private Clock clock = new SystemClock();
     private ImcmsServices imcmsServices;
     
+    private NativeQueriesDao nativeQueriesDao;
+    
     /**
      * Gets documents directly form a database bypassing cache.
      * Instantiated using SpringFramework.
@@ -120,6 +120,7 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentMapper(ImcmsServices services, Database database) {
         this.imcmsServices = services;
         this.database = database;
+        
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
         
@@ -133,15 +134,16 @@ public class DocumentMapper implements DocumentGetter {
         databaseDocumentGetter.setServices(services);
         databaseDocumentGetter.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
         
-        this.cachingDocumentGetter = new CachingDocumentGetter(databaseDocumentGetter, documentCacheMaxSize);        
-        this.categoryMapper = new CategoryMapper(database);
-        // old code:
-        // documentSaver = new DocumentSaver(this);
+        cachingDocumentGetter = new CachingDocumentGetter(databaseDocumentGetter, documentCacheMaxSize);        
+        categoryMapper = (CategoryMapper)services.getSpringBean("categoryMapper");
+        categoryMapper.setDatabse(database);
         
         // DocumentSaver is instantiated using SpringFramework
         // in order to support declarative (AOP) transactions.
-        this.documentSaver = (DocumentSaver)services.getSpringBean("documentSaver");
-        this.documentSaver.setDocumentMapper(this);
+        documentSaver = (DocumentSaver)services.getSpringBean("documentSaver");
+        documentSaver.setDocumentMapper(this);
+        
+        nativeQueriesDao = (NativeQueriesDao)services.getSpringBean("nativeQueriesDao");
     }
     
     /**
@@ -352,15 +354,19 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public String[][] getAllMimeTypesWithDescriptions(UserDomainObject user) {
-        String sqlStr = "SELECT mime, mime_name FROM mime_types WHERE lang_prefix = ? AND mime_id > 0 ORDER BY mime_id";
-        String[] parameters = new String[]{user.getLanguageIso639_2()};
-        return (String[][]) getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+    	List<String[]> result = nativeQueriesDao.getAllMimeTypesWithDescriptions(user.getLanguageIso639_2());
+    	
+    	String[][] mimeTypes = new String[result.size()][]; 
+    	
+    	for (int i = 0; i < mimeTypes.length; i++) {
+    		mimeTypes[i] = result.get(i);
+    	}
+    	
+    	return mimeTypes;
     }
 
     public String[] getAllMimeTypes() {
-        String sqlStr = "SELECT mime FROM mime_types WHERE mime_id > 0 ORDER BY mime_id";
-        String[] params = new String[]{};
-        return (String[]) getDatabase().execute(new SqlQueryCommand(sqlStr, params, Utility.STRING_ARRAY_HANDLER));
+    	return nativeQueriesDao.getAllMimeTypes().toArray(new String[] {});    
     }
 
 
@@ -405,29 +411,23 @@ public class DocumentMapper implements DocumentGetter {
     public Iterator getDocumentsIterator(final IntRange idRange) {
         return new DocumentsIterator(getDocumentIds(idRange));
     }
-
+   
+    // TODO: refactor
     private int[] getDocumentIds(IntRange idRange) {
-        String sqlSelectIds = "SELECT meta_id FROM meta WHERE meta_id >= ? AND meta_id <= ? ORDER BY meta_id";
-        String[] params = new String[]{
-            "" + idRange.getMinimumInteger(),
-            "" + idRange.getMaximumInteger()
-        };
-        String[] documentIdStrings = (String[]) getDatabase().execute(new SqlQueryCommand(sqlSelectIds, params, Utility.STRING_ARRAY_HANDLER));
-        int[] documentIds = new int[documentIdStrings.length];
-        for (int i = 0; i < documentIdStrings.length; i++) {
-            documentIds[i] = Integer.parseInt(documentIdStrings[i]);
-        }
-        return documentIds;
+    	List<Integer> ids = documentSaver.getMetaDao().getDocumentIdsInRange(
+    			idRange.getMaximumInteger(),
+    			idRange.getMaximumInteger());
+    	
+    	// Optimize
+    	return ArrayUtils.toPrimitive(ids.toArray(new Integer[] {}));
     }
 
+    // TODO: refactor
     public int[] getAllDocumentIds() {
-        String[] params = new String[0];
-        String[] documentIdStrings = (String[]) getDatabase().execute(new SqlQueryCommand("SELECT meta_id FROM meta ORDER BY meta_id", params, Utility.STRING_ARRAY_HANDLER));
-        int[] documentIds = new int[documentIdStrings.length];
-        for (int i = 0; i < documentIdStrings.length; i++) {
-            documentIds[i] = Integer.parseInt(documentIdStrings[i]);
-        }
-        return documentIds;
+    	List<Integer> ids = documentSaver.getMetaDao().getAllDocumentIds();
+    	
+    	// Optimize
+    	return ArrayUtils.toPrimitive(ids.toArray(new Integer[] {}));
     }
 
     // TODO: refactor
@@ -515,13 +515,11 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public int getLowestDocumentId() {
-        String[] params = new String[0];
-        return Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT MIN(meta_id) FROM meta", params, Utility.SINGLE_STRING_HANDLER)));
+    	return documentSaver.getMetaDao().getMaxDocumentId();
     }
 
     public int getHighestDocumentId() {
-        String[] params = new String[0];
-        return Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT MAX(meta_id) FROM meta", params, Utility.SINGLE_STRING_HANDLER)));
+        return documentSaver.getMetaDao().getMinDocumentId();
     }
 
     public DocumentDomainObject copyDocument(DocumentDomainObject document,

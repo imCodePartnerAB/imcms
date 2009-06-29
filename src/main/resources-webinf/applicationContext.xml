@@ -75,13 +75,21 @@
     <property name="languageDao" ref="languageDao"/>
   </bean> 
   
-   <bean id="textDao" class="com.imcode.imcms.dao.TextDao">
+  <bean id="textDao" class="com.imcode.imcms.dao.TextDao">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
   
+  <bean id="categoryMapper" class="com.imcode.imcms.mapping.CategoryMapper">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>  
+  
   <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDao">
     <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>        
+  </bean> 
+  
+  <bean id="nativeQueriesDao" class="com.imcode.imcms.dao.NativeQueriesDao">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>         
   
   <bean id="menuDao" class="com.imcode.imcms.dao.MenuDao">
     <property name="sessionFactory" ref="sessionFactory"/>
