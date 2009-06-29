@@ -1,21 +1,11 @@
 package com.imcode.imcms.dao;
 
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
-
-import java.util.AbstractList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.imcms.mapping.DocumentMapper.TextDocumentMenuIndexPair;
 
 /**
  * Temporal native queries - moved from the DocumentMapper.

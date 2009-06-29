@@ -2,15 +2,41 @@ package imcode.server.document;
 
 import java.io.Serializable;
 
-/** @author kreiger */
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
+
+@Entity(name="Category")
+@Table(name="categories")
 public class CategoryDomainObject implements Comparable, Serializable {
-
+	
     private String name;
+    
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="category_id")	    
     private int id;
-    private CategoryTypeDomainObject type;
+	    
     private String description = "";
+    
+    @Column(name="image")	 
     private String imageUrl = "";
+    
+    @OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.REFRESH)
+    @JoinColumn(name="category_type_id", nullable=false)
+    private CategoryTypeDomainObject type;
 
+
+    public CategoryDomainObject() {} 
+    
     public CategoryDomainObject(int id, String name, String description, String imageUrl, CategoryTypeDomainObject type) {
         this.description = description;
         this.type = type;

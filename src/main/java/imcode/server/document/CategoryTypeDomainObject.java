@@ -11,7 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity(name="Category")
+@Entity(name="CategoryType")
 @Table(name="category_types")
 public class CategoryTypeDomainObject implements Comparable, Serializable {
 

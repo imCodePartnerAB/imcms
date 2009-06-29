@@ -83,12 +83,11 @@ CREATE TABLE category_types (
 --
 
 CREATE TABLE categories (
-  category_id int NOT NULL auto_increment,
+  category_id int NOT NULL auto_increment PRIMARY KEY,
   category_type_id int NOT NULL,
   name varchar(128) NOT NULL,
   description varchar(500) default NULL,
   image varchar(255) NOT NULL,
-  CONSTRAINT pk__categories PRIMARY KEY (category_id),
   CONSTRAINT fk__categories__category_types FOREIGN KEY (category_type_id) REFERENCES category_types (category_type_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

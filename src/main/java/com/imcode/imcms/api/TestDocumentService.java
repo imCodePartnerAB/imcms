@@ -42,37 +42,6 @@ public class TestDocumentService extends TestCase {
         documentService = new DocumentService(contentManagementSystem) ;
     }
 
-    public void testSaveCategory() throws CategoryAlreadyExistsException, NoPermissionException {
-        ResultSet allCategoryTypesResult = new MockResultSet(new Object[][] { { new Integer(1), "test", new Integer(0), new Integer(0) } });
-        database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "SELECT category_types.category_type_id"), allCategoryTypesResult );
-        CategoryType categoryType = documentService.getAllCategoryTypes()[0] ;
-        assertEquals( false, categoryType.isInherited()) ;
-        String categoryName = "name";
-        Category category = new Category( categoryName, categoryType );
-        category.setDescription( "description" );
-        category.setImage( "image" );
-        user.addRole( new Role( imcmsServices.getRoleGetter().getRole(RoleId.SUPERADMIN) ) );
-        database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "categories" ), new Integer(1) );
-        documentService.saveCategory(category);
-        database.assertExpectedSqlCalls();
-
-        ResultSet categoryResult = new MockResultSet(new Object[][] { { new Integer(1), category.getName(), category.getDescription(), category.getImage(), new Integer(categoryType.getId()), categoryType.getName(), new Integer(categoryType.getInternal().getMaxChoices()), new Integer(categoryType.isInherited() ? 1 : 0)}});
-        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate(CategoryMapper.SQL__GET_CATEGORY_BY_NAME_AND_CATEGORY_TYPE_ID), categoryResult );
-        Category otherCategory = new Category( categoryName, categoryType );
-        try {
-            documentService.saveCategory( otherCategory );
-            fail() ;
-        } catch ( CategoryAlreadyExistsException e ) {
-        }
-        database.assertExpectedSqlCalls();
-
-        String otherName = "other name";
-        category.setName( otherName );
-        category.setDescription( "other description");
-        category.setImage( "other image");
-        documentService.saveCategory( category );
-        database.assertCalled( new MockDatabase.UpdateTableSqlCallPredicate( "categories", otherName ));
-    }
 
     public void testApiWrappingList() {
         List list = new ArrayList() ;

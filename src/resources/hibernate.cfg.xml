@@ -26,7 +26,7 @@
         <mapping class="imcode.server.document.textdocument.MenuDomainObject"/>
         
         <mapping class="imcode.server.document.CategoryTypeDomainObject"/>
-        
+        <mapping class="imcode.server.document.CategoryDomainObject"/>
         
         <!-- Named queries -->
         <mapping resource="DocumentVersion.hbm.xml"/>

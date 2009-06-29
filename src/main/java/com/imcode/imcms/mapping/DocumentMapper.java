@@ -133,13 +133,12 @@ public class DocumentMapper implements DocumentGetter {
         
         cachingDocumentGetter = new CachingDocumentGetter(databaseDocumentGetter, documentCacheMaxSize);        
         categoryMapper = (CategoryMapper)services.getSpringBean("categoryMapper");
-        categoryMapper.setDatabse(database);
         
         // DocumentSaver is instantiated using SpringFramework
         // in order to support declarative (AOP) transactions.
         documentSaver = (DocumentSaver)services.getSpringBean("documentSaver");
         documentSaver.setDocumentMapper(this);
-        
+          
         nativeQueriesDao = (NativeQueriesDao)services.getSpringBean("nativeQueriesDao");
     }
     
