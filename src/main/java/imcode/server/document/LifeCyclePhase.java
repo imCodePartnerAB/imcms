@@ -4,7 +4,6 @@ import imcode.server.document.index.DocumentIndex;
 
 import java.util.Date;
 
-import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
@@ -12,6 +11,9 @@ import org.apache.lucene.search.RangeQuery;
 import org.apache.lucene.search.TermQuery;
 
 import com.imcode.imcms.api.Document;
+import org.apache.lucene.document.DateField;
+import org.apache.lucene.document.DateTools;
+import org.apache.lucene.search.BooleanClause;
 
 public abstract class LifeCyclePhase {
 
@@ -51,18 +53,14 @@ public abstract class LifeCyclePhase {
             PUBLISHED, ARCHIVED, UNPUBLISHED
     };
 
-   
     private static BooleanQuery add(BooleanQuery query, Query otherQuery) {
-        query.add(
-                otherQuery,
-                true, false) ;
+        query.add(otherQuery, BooleanClause.Occur.MUST) ;
         return query;
     }
 
     private static BooleanQuery subtract(BooleanQuery minuend, Query subtrahend) {
-        minuend.add(
-                subtrahend,
-                false, true) ;
+        minuend.add(subtrahend, BooleanClause.Occur.MUST_NOT) ;
+
         return minuend;
     }
 
@@ -79,8 +77,8 @@ public abstract class LifeCyclePhase {
     }
 
     private static RangeQuery getDateRangeQuery(String field, Date now) {
-        return new RangeQuery(new Term(field, DateField.MIN_DATE_STRING()),
-                              new Term(field, DateField.dateToString(now)),
+        return new RangeQuery(null,
+                              new Term(field, DateTools.dateToString(now, DateTools.Resolution.MINUTE)),
                               true);
     }
 

@@ -28,6 +28,7 @@ import org.apache.lucene.search.Query;
 
 import com.imcode.imcms.servlet.admin.Handler;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import org.apache.lucene.search.BooleanClause.Occur;
 
 public class DocumentFinder extends WebComponent {
 
@@ -61,10 +62,10 @@ public class DocumentFinder extends WebComponent {
         DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
         final BooleanQuery booleanQuery = new BooleanQuery();
         if ( null != page.getQuery() ) {
-            booleanQuery.add( page.getQuery(), true, false );
+            booleanQuery.add( page.getQuery(), Occur.MUST );
         }
         if ( null != restrictingQuery ) {
-            booleanQuery.add( restrictingQuery, true, false );
+            booleanQuery.add( restrictingQuery, Occur.MUST);
         }
         if ( booleanQuery.getClauses().length > 0 ) {
             List documentsFound = index.search(new SimpleDocumentQuery(booleanQuery, null, logged), Utility.getLoggedOnUser( request ) );

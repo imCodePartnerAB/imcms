@@ -29,7 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
-import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanQuery;
@@ -43,6 +42,8 @@ import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.flow.Page;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.superadmin.AdminManager;
+import org.apache.lucene.document.DateTools;
+import org.apache.lucene.search.BooleanClause.Occur;
 
 public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderPage {
 
@@ -172,7 +173,7 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
         if ( StringUtils.isNotBlank( queryString ) ) {
             try {
                 Query textQuery = documentFinder.parse( queryString );
-                newQuery.add( textQuery, true, false );
+                newQuery.add( textQuery, Occur.MUST);
             } catch ( ParseException e ) {
                 log.debug( e.getMessage() + " in search-string " + queryString, e );
             }
@@ -183,9 +184,9 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
             for ( int i = 0; i < phases.length; i++ ) {
                 String phase = phases[i];
                 Query phaseQuery = new TermQuery( new Term( DocumentIndex.FIELD__PHASE, phase ) );
-                phaseQueries.add( phaseQuery, false, false );
+                phaseQueries.add( phaseQuery, Occur.SHOULD);
             }
-            newQuery.add( phaseQueries, true, false );
+            newQuery.add( phaseQueries, Occur.MUST );
         }
 
         if ( null != documentTypeIds && documentTypeIds.length > 0 ) {
@@ -193,19 +194,19 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
             for ( int i = 0; i < documentTypeIds.length; i++ ) {
                 int documentTypeId = documentTypeIds[i];
                 Query documentTypeQuery = new TermQuery( new Term(DocumentIndex.FIELD__DOC_TYPE_ID, ""+documentTypeId)) ;
-                documentTypeQueries.add( documentTypeQuery, false, false );
+                documentTypeQueries.add( documentTypeQuery, Occur.SHOULD );
             }
-            newQuery.add( documentTypeQueries, true, false ) ;
+            newQuery.add( documentTypeQueries, Occur.MUST) ;
         }
 
         if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER.equals( userDocumentsRestriction ) ) {
             Query createdByUserQuery = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, "" + user.getId() ) );
-            newQuery.add( createdByUserQuery, true, false );
+            newQuery.add( createdByUserQuery, Occur.MUST);
         }
 
         if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER.equals( userDocumentsRestriction ) ) {
             Query publishedByUserQuery = new TermQuery( new Term( DocumentIndex.FIELD__PUBLISHER_ID, "" + user.getId() ) );
-            newQuery.add( publishedByUserQuery, true, false );
+            newQuery.add( publishedByUserQuery, Occur.MUST );
         }
 
         if ( null != startDate || null != endDate ) {
@@ -227,10 +228,10 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
                 dateField = DocumentIndex.FIELD__PUBLICATION_START_DATETIME;
             }
 
-            Term lowerTerm = new Term( dateField, DateField.dateToString( calculatedStartDate ) );
-            Term upperTerm = new Term( dateField, DateField.dateToString( calculatedEndDate ) );
+            Term lowerTerm = new Term( dateField, DateTools.dateToString(calculatedStartDate, DateTools.Resolution.MINUTE));
+            Term upperTerm = new Term( dateField, DateTools.dateToString(calculatedEndDate, DateTools.Resolution.MINUTE) );
             Query publicationStartedQuery = new RangeQuery( lowerTerm, upperTerm, true );
-            newQuery.add( publicationStartedQuery, true, false );
+            newQuery.add( publicationStartedQuery, Occur.MUST );
         }
 
         if ( 0 == newQuery.getClauses().length ) {

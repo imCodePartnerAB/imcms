@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
-import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
@@ -52,6 +51,8 @@ import com.imcode.imcms.flow.Page;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import org.apache.lucene.document.DateTools;
+import org.apache.lucene.search.BooleanClause.Occur;
 
 public class GetExistingDoc extends HttpServlet {
 
@@ -391,9 +392,9 @@ public class GetExistingDoc extends HttpServlet {
         BooleanQuery docTypesQuery = new BooleanQuery();
         for ( int i = 0; null != docTypes && i < docTypes.length; i++ ) {
             String docType = docTypes[i];
-            docTypesQuery.add( new TermQuery( new Term( "doc_type_id", docType ) ), false, false );
+            docTypesQuery.add( new TermQuery( new Term( "doc_type_id", docType ) ), Occur.SHOULD );
         }
-        query.add( docTypesQuery, true, false );
+        query.add( docTypesQuery, Occur.MUST);
     }
 
     private void addDateRangesToQuery( Date startDate, Date endDate, HttpServletRequest req, BooleanQuery query ) {
@@ -409,14 +410,15 @@ public class GetExistingDoc extends HttpServlet {
                 } else {
                     continue;
                 }
+
                 Term startDateTerm = null != startDate
-                                     ? new Term( wantedIndexDateField, DateField.dateToString( startDate ) ) : null;
+                                     ? new Term( wantedIndexDateField, DateTools.dateToString(startDate, DateTools.Resolution.SECOND)) : null;
                 Term endDateTerm = null != endDate
                                    ? new Term( wantedIndexDateField,
-                                               DateField.dateToString( addOneDayToDate( endDate ) ) )
+                                               DateTools.dateToString( addOneDayToDate( endDate ), DateTools.Resolution.SECOND ) )
                                    : null;
                 RangeQuery dateRangeQuery = new RangeQuery( startDateTerm, endDateTerm, true );
-                query.add( dateRangeQuery, true, false );
+                query.add( dateRangeQuery, Occur.MUST );
             }
         }
     }
@@ -431,7 +433,7 @@ public class GetExistingDoc extends HttpServlet {
     private void addStringToQuery(String string, BooleanQuery query)
             throws org.apache.lucene.queryParser.ParseException {
         Query textQuery = new DefaultQueryParser().parse( string );
-        query.add( textQuery, true, false );
+        query.add( textQuery, Occur.MUST );
     }
 
     /**

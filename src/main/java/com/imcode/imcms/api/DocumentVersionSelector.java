@@ -4,6 +4,7 @@ import imcode.server.document.DocumentDomainObject;
 
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.mapping.DocumentGetter;
+import java.io.Serializable;
 
 /**
  * Specifies document's version in document retrieving API.
@@ -19,7 +20,7 @@ import com.imcode.imcms.mapping.DocumentGetter;
  * @see MetaDao
  * @see DocumentVersionTag
  */
-public class DocumentVersionSelector {
+public class DocumentVersionSelector implements Serializable {
 	
 	/**
 	 * Predefined publish document selector.

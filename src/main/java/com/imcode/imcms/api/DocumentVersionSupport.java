@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,7 @@ import java.util.TreeMap;
 /**
  * Provides document version support.
  */
-public class DocumentVersionSupport {
+public class DocumentVersionSupport implements Serializable {
 	
 	/**
 	 * Document id. 

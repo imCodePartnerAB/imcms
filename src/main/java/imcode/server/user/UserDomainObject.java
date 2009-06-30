@@ -59,7 +59,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     protected RoleIds userAdminRoleIds = new RoleIds();
     
     /**
-     * Document show mode.
+     * Document show mode.DocumentShowSettings
      */
     private DocumentShowSettings documentShowSettings = new DocumentShowSettings();        
 

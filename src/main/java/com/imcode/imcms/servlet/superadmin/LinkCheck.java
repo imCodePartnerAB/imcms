@@ -48,6 +48,7 @@ import org.apache.oro.text.perl.Perl5Util;
 import org.apache.oro.text.regex.PatternMatcherInput;
 
 import com.imcode.imcms.mapping.DocumentMapper;
+import org.apache.lucene.search.BooleanClause.Occur;
 
 public class LinkCheck extends HttpServlet {
 
@@ -209,9 +210,9 @@ public class LinkCheck extends HttpServlet {
     private void addTextAndImageLinks( List links, DocumentIndex reindexingIndex, UserDomainObject user,
                                        HttpServletRequest request, IntRange range ) {
         BooleanQuery query = new BooleanQuery();
-        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "http" ) ), false, false );
-        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "href" ) ), false, false );
-        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__IMAGE_LINK_URL, "http" ) ), false, false );
+        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "http" ) ), Occur.SHOULD );
+        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "href" ) ), Occur.SHOULD );
+        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__IMAGE_LINK_URL, "http" ) ), Occur.SHOULD );
 
         List textDocuments = reindexingIndex.search( new SimpleDocumentQuery(query), user );
 

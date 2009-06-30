@@ -24,22 +24,25 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 
 import com.imcode.imcms.mapping.DocumentGetter;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.util.HumanReadable;
+import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.TopDocs;
 
 class DefaultDirectoryIndex implements DirectoryIndex {
 
     private final static Logger log = Logger.getLogger( DefaultDirectoryIndex.class.getName() );
-    private final static int INDEXING_LOG_PERIOD__MILLISECONDS = DateUtils.MILLIS_IN_MINUTE ;
+    private final static int INDEXING_LOG_PERIOD__MILLISECONDS = (int) DateUtils.MILLIS_PER_MINUTE ;
 
     private final File directory;
     private final IndexDocumentFactory indexDocumentFactory;
 
     private boolean inconsistent;
+
+    private static final int NUM_HITS = 50;
 
     static {
         // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow or memoryconsuming queries?
@@ -54,12 +57,20 @@ class DefaultDirectoryIndex implements DirectoryIndex {
     public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         try {
             IndexSearcher indexSearcher = new IndexSearcher( directory.toString() );
+                 
             try {
                 StopWatch searchStopWatch = new StopWatch();
                 searchStopWatch.start();
-                Hits hits = indexSearcher.search( query.getQuery(), query.getSort() );
+
+                TopDocs topDocs = null;
+                if (query.getSort() != null) {
+                    topDocs = indexSearcher.search(query.getQuery(), null, NUM_HITS, query.getSort());
+                } else {
+                    topDocs = indexSearcher.search(query.getQuery(), NUM_HITS);
+                }
+                
                 long searchTime = searchStopWatch.getTime();
-                List<DocumentDomainObject> documentList = getDocumentListForHits( hits, searchingUser );
+                List<DocumentDomainObject> documentList = getDocumentListForHits(topDocs, indexSearcher, searchingUser );
                 if (log.isDebugEnabled()) {
                     log.debug( "Search for " + query.getQuery().toString() + ": " + searchTime + "ms. Total: "
                            + searchStopWatch.getTime()
@@ -82,9 +93,9 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         }
     }
 
-    private List<DocumentDomainObject> getDocumentListForHits( final Hits hits, final UserDomainObject searchingUser ) {
+    private List<DocumentDomainObject> getDocumentListForHits( final TopDocs topDocs, Searcher searcher, final UserDomainObject searchingUser ) {
         DocumentGetter documentGetter = Imcms.getServices().getDocumentMapper().getDocumentGetter();
-        List<Integer> documentIds = new DocumentIdHitsList(hits) ;
+        List<Integer> documentIds = new DocumentIdHitsList(topDocs, searcher) ;
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         List<DocumentDomainObject> documentList = documentGetter.getDocuments(documentIds) ;
@@ -92,7 +103,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         if (log.isDebugEnabled()) {
             log.debug("Got "+documentList.size()+" documents in "+stopWatch.getTime()+"ms.");
         }
-        if (documentList.size() != hits.length()) {
+        if (documentList.size() != topDocs.totalHits) {
             inconsistent = true ;
         }
         CollectionUtils.filter(documentList, new Predicate() {
@@ -117,7 +128,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         try {
             IndexReader indexReader = IndexReader.open( directory );
             try {
-                indexReader.delete( new Term( "meta_id", "" + document.getId() ) );
+                indexReader.deleteDocuments(new Term( "meta_id", "" + document.getId() ) );
             } finally {
                 indexReader.close();
             }
@@ -136,7 +147,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     private IndexWriter createIndexWriter( boolean createIndex ) throws IOException {
-        return new IndexWriter( directory, new AnalyzerImpl(), createIndex );
+        return new IndexWriter( directory, new AnalyzerImpl(), createIndex, IndexWriter.MaxFieldLength.UNLIMITED );
     }
 
     private void indexAllDocuments() throws IOException {
@@ -238,22 +249,24 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
     private static class DocumentIdHitsList extends AbstractList<Integer> {
 
-        private final Hits hits;
+        private final TopDocs topDocs;
+        private final Searcher searcher;
 
-        DocumentIdHitsList(Hits hits) {
-            this.hits = hits;
+        DocumentIdHitsList(TopDocs topDocs, Searcher searcher) {
+            this.topDocs = topDocs;
+            this.searcher = searcher;
         }
 
         public Integer get(int index) {
             try {
-                return Integer.valueOf( hits.doc(index).get(DocumentIndex.FIELD__META_ID) ) ;
+                return new Integer( searcher.doc(topDocs.scoreDocs[index].doc ).get( DocumentIndex.FIELD__META_ID ) );
             } catch ( IOException e ) {
                 throw new IndexException(e);
             }
         }
 
         public int size() {
-            return hits.length() ;
+            return topDocs.totalHits ;
         }
     }
 }

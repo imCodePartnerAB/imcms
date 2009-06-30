@@ -61,8 +61,8 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
             BooleanQuery booleanQuery = (BooleanQuery) query ;
             BooleanClause[] clauses = booleanQuery.getClauses();
             for ( BooleanClause clause : clauses ) {
-                if (!clause.prohibited) {
-                    getTerms(clause.query, terms);
+                if (clause.getOccur() != BooleanClause.Occur.MUST_NOT) {
+                    getTerms(clause.getQuery(), terms);
                 }
             }
         } else if ( query instanceof TermQuery ) {
@@ -83,8 +83,8 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
             DocumentIndex.FIELD__TEXT,
             DocumentIndex.FIELD__ALIAS,
             DocumentIndex.FIELD__KEYWORD,
-    } )); 
-    
+    } ));
+
     private void addTerm(Collection<String> terms, Term term) {
         if (LOGGED_FIELDS.contains(term.field())) {
             terms.add(term.text());

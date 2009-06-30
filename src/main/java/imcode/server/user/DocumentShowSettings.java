@@ -1,14 +1,14 @@
 package imcode.server.user;
 
 import com.imcode.imcms.api.DocumentVersionSelector;
+import java.io.Serializable;
 
 /**
  * User's document show settings.
  * 
  * Settings specifies how document should be showed (displayed) for an user.
  */
-public class DocumentShowSettings {
-		
+public class DocumentShowSettings implements Cloneable, Serializable {
 	/** 
 	 * When set to true then Meta.getI18nShowMode value is not taken into account.
 	 *  
