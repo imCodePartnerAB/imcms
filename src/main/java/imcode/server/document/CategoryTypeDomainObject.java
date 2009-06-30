@@ -17,7 +17,7 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="category_type_id")	
-    private int id;
+    private Integer id;
 	
 	@Column(name="name")
     private String name ;
@@ -38,7 +38,7 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
     }
 
     public int getId() {
-        return id;
+        return id == null ? 0 : id;
     }
 
     public String getName() {

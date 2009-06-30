@@ -26,13 +26,14 @@ public class CategoryMapper extends HibernateTemplate {
                                                        + " WHERE meta_id ";
 	*/
     
-
+    @Transactional
     public CategoryDomainObject[] getAllCategoriesOfType(CategoryTypeDomainObject categoryType) {
     	List<CategoryDomainObject> list = findByNamedQuery("Category.getByType", categoryType);
     	
     	return list.toArray(new CategoryDomainObject[] {});
     }
 
+    @Transactional
     public boolean isUniqueCategoryTypeName(String categoryTypeName) {
         CategoryTypeDomainObject[] categoryTypes = getAllCategoryTypes();
         for (int i = 0; i < categoryTypes.length; i++) {
@@ -44,6 +45,7 @@ public class CategoryMapper extends HibernateTemplate {
         return true;
     }
 
+    @Transactional
     public CategoryTypeDomainObject[] getAllCategoryTypes() {
     	List<CategoryTypeDomainObject> types = 
     		(List<CategoryTypeDomainObject>)getSession().getNamedQuery("CategoryType.getAllTypes")
@@ -52,6 +54,7 @@ public class CategoryMapper extends HibernateTemplate {
     	return types.toArray(new CategoryTypeDomainObject[] {});
     }
 
+    @Transactional
     public CategoryDomainObject getCategoryByTypeAndName(CategoryTypeDomainObject categoryType, String categoryName) {
     	return (CategoryDomainObject)getSession().getNamedQuery("Category.getByNameAndType")
     		.setParameter("name", categoryName)
@@ -59,6 +62,7 @@ public class CategoryMapper extends HibernateTemplate {
     		.uniqueResult();
     }
 
+    @Transactional
     public CategoryDomainObject getCategoryById( int categoryId ) {
     	return (CategoryDomainObject)get(CategoryDomainObject.class, categoryId);
     }
@@ -75,6 +79,7 @@ public class CategoryMapper extends HibernateTemplate {
     	return (CategoryTypeDomainObject)get(CategoryTypeDomainObject.class, categoryTypeId);
     }
 
+    @Transactional
     public void deleteCategoryTypeFromDb(CategoryTypeDomainObject categoryType) {
         String sqlstr = "delete from category_types where category_type_id = ?";
         
@@ -84,15 +89,8 @@ public class CategoryMapper extends HibernateTemplate {
 
     @Transactional
     public CategoryTypeDomainObject addCategoryTypeToDb(final CategoryTypeDomainObject categoryType) {
-        return (CategoryTypeDomainObject)save(categoryType);
-    }
-
-    private Object[][] getColumnNamesAndValuesForCategoryType(CategoryTypeDomainObject categoryType) {
-        return new Object[][] {
-                { "name", categoryType.getName() },
-                { "max_choices", new Integer(categoryType.getMaxChoices()) },
-                { "inherited", new Integer(categoryType.isInherited() ? 1 : 0) },
-        };
+        save(categoryType);
+        return categoryType;
     }
 
     @Transactional
@@ -102,16 +100,8 @@ public class CategoryMapper extends HibernateTemplate {
 
     @Transactional
     public CategoryDomainObject addCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
-        return (CategoryDomainObject)save(category);
-    }
-
-    private Object[][] getColumnNamesAndValuesForCategory(CategoryDomainObject category) {
-        return new Object[][] {
-                { "category_type_id", new Integer(category.getType().getId()) },
-                { "name", category.getName() },
-                { "description", category.getDescription() },
-                { "image", category.getImageUrl() }
-        };
+        save(category);
+        return category;
     }
 
     @Transactional
@@ -151,6 +141,7 @@ public class CategoryMapper extends HibernateTemplate {
     		.executeUpdate();
     }
 
+    @Transactional
     void checkMaxDocumentCategoriesOfType(DocumentDomainObject document)
             throws MaxCategoryDomainObjectsOfTypeExceededException {
         CategoryTypeDomainObject[] categoryTypes = getAllCategoryTypes();
@@ -167,6 +158,7 @@ public class CategoryMapper extends HibernateTemplate {
         }
     }
 
+    @Transactional
     public void saveCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
         if (0 == category.getId()) {
             CategoryDomainObject categoryInDb = getCategoryByTypeAndName(category.getType(), category.getName());
@@ -182,6 +174,7 @@ public class CategoryMapper extends HibernateTemplate {
         }
     }
 
+    @Transactional
     public Set<CategoryDomainObject> getCategories(Collection<Integer> categoryIds) {
         Set<CategoryDomainObject> categories = new HashSet<CategoryDomainObject>() ;
         
@@ -195,6 +188,7 @@ public class CategoryMapper extends HibernateTemplate {
         return categories;
     }
 
+    @Transactional    
     public Set<CategoryDomainObject> getCategoriesOfType(CategoryTypeDomainObject categoryType, Set<Integer> categoryIds) {
         Set<CategoryDomainObject> categories = getCategories(categoryIds) ;
         Set<CategoryDomainObject> categoriesOfType = new HashSet<CategoryDomainObject>();

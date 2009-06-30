@@ -34,6 +34,7 @@
         <mapping resource="DocumentProperty.hbm.xml"/>
         <mapping resource="ContentLoop.hbm.xml"/>
         <mapping resource="Text.hbm.xml"/>
+        <mapping resource="Category.hbm.xml"/>
     </session-factory>
     
 </hibernate-configuration>
