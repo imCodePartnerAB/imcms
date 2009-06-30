@@ -12,7 +12,7 @@
   
   <query name="Meta.getDocumentIdsInRange">
     <![CDATA[
-    SELECT m.id FORM Meta m 
+    SELECT m.id FROM Meta m 
     WHERE m.id 
     BETWEEN :min AND :max 
     ORDER BY m.id

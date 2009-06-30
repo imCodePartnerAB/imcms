@@ -30,6 +30,7 @@
         
         <!-- Named queries -->
         <mapping resource="DocumentVersion.hbm.xml"/>
+        <mapping resource="DocumentMeta.hbm.xml"/>
         <mapping resource="I18nLanguage.hbm.xml"/>
         <mapping resource="DocumentProperty.hbm.xml"/>
         <mapping resource="ContentLoop.hbm.xml"/>
