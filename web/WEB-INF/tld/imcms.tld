@@ -310,5 +310,22 @@
             <scope>AT_BEGIN</scope>
         </variable>
     </tag>
+    
+    <tag-file>
+        <name>statusIcon</name>
+        <path>/WEB-INF/tags/imcms/ui/statusIcon.tag</path>
+    </tag-file>
+    
+    <function>
+        <name>canEditDocument</name>
+        <function-class>com.imcode.imcms.web.tag.Functions</function-class>
+        <function-signature>boolean canEditDocument(imcode.server.document.DocumentDomainObject, javax.servlet.jsp.PageContext)</function-signature>
+    </function>
+    
+    <function>
+        <name>canEditDocumentInformation</name>
+        <function-class>com.imcode.imcms.web.tag.Functions</function-class>
+        <function-signature>boolean canEditDocumentInformation(imcode.server.document.DocumentDomainObject, javax.servlet.jsp.PageContext)</function-signature>
+    </function>
 
 </taglib>

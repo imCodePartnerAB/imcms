@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
@@ -186,6 +187,12 @@ public class CategoryMapper extends HibernateTemplate {
         }
         
         return categories;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+    public List<CategoryDomainObject> getAllCategories() {
+        return getSession().getNamedQuery("Category.getAll").list();
     }
 
     @Transactional    

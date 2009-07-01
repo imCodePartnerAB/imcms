@@ -26,5 +26,11 @@
     <![CDATA[
     SELECT c FROM Category c WHERE c.name = :name AND c.type = :type
     ]]>  
-  </query>   
+  </query>
+  
+  <query name="Category.getAll">
+    <![CDATA[
+    FROM Category c ORDER BY c.type.name ASC, c.name ASC
+    ]]>
+  </query>
 </hibernate-mapping>

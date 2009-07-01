@@ -30,7 +30,7 @@ public class NativeQueriesDao extends HibernateTemplate {
 	}
 	
 	@Transactional
-    public List<String[]> getParentDocumentAndMenuIdsForDocument(Integer documentId) {
+    public List<Object[]> getParentDocumentAndMenuIdsForDocument(Integer documentId) {
         String sqlStr = "SELECT meta_id,menu_index FROM childs, menus WHERE menus.menu_id = childs.menu_id AND to_meta_id = ?";
         
 	     return getSession().createSQLQuery(sqlStr)

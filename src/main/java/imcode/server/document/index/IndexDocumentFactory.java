@@ -4,6 +4,8 @@ import imcode.server.Imcms;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
+import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings.Mapping;
 import imcode.util.DateConstants;
 
 import java.text.DateFormat;
@@ -15,20 +17,20 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.NumberTools;
 
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
-import org.apache.lucene.document.DateTools;
 
 /**
  * Create lucene index from document's fields.
  */
 public class IndexDocumentFactory {
-
     private CategoryMapper categoryMapper;
     private final static Logger log = Logger.getLogger(IndexDocumentFactory.class.getName());
 
@@ -46,6 +48,12 @@ public class IndexDocumentFactory {
 
         int documentId = document.getId();
         indexDocument.add(new Field(DocumentIndex.FIELD__META_ID, "" + documentId, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, NumberTools.longToString(documentId) ) );
+        
+        RoleIdToDocumentPermissionSetTypeMappings roleIdMappings = document.getRoleIdsMappedToDocumentPermissionSetTypes();
+        for (Mapping mapping : roleIdMappings.getMappings()) {
+            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__ROLE_ID, Integer.toString(mapping.getRoleId().intValue())) );
+        }
 
         List<I18nLanguage> languages = I18nSupport.getLanguages();
 
@@ -104,13 +112,17 @@ public class IndexDocumentFactory {
             }
         }
 
-        String[][] parentDocumentAndMenuIds = documentMapper.getParentDocumentAndMenuIdsForDocument(document);
-        for (int i = 0; i < parentDocumentAndMenuIds.length; i++) {
-            String parentId = parentDocumentAndMenuIds[i][0];
-            String menuId = parentDocumentAndMenuIds[i][1];
-            indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__PARENT_ID, parentId));
+        List<Integer[]> parentDocumentAndMenuIds = documentMapper.getParentDocumentAndMenuIdsForDocument(document);
+        for (Integer[] pair : parentDocumentAndMenuIds) {
+            Integer parentId = pair[0];
+            Integer menuId = pair[1];
+            
+            indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__PARENT_ID, parentId.toString()));
             indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__PARENT_MENU_ID, parentId + "_" + menuId));
         }
+        
+        boolean hasParents = !parentDocumentAndMenuIds.isEmpty();
+        indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__HAS_PARENTS, Boolean.toString(hasParents) ) );
 
         if (document.getAlias() != null) {
             indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__ALIAS, document.getAlias()));
@@ -145,4 +157,5 @@ public class IndexDocumentFactory {
     private static Field unStoredKeyword(String fieldName, Date fieldValue) {
         return new Field(fieldName, DateTools.dateToString(fieldValue, DateTools.Resolution.MINUTE), Field.Store.NO, Field.Index.ANALYZED, Field.TermVector.NO);
     }
+    
 }

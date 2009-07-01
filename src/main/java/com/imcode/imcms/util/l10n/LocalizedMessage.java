@@ -44,6 +44,10 @@ public class LocalizedMessage implements Serializable {
         }
         return StringUtils.defaultString(localProvider.getResourceBundle(languageIso639_2).getString(languageKey));
     }
+    
+    public String getLanguageKey() {
+		return languageKey;
+	}
 
     public boolean equals(Object o) {
         if ( this == o ) {

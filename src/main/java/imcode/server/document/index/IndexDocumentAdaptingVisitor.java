@@ -49,11 +49,15 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
 	        }
         }
 
+        boolean hasChildren = false;
         for ( MenuDomainObject menu : textDocument.getMenus().values() ) {
             for ( MenuItemDomainObject menuItem : menu.getMenuItems() ) {
+                hasChildren = true;
                 indexDocument.add(new Field(DocumentIndex.FIELD__CHILD_ID, ""+menuItem.getDocumentId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
             }
         }
+        
+        indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__HAS_CHILDREN, Boolean.toString(hasChildren)));
 
         for (I18nLanguage language: languages) {
 	        for ( ImageDomainObject image : textDocument.getImages(language).values() ) {

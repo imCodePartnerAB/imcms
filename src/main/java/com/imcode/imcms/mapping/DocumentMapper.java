@@ -24,7 +24,9 @@ import imcode.util.io.FileUtility;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.sql.SQLException;
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,7 +45,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.oro.text.perl.Perl5Util;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.api.Document;
@@ -343,16 +349,21 @@ public class DocumentMapper implements DocumentGetter {
         return documentIndex;
     }
 
-    public String[][] getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
-    	List<String[]> listOfPairs = nativeQueriesDao.getParentDocumentAndMenuIdsForDocument(document.getId());
-    	
-    	String[][] result = new String[listOfPairs.size()][]; 
-    	
-    	for (int i = 0; i < result.length; i++) {
-    		result[i] = listOfPairs.get(i);
-    	}
-    	
-    	return result;
+    public List<Integer[]> getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
+        List<Object[]> tuples = nativeQueriesDao.getParentDocumentAndMenuIdsForDocument(document.getId());
+        
+        List<Integer[]> result = new ArrayList<Integer[]>(tuples.size());
+        
+        for (Object[] tuple : tuples) {
+            Integer[] pair = new Integer[] {
+                (Integer) tuple[0], 
+                (Integer) tuple[1]
+            };
+            
+            result.add(pair);
+        }
+        
+        return result;
     }
 
     public String[][] getAllMimeTypesWithDescriptions(UserDomainObject user) {
@@ -422,6 +433,12 @@ public class DocumentMapper implements DocumentGetter {
     	
     	// Optimize
     	return ArrayUtils.toPrimitive(ids.toArray(new Integer[] {}));
+    }
+    
+    public IntRange getDocumentIdRange() {
+        Integer[] minMaxPair = documentSaver.getMetaDao().getMinMaxDocumentIds();
+        
+        return new IntRange(minMaxPair[0], minMaxPair[1]);
     }
 
     // TODO: refactor

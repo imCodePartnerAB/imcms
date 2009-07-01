@@ -8,7 +8,7 @@ import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 
-class AnalyzerImpl extends Analyzer {
+public class AnalyzerImpl extends Analyzer {
 
     public TokenStream tokenStream( String fieldName, Reader reader ) {
         Tokenizer tokenizer;

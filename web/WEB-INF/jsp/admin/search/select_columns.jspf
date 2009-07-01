@@ -1,0 +1,33 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<tr>
+    <td>
+        <label for="${id}">${leftColumnTitle}</label><br/>
+        <select id="${id}" multiple="multiple" size="10" style="width:200px;">
+            <c:forEach var="pair" items="${notSelectedPairs}">
+                <option value="${pair.value}" title="${fn:escapeXml(pair.name)}">
+                    <c:out value="${pair.name}"/>
+                </option>
+            </c:forEach>
+        </select>
+    </td>
+    <td align="center" width="70">
+        <input type="button" id="add_${id}" value="&raquo;" class="imcmsFormBtn" style="width:30px;"/><br/><br/>
+        <input type="button" id="remove_${id}" value="&laquo;" class="imcmsFormBtn" style="width:30px;"/>
+    </td>
+    <td>
+        <label for="search_${id}">${rightColumnTitle}</label><br/>
+        <select id="search_${id}" multiple="multiple" size="10" style="width:200px;">
+            <c:forEach var="pair" items="${selectedPairs}">
+                <option value="${pair.value}" title="${fn:escapeXml(pair.name)}">
+                    <c:out value="${pair.name}"/>
+                </option>
+            </c:forEach>
+        </select>
+
+        <c:forEach var="pair" items="${selectedPairs}">
+            <input type="hidden" id="${id}_${pair.value}" name="${id}" value="${pair.value}"/>
+        </c:forEach>
+    </td>
+</tr>

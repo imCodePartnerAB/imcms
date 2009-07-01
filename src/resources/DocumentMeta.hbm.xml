@@ -29,5 +29,11 @@
     <![CDATA[
     SELECT min(m.id) FROM Meta m
     ]]>  
+  </query>
+  
+  <query name="Meta.getMinMaxDocumentIds">
+    <![CDATA[
+    SELECT min(m.id), max(m.id) FROM Meta m
+    ]]>
   </query>     
 </hibernate-mapping>

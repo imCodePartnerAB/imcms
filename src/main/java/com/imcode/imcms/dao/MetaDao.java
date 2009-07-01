@@ -445,5 +445,16 @@ public class MetaDao extends HibernateTemplate {
 	public Integer getMinDocumentId() {
 		return (Integer)getSession().getNamedQuery("Meta.getMinDocumentId")
 			.uniqueResult();
-	}	
+	}
+	
+	@Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+	public Integer[] getMinMaxDocumentIds() {
+	    Object[] tuple = (Object[]) getSession().getNamedQuery("Meta.getMinMaxDocumentIds")
+	        .uniqueResult();
+	    
+	    return new Integer[] {
+	            (Integer) tuple[0], 
+	            (Integer) tuple[1]
+	    };
+	}
 }
