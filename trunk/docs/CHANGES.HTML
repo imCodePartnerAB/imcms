@@ -1,0 +1,3949 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>
+                    Changes in imCMS
+                 </title>
+<link rel="stylesheet" href="changes.css">
+</head>
+<body>
+<h1>
+        Changes in version 4.0.0</h1>
+<h2>Of
+            <span class="important">importance</span>
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_6836"></a>
+<p>Add a text history restorer feature (version control of text fields).
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6836">Issue 6836</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6791"></a>
+<p> Add time-out warning in text-editing GUI.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6791">Issue 6791</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4596"></a>
+<p>
+                The HTMLArea text field editor is no longer supported and has been replaced with Xinha.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4596">Issue 4596</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            <span class="important">importance</span>
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_206"></a>
+<p>imCMS now automatically upgrades the database on startup.
+                When upgrading from version 3.0 or later, no manual running of SQL scripts is required.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=206">Issue 206</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4491"></a><a name="issue_4593"></a>
+<p>The default character encoding has been changed from windows-1252 to UTF-8. 
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4491">Issue 4491</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4593">Issue 4593</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            <span class="important">importance</span>
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<a name="issue_4259"></a>
+<p>Remove permission check when saving document.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4259">Issue 4259</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_6487"></a>
+<p>Add more options for insert link in Xinha editor.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6487">Issue 6487</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6572"></a>
+<p>Xinha, insert link. Internal link should go to alias, if existing.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6572">Issue 6572</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6733"></a>
+<p>Increased max length of words in "Search keywords".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6733">Issue 6733</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6838"></a>
+<p>Improved security and speed when saving a document.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6838">Issue 6838</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6638"></a>
+<p>Increase width for treekey-field in menu administration.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6638">Issue 6638</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6489"></a>
+<p>Remove the charcount-addon to Xinha since it slows down IE.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6489">Issue 6489</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6851"></a>
+<p>Made it possible to remove a role added to a LDAP-user. 
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6851">Issue 6851</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6828"></a><a name="issue_6822"></a>
+<p>Add medium and strong filters (for Word and HTML-code) in Xinha.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6828">Issue 6828</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6822">Issue 6822</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6821"></a>
+<p>Changed HTML to Editor/HTML in text-editing GUI.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6821">Issue 6821</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6287"></a>
+<p>Fixed problem that adminbuttons disappear when hovered in IE
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6287">Issue 6287</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4677"></a>
+<p>
+                Fixed a crash when trying to add a link to a document that doesn't exist.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4677">Issue 4677</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3437"></a>
+<p>
+                Created new "dual list" user interface for setting document categories.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3437">Issue 3437</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2939"></a><a name="issue_4605"></a>
+<p>
+                Created a new user interface for editing menus.
+                Menus are now edited on a separate page from the containing text document. 
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2939">Issue 2939</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4605">Issue 4605</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2155"></a>
+<p>
+                Menus can now be sorted in order of published datetime.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2155">Issue 2155</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4636"></a>
+<p>
+                The "Edit permissions for new documents" was wrongly displayed for non-text documents.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4636">Issue 4636</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_6586"></a>
+<p>Made it possible to prevent multiple user sessions.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6586">Issue 6586</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6350"></a>
+<p>Skip UnicodeUpgrade for non-imCMS tables.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6350">Issue 6350</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6196"></a>
+<p>Properly report cause of exceptions.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6196">Issue 6196</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6251"></a>
+<p>Remove invalid template group assignments.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6251">Issue 6251</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6282"></a>
+<p>Store calendar language file as UTF-8.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6282">Issue 6282</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6541"></a>
+<p>Change so that admin language for new users are set by DefaultLanguage.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6541">Issue 6541</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6247"></a>
+<p>Implemented "profiles" in My Pages for connecting meta-id for parent doc with a name (profile) instead, when creating new documents.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6247">Issue 6247</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6132"></a>
+<p>Properly close PDF document after use.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6132">Issue 6132</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6825"></a>
+<p>Added secondary LDAP support.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6825">Issue 6825</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4724"></a>
+<p>
+                The template administration user interface would crash if demo template directory was missing.
+                It will now be created if needed.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4724">Issue 4724</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4595"></a>
+<p>
+                Use english language error page if no user language is available.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4595">Issue 4595</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4687"></a>
+<p>
+                The maximum length for a category name was changed from 50 characters to 128.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4687">Issue 4687</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<a name="issue_6284"></a>
+<p>Make sure JSP menu tag shows the same menu items that the old menu parser does.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6284">Issue 6284</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_5708"></a>
+<p>Add RSS-support to Lists in imCMS.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=5708">Issue 5708</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6131"></a>
+<p>Made it possible to search for documents by child_id.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6131">Issue 6131</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6130"></a>
+<p>Made it possible to set and get the format of a TextField.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6130">Issue 6130</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6099"></a>
+<p>Made it possible to search for text documents by template.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6099">Issue 6099</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_6348"></a>
+<p>Present search result in order of relevans.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=6348">Issue 6348</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4712"></a>
+<p>
+                Added API method <span class="method">Image.toHtmlTag()</span> for 
+                generating the html tag for an <span class="class">Image</span>. 
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4712">Issue 4712</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4623"></a>
+<p>
+                Added 
+        "<span class="attr">title</span>"
+     attribute to <span class="tag">&lt;img&gt;</span>
+                with the same content as the 
+        "<span class="attr">alt</span>"
+     attribute.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4623">Issue 4623</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4579"></a>
+<p>
+                Removed non-XHTML compatible 
+        "<span class="attr">border</span>"
+     attribute from <span class="tag">&lt;img&gt;</span>,
+                instead passing through 
+        "<span class="attr">style</span>"
+    , 
+        "<span class="attr">class</span>"
+    , and 
+        "<span class="attr">usemap</span>"
+     attributes
+                from the <span class="tag">&lt;imcms:image&gt;</span> in the template.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4579">Issue 4579</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4581"></a>
+<p>
+                Line breaks in text fields now generate <span class="tag">"&lt;br /&gt;"</span> instead of <span class="tag">"&lt;BR&gt;"</span>,
+                providing XHTML compatibility.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4581">Issue 4581</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4553"></a>
+<p>
+<span class="method">UserService.saveUser(User)</span> did not respect the UserAdmin role.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4553">Issue 4553</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 3.2.0</h1>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_2155"></a>
+<p>
+                Added "by published datetime" sorting to menus.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2155">Issue 2155</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4500"></a>
+<p>
+                Fixed "NullPointerException in FrequencyOrderedBag" crash.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4500">Issue 4500</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4498"></a>
+<p>
+                Fixed crash caused by menuitems not being properly removed
+                when deleting a document.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4498">Issue 4498</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4800"></a>
+<p>
+                Fixed crash caused by documents not being removed from the cache
+                when their template was deleted.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4800">Issue 4800</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_4833"></a>
+<p>
+                Fixed image preview in the file administrator. 
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4833">Issue 4833</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<a name="issue_4412"></a>
+<p>
+                Added capability to send HTML mail.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4412">Issue 4412</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4412"></a>
+<p>
+                Mails now use UTF-8 encoding.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4412">Issue 4412</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4505"></a>
+<p>
+                Fixed a typo in <a class="localfile" href="TEMPLATE_SYNTAX.TXT">TEMPLATE_SYNTAX.TXT</a>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4505">Issue 4505</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4553"></a>
+<p>
+                Fixed a bug preventing users with the UserAdmin role
+                from editing users through the API.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4553">Issue 4553</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4804"></a>
+<p>
+                Fixed a bug making it impossible to change sort keys for menu items
+                through the API.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4804">Issue 4804</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            developers</h2>
+<ul>
+<li class="change">
+<a name="issue_4506"></a>
+<p>
+                Made the error page output less redundant by only displaying one stack trace.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4506">Issue 4506</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 3.1.2</h1>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_4380"></a>
+<p>
+                Fixed bug that made it impossible to create new documents if there was a category-type defined.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4380">Issue 4380</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4385"></a>
+<p>
+                Made option "linked for unauthorized users" work in searches as well as in menus.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4385">Issue 4385</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4401"></a>
+<p>
+                Fixed bug that caused template ids not to be cloned when cloning text documents.
+                This means that for example changing the template for a newly created text document
+                also changes the template of the parent in the cache.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4401">Issue 4401</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<a name="issue_4415"></a>
+<p>
+                Fixed error when running api example "<span class="path">document_search.jsp</span>"
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4415">Issue 4415</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4352"></a>
+<p>
+                Fixed bug that excluded documents without a valid archived datetime from search result.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4352">Issue 4352</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4386"></a>
+<p>
+                Made the list returned by <span class="method">DocumentService.getDocuments(SearchQuery)</span> modifiable.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4386">Issue 4386</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4415"></a>
+<p>
+                Fixed bug when trying to sort search result on "meta_headline".
+                Added new non-tokenized field "meta_headline_keyword" to use for sorting on
+                document headlines.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4415">Issue 4415</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            developers</h2>
+<ul>
+<li class="change">
+<a name="issue_4389"></a>
+<p>
+                Upgrade imcode-db to version 0.3.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4389">Issue 4389</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 3.1.1</h1>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_4305"></a>
+<p>
+                Fixed missing version number in help links.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4305">Issue 4305</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4313"></a>
+<p>
+                Fixed a bug which prevented sort keys for menuitems from being saved.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4313">Issue 4313</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 3.1.0</h1>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_1855"></a>
+<p>
+                You can now search in PDF files, as well as in Microsoft Word, Excel, and Powerpoint files. 
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=1855">Issue 1855</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4135"></a>
+<p>
+                Performance has been improved, so searching for documents should be much faster.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4135">Issue 4135</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2926"></a>
+<p>
+                Fixed a NullPointerException when browsing search result, for example when searching for images.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2926">Issue 2926</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4148"></a>
+<p>
+                Fixed a problem with image filenames containing spaces.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4148">Issue 4148</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4212"></a>
+<p>
+                Fixed an exception when entering an invalid text document id for an include.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4212">Issue 4212</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4092"></a>
+<p>
+                Fixed a bug where menus would cache their documents,
+                so changes to documents would not be visible in menus immediately.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4092">Issue 4092</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_4140"></a><a name="issue_4142"></a>
+<p>
+                You can now search for users by role, title, company, and email address.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4140">Issue 4140</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4142">Issue 4142</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4235"></a>
+<p>
+                Made sure that temporary upload files are removed in a timely manner.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4235">Issue 4235</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4117"></a>
+<p>
+                Fixed a bug where a superadmin which was also useradmin couldn't edit all roles for a user.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4117">Issue 4117</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4278"></a>
+<p>
+                Fixed a bug where the file manager would fail to change directories if the webapp
+                was situated in a symlinked path.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4278">Issue 4278</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            developers</h2>
+<ul>
+<li class="change">
+<a name="issue_4135"></a>
+<p>
+                Documents are now lazily loaded,
+                so as to not retrieve more from the database than is needed.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4135">Issue 4135</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_4233"></a>
+<p>
+                Removed the unused <span class="config">addon</span> property from <span class="path">build.properties.template</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=4233">Issue 4233</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 3.0.1</h1>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_3646"></a>
+<p>
+                Image-paths are URL-encoded to fix problems with image-paths containing non-ASCII characters.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3646">Issue 3646</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3773"></a>
+<p>
+                Users with "restricted 1/2" permissions on a page could not save a text document
+                if it linked to documents the user couldn't link to.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3773">Issue 3773</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3691"></a>
+<p>
+                Searches on the "phase" field of a document, such as "phase:published" or "phase:new",
+                would search based on the time that the document was indexed, not the time of the search.
+                Such queries are now rewritten on the fly to fix this.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3691">Issue 3691</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_3706"></a>
+<p>
+                If there was an error while deploying, the deploy failed completely.
+                Now the deploy succeeds, and the error appears in the browser instead.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3706">Issue 3706</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3643"></a>
+<p>
+                Fixed a problem with default values in the SQL script for MySQL 5.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3643">Issue 3643</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3681"></a>
+<p>
+                Ignore IPv6 and other non IPv4-addresses instead of choking on them.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3681">Issue 3681</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3705"></a>
+<p>
+                Added MySQL sample to <span class="path">server.properties</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3705">Issue 3705</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3707"></a>
+<p>
+                The upgrade SQL script <span class="path">diff-2-3.sql</span> did not work in some cases,
+                due to some foreign keys to the 'users' table changing name.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3707">Issue 3707</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3778"></a>
+<p>
+                The imCMS advertisement at the top of every page was not output when the <span class="tag">html</span> tag contained attributes.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3778">Issue 3778</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3860"></a>
+<p>
+                An attempt to reduce ThreadDeath errors with Tomcat has been done,
+                by providing only commons-logging-api and calling
+                <span class="method">LogFactory.releaseAll()</span> on shutdown.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3860">Issue 3860</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            developers</h2>
+<ul>
+<li class="change">
+<a name="issue_3708"></a>
+<p>
+                Source is now included for our own libraries.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3708">Issue 3708</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3914"></a>
+<p>
+                The ddlutils and commons-betwixt libraries have been updated to newer non-released versions
+                from the Apache Subversion repository, so we don't have to keep the ddlutils version patched by us.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3914">Issue 3914</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 3.0.0</h1>
+<h2>Of
+            <span class="important">importance</span>
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_3347"></a>
+<p>
+                Removed deprecated features "conference", "billboard", "chat", "shop", "poll", "qengine", "fortune".
+                Warning! If you are using these features, all data for them will be deleted in the upgrade!
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3347">Issue 3347</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_1288"></a>
+<p>
+                imCMS may now also be run on MySQL.
+                In theory it may run on any DBMS which has a JDBC 3.0 compliant driver,
+                but this has not been tested.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=1288">Issue 1288</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3537"></a>
+<p>
+                The setting <span class="config">LdapUserAttribute.CountyCouncil</span> in <span class="path">server.properties</span>
+                has been replaced by <span class="config">LdapUserAttribute.Province</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3537">Issue 3537</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            <span class="important">importance</span>
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<a name="issue_2980"></a>
+<p>
+                Many methods no longer throw <span class="class">NoPermissionException</span>,
+                notably most accessors of <span class="class">Document</span> and its subclasses.
+                Permissions are instead checked when saving the document.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2980">Issue 2980</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<p>
+                The text editor now runs the MS Word-code removal filter every time you paste.
+            </p>
+</li>
+<li class="change">
+<a name="issue_3385"></a>
+<p>
+                Linking a document for which you had no permissions was impossible
+                regardless of whether the document was "linkableByOtherUsers".
+            </p>
+<p>
+                This has been worked around so that you can add a document by entering its id,
+                if a search for that id doesn't match another document.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3385">Issue 3385</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3469"></a>
+<p>
+                The reset button in the text editor did not work.                
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3469">Issue 3469</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3468"></a>
+<p>
+                Removed broken undo/redo support in the text editor until properly supported by upstream.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3468">Issue 3468</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3442"></a>
+<p>
+                Integrated jsCalendar (<a class="url" href="http://www.dynarch.com/projects/calendar/">http://www.dynarch.com/projects/calendar/</a>) for selecting datetimes.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3442">Issue 3442</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3409"></a>
+<p>
+                If a user with "restricted 1" or "restricted 2" permissions created a document,
+                the default "default template" was ignored.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3409">Issue 3409</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2975"></a>
+<p>
+                Added a new default tab "Create new" to "My pages",
+                which doesn't list documents, but allows creating new documents.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2975">Issue 2975</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3094"></a>
+<p>
+                The text editor ctrl-key combinations would ignore the alt-key.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3094">Issue 3094</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2924"></a>
+<p>
+                A non-numeric prefix in a tree menu sort key would cause an exception.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2924">Issue 2924</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2992"></a>
+<p>
+                Copying a document did not copy its menus.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2992">Issue 2992</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3526"></a>
+<p>
+                If a category type was changed it would not affect editing cached documents.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3526">Issue 3526</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_3519"></a>
+<p>
+                Accessing <span class="path">/servlet/Version</span> now 
+                prints the versions of java, the servlet container, and the database along with the imCMS version.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3519">Issue 3519</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3509"></a>
+<p>
+                It was impossible to delete some directories in the file manager.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3509">Issue 3509</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3511"></a>
+<p>
+                Disconnect from database when the webapp is shut down.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3511">Issue 3511</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3479"></a>
+<p>
+                Pressing "Add" or "Remove" when assigning templates to template groups with no templates listed
+                would throw an exception.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3479">Issue 3479</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3467"></a>
+<p>
+                Refactored <span class="path">login/access_denied.jsp</span> and <span class="path">login/no_permission.jsp</span>
+                into <span class="path">login/index.jsp</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3467">Issue 3467</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3466"></a>
+<p>
+                Renaming templates to already existing name would throw an exception.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3466">Issue 3466</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2935"></a>
+<p>
+                Allow superadmin to edit his/her own roles.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2935">Issue 2935</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3421"></a>
+<p>
+                Removed "List new/modified documents", and moved its functionality to the search form.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3421">Issue 3421</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3420"></a>
+<p>
+                If a role was removed, editing permissions for a cached document with that role would throw an exception.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3420">Issue 3420</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3150"></a>
+<p>
+                Prevent multiple users from being created with the same name.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3150">Issue 3150</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2757"></a>
+<p>
+                Users with the useradmin role could edit any user under certain conditions.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2757">Issue 2757</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3144"></a>
+<p>
+                Scheduled indexing may now be disabled by setting <span class="config">IndexingSchedulePeriodInMinutes</span>
+                in <span class="path">server.properties</span> to 
+        "<span class="value">0</span>"
+    .
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3144">Issue 3144</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3491"></a>
+<p>
+                Build index in subdirectories of <span class="path">WEB-INF/index</span> instead of in <span class="path">WEB-INF/index.new</span>. 
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3491">Issue 3491</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3155"></a>
+<p>
+                For each reload of the webapp a new background indexing thread would be started,
+                leading to multiple concurrent indexings.
+                This has been worked around so that an indexing thread terminates
+                if it notices that the index has been changed.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3155">Issue 3155</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3501"></a>
+<p>
+                Some error pages were shown as html code.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3501">Issue 3501</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2923"></a>
+<p>
+                Fixed spurious NullPointerExceptions in "LRUMap.reuseMapping()" due to unsynchronized access.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2923">Issue 2923</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3182"></a>
+<p>
+                Documents were not removed from the index when deleted.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3182">Issue 3182</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3072"></a>
+<p>
+                Increased space for system message to 1000 characters.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3072">Issue 3072</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<a name="issue_3527"></a>
+<p>
+                Added the method <span class="method">DatabaseService.getDataSource()</span>
+                for accessing the underlying DataSource.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3527">Issue 3527</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3433"></a>
+<p>
+                The login page now passes along parameters "next_meta" and "next_url",
+                either of which can be used to redirect the user after login.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3433">Issue 3433</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2930"></a><a name="issue_2931"></a><a name="issue_2932"></a>
+<p>
+                Added the following methods to <span class="class">com.imcode.imcms.api.Document</span>:
+            </p>
+<ul>
+<li>
+<span class="method">Document.getKeywords()</span>
+</li>
+<li>
+<span class="method">Document.setKeywords(Set)</span>
+</li>
+<li>
+<span class="method">Document.isLinkableByOtherUsers()</span>
+</li>
+<li>
+<span class="method">Document.setLinkableByOtherUsers(boolean)</span>
+</li>
+<li>
+<span class="method">Document.isSearchDisabled()</span>
+</li>
+<li>
+<span class="method">Document.setSearchDisabled(boolean)</span>
+</li>
+</ul>
+<p>
+                    (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2930">Issue 2930</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2931">Issue 2931</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2932">Issue 2932</a>)
+                </p>
+</li>
+<li class="change">
+<a name="issue_2927"></a>
+<p>
+                Deprecated the method <span class="method">TextDocument.MenuItem.getManualNumber()</span>,
+                and added the replacement methods <span class="method">TextDocument.MenuItem.setSortKey(Integer)</span>
+                and <span class="method">TextDocument.MenuItem.getSortKey()</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2927">Issue 2927</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2928"></a>
+<p>
+                Added method <span class="method">TextDocument.MenuItem.setTreeKey(TreeKey)</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2928">Issue 2928</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3037"></a>
+<p>
+                Deprecated methods <span class="method">Document.setStatus(int)</span> and <span class="method">Document.getStatus()</span>.
+                Added the replacement methods <span class="method">Document.setPublicationStatus(PublicationStatus)</span>
+                and <span class="method">Document.getPublicationStatus()</span> and the class <span class="class">Document.PublicationStatus</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3037">Issue 3037</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3037"></a>
+<p>
+                Deprecated methods <span class="method">Document.setPermissionSetIdForRole(Role,int)</span>
+                and <span class="method">Document.getPermissionSetIdForRole(Role)</span>.
+                Added the replacement methods <span class="method">Document.setPermissionSetTypeForRole(Role,DocumentPermissionSetType)</span>
+                and <span class="method">Document.getPermissionSetTypeForRole(Role)</span>
+                and the class <span class="class">DocumentPermissionSetType</span>.
+            </p>
+<p>
+                Deprecated method <span class="method">DocumentPermissionSet.getType()</span> with no replacement.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3037">Issue 3037</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3537"></a>
+<p>
+                Deprecated methods <span class="method">User.setCountyCouncil(String)</span>
+                and <span class="method">User.getCountyCouncil()</span>.
+                Added the replacement methods <span class="method">User.setProvince(String)</span>
+                and <span class="method">User.getProvince()</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3537">Issue 3537</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3428"></a>
+<p>
+                Added method <span class="method">DocumentService.deleteDocument(Document)</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3428">Issue 3428</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2929"></a>
+<p>
+                Added method <span class="method">UserService.getUser(int)</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2929">Issue 2929</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3012"></a>
+<p>
+                You can now set the creator of a new Document.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3012">Issue 3012</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2364"></a>
+<p>
+                Added class <span class="class">LuceneQuery</span> which allows using the Lucene API directly.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2364">Issue 2364</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3490"></a>
+<p>
+                Including a non-existent path using an include-tag would throw a <span class="class">NullPointerException</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3490">Issue 3490</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            developers</h2>
+<ul>
+<li class="change">
+<a name="issue_1288"></a><a name="issue_3436"></a>
+<p>
+                SQL DDL is now generated from XML source using Apache DdlUtils.
+            </p>
+<p>
+                SQL procedures previously stored in the database are now loaded from disk.
+                Many of them have been removed.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=1288">Issue 1288</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3436">Issue 3436</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3454"></a>
+<p>
+                Refactored parts of the database layer into a separate library named imcode-db.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3454">Issue 3454</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3304"></a>
+<p>
+                Removed the tools classes and extracted libraries imcode-util and imcode-ant-tasks.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3304">Issue 3304</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3162"></a>
+<p>
+                A document is always fetched from the database inside of a transaction.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3162">Issue 3162</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2089"></a>
+<p>
+                JSPs are now compiled during the build to find errors.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2089">Issue 2089</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3443"></a>
+<p>
+                Checkstyle is run during the build to find style errors.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3443">Issue 3443</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3459"></a><a name="issue_3462"></a>
+<p>
+                Building with a platform default encoding other than iso-8859-1 would fail.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3459">Issue 3459</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3462">Issue 3462</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3510"></a>
+<p>
+                A <span class="class">ServletContextListener</span> is used to start up, instead of a load-on-startup servlet.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3510">Issue 3510</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3514"></a>
+<p>
+                The links on the first welcome page will now be accurate regardless of context path.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3514">Issue 3514</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 2a.0.0</h1>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_3125"></a>
+<p>
+                Fixed a NullPointerException when trying to view a textpage containing a
+                filedocument-image that had been deleted.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3125">Issue 3125</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_3122"></a>
+<p>
+                Made <span class="tag">&lt;?imcms:include file="..."?&gt;</span> recursively parse tags.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3122">Issue 3122</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<a name="issue_3167"></a>
+<p>
+<span class="method">UserService.getUser(String)</span> now returns null for non-existing users.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3167">Issue 3167</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 2.2.0</h1>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_2937"></a>
+<p>
+                Added "Save" and "Save and close" buttons to text editor.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2937">Issue 2937</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<a name="issue_3062"></a>
+<p>
+                When including other documents,
+                the <span class="class">TextDocumentViewing</span> in the request was replaced,
+                so that subsequent <span class="class">TextDocumentViewings</span>
+                in the including document came from the included document.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=3062">Issue 3062</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 2.1.1</h1>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_2925"></a>
+<p>
+                Fixed a problem where a user would lose all his roles when editing himself.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2925">Issue 2925</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<a name="issue_2901"></a>
+<p>
+                There was a mistake made with the
+                <span class="method">ContentManagementSystem.runAsSuperadmin(ContentManagementSystemRunnable)</span>
+                method so it actually did not work at all.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2901">Issue 2901</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 2.1.0</h1>
+<h2>Of
+            <span class="important">importance</span>
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_2891"></a>
+<p>
+                Fixed a security hole that could let an attacker overwrite any file in the system.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2891">Issue 2891</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_2895"></a>
+<p>
+                Only read permission on a document was required to add it to a menu.
+                Now at least restricted 2 is required.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2895">Issue 2895</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2885"></a>
+<p>
+                Fixed a bug that made it impossible to set "edit texts" permission for restricted 1 or 2.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2885">Issue 2885</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2892"></a>
+<p>
+                Fixed a bug that would cause text in text fields to be interpreted as velocity code when
+                displayed for editing.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2892">Issue 2892</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2881"></a>
+<p>
+                Made enter submit a text field when using "rows='1'".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2881">Issue 2881</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2879"></a>
+<p>
+                Fixed a javascript error when editing texts and using the 
+        "<span class="attr">formats</span>"
+     attribute.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2879">Issue 2879</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2890"></a>
+<p>
+                The text editor would insert spurious <span class="tag">&lt;br /&gt;</span>-tags when the text was empty.
+                They are now removed when saving and when switching formats.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2890">Issue 2890</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2898"></a>
+<p>
+                Fixed an exception when trying to edit a non-existing document.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2898">Issue 2898</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            template creators</h2>
+<ul>
+<li class="change">
+<a name="issue_2785"></a>
+<p>
+                Allow velocity code in all tag attributes.
+                See <a class="localfile" href="TEMPLATE_SYNTAX.TXT">TEMPLATE_SYNTAX.TXT</a> for details.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2785">Issue 2785</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2874"></a>
+<p>
+                Whitespace in 
+        "<span class="attr">label</span>"
+    -attributes are now normalized,
+                i.e. consecutive runs of whitespace are replaced by a single space.
+                This is a workaround for newlines in the 
+        "<span class="attr">label</span>"
+    -attribute
+                not being handled correctly in some places.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2874">Issue 2874</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_2882"></a>
+<p>
+                Fixed a bug where deleted documents would remain in the cache.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2882">Issue 2882</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2889"></a>
+<p>
+                Allow role names of up to 60 characters, and display more than three roles at a time.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2889">Issue 2889</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2888"></a>
+<p>
+                Fixed a bug that caused text in templates to be interpreted as velocity code when displayed for editing.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2888">Issue 2888</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2883"></a>
+<p>
+                Updated jTDS to version 1.0.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2883">Issue 2883</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2894"></a>
+<p>
+                Fixed a problem where references to removed documents
+                were retained in menus, causing NullPointerExceptions.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2894">Issue 2894</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<a name="issue_2897"></a>
+<p>
+                Added package <span class="package">com.imcode.imcms.api.contrib</span>,
+                containing class <span class="class">DateTextFieldTextDocumentComparator</span>,
+                contributed by Anders Flodell and Pontus Amberg at Vetenskapsr&aring;det.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2897">Issue 2897</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2875"></a>
+<p>
+                Added class <span class="class">ContentManagementSystemRunnable</span> and
+                method <span class="method">ContentManagementSystem.runAsSuperadmin(ContentManagementSystemRunnable)</span>
+                to allow code that has been signed by an administrator to run with superadmin-privileges.
+            </p>
+<p>
+                The following things are required to run code with superadmin-privileges:
+            </p>
+<ul>
+<li>
+<span class="config">KeyStorePath</span> in <span class="path">server.properties</span> must be the path of a keystore.</li>
+<li>The class implementing <span class="class">ContentManagementSystemRunnable</span> must be signed (e.g. inside a signed jar-file).</li>
+<li>All certificates used for signing the class must be found in the keystore.</li>
+</ul>
+<p>
+                See <a class="url" href="http://java.sun.com/docs/books/tutorial/jar/sign/">http://java.sun.com/docs/books/tutorial/jar/sign/</a>
+                for more information about signing jar files.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2875">Issue 2875</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2790"></a>
+<p>
+                Made it possible to edit categories through the API.
+            </p>
+<p>
+                Added methods <span class="method">setName()</span>, <span class="method">setDescription()</span>,
+                and <span class="method">setImage()</span> to <span class="class">Category</span>.
+            </p>
+<p>
+                Added method <span class="method">DocumentService.saveCategory(Category)</span>.
+            </p>
+<p>
+                Deprecated method <span class="method">DocumentService.createNewCategory(String, String, String, CategoryType)</span>.
+                Use <span class="method">Category.Category(String, CategoryType)</span>
+                and <span class="method">DocumentService.saveCategory(Category)</span> instead.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2790">Issue 2790</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2884"></a>
+<p>
+                Methods <span class="method">UserService.getRole(int)</span> and <span class="method">UserService.getRole(String)</span>
+                no longer require superadmin-permissions.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2884">Issue 2884</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2893"></a>
+<p>
+                Methods <span class="method">TextDocument.Menu.addDocument(Document)</span>
+                and <span class="method">TextDocument.Menu.removeDocument(Document)</span> erroneously required
+                edit-permissions for the document added or removed, instead of the menu document as intended.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2893">Issue 2893</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2887"></a>
+<p>
+                Added fields <span class="tag">section_id</span>, <span class="tag">category</span>, <span class="tag">category_type</span>,
+                and <span class="tag">category_type_id</span> to search index.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2887">Issue 2887</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2880"></a>
+<p>
+                Added the constants <span class="variable">Document.LifeCyclePhase.NEW</span>,
+                <span class="variable">Document.LifeCyclePhase.APPROVED</span>,
+                <span class="variable">Document.LifeCyclePhase.DISAPPROVED</span>,
+                <span class="variable">Document.LifeCyclePhase.PUBLISHED</span>,
+                <span class="variable">Document.LifeCyclePhase.ARCHIVED</span>,
+                and <span class="variable">Document.LifeCyclePhase.UNPUBLISHED</span>,
+                to be used as values in searches on the field "phase".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2880">Issue 2880</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            developers</h2>
+<ul>
+<li class="change">
+<a name="issue_2878"></a>
+<p>
+                The java code in the <span class="path">tools</span> directory were not built with
+                source="1.4" and target="1.4".
+                This caused parts of imCMS to break when compiled with java 1.5 and run on java 1.4.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2878">Issue 2878</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 2.0.0</h1>
+<h2>Of
+            <span class="important">importance</span>
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_1163"></a>
+<p>
+                New url format for documents: <span class="path">/imcms/1001</span> instead of <span class="path">/imcms/servlet/GetDoc?meta_id=1001</span>.
+                The old format still works, but this means that relative links in pages are likely to break.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=1163">Issue 1163</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2727"></a>
+<p>
+                To alleviate broken relative links, <span class="path">/imcms/GetDoc?meta_id=1001</span> now works as well as <span class="path">/imcms/servlet/GetDoc?meta_id=1001</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2727">Issue 2727</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            <span class="important">importance</span>
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_1850"></a>
+<p>
+                We're now using jTDS instead of Microsofts JDBC driver.
+                The Microsoft driver may still somewhat work,
+                but it is strongly recommended that you use jTDS instead.
+                To do this, change the following values in <span class="path">server.properties</span>:
+            </p>
+<ul>
+<li>Set <span class="config">JdbcDriver</span> to 
+        "<span class="value">net.sourceforge.jtds.jdbc.Driver</span>"
+    </li>
+<li>Set <span class="config">JdbcUrl</span> to
+                    
+        "<span class="value">jdbc:jtds:sqlserver://<span class="replace">&lt;host&gt;</span>:<span class="replace">&lt;port&gt;</span>/;AppName=imCMS;DatabaseName=<span class="replace">&lt;databasename&gt;</span></span>"
+    
+                    substituting correct values for <span class="replace">&lt;host&gt;</span>,
+                    <span class="replace">&lt;port&gt;</span>, and <span class="replace">&lt;databasename&gt;</span>.</li>
+</ul>
+<p>
+                    (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=1850">Issue 1850</a>)
+                </p>
+</li>
+<li class="change">
+<a name="issue_2859"></a>
+<p>
+                We require javamail 1.3 or later, but Tomcat 4.1.30 and earlier includes javamail 1.2,
+                which overrides our included implementation (GNU classpathx javamail).
+            </p>
+<p>
+                If you're using Tomcat 4.1.30 or earlier, you can do one of three things:
+            </p>
+<ul>
+<li>Recommended: Upgrade Tomcat to version 4.1.31 or later.</li>
+<li>Remove <span class="path">mail.jar</span> and <span class="path">activation.jar</span> from <span class="path">tomcat/common/lib</span>.
+                    If you use any web applications that require any of them, you can put them in the <span class="path">WEB-INF/lib</span> directory of those applications.
+                     imCMS will use its own implementation.</li>
+<li>Replace <span class="path">mail.jar</span> in the directory <span class="path">tomcat/common/lib</span> with <span class="path">mail.jar</span> from JavaMail 1.3 or later.
+                    JavaMail can be downloaded from <a class="url" href="http://java.sun.com/products/javamail/downloads/">http://java.sun.com/products/javamail/downloads/</a>
+</li>
+</ul>
+<p>
+                If you are using another servlet engine that includes an older implementation of javamail,
+                similar action may be required.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2859">Issue 2859</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2733"></a>
+<p>
+                Specifically, the new url format is
+                <span class="path"><span class="replace">&lt;contextpath&gt;</span><span class="replace">&lt;prefix&gt;</span><span class="replace">&lt;document-id&gt;</span></span>,
+                e.g. <span class="path">/imcms<span class="replace">&lt;prefix&gt;</span>1001</span>.
+                The <span class="replace">&lt;prefix&gt;</span> can be set with the setting <span class="config">DocumentPathPrefix</span> in <span class="path">server.properties</span>.
+                The default is 
+        "<span class="value">/</span>"
+    . Comment this out to disable the new url format.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2733">Issue 2733</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2083"></a><a name="issue_2864"></a>
+<p>
+                The latest documents requested from the database are now cached in memory.
+                This makes imCMS much faster, but means that changes to the database won't be seen.
+                The maximum number of documents cached can be set using
+                <span class="config">DocumentCacheMaxSize</span> in <span class="path">server.properties</span>.
+                The default is to cache at most 100 documents.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2083">Issue 2083</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2864">Issue 2864</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2746"></a>
+<p>
+                All the class-files that used to live in <span class="path">WEB-INF/classes</span>
+                are now packaged in one jar file in <span class="path">WEB-INF/lib</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2746">Issue 2746</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2750"></a>
+<p>
+                Some objects were put in sessions when editing documents, and never removed.
+                These are now removed when no longer needed. This might reduce memory usage a bit.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2750">Issue 2750</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_2578"></a>
+<p>
+                A new function called "My pages" gives you an easy overview of your documents.
+                It is accessible through the "admin" button for users
+                which have any role that has permission to access "My pages".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2578">Issue 2578</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2548"></a>
+<p>
+                A new better html editor (<a class="url" href="http://www.dynarch.com/projects/htmlarea/">http://www.dynarch.com/projects/htmlarea/</a>)
+                which also supports Mozilla browsers has been incorporated.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2548">Issue 2548</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2578"></a>
+<p>
+                The search page now allows much more advanced searches.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2578">Issue 2578</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2681"></a>
+<p>
+                File extension "dot" is now recognized as a Microsoft Word file.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2681">Issue 2681</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2743"></a>
+<p>
+                File extension "ppt" is now recognized as a Microsoft Powerpoint file.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2743">Issue 2743</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2796"></a>
+<p>
+                Updated the look of the user interface a bit, notably the adminbuttons and the template dialog.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2796">Issue 2796</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2451"></a>
+<p>
+                One can now on the permission page set a default template to be used for new text documents.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2451">Issue 2451</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2567"></a>
+<p>
+                Don't display a broken image for an empty image field.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2567">Issue 2567</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2653"></a>
+<p>
+                Fixed problem with previewing images with non-ASCII characters in the name in the image browser.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2653">Issue 2653</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2734"></a>
+<p>
+                Don't show button to upload images if lacking permission to do so.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2734">Issue 2734</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2591"></a>
+<p>
+                Changed certain file uploading error messages to be somewhat clearer.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2591">Issue 2591</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2680"></a>
+<p>
+                Fixed a problem where users were allowed to access the document "page info" without proper permissions.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2680">Issue 2680</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2737"></a>
+<p>
+                Set creation date to "now" for copies of documents.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2737">Issue 2737</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2682"></a>
+<p>
+                Fixed help message on "file edit page".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2682">Issue 2682</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2703"></a>
+<p>
+                The OK button on the document "page info" page was unclickable in Safari on Mac due to a javascript.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2703">Issue 2703</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2794"></a>
+<p>
+                Hide categories on "page info" page if none exist.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2794">Issue 2794</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2794"></a>
+<p>
+                Added shortcut buttons to set dates to "Now" on "page info" page.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2794">Issue 2794</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2803"></a>
+<p>
+                The creator and some dates were not set properly for copied documents.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2803">Issue 2803</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2799"></a>
+<p>
+                Removed misleading instructions on how to create documents.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2799">Issue 2799</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2839"></a>
+<p>
+                Fixed problem with data for browser documents not being saved on creation.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2839">Issue 2839</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2860"></a>
+<p>
+                Missing schemes are now automatically added to urls.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2860">Issue 2860</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2861"></a>
+<p>
+                The link checker now handles relative and schemeless urls.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2861">Issue 2861</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2800"></a>
+<p>
+                When editing menus, for each menu display two numbers.
+            </p>
+<p>
+                One number is the number of documents a visitor to the site would see in the menu,
+                and the other number is the number of documents the current user can see when editing the menu.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2800">Issue 2800</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2771"></a>
+<p>
+                Allow setting the link target when editing a file document.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2771">Issue 2771</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            template creators</h2>
+<ul>
+<li class="change">
+<a name="issue_2689"></a>
+<p>
+                Added the file <a class="localfile" href="TEMPLATE_SYNTAX.TXT">TEMPLATE_SYNTAX.TXT</a> containing a basic reference to the template tags.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2689">Issue 2689</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2684"></a>
+<p>
+                Local includes can now be made using <span class="tag">&lt;?imcms:include path="/relative/to/context/path"?&gt;</span>.
+                These don't require a http-request to localhost as url-includes do,
+                are a magnitude more efficient, and don't spam the access-log.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2684">Issue 2684</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2668"></a>
+<p>
+                Jakarta Velocity can now be used in templates, between <span class="tag">&lt;?imcms:velocity?&gt; ... &lt;?/imcms:velocity?&gt;</span> tags.
+                See the file <a class="localfile" href="TEMPLATE_SYNTAX.TXT">TEMPLATE_SYNTAX.TXT</a> for details.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2668">Issue 2668</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2668"></a>
+<p>
+                Attributes 
+        "<span class="attr">pre</span>"
+     and 
+        "<span class="attr">post</span>"
+    
+                can now be used on <span class="tag">&lt;?imcms:menu?&gt;</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2668">Issue 2668</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2783"></a>
+<p>
+                Attributes in tags can now be html-escaped, like so: <span class="tag">&lt;?imcms:text label="&amp;quot;quoted text&amp;quot;"?&gt;</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2783">Issue 2783</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2689"></a>
+<p>
+                New attribute for <span class="tag">&lt;?imcms:menu?&gt;</span>: 
+        "<span class="attr">defaulttemplate</span>"
+     - specify the name of a template to use for new text documents created in this menu.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2689">Issue 2689</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2709"></a>
+<p>
+                New attribute for <span class="tag">&lt;?imcms:text?&gt;</span>: 
+        "<span class="attr">formats</span>"
+     - specify what editor modes are available.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2709">Issue 2709</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2764"></a>
+<p>
+                New attribute for <span class="tag">&lt;?imcms:text?&gt;</span>: 
+        "<span class="attr">rows</span>"
+     - indicate the preferred number of rows to the editor.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2764">Issue 2764</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_2669"></a>
+<p>
+                When something went wrong during initialization, a useless generic "NoClassDefFoundError" was given.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2669">Issue 2669</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2661"></a>
+<p>
+                Certain html files were not viewable in the file manager.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2661">Issue 2661</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2692"></a>
+<p>
+                Fixed a problem in the <span class="path">diff-1.10.2-1.11.sql</span> database upgrade script.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2692">Issue 2692</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2696"></a>
+<p>
+                Fixed an error when trying to edit a user.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2696">Issue 2696</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2757"></a>
+<p>
+                Make sure a useradmin only can list users he can edit.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2757">Issue 2757</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2442"></a>
+<p>
+                Sometimes when using the file administrator, some files would be unremovable.
+                Trying to remove them will now give a rather nasty error message instead of failing silently.
+                This still needs improvement.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2442">Issue 2442</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2587"></a><a name="issue_2789"></a>
+<p>
+                The link checker is now multithreaded, and one can choose to list only broken links.
+                Also, one can specify a range of document ids to check.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2587">Issue 2587</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2789">Issue 2789</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2786"></a>
+<p>
+                Use a default value of 
+        "<span class="value">1440</span>"
+     (24 hours) for <span class="config">IndexingSchedulePeriodInMinutes</span>
+                if missing from <span class="path">server.properties</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2786">Issue 2786</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2842"></a>
+<p>
+                Reversed sort order of "List new/updated pages".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2842">Issue 2842</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2806"></a>
+<p>
+                Allow to set no roles for users, leaving only the "Users"-role.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2806">Issue 2806</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2845"></a>
+<p>
+                Fixed a problem with mismatched filenames in the chat on case-sensitive filesystems.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2845">Issue 2845</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2847"></a>
+<p>
+                Empty passwords are no longer allowed for external authentication, e.g. LDAP.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2847">Issue 2847</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2334"></a>
+<p>
+                Updated the look of the "Edit external user" page.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2334">Issue 2334</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2858"></a>
+<p>
+                Fixed a problem with modified date of a document only being updated on every second save.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2858">Issue 2858</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2865"></a>
+<p>
+                The checksums in <span class="path">WEB-INF/version.txt</span> are now in <span class="path">WEB-INF/checksums.txt</span> instead,
+                and are not output by the "Version" servlet.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2865">Issue 2865</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2855"></a>
+<p>
+                Made a "RebuildIndex" servlet for rebuilding the index,
+                and fixed the "Restart" servlet to do a more thorough/proper restart of imCMS.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2855">Issue 2855</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2836"></a>
+<p>
+                Don't allow removing a template group that contains templates.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2836">Issue 2836</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2828"></a>
+<p>
+                Don't print password to log when failing to log in to an LDAP server.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2828">Issue 2828</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2821"></a>
+<p>
+                List users in order of last name and first name instead of by id.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2821">Issue 2821</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<a name="issue_2493"></a>
+<p>
+                Created package <span class="package">com.imcode.util</span> with generic non-imCMS-specific utilities:
+            </p>
+<dl>
+<dt>
+<span class="class">ChainableReversibleNullComparator</span>
+</dt>
+<dd>
+            - Moved here from <span class="package">com.imcode.imcms.api.util</span>
+</dd>
+<dt>
+<span class="class">ComparatorWrapper</span>
+</dt>
+<dd>
+            - Moved here from <span class="package">com.imcode.imcms.api.util</span>
+</dd>
+<dt>
+<span class="class">HumanReadable</span>
+</dt>
+<dd>
+            - Get human readable byte sizes and time spans.</dd>
+<dt>
+<span class="class">ImageSize</span>
+</dt>
+<dd>
+            - Get the size of an image in somewhat more efficient manner than <span class="method"><span class="class">ImageIO</span>.read()</span>.</dd>
+<dt>
+<span class="class">MultipartHttpServletRequest</span>
+</dt>
+<dd>
+            - Extends <span class="class">HttpServletRequest</span> for file upload with support from Jakarta Commons-FileUpload.</dd>
+</dl>
+<p>
+                    (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2493">Issue 2493</a>)
+                </p>
+</li>
+<li class="change">
+<a name="issue_2708"></a>
+<p>
+                Users can now change their own attributes.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2708">Issue 2708</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2676"></a><a name="issue_2776"></a>
+<p>
+                Added classes:
+            </p>
+<dl>
+<dt>
+<span class="class">Role</span>
+</dt>
+<dd>
+            - Represents a user-role.</dd>
+<dt>
+<span class="class">SaveException</span>
+</dt>
+<dd>
+            - Thrown when something can't be saved.</dd>
+<dt>
+<span class="class">AlreadyExistsException</span>
+</dt>
+<dd>
+            - Extends SaveException.</dd>
+<dt>
+<span class="class">TextDocumentViewing</span>
+</dt>
+<dd>
+            - Accessible in included JSPs and velocity code. Represents one viewing of a text document.</dd>
+</dl>
+<p>
+                    (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2676">Issue 2676</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2776">Issue 2776</a>)
+                </p>
+</li>
+<li class="change">
+<p>
+                Changed classes:
+            </p>
+<dl>
+<dt>
+<span class="class">MaxCategoriesOfTypeExceededException</span>
+</dt>
+<dd>
+            - Extends <span class="class">SaveException</span>
+</dd>
+<dt>
+<span class="class">CategoryAlreadyExistsException</span>
+</dt>
+<dd>
+            - Extends <span class="class">AlreadyExistsException</span>
+</dd>
+<dt>
+<span class="class">CategoryTypeAlreadyExistsException</span>
+</dt>
+<dd>
+            - Extends <span class="class">AlreadyExistsException</span>
+</dd>
+<dt>
+<span class="class">UserAlreadyExistsException</span>
+</dt>
+<dd>
+            - Extends <span class="class">AlreadyExistsException</span>
+</dd>
+<dt>
+<span class="class">RoleAlreadyExistsException</span>
+</dt>
+<dd>
+            - Extends <span class="class">AlreadyExistsException</span>
+</dd>
+</dl>
+</li>
+<li class="change">
+<p>
+                Deprecated classes:
+            </p>
+<dl>
+<dt>
+<span class="class">com.imcode.imcms.api.util.ChainableReversibleNullComparator</span>
+</dt>
+<dd>
+            - Moved to <span class="package">com.imcode.util</span>
+</dd>
+<dt>
+<span class="class">com.imcode.imcms.api.util.ComparatorWrapper</span>
+</dt>
+<dd>
+            - Moved to com.imcode.util</dd>
+</dl>
+</li>
+<li class="change">
+<a name="issue_2648"></a><a name="issue_2648"></a><a name="issue_2677"></a><a name="issue_2827"></a><a name="issue_2827"></a>
+<p>
+                Added methods:
+            </p>
+<dl>
+<dt>
+<span class="method">ContentManagementSystem.fromRequest(ServletRequest)</span>
+</dt>
+<dd>
+            - Get the <span class="class">ContentManagementSystem</span>.</dd>
+<dt>
+<span class="method">Document.setPermissionSetIdForRole(Role,int)</span>m</dt>
+<dd>
+            - Replaces <span class="method">Document.setPermissionSetForRole(String,int)</span>
+</dd>
+<dt>
+<span class="method">Document.getPermissionSetIdForRole(Role)</span>
+</dt>
+<dd>
+            - Get the permission set id for a role</dd>
+<dt>
+<span class="method">DocumentService.getSection(String)</span>
+</dt>
+<dd>
+            - Get a section by name.</dd>
+<dt>
+<span class="method">Section.getId()</span>
+</dt>
+<dd>
+            - Get the id for a section.</dd>
+<dt>
+<span class="method">TextDocument.Menu.getVisibleDocuments()</span>
+</dt>
+<dd>
+            - Returns the documents visible in the menu.</dd>
+<dt>
+<span class="method">TextDocument.Menu.getVisibleMenuItems()</span>
+</dt>
+<dd>
+            - Returns the menuitems visible in the menu.</dd>
+<dt>
+<span class="method">User.getRoles()</span>
+</dt>
+<dd>
+            - Get the user's roles.</dd>
+<dt>
+<span class="method">User.setRoles(Role[])</span>
+</dt>
+<dd>
+            - Set the user's roles.</dd>
+<dt>
+<span class="method">User.hasRole(Role)</span>
+</dt>
+<dd>
+            - Returns true if the user has the role.</dd>
+<dt>
+<span class="method">User.addRole(Role)</span>
+</dt>
+<dd>
+            - Add a role to the user.</dd>
+<dt>
+<span class="method">User.removeRole(Role)</span>
+</dt>
+<dd>
+            - Remove a role from the user.</dd>
+<dt>
+<span class="method">UserService.createNewRole(String)</span>
+</dt>
+<dd>
+            - Create a new role</dd>
+<dt>
+<span class="method">UserService.deleteRole(Role)</span>
+</dt>
+<dd>
+            - Delete a role, requires superadmin permission.</dd>
+<dt>
+<span class="method">UserService.getAllRoles()</span>
+</dt>
+<dd>
+            - Returns all roles in the system, requires superadmin permission.</dd>
+<dt>
+<span class="method">UserService.getAllUsersWithRole(Role)</span>
+</dt>
+<dd>
+            - Get all users with the given permission.</dd>
+<dt>
+<span class="method">UserService.getRole(int)</span>
+</dt>
+<dd>
+            - Get a role by id, requires superadmin permission.</dd>
+<dt>
+<span class="method">UserService.getRole(String)</span>
+</dt>
+<dd>
+            - Get a role by name, requires superadmin permission.</dd>
+<dt>
+<span class="method">UserService.saveRole(Role)</span>
+</dt>
+<dd>
+            - Save changes to the role, requires superadmin permission.</dd>
+<dt>
+<span class="method">UserService.createNewUser(String, String)</span>
+</dt>
+<dd>
+            - Create a new user.</dd>
+<dt>
+<span class="method">UserService.saveUser(User)</span>
+</dt>
+<dd>
+            - Save a new or existing user, requires superadmin permission.</dd>
+<dt>
+<span class="method">User.set*</span>
+</dt>
+<dd>
+            - Added a bunch of setters.</dd>
+<dt>
+<span class="method">User.get*</span>
+</dt>
+<dd>
+            - Added a few missing getters.</dd>
+</dl>
+<p>
+                    (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2648">Issue 2648</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2648">Issue 2648</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2677">Issue 2677</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2827">Issue 2827</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2827">Issue 2827</a>)
+                </p>
+</li>
+<li class="change">
+<a name="issue_2827"></a><a name="issue_2827"></a>
+<p>
+                Changed methods:
+            </p>
+<dl>
+<dt>
+<span class="method">DocumentService.saveChanges(Document)</span>
+</dt>
+<dd>
+            - Throws <span class="class">SaveException</span> instead of <span class="class">MaxCategoriesOfTypeExceededException</span>.</dd>
+<dt>
+<span class="method">TextDocument.setInclude(int,TextDocument)</span>
+</dt>
+<dd>
+            - Now requires you to call <span class="method">DocumentService.saveChanges()</span> afterwards.</dd>
+<dt>
+<span class="method">TextDocument.Menu.getDocuments()</span>
+</dt>
+<dd>
+            - Returns the same documents as can be seen when editing the menu.</dd>
+<dt>
+<span class="method">TextDocument.Menu.getMenuItems()</span>
+</dt>
+<dd>
+            - Returns the same menuitems as can be seen when editing the menu. No longer throws <span class="class">NoPermissionException</span>.</dd>
+<dt>
+<span class="method">UserService.addNewRole(String)</span>
+</dt>
+<dd>
+            - Returns the new role.</dd>
+</dl>
+<p>
+                    (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2827">Issue 2827</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2827">Issue 2827</a>)
+                </p>
+</li>
+<li class="change">
+<a name="issue_2791"></a>
+<p>
+                Undeprecated methods:
+            </p>
+<dl>
+<dt>
+<span class="method">TextDocument.setTemplate(Template)</span>
+</dt>
+<dd>
+            - Use when you don't care about setting a template group.</dd>
+</dl>
+<p>
+                    (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2791">Issue 2791</a>)
+                </p>
+</li>
+<li class="change">
+<p>
+                Deprecated methods:
+            </p>
+<dl>
+<dt>
+<span class="method">Document.setPermissionSetForRole(String,int)</span>
+</dt>
+<dd>
+            - Use <span class="method">Document.setPermissionSetIdForRole(Role,int)</span>.</dd>
+<dt>
+<span class="method">User.getRoleNames()</span>
+</dt>
+<dd>
+            - Use <span class="method">User.getRoles()</span>
+</dd>
+<dt>
+<span class="method">User.hasRole(String)</span>
+</dt>
+<dd>
+            - Use <span class="method">User.hasRole(Role)</span>
+</dd>
+<dt>
+<span class="method">UserService.deleteRole(String)</span>
+</dt>
+<dd>
+            - Use <span class="method">UserService.deleteRole(Role)</span>
+</dd>
+<dt>
+<span class="method">UserService.getAllUserWithRole(String)</span>
+</dt>
+<dd>
+            - Use <span class="method">UserService.getAllUsersWithRole(Role)</span>
+</dd>
+<dt>
+<span class="method">UserService.getRoleNames(User)</span>
+</dt>
+<dd>
+            - Use <span class="method">User.getRoles()</span>
+</dd>
+<dt>
+<span class="method">UserService.getAllRolesNames()</span>
+</dt>
+<dd>
+            - Use <span class="method">UserService.getAllRoles()</span>
+</dd>
+<dt>
+<span class="method">UserService.setUserRoles(User,String[])</span>
+</dt>
+<dd>
+            - Use <span class="method">User.setRoles(Role[])</span>
+</dd>
+<dt>
+<span class="method">UserService.addNewRole(String)</span>
+</dt>
+<dd>
+            - Use <span class="method">UserService.createNewRole(String)</span> and <span class="method">UserService.saveRole(Role)</span>
+</dd>
+</dl>
+</li>
+<li class="change">
+<p>
+                Removed methods:
+            </p>
+<dl>
+<dt>DocumentService.createAndSaveNewTextDocument(Document)</dt>
+<dd>
+            - Use <span class="method">DocumentService.createNewTextDocument()</span> and <span class="method">DocumentService.saveChanges(Document)</span>
+</dd>
+<dt>DocumentService.createAndSaveNewUrlDocument(Document)</dt>
+<dd>
+            - Use <span class="method">DocumentService.createNewUrlDocument()</span> and <span class="method">DocumentService.saveChanges(Document)</span>
+</dd>
+</dl>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            developers</h2>
+<ul>
+<li class="change">
+<a name="issue_2664"></a>
+<p>
+                Unit tests are now enabled in the build by default.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2664">Issue 2664</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2674"></a>
+<p>
+                Target "copy-web" in an addon <span class="path">build.xml</span> is now run when running the "web"-target in the main <span class="path">build.xml</span>.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2674">Issue 2674</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2549"></a>
+<p>
+                Use jsp for "edit text" page.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2549">Issue 2549</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2663"></a>
+<p>
+                Added a unique index on column "login_name" in table "users".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2663">Issue 2663</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2687"></a>
+<p>
+                Compileable with java 1.5.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2687">Issue 2687</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2686"></a>
+<p>
+                Updated jars to the latest versions, and made sure all have understandable names with version numbers.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2686">Issue 2686</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2685"></a>
+<p>
+                Getting the size of an image was very slow.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2685">Issue 2685</a>)
+            </p>
+</li>
+<li class="change">
+<p>
+                The column "role_id" in the table "roles" is now an identity column, and "role_name" is varchar(60).
+            </p>
+</li>
+<li class="change">
+<a name="issue_2672"></a>
+<p>
+                Don't update menus in database if they don't differ from the cache when saving a text-document.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2672">Issue 2672</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2701"></a>
+<p>
+                Fixed a problem where clones of users would share the same set of roles.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2701">Issue 2701</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2705"></a>
+<p>
+                Added possibility to set permissions for roles.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2705">Issue 2705</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2718"></a>
+<p>
+                Fixed hardcoded urls to the documentation site in the default template.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2718">Issue 2718</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2705"></a>
+<p>
+                Removed table "roles_permissions", no longer needed.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2705">Issue 2705</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2770"></a>
+<p>
+                All users are now always considered to have the "Users" role regardless of what the database says.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2770">Issue 2770</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2774"></a>
+<p>
+                Made an ant-target "distcheck" for verifying that the source distribution is buildable.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2774">Issue 2774</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2818"></a>
+<p>
+                Made it easier to build with LDAP enabled
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2818">Issue 2818</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2775"></a>
+<p>
+                Texts are doubly indexed: With and without HTML-tags.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2775">Issue 2775</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2855"></a>
+<p>
+                Introduced the concept of <span class="class">LifeCyclePhase</span> for a <span class="class">DocumentDomainObject</span> (indexed as "phase"),
+                corresponding to what users think of as "status".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2855">Issue 2855</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2798"></a>
+<p>
+                A group can now be used as the to-address of e-mails.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2798">Issue 2798</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2765"></a>
+<p>
+                The changelog (previously <span class="path">CHANGES.TXT</span>, now <span class="path">CHANGES.HTML</span>)
+                is now generated from an xml-file using an xsl-stylesheet.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2765">Issue 2765</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 1.11.1</h1>
+<h2>Of
+            interest
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_2452"></a><a name="issue_2650"></a>
+<p>
+                In the fix to bug 2452 in 1.11.0, we changed the way files in file documents are saved to disk, forgetting backwards-compatibility. Administrators had to remove the "_se"-suffix from all files under "WEB-INF/uploads", or the files would not be found after an upgrade. This was fixed so the "_se" suffix is recognized again, and will be automatically removed when the file document is saved. Removing the suffix from the files on upgrade is still recommended.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2452">Issue 2452</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2650">Issue 2650</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2640"></a>
+<p>
+                On a related note, don't show "WEB-INF/uploads" in "FileAdmin" by default.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2640">Issue 2640</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2633"></a>
+<p>
+                Made "/RD/*"-paths (as seen in the log) work again.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2633">Issue 2633</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 1.11.0</h1>
+<h2>Of
+            <span class="important">importance</span>
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_2569"></a>
+<p>
+                The "SelectMethod" in the JdbcUrl in "server.properties" MUST be set to "SelectMethod=cursor", otherwise you will get the error "Can't start a cloned connection while in manual transaction mode." when you try to save a document. This is due to the new transaction code. The default used to be "SelectMethod=direct".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2569">Issue 2569</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_2452"></a>
+<p>
+                Made it possible to upload several files in one filedocument.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2452">Issue 2452</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2569"></a>
+<p>
+                Fixed a race condition that could cause menus to be cleared when editing a text-document.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2569">Issue 2569</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2534"></a>
+<p>
+                File-extension "xls" on uploaded files is now recognized as a Microsoft Excel Spreadsheet.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2534">Issue 2534</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2511"></a>
+<p>
+                Fixed a problem with viewing uploaded PDF files with Adobe Acrobat 6.0.1.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2511">Issue 2511</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2543"></a>
+<p>
+                Fixed exception when trying to create an HTML-document.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2543">Issue 2543</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_1496"></a>
+<p>
+                Changed some swedish names for different document types.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=1496">Issue 1496</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2391"></a>
+<p>
+                Some form elements looked strange in "page info" in Internet Explorer 5.2 on Macintosh.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2391">Issue 2391</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2567"></a>
+<p>
+                Fixed a bug that made it hard to remove images.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2567">Issue 2567</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2520"></a>
+<p>
+                Show file-size on file-document-files and images.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2520">Issue 2520</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2572"></a>
+<p>
+                Distinguish directories in "FileAdmin" with gray background color, sort files and directories in alphabetical order, and make file-sizes more readable.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2572">Issue 2572</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2585"></a>
+<p>
+                Fixed a bug making it impossible to delete a text-document with more than one menu.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2585">Issue 2585</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2593"></a>
+<p>
+                HTML is now removed from text-fields before indexing, so a search for "foo bar" will now also find "&lt;em&gt;foo&lt;/em&gt; bar".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2593">Issue 2593</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_1496"></a>
+<p>
+                Changed swedish name of text-document, "Ny sida" to "Textsida".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=1496">Issue 1496</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2628"></a>
+<p>
+                Image-preview in old image archive was broken.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2628">Issue 2628</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2607"></a>
+<p>
+                Submitting the form several times (i.e. by double-clicking) when creating a new document no longer results in an error message and several documents created.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2607">Issue 2607</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            template creators</h2>
+<ul>
+<li class="change">
+<a name="issue_2623"></a>
+<p>
+                Put the imCMS-commercial html-comment (imcms_message.html) before the &lt;html&gt;-tag instead of the before doctype declaration.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2623">Issue 2623</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_2479"></a>
+<p>
+                Disallow editing of user "user".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2479">Issue 2479</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2514"></a>
+<p>
+                Fixed a bug that made it impossible to create a category.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2514">Issue 2514</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2515"></a>
+<p>
+                Fixed a bug that prevented changing a category-type from multi-choice to single-choice.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2515">Issue 2515</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2144"></a>
+<p>
+                Database connections are now tested before use. This allows imCMS to survive database server restarts.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2144">Issue 2144</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2614"></a>
+<p>
+                "IndexingSchedulePeriodInMinutes" in "server.properties" now controls the time period between reindexings in minutes.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2614">Issue 2614</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2625"></a>
+<p>
+                Reindexing is no longer performed on startup unless needed.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2625">Issue 2625</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2484"></a>
+<p>
+                Added a little note about running SQL-scripts to INSTALL.TXT.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2484">Issue 2484</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2629"></a>
+<p>
+                The admin button is now visible for users with role "Useradmin" again.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2629">Issue 2629</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<p>
+                Category now implements Comparable. Compares by name, ignoring case.
+            </p>
+</li>
+<li class="change">
+<a name="issue_2527"></a>
+<p>
+                UserService.getUser(String) no longer requires superadmin permissions.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2527">Issue 2527</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2490"></a><a name="issue_2490"></a><a name="issue_2551"></a><a name="issue_2551"></a><a name="issue_2551"></a>
+<p>
+                Added classes:
+        - MailService - provides methods for sending e-mail.
+        - Mail - represents a mail to be sent with MailService. Uses javax.activation.DataSource for attachments.
+        - MailException - thrown by MailService.
+        - FileDocument - represents a filedocument
+        - FileDocument.FileDocumentFile - represents a single file in a filedocument. Implements javax.activation.DataSource.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2490">Issue 2490</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2490">Issue 2490</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2551">Issue 2551</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2551">Issue 2551</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2551">Issue 2551</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2490"></a><a name="issue_2491"></a><a name="issue_2491"></a><a name="issue_2491"></a><a name="issue_2551"></a><a name="issue_2551"></a><a name="issue_2609"></a><a name="issue_2609"></a><a name="issue_2616"></a><a name="issue_2616"></a>
+<p>
+                Added methods:
+        - ContentManagementSystem.getMailService() -
+        - DocumentService.createNewFileDocument() -
+        - DocumentService.getXmlDomForDocument() - returns an org.w3c.dom.Document representing a document. Currently only works with text-documents.
+        - Image.getSrc(String contextPath) - returns image-src with contextPath prepended.
+        - Image.getSrcRelativeToContextPath() - returns image-src without contextPath prepended.
+        - Image.getSize() - returns the size of the image in bytes.
+        - User.getId() - returns the user id.
+        - User.isDefaultUser() - returns true if the user is the default user ("user/user").
+        - DocumentPermissionSet.getEditMenusPermission() - returns true if this permission-set allows editing of menus.
+        - DocumentPermissionSet.setEditMenusPermission(boolean) - sets whether this permission-set allows editing of menus.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2490">Issue 2490</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2491">Issue 2491</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2491">Issue 2491</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2491">Issue 2491</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2551">Issue 2551</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2551">Issue 2551</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2609">Issue 2609</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2609">Issue 2609</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2616">Issue 2616</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2616">Issue 2616</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2491"></a><a name="issue_2491"></a>
+<p>
+                Removed methods:
+        - Image.getSrc() - use Image.getSrc(String contextPath) or Image.getSrcRelativeToContextPath()
+        - Image.getSrcUrl() - use Image.getSrc(String contextPath) or Image.getSrcRelativeToContextPath() This was necessary to completely remove imCMS dependence on a specific context path.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2491">Issue 2491</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2491">Issue 2491</a>)
+            </p>
+</li>
+<li class="change">
+<p>
+                Removed deprecated fields:
+        - Document.Comparator.ACTIVATED_DATETIME - use Document.Comparator.PUBLICATION_START_DATETIME
+            </p>
+</li>
+<li class="change">
+<a name="issue_2560"></a><a name="issue_2560"></a><a name="issue_2609"></a><a name="issue_2609"></a><a name="issue_2609"></a>
+<p>
+                Removed deprecated methods
+        - Document.setModifiedDateTime(Date) - use Document.setModifiedDatetime(Date)
+        - Document.getModifiedDateTime() - use Document.getModifiedDatetime()
+        - Document.getCreatedDateTime() - use Document.getCreatedDatetime()
+        - TextDocument.getMenuSortOrder() - use Menu.getSortOrder()
+        - TextDocument.setMenuSortOrder(int) - use Menu.setSortOrder(int)
+        - DocumentPermissionSet.getEditHeadlinePermission() - use DocumentPermissionSet.getEditDocumentInformationPermission()
+        - DocumentPermissionSet.setEditHeadlinePermission(boolean) - use DocumentPermissionSet.setEditDocumentInformationPermission(boolean)
+        - DocumentPermissionSet.getEditableMenuDocumentTypeNames() - removed, returning type-names is broken.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2560">Issue 2560</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2560">Issue 2560</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2609">Issue 2609</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2609">Issue 2609</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2609">Issue 2609</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            developers</h2>
+<ul>
+<li class="change">
+<a name="issue_2495"></a>
+<p>
+                The document-deletion procedure is now run in an transaction.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2495">Issue 2495</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2542"></a>
+<p>
+                It's now possible to send attachments with mails. This uses the Java Activation Framework (javax.activation) and JavaMail API implementations from the GNU classpathx project.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2542">Issue 2542</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2493"></a>
+<p>
+                Replaced imCMS own image-parsing routines with javax.imageio.ImageIO
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2493">Issue 2493</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2569"></a>
+<p>
+                Started to change the database API to allow for transactions.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2569">Issue 2569</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2569"></a>
+<p>
+                Text document menus are now saved inside a transaction.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2569">Issue 2569</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 1.10.3</h1>
+<h2>Of
+            interest
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<p>
+                Added constants for use in search-strings:
+        - TextDocument.TYPE_ID
+        - UrlDocument.TYPE_ID
+            </p>
+</li>
+<li class="change">
+<a name="issue_2521"></a><a name="issue_2521"></a>
+<p>
+                Added methods:
+        - boolean User.isSuperAdmin()
+        - boolean User.canEdit(Document)
+        - String[] User.getRoleNames()
+        - DocumentService.createNewTextDocument(Document)
+        - DocumentService.createNewUrlDocument(Document)
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2521">Issue 2521</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2521">Issue 2521</a>)
+            </p>
+</li>
+<li class="change">
+<p>
+                Deprecated methods:
+        - DocumentService.createAndSaveNewTextDocument(Document)
+        - DocumentService.createAndSaveNewUrlDocument(Document)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_1981"></a><a name="issue_2516"></a>
+<p>
+                The ldap implementation should no longer be dependent on Microsoft Active Directory. Rewrote a big part of the ldap-configuration in "server.properties":
+        - "LdapUserName" is replaced by "LdapBindDn",
+        - "LdapUserObjectClass" is set to "inetOrgPerson" by default.
+        - "LdapUserIdentifyingAttribute" is replaced by "LdapUserAttribute.LoginName" which is only required if not using 'uid' in the "inetOrgPerson" objectclass. Ldap-attributes can now be arbitrarily mapped to user-properties. See the comments in "server.properties" for details.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=1981">Issue 1981</a>, <a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2516">Issue 2516</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2471"></a>
+<p>
+                Fixed a bug where removing a single phone number from a user had no effect.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2471">Issue 2471</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2485"></a>
+<p>
+                Use dos-style line-endings in the text-files in the zip file, and unix-style line-endings in the tarball.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2485">Issue 2485</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            developers</h2>
+<ul>
+<li class="change">
+<a name="issue_2488"></a>
+<p>
+                Instead of empty strings, use "localhost" for default database-host and "imcms" for default database-name.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2488">Issue 2488</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 1.10.2</h1>
+<h2>Of
+            interest
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<a name="issue_2344"></a>
+<p>
+                Added method Image.isEmpty() to determine whether an image is empty or not.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2344">Issue 2344</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2475"></a>
+<p>
+                Image.getWidth() and Image.getHeight() now return the actual size of the image as it will be displayed, instead of 0, unless the actual size couldn't be determined.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2475">Issue 2475</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2449"></a>
+<p>
+                Fixed a bug which caused includes to be done with the included document in adminmode.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2449">Issue 2449</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2454"></a>
+<p>
+                Image-tags containing filedocument-images are hidden from users without permissions to the filedocument.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2454">Issue 2454</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2445"></a>
+<p>
+                Fixed a mistake which prevented the imCMS-advertisement in "imcms_message.html" from being output at the beginning of every page.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2445">Issue 2445</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2406"></a>
+<p>
+                Allow files with extensions "jsp" and "js" to be edited in the file administrator ("FileAdmin").
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2406">Issue 2406</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2460"></a>
+<p>
+                Build a zip file/tarball so people don't have to download more than one file.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2460">Issue 2460</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2419"></a>
+<p>
+                Fixed a number of problems with the conference login.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2419">Issue 2419</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2462"></a>
+<p>
+                Fixed a bug with the linkeditor in browsers other than Internet Explorer.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2462">Issue 2462</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2327"></a>
+<p>
+                Made the html-editor optional through the use of a cookie.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2327">Issue 2327</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2418"></a>
+<p>
+                Fixed a bug with creating external links in the html-editor.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2418">Issue 2418</a>)
+            </p>
+</li>
+<li class="change">
+<p>
+                Fixed a couple of bugs related to creating new conferences and new conference-users.
+            </p>
+</li>
+<li class="change">
+<a name="issue_2316"></a>
+<p>
+                Made listing many users somewhat quicker.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2316">Issue 2316</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 1.10.1</h1>
+<h2>Of
+            interest
+            to
+            </h2>
+<ul>
+<li class="change">
+<a name="issue_2443"></a>
+<p>
+                Fixed exception and possible menu-deletion when trying to readd an already existing document to a menu sorted by "manual" order.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2443">Issue 2443</a>)
+            </p>
+</li>
+<li class="change">
+<p>
+                Included both english and swedish sql scripts in the distribution.
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 1.10.0</h1>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<a name="issue_2128"></a>
+<p>
+                Filedocuments of types "png", "gif", or "jpeg" can now be used as images.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2128">Issue 2128</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2128"></a>
+<p>
+                Completely redid the image-selecting interface to allow for the new filedocuments-as-images paradigm.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2128">Issue 2128</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2149"></a>
+<p>
+                Replaced dropdown for selecting document publisher with a user-select dialog, and made the document creator settable in the same manner.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2149">Issue 2149</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2088"></a>
+<p>
+                Allow filedocument filenames of up to 255 characters, truncating somewhat intelligently if needed.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2088">Issue 2088</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2387"></a>
+<p>
+                Only show links to documents which the user has at least read permission on, or which are visible to non-authorized users.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2387">Issue 2387</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2390"></a>
+<p>
+                Fixed exception when adding documents to a menu sorted by "manual" order.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2390">Issue 2390</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2367"></a>
+<p>
+                Setting the modified time of a document is now possible, but it will still be updated the next time the document is modified.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2367">Issue 2367</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            template creators</h2>
+<ul>
+<li class="change">
+<a name="issue_1622"></a>
+<p>
+                The label attribute now works for the include-tag: &lt;?imcms:include label="Include label"?&gt;
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=1622">Issue 1622</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2151"></a>
+<p>
+                The outputdescription-attribute of the documentcategories tag now takes two values, "true" or "only":
+        - "true": &lt;?imcms:documentcategories outputdescription="true"?&gt; will output "categoryname - categorydescription"
+        - "only": &lt;?imcms:documentcategories outputdescription="only"?&gt; will output "categorydescription"
+        - Not present: &lt;?imcms:documentcategories?&gt; will output "categoryname".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2151">Issue 2151</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<a name="issue_2424"></a>
+<p>
+                The file "host.properties" is gone, and everything is put in "server.properties".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2424">Issue 2424</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2354"></a>
+<p>
+                Worked a little more on indexing robustness.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2354">Issue 2354</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2362"></a>
+<p>
+                Made the indexing work at a lower priority.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2362">Issue 2362</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2365"></a>
+<p>
+                Remove documents from the index when deleted.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2365">Issue 2365</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2336"></a>
+<p>
+                Fixed a bug in the linkchecker where some broken links would be flagged as OK.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2336">Issue 2336</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_1886"></a>
+<p>
+                If "SessionCookieDomain" is set in "server.properties", a second JSESSIONID cookie will be set with the given domain.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=1886">Issue 1886</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<a name="issue_2344"></a>
+<p>
+                Added methods TextDocument.getTextFields(), TextDocument.getImages(), and TextDocument.getIncludes()
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2344">Issue 2344</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2351"></a>
+<p>
+                Added accessors Document.setVisibleInMenusForUnauthorizedUsers(boolean visibleInMenusForUnauthorizedUsers) and Document.isVisibleInMenusForUnauthorizedUsers()
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2351">Issue 2351</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2388"></a>
+<p>
+                Added accessor Document.setCreator(User creator)
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2388">Issue 2388</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2153"></a>
+<p>
+                Added method Document.getDocumentPermissionSetForUser()
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2153">Issue 2153</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2438"></a>
+<p>
+                Added accessors TextDocument.Menu.getSortOrder() and TextDocument.Menu.setSortOrder(int sortOrder)
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2438">Issue 2438</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2438"></a>
+<p>
+                Added method TextDocument.getMenus()
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2438">Issue 2438</a>)
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            developers</h2>
+<ul>
+<li class="change">
+<a name="issue_2149"></a>
+<p>
+                Removed user-"categories".
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2149">Issue 2149</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2039"></a>
+<p>
+                Refactored the code for creating and editing documents.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2039">Issue 2039</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 1.9.3</h1>
+<h2>Of
+            interest
+            to
+            </h2>
+<ul>
+<li class="change">
+<a name="issue_2387"></a>
+<p>
+                Only show links to documents which the user has at least read permission on, or which are visible to non-authorized users.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2387">Issue 2387</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 1.9.2</h1>
+<h2>Of
+            interest
+            to
+            </h2>
+<ul>
+<li class="change">
+<a name="issue_2390"></a>
+<p>
+                Fixed exception when adding documents to a menu sorted by "manual" order.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2390">Issue 2390</a>)
+            </p>
+</li>
+<li class="change">
+<a name="issue_2365"></a>
+<p>
+                Remove documents from the index when deleted.
+            
+                (<a class="issue" href="http://bugzilla.imcode.com/show_bug.cgi?id=2365">Issue 2365</a>)
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 1.9.1</h1>
+<h2>Of
+            interest
+            to
+            </h2>
+<ul>
+<li class="change">
+<p>
+                Made the indexing a little more robust.
+            </p>
+</li>
+</ul>
+<h1>
+        Changes in version 1.9.0</h1>
+<h2>Of
+            interest
+            to
+            users</h2>
+<ul>
+<li class="change">
+<p>
+                Simple/advanced view toggle for docinfo.
+            </p>
+</li>
+<li class="change">
+<p>
+                Admin-pages will now work on non-javascript-enabled browsers.
+            </p>
+</li>
+<li class="change">
+<p>
+                All admin-pages now use the new blue/white look.
+            </p>
+</li>
+<li class="change">
+<p>
+                The link checker will now also check linked images and urls in text-fields.
+            </p>
+</li>
+<li class="change">
+<p>
+                "Administer conferences" functionality moved to "List new/updated pages".
+            </p>
+</li>
+<li class="change">
+<p>
+                The session counter now counts sessions, not logins. This means that each visitor is only counted once per browser session, instead of once when entering the site and then again when logging in.
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            template creators</h2>
+<ul>
+<li class="change">
+<p>
+                New template tag: &lt;?imcms:contextpath?&gt; will be replaced by the "context path" of the webapp. The context path is the root path to the webapp, usually the name of the webapp preceded by a slash, for example "/imcms". This is useful when one wants to construct an absolute URL. Example: &lt;img src="&lt;?imcms:contextpath?&gt;/images/imCMSpower.gif" alt="Powered by imCMS"&gt;
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            administrators</h2>
+<ul>
+<li class="change">
+<p>
+                The webapp should now be possible to rename without having to change any templates.
+            </p>
+</li>
+<li class="change">
+<p>
+                We now return correct HTTP status codes: 404 for "Not found", and 403 for "Forbidden/Permission denied".
+            </p>
+</li>
+<li class="change">
+<p>
+                Changed database parameters to allow for different database-drivers: The parameters "Url", "Host", "Port", "DatabaseName" in imcms/WEB-INF/conf/server.properties were replaced by the single option "JdbcUrl", which for the Microsoft JDBC driver maps to the old parameters as follows: jdbc:microsoft:sqlserver://&lt;Host&gt;:&lt;Port&gt;;DatabaseName=&lt;DatabaseName&gt;
+            </p>
+</li>
+<li class="change">
+<p>
+                The "MaxConnectionCount" in server.properties is ignored by the Microsoft JDBC Driver, unless one sets the driver parameter "SelectMethod" to "cursor". To do this, append ";SelectMethod=cursor" (note the semicolon) to the JdbcUrl. The default is "SelectMethod=direct", and this causes the MS JDBC driver to clone connections internally. See http://support.microsoft.com/default.aspx?scid=kb;EN-US;313220 for more information.
+            </p>
+</li>
+<li class="change">
+<p>
+                Conference, billboard, and chat should now work on case sensitive filesystems, for example on linux.
+            </p>
+</li>
+<li class="change">
+<p>
+                Reindexing of documents is now scheduled every 24 hours from startup. Reindexing is done to a new directory, "imcms/WEB-INF/index.new", which replaces the current index "imcms/WEB-INF/index" when complete.
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            site developers</h2>
+<ul>
+<li class="change">
+<p>
+                Moved the apisamples from "/apisamples/" to "/imcms/docs/apisamples/".
+            </p>
+</li>
+<li class="change">
+<p>
+                DocumentService.saveChanges(Document) is now synchronized as a poor mans transaction to prevent database conflicts.
+            </p>
+</li>
+<li class="change">
+<p>
+                Added method DocumentService.getCategoryType(int categoryTypeId)
+            </p>
+</li>
+<li class="change">
+<p>
+                Added method DocumentService.createNewCategoryType(String name, int maxChoices)
+            </p>
+</li>
+<li class="change">
+<p>
+                Added method DocumentService.createNewCategory(String name, String description, String imageUrl, CategoryType categoryType)
+            </p>
+</li>
+<li class="change">
+<p>
+                Added method TemplateService.getAllTemplateGroups()
+            </p>
+</li>
+<li class="change">
+<p>
+                Added accessors Template.getId() and TemplateGroup.getId().
+            </p>
+</li>
+<li class="change">
+<p>
+                Added convenience method DocumentService.parseLuceneSearchQuery(String) which returns a SearchQuery parsed according to Lucene syntax, see http://jakarta.apache.org/lucene/docs/queryparsersyntax.html
+            </p>
+</li>
+</ul>
+<h2>Of
+            interest
+            to
+            developers</h2>
+<ul>
+<li class="change">
+<p>
+                Cleaned up the file organization in the project.
+            </p>
+</li>
+<li class="change">
+<p>
+                Renamed all the ant-targets using more consistent names.
+            </p>
+</li>
+<li class="change">
+<p>
+                The API now has its own connection pool, so developers using the API can't accidentally starve the system of connections.
+            </p>
+</li>
+<li class="change">
+<p>
+                Jakarta Velocity (http://jakarta.apache.org/velocity/) can now be used in admintemplates and JSP-pages.
+            </p>
+</li>
+<li class="change">
+<p>
+                Searchable tokens in the index may now only consist of letters, digits, and underscores, instead of non-whitespace. This makes html index a little bit better, so that for example &lt;b&gt;bold&lt;/b&gt; is indexed as two words ("b" and "bold").
+            </p>
+</li>
+</ul>
+</body>
+</html>

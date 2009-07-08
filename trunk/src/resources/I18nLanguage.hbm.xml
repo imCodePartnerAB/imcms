@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+<hibernate-mapping>
+  <!--
+  <query name="">
+    <![CDATA[
+    ]]>
+  </query>    
+  -->
+
+  <!-- Unique -->
+  <query name="I18nLanguage.getDefaultLanguage">
+    <![CDATA[
+      select l from I18nLanguage l where l.default is true
+    ]]>
+  </query>   
+  
+  <!-- Unique -->
+  <query name="I18nLanguage.getByCode">
+    <![CDATA[
+	  select l from I18nLanguage l where l.code = :code   
+    ]]>
+  </query>  
+  
+  <!-- Collection -->
+  <query name="I18nLanguage.missingMetaLanguages">
+    <![CDATA[
+	  select l from I18nLanguage l where l not in (select m.language from I18nMeta m where m.metaId = :metaId)
+    ]]>
+  </query>  
+</hibernate-mapping>

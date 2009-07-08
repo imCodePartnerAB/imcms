@@ -1,0 +1,9 @@
+/*
+För imCMS label attributet för text-taggarna. Kopiera över dessa till det vanliga stylesheetet
+Ändra utseende om så önskas.
+*/
+
+A.imcms_label:link, A.imcms_label:visited { font: 10px Verdana; color:#c00000; text-decoration:none; background-color:#ffffcc }
+A.imcms_label:active, A.imcms_label:hover { font: 10px Verdana; color:#000099; text-decoration:underline; background-color:#ffffcc }
+
+

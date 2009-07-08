@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Puppy Crawl//DTD Check Configuration 1.1//EN"
+        "http://www.puppycrawl.com/dtds/configuration_1_1.dtd">
+
+<module name="Checker">
+
+  <module name="TreeWalker">
+      
+    <module name="ConstantName">
+        <property name="format" value="^[A-Z][A-Z0-9]*(__?[A-Z0-9]+)*$|[Ll]og$"/>
+    </module>
+
+    <module name="EqualsHashCode"/>
+      
+    <module name="MemberName">
+        <property name="format" value="^[a-z][a-zA-Z0-9_]*$"/>
+    </module>
+
+    <module name="MethodName">
+        <property name="format" value="^[a-z][a-zA-Z0-9_]*$"/>
+    </module>
+
+    <module name="NeedBraces"/>
+      
+    <module name="PackageName">
+        <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+    </module>
+
+    <module name="StaticVariableName">
+        <property name="format" value="^[a-z][a-zA-Z0-9_]*$"/>
+    </module>
+
+    <module name="StringLiteralEquality"/>
+
+    <module name="TypeName"/>
+
+  </module>
+    
+  <module name="StrictDuplicateCode">
+      <property name="min" value="11"/>
+  </module>
+
+</module>

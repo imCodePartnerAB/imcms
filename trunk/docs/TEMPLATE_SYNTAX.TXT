@@ -1,0 +1,178 @@
+Tags used in text templates
+
+    Attributes available for all tags:
+        * pre - Inserted before the tag content if non-empty.
+        * post - Inserted after the tag content if non-empty.
+
+    All attributes allow html-entities, like "&#39;", "&lt;" or "&quot;".
+    Also, all attributes allow velocity code, exactly as for the <?imcms:velocity?>-tag,
+    for example:
+        pre="$request.getContextPath()"
+
+
+Block-tags
+
+
+    <?imcms:menu?> <?/imcms:menu?>
+
+        Used for displaying a list of links. Allows for creating new documents.
+
+        Attributes:
+            * no - The number of this menu in the text document.
+            * label - A small text describing the intended use for this menu.
+            * template - The template to use for displaying textdocuments linked from this menu.
+            * defaulttemplate - The template to use for new documents created in this menu.
+            * mode - Possible values:
+                - "write" - The content is only output if in "edit menu" mode.
+                - "read" - The content is only output if not in "edit menu" mode.
+
+
+    <?imcms:velocity?> <?/imcms:velocity?>
+
+        Lets you use Jakarta Velocity code in the template.
+
+        Objects available:
+            * $request - The javax.servlet.HttpServletRequest.
+            * $response - The javax.servlet.HttpServletResponse.
+            * $document - A com.imcode.imcms.api.TextDocument
+            * $viewing - A com.imcode.imcms.api.TextDocumentViewing
+
+
+Single tags
+
+
+    <?imcms:metaid?>
+
+        The id of the current document.
+
+
+    <?imcms:text?>
+
+        Displays a text.
+
+        Attributes:
+            * no - The number of this text in the text document.
+            * document - The document to get the textfield from (documentId or documentAlias),
+                        - if documentName is blank or NULL use text from current document.
+                        - don't output anything if not a valid text document.
+                        - when not current document only output if not in "edit text" mode.
+
+            * label - A small text describing the intended use for this text.
+            * rows - Indicate number of rows to use for the editor.
+            * mode - Possible values:
+                - "write" - The content is only output if in "edit text" mode.
+                - "read" - The content is only output if not in "edit text" mode.
+            * formats - List of allowed formats in the editor. Possible values:
+                - "none" or "html" - Do not use the html-editor to input HTML.
+                - "text" - Use plain text, newlines converted to "<BR>" and html escaped on output.
+
+
+    <?imcms:image?>
+
+        Displays an image.
+
+        Attributes:
+            * no - The number of this image in the text document.
+            * document - The document to get the image from (documentId or documentAlias),
+                        - if documentName is blank or NULL use image from current document.
+                        - don't output anything if not a valid text document.
+                        - when not current document only output if not in "edit image" mode.
+
+            * label - A small text describing the intended use for this image.
+            * class - Passes through to the result.
+            * style - Passes through to the result.
+            * usemap - Passes through to the result.
+            * mode - Possible values:
+                - "write" - The content is only output if in "edit image" mode.
+                - "read" - The content is only output if not in "edit image" mode.
+
+
+    <?imcms:include?>
+
+        Includes in the text document content from somewhere else.
+        One and only one of the attributes "path", "document", "file" or "url" must be set.
+
+        Attributes:
+            * no - The number of this include in the text document.
+            * label - A small text describing the intended use for this include.
+            * path - Include the output of another resource in the webapp, relative to the webapp root.
+                     Example: "/jsp/example.jsp".
+                     A TextDocumentViewing object is available in jsps included this way,
+                     through the method TextDocumentViewing.fromRequest(request).
+            * document - The id of another textdocument to include.
+                Allows for another attribute:
+                * template - The name of a template to use for the included textdocument.
+            * url - The url of a resource to include, usually an http-url.
+                The parameters of the request are sent along automatically.
+                Allows for other attributes:
+                * sendsessionid - Send the JSESSIONID cookie to the server.
+                * sendcookies - Send all other cookies to the server.
+                * sendmetaid - Send the id of the current document in the http header "X-Meta-Id".
+            * file - The name of a file in the "/WEB-INF/includes" directory.
+                This file can contain other tags.
+
+
+    <?imcms:datetime?>
+
+        Displays a date/time.
+
+        Attributes:
+            * type - Which date/time to display. Possible values:
+                - "now" - The default.
+                - "created" - The created date/time of the current document.
+                - "modified" - The modified date/time of the current document.
+                - "archived" - The archived date/time of the current document.
+                - "activated" - The published/activated date/time of the current document.
+            * format - The format to use. Uses the patterns of java.text.SimpleDateFormat.
+                See http://java.sun.com/j2se/1.4/docs/api/java/text/SimpleDateFormat.html
+            * lang - The language to use for formatting the date. An ISO 639 two-letter code.
+
+
+    <?imcms:user?>
+
+        Used for displaying user data.
+
+        Attributes:
+            * who - Which user's data to display. Default is the current user. Possible values:
+                - "creator" - The creator of the document.
+                - "publisher" - The publisher of the document.
+            * get - What data to display. Possible values:
+                - "firstname"
+                - "lastname"
+                - "name" - "firstname lastname".
+                - "company"
+                - "address"
+                - "zip"
+                - "city"
+                - "workphone"
+                - "mobilephone"
+                - "homephone"
+                - "email"
+
+
+    <?imcms:documentlanguage?>
+
+        The language of the current document.
+
+        Attributes:
+            * representation - Which language representation to use. Possible values:
+                - none - The default is to print it in the current user's language.
+                - "ISO 639-2" - A three-letter code according to ISO 639-2.
+
+
+    <?imcms:documentcategories?>
+
+        List categories of the current document.
+
+        Attributes:
+            * type - The name of a category-type. Restricts list to only categories of that type.
+            * separator - A string to separate the categories.
+            * outputdescription - If and how to output the category description. Possible values:
+                - none - Output just the category names.
+                - "true" - Append "- thedescription" to each category name.
+                - "only" - Output just the category descriptions.
+
+
+    <?imcms:contextpath?>
+
+        The path to the webapp on the server. Useful to avoid hardcoding "/imcms" everywhere.
