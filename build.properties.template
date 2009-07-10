@@ -13,7 +13,7 @@ imcms.version=6.0.0-SNAPSHOT
 # Required database schema version.
 # At startup time compared against value in database_version table - exact match is required.
 # This value is saved into <webapproot>/schema-version.txt file.
-db.schema.version = 6.0
+db.schema.version = 6.1
 
 deployroot =
 
