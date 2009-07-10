@@ -27,7 +27,7 @@ SET @ui__language = 'eng';
 
 -- Database schema version
 SET @database_version__major = 6;
-SET @database_version__minor = 0;
+SET @database_version__minor = 1;
 
 -- Predefined i18n languages indentities
 SET @language_id__english = 1;

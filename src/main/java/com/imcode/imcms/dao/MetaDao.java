@@ -63,7 +63,7 @@ public class MetaDao extends HibernateTemplate {
 		if (latestVersion == null) {
 			workingVersion = new DocumentVersion(documentId, 1, DocumentVersionTag.WORKING);			
 		} else {
-			// This must be always true
+			// This must always evaluates to true
 			if (latestVersion.getTag() == DocumentVersionTag.WORKING) {
 				latestVersion.setTag(DocumentVersionTag.POSTPONED);
 				update(latestVersion);
