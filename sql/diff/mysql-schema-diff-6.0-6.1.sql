@@ -222,8 +222,8 @@ ALTER TABLE text_doc_contents
 --
 UPDATE database_version
 SET
-  major = @database_version__major__new,
-  minor = @database_version__minor__new;   
+  major = 6,
+  minor = 1;   
 /*    
 -- Refactor i18n_meta table:
 CREATE TABLE __i18n_meta (
