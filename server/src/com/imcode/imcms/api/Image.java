@@ -8,6 +8,8 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 public class Image {
 
     private ImageDomainObject internalImage;
@@ -134,7 +136,7 @@ public class Image {
     }
     
     public String toHtmlUrl(String contextPath, Integer documentId, Integer imageIndex) {
-        return ImcmsImageUtils.getImageUrl(documentId, imageIndex, internalImage, contextPath);
+        return StringEscapeUtils.escapeHtml(ImcmsImageUtils.getImageUrl(documentId, imageIndex, internalImage, contextPath));
     }
     
     public String toHtmlTag(HttpServletRequest request, Properties attributes, Integer documentId, Integer imageIndex, boolean absolute) {
