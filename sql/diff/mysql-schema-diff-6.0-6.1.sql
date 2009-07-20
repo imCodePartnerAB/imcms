@@ -1,6 +1,6 @@
 -- Database schema version
-SET @database_version__major = 6;
-SET @database_version__minor = 1;
+SET @database_version__major_new = 6;
+SET @database_version__minor_new = 1;
 
 -- Change meta_version engine type
 CREATE TABLE __meta_version (
