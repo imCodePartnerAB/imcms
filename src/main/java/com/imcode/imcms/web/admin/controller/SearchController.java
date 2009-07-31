@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -36,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -46,11 +46,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.web.admin.AdminPageController;
 import com.imcode.imcms.web.admin.DocumentSearchQuery;
 import com.imcode.imcms.web.admin.FieldDateRange;
 import com.imcode.imcms.web.admin.IntegerRange;
 import com.imcode.imcms.web.admin.NameValuePair;
 import com.imcode.imcms.web.admin.PresetDateRange;
+import com.imcode.imcms.web.admin.AdminPageController.AdminModul;
 import com.imcode.imcms.web.admin.DocumentSearchQuery.Relationship;
 import com.imcode.imcms.web.admin.command.SearchDocumentsCommand;
 import com.imcode.imcms.web.admin.command.SearchDocumentsFoldCommand;
@@ -85,7 +87,7 @@ public class SearchController {
 			HttpServletRequest request, 
 			HttpServletResponse response, 
 			HttpSession session, 
-			Map<String, Object> model, 
+			ModelMap model, 
 			Locale locale) {
 		
 		ImcmsServices services = Imcms.getServices();
@@ -159,7 +161,6 @@ public class SearchController {
 		addSelectedUsers(users, command.getPublishers(), model, "publishers", "searchPublishers");
 		addSelectedCategories(command.getCategories(), model, "categories", "searchCategories");
 		
-		model.put("locale", locale);
 		model.put("roles", authMapper.getAllRoles());
 		model.put("templates", services.getTemplateMapper().getAllTemplates());
 		model.put("presetDateRanges", PresetDateRange.getStandardPresets(locale));
@@ -168,12 +169,18 @@ public class SearchController {
 		
 		String view = null;
 		
+		AdminPageController apc = new AdminPageController(model);
+		apc.setLocale(locale);
+		
 		if (command.isSearch()) {
-			view = "admin/search/search_results";
+			apc.setAdminModul(AdminModul.SEARCH_RESULTS);
+			view = apc.getPartialPage();
 		} else if (command.isClear()) {
-			view = "admin/search/search_form";
+			apc.setAdminModul(AdminModul.SEARCH_FORM);
+			view = apc.getPartialPage();
 		} else {
-			view = "admin/search/search";
+			apc.setAdminModul(AdminModul.SEARCH_FORM);
+			view = apc.getAdminPage();
 		}
 		
 		return view;
@@ -338,7 +345,7 @@ public class SearchController {
 	}
 	
 	private static void addSelectedUsers(UserDomainObject[] users, int[] selectedUserIds, 
-			Map<String, Object> model, String notSelectedKey, String selectedKey) {
+			ModelMap model, String notSelectedKey, String selectedKey) {
 		
 		List<NameValuePair> notSelectedUsers = new ArrayList<NameValuePair>(users.length);
 		List<NameValuePair> selectedUsers = new ArrayList<NameValuePair>();
@@ -374,7 +381,7 @@ public class SearchController {
 		model.put(selectedKey, selectedUsers);
 	}
 	
-	private static void addSelectedCategories(int[] selectedCategoryIds, Map<String, Object> model, 
+	private static void addSelectedCategories(int[] selectedCategoryIds, ModelMap model, 
 			String notSelectedKey, String selectedKey) {
 		
 		List<CategoryDomainObject> categories = Imcms.getServices().getCategoryMapper().getAllCategories();
