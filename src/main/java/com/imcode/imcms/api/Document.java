@@ -42,7 +42,7 @@ public class Document implements Serializable {
         this.contentManagementSystem = contentManagementSystem;
     }
 
-    DocumentDomainObject getInternal() {
+    public DocumentDomainObject getInternal() {
         return internalDocument;
     }
 

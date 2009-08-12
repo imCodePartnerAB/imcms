@@ -1,5 +1,8 @@
 package com.imcode.imcms.dao;
 
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+
 import java.util.List;
 
 import org.hibernate.Query;
@@ -151,14 +154,29 @@ public class ContentLoopDao extends HibernateTemplate {
 		return content;		
 	}	
 
+	/**
+	 * Create content loop with single content.
+	 * 
+	 * @param document
+	 * @param loopIndex
+	 * @param baseIndex
+	 * @return
+	 */
 	@Transactional
-	public ContentLoop createContentLoop(Integer documentId, Integer loopIndex, Integer baseIndex) {
+	public ContentLoop createContentLoop(TextDocumentDomainObject document, Integer loopIndex, Integer baseIndex) {
 		ContentLoop loop = new ContentLoop();
-		loop.setMetaId(documentId);
+		loop.setMetaId(document.getId());
+		loop.setMetaVersion(document.getVersion().getNumber());
 		loop.setIndex(loopIndex);
 		loop.setBaseIndex(baseIndex);
 		
-		save(loop);
+		Content content = new Content();
+		content.setOrderIndex(0);
+		content.setSequenceIndex(0);
+		
+		loop.getContents().add(content);
+		
+		save(loop);		
 		
 		return loop;
 	}

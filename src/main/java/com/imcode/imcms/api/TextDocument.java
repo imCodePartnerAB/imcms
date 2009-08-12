@@ -37,6 +37,11 @@ public class TextDocument extends Document {
                   ContentManagementSystem contentManagementSystem ) {
         super(textDocument, contentManagementSystem);
     }
+    
+    @Override
+    public TextDocumentDomainObject getInternal() {
+    	return (TextDocumentDomainObject)super.getInternal();
+    }
 
     /**
      * @return A SortedMap that contains the textFileds index as keys, and instaces of TextFields as values. Only the

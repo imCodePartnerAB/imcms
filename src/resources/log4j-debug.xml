@@ -96,6 +96,21 @@
         -->
     </root>
     
+    <category name="org.hibernate.SQL" additivity="false">
+        <priority value="all"/>
+        <appender-ref ref="ERROR"/>
+    </category>
+    
+    <category name="org.hibernate.type" additivity="false">
+        <priority value="all"/>
+        <appender-ref ref="ERROR"/>
+    </category>   
+    
+    <category name="org.hibernate.transaction" additivity="false">
+        <priority value="all"/>
+        <appender-ref ref="ERROR"/>
+    </category>          
+    
 <!--  
 org.hibernate.SQL        Log all SQL DML statements as they are executed
 org.hibernate.type  Log all JDBC parameters
