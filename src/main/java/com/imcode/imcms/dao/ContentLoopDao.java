@@ -163,10 +163,10 @@ public class ContentLoopDao extends HibernateTemplate {
 	 * @return
 	 */
 	@Transactional
-	public ContentLoop createContentLoop(TextDocumentDomainObject document, Integer loopIndex, Integer baseIndex) {
+	public ContentLoop createContentLoop(Integer metaId, Integer metaVersion, Integer loopIndex, Integer baseIndex) {
 		ContentLoop loop = new ContentLoop();
-		loop.setMetaId(document.getId());
-		loop.setMetaVersion(document.getVersion().getNumber());
+		loop.setMetaId(metaId);
+		loop.setMetaVersion(metaVersion);
 		loop.setIndex(loopIndex);
 		loop.setBaseIndex(baseIndex);
 		
