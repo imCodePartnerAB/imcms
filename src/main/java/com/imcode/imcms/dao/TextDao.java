@@ -73,7 +73,7 @@ public class TextDao extends HibernateTemplate {
 	 * Returns all texts for given document id, text index, text language and versions.
 	 * TODO: Reafactor out HQL call  
 	 */
-	@Transactional(propagation=Propagation.SUPPORTS)
+	@Transactional
 	public List<TextDomainObject> getTexts(Integer documentId, Integer index, I18nLanguage language, Collection<DocumentVersion> versions) {
 		String hql = String.format(
 			"SELECT t FROM Text t WHERE t.metaId = ? AND t.index = ? AND t.language.id = ? AND t.metaVersion IN (%s)",
@@ -94,6 +94,7 @@ public class TextDao extends HibernateTemplate {
 	/**
 	 * Returns text fields for the same document for all versions.
 	 */
+	@Transactional
 	public List<TextDomainObject> getTextsForAllVersions(Integer documentId, I18nLanguage language) {
 		String query = "SELECT t FROM Text t WHERE t.metaId = ? AND t.language = ?";
 		
@@ -103,6 +104,7 @@ public class TextDao extends HibernateTemplate {
 	/**
 	 * eturns text fields for the same document in version range.
 	 */
+	@Transactional
 	public List<TextDomainObject> getTextsForVersionsInRange(Integer documentId, 
 			I18nLanguage language, Integer versionFrom, Integer versionTo) {
 		
@@ -116,6 +118,7 @@ public class TextDao extends HibernateTemplate {
 	/**
 	 * Returns text fields for the same document in specific versions.
 	 */
+	@Transactional
 	public List<TextDomainObject> getTextsForVersions(Integer documentId, 
 			I18nLanguage language, Collection<Integer> versions) {
 		

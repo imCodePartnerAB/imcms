@@ -45,7 +45,7 @@ public class DocumentSaver {
      *   etc 
      */
     @Transactional     
-    void saveText(DocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveText(DocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
     	checkDocumentForSave(document);
     	
     	new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentText(text, user);
@@ -58,7 +58,7 @@ public class DocumentSaver {
      */
     // TODO: Should throw NoPermissionToEditDocumentException ?
     @Transactional    
-    void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) 
+    public void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) 
     throws DocumentSaveException {
     	try {
     		Integer documentId = document.getMeta().getId();
@@ -88,7 +88,7 @@ public class DocumentSaver {
      * Updates published or working document.
      */
     @Transactional
-    void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
+    public void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
                       final UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         checkDocumentForSave(document);
 
@@ -121,7 +121,7 @@ public class DocumentSaver {
      * @param document an instance of {@link TextDocumentDomainObject}
      */
     @Transactional
-    void createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         //checkDocumentForSave(document);
         //document.loadAllLazilyLoaded();
     	
@@ -166,7 +166,7 @@ public class DocumentSaver {
 
 
     @Transactional
-    void saveNewDocument(UserDomainObject user,
+    public void saveNewDocument(UserDomainObject user,
                          DocumentDomainObject document, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(document);
 

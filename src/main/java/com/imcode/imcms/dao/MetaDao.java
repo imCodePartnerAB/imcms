@@ -353,13 +353,13 @@ public class MetaDao extends HibernateTemplate {
 	 * @param documentId document id.
 	 * @return available versions for the document.
 	 */
-	@Transactional(propagation=Propagation.SUPPORTS)
+	@Transactional
 	public List<DocumentVersion> getDocumentVersions(Integer documentId) {
 		return findByNamedQueryAndNamedParam("DocumentVersion.getByDocumentId", 
 				"documentId", documentId);
 	}	
 	
-	@Transactional(propagation=Propagation.SUPPORTS)
+	@Transactional
 	public Integer getDocumentIdByAlias(String alias) {
 		return (Integer)getSession().getNamedQuery("DocumentProperty.getDocumentIdByAlias")
 			.setParameter("name", DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)
@@ -367,14 +367,14 @@ public class MetaDao extends HibernateTemplate {
 			.uniqueResult();
 	}
 	
-	@Transactional(propagation=Propagation.SUPPORTS)
+	@Transactional
 	public List<String> getAllAliases() {
 		return findByNamedQueryAndNamedParam(
 				"DocumentProperty.getAllAliases", "name", 
 				DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
 	}	
 	
-	@Transactional(propagation=Propagation.SUPPORTS)
+	@Transactional
 	public DocumentProperty getAliasProperty(String alias) {
 		return (DocumentProperty)getSession().getNamedQuery("DocumentProperty.getAliasProperty")
 			.setParameter("name", DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)
@@ -447,7 +447,7 @@ public class MetaDao extends HibernateTemplate {
 			.uniqueResult();
 	}
 	
-	@Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+	@Transactional
 	public Integer[] getMinMaxDocumentIds() {
 	    Object[] tuple = (Object[]) getSession().getNamedQuery("Meta.getMinMaxDocumentIds")
 	        .uniqueResult();

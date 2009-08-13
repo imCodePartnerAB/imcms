@@ -143,7 +143,7 @@ public class CategoryMapper extends HibernateTemplate {
     }
 
     @Transactional
-    void checkMaxDocumentCategoriesOfType(DocumentDomainObject document)
+    public void checkMaxDocumentCategoriesOfType(DocumentDomainObject document)
             throws MaxCategoryDomainObjectsOfTypeExceededException {
         CategoryTypeDomainObject[] categoryTypes = getAllCategoryTypes();
         for (int i = 0; i < categoryTypes.length; i++) {
@@ -190,7 +190,7 @@ public class CategoryMapper extends HibernateTemplate {
     }
     
     @SuppressWarnings("unchecked")
-    @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
+    @Transactional
     public List<CategoryDomainObject> getAllCategories() {
         return getSession().getNamedQuery("Category.getAll").list();
     }
