@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration 
+    xmlns:log4j="http://jakarta.apache.org/log4j/"
+    debug="true" threshold="all">
+    
+    <!-- Renderer for DocumentRequest -->
+    <!-- renderer
+        renderingClass="imcode.util.log.FakeRequestRenderer"
+        renderedClass="imcode.server.DocumentRequest"/-->
+    
+
+    <appender name="console" class="org.apache.log4j.ConsoleAppender">
+
+      <param name="threshold" value="all"/>
+
+    
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d %p [%c] - %m%n"/>
+        /* 
+        <param name="ConversionPattern" value="%d %p [%c][%X{user}] - %m%n"/>
+        <param name="ConversionPattern" value="%d %p [%c][%X{user}] - %m%n"/>
+        */     
+      </layout>   
+    </appender>        
+     
+    <!-- The accesslog (logs usermovements) -->
+    <appender name="ACCESS" class="imcode.util.log.DailyRollingFileAppender">
+        <param name="File" value="${com.imcode.imcms.path}/WEB-INF/logs/access.log"/>
+        <param name="DatePattern" value="'.'yyyy-MM"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- The mainlog (captures edits and changes) -->
+    <appender name="MAIN" class="imcode.util.log.DailyRollingFileAppender">
+        <param name="File" value="${com.imcode.imcms.path}/WEB-INF/logs/main.log"/>
+        <param name="DatePattern" value="'.'yyyy-MM"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- The errorlog (captures everything that doesn't go to one of the above. -->
+    <appender name="ERROR" class="imcode.util.log.DailyRollingFileAppender">
+        <param name="File" value="${com.imcode.imcms.path}/WEB-INF/logs/error.log"/>
+        <param name="DatePattern" value="'.'yyyy-MM"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c %x - %m%n"/>
+        </layout>
+    </appender>
+    
+    <!--  -->
+    <appender name="file" class="org.apache.log4j.FileAppender">
+        <param name="File" value="${com.imcode.imcms.path}/WEB-INF/logs/all.log"/>
+        
+      <!-- 
+      <param name="threshold" value="all"/>
+      -->
+    
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d %p [%c] - %m%n"/>
+        <!-- 
+        <param name="ConversionPattern" value="%d %p [%c][%X{user}] - %m%n"/>
+        <param name="ConversionPattern" value="%d %p [%c][%X{user}] - %m%n"/>
+        -->     
+      </layout>   
+        
+    </appender>    
+
+    <!-- Set up accesslog with priority 'debug' -->
+    <category name="com.imcode.imcms.log.access" additivity="false">
+        <priority value="debug"/>
+        <appender-ref ref="ACCESS"/>
+    </category>
+
+    <!-- Set up mainlog with priority 'debug' -->
+    <category name="com.imcode.imcms.log.main" additivity="false">
+        <priority value="debug"/>
+        <appender-ref ref="MAIN"/>
+    </category>
+
+    <category name="org.apache" additivity="false">
+        <priority value="error"/>
+        <appender-ref ref="ERROR"/>
+    </category>
+    
+    <!-- Set up the errorlog with priority 'debug' -->
+    <root>
+        <level value="all"/>
+        <appender-ref ref="ERROR"/>
+        <!-- 
+        <appender-ref ref="console"/>
+        -->
+    </root>
+    
+    <category name="org.hibernate.SQL" additivity="false">
+        <priority value="all"/>
+        <appender-ref ref="ERROR"/>
+<appender-ref ref="console"/>
+    </category>
+    
+    <category name="org.hibernate.type" additivity="false">
+        <priority value="all"/>
+        <appender-ref ref="ERROR"/>
+<appender-ref ref="console"/>
+    </category>   
+    
+    <category name="org.hibernate.transaction" additivity="false">
+        <priority value="all"/>
+        <appender-ref ref="ERROR"/>
+<appender-ref ref="console"/>
+    </category>          
+    
+<!--  
+org.hibernate.SQL        Log all SQL DML statements as they are executed
+org.hibernate.type  Log all JDBC parameters
+org.hibernate.tool.hbm2ddl  Log all SQL DDL statements as they are executed
+org.hibernate.pretty    Log the state of all entities (max 20 entities) associated with the session at flush time
+org.hibernate.cache     Log all second-level cache activity
+org.hibernate.transaction   Log transaction related activity
+org.hibernate.jdbc  Log all JDBC resource acquisition
+org.hibernate.hql.ast.AST   Log HQL and SQL ASTs during query parsing
+org.hibernate.secure    Log all JAAS authorization requests
+org.hibernate   Log everything (a lot of information, but very useful for troubleshooting) 
+-->    
+
+</log4j:configuration>

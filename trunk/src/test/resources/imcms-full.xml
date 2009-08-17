@@ -1,0 +1,203 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <browser_docs/>
+  <browsers browser_id="1" name="Internet Explorer" user_agent="%MSIE%" value="2"/>
+  <browsers browser_id="2" name="Netscape" user_agent="Mozilla%(%;%[UIN][);]%" value="2"/>
+  <browsers browser_id="3" name="Internet Explorer 3" user_agent="%MSIE 3%" value="4"/>
+  <browsers browser_id="4" name="Internet Explorer 4" user_agent="%MSIE 4%" value="4"/>
+  <browsers browser_id="5" name="Internet Explorer 5" user_agent="%MSIE 5%" value="4"/>
+  <browsers browser_id="6" name="Internet Explorer 6" user_agent="%MSIE 6%" value="4"/>
+  <browsers browser_id="7" name="Netscape 3" user_agent="Mozilla/3%(%;%[UIN][ );]%" value="4"/>
+  <browsers browser_id="8" name="Netscape 4" user_agent="Mozilla/4%(%;%[UIN][ );]%" value="4"/>
+  <browsers browser_id="9" name="Netscape 6" user_agent="Mozilla/5%(%;%[UIN][ );]%" value="4"/>
+  <browsers browser_id="10" name="Netscape 7" user_agent="Mozilla%/5;%netscape/7%" value="4"/>
+  <browsers browser_id="11" name="Windows" user_agent="%win%" value="1"/>
+  <browsers browser_id="12" name="Macintosh" user_agent="%mac%" value="1"/>
+  <browsers browser_id="13" name="Windows Internet Explorer" user_agent="%MSIE%win%" value="3"/>
+  <browsers browser_id="14" name="Windows Internet Explorer 3" user_agent="%MSIE 3%win%" value="5"/>
+  <browsers browser_id="15" name="Windows Internet Explorer 4" user_agent="%MSIE 4%win%" value="5"/>
+  <browsers browser_id="16" name="Windows Internet Explorer 5.0" user_agent="%MSIE 5.0%win%" value="5"/>
+  <browsers browser_id="17" name="Windows Internet Explorer 5.5" user_agent="%MSIE 5.5%win%" value="5"/>
+  <browsers browser_id="18" name="Windows Internet Explorer 6" user_agent="%MSIE 6%win%" value="5"/>
+  <browsers browser_id="19" name="Windows Netscape" user_agent="Mozilla%(%win%;%[UIN][ );]%" value="3"/>
+  <browsers browser_id="20" name="Windows Netscape 3" user_agent="Mozilla/3%(%win%;%[UIN][ );]%" value="5"/>
+  <browsers browser_id="21" name="Windows Netscape 4" user_agent="Mozilla/4%(%win%;%[UIN][ );]%" value="5"/>
+  <browsers browser_id="22" name="Windows Netscape 6" user_agent="Mozilla/5%(%win%;%[UIN][ );]%" value="5"/>
+  <browsers browser_id="23" name="Windows Netscape 7" user_agent="Mozilla/5%(%win%netscape/7%" value="5"/>
+  <browsers browser_id="24" name="Macintosh Internet Explorer" user_agent="%MSIE%mac%" value="3"/>
+  <browsers browser_id="25" name="Macintosh Internet Explorer 3" user_agent="%MSIE 3%mac%" value="5"/>
+  <browsers browser_id="26" name="Macintosh Internet Explorer 4" user_agent="%MSIE 4%mac%" value="5"/>
+  <browsers browser_id="27" name="Macintosh Internet Explorer 5" user_agent="%MSIE 5%mac%" value="5"/>
+  <browsers browser_id="28" name="Macintosh Netscape" user_agent="Mozilla%(%mac%;%[UIN][ );]%" value="3"/>
+  <browsers browser_id="29" name="Macintosh Netscape 3" user_agent="Mozilla/3%(%mac%;%[UIN][ );]%" value="5"/>
+  <browsers browser_id="30" name="Macintosh Netscape 4" user_agent="Mozilla/4%(%mac%;%[UIN][ );]%" value="5"/>
+  <browsers browser_id="31" name="Macintosh Netscape 6" user_agent="Mozilla/5%(%mac%;%[UIN][ );]%" value="5"/>
+  <categories/>
+  <category_types/>
+  <childs/>
+  <childs_history/>
+  <content_loops/>
+  <contents content_id="1" content_no="1" meta_id="1001" base_index="10000"/>
+  <database_version major="5" minor="3"/>
+  <doc_permission_sets/>
+  <doc_permission_sets_ex/>
+  <doc_permissions permission_id="65536" doc_type="2" lang_prefix="eng" description="Edit texts"/>
+  <doc_permissions permission_id="65536" doc_type="2" lang_prefix="swe" description="�ndra text"/>
+  <doc_permissions permission_id="65536" doc_type="5" lang_prefix="eng" description="Edit"/>
+  <doc_permissions permission_id="65536" doc_type="5" lang_prefix="swe" description="Redigera"/>
+  <doc_permissions permission_id="65536" doc_type="6" lang_prefix="eng" description="Edit"/>
+  <doc_permissions permission_id="65536" doc_type="6" lang_prefix="swe" description="Redigera"/>
+  <doc_permissions permission_id="65536" doc_type="7" lang_prefix="eng" description="Edit"/>
+  <doc_permissions permission_id="65536" doc_type="7" lang_prefix="swe" description="Redigera"/>
+  <doc_permissions permission_id="65536" doc_type="8" lang_prefix="eng" description="Edit"/>
+  <doc_permissions permission_id="65536" doc_type="8" lang_prefix="swe" description="Redigera"/>
+  <doc_permissions permission_id="65536" doc_type="101" lang_prefix="eng" description="Edit"/>
+  <doc_permissions permission_id="65536" doc_type="101" lang_prefix="swe" description="Redigera"/>
+  <doc_permissions permission_id="65536" doc_type="102" lang_prefix="eng" description="Edit"/>
+  <doc_permissions permission_id="65536" doc_type="102" lang_prefix="swe" description="Redigera"/>
+  <doc_permissions permission_id="131072" doc_type="2" lang_prefix="eng" description="Edit pictures"/>
+  <doc_permissions permission_id="131072" doc_type="2" lang_prefix="swe" description="�ndra bild"/>
+  <doc_permissions permission_id="262144" doc_type="2" lang_prefix="eng" description="Edit menus"/>
+  <doc_permissions permission_id="262144" doc_type="2" lang_prefix="swe" description="�ndra meny"/>
+  <doc_permissions permission_id="524288" doc_type="2" lang_prefix="eng" description="Change template"/>
+  <doc_permissions permission_id="524288" doc_type="2" lang_prefix="swe" description="�ndra utseende"/>
+  <doc_permissions permission_id="1048576" doc_type="2" lang_prefix="eng" description="Change include"/>
+  <doc_permissions permission_id="1048576" doc_type="2" lang_prefix="swe" description="�ndra include"/>
+  <doc_types doc_type="2" lang_prefix="eng" type="Text page"/>
+  <doc_types doc_type="2" lang_prefix="swe" type="Textsida"/>
+  <doc_types doc_type="5" lang_prefix="eng" type="External link"/>
+  <doc_types doc_type="5" lang_prefix="swe" type="Extern l�nk"/>
+  <doc_types doc_type="6" lang_prefix="eng" type="Browser controlled link"/>
+  <doc_types doc_type="6" lang_prefix="swe" type="Browserkontroll"/>
+  <doc_types doc_type="7" lang_prefix="eng" type="HTML-document"/>
+  <doc_types doc_type="7" lang_prefix="swe" type="HTML-dokument"/>
+  <doc_types doc_type="8" lang_prefix="eng" type="File"/>
+  <doc_types doc_type="8" lang_prefix="swe" type="Fil"/>
+  <document_categories/>
+  <document_properties/>
+  <document_search_log/>
+  <fileupload_docs/>
+  <frameset_docs/>
+  <i18n_languages language_id="1" code="en" name="English" native_name="English" is_default="true" is_enabled="true"/>
+  <i18n_languages language_id="2" code="sv" name="Swedish" native_name="Svenska" is_default="false" is_enabled="true"/>
+  <i18n_meta i18n_meta_id="1" language_id="1" meta_id="1001" meta_enabled="true" meta_headline="Start page" meta_text="" meta_image=""/>
+  <i18n_meta i18n_meta_id="2" language_id="2" meta_id="1001" meta_enabled="true" meta_headline="Startsidan" meta_text="" meta_image=""/>
+  <images meta_id="1001" width="0" height="0" border="0" v_space="0" h_space="0" name="3" image_name="" target="_blank" align="top" alt_text="" low_scr="" imgurl="imCMSpower.gif" linkurl="http://www.imcms.net" type="0" language_id="1" image_id="1"/>
+  <images meta_id="1001" width="0" height="0" border="0" v_space="0" h_space="0" name="3" image_name="" target="_blank" align="top" alt_text="" low_scr="" imgurl="imCMSpower.gif" linkurl="http://www.imcms.net" type="0" language_id="2" image_id="2"/>
+  <images_history/>
+  <includes/>
+  <ip_accesses/>
+  <keywords/>
+  <lang_prefixes lang_id="1" lang_prefix="swe"/>
+  <lang_prefixes lang_id="2" lang_prefix="eng"/>
+  <languages lang_prefix="eng" user_prefix="eng" language="English"/>
+  <languages lang_prefix="eng" user_prefix="swe" language="Engelska"/>
+  <languages lang_prefix="swe" user_prefix="eng" language="Swedish"/>
+  <languages lang_prefix="swe" user_prefix="swe" language="Svenska"/>
+  <menus/>
+  <menus_history/>
+  <meta meta_id="1001" doc_type="2" owner_id="1" permissions="0" shared="0" show_meta="0" lang_prefix="eng" date_created="2008-10-23 15:45:52.0" date_modified="2008-10-23 15:45:52.0" disable_search="0" target="_self" activate="1" status="2" publication_start_datetime="2008-10-23 15:45:52.0" missing_i18n_show_rule="DO_NOT_SHOW"/>
+  <meta_section/>
+  <mime_types mime_id="0" mime_name="Other..." mime="other" lang_prefix="eng"/>
+  <mime_types mime_id="0" mime_name="Annan..." mime="other" lang_prefix="swe"/>
+  <mime_types mime_id="1" mime_name="Plain text" mime="text/plain" lang_prefix="eng"/>
+  <mime_types mime_id="1" mime_name="Vanlig text" mime="text/plain" lang_prefix="swe"/>
+  <mime_types mime_id="2" mime_name="HTML-document" mime="text/html" lang_prefix="eng"/>
+  <mime_types mime_id="2" mime_name="HTML-dokument" mime="text/html" lang_prefix="swe"/>
+  <mime_types mime_id="3" mime_name="Binary file" mime="application/octet-stream" lang_prefix="eng"/>
+  <mime_types mime_id="3" mime_name="Bin�rfil" mime="application/octet-stream" lang_prefix="swe"/>
+  <mime_types mime_id="4" mime_name="Shockwave Flash" mime="application/x-shockwave-flash" lang_prefix="eng"/>
+  <mime_types mime_id="4" mime_name="Shockwave Flash" mime="application/x-shockwave-flash" lang_prefix="swe"/>
+  <mime_types mime_id="5" mime_name="Shockwave Director" mime="application/x-director" lang_prefix="eng"/>
+  <mime_types mime_id="5" mime_name="Shockwave Director" mime="application/x-director" lang_prefix="swe"/>
+  <mime_types mime_id="6" mime_name="PNG-image" mime="image/png" lang_prefix="eng"/>
+  <mime_types mime_id="6" mime_name="PNG-bild" mime="image/png" lang_prefix="swe"/>
+  <mime_types mime_id="7" mime_name="GIF-image" mime="image/gif" lang_prefix="eng"/>
+  <mime_types mime_id="7" mime_name="GIF-bild" mime="image/gif" lang_prefix="swe"/>
+  <mime_types mime_id="8" mime_name="JPEG-image" mime="image/jpeg" lang_prefix="eng"/>
+  <mime_types mime_id="8" mime_name="JPEG-bild" mime="image/jpeg" lang_prefix="swe"/>
+  <mime_types mime_id="9" mime_name="Adobe Acrobat-document" mime="application/pdf" lang_prefix="eng"/>
+  <mime_types mime_id="9" mime_name="Adobe Acrobat-dokument" mime="application/pdf" lang_prefix="swe"/>
+  <mime_types mime_id="10" mime_name="Wav-sound" mime="audio/x-wav" lang_prefix="eng"/>
+  <mime_types mime_id="10" mime_name="Wav-ljud" mime="audio/x-wav" lang_prefix="swe"/>
+  <mime_types mime_id="11" mime_name="Zip-file" mime="application/zip" lang_prefix="eng"/>
+  <mime_types mime_id="11" mime_name="Zip-fil" mime="application/zip" lang_prefix="swe"/>
+  <mime_types mime_id="12" mime_name="AVI-movie" mime="video/x-msvideo" lang_prefix="eng"/>
+  <mime_types mime_id="12" mime_name="AVI-film" mime="video/x-msvideo" lang_prefix="swe"/>
+  <mime_types mime_id="13" mime_name="Quicktime-movie" mime="video/quicktime" lang_prefix="eng"/>
+  <mime_types mime_id="13" mime_name="Quicktime-film" mime="video/quicktime" lang_prefix="swe"/>
+  <mime_types mime_id="14" mime_name="MPEG-movie" mime="video/mpeg" lang_prefix="eng"/>
+  <mime_types mime_id="14" mime_name="MPEG-film" mime="video/mpeg" lang_prefix="swe"/>
+  <mime_types mime_id="15" mime_name="MS Word-document" mime="application/msword" lang_prefix="eng"/>
+  <mime_types mime_id="15" mime_name="MS Word-dokument" mime="application/msword" lang_prefix="swe"/>
+  <mime_types mime_id="16" mime_name="MS Excel-document" mime="application/vnd.ms-excel" lang_prefix="eng"/>
+  <mime_types mime_id="16" mime_name="MS Excel-dokument" mime="application/vnd.ms-excel" lang_prefix="swe"/>
+  <mime_types mime_id="17" mime_name="MS Powerpoint-document" mime="application/vnd.ms-powerpoint" lang_prefix="eng"/>
+  <mime_types mime_id="17" mime_name="MS Powerpoint-dokument" mime="application/vnd.ms-powerpoint" lang_prefix="swe"/>
+  <new_doc_permission_sets/>
+  <new_doc_permission_sets_ex/>
+  <permission_sets set_id="0" description="Full"/>
+  <permission_sets set_id="1" description="Begr�nsad 1"/>
+  <permission_sets set_id="2" description="Begr�nsad 2"/>
+  <permission_sets set_id="3" description="L�s"/>
+  <permissions permission_id="1" lang_prefix="eng" description="Edit headline"/>
+  <permissions permission_id="1" lang_prefix="swe" description="�ndra rubrik"/>
+  <permissions permission_id="2" lang_prefix="eng" description="Edit docinfo"/>
+  <permissions permission_id="2" lang_prefix="swe" description="�ndra dokinfo"/>
+  <permissions permission_id="4" lang_prefix="eng" description="Edit permissions"/>
+  <permissions permission_id="4" lang_prefix="swe" description="�ndra r�ttigheter f�r roller"/>
+  <permissions permission_id="8" lang_prefix="eng" description="Create document"/>
+  <permissions permission_id="8" lang_prefix="swe" description="Skapa dokument"/>
+  <phones/>
+  <phonetypes phonetype_id="0" typename="Annat" lang_id="1"/>
+  <phonetypes phonetype_id="0" typename="Other" lang_id="2"/>
+  <phonetypes phonetype_id="1" typename="Bostad" lang_id="1"/>
+  <phonetypes phonetype_id="1" typename="Home" lang_id="2"/>
+  <phonetypes phonetype_id="2" typename="Arbete" lang_id="1"/>
+  <phonetypes phonetype_id="2" typename="Work" lang_id="2"/>
+  <phonetypes phonetype_id="3" typename="Mobil" lang_id="1"/>
+  <phonetypes phonetype_id="3" typename="Mobile" lang_id="2"/>
+  <phonetypes phonetype_id="4" typename="Fax" lang_id="1"/>
+  <phonetypes phonetype_id="4" typename="Fax" lang_id="2"/>
+  <profiles/>
+  <roles role_id="0" role_name="Superadmin" permissions="0" admin_role="1"/>
+  <roles role_id="1" role_name="Useradmin" permissions="0" admin_role="2"/>
+  <roles role_id="2" role_name="Users" permissions="1" admin_role="0"/>
+  <roles_rights role_id="2" meta_id="1001" set_id="3"/>
+  <sections/>
+  <stats/>
+  <sys_data sys_id="0" type_id="0" value="1001"/>
+  <sys_data sys_id="1" type_id="1" value="2"/>
+  <sys_data sys_id="2" type_id="2" value="2008-10-23 15:45:52"/>
+  <sys_data sys_id="3" type_id="3" value=""/>
+  <sys_data sys_id="4" type_id="4" value=""/>
+  <sys_data sys_id="5" type_id="5" value=""/>
+  <sys_data sys_id="6" type_id="6" value=""/>
+  <sys_data sys_id="7" type_id="7" value=""/>
+  <sys_types type_id="0" name="StartDocument"/>
+  <sys_types type_id="1" name="SessionCounter"/>
+  <sys_types type_id="2" name="SessionCounterDate"/>
+  <sys_types type_id="3" name="SystemMessage"/>
+  <sys_types type_id="4" name="ServerMaster"/>
+  <sys_types type_id="5" name="ServerMasterAddress"/>
+  <sys_types type_id="6" name="WebMaster"/>
+  <sys_types type_id="7" name="WebMasterAddress"/>
+  <templategroups group_id="0" group_name="normal"/>
+  <templates_cref group_id="0" template_name="demo"/>
+  <text_docs meta_id="1001" template_name="demo" group_id="0"/>
+  <texts meta_id="1001" name="1" text="&lt;h3&gt;Welcome to imCMS&lt;/h3&gt;" type="1" counter="1" language_id="1"/>
+  <texts meta_id="1001" name="2" text="&lt;a href=&quot;&lt;?imcms:contextpath?&gt;/login/&quot; title=&quot;Link to login-page&quot;&gt;&lt;b&gt;Log in!&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;&lt;?imcms:contextpath?&gt;/servlet/SearchDocuments&quot; target=&quot;_blank&quot; title=&quot;Link to search-page&quot;&gt;&lt;b&gt;Search-page&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  Opens in new window.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;@documentationwebappurl@/&quot; target=&quot;_blank&quot; title=&quot;Link to documentation-site&quot;&gt;&lt;b&gt;Documentation&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  External site, opens in new window.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;http://www.imcms.net&quot; target=&quot;_blank&quot; title=&quot;Link to www.imcms.net&quot;&gt;&lt;b&gt;More about imCMS&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  imCMS Product-site. External site, opens in new window.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;&lt;?imcms:contextpath?&gt;/imcms/docs/&quot; target=&quot;_blank&quot; title=&quot;Link to included documentation.&quot;&gt;&lt;b&gt;Included documentation.&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  For administrators and developers, in english. Opens in new window.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;&lt;?imcms:contextpath?&gt;/imcms/docs/apisamples/&quot; target=&quot;_blank&quot; title=&quot;Link to API-samples&quot;&gt;&lt;b&gt;API examples&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  Only for developers, in english. Opens in new window.&lt;br&gt;&#xD;&#xA;  Note! Only to be used in test environment - not sites for public use." type="1" counter="2" language_id="1"/>
+  <texts meta_id="1001" name="1" text="&lt;h3&gt;Välkommen till imCMS&lt;/h3&gt;" type="1" counter="3" language_id="2"/>
+  <texts meta_id="1001" name="2" text="&lt;a href=&quot;&lt;?imcms:contextpath?&gt;/login/&quot; title=&quot;Länk till inloggningssida&quot;&gt;&lt;b&gt;Logga in!&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;&lt;?imcms:contextpath?&gt;/servlet/SearchDocuments&quot; target=&quot;_blank&quot; title=&quot;Länk till söksida&quot;&gt;&lt;b&gt;Söksida&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  Öppnas i nytt fönster.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;@documentationwebappurl@/&quot; target=&quot;_blank&quot; title=&quot;Länk till dokumentationssajt&quot;&gt;&lt;b&gt;Dokumentation&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  Extern sajt, öppnas i nytt fönster.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;http://www.imcms.net&quot; target=&quot;_blank&quot; title=&quot;Länk till www.imcms.net&quot;&gt;&lt;b&gt;Mer om imCMS&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  Produktsajt om imCMS. Extern sajt, öppnas i nytt fönster.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;&lt;?imcms:contextpath?&gt;/imcms/docs/&quot; target=&quot;_blank&quot; title=&quot;Länk till medföljande dokumentation.&quot;&gt;&lt;b&gt;Medföljande dokumentation&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  För administratörer och utvecklare, på engelska. Öppnas i nytt fönster.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;&lt;?imcms:contextpath?&gt;/imcms/docs/apisamples/&quot; target=&quot;_blank&quot; title=&quot;Länk till API-exempel&quot;&gt;&lt;b&gt;API-exempel&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  Endast för utvecklare, på engelska. Öppnas i nytt fönster.&lt;br&gt;&#xD;&#xA;  OBS! Endast för testmiljö - använd inte på publika sajter." type="1" counter="4" language_id="2"/>
+  <texts_history meta_id="1001" name="1" text="&lt;h3&gt;Welcome to imCMS&lt;/h3&gt;" type="1" modified_datetime="2008-10-23 15:45:52.0" user_id="1" counter="1" language_id="1"/>
+  <texts_history meta_id="1001" name="2" text="&lt;a href=&quot;&lt;?imcms:contextpath?&gt;/login/&quot; title=&quot;Link to login-page&quot;&gt;&lt;b&gt;Log in!&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;&lt;?imcms:contextpath?&gt;/servlet/SearchDocuments&quot; target=&quot;_blank&quot; title=&quot;Link to search-page&quot;&gt;&lt;b&gt;Search-page&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  Opens in new window.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;@documentationwebappurl@/&quot; target=&quot;_blank&quot; title=&quot;Link to documentation-site&quot;&gt;&lt;b&gt;Documentation&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  External site, opens in new window.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;http://www.imcms.net&quot; target=&quot;_blank&quot; title=&quot;Link to www.imcms.net&quot;&gt;&lt;b&gt;More about imCMS&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  imCMS Product-site. External site, opens in new window.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;&lt;?imcms:contextpath?&gt;/imcms/docs/&quot; target=&quot;_blank&quot; title=&quot;Link to included documentation.&quot;&gt;&lt;b&gt;Included documentation.&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  For administrators and developers, in english. Opens in new window.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;&lt;?imcms:contextpath?&gt;/imcms/docs/apisamples/&quot; target=&quot;_blank&quot; title=&quot;Link to API-samples&quot;&gt;&lt;b&gt;API examples&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  Only for developers, in english. Opens in new window.&lt;br&gt;&#xD;&#xA;  Note! Only to be used in test environment - not sites for public use." type="1" modified_datetime="2008-10-23 15:45:52.0" user_id="1" counter="2" language_id="1"/>
+  <texts_history meta_id="1001" name="1" text="&lt;h3&gt;Välkommen till imCMS&lt;/h3&gt;" type="1" modified_datetime="2008-10-23 15:45:52.0" user_id="1" counter="3" language_id="2"/>
+  <texts_history meta_id="1001" name="2" text="&lt;a href=&quot;&lt;?imcms:contextpath?&gt;/login/&quot; title=&quot;Länk till inloggningssida&quot;&gt;&lt;b&gt;Logga in!&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;&lt;?imcms:contextpath?&gt;/servlet/SearchDocuments&quot; target=&quot;_blank&quot; title=&quot;Länk till söksida&quot;&gt;&lt;b&gt;Söksida&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  Öppnas i nytt fönster.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;@documentationwebappurl@/&quot; target=&quot;_blank&quot; title=&quot;Länk till dokumentationssajt&quot;&gt;&lt;b&gt;Dokumentation&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  Extern sajt, öppnas i nytt fönster.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;http://www.imcms.net&quot; target=&quot;_blank&quot; title=&quot;Länk till www.imcms.net&quot;&gt;&lt;b&gt;Mer om imCMS&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  Produktsajt om imCMS. Extern sajt, öppnas i nytt fönster.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;&lt;?imcms:contextpath?&gt;/imcms/docs/&quot; target=&quot;_blank&quot; title=&quot;Länk till medföljande dokumentation.&quot;&gt;&lt;b&gt;Medföljande dokumentation&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  För administratörer och utvecklare, på engelska. Öppnas i nytt fönster.&lt;br&gt;&lt;br&gt;&#xD;&#xA;  &lt;a href=&quot;&lt;?imcms:contextpath?&gt;/imcms/docs/apisamples/&quot; target=&quot;_blank&quot; title=&quot;Länk till API-exempel&quot;&gt;&lt;b&gt;API-exempel&lt;/b&gt;&lt;/a&gt;&lt;br&gt;&#xD;&#xA;  Endast för utvecklare, på engelska. Öppnas i nytt fönster.&lt;br&gt;&#xD;&#xA;  OBS! Endast för testmiljö - använd inte på publika sajter." type="1" modified_datetime="2008-10-23 15:45:52.0" user_id="1" counter="4" language_id="2"/>
+  <url_docs/>
+  <user_rights/>
+  <user_roles_crossref user_id="1" role_id="0"/>
+  <user_roles_crossref user_id="2" role_id="2"/>
+  <useradmin_role_crossref/>
+  <users user_id="1" login_name="admin" login_password="admin" first_name="Admin" last_name="Super" title="" company="" address="" city="" zip="" country="" county_council="" email="" external="0" active="1" create_date="2008-10-23 15:45:52.0" language="eng"/>
+  <users user_id="2" login_name="user" login_password="user" first_name="User" last_name="Extern" title="" company="" address="" city="" zip="" country="" county_council="" email="" external="0" active="1" create_date="2008-10-23 15:45:52.0" language="eng"/>
+</dataset>

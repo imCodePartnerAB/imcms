@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+<hibernate-mapping>
+  <!--
+  <query name="">
+    <![CDATA[
+    ]]>
+  </query>    
+  -->
+  
+  <!-- Unique -->
+  <query name="DocumentProperty.getDocumentIdByAlias">
+    <![CDATA[
+		SELECT p.documentId
+		FROM DocumentProperty p 
+		WHERE p.name = :name AND value= :value
+    ]]>
+  </query> 
+  
+  <!-- Collection -->
+  <query name="DocumentProperty.getAllAliases">
+    <![CDATA[
+		SELECT p.value
+		FROM DocumentProperty p 
+		WHERE p.name = :name
+		ORDER BY p.value
+    ]]>
+  </query> 
+  
+  <!-- Unique -->
+  <query name="DocumentProperty.getAliasProperty">
+    <![CDATA[
+		SELECT p FROM 
+		DocumentProperty p 
+		WHERE p.name = :name AND lower(p.value) = lower(:value)
+    ]]>
+  </query>   
+ 
+</hibernate-mapping>

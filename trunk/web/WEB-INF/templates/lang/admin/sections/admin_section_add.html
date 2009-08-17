@@ -1,0 +1,46 @@
+<html>
+<head>
+<title><? templates/sv/sections/admin_section_add.html/1 ?></title>
+
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
+
+</head>
+<body onLoad="focusField(1,'new_section_name');">
+
+#gui_outer_start()
+#gui_head( "<? templates/sv/sections/admin_section_add.html/2 ?>" )
+#gui_head_help_and_back_buttons( "SectionSiteAdd"  "AdminSection" "" "" )
+#gui_mid()
+
+<form method="post" action="AdminSection">
+<table border="0" cellspacing="0" cellpadding="2" width="320">
+<tr>
+	<td colspan="2" nowrap><span style="color:#cc0000"><b>#errormsg#</b></span></td>
+</tr>
+<tr>
+	<td width="80"><? templates/sv/sections/admin_section_add.html/3 ?></td>
+	<td width="240">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td><input name="new_section_name" size="30" value=""></td>
+		<td>&nbsp;&nbsp;</td>
+		<td><input type="submit" class="imcmsFormBtnSmall"  name="add_section" value="<? templates/sv/sections/admin_section_add.html/2001 ?>"></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td><? templates/sv/sections/admin_section_add.html/4 ?></td>
+	<td><select name="section_list" size="4">#section_list#</select> </td>
+</tr>
+</table>
+</form>
+
+#gui_bottom()
+#gui_outer_end()
+
+</body>
+</html>
+
+
+

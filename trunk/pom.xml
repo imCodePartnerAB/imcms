@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.imcode.imcms</groupId>
+  <artifactId>imcms</artifactId>
+  <packaging>war</packaging>
+  <version>${imcms.version}</version>
+  <name>imCMS</name>
+
+  <dependencies>
+    <!-- TEST -->
+    <dependency>
+      <groupId>org.beanshell</groupId>
+      <artifactId>bsh</artifactId>
+      <version>2.0b4</version>
+      <scope>provided</scope>      
+    </dependency>           
+      
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.4</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>5.8</version>
+      <classifier>jdk15</classifier>
+      <scope>test</scope>      
+    </dependency>  
+    
+    <dependency>
+      <groupId> org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <version>2.0</version>
+      <scope>test</scope>
+    </dependency> 
+    
+     <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.5.6</version>
+        <scope>test</scope>
+    </dependency>
+    <!-- concrete Log4J Implementation for SLF4J API-->
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>1.5.6</version>
+        <scope>test</scope>
+    </dependency>
+         
+             
+    <!-- REQUIRED -->
+    <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
+      <version>2.7.7</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib-nodep</artifactId>
+      <version>2.1_3</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>1.7.0</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-betwixt</groupId>
+      <artifactId>commons-betwixt</artifactId>
+      <version>0.8</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.2</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <version>1.2.2</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-dbutils</groupId>
+      <artifactId>commons-dbutils</artifactId>
+      <version>1.0</version>        
+    </dependency>
+
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <version>1.8</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.commons</groupId> <!-- commons-email -->
+      <artifactId>commons-email</artifactId>
+      <version>1.1</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.2.1</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <version>2.0.2</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>1.4</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.4</version>        
+    </dependency>
+          
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.1.1</version>        
+    </dependency>   
+    
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging-api</artifactId>
+      <version>1.1</version>
+    </dependency>
+       
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+      <version>1.4</version>        
+    </dependency>
+    
+    <dependency>
+	  <groupId>org.dbunit</groupId>
+      <artifactId>dbunit</artifactId>
+	  <version>2.3.0</version>
+    </dependency>     
+    
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.6.1</version>        
+    </dependency>
+
+    <!-- imCode Internal Repository dependencies -->  
+    <dependency>
+      <groupId>gnu-activation</groupId>
+      <artifactId>gnu-activation</artifactId>
+      <version>1.0</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>gnu-crypto-javax-security</groupId>
+      <artifactId>gnu-crypto-javax-security</artifactId>
+      <version>2.0.1</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>gnu-crypto-javax-security</groupId>
+      <artifactId>gnu-crypto-javax-security</artifactId>
+      <version>2.0.1</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>gnu-inetlib</groupId>
+      <artifactId>gnu-inetlib</artifactId>
+      <version>1.1</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>gnu-mail</groupId>
+      <artifactId>gnu-mail</artifactId>
+      <version>1.0</version>        
+    </dependency>         
+    
+    <dependency>
+      <groupId>gnu-mail-providers</groupId>
+      <artifactId>gnu-mail-providers</artifactId>
+      <version>1.0</version>              
+    </dependency>
+    <!-- imCode Internal Repository dependencies -->
+    
+    <dependency>
+      <groupId>org.jruby</groupId>
+      <artifactId>jruby</artifactId>
+      <version>1.3.1</version> 
+    </dependency>
+          
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>1.5.7</version> 
+      
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>        
+        <exclusion>
+          <groupId>org.apache.ant</groupId>
+          <artifactId>ant-launcher</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jline</groupId>
+          <artifactId>jline</artifactId>
+        </exclusion>              
+      </exclusions>                   
+    </dependency>
+    
+    
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate</artifactId>
+      <version>3.2.6.ga</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-annotations</artifactId>
+      <version>3.3.1.GA</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-commons-annotations</artifactId>
+      <version>3.3.0.ga</version>        
+    </dependency>      
+     
+    <dependency>
+      <groupId>com.imcode.db</groupId>
+      <artifactId>imcode-db</artifactId>
+      <version>0.3</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>com.imcode.util</groupId>
+      <artifactId>imcode-util</artifactId>
+      <version>2.0.1</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>com.imcode.ldap</groupId>
+      <artifactId>imcode-ldap</artifactId>
+      <version>0.1</version>        
+    </dependency>
+          
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <version>2.0.8</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.1.2</version>
+      <!--  
+      <version>1.2</version>
+      -->
+    </dependency>
+    
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <version>1.0.1B</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>net.sourceforge.jtds</groupId>
+      <artifactId>jtds</artifactId>
+      <version>1.2.2</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.15</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>2.4.1</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.6</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+      <version>0.7.3</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
+      <version>1.0</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+      <version>3.1-FINAL</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-scratchpad</artifactId>
+      <version>3.1-FINAL</version>        
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+      <version>2.5.5</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>2.5.5</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+      <version>2.5.5</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>2.5.5</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
+      <version>2.5.5</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>2.5.5</version>        
+    </dependency>    
+    
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+      <version>1.6.2</version>        
+    </dependency>    
+              
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+      <version>1.6.2</version>        
+    </dependency>        
+    
+    <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
+      <version>1.1.2</version>        
+    </dependency>
+    
+    <dependency>
+      <groupId>velocity</groupId>
+      <artifactId>velocity</artifactId>
+      <version>1.4</version> 
+      
+      <exclusions>
+        <exclusion>
+          <groupId>velocity</groupId>
+          <artifactId>velocity-dep</artifactId>
+        </exclusion>
+       </exclusions>
+    </dependency>
+    
+    <!-- PROVIDED -->  
+    <dependency>
+      <groupId>ant-contrib</groupId>
+      <artifactId>ant-contrib</artifactId>
+      <version>1.0b3</version>
+      <scope>provided</scope>
+    </dependency>
+         
+    <dependency>
+      <groupId>checkstyle</groupId>
+      <artifactId>checkstyle</artifactId>
+      <version>4.4</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-el</groupId>
+      <artifactId>commons-el</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.imcode.ant.tasks</groupId>
+      <artifactId>imcode-ant-tasks</artifactId>
+      <version>1.3</version>
+      <scope>provided</scope>
+    </dependency>    
+    
+    <dependency>
+      <groupId>jakarta-regexp</groupId>
+      <artifactId>jakarta-regexp</artifactId>
+      <version>1.4</version>
+    </dependency>
+             
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>2.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
+      <scope>provided</scope>
+    </dependency>       
+  </dependencies>
+  
+  <repositories>
+    <repository>
+      <id>imcode</id>
+      <url>http://repo.imcode.com/maven2</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>              
+    </repository>
+      
+    <repository>
+      <id>ibiblio</id>
+      <url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>        
+    </repository>    
+  
+    <repository>
+      <id>codehaus</id>
+      <url>http://repository.codehaus.org</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>        
+    </repository>
+  </repositories>  
+      
+  <build>
+    <plugins>    
+      <!-- TODO: Add (Jetty?) Jspc plugin for jsps verification? -->
+	  <plugin>
+	    <artifactId>maven-compiler-plugin</artifactId>
+		  <configuration>
+		    <source>1.5</source>
+		    <target>1.5</target>
+		    
+            <excludes>
+              <exclude>**/Test*.java</exclude>
+              <exclude>**/*TestCase.java</exclude>
+            </excludes>
+		  </configuration>
+  	    </plugin>
+  	    
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.4.2</version>
+          <configuration>
+            <skipTests>true</skipTests>
+          </configuration>
+        </plugin>
+  	      	    
+	    <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>2.1-beta-1</version>
+          <configuration>      
+            <attachClasses>true</attachClasses>  	  
+            <archiveClasses>true</archiveClasses>           
+                         
+            <!-- 
+            <webResources>
+	          <resource>
+	            <directory>src/main/resources-webinf/</directory>
+                <targetPath>WEB-INF</targetPath>            
+	          </resource>
+	        </webResources>
+	        -->
+          </configuration>
+        </plugin> 
+        
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.3</version>
+          
+          <configuration>
+            <!--
+            <updateReleaseInfo>true</updateReleaseInfo>
+            -->
+          </configuration>
+        </plugin>         	    
+  	        
+		<plugin>
+	      <groupId>org.mortbay.jetty</groupId>
+	      <artifactId>maven-jetty-plugin</artifactId>
+	      <configuration>
+	        <connectors>
+	          <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+	            <port>9090</port>
+	            <maxIdleTime>60000</maxIdleTime>
+	          </connector>
+	        </connectors>		          
+	      </configuration>
+		</plugin>
+		 
+		<!--  
+        <plugin>
+		  <groupId>org.codehaus.mojo</groupId>
+		  <artifactId>exec-maven-plugin</artifactId>
+		  <version>1.1</version>
+		  <executions>
+		    <execution>
+		    <phase>process-sources</phase>
+		    <goals>
+		      <goal>exec</goal>
+		    </goals>
+			<configuration>
+              <executable>ant</executable>                        
+              <arguments>
+                <argument>process-webapp-sources</argument>
+              </arguments>
+            </configuration>
+		  </execution>
+		</executions>
+	  </plugin>
+	   -->			 
+    </plugins>
+  </build> 
+  
+  <distributionManagement>
+    <repository>
+      <id>imcode</id>
+      <name>imCode Internal Repository</name>
+      <url>scp://garm.imcode.com:/srv/www/apache/sites/repo.imcode.com/maven2</url>
+    </repository>
+  </distributionManagement> 
+  
+</project>
