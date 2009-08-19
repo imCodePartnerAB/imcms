@@ -53,8 +53,12 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     	UrlReference reference = new UrlReference();
     	reference.setMetaId(document.getMeta().getId());
     	reference.setUrl(document.getUrl());
+	    reference.setUrlTarget("");
+    	reference.setUrlText("");
+    	reference.setUrlLanguagePrefix("");
+    	reference.setUrlFrameName("");
     	
-    	dao.saveUrlReference(reference);    	
+	    dao.saveUrlReference(reference);
     }
 
     // runs inside transaction 
