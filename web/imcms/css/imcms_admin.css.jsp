@@ -18,7 +18,7 @@ Perl5Util re = new Perl5Util() ;
 /* Check browser */
 
 String uAgent = request.getHeader("USER-AGENT") ;
-boolean isIE  = re.match("/(MSIE 4|MSIE 5|MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) ;
+boolean isIE  = re.match("/(MSIE 4|MSIE 5|MSIE 5\\.5|MSIE 6|MSIE 7|MSIE 8)/i", uAgent) ;
 boolean isGecko = re.match("/Gecko/i", uAgent) ;
 boolean isNS  = re.match("/Mozilla/i", uAgent) && !isGecko && !isIE ;
 
