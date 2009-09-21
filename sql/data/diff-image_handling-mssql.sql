@@ -1,3 +1,5 @@
+-- Adds support for image handling
+
 CREATE TABLE images_cache (
     id varchar(40) NOT NULL,
     meta_id integer NOT NULL, 
