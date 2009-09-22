@@ -50,7 +50,8 @@ public class DocumentPermissionSetPage extends OkCancelPage {
     protected void updateFromRequest( HttpServletRequest request ) {
         documentPermissionSet.setEditPermissions( null != request.getParameter( REQUEST_PARAMETER__EDIT_PERMISSIONS ));
         documentPermissionSet.setEditDocumentInformation( null != request.getParameter( REQUEST_PARAMETER__EDIT_DOCUMENT_INFORMATION ));
-        if (documentPermissionSet instanceof TextDocumentPermissionSetDomainObject) {
+
+        if (document instanceof TextDocumentDomainObject) {
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet ;
             textDocumentPermissionSet.setEditTexts( Utility.parameterIsSet( request, REQUEST_PARAMETER__EDIT_TEXTS ));
             textDocumentPermissionSet.setEditImages( Utility.parameterIsSet( request, REQUEST_PARAMETER__EDIT_IMAGES ));
