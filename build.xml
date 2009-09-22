@@ -318,7 +318,7 @@
 
         <javac destdir="${classes}"
             debug="${debug}" optimize="${optimize}" deprecation="${deprecation}"
-            source="1.5" target="1.5"
+            source="1.6" target="1.6"
             encoding="iso-8859-1">
 
             <src path="server/src"/>
