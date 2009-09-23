@@ -8,10 +8,12 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,11 +87,17 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
             return;
         }
         String[] texts;
+        InputStream in = null;
         try {
-            texts = extractor.extractTexts(file.getInputStreamSource().getInputStream());
+            in = file.getInputStreamSource().getInputStream();
+
+            texts = extractor.extractTexts(in);
         } catch ( IOException ioe ) {
             throw new RuntimeException(ioe);
+        } finally {
+            IOUtils.closeQuietly(in);
         }
+
         for ( String text : texts ) {
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, text));
         }
