@@ -141,7 +141,12 @@ public class GetDoc extends HttpServlet {
         if ( !document.isPublished() && !user.canEdit(document) ) {
             res.setStatus(HttpServletResponse.SC_FORBIDDEN);
             Utility.setDefaultHtmlContentType(res);
-            imcref.getAdminTemplate(NO_ACTIVE_DOCUMENT_URL, user, null);
+            String tempstring = imcref.getAdminTemplate(NO_ACTIVE_DOCUMENT_URL, user, null);
+
+            byte[] tempbytes = tempstring.getBytes("utf-8");
+            res.setContentLength(tempbytes.length);
+            res.getOutputStream().write(tempbytes);
+            
             return;
         }
 
