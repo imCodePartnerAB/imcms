@@ -1,0 +1,7 @@
+<schema-upgrade>
+  <diff version=":version:">
+    <vendor name="mysql">
+      <script location=":filepath:"/>
+    </vendor>
+  </diff>
+</schema-upgrade>

@@ -10,16 +10,7 @@ import imcode.util.Prefs;
 import imcode.util.CachingFileLoader;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
-import org.apache.ddlutils.Platform;
-import org.apache.ddlutils.model.Index;
-import org.apache.ddlutils.model.IndexColumn;
-import org.apache.ddlutils.model.ForeignKey;
-import org.apache.ddlutils.alteration.*;
 
 import javax.sql.DataSource;
 import java.io.*;
@@ -190,6 +181,21 @@ public class Imcms {
                              + ex.getErrorCode() + " SQL State: " + ex.getSQLState();
             LOG.fatal(message, ex);
             throw new RuntimeException(message, ex);
+        }
+    }
+
+    public static DatabaseVersion getRequiredDatabaseVersion()
+    {
+        Properties props = getServerProperties();
+        String version = props.getProperty("DatabaseVersion");
+
+        if (version != null && version.length() > 0)
+        {
+            StringTokenizer t = new StringTokenizer(version, ".");
+            return new DatabaseVersion(Integer.parseInt(t.nextToken()), Integer.parseInt(t.nextToken()));
+        }
+        else {
+            return null; 
         }
     }
 

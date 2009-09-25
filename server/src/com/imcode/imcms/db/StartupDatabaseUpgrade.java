@@ -1,9 +1,6 @@
 package com.imcode.imcms.db;
 
-import com.imcode.db.Database;
-import com.imcode.db.DatabaseConnection;
-import com.imcode.db.DatabaseException;
-import com.imcode.db.SingleConnectionDatabase;
+import com.imcode.db.*;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
@@ -22,6 +19,7 @@ import imcode.server.Imcms;
 public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
 
     private static final String SQL_STATE__MISSING_TABLE = "42S02";
+    private static final DatabaseVersion SCRIPT_BASED_MECHANISM_VERSION = new DatabaseVersion(4, 11);
 
     private final static Logger LOG = Logger.getLogger(StartupDatabaseUpgrade.class);
 
@@ -87,25 +85,56 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
     }
 
     private void upgradeDatabase(DatabaseVersion databaseVersion, Database database) {
-        LOG.info("Database is version "+databaseVersion) ;
-        if (getLastDatabaseVersion().compareTo(databaseVersion) > 0 ) {
-            for ( final DatabaseVersionUpgradePair versionUpgradePair : upgrades ) {
-                final DatabaseVersion upgradeVersion = versionUpgradePair.getVersion();
-                if ( upgradeVersion.compareTo(databaseVersion) > 0 ) {
-                    LOG.info("Upgrading database to version "+upgradeVersion);
-                    database.execute(new TransactionDatabaseCommand() {
-                        public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
-                            SingleConnectionDatabase database = new SingleConnectionDatabase(connection);
-                            versionUpgradePair.getUpgrade().upgrade(database);
-                            setDatabaseVersion(database, upgradeVersion);
-                            return null;
-                        }
-                    });
-                    databaseVersion = upgradeVersion ;
+
+        final DatabaseVersion requiredDatabaseVersion = Imcms.getRequiredDatabaseVersion();
+        LOG.info("The current database version is " + databaseVersion);
+        LOG.info("The required database version is " + requiredDatabaseVersion);
+        
+        if (requiredDatabaseVersion.compareTo(databaseVersion) > 0) {
+            if (databaseVersion.compareTo(SCRIPT_BASED_MECHANISM_VERSION) < 0)
+            {
+                for (final DatabaseVersionUpgradePair versionUpgradePair : upgrades) {
+                    final DatabaseVersion upgradeVersion = versionUpgradePair.getVersion();
+                    if (upgradeVersion.compareTo(databaseVersion) > 0 && upgradeVersion.compareTo(requiredDatabaseVersion) <= 0) {
+                        LOG.info("Upgrading database to version " + upgradeVersion);
+                        database.execute(new TransactionDatabaseCommand() {
+                            public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
+                                SingleConnectionDatabase database = new SingleConnectionDatabase(connection);
+                                versionUpgradePair.getUpgrade().upgrade(database);
+                                setDatabaseVersion(database, upgradeVersion);
+                                return null;
+                            }
+                        });
+                        databaseVersion = upgradeVersion;
+                    }
                 }
             }
-            LOG.info("Database upgraded to version "+databaseVersion);
+
+            if (requiredDatabaseVersion.compareTo(databaseVersion) > 0) {
+                final DatabaseVersion currentVersion = databaseVersion;
+                database.execute(new DatabaseCommand() {
+                    public Object executeOn(DatabaseConnection connection) throws DatabaseException {
+                        SingleConnectionDatabase database = new SingleConnectionDatabase(connection);
+                        try {
+                            String databaseVendor = connection.getConnection().getMetaData()
+                                .getDatabaseProductName().toLowerCase();
+                            ScriptBasedUpgrade upgrade = new ScriptBasedUpgrade(databaseVendor, currentVersion,
+                                Imcms.getRequiredDatabaseVersion(), wantedDdl);
+                            upgrade.upgrade(database);
+                        }
+                        catch (Exception ex)
+                        {
+                            LOG.fatal("Failed to run script based upgrade.", ex);
+                        }
+                        return null;
+                    }
+                });
+            }
+            else {
+                LOG.info("Database upgraded to version " + databaseVersion);
+            }
         }
+
     }
 
     private void setDatabaseVersion(Database database, DatabaseVersion upgradeVersion) {

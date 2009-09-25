@@ -381,6 +381,10 @@
             <fileset dir="sql/diff" includes="diff-*.sql"/>
         </copy>
 
+        <copy todir="${sql-diff}">
+            <fileset file="sql/diff/schema-upgrade.xml"/>
+        </copy>
+
         <copy todir="${sql-sprocs}">
             <fileset dir="sql/sprocs" includes="*.prc"/>
         </copy>
@@ -548,6 +552,7 @@
 
         <filter token="deny-multiple-user-login" value="${deny-multiple-user-login}"/>
 
+        <filter token="db-schema-version" value="${db-schema-version}"/>
         <filter token="db-driver" value="${db-driver}"/>
         <filter token="db-url" value="${db-url}"/>
         <filter token="db-name" value="${db-name}"/>
