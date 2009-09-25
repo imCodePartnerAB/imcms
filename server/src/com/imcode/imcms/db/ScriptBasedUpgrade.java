@@ -1,6 +1,7 @@
 package com.imcode.imcms.db;
 
 import org.apache.ddlutils.model.Database;
+import org.apache.ddlutils.Platform;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -78,7 +79,8 @@ public class ScriptBasedUpgrade extends ImcmsDatabaseUpgrade {
                                     fs.read(b);
                                     fs.close();
 
-                                    connection.executeUpdate(new String(b), new Object[0]);
+                                    Platform platform = DatabaseUtils.getPlatform(connection);
+                                    platform.evaluateBatch(new String(b), true);
                                 }
 
                                 setDatabaseVersion(db, dv);

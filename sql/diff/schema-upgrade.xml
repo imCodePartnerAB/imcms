@@ -1,7 +1,8 @@
 <schema-upgrade>
-  <diff version=":version:">
+  <diff version="4.11">
     <vendor name="mysql">
-      <script location=":filepath:"/>
+      <script location="diff-image_handling-mysql.sql"/>
+      <script location="diff-mysql-5_schema.sql"/>
     </vendor>
   </diff>
 </schema-upgrade>
