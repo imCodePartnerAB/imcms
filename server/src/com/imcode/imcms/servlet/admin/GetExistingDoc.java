@@ -175,11 +175,9 @@ public class GetExistingDoc extends HttpServlet {
             } else if ( "doc_type".equalsIgnoreCase( sortBy ) ) {
                 return d1.getDocumentTypeId() - d2.getDocumentTypeId();
             } else if ( "date_modified".equalsIgnoreCase( sortBy ) ) {
-                return Utility.compareDatesWithNullFirst( d1.getModifiedDatetime(), d2.getModifiedDatetime() );
+                return -1 * Utility.compareDatesWithNullFirst( d1.getModifiedDatetime(), d2.getModifiedDatetime() );
             } else if ( "date_created".equalsIgnoreCase( sortBy ) ) {
-                return Utility.compareDatesWithNullFirst( d1.getCreatedDatetime(), d2.getCreatedDatetime() );
-            } else if ( "date_archived".equalsIgnoreCase( sortBy ) ) {
-                return Utility.compareDatesWithNullFirst( d1.getArchivedDatetime(), d2.getArchivedDatetime() );
+                return -1 * Utility.compareDatesWithNullFirst( d1.getCreatedDatetime(), d2.getCreatedDatetime() );
             } else if ( "date_activated".equalsIgnoreCase( sortBy ) ) {
                 return Utility.compareDatesWithNullFirst( d1.getPublicationStartDatetime(), d2.getPublicationStartDatetime() );
             } else {
