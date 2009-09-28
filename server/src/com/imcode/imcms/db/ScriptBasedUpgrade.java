@@ -14,6 +14,9 @@ import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.StringTokenizer;
@@ -50,52 +53,51 @@ public class ScriptBasedUpgrade extends ImcmsDatabaseUpgrade {
             DocumentBuilder builder = dbFactory.newDocumentBuilder();
             Document doc = builder.parse(new File(Imcms.getPath(), "WEB-INF/sql/diff/schema-upgrade.xml"));
 
-            NodeList diffList = doc.getElementsByTagName("diff");
+            XPathFactory xpathFactory = XPathFactory.newInstance();
+            XPath xpath = xpathFactory.newXPath();
+            final NodeList scriptList = (NodeList)xpath.evaluate("/schema-upgrade/diff[@version <= " +
+                    requiredVersion + " and @version > " + currentVersion +
+                    "]/vendor[@name = '" + databaseVendor + "']/script", doc, XPathConstants.NODESET);
 
-            for (int i = 0; i < diffList.getLength(); i++)
-            {
-                Element diffElement = (Element)diffList.item(i);
-                String version = diffElement.getAttribute("version");
+            database.execute(new TransactionDatabaseCommand() {
+                public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
+                    File scriptFile = null;
+                    try {
+                        Element scriptElement = null;
+                        for (int i = 0; i < scriptList.getLength(); i++) {
+                            scriptElement = (Element)scriptList.item(i);
+                            String script = scriptElement.getAttribute("location");
+                            scriptFile = new File(Imcms.getPath(), "WEB-INF/sql/diff/" + script);
+                            FileInputStream fs = new FileInputStream(scriptFile);
 
-                StringTokenizer st = new StringTokenizer(version, ".");
-                final DatabaseVersion dv = new DatabaseVersion(
-                        Integer.parseInt(st.nextToken()),
-                        Integer.parseInt(st.nextToken()));
+                            byte[] b = new byte[fs.available()];
+                            fs.read(b);
+                            fs.close();
 
-                if (dv.compareTo(currentVersion) > 0 && dv.compareTo(requiredVersion) <= 0) {
-                    final String[] scripts = getScripts(diffElement, databaseVendor);
-
-                    LOG.info("Upgrading database to version " + version);
-
-                    database.execute(new TransactionDatabaseCommand() {
-                        public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
-                            File scriptFile = null;
-                            try {
-                                for (String script : scripts) {
-                                    scriptFile = new File(Imcms.getPath(), "WEB-INF/sql/diff/" + script);
-                                    FileInputStream fs = new FileInputStream(scriptFile);
-
-                                    byte[] b = new byte[fs.available()];
-                                    fs.read(b);
-                                    fs.close();
-
-                                    Platform platform = DatabaseUtils.getPlatform(connection);
-                                    platform.evaluateBatch(new String(b), true);
-                                }
-
-                                setDatabaseVersion(db, dv);
-                                currentVersion = dv;
-                            }
-                            catch (Exception ex) {
-                                LOG.fatal("Failed to run script based upgrade.", ex);
-                                throw new DatabaseException("Failed to run the script " + scriptFile.getName(), ex);
-                            }
-                            
-                            return null;
+                            Platform platform = DatabaseUtils.getPlatform(connection);
+                            platform.evaluateBatch(new String(b), true);
                         }
-                    });
+
+                        if (scriptElement != null) {
+                            Element diffElement = (Element)scriptElement.getParentNode().getParentNode();
+                            String version = diffElement.getAttribute("version");
+                            StringTokenizer st = new StringTokenizer(version, ".");
+                            DatabaseVersion dv = new DatabaseVersion(
+                                    Integer.parseInt(st.nextToken()),
+                                    Integer.parseInt(st.nextToken()));
+                            setDatabaseVersion(db, dv);
+
+                            currentVersion = dv;
+                        }
+                    }
+                    catch (Exception ex) {
+                        LOG.fatal("Failed to run script based upgrade.", ex);
+                        throw new DatabaseException("Failed to run the script " + scriptFile.getName(), ex);
+                    }
+
+                    return null;
                 }
-            }
+            });
 
             LOG.info("Database upgraded to version " + currentVersion);
 
@@ -114,33 +116,6 @@ public class ScriptBasedUpgrade extends ImcmsDatabaseUpgrade {
                     { "major", newVersion.getMajorVersion() },
                     { "minor", newVersion.getMinorVersion() },
             })) ;
-        }
-    }
-
-    private String[] getScripts(Element diffElement, String vendor)  {
-        NodeList vendorList = diffElement.getElementsByTagName("vendor");
-        Element vendorElement = null;
-        for (int i = 0; i < vendorList.getLength(); i++) {
-            Element v = (Element)vendorList.item(i);
-            if (v.getAttribute("name").equalsIgnoreCase(vendor)) {
-                vendorElement = v;
-                break;
-            }
-        }
-
-        if (vendorElement != null) {
-            NodeList scriptList = vendorElement.getElementsByTagName("script");
-            String[] result = new String[scriptList.getLength()];
-
-            for (int i = 0; i < scriptList.getLength(); i++) {
-                Element scriptElement = (Element)scriptList.item(i);
-                result[i] = scriptElement.getAttribute("location");
-            }
-
-            return result;
-        }
-        else {
-            return new String[0];
         }
     }
 }

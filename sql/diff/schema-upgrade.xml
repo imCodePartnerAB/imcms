@@ -4,5 +4,5 @@
       <script location="diff-image_handling-mysql.sql"/>
       <script location="diff-mysql-5_schema.sql"/>
     </vendor>
-  </diff>
+  </diff>   
 </schema-upgrade>
