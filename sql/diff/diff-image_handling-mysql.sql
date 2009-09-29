@@ -5,10 +5,12 @@ CREATE TABLE images_cache (
     meta_id integer NOT NULL, 
     image_index integer NOT NULL,
     resource varchar(255) NOT NULL, 
-    cache_type smallint NOT NULL, -- '1-path, 2-file document, 3-URL', 
+    cache_type smallint NOT NULL,
+-- '1-path, 2-file document, 3-URL',        
     file_size integer NOT NULL, 
     frequency integer NOT NULL, 
-    format smallint NOT NULL, -- '1-BMP, 2-GIF, 3-JPEG, 4-PNG, 5-PSD, 6-SVG, 7-TIFF, 8-XCF, 9-PICT'
+    format smallint NOT NULL,
+-- '1-BMP, 2-GIF, 3-JPEG, 4-PNG, 5-PSD, 6-SVG, 7-TIFF, 8-XCF, 9-PICT'
     rotate_angle smallint NOT NULL, 
     width integer NOT NULL, 
     height integer NOT NULL, 
@@ -21,14 +23,16 @@ CREATE TABLE images_cache (
     CONSTRAINT images_cache_pk PRIMARY KEY (id, meta_id, image_index)
 ) ENGINE='InnoDB' DEFAULT CHARSET='utf8';
 
-ALTER TABLE images ADD format smallint; -- '1-BMP, 2-GIF, 3-JPEG, 4-PNG, 5-PSD, 6-SVG, 7-TIFF, 8-XCF, 9-PICT'
+ALTER TABLE images ADD format smallint;
+-- '1-BMP, 2-GIF, 3-JPEG, 4-PNG, 5-PSD, 6-SVG, 7-TIFF, 8-XCF, 9-PICT'
 ALTER TABLE images ADD rotate_angle smallint;
 ALTER TABLE images ADD crop_x1 integer;
 ALTER TABLE images ADD crop_y1 integer;
 ALTER TABLE images ADD crop_x2 integer;
 ALTER TABLE images ADD crop_y2 integer;
 
-ALTER TABLE images_history ADD format smallint; -- '1-BMP, 2-GIF, 3-JPEG, 4-PNG, 5-PSD, 6-SVG, 7-TIFF, 8-XCF, 9-PICT'
+ALTER TABLE images_history ADD format smallint;
+-- '1-BMP, 2-GIF, 3-JPEG, 4-PNG, 5-PSD, 6-SVG, 7-TIFF, 8-XCF, 9-PICT'
 ALTER TABLE images_history ADD rotate_angle smallint;
 ALTER TABLE images_history ADD crop_x1 integer;
 ALTER TABLE images_history ADD crop_y1 integer;
