@@ -3,6 +3,7 @@ package com.imcode.imcms.db;
 import org.apache.ddlutils.model.Database;
 import org.apache.ddlutils.Platform;
 import org.apache.log4j.Logger;
+import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
@@ -19,6 +20,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 import imcode.server.Imcms;
@@ -70,13 +72,11 @@ public class ScriptBasedUpgrade extends ImcmsDatabaseUpgrade {
                             String script = scriptElement.getAttribute("location");
                             scriptFile = new File(Imcms.getPath(), "WEB-INF/sql/diff/" + script);
                             FileInputStream fs = new FileInputStream(scriptFile);
-
-                            byte[] b = new byte[fs.available()];
-                            fs.read(b);
-                            fs.close();
-
+                            InputStreamReader reader = new InputStreamReader(fs);
+                            String sql = IOUtils.toString(reader);
+                            reader.close();
                             Platform platform = DatabaseUtils.getPlatform(connection);
-                            platform.evaluateBatch(new String(b), true);
+                            platform.evaluateBatch(sql, false);
                         }
 
                         if (scriptElement != null) {
