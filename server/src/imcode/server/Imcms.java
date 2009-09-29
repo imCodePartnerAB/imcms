@@ -10,6 +10,7 @@ import imcode.util.Prefs;
 import imcode.util.CachingFileLoader;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import javax.sql.DataSource;
@@ -189,7 +190,7 @@ public class Imcms {
         Properties props = getServerProperties();
         String version = props.getProperty("DatabaseVersion");
 
-        if (version != null && version.length() > 0)
+        if (!StringUtils.isBlank(version))
         {
             StringTokenizer t = new StringTokenizer(version, ".");
             return new DatabaseVersion(Integer.parseInt(t.nextToken()), Integer.parseInt(t.nextToken()));
@@ -197,6 +198,14 @@ public class Imcms {
         else {
             return null; 
         }
+    }
+
+    public static String getDefaultLanguage()
+    {
+        Properties props = getServerProperties();
+        String language = props.getProperty("DefaultLanguage");
+
+        return (!StringUtils.isBlank(language)) ? language : "eng";
     }
 
     public static class StartupException extends RuntimeException {

@@ -55,9 +55,10 @@ public class ScriptBasedUpgrade extends ImcmsDatabaseUpgrade {
 
             XPathFactory xpathFactory = XPathFactory.newInstance();
             XPath xpath = xpathFactory.newXPath();
-            final NodeList scriptList = (NodeList)xpath.evaluate("/schema-upgrade/diff[@version <= " +
-                    requiredVersion + " and @version > " + currentVersion +
-                    "]/vendor[@name = '" + databaseVendor + "']/script", doc, XPathConstants.NODESET);
+
+            final NodeList scriptList = (NodeList)xpath.evaluate(
+                    String.format("/schema-upgrade/diff[@version <= %s and @version > %s]/vendor[@name = '%s']/script",
+                    requiredVersion, currentVersion, databaseVendor), doc, XPathConstants.NODESET);
 
             database.execute(new TransactionDatabaseCommand() {
                 public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {

@@ -15,6 +15,8 @@ import java.io.*;
 import java.util.regex.Pattern;
 import java.util.Locale;
 
+import imcode.server.Imcms;
+
 public class ImcmsDatabaseCreator {
 
     private final LocalizedMessageProvider localizedMessageProvider;
@@ -66,9 +68,10 @@ public class ImcmsDatabaseCreator {
                 "^-- " + platformName + " ", Pattern.MULTILINE).matcher(sql).replaceAll("");
         sql = Pattern.compile("^-- \\w+ (.*?)\n", Pattern.MULTILINE).matcher(sql).replaceAll("");
         String language = Locale.getDefault().getISO3Language() ;
-        if ( StringUtils.isBlank(language)) {
-            language = "eng" ;
+        if (StringUtils.isBlank(language) || !localizedMessageProvider.supportsLanguage(language)) {
+            language = Imcms.getDefaultLanguage() ;
         }
+
         sql = sql.replaceAll("@language@", language);
         sql = sql.replaceAll("@headline@", localizedMessageProvider.get("start_document/headline").toLocalizedString(language)) ;
         sql = sql.replaceAll("@text1@", localizedMessageProvider.get("start_document/text1").toLocalizedString(language)) ;
