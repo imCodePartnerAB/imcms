@@ -1,7 +1,9 @@
 package imcode.server.document.index;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
+//import org.apache.pdfbox.pdmodel.PDDocument;
+//import org.apache.pdfbox.util.PDFTextStripper;
+import org.pdfbox.pdmodel.PDDocument;
+import org.pdfbox.util.PDFTextStripper;
 
 import java.io.IOException;
 import java.io.InputStream;
