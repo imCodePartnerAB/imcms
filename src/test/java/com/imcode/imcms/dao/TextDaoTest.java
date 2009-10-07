@@ -17,7 +17,7 @@ import org.testng.annotations.Test;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.I18nLanguage;
 
-public class TextDaoTest extends DaoTest {
+public class TextDaoTest extends DaoTestG {
 	
 	/**
 	 * Queries all texts for the same document.

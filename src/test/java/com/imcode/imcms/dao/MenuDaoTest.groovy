@@ -1,9 +1,18 @@
 package com.imcode.imcms.dao
 
-import org.dbunit.dataset.xml.FlatXmlDataSetimport org.testng.annotations.BeforeClassimport org.testng.annotations.Testimport org.testng.annotations.BeforeTest
-import static org.testng.Assert.*import imcode.server.document.textdocument.TextDomainObjectimport org.testng.Assertimport imcode.server.document.textdocument.MenuDomainObjectimport imcode.server.document.textdocument.MenuItemDomainObjectimport imcode.server.document.textdocument.TreeSortKeyDomainObject
+import org.dbunit.dataset.xml.FlatXmlDataSet
+import org.testng.annotations.BeforeClass
+import org.testng.annotations.Test
+import org.testng.annotations.BeforeTest
+import static org.testng.Assert.*
+import imcode.server.document.textdocument.TextDomainObject
+import org.testng.Assert
+import imcode.server.document.textdocument.MenuDomainObject
+import imcode.server.document.textdocument.MenuItemDomainObject
+import imcode.server.document.textdocument.TreeSortKeyDomainObject
+
 //todo: Test named queries
-public class MenuDaoTest extends DaoTest {
+public class MenuDaoTest extends DaoTestG {
 	
 	MenuDao dao;
 	

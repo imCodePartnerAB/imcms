@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 
 import com.imcode.imcms.api.ContentLoop;
 
-public class ContentLoopDaoTest extends DaoTest {
+public class ContentLoopDaoTest extends DaoTestG {
 
 	@Test
 	public void getExistingLoop() {

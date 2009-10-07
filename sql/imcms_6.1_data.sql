@@ -420,7 +420,7 @@ VALUES
   (@start_document__meta_id, 4, @language_id__swedish, 2, @'start_document__text2__swedish', 1);     
 
 -- Add document version number before texts
-UPDATE texts SET text = concat(text, ' (V.', CAST(meta_version AS CHAR), ')');
+-- UPDATE texts SET text = concat(text, ' (V.', CAST(meta_version AS CHAR), ')');
 
 --
 -- Data for table texts_history

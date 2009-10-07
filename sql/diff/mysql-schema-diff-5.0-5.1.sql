@@ -1,4 +1,4 @@
-﻿--
+--
 -- Removes ambigous tables and view.
 --
 

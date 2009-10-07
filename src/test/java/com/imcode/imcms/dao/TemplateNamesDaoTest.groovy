@@ -1,11 +1,18 @@
 package com.imcode.imcms.dao
 
-import org.dbunit.dataset.xml.FlatXmlDataSetimport org.testng.annotations.BeforeClassimport org.testng.annotations.Testimport org.testng.annotations.BeforeTest
-import static org.testng.Assert.*import imcode.server.document.textdocument.TextDomainObjectimport org.testng.Assertimport com.imcode.imcms.dao.TextDao
+import org.dbunit.dataset.xml.FlatXmlDataSet
+import org.testng.annotations.BeforeClass
+import org.testng.annotations.Test
+import org.testng.annotations.BeforeTest
+import static org.testng.Assert.*
+import imcode.server.document.textdocument.TextDomainObject
+import org.testng.Assert
+
+import com.imcode.imcms.dao.TextDao
 import com.imcode.imcms.dao.LanguageDao
 
 //todo: Test named queries
-public class TemplateNamesDaoTest extends DaoTest {
+public class TemplateNamesDaoTest extends DaoTestG {
 	
 	MetaDao dao;
 	

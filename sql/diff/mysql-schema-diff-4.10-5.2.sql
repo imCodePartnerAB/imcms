@@ -1,4 +1,4 @@
-﻿-- Current schema version
+-- Current schema version
 SET @database_version__major__current = 4;
 SET @database_version__minor__current = 10;
 

@@ -20,7 +20,7 @@ import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.mapping.CachingDocumentGetter;
 import com.imcode.imcms.mapping.DocumentMapper;
 
-public class MetaDaoTest extends DaoTest {
+public class MetaDaoTest extends DaoTestG {
 	
 	/**
 	 * Supports only limited set of API. 

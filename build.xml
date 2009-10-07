@@ -10,7 +10,7 @@
     <property file="${build.properties}"/>
 	
     <!-- The current version of imCMS. -->
-    <property name="svnurl" value="$URL: https://repo.imcode.com/imcode/imcms/trunk/build.xml $"/>
+    <property name="svnurl" value="$URL$"/>
 
     <!-- versionnumber : imCMS version without suffix, only the number (e.g. "1.2.3") -->
     <property name="version" value=""/>
@@ -406,8 +406,8 @@
                 location="javax/servlet/resources/web-app_2_3.dtd"/>
         </xmlvalidate>
     </target>
-	
-	
+
+    
 	<!-- ======================================================= -->
 	<!-- Maven based tasks -->
 	<!-- ======================================================= -->
@@ -448,7 +448,12 @@
 	<target name="jetty" depends="process-webapp-sources"
 			description="Runs built webapp under jetty on port 9090">
 		<maven goal="jetty:run"/>
-	</target>	
+	</target>
+
+	<target name="deploy-jar" depends="process-webapp-sources"
+			description="Runs built webapp under jetty on port 9090">
+		<maven goal="jetty:run"/>
+	</target>    
 		
     <!-- Compound targets -->
     <target name="build-tomcat-install" depends="package,tomcat-install" description="Copies the webapp directly into the webapp-directory in the deployroot."/>

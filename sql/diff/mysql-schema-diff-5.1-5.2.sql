@@ -1,4 +1,4 @@
-﻿-- Changes for v 5.2
+-- Changes for v 5.2
 
 -- Current schema version
 SET @database_version__major__current = 5;

@@ -17,7 +17,7 @@ import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.dao.ContentLoopDao;
 
 
-public class ContentLoopDaoTest extends DaoTest {
+public class ContentLoopDaoTestG extends DaoTestG {
     
     private ContentLoopDao clDao;
     
