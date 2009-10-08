@@ -1,7 +1,6 @@
 package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
 import imcode.util.Prefs;
 
 import java.io.File;
@@ -19,8 +18,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.context.WebApplicationContext;
 import com.imcode.imcms.dao.LanguageDao;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
@@ -61,11 +58,8 @@ public class ApplicationContextListener implements ServletContextListener {
             throw e;
         }
 
-    	initSpringframework(servletContext);
     	initI18nSupport(servletContext);
     	checkSchemaVersion(servletContext);
-
-        ImcmsServices service = Imcms.getServices();
     }
 
     /**
@@ -76,22 +70,22 @@ public class ApplicationContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         Logger log = Logger.getLogger(ApplicationContextListener.class);
         log.debug("Stopping imCMS.");
-        try {
-            Imcms.stop();
-        } catch(Exception e) {
-            log.error("Stopping imCMS failed.", e);
-        }
-        log.debug("Shutting down logging.");
-        try {
-            LogManager.shutdown();
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-        try {
-            LogFactory.releaseAll();
-        } catch (Exception e) {
-            System.err.println(e);
-        }
+        //try {
+        //    Imcms.stop();
+        //} catch(Exception e) {
+        //    log.error("Stopping imCMS failed.", e);
+        //}
+        //log.debug("Shutting down logging.");
+        //try {
+        //    LogManager.shutdown();
+        //} catch (Exception e) {
+        //    System.err.println(e);
+        //}
+        //try {
+        //   LogFactory.releaseAll();
+        //} catch (Exception e) {
+        //    System.err.println(e);
+        //}
     }
 
     private void logPlatformInfo(ServletContext application, Logger log) {
@@ -121,7 +115,7 @@ public class ApplicationContextListener implements ServletContextListener {
 	private void initI18nSupport(ServletContext servletContext) {
     	logger.info("Initializing i18n support.");
 
-    	LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao");
+    	LanguageDao languageDao = (LanguageDao) Imcms.getSpringBean("languageDao");
     	List<I18nLanguage> languages = languageDao.getAllLanguages();
 
     	if (languages.size() == 0) {
@@ -193,8 +187,7 @@ public class ApplicationContextListener implements ServletContextListener {
 
 
     private void checkSchemaVersion(ServletContext servletContext) {
-    	SchemaVersionChecker checker = (SchemaVersionChecker)Imcms.getServices()
-    		.getSpringBean("schemaVersionChecker");
+    	SchemaVersionChecker checker = (SchemaVersionChecker)Imcms.getSpringBean("schemaVersionChecker");
 
     	try {
     		String expectedSchemaVersion = Imcms.getServerProperties().getProperty("db.schema.version", "");
@@ -205,14 +198,6 @@ public class ApplicationContextListener implements ServletContextListener {
     	}
     }
 
-    
-    private void initSpringframework(ServletContext servletContext) {
-    	logger.info("Initializing springframework web application context.");
-        WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(
-    			servletContext);
-
-    	Imcms.webApplicationContext = wac; 
-    }
 
 
     /**

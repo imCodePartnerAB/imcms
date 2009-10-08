@@ -104,12 +104,5 @@ public interface ImcmsServices {
 
     LocalizedMessageProvider getLocalizedMessageProvider();
     
-    
-    /**
-     * Spring framework integration.
-     * Latter this will be refactored out.
-     */    
-    WebApplicationContext getWebApplicationContext();
-    
     Object getSpringBean(String beanName);
 }

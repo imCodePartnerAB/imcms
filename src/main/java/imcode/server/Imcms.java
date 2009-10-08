@@ -12,11 +12,15 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.Database;
@@ -26,6 +30,7 @@ import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.imcms.ImcmsMode;
 import com.imcode.imcms.ImcmsFilter;
+import com.imcode.imcms.servlet.ApplicationContextListener;
 
 public class Imcms {
 	
@@ -41,11 +46,15 @@ public class Imcms {
     private static BasicDataSource dataSource;
     private static File path;
 
+
+    // ----------- SUPERVISION INPLEMENTATION - WORK IN PROGRESS
+    public static ServletContextEvent servletContextEvent;
     private static ImcmsMode mode = ImcmsMode.SUPERVISOR;
-    private static ImcmsFilter filter = null;
+    private static ImcmsFilter filter;
+    private static Exception appStartupEx;
 
-    private static Exception appStartupEx = null;
-
+    private static ApplicationContextListener applicationContextListener;
+    private static ContextLoaderListener springContextLoaderListener;
 
 
     /**
@@ -78,26 +87,55 @@ public class Imcms {
         return path;
     }
 
-    public synchronized static void start() throws StartupException {
+    public synchronized static ImcmsMode start() throws StartupException {
         try {
+            // TEMP - WORK IN PROGRESS
+            // ASSUME THATH ServletContext is set.
+            springContextLoaderListener = new ContextLoaderListener();
+            springContextLoaderListener.contextInitialized(servletContextEvent);
+            webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContextEvent.getServletContext());
+
+            applicationContextListener = new ApplicationContextListener();
+            applicationContextListener.contextInitialized(servletContextEvent);
+            // END TEMP - WORK IN PROGRESS
+
             services = createServices();
+
+            setAppStartupEx(null);
+            setApplicationMode();
         } catch (Exception e) {
-            throw new StartupException("imCMS could not be started. Please see the log file in WEB-INF/logs/ for details.", e);
+            setSupervisorMode();
+            setAppStartupEx(e);
+            // STOP OR NOT?
+            try {
+                if (applicationContextListener != null)
+                    applicationContextListener.contextDestroyed(servletContextEvent);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+            try {
+                if (springContextLoaderListener != null)
+                    springContextLoaderListener.contextDestroyed(servletContextEvent);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+
+            //throw new StartupException("imCMS could not be started. Please see the log file in WEB-INF/logs/ for details.", e);
         }
+
+        return mode;
     }
 
     private synchronized static ImcmsServices createServices() throws Exception {
-    	if (webApplicationContext == null) {
-    		throw new NullPointerException("Spring WebApplicationContext is not set.");
-    	}
-    	
         Properties serverprops = getServerProperties();
         LOG.debug("Creating main DataSource.");
         Database database = createDatabase(serverprops);
         LocalizedMessageProvider localizedMessageProvider = new CachingLocalizedMessageProvider(new ImcmsPrefsLocalizedMessageProvider());
                 
         final CachingFileLoader fileLoader = new CachingFileLoader();
-        return new DefaultImcmsServices(webApplicationContext, database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
+        return new DefaultImcmsServices(database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
     }
 
     private static Database createDatabase(Properties serverprops) {
@@ -162,6 +200,23 @@ public class Imcms {
             }
         }
         Prefs.flush();
+
+        // TEMP MAINTAINANCE IMPL -WORK IN PROGRESS
+        try {
+            if (applicationContextListener != null)
+                applicationContextListener.contextDestroyed(servletContextEvent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            if (springContextLoaderListener != null)
+                springContextLoaderListener.contextDestroyed(servletContextEvent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        services = null;
     }
 
     private static void logDatabaseVersion(BasicDataSource basicDataSource) throws SQLException {
@@ -248,5 +303,24 @@ public class Imcms {
 
     public static void setAppStartupEx(Exception appStartupEx) {
         Imcms.appStartupEx = appStartupEx;
-    }    
+    }
+
+    /*
+    public static ServletContext getServletContext() {
+        return servletContext;
+    }
+
+    public static void setServletContext(ServletContext servletContext) {
+        Imcms.servletContext = servletContext;
+    }
+    */
+
+	public static Object getSpringBean(String beanName) {
+		if (webApplicationContext == null) {
+			//log.error("WebApplicationContext is not set.");
+			throw new NullPointerException("WebApplicationContext is not set.");
+		}
+
+		return webApplicationContext.getBean(beanName);
+	}
 }

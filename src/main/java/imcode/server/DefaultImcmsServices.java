@@ -97,11 +97,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private final LocalizedMessageProvider localizedMessageProvider;
-    
-    /**
-     * This variable is currently set from ImcmsSetupFilter.config(...) method. 
-     */
-    private WebApplicationContext webApplicationContext;
 
     static {
         mainLog.info("Main log started.");
@@ -116,9 +111,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     /** Constructs an DefaultImcmsServices object. */
-    public DefaultImcmsServices(WebApplicationContext webApplicationContext, Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
+    public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor) {
-        this.webApplicationContext = webApplicationContext;
     	this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
         this.procedureExecutor = procedureExecutor;
@@ -752,17 +746,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
         }
     }
 
-    public WebApplicationContext getWebApplicationContext() {
-		return webApplicationContext;
-	}
-
-	public Object getSpringBean(String beanName) {		
-		if (webApplicationContext == null) {
-			log.error("WebApplicationContext is not set.");
-			throw new NullPointerException("WebApplicationContext is not set.");
-		}
-		
-		return webApplicationContext.getBean(beanName);
+	public Object getSpringBean(String beanName) {
+		return Imcms.getSpringBean(beanName);
 	}
 
 	public void setDocumentMapper(DocumentMapper documentMapper) {
