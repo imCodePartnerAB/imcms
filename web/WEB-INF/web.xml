@@ -9,7 +9,7 @@
 
     <!-- Springframework context loader listener -->
     <listener>
-    	<listener-class>com.imcode.imcms.supervisor.SupervisorContextListener</listener-class>
+    	<listener-class>com.imcode.imcms.ImcmsContextListener</listener-class>
 	</listener>
 
     <!--
@@ -19,21 +19,22 @@
 
 
     <listener>
-        <listener-class>com.imcode.imcms.servlet.ImcmsContextListener</listener-class>
+        <listener-class>com.imcode.imcms.servlet.AllicationContextListenertener</listener-class>
     </listener>
     -->
     
-      
+     <!--
     <filter>
         <description>Checks for multiple user login</description>
         <filter-name>ImcmsMultipleUserLoginFilter</filter-name>
         <filter-class>com.imcode.imcms.servlet.ImcmsMultipleUserLoginFilter</filter-class>
     </filter>
-
+         -->
+    
     <filter>
-        <description>Setting up objects in request for api usage.</description>
-        <filter-name>ImcmsSetupFilter</filter-name>
-        <filter-class>com.imcode.imcms.servlet.ApplicationFilter</filter-class>
+        <description>ImcmsFilter</description>
+        <filter-name>ImcmsFilter</filter-name>
+        <filter-class>com.imcode.imcms.ImcmsFilter</filter-class>
     </filter>
 
     <filter>
@@ -42,15 +43,15 @@
         <filter-class>com.imcode.imcms.servlet.SuperAdminFilter</filter-class>
     </filter>
 
-    
+    <!--
     <filter-mapping>
         <filter-name>ImcmsMultipleUserLoginFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
+    -->
     
     <filter-mapping>
-        <filter-name>ImcmsSetupFilter</filter-name>
+        <filter-name>ImcmsFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     

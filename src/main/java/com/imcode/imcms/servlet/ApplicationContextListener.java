@@ -29,9 +29,9 @@ import com.imcode.imcms.util.SchemaVersionChecker;
 import com.imcode.imcms.util.SchemaVersionCheckerException;
 
 /**
- * Initializes system.
+ * Initializes application.
  */
-public class ImcmsContextListener implements ServletContextListener {
+public class ApplicationContextListener implements ServletContextListener {
 
     private Logger logger;
 
@@ -48,7 +48,7 @@ public class ImcmsContextListener implements ServletContextListener {
 
         System.setProperty("com.imcode.imcms.path", realPathToWebApp.toString());
 
-        logger = Logger.getLogger(ImcmsContextListener.class);
+        logger = Logger.getLogger(ApplicationContextListener.class);
 
         logger.info("Logging started");
         logPlatformInfo(servletContext, logger);
@@ -74,7 +74,7 @@ public class ImcmsContextListener implements ServletContextListener {
      * TODO: investigate why logging is being shut-down - is this really necessary?.    
      */
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        Logger log = Logger.getLogger(ImcmsContextListener.class);
+        Logger log = Logger.getLogger(ApplicationContextListener.class);
         log.debug("Stopping imCMS.");
         try {
             Imcms.stop();

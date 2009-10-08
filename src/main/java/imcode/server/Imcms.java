@@ -24,6 +24,8 @@ import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
+import com.imcode.imcms.ImcmsMode;
+import com.imcode.imcms.ImcmsFilter;
 
 public class Imcms {
 	
@@ -39,8 +41,15 @@ public class Imcms {
     private static BasicDataSource dataSource;
     private static File path;
 
+    private static ImcmsMode mode = ImcmsMode.SUPERVISOR;
+    private static ImcmsFilter filter = null;
+
+    private static Exception appStartupEx = null;
+
+
+
     /**
-     * Springframework web-application conntext.
+     * Springframework web application context.
      */
     public static WebApplicationContext webApplicationContext;
     
@@ -203,5 +212,41 @@ public class Imcms {
     
     public static UserDomainObject getUser() {
     	return users.get();
+    }
+
+
+    public static ImcmsMode setMode(ImcmsMode mode) {
+        Imcms.mode = mode;
+
+        if (filter != null) {
+            filter.updateDelegateFilter();
+        }
+
+        return mode;
+    }
+
+    public static ImcmsMode setSupervisorMode() {
+        return setMode(ImcmsMode.SUPERVISOR);
+    }
+
+
+    public static ImcmsMode setApplicationMode() {
+        return setMode(ImcmsMode.APPLICATION);
+    }
+
+    public static ImcmsMode getMode() {
+        return mode;
+    }
+
+    public static void setFilter(ImcmsFilter filter) {
+        Imcms.filter = filter;
+    }
+
+    public static Exception getAppStartupEx() {
+        return appStartupEx;
+    }
+
+    public static void setAppStartupEx(Exception appStartupEx) {
+        Imcms.appStartupEx = appStartupEx;
     }    
 }
