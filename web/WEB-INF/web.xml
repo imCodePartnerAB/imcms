@@ -6,16 +6,23 @@
          version="2.4">
 
     <display-name>imCMS</display-name>
-     
-    <listener>
-        <listener-class>com.imcode.imcms.servlet.ContextListener</listener-class>
-    </listener>
-         
+
     <!-- Springframework context loader listener -->
+    <listener>
+    	<listener-class>com.imcode.imcms.supervisor.SupervisorContextListener</listener-class>
+	</listener>
+
+    <!--
     <listener>
     	<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
+
+    <listener>
+        <listener-class>com.imcode.imcms.servlet.ImcmsContextListener</listener-class>
+    </listener>
+    -->
+    
       
     <filter>
         <description>Checks for multiple user login</description>
@@ -26,7 +33,7 @@
     <filter>
         <description>Setting up objects in request for api usage.</description>
         <filter-name>ImcmsSetupFilter</filter-name>
-        <filter-class>com.imcode.imcms.servlet.ImcmsSetupFilter</filter-class>
+        <filter-class>com.imcode.imcms.servlet.ApplicationFilter</filter-class>
     </filter>
 
     <filter>

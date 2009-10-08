@@ -38,18 +38,21 @@ public class Imcms {
     private static BasicDataSource apiDataSource;
     private static BasicDataSource dataSource;
     private static File path;
-    
-    // Workaround
+
+    /**
+     * Springframework web-application conntext.
+     */
     public static WebApplicationContext webApplicationContext;
     
 	/** 
-	 * When running in WEB container user is bound to current thread in
-	 * ServletFilter.  
+	 * When running in WEB container user is bound to a current thread in the FrontFilter.  
 	 */
-	private final static ThreadLocal<UserDomainObject> users = new ThreadLocal<UserDomainObject>();    
-    
-    private Imcms() {
-    }
+	private final static ThreadLocal<UserDomainObject> users = new ThreadLocal<UserDomainObject>();
+
+    /**
+     * Can not be instantiated directly;
+     */
+    private Imcms() {}
 
     public synchronized static ImcmsServices getServices() {
         if ( null == services ) {        	

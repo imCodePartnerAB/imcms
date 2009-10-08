@@ -90,9 +90,9 @@
     <root>
         <level value="all"/>
         <appender-ref ref="ERROR"/>
-        <!-- 
+
         <appender-ref ref="console"/>
-        -->
+        
     </root>
     
     <category name="org.hibernate.SQL" additivity="false">

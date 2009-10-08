@@ -25,6 +25,7 @@
 	<property name="resources.dir" value="${basedir}/src/resources"/>
 		
 	<property name="main.java.dir" value="${basedir}/src/main/java"/>
+    <property name="main.clojure.dir" value="${basedir}/src/main/clojure"/>
 	<property name="main.resources.dir" value="${basedir}/src/main/resources"/>
 	<property name="main.resources-conf.dir" value="${basedir}/src/main/resources-conf"/>
 	<property name="main.resources-webinf.dir" value="${basedir}/src/main/resources-webinf"/>	
@@ -248,6 +249,10 @@
 
         <copy todir="${docs}">
             <fileset dir="${basedir}/docs"/>
+        </copy>
+
+        <copy todir="${webinf.classes.dir}">
+            <fileset dir="${main.clojure.dir}"/>
         </copy>
     </target>
 

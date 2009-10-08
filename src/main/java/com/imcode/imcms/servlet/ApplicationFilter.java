@@ -47,16 +47,18 @@ import com.imcode.imcms.util.SchemaVersionChecker;
 import com.imcode.imcms.util.SchemaVersionCheckerException;
 
 /**
- * init method of the filter contains application initialization
- * which probably should be moved into ContextListener.  
+ * Application filter - intercepts all requests in application mode.
  */
-public class ImcmsSetupFilter implements Filter {
+public class ApplicationFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
     
     private final Logger logger = Logger.getLogger(getClass());
-    
-    private Map<String, I18nLanguage> i18nHosts = new HashMap<String, I18nLanguage>();
+
+    /**
+     * Initialized in init.
+     */
+    private Map<String, I18nLanguage> i18nHosts;
     
     /**
      * Check if a user is logged in.
@@ -205,37 +207,13 @@ public class ImcmsSetupFilter implements Filter {
     }
 
     /**
-     * Integrates springframework.
-     * Set up i18n support.
-     * 
-     * TODO i18n: refactor out 
+     * Initializes fields.
      */
     public void init( FilterConfig config ) throws ServletException {
     	ServletContext servletContext = config.getServletContext();
-    	initSpringframework(servletContext);
-    	initI18nSupport(servletContext);
-    	checkSchemaVersion(servletContext);
+        i18nHosts = (Map<String, I18nLanguage>) servletContext.getAttribute("imcms.i18n.hosts");
     }
-    
-    private void checkSchemaVersion(ServletContext servletContext) throws ServletException {
-    	SchemaVersionChecker checker = (SchemaVersionChecker)Imcms.getServices()
-    		.getSpringBean("schemaVersionChecker");
-    	
-    	try {
-    		String expectedSchemaVersion = Imcms.getServerProperties().getProperty("db.schema.version", "");
-    		checker.checkSchemaVersion(expectedSchemaVersion);
-    	} catch (SchemaVersionCheckerException e) {
-    		logger.fatal(e);
-    		throw e;
-    	}
-    }
-    
-    private void initSpringframework(ServletContext servletContext) throws ServletException {
-    	logger.info("Initializing springframework web application context.");
-    	
-    	Imcms.webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(
-    			servletContext);    	
-    }
+   
     
     /**
      * Updates logged in user's show settings. 
@@ -262,79 +240,6 @@ public class ImcmsSetupFilter implements Filter {
         }                 	
     }
     
-    /**
-     * Initializes I18N support.
-     * Reads languages from the database.
-     * Please note that one (and only one) language in the database table i18n_languages must be set as default.
-     */
-	private void initI18nSupport(ServletContext servletContext) throws ServletException {
-    	logger.info("Initializing i18n support.");
-    	
-    	LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao");    	    	
-    	List<I18nLanguage> languages = languageDao.getAllLanguages();    
-
-    	if (languages.size() == 0) {
-    		String msg = "I18n configuration error. Database table i18n_languages must contain at least one record.";
-    		logger.fatal(msg);
-    		throw new ServletException(msg);
-    	}
-
-        int defaultLanguageRecordCount = CollectionUtils.countMatches(languages, new Predicate() {
-            public boolean evaluate(Object language) {
-                return ((I18nLanguage)language).isDefault();        
-            }
-        });
-
-        if (defaultLanguageRecordCount == 0) {
-    		String msg = "I18n configuration error. Default language is not set.";
-    		logger.fatal(msg);
-    		throw new ServletException(msg);
-        } else if (defaultLanguageRecordCount > 1) {
-            String msg = "I18n configuration error. Only one language must be set default.";
-            logger.fatal(msg);
-            throw new ServletException(msg);
-        }
-
-        I18nLanguage defaultLanguage = languageDao.getDefaultLanguage();
-
-    	I18nSupport.setDefaultLanguage(defaultLanguage);
-    	I18nSupport.setLanguages(languages);
-    	
-    	servletContext.setAttribute("defaultLanguage", defaultLanguage);
-    	servletContext.setAttribute("languages", languages);	
-
-        // Read "virtual" hosts mapped to languages.
-    	String prefix = "i18n.host.";
-    	int prefixLength = prefix.length();
-        Properties properties = Imcms.getServerProperties();
-    	
-    	for (Entry entry: properties.entrySet()) {
-    		String key = (String)entry.getKey();
-    		
-    		if (!key.startsWith(prefix)) {
-    			continue;
-    		}
-    		
-			String languageCode = key.substring(prefixLength);    		
-			String value = (String)entry.getValue();
-			
-    		logger.info("I18n configurtion: language code [" + languageCode + "] mapped to host(s) [" + value + "].");
-    		
-			I18nLanguage language = I18nSupport.getByCode(languageCode);
-			
-			if (language == null) {
-				String msg = "I18n configuration error. Language with code [" + languageCode + "] is not defined in database.";
-        		logger.fatal(msg);
-        		throw new ServletException(msg);
-			}
-						
-			String hosts[] = value.split("[ \\t]*,[ \\t]*");
-			
-			for (String host: hosts) {
-				i18nHosts.put(host.trim(), language);
-			}
-    	}
-	}    
 
     public void destroy() {}
 }
