@@ -69,10 +69,10 @@
     if (path == null) {
         path = Imcms.getPath();
     }
-
+    
     session.setAttribute("path", path);
 %>
-
+                                                               
 <html>
   <body>
   <hr/>

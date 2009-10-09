@@ -134,7 +134,7 @@
     (empty-db-schema (:schema-name (db-env))))
 
   ([schema-name]
-    (db-utils/empty-schema schema-name [])))
+    (db-utils/empty-schema (:db-spec (db-env)) schema-name)))
 
 
 (defn empty-db-schema?

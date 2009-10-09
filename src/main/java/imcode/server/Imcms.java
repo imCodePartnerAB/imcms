@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -41,78 +40,65 @@ public class Imcms {
     public static final String DEFAULT_ENCODING = UTF_8_ENCODING;
 
     private final static Logger LOG = Logger.getLogger(Imcms.class.getName());
+
+    /** Application services. */
     private static ImcmsServices services;
+
     private static BasicDataSource apiDataSource;
     private static BasicDataSource dataSource;
+
+    /** Imcms full deployment path. */
     private static File path;
 
 
-    // ----------- SUPERVISION INPLEMENTATION - WORK IN PROGRESS
+    // TODO: begin refactor
     public static ServletContextEvent servletContextEvent;
-    private static ImcmsMode mode = ImcmsMode.SUPERVISOR;
+    private static ImcmsMode mode = ImcmsMode.MAINTENANCE;
     private static ImcmsFilter filter;
     private static Exception appStartupEx;
 
     private static ApplicationContextListener applicationContextListener;
     private static ContextLoaderListener springContextLoaderListener;
 
-
-    /**
-     * Springframework web application context.
-     */
+    /** Springframework web application context. */
     public static WebApplicationContext webApplicationContext;
-    
-	/** 
-	 * When running in WEB container user is bound to a current thread in the FrontFilter.  
-	 */
+    // TODO: end refactor 
+
+
+	/** When running in application mode a user bound to a current thread in the ApplicationFilter. */
 	private final static ThreadLocal<UserDomainObject> users = new ThreadLocal<UserDomainObject>();
+
 
     /**
      * Can not be instantiated directly;
      */
     private Imcms() {}
 
-    public synchronized static ImcmsServices getServices() {
-        if ( null == services ) {        	
-            start();
-        }
+    /**
+     * Returns application services.
+     */
+    public static ImcmsServices getServices() {
+        // TODO: assign some proxy implementation - null ex might be thrown.
         return services;
-    }   
-
-    public static void setPath(File path) {
-        Imcms.path = path;
     }
 
-    public static File getPath() {
-        return path;
-    }
-
-    public synchronized static ImcmsMode start() throws StartupException {
+    /**
+     * TODO: Refactor.
+     */
+    public static void startApplication() throws StartupException {
+        setAppStartupEx(null);
+        
         try {
-            // TEMP - WORK IN PROGRESS
-            // ASSUME THATH ServletContext is set.
             springContextLoaderListener = new ContextLoaderListener();
             springContextLoaderListener.contextInitialized(servletContextEvent);
             webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContextEvent.getServletContext());
 
             applicationContextListener = new ApplicationContextListener();
             applicationContextListener.contextInitialized(servletContextEvent);
-            // END TEMP - WORK IN PROGRESS
 
-            services = createServices();
-
-            setAppStartupEx(null);
-            setApplicationMode();
+            services = createApplicationServices();
         } catch (Exception e) {
-            setSupervisorMode();
             setAppStartupEx(e);
-            // STOP OR NOT?
-            try {
-                if (applicationContextListener != null)
-                    applicationContextListener.contextDestroyed(servletContextEvent);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
 
             try {
                 if (springContextLoaderListener != null)
@@ -122,13 +108,21 @@ public class Imcms {
             }
 
 
-            //throw new StartupException("imCMS could not be started. Please see the log file in WEB-INF/logs/ for details.", e);
+            throw new StartupException("" +
+                    "Application could not be started. Please see the log file in WEB-INF/logs/ for details.", e);
         }
-
-        return mode;
     }
 
-    private synchronized static ImcmsServices createServices() throws Exception {
+    public static void setPath(File path) {
+        Imcms.path = path;
+    }
+
+    public static File getPath() {
+        return path;
+    }
+
+
+    private static ImcmsServices createApplicationServices() throws Exception {
         Properties serverprops = getServerProperties();
         LOG.debug("Creating main DataSource.");
         Database database = createDatabase(serverprops);
@@ -177,12 +171,12 @@ public class Imcms {
         return createDataSource(jdbcDriver, jdbcUrl, user, password, maxConnectionCount);
     }
 
-    public synchronized static void restart() {
-        stop();
-        start();
+    public synchronized static void restartApplication() {
+        stopApplication();
+        startApplication();
     }
 
-    public static void stop() {
+    public static void stopApplication() {
         if ( null != apiDataSource ) {
             try {
                 LOG.debug("Closing API DataSource.");
@@ -199,15 +193,8 @@ public class Imcms {
                 LOG.error(e, e);
             }
         }
+        
         Prefs.flush();
-
-        // TEMP MAINTAINANCE IMPL -WORK IN PROGRESS
-        try {
-            if (applicationContextListener != null)
-                applicationContextListener.contextDestroyed(servletContextEvent);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
 
         try {
             if (springContextLoaderListener != null)
@@ -280,8 +267,8 @@ public class Imcms {
         return mode;
     }
 
-    public static ImcmsMode setSupervisorMode() {
-        return setMode(ImcmsMode.SUPERVISOR);
+    public static ImcmsMode setMaintenanceMode() {
+        return setMode(ImcmsMode.MAINTENANCE);
     }
 
 

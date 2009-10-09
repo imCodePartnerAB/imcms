@@ -1,5 +1,4 @@
 <%@ page import="com.imcode.imcms.servlet.admin.ImageBrowse,
-                 com.imcode.imcms.servlet.admin.ImageBrowse,
                  org.apache.commons.lang.StringEscapeUtils,
                  com.imcode.imcms.servlet.admin.ImageBrowser,
                  imcode.util.HttpSessionUtils,

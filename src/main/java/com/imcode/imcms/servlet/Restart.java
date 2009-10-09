@@ -22,7 +22,7 @@ public class Restart extends HttpServlet {
             return;
         }
 
-        Imcms.restart() ;
+        Imcms.restartApplication() ;
         res.getOutputStream().println( "Restart complete." );
     }
 }

@@ -7,7 +7,7 @@
     <session-factory>
         <mapping class="com.imcode.imcms.api.Meta"/>
         
-        <mapping class="com.imcode.imcms.mapping.orm.TemplateNamesX"/> 
+        <mapping class="com.imcode.imcms.mapping.orm.TemplateNames"/> 
         <mapping class="com.imcode.imcms.mapping.orm.Include"/>
         <mapping class="com.imcode.imcms.mapping.orm.FileReference"/>
         <mapping class="com.imcode.imcms.mapping.orm.HtmlReference"/>

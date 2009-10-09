@@ -3,7 +3,6 @@ package com.imcode.imcms.web.admin;
 import imcode.server.Imcms;
 
 import java.util.Locale;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;

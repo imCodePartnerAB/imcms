@@ -24,7 +24,6 @@ import imcode.util.io.FileUtility;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.sql.SQLException;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,11 +44,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.oro.text.perl.Perl5Util;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.api.Document;

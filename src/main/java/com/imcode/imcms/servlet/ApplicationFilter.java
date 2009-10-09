@@ -10,12 +10,8 @@ import imcode.util.Utility;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.Map.Entry;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -31,20 +27,14 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.dao.LanguageDao;
-import com.imcode.imcms.util.SchemaVersionChecker;
-import com.imcode.imcms.util.SchemaVersionCheckerException;
 
 /**
  * Application filter - intercepts all requests in application mode.
