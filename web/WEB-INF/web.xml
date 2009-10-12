@@ -7,9 +7,9 @@
 
     <display-name>imCMS</display-name>
 
-    <!-- Springframework context loader listener -->
+    <!-- Core context loader listener -->
     <listener>
-    	<listener-class>com.imcode.imcms.ImcmsContextListener</listener-class>
+    	<listener-class>com.imcode.imcms.CoreContextListener</listener-class>
 	</listener>
 
     <!--
@@ -32,9 +32,9 @@
          -->
     
     <filter>
-        <description>ImcmsFilter</description>
-        <filter-name>ImcmsFilter</filter-name>
-        <filter-class>com.imcode.imcms.ImcmsFilter</filter-class>
+        <description>Imcs Core Filter</description>
+        <filter-name>CoreFilter</filter-name>
+        <filter-class>com.imcode.imcms.CoreFilter</filter-class>
     </filter>
 
     <filter>
@@ -51,7 +51,7 @@
     -->
     
     <filter-mapping>
-        <filter-name>ImcmsFilter</filter-name>
+        <filter-name>CoreFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     

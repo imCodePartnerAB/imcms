@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='iso-8859-1'?>
 
 <project name="imCMS" default="package" xmlns:artifact="urn:maven-artifact-ant">
-	
+
     <!-- Read in 'build.properties' and set the properties therein. -->
     <!-- Those properties are used as bases for latsproer properties in this file. -->
     <available file="build.properties" property="build.properties-available" />
@@ -20,15 +20,8 @@
 	<property name="lib.dir" value="${basedir}/lib"/>
 	<property name="sql.dir" value="${basedir}/sql"/>
 	<property name="web.dir" value="${basedir}/web"/>
-
-	<!-- Resources common for both main and test -->
-	<property name="resources.dir" value="${basedir}/src/resources"/>
 		
-	<property name="main.java.dir" value="${basedir}/src/main/java"/>
-    <property name="main.clojure.dir" value="${basedir}/src/main/clojure"/>
-	<property name="main.resources.dir" value="${basedir}/src/main/resources"/>
-	<property name="main.resources-conf.dir" value="${basedir}/src/main/resources-conf"/>
-	<property name="main.resources-webinf.dir" value="${basedir}/src/main/resources-webinf"/>	
+	<property name="main.resources-conf.dir" value="${basedir}/src/main/resources-conf"/>	
 	
 	<property name="main.webapp.dir" value="${basedir}/src/main/webapp"/>	
 	<property name="main.webapp.login.dir" value="${main.webapp.dir}/login"/>
@@ -40,7 +33,6 @@
     <property name="srcincludes" value="MANIFEST.TXT"/>
 		
     <property name="webinf.conf.dir" value="${main.webapp.webinf.dir}/conf"/>
-	<property name="webinf.classes.dir" value="${main.webapp.webinf.dir}/classes"/>
     <property name="webinf.templates.dir" value="${main.webapp.webinf.dir}/templates"/>
     <property name="webinf.sql.dir" value="${main.webapp.webinf.dir}/sql"/>
     <property name="webinf.sql-diff.dir" value="${webinf.sql.dir}/diff"/>
@@ -62,8 +54,7 @@
     
     <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="pom.classpath"/>
     <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask" classpathref="pom.classpath"/>
-    <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="pom.classpath"/>
-    <taskdef resource="checkstyletask.properties" classpathref="pom.classpath"/>
+    <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="pom.classpath"/>    
 	
     <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
 
@@ -121,35 +112,11 @@
     </target>
 
 
-    <target name="apidocs">
-        <javadoc sourcepath="${main.java.dir}/" destdir="${apidocs}"
-                 windowtitle="imCMS API" classpathref="libraries"
-                 encoding="iso-8859-1">
-            <fileset dir="${main.java.dir}/" defaultexcludes="yes">
-                <include name="com/imcode/imcms/api/**"/>
-                <include name="com/imcode/util/**"/>
-                <exclude name="**/Test*.java"/>
-                <exclude name="**/Mock*.java"/>
-            </fileset>
-        </javadoc>
-    </target>
-
-	
     <target name="changes">
         <xslt in="docs/changes.xml" style="docs/changes.xsl" out="docs/CHANGES.HTML"/>
     </target>
 
-	
-    <target name="checkstyle" depends="init">
-		<!--
-        <checkstyle config="docs/checkstyle.xml">
-            <fileset dir="${main.java.dir}" includes="**/*.java"/>
-        </checkstyle>
-		-->
-    </target>   
-
-	
-    <target name="sql">        
+    <target name="sql">
         <copy todir="${webinf.sql-diff.dir}">
             <fileset dir="${sql.dir}/diff" includes="diff-*.sql"/>
         </copy>     
@@ -186,13 +153,6 @@
             	<include name="server.properties"/>
             </targetfileset>
         </dependset>
-    	
-        <dependset>
-            <srcfileset file="${build.properties}"/>
-            <targetfileset dir="${webinf.classes.dir}">
-            	<include name="logj4*"/>
-            </targetfileset>
-        </dependset>    	
 
         <mkdir dir="${main.webapp.imcms.dir}"/>
         <mkdir dir="${main.webapp.login.dir}"/>
@@ -208,16 +168,7 @@
     	
     	<echo message="${version}" file="${versionfile}"/>
         
-        <!-- Copy and filter webinf, conf and classes resources to main webapp dir -->   
-    	<copy todir="${main.webapp.webinf.dir}" filtering="true">
-    		<fileset dir="${main.resources-webinf.dir}"/>
-    	</copy>    	
-    	
-    	<copy todir="${webinf.classes.dir}" filtering="true">
-    		<fileset dir="${resources.dir}"/>
-    	</copy>    	
-    	<copy file="${resources.dir}/${log4j-config}" tofile="${webinf.classes.dir}/log4j.xml"/>
-    	    
+        <!-- Copy and filter webinf, conf and classes resources to main webapp dir -->
     	<copy todir="${webinf.conf.dir}" filtering="true">
     		<fileset dir="${main.resources-conf.dir}"/>
     	</copy>    	   	
@@ -249,10 +200,6 @@
 
         <copy todir="${docs}">
             <fileset dir="${basedir}/docs"/>
-        </copy>
-
-        <copy todir="${webinf.classes.dir}">
-            <fileset dir="${main.clojure.dir}"/>
         </copy>
     </target>
 

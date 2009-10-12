@@ -27,13 +27,13 @@ import com.imcode.imcms.util.SchemaVersionChecker;
 import com.imcode.imcms.util.SchemaVersionCheckerException;
 
 /**
- * Application context listener.
+ * Cms context listener.
  *
  * Springframework should be initialized first.
  *
  * TODO: Refactor this listener to spring bean.
  */
-public class ApplicationContextListener implements ServletContextListener {
+public class CmsContextListener implements ServletContextListener {
 
     private Logger logger;
 

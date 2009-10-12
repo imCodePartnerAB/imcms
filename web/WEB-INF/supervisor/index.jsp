@@ -33,25 +33,25 @@
 
     if (request.getParameter("error") != null) {
         response.setContentType("text/plain");
-        Imcms.getAppStartupEx().printStackTrace(new PrintWriter(out));
+        Imcms.getCmsStartupEx().printStackTrace(new PrintWriter(out));
 
         return;
     }
 
     if (request.getParameter("start") != null) {
         try {
-            Imcms.startApplication();
+            Imcms.startCms();
         } catch (Exception e) {}
     }
 
     if (request.getParameter("stop") != null) {
         try {
-            Imcms.stopApplication();
+            Imcms.stopCms();
         } catch (Exception e) {}
     }
 
     if (request.getParameter("exit") != null) {
-        Imcms.setApplicationMode();
+        Imcms.setCmsMode();
         //request.getRequestDispatcher("/").forward(request, response);
         response.sendRedirect("");
 
@@ -89,13 +89,13 @@
     &nbsp;&nbsp;:Running:&nbsp;<%=Imcms.getServices() == null ? "NO" : "YES"%><br/>
     &nbsp;&nbsp;:Startup errors:&nbsp;
       <%
-        if (Imcms.getAppStartupEx() == null) {
+        if (Imcms.getCmsStartupEx() == null) {
             %>
             NO ERRORS
             <%
         } else {
             %>
-            <a href="?error" target="_blank"><%=Imcms.getAppStartupEx().getClass()%></a>
+            <a href="?error" target="_blank"><%=Imcms.getCmsStartupEx().getClass()%></a>
             <%
         }
       %>

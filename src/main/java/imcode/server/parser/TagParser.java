@@ -61,7 +61,7 @@ import org.apache.velocity.app.VelocityEngine;
 
 import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.mapping.CategoryMapper;
-import com.imcode.imcms.servlet.ApplicationFilter;
+import com.imcode.imcms.servlet.CmsFilter;
 import com.imcode.util.CountingIterator;
 
 public class TagParser {
@@ -256,14 +256,14 @@ public class TagParser {
             urlConnection.setRequestProperty("User-Agent",
                                              documentRequest.getHttpServletRequest().getHeader("User-agent"));
             if ( null != attributes.getProperty("sendsessionid") ) {
-                urlConnection.addRequestProperty("Cookie", ApplicationFilter.JSESSIONID_COOKIE_NAME + "="
+                urlConnection.addRequestProperty("Cookie", CmsFilter.JSESSIONID_COOKIE_NAME + "="
                                                            + sessionId);
             }
             if ( null != attributes.getProperty("sendcookies") ) {
                 Cookie[] requestCookies = documentRequest.getHttpServletRequest().getCookies();
                 for ( int i = 0; requestCookies != null && i < requestCookies.length; ++i ) {
                     Cookie theCookie = requestCookies[i];
-                    if ( !ApplicationFilter.JSESSIONID_COOKIE_NAME.equals(theCookie.getName()) ) {
+                    if ( !CmsFilter.JSESSIONID_COOKIE_NAME.equals(theCookie.getName()) ) {
                         urlConnection.addRequestProperty("Cookie", theCookie.getName() + "="
                                                                    + theCookie.getValue());
                     }

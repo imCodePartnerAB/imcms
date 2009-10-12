@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <project>
+
+    <!-- TODO: Integrate api and checkstyle
+    <target name="apidocs">
+        <javadoc sourcepath="${main.java.dir}/" destdir="${apidocs}"
+                 windowtitle="imCMS API" classpathref="libraries"
+                 encoding="iso-8859-1">
+            <fileset dir="${main.java.dir}/" defaultexcludes="yes">
+                <include name="com/imcode/imcms/api/**"/>
+                <include name="com/imcode/util/**"/>
+                <exclude name="**/Test*.java"/>
+                <exclude name="**/Mock*.java"/>
+            </fileset>
+        </javadoc>
+    </target>
+
+    <taskdef resource="checkstyletask.properties" classpathref="pom.classpath"/>
+    <target name="checkstyle" depends="init">
+        <checkstyle config="docs/checkstyle.xml">
+            <fileset dir="${main.java.dir}" includes="**/*.java"/>
+        </checkstyle>
+    </target>
+    -->
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.imcode.imcms</groupId>
@@ -528,6 +551,12 @@
   </repositories>  
       
   <build>
+   <resources>
+     <resource>
+       <directory>src/main/clojure</directory>
+     </resource>
+   </resources>
+
     <plugins>    
       <!-- TODO: Add (Jetty?) Jspc plugin for jsps verification? -->
 	  <plugin>
@@ -556,17 +585,19 @@
           <artifactId>maven-war-plugin</artifactId>
           <version>2.1-beta-1</version>
           <configuration>      
-            <attachClasses>true</attachClasses>  	  
+            <attachClasses>true</attachClasses>
+
+            <!--
             <archiveClasses>true</archiveClasses>           
-                         
-            <!-- 
+            -->
+
             <webResources>
 	          <resource>
-	            <directory>src/main/resources-webinf/</directory>
-                <targetPath>WEB-INF</targetPath>            
+	            <directory>src/main/resources-webinf</directory>
+                <targetPath>WEB-INF</targetPath>
 	          </resource>
 	        </webResources>
-	        -->
+
           </configuration>
         </plugin> 
         

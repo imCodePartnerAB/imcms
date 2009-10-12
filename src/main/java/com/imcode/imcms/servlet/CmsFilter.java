@@ -39,7 +39,7 @@ import com.imcode.imcms.api.I18nSupport;
 /**
  * Application filter - intercepts all requests in application mode.
  */
-public class ApplicationFilter implements Filter {
+public class CmsFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
     
