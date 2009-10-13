@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.Map;
 
 import javax.sql.DataSource;
 import javax.servlet.ServletContextEvent;
@@ -18,6 +19,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.xml.DOMConfigurator;
 
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
@@ -30,7 +32,8 @@ import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.imcms.ImcmsMode;
-import com.imcode.imcms.CoreFilter;
+import com.imcode.imcms.ImcmsFilter;
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.servlet.CmsContextListener;
 
 /**
@@ -44,12 +47,9 @@ public class Imcms {
     public static final String UTF_8_ENCODING = "UTF-8";
     public static final String DEFAULT_ENCODING = UTF_8_ENCODING;
 
-    /** Application logger.
-     * Initialized/shutdowned in initAppLogger/shutDownAppLogger.
-     */
-    private static Logger cmsLogger;
+    private static Logger logger = Logger.getLogger(Imcms.class);
 
-    /** Application services. */
+    /** Cms services. */
     private static ImcmsServices cmsServices;
 
     private static BasicDataSource apiDataSource;
@@ -65,11 +65,12 @@ public class Imcms {
      */
     private static ServletContextEvent servletContextEvent;
     private static ImcmsMode mode = ImcmsMode.MAINTENANCE;
-    private static CoreFilter filter;
+    private static ImcmsFilter imcmsFilter;
     private static Exception cmsStartupEx;
 
     private static CmsContextListener CmsContextListener;
     private static ContextLoaderListener springContextLoaderListener;
+    private static Map<String, I18nLanguage> i18nHosts;
 
     /** Springframework web application context. */
     public static WebApplicationContext webApplicationContext;
@@ -98,7 +99,6 @@ public class Imcms {
         setCmsStartupEx(null);
 
         try {
-            initCmsLogger();
             initCmsPrefs();
 
             springContextLoaderListener = new ContextLoaderListener();
@@ -110,6 +110,7 @@ public class Imcms {
 
             cmsServices = createApplicationServices();
         } catch (Exception e) {
+            logger.error(e, e);
             setCmsStartupEx(e);
 
             throw new StartupException("" +
@@ -128,7 +129,7 @@ public class Imcms {
 
     private static ImcmsServices createApplicationServices() throws Exception {
         Properties serverprops = getServerProperties();
-        cmsLogger.debug("Creating main DataSource.");
+        logger.debug("Creating main DataSource.");
         Database database = createDatabase(serverprops);
         LocalizedMessageProvider localizedMessageProvider = new CachingLocalizedMessageProvider(new ImcmsPrefsLocalizedMessageProvider());
                 
@@ -144,7 +145,7 @@ public class Imcms {
     public synchronized static DataSource getApiDataSource() {
         if ( null == apiDataSource ) {
             Properties serverprops = getServerProperties();
-            cmsLogger.debug("Creating API DataSource.");
+            logger.debug("Creating API DataSource.");
             apiDataSource = createDataSource(serverprops);
         }
         return apiDataSource;
@@ -154,7 +155,7 @@ public class Imcms {
         try {
             return Prefs.getProperties(SERVER_PROPERTIES_FILENAME);
         } catch ( IOException e ) {
-            cmsLogger.fatal("Failed to initialize imCMS", e);
+            logger.fatal("Failed to initialize imCMS", e);
             throw new UnhandledException(e);
         }
     }
@@ -167,10 +168,10 @@ public class Imcms {
         String password = props.getProperty("Password");
         int maxConnectionCount = Integer.parseInt(props.getProperty("MaxConnectionCount"));
 
-        cmsLogger.debug("JdbcDriver = " + jdbcDriver);
-        cmsLogger.debug("JdbcUrl = " + jdbcUrl);
-        cmsLogger.debug("User = " + user);
-        cmsLogger.debug("MaxConnectionCount = " + maxConnectionCount);
+        logger.debug("JdbcDriver = " + jdbcDriver);
+        logger.debug("JdbcUrl = " + jdbcUrl);
+        logger.debug("User = " + user);
+        logger.debug("MaxConnectionCount = " + maxConnectionCount);
 
         return createDataSource(jdbcDriver, jdbcUrl, user, password, maxConnectionCount);
     }
@@ -185,19 +186,19 @@ public class Imcms {
     public static void stopCms() {
         if ( null != apiDataSource ) {
             try {
-                cmsLogger.debug("Closing API DataSource.");
+                logger.debug("Closing API DataSource.");
                 apiDataSource.close();
             } catch ( SQLException e ) {
-                cmsLogger.error(e, e);
+                logger.error(e, e);
             }
         }
         
         if ( null != dataSource ) {
             try {
-                cmsLogger.debug("Closing main DataSource.");
+                logger.debug("Closing main DataSource.");
                 dataSource.close();
             } catch ( SQLException e ) {
-                cmsLogger.error(e, e);
+                logger.error(e, e);
             }
         }
         
@@ -206,14 +207,8 @@ public class Imcms {
         try {
             if (springContextLoaderListener != null)
                 springContextLoaderListener.contextDestroyed(servletContextEvent);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        try {
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+           logger.error(e, e);
         }
 
         cmsServices = null;
@@ -222,7 +217,7 @@ public class Imcms {
     private static void logDatabaseVersion(BasicDataSource basicDataSource) throws SQLException {
         Connection connection = basicDataSource.getConnection();
         DatabaseMetaData metaData = connection.getMetaData();
-        cmsLogger.info("Database product version = " + metaData.getDatabaseProductVersion());
+        logger.info("Database product version = " + metaData.getDatabaseProductVersion());
         connection.close();
     }
 
@@ -249,7 +244,7 @@ public class Imcms {
         } catch ( SQLException ex ) {
             String message = "Could not connect to database "+ jdbcUrl + " with driver " + jdbcDriver + ": "+ex.getMessage()+" Error code: "
                              + ex.getErrorCode() + " SQL GroupData: " + ex.getSQLState();
-            cmsLogger.fatal(message, ex);
+            logger.fatal(message, ex);
             throw new RuntimeException(message, ex);
         }
     }
@@ -273,8 +268,8 @@ public class Imcms {
     public static ImcmsMode setMode(ImcmsMode mode) {
         Imcms.mode = mode;
 
-        if (filter != null) {
-            filter.updateDelegateFilter();
+        if (imcmsFilter != null) {
+            imcmsFilter.updateDelegateFilter();
         }
 
         return mode;
@@ -293,14 +288,21 @@ public class Imcms {
         return mode;
     }
 
-    public static void setFilter(CoreFilter filter) {
-        Imcms.filter = filter;
+
+    /**
+     * Invoked by ImcmsFilter when its init method is called.
+     *
+     * @param imcmsFilter
+     */
+    public static void setImcmsFilter(ImcmsFilter imcmsFilter) {
+        Imcms.imcmsFilter = imcmsFilter;
     }
 
     public static Exception getCmsStartupEx() {
         return cmsStartupEx;
     }
 
+    // clear
     public static void setCmsStartupEx(Exception cmsStartupEx) {
         Imcms.cmsStartupEx = cmsStartupEx;
     }
@@ -327,29 +329,11 @@ public class Imcms {
 	}
 
 
-    /**
-     * Initializes log4j logger.
-     * Assumes that log4j configuration file resides in a classpath
-     */
-    public static void initCmsLogger() {
-        //File configFile = new File(path, "WEB-INF/classes/log4j.xml");
-        //DOMConfigurator.configure(configFile.toString());
-        
-        // Property in logger conf file
-        System.setProperty("com.imcode.imcms.path", path.toString());
-
-        cmsLogger = Logger.getLogger(Imcms.class.getName());
-    }
-
     public static void initCmsPrefs() {
         File configPath = new File(path, "WEB-INF/conf");
         Prefs.setConfigPath(configPath);        
     }
-    
 
-    public static void shutdownCmsLogger() {
-        LogManager.shutdown();
-    }
 
     public static ServletContextEvent getServletContextEvent() {
         return servletContextEvent;
@@ -357,5 +341,13 @@ public class Imcms {
 
     public static void setServletContextEvent(ServletContextEvent servletContextEvent) {
         Imcms.servletContextEvent = servletContextEvent;
-    }    
+    }
+
+    public static Map<String, I18nLanguage> getI18nHosts() {
+        return i18nHosts;
+    }
+
+    public static void setI18nHosts(Map<String, I18nLanguage> i18nHosts) {
+        Imcms.i18nHosts = i18nHosts;
+    }
 }

@@ -15,10 +15,6 @@
    "Application configuration files.")
 
 
-(defvar repl-server (ref nil)
-  "Repl server.")
-
-
 (defn start-repl-server [port]
   (dosync
     (if-not @repl-server

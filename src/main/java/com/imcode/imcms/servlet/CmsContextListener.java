@@ -29,7 +29,7 @@ import com.imcode.imcms.util.SchemaVersionCheckerException;
 /**
  * Cms context listener.
  *
- * Springframework should be initialized first.
+ * Springframework context listener should be initialized first.
  *
  * TODO: Refactor this listener to spring bean.
  */
@@ -39,7 +39,7 @@ public class CmsContextListener implements ServletContextListener {
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         logger = Logger.getLogger(getClass());
-        
+        // TODO: Refactor dublicated in Imcms.initPrefs
         File configPath = new File(Imcms.getPath(), "WEB-INF/conf");
         Prefs.setConfigPath(configPath);
 
@@ -99,9 +99,8 @@ public class CmsContextListener implements ServletContextListener {
     	int prefixLength = prefix.length();
         Properties properties = Imcms.getServerProperties();
 
-        // TODO: create const for "imcms.i18n.hosts"
         Map<String, I18nLanguage> i18nHosts = new HashMap<String, I18nLanguage>();
-        servletContext.setAttribute("imcms.i18n.hosts", i18nHosts);
+        Imcms.setI18nHosts(i18nHosts);
         
     	for (Map.Entry entry: properties.entrySet()) {
     		String key = (String)entry.getKey();

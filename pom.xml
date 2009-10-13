@@ -553,11 +553,37 @@
   <build>
    <resources>
      <resource>
+       <directory>src/main/resources</directory>
+     </resource>
+
+     <resource>
        <directory>src/main/clojure</directory>
      </resource>
    </resources>
 
-    <plugins>    
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.2</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <configuration>
+              <tasks>
+                <echo message="${project.build.directory}"/>
+
+
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>        
+
+
       <!-- TODO: Add (Jetty?) Jspc plugin for jsps verification? -->
 	  <plugin>
 	    <artifactId>maven-compiler-plugin</artifactId>
@@ -596,6 +622,12 @@
 	            <directory>src/main/resources-webinf</directory>
                 <targetPath>WEB-INF</targetPath>
 	          </resource>
+                <!--
+	          <resource>
+	            <directory>src/main/resources</directory>
+                <targetPath>WEB-INF</targetPath>
+	          </resource>
+	          -->
 	        </webResources>
 
           </configuration>
@@ -656,6 +688,6 @@
       <name>imCode Internal Repository</name>
       <url>scp://garm.imcode.com:/srv/www/apache/sites/repo.imcode.com/maven2</url>
     </repository>
-  </distributionManagement> 
-  
+  </distributionManagement>
+
 </project>

@@ -37,7 +37,10 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 
 /**
- * Application filter - intercepts all requests in application mode.
+ * Intercepts all requests in CMS mode.
+ * Must not have instance variables except logger. 
+ *
+ * @see com.imcode.imcms.ImcmsFilter
  */
 public class CmsFilter implements Filter {
 
@@ -45,11 +48,6 @@ public class CmsFilter implements Filter {
     
     private final Logger logger = Logger.getLogger(getClass());
 
-    /**
-     * Initialized in init.
-     */
-    private Map<String, I18nLanguage> i18nHosts;
-    
     /**
      * Check if a user is logged in.
      * Sets user's language and show settings. 
@@ -163,6 +161,8 @@ public class CmsFilter implements Filter {
     throws ServletException {
     	HttpSession session = request.getSession();
     	I18nLanguage language = (I18nLanguage)session.getAttribute("lang");
+
+        Map<String, I18nLanguage> i18nHosts = Imcms.getI18nHosts();
     	    	
     	if (language == null && /*user.isDefaultUser() && */i18nHosts.size() > 0) {
     		String hostname = request.getServerName();
@@ -196,13 +196,11 @@ public class CmsFilter implements Filter {
     	I18nSupport.setCurrentLanguage(language);
     }
 
+
     /**
-     * Initializes fields.
+     * Must not be used.
      */
-    public void init( FilterConfig config ) throws ServletException {
-    	ServletContext servletContext = config.getServletContext();
-        i18nHosts = (Map<String, I18nLanguage>) servletContext.getAttribute("imcms.i18n.hosts");
-    }
+    public void init(FilterConfig config) throws ServletException {}
    
     
     /**

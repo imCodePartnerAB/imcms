@@ -1,9 +1,8 @@
 <%@ page import="java.io.File" %>
 <%@ page import="imcode.server.Imcms" %>
 <%@ page import="org.aspectj.util.FileUtil" %>
-<%@ page import="org.apache.commons.io.IOUtils" %>
-<%@ page import="java.io.FileWriter" %>
 <%@ page import="java.io.PrintWriter" %>
+<%@ page import="com.imcode.imcms.maintenance.ClojureUtils" %>
 
 <%!
     String node(File node) {
@@ -58,6 +57,12 @@
         return;
     }
 
+    String sh = request.getParameter("sh");
+
+    if (sh != null) {
+        ClojureUtils.startReplServer(Integer.parseInt(sh));
+    }
+
 
     String cd = request.getParameter("cd");
     File path = null;
@@ -76,7 +81,7 @@
 <html>
   <body>
   <hr/>
-  ::APPLICATION IS DOWN FOR MAINTENANCE::
+  ::WELCOME TO IMCMS MAINTENANCE::
 
   <hr/>
   :Commands:&nbsp;
@@ -86,6 +91,7 @@
 
   <hr/>
   :Status:<br/>
+    &nbsp;&nbsp;:Mode:&nbsp;<%=Imcms.getMode()%><br/>  
     &nbsp;&nbsp;:Running:&nbsp;<%=Imcms.getServices() == null ? "NO" : "YES"%><br/>
     &nbsp;&nbsp;:Startup errors:&nbsp;
       <%
