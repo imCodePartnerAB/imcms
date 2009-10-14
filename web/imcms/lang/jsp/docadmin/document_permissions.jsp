@@ -166,8 +166,8 @@
                         <? templates/sv/permissions/sets_precedence.html/precedence ?>
                     </td>
                     <td class="imcmsAdmText">
-                        <input type="CHECKBOX" name="<%= DocumentPermissionsPage.REQUEST_PARAMETER__RESTRICTED_ONE_MORE_PRIVILEGED_THAN_RESTRICTED_TWO %>" value="1" <% if (document.isRestrictedOneMorePrivilegedThanRestrictedTwo()) { %>checked<% } %>>
-                        <? templates/sv/permissions/sets_precedence.html/1001 ?>
+                        <input type="CHECKBOX" id="setsPrecedenceCb" name="<%= DocumentPermissionsPage.REQUEST_PARAMETER__RESTRICTED_ONE_MORE_PRIVILEGED_THAN_RESTRICTED_TWO %>" value="1" <% if (document.isRestrictedOneMorePrivilegedThanRestrictedTwo()) { %>checked<% } %>>
+                        <label for="setsPrecedenceCb"><? templates/sv/permissions/sets_precedence.html/1001 ?></label>
                     </td>
                 </tr>
             <% } %>
@@ -203,12 +203,12 @@
                 <td>
                 <table border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                    <td><input type="CHECKBOX" name="show_meta" value="1" <% if (document.isLinkedForUnauthorizedUsers()) {%>checked<% } %>></td>
-                    <td class="imcmsAdmText">&nbsp;<? templates/global/pageinfo/ShowLinkToUnuthorizedUser ?></td>
+                    <td><input type="CHECKBOX" id="showMetaCb" name="show_meta" value="1" <% if (document.isLinkedForUnauthorizedUsers()) {%>checked<% } %>></td>
+                    <td class="imcmsAdmText">&nbsp;<label for="showMetaCb"><? templates/global/pageinfo/ShowLinkToUnuthorizedUser ?></label></td>
                 </tr>
                 <tr>
-                    <td><input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS %>" value="1" <% if (document.isLinkableByOtherUsers()) {%>checked<% } %>></td>
-                    <td class="imcmsAdmText">&nbsp;<? templates/global/pageinfo/share ?></td>
+                    <td><input type="CHECKBOX" id="linkableCb" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS %>" value="1" <% if (document.isLinkableByOtherUsers()) {%>checked<% } %>></td>
+                    <td class="imcmsAdmText">&nbsp;<label for="linkableCb"><? templates/global/pageinfo/share ?></label></td>
                 </tr>
                 </table>
                 </td>

@@ -26,22 +26,25 @@
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
-<body onLoad="focusField(0,'<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>');">
+<body onLoad="focusField(1,'<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>');">
 	#gui_outer_start()
 	#gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/2 ?>" )
-    <table border="0" cellspacing="0" cellpadding="0">
+
 <form name="argumentForm" action="UserBrowser" method="GET" target="_top">
+<table border="0" cellspacing="0" cellpadding="0">
 <tr>
 	<td><input type="submit"  class="imcmsFormBtn" name="<%= UserBrowser.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/back ?>"></td>
 	<td>&nbsp;</td>
 	<td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW('UserAdmin')"></td>
 </tr>
 </table>
+</form>
 #gui_mid()
 
+<form name="argumentForm" action="UserBrowser" method="GET" target="_top">
+<input type="hidden" name="<%= UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE %>"
+       value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE ) %>">
 <table border="0" cellspacing="0" cellpadding="0" width="600" align="center">
-            <input type="hidden" name="<%= UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE %>"
-                                value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE ) %>">
     <tr>
         <td colspan="2">#gui_heading( "<%= userFinder.getHeadline().toLocalizedString(request) %>" )</td>
     </tr>
@@ -50,7 +53,7 @@
         <td width="70%">
         <table border="0" cellspacing="0" cellpadding="0">
         <tr>
-            <td><input type="text" name="<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>" size="20" maxlength="20" value="<%= StringEscapeUtils.escapeHtml(userBrowserPage.getSearchString()) %>"></td>
+            <td><input type="text" id="<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>" name="<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>" size="20" maxlength="20" value="<%= StringEscapeUtils.escapeHtml(userBrowserPage.getSearchString()) %>"></td>
             <td class="imcmsAdmDim">&nbsp; <? templates/sv/AdminChangeUser.htm/1001 ?></td>
         </tr>
         </table></td>
@@ -81,6 +84,12 @@
         </table>
     </td>
     </tr>
+</table>
+</form>
+<form name="argumentForm" action="UserBrowser" method="GET" target="_top">
+<input type="hidden" name="<%= UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE %>"
+       value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE ) %>">
+<table border="0" cellspacing="0" cellpadding="0" width="600" align="center">
     <tr>
         <td colspan="2">#gui_hr( "cccccc" )</td>
     </tr>
@@ -120,8 +129,8 @@
         </tr>
         </table></td>
     </tr>
-</form>
 </table>
+</form>
 
 <script language="JavaScript">
 <!--

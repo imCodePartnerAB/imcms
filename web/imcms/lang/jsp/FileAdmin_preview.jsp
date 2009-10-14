@@ -8,8 +8,10 @@
 	        java.io.BufferedReader,
 	        java.io.File,
 	        java.io.FileInputStream,
-	        java.io.InputStreamReader, java.text.DecimalFormat, org.apache.commons.lang.StringEscapeUtils, java.io.IOException"
-        contentType="text/html; charset=UTF-8"
+	        java.io.InputStreamReader, java.text.DecimalFormat, org.apache.commons.lang.StringEscapeUtils, java.io.IOException, org.apache.commons.lang.StringUtils, java.net.URLEncoder"
+	
+	contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"
 	
 %><%
 
@@ -29,6 +31,7 @@ String IMG_PATH   = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( 
  ******************************************************************* */
 
 String file       = request.getParameter("file") ;
+String orgFileParam = StringUtils.defaultString(request.getParameter("file")) ;
 
 String frame      = (request.getParameter("frame") != null) ? request.getParameter("frame") : "FRAME" ;
 String thisPage = request.getContextPath() + request.getServletPath();
@@ -49,11 +52,11 @@ String border     = "" ;
 boolean hasBorder = false ;
 if (request.getParameter("border") != null) {
 	border          = (request.getParameter("border").equals("1")) ? " border=\"1\"" : "" ;
-	hasBorder       = (request.getParameter("border").equals("1")) ? true : false ;
+	hasBorder       = (request.getParameter("border").equals("1")) ;
 	session.setAttribute("border", request.getParameter("border")) ;
 } else if (session.getAttribute("border") != null) {
 	border          = (session.getAttribute("border").equals("1")) ? " border=\"1\"" : "" ;
-	hasBorder       = (session.getAttribute("border").equals("1")) ? true : false ;
+	hasBorder       = (session.getAttribute("border").equals("1")) ;
 }
 
     File webRoot    = Imcms.getPath() ;
@@ -65,21 +68,21 @@ boolean isImage    = re.match(acceptedExtPattern, file) ;
 
 /* Check browser */
 
-String uAgent = request.getHeader("USER-AGENT") ;
-boolean hasDocumentAll  = re.match("/(MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) ;
-boolean hasDocumentLayers  = (re.match("/Mozilla/i", uAgent) && !re.match("/Gecko/i", uAgent)) ? true : false ;
-boolean hasGetElementById = re.match("/Gecko/i", uAgent) ;
+String uAgent = StringUtils.defaultString(request.getHeader("USER-AGENT")) ;
+boolean hasDocumentAll    = re.match("/(MSIE \\d)/i", uAgent) ;
+boolean hasGetElementById = re.match("/Gecko/i", uAgent) || hasDocumentAll ;
+boolean hasDocumentLayers = (re.match("/Mozilla/i", uAgent) && !hasDocumentAll && !hasGetElementById) ;
 boolean isMac = re.match("/Mac/i", uAgent) ;
 
 /* if Stat-Report - Read file and show it */
-boolean isStat    = (request.getParameter("isStat") != null) ? true : false ;
+boolean isStat    = (request.getParameter("isStat") != null) ;
 
 if (isStat && frame.equalsIgnoreCase("MAIN")) {
 
     BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fn))) ;
 
-    String statSrc = "" ;
-    String fileLine = "" ;
+    String statSrc  ;
+    String fileLine ;
     StringBuffer strbuf = new StringBuffer();
     while ((fileLine = br.readLine())!= null) {
         strbuf.append(fileLine).append( "\n") ;
@@ -89,13 +92,13 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
 
     statSrc = statSrc.replaceAll("<head>","<head>\n\n<base target=\"_blank\">");	/* add some buttons in some browsers */
 
-	String theButtons = "" ;
+	String theButtons ;
 	boolean hasInlineButtons = false ;
 
 	theButtons = "<table border=0 bgcolor=\"#d6d3ce\" align=\"right\">\n<tr>" ;
 	if (hasGetElementById && !hasDocumentAll && !isMac) {
 		hasInlineButtons = true ;
-         theButtons += "\n   <td><a href=\"#\" onClick=\"find(); return false\"><img align=\"absmiddle\" src=\"" + IMG_PATH + "btn_find.gif\" border=\"0\" alt=\"Sök!\"></a></td>" ;
+         theButtons += "\n   <td><a href=\"#\" onClick=\"find(); return false\"><img align=\"absmiddle\" src=\"" + IMG_PATH + "btn_find.gif\" border=\"0\" alt=\"SÃ¶k!\"></a></td>" ;
 	}
 	if (isMac) {
 		hasInlineButtons = true ;
@@ -116,17 +119,22 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
 /* Get formated file size */
 
 String size  = "" ;
-double iSize = 0 ;
+double iSize ;
 
 try {
 	iSize = (double) fn.length() ;
-	if (iSize >= 1024) {
+	if (iSize >= (1024*1024)) {
+		iSize = iSize / 1024 / 1024 ;
+		DecimalFormat df = new DecimalFormat("#.#") ;
+		size  = df.format(iSize) ;
+		size  = size.replaceAll(",", ".") + " MB" ;
+	} else if (iSize >= 1024) {
 		iSize = iSize / 1024 ;
 		DecimalFormat df = new DecimalFormat("#.#") ;
 		size  = df.format(iSize) ;
-		size  = ", " + size.replaceAll(",", ".") + "kB" ;
+		size  = size.replaceAll(",", ".") + " kB" ;
 	} else {
-		size  = ", " + fn.length() + " bytes" ;
+		size  = fn.length() + " bytes" ;
 	}
 } catch ( NumberFormatException ex ) {
 	// ignore
@@ -156,23 +164,27 @@ if (frame.equalsIgnoreCase("MAIN")) { %>
 if (isImage) {
     try {
         BufferedImage image = ImageIO.read( fn );
-        %><div class="imcmsAdmText" style="padding: 5 0 <%
-        if (hasBorder) {
-            %>5<%
-        } else {
-            %>6<%
-        } %> 0; color:#666666;">&quot;<%= file.replaceAll("\\\\","/") %>&quot;<%
+        %><div class="imcmsAdmText" style="padding: 5px 0 <%= hasBorder ? 7 : 8 %>px 0; color:#666;">&quot;$contextPath<%= file.replaceAll("\\\\","/") %>&quot;<%
         if (image.getWidth() > 0 && image.getHeight() > 0 && !size.equals("")) {
             %> (<%
             if (image.getWidth() > 0 && image.getHeight() > 0) {
-                %><%= image.getWidth() + "x" + image.getHeight() %><%
+                %><%= image.getWidth() + "x" + image.getHeight() %> px, <%
+	            if (hasGetElementById && !hasDocumentAll && defZoom.matches("^\\d+\\.\\d+$")) {// Gecko
+		            double dZoom = Double.parseDouble(defZoom) ;
+		            double newWidth = (dZoom * image.getWidth()) ;
+		            //out.print(defZoom + " - " + dZoom + " - " + newWidth + " - " + Math.round(newWidth) + " - ");
+		            zoom = " style=\"width:" + Math.round(newWidth) + "px;\"" ;
+	            }
             }
             if (!size.equals("")) {
                 %><%= size %><%
             } %>)<%
         } %></div><%
-    } catch( IOException ignored ) {}
-    %><img name="theImg" id="theImg" src="<%= request.getContextPath() + Utility.escapeUrl(file) %>"<%= border + zoom %>><%
+    } catch( IOException ignored ) {
+	    //out.print(ignored);
+	    if (hasGetElementById && !hasDocumentAll) zoom = "" ;
+    }
+    %><img name="theImg" id="theImg" src="$contextPath<%= Utility.escapeUrl(file).replaceAll("(%5C|%255C)","/") %>"<%= border + zoom %> alt=""><%
 } else {
 	%><%
 } %></div>
@@ -229,7 +241,7 @@ function findIt(str) {
 		}
 	} else if ((hasDocumentAll || hasGetElementById) && str != "") {
 		txt = win.document.body.createTextRange();
-		for (i = 0; i <= n && (found = txt.findText(str)) != false; i++) {
+		for (i = 0; i <= n && (found = txt.findText(str)); i++) {
 			txt.moveStart("character", 1);
 			txt.moveEnd("textedit");
 		}
@@ -254,7 +266,7 @@ function findIt(str) {
 </script>
 
 </head>
-<body class="imcmsAdmBgHead" style="margin:0px; border:0px">
+<body class="imcmsAdmBgHead" style="margin:0; border:0;">
 
 <table border="0" cellspacing="0" cellpadding="0" width="100%" height="100%" style="border-bottom: 1px solid #000000">
 <tr>
@@ -267,13 +279,12 @@ function findIt(str) {
 	} %> &nbsp;</span></td>
 
 	<td align="right"><%
-	if (isStat) {
-		%>
+	if (isStat) { %>
+	<form action="" onSubmit="findIt(document.forms[0].searchString.value); return false">
 	<table border="0" cellspacing="0" cellpadding="0">
-	<form onSubmit="findIt(document.forms[0].searchString.value); return false">
 	<tr><%
 		if (hasDocumentAll || hasDocumentLayers) { %>
-		<td class="imcmsAdmText"><input type="text" name="searchString" size="15" value="" class="imcmsAdmText" style="width:100"></td>
+		<td class="imcmsAdmText"><input type="text" name="searchString" size="15" value="" class="imcmsAdmText" style="width:100px;"></td>
 		<td><a id="btnSearch" href="javascript://find()" onClick="findIt(document.forms[0].searchString.value);"><img src="<%= IMG_PATH %>btn_find.gif" border="0" hspace="5" alt="<? install/htdocs/sv/jsp/FileAdmin_preview.jsp/2001 ?>"></a></td><%
 		} %>
 		<td class="imcmsAdmText">&nbsp;&nbsp;</td><%
@@ -283,27 +294,27 @@ function findIt(str) {
 		<td><a href="javascript://close()" onClick="closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" hspace="5" alt="<? install/htdocs/sv/jsp/FileAdmin_preview.jsp/2003 ?>"></a></td>
 		<td class="imcmsAdmText">&nbsp;&nbsp;&nbsp;&nbsp;</td>
 	</tr>
-	</form>
-	</table><%
+	</table>
+	</form><%
 	} else { /* image */ %>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<form action="<%= thisPage %>" target="main">
 	<input type="hidden" name="frame" value="main">
-	<input type="hidden" name="file" value="<%= Utility.escapeUrl(file) %>">
+	<input type="hidden" name="file" value="<%= StringEscapeUtils.escapeHtml(orgFileParam) %>">
 	<tr>
 		<td class="imcmsAdmText"><span class="imcmsAdmText" style="color:#ffffff;">| &nbsp; <%
-		if (hasDocumentAll) { %><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/16 ?></span>&nbsp;</span></td>
+		if (hasGetElementById) { %><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/16 ?></span>&nbsp;</span></td>
 		<td class="imcmsAdmText">
 		<select name="zoom" onChange="this.form.submit();">
-			<option value="0.25"<% if (defZoom.equals("0.25")) { %> selected<% } %>>25%
-			<option value="0.5"<%  if (defZoom.equals("0.5")) { %> selected<% } %>>50%
-			<option value="0.75"<% if (defZoom.equals("0.75")) { %> selected<% } %>>75%
-			<option value="1.0"<%  if (defZoom.equals("1.0")) { %> selected<% } %>>100%
-			<option value="1.5"<%  if (defZoom.equals("1.5")) { %> selected<% } %>>150%
-			<option value="2.0"<%  if (defZoom.equals("2.0")) { %> selected<% } %>>200%
-			<option value="4.0"<%  if (defZoom.equals("4.0")) { %> selected<% } %>>400%
-			<option value="8.0"<%  if (defZoom.equals("8.0")) { %> selected<% } %>>800%
-			<option value="16.0"<% if (defZoom.equals("16.0")) { %> selected<% } %>>1600%
+			<option value="0.25"<% if (defZoom.equals("0.25")) { %> selected<% } %>>25%</option>
+			<option value="0.5"<%  if (defZoom.equals("0.5")) { %> selected<% } %>>50%</option>
+			<option value="0.75"<% if (defZoom.equals("0.75")) { %> selected<% } %>>75%</option>
+			<option value="1.0"<%  if (defZoom.equals("1.0")) { %> selected<% } %>>100%</option>
+			<option value="1.5"<%  if (defZoom.equals("1.5")) { %> selected<% } %>>150%</option>
+			<option value="2.0"<%  if (defZoom.equals("2.0")) { %> selected<% } %>>200%</option>
+			<option value="4.0"<%  if (defZoom.equals("4.0")) { %> selected<% } %>>400%</option>
+			<option value="8.0"<%  if (defZoom.equals("8.0")) { %> selected<% } %>>800%</option>
+			<option value="16.0"<% if (defZoom.equals("16.0")) { %> selected<% } %>>1600%</option>
 		</select></td>
 		<td><span class="imcmsAdmText" style="color:#ffffff;"> &nbsp; | &nbsp; <%
 		} %><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/1 ?>

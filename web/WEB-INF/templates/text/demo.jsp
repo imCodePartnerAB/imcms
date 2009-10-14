@@ -1,28 +1,38 @@
-<%@taglib prefix="imcms" uri="imcms"
-        %><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" 
-        %><%@taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%><html>
+<%@ page
+	
+	contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"
+
+%><%@taglib prefix="imcms" uri="imcms"
+%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" 
+%><%@taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"
+%><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
 <imcms:variables/>
 <head>
 <title><c:out value="${document.headline}"/> - Powered by imCMS from imCode Partner AB</title>
+
 <style type="text/css">
-<!--
-.imcHeading { font: bold medium Verdana,Geneva,sans-serif; color:#000099; }
-TD { font: x-small Verdana,Geneva,sans-serif; color:#000000; }
-.small { font: xx-small Verdana,Geneva,sans-serif; color:#000000; }
-PRE, TT { font: x-small "Courier New", Courier, monospace; color:#888888; }
+/*<![CDATA[*/
+.imcHeading { margin-bottom:1em; font: bold medium Verdana,Geneva,sans-serif; color:#009; }
+TD { font: x-small Verdana,Geneva,sans-serif; color:#000; }
+.small { font: xx-small Verdana,Geneva,sans-serif; color:#000; }
+PRE, TT { font: x-small "Courier New", Courier, monospace; color:#888; }
 
-A:link    { color:#000099; }
-A:visited { color:#000099; }
-A:active  { color:#cc0000; }
-A:hover   { color:#0000ff; }
+A:link    { color:#009; }
+A:visited { color:#009; }
+A:active  { color:#c00; }
+A:hover   { color:#00f; }
 
-LI { padding-bottom:5; }
--->
+LI { padding-bottom:5px; }
+/*]]>*/
 </style>
 
 </head>
-<body bgcolor="#f0f0ff" style="margin: 10 0 10 10">
-<table border="0" cellspacing="0" cellpadding="5" height="100%" align="center" bgcolor="#ffffff">
+<body bgcolor="#f0f0ff" style="margin: 10px 0 10px 10px;">
+
+
+<table border="0" cellspacing="0" cellpadding="5" align="center" style="height:100%; background-color:#fff;">
 <tr>
 	<td valign="top">
 	<table border="0" cellspacing="0" cellpadding="0" width="760">
@@ -38,17 +48,17 @@ LI { padding-bottom:5; }
 		<td width="15">&nbsp;</td>
 
 		<td width="385">
-            <imcms:text no="1" label="Text (Rubrik)" pre='<span class="imcHeading">' post='</span><br><br>' />
+            <imcms:text no="1" label="Text (Rubrik)" pre='<div class="imcHeading">' post='</div>' />
             <imcms:text no='2' label='<br>Text' post='<br><br>' />
             <imcms:menu no='1' label='<br><br>Meny (punktlista)'>
                 <ul>
                     <imcms:menuloop>
                         <imcms:menuitem>
-                            <li style="padding-bottom:5; color: green;"><imcms:menuitemlink><c:out value="${menuitem.document.headline}"/></imcms:menuitemlink></li>
+                            <li style="color: green;"><imcms:menuitemlink><c:out value="${menuitem.document.headline}"/></imcms:menuitemlink></li>
                         </imcms:menuitem>
                         <imcms:menuitem>
                             <imcms:menuitemhide>
-                                <li style="padding-bottom:5; color: red;"><imcms:menuitemlink><c:out value="${menuitem.document.headline}"/></imcms:menuitemlink></li>
+                                <li style="color: red;"><imcms:menuitemlink><c:out value="${menuitem.document.headline}"/></imcms:menuitemlink></li>
                             </imcms:menuitemhide>
                         </imcms:menuitem>
                     </imcms:menuloop>

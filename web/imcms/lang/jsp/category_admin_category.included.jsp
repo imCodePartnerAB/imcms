@@ -36,9 +36,10 @@ String subHeading = inDeleteCategoryMode ? "<? install/htdocs/sv/jsp/category_ad
         </td>
         </tr>
         <tr>
-		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/icon ?> &nbsp;</td>
+						<td class="imcmsAdmText" valign="top" style="padding-top:3px;" nowrap><? install/htdocs/sv/jsp/category_admin/icon ?> &nbsp;</td>
             <td>
-            <input type="text" name="icon" <% if (readonly) {%>readonly<%}%> size="30" maxlength="255" value="<%= StringEscapeUtils.escapeHtml((String)ObjectUtils.defaultIfNull(categoryToEdit.getImageUrl(),"")) %>">
+            <input type="text" name="icon" <% if (readonly) {%>readonly<%}%> size="30" maxlength="255" style="width:300px;"
+                   value="<%= StringEscapeUtils.escapeHtml((String)ObjectUtils.defaultIfNull(categoryToEdit.getImageUrl(),"")) %>">
             &nbsp;
             <% if (!readonly) { %><input type="submit" class="imcmsFormBtnSmall" name="<%= AdminCategories.PARAMETER__BROWSE_FOR_IMAGE %>" value=" Browse "><% } %>
             &nbsp;

@@ -197,7 +197,11 @@ public class ImageBrowse extends HttpServlet {
             this.label = label;
         }
 
-        public String getDirectoriesOptionList() throws IOException {
+	    public File getCurrentDirectory () {
+		    return currentDirectory;
+	    }
+
+	    public String getDirectoriesOptionList() throws IOException {
             final File imagesRoot = Imcms.getServices().getConfig().getImagePath();
             Collection imageDirectories = Utility.collectImageDirectories();
 

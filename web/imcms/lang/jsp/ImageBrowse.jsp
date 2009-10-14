@@ -5,11 +5,15 @@
                  imcode.util.HttpSessionUtils,
                  imcode.server.Imcms,
                  com.imcode.imcms.util.l10n.LocalizedMessage,
-                 imcode.util.Utility"
+                 imcode.util.Utility, java.io.File, imcode.util.io.FileUtility"
         contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity"%><%
 
 boolean fromEditor = (request.getParameter("editor_image") != null && request.getParameter("editor_image").equals("true")) ;
+
+ImageBrowse.ImageBrowserPage imageBrowsePage = ImageBrowse.ImageBrowserPage.fromRequest(request) ;
+
+File currentDirectory = imageBrowsePage.getCurrentDirectory() ;
 
 %>
 <vel:velocity>
@@ -31,14 +35,14 @@ boolean fromEditor = (request.getParameter("editor_image") != null && request.ge
 
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
-<%
-    ImageBrowse.ImageBrowserPage imageBrowsePage = ImageBrowse.ImageBrowserPage.fromRequest(request) ;
-%>
-<table border="0" cellspacing="0" cellpadding="0">
 <form action="ImageBrowse" method="POST" enctype="multipart/form-data">
+<input type="hidden" id="dir" name="dir" value="<%= ("\\" + FileUtility.relativizeFile( Imcms.getServices().getConfig().getImagePath().getParentFile(), currentDirectory ).toString()).replace("\\", "/") %>">
 <input type="hidden" name="editor_image" value="<%= request.getParameter("editor_image") %>">
-<input type="HIDDEN" name="<%= ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER %>" value="<%=HttpSessionUtils.getSessionAttributeNameFromRequest(request, ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER)%>">
-<% if (null != imageBrowsePage.getLabel() ) { %><input type="HIDDEN" name="<%= ImageBrowse.REQUEST_PARAMETER__LABEL %>" value="<%=imageBrowsePage.getLabel()%>"><% } %>
+<input type="hidden" name="<%= ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER %>" value="<%=HttpSessionUtils.getSessionAttributeNameFromRequest(request, ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER)%>"><%
+if (null != imageBrowsePage.getLabel() ) { %>
+<input type="hidden" name="<%= ImageBrowse.REQUEST_PARAMETER__LABEL %>" value="<%=imageBrowsePage.getLabel()%>"><%
+} %>
+<table border="0" cellspacing="0" cellpadding="0">
 <tr>
 	<td><input type="Submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2001 ?>"></td>
 	<td>&nbsp;</td>
@@ -55,7 +59,8 @@ boolean fromEditor = (request.getParameter("editor_image") != null && request.ge
         </tr>
         <tr>
             <td>
-            <select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_DIRECTORY %>" size="15" onDblClick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.REQUEST_PARAMETER__CHANGE_DIRECTORY_BUTTON ) %>'].click();" style="width:270">
+            <select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_DIRECTORY %>" size="15"
+                    ondblclick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.REQUEST_PARAMETER__CHANGE_DIRECTORY_BUTTON ) %>'].click();" style="width:270px;">
                 <%=imageBrowsePage.getDirectoriesOptionList()%>
             </select></td>
         </tr>
@@ -71,10 +76,15 @@ boolean fromEditor = (request.getParameter("editor_image") != null && request.ge
             </tr>
             <tr>
                 <td>
-                    <select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_URL %>" size="15" onDblClick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.REQUEST_PARAMETER__PREVIEW_BUTTON ) %>'].click();" style="width:270">
-                        <%=imageBrowsePage.getImagesOptionList()%>
-                    </select>
-                </td>
+								<select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_URL %>" size="15"
+								        ondblclick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.REQUEST_PARAMETER__PREVIEW_BUTTON ) %>'].click();" style="width:270px;"><%
+								String imageOptionsList = imageBrowsePage.getImagesOptionList() ;
+								if (!"".equals(imageOptionsList)) { %>
+									<%= imageOptionsList %><%
+								} else { %>
+									<optgroup label="<? install/htdocs/sv/jsp/ImageBrowse.html/No_files ?>" style="font-weight:normal !important; font-style:italic !important;"></optgroup><%
+								} %>
+								</select></td>
             </tr>
         </table>
     </td>
@@ -88,7 +98,8 @@ boolean fromEditor = (request.getParameter("editor_image") != null && request.ge
             <tr>
                 <td><input type="submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__OK_BUTTON %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2005 ?>"></td>
                 <td>&nbsp;</td>
-                <td><input type="submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__PREVIEW_BUTTON %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2006 ?>"></td>
+                <td><input type="submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__PREVIEW_BUTTON %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2006 ?>"
+                           onclick="return previewFile();"></td>
                 <td>&nbsp;</td>
                 <td><input type="Submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2007 ?>"></td>
             </tr>
@@ -130,14 +141,46 @@ boolean fromEditor = (request.getParameter("editor_image") != null && request.ge
 <div align="center" id="previewDiv"><img src="<%= StringEscapeUtils.escapeHtml( Utility.escapeUrl(request.getContextPath() + Imcms.getServices().getConfig().getImageUrl() + imageBrowsePage.getImageUrl() )) %>"></div>
 <% } %>
 
-<script language="JavaScript">
+<script type="text/javascript">
 <!--
-if (hasGetElementById) {
+if (document.getElementById) {
 	if (document.getElementById("previewDiv")) {
 		if (!/\./.test(document.getElementById("previewDiv").innerHTML.toString())) {
 			document.getElementById("previewDiv").style.display = "none" ;
 		}
 	}
+}
+
+var pai = "\\.(GIF|JPE?G|PNG)$";
+
+function isImageFile(file) {
+	try {
+		var re = new RegExp(pai, 'gi');
+		return re.test(file);
+	} catch (e) {
+		return false ;
+	}
+}
+
+function getFile() {
+	var theVal = "";
+	try {
+		var f = document.forms[0];
+		var oSel = f.<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_URL %>;
+		if (oSel.selectedIndex > -1) theVal = oSel.options[oSel.selectedIndex].value;
+	} catch (e) {}
+	return theVal;
+}
+
+function previewFile() {
+	try {
+		var file = document.getElementById("dir").value + "/" + getFile();
+		if (isImageFile(file)) {
+			popWinOpen(800,570,"$contextPath/imcms/$language/jsp/FileAdmin_preview.jsp?file=" + escape(file),"",1,0);
+			return false;
+		}
+	} catch (e) {}
+	return true ;
 }
 //-->
 </script>

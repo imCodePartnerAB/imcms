@@ -484,18 +484,18 @@ function checkFocus() {
 		<td class="imcmsAdmText">
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS %>" value="1"<%
+			<td><input type="CHECKBOX" id="shareCb0" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS %>" value="1"<%
 			if (document.isLinkedForUnauthorizedUsers()) {
 				%> checked<%
 			} %>></td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/global/pageinfo/show_link_to_unauthorized_user ?></td>
+			<td class="imcmsAdmText">&nbsp;<label for="shareCb0"><? install/htdocs/global/pageinfo/show_link_to_unauthorized_user ?></label></td>
 		</tr>
 		<tr>
-			<td><input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS %>" value="1"<%
+			<td><input type="CHECKBOX" id="shareCb1" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS %>" value="1"<%
 			if (document.isLinkableByOtherUsers()) {
 				%> checked<%
 			} %>></td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/global/pageinfo/share ?></td>
+			<td class="imcmsAdmText">&nbsp;<label for="shareCb1"><? install/htdocs/global/pageinfo/share ?></label></td>
 		</tr>
 		</table></td>
 	</tr>
@@ -514,10 +514,10 @@ function checkFocus() {
 		<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS %>" size="48" maxlength="200" style="width: 100%"
 		value="<%= StringEscapeUtils.escapeHtml( keywordsParser.formatKeywords(keywords) )%>"><br>
 		<span class="imcmsAdmDim"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/keywords_explanation ?></span><br>
-		<input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SEARCH_DISABLED %>" value="1" <%
+		<input type="CHECKBOX" id="lucene0" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SEARCH_DISABLED %>" value="1" <%
 		if (document.isSearchDisabled()) {
 			%> checked<%
-		} %>> <? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?></td>
+		} %>> <label for="lucene0"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?></label></td>
 	</tr>
 	<tr>
 		<td colspan="2">#gui_hr( "cccccc" )</td>
@@ -528,28 +528,28 @@ function checkFocus() {
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr><%
 			String target = document.getTarget() ; %>
-			<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_self"<%
+			<td><input type="radio" id="targetCb0" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_self"<%
 			if ("_self".equalsIgnoreCase( target ) || "".equals( target )) {
 				%> checked<%
 				target = null;
 			} %>></td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1015 ?> &nbsp;</td>
-			<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_blank"<%
+			<td class="imcmsAdmText">&nbsp;<label for="targetCb0"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1015 ?></label> &nbsp;</td>
+			<td><input type="radio" id="targetCb1" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_blank"<%
 			if ("_blank".equalsIgnoreCase( target ) ) {
 				%> checked<%
 				target = null;
 			} %>></td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1016 ?> &nbsp;</td>
-			<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_top"<%
+			<td class="imcmsAdmText">&nbsp;<label for="targetCb1"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1016 ?></label> &nbsp;</td>
+			<td><input type="radio" id="targetCb2" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_top"<%
 			if ("_top".equalsIgnoreCase( target ) ) {
 				%> checked<%
 				target = null;
 			} %>></td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1017 ?> &nbsp;</td>
-			<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" <% if (null != target) { %> checked<% } %>></td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1018 ?>&nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;<label for="targetCb2"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1017 ?></label> &nbsp;</td>
+			<td><input type="radio" id="targetCb3" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" <% if (null != target) { %> checked<% } %> onclick="document.getElementById('otherTarget').focus();"></td>
+			<td class="imcmsAdmText">&nbsp;<label for="targetCb3"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1018 ?></label>&nbsp;</td>
 			<td>
-			<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" size="9" maxlength="20" style="width:120"
+			<input type="text" id="otherTarget" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" size="9" maxlength="20" style="width:120"
 			value="<%
 			if (null != target) {
 				%><%= StringEscapeUtils.escapeHtml( target ) %><%

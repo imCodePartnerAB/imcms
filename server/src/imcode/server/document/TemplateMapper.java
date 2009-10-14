@@ -63,7 +63,7 @@ public class TemplateMapper {
         String temps = "";
         for ( TemplateGroupDomainObject templateGroup : templateGroups ) {
             boolean selected = null != selectedTemplateGroup && selectedTemplateGroup.equals(templateGroup);
-            temps += "<option value=\"" + templateGroup.getId() + "\"" + ( selected ? " selected" : "" ) + ">"
+            temps += "<option value=\"" + templateGroup.getId() + "\"" + ( selected ? " selected=\"selected\"" : "" ) + ">"
                      + templateGroup.getName() + "</option>";
         }
         return temps;
@@ -78,7 +78,7 @@ public class TemplateMapper {
             temps += "<option value=\""
                      + StringEscapeUtils.escapeHtml(template.getName())
                      + "\""
-                     + ( selected ? " selected" : "" )
+                     + ( selected ? " selected=\"selected\"" : "" )
                      + ">"
                      + StringEscapeUtils.escapeHtml(template.getName()) + "</option>";
         }

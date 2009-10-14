@@ -3,8 +3,10 @@
 	import="imcode.util.Utility,
 	        org.apache.oro.text.perl.Perl5Util,
 	        java.io.*,
-            imcode.server.user.UserDomainObject, imcode.server.Imcms"
-    contentType="text/html; charset=UTF-8"
+            imcode.server.user.UserDomainObject, imcode.server.Imcms, org.apache.commons.lang.StringUtils"
+	
+	contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"
 
 %><%@taglib prefix="vel" uri="imcmsvelocity"%><%
 
@@ -86,10 +88,10 @@ boolean isEditable = re.match(acceptedExtPattern, fn.getName()) ;
 
 /* Check browser */
 
-String uAgent = request.getHeader("USER-AGENT") ;
-boolean hasDocumentAll  = re.match("/(MSIE 4|MSIE 5|MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) ;
-boolean hasDocumentLayers  = (re.match("/Mozilla/i", uAgent) && !re.match("/Gecko/i", uAgent) && !re.match("/MSIE/i", uAgent)) ;
-boolean hasGetElementById = re.match("/Gecko/i", uAgent) ;
+String uAgent = StringUtils.defaultString(request.getHeader("USER-AGENT")) ;
+boolean hasDocumentAll    = re.match("/(MSIE \\d)/i", uAgent) ;
+boolean hasGetElementById = re.match("/Gecko/i", uAgent) || hasDocumentAll ;
+boolean hasDocumentLayers = (re.match("/Mozilla/i", uAgent) && !hasDocumentAll && !hasGetElementById) ;
 boolean isMac = re.match("/Mac/i", uAgent) ;
 
 /* Special Character replacers */
@@ -225,7 +227,7 @@ if (isHelpWin) { %>
 		%>100%<%
 	} else {
 		%>380<%
-	} %>" height="6" vspace="5"></td>
+	} %>" height="6" vspace="5" alt=""></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><%
@@ -340,13 +342,13 @@ function checkSaved(ch) {
 		var isSaved = <%= isSaved %>;
 		var el = document.getElementById("btnSave");
 		if (isSaved && !ch) {
+			el.disabled = true;
 			el.style.cursor = "default";
 			el.style.filter = "progid:DXImageTransform.Microsoft.BasicImage( Rotation=0,Mirror=0,Invert=1,XRay=0,Grayscale=1,Opacity=0.60)";
-			el.disabled = 1;
 		} else {
-			el.style.cursor = (hasDocumentAll) ? "hand" : "pointer";
+			el.disabled = false;
+			el.style.cursor = "pointer";
 			el.style.filter = "";
-			el.disabled = 0;
 		}<%
 		} %>
 		resizeEditField();
@@ -365,8 +367,8 @@ function resizeEditField() {
 			availW = parseInt(innerWidth);
 			availH = parseInt(innerHeight);
 		}
-		if (availW > 0) elEdit.style.width = availW - 13;
-		if (availH > 0) elEdit.style.height = availH - 62;
+		if (availW > 0) elEdit.style.width = (availW - 13) + "px" ;
+		if (availH > 0) elEdit.style.height = (availH - 75) + "px" ;
 	}
 }
 
@@ -415,12 +417,12 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 </script>
 
 </head>
-<body class="imcmsAdmBgCont" style="border:0px; margin:0px" onLoad="checkSaved(0);" onResize="resizeEditField()">
+<body class="imcmsAdmBgCont" style="border:0; margin:0;" onload="checkSaved(0);" onresize="resizeEditField()">
 
 <table border="0" cellspacing="0" cellpadding="0" width="100%" height="100%">
 <tr>
 	<td valign="top">
-	<table border="0" cellspacing="0" cellpadding="0" width="100%">
+	<table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
 	<tr class="imcmsAdmBgHead">
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
@@ -462,26 +464,24 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 		</tr>
 		</table></td>
 
-		<td align="right"><%
-		if (!isReadonly) {
-			%>
+		<td align="right" style="padding-top:10px;"><%
+		if (!isReadonly) { %>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr><%
 			if (hasDocumentAll && !isMac) { %>
 			<td>
+			<form name="searchForm" action="" onSubmit="findIt(document.forms[0].searchString.value); return false">
 			<table border="0" cellspacing="0" cellpadding="0">
-			<form name="searchForm" onSubmit="findIt(document.forms[0].searchString.value); return false">
 			<tr>
-				<td><input type="text" name="searchString" size="8" value="<%= theSearchString %>" style="width:50"></td>
+				<td><input type="text" name="searchString" size="8" value="<%= theSearchString %>" style="width:50px;"></td>
 				<td><a id="btnSearch" href="javascript://find()" onClick="findIt(document.forms[0].searchString.value);"><img src="<%= IMG_PATH %>btn_find.gif" border="0" hspace="5" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2001 ?>"></a></td>
 			</tr>
-			</form>
-			</table></td><%
+			</table>
+			</form></td><%
 			} %>
 			<td class="imcmsAdmText">&nbsp;&nbsp;</td>
 			<td>
-			<table border="0" cellspacing="0" cellpadding="0">
-			<form name="resetForm">
+			<form name="resetForm" action="">
 			<input type="hidden" name="file" value="<%= file %>">
 			<input type="hidden" name="hdPath" value="<%= hdPath %>">
 			<input type="hidden" name="searchString" value="<%= theSearchString %>"><%
@@ -489,6 +489,7 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			<input type="hidden" name="template" value="1">
 			<input type="hidden" name="templName" value="<%= templName %>"><%
 			} %>
+			<table border="0" cellspacing="0" cellpadding="0">
 			<tr>
 				<td class="imcmsAdmText"><a href="javascript://help" onClick="alert('Choose to reset the file to what it looked like when:\n\n - You saved it last.\n - You opened it.')"><span style="color:#ffffff; text-decoration:none; cursor:help;"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/4 ?></span></a>&nbsp;</td>
 				<td class="imcmsAdmText">
@@ -498,12 +499,11 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 					<option value="org"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/7 ?>
 				</select></td>
 			</tr>
-			</form>
-			</table></td>
+			</table>
+			</form></td>
 			<td class="imcmsAdmText">&nbsp;&nbsp;</td>
 			<td>
-			<table border="0" cellspacing="0" cellpadding="0">
-			<form name="editForm" action="<%= thisPage %>" method="post" onSubmit="if (doSave()) return true; return false">
+			<form name="editForm" action="<%= thisPage %>" method="post" onSubmit="return doSave(); return false">
 			<input type="hidden" name="file" value="<%= file %>">
 			<input type="hidden" name="hdPath" value="<%= hdPath %>">
 			<input type="hidden" name="searchString" value="<%= theSearchString %>"><%
@@ -511,14 +511,15 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			<input type="hidden" name="template" value="1">
 			<input type="hidden" name="templName" value="<%= templName %>"><%
 			} %>
+			<table border="0" cellspacing="0" cellpadding="0">
 			<tr>
-				<td><input name="btnSave" id="btnSave" type="image" src="<%= IMG_PATH %>btn_save.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2002 ?>"></td>
+				<td><input name="btnSave" id="btnSave" type="image" src="<%= IMG_PATH %>btn_save.gif" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2002 ?>"></td>
 				<td class="imcmsAdmText">&nbsp;&nbsp;</td>
 				<td><%
 				if (hasDocumentLayers) {
 					%><a href="javascript: closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2003 ?>"></a><%
 				} else {
-					%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2004 ?>" onClick="closeIt(); return false"><%
+					%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2004 ?>" onClick="closeIt(); return false"><%
 				} %></td>
 				<td>&nbsp;&nbsp;</td>
 			</tr>
@@ -526,14 +527,14 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 		</tr>
 		</table><%
 		} else { // readonly %>
+		<form name="editForm" action="<%= thisPage %>" method="post" onSubmit="return doSave(); return false">
 		<table border="0" cellspacing="0" cellpadding="0">
-		<form name="editForm" action="<%= thisPage %>" method="post" onSubmit="if (doSave()) return true; return false">
 		<tr>
 			<td><%
 			if (hasDocumentLayers) {
-				%><a href="javascript: closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2005 ?>"></a><%
+				%><a href="javascript:closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2005 ?>"></a><%
 			} else {
-				%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2006 ?>" onClick="closeIt(); return false"><%
+				%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2006 ?>" onClick="closeIt(); return false"><%
 			} %></td>
 			<td>&nbsp;&nbsp;</td>
 		</tr>
@@ -562,24 +563,24 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			if (hasDocumentAll || (isMac && hasGetElementById)) { %>
 	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center">
-		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" class="edit" style="width:790; height:<% if (isTempl || (isMac && hasDocumentAll)) { %>505<% } else { %>515<% } %>; overflow:auto" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" class="edit FileAdminEditEditor" style="width:790px; height:<%=(isTempl || (isMac && hasDocumentAll)) ? 505 : 515 %>px;" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else if (hasGetElementById) { %>
 	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center" valign="top">
-		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" wrap="soft" class="edit" style="width:98%; height:<% if (isTempl) { %>500<% } else { %>510<% } %>" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" wrap="soft" class="edit FileAdminEditEditor" style="width:98%; height:<%= (isTempl) ? 500 : 510 %>px;" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else if (isMac && hasDocumentLayers) { %>
 	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center" class="imcmsAdmText">
-		<textarea name="txtField" id="txtField" cols="125" rows="<%= taRows %>" wrap="soft" class="edit" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+		<textarea name="txtField" id="txtField" cols="125" rows="<%= taRows %>" wrap="soft" class="edit FileAdminEditEditor" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else { %>
 	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center" class="imcmsAdmText">
-		<textarea name="txtField" id="txtField" cols="82" rows="<%= taRows %>" wrap="soft" class="edit" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+		<textarea name="txtField" id="txtField" cols="82" rows="<%= taRows %>" wrap="soft" class="edit FileAdminEditEditor" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} %>
 <%= fileSrc %></textarea></td>
 	</tr>
-	</form>
-	</table></td>
+	</table>
+	</form></td>
 </tr>
 </table>
 <%
@@ -588,8 +589,8 @@ if (isTempl && !(isMac && (hasDocumentLayers || hasDocumentAll))) { %>
 <!--
 function imScriptCount(imType) {
 	var hits,arr1,arr2;
-	var retStr = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/8 ?>\n������������������������������������������\n";
-	if (hasDocumentLayers) retStr += "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/9 ?>\n������������������������������������������\n";
+	var retStr = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/8 ?>\n----------------------------------------\n";
+	if (hasDocumentLayers) retStr += "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/9 ?>\n----------------------------------------\n";
 	var head_1_a = ":: ";
 	var head_1_b = " ::";
 	var head_2_a = "        - ";

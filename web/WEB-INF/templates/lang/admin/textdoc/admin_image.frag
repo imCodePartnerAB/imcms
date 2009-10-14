@@ -1,3 +1,4 @@
-<a href="$contextPath/servlet/ChangeImage?meta_id=#meta_id#&img=#content_id#&label=#label_url#&width=#image_width#&height=#image_height#" class="imcms_label">#label#</a>
+<a href="$contextPath/servlet/ChangeImage?meta_id=#meta_id#&amp;img=#content_id#&amp;label=#label_url#&amp;width=#image_width#&amp;height=#image_height#" class="imcms_label">#label#</a>
 #content#
-<a href="$contextPath/servlet/ChangeImage?meta_id=#meta_id#&img=#content_id#&label=#label_url#&width=#image_width#&height=#image_height#"><img src="$contextPath/imcms/$language/images/admin/ico_txt.gif" border="0"></a>
+<a href="$contextPath/servlet/ChangeImage?meta_id=#meta_id#&amp;img=#content_id#&amp;label=#label_url#&amp;width=#image_width#&amp;height=#image_height#"><img
+   src="$contextPath/imcms/$language/images/admin/ico_txt.gif" style="border:0 !important;" alt="" /></a>

@@ -6,22 +6,33 @@ import imcode.server.SystemData;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
+import com.imcode.imcms.servlet.Version;
+import com.imcode.db.DatabaseCommand;
+import com.imcode.db.DatabaseConnection;
+import com.imcode.db.DatabaseException;
 import org.apache.log4j.Logger;
+import org.apache.commons.io.IOUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 
 public class AdminSystemInfo extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( AdminSystemInfo.class.getName() );
 
     private final static String HTML_TEMPLATE = "AdminSystemMessage.htm";
+
+    private final static String VERSION_FILE = "/WEB-INF/version.txt";
 
     /**
      * The GET method creates the html page when this side has been
@@ -42,10 +53,22 @@ public class AdminSystemInfo extends HttpServlet {
         String webMasterEmail = sysData.getWebMasterAddress();
         String serverMaster = sysData.getServerMaster();
         String serverMasterEmail = sysData.getServerMasterAddress();
+	    
+	      
+        String imcmsVersion = new Version().getImcmsVersion();
+        String serverInfo = getServletContext().getServerInfo();
+        String databaseProductNameAndVersion = new Version().getDatabaseProductNameAndVersion();
+        String javaVersion = new Version().getJavaVersion();
+        String imCmsData = "Version:  " + imcmsVersion +
+                           "\nServer:   " + serverInfo +
+                           "\nDatabase: " + databaseProductNameAndVersion +
+                           "\nJava:     " + javaVersion +
+                           "\nPath:     " + Imcms.getPath() ;
 
 
         // Lets generate the html page
         Map vm = new HashMap();
+        vm.put("IMCMS_DATA", "" + imCmsData);
         vm.put("STARTDOCUMENT", "" + startDoc);
         vm.put("SYSTEM_MESSAGE", msg);
         vm.put("WEB_MASTER", webMaster);

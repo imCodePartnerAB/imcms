@@ -35,11 +35,11 @@ public class Version extends HttpServlet {
         out.println(databaseProductNameAndVersion);
     }
 
-    private String getJavaVersion() {
+    public String getJavaVersion() {
         return System.getProperty("java.vm.vendor")+" "+System.getProperty("java.vm.name")+" "+System.getProperty("java.vm.version");
     }
 
-    private String getImcmsVersion() {
+    public String getImcmsVersion() {
         try {
             Reader in = new InputStreamReader(getServletContext().getResourceAsStream(VERSION_FILE));
             try {
@@ -52,7 +52,7 @@ public class Version extends HttpServlet {
         }
     }
 
-    private String getDatabaseProductNameAndVersion() {
+    public String getDatabaseProductNameAndVersion() {
         return (String) Imcms.getServices().getDatabase().execute(new DatabaseCommand() {
             public Object executeOn(DatabaseConnection connection) throws DatabaseException {
                 try {
