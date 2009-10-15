@@ -1,5 +1,7 @@
 package com.imcode.imcms.schema;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -8,12 +10,24 @@ import java.util.Collections;
  */
 public class Diff {
     
-    final Version version;
+    final double version;
 
-    final Collection<String> filenames;
+    /**
+     * Location is a sql script filename with optional relative path.
+     */
+    final Collection<String> locations;
 
-    public Diff(Version version, Collection<String> filenames) {
+    public Diff(double version, Collection<String> locations) {
         this.version = version;
-        this.filenames = Collections.unmodifiableCollection(filenames);
+        this.locations = Collections.unmodifiableCollection(locations);
+    }
+
+
+    /**
+     * @return string representation in format {version, [location0, location1, ..., locationN]}
+     */
+    @Override
+    public String toString() {
+        return String.format("{%s, [%s]}", version, StringUtils.join(locations, ", "));
     }
 }

@@ -21,69 +21,69 @@ import java.io.StringReader;
 public class Upgrade {
 
 
+    /** XPath expression for selecting diff versions. */
+    public static final String XPATH_SELECT_DIFF_VERSIONS =
+            "/schema-upgrade/diff/@version";
+
+    /** XPath expression template for selecting diff locations. */
+    public static final String XPATH_TEMPLATE__SELECT_DIFF_LOCATIONS =
+            "/schema-upgrade/diff[@version = %s]/vendor[@name = '%s']/script/@location";
+
+    
     /**
-     * Collections of diffs for given vendor.
+     * Returns collections of diffs for given vendor which versions are higher than base version
      *
      * @param xml upgrade configuration.
      * @param vendor database vendor.
-     * @return collection of diffs.
+     * @return collection of diffs which versions are higher than base version.
      */
+    @SuppressWarnings("unchecked")
     public static Collection<Diff> getDiffs(final String xml, final Vendor vendor) {
-        Collection<String> versions = getVersions(xml);
+        Collection<Double> versions = getVersions(xml);
 
         return CollectionUtils.collect(versions, new Transformer() {
 
             public Diff transform(Object o) {
-                String versionStr = (String)o;
-                Version version = Version.parse(versionStr);
-                Collection<String> filenames = getDiffFilenames(xml, versionStr, vendor.name());
+                double version = (Double)o;
+                Collection<String> locations = getDiffLocations(xml, version, vendor);
 
-                return new Diff(version, filenames);
+                return new Diff(version, locations);
             }
         });
     }
 
 
     /**
-     * Returns awailable schema upgrade versions.
+     * Returns collection of diffs versions.
      *
      * @param xml upgrade configuration.
-     * @return awailable schema upgrade versions.
      */
-    public static Collection<String> getVersions(String xml) {
-        String expression = "/schema-upgrade/diff/@version";
+    @SuppressWarnings("unchecked")
+    public static Collection<Double> getVersions(String xml) {
+        String expression = String.format(XPATH_SELECT_DIFF_VERSIONS);
+        Collection<String> values =  getValues(getNodes(xml, expression));
 
-        return getValues(getNodes(xml, expression));
+        return CollectionUtils.collect(values, new Transformer() {
+            public Double transform(Object o) {
+                return Double.parseDouble((String)o);
+            }
+        });
     }
 
 
     /**
-     * Returns collection of diff filenames for given version and vendor.
+     * Returns collection of diff locations for given version and vendor.
      *
      * @param xml upgrade configuration.
      *
-     * @param versionStr
-     * @param vendorName
+     * @param version diff version
+     * @param vendor database vendor.
      * @return collection of diff filenames.
      */
-    public static Collection<String> getDiffFilenames(String xml, String versionStr, String vendorName) {
-        String expression = createDiffFilenamesExpression(versionStr, vendorName);
+    public static Collection<String> getDiffLocations(String xml, double version, Vendor vendor) {
+        String expression = String.format(XPATH_TEMPLATE__SELECT_DIFF_LOCATIONS, version, vendor);
 
         return getValues(getNodes(xml, expression));
-    }
-
-
-    /**
-     * Creates and returns XPath expression for retrieving diff scripts locations.
-     *
-     * @param versionStr version string.
-     * @param vendorName vendor name.
-     * @return XPath expression for retrieving diff scripts locations.
-     */
-    public static String createDiffFilenamesExpression(String versionStr, String vendorName) {
-        String expressionTemplate = "/schema-upgrade/diff[@version=%s]/vendor[@name='%s']/script/@location";
-
-        return String.format(expressionTemplate, versionStr, vendorName);
     }
 
 
@@ -93,8 +93,8 @@ public class Upgrade {
      * @param nodes nodes collection.
      * @return nodes values collection.
      */
-    public static Collection<String> getValues(Collection<Node> nodes) {
-
+    @SuppressWarnings("unchecked")
+    private static Collection<String> getValues(Collection<Node> nodes) {
         return CollectionUtils.collect(nodes, new Transformer() {
             public String transform(Object o) {
                 return ((Node)o).getNodeValue();
@@ -110,7 +110,7 @@ public class Upgrade {
      * @param expression xpath expression.
      * @return collection of nodes.
      */
-    public static Collection<Node> getNodes(String xml, String expression) {
+    private static Collection<Node> getNodes(String xml, String expression) {
         XPath xpath = XPathFactory.newInstance().newXPath();
         InputSource inputSource = new InputSource(new StringReader(xml));
         NodeList nodeset;
