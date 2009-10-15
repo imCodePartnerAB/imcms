@@ -39,7 +39,7 @@
         <filter-name>MaintenanceFilter</filter-name>
         <url-pattern>/admin/maintenance/*</url-pattern>
     </filter-mapping>
-    
+
     <filter-mapping>
         <filter-name>ImcmsFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -62,7 +62,15 @@
         <filter-name>SuperAdminFilter</filter-name>
         <url-pattern>/imcms/docs/apisamples/*</url-pattern>
     </filter-mapping>
-    
+
+    <servlet>
+      <servlet-name>maintenance</servlet-name>
+        <servlet-class>
+          org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
     <!-- New administration UI dispatcher servlet -->
     <servlet>
       <servlet-name>newadmin</servlet-name>

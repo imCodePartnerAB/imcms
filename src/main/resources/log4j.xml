@@ -3,7 +3,7 @@
 
 
 <!-- Start log4j configuration -->
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" threshold="debug">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" threshold="debug" debug="true">
 
     <!-- Renderer for DocumentRequest -->
     <renderer

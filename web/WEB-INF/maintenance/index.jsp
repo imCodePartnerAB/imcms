@@ -129,5 +129,12 @@
         }
         %>
     </table>
+  <hr/>
+  <%=request.getPathInfo()%>   <br/>
+  <%=request.getPathTranslated()%><br/>
+  <%=request.getRequestURI()%>         <br/>
+  <%=request.getRequestURL()%>              <br/>
+  <%=request.getServletPath()%>                  <br/>
+
   </body>
 </html>

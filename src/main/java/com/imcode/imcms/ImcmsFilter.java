@@ -9,7 +9,9 @@ import java.io.IOException;
 import imcode.server.Imcms;
 
 /**
- * The first filter in the chain configured to intercept all requests.
+ * Imcms front filter.
+ *
+ * Must be first filter in the chain configured to intercept all requests.
  */
 public class ImcmsFilter implements Filter {
 

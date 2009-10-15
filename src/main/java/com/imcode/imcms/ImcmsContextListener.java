@@ -13,11 +13,18 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 /**
  * Imcms Context Listener - must be specified first in web.xml.
+ * TODO: Move logger configuration routines to Imcms? 
  */
 public class ImcmsContextListener implements ServletContextListener {
 
+    /** */
     private Logger logger;
 
+    /**
+     * Configures and initizlizes Imcms.
+     *
+     * @param evt
+     */
 	public void contextInitialized(ServletContextEvent evt) {
         ServletContext servletContext = evt.getServletContext();
         File path = new File(servletContext.getRealPath("/"));
@@ -45,14 +52,14 @@ public class ImcmsContextListener implements ServletContextListener {
 
 
     public void initLogger(ServletContext servletContext, File realContextPath) {
-        //File configFile = new File(path, "WEB-INF/classes/log4j.xml");
-        File configFile = new File(realContextPath, "WEB-INF/classes/log4j-debug.xml");
+        File configFile = new File(realContextPath, "WEB-INF/classes/log4j.xml");
+        //File configFile = new File(realContextPath, "WEB-INF/classes/log4j-debug.xml");
 
         try {
             System.setProperty("com.imcode.imcms.path", realContextPath.toString());
             DOMConfigurator.configure(configFile.toString());
         } catch (RuntimeException e ) {
-            // TODO: Provide minimal logging configuration
+            // TODO: ??Provide minimal logging configuration??
             throw e;
         }
 
