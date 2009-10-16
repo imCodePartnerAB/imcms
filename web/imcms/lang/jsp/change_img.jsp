@@ -13,14 +13,17 @@
           imcode.util.Html,
           imcode.util.ImcmsImageUtils,
           imcode.util.Utility,
-          imcode.util.image.Format, 
-          imcode.util.image.ImageInfo, 
+          imcode.util.image.Format,
           org.apache.commons.lang.StringEscapeUtils,
           org.apache.commons.lang.StringUtils, java.util.Properties"
 
 	contentType="text/html; charset=UTF-8"
 
-%><%@taglib prefix="vel" uri="imcmsvelocity"%><%
+%><%@taglib prefix="vel" uri="imcmsvelocity"%><%!
+
+final static int GUI_INNER_WIDTH = 900 ;
+
+%><%
 
     ImageEditPage imageEditPage = ImageEditPage.getFromRequest(request);
     assert null != imageEditPage;
@@ -65,7 +68,7 @@ function addScrolling() {
 	if (window.opener) {
 		var obj = document.getElementById("outer_container") ;
 		obj.style.height = "100%" ;
-		obj.style.overflow = "scroll" ;
+		obj.style.overflow = "auto" ;
 	}
 }
 
@@ -104,7 +107,7 @@ function checkLinkType() {<%
 	if (val == defValues[0] || val == defValues[1]) {
 		url.value = "" ;
 	} else if (/^\d+$/.test(val)) {
-		url.value = "GetDoc?meta_id=" + val ;
+		url.value = val ;
 	}
 	return true ;<%
 	} %>
@@ -182,14 +185,14 @@ function resetCrop() {
 #gui_head( "<? global/imcms_administration ?>" )
 <form method="POST" action="<%= request.getContextPath() %>/servlet/PageDispatcher" onsubmit="checkLinkType();">
 <%= Page.htmlHidden(request) %>
-    <input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID %>" value="<%= image.getArchiveImageId() %>"/>
-    <input type="hidden" id="forced_width" value="<%= imageEditPage.getForcedWidth() %>"/>
-    <input type="hidden" id="forced_height" value="<%= imageEditPage.getForcedHeight() %>"/>
-    <input type="hidden" id="h_crop_x1" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_X1 %>" value="<%= cropRegion.getCropX1() %>"/>
-    <input type="hidden" id="h_crop_y1" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y1 %>" value="<%= cropRegion.getCropY1() %>"/>
-    <input type="hidden" id="h_crop_x2" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_X2 %>" value="<%= cropRegion.getCropX2() %>"/>
-    <input type="hidden" id="h_crop_y2" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y2 %>" value="<%= cropRegion.getCropY2() %>"/>
-    <input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__ROTATE_ANGLE %>" value="<%= image.getRotateDirection().getAngle() %>"/>
+<input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_ID %>" value="<%= image.getArchiveImageId() %>"/>
+<input type="hidden" id="forced_width" value="<%= imageEditPage.getForcedWidth() %>"/>
+<input type="hidden" id="forced_height" value="<%= imageEditPage.getForcedHeight() %>"/>
+<input type="hidden" id="h_crop_x1" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_X1 %>" value="<%= cropRegion.getCropX1() %>"/>
+<input type="hidden" id="h_crop_y1" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y1 %>" value="<%= cropRegion.getCropY1() %>"/>
+<input type="hidden" id="h_crop_x2" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_X2 %>" value="<%= cropRegion.getCropX2() %>"/>
+<input type="hidden" id="h_crop_y2" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y2 %>" value="<%= cropRegion.getCropY2() %>"/>
+<input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__ROTATE_ANGLE %>" value="<%= image.getRotateDirection().getAngle() %>"/>
     
     <table border="0" cellspacing="0" cellpadding="0">
     <tr>
@@ -206,7 +209,7 @@ function resetCrop() {
     </table>
     #gui_mid()
 
-    <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+    <table border="0" cellspacing="0" cellpadding="2" width="<%= GUI_INNER_WIDTH %>" align="center">
         <tr>
             <td colspan="2">
                 &nbsp;<br>
@@ -216,10 +219,30 @@ function resetCrop() {
                 <%=
             "<div id=\"theLabel\" class=\"imcmsAdmText\"><i>" + StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) + "</i></div>"  %></td>
         </tr><%
-		if (!image.isEmpty()) { %>
+		if (!image.isEmpty()) {
+			int previewW = GUI_INNER_WIDTH ;
+			int previewH = 0 ;
+			String overFlow = " overflow:auto;" ;
+			try {
+				int width  = realImageSize.getWidth();
+				int height = realImageSize.getHeight();
+				if (cropRegion.isValid()) {
+					width = cropRegion.getWidth() ;
+					height = cropRegion.getHeight() ;
+				}
+				if (width < GUI_INNER_WIDTH && width > 0) {
+					previewW = width ;
+				}
+				if (height > 400) {
+					previewH = 400 ;
+				}
+			} catch (Exception e) {}
+        %>
 		<tr>
-			<td colspan="2" align="center">
-			<div id="previewDiv"><%= !image.isEmpty() ? ImcmsImageUtils.getImageHtmlTag((document != null ? document.getId() : null), imageEditPage.getImageIndex(), image, request, new Properties()) : "" %></div></td>
+			<td colspan="2" align="center" style="padding:0;">
+			<div id="previewDiv" style="padding:0;<%= previewW > 0 ? " width:" + previewW + "px;" : "" %><%= previewH > 0 ? " height:" + previewH + "px;" : "" %><%= overFlow %>">
+				<%= !image.isEmpty() ? ImcmsImageUtils.getImageHtmlTag((document != null ? document.getId() : null), imageEditPage.getImageIndex(), image, request, new Properties()) : "" %>
+			</div></td>
 		</tr><%
 				ImageSource imageSource = image.getSource();
 				if ( imageSource instanceof FileDocumentImageSource) { %>
@@ -268,7 +291,7 @@ function resetCrop() {
 								%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>" <%
 								%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>" <%
 								String path = image.getUrlPathRelativeToContextPath();
-                %>size="50" maxlength="255" style="width: 350" value="<%= StringUtils.isBlank(path) ? "" : StringEscapeUtils.escapeHtml(request.getContextPath()+path) %>"></td>
+                %>size="50" maxlength="255" style="width:350px;" value="<%= StringUtils.isBlank(path) ? "" : StringEscapeUtils.escapeHtml(request.getContextPath()+path) %>"></td>
             </tr>
             </table></td>
         </tr>
@@ -277,7 +300,7 @@ function resetCrop() {
             <td><input type="text" <%
 								%>name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>" <%
 								%>id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>" <%
-								%>size="50" maxlength="255" style="width: 350" value="<%=
+								%>size="50" maxlength="255" style="width:350px;" value="<%=
 						StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getName())) %>"></td>
         </tr>
 				<tr>
@@ -511,12 +534,11 @@ function resetCrop() {
             <input type="SUBMIT" class="imcmsFormBtn" name="<%= ImageEditPage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value=" <? templates/sv/change_img.html/2008 ?> "></td>
         </tr>
         <tr>
-            <td><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif" width="156" height="1" alt=""></td>
-            <td><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif" width="1" height="1" alt=""></td>
+            <td style="padding:0; width:170px;"><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif" width="170" height="1" alt=""></td>
+            <td style="padding:0;"><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif" width="1" height="1" alt=""></td>
         </tr>
-        <input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_LOWSRC %>" value="<%=
-				StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLowResolutionUrl())) %>">
     </table>
+<input type="hidden" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_LOWSRC %>" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLowResolutionUrl())) %>">
 </form>
 #gui_bottom()
 #gui_outer_end()

@@ -387,7 +387,7 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll,iStatus) {
 	}
 }
 function openTextRestorer() {
-	popWinOpen(800,600,"<%= request.getContextPath() %>/imcms/eng/jsp/text_restorer.jsp?meta_id=<%= textEditPage.getDocumentId() %>&txt=<%= textEditPage.getTextIndex() %>","textRestorerWin",1,1,1) ;
+	popWinOpen(800,600,"<%= request.getContextPath() %>/imcms/$language/jsp/text_restorer.jsp?meta_id=<%= textEditPage.getDocumentId() %>&txt=<%= textEditPage.getTextIndex() %>","textRestorerWin",1,1,1) ;
 }
 </script>
 
