@@ -230,9 +230,6 @@ function resetCrop() {
 					width = cropRegion.getWidth() ;
 					height = cropRegion.getHeight() ;
 				}
-				if (width < GUI_INNER_WIDTH && width > 0) {
-					previewW = width ;
-				}
 				if (height > 400) {
 					previewH = 400 ;
 				}
@@ -240,7 +237,7 @@ function resetCrop() {
         %>
 		<tr>
 			<td colspan="2" align="center" style="padding:0;">
-			<div id="previewDiv" style="padding:0;<%= previewW > 0 ? " width:" + previewW + "px;" : "" %><%= previewH > 0 ? " height:" + previewH + "px;" : "" %><%= overFlow %>">
+			<div id="previewDiv" style="padding:0; text-align:center;<%= previewW > 0 ? " width:" + previewW + "px;" : "" %><%= previewH > 0 ? " height:" + previewH + "px;" : "" %><%= overFlow %>">
 				<%= !image.isEmpty() ? ImcmsImageUtils.getImageHtmlTag((document != null ? document.getId() : null), imageEditPage.getImageIndex(), image, request, new Properties()) : "" %>
 			</div></td>
 		</tr><%
