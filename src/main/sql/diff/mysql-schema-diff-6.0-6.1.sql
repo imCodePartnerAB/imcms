@@ -224,31 +224,32 @@ UPDATE database_version
 SET
   major = 6,
   minor = 1;   
-/*    
+
+-- /*
 -- Refactor i18n_meta table:
-CREATE TABLE __i18n_meta (
-  id int NOT NULL auto_increment PRIMARY KEY,
-  language_id int default NULL,
-  meta_id int default NULL,
-  -- meta_version -- or meta_id != document_id
-  enabled tinyint(1) NOT NULL default '0',
-  headline varchar(255) default NULL,
-  text varchar(1000) default NULL,
-  image varchar(255) default NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;   
+-- CREATE TABLE __i18n_meta (
+--   id int NOT NULL auto_increment PRIMARY KEY,
+--   language_id int default NULL,
+--   meta_id int default NULL,
+--   -- meta_version -- or meta_id != document_id
+--   enabled tinyint(1) NOT NULL default '0',
+--   headline varchar(255) default NULL,
+--   text varchar(1000) default NULL,
+--   image varchar(255) default NULL
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-meta:
-  id <- meta_id for related tables???
-  meta_id will become document_id 1001, 1002, .. n
+-- meta:
+--   id <- meta_id for related tables???
+--   meta_id will become document_id 1001, 1002, .. n
   
-meta_version:
-  id 
-  meta_id
-  meta_version  
+-- meta_version:
+--   id
+--   meta_id
+--   meta_version
 
 
-  CONSTRAINT uk__i18n_meta__meta_id__language_id UNIQUE KEY (meta_id, language_id),
-  CONSTRAINT fk__i18n_meta__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  CONSTRAINT fk__i18n_meta__language FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id)
+--   CONSTRAINT uk__i18n_meta__meta_id__language_id UNIQUE KEY (meta_id, language_id),
+--   CONSTRAINT fk__i18n_meta__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+--   CONSTRAINT fk__i18n_meta__language FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id)
 
- */
+--  */
