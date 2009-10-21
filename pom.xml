@@ -622,12 +622,12 @@
 	            <directory>src/main/resources-webinf</directory>
                 <targetPath>WEB-INF</targetPath>
 	          </resource>
-                <!--
+
 	          <resource>
-	            <directory>src/main/resources</directory>
-                <targetPath>WEB-INF</targetPath>
+	            <directory>src/main/sql</directory>
+                <targetPath>WEB-INF/sql</targetPath>
 	          </resource>
-	          -->
+
 	        </webResources>
 
           </configuration>

@@ -1,0 +1,11 @@
+<schema-upgrade
+    xsi:noNamespaceSchemaLocation="schema-upgrade.xsd" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    
+  <diff version="6.1">
+    <vendor name="mysql">
+      <script location="imcms_6.1_schema.sql"/>
+      <script location="imcms_6.1_data.sql"/>
+    </vendor>
+  </diff>
+</schema-upgrade>

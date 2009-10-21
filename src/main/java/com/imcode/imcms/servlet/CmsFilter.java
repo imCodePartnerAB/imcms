@@ -198,7 +198,7 @@ public class CmsFilter implements Filter {
 
 
     /**
-     * Must not be used.
+     * Must not initialize instance variables.
      */
     public void init(FilterConfig config) throws ServletException {}
    

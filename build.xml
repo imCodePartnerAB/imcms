@@ -18,11 +18,10 @@
     <property name="versionfilesuffix" value=""/>
 	    
 	<property name="lib.dir" value="${basedir}/lib"/>
-	<property name="sql.dir" value="${basedir}/sql"/>
 	<property name="web.dir" value="${basedir}/web"/>
 		
 	<property name="main.resources-conf.dir" value="${basedir}/src/main/resources-conf"/>	
-	
+
 	<property name="main.webapp.dir" value="${basedir}/src/main/webapp"/>	
 	<property name="main.webapp.login.dir" value="${main.webapp.dir}/login"/>
     <property name="main.webapp.imcms.dir" value="${main.webapp.dir}/imcms"/>	    
@@ -34,9 +33,6 @@
 		
     <property name="webinf.conf.dir" value="${main.webapp.webinf.dir}/conf"/>
     <property name="webinf.templates.dir" value="${main.webapp.webinf.dir}/templates"/>
-    <property name="webinf.sql.dir" value="${main.webapp.webinf.dir}/sql"/>
-    <property name="webinf.sql-diff.dir" value="${webinf.sql.dir}/diff"/>
-    <property name="webinf.sql-sprocs.dir" value="${webinf.sql.dir}/sprocs"/>
     
     <!-- Maven integration -->
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" 
@@ -63,14 +59,6 @@
     	<delete dir="${main.webapp.webinf.dir}"/>
     </target>
 	
-    <target name="database-apply-diff" depends="init,sql">
-        <fail unless="db-diff-file">
-            Set "db-diff-file" in build.properties to the diff file you want to execute.
-        </fail>
-
-        <sql classpathref="pom.classpath" driver="${db-driver}" url="${db-url}"
-            userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" src="${sql.dir}/diff/${db-diff-file}"/>
-    </target>
 
     <target name="database-create" depends="init">
         <sql classpathref="pom.classpath" driver="${db-driver}" url="${db-url-without-db-name}"
@@ -80,8 +68,8 @@
 
         <sql classpathref="pom.classpath" driver="${db-driver}" url="${db-url}"
             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" keepformat="true">
-            <transaction src="${sql.dir}/imcms_6.0_schema.sql"/>
-        	<transaction src="${sql.dir}/imcms_6.0_data.sql"/>
+            <transaction src="src/main/sql/imcms_6.1_schema.sql"/>
+        	<transaction src="src/main/sql/imcms_6.1_data.sql"/>
         </sql>
     </target>
 
@@ -115,27 +103,8 @@
     <target name="changes">
         <xslt in="docs/changes.xml" style="docs/changes.xsl" out="docs/CHANGES.HTML"/>
     </target>
-
-    <target name="sql">
-        <copy todir="${webinf.sql-diff.dir}">
-            <fileset dir="${sql.dir}/diff" includes="diff-*.sql"/>
-        </copy>     
-
-        <copy todir="${webinf.sql.dir}">
-            <fileset file="${sql.dir}/imcms_6.0_schema.sql"/>
-        </copy>
-        
-        <copy todir="${webinf.sql.dir}">
-            <fileset file="${sql.dir}/imcms_6.0_data.sql"/>
-        </copy>     
-
-        <copy todir="${webinf.sql-sprocs.dir}">
-            <fileset dir="${sql.dir}/sprocs" includes="*.prc"/>
-        </copy>        
-    </target>
-
 	
-    <target name="process-webapp-sources" depends="init,changes,sql"
+    <target name="process-webapp-sources" depends="init,changes"
             description="Translates and copies the webapp sources to webapp.">
 
         <property name="texttemplates" value="${webinf.templates.dir}/text"/>
@@ -174,11 +143,11 @@
     	</copy>    	   	
     	    		
         <copy todir="${main.webapp.dir}" filtering="true">
-            <fileset dir="${web.dir}" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
+            <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
         </copy>
 
         <copy todir="${main.webapp.dir}">
-            <fileset dir="${web.dir}" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern}"/>
+            <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern}"/>
         </copy>
 
         <antcall target="web-lang">
@@ -208,17 +177,17 @@
         <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${webinf.templates.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
-            <fileset dir="${web.dir}/WEB-INF/templates/lang"/>
+            <fileset dir="src/main/web/WEB-INF/templates/lang"/>
         </imtranslate>
 
         <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${main.webapp.imcms.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
-            <fileset dir="${web.dir}/imcms/lang" excludes="${imagespattern}"/>
+            <fileset dir="src/main/web/imcms/lang" excludes="${imagespattern}"/>
         </imtranslate>
 
         <copy todir="${main.webapp.imcms.dir}/${buildlanguage}" filtering="false">
-            <fileset dir="${web.dir}/imcms/lang" includes="${imagespattern}"/>
+            <fileset dir="src/main/web/imcms/lang" includes="${imagespattern}"/>
         </copy>
     </target>
 
@@ -229,14 +198,7 @@
         <record name="${basedir}/build.log"/>
 
         <tstamp/>
-
-  	    <fail message="Database schema version property [db.schema.version] must be set and must be in format major-version.minor-version where major-version and minor-version are digits.">
-	      <condition>
-	        <not>
-	       	  <matches string="${db.schema.version}" pattern="^\d\.\d\s*$"/>
-	        </not>
-	      </condition>
-	    </fail>    	
+ 	
     </target>
 
 	
@@ -265,8 +227,6 @@
             override="true"
             replace="-\1"
             casesensitive="false"/>
-        
-        <property name="sprocs-sql" value="${webinf.sql.dir}/imcms-sprocs${versionfilesuffix}.sql"/>
     	
     	<if>
     	 <equals arg1="${version}" arg2="" />
@@ -352,7 +312,7 @@
 
 	
     <target name="check-web-xml-valid">
-        <xmlvalidate file="web/WEB-INF/web.xml" classpathref="libraries">
+        <xmlvalidate file="src/main/web/WEB-INF/web.xml" classpathref="libraries">
             <dtd
                 publicId="-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
                 location="javax/servlet/resources/web-app_2_3.dtd"/>

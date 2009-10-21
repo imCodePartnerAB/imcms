@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Map;
 import java.util.HashMap;
+import java.sql.SQLException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextListener;
@@ -16,15 +17,15 @@ import javax.servlet.ServletContextEvent;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.log4j.Logger;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.hibernate.Session;
+import org.hibernate.HibernateException;
 import com.imcode.imcms.dao.LanguageDao;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.I18nException;
-import com.imcode.imcms.util.SchemaVersionChecker;
-import com.imcode.imcms.util.SchemaVersionCheckerException;
+import com.imcode.imcms.schema.SchemaUpgrade;
 
 /**
  * Cms context listener.
@@ -45,8 +46,9 @@ public class CmsContextListener implements ServletContextListener {
 
         ServletContext servletContext =  servletContextEvent.getServletContext();
 
-    	initI18nSupport(servletContext);
-    	checkSchemaVersion(servletContext);
+    	upgradeDatabaseSchema();
+        initI18nSupport(servletContext);
+
     }
 
 
@@ -131,33 +133,27 @@ public class CmsContextListener implements ServletContextListener {
 	}
 
 
-    private void checkSchemaVersion(ServletContext servletContext) {
-    	SchemaVersionChecker checker = (SchemaVersionChecker)Imcms.getSpringBean("schemaVersionChecker");
-
-    	try {
-    		String expectedSchemaVersion = Imcms.getServerProperties().getProperty("db.schema.version", "");
-    		checker.checkSchemaVersion(expectedSchemaVersion);
-    	} catch (SchemaVersionCheckerException e) {
-    		logger.fatal(e);
-    		throw e;
-    	}
-    }
-
-
 
     /**
-     * Upgrades database schema.
+     * Upgrades database schema if necessary.
      */
-    /*
-    private void upgradeDatabaseSchemaIfNecessary() {
-        try {
-            RT.load("com/imcode/imcms/schema_upgrade");
-        } catch (Exception e) {
-            throw new RuntimeException("Clojure RT.", e);    
-        }
+    private void upgradeDatabaseSchema() {
+        // TODO: lock file
+        File confXMLFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xml");
+        File confXSDFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xsd");
+        File scriptsDir = new File(Imcms.getPath(), "WEB-INF/sql");
 
-        Var var = RT.var("com.imcode.imcms.schema-upgrade", "upgrade");
-        var.invoke(dataSource);
+        final SchemaUpgrade schemaUpgrade = new SchemaUpgrade(confXMLFile, confXSDFile, scriptsDir);
+
+        // todo: replace with datasource get connection.
+        HibernateTemplate template = (HibernateTemplate)Imcms.getSpringBean("hibernateTemplate");
+
+        template.execute(new HibernateCallback() {
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                schemaUpgrade.upgrade(session.connection());
+
+                return null;
+            }
+        });
     }
-    */
 }

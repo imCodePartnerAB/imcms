@@ -40,7 +40,7 @@ import com.imcode.imcms.servlet.CmsContextListener;
  * Shared fields and mathods; can not be instantiated.
  */
 public class Imcms {
-	
+
     private static final String SERVER_PROPERTIES_FILENAME = "server.properties";
     public static final String ASCII_ENCODING = "US-ASCII";
     public static final String ISO_8859_1_ENCODING = "ISO-8859-1";
@@ -74,7 +74,7 @@ public class Imcms {
 
     /** Springframework web application context. */
     public static WebApplicationContext webApplicationContext;
-    // TODO: end refactor 
+    // TODO: end refactor
 
 
 	/** When running in cms mode a user bound to a current thread in the CmsFilter. */
@@ -132,7 +132,7 @@ public class Imcms {
         logger.debug("Creating main DataSource.");
         Database database = createDatabase(serverprops);
         LocalizedMessageProvider localizedMessageProvider = new CachingLocalizedMessageProvider(new ImcmsPrefsLocalizedMessageProvider());
-                
+
         final CachingFileLoader fileLoader = new CachingFileLoader();
         return new DefaultImcmsServices(database, serverprops, localizedMessageProvider, fileLoader, new DefaultProcedureExecutor(database, fileLoader));
     }
@@ -192,7 +192,7 @@ public class Imcms {
                 logger.error(e, e);
             }
         }
-        
+
         if ( null != dataSource ) {
             try {
                 logger.debug("Closing main DataSource.");
@@ -201,7 +201,7 @@ public class Imcms {
                 logger.error(e, e);
             }
         }
-        
+
         Prefs.flush();
 
         try {
@@ -255,11 +255,11 @@ public class Imcms {
             super(message, e) ;
         }
     }
-    
+
     public static void setUser(UserDomainObject user) {
     	cmsUsers.set(user);
     }
-    
+
     public static UserDomainObject getUser() {
     	return cmsUsers.get();
     }
@@ -307,7 +307,7 @@ public class Imcms {
         Imcms.cmsStartupEx = cmsStartupEx;
     }
 
-    
+
     /*
     public static ServletContext getServletContext() {
         return servletContext;
@@ -331,7 +331,7 @@ public class Imcms {
 
     public static void initCmsPrefs() {
         File configPath = new File(path, "WEB-INF/conf");
-        Prefs.setConfigPath(configPath);        
+        Prefs.setConfigPath(configPath);
     }
 
 
