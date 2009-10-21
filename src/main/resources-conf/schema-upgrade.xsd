@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="schema-upgrade">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element ref="diff" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name="diff">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element ref="vendor" minOccurs="1" maxOccurs="2"/>
+        </xs:sequence>
+
+        <xs:attribute name="version" type="xs:double" use="required"/>
+      </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name="vendor">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element ref="script" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" use="required" type="vendor-name"/>
+      </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name="script">
+      <xs:complexType>
+        <xs:attribute name="location" type="xs:string" use="required"/>
+      </xs:complexType>
+    </xs:element>
+
+
+    <xs:simpleType name="vendor-name">
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="mysql"/>
+        <xs:enumeration value="mssql"/>
+      </xs:restriction>
+    </xs:simpleType>
+    
+</xs:schema>
