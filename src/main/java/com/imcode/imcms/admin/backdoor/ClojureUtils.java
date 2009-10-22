@@ -1,4 +1,4 @@
-package com.imcode.imcms.maintenance;
+package com.imcode.imcms.admin.backdoor;
 
 import clojure.lang.RT;
 import clojure.lang.Var;

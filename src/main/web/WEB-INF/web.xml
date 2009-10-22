@@ -12,9 +12,9 @@
 	</listener>
 
     <filter>
-        <description>Imcms Maintenance Filter</description>
-        <filter-name>MaintenanceFilter</filter-name>
-        <filter-class>com.imcode.imcms.maintenance.MaintenanceFilter</filter-class>
+        <description>Imcms Backdoor Filter</description>
+        <filter-name>BackdoorFilter</filter-name>
+        <filter-class>com.imcode.imcms.admin.backdoor.BackdoorFilter</filter-class>
     </filter>
     
     <filter>
@@ -36,8 +36,8 @@
     </filter>
 
     <filter-mapping>
-        <filter-name>MaintenanceFilter</filter-name>
-        <url-pattern>/admin/maintenance/*</url-pattern>
+        <filter-name>BackdoorFilter</filter-name>
+        <url-pattern>/admin/backdoor/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>

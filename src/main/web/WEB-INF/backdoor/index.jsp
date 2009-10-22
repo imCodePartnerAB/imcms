@@ -1,9 +1,8 @@
 <%@ page import="java.io.File" %>
 <%@ page import="imcode.server.Imcms" %>
 <%@ page import="org.aspectj.util.FileUtil" %>
-<%@ page import="org.apache.commons.io.IOUtils" %>
-<%@ page import="java.io.FileWriter" %>
 <%@ page import="java.io.PrintWriter" %>
+<%@ page import="com.imcode.imcms.admin.backdoor.ClojureUtils" %>
 
 <%!
     String node(File node) {
@@ -50,12 +49,17 @@
         } catch (Exception e) {}
     }
 
-    if (request.getParameter("exit") != null) {
-        Imcms.setCmsMode();
-        //request.getRequestDispatcher("/").forward(request, response);
-        response.sendRedirect("");
+    if (request.getParameter("mode") != null) {
+        if (request.getParameter("mode").equals("c"))
+            Imcms.setCmsMode();
+        else
+            Imcms.setMaintenanceMode();
+    }
 
-        return;
+    String sh = request.getParameter("sh");
+
+    if (sh != null) {
+        ClojureUtils.startReplServer(Integer.parseInt(sh));
     }
 
 
@@ -69,23 +73,25 @@
     if (path == null) {
         path = Imcms.getPath();
     }
-
+    
     session.setAttribute("path", path);
 %>
-
+                                                               
 <html>
   <body>
   <hr/>
-  ::APPLICATION IS DOWN FOR MAINTENANCE::
+  ::WELCOME TO IMCMS MAINTENANCE::
 
   <hr/>
   :Commands:&nbsp;
     |&nbsp;<a href="?start">Start appliction</a>
     |&nbsp;<a href="?stop">Stop appliction</a>
-    |&nbsp;<a href="?exit">EXIT</a>
+    |&nbsp;<a href="?mode=c">CMS MODE</a>
+    |&nbsp;<a href="?mode=m">MAINTENANCE MODE</a>
 
   <hr/>
   :Status:<br/>
+    &nbsp;&nbsp;:Mode:&nbsp;<%=Imcms.getMode()%><br/>  
     &nbsp;&nbsp;:Running:&nbsp;<%=Imcms.getServices() == null ? "NO" : "YES"%><br/>
     &nbsp;&nbsp;:Startup errors:&nbsp;
       <%
@@ -123,5 +129,14 @@
         }
         %>
     </table>
+  <hr/>
+
+  <%--
+  <%=request.getPathInfo()%>   <br/>
+  <%=request.getPathTranslated()%><br/>
+  <%=request.getRequestURI()%>         <br/>
+  <%=request.getRequestURL()%>              <br/>
+  <%=request.getServletPath()%>                  <br/>
+  --%>
   </body>
 </html>

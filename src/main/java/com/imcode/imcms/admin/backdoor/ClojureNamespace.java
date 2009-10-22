@@ -1,8 +1,8 @@
-package com.imcode.imcms.maintenance;
+package com.imcode.imcms.admin.backdoor;
 
 public enum ClojureNamespace {
 	
-	MAINTENANCE_CONTROLLER("com.imcode.imcms.maintenance.controller", "/com/imcode/imcms/maintenance/controller"),
+	MAINTENANCE_CONTROLLER("com.imcode.imcms.backdoor.controller", "/com/imcode/imcms/backdoor/controller"),
     SERVER_SCOKET("clojure.contrib.server-socket", "clojure.contrib.server_socket");
 
 
