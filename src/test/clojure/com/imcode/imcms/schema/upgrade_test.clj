@@ -7,7 +7,7 @@
     [com.imcode.imcms.project-utils :only [db-spec]])
   
   (:import
-    (com.imcode.imcms.schema Upgrade Vendor)
+    (com.imcode.imcms.schema SchemaUpgrade Vendor)
     (java.io File)))
 
 
@@ -30,5 +30,5 @@
         (format "use %s" schema-name))
 
 
-      (doto (Upgrade. confXMLFile confXSDFile scriptsDir)
+      (doto (SchemaUpgrade. confXMLFile confXSDFile scriptsDir)
         (.doUpgrade (sql/connection))))))

@@ -107,6 +107,8 @@
      :schema-name (:db-name p)
      :db-spec {:datasource (create-db-datasource p)}}))
 
+(defn db-spec [] (:db-spec (db-env)))
+
 
 (defn db-metadata
   []
@@ -154,10 +156,13 @@
 
 
 (defn recreate-db-schema
-  "Recreates PROJECT datatabse schema."
-  []
+  "Recreates datatabse schema or PROJECT schema if schema name is not given."
+  ([]
+    (recreate-db-schema (:schema-name (db-env))) (db-schema-script-files))
+
+  ([schema-name scripts]
   (let [env (db-env)]
-    (db-utils/recreate-schema (:db-spec env) (:schema-name env) (db-schema-script-files))))
+    (db-utils/recreate-schema (:db-spec env) schema-name scripts))))
 
 
 (defn recreate-sandbox-db-schema
