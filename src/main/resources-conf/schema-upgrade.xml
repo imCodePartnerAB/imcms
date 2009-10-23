@@ -38,4 +38,10 @@
       <script location="diff/mysql-schema-diff-6.0-6.1.sql"/>
     </vendor>
   </diff>
+
+  <diff version="6.2">
+    <vendor name="mysql">
+      <script location="diff/mysql-schema-diff-6.1-6.2.sql"/>
+    </vendor>
+  </diff>
 </schema-upgrade>
