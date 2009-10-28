@@ -15,17 +15,16 @@
 
 
 (deftest test-get-versions
-  (is (= (DiffBuilder/getVersionsNumbers (slurp-conf))  [6.11 6.12 6.13])))
+  (is (= (DiffBuilder/getVersionsNumbers (slurp-conf))  [5.0 5.1 5.2 5.3 6.0 6.1 6.2])))
 
 
 (deftest test-get-diff-pathnames
   (let [conf (slurp-conf)]
-    (is (= (DiffBuilder/getScriptsLocations conf 6.11 Vendor/mysql) ["A.sql" "B.sql"]))
-    (is (= (DiffBuilder/getScriptsLocations conf 6.11 Vendor/mysql) ["A.sql" "B.sql"]))
-    (is (= (DiffBuilder/getScriptsLocations conf 6.11 Vendor/mssql) ["A$.sql" "B$.sql"]))
+    (is (= (DiffBuilder/getScriptsLocations conf 5.0 Vendor/mysql) ["imcms_5.0_schema.sql" "imcms_5.0_data.sql"]))
+    (is (= (DiffBuilder/getScriptsLocations conf 5.0 Vendor/mssql) []))
 
-    (is (= (DiffBuilder/getScriptsLocations conf 6.12 Vendor/mysql) ["C.sql" "D.sql"]))
-    (is (= (DiffBuilder/getScriptsLocations conf 6.12 Vendor/mssql) ["C$.sql" "D$.sql"]))
+    (is (= (DiffBuilder/getScriptsLocations conf 6.1 Vendor/mysql) ["diff/mysql-schema-diff-6.0-6.1.sql"]))
+    (is (= (DiffBuilder/getScriptsLocations conf 6.1 Vendor/mssql) []))
 
-    (is (= (DiffBuilder/getScriptsLocations conf 6.13 Vendor/mysql) ["E.sql" "F.sql"]))
-    (is (= (DiffBuilder/getScriptsLocations conf 6.13 Vendor/mssql) ["E$.sql" "F$.sql"]))))
+    (is (= (DiffBuilder/getScriptsLocations conf 6.2 Vendor/mysql) ["diff/mysql-schema-diff-6.1-6.2.sql"]))
+    (is (= (DiffBuilder/getScriptsLocations conf 6.2 Vendor/mssql) []))))

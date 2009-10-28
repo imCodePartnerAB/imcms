@@ -23,14 +23,11 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
 
 import com.imcode.imcms.mapping.DocumentGetter;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.util.HumanReadable;
-import org.apache.lucene.search.Searcher;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 
 class DefaultDirectoryIndex implements DirectoryIndex {
 
@@ -98,7 +95,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         List<Integer> documentIds = new DocumentIdHitsList(topDocs, searcher) ;
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        List<DocumentDomainObject> documentList = documentGetter.getDocuments(documentIds) ;
+        List<DocumentDomainObject> documentList = documentGetter.getPublishedDocuments(documentIds);
         stopWatch.stop();
         if (log.isDebugEnabled()) {
             log.debug("Got "+documentList.size()+" documents in "+stopWatch.getTime()+"ms.");
@@ -125,13 +122,23 @@ class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     public void removeDocument( DocumentDomainObject document ) throws IndexException {
+        //BooleanQuery bq = new BooleanQuery();
+        //bq.add(new BooleanClause(new TermQuery(new Term(DocumentIndex.FIELD__META_ID, "" + document.getId())), BooleanClause.Occur.MUST));
+        //bq.add(new BooleanClause(new TermQuery(new Term(DocumentIndex.FIELD__VERSION_NUMBER, document.getVersion().getNumber().toString())), BooleanClause.Occur.MUST));
+
         try {
-            IndexReader indexReader = IndexReader.open( directory );
-            try {
-                indexReader.deleteDocuments(new Term( "meta_id", "" + document.getId() ) );
-            } finally {
-                indexReader.close();
-            }
+        //    IndexSearcher indexSearcher = new IndexSearcher( directory.toString());
+        //    TopDocs td = indexSearcher.search(bq, 1);
+
+            //if (td.totalHits != 0) {
+                IndexReader indexReader = IndexReader.open( directory );
+                try {
+                    //indexReader.deleteDocument(td.scoreDocs[0].doc);
+                    indexReader.deleteDocuments(new Term( "meta_id", "" + document.getId() ) );
+                } finally {
+                    indexReader.close();
+                }
+            //}
         } catch ( IOException e ) {
             throw new IndexException( e );
         }
@@ -173,7 +180,14 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
         for ( int i = 0; i < documentIds.length; i++ ) {
             try {
-                addDocumentToIndex( documentMapper.getDocument( documentIds[i] ), indexWriter );
+                //DocumentDomainObject workingDocument = documentMapper.getDocument( documentIds[i] );
+                DocumentDomainObject publishedDocument = documentMapper.getPublishedDocument( documentIds[i] );
+
+                //addDocumentToIndex( workingDocument, indexWriter );
+
+                if (publishedDocument != null) {
+                    addDocumentToIndex( publishedDocument, indexWriter );
+                }
             } catch ( Exception ex ) {
                 log.error( "Could not index document with meta_id " + documentIds[i] + ", trying next document.", ex );
             }
@@ -247,6 +261,8 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         return directory.hashCode();
     }
 
+    //private static class 
+
     private static class DocumentIdHitsList extends AbstractList<Integer> {
 
         private final TopDocs topDocs;
@@ -259,7 +275,9 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
         public Integer get(int index) {
             try {
-                return new Integer( searcher.doc(topDocs.scoreDocs[index].doc ).get( DocumentIndex.FIELD__META_ID ) );
+                Document luceneDocumment = searcher.doc(topDocs.scoreDocs[index].doc);
+                
+                return new Integer(luceneDocumment.get(DocumentIndex.FIELD__META_ID));
             } catch ( IOException e ) {
                 throw new IndexException(e);
             }

@@ -4,6 +4,7 @@ import imcode.util.Prefs;
 import imcode.server.Imcms;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Properties;
 import java.util.Map;
@@ -26,6 +27,7 @@ import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.I18nException;
 import com.imcode.imcms.schema.SchemaUpgrade;
+import com.imcode.imcms.schema.SchemaUpgradeException;
 
 /**
  * Cms context listener.
@@ -138,12 +140,27 @@ public class CmsContextListener implements ServletContextListener {
      * Upgrades database schema if necessary.
      */
     private void upgradeDatabaseSchema() {
-        // TODO: lock file
         File confXMLFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xml");
         File confXSDFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xsd");
         File scriptsDir = new File(Imcms.getPath(), "WEB-INF/sql");
 
-        final SchemaUpgrade schemaUpgrade = new SchemaUpgrade(confXMLFile, confXSDFile, scriptsDir);
+        if (!confXMLFile.isFile()) {
+            throw new RuntimeException("Schema upgrade XML file '" + confXMLFile.getAbsolutePath() + "' does not exist.");
+        }
+
+
+        if (!confXSDFile.isFile()) {
+            throw new RuntimeException("Schema upgrade XSD file '" + confXSDFile.getAbsolutePath() + "' does not exist.");
+        }
+
+
+        if (!scriptsDir.isDirectory()) {
+            throw new RuntimeException("Schema diff scripts dir '" + scriptsDir.getAbsolutePath() + "' does not exist.");
+        }
+
+        
+        String xml = SchemaUpgrade.validateAndGetContent(confXMLFile, confXSDFile);
+        final SchemaUpgrade schemaUpgrade = new SchemaUpgrade(xml, scriptsDir);
 
         // todo: replace with datasource get connection.
         HibernateTemplate template = (HibernateTemplate)Imcms.getSpringBean("hibernateTemplate");

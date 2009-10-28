@@ -2,6 +2,9 @@ package com.imcode.imcms.api;
 
 import org.apache.lucene.search.Query;
 
+/**
+ * Not in use?
+ */
 public class LuceneQuery extends SearchQuery {
 
     private Query query;

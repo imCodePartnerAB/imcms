@@ -13,12 +13,12 @@
 
 (def confXMLFile (File. "src/test/resources/schema-upgrade.xml"))
 (def confXSDFile (File. "src/test/resources/schema-upgrade.xsd"))
-(def scriptsDir (File. "sql"))
+(def scriptsDir (File. "src/main/sql"))
 (def schema-name "x");
 
 
 (deftest test-validate-xml
-  (Upgrade/validateAndGetContent confXMLFile confXSDFile))
+  (SchemaUpgrade/validateAndGetContent confXMLFile confXSDFile))
 
 
 (deftest test-upgrade
@@ -30,5 +30,5 @@
         (format "use %s" schema-name))
 
 
-      (doto (SchemaUpgrade. confXMLFile confXSDFile scriptsDir)
-        (.doUpgrade (sql/connection))))))
+      (doto (SchemaUpgrade. (SchemaUpgrade/validateAndGetContent confXMLFile confXSDFile) scriptsDir)
+        (.upgrade (sql/connection))))))

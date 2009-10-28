@@ -160,7 +160,7 @@ public class CachingDocumentGetter implements DocumentGetter {
     } 
     
     /**
-     * Returns latest (working) document.
+     * Returns working document.
      */
     public DocumentDomainObject getDocument(Integer documentId) {
     	return getWorkingDocument(documentId);

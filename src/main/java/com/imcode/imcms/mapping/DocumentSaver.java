@@ -161,6 +161,8 @@ public class DocumentSaver {
         visitor.updateTextDocumentTexts(textDocument, null, user);
         visitor.updateTextDocumentImages(textDocument, null, user);
         visitor.updateTextDocumentContentLoops(textDocument, null, user);
+
+
     }
     
 

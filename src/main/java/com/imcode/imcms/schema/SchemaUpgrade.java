@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
 import java.io.*;
 import java.sql.*;
@@ -28,47 +27,34 @@ import com.ibatis.common.jdbc.ScriptRunner;
 public final class SchemaUpgrade {
 
     /** SQL select statement which returns schema version number string in format 'major.minor' */
-	public static final String SQL__SELECT_SCHEMA_VERSION = "SELECT concat(" +
+	private static final String SQL__SELECT_SCHEMA_VERSION = "SELECT concat(" +
 			"cast(major as char), '.', cast(minor as char)) " +
 			"FROM database_version";
 
     /** MySql show tables command. */
-	public static final String MYSQL__SHOW_TABLES = "SHOW TABLES";
+	private static final String MYSQL__SHOW_TABLES = "SHOW TABLES";
 
     /** Logger. */
     private final Logger logger = Logger.getLogger(getClass());
 
-    /** Upgrade scripts directory. */
-    private final File scriptsDir;
 
     /** Configuration xml. */
     private final String xml;
 
 
+    /** Upgrade scripts directory. */
+    private final File scriptsDir;
+
+
     /**
      * Creates new Upgrade instance.
      *
-     * @param confXMLFile schema upgrade configuration file.
-     * @param confXSDFile schema upgrade validation file.
+     * @param xml configuration xml.
      * @param scriptsDir directory which contains upgrade scripts.
      * 
      */
-    public SchemaUpgrade(File confXMLFile, File confXSDFile, File scriptsDir) {
-        if (!confXMLFile.isFile()) {
-            throw new SchemaUpgradeException("confXMLFile '" + confXMLFile.getAbsolutePath() + "' not found.");
-        }
-
-
-        if (!confXSDFile.isFile()) {
-            throw new SchemaUpgradeException("confXSDFile '" + confXSDFile.getAbsolutePath() + "' not found.");
-        }
-
-
-        if (!scriptsDir.isDirectory()) {
-            throw new SchemaUpgradeException("scriptDir '" + scriptsDir.getAbsolutePath() + "' not found.");
-        }
-
-        this.xml = validateAndGetContent(confXMLFile, confXSDFile);
+    public SchemaUpgrade(String xml, File scriptsDir) {
+        this.xml = xml;
         this.scriptsDir = scriptsDir;
     }
 
@@ -179,14 +165,14 @@ public final class SchemaUpgrade {
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
         try {
-            Schema schema = schemaFactory.newSchema(xsdFile);
+            javax.xml.validation.Schema schema = schemaFactory.newSchema(xsdFile);
             Validator validator = schema.newValidator();
 
             validator.validate(new StreamSource(xmlFile));
 
             return FileUtils.readFileToString(xmlFile);
         } catch (Exception e) {
-            throw new SchemaUpgradeException(e);
+            throw new RuntimeException("Schema validation failed.", e);
         }
     }
 

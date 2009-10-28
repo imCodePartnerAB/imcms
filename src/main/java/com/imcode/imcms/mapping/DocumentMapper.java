@@ -47,15 +47,7 @@ import org.apache.oro.text.perl.Perl5Util;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 
 import com.imcode.db.Database;
-import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.DocumentVersionSelector;
-import com.imcode.imcms.api.DocumentVersionSupport;
-import com.imcode.imcms.api.I18nDisabledException;
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nMeta;
-import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.NativeQueriesDao;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.aop.DocumentAspect;
@@ -336,8 +328,13 @@ public class DocumentMapper implements DocumentGetter {
         Integer documentId = document.getId();
         
         cachingDocumentGetter.removeDocumentFromCache(documentId);
-        //document = getDocument(documentId);        
-        documentIndex.indexDocument(document);        
+
+
+        document = getPublishedDocument(documentId);
+
+        if (document != null) {
+            documentIndex.indexDocument(document);
+        }
     }
 
     public DocumentIndex getDocumentIndex() {
@@ -583,11 +580,11 @@ public class DocumentMapper implements DocumentGetter {
     }    
     
     /**
-     * Returns latest document version.
+     * Returns working document version.
      * 
      * @param documentId document id
      * 
-     * @return latest version of the document or null if document does not exist.
+     * @return working on of the document or null if document does not exist.
      */
     public DocumentDomainObject getDocument(Integer documentId) { 
         return cachingDocumentGetter.getDocument(documentId);

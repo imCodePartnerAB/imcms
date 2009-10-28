@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.io.StringReader;
 
-import com.imcode.imcms.schema.Diff;
-
 /**
  * Builds diffs from configuration xml string.
  *

@@ -24,6 +24,7 @@ import org.apache.lucene.document.NumberTools;
 
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 
@@ -38,16 +39,23 @@ public class IndexDocumentFactory {
         this.categoryMapper = categoryMapper;
     }
 
+    
     /**
      * @return lucene document.
      */
     public Document createIndexDocument( DocumentDomainObject document ) {
-        log.trace("Indexing document "+document.getId());
-        System.out.println("Indexing document " + document.getId());
+        DocumentVersion version = document.getVersion();
+
+        log.debug(String.format("Indexing document %s, version %s (%s).",
+                document.getId(), version.getTag(), version.getNumber()));
+        
         Document indexDocument = new Document();
 
         int documentId = document.getId();
         indexDocument.add(new Field(DocumentIndex.FIELD__META_ID, "" + documentId, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        indexDocument.add(new Field(DocumentIndex.FIELD__VERSION_NUMBER, version.getNumber().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+        indexDocument.add(new Field(DocumentIndex.FIELD__VERSION_TAG, version.getTag().name(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, NumberTools.longToString(documentId) ) );
         
         RoleIdToDocumentPermissionSetTypeMappings roleIdMappings = document.getRoleIdsMappedToDocumentPermissionSetTypes();
