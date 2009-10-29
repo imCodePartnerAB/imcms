@@ -6,6 +6,8 @@ import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.mapping.DocumentGetter;
 import java.io.Serializable;
 
+import org.apache.commons.lang.math.NumberUtils;
+
 /**
  * Specifies document's version in document retrieving API.
  *  
@@ -13,15 +15,25 @@ import java.io.Serializable;
  * Published and a working are predefined and can be obtained as public final fields
  * or using {@link #getPredefinedSelector(String)} method.
  * 
- * Custom selector can be created using {@link #createCustomSelector(Integer)} 
- * factory method. 
- * 
  * @see DocumentGetter
  * @see MetaDao
  * @see DocumentVersionTag
  */
 public class DocumentVersionSelector implements Serializable {
-	
+
+	/**
+	 * Selector type.
+	 *
+	 * PUBLISHED specifies versions tagged as PUBLISHED
+	 * WORKING specifies versions tagged as WORKING
+	 * CUSTOM specifies any document version.
+	 */
+	public static enum Type {
+		PUBLISHED,
+		WORKING,
+		CUSTOM
+	}
+    
 	/**
 	 * Predefined publish document selector.
 	 */
@@ -58,19 +70,6 @@ public class DocumentVersionSelector implements Serializable {
 	
 	/**
 	 * Selector type.
-	 * 
-	 * PUBLISHED specifies versions tagged as PUBLISHED
-	 * WORKING specifies versions tagged as WORKING
-	 * CUSTOM specifies any document version.
-	 */
-	public static enum Type {
-		PUBLISHED,
-		WORKING,
-		CUSTOM
-	}
-	
-	/**
-	 * Selector type.
 	 */
 	private final Type type;
 	
@@ -87,22 +86,36 @@ public class DocumentVersionSelector implements Serializable {
 		this.type = type;
 		this.versionNumber = number;
 	}
-	
+
+
 	/**
-	 * Factory method - creates custom version specifier.
-	 * 
-	 * @param number version number.
-	 * 
-	 * @return custom version specifier.
-	 * 
+	 * Returns version selector.
+	 *
+	 * @param version version number or name.
+	 *
+	 * @return version selector.
+	 *
 	 * @throws IllegalArgumentException
 	 */
-	public static DocumentVersionSelector createCustomSelector(Integer number) {
-		if (number == null) {
-			throw new IllegalArgumentException("number argument can not be null.");
+	public static DocumentVersionSelector getSelector(String version) {
+		if (version == null) {
+			throw new IllegalArgumentException("version argument can not be null.");
 		}
-		
-		return new DocumentVersionSelector(Type.CUSTOM, number);
+
+        if (NumberUtils.isDigits(version)) {
+            return new DocumentVersionSelector(Type.CUSTOM, Integer.parseInt(version));
+        } else {
+			switch (Type.valueOf(version.toUpperCase())) {
+			case PUBLISHED:
+				return PUBLISHED_SELECTOR;
+
+			case WORKING:
+				return WORKING_SELECTOR;
+
+			default:
+				throw new IllegalArgumentException(String.format("%s is not a valid version name. Valid names are: %s and %s", version, Type.PUBLISHED, Type.WORKING));
+			}
+        }
 	}
 	
 	/**
@@ -130,11 +143,12 @@ public class DocumentVersionSelector implements Serializable {
 			throw new IllegalArgumentException("typeName argument can not be null.", e);
 		}
 	}
-	
+
+    
 	/**
 	 * Dispatches call to document getter.
 	 * 
-	 * @param documumentId document id
+	 * @param documentId document id
 	 * @return custom version of a document  
 	 */
 	public DocumentDomainObject getDocument(DocumentGetter documentGetter, Integer documentId) {
@@ -144,7 +158,10 @@ public class DocumentVersionSelector implements Serializable {
 	public Type getType() {
 		return type;
 	}
-	
+
+    /**
+     * @return version number in case of CUSTOM selector or null in case of WORKING or PUBLISHED selector. 
+     */
 	public Integer getVersionNumber() {
 		return versionNumber;
 	}	

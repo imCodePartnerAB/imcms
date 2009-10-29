@@ -129,8 +129,14 @@ public class TextDocumentInitializer {
     	
     	document.setAllImages(imagesMap);
     }
-    
-    
+
+
+    /**
+     * Working document menuitems initialized to refer to working documents.
+     * Published and other documents initialized to refer to published documents. 
+     *
+     * @param document document to initialzie.
+     */
     public void initMenus(TextDocumentDomainObject document) {
     	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getMeta().getId());	
     	Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();

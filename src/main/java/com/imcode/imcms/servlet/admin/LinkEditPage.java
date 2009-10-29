@@ -69,7 +69,7 @@ public class LinkEditPage extends OkCancelPage {
                     Integer documentId = documentRetrievalCommand.getDocumentId();
                     if (null != documentId) {
 												DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper() ;
-	                      DocumentDomainObject doc = documentMapper.getPublishedDocument(documentId) ;
+	                      DocumentDomainObject doc = documentMapper.getDocument(documentId) ;
                         setLink(new SimpleLink(request.getContextPath()+"/"+doc.getName(), link.getTitle(), link.getTarget()));
                     }
                     forward(request, response);

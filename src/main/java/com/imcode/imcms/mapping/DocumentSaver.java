@@ -112,31 +112,33 @@ public class DocumentSaver {
                     
         document.accept(savingVisitor);
     }
-    
+
     /**
      * Creates working document version from existing document.
-     * 
+     * <p/>
      * Actually only texts and images are copied into new document.
-     * 
+     *
      * @param document an instance of {@link TextDocumentDomainObject}
+     * @return working version of a document.
      */
     @Transactional
-    public void createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public DocumentDomainObject createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+
         //checkDocumentForSave(document);
         //document.loadAllLazilyLoaded();
-    	
-        //TODO: refactor - very ugly
-    	// save document id
-    	Meta meta = document.getMeta();
-    	Integer documentId = meta.getId();
-    		
-    	//TODO: refactor - very ugly
-    	// clone document, reset its dependencies meta id and assign its documentId again  
-    	TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document.clone();
-    	textDocument.setDependenciesMetaIdToNull();
-    	textDocument.setId(documentId);
 
-    	/*
+        //TODO: refactor - very ugly
+        // save document id
+        Meta meta = document.getMeta();
+        Integer documentId = meta.getId();
+
+        //TODO: refactor - very ugly
+        // clone document, reset its dependencies meta id and assign its documentId again
+        TextDocumentDomainObject textDocument = (TextDocumentDomainObject) document.clone();
+        textDocument.setDependenciesMetaIdToNull();
+        textDocument.setId(documentId);
+
+        /*
         //try {
             Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
             Date modifiedDatetime = Utility.truncateDateToMinutePrecision(document.getModifiedDatetime());
@@ -151,18 +153,18 @@ public class DocumentSaver {
         //} finally {
         //    documentMapper.invalidateDocument(document);
         //}
-        */  
-        
+        */
+
         DocumentVersion documentVersion = metaDao.createWorkingVersion(documentId, user.getId());
         textDocument.getMeta().setVersion(documentVersion);
-    	
+
         DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
-                
+
         visitor.updateTextDocumentTexts(textDocument, null, user);
         visitor.updateTextDocumentImages(textDocument, null, user);
         visitor.updateTextDocumentContentLoops(textDocument, null, user);
 
-
+        return document;
     }
     
 

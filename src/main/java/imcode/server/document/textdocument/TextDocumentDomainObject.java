@@ -18,6 +18,10 @@ import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.mapping.orm.TemplateNames;
 
+/**
+ * If this document represents a working version then its menus items also refer to working versions.
+ * If this document represents non working version then its menus items also refer to published versions.
+ */
 public class TextDocumentDomainObject extends DocumentDomainObject {
 		
 	/**

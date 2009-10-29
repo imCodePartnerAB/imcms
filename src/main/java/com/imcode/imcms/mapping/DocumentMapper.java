@@ -290,7 +290,9 @@ public class DocumentMapper implements DocumentGetter {
     throws DocumentSaveException, NoPermissionToEditDocumentException {
     	DocumentDomainObject document = getDocument(documentId, documentVersion);
     	
-	    documentSaver.createWorkingDocumentFromExisting(document, user);
+	    document = documentSaver.createWorkingDocumentFromExisting(document, user);
+
+        invalidateDocument(document);
 	}
             
     
@@ -330,9 +332,7 @@ public class DocumentMapper implements DocumentGetter {
         cachingDocumentGetter.removeDocumentFromCache(documentId);
 
 
-        document = getPublishedDocument(documentId);
-
-        if (document != null) {
+        if (document.getVersion().getTag() == DocumentVersionTag.WORKING) {
             documentIndex.indexDocument(document);
         }
     }

@@ -220,12 +220,9 @@ public class CmsFilter implements Filter {
         String version = request.getParameter("version");
         if (version != null) {
         	DocumentShowSettings settings = user.getDocumentShowSettings();
-        	if (NumberUtils.isDigits(version)) {
-        		settings.setVersionSelector(DocumentVersionSelector.createCustomSelector(Integer.valueOf(version)));
-        	} else {        	
-        		settings.setVersionSelector(DocumentVersionSelector.getPredefinedSelector(version));
-        	}
-        }                 	
+
+            settings.setVersionSelector(DocumentVersionSelector.getSelector(version));
+        }
     }
     
 

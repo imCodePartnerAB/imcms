@@ -138,7 +138,7 @@ public class MenuEditPage extends OkCancelPage {
                     Date now = new Date();
                     for ( String selectedChildrenId : selectedChildrenIds ) {
                         int childId = Integer.parseInt(selectedChildrenId);
-                        DocumentDomainObject child = documentMapper.getPublishedDocument(childId);
+                        DocumentDomainObject child = documentMapper.getDocument(childId);
                         child.setArchivedDatetime(now);
                         documentMapper.saveDocument(child, user);
                     }

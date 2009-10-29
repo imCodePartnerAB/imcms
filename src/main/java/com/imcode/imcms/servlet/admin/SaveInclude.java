@@ -44,7 +44,7 @@ public class SaveInclude extends HttpServlet {
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getPublishedDocument( meta_id );
+        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id );
 
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
         if ( !permissionSet.getEditIncludes() ) {	// Checking to see if user may edit this
@@ -71,7 +71,7 @@ public class SaveInclude extends HttpServlet {
                 } else {
                     try {
                         int included_meta_id_int = Integer.parseInt(included_meta_id);
-                        DocumentDomainObject includedDocument = documentMapper.getPublishedDocument(included_meta_id_int);
+                        DocumentDomainObject includedDocument = documentMapper.getDocument(included_meta_id_int);
 
                         if ( null == includedDocument || !DocumentTypeDomainObject.TEXT.equals(includedDocument.getDocumentType()) ) {
                             sendBadId(imcref, out, meta_id, user);

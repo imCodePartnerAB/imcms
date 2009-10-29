@@ -81,7 +81,7 @@ public class GetExistingDoc extends HttpServlet {
         Writer out = res.getWriter();
 
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        TextDocumentDomainObject parentDocument = (TextDocumentDomainObject)documentMapper.getPublishedDocument( Integer.parseInt( req.getParameter( "meta_id_value" ) ) );
+        TextDocumentDomainObject parentDocument = (TextDocumentDomainObject)documentMapper.getDocument( Integer.parseInt( req.getParameter( "meta_id_value" ) ) );
 
         // Lets get the doc_menu_number
         int menuIndex = Integer.parseInt( req.getParameter( "doc_menu_no" ) );
@@ -153,7 +153,7 @@ public class GetExistingDoc extends HttpServlet {
             if ( 0 == searchResultDocuments.size() ) {
                 if ( StringUtils.isNumeric(searchString) ) {
                     int documentId = Integer.parseInt(searchString) ;
-                    DocumentDomainObject document = documentMapper.getPublishedDocument(documentId);
+                    DocumentDomainObject document = documentMapper.getDocument(documentId);
                     if (canAddToMenu(user, parentDocument, document)) {
                         addDocumentToMenu(document, parentDocument, user, menuEditPage);
                         redirectBackToMenu( req, res, menuEditPage );
@@ -224,7 +224,7 @@ public class GetExistingDoc extends HttpServlet {
         for ( String value : values ) {
             int existingDocumentId = Integer.parseInt(value);
 
-            DocumentDomainObject existingDocument = documentMapper.getPublishedDocument(existingDocumentId);
+            DocumentDomainObject existingDocument = documentMapper.getDocument(existingDocumentId);
             // Add the document in menu if user is admin for the document OR the document is shared.
             addDocumentToMenu(existingDocument, parentDocument, user, menuEditPage);
 
