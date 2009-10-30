@@ -55,7 +55,7 @@ public class ImcmsFilter implements Filter {
     
 
     /** Sends service unavailable. */
-    private Filter maintenanceModeFilter = new ImcmsFilter() {
+    private Filter maintenanceModeFilter = new Filter() {
 
         public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
                 throws IOException, ServletException {
@@ -63,11 +63,14 @@ public class ImcmsFilter implements Filter {
 
             response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
         }
+
+        public void init(FilterConfig filterConfig) throws ServletException {}
+        public void destroy() {}
     };
 
 
     /** Processes request normally. */
-    private Filter cmsModeFilter = new ImcmsFilter() {
+    private Filter cmsModeFilter = new Filter() {
 
         public void doFilter(ServletRequest r, ServletResponse response, FilterChain filterChain)
                 throws IOException, ServletException {
@@ -118,6 +121,9 @@ public class ImcmsFilter implements Filter {
             handleDocumentUri(filterChain, request, response, service, fallbackDecoder);
             NDC.setMaxDepth( 0 );
         }
+
+        public void init(FilterConfig filterConfig) throws ServletException {}
+        public void destroy() {}
     };
 
 
