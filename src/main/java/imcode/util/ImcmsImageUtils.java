@@ -19,7 +19,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.servlet.CmsFilter;
+import com.imcode.imcms.servlet.ImcmsFilter;
 import com.imcode.util.ImageSize;
 
 public class ImcmsImageUtils {
@@ -123,7 +123,7 @@ public class ImcmsImageUtils {
         if ( StringUtils.isNotBlank(imageUrl) ) {
             ImcmsServices services = Imcms.getServices();
             DocumentMapper documentMapper = services.getDocumentMapper();
-            String documentIdString = CmsFilter.getDocumentIdString(services, imageUrl);
+            String documentIdString = ImcmsFilter.getDocumentIdString(services, imageUrl);
             DocumentDomainObject document = documentMapper.getDocument(documentIdString);
             if ( document instanceof FileDocumentDomainObject ) {
                 imageSource = new FileDocumentImageSource(documentMapper.getDocumentReference(document, DocumentVersionSelector.WORKING_SELECTOR));

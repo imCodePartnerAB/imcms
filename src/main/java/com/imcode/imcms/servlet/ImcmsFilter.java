@@ -31,8 +31,6 @@ import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.imcode.imcms.api.DocumentVersionSelector;
@@ -51,7 +49,7 @@ public class ImcmsFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
 
-    private Logger logger;
+    private final Logger logger = Logger.getLogger(getClass());
     
 
     /** Sends service unavailable. */
@@ -143,10 +141,9 @@ public class ImcmsFilter implements Filter {
 
     public void init(FilterConfig filterConfig) throws ServletException {
         ServletContext servletContext = filterConfig.getServletContext();
-
         File path = new File(servletContext.getRealPath("/"));
 
-        initLogger(servletContext, path);
+        logEnvironment(servletContext);
 
         Imcms.setPath(path);
         Imcms.setServletContext(servletContext);
@@ -166,7 +163,6 @@ public class ImcmsFilter implements Filter {
 
     public void destroy() {
         Imcms.stopCms();
-        LogManager.shutdown();
     }
 
 
@@ -297,19 +293,7 @@ public class ImcmsFilter implements Filter {
     }
 
     
-    public void initLogger(ServletContext servletContext, File realContextPath) {
-        File configFile = new File(realContextPath, "WEB-INF/classes/log4j.xml");
-        //File configFile = new File(realContextPath, "WEB-INF/classes/log4j-debug.xml");
-
-        try {
-            System.setProperty("com.imcode.imcms.path", realContextPath.toString());
-            DOMConfigurator.configure(configFile.toString());
-        } catch (RuntimeException e ) {
-            // TODO: ??Provide minimal logging configuration??
-            throw e;
-        }
-
-        logger = Logger.getLogger(getClass());
+    public void logEnvironment(ServletContext servletContext) {
         logger.info("Servlet Engine: " + servletContext.getServerInfo());
 
         String[] systemPropertyNames = new String[] {
@@ -325,5 +309,5 @@ public class ImcmsFilter implements Filter {
             String systemPropertyName = systemPropertyNames[i];
             logger.info(systemPropertyName + ": " + System.getProperty(systemPropertyName));
         }
-    }    
+    }
 }

@@ -446,4 +446,8 @@ public class Imcms {
     public static void setWebApplicationContext(WebApplicationContext webApplicationContext) {
         Imcms.webApplicationContext = webApplicationContext;
     }
+
+    public static Exception getCmsStartupEx() {
+        return cmsStartupEx;
+    }
 }
