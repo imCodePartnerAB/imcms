@@ -8,7 +8,7 @@ import java.util.Map;
  * I18n support.
  * This class intended to be used as a singleton and can not be instantiated.
  * 
- * @see com.imcode.imcms.servlet.CmsFilter
+ * @see com.imcode.imcms.servlet.ImcmsFilter
  * @author Anton Josua
  */
 public class I18nSupport {
@@ -18,7 +18,7 @@ public class I18nSupport {
 	 * 
 	 * Language selected by user or assigned by the system on a first run. 
 	 *  
-	 * @see com.imcode.imcms.servlet.CmsFilter
+	 * @see com.imcode.imcms.servlet.ImcmsFilter
 	 */
 	private static ThreadLocal<I18nLanguage> currentLanguage = new ThreadLocal<I18nLanguage>();
 		

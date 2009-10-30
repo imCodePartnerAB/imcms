@@ -1,6 +1,6 @@
 package com.imcode.imcms.schema;
 
-import com.imcode.imcms.ImcmsException;
+import com.imcode.imcms.servlet.ImcmsException;
 
 /**
  * Indicates schema upgrade exception.

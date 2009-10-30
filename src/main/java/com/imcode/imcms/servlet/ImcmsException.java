@@ -1,4 +1,4 @@
-package com.imcode.imcms;
+package com.imcode.imcms.servlet;
 
 /**
  * 

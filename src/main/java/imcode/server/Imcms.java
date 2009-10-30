@@ -11,19 +11,23 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
 
 import javax.sql.DataSource;
-import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContext;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.log4j.Logger;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.xml.DOMConfigurator;
 
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.hibernate.Session;
+import org.hibernate.HibernateException;
 
 import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.Database;
@@ -31,10 +35,13 @@ import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
-import com.imcode.imcms.ImcmsMode;
-import com.imcode.imcms.ImcmsFilter;
+import com.imcode.imcms.schema.SchemaUpgrade;
+import com.imcode.imcms.dao.LanguageDao;
 import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.servlet.CmsContextListener;
+import com.imcode.imcms.api.I18nException;
+import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.servlet.ImcmsMode;
+import com.imcode.imcms.servlet.ImcmsFilter;
 
 /**
  * Shared fields and mathods; can not be instantiated.
@@ -60,16 +67,11 @@ public class Imcms {
 
 
     // TODO: begin refactor
-    /*
-     * Temp workaround. Servlet Context Event is required to initialize Cms and Spring context listeners.
-     */
-    private static ServletContextEvent servletContextEvent;
+    private static ServletContext servletContext;
     private static ImcmsMode mode = ImcmsMode.MAINTENANCE;
     private static ImcmsFilter imcmsFilter;
     private static Exception cmsStartupEx;
 
-    private static CmsContextListener CmsContextListener;
-    private static ContextLoaderListener springContextLoaderListener;
     private static Map<String, I18nLanguage> i18nHosts;
 
     /** Springframework web application context. */
@@ -99,15 +101,10 @@ public class Imcms {
         setCmsStartupEx(null);
 
         try {
-            initCmsPrefs();
+            beforeStart();
 
-            springContextLoaderListener = new ContextLoaderListener();
-            springContextLoaderListener.contextInitialized(servletContextEvent);
-            webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContextEvent.getServletContext());
 
-            CmsContextListener = new CmsContextListener();
-            CmsContextListener.contextInitialized(servletContextEvent);
-
+            
             cmsServices = createApplicationServices();
         } catch (Exception e) {
             logger.error(e, e);
@@ -204,13 +201,6 @@ public class Imcms {
 
         Prefs.flush();
 
-        try {
-            if (springContextLoaderListener != null)
-                springContextLoaderListener.contextDestroyed(servletContextEvent);
-        } catch (Exception e) {
-           logger.error(e, e);
-        }
-
         cmsServices = null;
     }
 
@@ -267,10 +257,7 @@ public class Imcms {
 
     public static ImcmsMode setMode(ImcmsMode mode) {
         Imcms.mode = mode;
-
-        if (imcmsFilter != null) {
-            imcmsFilter.updateDelegateFilter();
-        }
+        imcmsFilter.updateDelegateFilter();
 
         return mode;
     }
@@ -289,26 +276,12 @@ public class Imcms {
     }
 
 
-    /**
-     * Invoked by ImcmsFilter when its init method is called.
-     *
-     * @param imcmsFilter
-     */
-    public static void setImcmsFilter(ImcmsFilter imcmsFilter) {
-        Imcms.imcmsFilter = imcmsFilter;
-    }
-
-    public static Exception getCmsStartupEx() {
-        return cmsStartupEx;
-    }
-
     // clear
     public static void setCmsStartupEx(Exception cmsStartupEx) {
         Imcms.cmsStartupEx = cmsStartupEx;
     }
 
 
-    /*
     public static ServletContext getServletContext() {
         return servletContext;
     }
@@ -316,31 +289,19 @@ public class Imcms {
     public static void setServletContext(ServletContext servletContext) {
         Imcms.servletContext = servletContext;
     }
-    */
 
 
 	public static Object getSpringBean(String beanName) {
-		if (webApplicationContext == null) {
-			//log.error("WebApplicationContext is not set.");
-			throw new NullPointerException("WebApplicationContext is not set.");
-		}
-
 		return webApplicationContext.getBean(beanName);
 	}
 
 
-    public static void initCmsPrefs() {
+    public static void beforeStart() {
         File configPath = new File(path, "WEB-INF/conf");
         Prefs.setConfigPath(configPath);
-    }
 
-
-    public static ServletContextEvent getServletContextEvent() {
-        return servletContextEvent;
-    }
-
-    public static void setServletContextEvent(ServletContextEvent servletContextEvent) {
-        Imcms.servletContextEvent = servletContextEvent;
+    	upgradeDatabaseSchema();
+        initI18nSupport();        
     }
 
     public static Map<String, I18nLanguage> getI18nHosts() {
@@ -349,5 +310,140 @@ public class Imcms {
 
     public static void setI18nHosts(Map<String, I18nLanguage> i18nHosts) {
         Imcms.i18nHosts = i18nHosts;
+    }
+
+
+
+    /**
+     * Initializes I18N support.
+     * Reads languages from the database.
+     * Please note that one (and only one) language in the database table i18n_languages must be set as default.
+     */
+	private static void initI18nSupport() {
+    	logger.info("Initializing i18n support.");
+
+    	LanguageDao languageDao = (LanguageDao) Imcms.getSpringBean("languageDao");
+    	List<I18nLanguage> languages = languageDao.getAllLanguages();
+
+    	if (languages.size() == 0) {
+    		String msg = "I18n configuration error. Database table i18n_languages must contain at least one record.";
+    		logger.fatal(msg);
+    		throw new I18nException(msg);
+    	}
+
+        int defaultLanguageRecordCount = CollectionUtils.countMatches(languages, new Predicate() {
+            public boolean evaluate(Object language) {
+                return ((I18nLanguage)language).isDefault();
+            }
+        });
+
+        if (defaultLanguageRecordCount == 0) {
+    		String msg = "I18n configuration error. Default language is not set.";
+    		logger.fatal(msg);
+    		throw new I18nException(msg);
+        } else if (defaultLanguageRecordCount > 1) {
+            String msg = "I18n configuration error. Only one language must be set default.";
+            logger.fatal(msg);
+            throw new I18nException(msg);
+        }
+
+        I18nLanguage defaultLanguage = languageDao.getDefaultLanguage();
+
+    	I18nSupport.setDefaultLanguage(defaultLanguage);
+    	I18nSupport.setLanguages(languages);
+
+    	servletContext.setAttribute("defaultLanguage", defaultLanguage);
+    	servletContext.setAttribute("languages", languages);
+
+        // Read "virtual" hosts mapped to languages.
+    	String prefix = "i18n.host.";
+    	int prefixLength = prefix.length();
+        Properties properties = Imcms.getServerProperties();
+
+        Map<String, I18nLanguage> i18nHosts = new HashMap<String, I18nLanguage>();
+        Imcms.setI18nHosts(i18nHosts);
+
+    	for (Map.Entry entry: properties.entrySet()) {
+    		String key = (String)entry.getKey();
+
+    		if (!key.startsWith(prefix)) {
+    			continue;
+    		}
+
+			String languageCode = key.substring(prefixLength);
+			String value = (String)entry.getValue();
+
+    		logger.info("I18n configurtion: language code [" + languageCode + "] mapped to host(s) [" + value + "].");
+
+			I18nLanguage language = I18nSupport.getByCode(languageCode);
+
+			if (language == null) {
+				String msg = "I18n configuration error. Language with code [" + languageCode + "] is not defined in database.";
+        		logger.fatal(msg);
+        		throw new I18nException(msg);
+			}
+
+			String hosts[] = value.split("[ \\t]*,[ \\t]*");
+
+			for (String host: hosts) {
+				i18nHosts.put(host.trim(), language);
+			}
+    	}
+	}
+
+
+
+    /**
+     * Upgrades database schema if necessary.
+     */
+    private static void upgradeDatabaseSchema() {
+        File confXMLFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xml");
+        File confXSDFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xsd");
+        File scriptsDir = new File(Imcms.getPath(), "WEB-INF/sql");
+
+        if (!confXMLFile.isFile()) {
+            throw new RuntimeException("Schema upgrade XML file '" + confXMLFile.getAbsolutePath() + "' does not exist.");
+        }
+
+
+        if (!confXSDFile.isFile()) {
+            throw new RuntimeException("Schema upgrade XSD file '" + confXSDFile.getAbsolutePath() + "' does not exist.");
+        }
+
+
+        if (!scriptsDir.isDirectory()) {
+            throw new RuntimeException("Schema diff scripts dir '" + scriptsDir.getAbsolutePath() + "' does not exist.");
+        }
+
+
+        String xml = SchemaUpgrade.validateAndGetContent(confXMLFile, confXSDFile);
+        final SchemaUpgrade schemaUpgrade = new SchemaUpgrade(xml, scriptsDir);
+
+        // todo: replace with datasource get connection.
+        HibernateTemplate template = (HibernateTemplate)Imcms.getSpringBean("hibernateTemplate");
+
+        template.execute(new HibernateCallback() {
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                schemaUpgrade.upgrade(session.connection());
+
+                return null;
+            }
+        });
+    }
+
+    public static ImcmsFilter getImcmsFilter() {
+        return imcmsFilter;
+    }
+
+    public static void setImcmsFilter(ImcmsFilter imcmsFilter) {
+        Imcms.imcmsFilter = imcmsFilter;
+    }
+
+    public static WebApplicationContext getWebApplicationContext() {
+        return webApplicationContext;
+    }
+
+    public static void setWebApplicationContext(WebApplicationContext webApplicationContext) {
+        Imcms.webApplicationContext = webApplicationContext;
     }
 }

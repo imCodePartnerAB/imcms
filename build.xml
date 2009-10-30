@@ -249,8 +249,6 @@
         	depends="check-build-properties,init-version-properties">
     	
     	<filter token="defaultlanguage" value="${defaultlanguage}"/>
-    	
-    	<filter token="db.schema.version" value="${db.schema.version}"/>
         
         <filter token="documentationwebappurl" value="http://${documentation-host}/${versionnumber}"/>
         <filter token="documentationurl" value="http://${documentation-host}/${versionnumber}"/>

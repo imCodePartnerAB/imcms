@@ -8,8 +8,8 @@
     <display-name>imCMS</display-name>
 
     <listener>
-    	<listener-class>com.imcode.imcms.ImcmsContextListener</listener-class>
-	</listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
 
     <filter>
         <description>Imcms Backdoor Filter</description>
@@ -20,13 +20,7 @@
     <filter>
         <description>Imcms Filter</description>
         <filter-name>ImcmsFilter</filter-name>
-        <filter-class>com.imcode.imcms.ImcmsFilter</filter-class>
-    </filter>
-
-    <filter>
-        <description>Cms Mode Filter</description>
-        <filter-name>CmsFilter</filter-name>
-        <filter-class>com.imcode.imcms.servlet.CmsFilter</filter-class>
+        <filter-class>com.imcode.imcms.servlet.ImcmsFilter</filter-class>
     </filter>
 
     <filter>
@@ -52,17 +46,19 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     -->
-    
-    <filter-mapping>
-        <filter-name>CmsFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>    
-    
+
     <filter-mapping>
         <filter-name>SuperAdminFilter</filter-name>
         <url-pattern>/imcms/docs/apisamples/*</url-pattern>
     </filter-mapping>
 
+    
+    <filter-mapping>
+        <filter-name>ImcmsFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!--
     <servlet>
       <servlet-name>maintenance</servlet-name>
         <servlet-class>
@@ -70,7 +66,8 @@
         </servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-
+    -->
+    
     <!-- New administration UI dispatcher servlet -->
     <servlet>
       <servlet-name>newadmin</servlet-name>
