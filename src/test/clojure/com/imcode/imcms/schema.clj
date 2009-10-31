@@ -8,8 +8,8 @@
       [schema-utils :as schema-utils]]))
 
 
-(def schema-name "imcms_trunk")  
-(def test-schema-name "imcms_trunk_test")
+(defn db-schema-name [] (:db-name (project/load-build-properties)))
+(defn test-db-schema-name [] (str (db-schema-name) "_test"))
 
 
 (defn xml-conf-file [] (project/file "src/main/resources-conf/schema-upgrade.xml"))
@@ -31,17 +31,17 @@
   (project/files "src/main/sql" ["imcms_6.1_schema.sql" "imcms_6.1_data.sql"]))
 
 
-(defn schema-version
+(defn version
   ([]
-    (schema-version (:db-name (project/load-build-properties))))
+    (version (db-schema-name)))
 
   ([schema-name]
-    (schema-utils/get-version (project/db-spec) schema-name)))
+    (schema-utils/version (project/db-spec) schema-name)))
 
 
 (defn tables
   ([]
-    (tables (:db-name (project/load-build-properties))))
+    (tables (db-schema-name)))
 
   ([schema-name]
     (schema-utils/tables (project/db-spec) schema-name)))
@@ -49,23 +49,15 @@
 
 (defn delete-tables
   ([]
-    (delete-tables (:db-name (project/load-build-properties))))
+    (delete-tables (db-schema-name)))
 
   ([schema-name]
     (schema-utils/delete-tables (project/db-spec) schema-name)))
 
 
-(defn has-tables?
-  ([]
-    (has-tables? (:db-name (project/load-build-properties))))
-
-  ([schema-name]
-    (schema-utils/has-tables? (project/db-spec) schema-name)))
-
-
 (defn delete
   ([]
-    (delete (:db-name (project/load-build-properties))))
+    (delete (db-schema-name)))
 
   ([schema-name]
     (schema-utils/delete (project/db-spec) schema-name)))
@@ -74,10 +66,22 @@
 (defn recreate
   "Recreates datatabse schema or PROJECT schema if schema name is not given."
   ([]
-    (recreate (:db-name (project/load-build-properties)) (init-script-files)))
+    (recreate (db-schema-name)))
+
+  ([schema-name]
+    (recreate schema-name (init-script-files)))  
 
   ([schema-name scripts]
     (schema-utils/recreate (project/db-spec) schema-name scripts)))
+
+
+(defn recreate-empty
+  "Recreates empty datatabse schema or PROJECT schema if schema name is not given."
+  ([]
+    (recreate (db-schema-name) []))
+
+  ([schema-name]
+    (recreate schema-name [])))
 
 
 (defn recreate-sandbox
@@ -85,6 +89,17 @@
   "Recreates SANDBOX datatabse schema."
   (let [script-files (project/files "src/test/sql" ["sandbox.sql"])]
     (recreate "sandbox" script-files)))
+
+
+(defn upgrade
+  ([]
+    (upgrade (db-schema-name)))
+
+  ([schema-name]
+    (upgrade schema-name (xml-conf-file) (xsd-conf-file) (scripts-dir)))
+
+  ([schema-name p_xml-conf-file p_xsd-conf-file p_scripts-dir]
+    (schema-utils/upgrade (project/db-spec) schema-name p_xml-conf-file p_xsd-conf-file p_scripts-dir)))
 
 
 (deftest test-settings

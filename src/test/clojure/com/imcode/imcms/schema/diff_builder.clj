@@ -1,13 +1,13 @@
 (ns com.imcode.imcms.schema.diff-builder
   (:require
-    [com.imcode.imcms.schema-settings :as ss])  
+    [com.imcode.imcms.schema :as schema])  
   (:use
     clojure.contrib.test-is)
   (:import
     (com.imcode.imcms.schema Diff DiffBuilder Vendor)))
 
 
-(deftest build-xpath-expression
+(deftest test-build-xpath-expression
   (is (= (format DiffBuilder/XPATH_TEMPLATE__SELECT_SCRIPTS_LOCATIONS 6.11 Vendor/mysql)
          "/schema-upgrade/diff[@version = 6.11]/vendor[@name = 'mysql']/script/@location"))
 
@@ -15,12 +15,12 @@
          "/schema-upgrade/diff[@version = 6.12]/vendor[@name = 'mssql']/script/@location")))
 
 
-(deftest get-versions-numbers
-  (is (= (DiffBuilder/getVersionsNumbers (ss/slurp-xml-conf))  [5.0 5.1 5.2 5.3 6.0 6.1 6.2])))
+(deftest test-get-versions-numbers
+  (is (= (DiffBuilder/getVersionsNumbers (schema/slurp-xml-conf))  [5.0 5.1 5.2 5.3 6.0 6.1 6.2])))
 
 
-(deftest get-scripts-locations
-  (let [conf (ss/slurp-xml-conf)]
+(deftest test-get-scripts-locations
+  (let [conf (schema/slurp-xml-conf)]
     (is (= (DiffBuilder/getScriptsLocations conf 5.0 Vendor/mysql) ["imcms_5.0_schema.sql" "imcms_5.0_data.sql"]))
     (is (= (DiffBuilder/getScriptsLocations conf 5.0 Vendor/mssql) []))
 
