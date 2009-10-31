@@ -397,27 +397,11 @@ public class Imcms {
      * Upgrades database schema if necessary.
      */
     private static void upgradeDatabaseSchema() {
-        File confXMLFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xml");
-        File confXSDFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xsd");
+        File confXmlFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xml");
+        File confXsdFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xsd");
         File scriptsDir = new File(Imcms.getPath(), "WEB-INF/sql");
 
-        if (!confXMLFile.isFile()) {
-            throw new RuntimeException("Schema upgrade XML file '" + confXMLFile.getAbsolutePath() + "' does not exist.");
-        }
-
-
-        if (!confXSDFile.isFile()) {
-            throw new RuntimeException("Schema upgrade XSD file '" + confXSDFile.getAbsolutePath() + "' does not exist.");
-        }
-
-
-        if (!scriptsDir.isDirectory()) {
-            throw new RuntimeException("Schema diff scripts dir '" + scriptsDir.getAbsolutePath() + "' does not exist.");
-        }
-
-
-        String xml = SchemaUpgrade.validateAndGetContent(confXMLFile, confXSDFile);
-        final SchemaUpgrade schemaUpgrade = new SchemaUpgrade(xml, scriptsDir);
+        final SchemaUpgrade schemaUpgrade = SchemaUpgrade.createInstance(confXmlFile, confXsdFile, scriptsDir);
 
         // todo: replace with datasource get connection.
         HibernateTemplate template = (HibernateTemplate)Imcms.getSpringBean("hibernateTemplate");

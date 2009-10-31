@@ -1,5 +1,5 @@
 <schema-upgrade
-    xsi:noNamespaceSchemaLocation="schema-upgrade.xsd" 
+    xsi:noNamespaceSchemaLocation="../../main/resources-conf/schema-upgrade.xsd" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     
   <diff version="6.11">

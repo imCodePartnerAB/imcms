@@ -1,4 +1,4 @@
-(ns com.imcode.imcms.lucene
+(ns com.imcode.imcms.rt
   (:import
     (java.io File)
     (org.apache.lucene.store RAMDirectory)
@@ -10,6 +10,15 @@
 
     (com.imcode.imcms.api DocumentService ContentManagementSystem))
   (:use clojure.contrib.duck-streams))
+
+
+;Servlet context
+(def *servlet-context*)
+
+(defn get-prop []
+  "Returns server properties."
+  (doseq [[k v]
+    (imcode.server.Imcms/getServerProperties)] (println k "->" v)))
 
 
 (def cms (atom nil))
