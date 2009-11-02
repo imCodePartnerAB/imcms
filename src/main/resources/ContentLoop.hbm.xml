@@ -10,11 +10,13 @@
     ]]>
   </query>    
   -->
+
   <query name="ContentLoop.getByMetaIdAndMetaVersionAndIndex">
     <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.metaVersion = :metaVersion AND l.index = :index
+    SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.metaVersion = :metaVersion AND l.no = :index
     ]]>
-  </query>  
+  </query>
+
   
   <query name="ContentLoop.getByMetaIdAndMetaVersion">
     <![CDATA[
@@ -59,5 +61,5 @@
     <![CDATA[
     SELECT c.id FROM Content c WHERE c.loopId = :loopId AND c.sequenceIndex = :sequenceIndex
     ]]>
-  </query> 
+  </query>
 </hibernate-mapping>

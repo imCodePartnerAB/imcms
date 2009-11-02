@@ -35,8 +35,8 @@
   ([]
     (version (db-schema-name)))
 
-  ([schema-name]
-    (schema-utils/version (project/db-spec) schema-name)))
+  ([name]
+    (schema-utils/version (project/db-spec) name)))
 
 
 (defn tables
@@ -45,14 +45,6 @@
 
   ([schema-name]
     (schema-utils/tables (project/db-spec) schema-name)))
-
-
-(defn delete-tables
-  ([]
-    (delete-tables (db-schema-name)))
-
-  ([schema-name]
-    (schema-utils/delete-tables (project/db-spec) schema-name)))
 
 
 (defn delete
@@ -91,6 +83,7 @@
     (recreate "sandbox" script-files)))
 
 
+
 (defn upgrade
   ([]
     (upgrade (db-schema-name)))
@@ -100,6 +93,16 @@
 
   ([schema-name p_xml-conf-file p_xsd-conf-file p_scripts-dir]
     (schema-utils/upgrade (project/db-spec) schema-name p_xml-conf-file p_xsd-conf-file p_scripts-dir)))
+
+
+(defn recreate-empty-upgrade
+  "Recreates empty schema and runs upgrade."
+  ([]
+    (recreate-empty-upgrade (db-schema-name)))
+
+  ([schema-name]
+    (recreate-empty schema-name)
+    (upgrade schema-name)))
 
 
 (deftest test-settings

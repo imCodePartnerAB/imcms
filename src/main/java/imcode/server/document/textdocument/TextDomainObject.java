@@ -78,14 +78,22 @@ public class TextDomainObject implements Serializable, Cloneable {
      * Text filed index in the document.
      */	
 	@Column(name="name")
-	Integer index;
+	private Integer index;
+
+    @Column(name="loop_no")
+    private Integer loopNo;
+
+    @Column(name="content_no")
+    private Integer contentNo;
 	
 	/**
 	 * Altered if text was modified.
+     *
+     * todo: move to document domain object modified texts list.
 	 * 
 	 * @see TextDocumentDomainObject.setText
 	 * @see DocumentStoringVisitor.updateTextDocumentTexts 
-	 */
+	 */                                           
 	@Transient
 	private boolean modified;
 		
@@ -266,4 +274,20 @@ public class TextDomainObject implements Serializable, Cloneable {
 	public void setMetaVersion(Integer metaVersion) {
 		this.metaVersion = metaVersion;
 	}
+
+    public Integer getLoopNo() {
+        return loopNo;
+    }
+
+    public void setLoopNo(Integer loopNo) {
+        this.loopNo = loopNo;
+    }
+
+    public Integer getContentNo() {
+        return contentNo;
+    }
+
+    public void setContentNo(Integer contentNo) {
+        this.contentNo = contentNo;
+    }
 }

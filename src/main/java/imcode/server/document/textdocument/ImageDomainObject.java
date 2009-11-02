@@ -87,12 +87,20 @@ public class ImageDomainObject implements Serializable, Cloneable {
     
 	/**
 	 * Altered if image was modified.
+     *
+     * todo: move to DocumentDomin object modified images list.
 	 * 
 	 * @see TextDocumentDomainObject.setText
 	 * @see DocumentStoringVisitor.updateTextDocumentTexts 
 	 */
 	@Transient
-	private boolean modified;    
+	private boolean modified;
+
+    @Column(name="loop_no")
+    private Integer loopNo;
+
+    @Column(name="content_no")
+    private Integer contentNo;    
     
     /**
      * i18n support 

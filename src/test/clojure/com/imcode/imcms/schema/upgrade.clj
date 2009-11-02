@@ -19,9 +19,10 @@
   (SchemaUpgrade/createInstance (schema/xml-conf-file) (schema/xsd-conf-file) (schema/scripts-dir)))
 
 
-(deftest test-upgrade
-  (schema/recreate (schema/test-db-schema-name))
-  (schema/upgrade (schema/test-db-schema-name)))
+(deftest test-upgrade-existing
+  (let [schema-name (schema/test-db-schema-name)]
+    (schema/recreate schema-name)
+    (schema/upgrade schema-name)))
 
 
 (deftest test-upgrade-empty

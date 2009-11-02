@@ -3,18 +3,7 @@ package com.imcode.imcms.api;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 @Entity
 @Table(name="text_doc_content_loops")
@@ -32,15 +21,23 @@ public class ContentLoop implements Cloneable {
 	private Integer baseIndex;
 	
 	@Column(name="loop_index")
-	private Integer index;
+	private Integer no;
 	
 	@Column(name="meta_id")
 	private Integer metaId;
 	
 	@Column(name="meta_version")
-	private Integer metaVersion;	
-	
-	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
+	private Integer metaVersion;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name="sequence", column=@Column(name="content_sequence_index")),
+            @AttributeOverride(name="lowerOrder", column=@Column(name="content_lower_order_index")),
+            @AttributeOverride(name="highOrder", column=@Column(name="content_higher_order_index"))
+    })
+    private ContentIndexes contentIndexes;
+
+	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.REFRESH})
     @JoinColumn(name="loop_id")
     @OrderBy("orderIndex")
 	private List<Content> contents = new LinkedList<Content>();
@@ -51,8 +48,8 @@ public class ContentLoop implements Cloneable {
 	 */
 	@Transient
 	private boolean modified = false;
-	
-	@Override
+
+    @Override
 	public ContentLoop clone() {
 		ContentLoop clone;
 		
@@ -89,20 +86,21 @@ public class ContentLoop implements Cloneable {
 		this.baseIndex = baseIndex;
 	}
 
-	@Deprecated
 	public Integer getNo() {
-		return index;
+		return no;
 	}
 
-	@Deprecated
+
 	public void setNo(Integer no) {
-		this.index = no;
+		this.no = no;
 	}
-	
+
+    @Deprecated
 	public Integer getIndex() {
 		return getNo();
 	}
 
+    @Deprecated
 	public void setIndex(Integer index) {
 		setNo(index);
 	}	
@@ -138,4 +136,12 @@ public class ContentLoop implements Cloneable {
 	public void setMetaVersion(Integer metaVersion) {
 		this.metaVersion = metaVersion;
 	}
+
+    public ContentIndexes getContentIndexes() {
+        return contentIndexes;
+    }
+
+    public void setContentIndexes(ContentIndexes contentIndexes) {
+        this.contentIndexes = contentIndexes;
+    }
 }
