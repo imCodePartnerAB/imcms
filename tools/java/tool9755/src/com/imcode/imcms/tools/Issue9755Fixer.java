@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.*;
+import org.apache.log4j.Logger;
 
 public class Issue9755Fixer {
+
+    private Logger logger = Logger.getLogger(Issue9755Fixer.class);
 
     private static final String NEW_LINE = System.getProperty("line.separator");
 
@@ -72,6 +75,7 @@ public class Issue9755Fixer {
         target = new File(target, postDirs);
         target.mkdirs();
         File targetFile = new File(target, filename);
+        logger.info("Saving destination '" + targetFile.getAbsolutePath() + "' ...");
         FileWriter writer = new FileWriter(targetFile);
         writer.append(content);
         writer.close();
@@ -80,12 +84,15 @@ public class Issue9755Fixer {
     private void processListOfFiles(List<File> list, String root, boolean isJsp) throws IOException {
         for (File file: list) {
             String content = getFileContent(file);
+
+            logger.info("Processing file '" + file.getAbsolutePath() + "' ...");
             Matcher m = localizationPattern.matcher(content);
 
             StringBuffer contentBuffer = new StringBuffer(content);
             while (m.find()) {
                 String key = m.group(1).trim();
                 String message = String.format("<fmt:message key=\"%s\"/>", key);
+                logger.debug("Replace '" + contentBuffer.substring(m.start(), m.end()) + "' with '" + message + "'");
                 contentBuffer.replace(m.start(), m.end(), message);
                 m.reset(contentBuffer.toString());
             }
@@ -95,10 +102,11 @@ public class Issue9755Fixer {
             while (m.find()) {
                 pageEndIndex = m.end();
             }
-            
+
+            logger.debug("Insert <%@taglib prefix=\"fmt\" uri=\"http://java.sun.com/jsp/jstl/fmt\" %>");
+
             contentBuffer.insert(pageEndIndex,
                     NEW_LINE + "<%@taglib prefix=\"fmt\" uri=\"http://java.sun.com/jsp/jstl/fmt\" %>" + NEW_LINE);
-
 
             if (!isJsp) {
                 contentBuffer.insert(0,

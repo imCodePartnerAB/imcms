@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="US-ASCII" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+    <appender name="file" class="org.apache.log4j.FileAppender">
+        <param name="File" value="tool9755.log" />
+        <param name="Append" value="false" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                   value="%-4r [%t] %-6p %c %x - %m%n"/>
+        </layout>
+    </appender>
+
+    <root>
+        <priority value ="debug" />
+        <appender-ref ref="file" />
+    </root>
+</log4j:configuration>

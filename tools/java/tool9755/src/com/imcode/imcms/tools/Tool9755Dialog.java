@@ -114,6 +114,7 @@ public class Tool9755Dialog extends JDialog {
 
     public static void main(String[] args) {
         Tool9755Dialog dialog = new Tool9755Dialog();
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);

@@ -203,7 +203,7 @@
   </component>
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectKey">
-    <option name="state" value="project://D:\Omertex\Hillar\imCMS\branches\tool9755\tool9755.ipr" />
+    <option name="state" value="project://D:\Omertex\Hillar\imCMS\branches\RB-4\tools\java\tool9755\tool9755.ipr" />
   </component>
   <component name="ProjectModuleManager">
     <modules>
@@ -234,101 +234,14 @@
     <mapping directory="" vcs="" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
-  <component name="masterDetails">
-    <option name="states">
-      <map>
-        <entry key="Copyright.UI">
-          <value>
-            <UIState>
-              <option name="proportions">
-                <SplitterProportionsDataImpl />
-              </option>
-            </UIState>
-          </value>
-        </entry>
-        <entry key="Errors.UI">
-          <value>
-            <UIState>
-              <option name="proportions">
-                <SplitterProportionsDataImpl />
-              </option>
-            </UIState>
-          </value>
-        </entry>
-        <entry key="ProjectJDKs.UI">
-          <value>
-            <UIState>
-              <option name="proportions">
-                <SplitterProportionsDataImpl>
-                  <option name="proportions">
-                    <list>
-                      <option value="0.2" />
-                    </list>
-                  </option>
-                </SplitterProportionsDataImpl>
-              </option>
-              <option name="lastEditedConfigurable" value="1.6" />
-            </UIState>
-          </value>
-        </entry>
-        <entry key="ScopeChooserConfigurable.UI">
-          <value>
-            <UIState>
-              <option name="proportions">
-                <SplitterProportionsDataImpl />
-              </option>
-            </UIState>
-          </value>
-        </entry>
-      </map>
-    </option>
-    <option name="myStates">
-      <map>
-        <entry key="Copyright.UI">
-          <value>
-            <UIState>
-              <option name="proportions">
-                <SplitterProportionsDataImpl />
-              </option>
-            </UIState>
-          </value>
-        </entry>
-        <entry key="Errors.UI">
-          <value>
-            <UIState>
-              <option name="proportions">
-                <SplitterProportionsDataImpl />
-              </option>
-            </UIState>
-          </value>
-        </entry>
-        <entry key="ProjectJDKs.UI">
-          <value>
-            <UIState>
-              <option name="proportions">
-                <SplitterProportionsDataImpl>
-                  <option name="proportions">
-                    <list>
-                      <option value="0.2" />
-                    </list>
-                  </option>
-                </SplitterProportionsDataImpl>
-              </option>
-              <option name="lastEditedConfigurable" value="1.6" />
-            </UIState>
-          </value>
-        </entry>
-        <entry key="ScopeChooserConfigurable.UI">
-          <value>
-            <UIState>
-              <option name="proportions">
-                <SplitterProportionsDataImpl />
-              </option>
-            </UIState>
-          </value>
-        </entry>
-      </map>
-    </option>
+  <component name="libraryTable">
+    <library name="lib">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/lib/log4j-1.2.9.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
   </component>
 </project>
 
