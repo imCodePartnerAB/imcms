@@ -28,7 +28,7 @@
   <query name="Content.getByLoopIdAndOrderIndex">
     <![CDATA[
 		SELECT c FROM Content c
-		WHERE c.loopId = :loopId AND c.orderIndex = :orderIndex    
+		WHERE c.loopId = :loopId AND c.orderIndex = :orderIndex  ORDER BY  c.orderIndex  
     ]]>
   </query>
   
@@ -41,6 +41,18 @@
         FROM
             ContentLoop l JOIN l.contents c
 		WHERE l.id = :loopId    
+    ]]>
+  </query>
+
+  <query name="Content.getNextIndexes2">
+    <![CDATA[
+		SELECT
+			min(c.orderIndex)    - 1,
+			max(c.orderIndex)    + 1,
+			max(c.sequenceIndex) + 1
+        FROM
+            ContentLoop l JOIN l.contents c
+		WHERE l.id = :loopId
     ]]>
   </query>
   

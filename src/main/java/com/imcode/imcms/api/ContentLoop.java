@@ -33,7 +33,7 @@ public class ContentLoop implements Cloneable {
     @AttributeOverrides({
             @AttributeOverride(name="sequence", column=@Column(name="content_sequence_index")),
             @AttributeOverride(name="lowerOrder", column=@Column(name="content_lower_order_index")),
-            @AttributeOverride(name="highOrder", column=@Column(name="content_higher_order_index"))
+            @AttributeOverride(name="higherOrder", column=@Column(name="content_higher_order_index"))
     })
     private ContentIndexes contentIndexes;
 

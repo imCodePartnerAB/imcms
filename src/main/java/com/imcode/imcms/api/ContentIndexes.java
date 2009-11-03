@@ -18,23 +18,23 @@ public class ContentIndexes {
         return sequence;
     }
 
-    public void setSequence(Integer sequence) {
-        this.sequence = sequence;
+    public Integer setSequence(Integer sequence) {
+        return this.sequence = sequence;
     }
 
     public Integer getLowerOrder() {
         return lowerOrder;
     }
 
-    public void setLowerOrder(Integer lowerOrder) {
-        this.lowerOrder = lowerOrder;
+    public Integer setLowerOrder(Integer lowerOrder) {
+        return this.lowerOrder = lowerOrder;
     }
 
     public Integer getHigherOrder() {
         return higherOrder;
     }
 
-    public void setHigherOrder(Integer higherOrder) {
-        this.higherOrder = higherOrder;
+    public Integer setHigherOrder(Integer higherOrder) {
+        return this.higherOrder = higherOrder;
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
+import com.imcode.imcms.api.ContentIndexes;
 
 /**
  * Content loop DAO.
@@ -20,6 +21,7 @@ public class ContentLoopDao extends HibernateTemplate {
 	/**
 	 * Content indexes immutable structure.
 	 */
+    /*
 	private static final class ContentIndexes {
 		final Integer lower;
 		final Integer higher;
@@ -31,6 +33,7 @@ public class ContentLoopDao extends HibernateTemplate {
 			this.sequence = sequence;
 		}
 	}
+	*/
 	
 	/**
 	 * Creates and returns next context indexes.
@@ -38,6 +41,7 @@ public class ContentLoopDao extends HibernateTemplate {
 	 * @param loopId loop id.
 	 * @return new instance of ContentIndexes. 
 	 */
+    /*
 	private ContentIndexes getNextContentIndexes(Long loopId) {
 		List<Object[]> nextIndexesList = findByNamedQueryAndNamedParam(
 				"Content.getNextIndexes", "loopId", loopId); 
@@ -47,8 +51,30 @@ public class ContentLoopDao extends HibernateTemplate {
 		Integer higher = indexes[1] == null ? 0 : (Integer)indexes[1];		
 		Integer sequence = indexes[2] == null ? 0 : (Integer)indexes[2];
 
-		return new ContentIndexes(lower, higher, sequence); 
-	} 
+		return new ContentIndexes(lower, higher, sequence);
+	}
+	*/
+
+
+	/**
+	 * Creates and returns next context indexes.
+	 *
+	 * @param metaId meta id.
+	 * @return new instance of ContentIndexes.
+	 */
+	private com.imcode.imcms.api.ContentIndexes getContentIndexes(Long loopId) {
+        return (com.imcode.imcms.api.ContentIndexes)getSession().createQuery("select c.contentIndexes from ContentLoop  c where c.id = :id")
+                .setParameter("id", loopId)
+                .uniqueResult();
+	}
+
+    /**
+     *
+     */
+    @Transactional
+    public ContentLoop getContentLoop(Long loopId) {
+        return (ContentLoop)get(ContentLoop.class, loopId);
+    }
 	
 	/**
 	 * Creates and adds new Content at the fist position of the loop.
@@ -58,9 +84,16 @@ public class ContentLoopDao extends HibernateTemplate {
 	 */
 	@Transactional
 	public synchronized Content addFisrtContent(Long loopId) {
-		ContentIndexes indexes = getNextContentIndexes(loopId);
+		//ContentIndexes indexes = getContentIndexes(loopId);
+        ContentLoop loop = getContentLoop(loopId);
+        ContentIndexes indexes = loop.getContentIndexes();
+
+        Integer newSequenceIndex = indexes.setSequence(indexes.getSequence() + 1);
+        Integer newOrderIndex = indexes.setLowerOrder(indexes.getLowerOrder() - 1);
+
+        update(loop);
 				
-		return createContent(loopId, indexes.sequence, indexes.lower);
+		return createContent(loopId, newSequenceIndex, newOrderIndex);
 	}
 	
 	/**
@@ -82,9 +115,15 @@ public class ContentLoopDao extends HibernateTemplate {
 	 */	
 	@Transactional
 	public synchronized Content addLastContent(Long loopId) {
-		ContentIndexes indexes = getNextContentIndexes(loopId);
+        ContentLoop loop = getContentLoop(loopId);
+        ContentIndexes indexes = loop.getContentIndexes();
+
+        Integer newSequenceIndex = indexes.setSequence(indexes.getSequence() + 1);
+        Integer newOrderIndex = indexes.setHigherOrder(indexes.getHigherOrder() + 1);
+
+        update(loop);
 		
-		return createContent(loopId, indexes.sequence, indexes.higher);
+		return createContent(loopId, newSequenceIndex, newOrderIndex);
 	}
 	
 	/**
@@ -246,41 +285,42 @@ public class ContentLoopDao extends HibernateTemplate {
 			moveContentUp(loop, contentId);
 		}
 	}
+
 	
 	@Transactional
 	public synchronized void moveContentUp(ContentLoop loop, Long contentId) {
-		List<Content> contents = loop.getContents();
-		int size = contents.size();		
-		Query hql = getSession().getNamedQuery("Content.updateOrderIndex");
-		
-		for (int i = 0; i < size; i++) {
-			Content content = contents.get(i);
-			
-			if (content.getId().equals(contentId)) {
-				if (i != 0) {
-					ContentIndexes contentIndexes = getNextContentIndexes(loop.getId());
-					Content prevContent = contents.get(i - 1);
-					
-					Integer prevIndex = prevContent.getOrderIndex();
-					Integer currentIndex = content.getOrderIndex();
-					Integer tempIndex = contentIndexes.higher;
-										
-					hql.setParameter("orderIndex", tempIndex);
-					hql.setLong("id", prevContent.getId());							
-					int n = hql.executeUpdate();
-					
-					hql.setParameter("orderIndex", prevIndex);
-					hql.setLong("id", content.getId());							
-					n = hql.executeUpdate();
-					
-					hql.setParameter("orderIndex", currentIndex);
-					hql.setLong("id", prevContent.getId());							
-					n = hql.executeUpdate();
-				}
-				
-				break;				
-			}			
-		}		
+        Content content = (Content)get(Content.class, contentId);
+
+        if (content != null) {
+            Content prevContent = (Content)getSession().createQuery(
+                "select c from Content c where c.loopId = :loopId AND c.orderIndex < :orderIndex order by c.orderIndex"
+                ).setParameter("loopId", loop.getId())
+                 .setParameter("orderIndex", content.getOrderIndex())
+                 .setMaxResults(1)
+                 .uniqueResult();
+                                   
+            if (prevContent != null) {
+                Integer ordIndex = content.getOrderIndex();
+                Integer seqIndex = content.getSequenceIndex();
+                Integer prevOrdIndex = prevContent.getOrderIndex();
+                Integer prevSeqIndex = prevContent.getSequenceIndex();                
+
+                prevContent.setOrderIndex(Integer.MAX_VALUE);
+                prevContent.setSequenceIndex(Integer.MAX_VALUE);                
+                save(prevContent);
+                getSession().flush();
+
+                content.setOrderIndex(prevOrdIndex);
+                content.setSequenceIndex(prevSeqIndex);
+                save(content);
+                getSession().flush();
+
+                prevContent.setOrderIndex(ordIndex);
+                prevContent.setSequenceIndex(seqIndex);
+                save(prevContent);
+                getSession().flush();
+            }
+        }
 	}
 	
 	
@@ -294,37 +334,38 @@ public class ContentLoopDao extends HibernateTemplate {
 	
 	@Transactional
 	public synchronized void moveContentDown(ContentLoop loop, Long contentId) {
-		List<Content> contents = loop.getContents();
-		int size = contents.size();
-		Query hql = getSession().getNamedQuery("Content.updateOrderIndex");
-		
-		for (int i = 0; i < size; i++) {
-			Content content = contents.get(i);
-			if (content.getId().equals(contentId)) {
-				if (i != size - 1) {
-					ContentIndexes contentIndexes = getNextContentIndexes(loop.getId());
-					Content nextContent = contents.get(i + 1);
-					
-					Integer nextIndex = nextContent.getOrderIndex();
-					Integer currentIndex = content.getOrderIndex();
-					Integer tempIndex = contentIndexes.lower;
-					
-					hql.setParameter("orderIndex", tempIndex);
-					hql.setLong("id", nextContent.getId());							
-					int n = hql.executeUpdate();
-					
-					hql.setParameter("orderIndex", nextIndex);
-					hql.setLong("id", content.getId());							
-					n = hql.executeUpdate();
-					
-					hql.setParameter("orderIndex", currentIndex);
-					hql.setLong("id", nextContent.getId());							
-					n = hql.executeUpdate();
-				}
-				
-				break;
-			}
-		}
+        Content content = (Content)get(Content.class, contentId);
+
+        if (content != null) {
+            Content nextContent = (Content)getSession().createQuery(
+                "select c from Content c where c.loopId = :loopId AND c.orderIndex > :orderIndex order by c.orderIndex"
+                ).setParameter("loopId", loop.getId())
+                 .setParameter("orderIndex", content.getOrderIndex())
+                 .setMaxResults(1)
+                 .uniqueResult();
+
+            if (nextContent != null) {
+                Integer ordIndex = content.getOrderIndex();
+                Integer seqIndex = content.getSequenceIndex();
+                Integer nextOrdIndex = nextContent.getOrderIndex();
+                Integer nextSeqIndex = nextContent.getSequenceIndex();
+
+                nextContent.setOrderIndex(Integer.MAX_VALUE);
+                nextContent.setSequenceIndex(Integer.MAX_VALUE);
+                save(nextContent);
+                getSession().flush();
+
+                content.setOrderIndex(nextOrdIndex);
+                content.setSequenceIndex(nextSeqIndex);
+                save(content);
+                getSession().flush();
+
+                nextContent.setOrderIndex(ordIndex);
+                nextContent.setSequenceIndex(seqIndex);
+                save(nextContent);
+                getSession().flush();
+            }
+        }
 	}
 
 	
@@ -341,6 +382,7 @@ public class ContentLoopDao extends HibernateTemplate {
 	
 	@Transactional
 	public synchronized Content insertNewContentAfter(ContentLoop loop, Long contentId) {
+        /*
 		Query hql = getSession().getNamedQuery("Content.updateOrderIndex");
 						
 		ContentIndexes contentIndexes = getNextContentIndexes(loop.getId());
@@ -380,6 +422,8 @@ public class ContentLoopDao extends HibernateTemplate {
 		}
 		
 		return newContent;
+		*/
+        return null;
 	}
 
 	@Transactional	
@@ -395,6 +439,7 @@ public class ContentLoopDao extends HibernateTemplate {
 	
 	@Transactional
 	public synchronized Content insertNewContentBefore(ContentLoop loop, Long contentId) {
+        /*
 		Query hql = getSession().getNamedQuery("Content.updateOrderIndex");				
 		ContentIndexes contentIndexes = getNextContentIndexes(loop.getId());
 		int nextLowerOrderIndex = contentIndexes.lower;				
@@ -428,6 +473,8 @@ public class ContentLoopDao extends HibernateTemplate {
 		}
 		
 		return newContent;
+		*/
+        return null;
 	}
 	
 	// Very ineffective - optimize
@@ -440,5 +487,20 @@ public class ContentLoopDao extends HibernateTemplate {
 		}
 
 		return loops.size();
-	}	
+	}
+
+
+	@Transactional
+	public synchronized int deleteLoop(Long loopId) {
+		return getSession().createQuery("delete from ContentLoop l where l.id = :id")
+                .setParameter("id", loopId)
+                .executeUpdate();
+	}
+
+
+	@Transactional
+	public synchronized int deleteAllLoops() {
+		return getSession().createQuery("delete from ContentLoop l")
+                .executeUpdate();
+	}
 }
