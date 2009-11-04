@@ -5,6 +5,12 @@ import java.util.List;
 
 import javax.persistence.*;
 
+/**
+ * Do not set content indexes values manually.
+ * Do not modify contents. 
+ *
+ * @see com.imcode.imcms.dao.ContentLoopDao
+ */
 @Entity
 @Table(name="text_doc_content_loops")
 public class ContentLoop implements Cloneable {
@@ -37,7 +43,7 @@ public class ContentLoop implements Cloneable {
     })
     private ContentIndexes contentIndexes;
 
-	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.REFRESH})
+	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
     @JoinColumn(name="loop_id")
     @OrderBy("orderIndex")
 	private List<Content> contents = new LinkedList<Content>();

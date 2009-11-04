@@ -26,7 +26,7 @@ public class ContentLoopDaoTest extends DaoTestG {
 
 		int count = loop.getContents().size();
 		loop.getContents().remove(0);
-		ContentLoop newLoop = contentLoopDao.saveContentLoop(loop.getMetaId(), loop);
+		ContentLoop newLoop = contentLoopDao.saveContentLoop(loop);
 		assertTrue(count == newLoop.getContents().size() + 1);
 		
 		// Assert previos loop was removed

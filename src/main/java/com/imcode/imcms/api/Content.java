@@ -7,6 +7,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * Never set orderIndex and sequenceIndex manually.
+ * 
+ * @see com.imcode.imcms.dao.ContentLoopDao
+ */
 @Entity
 @Table(name="text_doc_contents")
 public class Content implements Cloneable {

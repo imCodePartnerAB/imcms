@@ -52,9 +52,9 @@ public class TextDomainObject implements Serializable, Cloneable {
     /**
      * HTML-code. *
      */
-    public final static int TEXT_TYPE_HTML = 1;	
+    public final static int TEXT_TYPE_HTML = 1;
 
-	@Override
+    @Override
 	protected TextDomainObject clone() {
 		try {
 			return (TextDomainObject)super.clone();
@@ -83,8 +83,8 @@ public class TextDomainObject implements Serializable, Cloneable {
     @Column(name="loop_no")
     private Integer loopNo;
 
-    @Column(name="content_no")
-    private Integer contentNo;
+    @Column(name="content_index")
+    private Integer contentIndex;
 	
 	/**
 	 * Altered if text was modified.
@@ -283,11 +283,11 @@ public class TextDomainObject implements Serializable, Cloneable {
         this.loopNo = loopNo;
     }
 
-    public Integer getContentNo() {
-        return contentNo;
+    public Integer getContentIndex() {
+        return contentIndex;
     }
 
-    public void setContentNo(Integer contentNo) {
-        this.contentNo = contentNo;
+    public void setContentIndex(Integer contentIndex) {
+        this.contentIndex = contentIndex;
     }
 }

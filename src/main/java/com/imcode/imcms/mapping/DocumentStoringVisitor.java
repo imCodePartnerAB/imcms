@@ -131,18 +131,18 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     // should be run inside transaction
     public void updateTextDocumentContentLoops(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ContentLoopDao dao = (ContentLoopDao)services.getSpringBean("contentLoopDao");
-        Integer documentId = textDocument.getMeta().getId();
+        Integer metaId = textDocument.getMeta().getId();
         Integer documentVersion = textDocument.getVersion().getNumber();
         Integer documentVersionNumber = textDocument.getMeta().getVersion().getNumber();
         
         // delete all loops for meta and version
-        dao.deleteLoops(documentId, documentVersionNumber);
+        dao.deleteLoops(metaId, documentVersionNumber);
         
         for (ContentLoop loop: textDocument.getContentLoopsMap().values()) {
-        	loop.setMetaId(documentId);
+        	loop.setMetaId(metaId);
         	loop.setMetaVersion(documentVersion);
         	
-        	dao.saveContentLoop(documentId, loop);
+        	dao.saveContentLoop(loop);
         }  	
     }
     

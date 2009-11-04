@@ -21,7 +21,7 @@ ALTER TABLE texts
 
 ALTER TABLE texts_history
   ADD COLUMN loop_no int DEFAULT NULL,
-  ADD COLUMN content_no int DEFAULT NULL;
+  ADD COLUMN content_index int DEFAULT NULL;
 
 
 --
@@ -41,6 +41,31 @@ ALTER TABLE images_history
   ADD COLUMN content_index int DEFAULT NULL;
 
 
+
+-- Adds indexes to content loop table
+ALTER TABLE text_doc_content_loops
+  ADD COLUMN content_sequence_index INT NOT NULL DEFAULT 0,
+  ADD COLUMN content_lower_order_index INT NOT NULL DEFAULT 0,
+  ADD COLUMN content_higher_order_index INT NOT NULL DEFAULT 0;
+
+
+CREATE TEMPORARY TABLE text_doc_content_indexes AS
+  SELECT loop_id, max(sequence_index) AS sequence_index,
+                  min(order_index) AS lower_order_index,
+                  max(order_index) higher_order_index FROM text_doc_contents GROUP BY loop_id;
+
+
+UPDATE
+  text_doc_content_loops t1, text_doc_content_indexes t2
+SET
+  t1.content_sequence_index  = t2.sequence_index,
+  t1.content_lower_order_index = t2.lower_order_index,
+  t1.content_higher_order_index = t2.higher_order_index
+WHERE
+  t1.id = t2.loop_id;
+
+
+
 --
 -- Update schema version
 --
@@ -48,18 +73,3 @@ UPDATE database_version
 SET
   major = @schema_version__major_new,
   minor = @schema_version__minor_new;
-
-ALTER TABLE text_doc_content_loops
-  ADD COLUMN content_sequence_index INT NOT NULL DEFAULT 0,
-  ADD COLUMN content_lower_order_index INT NOT NULL DEFAULT 0,
-  ADD COLUMN content_higher_order_index INT NOT NULL DEFAULT 0;
-
---
--- CREATE TABLE text_doc_content_indexes (
---    loop_id INT NOT NULL PRIMARY KEY,
---    seq_index INT NOT NULL DEFAULT 0,
---    lower_ord_index INT NOT NULL DEFAULT 0,
---    higher_ord_index INT NOT NULL DEFAULT 0,
---
---    CONSTRAINT fk__text_doc_content_indexes__loop FOREIGN KEY (loop_id) REFERENCES text_doc_content_loops (loop_id)
--- );

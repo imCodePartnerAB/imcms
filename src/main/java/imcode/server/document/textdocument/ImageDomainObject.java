@@ -99,8 +99,8 @@ public class ImageDomainObject implements Serializable, Cloneable {
     @Column(name="loop_no")
     private Integer loopNo;
 
-    @Column(name="content_no")
-    private Integer contentNo;    
+    @Column(name="content_index")
+    private Integer contentIndex;    
     
     /**
      * i18n support 
@@ -378,5 +378,21 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
 	public void setMetaVersion(Integer metaVersion) {
 		this.metaVersion = metaVersion;
-	}		
+	}
+
+    public Integer getLoopNo() {
+        return loopNo;
+    }
+
+    public void setLoopNo(Integer loopNo) {
+        this.loopNo = loopNo;
+    }
+
+    public Integer getContentIndex() {
+        return contentIndex;
+    }
+
+    public void setContentIndex(Integer contentIndex) {
+        this.contentIndex = contentIndex;
+    }
 }

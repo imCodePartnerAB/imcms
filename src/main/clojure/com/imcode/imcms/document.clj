@@ -14,7 +14,7 @@
 
 ; (gen-template)
 
-(textdoc :id :estonia, :title "Welocom to Estonia", :language "eng"
+(textdoc :id :estonia, :title "Welcome to Estonia", :language "eng"
   
   :texts {1 "text field 1"
           2 "text field 2"}

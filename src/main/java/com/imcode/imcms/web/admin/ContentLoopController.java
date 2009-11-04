@@ -10,8 +10,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.imcode.imcms.api.ContentLoop;
+import com.imcode.imcms.api.Content;
+import com.imcode.imcms.api.ContentIndexes;
 import com.imcode.imcms.dao.ContentLoopDao;
 import com.imcode.imcms.mapping.DocumentMapper;
+import java.util.List;
+import java.util.Iterator;
+import java.util.ListIterator;
+
 
 /**
  * Working prototype - REFACTOR & OPTIMIZE & Add permission check 
@@ -40,7 +46,7 @@ public class ContentLoopController {
 	}
 	
 	@RequestMapping(value="/contentloop", method = RequestMethod.POST)
-	public String processCommand(
+	public String processCommand (
 			@RequestParam("cmd") int cmd,
 			@RequestParam("metaId") int metaId,
 			@RequestParam("loopIndex") int loopIndex,
@@ -51,43 +57,44 @@ public class ContentLoopController {
 		Command command = getCommand(cmd);
 		DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 		TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(metaId);
-		ContentLoop loop = document.getContentLoop(loopIndex);
+		ContentLoop loop = document.getContentLoop(loopIndex).clone();
 		
-		// Recreates loop - remove after functionality is fully tested 
-		contentLoopDao.saveContentLoop(metaId, loop);
+		// Recreates loop - remove after functionality is fully tested
+		loop = contentLoopDao.saveContentLoop(loop);
+        Long loopId = loop.getId();
 		
 		int contentsCount = loop.getContents().size();
 		
 		switch (command) {
 		case MOVE_UP:
 			if (contentsCount > 1)
-				contentLoopDao.moveContentUp(loop, contentIndex);
+				contentLoopDao.moveContentUp(loopId, contentIndex);
 			break;
 			
 		case MOVE_DOWN:
 			if (contentsCount > 1)
-				contentLoopDao.moveContentDown(loop, contentIndex);
+				contentLoopDao.moveContentDown(loopId, contentIndex);
 			break;
 			
 		case ADD_BEFORE:
-			contentLoopDao.insertNewContentBefore(loop, contentIndex);			
+			contentLoopDao.insertNewContentBefore(loopId, contentIndex);
 			break;
 			
 		case ADD_AFTER:
-			contentLoopDao.insertNewContentAfter(loop, contentIndex);
+			contentLoopDao.insertNewContentAfter(loopId, contentIndex);
 			break;
 			
 		case ADD_FISRT:
-			contentLoopDao.addFisrtContent(loop);
+			contentLoopDao.addFisrtContent(loopId);
 			break;
 			
 		case ADD_LAST:
-			contentLoopDao.addLastContent(loop);
+			contentLoopDao.addLastContent(loopId);
 			break;
 			
 		case DELETE:
 			if (contentsCount > 1)
-				contentLoopDao.deleteContent(loop, contentIndex);
+				contentLoopDao.deleteContent(loopId, contentIndex);
 			
 			break;
 		}
