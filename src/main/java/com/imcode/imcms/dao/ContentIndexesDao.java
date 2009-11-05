@@ -15,26 +15,13 @@ import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.ContentIndexes;
 
 /**
- * Content indexes dao.
+ * Helper class for ContentLoopDao.
  *
- * Intended to safe indexes update.
+ * Intended to update indexes in nested transactions.
+ *
+ * @see com.imcode.imcms.dao.ContentLoopDao
  */
 public class ContentIndexesDao extends HibernateTemplate {
-
-
-	/**
-	 * Returns loop context indexes.
-	 *
-	 * @param loopId loop id.
-	 * @return loop content indexes.
-	 */
-    @Transactional(propagation=Propagation.REQUIRES_NEW)
-	public ContentIndexes getIndexes(Long loopId) {
-        return (ContentIndexes)getSession().createQuery("select c.contentIndexes from ContentLoop  c where c.id = :id")
-                .setParameter("id", loopId)
-                .uniqueResult();
-	}
-
     
     /**
      * Increments content loop's content sequence and higher order indexes.
@@ -42,7 +29,7 @@ public class ContentIndexesDao extends HibernateTemplate {
      * @return updated content loop.
      */
     @Transactional(propagation=Propagation.REQUIRES_NEW)
-    public synchronized ContentLoop incSequenceIncHigherOrder(Long loopId) {
+    public synchronized ContentLoop updateForNextHigherOrder(Long loopId) {
         ContentLoop loop = (ContentLoop)get(ContentLoop.class, loopId);
         ContentIndexes indexes = loop.getContentIndexes();
 
@@ -62,7 +49,7 @@ public class ContentIndexesDao extends HibernateTemplate {
      * @return updated content loop.
      */
     @Transactional(propagation=Propagation.REQUIRES_NEW)
-    public synchronized ContentLoop incSequenceDecLowerOrder(Long loopId) {
+    public synchronized ContentLoop updateForNextLowerOrder(Long loopId) {
         ContentLoop loop = (ContentLoop)get(ContentLoop.class, loopId);
         ContentIndexes indexes = loop.getContentIndexes();
 

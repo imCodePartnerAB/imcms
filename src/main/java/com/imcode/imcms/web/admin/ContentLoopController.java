@@ -59,47 +59,51 @@ public class ContentLoopController {
 		TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(metaId);
 		ContentLoop loop = document.getContentLoop(loopIndex).clone();
 		
-		// Recreates loop - remove after functionality is fully tested
-		loop = contentLoopDao.saveContentLoop(loop);
-        Long loopId = loop.getId();
-		
-		int contentsCount = loop.getContents().size();
-		
-		switch (command) {
-		case MOVE_UP:
-			if (contentsCount > 1)
-				contentLoopDao.moveContentUp(loopId, contentIndex);
-			break;
-			
-		case MOVE_DOWN:
-			if (contentsCount > 1)
-				contentLoopDao.moveContentDown(loopId, contentIndex);
-			break;
-			
-		case ADD_BEFORE:
-			contentLoopDao.insertNewContentBefore(loopId, contentIndex);
-			break;
-			
-		case ADD_AFTER:
-			contentLoopDao.insertNewContentAfter(loopId, contentIndex);
-			break;
-			
-		case ADD_FISRT:
-			contentLoopDao.addFisrtContent(loopId);
-			break;
-			
-		case ADD_LAST:
-			contentLoopDao.addLastContent(loopId);
-			break;
-			
-		case DELETE:
-			if (contentsCount > 1)
-				contentLoopDao.deleteContent(loopId, contentIndex);
-			
-			break;
-		}
-		
-		documentMapper.invalidateDocument(document);
+        try {
+            if (loop.getId() == null) {
+                loop = contentLoopDao.saveContentLoop(loop);
+            }
+            
+            Long loopId = loop.getId();
+
+            int contentsCount = loop.getContents().size();
+
+            switch (command) {
+            case MOVE_UP:
+                if (contentsCount > 1)
+                    contentLoopDao.moveContentUp(loopId, contentIndex);
+                break;
+
+            case MOVE_DOWN:
+                if (contentsCount > 1)
+                    contentLoopDao.moveContentDown(loopId, contentIndex);
+                break;
+
+            case ADD_BEFORE:
+                contentLoopDao.insertNewContentBefore(loopId, contentIndex);
+                break;
+
+            case ADD_AFTER:
+                contentLoopDao.insertNewContentAfter(loopId, contentIndex);
+                break;
+
+            case ADD_FISRT:
+                contentLoopDao.addFisrtContent(loopId);
+                break;
+
+            case ADD_LAST:
+                contentLoopDao.addLastContent(loopId);
+                break;
+
+            case DELETE:
+                if (contentsCount > 1)
+                    contentLoopDao.deleteContent(loopId, contentIndex);
+
+                break;
+            }
+        } finally {
+            documentMapper.invalidateDocument(document);
+        }
 		
 		return String.format(view, metaId, flags);
 	}	

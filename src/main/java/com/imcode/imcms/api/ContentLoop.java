@@ -15,16 +15,12 @@ import javax.persistence.*;
 @Table(name="text_doc_content_loops")
 public class ContentLoop implements Cloneable {
 	
-	/**
-	 * Loop step.
-	 */
-	public static final int STEP = 100000;
-	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
+    // Legacy support. Will be removed in future releases.
 	@Column(name="base_index")
-	private Integer baseIndex;
+	private Integer baseIndex = 0;
 	
 	@Column(name="loop_index")
 	private Integer no;
@@ -33,7 +29,7 @@ public class ContentLoop implements Cloneable {
 	private Integer metaId;
 	
 	@Column(name="meta_version")
-	private Integer metaVersion;
+	private Integer documentVersion;
 
     @Embedded
     @AttributeOverrides({
@@ -41,7 +37,7 @@ public class ContentLoop implements Cloneable {
             @AttributeOverride(name="lowerOrder", column=@Column(name="content_lower_order_index")),
             @AttributeOverride(name="higherOrder", column=@Column(name="content_higher_order_index"))
     })
-    private ContentIndexes contentIndexes;
+    private ContentIndexes contentIndexes = new ContentIndexes();
 
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
     @JoinColumn(name="loop_id")
@@ -84,10 +80,12 @@ public class ContentLoop implements Cloneable {
 		this.id = id;
 	}
 
+    @Deprecated
 	public Integer getBaseIndex() {
 		return baseIndex;
 	}
 
+    @Deprecated
 	public void setBaseIndex(Integer baseIndex) {
 		this.baseIndex = baseIndex;
 	}
@@ -135,12 +133,12 @@ public class ContentLoop implements Cloneable {
 		this.modified = modified;
 	}
 
-	public Integer getMetaVersion() {
-		return metaVersion;
+	public Integer getDocumentVersion() {
+		return documentVersion;
 	}
 
-	public void setMetaVersion(Integer metaVersion) {
-		this.metaVersion = metaVersion;
+	public void setDocumentVersion(Integer documentVersion) {
+		this.documentVersion = documentVersion;
 	}
 
     public ContentIndexes getContentIndexes() {

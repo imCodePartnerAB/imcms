@@ -57,6 +57,9 @@ public class UserDomainObject implements Cloneable, Serializable {
     
     RoleIds roleIds = createRolesSetWithUserRole();
     protected RoleIds userAdminRoleIds = new RoleIds();
+
+    /** Default language. */
+    private I18nLanguage language;
     
     /**
      * Document show mode.DocumentShowSettings
@@ -776,4 +779,12 @@ public class UserDomainObject implements Cloneable, Serializable {
 	public void setDocumentShowSettings(DocumentShowSettings documentShowSettings) {
 		this.documentShowSettings = documentShowSettings;
 	}
+
+    public I18nLanguage getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(I18nLanguage language) {
+        this.language = language;
+    }
 }

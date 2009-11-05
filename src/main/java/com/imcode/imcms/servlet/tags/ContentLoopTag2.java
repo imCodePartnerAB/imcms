@@ -17,60 +17,46 @@ import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
 
 /**
- * Content loop tag prototype.
- * 
- * Admin GUI is not yet defined for this tag.
+ * Second version of content loop.
+ * Base index and step are not required copared to v1. Texts and images are bound to enclosing loop.
  */
-public class ContentLoopTag extends BodyTagSupport {
-	
-	public final static int STEP = 100000;
-		
-	/**
-	 * Content loop index in TextDocument.
-	 */
-    private int no;  
-    
-    /**
-     * Content loop base index.
-     */
-    private int baseIndex;    
-    
-    /**
-     * Content loop index variable name - bind to pageContext.
-     */
-    private String indexVar;
-    
+public class ContentLoopTag2 extends BodyTagSupport {
+
+	/** Content loop index in TextDocument. */
+    private int no;
+
+    /** Loop contentes. */
     private ListIterator<Content> contentsIterator;
-    
+
     private ContentLoop loop;
-    
+
     private Content content;
-    
+
     private int contentsCount;
-            
+
     private Properties attributes = new Properties();
-    
+
     /**
      * Label - common imcms attribute.
      */
-    private String label; 
-    
+    private String label;
+
     private boolean editMode;
-    
+
     private HttpServletRequest request;
-    
+
     private HttpServletResponse response;
-    
+
     private TextDocumentDomainObject document;
-    
+
     private ParserParameters parserParameters;
-    
-    private StringBuilder result; 
-    
+
+    private StringBuilder result;
+
     private boolean firstContent;
-    
+
     private boolean lastContent;
-    
+
 	public int doStartTag() throws JspException {
 		result = new StringBuilder();
         request = (HttpServletRequest) pageContext.getRequest();
@@ -78,54 +64,53 @@ public class ContentLoopTag extends BodyTagSupport {
         parserParameters = ParserParameters.fromRequest(request);
         document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
         editMode = parserParameters.isContentLoopMode();
-        
+
         loop = document.getContentLoop(no);
-        if (loop == null) {        	
+        if (loop == null) {
         	loop = new ContentLoop();
-        	loop.setBaseIndex(baseIndex);
         	loop.setMetaId(document.getMeta().getId());
         	loop.setNo(no);
         	loop.setDocumentVersion(document.getVersion().getNumber());
+            
         	Content content = new Content();
         	content.setOrderIndex(0);
         	content.setSequenceIndex(0);
         	loop.getContents().add(content);
         	document.setContentLoop(no, loop);
         }
-        
+
         contentsCount = loop.getContents().size();
         contentsIterator = loop.getContents().listIterator();
-        
+
         handleNextContent();
-        
+
         return editMode ? EVAL_BODY_BUFFERED : EVAL_BODY_INCLUDE;
 	}
-	
+
 	private boolean handleNextContent() {
         if (!contentsIterator.hasNext()) {
-        	pageContext.removeAttribute(indexVar);
+        	//pageContext.removeAttribute(indexVar);
         	return false;
-        }		
-		
-        firstContent = !contentsIterator.hasPrevious();        
+        }
+
+        firstContent = !contentsIterator.hasPrevious();
         content = contentsIterator.next();
         lastContent = !contentsIterator.hasNext();
-        
+
 		int sequenceIndex = content.getSequenceIndex();
-    	int index = baseIndex + (sequenceIndex * STEP);
-    	
-    	pageContext.setAttribute(indexVar, index);
+
+    	//pageContext.setAttribute(indexVar, index);
 
     	return true;
 	}
-    
-    
+
+
     public int doAfterBody() throws JspException {
     	if (editMode) {
     		BodyContent bodyContent = getBodyContent();
     		String viewFragment = bodyContent.getString();
-    		
-    		request.setAttribute("document", document);    		
+
+    		request.setAttribute("document", document);
     		request.setAttribute("contentLoop", loop);
     		request.setAttribute("content", content);
     		request.setAttribute("flags", parserParameters.getFlags());
@@ -133,52 +118,52 @@ public class ContentLoopTag extends BodyTagSupport {
     		request.setAttribute("contentsCount", contentsCount);
     		request.setAttribute("isFirstContent", firstContent);
     		request.setAttribute("isLastContent", lastContent);
-    		
+
     		try {
     			viewFragment = Utility.getContents(
     		        		"/WEB-INF/admin/textdoc/contentloop/tag/content.jsp",
     		                request, response);
-    			
+
     			result.append(viewFragment);
     			bodyContent.clearBody();
     		} catch (Exception e) {
     			throw new JspException(e);
-    		}    		
+    		}
     	}
-    	
+
     	return handleNextContent() ? EVAL_BODY_AGAIN : SKIP_BODY;
     }
-    
-    
+
+
 	public int doEndTag() throws JspException {
 		if (editMode) {
 			try {
 	    		String viewFragment = result.toString();
-	    		
+
 	        	request.setAttribute("contentLoop", loop);
-	        	request.setAttribute("viewFragment", viewFragment);    	
+	        	request.setAttribute("viewFragment", viewFragment);
 	    		request.setAttribute("document", document);
 	    		request.setAttribute("contentLoop", loop);
 	    		request.setAttribute("flags", parserParameters.getFlags());
-	    		
+
 	    		try {
 	    			viewFragment = Utility.getContents(
 	    		        		"/WEB-INF/admin/textdoc/contentloop/tag/loop.jsp",
 	    		                request, response);
 	    		} catch (Exception e) {
 	    			throw new JspException(e);
-	    		}    		
-		    	
+	    		}
+
 				pageContext.getOut().write(viewFragment);
 			} catch (Exception e) {
 				throw new JspException(e);
-			}		
+			}
 		}
-				
+
 		return EVAL_PAGE;
 	}
-	
-	
+
+
     public void setNo(int no) {
         this.no = no ;
     }
@@ -203,22 +188,10 @@ public class ContentLoopTag extends BodyTagSupport {
         attributes.setProperty("post", post) ;
     }
 
-	public int getBaseIndex() {
-		return baseIndex;
-	}
-
-
-	public void setBaseIndex(int baseIndex) {
-		this.baseIndex = baseIndex;
-	}
-
-
-	public String getIndexVar() {
-		return indexVar;
-	}
-
-
-	public void setIndexVar(String indexVar) {
-		this.indexVar = indexVar;
-	}	
+    /**
+     * @return current content.
+     */
+    public Content getContent() {
+        return content;
+    }
 }

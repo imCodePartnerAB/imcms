@@ -1,12 +1,17 @@
 package com.imcode.imcms.servlet.tags;
 
 import imcode.server.parser.TagParser;
+import com.imcode.imcms.api.Content;
 
 public class TextTag extends SimpleImcmsTag {
 	
 
     protected String getContent(TagParser tagParser) {
-        return tagParser.tagText(attributes);
+        ContentLoopTag2 clTag = (ContentLoopTag2)findAncestorWithClass(this, ContentLoopTag2.class);
+        Content content = clTag == null ? null : clTag.getContent();
+
+
+        return tagParser.tagText(attributes, content);
     }
 
     public void setRows(int rows) {

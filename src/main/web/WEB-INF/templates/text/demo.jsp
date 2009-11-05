@@ -76,13 +76,11 @@ LI { padding-bottom:5; }
             <imcms:include url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoContent" pre='<hr>' post='<hr>'/>
             <imcms:image no='3' label='Bild' pre='<br><br>' post='<br>'/><br>
             <imcms:include no='1' label='Dynamisk inkludering 1'/>
-            
-            <imcms:content no="1" indexVar="entryIndex" baseIndex="10000">
-              <imcms:contentloop>
-                <imcms:text no='${entryIndex + 2}' label='<br>Text' post='<br><br>' />
-                <imcms:image no='${entryIndex + 3}' label='Bild' pre='<br><br>' post='<br>'/><br>
-              </imcms:contentloop>  
-            </imcms:content>                      
+
+          <imcms:contentloop no="1" indexVar="entryIndex" baseIndex="10000">
+            <imcms:text no='${entryIndex + 2}' label='<br>Text' post='<br><br>' />
+            <imcms:image no='${entryIndex + 3}' label='Bild' pre='<br><br>' post='<br>'/><br>
+          </imcms:contentloop>
         </td>
     
         <td width="10">&nbsp;</td>

@@ -229,6 +229,10 @@ public class ImcmsFilter implements Filter {
      *
      * @throws ServletException in case of an error.
      * @see com.imcode.imcms.api.I18nSupport
+     *
+     * TODO: refactor - language should remain only in user object.
+     * TODO: refactor - remove session and request language attributes
+     * TODO: refactor - move language support to Imcms object.
      */
     private void updateUserI18nSetting(HttpServletRequest request, UserDomainObject user)
     throws ServletException {
@@ -267,6 +271,7 @@ public class ImcmsFilter implements Filter {
 		request.setAttribute("currentLanguage", language);
 
     	I18nSupport.setCurrentLanguage(language);
+        user.setLanguage(language);
     }
 
 

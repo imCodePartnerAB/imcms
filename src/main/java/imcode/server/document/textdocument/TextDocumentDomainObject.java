@@ -35,6 +35,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      */
     private Map<I18nLanguage, Map<Integer, TextDomainObject>> texts    
     		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
+
+    /**
+     * Loop texts.
+     */
+    private Map<Integer, Map<Integer, Map<I18nLanguage, Map<Integer, TextDomainObject>>>> loopTexts
+    		= new HashMap<Integer, Map<Integer,  Map<I18nLanguage, Map<Integer, TextDomainObject>>>>();
+    
     
     /**
      * Includes map.
@@ -595,12 +602,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		
 		if (oldContentLoop != null) {
 			loopId = oldContentLoop.getId();
-			metaVersion = oldContentLoop.getMetaVersion();
+			metaVersion = oldContentLoop.getDocumentVersion();
 		}
 		
 		newContentLoop.setModified(true);
 		newContentLoop.setMetaId(metaId);
-		newContentLoop.setMetaVersion(metaVersion);
+		newContentLoop.setDocumentVersion(metaVersion);
 		newContentLoop.setId(loopId);		
 		newContentLoop.setIndex(index);
 		

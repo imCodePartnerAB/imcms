@@ -60,6 +60,9 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import com.imcode.imcms.api.TextDocumentViewing;
+import com.imcode.imcms.api.Content;
+import com.imcode.imcms.api.User;
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.servlet.ImcmsFilter;
 import com.imcode.util.CountingIterator;
@@ -379,6 +382,11 @@ public class TagParser {
         return names;
     }
 
+
+     public String tagText(Properties attributes) {
+         return tagText(attributes, null);
+     }
+
     /**
      * Handle a <?imcms:text ...?> tag
      *
@@ -392,8 +400,11 @@ public class TagParser {
      *                   - formats
      *                   - rows
      */
-    public String tagText(Properties attributes) {
+    public String tagText(Properties attributes, Content content) {
         TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
+        UserDomainObject user = documentRequest.getUser();
+        I18nLanguage language = user.getLanguage();
+
         if ( shouldOutputNothingAccordingToMode(attributes, textMode) || textDocumentToUse==null || textDocumentToUse.getId() != document.getId() && textMode ) {
             return "";
         }
@@ -403,11 +414,11 @@ public class TagParser {
         TextDomainObject text;
         if ( null == noStr ) {
             no = implicitTextNumber++;
-            text = textDocumentToUse.getText(no);
+            text = textDocumentToUse.getText(language, no);
         } else {
             noStr = noStr.trim();
             no = Integer.parseInt(noStr);
-            text = textDocumentToUse.getText(no);
+            text = textDocumentToUse.getText(language, no);
             implicitTextNumber = no + 1;
         }
         String result = "";

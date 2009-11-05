@@ -11,16 +11,18 @@
   </query>    
   -->
 
-  <query name="ContentLoop.getByMetaIdAndMetaVersionAndIndex">
+  <!-- Unique -->  
+  <query name="ContentLoop.getByMetaIdAndDocumentVersionAndNo">
     <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.metaVersion = :metaVersion AND l.no = :index
+    SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.documentVersion = :documentVersion AND l.no = :no
     ]]>
   </query>
 
-  
-  <query name="ContentLoop.getByMetaIdAndMetaVersion">
+
+  <!-- List -->
+  <query name="ContentLoop.getByMetaIdAndDocumentVersion">
     <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.metaVersion = :metaVersion
+    SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.documentVersion = :documentVersion
     ]]>
   </query>   
   
@@ -69,9 +71,22 @@
     ]]>
   </query>
   
-  <query name="Content.getContentIdByLoopIdAndSequenceIndex">
+  <query name="Content.getIdByLoopIdAndSequenceIndex">
     <![CDATA[
     SELECT c.id FROM Content c WHERE c.loopId = :loopId AND c.sequenceIndex = :sequenceIndex
+    ]]>
+  </query>
+
+
+  <query name="Content.getPrevsByOrder">
+    <![CDATA[
+    SELECT c FROM Content c WHERE c.loopId = :loopId AND c.orderIndex < :orderIndex ORDER BY c.orderIndex DESC
+    ]]>
+  </query>
+
+  <query name="Content.getNextsByOrder">
+    <![CDATA[
+    SELECT c FROM Content c WHERE c.loopId = :loopId AND c.orderIndex > :orderIndex ORDER BY c.orderIndex
     ]]>
   </query>
 </hibernate-mapping>
