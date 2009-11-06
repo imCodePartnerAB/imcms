@@ -34,6 +34,11 @@ public class ChangeText extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( request );
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         int documentId = Integer.parseInt( request.getParameter( "meta_id" ) );
+        String loopNoStr = request.getParameter("loop_no");
+        String contentIndexStr = request.getParameter("content_index");
+
+        Integer loopNo = loopNoStr == null ? null : Integer.valueOf(loopNoStr);
+        Integer contentIndex = contentIndexStr == null ? null : Integer.valueOf(contentIndexStr);     
         
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument(
         		documentId, user.getDocumentShowSettings().getVersionSelector());
@@ -49,7 +54,10 @@ public class ChangeText extends HttpServlet {
         String label = null == request.getParameter( "label" ) ? "" : request.getParameter( "label" );
 
         I18nLanguage language = I18nSupport.getCurrentLanguage();        
-        TextDomainObject text = textDocument.getText(language, textIndex );        
+        TextDomainObject text = loopNo == null
+                ? textDocument.getText(language, textIndex )
+                : textDocument.getLoopText(language, loopNo, contentIndex, textIndex );
+        
         Integer metaId = textDocument.getId();
         Meta meta = textDocument.getMeta();
         I18nMeta i18nMeta = meta.getI18nMeta(language);
@@ -58,9 +66,11 @@ public class ChangeText extends HttpServlet {
     	if (text == null) {
     		text = new TextDomainObject();
     		//text.setMetaId(metaId);
-    		text.setIndex(textIndex);
+    		text.setNo(textIndex);
     		text.setLanguage(language);
     		text.setType(TextDomainObject.TEXT_TYPE_HTML);
+            text.setLoopNo(loopNo);
+            text.setContentIndex(contentIndex);
         }        
         
     	String queryString = request.getQueryString();
@@ -143,6 +153,10 @@ public class ChangeText extends HttpServlet {
 		public void setSubstitutedWithDefault(boolean substitutedWithDefault) {
 			this.substitutedWithDefault = substitutedWithDefault;
 		}
+
+        public TextDomainObject getText() {
+            return text.clone();
+        }
     }
 
 }

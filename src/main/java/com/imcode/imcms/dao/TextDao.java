@@ -61,7 +61,7 @@ public class TextDao extends HibernateTemplate {
 		getSession().createSQLQuery(sql)
 			.setParameter("metaId", documentId)
 			.setParameter("metaVersion", text.getMetaVersion())
-			.setParameter("index", text.getIndex())
+			.setParameter("index", text.getNo())
 			.setParameter("type", text.getType())
 			.setParameter("text", text.getText())
 			.setParameter("modifiedDt", new Date())
@@ -70,16 +70,16 @@ public class TextDao extends HibernateTemplate {
 	}
 
 	/**
-	 * Returns all texts for given document id, text index, text language and versions.
+	 * Returns all texts for given document id, text no, text language and versions.
 	 * TODO: Reafactor out HQL call  
 	 */
 	@Transactional
-	public List<TextDomainObject> getTexts(Integer documentId, Integer index, I18nLanguage language, Collection<DocumentVersion> versions) {
+	public List<TextDomainObject> getTexts(Integer documentId, Integer no, I18nLanguage language, Collection<DocumentVersion> versions) {
 		String hql = String.format(
-			"SELECT t FROM Text t WHERE t.metaId = ? AND t.index = ? AND t.language.id = ? AND t.metaVersion IN (%s)",
+			"SELECT t FROM Text t WHERE t.metaId = ? AND t.no = ? AND t.language.id = ? AND t.metaVersion IN (%s)",
 			createVersionString(versions));
 		
-		return find(hql, new Object[] {documentId, index, language.getId()});
+		return find(hql, new Object[] {documentId, no, language.getId()});
 	}
 	
 	@Transactional

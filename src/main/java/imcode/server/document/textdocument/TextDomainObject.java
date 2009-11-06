@@ -36,7 +36,7 @@ import com.imcode.imcms.mapping.DocumentStoringVisitor;
 	
 	// Unique result
 	@NamedQuery(name="Text.getByDocumentIdAndDocumentVersionAndIndexAndLanguageId", 
-			query="SELECT t FROM Text t WHERE t.metaId = :documentId AND t.metaVersion = :documentVersion AND t.index = :index AND t.language.id = :languageId"),
+			query="SELECT t FROM Text t WHERE t.metaId = :documentId AND t.metaVersion = :documentVersion AND t.no = :no AND t.language.id = :languageId"),
 	
 	// Collection			
 	@NamedQuery(name="Text.getByDocumentIdAndDocumentVersion", 
@@ -55,7 +55,7 @@ public class TextDomainObject implements Serializable, Cloneable {
     public final static int TEXT_TYPE_HTML = 1;
 
     @Override
-	protected TextDomainObject clone() {
+	public TextDomainObject clone() {
 		try {
 			return (TextDomainObject)super.clone();
 		} catch (CloneNotSupportedException e) {
@@ -78,7 +78,7 @@ public class TextDomainObject implements Serializable, Cloneable {
      * Text filed index in the document.
      */	
 	@Column(name="name")
-	private Integer index;
+	private Integer no;
 
     @Column(name="loop_no")
     private Integer loopNo;
@@ -211,7 +211,7 @@ public class TextDomainObject implements Serializable, Cloneable {
         return new EqualsBuilder()
         		.append(text, o.getText())
                 .append(type, o.getType())
-                .append(index, o.getIndex())
+                .append(no, o.getNo())
                 .append(language, o.getLanguage()).isEquals();
     }
 
@@ -220,7 +220,7 @@ public class TextDomainObject implements Serializable, Cloneable {
         return new HashCodeBuilder(33, 31)
         		.append(text)
         		.append(type)
-        		.append(index)
+        		.append(no)
                 .append(language).toHashCode();
     }
 
@@ -248,12 +248,22 @@ public class TextDomainObject implements Serializable, Cloneable {
 		this.language = language;
 	}
 
+    @Deprecated
 	public Integer getIndex() {
-		return index;
+		return getNo();
 	}
 
+    @Deprecated
 	public void setIndex(Integer index) {
-		this.index = index;
+		setNo(index);
+	}
+
+	public Integer getNo() {
+		return no;
+	}
+
+	public void setNo(Integer no) {
+		this.no = no;
 	}
 
 	/**

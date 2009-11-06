@@ -21,6 +21,7 @@ import com.imcode.imcms.mapping.orm.TemplateNames;
 /**
  * If this document represents a working version then its menus items also refer to working versions.
  * If this document represents non working version then its menus items also refer to published versions.
+ * TODO: optimize ineffective items (texts, images, loop texts, etc) access.
  */
 public class TextDocumentDomainObject extends DocumentDomainObject {
 		
@@ -31,16 +32,17 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     		= new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
     
     /**
-     * Texts.
+     * Texts outside loops.
      */
     private Map<I18nLanguage, Map<Integer, TextDomainObject>> texts    
     		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
 
     /**
-     * Loop texts.
+     * Texts in loops.
+     * language->loopNo->contentIndex->text-no->text
      */
-    private Map<Integer, Map<Integer, Map<I18nLanguage, Map<Integer, TextDomainObject>>>> loopTexts
-    		= new HashMap<Integer, Map<Integer,  Map<I18nLanguage, Map<Integer, TextDomainObject>>>>();
+    private Map<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>> loopTexts
+    		= new HashMap<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>>();
     
     
     /**
@@ -165,7 +167,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * @return TextDomainObject or null if text can not be found.
      */
-	public TextDomainObject getText(I18nLanguage language, int index) {
+	public TextDomainObject getText(I18nLanguage language, int no) {
 		if (language == null) {
 			throw new IllegalArgumentException("language argument " +
 					"can not be null.");			
@@ -173,8 +175,82 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		
 		Map<Integer, TextDomainObject> map = getTextsMap(language);
 		
-		return map.get(index);
-	}    
+		return map.get(no);
+	}
+
+
+    /**
+     * @return TextDomainObject or null if text can not be found.
+     */
+	public TextDomainObject getLoopText(I18nLanguage language, int loopNo, int contentIndex, int no) {
+		if (language == null) {
+			throw new IllegalArgumentException("language argument " +
+					"can not be null.");
+		}
+
+        TextDomainObject text = null;
+
+		Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loopsMap = loopTexts.get(language);
+
+        if (loopsMap != null) {
+            Map<Integer, Map<Integer, TextDomainObject>> contentsMap = loopsMap.get(loopNo);
+
+            if (contentsMap != null) {
+                Map<Integer, TextDomainObject> textsMap = contentsMap.get(contentIndex);
+
+                if (textsMap != null) {
+                    text = textsMap.get(no);
+                }
+            }
+        }
+
+		return text;
+	}
+
+
+    /**
+     * Sets loop text.
+     */
+	public void setLoopText(I18nLanguage language, int loopNo, int contentIndex, int no, TextDomainObject text) {
+		if (language == null) {
+			throw new IllegalArgumentException("language argument " +
+					"can not be null.");
+		}
+
+        TextDomainObject textClone = text.clone();
+        textClone.setModified(true);
+        textClone.setId(null);
+        textClone.setNo(no);
+        textClone.setLanguage(language);
+        textClone.setMetaId(getMeta().getId());
+        textClone.setLoopNo(loopNo);
+        textClone.setContentIndex(contentIndex);
+        
+        Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loops = loopTexts.get(language);
+
+        if (loops == null) {
+            loops = new HashMap<Integer, Map<Integer, Map<Integer, TextDomainObject>>>();
+            loopTexts.put(language, loops);
+        }
+
+
+        Map<Integer, Map<Integer, TextDomainObject>> contents = loops.get(loopNo);
+
+        if (contents == null) {
+            contents = new HashMap<Integer, Map<Integer, TextDomainObject>>();
+            loops.put(loopNo, contents);
+        }
+
+
+        Map<Integer, TextDomainObject> contentTexts = contents.get(contentIndex);
+
+        if (contentTexts == null) {
+            contentTexts = new HashMap<Integer, TextDomainObject>();
+            contents.put(contentIndex, contentTexts);
+        }
+
+        contentTexts.put(no, textClone);
+	}
 
     /**
      * Returns texts map for current language.
@@ -619,5 +695,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		contentLoopsMap.put(index, newContentLoop);
 		
 		return newContentLoop;
-	}	
+	}
+
+    public Map<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>> getLoopTexts() {
+        return loopTexts;
+    }
+
+    public void setLoopTexts(Map<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>> loopTexts) {
+        this.loopTexts = loopTexts;
+    }
 }

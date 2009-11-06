@@ -59,10 +59,7 @@ import org.apache.oro.text.regex.Util;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import com.imcode.imcms.api.TextDocumentViewing;
-import com.imcode.imcms.api.Content;
-import com.imcode.imcms.api.User;
-import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.*;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.servlet.ImcmsFilter;
 import com.imcode.util.CountingIterator;
@@ -384,7 +381,7 @@ public class TagParser {
 
 
      public String tagText(Properties attributes) {
-         return tagText(attributes, null);
+         return tagText(attributes, null, null);
      }
 
     /**
@@ -400,7 +397,7 @@ public class TagParser {
      *                   - formats
      *                   - rows
      */
-    public String tagText(Properties attributes, Content content) {
+    public String tagText(Properties attributes, ContentLoop loop, Content content) {
         TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
         UserDomainObject user = documentRequest.getUser();
         I18nLanguage language = user.getLanguage();
@@ -414,13 +411,19 @@ public class TagParser {
         TextDomainObject text;
         if ( null == noStr ) {
             no = implicitTextNumber++;
-            text = textDocumentToUse.getText(language, no);
+            text = loop == null
+                    ? textDocumentToUse.getText(language, no)
+                    : textDocumentToUse.getLoopText(language, loop.getNo(), content.getSequenceIndex(), no);
         } else {
             noStr = noStr.trim();
             no = Integer.parseInt(noStr);
-            text = textDocumentToUse.getText(language, no);
+            text = loop == null
+                    ? textDocumentToUse.getText(language, no)
+                    : textDocumentToUse.getLoopText(language, loop.getNo(), content.getSequenceIndex(), no);
+            
             implicitTextNumber = no + 1;
         }
+        
         String result = "";
         if ( text != null ) {
             result = text.toHtmlString();
@@ -441,6 +444,11 @@ public class TagParser {
             request.setAttribute("content", result);
             request.setAttribute("formats", formats);
             request.setAttribute("rows", attributes.getProperty("rows"));
+
+            if (loop != null) {
+                request.setAttribute("tag.text.loop", loop);
+                request.setAttribute("tag.text.loop.content", content);
+            }
 
             try {
                 result = Utility.getContents("/imcms/" + documentRequest.getUser().getLanguageIso639_2()

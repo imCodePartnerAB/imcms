@@ -50,30 +50,48 @@ public final class SaveText extends HttpServlet {
 
             int text_format = Integer.parseInt( req.getParameter( "format_type" ) );
 
-	          String[] formatParameterValues = req.getParameterValues("format") ;
-	          String rowsParameterValue = (null != formatParameterValues) ? req.getParameter("rows") : null ;
-	          String formatRowsQueryString = "" ;
-	          if (null != formatParameterValues) {
-		          for (String formatParameter : formatParameterValues) {
-			          formatRowsQueryString += "&format=" + formatParameter ;
-		          }
-		          if (null != rowsParameterValue) {
-			          formatRowsQueryString += "&rows=" + rowsParameterValue ;
-		          }
-	          }
+            String[] formatParameterValues = req.getParameterValues("format") ;
+            String rowsParameterValue = (null != formatParameterValues) ? req.getParameter("rows") : null ;
+            String formatRowsQueryString = "" ;
+            if (null != formatParameterValues) {
+                for (String formatParameter : formatParameterValues) {
+                    formatRowsQueryString += "&format=" + formatParameter ;
+                }
+                
+                if (null != rowsParameterValue) {
+                    formatRowsQueryString += "&rows=" + rowsParameterValue ;
+                }
+            }
+
             String label = StringUtils.defaultString(req.getParameter("label")) ;
+
+
+            String loopNoStr = req.getParameter("loop_no");
+            String contentIndexStr = req.getParameter("content_index");
+
+            Integer loopNo = loopNoStr == null ? null : Integer.valueOf(loopNoStr);
+            Integer contentIndex = contentIndexStr == null ? null : Integer.valueOf(contentIndexStr);            
 
             TextDomainObject text = new TextDomainObject();
     		//text.setMetaId(meta_id);
-    		text.setIndex(txt_no);
+    		text.setNo(txt_no);
     		text.setLanguage(I18nSupport.getCurrentLanguage());
             text.setText(text_string);
             text.setType(text_format);
+            text.setLoopNo(loopNo);
+            text.setContentIndex(contentIndex);
+
 
             saveText( documentMapper, text, document, txt_no, imcref, meta_id, user );
 
             if (null != req.getParameter( "save" )) {
-                res.sendRedirect( "ChangeText?meta_id="+meta_id+"&txt="+txt_no + formatRowsQueryString + "&label=" + label );
+                String url = "ChangeText?meta_id="+meta_id+"&txt="+txt_no + formatRowsQueryString + "&label=" + label;
+
+                if (loopNo != null) {
+                    url += "&loop_no="+loopNo+"&content_index="+contentIndex;
+                }
+
+                res.sendRedirect(url);
                 return ;
             }
         }
@@ -86,7 +104,12 @@ public final class SaveText extends HttpServlet {
     private void saveText(DocumentMapper documentMapper, TextDomainObject text, TextDocumentDomainObject document,
                           final int txt_no, final ImcmsServices imcref, int meta_id,
                           final UserDomainObject user) {
-        text = document.setText(I18nSupport.getCurrentLanguage(), txt_no, text );
+
+        if (text.getLoopNo() == null) {
+            text = document.setText(I18nSupport.getCurrentLanguage(), txt_no, text );
+        } else {
+            document.setLoopText(I18nSupport.getCurrentLanguage(), text.getLoopNo(), text.getContentIndex(), txt_no, text);
+        }
 
         try {
         	documentMapper.saveText(document, text, user);        

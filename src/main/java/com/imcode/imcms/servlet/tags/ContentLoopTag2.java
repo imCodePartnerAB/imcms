@@ -188,6 +188,15 @@ public class ContentLoopTag2 extends BodyTagSupport {
         attributes.setProperty("post", post) ;
     }
 
+
+    public ContentLoop getLoop() {
+        return loop;
+    }
+
+    public void setLoop(ContentLoop loop) {
+        this.loop = loop;
+    }
+
     /**
      * @return current content.
      */

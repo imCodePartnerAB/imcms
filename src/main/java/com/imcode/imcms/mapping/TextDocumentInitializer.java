@@ -54,12 +54,12 @@ public class TextDocumentInitializer {
 	 * Initializes text document.
      */
     public void initialize(TextDocumentDomainObject document) {
+        initContentLoops(document);
         initTexts(document);
         initImages(document);
         initMenus(document);
         initIncludes(document);
         initTemplateNames(document);
-        initContentLoops(document);
     }
     
     public void initTexts(TextDocumentDomainObject document) {
@@ -67,19 +67,60 @@ public class TextDocumentInitializer {
     	
     	Collection<TextDomainObject> texts = textDao.getTexts(meta.getId(), meta.getVersion().getNumber());    	    
     	Map<I18nLanguage, Map<Integer, TextDomainObject>> textsMap = new HashMap<I18nLanguage, Map<Integer,TextDomainObject>>();
+
+        Map<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>> loopTexts
+    		= new HashMap<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>>();        
     	
     	for (TextDomainObject text: texts) {
     		I18nLanguage language = text.getLanguage();
-    		Map<Integer, TextDomainObject> indexMap = textsMap.get(language);
-    		
-    		if (indexMap == null) {
-    			indexMap = new HashMap<Integer, TextDomainObject>();
-    			textsMap.put(language, indexMap);
-    		}  
-    		
-    		indexMap.put(text.getIndex(), text);
+            Integer loopNo = text.getLoopNo();
+
+            if (loopNo == null) {
+                Map<Integer, TextDomainObject> indexMap = textsMap.get(language);
+
+                if (indexMap == null) {
+                    indexMap = new HashMap<Integer, TextDomainObject>();
+                    textsMap.put(language, indexMap);
+                }
+
+                indexMap.put(text.getNo(), text);
+            } else {
+                Integer contentIndex = text.getContentIndex();
+                if (contentIndex == null) {
+                    throw new RuntimeException(String.format(
+                        "Invalid text field. Content loop is set but content index is not. meta :%s, document version: %s, loop no: %s, text no: %s."
+                        ,meta.getId(), meta.getVersion().getNumber(), loopNo, text.getNo())
+                    );
+                }
+
+                Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loops = loopTexts.get(language);
+
+                if (loops == null) {
+                    loops = new HashMap<Integer, Map<Integer, Map<Integer, TextDomainObject>>>();
+                    loopTexts.put(language, loops);
+                }
+
+
+                Map<Integer, Map<Integer, TextDomainObject>> contents = loops.get(loopNo);
+
+                if (contents == null) {
+                    contents = new HashMap<Integer, Map<Integer, TextDomainObject>>();
+                    loops.put(loopNo, contents);
+                }
+
+
+                Map<Integer, TextDomainObject> contentTexts = contents.get(contentIndex);
+
+                if (contentTexts == null) {
+                    contentTexts = new HashMap<Integer, TextDomainObject>();
+                    contents.put(contentIndex, contentTexts);
+                }
+
+                contentTexts.put(text.getNo(), text);
+            }
     	}
-    	
+
+        document.setLoopTexts(loopTexts);
     	document.setAllTexts(textsMap);
     }
     

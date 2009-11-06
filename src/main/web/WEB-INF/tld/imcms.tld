@@ -38,6 +38,21 @@
         </attribute>                                
     </tag>
 
+
+
+    <tag>
+        <name>contentloop2</name>
+        <tag-class>com.imcode.imcms.servlet.tags.ContentLoopTag2</tag-class>
+        <body-content>JSP</body-content>
+
+        <attribute>
+            <name>no</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+
     <tag>
         <name>contextpath</name>
         <tag-class>com.imcode.imcms.servlet.tags.ContextPathTag</tag-class>

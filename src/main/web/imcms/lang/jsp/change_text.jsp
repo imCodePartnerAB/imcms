@@ -78,6 +78,9 @@ DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper() ;
 DocumentDomainObject document = documentMapper.getDocument(textEditPage.getDocumentId()) ;
 Meta meta = document.getMeta() ;
 Set<I18nMeta> i18nMetas = meta.getI18nMetas() ;
+TextDomainObject text = textEditPage.getText();
+
+
 
 %>
 <%@page import="com.imcode.imcms.api.I18nMeta, com.imcode.imcms.dao.LanguageDao, com.imcode.imcms.api.I18nLanguage, com.imcode.imcms.api.Meta, imcode.server.document.DocumentDomainObject, com.imcode.imcms.mapping.DocumentMapper"%>
@@ -102,7 +105,19 @@ if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType() && !editorHidden) { 
 <form method="POST" action="<%= request.getContextPath() %>/servlet/SaveText">
 <input type="hidden" name="lang"  value="${currentLanguage.code}">
 <input type="hidden" name="meta_id"  value="<%= textEditPage.getDocumentId() %>">
-<input type="hidden" name="txt_no"   value="<%= textEditPage.getTextIndex() %>"><%
+<input type="hidden" name="txt_no"   value="<%= textEditPage.getTextIndex() %>">
+
+<%
+Integer loopNo = text.getLoopNo();
+if (loopNo != null) {
+    Integer contentIndex = text.getContentIndex();
+    %>
+    <input type="hidden" name="loop_no"  value="<%= loopNo %>">
+    <input type="hidden" name="content_index"  value="<%= contentIndex %>">
+    <%
+}
+%>
+<%
 if (null != formatParameterValues) {
 	for ( String formatParameter : formatParameterValues ) { %>
 <input type="hidden" name="format" value="<%= formatParameter %>"><%
