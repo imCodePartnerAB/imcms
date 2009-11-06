@@ -15,14 +15,38 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
+import com.imcode.imcms.api.ContentIndexes;
 
 /**
- * Second version of content loop.
- * Base index and step are not required copared to v1. Texts and images are bound to enclosing loop.
+ * Second version of content loop tag.
  */
 public class ContentLoopTag2 extends BodyTagSupport {
 
-	/** Content loop index in TextDocument. */
+    /** Creates content loop with a single content. */
+    private static ContentLoop createLoop(Integer metaId, Integer documentVersion, Integer no) {
+        ContentLoop loop = new ContentLoop();
+        ContentIndexes indexes = loop.getContentIndexes();
+
+        loop.setMetaId(metaId);
+        loop.setNo(no);
+        loop.setDocumentVersion(documentVersion);
+
+        indexes.setSequence(0);
+        indexes.setHigherOrder(0);
+        indexes.setLowerOrder(0);
+
+        Content content = new Content();
+
+        content.setOrderIndex(0);
+        content.setSequenceIndex(0);
+
+        loop.getContents().add(content);
+
+        return loop;
+    }
+
+
+	/** Loop number in a TextDocument. */
     private int no;
 
     /** Loop contentes. */
@@ -30,15 +54,13 @@ public class ContentLoopTag2 extends BodyTagSupport {
 
     private ContentLoop loop;
 
-    private Content content;
+    private Content currentContent;
 
     private int contentsCount;
 
     private Properties attributes = new Properties();
 
-    /**
-     * Label - common imcms attribute.
-     */
+    /** Label - common imcms attribute. */
     private String label;
 
     private boolean editMode;
@@ -57,6 +79,10 @@ public class ContentLoopTag2 extends BodyTagSupport {
 
     private boolean lastContent;
 
+    /**
+     * @return
+     * @throws JspException
+     */
 	public int doStartTag() throws JspException {
 		result = new StringBuilder();
         request = (HttpServletRequest) pageContext.getRequest();
@@ -66,19 +92,14 @@ public class ContentLoopTag2 extends BodyTagSupport {
         editMode = parserParameters.isContentLoopMode();
 
         loop = document.getContentLoop(no);
+        
         if (loop == null) {
-        	loop = new ContentLoop();
-        	loop.setMetaId(document.getMeta().getId());
-        	loop.setNo(no);
-        	loop.setDocumentVersion(document.getVersion().getNumber());
-            
-        	Content content = new Content();
-        	content.setOrderIndex(0);
-        	content.setSequenceIndex(0);
-        	loop.getContents().add(content);
-        	document.setContentLoop(no, loop);
+        	loop = createLoop(document.getMeta().getId(), document.getVersion().getNumber(), no);
+
+           	document.setContentLoop(no, loop);
         }
 
+        currentContent = null;
         contentsCount = loop.getContents().size();
         contentsIterator = loop.getContents().listIterator();
 
@@ -94,10 +115,10 @@ public class ContentLoopTag2 extends BodyTagSupport {
         }
 
         firstContent = !contentsIterator.hasPrevious();
-        content = contentsIterator.next();
+        currentContent = contentsIterator.next();
         lastContent = !contentsIterator.hasNext();
 
-		int sequenceIndex = content.getSequenceIndex();
+		int sequenceIndex = currentContent.getSequenceIndex();
 
     	//pageContext.setAttribute(indexVar, index);
 
@@ -112,7 +133,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
 
     		request.setAttribute("document", document);
     		request.setAttribute("contentLoop", loop);
-    		request.setAttribute("content", content);
+    		request.setAttribute("content", currentContent);
     		request.setAttribute("flags", parserParameters.getFlags());
     		request.setAttribute("viewFragment", viewFragment);
     		request.setAttribute("contentsCount", contentsCount);
@@ -200,7 +221,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
     /**
      * @return current content.
      */
-    public Content getContent() {
-        return content;
+    public Content getCurrentContent() {
+        return currentContent;
     }
 }

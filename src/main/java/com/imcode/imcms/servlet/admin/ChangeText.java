@@ -56,7 +56,7 @@ public class ChangeText extends HttpServlet {
         I18nLanguage language = I18nSupport.getCurrentLanguage();        
         TextDomainObject text = loopNo == null
                 ? textDocument.getText(language, textIndex )
-                : textDocument.getLoopText(language, loopNo, contentIndex, textIndex );
+                : textDocument.getText(language, loopNo, contentIndex, textIndex );
         
         Integer metaId = textDocument.getId();
         Meta meta = textDocument.getMeta();
@@ -65,7 +65,8 @@ public class ChangeText extends HttpServlet {
         
     	if (text == null) {
     		text = new TextDomainObject();
-    		//text.setMetaId(metaId);
+    		text.setMetaId(metaId);
+            text.setMetaVersion(meta.getVersion().getNumber());
     		text.setNo(textIndex);
     		text.setLanguage(language);
     		text.setType(TextDomainObject.TEXT_TYPE_HTML);

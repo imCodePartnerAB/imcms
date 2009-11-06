@@ -750,7 +750,16 @@ public class DocumentMapper implements DocumentGetter {
         document.setActualModifiedDatetime(now);
     }
 
-    public void saveText(DocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+
+    /**
+     * Saves text and non-saved enclosing content loop if any.
+     * 
+     * Non saved content loop might be added to the document by ContentLoopTag2.
+     *
+     * @see com.imcode.imcms.servlet.admin.SaveText
+     * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
+     */
+    public synchronized void saveText(TextDocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
     	try {
     		documentSaver.saveText(document, text, user);            
 	    } finally {

@@ -109,6 +109,7 @@
   
   <bean id="documentSaver" class="com.imcode.imcms.mapping.DocumentSaver">
     <property name="metaDao" ref="metaDao"/>
+    <property name="contentLoopDao" ref="contentLoopDao"/>
   </bean>
   
   <bean id="databaseDocumentGetter" class="com.imcode.imcms.mapping.DatabaseDocumentGetter">

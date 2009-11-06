@@ -182,12 +182,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * @return TextDomainObject or null if text can not be found.
      */
-	public TextDomainObject getLoopText(I18nLanguage language, int loopNo, int contentIndex, int no) {
-		if (language == null) {
-			throw new IllegalArgumentException("language argument " +
-					"can not be null.");
-		}
-
+	public TextDomainObject getText(I18nLanguage language, Integer loopNo, Integer contentIndex, Integer no) {
         TextDomainObject text = null;
 
 		Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loopsMap = loopTexts.get(language);
@@ -206,51 +201,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
 		return text;
 	}
-
-
-    /**
-     * Sets loop text.
-     */
-	public void setLoopText(I18nLanguage language, int loopNo, int contentIndex, int no, TextDomainObject text) {
-		if (language == null) {
-			throw new IllegalArgumentException("language argument " +
-					"can not be null.");
-		}
-
-        TextDomainObject textClone = text.clone();
-        textClone.setModified(true);
-        textClone.setId(null);
-        textClone.setNo(no);
-        textClone.setLanguage(language);
-        textClone.setMetaId(getMeta().getId());
-        textClone.setLoopNo(loopNo);
-        textClone.setContentIndex(contentIndex);
-        
-        Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loops = loopTexts.get(language);
-
-        if (loops == null) {
-            loops = new HashMap<Integer, Map<Integer, Map<Integer, TextDomainObject>>>();
-            loopTexts.put(language, loops);
-        }
-
-
-        Map<Integer, Map<Integer, TextDomainObject>> contents = loops.get(loopNo);
-
-        if (contents == null) {
-            contents = new HashMap<Integer, Map<Integer, TextDomainObject>>();
-            loops.put(loopNo, contents);
-        }
-
-
-        Map<Integer, TextDomainObject> contentTexts = contents.get(contentIndex);
-
-        if (contentTexts == null) {
-            contentTexts = new HashMap<Integer, TextDomainObject>();
-            contents.put(contentIndex, contentTexts);
-        }
-
-        contentTexts.put(no, textClone);
-	}
+    
 
     /**
      * Returns texts map for current language.
@@ -328,34 +279,78 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * Sets text to currently active language.
      */    
-    public void setText( int textIndex, TextDomainObject text ) {
-    	setText(I18nSupport.getCurrentLanguage(), textIndex, text);
+    public void setText(Integer no, TextDomainObject text ) {
+    	setText(I18nSupport.getCurrentLanguage(), no, text);
     }
+
     
     /**
      * Sets text.
      */   
-    public TextDomainObject setText(I18nLanguage language, int index, TextDomainObject text) {        	
-    	Map<Integer, TextDomainObject> map = getTextsMap(language);
-    	TextDomainObject oldText = map.get(index);
-    	TextDomainObject newText = text.clone();
-    	Integer metaVersion = getMeta().getVersion().getNumber();
+    public TextDomainObject setText(I18nLanguage language, Integer no, TextDomainObject text) {
+        Meta meta = getMeta();
+        Integer documentVersion = meta.getVersion().getNumber();
+        Integer metaId = meta.getId();        
+
+        Map<Integer, TextDomainObject> map;
+
+        Integer loopNo = text.getLoopNo();
+        
+        if (loopNo == null) {
+            map = getTextsMap(language);
+        } else {
+            Integer contentIndex = text.getContentIndex();
+
+            if (contentIndex == null) {
+                throw new RuntimeException(String.format(
+                    "Invalid text field. Content loop is set but content index is not. meta :%s, document version: %s, loop no: %s, text no: %s."
+                    ,meta.getId(), documentVersion, loopNo, no)
+                );
+            }
+
+            Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loops = loopTexts.get(language);
+
+            if (loops == null) {
+                loops = new HashMap<Integer, Map<Integer, Map<Integer, TextDomainObject>>>();
+                loopTexts.put(language, loops);
+            }
+
+
+            Map<Integer, Map<Integer, TextDomainObject>> contents = loops.get(loopNo);
+
+            if (contents == null) {
+                contents = new HashMap<Integer, Map<Integer, TextDomainObject>>();
+                loops.put(loopNo, contents);
+            }
+
+
+            map = contents.get(contentIndex);
+
+            if (map == null) {
+                map = new HashMap<Integer, TextDomainObject>();
+                contents.put(contentIndex, map);
+            }
+        }
     	
-    	if (oldText != null) {
-    		newText.setId(oldText.getId());
-    	} else {
-    		newText.setId(null);    		
-    	}
-    	
-    	newText.setMetaVersion(metaVersion);
-    	newText.setMetaId(getMeta().getId());
-    	newText.setIndex(index);
-    	newText.setLanguage(language);
-    	newText.setModified(true);    	
-    	
-    	map.put(index, newText);
-    	
-    	return newText;
+
+        TextDomainObject oldText = map.get(no);
+        TextDomainObject newText = text.clone();
+
+        if (oldText != null) {
+            newText.setId(oldText.getId());
+        } else {
+            newText.setId(null);
+        }
+        
+        newText.setModified(true);
+        newText.setMetaId(metaId);
+        newText.setMetaVersion(documentVersion);
+        newText.setNo(no);
+        newText.setLanguage(language);
+
+        map.put(no, newText);
+
+        return newText.clone();
     } 
     
     public Map<Integer, Integer> getIncludesMap() {
@@ -626,7 +621,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	}
 
     /**
-     * Returns all texts. 
+     * Returns texts outside of loops. 
      */
 	public Map<I18nLanguage, Map<Integer, TextDomainObject>> getAllTexts() {
 		return texts;
@@ -655,19 +650,19 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		this.contentLoopsMap = contentLoopsMap;
 	}	
 	
-	public ContentLoop getContentLoop(int index) {
-		return contentLoopsMap.get(index);
+	public ContentLoop getContentLoop(int no) {
+		return contentLoopsMap.get(no);
 	}
 	
 	/**
 	 * Sets content loop clone passed to the method. 
 	 * 
-	 * @param index content loop index in this document.
+	 * @param no content loop no in this document.
 	 * @param contentLoop content loop to set.
 	 * @return ContentLoop set to document.
 	 */
-	public ContentLoop setContentLoop(int index, ContentLoop contentLoop) {
-		ContentLoop oldContentLoop = getContentLoop(index);
+	public ContentLoop setContentLoop(int no, ContentLoop contentLoop) {
+		ContentLoop oldContentLoop = getContentLoop(no);
 		ContentLoop newContentLoop = contentLoop.clone();
 		
 		Meta meta = getMeta();		
@@ -685,14 +680,14 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		newContentLoop.setMetaId(metaId);
 		newContentLoop.setDocumentVersion(metaVersion);
 		newContentLoop.setId(loopId);		
-		newContentLoop.setIndex(index);
+		newContentLoop.setNo(no);
 		
 		for (Content content: newContentLoop.getContents()) {
 			content.setLoopId(loopId);
 			content.setId(null);
 		}
 		
-		contentLoopsMap.put(index, newContentLoop);
+		contentLoopsMap.put(no, newContentLoop);
 		
 		return newContentLoop;
 	}

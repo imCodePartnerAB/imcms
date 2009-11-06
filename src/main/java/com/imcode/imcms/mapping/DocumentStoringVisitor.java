@@ -154,7 +154,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }  	
     }
     
-    // should be run inside transaction
+    // must be run inside transaction
     public void updateTextDocumentText(TextDomainObject text, UserDomainObject user) {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
 

@@ -57,7 +57,7 @@ public class ContentLoopController {
 		Command command = getCommand(cmd);
 		DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 		TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(metaId);
-		ContentLoop loop = document.getContentLoop(loopIndex).clone();
+		ContentLoop loop = document.getContentLoop(loopIndex);
 		
         try {
             if (loop.getId() == null) {

@@ -10,7 +10,7 @@ public class TextTag extends SimpleImcmsTag {
     protected String getContent(TagParser tagParser) {
         ContentLoopTag2 clTag = (ContentLoopTag2)findAncestorWithClass(this, ContentLoopTag2.class);
         ContentLoop loop =  clTag == null ? null : clTag.getLoop();
-        Content content = clTag == null ? null : clTag.getContent();
+        Content content = clTag == null ? null : clTag.getCurrentContent();
 
 
         return tagParser.tagText(attributes, loop, content);

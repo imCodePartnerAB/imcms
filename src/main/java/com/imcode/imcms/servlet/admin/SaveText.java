@@ -22,9 +22,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 
 import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 
+/**
+ * Saves edited text. 
+ */
 public final class SaveText extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws IOException {
@@ -37,17 +41,12 @@ public final class SaveText extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id, user.getDocumentShowSettings().getVersionSelector() );
-
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
+        I18nLanguage language = user.getLanguage();
 
-        if ( permissionSet.getEditTexts()
-             && req.getParameter( "cancel" ) == null ) {
-            // get text_no
+        if (permissionSet.getEditTexts() && req.getParameter( "cancel" ) == null ) {
             int txt_no = Integer.parseInt( req.getParameter( "txt_no" ) );
-
-            // get textdocument
             String text_string = req.getParameter( "text" );
-
             int text_format = Integer.parseInt( req.getParameter( "format_type" ) );
 
             String[] formatParameterValues = req.getParameterValues("format") ;
@@ -72,15 +71,20 @@ public final class SaveText extends HttpServlet {
             Integer loopNo = loopNoStr == null ? null : Integer.valueOf(loopNoStr);
             Integer contentIndex = contentIndexStr == null ? null : Integer.valueOf(contentIndexStr);            
 
-            TextDomainObject text = new TextDomainObject();
-    		//text.setMetaId(meta_id);
+            TextDomainObject text = loopNo == null
+                    ? document.getText(language, txt_no)
+                    : document.getText(language, loopNo, contentIndex, txt_no);
+
+            text = text == null ? new TextDomainObject() : text.clone();
+
+    		text.setMetaId(document.getId());
     		text.setNo(txt_no);
+            text.setMetaVersion(document.getVersion().getNumber());
     		text.setLanguage(I18nSupport.getCurrentLanguage());
             text.setText(text_string);
             text.setType(text_format);
             text.setLoopNo(loopNo);
             text.setContentIndex(contentIndex);
-
 
             saveText( documentMapper, text, document, txt_no, imcref, meta_id, user );
 
@@ -104,13 +108,6 @@ public final class SaveText extends HttpServlet {
     private void saveText(DocumentMapper documentMapper, TextDomainObject text, TextDocumentDomainObject document,
                           final int txt_no, final ImcmsServices imcref, int meta_id,
                           final UserDomainObject user) {
-
-        if (text.getLoopNo() == null) {
-            text = document.setText(I18nSupport.getCurrentLanguage(), txt_no, text );
-        } else {
-            document.setLoopText(I18nSupport.getCurrentLanguage(), text.getLoopNo(), text.getContentIndex(), txt_no, text);
-        }
-
         try {
         	documentMapper.saveText(document, text, user);        
         } catch ( NoPermissionToEditDocumentException e ) {

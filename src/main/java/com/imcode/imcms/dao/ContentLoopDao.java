@@ -69,7 +69,11 @@ public class ContentLoopDao extends HibernateTemplate {
 	 */
 	@Transactional
 	public synchronized ContentLoop saveContentLoop(final ContentLoop loop) {
-        return (ContentLoop)save(loop.clone());
+        ContentLoop loopClone = loop.clone();
+
+        save(loop.clone());
+        
+        return loopClone;
 	} 
 	
 	/**

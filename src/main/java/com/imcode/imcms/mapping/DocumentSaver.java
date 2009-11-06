@@ -20,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.imcode.imcms.api.DocumentProperty;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.dao.MetaDao;
+import com.imcode.imcms.dao.ContentLoopDao;
 
 /**
  * This class is instantiated using spring framework.
@@ -32,12 +34,18 @@ public class DocumentSaver {
     private DocumentMapper documentMapper;
     
     private MetaDao metaDao;
+
+    private ContentLoopDao contentLoopDao;
     
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
     
     /**
-     * Existing API saves whole document even if only a fragment of it 
-     * (text, image or menu) was modified.
+     * Saves text and non-saved enclosing content loop if any.
+     *
+     * Non saved content loop might be added to the document by ContentLoopTag2.
+     *
+     * @see com.imcode.imcms.servlet.admin.SaveText
+     * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      * 
      * TODO: Create methods for other doc's fields: 
      *   saveImages
@@ -45,12 +53,21 @@ public class DocumentSaver {
      *   etc 
      */
     @Transactional     
-    public void saveText(DocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveText(TextDocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
     	checkDocumentForSave(document);
-    	
+
+        Integer loopNo = text.getLoopNo();
+
+        if (loopNo != null) {
+            ContentLoop loop = document.getContentLoop(loopNo);
+            if (loop.getId() == null) {
+                contentLoopDao.saveContentLoop(loop);
+            }
+        }
+
     	new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentText(text, user);
     	
-    	// TODO: update meta modified time
+    	// TODO: update meta modified time?
     }
 
     /**
@@ -335,4 +352,12 @@ public class DocumentSaver {
 	public void setMetaDao(MetaDao metaDao) {
 		this.metaDao = metaDao;
 	}
+
+    public ContentLoopDao getContentLoopDao() {
+        return contentLoopDao;
+    }
+
+    public void setContentLoopDao(ContentLoopDao contentLoopDao) {
+        this.contentLoopDao = contentLoopDao;
+    }
 }

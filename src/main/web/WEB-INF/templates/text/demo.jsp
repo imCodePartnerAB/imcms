@@ -81,6 +81,11 @@ LI { padding-bottom:5; }
             <imcms:text no='2' label='<br>Text' post='<br><br>' />
           </imcms:contentloop2>
 
+
+          <imcms:contentloop2 no="100">
+            <imcms:text no='100' label='<br>Text' post='<br><br>' />
+          </imcms:contentloop2>
+
           <%--
               <imcms:image no='3' label='Bild' pre='<br><br>' post='<br>'/><br>
           --%>
