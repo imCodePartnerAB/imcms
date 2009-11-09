@@ -11,7 +11,7 @@
 	  SELECT v FROM DocumentVersion v 
 	  WHERE v.id IN (
 	    SELECT max(v.id) FROM DocumentVersion v 
-	    WHERE v.documentId = :documentId)
+	    WHERE v.documentId = :metaId)
 	  )    
     ]]>
   </query>
@@ -20,7 +20,7 @@
   <query name="DocumentVersion.getWorkingVersion">
     <![CDATA[
 	  SELECT v FROM DocumentVersion v 
-	  WHERE v.tag = 'WORKING' AND v.documentId = :documentId     
+	  WHERE v.tag = 'WORKING' AND v.documentId = :metaId     
     ]]>
   </query>
   
@@ -28,7 +28,7 @@
   <query name="DocumentVersion.getPublishedVersion">
     <![CDATA[
 	  SELECT v FROM DocumentVersion v 
-	  WHERE v.tag = 'PUBLISHED' AND v.documentId = :documentId     
+	  WHERE v.tag = 'PUBLISHED' AND v.documentId = :metaId
     ]]>
   </query>    
   
@@ -38,12 +38,20 @@
 	  SELECT v FROM DocumentVersion v 
 	  WHERE v.documentId = :documentId AND v.number = :versionNumber    
     ]]>
-  </query>  
+  </query>
+
+  <!-- Unique -->
+  <query name="DocumentVersion.getByMetaIdAndVersionNumber">
+    <![CDATA[
+	  SELECT v FROM DocumentVersion v
+	  WHERE v.documentId = :metaId AND v.number = :versionNumber    
+    ]]>
+  </query>
 
   <!-- Collection -->
-  <query name="DocumentVersion.getByDocumentId">
+  <query name="DocumentVersion.getByMetaId">
     <![CDATA[
-      SELECT v FROM DocumentVersion v WHERE v.documentId = :documentId   
+      SELECT v FROM DocumentVersion v WHERE v.documentId = :metaId   
     ]]>
   </query>
   

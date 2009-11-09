@@ -23,6 +23,7 @@ import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.dao.ContentLoopDao;
+import com.imcode.imcms.dao.DocumentVersionDao;
 
 /**
  * This class is instantiated using spring framework.
@@ -34,6 +35,8 @@ public class DocumentSaver {
     private DocumentMapper documentMapper;
     
     private MetaDao metaDao;
+
+    private DocumentVersionDao documentVersionDao;
 
     private ContentLoopDao contentLoopDao;
     
@@ -79,8 +82,8 @@ public class DocumentSaver {
     throws DocumentSaveException {
     	try {
     		Integer documentId = document.getMeta().getId();
-    		metaDao.publishWorkingVersion(documentId);
-    		DocumentVersion documentVersion = metaDao.createWorkingVersion(documentId, user.getId());
+    		documentVersionDao.publishWorkingVersion(documentId);
+    		DocumentVersion documentVersion = documentVersionDao.createWorkingVersion(documentId, user.getId());
     		
     		if (document.getDocumentTypeId() == DocumentTypeDomainObject.TEXT_ID) {
     			TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document.clone();
@@ -172,7 +175,7 @@ public class DocumentSaver {
         //}
         */
 
-        DocumentVersion documentVersion = metaDao.createWorkingVersion(documentId, user.getId());
+        DocumentVersion documentVersion = documentVersionDao.createWorkingVersion(documentId, user.getId());
         textDocument.getMeta().setVersion(documentVersion);
 
         DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
@@ -209,7 +212,7 @@ public class DocumentSaver {
         document.setDependenciesMetaIdToNull();         
         Meta meta = saveMeta(document);
         
-        DocumentVersion version = metaDao.createWorkingVersion(meta.getId(), user.getId());
+        DocumentVersion version = documentVersionDao.createWorkingVersion(meta.getId(), user.getId());
         document.getMeta().setVersion(version);        
                 
         document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
@@ -359,5 +362,13 @@ public class DocumentSaver {
 
     public void setContentLoopDao(ContentLoopDao contentLoopDao) {
         this.contentLoopDao = contentLoopDao;
+    }
+
+    public DocumentVersionDao getDocumentVersionDao() {
+        return documentVersionDao;
+    }
+
+    public void setDocumentVersionDao(DocumentVersionDao documentVersionDao) {
+        this.documentVersionDao = documentVersionDao;
     }
 }

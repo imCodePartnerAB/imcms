@@ -39,7 +39,7 @@ public class TextDocumentInitializer {
 
     /** Set to documentMapper */
     private DocumentGetter documentGetter;
-    
+
     private MetaDao metaDao;
     
     private TextDao textDao;

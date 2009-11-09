@@ -38,6 +38,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	 */
 	private Meta meta = new Meta();
 
+
+    /**
+     * Document version.
+     */
+    private DocumentVersion version;
+
+
 	@Override
 	public DocumentDomainObject clone() {
 		DocumentDomainObject clone;
@@ -46,7 +53,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 			clone = (DocumentDomainObject) super.clone();
 
 			if (null != attributes) {
-				clone.attributes = (Attributes) attributes.clone();
+				clone.attributes = attributes.clone();
 			}
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
@@ -56,6 +63,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 			clone.meta = meta.clone();
 		}
 
+        if (version != null) {
+            clone.version = version.clone();
+        }
+
 		return clone;
 	}
 	
@@ -63,7 +74,15 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	 * Returns this document's version.
 	 */
 	public DocumentVersion getVersion() {
-		return meta == null ? null : meta.getVersion();
+		return version;
+	}
+
+
+	/**
+	 * Returns this document's version.
+	 */
+	public void setVersion(DocumentVersion version) {
+		this.version = version;
 	}
 	
 	
@@ -552,7 +571,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 		private RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
 
-		public Object clone() throws CloneNotSupportedException {
+        @Override
+		public Attributes clone() throws CloneNotSupportedException {
 			Attributes clone = (Attributes) super.clone();
 
 			clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings

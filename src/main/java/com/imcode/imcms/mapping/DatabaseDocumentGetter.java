@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import imcode.server.ImcmsConstants;
-import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -16,28 +15,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.DocumentVersionSelector;
-import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.MetaDao;
+import com.imcode.imcms.dao.DocumentVersionDao;
 
 /**
- * Retrieves documents from the database. 
+ * Retrieves documents from the database.
+ *  
  * Instantiated by spring-framework and initialized in DocumentMapper constructor. 
  */
-public class DatabaseDocumentGetter implements DocumentGetter {
+public class DatabaseDocumentGetter {
 	
-    /** Permission to create child documents. * */
-    public final static int PERM_CREATE_DOCUMENT = 8;	
+    /** Permission to create child documents. */
+    public final static int PERM_CREATE_DOCUMENT = 8;
 
-    /** Injected by DocumentMapper. */
-    private ImcmsServices services;
-    
+    /** Injected by spring. */
     private MetaDao metaDao;
+
+    /** Injected by spring. */
+    private DocumentVersionDao documentVersionDao;    
         
-    /**
-     * Initializes document's fields.
-     */
+    /** Initializes document's fields. */
     private DocumentInitializingVisitor documentInitializingVisitor;
     
     public Meta getMeta(Integer metaId) {
@@ -46,31 +44,54 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     
     /**
      * Returns latest (working) version of a document.
+     * TODO: Working or published?
      */
-    public DocumentDomainObject getDocument(Integer documentId) {
-    	return getWorkingDocument(documentId);
+    public DocumentDomainObject getDocument(Meta meta) {
+    	return getWorkingDocument(meta);
     }
     
-    public DocumentDomainObject getDocument(Integer documentId, Integer versionNumber) {
-    	return initDocument(loadDocument(documentId, versionNumber));
-    }	    
+    public DocumentDomainObject getDocument(Meta meta, Integer versionNumber) {
+        DocumentVersion version = documentVersionDao.getVersion(meta.getId(), versionNumber);
+
+        return getDocument(meta, version);
+    }
+    
         
-    public DocumentDomainObject getPublishedDocument(Integer documentId) {
-    	return initDocument(loadDocument(documentId, DocumentVersionSelector.PUBLISHED_SELECTOR));
+    public DocumentDomainObject getPublishedDocument(Meta meta) {
+        DocumentVersion version = documentVersionDao.getPublishedVersion(meta.getId());
+
+        return getDocument(meta, version);
     }	
-	
-	public DocumentDomainObject getWorkingDocument(Integer documentId) {
-		return initDocument(loadDocument(documentId, DocumentVersionSelector.WORKING_SELECTOR));
+
+    
+	public DocumentDomainObject getWorkingDocument(Meta meta) {
+        DocumentVersion version = documentVersionDao.getWorkingVersion(meta.getId());
+
+        return getDocument(meta, version);
 	}
-	
+
+
+    private DocumentDomainObject getDocument(Meta meta, DocumentVersion version) {
+        if (version == null) {
+            return null;
+        }
+
+        meta.setVersion(version);
+        
+        return initDocument(createDocument(meta));
+    }
+
+    
     /**
      * @return working documents.
      */
-    public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
+    public List<DocumentDomainObject> getDocuments(Collection<Integer> metaIds) {
         List<DocumentDomainObject> documents = new LinkedList<DocumentDomainObject>();
         
-    	for (Integer documentId: documentIds) {
-    		DocumentDomainObject document = initDocument(loadDocument(documentId, DocumentVersionSelector.WORKING_SELECTOR));
+    	for (Integer metaId: metaIds) {
+            Meta meta = getMeta(metaId);
+            
+    		DocumentDomainObject document = getWorkingDocument(meta);
     		
     		// ??? do not add in case of null
     		if (document != null) {
@@ -82,13 +103,14 @@ public class DatabaseDocumentGetter implements DocumentGetter {
     } 
     
     /**
-     * @return published` documents.
+     * @return published documents.
      */
-    public List<DocumentDomainObject> getPublishedDocuments(Collection<Integer> documentIds) {
+    public List<DocumentDomainObject> getPublishedDocuments(Collection<Integer> metaIds) {
         List<DocumentDomainObject> documents = new LinkedList<DocumentDomainObject>();
         
-    	for (Integer documentId: documentIds) {
-    		DocumentDomainObject document = initDocument(loadDocument(documentId, DocumentVersionSelector.PUBLISHED_SELECTOR));
+    	for (Integer metaId: metaIds) {
+            Meta meta = getMeta(metaId);
+    		DocumentDomainObject document = getPublishedDocument(meta);
     		
     		// ??? do not add in case of null
     		if (document != null) {
@@ -98,36 +120,19 @@ public class DatabaseDocumentGetter implements DocumentGetter {
                                 
         return documents;
     }    
-    
 
-    /**
-     * Loads document
-     */
-    private DocumentDomainObject loadDocument(Integer documentId, DocumentVersionSelector versionSpecifier) {		
-    	Meta meta = metaDao.getMeta(documentId, versionSpecifier);
-		
-		return createDocument(meta);
-    }
-    
-    /**
-     * Loads document
-     */
-    private DocumentDomainObject loadDocument(Integer documentId, Integer versionNumber) {		
-    	Meta meta = metaDao.getMeta(documentId, versionNumber);
-		
-		return createDocument(meta);
-    }    
     
     /**
      * Initializes document's meta.
      */
-    private DocumentDomainObject createDocument(Meta meta) {		
+    private DocumentDomainObject createDocument(Meta meta) {
 		if (meta == null) {
 			return null;
 		}
 		
 		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 		document.setMeta(meta);
+        document.setVersion(meta.getVersion());
 		
 		document.setActualModifiedDatetime(meta.getModifiedDatetime());
         
@@ -263,16 +268,8 @@ public class DatabaseDocumentGetter implements DocumentGetter {
                 default:
             }
         }
-    }   
-
-
-	public ImcmsServices getServices() {
-		return services;
-	}
-
-	public void setServices(ImcmsServices services) {
-		this.services = services;
-	}
+    }
+    
 
 	public MetaDao getMetaDao() {
 		return metaDao;
@@ -289,5 +286,15 @@ public class DatabaseDocumentGetter implements DocumentGetter {
 	public void setDocumentInitializingVisitor(
 			DocumentInitializingVisitor documentInitializingVisitor) {
 		this.documentInitializingVisitor = documentInitializingVisitor;
-	}      
+	}
+
+    public DocumentVersionDao getDocumentVersionDao() {
+        return documentVersionDao;
+    }
+
+    public void setDocumentVersionDao(DocumentVersionDao documentVersionDao) {
+        this.documentVersionDao = documentVersionDao;
+    }
+
+
 }

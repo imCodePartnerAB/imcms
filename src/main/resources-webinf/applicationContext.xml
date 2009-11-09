@@ -105,15 +105,21 @@
   
   <bean id="menuDao" class="com.imcode.imcms.dao.MenuDao">
     <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>  
+  </bean>
+
+  <bean id="documentVersionDao" class="com.imcode.imcms.dao.DocumentVersionDao">
+      <property name="sessionFactory" ref="sessionFactory"/>
+      </bean>
   
   <bean id="documentSaver" class="com.imcode.imcms.mapping.DocumentSaver">
     <property name="metaDao" ref="metaDao"/>
     <property name="contentLoopDao" ref="contentLoopDao"/>
+    <property name="documentVersionDao" ref="documentVersionDao"/>
   </bean>
   
   <bean id="databaseDocumentGetter" class="com.imcode.imcms.mapping.DatabaseDocumentGetter">
     <property name="metaDao" ref="metaDao"/>
+      <property name="documentVersionDao" ref="documentVersionDao"/>
     <property name="documentInitializingVisitor" ref="documentInitializingVisitor"/>
   </bean> 
   

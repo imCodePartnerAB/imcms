@@ -35,51 +35,6 @@ public class MetaDao extends HibernateTemplate {
 		Meta meta = (Meta)get(Meta.class, metaId);
 		
 		return initI18nMetas(meta);
-	}
-	
-	
-	/**
-	 * Creates and returns a new working version of a document.
-	 * 
-	 * Tags existing working version as postponed if it is already present.
-	 * 
-	 * @return next document version.
-	 * 
-	 * @see DocumentMapper.saveNewDocument
-	 * @see DocumentMapper.publishWorkingDocument
-	 * @see DocumentMapper.createWorkingDocumentFromExisting 
-	 * 
-	 * @return new working version of a document
-	 */
-	@Transactional
-	public DocumentVersion createWorkingVersion(Integer documentId, Integer userId) {
-		DocumentVersion workingVersion;
-		
-		DocumentVersion latestVersion = (DocumentVersion)getSession()
-			.getNamedQuery("DocumentVersion.getLastVersion")
-			.setParameter("documentId", documentId)
-			.uniqueResult();
-		
-		if (latestVersion == null) {
-			workingVersion = new DocumentVersion(documentId, 1, DocumentVersionTag.WORKING);			
-		} else {
-			// This must always evaluates to true
-			if (latestVersion.getTag() == DocumentVersionTag.WORKING) {
-				latestVersion.setTag(DocumentVersionTag.POSTPONED);
-				update(latestVersion);
-			}
-			
-			workingVersion = new DocumentVersion(documentId, 
-					latestVersion.getNumber() + 1, 
-					DocumentVersionTag.WORKING);			
-		}
-		
-		workingVersion.setUserId(userId);
-		workingVersion.setCreatedDt(new Date());
-				
-		save(workingVersion);
-		
-		return workingVersion;
 	}	
 	
 	
@@ -88,6 +43,7 @@ public class MetaDao extends HibernateTemplate {
 	 * 
 	 * @return Meta
 	 */
+    /*
 	@Transactional
 	public Meta getMeta(Integer id, Integer versionNumber) {
 		Meta meta = getMeta(id);
@@ -105,7 +61,9 @@ public class MetaDao extends HibernateTemplate {
 		}
 				
 		return initI18nMetas(meta);
-	}	
+	}
+		*/
+
 
 	/**
 	 * Returns meta for given document id and and version tag. 
@@ -114,6 +72,7 @@ public class MetaDao extends HibernateTemplate {
 	 * 
 	 * @return Meta
 	 */
+    /*
 	@Transactional
 	public Meta getMeta(Integer documentId, DocumentVersionSelector versionSelector) {
 		switch (versionSelector.getType()) {
@@ -125,7 +84,9 @@ public class MetaDao extends HibernateTemplate {
 				return getMeta(documentId, versionSelector.getVersionNumber());
 				
 		}
-	}	
+	}
+	*/
+    
 	
 	/**
 	 * Returns published document Meta for given document id. 
@@ -135,6 +96,7 @@ public class MetaDao extends HibernateTemplate {
 	 * @return published document meta.
 	 */
 	// TODO: refactor
+    /*
 	@Transactional
 	public Meta getPublishedMeta(Integer documentId) {
 		Meta meta = getMeta(documentId);
@@ -152,14 +114,7 @@ public class MetaDao extends HibernateTemplate {
 		
 		return initI18nMetas((meta));
 	}
-	
-	@Transactional
-	public DocumentVersion getPublishedVersion(Integer documentId) {
-		return (DocumentVersion)getSession()
-			.getNamedQuery("DocumentVersion.getPublishedVersion")
-		    .setParameter("documentId", documentId)
-		    .uniqueResult();
-	}	
+	*/
 	
 	
 	/**
@@ -169,6 +124,7 @@ public class MetaDao extends HibernateTemplate {
 	 * 
 	 * @return published document meta.
 	 */
+    /*
 	// TODO: refactor
 	@Transactional
 	public Meta getWorkingMeta(Integer documentId) {
@@ -186,7 +142,8 @@ public class MetaDao extends HibernateTemplate {
 		}
 		
 		return initI18nMetas((meta));
-	} 
+	}
+	*/
 
 	
 	/** 
@@ -313,51 +270,6 @@ public class MetaDao extends HibernateTemplate {
 		return reference;
 	}	
 	
-	/**
-	 * Publishes working version of a document.
-	 * 
-	 * Changes published version to archived and working version to published.
-	 * 
-	 * @param documentId document id to publish.
-	 * //TODO?: @param version, and select by version, not by tag ???
-	 * //TODO?: @param userId - user id ??? 
-	 * //TODO?: alter modification date ???
-	 */
-	@Transactional
-	public void publishWorkingVersion(Integer documentId) {
-		DocumentVersion publishedVersion = (DocumentVersion)getSession()
-			.getNamedQuery("DocumentVersion.getPublishedVersion")
-			.setParameter("documentId", documentId)
-			.uniqueResult();
-		
-		if (publishedVersion != null) {
-			publishedVersion.setTag(DocumentVersionTag.ARCHIVED);
-			save(publishedVersion);
-		}
-		
-		DocumentVersion workingVersion = (DocumentVersion)getSession()
-			.getNamedQuery("DocumentVersion.getWorkingVersion")
-			.setParameter("documentId", documentId)
-			.uniqueResult();
-				
-		if (workingVersion != null) {
-			workingVersion.setTag(DocumentVersionTag.PUBLISHED);
-			save(workingVersion);
-		}
-	}
-	
-	
-	/**
-	 * Returns all versions for the document.
-	 * 
-	 * @param documentId document id.
-	 * @return available versions for the document.
-	 */
-	@Transactional
-	public List<DocumentVersion> getDocumentVersions(Integer documentId) {
-		return findByNamedQueryAndNamedParam("DocumentVersion.getByDocumentId", 
-				"documentId", documentId);
-	}	
 	
 	@Transactional
 	public Integer getDocumentIdByAlias(String alias) {
@@ -457,4 +369,11 @@ public class MetaDao extends HibernateTemplate {
 	            (Integer) tuple[1]
 	    };
 	}
+
+    // TODO: REMOVE!!!
+    // TEMP!!!
+    @Override
+    public Session getSession() {
+        return super.getSession();
+    }
 }

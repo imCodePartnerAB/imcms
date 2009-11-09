@@ -46,8 +46,6 @@ public class MetaDaoTest extends DaoTestG {
 		
 		DefaultImcmsServices services = new DefaultImcmsServices();
 		services.setDocumentMapper(documentMapper);
-				
-		databaseDocumentGetter.setServices(services);
 	}
 
 	/**
