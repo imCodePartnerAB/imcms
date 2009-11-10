@@ -90,7 +90,7 @@ public class DocumentSaver {
     			
     			textDocument.setDependenciesMetaIdToNull();
     			textDocument.setId(documentId);    			
-    	        textDocument.getMeta().setVersion(documentVersion);    			
+    	        textDocument.setVersion(documentVersion);
     			
     	        DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
     	            	        
@@ -176,7 +176,7 @@ public class DocumentSaver {
         */
 
         DocumentVersion documentVersion = documentVersionDao.createWorkingVersion(documentId, user.getId());
-        textDocument.getMeta().setVersion(documentVersion);
+        textDocument.setVersion(documentVersion);
 
         DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
@@ -213,7 +213,7 @@ public class DocumentSaver {
         Meta meta = saveMeta(document);
         
         DocumentVersion version = documentVersionDao.createWorkingVersion(meta.getId(), user.getId());
-        document.getMeta().setVersion(version);        
+        document.setVersion(version);        
                 
         document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
         

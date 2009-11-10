@@ -39,12 +39,12 @@ public class DatabaseDocumentGetter {
     private DocumentInitializingVisitor documentInitializingVisitor;
     
     public Meta getMeta(Integer metaId) {
-    	return metaDao.getMeta(metaId); 	
+       return metaDao.getMeta(metaId);
     }
     
     /**
      * Returns latest (working) version of a document.
-     * TODO: Working or published?
+     * TODO: !!! MUST RETURN PUBLISHED VERSION
      */
     public DocumentDomainObject getDocument(Meta meta) {
     	return getWorkingDocument(meta);
@@ -75,10 +75,8 @@ public class DatabaseDocumentGetter {
         if (version == null) {
             return null;
         }
-
-        meta.setVersion(version);
         
-        return initDocument(createDocument(meta));
+        return initDocument(createDocument(meta, version));
     }
 
     
@@ -125,14 +123,15 @@ public class DatabaseDocumentGetter {
     /**
      * Initializes document's meta.
      */
-    private DocumentDomainObject createDocument(Meta meta) {
+    private DocumentDomainObject createDocument(Meta meta, DocumentVersion version) {
 		if (meta == null) {
 			return null;
 		}
 		
 		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+        
 		document.setMeta(meta);
-        document.setVersion(meta.getVersion());
+        document.setVersion(version);
 		
 		document.setActualModifiedDatetime(meta.getModifiedDatetime());
         

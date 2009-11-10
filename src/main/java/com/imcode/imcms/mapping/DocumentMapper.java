@@ -242,7 +242,7 @@ public class DocumentMapper implements DocumentGetter {
     {
 
     	DocumentDomainObject oldDocument = 
-    		getDocument(document.getId(), document.getMeta().getVersion().getNumber());
+    		getDocument(document.getId(), document.getVersion().getNumber());
 
     	try {
     		documentSaver.updateDocument(document, oldDocument, user);

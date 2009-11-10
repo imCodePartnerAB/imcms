@@ -51,6 +51,33 @@ public class DocumentVersionDao extends HibernateTemplate {
 		return workingVersion;
 	}
 
+	/**
+	 * Publishes working version of a document.
+	 *
+	 * Changes published version to archived and working version to published.
+	 *
+	 * @param metaId document's meta id to publish.
+	 * //TODO?: @param version, and select by version, not by tag ???
+	 * //TODO?: @param userId - user id ???
+	 * //TODO?: alter modification date ???
+	 */
+	@Transactional
+	public void publishWorkingVersion(Integer metaId) {
+		DocumentVersion publishedVersion = getPublishedVersion(metaId);
+
+		if (publishedVersion != null) {
+			publishedVersion.setTag(DocumentVersionTag.ARCHIVED);
+			save(publishedVersion);
+		}
+
+		DocumentVersion workingVersion = getWorkingVersion(metaId);
+
+		if (workingVersion != null) {
+			workingVersion.setTag(DocumentVersionTag.PUBLISHED);
+			save(workingVersion);
+		}
+	}    
+
 
 	/**
 	 * Returns all versions for the document.
@@ -77,7 +104,7 @@ public class DocumentVersionDao extends HibernateTemplate {
 	@Transactional
 	public DocumentVersion getWorkingVersion(Integer metaId) {
 		return (DocumentVersion)getSession()
-			.getNamedQuery("DocumentVersion.getPublishedVersion")
+			.getNamedQuery("DocumentVersion.getWorkingVersion")
 		    .setParameter("metaId", metaId)
 		    .uniqueResult();
 	}

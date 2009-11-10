@@ -83,7 +83,7 @@ public class CachingDocumentGetter implements DocumentGetter {
         Meta meta = metas.get(metaId);
 
         if (meta == null) {
-            databaseDocumentGetter.getMeta(metaId);
+            meta = databaseDocumentGetter.getMeta(metaId);
 
             if (meta != null) {
                 metas.put(metaId, meta);
@@ -97,7 +97,7 @@ public class CachingDocumentGetter implements DocumentGetter {
     public DocumentVersionSupport getDocumentVersionSupport(Integer metaId) {
         DocumentVersionSupport versionSupport = versionsSupports.get(metaId);
         
-    	if (versionsSupports == null) {
+    	if (versionSupport == null) {
             List<DocumentVersion> versions =  databaseDocumentGetter.getDocumentVersionDao()
                     .getDocumentVersions(metaId);
             
@@ -133,8 +133,11 @@ public class CachingDocumentGetter implements DocumentGetter {
         DocumentDomainObject document = publishedDocuments.get(metaId);
 
     	if (document == null) {
-	        document = publishedDocuments.get(meta.clone());
-	        publishedDocuments.put(metaId, document);
+	        document = databaseDocumentGetter.getPublishedDocument(meta.clone());
+
+            if (document != null) {
+	            publishedDocuments.put(metaId, document);
+            }
     	}
 
         return document;
@@ -151,7 +154,10 @@ public class CachingDocumentGetter implements DocumentGetter {
         
     	if (document == null) {
 	        document = databaseDocumentGetter.getWorkingDocument(meta.clone());
-	        workingDocuments.put(metaId, document);
+
+            if (document != null) {
+	            workingDocuments.put(metaId, document);
+            }
     	}
 
         return document;

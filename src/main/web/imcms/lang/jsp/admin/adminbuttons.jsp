@@ -27,7 +27,7 @@ UserDomainObject user = (UserDomainObject)request.getAttribute("user") ;
 DocumentDomainObject document = (DocumentDomainObject)request.getAttribute("document") ;
 DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetFor( document ) ;
 DocumentVersionSupport versionSupport = Imcms.getServices().getDocumentMapper().getDocumentVersionSupport(document.getId());
-DocumentVersion version = document.getMeta().getVersion();
+DocumentVersion version = document.getVersion();
 
 String queryString = request.getQueryString();
 StringBuffer baseURL = request.getRequestURL();

@@ -11,11 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.imcode.imcms.api.Content;
-import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.api.*;
 import com.imcode.imcms.mapping.orm.TemplateNames;
 
 /**
@@ -289,7 +285,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      */   
     public TextDomainObject setText(I18nLanguage language, Integer no, TextDomainObject text) {
         Meta meta = getMeta();
-        Integer documentVersion = meta.getVersion().getNumber();
+        Integer documentVersion = getVersion().getNumber();
         Integer metaId = meta.getId();        
 
         Map<Integer, TextDomainObject> map;
@@ -669,16 +665,17 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		
 		Integer metaId = meta == null ? null : meta.getId();
 		Long loopId = null;
-		Integer metaVersion = meta == null ? null : meta.getVersion().getNumber();
+		DocumentVersion documentVersion = getVersion();
+        Integer versionNumber = documentVersion == null ? null :  documentVersion.getNumber();
 		
 		if (oldContentLoop != null) {
 			loopId = oldContentLoop.getId();
-			metaVersion = oldContentLoop.getDocumentVersion();
+			versionNumber = oldContentLoop.getDocumentVersion();
 		}
 		
 		newContentLoop.setModified(true);
 		newContentLoop.setMetaId(metaId);
-		newContentLoop.setDocumentVersion(metaVersion);
+		newContentLoop.setDocumentVersion(versionNumber);
 		newContentLoop.setId(loopId);		
 		newContentLoop.setNo(no);
 		

@@ -65,7 +65,7 @@ public class TextDocumentInitializer {
     public void initTexts(TextDocumentDomainObject document) {
      	Meta meta = document.getMeta();
     	
-    	Collection<TextDomainObject> texts = textDao.getTexts(meta.getId(), meta.getVersion().getNumber());    	    
+    	Collection<TextDomainObject> texts = textDao.getTexts(meta.getId(), document.getVersion().getNumber());    	    
     	Map<I18nLanguage, Map<Integer, TextDomainObject>> textsMap = new HashMap<I18nLanguage, Map<Integer,TextDomainObject>>();
 
         Map<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>> loopTexts
@@ -107,7 +107,7 @@ public class TextDocumentInitializer {
     public void initImages(TextDocumentDomainObject document) {
     	Meta meta = document.getMeta();
     	
-    	Collection<ImageDomainObject> images = imageDao.getImages(meta.getId(), meta.getVersion().getNumber());
+    	Collection<ImageDomainObject> images = imageDao.getImages(meta.getId(), document.getVersion().getNumber());
     	
     	Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
     	
@@ -136,7 +136,7 @@ public class TextDocumentInitializer {
     public void initMenus(TextDocumentDomainObject document) {
     	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getMeta().getId());	
     	Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
-    	DocumentVersionTag tag = document.getMeta().getVersion().getTag();
+    	DocumentVersionTag tag = document.getVersion().getTag();
     	DocumentVersionSelector versionSelector = tag == DocumentVersionTag.WORKING 
     		? DocumentVersionSelector.WORKING_SELECTOR
     		: DocumentVersionSelector.PUBLISHED_SELECTOR;

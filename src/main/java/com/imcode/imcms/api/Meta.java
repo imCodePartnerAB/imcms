@@ -133,19 +133,7 @@ public class Meta implements Serializable, Cloneable {
 	@Enumerated(EnumType.STRING)
 	@Column(name="missing_i18n_show_rule", nullable=false)
 	private UnavailableI18nDataSubstitution unavailableI18nDataSubstitution =
-		UnavailableI18nDataSubstitution.DO_NOT_SHOW;
-
-	/**
-	 * In the current imcms release, version is not a logical part of meta
-	 * since meta does not have version itself.
-	 * All versions of a particular document have the same meta. 
-	 * But technically every loaded (cached) document instance also loads
-	 * and references its own meta object.   
-	 * 
-	 * NB! In the future most of meta fields will be also version-ed. 
-	 */
-	@Transient
-	private DocumentVersion version;	
+		UnavailableI18nDataSubstitution.DO_NOT_SHOW;	
 	
 	// CHECKED	
 	@Column(name="activate", nullable=false, updatable=false)
@@ -326,7 +314,6 @@ public class Meta implements Serializable, Cloneable {
 			Meta clone = (Meta)super.clone();
 			
 			clone.unavailableI18nDataSubstitution = unavailableI18nDataSubstitution;
-			clone.version = version.clone();
 
 			clone.permisionSetEx = new HashSet<PermisionSetEx>(permisionSetEx);
 			clone.permisionSetExForNew = new HashSet<PermisionSetEx>(permisionSetExForNew);
@@ -616,13 +603,5 @@ public class Meta implements Serializable, Cloneable {
 	public boolean isShowDisabledI18nContentInDefaultLanguage() {
 		return unavailableI18nDataSubstitution == 
 			UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;
-	}
-
-	public DocumentVersion getVersion() {
-		return version;
-	}
-
-	public void setVersion(DocumentVersion documentVersion) {
-		this.version = documentVersion;
 	}
 }

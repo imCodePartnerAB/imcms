@@ -106,7 +106,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
         Integer documentId = textDocument.getMeta().getId();
-        Integer documentVersionNumber = textDocument.getMeta().getVersion().getNumber();
+        Integer documentVersionNumber = textDocument.getVersion().getNumber();
 
         // delete all texts for meta and version
         textDao.deleteTexts(documentId, documentVersionNumber);
@@ -141,7 +141,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         ContentLoopDao dao = (ContentLoopDao)services.getSpringBean("contentLoopDao");
         Integer metaId = textDocument.getMeta().getId();
         Integer documentVersion = textDocument.getVersion().getNumber();
-        Integer documentVersionNumber = textDocument.getMeta().getVersion().getNumber();
+        Integer documentVersionNumber = textDocument.getVersion().getNumber();
         
         // delete all loops for meta and version
         dao.deleteLoops(metaId, documentVersionNumber);
@@ -166,7 +166,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
         Integer metaId = textDocument.getMeta().getId();
-        Integer documentVersionNumber = textDocument.getMeta().getVersion().getNumber();
+        Integer documentVersionNumber = textDocument.getVersion().getNumber();
         
         for (Map<Integer, ImageDomainObject> map: textDocument.getAllImages().values()) {
         	for (ImageDomainObject image: map.values()) {

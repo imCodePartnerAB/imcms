@@ -29,11 +29,11 @@ List<DocumentVersion> documentVersions = dm.getDocumentVersions(documentId);
 	for (DocumentVersion version: documentVersions) {
 		%>
 		<tr>
-		  <td><%=version.getVersion()%></td>
-		  <td><%=version.getVersionTag()%></td>
+		  <td><%=version.getNumber()%></td>
+		  <td><%=version.getTag()%></td>
 		  <td>
-		    <imcms:text no='<%=textIndex%>' version="<%=version.getVersion()%>"/>
-		  </td>		  
+		    <imcms:text no='<%=textIndex%>' version="<%=version.getNumber()%>"/>
+		  </td>
 		</tr>
 		<%	
 	}
