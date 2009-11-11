@@ -340,7 +340,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         
         newText.setModified(true);
         newText.setMetaId(metaId);
-        newText.setMetaVersion(documentVersion);
+        newText.setDocumentVersion(documentVersion);
         newText.setNo(no);
         newText.setLanguage(language);
 
@@ -444,7 +444,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	
     	if (oldImage != null) {
     		newImage.setId(oldImage.getId());
-    		newImage.setMetaVersion(oldImage.getMetaVersion());
+    		newImage.setDocumentVersion(oldImage.getDocumentVersion());
     	} else {
     		newImage.setId(null);
     	}

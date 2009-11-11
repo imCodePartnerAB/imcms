@@ -14,42 +14,34 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- * Represents document's version.
+ * A document version.
  */
-@Entity(name="DocumentVersion")
-@Table(name="meta_version")
+@Entity
+@Table(name="imcms_doc_versions")
 public class DocumentVersion implements Cloneable {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="id")
 	private Long id;
 
 	@Column(name="meta_id", updatable=false)
-	private Integer documentId;
+	private Integer metaId;
 
-	/**
-	 * Version number
-	 */
-	@Column(name="version")	
+	/**  Version number */
 	private Integer number;
 	
-	@Column(name="user_id", updatable=false)	
-	private Integer userId;
+	@Column(name="created_by", updatable=false)	
+	private Integer createdBy;
 	
 	@Column(name="created_dt")	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdDt;	
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="version_tag")
-	private DocumentVersionTag tag;
+    public DocumentVersion() {}
 	
-	public DocumentVersion() {}
-	
-	public DocumentVersion(Integer documentId, Integer versionNumber, DocumentVersionTag versionTag) {
-		this.documentId = documentId;
-		this.number = versionNumber;
-		this.tag = versionTag;
+	public DocumentVersion(Integer metaId, Integer number, Integer createBy) {
+		this.metaId = metaId;
+		this.number = number;
+        this.createdBy = createdBy;
 	}	
 	
 	@Override
@@ -69,87 +61,30 @@ public class DocumentVersion implements Cloneable {
 		this.id = id;
 	}
 
-	public Integer getDocumentId() {
-		return documentId;
+	public Integer getMetaId() {
+		return metaId;
 	}
 
-	public void setDocumentId(Integer documentId) {
-		this.documentId = documentId;
+	public void setMetaId(Integer metaId) {
+		this.metaId = metaId;
 	}
 
 	
-	/**
-	 * Use getNumber instead
-	 */
-	@Deprecated
-	public Integer getVersion() {
+	public Integer getNumber() {
 		return number;
 	}
 
-	
-	/**
-	 * Use setNumber instead
-	 */	
-	@Deprecated
-	public void setVersion(Integer version) {
-		this.number = version;
-	}
-	
-	/**
-	 * @return version number.
-	 */
-	public Integer getNumber() {
-		return getVersion();
-	}
-
-	
-	/**
-	 * Sets version number.
-	 * 
-	 * @param number version number
-	 */	
 	public void setNumber(Integer number) {
-		setVersion(number);
-	}	
-
-	/**
-	 * Use getTag instead
-	 */	
-	@Deprecated	
-	public DocumentVersionTag getVersionTag() {
-		return tag;
+		this.number = number;
 	}
 
-	/**
-	 * Use setTag instead
-	 */	
-	@Deprecated	
-	public void setVersionTag(DocumentVersionTag versionTag) {
-		this.tag = versionTag;
-	}
-	
-	/** 
-	 * @return document version tag.
-	 */
-	public DocumentVersionTag getTag() {
-		return getVersionTag();
+
+	public Integer getCreatedBy() {
+		return createdBy;
 	}
 
-	/** 
-	 * Sets document version tag.
-	 * 
-	 * @param tag document version tag.
-	 */
-	public void setTag(DocumentVersionTag tag) {
-		setVersionTag(tag);
-	}
-
-	public Integer getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+	public void setCreatedBy(Integer createdBy) {
+		this.createdBy = createdBy;
 	}
 
 	public Date getCreatedDt() {

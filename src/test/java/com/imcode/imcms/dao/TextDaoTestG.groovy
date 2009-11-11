@@ -104,7 +104,7 @@ public class TextDaoTestG extends DaoTestG {
 	}
 	
     @Test void getTextsForDocument() {
-    	def versions = metaDao.getDocumentVersions(1001)
+    	def versions = metaDao.getAllVersions(1001)
     	def language = languageDao.defaultLanguage
         def texts = textDao.getTexts(1001, 1, language, versions);
     

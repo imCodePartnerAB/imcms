@@ -36,7 +36,7 @@
     if (loop != null) {
         Content loopContent = (Content)request.getAttribute("tag.text.loop.content");
 
-        url += "&loop_no="+loop.getNo()+"&content_index="+loopContent.getSequenceIndex();
+        url += "&loop_no="+loop.getNo()+"&content_index="+loopContent.getIndex();
     }
 
 

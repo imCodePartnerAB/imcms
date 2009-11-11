@@ -3,80 +3,38 @@ package com.imcode.imcms.dao;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.DocumentVersionTag;
 
 import java.util.Date;
 import java.util.List;
 
 /**
- * 
+ *     TODO: implement get active version.
  */
 public class DocumentVersionDao extends HibernateTemplate {
 
 	/**
-	 * Creates and returns a new working version of a document.
+	 * Creates and returns a new version of a document.
+     * If document does not have version creates version with number 0 otherwise creates version with next version number.
 	 *
-	 * Tags existing working version as postponed if it is already present.
-	 *
-	 * @return next document version.
+	 * @return new document version.
 	 */
 	@Transactional
-	public DocumentVersion createWorkingVersion(Integer metaId, Integer userId) {
-		DocumentVersion workingVersion;
-
+	public synchronized DocumentVersion createVersion(Integer metaId, Integer userId) {
 		DocumentVersion latestVersion = (DocumentVersion)getSession()
-			.getNamedQuery("DocumentVersion.getLastVersion")
+			.getNamedQuery("DocumentVersion.getLatestVersion")
 			.setParameter("metaId", metaId)
 			.uniqueResult();
 
-		if (latestVersion == null) {
-			workingVersion = new DocumentVersion(metaId, 1, DocumentVersionTag.WORKING);
-		} else {
-			// This must always evaluates to true
-			if (latestVersion.getTag() == DocumentVersionTag.WORKING) {
-				latestVersion.setTag(DocumentVersionTag.POSTPONED);
-				update(latestVersion);
-			}
+        Integer versionNumber = latestVersion == null
+                ? 0
+                : latestVersion.getNumber() + 1;
 
-			workingVersion = new DocumentVersion(metaId,
-					latestVersion.getNumber() + 1,
-					DocumentVersionTag.WORKING);
-		}
+        DocumentVersion version =  new DocumentVersion(metaId, versionNumber, userId);
 
-		workingVersion.setUserId(userId);
-		workingVersion.setCreatedDt(new Date());
+		save(version);
 
-		save(workingVersion);
-
-		return workingVersion;
+		return version;
 	}
-
-	/**
-	 * Publishes working version of a document.
-	 *
-	 * Changes published version to archived and working version to published.
-	 *
-	 * @param metaId document's meta id to publish.
-	 * //TODO?: @param version, and select by version, not by tag ???
-	 * //TODO?: @param userId - user id ???
-	 * //TODO?: alter modification date ???
-	 */
-	@Transactional
-	public void publishWorkingVersion(Integer metaId) {
-		DocumentVersion publishedVersion = getPublishedVersion(metaId);
-
-		if (publishedVersion != null) {
-			publishedVersion.setTag(DocumentVersionTag.ARCHIVED);
-			save(publishedVersion);
-		}
-
-		DocumentVersion workingVersion = getWorkingVersion(metaId);
-
-		if (workingVersion != null) {
-			workingVersion.setTag(DocumentVersionTag.PUBLISHED);
-			save(workingVersion);
-		}
-	}    
 
 
 	/**
@@ -86,36 +44,28 @@ public class DocumentVersionDao extends HibernateTemplate {
 	 * @return available versions for the document.
 	 */
 	@Transactional
-	public List<DocumentVersion> getDocumentVersions(Integer metaId) {
+	public List<DocumentVersion> getAllVersions(Integer metaId) {
 		return findByNamedQueryAndNamedParam("DocumentVersion.getByMetaId",
 				"metaId", metaId);
 	}
 
-
+    
+    // TODO: refactor - hardcoded - returns v number 0.
 	@Transactional
-	public DocumentVersion getPublishedVersion(Integer metaId) {
+	public DocumentVersion getActiveVersion(Integer metaId) {
 		return (DocumentVersion)getSession()
-			.getNamedQuery("DocumentVersion.getPublishedVersion")
+			.getNamedQuery("DocumentVersion.getActiveVersion")
 		    .setParameter("metaId", metaId)
 		    .uniqueResult();
 	}
 
 
 	@Transactional
-	public DocumentVersion getWorkingVersion(Integer metaId) {
+	public DocumentVersion getVersion(Integer metaId, Integer number) {
 		return (DocumentVersion)getSession()
-			.getNamedQuery("DocumentVersion.getWorkingVersion")
+			.getNamedQuery("DocumentVersion.getByMetaIdAndNumber")
 		    .setParameter("metaId", metaId)
-		    .uniqueResult();
-	}
-
-
-	@Transactional
-	public DocumentVersion getVersion(Integer metaId, Integer versionNumber) {
-		return (DocumentVersion)getSession()
-			.getNamedQuery("DocumentVersion.getByMetaIdAndVersionNumber")
-		    .setParameter("metaId", metaId)
-            .setParameter("versionNumber", versionNumber)
+            .setParameter("number", number)
 		    .uniqueResult();
 	}
 }

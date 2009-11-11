@@ -30,7 +30,6 @@ List<DocumentVersion> documentVersions = dm.getDocumentVersions(documentId);
 		%>
 		<tr>
 		  <td><%=version.getNumber()%></td>
-		  <td><%=version.getTag()%></td>
 		  <td>
 		    <imcms:text no='<%=textIndex%>' version="<%=version.getNumber()%>"/>
 		  </td>

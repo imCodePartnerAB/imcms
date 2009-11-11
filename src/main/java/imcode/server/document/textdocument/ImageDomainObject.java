@@ -26,23 +26,22 @@ import com.imcode.imcms.mapping.DocumentStoringVisitor;
 import com.imcode.util.ImageSize;
 
 @Entity(name="Image")
-@Table(name="images")
+@Table(name="imcms_text_doc_images")
 @NamedQueries({
 	@NamedQuery(name="Image.getByLanguageId", query="select i from Image i where i.metaId = :metaId and i.language.id = :languageId"),
-	@NamedQuery(name="Image.getLanguagesToImagesByMetaId", query="select l, i from Image i right join i.language l where (i.metaId = :metaId and i.name = :name) or i.metaId is null order by l.default desc"),
+	@NamedQuery(name="Image.getLanguagesToImagesByMetaId", query="select l, i from Image i right join i.language l where (i.metaId = :metaId and i.no = :name) or i.metaId is null order by l.default desc"),
 	@NamedQuery(name="Image.getAllImages", query="select i from Image i where i.metaId = :metaId"),
 	@NamedQuery(name="Image.getAllDocumentImagesByLanguage", query="select i from Image i where i.metaId = :metaId and i.language.id = :languageId"),
-	@NamedQuery(name="Image.getDefaultImage", query="select i from Image i where i.metaId = :metaId and i.name = :name and i.language.default is true"),
+	@NamedQuery(name="Image.getDefaultImage", query="select i from Image i where i.metaId = :metaId and i.no = :name and i.language.default is true"),
 	
 	// Collection			
 	@NamedQuery(name="Image.getByDocumentIdAndDocumentVersion", 
-			query="SELECT i FROM Image i WHERE i.metaId = :documentId AND i.metaVersion = :documentVersion")
+			query="SELECT i FROM Image i WHERE i.metaId = :documentId AND i.documentVersion = :documentVersion")
 	
 })
 public class ImageDomainObject implements Serializable, Cloneable {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="image_id")
 	private Long id;
     
 	@Transient
@@ -51,13 +50,11 @@ public class ImageDomainObject implements Serializable, Cloneable {
 	@Column(name="meta_id")
 	private Integer metaId;
 	
-	@Column(name="meta_version")
-	private Integer metaVersion;	
+	@Column(name="doc_version_number")
+	private Integer documentVersion;
 
-    /**
-     * Image index.
-     */
-    private String name = "";
+    /** Image no in a document.*/
+    private String no = "";
 	
     private int width;
     private int height;
@@ -99,7 +96,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
     @Column(name="loop_no")
     private Integer loopNo;
 
-    @Column(name="content_index")
+    @Column(name="loop_content_index")
     private Integer contentIndex;    
     
     /**
@@ -107,10 +104,10 @@ public class ImageDomainObject implements Serializable, Cloneable {
      */
 	@OneToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="language_id", referencedColumnName="language_id")    
-    private I18nLanguage language;		
+    private I18nLanguage language;
 
     public String getName() {
-        return name;
+        return no;
     }
 
     public ImageSize getDisplayImageSize() {
@@ -180,7 +177,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
     }
 
     public void setName(String image_name) {
-        this.name = image_name;
+        this.no = image_name;
     }
 
     public void setWidth(int image_width) {
@@ -278,7 +275,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
         
         final ImageDomainObject o = (ImageDomainObject)obj;
         return new EqualsBuilder().append(source.toStorageString(), o.getSource().toStorageString())
-                .append(name, o.getName())
+                .append(no, o.getName())
                 .append(width, o.getWidth())
                 .append(height, o.getHeight())
                 .append(border, o .getBorder())
@@ -296,7 +293,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(source.toStorageString())
-                .append(name).append(width).append(height)
+                .append(no).append(width).append(height)
                 .append(border).append(align).append(alternateText)
                 .append(lowResolutionUrl).append(verticalSpace).append(horizontalSpace)
                 .append(target).append(linkUrl)
@@ -351,17 +348,28 @@ public class ImageDomainObject implements Serializable, Cloneable {
 	public void setType(Integer type) {
 		this.type = type;
 	}
-	
+
+    @Deprecated
 	public Integer getIndex() {
-		return name == null ? null : new Integer(name);
+		return no == null ? null : new Integer(no);
 	}
-	
+
+    @Deprecated
 	public void setIndex(Integer index) {
 		if (index == null) {
-			name = null;
+			no = null;
 		} else {
-			name = index.toString();
+			no = index.toString();
 		}
+	}
+
+
+	public Integer getNo() {
+		return getIndex();
+	}
+
+	public void setNo(Integer no) {
+		setIndex(no);
 	}
 
 	public boolean isModified() {
@@ -372,12 +380,12 @@ public class ImageDomainObject implements Serializable, Cloneable {
 		this.modified = modified;
 	}
 
-	public Integer getMetaVersion() {
-		return metaVersion;
+	public Integer getDocumentVersion() {
+		return documentVersion;
 	}
 
-	public void setMetaVersion(Integer metaVersion) {
-		this.metaVersion = metaVersion;
+	public void setDocumentVersion(Integer documentVersion) {
+		this.documentVersion = documentVersion;
 	}
 
     public Integer getLoopNo() {

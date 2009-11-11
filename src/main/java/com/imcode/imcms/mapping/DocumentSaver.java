@@ -82,8 +82,9 @@ public class DocumentSaver {
     throws DocumentSaveException {
     	try {
     		Integer documentId = document.getMeta().getId();
-    		documentVersionDao.publishWorkingVersion(documentId);
-    		DocumentVersion documentVersion = documentVersionDao.createWorkingVersion(documentId, user.getId());
+            // publish working version
+    		documentVersionDao.createVersion(documentId, user.getId());
+    		DocumentVersion documentVersion = documentVersionDao.createVersion(documentId, user.getId());
     		
     		if (document.getDocumentTypeId() == DocumentTypeDomainObject.TEXT_ID) {
     			TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document.clone();
@@ -175,7 +176,7 @@ public class DocumentSaver {
         //}
         */
 
-        DocumentVersion documentVersion = documentVersionDao.createWorkingVersion(documentId, user.getId());
+        DocumentVersion documentVersion = documentVersionDao.createVersion(documentId, user.getId());
         textDocument.setVersion(documentVersion);
 
         DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
@@ -212,7 +213,7 @@ public class DocumentSaver {
         document.setDependenciesMetaIdToNull();         
         Meta meta = saveMeta(document);
         
-        DocumentVersion version = documentVersionDao.createWorkingVersion(meta.getId(), user.getId());
+        DocumentVersion version = documentVersionDao.createVersion(meta.getId(), user.getId());
         document.setVersion(version);        
                 
         document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));

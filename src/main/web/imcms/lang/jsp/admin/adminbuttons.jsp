@@ -26,7 +26,7 @@
 UserDomainObject user = (UserDomainObject)request.getAttribute("user") ;
 DocumentDomainObject document = (DocumentDomainObject)request.getAttribute("document") ;
 DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetFor( document ) ;
-DocumentVersionSupport versionSupport = Imcms.getServices().getDocumentMapper().getDocumentVersionSupport(document.getId());
+DocumentVersionInfo versionSupport = Imcms.getServices().getDocumentMapper().getDocumentVersionSupport(document.getId());
 DocumentVersion version = document.getVersion();
 
 String queryString = request.getQueryString();
@@ -216,7 +216,7 @@ if (sFlags != null && sFlags.equals("1")) {
             	DocumentVersionTag tag = v.getTag();
             	String sVersion = tag == DocumentVersionTag.PUBLISHED || tag == DocumentVersionTag.WORKING
             		? sVersion = tag.name()
-            		: v.getNumber().toString();            		
+            		: v.getNumber().toString();
                 %>            
             	<option value="<%=sVersion%>" <%= sSelected %>>
             		<%=v.getNumber()%> <%=(v.getTag().toString())%>

@@ -90,13 +90,8 @@
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>  
 
-  <bean id="contentIndexesDao" class="com.imcode.imcms.dao.ContentIndexesDao">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>
-
   <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDao">
     <property name="sessionFactory" ref="sessionFactory"/>
-    <property name="contentIndexesDao" ref="contentIndexesDao"/>
   </bean> 
   
   <bean id="nativeQueriesDao" class="com.imcode.imcms.dao.NativeQueriesDao">

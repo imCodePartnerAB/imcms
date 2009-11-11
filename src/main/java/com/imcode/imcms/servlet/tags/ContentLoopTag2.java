@@ -15,7 +15,6 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.api.ContentIndexes;
 
 /**
  * Second version of content loop tag.
@@ -25,20 +24,15 @@ public class ContentLoopTag2 extends BodyTagSupport {
     /** Creates content loop with a single content. */
     private static ContentLoop createLoop(Integer metaId, Integer documentVersion, Integer no) {
         ContentLoop loop = new ContentLoop();
-        ContentIndexes indexes = loop.getContentIndexes();
 
         loop.setMetaId(metaId);
         loop.setNo(no);
         loop.setDocumentVersion(documentVersion);
 
-        indexes.setSequence(0);
-        indexes.setHigherOrder(0);
-        indexes.setLowerOrder(0);
-
         Content content = new Content();
 
         content.setOrderIndex(0);
-        content.setSequenceIndex(0);
+        content.setIndex(0);
 
         loop.getContents().add(content);
 
@@ -118,7 +112,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
         currentContent = contentsIterator.next();
         lastContent = !contentsIterator.hasNext();
 
-		int sequenceIndex = currentContent.getSequenceIndex();
+		int sequenceIndex = currentContent.getIndex();
 
     	//pageContext.setAttribute(indexVar, index);
 

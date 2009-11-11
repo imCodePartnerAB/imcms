@@ -13,7 +13,7 @@ import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.collections.map.LRUMap;
 
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.DocumentVersionSupport;
+import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.api.Meta;
 
 /**
@@ -30,7 +30,7 @@ public class CachingDocumentGetter implements DocumentGetter {
 	 * 
      * Cache key is a document id. 
 	 */
-	private Map<Integer, DocumentVersionSupport> versionsSupports;
+	private Map<Integer, DocumentVersionInfo> versionsSupports;
 	
 	/**
 	 * Published documents cache.
@@ -65,7 +65,7 @@ public class CachingDocumentGetter implements DocumentGetter {
     public CachingDocumentGetter(DatabaseDocumentGetter databaseDocumentGetter, int cacheSize) {
         this.databaseDocumentGetter = databaseDocumentGetter;
         
-        versionsSupports = new HashMap<Integer, DocumentVersionSupport>();
+        versionsSupports = new HashMap<Integer, DocumentVersionInfo>();
         workingDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
         publishedDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
         metas = Collections.synchronizedMap(new LRUMap(cacheSize));
@@ -94,15 +94,15 @@ public class CachingDocumentGetter implements DocumentGetter {
     }
 
     
-    public DocumentVersionSupport getDocumentVersionSupport(Integer metaId) {
-        DocumentVersionSupport versionSupport = versionsSupports.get(metaId);
+    public DocumentVersionInfo getDocumentVersionSupport(Integer metaId) {
+        DocumentVersionInfo versionSupport = versionsSupports.get(metaId);
         
     	if (versionSupport == null) {
             List<DocumentVersion> versions =  databaseDocumentGetter.getDocumentVersionDao()
-                    .getDocumentVersions(metaId);
+                    .getAllVersions(metaId);
             
             if (versions.size() > 0) {
-                versionSupport = new DocumentVersionSupport(metaId, versions);
+                versionSupport = new DocumentVersionInfo(metaId, versions);
                 versionsSupports.put(metaId, versionSupport);
             }
     	}

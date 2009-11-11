@@ -196,7 +196,7 @@ public class ContentLoopDaoTestG extends DaoTestG {
         long oldCurrentContentId = currentContent.getId();
         long oldPrevContentId = prevContent.getId();        
         
-        clDao.moveContentUp(loop, currentContent.sequenceIndex);
+        clDao.moveContentUp(loop, currentContent.index);
         
         loop = clDao.getContentLoop(1001, 1);
         currentContent = loop.getContents().get(4);
@@ -217,7 +217,7 @@ public class ContentLoopDaoTestG extends DaoTestG {
         long oldCurrentContentId = currentContent.getId();
         long oldNextContentId = nextContent.getId();        
         
-        clDao.moveContentDown(loop, currentContent.sequenceIndex);
+        clDao.moveContentDown(loop, currentContent.index);
         
         loop = clDao.getContentLoop(1001, 1);
         currentContent = loop.getContents().get(5);
@@ -235,13 +235,13 @@ public class ContentLoopDaoTestG extends DaoTestG {
         ContentLoop loop = clDao.getContentLoop(1001, 1);      
         Content content = loop.getContents().get(5);        
         
-        clDao.insertNewContentBefore(loop, content.sequenceIndex);
+        clDao.insertNewContentBefore(loop, content.index);
     }
     
     @Test public void insertNextContentAfterBySequenceIndex() {
         ContentLoop loop = clDao.getContentLoop(1001, 1);      
         Content content = loop.getContents().get(5);        
         
-        clDao.insertNewContentAfter(loop, content.sequenceIndex);
+        clDao.insertNewContentAfter(loop, content.index);
     }    
 }

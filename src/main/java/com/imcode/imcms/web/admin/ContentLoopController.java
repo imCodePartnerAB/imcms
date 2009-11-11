@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.Content;
-import com.imcode.imcms.api.ContentIndexes;
 import com.imcode.imcms.dao.ContentLoopDao;
 import com.imcode.imcms.mapping.DocumentMapper;
 import java.util.List;

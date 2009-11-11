@@ -79,7 +79,7 @@ public final class SaveText extends HttpServlet {
 
     		text.setMetaId(document.getId());
     		text.setNo(txt_no);
-            text.setMetaVersion(document.getVersion().getNumber());
+            text.setDocumentVersion(document.getVersion().getNumber());
     		text.setLanguage(I18nSupport.getCurrentLanguage());
             text.setText(text_string);
             text.setType(text_format);

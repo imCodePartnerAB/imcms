@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.imcode.imcms.api.DocumentProperty;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionSelector;
-import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;

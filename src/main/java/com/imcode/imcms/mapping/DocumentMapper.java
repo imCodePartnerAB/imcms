@@ -138,7 +138,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param documentId document id.
      * @return version support for a given document or null if document does not exist.
      */
-    public DocumentVersionSupport getDocumentVersionSupport(Integer documentId) {
+    public DocumentVersionInfo getDocumentVersionSupport(Integer documentId) {
     	return cachingDocumentGetter.getDocumentVersionSupport(documentId);
     }
 
@@ -254,7 +254,7 @@ public class DocumentMapper implements DocumentGetter {
         
         if (meta.getPublicationStatusInt() == Document.PublicationStatus.APPROVED.asInt()) {
         	Integer documentId = meta.getId();
-        	DocumentVersionSupport versionSupport = getDocumentVersionSupport(documentId);
+        	DocumentVersionInfo versionSupport = getDocumentVersionSupport(documentId);
         	if (!versionSupport.hasPublishedVersion()) {
             	document = getWorkingDocument(document.getMeta().getId());
             	publishWorkingDocument(document.clone(), user);
@@ -330,8 +330,7 @@ public class DocumentMapper implements DocumentGetter {
         
         cachingDocumentGetter.removeDocumentFromCache(documentId);
 
-
-        if (document.getVersion().getTag() == DocumentVersionTag.WORKING) {
+        if (document.getVersion().getNumber() == 0) {
             documentIndex.indexDocument(document);
         }
     }
@@ -649,7 +648,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return all document's versions 
      */
     public List<DocumentVersion> getDocumentVersions(Integer documentId) {
-    	DocumentVersionSupport support = getDocumentVersionSupport(documentId);
+    	DocumentVersionInfo support = getDocumentVersionSupport(documentId);
     	
     	if (support != null) {
     		return support.getVersions();
@@ -657,7 +656,7 @@ public class DocumentMapper implements DocumentGetter {
     		return new LinkedList<DocumentVersion>();
     	}
     	
-    	//return documentSaver.getMetaDao().getDocumentVersions(documentId);
+    	//return documentSaver.getMetaDao().getAllVersions(documentId);
     }
     
         

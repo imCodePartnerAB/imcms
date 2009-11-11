@@ -46,15 +46,15 @@ public class IndexDocumentFactory {
     public Document createIndexDocument( DocumentDomainObject document ) {
         DocumentVersion version = document.getVersion();
 
-        log.debug(String.format("Indexing document %s, version %s (%s).",
-                document.getId(), version.getTag(), version.getNumber()));
+        //log.debug(String.format("Indexing document %s, version %s (%s).",
+        //        document.getId(), version.getTag(), version.getNumber()));
         
         Document indexDocument = new Document();
 
         int documentId = document.getId();
         indexDocument.add(new Field(DocumentIndex.FIELD__META_ID, "" + documentId, Field.Store.YES, Field.Index.NOT_ANALYZED));
         indexDocument.add(new Field(DocumentIndex.FIELD__VERSION_NUMBER, version.getNumber().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-        indexDocument.add(new Field(DocumentIndex.FIELD__VERSION_TAG, version.getTag().name(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+        //indexDocument.add(new Field(DocumentIndex.FIELD__VERSION_TAG, version.getTag().name(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, NumberTools.longToString(documentId) ) );
         

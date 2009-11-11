@@ -6,63 +6,37 @@
 <hibernate-mapping>
   
   <!-- Unique -->
-  <query name="DocumentVersion.getLastVersion">
+  <query name="DocumentVersion.getLatestVersion">
     <![CDATA[
 	  SELECT v FROM DocumentVersion v 
 	  WHERE v.id IN (
 	    SELECT max(v.id) FROM DocumentVersion v 
-	    WHERE v.documentId = :metaId)
+	    WHERE v.metaId = :metaId)
 	  )    
     ]]>
   </query>
-    
-  <!-- Unique -->
-  <query name="DocumentVersion.getWorkingVersion">
-    <![CDATA[
-	  SELECT v FROM DocumentVersion v 
-	  WHERE v.tag = 'WORKING' AND v.documentId = :metaId     
-    ]]>
-  </query>
   
-  <!-- Unique -->
-  <query name="DocumentVersion.getPublishedVersion">
+  <!-- Unique - HARDCODED - REWRITE -->
+  <query name="DocumentVersion.getActiveVersion">
     <![CDATA[
 	  SELECT v FROM DocumentVersion v 
-	  WHERE v.tag = 'PUBLISHED' AND v.documentId = :metaId
+	  WHERE v.number = 0 AND v.metaId = :metaId
     ]]>
   </query>    
-  
-  <!-- Unique -->
-  <query name="DocumentVersion.getByDocumentIdAndVersionNumber">
-    <![CDATA[
-	  SELECT v FROM DocumentVersion v 
-	  WHERE v.documentId = :documentId AND v.number = :versionNumber    
-    ]]>
-  </query>
 
   <!-- Unique -->
-  <query name="DocumentVersion.getByMetaIdAndVersionNumber">
+  <query name="DocumentVersion.getByMetaIdAndNumber">
     <![CDATA[
 	  SELECT v FROM DocumentVersion v
-	  WHERE v.documentId = :metaId AND v.number = :versionNumber    
+	  WHERE v.metaId = :metaId AND v.number = :number
     ]]>
   </query>
 
   <!-- Collection -->
   <query name="DocumentVersion.getByMetaId">
     <![CDATA[
-      SELECT v FROM DocumentVersion v WHERE v.documentId = :metaId   
+      SELECT v FROM DocumentVersion v WHERE v.metaId = :metaId   
     ]]>
-  </query>
-  
-  <!-- Collection -->
-  <query name="DocumentVersion.getByDocumentIdAndVersionTag">
-    <![CDATA[
-      SELECT v FROM DocumentVersion v 
-      WHERE 
-        v.documentId = :documentId AND 
-        v.tag = :versionTag    
-    ]]>
-  </query>   
+  </query>  
   
 </hibernate-mapping>

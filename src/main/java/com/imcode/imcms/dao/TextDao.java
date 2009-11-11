@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.DocumentVersion;
@@ -60,7 +59,7 @@ public class TextDao extends HibernateTemplate {
 		
 		getSession().createSQLQuery(sql)
 			.setParameter("metaId", documentId)
-			.setParameter("metaVersion", text.getMetaVersion())
+			.setParameter("metaVersion", text.getDocumentVersion())
 			.setParameter("index", text.getNo())
 			.setParameter("type", text.getType())
 			.setParameter("text", text.getText())

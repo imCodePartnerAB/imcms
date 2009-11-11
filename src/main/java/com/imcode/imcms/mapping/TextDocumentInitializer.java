@@ -21,7 +21,6 @@ import org.apache.log4j.Logger;
 import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.DocumentVersionSelector;
-import com.imcode.imcms.api.DocumentVersionTag;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.ContentLoopDao;
@@ -65,7 +64,7 @@ public class TextDocumentInitializer {
     public void initTexts(TextDocumentDomainObject document) {
      	Meta meta = document.getMeta();
     	
-    	Collection<TextDomainObject> texts = textDao.getTexts(meta.getId(), document.getVersion().getNumber());    	    
+    	Collection<TextDomainObject> texts = textDao.getTexts(meta.getId(), document.getVersion().getNumber());
     	Map<I18nLanguage, Map<Integer, TextDomainObject>> textsMap = new HashMap<I18nLanguage, Map<Integer,TextDomainObject>>();
 
         Map<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>> loopTexts
@@ -136,8 +135,7 @@ public class TextDocumentInitializer {
     public void initMenus(TextDocumentDomainObject document) {
     	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getMeta().getId());	
     	Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
-    	DocumentVersionTag tag = document.getVersion().getTag();
-    	DocumentVersionSelector versionSelector = tag == DocumentVersionTag.WORKING 
+    	DocumentVersionSelector versionSelector = document.getVersion().getNumber() == 0 
     		? DocumentVersionSelector.WORKING_SELECTOR
     		: DocumentVersionSelector.PUBLISHED_SELECTOR;
     				
@@ -197,7 +195,7 @@ public class TextDocumentInitializer {
 				
 				content.setLoopId(loop.getId());
 				content.setOrderIndex(0);
-				content.setSequenceIndex(0);
+				content.setIndex(0);
 				
 				contents.add(content);
 			}

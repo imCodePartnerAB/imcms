@@ -8,6 +8,30 @@ SET @schema_version__minor_new = 2;
 
 
 --
+-- document's versions
+--
+
+--CREATE TABLE imcms_document_versions (
+
+--    id int auto_increment PRIMARY KEY,
+--    meta_id int NOT NULL,
+--    version int NOT NULL DEFAULT 0,
+--    created_by INT NOT NULL,
+--    created_dt datetime NOT NULL DEFAULT NOW
+--);
+
+--INSERT INTO
+--    imcms_document_versions (meta_id, version, created_by, created_dt)
+--SELECT
+--    meta_id,
+--    CASE version_tag WHEN 'WORKING' THEN 0 ELSE version END,
+--    user_id,
+--    created_dt
+--FROM
+--    meta_version;
+
+
+--
 -- Adds loop and content reference to texts and texts_history tables. 
 --
 

@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Provides document version support.
+ * Provides document version info.
  */
-public class DocumentVersionSupport implements Serializable {
+public class DocumentVersionInfo implements Serializable {
 	
 	/**
 	 * Document id. 
@@ -20,7 +20,7 @@ public class DocumentVersionSupport implements Serializable {
 	 * Latest document version;
 	 */
 	private DocumentVersion latestVersion;
-	
+
 	/**
 	 * Working document version.
 	 */
@@ -48,21 +48,21 @@ public class DocumentVersionSupport implements Serializable {
 	 * 
 	 * @param versions document versions list.
 	 */
-	public DocumentVersionSupport(Integer documentId, List<DocumentVersion> versions) {
+	public DocumentVersionInfo(Integer documentId, List<DocumentVersion> versions) {
 		versionsMap = new TreeMap<Integer, DocumentVersion>();
 		
 		for (DocumentVersion  version: versions) {
 			versionsMap.put(version.getNumber(), version);
 			
-			switch (version.getTag()) {
-			case PUBLISHED:
+			//switch (version.getTag()) {
+			//case PUBLISHED:
 				publishedVersion = version;
-				break;
+			//	break;
 				
-			case WORKING:
+			//case WORKING:
 				workingVersion = version;
-				break;
-			}
+			////	break;
+			//}
 			
 			latestVersion = version;
 		}
@@ -70,9 +70,9 @@ public class DocumentVersionSupport implements Serializable {
 		this.documentId = documentId;
 		this.versions = Collections.unmodifiableList(versions);
 		this.versionsMap = Collections.unmodifiableMap(versionsMap);			
-	} 
-	
-	/** 
+	}
+
+    /**
 	 * @return document id.
 	 */
 	public Integer getDocumentId() {

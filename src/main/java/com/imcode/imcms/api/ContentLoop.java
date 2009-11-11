@@ -12,32 +12,19 @@ import javax.persistence.*;
  * @see com.imcode.imcms.dao.ContentLoopDao
  */
 @Entity
-@Table(name="text_doc_content_loops")
+@Table(name="imcms_text_doc_content_loops")
 public class ContentLoop implements Cloneable {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
-
-    // Legacy support. Will be removed in future releases.
-	@Column(name="base_index")
-	private Integer baseIndex = 0;
 	
-	@Column(name="loop_index")
 	private Integer no;
 	
 	@Column(name="meta_id")
 	private Integer metaId;
 	
-	@Column(name="meta_version")
+	@Column(name="doc_version_number")
 	private Integer documentVersion;
-
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name="sequence", column=@Column(name="content_sequence_index")),
-            @AttributeOverride(name="lowerOrder", column=@Column(name="content_lower_order_index")),
-            @AttributeOverride(name="higherOrder", column=@Column(name="content_higher_order_index"))
-    })
-    private ContentIndexes contentIndexes = new ContentIndexes();
 
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
     @JoinColumn(name="loop_id")
@@ -78,16 +65,6 @@ public class ContentLoop implements Cloneable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-    @Deprecated
-	public Integer getBaseIndex() {
-		return baseIndex;
-	}
-
-    @Deprecated
-	public void setBaseIndex(Integer baseIndex) {
-		this.baseIndex = baseIndex;
 	}
 
 	public Integer getNo() {
@@ -140,12 +117,4 @@ public class ContentLoop implements Cloneable {
 	public void setDocumentVersion(Integer documentVersion) {
 		this.documentVersion = documentVersion;
 	}
-
-    public ContentIndexes getContentIndexes() {
-        return contentIndexes;
-    }
-
-    public void setContentIndexes(ContentIndexes contentIndexes) {
-        this.contentIndexes = contentIndexes;
-    }
 }

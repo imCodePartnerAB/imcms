@@ -115,7 +115,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         	for (TextDomainObject text: map.values()) {
         		text.setId(null);
             	text.setMetaId(documentId);
-            	text.setMetaVersion(documentVersionNumber);
+            	text.setDocumentVersion(documentVersionNumber);
                 textDao.saveText(text);
                 
                 if (text.isModified()) {                	 
@@ -173,7 +173,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 if (image.isModified()) {                	 
                 	// TODO: remove
                 	image.setMetaId(metaId);
-                	image.setMetaVersion(documentVersionNumber);
+                	image.setDocumentVersion(documentVersionNumber);
                     imageDao.saveImage(image);
                     //imageDao.saveImageHistory(metaId, text, user); 
                 }        		

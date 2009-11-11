@@ -12,7 +12,7 @@
   -->
   <query name="Text.deleteTexts">
     <![CDATA[
-    DELETE FROM Text t WHERE t.metaId = :metaId AND t.metaVersion = :metaVersion
+    DELETE FROM Text t WHERE t.metaId = :metaId AND t.documentVersion = :metaVersion
     ]]>
   </query>   
 </hibernate-mapping>

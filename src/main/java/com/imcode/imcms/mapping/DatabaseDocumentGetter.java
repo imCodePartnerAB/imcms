@@ -44,7 +44,7 @@ public class DatabaseDocumentGetter {
     
     /**
      * Returns latest (working) version of a document.
-     * TODO: !!! MUST RETURN PUBLISHED VERSION
+     * TODO: !!! MUST RETURN active VERSION
      */
     public DocumentDomainObject getDocument(Meta meta) {
     	return getWorkingDocument(meta);
@@ -58,16 +58,14 @@ public class DatabaseDocumentGetter {
     
         
     public DocumentDomainObject getPublishedDocument(Meta meta) {
-        DocumentVersion version = documentVersionDao.getPublishedVersion(meta.getId());
+        DocumentVersion version = documentVersionDao.getActiveVersion(meta.getId());
 
         return getDocument(meta, version);
     }	
 
     
 	public DocumentDomainObject getWorkingDocument(Meta meta) {
-        DocumentVersion version = documentVersionDao.getWorkingVersion(meta.getId());
-
-        return getDocument(meta, version);
+        return getDocument(meta, 0);
 	}
 
 

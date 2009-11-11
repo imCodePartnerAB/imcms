@@ -27,20 +27,20 @@ import com.imcode.imcms.mapping.DocumentStoringVisitor;
  * Document text field. 
  */
 @Entity(name="Text")
-@Table(name="texts")
+@Table(name="imcms_text_doc_texts")
 @NamedQueries({
 	
 	// Unique result
-	@NamedQuery(name="Text.getByDocumentIdAndDocumentVersionAndLanguageId", 
-			query="SELECT t FROM Text t WHERE t.metaId = :documentId AND t.metaVersion = :documentVersiob AND t.language.id = :languageId"),
+	@NamedQuery(name="Text.getByMetaIdAndDocumentVersionAndLanguageId", 
+			query="SELECT t FROM Text t WHERE t.metaId = :documentId AND t.documentVersion = :documentVersiob AND t.language.id = :languageId"),
 	
 	// Unique result
 	@NamedQuery(name="Text.getByDocumentIdAndDocumentVersionAndIndexAndLanguageId", 
-			query="SELECT t FROM Text t WHERE t.metaId = :documentId AND t.metaVersion = :documentVersion AND t.no = :no AND t.language.id = :languageId"),
+			query="SELECT t FROM Text t WHERE t.metaId = :documentId AND t.documentVersion = :documentVersion AND t.no = :no AND t.language.id = :languageId"),
 	
 	// Collection			
 	@NamedQuery(name="Text.getByDocumentIdAndDocumentVersion", 
-			query="SELECT t FROM Text t WHERE t.metaId = :documentId AND t.metaVersion = :documentVersion")
+			query="SELECT t FROM Text t WHERE t.metaId = :documentId AND t.documentVersion = :documentVersion")
 })
 public class TextDomainObject implements Serializable, Cloneable {
 	
@@ -65,25 +65,21 @@ public class TextDomainObject implements Serializable, Cloneable {
 	 
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="counter")
 	private Long id;
 	
 	@Column(name="meta_id")
 	private Integer metaId;
 	
-	@Column(name="meta_version")
-	private Integer metaVersion;	
+	@Column(name="doc_version_number")
+	private Integer documentVersion;	
 	
-    /**
-     * Text filed index in the document.
-     */	
-	@Column(name="name")
+    /** Text filed no in a document. */
 	private Integer no;
 
     @Column(name="loop_no")
     private Integer loopNo;
 
-    @Column(name="content_index")
+    @Column(name="loop_content_index")
     private Integer contentIndex;
 	
 	/**
@@ -277,12 +273,12 @@ public class TextDomainObject implements Serializable, Cloneable {
 		this.modified = modified;
 	}
 
-	public Integer getMetaVersion() {
-		return metaVersion;
+	public Integer getDocumentVersion() {
+		return documentVersion;
 	}
 
-	public void setMetaVersion(Integer metaVersion) {
-		this.metaVersion = metaVersion;
+	public void setDocumentVersion(Integer documentVersion) {
+		this.documentVersion = documentVersion;
 	}
 
     public Integer getLoopNo() {

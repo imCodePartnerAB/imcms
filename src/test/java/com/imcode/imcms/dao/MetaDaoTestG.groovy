@@ -27,7 +27,7 @@ public class MetaDaoTestG extends DaoTestG {
 	
 	
 	@Test void getDocumentVersions() {
-		def versions = dao.getDocumentVersions(1001);
+		def versions = dao.getAllVersions(1001);
 		
 		assertTrue(versions.size() > 0)
 	}

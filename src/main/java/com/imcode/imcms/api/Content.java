@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * @see com.imcode.imcms.dao.ContentLoopDao
  */
 @Entity
-@Table(name="text_doc_contents")
+@Table(name="imcms_text_doc_contents")
 public class Content implements Cloneable {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -33,11 +33,13 @@ public class Content implements Cloneable {
      * Unuque sequence index.
      * This value never changes (once assigned) and never repeats.
      */
-	@Column(name="sequence_index", updatable=false)
-	private Integer sequenceIndex;	
-	
-	
-	@Override
+	@Column(name="index", updatable=false)
+	private Integer index;	
+
+
+    private Boolean enabled;
+
+    @Override
 	public Content clone() {
 		try {
 			return (Content)super.clone();
@@ -70,11 +72,19 @@ public class Content implements Cloneable {
 		this.loopId = loopId;
 	}
 
-	public Integer getSequenceIndex() {
-		return sequenceIndex;
+	public Integer getIndex() {
+		return index;
 	}
 
-	public void setSequenceIndex(Integer sequenceIndex) {
-		this.sequenceIndex = sequenceIndex;
-	}		
+	public void setIndex(Integer index) {
+		this.index = index;
+	}
+
+    public Boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
 }
