@@ -10,38 +10,40 @@ public interface DocumentGetter {
     /** 
      * @return list of working documents. 
      */ 
-    List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds);
+    List<DocumentDomainObject> getDocuments(Collection<Integer> metaIds);
     
     /** 
-     * @return list of published documents. 
+     * @return list of active documents. 
      */ 
-    List<DocumentDomainObject> getPublishedDocuments(Collection<Integer> documentIds);    
+    List<DocumentDomainObject> getActiveDocuments(Collection<Integer> metaIds);
 
     /**
      * Returns latest (working) version of a document. 
      * 
      * @param metaId document's meta id.
+     *
+     * //TODO: WHAT TO RETURN???
      */
-    DocumentDomainObject getDocument(Integer documentId);
+    DocumentDomainObject getDocument(Integer metaId);
     
     /**
      * Returns published version of a document. 
      * 
      * @param metaId document's meta id.
      */
-    DocumentDomainObject getPublishedDocument(Integer documentId);    
+    DocumentDomainObject getActiveDocument(Integer metaId);
     
     /**
      * Returns working (latest) version of a document.
      * 
-     * @param documentId document's id.
+     * @param metaId document's id.
      */
-    DocumentDomainObject getWorkingDocument(Integer documentId);
+    DocumentDomainObject getWorkingDocument(Integer metaId);
         
     /**
      * Returns custom version of a document.
      * 
-     * @param documentId document's id.
+     * @param metaId document's id.
      */
-    DocumentDomainObject getDocument(Integer documentId, Integer version);    
+    DocumentDomainObject getDocument(Integer metaId, Integer version);
 }

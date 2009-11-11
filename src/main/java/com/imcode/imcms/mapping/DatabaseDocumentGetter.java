@@ -42,33 +42,14 @@ public class DatabaseDocumentGetter {
        return metaDao.getMeta(metaId);
     }
     
-    /**
-     * Returns latest (working) version of a document.
-     * TODO: !!! MUST RETURN active VERSION
-     */
-    public DocumentDomainObject getDocument(Meta meta) {
-    	return getWorkingDocument(meta);
-    }
     
     public DocumentDomainObject getDocument(Meta meta, Integer versionNumber) {
         DocumentVersion version = documentVersionDao.getVersion(meta.getId(), versionNumber);
 
         return getDocument(meta, version);
-    }
-    
-        
-    public DocumentDomainObject getPublishedDocument(Meta meta) {
-        DocumentVersion version = documentVersionDao.getActiveVersion(meta.getId());
-
-        return getDocument(meta, version);
     }	
 
     
-	public DocumentDomainObject getWorkingDocument(Meta meta) {
-        return getDocument(meta, 0);
-	}
-
-
     private DocumentDomainObject getDocument(Meta meta, DocumentVersion version) {
         if (version == null) {
             return null;
@@ -87,7 +68,7 @@ public class DatabaseDocumentGetter {
     	for (Integer metaId: metaIds) {
             Meta meta = getMeta(metaId);
             
-    		DocumentDomainObject document = getWorkingDocument(meta);
+    		DocumentDomainObject document = getDocument(meta, 0);
     		
     		// ??? do not add in case of null
     		if (document != null) {
@@ -101,12 +82,13 @@ public class DatabaseDocumentGetter {
     /**
      * @return published documents.
      */
-    public List<DocumentDomainObject> getPublishedDocuments(Collection<Integer> metaIds) {
+    public List<DocumentDomainObject> getActiveDocuments(Collection<Integer> metaIds) {
+        /*
         List<DocumentDomainObject> documents = new LinkedList<DocumentDomainObject>();
         
     	for (Integer metaId: metaIds) {
             Meta meta = getMeta(metaId);
-    		DocumentDomainObject document = getPublishedDocument(meta);
+    		DocumentDomainObject document = getActiveDocument(meta);
     		
     		// ??? do not add in case of null
     		if (document != null) {
@@ -115,6 +97,8 @@ public class DatabaseDocumentGetter {
     	}
                                 
         return documents;
+        */
+        return getDocuments(metaIds);
     }    
 
     

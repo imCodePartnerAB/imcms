@@ -139,7 +139,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return version support for a given document or null if document does not exist.
      */
     public DocumentVersionInfo getDocumentVersionSupport(Integer documentId) {
-    	return cachingDocumentGetter.getDocumentVersionSupport(documentId);
+    	return cachingDocumentGetter.getDocumentVersionInfo(documentId);
     }
 
     public DocumentSaver getDocumentSaver() {
@@ -255,7 +255,7 @@ public class DocumentMapper implements DocumentGetter {
         if (meta.getPublicationStatusInt() == Document.PublicationStatus.APPROVED.asInt()) {
         	Integer documentId = meta.getId();
         	DocumentVersionInfo versionSupport = getDocumentVersionSupport(documentId);
-        	if (!versionSupport.hasPublishedVersion()) {
+        	if (!versionSupport.hasActiveVersion()) {
             	document = getWorkingDocument(document.getMeta().getId());
             	publishWorkingDocument(document.clone(), user);
         	}
@@ -322,7 +322,7 @@ public class DocumentMapper implements DocumentGetter {
     
     
     public boolean hasPublishedVersion(Integer documentId) {
-    	return cachingDocumentGetter.getPublishedDocument(documentId) != null;
+    	return cachingDocumentGetter.getActiveDocument(documentId) != null;
     }    
 
     public void invalidateDocument(DocumentDomainObject document) {        
@@ -396,7 +396,7 @@ public class DocumentMapper implements DocumentGetter {
             int containingDocumentId = row[0];
             int menuIndex = row[1];
             
-            TextDocumentDomainObject containingDocument = (TextDocumentDomainObject) getPublishedDocument(containingDocumentId);
+            TextDocumentDomainObject containingDocument = (TextDocumentDomainObject) getActiveDocument(containingDocumentId);
             documentMenuPairs[i] = new TextDocumentMenuIndexPair(containingDocument, menuIndex);
         }
         
@@ -546,7 +546,7 @@ public class DocumentMapper implements DocumentGetter {
         	private List<Integer> documentIds = nativeQueriesDao.getDocumentsWithPermissionsForRole(role.getId().intValue()); 
             
         	public DocumentDomainObject get(int index) {
-                return getPublishedDocument(documentIds.get(index));
+                return getActiveDocument(documentIds.get(index));
             }
 
             public int size() {
@@ -578,38 +578,28 @@ public class DocumentMapper implements DocumentGetter {
     }    
     
     /**
-     * Returns working document version.
+     * Returns working document.
+     *
+     * @param metaId document's meta id
      * 
-     * @param documentId document id
-     * 
-     * @return working on of the document or null if document does not exist.
+     * @return working document.
+     * TODO: ??? return active document ???
      */
-    public DocumentDomainObject getDocument(Integer documentId) { 
-        return cachingDocumentGetter.getDocument(documentId);
+    public DocumentDomainObject getDocument(Integer metaId) {
+        return getDocument(metaId);
     }     
     
     /**
-     * Returns published version of a document.
+     * Returns active document.
      * 
-     * @param documentId document id
+     * @param metaId document's meta id
      * 
-     * @return published version of the document or null if document does not exist.
+     * @return active document or null if there is no active document.
      * 
      * TODO: Check all calls to this method and replace with getDocument where appropriate.
      */
-    public DocumentDomainObject getPublishedDocument(Integer documentId) { 
-        return cachingDocumentGetter.getPublishedDocument(documentId);
-    }    
-            
-    /**
-     * Returns working version of a document.
-     * 
-     * @param documentId document id
-     * 
-     * @return working version of a document or null if document does not exist
-     */
-    public DocumentDomainObject getWorkingDocument(Integer documentId) {
-    	return cachingDocumentGetter.getWorkingDocument(documentId);
+    public DocumentDomainObject getActiveDocument(Integer metaId) {
+        return cachingDocumentGetter.getActiveDocument(metaId);
     }    
       
     /**
@@ -633,7 +623,7 @@ public class DocumentMapper implements DocumentGetter {
         
         return documentId == null
         	? null
-        	: getPublishedDocument(documentId);	
+        	: getActiveDocument(documentId);
     }  
     
     public DocumentDomainObject getWorkingDocumentForShowing(String documentIdentity, UserDomainObject user) {
@@ -777,8 +767,8 @@ public class DocumentMapper implements DocumentGetter {
         return cachingDocumentGetter.getDocuments(documentIds) ;
     }
     
-    public List<DocumentDomainObject> getPublishedDocuments(Collection<Integer> documentIds) {
-        return cachingDocumentGetter.getPublishedDocuments(documentIds) ;
+    public List<DocumentDomainObject> getActiveDocuments(Collection<Integer> documentIds) {
+        return cachingDocumentGetter.getActiveDocuments(documentIds) ;
     }    
 
 
@@ -917,4 +907,8 @@ public class DocumentMapper implements DocumentGetter {
 			DatabaseDocumentGetter databaseDocumentGetter) {
 		this.databaseDocumentGetter = databaseDocumentGetter;
 	}
+
+    public DocumentDomainObject getWorkingDocument(Integer metaId) {
+        return cachingDocumentGetter.getWorkingDocument(metaId);
+    }
 }

@@ -110,7 +110,7 @@ public class TextDocument extends Document {
         Transformer fromDomainToAPITransformer = new Transformer() {
             public Object transform(Object o) {
                 Integer tempMetaId = (Integer) o;
-                return DocumentService.wrapDocumentDomainObject(getDocumentGetter().getPublishedDocument(tempMetaId), contentManagementSystem );
+                return DocumentService.wrapDocumentDomainObject(getDocumentGetter().getActiveDocument(tempMetaId), contentManagementSystem );
             }
         };
 
@@ -189,7 +189,7 @@ public class TextDocument extends Document {
     public Document getInclude(int includeIndexInDocument) {
         Integer includedDocumentId = getInternalTextDocument().getIncludedDocumentId(includeIndexInDocument);
         if (null != includedDocumentId) {
-            DocumentDomainObject includedDocument = getDocumentGetter().getPublishedDocument(includedDocumentId);
+            DocumentDomainObject includedDocument = getDocumentGetter().getActiveDocument(includedDocumentId);
             if (null != includedDocument) {
                 return DocumentService.wrapDocumentDomainObject(includedDocument, contentManagementSystem );
             }

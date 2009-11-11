@@ -188,7 +188,7 @@ public class TemplateMapper {
         DocumentDomainObject[] documents = new DocumentDomainObject[temp.length];
         for ( int i = 0; i < documents.length; i++ ) {
             int documentId = Integer.parseInt( temp[i][0] );
-            documents[i] = documentMapper.getPublishedDocument( documentId );
+            documents[i] = documentMapper.getActiveDocument( documentId );
         }
         return documents;
     }

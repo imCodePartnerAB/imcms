@@ -58,6 +58,10 @@ public class GetDoc extends HttpServlet {
 
     /**
      * Renders document.
+     *
+     * This method is called from doGet and from AdminDoc.viewDoc (if a user can not edit a document) only.
+     *
+     * @see com.imcode.imcms.servlet.admin.AdminDoc;
      */
     public static void viewDoc(String documentId, HttpServletRequest req,
                          HttpServletResponse res) throws IOException, ServletException {
@@ -81,6 +85,11 @@ public class GetDoc extends HttpServlet {
         viewDoc(document, req, res);
     }
 
+    /**
+     * This method is called from viewDoc and from ImcmsFilter.handleDocumentUrl only.
+     *  
+     * @see ImcmsFilter
+     */
     public static void viewDoc(DocumentDomainObject document, HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         NDC.push("" + document.getId());
         try {
@@ -125,7 +134,7 @@ public class GetDoc extends HttpServlet {
         Perl5Util perlrx = new Perl5Util();
         if ( null != referrer && perlrx.match("/meta_id=(\\d+)/", referrer) ) {
             int referring_meta_id = Integer.parseInt(perlrx.group(1));
-            referringDocument = documentMapper.getPublishedDocument(referring_meta_id);
+            referringDocument = documentMapper.getActiveDocument(referring_meta_id);
         }
 
         DocumentRequest documentRequest = new DocumentRequest(imcref, user, document, referringDocument, req, res);

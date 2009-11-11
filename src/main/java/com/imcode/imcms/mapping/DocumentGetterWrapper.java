@@ -18,16 +18,16 @@ public class DocumentGetterWrapper implements DocumentGetter {
         return documentGetter.getDocuments(documentIds) ;
     }
     
-    public List<DocumentDomainObject> getPublishedDocuments(Collection<Integer> documentIds) {
-        return documentGetter.getPublishedDocuments(documentIds) ;
+    public List<DocumentDomainObject> getActiveDocuments(Collection<Integer> documentIds) {
+        return documentGetter.getActiveDocuments(documentIds) ;
     }    
 
     public DocumentDomainObject getDocument(Integer documentId) {
         return documentGetter.getDocument(documentId) ;
     }
     
-    public DocumentDomainObject getPublishedDocument(Integer documentId) {
-        return documentGetter.getPublishedDocument(documentId) ;
+    public DocumentDomainObject getActiveDocument(Integer documentId) {
+        return documentGetter.getActiveDocument(documentId) ;
     }
            
     
@@ -37,5 +37,5 @@ public class DocumentGetterWrapper implements DocumentGetter {
 
 	public DocumentDomainObject getDocument(Integer documentId, Integer version) {
 		return documentGetter.getDocument(documentId, version);
-	}    
+	}
 }

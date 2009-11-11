@@ -21,30 +21,33 @@ import com.imcode.imcms.api.Meta;
  */
 public class CachingDocumentGetter implements DocumentGetter {
 
-    /** Cached metas. */
+    /**
+     * Cached metas.
+     *
+     * Map key is a meta id.
+     */
     private Map<Integer, Meta> metas;    
-
 	
 	/**
 	 * Documents versions supports.
 	 * 
-     * Cache key is a document id. 
+     * Map key is a document's meta id.
 	 */
-	private Map<Integer, DocumentVersionInfo> versionsSupports;
+	private Map<Integer, DocumentVersionInfo> versionInfos;
 	
 	/**
-	 * Published documents cache.
+	 * Active documents
 	 * 
-     * Cache key is a document id.
+     * Map key is a document's meta id.
 	 */
-    private Map<Integer, DocumentDomainObject> publishedDocuments;
+    private Map<Integer, DocumentDomainObject> activeDocuments;
     
     /** 
-     * Working documents cache.
+     * Working (version 0) documents
      * 
-     * Cache key is a document id.
+     * Map key is a document's meta id.
      */
-    private Map<Integer, DocumentDomainObject> workingDocuments;    
+    private Map<Integer, DocumentDomainObject> workingDocuments;
     
     /**
      * Aliases cache.
@@ -61,13 +64,13 @@ public class CachingDocumentGetter implements DocumentGetter {
      * Database document getter.    
      */
     private DatabaseDocumentGetter databaseDocumentGetter;
-        
+
     public CachingDocumentGetter(DatabaseDocumentGetter databaseDocumentGetter, int cacheSize) {
         this.databaseDocumentGetter = databaseDocumentGetter;
         
-        versionsSupports = new HashMap<Integer, DocumentVersionInfo>();
+        versionInfos = new HashMap<Integer, DocumentVersionInfo>();
         workingDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
-        publishedDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
+        activeDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
         metas = Collections.synchronizedMap(new LRUMap(cacheSize));
         
         aliasesBidiMap = new DualHashBidiMap();
@@ -94,8 +97,8 @@ public class CachingDocumentGetter implements DocumentGetter {
     }
 
     
-    public DocumentVersionInfo getDocumentVersionSupport(Integer metaId) {
-        DocumentVersionInfo versionSupport = versionsSupports.get(metaId);
+    public DocumentVersionInfo getDocumentVersionInfo(Integer metaId) {
+        DocumentVersionInfo versionSupport = versionInfos.get(metaId);
         
     	if (versionSupport == null) {
             List<DocumentVersion> versions =  databaseDocumentGetter.getDocumentVersionDao()
@@ -103,7 +106,7 @@ public class CachingDocumentGetter implements DocumentGetter {
             
             if (versions.size() > 0) {
                 versionSupport = new DocumentVersionInfo(metaId, versions);
-                versionsSupports.put(metaId, versionSupport);
+                versionInfos.put(metaId, versionSupport);
             }
     	}
         
@@ -123,74 +126,56 @@ public class CachingDocumentGetter implements DocumentGetter {
 
     
     
-    public DocumentDomainObject getPublishedDocument(Integer metaId) {
+    public DocumentDomainObject getActiveDocument(Integer metaId) {
         Meta meta = getMeta(metaId);
 
         if (meta == null) {
             return null;
         }
 
-        DocumentDomainObject document = publishedDocuments.get(metaId);
+        DocumentDomainObject document = activeDocuments.get(metaId);
 
     	if (document == null) {
-	        document = databaseDocumentGetter.getPublishedDocument(meta.clone());
+            DocumentVersionInfo info = getDocumentVersionInfo(metaId);
+	        document = databaseDocumentGetter.getDocument(meta.clone(), info.getActiveVersionNumber());
 
             if (document != null) {
-	            publishedDocuments.put(metaId, document);
+	            activeDocuments.put(metaId, document);
             }
     	}
 
         return document;
     }
-    
-    public DocumentDomainObject getWorkingDocument(Integer metaId) {
-        Meta meta = getMeta(metaId);
 
-        if (meta == null) {
-            return null;
-        }
-
-        DocumentDomainObject document = workingDocuments.get(metaId);
-        
-    	if (document == null) {
-	        document = databaseDocumentGetter.getWorkingDocument(meta.clone());
-
-            if (document != null) {
-	            workingDocuments.put(metaId, document);
-            }
-    	}
-
-        return document;
-    } 
     
     /**
      * Returns working document.
      */
     public DocumentDomainObject getDocument(Integer metaId) {
-    	return getWorkingDocument(metaId);
+        return getWorkingDocument(metaId);
     }    
             
     public List<DocumentDomainObject> getDocuments(Collection<Integer> metaIds) {
         return databaseDocumentGetter.getDocuments(metaIds) ;
     }
     
-    public List<DocumentDomainObject> getPublishedDocuments(Collection<Integer> metaIds) {
-        return databaseDocumentGetter.getPublishedDocuments(metaIds) ;
+    public List<DocumentDomainObject> getActiveDocuments(Collection<Integer> metaIds) {
+        return databaseDocumentGetter.getActiveDocuments(metaIds) ;
     }    
 
     
     public void clearCache() {
-    	publishedDocuments.clear();
-    	workingDocuments.clear();  
-    	versionsSupports.clear();
+    	activeDocuments.clear();
+    	workingDocuments.clear();
+    	versionInfos.clear();
     	aliasesBidiMap.clear();
     }
     
     
     public void removeDocumentFromCache(Integer metaId) {
-    	publishedDocuments.remove(metaId);
+    	activeDocuments.remove(metaId);
     	workingDocuments.remove(metaId);
-    	versionsSupports.remove(metaId);
+    	versionInfos.remove(metaId);
     	aliasesBidiMap.remove(metaId);
     } 
     
@@ -214,5 +199,25 @@ public class CachingDocumentGetter implements DocumentGetter {
     	}
     	
     	return metaId;
-    }    	
+    }
+
+    public DocumentDomainObject getWorkingDocument(Integer metaId) {
+        Meta meta = getMeta(metaId);
+
+        if (meta == null) {
+            return null;
+        }
+
+        DocumentDomainObject document = workingDocuments.get(metaId);
+
+    	if (document == null) {
+	        document = databaseDocumentGetter.getDocument(meta.clone(), 0);
+
+            if (document != null) {
+	            workingDocuments.put(metaId, document);
+            }
+    	}
+
+        return document;
+    }
 }

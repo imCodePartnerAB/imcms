@@ -7,29 +7,29 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Provides document version info.
+ * Document's version info.
  */
 public class DocumentVersionInfo implements Serializable {
 	
 	/**
-	 * Document id. 
+	 * Document's meta id. 
 	 */
-	private Integer documentId;
+	private Integer metaId;
 	
 	/**
-	 * Latest document version;
+	 * Latest version;
 	 */
 	private DocumentVersion latestVersion;
 
 	/**
-	 * Working document version.
+	 * Working version (version 0).
 	 */
 	private DocumentVersion workingVersion;
 	
 	/**
-	 * Published document version.
+	 * Active version.
 	 */
-	private DocumentVersion publishedVersion;
+	private DocumentVersion activeVersion;
 	
 	/**
 	 * Version list sorted ascending.
@@ -39,35 +39,27 @@ public class DocumentVersionInfo implements Serializable {
 	/**
 	 * Versions map.
 	 */
-	private Map<Integer, DocumentVersion> versionsMap;		
-	
-	/**
+	private Map<Integer, DocumentVersion> versionsMap;
+
+    /**
 	 * Creates new instance of DocumentVersionSupport.
 	 * 
-	 * @param documentId documentId.
+	 * @param metaId documentId.
 	 * 
 	 * @param versions document versions list.
 	 */
-	public DocumentVersionInfo(Integer documentId, List<DocumentVersion> versions) {
+	public DocumentVersionInfo(Integer metaId, List<DocumentVersion> versions) {
 		versionsMap = new TreeMap<Integer, DocumentVersion>();
 		
 		for (DocumentVersion  version: versions) {
 			versionsMap.put(version.getNumber(), version);
-			
-			//switch (version.getTag()) {
-			//case PUBLISHED:
-				publishedVersion = version;
-			//	break;
-				
-			//case WORKING:
-				workingVersion = version;
-			////	break;
-			//}
-			
-			latestVersion = version;
 		}
 
-		this.documentId = documentId;
+        activeVersion = versions.get(0);
+        workingVersion = versions.get(0);
+        latestVersion = versions.get(0);        
+
+		this.metaId = metaId;
 		this.versions = Collections.unmodifiableList(versions);
 		this.versionsMap = Collections.unmodifiableMap(versionsMap);			
 	}
@@ -75,52 +67,45 @@ public class DocumentVersionInfo implements Serializable {
     /**
 	 * @return document id.
 	 */
-	public Integer getDocumentId() {
-		return documentId;
+	public Integer getMetaId() {
+		return metaId;
 	}
 	
 	/** 
 	 * @param versionNumber version number.
 	 * 
-	 * @return document version or null if there is no such version number.
+	 * @return version or null if there is no version with such version number.
 	 */				
 	public DocumentVersion getVersion(Integer versionNumber) {
 		return versionsMap.get(versionNumber);
 	}
 	
 	/**
-	 * @returns if given version number belongs to published version.
+	 * @returns if given version number belongs to active version.
 	 */
-	public boolean isPublishedVersionNumber(Integer versionNumber) {
-		return hasPublishedVersion() && getPublishedVersion().getNumber().equals(versionNumber);
+	public boolean isActiveVersionNumber(Integer versionNumber) {
+		return hasActiveVersion() && getActiveVersion().getNumber().equals(versionNumber);
 	}
 	
-	/**
-	 * @returns if given version number belongs to working version.
-	 */
-	public boolean isWorkingVersionNumber(Integer versionNumber) {
-		return hasWorkingVersion() && getWorkingVersion().getNumber().equals(versionNumber);
-	}	
-	
 	/** 
-	 * @return latest document version.
+	 * @return latest version.
 	 */				
 	public DocumentVersion getLatestVersion() {
 		return latestVersion;
 	}
 	
 	/** 
-	 * @return working document version or null there is no working version.
+	 * @return working version.
 	 */		
 	public DocumentVersion getWorkingVersion() {
 		return workingVersion;
 	}	
 	
 	/** 
-	 * @return published document version or null there is no published version.
+	 * @return active version or null there is no active version.
 	 */
-	public DocumentVersion getPublishedVersion() {
-		return publishedVersion;
+	public DocumentVersion getActiveVersion() {
+		return activeVersion;
 	}	
 	
 	/** 
@@ -144,19 +129,12 @@ public class DocumentVersionInfo implements Serializable {
 	public Map<Integer, DocumentVersion> getVersionsMap() {
 		return versionsMap;
 	} 
-					
+						
 	/**
-	 * @return if a document has working version. 
-	 */
-	public boolean hasWorkingVersion() {
-		return workingVersion != null;
-	}
-	
-	/**
-	 * @return if a document has published version. 
+	 * @return if a document has an active version. 
 	 */		
-	public boolean hasPublishedVersion() {
-		return publishedVersion != null;
+	public boolean hasActiveVersion() {
+		return activeVersion != null;
 	}
 	
 	/**
@@ -167,20 +145,11 @@ public class DocumentVersionInfo implements Serializable {
 	}
 	
 	/**
-	 * @returns published version number or null if there is no published version.
+	 * @returns active version number or null if there is no active version.
 	 */
-	public Integer getPuplishedVersionNumber() {
-		return hasPublishedVersion() 
-			? getPublishedVersion().getNumber()
+	public Integer getActiveVersionNumber() {
+		return hasActiveVersion()
+			? getActiveVersion().getNumber()
 			: null;
 	}
-	
-	/**
-	 * @returns working version number or null if there is no published version.
-	 */
-	public Integer getWorkingVersionNumber() {
-		return hasWorkingVersion() 
-			? getWorkingVersion().getNumber()
-			: null;
-	}	
 }

@@ -47,7 +47,7 @@ public class DocumentVersionSelector implements Serializable {
 		 */
 		@Override
 		public DocumentDomainObject getDocument(DocumentGetter documentGetter, Integer documentId) {
-			return documentGetter.getPublishedDocument(documentId);
+			return documentGetter.getActiveDocument(documentId);
 		}		
 	};
 	
