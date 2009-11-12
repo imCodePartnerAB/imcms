@@ -2,7 +2,7 @@ import imcode.server.*;
 import com.imcode.imcms.mapping.*;
 
 DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-CachingDocumentGetter cachingDocumentGetter = documentMapper.getDocumentGetter();
+DocumentLoaderCachingProxy cachingDocumentGetter = documentMapper.getDocumentGetter();
 
 // Execute command if any
 def cmd = request.getParameter("cmd")

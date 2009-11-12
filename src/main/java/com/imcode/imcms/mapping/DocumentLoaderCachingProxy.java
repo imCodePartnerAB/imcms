@@ -17,11 +17,9 @@ import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.api.Meta;
 
 /**
- * Cache for wrapped DatabaseDocumentGetter.
- * 
- * TODO: rename to DocumentLoaderCachingProxy
+ * Caches documents returned by wrapped DocumentLoader.
  */
-public class CachingDocumentGetter {
+public class DocumentLoaderCachingProxy {
 
     /**
      * Cached metas.
@@ -62,13 +60,12 @@ public class CachingDocumentGetter {
     private BidiMap aliasesBidiMap;
 
     
-    /**
-     * Database document getter.    
-     */
-    private DatabaseDocumentGetter databaseDocumentGetter;
+    /** Wrapped document loader. */
+    private DocumentLoader documentLoader;
+    
 
-    public CachingDocumentGetter(DatabaseDocumentGetter databaseDocumentGetter, int cacheSize) {
-        this.databaseDocumentGetter = databaseDocumentGetter;
+    public DocumentLoaderCachingProxy(DocumentLoader documentLoader, int cacheSize) {
+        this.documentLoader = documentLoader;
         
         versionInfos = new HashMap<Integer, DocumentVersionInfo>();
         workingDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
@@ -76,11 +73,9 @@ public class CachingDocumentGetter {
         metas = Collections.synchronizedMap(new LRUMap(cacheSize));
         
         aliasesBidiMap = new DualHashBidiMap();
-
-
     }
 
-    
+
     /**
      * @return document's meta or null if there is no meta with such id.
      */
@@ -88,7 +83,7 @@ public class CachingDocumentGetter {
         Meta meta = metas.get(docId);
 
         if (meta == null) {
-            meta = databaseDocumentGetter.getMeta(docId);
+            meta = documentLoader.getMeta(docId);
 
             if (meta != null) {
                 metas.put(docId, meta);
@@ -103,7 +98,7 @@ public class CachingDocumentGetter {
         DocumentVersionInfo versionSupport = versionInfos.get(docId);
         
     	if (versionSupport == null) {
-            List<DocumentVersion> versions =  databaseDocumentGetter.getDocumentVersionDao()
+            List<DocumentVersion> versions =  documentLoader.getDocumentVersionDao()
                     .getAllVersions(docId);
             
             if (versions.size() > 0) {
@@ -123,7 +118,7 @@ public class CachingDocumentGetter {
             return null;
         }
     	
-    	return databaseDocumentGetter.getDocument(meta, versionNumber);
+    	return documentLoader.loadDocument(meta, versionNumber);
     }
 
     
@@ -139,7 +134,7 @@ public class CachingDocumentGetter {
 
     	if (document == null) {
             DocumentVersionInfo info = getDocumentVersionInfo(docId);
-	        document = databaseDocumentGetter.getDocument(meta.clone(), info.getActiveVersionNo());
+	        document = documentLoader.loadDocument(meta.clone(), info.getActiveVersionNo());
 
             if (document != null) {
 	            activeDocuments.put(docId, document);
@@ -158,11 +153,11 @@ public class CachingDocumentGetter {
     }    
             
     public List<DocumentDomainObject> getDocuments(Collection<Integer> docIds) {
-        return databaseDocumentGetter.getDocuments(docIds) ;
+        return documentLoader.loadDocuments(docIds) ;
     }
     
     public List<DocumentDomainObject> getActiveDocuments(Collection<Integer> docIds) {
-        return databaseDocumentGetter.getActiveDocuments(docIds) ;
+        return documentLoader.getActiveDocuments(docIds) ;
     }    
 
     
@@ -193,7 +188,7 @@ public class CachingDocumentGetter {
     	Integer docId = (Integer)aliasesBidiMap.getKey(alias);
     	
     	if (docId == null) {
-    		docId = databaseDocumentGetter.getMetaDao().getDocumentIdByAlias(alias);
+    		docId = documentLoader.getMetaDao().getDocumentIdByAlias(alias);
     		
     		if (docId != null) {
     			aliasesBidiMap.put(docId, alias);
@@ -213,7 +208,7 @@ public class CachingDocumentGetter {
         DocumentDomainObject document = workingDocuments.get(docId);
 
     	if (document == null) {
-	        document = databaseDocumentGetter.getDocument(meta.clone(), 0);
+	        document = documentLoader.loadDocument(meta.clone(), 0);
 
             if (document != null) {
 	            workingDocuments.put(docId, document);

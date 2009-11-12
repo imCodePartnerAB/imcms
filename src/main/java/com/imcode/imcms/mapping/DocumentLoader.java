@@ -20,16 +20,11 @@ import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.dao.DocumentVersionDao;
 
 /**
- *
- *
- * 
- * Retrieves documents from the database.
+ * Loads documents from the database.
  *  
  * Instantiated by spring-framework and initialized in DocumentMapper constructor.
- *
- * TODO: rename to DocumentLoader.
  */
-public class DatabaseDocumentGetter {
+public class DocumentLoader {
 	
     /** Permission to create child documents. */
     public final static int PERM_CREATE_DOCUMENT = 8;
@@ -43,19 +38,19 @@ public class DatabaseDocumentGetter {
     /** Initializes document's fields. */
     private DocumentInitializingVisitor documentInitializingVisitor;
     
-    public Meta getMeta(Integer metaId) {
-       return metaDao.getMeta(metaId);
+    public Meta getMeta(Integer docId) {
+       return metaDao.getMeta(docId);
     }
     
     
-    public DocumentDomainObject getDocument(Meta meta, Integer versionNumber) {
-        DocumentVersion version = documentVersionDao.getVersion(meta.getId(), versionNumber);
+    public DocumentDomainObject loadDocument(Meta meta, Integer docVersionNo) {
+        DocumentVersion version = documentVersionDao.getVersion(meta.getId(), docVersionNo);
 
-        return getDocument(meta, version);
+        return loadDocument(meta, version);
     }	
 
     
-    private DocumentDomainObject getDocument(Meta meta, DocumentVersion version) {
+    private DocumentDomainObject loadDocument(Meta meta, DocumentVersion version) {
         if (version == null) {
             return null;
         }
@@ -67,13 +62,13 @@ public class DatabaseDocumentGetter {
     /**
      * @return working documents.
      */
-    public List<DocumentDomainObject> getDocuments(Collection<Integer> metaIds) {
+    public List<DocumentDomainObject> loadDocuments(Collection<Integer> docIds) {
         List<DocumentDomainObject> documents = new LinkedList<DocumentDomainObject>();
         
-    	for (Integer metaId: metaIds) {
-            Meta meta = getMeta(metaId);
+    	for (Integer docId: docIds) {
+            Meta meta = getMeta(docId);
             
-    		DocumentDomainObject document = getDocument(meta, 0);
+    		DocumentDomainObject document = loadDocument(meta, 0);
     		
     		// ??? do not add in case of null
     		if (document != null) {
@@ -87,12 +82,12 @@ public class DatabaseDocumentGetter {
     /**
      * @return published documents.
      */
-    public List<DocumentDomainObject> getActiveDocuments(Collection<Integer> metaIds) {
+    public List<DocumentDomainObject> getActiveDocuments(Collection<Integer> docIds) {
         /*
         List<DocumentDomainObject> documents = new LinkedList<DocumentDomainObject>();
         
-    	for (Integer metaId: metaIds) {
-            Meta meta = getMeta(metaId);
+    	for (Integer docId: docIds) {
+            Meta meta = getMeta(docId);
     		DocumentDomainObject document = getActiveDocument(meta);
     		
     		// ??? do not add in case of null
@@ -103,7 +98,7 @@ public class DatabaseDocumentGetter {
                                 
         return documents;
         */
-        return getDocuments(metaIds);
+        return loadDocuments(docIds);
     }    
 
     
@@ -116,7 +111,10 @@ public class DatabaseDocumentGetter {
 		}
 		
 		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
-        
+
+        document.setId(meta.getId());
+        // TODO: - remove after test.
+        document.setLanguage(I18nSupport.getDefaultLanguage());
 		document.setMeta(meta);
         document.setVersion(version);
 		

@@ -21,24 +21,19 @@ import com.imcode.imcms.mapping.orm.TemplateNames;
  */
 public class TextDocumentDomainObject extends DocumentDomainObject {
 		
-	/**
-     * Images.
-     */
-    private Map<I18nLanguage, Map<Integer, ImageDomainObject>> images
-    		= new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
+	/** Images. */
+    private Map<Integer, ImageDomainObject> images = new HashMap<Integer, ImageDomainObject>();
+    
+    /** Texts outside loops. */
+    private Map<Integer, TextDomainObject> texts = new HashMap<Integer, TextDomainObject>();
+
     
     /**
-     * Texts outside loops.
-     */
-    private Map<I18nLanguage, Map<Integer, TextDomainObject>> texts    
-    		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
-
-    /**
      * Texts in loops.
-     * language->loopNo->contentIndex->text-no->text
+     * loopNo->contentIndex->text-no->text
      */
-    private Map<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>> loopTexts
-    		= new HashMap<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>>();
+    private Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loopTexts
+    		= new HashMap<Integer, Map<Integer, Map<Integer, TextDomainObject>>>();
     
     
     /**
@@ -112,28 +107,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Returns images map for current language.
      */
     private Map<Integer, ImageDomainObject> getImagesMap() {
-    	I18nLanguage language = I18nSupport.getCurrentLanguage();
-    	
-    	return getImagesMap(language);
+    	return images;
     }
-    
-    /**
-     * Returns all images for language specified.
-     * 
-     * This method loads images when invoked for the first time.  
-     */
-    
-    // TODO: Refactor out into lazy loaded object and optimize 
-    private Map<Integer, ImageDomainObject> getImagesMap(I18nLanguage language) {
-    	Map<Integer, ImageDomainObject> map = images.get(language);    	
-    	
-    	if (map == null) {
-   			map = new HashMap<Integer, ImageDomainObject>();   		
-      		images.put(language, map);
-    	}
-    	
-        return map;
-    }    
+
+
     
     public Integer getIncludedDocumentId( int includeIndex ) {
         return includesMap.get(includeIndex);
@@ -152,46 +129,24 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     
-    public TextDomainObject getText( int textFieldIndex ) {
-    	I18nLanguage language = I18nSupport.getCurrentLanguage();
-    	
-    	TextDomainObject text = getText(language, textFieldIndex);
-    	
-        return text;
+    public TextDomainObject getText(int no) {
+        return texts.get(no);
     }
-    
-    /**
-     * @return TextDomainObject or null if text can not be found.
-     */
-	public TextDomainObject getText(I18nLanguage language, int no) {
-		if (language == null) {
-			throw new IllegalArgumentException("language argument " +
-					"can not be null.");			
-		}		
-		
-		Map<Integer, TextDomainObject> map = getTextsMap(language);
-		
-		return map.get(no);
-	}
 
 
     /**
      * @return TextDomainObject or null if text can not be found.
      */
-	public TextDomainObject getText(I18nLanguage language, Integer loopNo, Integer contentIndex, Integer no) {
+	public TextDomainObject getText(Integer loopNo, Integer contentIndex, Integer textNo) {
         TextDomainObject text = null;
 
-		Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loopsMap = loopTexts.get(language);
+        Map<Integer, Map<Integer, TextDomainObject>> contentsMap = loopTexts.get(loopNo);
 
-        if (loopsMap != null) {
-            Map<Integer, Map<Integer, TextDomainObject>> contentsMap = loopsMap.get(loopNo);
+        if (contentsMap != null) {
+            Map<Integer, TextDomainObject> textsMap = contentsMap.get(contentIndex);
 
-            if (contentsMap != null) {
-                Map<Integer, TextDomainObject> textsMap = contentsMap.get(contentIndex);
-
-                if (textsMap != null) {
-                    text = textsMap.get(no);
-                }
+            if (textsMap != null) {
+                text = textsMap.get(textNo);
             }
         }
 
@@ -203,25 +158,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Returns texts map for current language.
      */
     private Map<Integer, TextDomainObject> getTextsMap() {
-    	I18nLanguage language = I18nSupport.getCurrentLanguage();
-    	
-    	return getTextsMap(language);
+    	return texts;
     }
-    
-    /**
-     * Returns all texts for language specified.
-     */
-    public Map<Integer, TextDomainObject> getTextsMap(I18nLanguage language) {
-    	Map<Integer, TextDomainObject> map = texts.get(language);
-    	
-    	if (map == null) {
-    		map = new HashMap<Integer, TextDomainObject>();
-    			
-    		texts.put(language, map);
-    	}
-    	
-        return map;
-    }            
+
 
     public void accept( DocumentVisitor documentVisitor ) {
         documentVisitor.visitTextDocument(this) ;
@@ -231,7 +170,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * Removes all image.
      */
     public synchronized void removeAllImages() {
-        images = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
+        images = new HashMap<Integer, ImageDomainObject>();
     }
 
     public void removeAllIncludes() {
@@ -247,7 +186,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void removeAllTexts() {
-        texts = new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
+        texts = new HashMap<Integer, TextDomainObject>();
     }
 
     
@@ -270,30 +209,23 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	    	
         menusMap.put(menuIndex, menu);
     }
-    
-        
-    /**
-     * Sets text to currently active language.
-     */    
-    public void setText(Integer no, TextDomainObject text ) {
-    	setText(I18nSupport.getCurrentLanguage(), no, text);
-    }
+
 
     
     /**
      * Sets text.
      */   
-    public TextDomainObject setText(I18nLanguage language, Integer no, TextDomainObject text) {
+    public TextDomainObject setText(Integer no, TextDomainObject text) {
         Meta meta = getMeta();
         Integer documentVersion = getVersion().getNo();
-        Integer metaId = meta.getId();        
+        Integer metaId = meta.getId();
 
         Map<Integer, TextDomainObject> map;
 
         Integer loopNo = text.getLoopNo();
-        
+
         if (loopNo == null) {
-            map = getTextsMap(language);
+            map = texts;
         } else {
             Integer contentIndex = text.getContentIndex();
 
@@ -304,19 +236,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
                 );
             }
 
-            Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loops = loopTexts.get(language);
 
-            if (loops == null) {
-                loops = new HashMap<Integer, Map<Integer, Map<Integer, TextDomainObject>>>();
-                loopTexts.put(language, loops);
-            }
-
-
-            Map<Integer, Map<Integer, TextDomainObject>> contents = loops.get(loopNo);
+            Map<Integer, Map<Integer, TextDomainObject>> contents = loopTexts.get(loopNo);
 
             if (contents == null) {
                 contents = new HashMap<Integer, Map<Integer, TextDomainObject>>();
-                loops.put(loopNo, contents);
+                loopTexts.put(loopNo, contents);
             }
 
 
@@ -342,7 +267,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         newText.setMetaId(metaId);
         newText.setDocVersionNo(documentVersion);
         newText.setNo(no);
-        newText.setLanguage(language);
+        newText.setLanguage(getLanguage());
 
         map.put(no, newText);
 
@@ -368,10 +293,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public Map<Integer, TextDomainObject> getTexts() {
         return Collections.unmodifiableMap( getTextsMap() );
     }
-    
-    public Map<Integer, TextDomainObject> getTexts(I18nLanguage language) {
-        return Collections.unmodifiableMap( getTextsMap(language) );
-    }    
+
 
     public void setTemplateName( String templateName ) {
     	templateNames.setTemplateName(templateName);
@@ -413,33 +335,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * @return Image id mapped to image for current language.
      */
     public Map<Integer, ImageDomainObject> getImages() {
-        return Collections.unmodifiableMap( getImagesMap() );
+        return Collections.unmodifiableMap(images);
     }
-    
-    /**
-     * @return Image id mapped to image for language specified.
-     */
-    public Map<Integer, ImageDomainObject> getImages(I18nLanguage language) {
-        return Collections.unmodifiableMap( getImagesMap(language) );
-    }    
-   	
-	
-    /**
-     * Sets image to currently active language.
-     * 
-     * Not in use.
-     */
-    public void setImage(int imageIndex, ImageDomainObject image) {
-    	setImage(I18nSupport.getCurrentLanguage(), imageIndex, image);
-    }
+
     
     /**
      * Sets image.
      */   
-    public void setImage(I18nLanguage language, int index, ImageDomainObject image) {    	
-    	Map<Integer, ImageDomainObject> map = getImagesMap(language);
-
-    	ImageDomainObject oldImage = map.get(index);
+    public void setImage(int no, ImageDomainObject image) {
+    	ImageDomainObject oldImage = images.get(no);
     	ImageDomainObject newImage = image.clone();
     	
     	if (oldImage != null) {
@@ -450,59 +354,36 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	}
     	
     	newImage.setMetaId(getMeta().getId());
-    	newImage.setLanguage(language);
-    	newImage.setIndex(index);
+    	newImage.setLanguage(getLanguage());
+    	newImage.setNo(no);
     	newImage.setModified(true);
     	
-    	map.put(index, newImage);
+    	images.put(no, newImage);
     }	
-	
-	/**
-	 * Returns i18n-ed image for language bound to the current thread. 
-	 *  
-	 * @return ImageDomainObject for language bound to the current thread. 
-	 */
-	public ImageDomainObject getImage(int imageIndex) {
-		I18nLanguage language = I18nSupport.getCurrentLanguage();
-		ImageDomainObject image = getImage(language, imageIndex);
-					
-		return image;
-	}
 	
 	/**
 	 * Returns image for language specified.
 	 */
-	public ImageDomainObject getImage(I18nLanguage language, int index) {
-		if (language == null) {
-			throw new IllegalArgumentException("language argument " +
-					"can not be null.");			
-		}		
-		
-		Map<Integer, ImageDomainObject> map = getImagesMap(language);		
-		
-		return map.get(index);
+	public ImageDomainObject getImage(int no) {
+		return images.get(no);
 	}
     
 	// TODO: RENAME: beforeSaveAsNewDocumentt
     @Override
     public void setDependenciesMetaIdToNull() {
     	super.setDependenciesMetaIdToNull();
-    	
-        for (Map<Integer, TextDomainObject> map: texts.values()) {
-        	for (TextDomainObject text: map.values()) {
+
+        	for (TextDomainObject text: texts.values()) {
         		text.setId(null);
         		text.setMetaId(null);
         		text.setModified(true);
-        	}
-        }
-        
-        for (Map<Integer, ImageDomainObject> map: images.values()) {
-        	for (ImageDomainObject image: map.values()) {
+            }
+
+        	for (ImageDomainObject image: images.values()) {
         		image.setId(null);
         		image.setMetaId(null);
         		image.setModified(true);
-        	}
-        }
+            }
         
     	for (MenuDomainObject menu: menusMap.values()) {
     		menu.setId(null);
@@ -538,42 +419,28 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
     
     
-    private Map<I18nLanguage, Map<Integer, ImageDomainObject>> cloneImages() {
-        Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesClone
-    		= new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
+    private Map<Integer, ImageDomainObject> cloneImages() {
+        Map<Integer, ImageDomainObject> imagesClone
+    		= new HashMap<Integer, ImageDomainObject>();
 
-        for(Map.Entry<I18nLanguage, Map<Integer, ImageDomainObject>> languageEntry: images.entrySet()) {
-            Map<Integer, ImageDomainObject> imagesMap = languageEntry.getValue();
-            Map<Integer, ImageDomainObject> imagesMapClone = new HashMap<Integer, ImageDomainObject>();
-
-            imagesClone.put(languageEntry.getKey(), imagesMapClone);
-
-            for (Map.Entry<Integer, ImageDomainObject> imagesEntry: imagesMap.entrySet()) {
+            for (Map.Entry<Integer, ImageDomainObject> imagesEntry: imagesClone.entrySet()) {
                 ImageDomainObject image = imagesEntry.getValue().clone();
 
-                imagesMapClone.put(imagesEntry.getKey(), image);
+                imagesClone.put(imagesEntry.getKey(), image);
             }
-        }
 
         return imagesClone;
     }    
 
-    private Map<I18nLanguage, Map<Integer, TextDomainObject>> cloneTexts() {
-        Map<I18nLanguage, Map<Integer, TextDomainObject>> textsClone    
-    		= new HashMap<I18nLanguage, Map<Integer, TextDomainObject>>();
+    private Map<Integer, TextDomainObject> cloneTexts() {
+        Map<Integer, TextDomainObject> textsClone
+    		= new HashMap<Integer, TextDomainObject>();
 
-        for(Map.Entry<I18nLanguage, Map<Integer, TextDomainObject>> languageEntry: texts.entrySet()) {
-            Map<Integer, TextDomainObject> textsMap = languageEntry.getValue();
-            Map<Integer, TextDomainObject> textsMapClone = new HashMap<Integer, TextDomainObject>();
-
-            textsClone.put(languageEntry.getKey(), textsMapClone);
-
-            for (Map.Entry<Integer, TextDomainObject> textsEntry: textsMap.entrySet()) {
+            for (Map.Entry<Integer, TextDomainObject> textsEntry: textsClone.entrySet()) {
                 TextDomainObject text = textsEntry.getValue().clone();
 
-                textsMapClone.put(textsEntry.getKey(), text);
+                textsClone.put(textsEntry.getKey(), text);
             }
-        }
 
         return textsClone;
     }
@@ -614,28 +481,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
 	public void setIncludesMap(Map<Integer, Integer> includesMap) {
 		this.includesMap = includesMap;
-	}
-
-    /**
-     * Returns texts outside of loops. 
-     */
-	public Map<I18nLanguage, Map<Integer, TextDomainObject>> getAllTexts() {
-		return texts;
-	}
-	
-	public void setAllTexts(Map<I18nLanguage, Map<Integer, TextDomainObject>> texts) {
-		this.texts = texts;
-	}
-	
-    /**
-     * Returns all images. 
-     */
-	public Map<I18nLanguage, Map<Integer, ImageDomainObject>> getAllImages() {
-		return images;
-	}
-	
-	public void setAllImages(Map<I18nLanguage, Map<Integer, ImageDomainObject>> images) {
-		this.images = images;
 	}
 
 	public Map<Integer, ContentLoop> getContentLoopsMap() {
@@ -689,11 +534,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		return newContentLoop;
 	}
 
-    public Map<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>> getLoopTexts() {
+    public Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> getLoopTexts() {
         return loopTexts;
     }
 
-    public void setLoopTexts(Map<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>> loopTexts) {
+    public void setLoopTexts(Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loopTexts) {
         this.loopTexts = loopTexts;
     }
 }

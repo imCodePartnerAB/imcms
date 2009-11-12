@@ -112,7 +112,7 @@
     <property name="documentVersionDao" ref="documentVersionDao"/>
   </bean>
   
-  <bean id="databaseDocumentGetter" class="com.imcode.imcms.mapping.DatabaseDocumentGetter">
+  <bean id="databaseDocumentGetter" class="com.imcode.imcms.mapping.DocumentLoader">
     <property name="metaDao" ref="metaDao"/>
       <property name="documentVersionDao" ref="documentVersionDao"/>
     <property name="documentInitializingVisitor" ref="documentInitializingVisitor"/>

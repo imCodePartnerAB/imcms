@@ -33,15 +33,16 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	protected Attributes attributes = new Attributes();
 	private static Logger log = Logger.getLogger(DocumentDomainObject.class);
 	
-	/**
-	 * Document meta.
-	 */
-	private Meta meta = new Meta();
+	/** Document's meta. */
+	private Meta meta;
 
+    /** Document id. */
+    private Integer id;
 
-    /**
-     * Document version.
-     */
+	/** Document's language. */
+	private I18nLanguage language;
+
+    /** Document's version. */
     private DocumentVersion version;
 
 
@@ -178,13 +179,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public int getId() {
-		Integer id = meta.getId();
 		return id == null ? ID_NEW : id.intValue();
 
 	}
 
-	public void setId(int v) {
-		meta.setId(v);
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	
@@ -635,4 +635,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     		}
     	}		
 	}
+
+    public I18nLanguage getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(I18nLanguage language) {
+        this.language = language;
+    }
 }

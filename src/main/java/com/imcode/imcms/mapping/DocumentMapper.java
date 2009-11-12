@@ -83,23 +83,18 @@ public class DocumentMapper implements DocumentGetter {
     
     private NativeQueriesDao nativeQueriesDao;
     
-    /**
-     * Gets documents directly form a database bypassing cache.
-     * Instantiated using SpringFramework.
-     */
-    private DatabaseDocumentGetter databaseDocumentGetter;
+    /** TODO: remove. */
+    private DocumentLoader documentLoader;
     
-    /** 
-     * Provides documents caching. Wraps databaseDocumentGetter.
-     */
-    private CachingDocumentGetter cachingDocumentGetter;
+    /** Document loader. */
+    private DocumentLoaderCachingProxy documentLoaderCachingProxy;
     
     /**
      * Contain document saving and updating routines. 
      * Instantiated using SpringFramework.
      */
     private DocumentSaver documentSaver ;
-    
+
     private CategoryMapper categoryMapper;
 
     /**
@@ -115,15 +110,15 @@ public class DocumentMapper implements DocumentGetter {
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
         
         // old code:
-        // setDocumentGetter(new FragmentingDocumentGetter(new DatabaseDocumentGetter(services)));
+        // setDocumentGetter(new FragmentingDocumentGetter(new DocumentLoader(services)));
         
         // Document getter is used directly without Fragmented getter
         // DatabseDocumentGetter is instantiated using SpringFramework factory
         // in order to support declarative (AOP) transactions.        
-        databaseDocumentGetter = (DatabaseDocumentGetter)services.getSpringBean("databaseDocumentGetter");
-        databaseDocumentGetter.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
+        documentLoader = (DocumentLoader)services.getSpringBean("documentLoader");
+        documentLoader.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
         
-        cachingDocumentGetter = new CachingDocumentGetter(databaseDocumentGetter, documentCacheMaxSize);        
+        documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentLoader, documentCacheMaxSize);
         categoryMapper = (CategoryMapper)services.getSpringBean("categoryMapper");
         
         // DocumentSaver is instantiated using SpringFramework
@@ -139,7 +134,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return version support for a given document or null if document does not exist.
      */
     public DocumentVersionInfo getDocumentVersionSupport(Integer documentId) {
-    	return cachingDocumentGetter.getDocumentVersionInfo(documentId);
+    	return documentLoaderCachingProxy.getDocumentVersionInfo(documentId);
     }
 
     public DocumentSaver getDocumentSaver() {
@@ -258,7 +253,8 @@ public class DocumentMapper implements DocumentGetter {
         	Integer documentId = meta.getId();
         	DocumentVersionInfo versionSupport = getDocumentVersionSupport(documentId);
         	if (!versionSupport.hasActiveVersion()) {
-            	document = getWorkingDocument(document.getMeta().getId());
+            	//document = getWorkingDocument(document.getMeta().getId());
+                document = getDocument(document.getMeta().getId());
             	publishWorkingDocument(document.clone(), user);
         	}
         }        
@@ -310,7 +306,7 @@ public class DocumentMapper implements DocumentGetter {
      */
     /*
     public DocumentDomainObject getDocument(Integer documentId, Integer documentVersion) {
-    	return cachingDocumentGetter.getDocument(documentId, documentVersion);
+    	return documentLoaderCachingProxy.getDocument(documentId, documentVersion);
 	}
 	*/
     
@@ -330,13 +326,13 @@ public class DocumentMapper implements DocumentGetter {
     
     
     public boolean hasPublishedVersion(Integer documentId) {
-    	return cachingDocumentGetter.getActiveDocument(documentId) != null;
+    	return documentLoaderCachingProxy.getActiveDocument(documentId) != null;
     }    
 
     public void invalidateDocument(DocumentDomainObject document) {        
         Integer documentId = document.getId();
         
-        cachingDocumentGetter.removeDocumentFromCache(documentId);
+        documentLoaderCachingProxy.removeDocumentFromCache(documentId);
 
         if (document.getVersion().getNo() == 0) {
             documentIndex.indexDocument(document);
@@ -386,7 +382,7 @@ public class DocumentMapper implements DocumentGetter {
         document.accept(new DocumentDeletingVisitor());
         documentIndex.removeDocument(document);
         
-        cachingDocumentGetter.removeDocumentFromCache(document.getId());
+        documentLoaderCachingProxy.removeDocumentFromCache(document.getId());
     }
 
     public Map<Integer, String> getAllDocumentTypeIdsAndNamesInUsersLanguage(UserDomainObject user) {
@@ -442,7 +438,7 @@ public class DocumentMapper implements DocumentGetter {
 
     // TODO: refactor
     public Set<String> getAllDocumentAlias() {
-    	List<String> aliasesList = databaseDocumentGetter.getMetaDao().getAllAliases();
+    	List<String> aliasesList = documentLoader.getMetaDao().getAllAliases();
     	Set<String> aliasesSet = new HashSet<String>();
     	Transformer transformer = new Transformer() {
     		public String transform(Object alias) {
@@ -506,7 +502,7 @@ public class DocumentMapper implements DocumentGetter {
     	try {
     		return Integer.valueOf(documentIdentity);
     	} catch (NumberFormatException e) {
-    		return cachingDocumentGetter.getDocumentIdByAlias(documentIdentity);
+    		return documentLoaderCachingProxy.getDocumentIdByAlias(documentIdentity);
     	}
     }
 
@@ -604,7 +600,7 @@ public class DocumentMapper implements DocumentGetter {
      * TODO: ??? return active document ???
      */
     public DocumentDomainObject getDocument(Integer metaId) {
-        return cachingDocumentGetter.getDocument(metaId);
+        return documentLoaderCachingProxy.getDocument(metaId);
     }     
     
     /**
@@ -618,7 +614,7 @@ public class DocumentMapper implements DocumentGetter {
      */
     /*
     public DocumentDomainObject getActiveDocument(Integer metaId) {
-        return cachingDocumentGetter.getActiveDocument(metaId);
+        return documentLoaderCachingProxy.getActiveDocument(metaId);
     }
       */
       
@@ -788,11 +784,11 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
-        return cachingDocumentGetter.getDocuments(documentIds) ;
+        return documentLoaderCachingProxy.getDocuments(documentIds) ;
     }
     
     public List<DocumentDomainObject> getActiveDocuments(Collection<Integer> documentIds) {
-        return cachingDocumentGetter.getActiveDocuments(documentIds) ;
+        return documentLoaderCachingProxy.getActiveDocuments(documentIds) ;
     }    
 
 
@@ -907,32 +903,25 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-	public CachingDocumentGetter getDocumentGetter() {
-		return cachingDocumentGetter;
+	public DocumentLoaderCachingProxy getDocumentGetter() {
+		return documentLoaderCachingProxy;
 	}
 	
-	public CachingDocumentGetter getCachingDocumentGetter() {
-		return cachingDocumentGetter;
+	public DocumentLoaderCachingProxy getCachingDocumentGetter() {
+		return documentLoaderCachingProxy;
 	}
 
-	public void setCachingDocumentGetter(CachingDocumentGetter cachingDocumentGetter) {
-		this.cachingDocumentGetter = cachingDocumentGetter;
+	public void setCachingDocumentGetter(DocumentLoaderCachingProxy documentLoaderCachingProxy) {
+		this.documentLoaderCachingProxy = documentLoaderCachingProxy;
 	}
 
 	public void setDocumentSaver(DocumentSaver documentSaver) {
 		this.documentSaver = documentSaver;
 	}
 
-	public DatabaseDocumentGetter getDatabaseDocumentGetter() {
-		return databaseDocumentGetter;
-	}
-
-	public void setDatabaseDocumentGetter(
-			DatabaseDocumentGetter databaseDocumentGetter) {
-		this.databaseDocumentGetter = databaseDocumentGetter;
-	}
-
+    /*
     public DocumentDomainObject getWorkingDocument(Integer metaId) {
-        return cachingDocumentGetter.getWorkingDocument(metaId);
+        return documentLoaderCachingProxy.getWorkingDocument(metaId);
     }
+    */
 }

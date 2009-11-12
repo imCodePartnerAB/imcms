@@ -179,7 +179,7 @@ public class DocumentPermissionSetMapper {
     		Meta.PermisionSetEx setEx = new Meta.PermisionSetEx();
     		
     		setEx.setSetId(setId);
-    		setEx.setPermissionId(DatabaseDocumentGetter.PERM_CREATE_DOCUMENT);
+    		setEx.setPermissionId(DocumentLoader.PERM_CREATE_DOCUMENT);
     		setEx.setPermissionData(allowedDocumentTypeId);
     		
     		permisionSetEx.add(setEx);
@@ -188,7 +188,7 @@ public class DocumentPermissionSetMapper {
     	/*
         String table = getExtendedPermissionsTable(forNewDocuments);        
         String sqlInsertCreatableDocumentTypeId = "INSERT INTO " + table + " VALUES(?,?,"
-                                                  + DatabaseDocumentGetter.PERM_CREATE_DOCUMENT
+                                                  + DocumentLoader.PERM_CREATE_DOCUMENT
                                                   + ",?)";
         for ( Iterator iterator = allowedDocumentTypeIds.iterator(); iterator.hasNext(); ) {
             Integer allowedDocumentTypeId = (Integer) iterator.next();

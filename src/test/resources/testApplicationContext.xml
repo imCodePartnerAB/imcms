@@ -108,7 +108,7 @@
     <property name="metaDao" ref="metaDao"/>
   </bean>
 
-  <bean id="databaseDocumentGetter" class="com.imcode.imcms.mapping.DatabaseDocumentGetter">
+  <bean id="databaseDocumentGetter" class="com.imcode.imcms.mapping.DocumentLoader">
     <property name="metaDao" ref="metaDao"/>
     <property name="documentInitializingVisitor" ref="documentInitializingVisitor"/>
   </bean>

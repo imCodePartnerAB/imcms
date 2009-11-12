@@ -2,9 +2,10 @@ package com.imcode.imcms.dao;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.imcode.imcms.mapping.DatabaseDocumentGetter;
+import com.imcode.imcms.mapping.DocumentLoader;
 import com.imcode.imcms.mapping.DocumentSaver;
-public class Utils {
+
+public class Utils {
 
 	public static final ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext("testApplicationContext.xml");
 	
@@ -24,10 +25,10 @@ import com.imcode.imcms.mapping.DocumentSaver;
 	public final static DocumentSaver documentSaver = 
 		(DocumentSaver)getBean("documentSaver");	
 	
-	public final static DatabaseDocumentGetter databaseDocumentGetter = 
-		(DatabaseDocumentGetter)getBean("databaseDocumentGetter");		
-	
-	public static Object getBean(String beanName) {
+	public final static DocumentLoader DOCUMENT_LOADER =
+		(DocumentLoader)getBean("DOCUMENT_LOADER");
+
+    public static Object getBean(String beanName) {
 		return classPathXmlApplicationContext.getBean(beanName);
 	}
 }
