@@ -20,15 +20,15 @@
   <query name="DocumentVersion.getActiveVersion">
     <![CDATA[
 	  SELECT v FROM DocumentVersion v 
-	  WHERE v.number = 0 AND v.metaId = :metaId
+	  WHERE v.no = 0 AND v.metaId = :metaId
     ]]>
   </query>    
 
   <!-- Unique -->
-  <query name="DocumentVersion.getByMetaIdAndNumber">
+  <query name="DocumentVersion.getByMetaIdAndNo">
     <![CDATA[
 	  SELECT v FROM DocumentVersion v
-	  WHERE v.metaId = :metaId AND v.number = :number
+	  WHERE v.metaId = :metaId AND v.no = :no
     ]]>
   </query>
 

@@ -4,15 +4,9 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
  
 <hibernate-mapping>
-  <!--
-  <query name="">
-    <![CDATA[
-    ]]>
-  </query>    
-  -->
   <query name="Text.deleteTexts">
     <![CDATA[
-    DELETE FROM Text t WHERE t.metaId = :metaId AND t.documentVersion = :metaVersion
+    DELETE FROM Text t WHERE t.metaId = :metaId AND t.docVersionNo = :docVersionNo
     ]]>
   </query>   
 </hibernate-mapping>

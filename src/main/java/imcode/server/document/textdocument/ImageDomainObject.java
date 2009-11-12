@@ -35,8 +35,8 @@ import com.imcode.util.ImageSize;
 	@NamedQuery(name="Image.getDefaultImage", query="select i from Image i where i.metaId = :metaId and i.no = :name and i.language.default is true"),
 	
 	// Collection			
-	@NamedQuery(name="Image.getByDocumentIdAndDocumentVersion", 
-			query="SELECT i FROM Image i WHERE i.metaId = :documentId AND i.documentVersion = :documentVersion")
+	@NamedQuery(name="Image.getByMetaIdAndDocVersionNo",
+			query="SELECT i FROM Image i WHERE i.metaId = :metaId AND i.docVersionNo = :docVersionNo")
 	
 })
 public class ImageDomainObject implements Serializable, Cloneable {
@@ -50,8 +50,8 @@ public class ImageDomainObject implements Serializable, Cloneable {
 	@Column(name="meta_id")
 	private Integer metaId;
 	
-	@Column(name="doc_version_number")
-	private Integer documentVersion;
+	@Column(name="doc_version_no")
+	private Integer docVersionNo;
 
     /** Image no in a document.*/
     private String no = "";
@@ -380,12 +380,12 @@ public class ImageDomainObject implements Serializable, Cloneable {
 		this.modified = modified;
 	}
 
-	public Integer getDocumentVersion() {
-		return documentVersion;
+	public Integer getDocVersionNo() {
+		return docVersionNo;
 	}
 
-	public void setDocumentVersion(Integer documentVersion) {
-		this.documentVersion = documentVersion;
+	public void setDocVersionNo(Integer docVersionNo) {
+		this.docVersionNo = docVersionNo;
 	}
 
     public Integer getLoopNo() {

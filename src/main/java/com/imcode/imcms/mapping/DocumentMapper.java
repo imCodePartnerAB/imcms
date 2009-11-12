@@ -172,7 +172,7 @@ public class DocumentMapper implements DocumentGetter {
         Meta meta = newDocument.getMeta();
         
         meta.setId(null);
-        //meta.setDocumentVersion(null);
+        //meta.setDocVersionNo(null);
         //meta.setDocumentVersionTag(null);
         
         for (I18nMeta i18nMeta: meta.getI18nMetas()) {
@@ -221,7 +221,7 @@ public class DocumentMapper implements DocumentGetter {
     
 
     public DocumentReference getDocumentReference(int childId, DocumentVersionSelector versionSelector) {
-        return new GetterDocumentReference(childId, cachingDocumentGetter, versionSelector);
+        return new GetterDocumentReference(childId, versionSelector);
     }
 
     public void saveNewDocument(DocumentDomainObject document, UserDomainObject user, boolean copying)
@@ -241,8 +241,10 @@ public class DocumentMapper implements DocumentGetter {
                              final UserDomainObject user) throws DocumentSaveException , NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException
     {
 
-    	DocumentDomainObject oldDocument = 
-    		getDocument(document.getId(), document.getVersion().getNumber());
+    	//DocumentDomainObject oldDocument =
+    	//	getDocument(document.getId(), document.getVersion().getNo());
+    	DocumentDomainObject oldDocument =
+    		getDocument(document.getId());        
 
     	try {
     		documentSaver.updateDocument(document, oldDocument, user);
@@ -284,7 +286,8 @@ public class DocumentMapper implements DocumentGetter {
      * 
      * @return new working version which is a copy of any previous version.
      */
-    // TODO: Check exceptions 
+    // TODO: Check exceptions
+    /*
     public void createWorkingDocument(Integer documentId, Integer documentVersion, UserDomainObject user) 
     throws DocumentSaveException, NoPermissionToEditDocumentException {
     	DocumentDomainObject document = getDocument(documentId, documentVersion);
@@ -293,6 +296,7 @@ public class DocumentMapper implements DocumentGetter {
 
         invalidateDocument(document);
 	}
+	*/
             
     
     /**
@@ -304,9 +308,11 @@ public class DocumentMapper implements DocumentGetter {
      * @param documentVersion document version. If not given (null) then published version is returned.
      * @return document or null if document can not be found.  
      */
+    /*
     public DocumentDomainObject getDocument(Integer documentId, Integer documentVersion) {
     	return cachingDocumentGetter.getDocument(documentId, documentVersion);
 	}
+	*/
     
     
     /**
@@ -314,11 +320,13 @@ public class DocumentMapper implements DocumentGetter {
      * 
      * Expensive call - returned document is not cached.
      */
+    /*
     public DocumentDomainObject getDocumentForShowing(Integer documentId, Integer versionNumber, UserDomainObject user) {
     	DocumentDomainObject document = getDocument(documentId, versionNumber);
     	
     	return createDocumentShowInterceptor(document, user);
 	}
+	*/
     
     
     public boolean hasPublishedVersion(Integer documentId) {
@@ -330,7 +338,7 @@ public class DocumentMapper implements DocumentGetter {
         
         cachingDocumentGetter.removeDocumentFromCache(documentId);
 
-        if (document.getVersion().getNumber() == 0) {
+        if (document.getVersion().getNo() == 0) {
             documentIndex.indexDocument(document);
         }
     }
@@ -396,7 +404,8 @@ public class DocumentMapper implements DocumentGetter {
             int containingDocumentId = row[0];
             int menuIndex = row[1];
             
-            TextDocumentDomainObject containingDocument = (TextDocumentDomainObject) getActiveDocument(containingDocumentId);
+            //TextDocumentDomainObject containingDocument = (TextDocumentDomainObject) getActiveDocument(containingDocumentId);
+            TextDocumentDomainObject containingDocument = (TextDocumentDomainObject) getDocument(containingDocumentId);
             documentMenuPairs[i] = new TextDocumentMenuIndexPair(containingDocument, menuIndex);
         }
         
@@ -461,11 +470,13 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * @return custom document's version for showing.
      */
+    /*
     public DocumentDomainObject getDocumentForShowing(String documentIdString, Integer versionNumber, UserDomainObject user) {
     	DocumentDomainObject document = getDocument(documentIdString, versionNumber);
     	
     	return createDocumentShowInterceptor(document, user);
     }
+    */
     
     /** 
      * @param documentIdentity document id or alias.
@@ -473,13 +484,15 @@ public class DocumentMapper implements DocumentGetter {
      * 
      * @return document or null if document can not be found. 
      */
+    /*
     public DocumentDomainObject getDocument(String documentIdentity, Integer versionNumber) {
         Integer documentId = toDocumentId(documentIdentity);
         
         return documentId == null 
         	? null
         	: getDocument(documentId, versionNumber);
-    }    
+    }
+        */
     
     /** 
      * @param documentIdentity document id or alias
@@ -546,7 +559,8 @@ public class DocumentMapper implements DocumentGetter {
         	private List<Integer> documentIds = nativeQueriesDao.getDocumentsWithPermissionsForRole(role.getId().intValue()); 
             
         	public DocumentDomainObject get(int index) {
-                return getActiveDocument(documentIds.get(index));
+                //return getActiveDocument(documentIds.get(index));
+                return getDocument(documentIds.get(index));
             }
 
             public int size() {
@@ -559,9 +573,11 @@ public class DocumentMapper implements DocumentGetter {
     /** 
      * @return custom version of a document.
      */
+    /*
     public DocumentDomainObject getDocument(Integer documentId, DocumentVersionSelector versionSelector) {
     	return versionSelector.getDocument(this, documentId);
     }
+    */
     
     /**
      * Returns latest version of a document.
@@ -571,11 +587,13 @@ public class DocumentMapper implements DocumentGetter {
      * @param documentId document id
      * @returns latest version of a document
      */
+    /*
     public DocumentDomainObject getLatestDocumentVersionForShowing(Integer documentId, UserDomainObject user) { 
         DocumentDomainObject document = getDocument(documentId);
         
         return document == null ? null : createDocumentShowInterceptor(document, user);
-    }    
+    }
+        */
     
     /**
      * Returns working document.
@@ -586,7 +604,7 @@ public class DocumentMapper implements DocumentGetter {
      * TODO: ??? return active document ???
      */
     public DocumentDomainObject getDocument(Integer metaId) {
-        return getDocument(metaId);
+        return cachingDocumentGetter.getDocument(metaId);
     }     
     
     /**
@@ -598,9 +616,11 @@ public class DocumentMapper implements DocumentGetter {
      * 
      * TODO: Check all calls to this method and replace with getDocument where appropriate.
      */
+    /*
     public DocumentDomainObject getActiveDocument(Integer metaId) {
         return cachingDocumentGetter.getActiveDocument(metaId);
-    }    
+    }
+      */
       
     /**
      * Returns published or working (depending on user show settings) document for showing.
@@ -610,6 +630,7 @@ public class DocumentMapper implements DocumentGetter {
      * 
      * @return published or working AOP adviced document or null if document does not exist.  
      */
+    /*
     public DocumentDomainObject getDocumentForShowing(String documentIdentity, UserDomainObject user) {
         Integer documentId = toDocumentId(documentIdentity);
         
@@ -632,7 +653,8 @@ public class DocumentMapper implements DocumentGetter {
         return documentId == null
         	? null
         	: getWorkingDocument(documentId);	
-    }    
+    }
+       */
     
     /**
      * @return all document's versions 
@@ -660,13 +682,15 @@ public class DocumentMapper implements DocumentGetter {
      * @return advised published, working or custom document version depending on user's view settings
      * or null if document does not exist
      */
+    /*
     public DocumentDomainObject getDocumentForShowing(Integer documentId, UserDomainObject user) {
     	DocumentShowSettings showSettings = user.getDocumentShowSettings();
     	DocumentDomainObject document = showSettings.getVersionSelector()
     		.getDocument(this, documentId);
     	
     	return createDocumentShowInterceptor(document, user);    	
-    } 
+    }
+     */
     
     /**
      * Creates document interceptor based on document show settings.

@@ -285,7 +285,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      */   
     public TextDomainObject setText(I18nLanguage language, Integer no, TextDomainObject text) {
         Meta meta = getMeta();
-        Integer documentVersion = getVersion().getNumber();
+        Integer documentVersion = getVersion().getNo();
         Integer metaId = meta.getId();        
 
         Map<Integer, TextDomainObject> map;
@@ -340,7 +340,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         
         newText.setModified(true);
         newText.setMetaId(metaId);
-        newText.setDocumentVersion(documentVersion);
+        newText.setDocVersionNo(documentVersion);
         newText.setNo(no);
         newText.setLanguage(language);
 
@@ -444,7 +444,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	
     	if (oldImage != null) {
     		newImage.setId(oldImage.getId());
-    		newImage.setDocumentVersion(oldImage.getDocumentVersion());
+    		newImage.setDocVersionNo(oldImage.getDocVersionNo());
     	} else {
     		newImage.setId(null);
     	}
@@ -512,7 +512,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	
     	for (ContentLoop loop: contentLoopsMap.values()) {
     		loop.setId(null);
-    		loop.setMetaId(null);
+    		loop.setDocId(null);
     		loop.setModified(true);
     		
     		for (Content content: loop.getContents()) {
@@ -666,16 +666,16 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		Integer metaId = meta == null ? null : meta.getId();
 		Long loopId = null;
 		DocumentVersion documentVersion = getVersion();
-        Integer versionNumber = documentVersion == null ? null :  documentVersion.getNumber();
+        Integer versionNumber = documentVersion == null ? null :  documentVersion.getNo();
 		
 		if (oldContentLoop != null) {
 			loopId = oldContentLoop.getId();
-			versionNumber = oldContentLoop.getDocumentVersion();
+			versionNumber = oldContentLoop.getDocVersionNo();
 		}
 		
 		newContentLoop.setModified(true);
-		newContentLoop.setMetaId(metaId);
-		newContentLoop.setDocumentVersion(versionNumber);
+		newContentLoop.setDocId(metaId);
+		newContentLoop.setDocVersionNo(versionNumber);
 		newContentLoop.setId(loopId);		
 		newContentLoop.setNo(no);
 		

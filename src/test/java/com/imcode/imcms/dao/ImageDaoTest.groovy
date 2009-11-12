@@ -105,7 +105,7 @@ public class ImageDaoTest extends DaoTestG {
         assertTrue(images.size() == 2)
         
         images.each {
-            assertTrue it.metaId == metaId 
+            assertTrue it.getDocId == metaId
         }
     }    
 
@@ -135,7 +135,7 @@ public class ImageDaoTest extends DaoTestG {
 		assertNull(text)
 		
 		text = new TextDomainObject()
-		text.setMetaId(metaId)
+		text.setDocId(metaId)
 		text.setIndex(textIndex)
 		text.setLanguage(language)
 				

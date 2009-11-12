@@ -40,8 +40,11 @@ public class ChangeText extends HttpServlet {
         Integer loopNo = loopNoStr == null ? null : Integer.valueOf(loopNoStr);
         Integer contentIndex = contentIndexStr == null ? null : Integer.valueOf(contentIndexStr);     
         
+        //TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument(
+        //		documentId, user.getDocumentShowSettings().getVersionSelector());
+
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument(
-        		documentId, user.getDocumentShowSettings().getVersionSelector());
+        		documentId);        
                 
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( textDocument );
 
@@ -66,7 +69,7 @@ public class ChangeText extends HttpServlet {
     	if (text == null) {
     		text = new TextDomainObject();
     		text.setMetaId(metaId);
-            text.setDocumentVersion(textDocument.getVersion().getNumber());
+            text.setDocVersionNo(textDocument.getVersion().getNo());
     		text.setNo(textIndex);
     		text.setLanguage(language);
     		text.setType(TextDomainObject.TEXT_TYPE_HTML);

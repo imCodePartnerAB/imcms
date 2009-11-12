@@ -128,7 +128,8 @@ public class AdminDoc extends HttpServlet {
             history.push( meta_int );
         }
 
-        DocumentDomainObject document = imcref.getDocumentMapper().getLatestDocumentVersionForShowing(meta_id, user);
+        //DocumentDomainObject document = imcref.getDocumentMapper().getLatestDocumentVersionForShowing(meta_id, user);
+        DocumentDomainObject document = imcref.getDocumentMapper().getDocument(meta_id);
         
         if ( null == document ) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);

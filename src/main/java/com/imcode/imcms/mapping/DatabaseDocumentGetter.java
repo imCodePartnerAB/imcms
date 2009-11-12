@@ -20,9 +20,14 @@ import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.dao.DocumentVersionDao;
 
 /**
+ *
+ *
+ * 
  * Retrieves documents from the database.
  *  
- * Instantiated by spring-framework and initialized in DocumentMapper constructor. 
+ * Instantiated by spring-framework and initialized in DocumentMapper constructor.
+ *
+ * TODO: rename to DocumentLoader.
  */
 public class DatabaseDocumentGetter {
 	

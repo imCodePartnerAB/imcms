@@ -45,14 +45,14 @@ html.html {
 	            cache.each { metaId, document ->
 	                tr {        	                
 	                    td(align:"right", "${metaId}")
-	                    td(align:"right", "${document.meta.getNumber.getNumber}")
+	                    td(align:"right", "${document.meta.getNo.getNo}")
 	                    td("${document.headline}")
 	                    td {
 	                        table(border:1) {
 	                        
 	                             documentMapper.getDocumentVersions(metaId).each { v ->
 	                                 tr {
-	                                    td(v.getNumber)
+	                                    td(v.getNo)
 	                                    td(v.versionTag)
 	                                 }
 	                             }

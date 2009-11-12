@@ -116,8 +116,8 @@ public class ContentLoopDao extends HibernateTemplate {
 	@Transactional
 	public synchronized ContentLoop createContentLoop(Integer metaId, Integer documentVersion, Integer loopNo) {
 		ContentLoop loop = new ContentLoop();
-		loop.setMetaId(metaId);
-		loop.setDocumentVersion(documentVersion);
+		loop.setDocId(metaId);
+		loop.setDocVersionNo(documentVersion);
 		loop.setNo(loopNo);
 		
 		Content content = new Content();
@@ -155,16 +155,16 @@ public class ContentLoopDao extends HibernateTemplate {
 	/**
 	 * Returns loop or null if loop can not be found. 
 	 * 
-	 * @param metaId meta id.
+	 * @param docId document id.
 	 * @param no loop no.
 	 * 
 	 * @return loop or null if loop can not be found. 
 	 */
 	@Transactional
-	public ContentLoop getContentLoop(Integer metaId, Integer documentVersion, Integer no) {
-		return (ContentLoop)getSession().getNamedQuery("ContentLoop.getByMetaIdAndDocumentVersionAndNo")
-			.setParameter("metaId", metaId)
-			.setParameter("documentVersion", documentVersion)
+	public ContentLoop getContentLoop(Integer docId, Integer docVersionNo, Integer no) {
+		return (ContentLoop)getSession().getNamedQuery("ContentLoop.getByDocIdAndDocVersionNoAndNo")
+			.setParameter("docId", docId)
+			.setParameter("docVersionNo", docVersionNo)
 			.setParameter("no", no)
 			.uniqueResult();
 	}
@@ -173,14 +173,14 @@ public class ContentLoopDao extends HibernateTemplate {
 	/**
 	 * Returns document content loops. 
 	 * 
-	 * @param metaId meta id.
+	 * @param docId document id.
 	 * 
 	 * @return document content loops. 
 	 */
 	@Transactional
-	public List<ContentLoop> getContentLoops(Integer metaId, Integer documentVersion) {
-		return findByNamedQueryAndNamedParam("ContentLoop.getByMetaIdAndDocumentVersion", 
-				new String[] {"metaId", "documentVersion"}, new Object[] {metaId, documentVersion });
+	public List<ContentLoop> getContentLoops(Integer docId, Integer docVersionNo) {
+		return findByNamedQueryAndNamedParam("ContentLoop.getByDocIdAndDocVersionNo", 
+				new String[] {"docId", "docVersionNo"}, new Object[] {docId, docVersionNo });
 	}
 	
 	// TODO: Optimize

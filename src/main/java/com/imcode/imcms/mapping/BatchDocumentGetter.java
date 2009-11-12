@@ -29,8 +29,10 @@ public class BatchDocumentGetter extends DocumentGetterWrapper {
         }
         DocumentDomainObject document = (DocumentDomainObject) documentsMap.remove(documentId);
         if (null == document) {
-            document = super.getActiveDocument(documentId) ;
+            //document = super.getActiveDocument(documentId) ;
+            document = super.getDocument(documentId);
         }
+        
         return document ;
     }
 }

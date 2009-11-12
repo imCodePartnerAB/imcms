@@ -193,7 +193,7 @@ if (null != languages) { %>
 } %>
 
 <%
-boolean isWorkingVersion = versionSupport.isWorkingVersionNumber(version.getNumber());
+boolean isWorkingVersion = versionSupport.isWorkingVersionNumber(version.getNo());
 String sFlags = request.getParameter("flags");
 if (sFlags != null && sFlags.equals("1")) {
 } else {
@@ -210,16 +210,16 @@ if (sFlags != null && sFlags.equals("1")) {
           <select name="version">          
             <% while (iterator.hasNext()) {
             	DocumentVersion v = (DocumentVersion)iterator.next();
-            	String sSelected = v.getNumber().equals(version.getNumber()) ? " selected=\"selected\"" : "";
+            	String sSelected = v.getNo().equals(version.getNo()) ? " selected=\"selected\"" : "";
             	// !!NB VERY IMPORTANT - if version tag name is WORKING OR PUBLISHED
             	// then tag name should be used instead of number.           
             	DocumentVersionTag tag = v.getTag();
             	String sVersion = tag == DocumentVersionTag.PUBLISHED || tag == DocumentVersionTag.WORKING
             		? sVersion = tag.name()
-            		: v.getNumber().toString();
+            		: v.getNo().toString();
                 %>            
             	<option value="<%=sVersion%>" <%= sSelected %>>
-            		<%=v.getNumber()%> <%=(v.getTag().toString())%>
+            		<%=v.getNo()%> <%=(v.getTag().toString())%>
             	</option>
             <% }%>              
           </select>

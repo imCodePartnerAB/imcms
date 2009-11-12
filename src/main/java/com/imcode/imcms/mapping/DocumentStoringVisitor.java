@@ -106,7 +106,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
         Integer documentId = textDocument.getMeta().getId();
-        Integer documentVersionNumber = textDocument.getVersion().getNumber();
+        Integer documentVersionNumber = textDocument.getVersion().getNo();
 
         // delete all texts for meta and version
         textDao.deleteTexts(documentId, documentVersionNumber);
@@ -115,7 +115,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         	for (TextDomainObject text: map.values()) {
         		text.setId(null);
             	text.setMetaId(documentId);
-            	text.setDocumentVersion(documentVersionNumber);
+            	text.setDocVersionNo(documentVersionNumber);
                 textDao.saveText(text);
                 
                 if (text.isModified()) {                	 
@@ -140,15 +140,15 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     public void updateTextDocumentContentLoops(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ContentLoopDao dao = (ContentLoopDao)services.getSpringBean("contentLoopDao");
         Integer metaId = textDocument.getMeta().getId();
-        Integer documentVersion = textDocument.getVersion().getNumber();
-        Integer documentVersionNumber = textDocument.getVersion().getNumber();
+        Integer documentVersion = textDocument.getVersion().getNo();
+        Integer documentVersionNumber = textDocument.getVersion().getNo();
         
         // delete all loops for meta and version
         dao.deleteLoops(metaId, documentVersionNumber);
         
         for (ContentLoop loop: textDocument.getContentLoopsMap().values()) {
-        	loop.setMetaId(metaId);
-        	loop.setDocumentVersion(documentVersion);
+        	loop.setDocId(metaId);
+        	loop.setDocVersionNo(documentVersion);
         	
         	dao.saveContentLoop(loop);
         }  	
@@ -166,14 +166,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
         Integer metaId = textDocument.getMeta().getId();
-        Integer documentVersionNumber = textDocument.getVersion().getNumber();
+        Integer documentVersionNumber = textDocument.getVersion().getNo();
         
         for (Map<Integer, ImageDomainObject> map: textDocument.getAllImages().values()) {
         	for (ImageDomainObject image: map.values()) {
                 if (image.isModified()) {                	 
                 	// TODO: remove
                 	image.setMetaId(metaId);
-                	image.setDocumentVersion(documentVersionNumber);
+                	image.setDocVersionNo(documentVersionNumber);
                     imageDao.saveImage(image);
                     //imageDao.saveImageHistory(metaId, text, user); 
                 }        		

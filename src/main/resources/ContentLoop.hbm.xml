@@ -12,17 +12,17 @@
   -->
 
   <!-- Unique -->  
-  <query name="ContentLoop.getByMetaIdAndDocumentVersionAndNo">
+  <query name="ContentLoop.getByDocIdAndDocVersionNoAndNo">
     <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.documentVersion = :documentVersion AND l.no = :no
+    SELECT l FROM ContentLoop l WHERE l.docId = :docId AND l.docVersionNo = :docVersionNo AND l.no = :no
     ]]>
   </query>
 
 
   <!-- List -->
-  <query name="ContentLoop.getByMetaIdAndDocumentVersion">
+  <query name="ContentLoop.getByDocIdAndDocVersionNo">
     <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.metaId = :metaId AND l.documentVersion = :documentVersion
+    SELECT l FROM ContentLoop l WHERE l.docId = :docId AND l.docVersionNo = :docVersionNo
     ]]>
   </query>   
   

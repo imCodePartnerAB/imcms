@@ -15,7 +15,7 @@ public interface DocumentGetter {
     /** 
      * @return list of active documents. 
      */ 
-    List<DocumentDomainObject> getActiveDocuments(Collection<Integer> metaIds);
+    //List<DocumentDomainObject> getActiveDocuments(Collection<Integer> metaIds);
 
     /**
      * Returns latest (working) version of a document. 
@@ -31,19 +31,19 @@ public interface DocumentGetter {
      * 
      * @param metaId document's meta id.
      */
-    DocumentDomainObject getActiveDocument(Integer metaId);
+    //DocumentDomainObject getActiveDocument(Integer metaId);
     
     /**
      * Returns working (latest) version of a document.
      * 
      * @param metaId document's id.
      */
-    DocumentDomainObject getWorkingDocument(Integer metaId);
+    //DocumentDomainObject getWorkingDocument(Integer metaId);
         
     /**
      * Returns custom version of a document.
      * 
      * @param metaId document's id.
      */
-    DocumentDomainObject getDocument(Integer metaId, Integer version);
+    //DocumentDomainObject getDocument(Integer metaId, Integer version);
 }

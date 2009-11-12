@@ -18,34 +18,36 @@ import com.imcode.imcms.api.Meta;
 
 /**
  * Cache for wrapped DatabaseDocumentGetter.
+ * 
+ * TODO: rename to DocumentLoaderCachingProxy
  */
-public class CachingDocumentGetter implements DocumentGetter {
+public class CachingDocumentGetter {
 
     /**
      * Cached metas.
      *
-     * Map key is a meta id.
+     * Map key is a document id.
      */
     private Map<Integer, Meta> metas;    
 	
 	/**
 	 * Documents versions supports.
 	 * 
-     * Map key is a document's meta id.
+     * Map key is a document id.
 	 */
 	private Map<Integer, DocumentVersionInfo> versionInfos;
 	
 	/**
 	 * Active documents
 	 * 
-     * Map key is a document's meta id.
+     * Map key is a document id.
 	 */
     private Map<Integer, DocumentDomainObject> activeDocuments;
     
     /** 
      * Working (version 0) documents
      * 
-     * Map key is a document's meta id.
+     * Map key is a document id.
      */
     private Map<Integer, DocumentDomainObject> workingDocuments;
     
@@ -82,14 +84,14 @@ public class CachingDocumentGetter implements DocumentGetter {
     /**
      * @return document's meta or null if there is no meta with such id.
      */
-    public Meta getMeta(Integer metaId) {
-        Meta meta = metas.get(metaId);
+    public Meta getMeta(Integer docId) {
+        Meta meta = metas.get(docId);
 
         if (meta == null) {
-            meta = databaseDocumentGetter.getMeta(metaId);
+            meta = databaseDocumentGetter.getMeta(docId);
 
             if (meta != null) {
-                metas.put(metaId, meta);
+                metas.put(docId, meta);
             }
         }
 
@@ -97,16 +99,16 @@ public class CachingDocumentGetter implements DocumentGetter {
     }
 
     
-    public DocumentVersionInfo getDocumentVersionInfo(Integer metaId) {
-        DocumentVersionInfo versionSupport = versionInfos.get(metaId);
+    public DocumentVersionInfo getDocumentVersionInfo(Integer docId) {
+        DocumentVersionInfo versionSupport = versionInfos.get(docId);
         
     	if (versionSupport == null) {
             List<DocumentVersion> versions =  databaseDocumentGetter.getDocumentVersionDao()
-                    .getAllVersions(metaId);
+                    .getAllVersions(docId);
             
             if (versions.size() > 0) {
-                versionSupport = new DocumentVersionInfo(metaId, versions);
-                versionInfos.put(metaId, versionSupport);
+                versionSupport = new DocumentVersionInfo(docId, versions);
+                versionInfos.put(docId, versionSupport);
             }
     	}
         
@@ -114,8 +116,8 @@ public class CachingDocumentGetter implements DocumentGetter {
     } 
     
 
-    public DocumentDomainObject getDocument(Integer metaId, Integer versionNumber) {
-        Meta meta = getMeta(metaId);
+    public DocumentDomainObject getDocument(Integer docId, Integer versionNumber) {
+        Meta meta = getMeta(docId);
 
         if (meta == null) {
             return null;
@@ -126,21 +128,21 @@ public class CachingDocumentGetter implements DocumentGetter {
 
     
     
-    public DocumentDomainObject getActiveDocument(Integer metaId) {
-        Meta meta = getMeta(metaId);
+    public DocumentDomainObject getActiveDocument(Integer docId) {
+        Meta meta = getMeta(docId);
 
         if (meta == null) {
             return null;
         }
 
-        DocumentDomainObject document = activeDocuments.get(metaId);
+        DocumentDomainObject document = activeDocuments.get(docId);
 
     	if (document == null) {
-            DocumentVersionInfo info = getDocumentVersionInfo(metaId);
-	        document = databaseDocumentGetter.getDocument(meta.clone(), info.getActiveVersionNumber());
+            DocumentVersionInfo info = getDocumentVersionInfo(docId);
+	        document = databaseDocumentGetter.getDocument(meta.clone(), info.getActiveVersionNo());
 
             if (document != null) {
-	            activeDocuments.put(metaId, document);
+	            activeDocuments.put(docId, document);
             }
     	}
 
@@ -151,16 +153,16 @@ public class CachingDocumentGetter implements DocumentGetter {
     /**
      * Returns working document.
      */
-    public DocumentDomainObject getDocument(Integer metaId) {
-        return getWorkingDocument(metaId);
+    public DocumentDomainObject getDocument(Integer docId) {
+        return getWorkingDocument(docId);
     }    
             
-    public List<DocumentDomainObject> getDocuments(Collection<Integer> metaIds) {
-        return databaseDocumentGetter.getDocuments(metaIds) ;
+    public List<DocumentDomainObject> getDocuments(Collection<Integer> docIds) {
+        return databaseDocumentGetter.getDocuments(docIds) ;
     }
     
-    public List<DocumentDomainObject> getActiveDocuments(Collection<Integer> metaIds) {
-        return databaseDocumentGetter.getActiveDocuments(metaIds) ;
+    public List<DocumentDomainObject> getActiveDocuments(Collection<Integer> docIds) {
+        return databaseDocumentGetter.getActiveDocuments(docIds) ;
     }    
 
     
@@ -172,11 +174,11 @@ public class CachingDocumentGetter implements DocumentGetter {
     }
     
     
-    public void removeDocumentFromCache(Integer metaId) {
-    	activeDocuments.remove(metaId);
-    	workingDocuments.remove(metaId);
-    	versionInfos.remove(metaId);
-    	aliasesBidiMap.remove(metaId);
+    public void removeDocumentFromCache(Integer docId) {
+    	activeDocuments.remove(docId);
+    	workingDocuments.remove(docId);
+    	versionInfos.remove(docId);
+    	aliasesBidiMap.remove(docId);
     } 
     
     /**
@@ -188,33 +190,33 @@ public class CachingDocumentGetter implements DocumentGetter {
      * @return document id.
      */
     public Integer getDocumentIdByAlias(String alias) {
-    	Integer metaId = (Integer)aliasesBidiMap.getKey(alias);
+    	Integer docId = (Integer)aliasesBidiMap.getKey(alias);
     	
-    	if (metaId == null) {
-    		metaId = databaseDocumentGetter.getMetaDao().getDocumentIdByAlias(alias);
+    	if (docId == null) {
+    		docId = databaseDocumentGetter.getMetaDao().getDocumentIdByAlias(alias);
     		
-    		if (metaId != null) {
-    			aliasesBidiMap.put(metaId, alias);
+    		if (docId != null) {
+    			aliasesBidiMap.put(docId, alias);
     		}
     	}
     	
-    	return metaId;
+    	return docId;
     }
 
-    public DocumentDomainObject getWorkingDocument(Integer metaId) {
-        Meta meta = getMeta(metaId);
+    public DocumentDomainObject getWorkingDocument(Integer docId) {
+        Meta meta = getMeta(docId);
 
         if (meta == null) {
             return null;
         }
 
-        DocumentDomainObject document = workingDocuments.get(metaId);
+        DocumentDomainObject document = workingDocuments.get(docId);
 
     	if (document == null) {
 	        document = databaseDocumentGetter.getDocument(meta.clone(), 0);
 
             if (document != null) {
-	            workingDocuments.put(metaId, document);
+	            workingDocuments.put(docId, document);
             }
     	}
 

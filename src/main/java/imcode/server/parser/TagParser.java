@@ -338,7 +338,8 @@ public class TagParser {
             includedParserParameters = (ParserParameters) parserParameters.clone();
             includedParserParameters.setTemplate(attributes.getProperty("template"));
             includedParserParameters.setParameter(attributes.getProperty("param"));
-            includedParserParameters.getDocumentRequest().setDocument(service.getDocumentMapper().getActiveDocument(included_meta_id));
+            //includedParserParameters.getDocumentRequest().setDocument(service.getDocumentMapper().getActiveDocument(included_meta_id));
+            includedParserParameters.getDocumentRequest().setDocument(service.getDocumentMapper().getDocument(included_meta_id));
             includedParserParameters.getDocumentRequest().setReferrer(document);
             includedParserParameters.setFlags(0);
             includedParserParameters.setIncludeLevel(parserParameters.getIncludeLevel() - 1);
@@ -816,11 +817,13 @@ public class TagParser {
         
         try {
 	        if(StringUtils.isNotBlank(documentName)) {
-	            textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocumentForShowing(documentName, user);
+	            //textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocumentForShowing(documentName, user);
+                textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocument(documentName);
 	        } else if (documentVersion != null) {
 	        	Integer docmentId = textDocumentToUse.getId();
 	        	
-	        	textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocumentForShowing(docmentId, documentVersion, user);
+	        	//textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocumentForShowing(docmentId, documentVersion, user);
+                textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocument(docmentId);
 	        }
         } catch (ClassCastException e) {
         	/* return null */

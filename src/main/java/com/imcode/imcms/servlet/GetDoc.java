@@ -37,6 +37,9 @@ import org.apache.oro.text.perl.Perl5Util;
 
 import com.imcode.imcms.mapping.DocumentMapper;
 
+/**
+ * Retrieves document by metaId.
+ */
 public class GetDoc extends HttpServlet {
 
     private final static Logger TRACK_LOG = Logger.getLogger(ImcmsConstants.ACCESS_LOG);
@@ -70,13 +73,16 @@ public class GetDoc extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         boolean publishedVersionRequest = req.getParameter("p") != null;
         boolean workingVersionRequest = req.getParameter("w") != null;
-                
+
+        /*
         DocumentDomainObject document = publishedVersionRequest
         	? documentMapper.getPublishedDocumentForShowing(documentId, user)
         	: workingVersionRequest 
         		? documentMapper.getWorkingDocumentForShowing(documentId, user)
         		: documentMapper.getDocumentForShowing(documentId, user);
-        
+        */
+        DocumentDomainObject document = documentMapper.getDocument(documentId);
+
         if (null == document) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -134,7 +140,8 @@ public class GetDoc extends HttpServlet {
         Perl5Util perlrx = new Perl5Util();
         if ( null != referrer && perlrx.match("/meta_id=(\\d+)/", referrer) ) {
             int referring_meta_id = Integer.parseInt(perlrx.group(1));
-            referringDocument = documentMapper.getActiveDocument(referring_meta_id);
+            //referringDocument = documentMapper.getActiveDocument(referring_meta_id);
+            referringDocument = documentMapper.getDocument(referring_meta_id);
         }
 
         DocumentRequest documentRequest = new DocumentRequest(imcref, user, document, referringDocument, req, res);

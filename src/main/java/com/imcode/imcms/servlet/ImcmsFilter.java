@@ -183,9 +183,9 @@ public class ImcmsFilter implements Filter {
         String documentIdString = getDocumentIdString(service, path);
         ServletContext servletContext = request.getSession().getServletContext();
         if ( null == servletContext.getResourcePaths(path) ) {
-            //DocumentDomainObject document = service.getDocumentMapper().getDocument(documentIdString);
-        	UserDomainObject user = Utility.getLoggedOnUser( request );
-        	DocumentDomainObject document = service.getDocumentMapper().getDocumentForShowing(documentIdString, user);
+            DocumentDomainObject document = service.getDocumentMapper().getDocument(documentIdString);
+        	//UserDomainObject user = Utility.getLoggedOnUser( request );
+        	//DocumentDomainObject document = service.getDocumentMapper().getDocumentForShowing(documentIdString, user);
             if (null != document) {
                 try {
                     GetDoc.viewDoc( document, request, (HttpServletResponse)response );

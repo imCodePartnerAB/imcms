@@ -17,7 +17,6 @@ import org.apache.commons.lang.math.NumberUtils;
  * 
  * @see DocumentGetter
  * @see MetaDao
- * @see DocumentVersionTag
  */
 public class DocumentVersionSelector implements Serializable {
 
@@ -29,7 +28,7 @@ public class DocumentVersionSelector implements Serializable {
 	 * CUSTOM specifies any document version.
 	 */
 	public static enum Type {
-		PUBLISHED,
+		PUBLISHED,     // <- ACTIVE
 		WORKING,
 		CUSTOM
 	}
@@ -47,7 +46,8 @@ public class DocumentVersionSelector implements Serializable {
 		 */
 		@Override
 		public DocumentDomainObject getDocument(DocumentGetter documentGetter, Integer documentId) {
-			return documentGetter.getActiveDocument(documentId);
+			//return documentGetter.getActiveDocument(documentId);
+            return documentGetter.getDocument(documentId);
 		}		
 	};
 	
@@ -64,7 +64,8 @@ public class DocumentVersionSelector implements Serializable {
 		 */
 		@Override
 		public DocumentDomainObject getDocument(DocumentGetter documentGetter, Integer documentId) {
-			return documentGetter.getWorkingDocument(documentId);
+			//return documentGetter.getWorkingDocument(documentId);
+            return documentGetter.getDocument(documentId);
 		}		
 	};
 	
@@ -152,7 +153,8 @@ public class DocumentVersionSelector implements Serializable {
 	 * @return custom version of a document  
 	 */
 	public DocumentDomainObject getDocument(DocumentGetter documentGetter, Integer documentId) {
-		return documentGetter.getDocument(documentId, versionNumber);
+		//return documentGetter.getDocument(documentId, versionNumber);
+        return documentGetter.getDocument(documentId);
 	}
 	
 	public Type getType() {

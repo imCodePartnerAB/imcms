@@ -49,7 +49,7 @@ public class ContentLoopDaoTestG extends DaoTestG {
         
         ContentLoop loop = clDao.getContentLoop(1001, 1);
                 
-        Assert.assertTrue(loop.getMetaId() == 1001);
+        Assert.assertTrue(loop.getDocId() == 1001);
         
         List<Content> contents = loop.getContents();
         

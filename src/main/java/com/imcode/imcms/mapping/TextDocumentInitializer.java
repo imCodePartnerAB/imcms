@@ -64,7 +64,7 @@ public class TextDocumentInitializer {
     public void initTexts(TextDocumentDomainObject document) {
      	Meta meta = document.getMeta();
     	
-    	Collection<TextDomainObject> texts = textDao.getTexts(meta.getId(), document.getVersion().getNumber());
+    	Collection<TextDomainObject> texts = textDao.getTexts(meta.getId(), document.getVersion().getNo());
     	Map<I18nLanguage, Map<Integer, TextDomainObject>> textsMap = new HashMap<I18nLanguage, Map<Integer,TextDomainObject>>();
 
         Map<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>> loopTexts
@@ -106,7 +106,7 @@ public class TextDocumentInitializer {
     public void initImages(TextDocumentDomainObject document) {
     	Meta meta = document.getMeta();
     	
-    	Collection<ImageDomainObject> images = imageDao.getImages(meta.getId(), document.getVersion().getNumber());
+    	Collection<ImageDomainObject> images = imageDao.getImages(meta.getId(), document.getVersion().getNo());
     	
     	Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
     	
@@ -135,7 +135,7 @@ public class TextDocumentInitializer {
     public void initMenus(TextDocumentDomainObject document) {
     	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getMeta().getId());	
     	Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
-    	DocumentVersionSelector versionSelector = document.getVersion().getNumber() == 0 
+    	DocumentVersionSelector versionSelector = document.getVersion().getNo() == 0
     		? DocumentVersionSelector.WORKING_SELECTOR
     		: DocumentVersionSelector.PUBLISHED_SELECTOR;
     				
@@ -155,7 +155,7 @@ public class TextDocumentInitializer {
     	for (Map.Entry<Integer, MenuItemDomainObject> entry: menu.getItemsMap().entrySet()) {
     		Integer destinationDocumentId = entry.getKey();
     		MenuItemDomainObject menuItem = entry.getValue();
-    		GetterDocumentReference gtr = new GetterDocumentReference(destinationDocumentId, documentGetter, versionSelector);
+    		GetterDocumentReference gtr = new GetterDocumentReference(destinationDocumentId, versionSelector);
     		
     		menuItem.setDocumentReference(gtr);
     		menuItem.setTreeSortKey(new TreeSortKeyDomainObject(menuItem.getTreeSortIndex()));
@@ -183,7 +183,7 @@ public class TextDocumentInitializer {
 	
 	
 	public void initContentLoops(TextDocumentDomainObject document) {
-		List<ContentLoop> loops = contentLoopDao.getContentLoops(document.getMeta().getId(), document.getVersion().getNumber());
+		List<ContentLoop> loops = contentLoopDao.getContentLoops(document.getMeta().getId(), document.getVersion().getNo());
 		Map<Integer, ContentLoop> loopsMap = new HashMap<Integer, ContentLoop>();
 		
 		for (ContentLoop loop: loops) {

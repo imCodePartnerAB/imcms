@@ -31,16 +31,16 @@ import com.imcode.imcms.mapping.DocumentStoringVisitor;
 @NamedQueries({
 	
 	// Unique result
-	@NamedQuery(name="Text.getByMetaIdAndDocumentVersionAndLanguageId", 
-			query="SELECT t FROM Text t WHERE t.metaId = :documentId AND t.documentVersion = :documentVersiob AND t.language.id = :languageId"),
+	@NamedQuery(name="Text.getByMetaIdAndDocVersionNoAndLanguageId",
+			query="SELECT t FROM Text t WHERE t.metaId = :metaId AND t.docVersionNo = :docVersionNo AND t.language.id = :languageId"),
 	
 	// Unique result
-	@NamedQuery(name="Text.getByDocumentIdAndDocumentVersionAndIndexAndLanguageId", 
-			query="SELECT t FROM Text t WHERE t.metaId = :documentId AND t.documentVersion = :documentVersion AND t.no = :no AND t.language.id = :languageId"),
+	@NamedQuery(name="Text.getByMetaIdAndDocVersionNoAndNoAndLanguageId", 
+			query="SELECT t FROM Text t WHERE t.metaId = :metaId AND t.docVersionNo = :docVersionNo AND t.no = :no AND t.language.id = :languageId"),
 	
 	// Collection			
-	@NamedQuery(name="Text.getByDocumentIdAndDocumentVersion", 
-			query="SELECT t FROM Text t WHERE t.metaId = :documentId AND t.documentVersion = :documentVersion")
+	@NamedQuery(name="Text.getByMetaIdAndDocVersionNo", 
+			query="SELECT t FROM Text t WHERE t.metaId = :metaId AND t.docVersionNo = :docVersionNo")
 })
 public class TextDomainObject implements Serializable, Cloneable {
 	
@@ -70,8 +70,8 @@ public class TextDomainObject implements Serializable, Cloneable {
 	@Column(name="meta_id")
 	private Integer metaId;
 	
-	@Column(name="doc_version_number")
-	private Integer documentVersion;	
+	@Column(name="doc_version_no")
+	private Integer docVersionNo;
 	
     /** Text filed no in a document. */
 	private Integer no;
@@ -273,12 +273,12 @@ public class TextDomainObject implements Serializable, Cloneable {
 		this.modified = modified;
 	}
 
-	public Integer getDocumentVersion() {
-		return documentVersion;
+	public Integer getDocVersionNo() {
+		return docVersionNo;
 	}
 
-	public void setDocumentVersion(Integer documentVersion) {
-		this.documentVersion = documentVersion;
+	public void setDocVersionNo(Integer docVersionNo) {
+		this.docVersionNo = docVersionNo;
 	}
 
     public Integer getLoopNo() {

@@ -4,8 +4,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,21 +24,20 @@ public class DocumentVersion implements Cloneable {
 	@Column(name="meta_id", updatable=false)
 	private Integer metaId;
 
-	/**  Version number */
-	private Integer number;
+	private Integer no;
 	
 	@Column(name="created_by", updatable=false)	
 	private Integer createdBy;
 	
 	@Column(name="created_dt")	
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date createdDt;	
+	private Date createdDt;
 
     public DocumentVersion() {}
 	
-	public DocumentVersion(Integer metaId, Integer number, Integer createBy) {
+	public DocumentVersion(Integer metaId, Integer no, Integer createdBy) {
 		this.metaId = metaId;
-		this.number = number;
+		this.no = no;
         this.createdBy = createdBy;
 	}	
 	
@@ -70,12 +67,12 @@ public class DocumentVersion implements Cloneable {
 	}
 
 	
-	public Integer getNumber() {
-		return number;
+	public Integer getNo() {
+		return no;
 	}
 
-	public void setNumber(Integer number) {
-		this.number = number;
+	public void setNo(Integer no) {
+		this.no = no;
 	}
 
 

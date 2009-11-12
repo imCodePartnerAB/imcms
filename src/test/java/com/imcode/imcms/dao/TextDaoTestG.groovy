@@ -85,7 +85,7 @@ public class TextDaoTestG extends DaoTestG {
 		assertNull(text)
 		
 		text = new TextDomainObject()
-		text.setMetaId(metaId)
+		text.setDocId(metaId)
 		text.setIndex(textIndex)
 		text.setLanguage(language)
 				

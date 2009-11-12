@@ -95,7 +95,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
      * @return working documents.
      */
     private List<DocumentDomainObject> getDocumentListForHits( final TopDocs topDocs, Searcher searcher, final UserDomainObject searchingUser ) {
-        DocumentGetter documentGetter = Imcms.getServices().getDocumentMapper().getDocumentGetter();
+        DocumentGetter documentGetter = Imcms.getServices().getDocumentMapper();
         List<Integer> documentIds = new DocumentIdHitsList(topDocs, searcher) ;
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();

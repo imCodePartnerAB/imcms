@@ -40,7 +40,8 @@ public final class SaveText extends HttpServlet {
         int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
         UserDomainObject user = Utility.getLoggedOnUser( req );
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id, user.getDocumentShowSettings().getVersionSelector() );
+        //TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id, user.getDocumentShowSettings().getVersionSelector() );
+        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(meta_id);
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
         I18nLanguage language = user.getLanguage();
 
@@ -79,7 +80,7 @@ public final class SaveText extends HttpServlet {
 
     		text.setMetaId(document.getId());
     		text.setNo(txt_no);
-            text.setDocumentVersion(document.getVersion().getNumber());
+            text.setDocVersionNo(document.getVersion().getNo());
     		text.setLanguage(I18nSupport.getCurrentLanguage());
             text.setText(text_string);
             text.setType(text_format);

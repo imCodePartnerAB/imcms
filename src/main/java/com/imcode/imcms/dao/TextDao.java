@@ -28,10 +28,10 @@ public class TextDao extends HibernateTemplate {
 	}
 	
 	@Transactional
-	public int deleteTexts(Integer documentId, Integer documentVersion) {
+	public int deleteTexts(Integer metaId, Integer docVersionNo) {
 		return getSession().getNamedQuery("Text.deleteTexts")
-			.setParameter("metaId", documentId)
-			.setParameter("metaVersion", documentVersion)
+			.setParameter("metaId", metaId)
+			.setParameter("docVersionNo", docVersionNo)
 			.executeUpdate();
 	}
 	
@@ -59,7 +59,7 @@ public class TextDao extends HibernateTemplate {
 		
 		getSession().createSQLQuery(sql)
 			.setParameter("metaId", documentId)
-			.setParameter("metaVersion", text.getDocumentVersion())
+			.setParameter("metaVersion", text.getDocVersionNo())
 			.setParameter("index", text.getNo())
 			.setParameter("type", text.getType())
 			.setParameter("text", text.getText())
@@ -73,19 +73,19 @@ public class TextDao extends HibernateTemplate {
 	 * TODO: Reafactor out HQL call  
 	 */
 	@Transactional
-	public List<TextDomainObject> getTexts(Integer documentId, Integer no, I18nLanguage language, Collection<DocumentVersion> versions) {
+	public List<TextDomainObject> getTexts(Integer metaId, Integer no, I18nLanguage language, Collection<DocumentVersion> versions) {
 		String hql = String.format(
-			"SELECT t FROM Text t WHERE t.metaId = ? AND t.no = ? AND t.language.id = ? AND t.metaVersion IN (%s)",
+			"SELECT t FROM Text t WHERE t.metaId = ? AND t.no = ? AND t.language.id = ? AND t.docVersionNo IN (%s)",
 			createVersionString(versions));
 		
-		return find(hql, new Object[] {documentId, no, language.getId()});
+		return find(hql, new Object[] {metaId, no, language.getId()});
 	}
 	
 	@Transactional
-	public Collection<TextDomainObject> getTexts(Integer documentId, Integer documentVersion) {
-		return findByNamedQueryAndNamedParam("Text.getByDocumentIdAndDocumentVersion", 
-				new String[] {"documentId", "documentVersion"}, 
-				new Object[] {documentId, documentVersion}	
+	public Collection<TextDomainObject> getTexts(Integer metaId, Integer docVersionNo) {
+		return findByNamedQueryAndNamedParam("Text.getByMetaIdAndDocVersionNo",
+				new String[] {"metaId", "docVersionNo"}, 
+				new Object[] {metaId, docVersionNo}
 		);
 	}
 
@@ -101,16 +101,16 @@ public class TextDao extends HibernateTemplate {
 	}
 	
 	/**
-	 * eturns text fields for the same document in version range.
+	 * Returns text fields for the same document in version range.
 	 */
 	@Transactional
-	public List<TextDomainObject> getTextsForVersionsInRange(Integer documentId, 
+	public List<TextDomainObject> getTextsForVersionsInRange(Integer metaId,
 			I18nLanguage language, Integer versionFrom, Integer versionTo) {
 		
 		String query = "SELECT t FROM Text t WHERE t.metaId=? AND t.language=?" +
-				" AND t.metaVersion BETWEEN ? AND ?";
+				" AND t.docVersionNo BETWEEN ? AND ?";
 		
-		return find(query, new Object[] {documentId, language, versionFrom, versionTo});
+		return find(query, new Object[] {metaId, language, versionFrom, versionTo});
 	}
 	
 
@@ -118,16 +118,16 @@ public class TextDao extends HibernateTemplate {
 	 * Returns text fields for the same document in specific versions.
 	 */
 	@Transactional
-	public List<TextDomainObject> getTextsForVersions(Integer documentId, 
+	public List<TextDomainObject> getTextsForVersions(Integer metaId,
 			I18nLanguage language, Collection<Integer> versions) {
 		
 		String versionsString = StringUtils.join(versions, ",");
 		
 		String query = String.format(
-			"SELECT t FROM Text t WHERE t.metaId = ? AND t.language=? AND t.metaVersion IN (%s)",
+			"SELECT t FROM Text t WHERE t.metaId = ? AND t.language=? AND t.docVersionNo IN (%s)",
 			versionsString);
 		
-		return find(query, new Object[] {documentId, language} );
+		return find(query, new Object[] {metaId, language} );
 	}	
 	
 	/**
@@ -140,7 +140,7 @@ public class TextDao extends HibernateTemplate {
 		for (DocumentVersion version: versions) {
 			if (i++ != 0) versionString.append(",");
 			
-			versionString.append(version.getNumber().toString());
+			versionString.append(version.getNo().toString());
 		}
 				
 		return versionString.toString();

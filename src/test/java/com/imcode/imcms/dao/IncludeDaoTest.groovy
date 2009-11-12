@@ -57,7 +57,7 @@ public class IncludeDaoTest extends DaoTestG {
         
         include = new Include()
         
-        include.setMetaId 1001
+        include.setDocId 1001
         include.setIndex 1000
         include.setIncludedMetaId 1001        
         

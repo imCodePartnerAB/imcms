@@ -22,7 +22,7 @@ public class DocumentVersionInfo implements Serializable {
 	private DocumentVersion latestVersion;
 
 	/**
-	 * Working version (version 0).
+	 * Working version (version no 0).
 	 */
 	private DocumentVersion workingVersion;
 	
@@ -52,7 +52,7 @@ public class DocumentVersionInfo implements Serializable {
 		versionsMap = new TreeMap<Integer, DocumentVersion>();
 		
 		for (DocumentVersion  version: versions) {
-			versionsMap.put(version.getNumber(), version);
+			versionsMap.put(version.getNo(), version);
 		}
 
         activeVersion = versions.get(0);
@@ -72,19 +72,19 @@ public class DocumentVersionInfo implements Serializable {
 	}
 	
 	/** 
-	 * @param versionNumber version number.
+	 * @param no version number.
 	 * 
 	 * @return version or null if there is no version with such version number.
 	 */				
-	public DocumentVersion getVersion(Integer versionNumber) {
-		return versionsMap.get(versionNumber);
+	public DocumentVersion getVersion(Integer no) {
+		return versionsMap.get(no);
 	}
 	
 	/**
 	 * @returns if given version number belongs to active version.
 	 */
-	public boolean isActiveVersionNumber(Integer versionNumber) {
-		return hasActiveVersion() && getActiveVersion().getNumber().equals(versionNumber);
+	public boolean isActiveVersionNo(Integer no) {
+		return hasActiveVersion() && getActiveVersion().getNo().equals(no);
 	}
 	
 	/** 
@@ -147,9 +147,9 @@ public class DocumentVersionInfo implements Serializable {
 	/**
 	 * @returns active version number or null if there is no active version.
 	 */
-	public Integer getActiveVersionNumber() {
+	public Integer getActiveVersionNo() {
 		return hasActiveVersion()
-			? getActiveVersion().getNumber()
+			? getActiveVersion().getNo()
 			: null;
 	}
 }

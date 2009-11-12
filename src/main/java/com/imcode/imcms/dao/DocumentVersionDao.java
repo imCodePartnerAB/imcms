@@ -4,7 +4,6 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import com.imcode.imcms.api.DocumentVersion;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,7 +26,7 @@ public class DocumentVersionDao extends HibernateTemplate {
 
         Integer versionNumber = latestVersion == null
                 ? 0
-                : latestVersion.getNumber() + 1;
+                : latestVersion.getNo() + 1;
 
         DocumentVersion version =  new DocumentVersion(metaId, versionNumber, userId);
 
@@ -50,7 +49,7 @@ public class DocumentVersionDao extends HibernateTemplate {
 	}
 
     
-    // TODO: refactor - hardcoded - returns v number 0.
+    // TODO: refactor - hardcoded - returns v no 0.
 	@Transactional
 	public DocumentVersion getActiveVersion(Integer metaId) {
 		return (DocumentVersion)getSession()
@@ -61,11 +60,11 @@ public class DocumentVersionDao extends HibernateTemplate {
 
 
 	@Transactional
-	public DocumentVersion getVersion(Integer metaId, Integer number) {
+	public DocumentVersion getVersion(Integer metaId, Integer no) {
 		return (DocumentVersion)getSession()
-			.getNamedQuery("DocumentVersion.getByMetaIdAndNumber")
+			.getNamedQuery("DocumentVersion.getByMetaIdAndNo")
 		    .setParameter("metaId", metaId)
-            .setParameter("number", number)
+            .setParameter("no", no)
 		    .uniqueResult();
 	}
 }

@@ -20,11 +20,11 @@ public class ContentLoop implements Cloneable {
 	
 	private Integer no;
 	
-	@Column(name="meta_id")
-	private Integer metaId;
+	@Column(name="doc_id")
+	private Integer docId;
 	
-	@Column(name="doc_version_number")
-	private Integer documentVersion;
+	@Column(name="doc_version_no")
+	private Integer docVersionNo;
 
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
     @JoinColumn(name="loop_id")
@@ -86,12 +86,12 @@ public class ContentLoop implements Cloneable {
 		setNo(index);
 	}	
 
-	public Integer getMetaId() {
-		return metaId;
+	public Integer getDocId() {
+		return docId;
 	}
 
-	public void setMetaId(Integer metaId) {
-		this.metaId = metaId;
+	public void setDocId(Integer docId) {
+		this.docId = docId;
 	}
 
 	public List<Content> getContents() {
@@ -110,11 +110,11 @@ public class ContentLoop implements Cloneable {
 		this.modified = modified;
 	}
 
-	public Integer getDocumentVersion() {
-		return documentVersion;
+	public Integer getDocVersionNo() {
+		return docVersionNo;
 	}
 
-	public void setDocumentVersion(Integer documentVersion) {
-		this.documentVersion = documentVersion;
+	public void setDocVersionNo(Integer docVersionNo) {
+		this.docVersionNo = docVersionNo;
 	}
 }

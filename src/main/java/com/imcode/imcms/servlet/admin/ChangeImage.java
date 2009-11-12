@@ -42,8 +42,11 @@ public class ChangeImage extends HttpServlet {
         final DocumentMapper documentMapper = imcref.getDocumentMapper();
         final Integer documentId = Integer.parseInt(request.getParameter("meta_id"));
         
+        //final TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(
+        //		documentId, user.getDocumentShowSettings().getVersionSelector());
+
         final TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(
-        		documentId, user.getDocumentShowSettings().getVersionSelector());
+        		documentId);        
         
         final int imageIndex = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__IMAGE_INDEX));        
         
@@ -97,7 +100,7 @@ public class ChangeImage extends HttpServlet {
         
         ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
         
-        List<ImageDomainObject> images = imageDao.getImagesByIndex(document.getMeta().getId(), document.getVersion().getNumber() ,imageIndex, true);
+        List<ImageDomainObject> images = imageDao.getImagesByIndex(document.getMeta().getId(), document.getVersion().getNo() ,imageIndex, true);
         
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true);

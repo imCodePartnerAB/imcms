@@ -25,9 +25,9 @@ public class ContentLoopTag2 extends BodyTagSupport {
     private static ContentLoop createLoop(Integer metaId, Integer documentVersion, Integer no) {
         ContentLoop loop = new ContentLoop();
 
-        loop.setMetaId(metaId);
+        loop.setDocId(metaId);
         loop.setNo(no);
-        loop.setDocumentVersion(documentVersion);
+        loop.setDocVersionNo(documentVersion);
 
         Content content = new Content();
 
@@ -88,7 +88,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
         loop = document.getContentLoop(no);
         
         if (loop == null) {
-        	loop = createLoop(document.getMeta().getId(), document.getVersion().getNumber(), no);
+        	loop = createLoop(document.getMeta().getId(), document.getVersion().getNo(), no);
 
            	document.setContentLoop(no, loop);
         }

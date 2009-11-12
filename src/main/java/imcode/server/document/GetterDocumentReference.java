@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 
 import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.mapping.DocumentGetter;
+import com.imcode.imcms.mapping.DocumentMapper;
 
 /**
  * Document reference using document getter.
@@ -15,22 +16,22 @@ import com.imcode.imcms.mapping.DocumentGetter;
  */
 public class GetterDocumentReference extends DocumentReference {
 	
-    private transient DocumentGetter documentGetter;
+    private transient DocumentMapper documentMapper;
     
     private transient DocumentVersionSelector versionSelector;
 
-    public GetterDocumentReference(int documentId, DocumentGetter documentGetter, DocumentVersionSelector versionSelector) {
+    public GetterDocumentReference(int documentId, DocumentVersionSelector versionSelector) {
         super(documentId) ;
-        this.documentGetter = documentGetter;
+        this.documentMapper = Imcms.getServices().getDocumentMapper();
         this.versionSelector = versionSelector;
     }
 
     public DocumentDomainObject getDocument() {
-		return versionSelector.getDocument(documentGetter, getDocumentId());
+		return versionSelector.getDocument(documentMapper, getDocumentId());
     }
     
     public void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        documentGetter = Imcms.getServices().getDocumentMapper().getDocumentGetter() ;
+        documentMapper = Imcms.getServices().getDocumentMapper();
         ois.defaultReadObject();
     }
 }

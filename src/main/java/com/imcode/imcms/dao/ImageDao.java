@@ -60,12 +60,12 @@ public class ImageDao extends HibernateTemplate {
 	*/
 	
 	public synchronized ImageDomainObject getImage(int languageId,
-			Integer documentId, Integer documentVersion, int index) {
+			Integer metaId, Integer docVersionNo, int no) {
 		
-		ImageDomainObject image = (ImageDomainObject)getSession().createQuery("select i from Image i where i.metaId = :documentId AND i.metaVersion = :documentVersion and i.name = :name and i.language.id = :languageId")
-			.setParameter("documentId", documentId)
-			.setParameter("documentVersion", documentVersion)
-			.setParameter("name", "" + index)
+		ImageDomainObject image = (ImageDomainObject)getSession().createQuery("select i from Image i where i.metaId = :metaId AND i.docVersionNo = :docVersionNo and i.no = :no and i.language.id = :languageId")
+			.setParameter("metaId", metaId)
+			.setParameter("docVersionNo", docVersionNo)
+			.setParameter("no", "" + no)
 			.setParameter("languageId", languageId)
 			.uniqueResult();
 		
@@ -83,11 +83,12 @@ public class ImageDao extends HibernateTemplate {
 	}
 	
 	@Transactional
-	public Collection<ImageDomainObject> getImages(Integer documentId, Integer documentVersion) {
-		return findByNamedQueryAndNamedParam("Image.getByDocumentIdAndDocumentVersion", 
-				new String[] {"documentId", "documentVersion"}, 
-				new Object[] {documentId, documentVersion}	
-		);	}
+	public Collection<ImageDomainObject> getImages(Integer metaId, Integer docVersionNo) {
+		return findByNamedQueryAndNamedParam("Image.getByMetaIdAndDocVersionNo",
+				new String[] {"metaId", "docVersionNo"},
+				new Object[] {metaId, docVersionNo}	
+		);
+    }
 	
 	public LanguageDao getLanguageDao() {
 		return languageDao;

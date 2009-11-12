@@ -39,7 +39,7 @@ public class TextHistory {
     public TextHistory() {}
     
     public TextHistory(TextDomainObject textDO) {
-    	//setMetaId(textDO.getMetaId());
+    	//setDocId(textDO.getDocId());
     	setIndex(textDO.getIndex());
     	setText(textDO.getText());
     	setLanguage(textDO.getLanguage());
