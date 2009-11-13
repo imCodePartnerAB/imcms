@@ -38,8 +38,9 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         
         List<I18nLanguage> languages = I18nSupport.getLanguages();
         
-        for (I18nLanguage language: languages) {
-	        for ( Map.Entry<Integer,TextDomainObject> textEntry : textDocument.getTexts(language).entrySet() ) {
+        //for (I18nLanguage language: languages) {
+	        //for ( Map.Entry<Integer,TextDomainObject> textEntry : textDocument.getTexts(language).entrySet() ) {
+        for ( Map.Entry<Integer,TextDomainObject> textEntry : textDocument.getTexts().entrySet() ) {
 	            Integer textIndex = textEntry.getKey();
 	            TextDomainObject text = textEntry.getValue();
 	            indexDocument.add(new Field(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText(), Field.Store.NO, Field.Index.ANALYZED));
@@ -47,7 +48,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
 	            indexDocument.add(new Field(DocumentIndex.FIELD__TEXT, htmlStrippedText, Field.Store.NO, Field.Index.ANALYZED));
 	            indexDocument.add(new Field(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText, Field.Store.NO, Field.Index.ANALYZED));
 	        }
-        }
+        //}
 
         boolean hasChildren = false;
         for ( MenuDomainObject menu : textDocument.getMenus().values() ) {
@@ -59,13 +60,14 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         
         indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__HAS_CHILDREN, Boolean.toString(hasChildren)));
 
-        for (I18nLanguage language: languages) {
-	        for ( ImageDomainObject image : textDocument.getImages(language).values() ) {
+        //for (I18nLanguage language: languages) {
+	        //for ( ImageDomainObject image : textDocument.getImages(language).values() ) {
+        for ( ImageDomainObject image : textDocument.getImages().values() ) {
 	            String imageLinkUrl = image.getLinkUrl();
 	            if ( null != imageLinkUrl && imageLinkUrl.length() > 0 ) {
 	                indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl));
 	            }
-	        }
+	    //    }
         }
     }
 

@@ -36,7 +36,10 @@ import com.imcode.util.ImageSize;
 	
 	// Collection			
 	@NamedQuery(name="Image.getByMetaIdAndDocVersionNo",
-			query="SELECT i FROM Image i WHERE i.metaId = :metaId AND i.docVersionNo = :docVersionNo")
+			query="SELECT i FROM Image i WHERE i.metaId = :metaId AND i.docVersionNo = :docVersionNo"),
+
+	@NamedQuery(name="Image.getByDocIdAndDocVersionNoAndLanguageId",
+			query="SELECT i FROM Image i WHERE i.metaId = :docId AND i.docVersionNo = :docVersionNo AND i.language.id = :languageId")        
 	
 })
 public class ImageDomainObject implements Serializable, Cloneable {

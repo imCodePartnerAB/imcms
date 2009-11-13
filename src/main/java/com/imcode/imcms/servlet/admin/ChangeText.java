@@ -57,9 +57,13 @@ public class ChangeText extends HttpServlet {
         String label = null == request.getParameter( "label" ) ? "" : request.getParameter( "label" );
 
         I18nLanguage language = I18nSupport.getCurrentLanguage();        
+        //TextDomainObject text = loopNo == null
+        //        ? textDocument.getText(language, textIndex )
+        //        : textDocument.getText(language, loopNo, contentIndex, textIndex );
+
         TextDomainObject text = loopNo == null
-                ? textDocument.getText(language, textIndex )
-                : textDocument.getText(language, loopNo, contentIndex, textIndex );
+                ? textDocument.getText(textIndex )
+                : textDocument.getText(loopNo, contentIndex, textIndex );        
         
         Integer metaId = textDocument.getId();
         Meta meta = textDocument.getMeta();

@@ -145,4 +145,16 @@ public class TextDao extends HibernateTemplate {
 				
 		return versionString.toString();
 	}
+
+
+	/**
+	 * Returns text fields for the same document in version range.
+	 */
+	@Transactional
+	public List<TextDomainObject> getTexts(Integer docId, Integer docVersionNo, Integer languageId) {
+		return findByNamedQueryAndNamedParam("Text.getByDocIdAndDocVersionNoAndLanguageId",
+				new String[] {"docId", "docVersionNo", "languageId"},
+				new Object[] {docId, docVersionNo, languageId}
+		);
+	}
 }

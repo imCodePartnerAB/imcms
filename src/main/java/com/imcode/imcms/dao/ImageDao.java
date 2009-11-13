@@ -89,6 +89,14 @@ public class ImageDao extends HibernateTemplate {
 				new Object[] {metaId, docVersionNo}	
 		);
     }
+
+	@Transactional
+	public Collection<ImageDomainObject> getImages(Integer docId, Integer docVersionNo, Integer languageId) {
+		return findByNamedQueryAndNamedParam("Image.getByDocIdAndDocVersionNoAndLanguageId",
+				new String[] {"docId", "docVersionNo", "languageId"},
+				new Object[] {docId, docVersionNo, languageId}
+		);
+    }
 	
 	public LanguageDao getLanguageDao() {
 		return languageDao;

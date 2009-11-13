@@ -53,7 +53,8 @@ public class ChangeImage extends HttpServlet {
         /**
          * Image DTO. Holds generic properties such as size and border. 
          */
-        final ImageDomainObject defaultImage = document.getImage(I18nSupport.getDefaultLanguage(), imageIndex);
+        //final ImageDomainObject defaultImage = document.getImage(I18nSupport.getDefaultLanguage(), imageIndex);
+        final ImageDomainObject defaultImage = document.getImage(imageIndex);
         final ImageDomainObject image = defaultImage != null 
         	? defaultImage
         	: new ImageDomainObject();
@@ -78,7 +79,8 @@ public class ChangeImage extends HttpServlet {
                 ImcmsServices services = Imcms.getServices();
                 
                 for (ImageDomainObject image: images) {
-                	document.setImage(image.getLanguage(), imageIndex, image);
+                	//document.setImage(image.getLanguage(), imageIndex, image);
+                    document.setImage(imageIndex, image);
                 }
                 
                 try {

@@ -30,12 +30,12 @@ import com.imcode.imcms.mapping.DocumentStoringVisitor;
 @Table(name="imcms_text_doc_texts")
 @NamedQueries({
 	
-	// Unique result
-	@NamedQuery(name="Text.getByMetaIdAndDocVersionNoAndLanguageId",
-			query="SELECT t FROM Text t WHERE t.metaId = :metaId AND t.docVersionNo = :docVersionNo AND t.language.id = :languageId"),
+	// Collection
+	@NamedQuery(name="Text.getByDocIdAndDocVersionNoAndLanguageId",
+			query="SELECT t FROM Text t WHERE t.metaId = :docId AND t.docVersionNo = :docVersionNo AND t.language.id = :languageId"),
 	
 	// Unique result
-	@NamedQuery(name="Text.getByMetaIdAndDocVersionNoAndNoAndLanguageId", 
+	@NamedQuery(name="Text.getByDocIdAndDocVersionNoAndNoAndLanguageId",
 			query="SELECT t FROM Text t WHERE t.metaId = :metaId AND t.docVersionNo = :docVersionNo AND t.no = :no AND t.language.id = :languageId"),
 	
 	// Collection			

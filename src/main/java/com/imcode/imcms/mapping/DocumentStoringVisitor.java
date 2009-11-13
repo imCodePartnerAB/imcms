@@ -110,9 +110,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         // delete all texts for meta and version
         textDao.deleteTexts(documentId, documentVersionNumber);
+
+        // for (Map<Integer, TextDomainObject> map: textDocument.getAllTexts().values()) {
         
-        for (Map<Integer, TextDomainObject> map: textDocument.getAllTexts().values()) {
-        	for (TextDomainObject text: map.values()) {
+       // for (Map<Integer, TextDomainObject> map: textDocument.getTexts()) {
+        	for (TextDomainObject text: textDocument.getTexts().values()) {
         		text.setId(null);
             	text.setMetaId(documentId);
             	text.setDocVersionNo(documentVersionNumber);
@@ -121,9 +123,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 if (text.isModified()) {                	 
                     textDao.saveTextHistory(documentId, text, user); 
                 }        		
-        	}
+        //	}
         }
 
+        /*
 
         for (Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loopsMap: textDocument.getLoopTexts().values()) {
         	for (Map<Integer, Map<Integer, TextDomainObject>> contentMaps: loopsMap.values()) {
@@ -133,7 +136,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                     }
                 }
         	}
-        }        
+        }
+         */       
     } 
     
     // should be run inside transaction
@@ -164,6 +168,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     
     // runs inside transaction
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
+        /*
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
         Integer metaId = textDocument.getMeta().getId();
         Integer documentVersionNumber = textDocument.getVersion().getNo();
@@ -178,7 +183,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                     //imageDao.saveImageHistory(metaId, text, user); 
                 }        		
         	}
-        }        
+        }
+                */
     }
     
     

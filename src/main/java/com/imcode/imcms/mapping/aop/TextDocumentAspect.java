@@ -24,13 +24,13 @@ public class TextDocumentAspect {
 	@Around("execution(* getText(int))")
     public Object getText(ProceedingJoinPoint pjp) throws Throwable {
 		return ((TextDocumentDomainObject)pjp.getTarget())
-			.getText(language, (Integer)pjp.getArgs()[0]);
+			.getText((Integer)pjp.getArgs()[0]);
     }
     
     
     @Around("execution(* getImage(int))")
     public Object getImage(ProceedingJoinPoint pjp) throws Throwable {
     	return ((TextDocumentDomainObject)pjp.getTarget())
-    		.getImage(language, (Integer)pjp.getArgs()[0]);
+    		.getImage((Integer)pjp.getArgs()[0]);
     }  
 }

@@ -72,9 +72,13 @@ public final class SaveText extends HttpServlet {
             Integer loopNo = loopNoStr == null ? null : Integer.valueOf(loopNoStr);
             Integer contentIndex = contentIndexStr == null ? null : Integer.valueOf(contentIndexStr);            
 
+            //TextDomainObject text = loopNo == null
+            //       ? document.getText(language, txt_no)
+            //        : document.getText(language, loopNo, contentIndex, txt_no);
+
             TextDomainObject text = loopNo == null
-                    ? document.getText(language, txt_no)
-                    : document.getText(language, loopNo, contentIndex, txt_no);
+                    ? document.getText(txt_no)
+                    : document.getText(loopNo, contentIndex, txt_no);            
 
             text = text == null ? new TextDomainObject() : text.clone();
 

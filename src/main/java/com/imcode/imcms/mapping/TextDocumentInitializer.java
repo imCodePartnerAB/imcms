@@ -62,19 +62,12 @@ public class TextDocumentInitializer {
     }
     
     public void initTexts(TextDocumentDomainObject document) {
-     	Meta meta = document.getMeta();
-    	
-    	Collection<TextDomainObject> texts = textDao.getTexts(meta.getId(), document.getVersion().getNo());
-    	Map<I18nLanguage, Map<Integer, TextDomainObject>> textsMap = new HashMap<I18nLanguage, Map<Integer,TextDomainObject>>();
+    	Collection<TextDomainObject> texts = textDao.getTexts(document.getId(), document.getVersion().getNo(), document.getLanguage().getId());
 
-        Map<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>> loopTexts
-    		= new HashMap<I18nLanguage, Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>>>();        
-    	
     	for (TextDomainObject text: texts) {
-    		I18nLanguage language = text.getLanguage();
             Integer no = text.getNo();
 
-            document.setText(language, no, text);
+            document.setText(no, text);
     	}
     }
     
@@ -104,25 +97,11 @@ public class TextDocumentInitializer {
     
     
     public void initImages(TextDocumentDomainObject document) {
-    	Meta meta = document.getMeta();
-    	
-    	Collection<ImageDomainObject> images = imageDao.getImages(meta.getId(), document.getVersion().getNo());
-    	
-    	Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap = new HashMap<I18nLanguage, Map<Integer, ImageDomainObject>>();
+    	Collection<ImageDomainObject> images = imageDao.getImages(document.getId(), document.getVersion().getNo(), document.getLanguage().getId());
     	
     	for (ImageDomainObject image: images) {
-    		I18nLanguage language = image.getLanguage();
-    		Map<Integer, ImageDomainObject> indexMap = imagesMap.get(language);
-    		
-    		if (indexMap == null) {
-    			indexMap = new HashMap<Integer, ImageDomainObject>();
-    			imagesMap.put(language, indexMap);
-    		}  
-    		
-    		indexMap.put(image.getIndex(), setImageSource(image));
+    		document.setImage(image.getNo(), image);
     	}
-    	
-    	document.setAllImages(imagesMap);
     }
 
 

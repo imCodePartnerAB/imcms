@@ -103,7 +103,7 @@ public class DocumentLoader {
 
     
     /**
-     * Initializes document's meta.
+     * Creates document instance.
      */
     private DocumentDomainObject createDocument(Meta meta, DocumentVersion version) {
 		if (meta == null) {
