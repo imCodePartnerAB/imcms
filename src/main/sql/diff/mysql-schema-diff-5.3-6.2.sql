@@ -3,21 +3,29 @@
 SET @schema_version__major_new = 6;
 SET @schema_version__minor_new = 2;
 
+
+
+
+
+
+
 -- fix i18n language!!!
 
---
--- Document
---
--- CREATE TABLE imcms_doc ?_labels (
---    id int AUTO_INCREMENT,
---    meta_id int NOT NULL,
---    doc_version_no
---    language_id smallint NOT NULL,
---    headline
---    menu_image
---    menu_text
+CREATE TABLE imcms_doc_languages (
 
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    id int AUTO_INCREMENT,
+    doc_id int NOT NULL,
+    language_id smallint NOT NULL,
+    enabled tinyint NOT NULL DEFAULT TRUE,
+
+    CONSTRAINT pk__imcms_doc_languages PRIMARY KEY (id),
+    CONSTRAINT uk__imcms_doc_languages__doc_id__language_id UNIQUE KEY (doc_id, language_id),
+    CONSTRAINT fk__imcms_doc_languages__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+    CONSTRAINT fk__imcms_doc_languages__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id) ON DELETE RESTRICT
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 
 --
 -- Document version support.
@@ -32,7 +40,7 @@ CREATE TABLE imcms_doc_versions (
     -- modified by, dt, etc
 
     CONSTRAINT pk__imcms_doc_versions PRIMARY KEY (id),
-    CONSTRAINT uk__imcms_doc_versions__meta_id__no UNIQUE KEY (doc_id, no),
+    CONSTRAINT uk__imcms_doc_versions__doc__no UNIQUE KEY (doc_id, no),
     CONSTRAINT fk__imcms_doc_versions__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
     CONSTRAINT fk__imcms_doc_versions__user FOREIGN KEY (created_by) REFERENCES users (user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -43,6 +51,27 @@ SELECT
     meta_id, 0, owner_id, date_created
 FROM
     meta;
+
+
+--
+-- Document labels
+--
+-- add ref to version
+CREATE TABLE imcms_doc_labels (
+
+    id int AUTO_INCREMENT,
+    doc_id int NOT NULL,
+    doc_version_no int NOT NULL,
+    language_id smallint NOT NULL,
+    headline varchar(256) NULL,
+    menu_image varchar(256) NULL,
+    menu_text varchar(1024) NULL,
+
+    CONSTRAINT pk__imcms_doc_labels PRIMARY KEY (id),
+    CONSTRAINT uk__imcms_doc_labels__doc_id__doc_version_no__language_id UNIQUE KEY (doc_id, doc_version_no, language_id),
+    CONSTRAINT fk__imcms_doc_labels__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+    CONSTRAINT fk__imcms_doc_labels__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 --
