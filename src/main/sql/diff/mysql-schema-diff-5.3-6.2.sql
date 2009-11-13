@@ -25,20 +25,20 @@ SET @schema_version__minor_new = 2;
 
 CREATE TABLE imcms_doc_versions (
     id int AUTO_INCREMENT,
-    meta_id int NOT NULL,
+    doc_id int NOT NULL,
     no int NOT NULL,
     created_by INT NULL,
     created_dt datetime NOT NULL,
     -- modified by, dt, etc
 
     CONSTRAINT pk__imcms_doc_versions PRIMARY KEY (id),
-    CONSTRAINT uk__imcms_doc_versions__meta_id__no UNIQUE KEY (meta_id, no),
-    CONSTRAINT fk__imcms_doc_versions__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+    CONSTRAINT uk__imcms_doc_versions__meta_id__no UNIQUE KEY (doc_id, no),
+    CONSTRAINT fk__imcms_doc_versions__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
     CONSTRAINT fk__imcms_doc_versions__user FOREIGN KEY (created_by) REFERENCES users (user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO
-    imcms_doc_versions (meta_id, no, created_by, created_dt)
+    imcms_doc_versions (doc_id, no, created_by, created_dt)
 SELECT
     meta_id, 0, owner_id, date_created
 FROM
@@ -56,7 +56,7 @@ CREATE TABLE imcms_text_doc_content_loops (
 
     CONSTRAINT pk__imcms_text_doc_content_loops PRIMARY KEY (id),
     UNIQUE KEY uk__imcms_text_doc_content_loops__content (doc_id, doc_version_no, no),
-    CONSTRAINT fk__imcms_text_doc_content_loops__imcms_doc_versions FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (meta_id, no) ON DELETE CASCADE
+    CONSTRAINT fk__imcms_text_doc_content_loops__imcms_doc_versions FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -78,7 +78,7 @@ CREATE TABLE imcms_text_doc_contents (
 -- text documents texts
 CREATE TABLE imcms_text_doc_texts (
     id int NOT NULL AUTO_INCREMENT,
-    meta_id int default NULL,
+    doc_id int default NULL,
     doc_version_no INT NOT NULL,
     no int NOT NULL,
     text longtext NOT NULL,
@@ -88,10 +88,10 @@ CREATE TABLE imcms_text_doc_texts (
     loop_content_index int DEFAULT NULL,
 
     CONSTRAINT pk__imcms_text_doc_texts PRIMARY KEY (id),
-    UNIQUE KEY uk__imcms_text_doc_texts__text (meta_id,doc_version_no,no,language_id,loop_no,loop_content_index),
+    UNIQUE KEY uk__imcms_text_doc_texts__text (doc_id, doc_version_no, no, language_id, loop_no, loop_content_index),
     CONSTRAINT fk__imcms_text_doc_texts__languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
-    CONSTRAINT fk__imcms_text_doc_texts__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-    CONSTRAINT fk__imcms_text_doc_texts__doc_version FOREIGN KEY (meta_id, doc_version_no) REFERENCES imcms_doc_versions (meta_id, no) ON DELETE CASCADE
+    CONSTRAINT fk__imcms_text_doc_texts__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+    CONSTRAINT fk__imcms_text_doc_texts__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
                 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -106,7 +106,7 @@ AND texts.meta_id = self.meta_id AND texts.name = self.name AND texts.language_i
 
 
 INSERT INTO imcms_text_doc_texts (
-    meta_id,
+    doc_id,
     doc_version_no,
     no,
     text,
@@ -125,7 +125,7 @@ FROM texts;
 -- Imqges
 CREATE TABLE imcms_text_doc_images (
   id int NOT NULL AUTO_INCREMENT,
-  meta_id int DEFAULT NULL,
+  doc_id int DEFAULT NULL,
   doc_version_no int NOT NULL,
   width int NOT NULL,
   height int NOT NULL,
@@ -146,16 +146,16 @@ CREATE TABLE imcms_text_doc_images (
   loop_content_index int DEFAULT NULL,
         
   CONSTRAINT pk__imcms_text_doc_images PRIMARY KEY (id),
-  UNIQUE KEY uk__imcms_text_doc_images__image (meta_id,doc_version_no,no,language_id,loop_no,loop_content_index),
+  UNIQUE KEY uk__imcms_text_doc_images__image (doc_id,doc_version_no,no,language_id,loop_no,loop_content_index),
   CONSTRAINT fk__imcms_text_doc_images__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
-  CONSTRAINT fk__imcms_text_doc_images__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  CONSTRAINT fk__imcms_text_doc_images__doc_version FOREIGN KEY (meta_id, doc_version_no) REFERENCES imcms_doc_versions (meta_id, no) ON DELETE CASCADE
+  CONSTRAINT fk__imcms_text_doc_images__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  CONSTRAINT fk__imcms_text_doc_images__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 INSERT INTO imcms_text_doc_images (
   id,
-  meta_id,
+  doc_id,
   doc_version_no,
   width,
   height,

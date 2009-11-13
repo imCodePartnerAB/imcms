@@ -28,9 +28,9 @@ public class TextDao extends HibernateTemplate {
 	}
 	
 	@Transactional
-	public int deleteTexts(Integer metaId, Integer docVersionNo) {
+	public int deleteTexts(Integer docId, Integer docVersionNo) {
 		return getSession().getNamedQuery("Text.deleteTexts")
-			.setParameter("metaId", metaId)
+			.setParameter("docId", docId)
 			.setParameter("docVersionNo", docVersionNo)
 			.executeUpdate();
 	}
@@ -55,10 +55,10 @@ public class TextDao extends HibernateTemplate {
 	@Transactional
 	public void saveTextHistory(Integer documentId, TextDomainObject text, UserDomainObject user) {
 		String sql = "INSERT INTO texts_history (meta_id, meta_version, name, text, type, modified_datetime, user_id, language_id) VALUES " +
-		"(:metaId,:metaVersion,:index,:text,:type,:modifiedDt,:userId,:languageId)";
+		"(:docId,:metaVersion,:index,:text,:type,:modifiedDt,:userId,:languageId)";
 		
 		getSession().createSQLQuery(sql)
-			.setParameter("metaId", documentId)
+			.setParameter("docId", documentId)
 			.setParameter("metaVersion", text.getDocVersionNo())
 			.setParameter("index", text.getNo())
 			.setParameter("type", text.getType())
@@ -73,19 +73,19 @@ public class TextDao extends HibernateTemplate {
 	 * TODO: Reafactor out HQL call  
 	 */
 	@Transactional
-	public List<TextDomainObject> getTexts(Integer metaId, Integer no, I18nLanguage language, Collection<DocumentVersion> versions) {
+	public List<TextDomainObject> getTexts(Integer docId, Integer no, I18nLanguage language, Collection<DocumentVersion> versions) {
 		String hql = String.format(
-			"SELECT t FROM Text t WHERE t.metaId = ? AND t.no = ? AND t.language.id = ? AND t.docVersionNo IN (%s)",
+			"SELECT t FROM Text t WHERE t.docId = ? AND t.no = ? AND t.language.id = ? AND t.docVersionNo IN (%s)",
 			createVersionString(versions));
 		
-		return find(hql, new Object[] {metaId, no, language.getId()});
+		return find(hql, new Object[] {docId, no, language.getId()});
 	}
 	
 	@Transactional
-	public Collection<TextDomainObject> getTexts(Integer metaId, Integer docVersionNo) {
-		return findByNamedQueryAndNamedParam("Text.getByMetaIdAndDocVersionNo",
-				new String[] {"metaId", "docVersionNo"}, 
-				new Object[] {metaId, docVersionNo}
+	public Collection<TextDomainObject> getTexts(Integer docId, Integer docVersionNo) {
+		return findByNamedQueryAndNamedParam("Text.getByDocIdAndDocVersionNo",
+				new String[] {"docId", "docVersionNo"}, 
+				new Object[] {docId, docVersionNo}
 		);
 	}
 
@@ -95,7 +95,7 @@ public class TextDao extends HibernateTemplate {
 	 */
 	@Transactional
 	public List<TextDomainObject> getTextsForAllVersions(Integer documentId, I18nLanguage language) {
-		String query = "SELECT t FROM Text t WHERE t.metaId = ? AND t.language = ?";
+		String query = "SELECT t FROM Text t WHERE t.docId = ? AND t.language = ?";
 		
 		return find(query, new Object [] {documentId, language});
 	}
@@ -104,13 +104,13 @@ public class TextDao extends HibernateTemplate {
 	 * Returns text fields for the same document in version range.
 	 */
 	@Transactional
-	public List<TextDomainObject> getTextsForVersionsInRange(Integer metaId,
+	public List<TextDomainObject> getTextsForVersionsInRange(Integer docId,
 			I18nLanguage language, Integer versionFrom, Integer versionTo) {
 		
-		String query = "SELECT t FROM Text t WHERE t.metaId=? AND t.language=?" +
+		String query = "SELECT t FROM Text t WHERE t.docId=? AND t.language=?" +
 				" AND t.docVersionNo BETWEEN ? AND ?";
 		
-		return find(query, new Object[] {metaId, language, versionFrom, versionTo});
+		return find(query, new Object[] {docId, language, versionFrom, versionTo});
 	}
 	
 
@@ -118,16 +118,16 @@ public class TextDao extends HibernateTemplate {
 	 * Returns text fields for the same document in specific versions.
 	 */
 	@Transactional
-	public List<TextDomainObject> getTextsForVersions(Integer metaId,
+	public List<TextDomainObject> getTextsForVersions(Integer docId,
 			I18nLanguage language, Collection<Integer> versions) {
 		
 		String versionsString = StringUtils.join(versions, ",");
 		
 		String query = String.format(
-			"SELECT t FROM Text t WHERE t.metaId = ? AND t.language=? AND t.docVersionNo IN (%s)",
+			"SELECT t FROM Text t WHERE t.docId = ? AND t.language=? AND t.docVersionNo IN (%s)",
 			versionsString);
 		
-		return find(query, new Object[] {metaId, language} );
+		return find(query, new Object[] {docId, language} );
 	}	
 	
 	/**

@@ -21,8 +21,8 @@ public class DocumentVersion implements Cloneable {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name="meta_id", updatable=false)
-	private Integer metaId;
+	@Column(name="doc_id", updatable=false)
+	private Integer docId;
 
 	private Integer no;
 	
@@ -35,8 +35,8 @@ public class DocumentVersion implements Cloneable {
 
     public DocumentVersion() {}
 	
-	public DocumentVersion(Integer metaId, Integer no, Integer createdBy) {
-		this.metaId = metaId;
+	public DocumentVersion(Integer docId, Integer no, Integer createdBy) {
+		this.docId = docId;
 		this.no = no;
         this.createdBy = createdBy;
 	}	
@@ -58,12 +58,12 @@ public class DocumentVersion implements Cloneable {
 		this.id = id;
 	}
 
-	public Integer getMetaId() {
-		return metaId;
+	public Integer getDocId() {
+		return docId;
 	}
 
-	public void setMetaId(Integer metaId) {
-		this.metaId = metaId;
+	public void setDocId(Integer docId) {
+		this.docId = docId;
 	}
 
 	

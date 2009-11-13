@@ -28,7 +28,7 @@ public class ImageDao extends HibernateTemplate {
 			
 			if (image == null && createImageIfNotExists) {
 					image = new ImageDomainObject();
-					image.setMetaId(documentId);
+					image.setDocId(documentId);
 					image.setName("" + imageId);
 				
 				image.setLanguage(language);
@@ -45,11 +45,11 @@ public class ImageDao extends HibernateTemplate {
 
 	/*
 	@Transactional
-	public synchronized List<ImageDomainObject> getImagesByLanguage(int metaId, int languageId) {
+	public synchronized List<ImageDomainObject> getImagesByLanguage(int docId, int languageId) {
 		List<ImageDomainObject> images = findByNamedQueryAndNamedParam(
 				"Image.getAllDocumentImagesByLanguage", 
-					new String[] {"metaId", "languageId"}, 
-					new Object[] {metaId, languageId});
+					new String[] {"docId", "languageId"}, 
+					new Object[] {docId, languageId});
 		
 		for (ImageDomainObject image: images) {
 			setImageSource(image);
@@ -60,10 +60,10 @@ public class ImageDao extends HibernateTemplate {
 	*/
 	
 	public synchronized ImageDomainObject getImage(int languageId,
-			Integer metaId, Integer docVersionNo, int no) {
+			Integer docId, Integer docVersionNo, int no) {
 		
-		ImageDomainObject image = (ImageDomainObject)getSession().createQuery("select i from Image i where i.metaId = :metaId AND i.docVersionNo = :docVersionNo and i.no = :no and i.language.id = :languageId")
-			.setParameter("metaId", metaId)
+		ImageDomainObject image = (ImageDomainObject)getSession().createQuery("select i from Image i where i.docId = :docId AND i.docVersionNo = :docVersionNo and i.no = :no and i.language.id = :languageId")
+			.setParameter("docId", docId)
 			.setParameter("docVersionNo", docVersionNo)
 			.setParameter("no", "" + no)
 			.setParameter("languageId", languageId)
@@ -83,10 +83,10 @@ public class ImageDao extends HibernateTemplate {
 	}
 	
 	@Transactional
-	public Collection<ImageDomainObject> getImages(Integer metaId, Integer docVersionNo) {
-		return findByNamedQueryAndNamedParam("Image.getByMetaIdAndDocVersionNo",
-				new String[] {"metaId", "docVersionNo"},
-				new Object[] {metaId, docVersionNo}	
+	public Collection<ImageDomainObject> getImages(Integer docId, Integer docVersionNo) {
+		return findByNamedQueryAndNamedParam("Image.getByDocIdAndDocVersionNo",
+				new String[] {"docId", "docVersionNo"},
+				new Object[] {docId, docVersionNo}	
 		);
     }
 

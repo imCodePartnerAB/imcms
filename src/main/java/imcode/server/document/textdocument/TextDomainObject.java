@@ -28,20 +28,6 @@ import com.imcode.imcms.mapping.DocumentStoringVisitor;
  */
 @Entity(name="Text")
 @Table(name="imcms_text_doc_texts")
-@NamedQueries({
-	
-	// Collection
-	@NamedQuery(name="Text.getByDocIdAndDocVersionNoAndLanguageId",
-			query="SELECT t FROM Text t WHERE t.metaId = :docId AND t.docVersionNo = :docVersionNo AND t.language.id = :languageId"),
-	
-	// Unique result
-	@NamedQuery(name="Text.getByDocIdAndDocVersionNoAndNoAndLanguageId",
-			query="SELECT t FROM Text t WHERE t.metaId = :metaId AND t.docVersionNo = :docVersionNo AND t.no = :no AND t.language.id = :languageId"),
-	
-	// Collection			
-	@NamedQuery(name="Text.getByMetaIdAndDocVersionNo", 
-			query="SELECT t FROM Text t WHERE t.metaId = :metaId AND t.docVersionNo = :docVersionNo")
-})
 public class TextDomainObject implements Serializable, Cloneable {
 	
     /**
@@ -67,8 +53,8 @@ public class TextDomainObject implements Serializable, Cloneable {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name="meta_id")
-	private Integer metaId;
+	@Column(name="doc_id")
+	private Integer docId;
 	
 	@Column(name="doc_version_no")
 	private Integer docVersionNo;
@@ -228,12 +214,12 @@ public class TextDomainObject implements Serializable, Cloneable {
 		this.id = id;
 	}
 
-	public Integer getMetaId() {
-		return metaId;
+	public Integer getDocId() {
+		return docId;
 	}
 
-	public void setMetaId(Integer metaId) {
-		this.metaId = metaId;
+	public void setDocId(Integer docId) {
+		this.docId = docId;
 	}
 
 	public I18nLanguage getLanguage() {

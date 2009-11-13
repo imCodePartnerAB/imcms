@@ -82,7 +82,7 @@ public final class SaveText extends HttpServlet {
 
             text = text == null ? new TextDomainObject() : text.clone();
 
-    		text.setMetaId(document.getId());
+    		text.setDocId(document.getId());
     		text.setNo(txt_no);
             text.setDocVersionNo(document.getVersion().getNo());
     		text.setLanguage(I18nSupport.getCurrentLanguage());

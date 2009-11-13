@@ -4,7 +4,6 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -27,7 +26,6 @@ import org.apache.commons.lang.UnhandledException;
 
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.dao.ContentLoopDao;
-import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.MenuDao;
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.dao.TextDao;
@@ -116,7 +114,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
        // for (Map<Integer, TextDomainObject> map: textDocument.getTexts()) {
         	for (TextDomainObject text: textDocument.getTexts().values()) {
         		text.setId(null);
-            	text.setMetaId(documentId);
+            	text.setDocId(documentId);
             	text.setDocVersionNo(documentVersionNumber);
                 textDao.saveText(text);
                 
@@ -163,7 +161,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
 
         textDao.saveText(text);
-        textDao.saveTextHistory(text.getMetaId(), text, user); 
+        textDao.saveTextHistory(text.getDocId(), text, user);
     }    
     
     // runs inside transaction
@@ -177,7 +175,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         	for (ImageDomainObject image: map.values()) {
                 if (image.isModified()) {                	 
                 	// TODO: remove
-                	image.setMetaId(metaId);
+                	image.setDocId(metaId);
                 	image.setDocVersionNo(documentVersionNumber);
                     imageDao.saveImage(image);
                     //imageDao.saveImageHistory(metaId, text, user); 

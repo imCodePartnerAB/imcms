@@ -15,6 +15,7 @@ import org.apache.commons.collections.map.LRUMap;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.api.I18nLanguage;
 
 /**
  * Caches documents returned by wrapped DocumentLoader.
@@ -109,20 +110,9 @@ public class DocumentLoaderCachingProxy {
         
     	return versionSupport;
     } 
-    
-
-    public DocumentDomainObject getDocument(Integer docId, Integer versionNumber) {
-        Meta meta = getMeta(docId);
-
-        if (meta == null) {
-            return null;
-        }
-    	
-    	return documentLoader.loadDocument(meta, versionNumber);
-    }
 
     
-    
+     /*
     public DocumentDomainObject getActiveDocument(Integer docId) {
         Meta meta = getMeta(docId);
 
@@ -143,22 +133,18 @@ public class DocumentLoaderCachingProxy {
 
         return document;
     }
-
+    */
     
-    /**
-     * Returns working document.
-     */
-    public DocumentDomainObject getDocument(Integer docId) {
-        return getWorkingDocument(docId);
-    }    
             
-    public List<DocumentDomainObject> getDocuments(Collection<Integer> docIds) {
-        return documentLoader.loadDocuments(docIds) ;
+    public List<DocumentDomainObject> getDocuments(Collection<Integer> docIds, I18nLanguage language) {
+        return documentLoader.loadDocuments(docIds, language) ;
     }
-    
+
+    /*
     public List<DocumentDomainObject> getActiveDocuments(Collection<Integer> docIds) {
         return documentLoader.getActiveDocuments(docIds) ;
-    }    
+    }
+       */
 
     
     public void clearCache() {
@@ -177,14 +163,13 @@ public class DocumentLoaderCachingProxy {
     } 
     
     /**
-     * Returns document id by alias.
-     * Caches returned value.
-     * 
+     * Returns document id by an alias.
+     *  
      * @param alias document's alias.
      * 
      * @return document id.
      */
-    public Integer getDocumentIdByAlias(String alias) {
+    public Integer getDocId(String alias) {
     	Integer docId = (Integer)aliasesBidiMap.getKey(alias);
     	
     	if (docId == null) {
@@ -197,24 +182,53 @@ public class DocumentLoaderCachingProxy {
     	
     	return docId;
     }
-
-    public DocumentDomainObject getWorkingDocument(Integer docId) {
+    
+    /*
+    public DocumentDomainObject getDocument(Integer docId, Integer docVersionNo, Integer languageId) {
         Meta meta = getMeta(docId);
 
         if (meta == null) {
             return null;
         }
 
+        DocumentVersionInfo versionInfo = getDocumentVersionInfo(docId);
+        DocumentVersion version = versionInfo.getVersion(docVersionNo);
+
         DocumentDomainObject document = workingDocuments.get(docId);
 
     	if (document == null) {
-	        document = documentLoader.loadDocument(meta.clone(), 0);
+	        document = documentLoader.loadDocument(meta.clone(), docVersionNo, languageId);
 
             if (document != null) {
 	            workingDocuments.put(docId, document);
             }
     	}
 
+        return document;
+    }
+    */
+
+
+    public DocumentDomainObject getWorkingDocument(Integer docId, I18nLanguage language) {
+        DocumentDomainObject document = workingDocuments.get(docId);
+
+    	if (document == null) {
+            Meta meta = getMeta(docId);
+
+            if (meta == null) {
+                return null;
+            }
+    
+            DocumentVersionInfo versionInfo = getDocumentVersionInfo(docId);
+            DocumentVersion version = versionInfo.getWorkingVersion();
+
+	        document = documentLoader.loadDocument(meta.clone(), version, language);
+
+            if (document != null) {
+	            workingDocuments.put(docId, document);
+            }
+    	}        
+        
         return document;
     }
 }

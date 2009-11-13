@@ -43,32 +43,22 @@ public class DocumentLoader {
     }
     
     
-    public DocumentDomainObject loadDocument(Meta meta, Integer docVersionNo) {
-        DocumentVersion version = documentVersionDao.getVersion(meta.getId(), docVersionNo);
-
-        return loadDocument(meta, version);
-    }	
-
-    
-    private DocumentDomainObject loadDocument(Meta meta, DocumentVersion version) {
-        if (version == null) {
-            return null;
-        }
-        
-        return initDocument(createDocument(meta, version));
+    public DocumentDomainObject loadDocument(Meta meta, DocumentVersion version, I18nLanguage language) {
+        return initDocument(createDocument(meta, version, language));
     }
 
     
     /**
      * @return working documents.
      */
-    public List<DocumentDomainObject> loadDocuments(Collection<Integer> docIds) {
+    public List<DocumentDomainObject> loadDocuments(Collection<Integer> docIds, I18nLanguage language) {
         List<DocumentDomainObject> documents = new LinkedList<DocumentDomainObject>();
         
     	for (Integer docId: docIds) {
             Meta meta = getMeta(docId);
+            DocumentVersion version = documentVersionDao.getVersion(docId, 0);
             
-    		DocumentDomainObject document = loadDocument(meta, 0);
+    		DocumentDomainObject document = loadDocument(meta, version, language);
     		
     		// ??? do not add in case of null
     		if (document != null) {
@@ -98,14 +88,15 @@ public class DocumentLoader {
                                 
         return documents;
         */
-        return loadDocuments(docIds);
+        //return loadDocuments(docIds);
+        return null;
     }    
 
     
     /**
      * Creates document instance.
      */
-    private DocumentDomainObject createDocument(Meta meta, DocumentVersion version) {
+    private DocumentDomainObject createDocument(Meta meta, DocumentVersion version, I18nLanguage language) {
 		if (meta == null) {
 			return null;
 		}
@@ -113,9 +104,9 @@ public class DocumentLoader {
 		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
         document.setId(meta.getId());
-        // TODO: - remove after test.
-        document.setLanguage(I18nSupport.getDefaultLanguage());
-		document.setMeta(meta);
+        document.setMeta(meta);
+        document.setLanguage(language);
+        
         document.setVersion(version);
 		
 		document.setActualModifiedDatetime(meta.getModifiedDatetime());

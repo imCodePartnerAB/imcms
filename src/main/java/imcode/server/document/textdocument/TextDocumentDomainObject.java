@@ -264,7 +264,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         }
         
         newText.setModified(true);
-        newText.setMetaId(metaId);
+        newText.setDocId(metaId);
         newText.setDocVersionNo(documentVersion);
         newText.setNo(no);
         newText.setLanguage(getLanguage());
@@ -353,7 +353,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     		newImage.setId(null);
     	}
     	
-    	newImage.setMetaId(getMeta().getId());
+    	newImage.setDocId(getMeta().getId());
     	newImage.setLanguage(getLanguage());
     	newImage.setNo(no);
     	newImage.setModified(true);
@@ -375,13 +375,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         	for (TextDomainObject text: texts.values()) {
         		text.setId(null);
-        		text.setMetaId(null);
+        		text.setDocId(null);
         		text.setModified(true);
             }
 
         	for (ImageDomainObject image: images.values()) {
         		image.setId(null);
-        		image.setMetaId(null);
+        		image.setDocId(null);
         		image.setModified(true);
             }
         

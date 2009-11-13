@@ -109,14 +109,14 @@ public class ContentLoopDao extends HibernateTemplate {
 	/**
 	 * Create content loop with single content.
 	 * 
-	 * @param metaId meta id.
+	 * @param docId meta id.
 	 * @param loopNo loop number.
 	 * @return
 	 */
 	@Transactional
-	public synchronized ContentLoop createContentLoop(Integer metaId, Integer documentVersion, Integer loopNo) {
+	public synchronized ContentLoop createContentLoop(Integer docId, Integer documentVersion, Integer loopNo) {
 		ContentLoop loop = new ContentLoop();
-		loop.setDocId(metaId);
+		loop.setDocId(docId);
 		loop.setDocVersionNo(documentVersion);
 		loop.setNo(loopNo);
 		
@@ -382,8 +382,8 @@ public class ContentLoopDao extends HibernateTemplate {
 
     // TODO: Optimize
 	@Transactional
-	public synchronized int deleteLoops(Integer metaId, Integer documentVersion) {
-		List<ContentLoop> loops = getContentLoops(metaId, documentVersion);
+	public synchronized int deleteLoops(Integer docId, Integer documentVersion) {
+		List<ContentLoop> loops = getContentLoops(docId, documentVersion);
 		
 		for (ContentLoop loop: loops) {
 			delete(loop);

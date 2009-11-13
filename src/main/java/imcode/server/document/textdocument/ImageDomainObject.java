@@ -10,8 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -27,21 +25,6 @@ import com.imcode.util.ImageSize;
 
 @Entity(name="Image")
 @Table(name="imcms_text_doc_images")
-@NamedQueries({
-	@NamedQuery(name="Image.getByLanguageId", query="select i from Image i where i.metaId = :metaId and i.language.id = :languageId"),
-	@NamedQuery(name="Image.getLanguagesToImagesByMetaId", query="select l, i from Image i right join i.language l where (i.metaId = :metaId and i.no = :name) or i.metaId is null order by l.default desc"),
-	@NamedQuery(name="Image.getAllImages", query="select i from Image i where i.metaId = :metaId"),
-	@NamedQuery(name="Image.getAllDocumentImagesByLanguage", query="select i from Image i where i.metaId = :metaId and i.language.id = :languageId"),
-	@NamedQuery(name="Image.getDefaultImage", query="select i from Image i where i.metaId = :metaId and i.no = :name and i.language.default is true"),
-	
-	// Collection			
-	@NamedQuery(name="Image.getByMetaIdAndDocVersionNo",
-			query="SELECT i FROM Image i WHERE i.metaId = :metaId AND i.docVersionNo = :docVersionNo"),
-
-	@NamedQuery(name="Image.getByDocIdAndDocVersionNoAndLanguageId",
-			query="SELECT i FROM Image i WHERE i.metaId = :docId AND i.docVersionNo = :docVersionNo AND i.language.id = :languageId")        
-	
-})
 public class ImageDomainObject implements Serializable, Cloneable {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -50,8 +33,8 @@ public class ImageDomainObject implements Serializable, Cloneable {
 	@Transient
 	private ImageSource source = new NullImageSource();
 	
-	@Column(name="meta_id")
-	private Integer metaId;
+	@Column(name="doc_id")
+	private Integer docId;
 	
 	@Column(name="doc_version_no")
 	private Integer docVersionNo;
@@ -312,12 +295,12 @@ public class ImageDomainObject implements Serializable, Cloneable {
 		this.language = language;
 	}
 
-	public Integer getMetaId() {
-		return metaId;
+	public Integer getDocId() {
+		return docId;
 	}
 
-	public void setMetaId(Integer metaId) {
-		this.metaId = metaId;
+	public void setDocId(Integer docId) {
+		this.docId = docId;
 	}
 	
 	public ImageDomainObject clone() {

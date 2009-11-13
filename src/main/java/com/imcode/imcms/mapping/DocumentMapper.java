@@ -59,7 +59,7 @@ import com.imcode.imcms.mapping.aop.TextDocumentAspect;
  * DocumentSaver is instantiated using SpringFramework factory
  * in order to support declared (AOP) transactions.
  *   
- * DatabseDocumentGetter is instantiated using SpringFramework factory
+ * DocumentLoader is instantiated using SpringFramework factory
  * in order to support declared (AOP) transactions.
  * 
  * There is a big difference between getDocument and getDocumentForShowing:
@@ -326,7 +326,8 @@ public class DocumentMapper implements DocumentGetter {
     
     
     public boolean hasPublishedVersion(Integer documentId) {
-    	return documentLoaderCachingProxy.getActiveDocument(documentId) != null;
+    	//return documentLoaderCachingProxy.getActiveDocument(documentId) != null;
+        return false;
     }    
 
     public void invalidateDocument(DocumentDomainObject document) {        
@@ -502,7 +503,7 @@ public class DocumentMapper implements DocumentGetter {
     	try {
     		return Integer.valueOf(documentIdentity);
     	} catch (NumberFormatException e) {
-    		return documentLoaderCachingProxy.getDocumentIdByAlias(documentIdentity);
+    		return documentLoaderCachingProxy.getDocId(documentIdentity);
     	}
     }
 
@@ -592,16 +593,27 @@ public class DocumentMapper implements DocumentGetter {
         */
     
     /**
-     * Returns working document.
+     * Returns working document in default language.
      *
-     * @param metaId document's meta id
+     * @param docId document id
      * 
-     * @return working document.
-     * TODO: ??? return active document ???
+     * @return working document in default language.
      */
-    public DocumentDomainObject getDocument(Integer metaId) {
-        return documentLoaderCachingProxy.getDocument(metaId);
-    }     
+    public DocumentDomainObject getDocument(Integer docId) {
+        return documentLoaderCachingProxy.getWorkingDocument(docId, I18nSupport.getDefaultLanguage());
+    }
+
+    /**
+     * Returns document.
+     *
+     * @param docId document id
+     *
+     * @return document.
+     */
+    public DocumentDomainObject getDocument(Integer docId, Integer docVersionNo, Integer languageId) {
+        //return documentLoaderCachingProxy.getDocument(docId, docVersionNo, languageId);
+        return null;
+    }
     
     /**
      * Returns active document.
@@ -784,12 +796,14 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
-        return documentLoaderCachingProxy.getDocuments(documentIds) ;
+        return documentLoaderCachingProxy.getDocuments(documentIds, I18nSupport.getDefaultLanguage()) ;
     }
-    
+
+    /*
     public List<DocumentDomainObject> getActiveDocuments(Collection<Integer> documentIds) {
         return documentLoaderCachingProxy.getActiveDocuments(documentIds) ;
-    }    
+    }
+        */
 
 
     private void removeNonInheritedCategories(DocumentDomainObject document) {

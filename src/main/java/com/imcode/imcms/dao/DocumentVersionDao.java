@@ -18,17 +18,17 @@ public class DocumentVersionDao extends HibernateTemplate {
 	 * @return new document version.
 	 */
 	@Transactional
-	public synchronized DocumentVersion createVersion(Integer metaId, Integer userId) {
+	public synchronized DocumentVersion createVersion(Integer docId, Integer userId) {
 		DocumentVersion latestVersion = (DocumentVersion)getSession()
 			.getNamedQuery("DocumentVersion.getLatestVersion")
-			.setParameter("metaId", metaId)
+			.setParameter("docId", docId)
 			.uniqueResult();
 
         Integer versionNumber = latestVersion == null
                 ? 0
                 : latestVersion.getNo() + 1;
 
-        DocumentVersion version =  new DocumentVersion(metaId, versionNumber, userId);
+        DocumentVersion version =  new DocumentVersion(docId, versionNumber, userId);
 
 		save(version);
 
@@ -39,31 +39,31 @@ public class DocumentVersionDao extends HibernateTemplate {
 	/**
 	 * Returns all versions for the document.
 	 *
-	 * @param metaId meta id.
+	 * @param docId meta id.
 	 * @return available versions for the document.
 	 */
 	@Transactional
-	public List<DocumentVersion> getAllVersions(Integer metaId) {
-		return findByNamedQueryAndNamedParam("DocumentVersion.getByMetaId",
-				"metaId", metaId);
+	public List<DocumentVersion> getAllVersions(Integer docId) {
+		return findByNamedQueryAndNamedParam("DocumentVersion.getByDocId",
+				"docId", docId);
 	}
 
     
     // TODO: refactor - hardcoded - returns v no 0.
 	@Transactional
-	public DocumentVersion getActiveVersion(Integer metaId) {
+	public DocumentVersion getActiveVersion(Integer docId) {
 		return (DocumentVersion)getSession()
 			.getNamedQuery("DocumentVersion.getActiveVersion")
-		    .setParameter("metaId", metaId)
+		    .setParameter("docId", docId)
 		    .uniqueResult();
 	}
 
 
 	@Transactional
-	public DocumentVersion getVersion(Integer metaId, Integer no) {
+	public DocumentVersion getVersion(Integer docId, Integer no) {
 		return (DocumentVersion)getSession()
-			.getNamedQuery("DocumentVersion.getByMetaIdAndNo")
-		    .setParameter("metaId", metaId)
+			.getNamedQuery("DocumentVersion.getByDocIdAndNo")
+		    .setParameter("docId", docId)
             .setParameter("no", no)
 		    .uniqueResult();
 	}

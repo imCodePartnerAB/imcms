@@ -72,7 +72,7 @@ public class ChangeText extends HttpServlet {
         
     	if (text == null) {
     		text = new TextDomainObject();
-    		text.setMetaId(metaId);
+    		text.setDocId(metaId);
             text.setDocVersionNo(textDocument.getVersion().getNo());
     		text.setNo(textIndex);
     		text.setLanguage(language);
