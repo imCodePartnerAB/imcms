@@ -1,6 +1,9 @@
-(ns com.imcode.imcms.compojure)
+(ns com.imcode.imcms.compojure
 
-(use 'compojure)
+  (:gen-class :extends javax.servlet.http.HttpServlet))
+
+
+(use 'compojure 'clojure.contrib.def)
 
 (defn html-doc
   [title & body]
@@ -10,56 +13,63 @@
       [:head
         [:title title]]
       [:body
-       [:div
-        [:h2
-         ;; Pass a map as the first argument to be set as attributes of the element
-         [:a {:href "/"} "Home"]]]
-              body]]))
+        [:div
+          [:h2
+            [:a {:href "/"} "Main (welcome page)"]
+          [:h2
+            [:a {:href "/doc"} "Document"]]
+          [:h2
+            [:a {:href "/user"} "Users"]]
+          [:h2
+            [:a {:href "/role"} "Roles"]]]]
+        body]]))
 
-
-(def sum-form
-  (html-doc "Sum"
-    (form-to [:post "/"]
-      (text-field {:size 3} :x)
-      "+"
-      (text-field {:size 3} :y)
-      "+"
-      (text-field {:size 3} :z)      
-      (submit-button "="))))
-
-(defn result
-  [x y z]
-  (let [x (Integer/parseInt x)
-        y (Integer/parseInt y)
-        z (Integer/parseInt z)]
+(defn handle-doc
+  [action]
+  (let []
     (html-doc "Result"
-      x " + " y " + " z " == " (+ x y z))))
+      "Processing: " action)))
 
-(defroutes webservice
+(defn undefined [request]
+  (html-doc "Undefined"
+    request))
+
+(defn welcome-page
+  []
+  (html-doc "imCMS admin" ">> Please pick a task <<"))
+
+(defroutes admin-services
   (GET "/"
-    sum-form)
+    (welcome-page))
 
-  (GET "/test"
-    (html-doc "Tst" (html (drop-down "species" [:cat :dog :buffalo :bunny :lion]))))  
+  (GET "/doc"
+    (html-doc "Document"
+      (form-to [:post "/doc"]
+        (drop-down "action" [:new :delete :search])
+        (submit-button "Go"))))
 
-  (GET "/public/:ax/:bx/:cx"
-    (str "Loading file: "
-         request))
+  (POST "/doc"
+    (handle-doc (params :action)))
+
+  (GET "/user"
+    (undefined request))
+
+  (GET "/role"
+     (undefined request))
 
   (GET "/image"
     (java.io.File. "/Users/ajosua/Pictures/ant.jpg"))  
 
   (ANY "*"
-    [404 "Page Not Found"])   
-
-  (POST "/"
-    (result (params :x) (params :y) (params :z))))
+    [404 "Page Not Found"]))   
 
 
 
 
 
-(def srv (atom nil))
+
+
+(defvar srv (atom nil))
 
 (defn srv-start
   ([]
@@ -70,7 +80,7 @@
       (run-server
         {:port port}
         "/*"
-        (servlet webservice)))))
+        (servlet admin-services)))))
 
 (defn srv-stop []
   (stop @srv))
