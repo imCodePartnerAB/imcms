@@ -48,7 +48,7 @@ public class DocumentLoaderCachingProxy {
      * 
      * Map key is a document id.
      */
-    private Map<Integer, DocumentDomainObject> workingDocuments;
+    private Map<I18nLanguage, Map<Integer, DocumentDomainObject>> workingDocuments;
     
     /**
      * Aliases cache.
@@ -63,15 +63,19 @@ public class DocumentLoaderCachingProxy {
     
     /** Wrapped document loader. */
     private DocumentLoader documentLoader;
+
+    private int cacheSize;
     
 
     public DocumentLoaderCachingProxy(DocumentLoader documentLoader, int cacheSize) {
         this.documentLoader = documentLoader;
         
         versionInfos = new HashMap<Integer, DocumentVersionInfo>();
-        workingDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
+        //workingDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
+        workingDocuments = new HashMap<I18nLanguage, Map<Integer, DocumentDomainObject>>();
         activeDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
         metas = Collections.synchronizedMap(new LRUMap(cacheSize));
+        this.cacheSize = cacheSize;
         
         aliasesBidiMap = new DualHashBidiMap();
     }
@@ -210,7 +214,9 @@ public class DocumentLoaderCachingProxy {
 
 
     public DocumentDomainObject getWorkingDocument(Integer docId, I18nLanguage language) {
-        DocumentDomainObject document = workingDocuments.get(docId);
+        Map<Integer, DocumentDomainObject> documents = getDocuments(workingDocuments, language);
+
+        DocumentDomainObject document = documents.get(docId);
 
     	if (document == null) {
             Meta meta = getMeta(docId);
@@ -225,10 +231,22 @@ public class DocumentLoaderCachingProxy {
 	        document = documentLoader.loadDocument(meta.clone(), version, language);
 
             if (document != null) {
-	            workingDocuments.put(docId, document);
+	            documents.put(docId, document);
             }
     	}        
         
         return document;
+    }
+
+
+    private Map<Integer, DocumentDomainObject> getDocuments(Map<I18nLanguage, Map<Integer, DocumentDomainObject>> allDocuments, I18nLanguage language) {
+        Map<Integer, DocumentDomainObject> documents = allDocuments.get(language);
+
+        if (documents == null) {
+            documents = Collections.synchronizedMap(new LRUMap(cacheSize));
+            allDocuments.put(language, documents);
+        }
+
+        return documents;
     }
 }
