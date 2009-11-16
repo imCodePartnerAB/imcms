@@ -11,12 +11,24 @@ SET @schema_version__minor_new = 2;
 
 -- fix i18n language!!!
 
+CREATE TABLE imcms_doc_keywords (
+
+    id int AUTO_INCREMENT,
+    doc_id int NOT NULL,
+    value varchar(128) NOT NULL,
+
+    CONSTRAINT pk__imcms_doc_keywords PRIMARY KEY (id),
+    CONSTRAINT uk__imcms_doc_keywords__doc_id__value UNIQUE KEY (doc_id, value),
+    CONSTRAINT fk__imcms_doc_keywords__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 CREATE TABLE imcms_doc_languages (
 
     id int AUTO_INCREMENT,
     doc_id int NOT NULL,
     language_id smallint NOT NULL,
-    enabled tinyint NOT NULL DEFAULT TRUE,
 
     CONSTRAINT pk__imcms_doc_languages PRIMARY KEY (id),
     CONSTRAINT uk__imcms_doc_languages__doc_id__language_id UNIQUE KEY (doc_id, language_id),
@@ -64,7 +76,7 @@ CREATE TABLE imcms_doc_labels (
     doc_version_no int NOT NULL,
     language_id smallint NOT NULL,
     headline varchar(256) NULL,
-    menu_image varchar(256) NULL,
+    menu_image_url varchar(256) NULL,
     menu_text varchar(1024) NULL,
 
     CONSTRAINT pk__imcms_doc_labels PRIMARY KEY (id),

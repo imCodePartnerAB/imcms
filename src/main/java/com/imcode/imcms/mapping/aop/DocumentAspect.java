@@ -14,7 +14,8 @@ import com.imcode.imcms.api.I18nLanguage;
  */
 @Aspect
 public class DocumentAspect {
-	
+
+    /*
 	private I18nLanguage language;
 	
 	public DocumentAspect(I18nLanguage language) {
@@ -39,5 +40,6 @@ public class DocumentAspect {
     public Object getMenuText(ProceedingJoinPoint pjp) throws Throwable {
     	return ((DocumentDomainObject)pjp.getTarget())
     		.getMenuText(language);
-    }	   
+    }
+    	   */
 }

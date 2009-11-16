@@ -400,8 +400,8 @@ function setI18nCodeParameterValue(value) {
 			<tr>
 				<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>"
 				id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>0"
-				value="<%=Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE%>"<%=
-				document.getMeta().getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE ? " checked=\"checked\"" : "" %> /></td>
+				value="<%=Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE%>"<%=
+				document.getMeta().getUnavailableI18nDataSubstitution() == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE ? " checked=\"checked\"" : "" %> /></td>
 				<td style="padding-left:5px;"><label for="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>0"><%=
 				isSwe ? "Visa på standardspråket" : "Show in default language" %></label></td>
 			</tr>
@@ -413,8 +413,8 @@ function setI18nCodeParameterValue(value) {
 			<tr>
 				<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>"
 				id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>1"
-				value="<%=Meta.UnavailableI18nDataSubstitution.DO_NOT_SHOW%>"<%=
-				document.getMeta().getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.DO_NOT_SHOW ? " checked=\"checked\"" : "" %> /></td>
+				value="<%=Meta.DisabledLanguageShowSetting.DO_NOT_SHOW%>"<%=
+				document.getMeta().getUnavailableI18nDataSubstitution() == Meta.DisabledLanguageShowSetting.DO_NOT_SHOW ? " checked=\"checked\"" : "" %> /></td>
 				<td style="padding-left:5px;"><label for="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>1"><%=
 				isSwe ? "Visa inte alls" : "Don't show at all" %></label></td>
 			</tr>

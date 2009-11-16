@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -67,8 +66,8 @@ public class ChangeText extends HttpServlet {
         
         Integer metaId = textDocument.getId();
         Meta meta = textDocument.getMeta();
-        I18nMeta i18nMeta = meta.getI18nMeta(language);
-        boolean enabled = i18nMeta.getEnabled();         
+        //I18nMeta i18nMeta = meta.getI18nMeta(language);
+        //boolean enabled = i18nMeta.getEnabled();
         
     	if (text == null) {
     		text = new TextDomainObject();
@@ -89,10 +88,10 @@ public class ChangeText extends HttpServlet {
     	request.setAttribute("queryString", queryString);
     	
         TextEditPage page = new TextEditPage( documentId, textIndex, text, label );
-        page.setEnabled(enabled);
-        page.setSubstitutedWithDefault(!enabled && meta.getUnavailableI18nDataSubstitution()
-        		== Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE
-        			&& meta.getI18nMeta(I18nSupport.getDefaultLanguage()).getEnabled());
+        //page.setEnabled(enabled);
+        //page.setSubstitutedWithDefault(!enabled && meta.getUnavailableI18nDataSubstitution()
+        //		== Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE
+        //			&& meta.getI18nMeta(I18nSupport.getDefaultLanguage()).getEnabled());
         
         page.forward( request, res, user );
     }

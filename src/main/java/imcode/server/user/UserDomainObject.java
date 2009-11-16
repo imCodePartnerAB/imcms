@@ -22,7 +22,6 @@ import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.UnhandledException;
 
 import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
 
@@ -705,10 +704,10 @@ public class UserDomainObject implements Cloneable, Serializable {
     private boolean languageIsActive(DocumentDomainObject document) {
     	I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
     	Meta meta = document.getMeta();
-    	I18nMeta i18nMeta = meta.getI18nMeta(currentLanguage);
+    	boolean enabled = meta.getLanguages().contains(currentLanguage);
     	
-    	return i18nMeta.getEnabled()||
-    		meta.getUnavailableI18nDataSubstitution() == Meta.UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;  
+    	return enabled ||
+    		meta.getDisabledLanguageShowSetting() == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE;
     } 
 
     public boolean canSeeDocumentWhenEditingMenus( DocumentDomainObject document ) {

@@ -36,8 +36,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Entity
 @Table(name="meta")
 public class Meta implements Serializable, Cloneable {
-	
-	/**
+
+    /**
 	 * Create (create only!) permission for template or a document type.
 	 * 
 	 * set_id (actually it is a 'set type id') can be: restricted 1 or restricted 2   
@@ -105,13 +105,9 @@ public class Meta implements Serializable, Cloneable {
 	}
 		
 	/**
-	 * Document show mode for disabled language.
-	 * 
-	 * The name 'DisabledI18nShowMode' would be more descriptive.
-	 * 
-	 * @see I18nMeta.getEnabled
-	 */
-	public static enum UnavailableI18nDataSubstitution {
+	 * Document show setting for disabled language.
+     */
+	public static enum DisabledLanguageShowSetting {
 		SHOW_IN_DEFAULT_LANGUAGE,
 		DO_NOT_SHOW,		
 	}
@@ -119,21 +115,15 @@ public class Meta implements Serializable, Cloneable {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="meta_id")
 	private Integer id;
-					
-	/**
-	 * I18n-ized parts of the meta.
-	 */
-	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
-	@JoinColumn(name="meta_id", referencedColumnName="meta_id")		
-	private Set<I18nMeta> i18nMetas = new HashSet<I18nMeta>();
+
 	
 	/**
 	 * Disabled language's content show rule.
 	 */
 	@Enumerated(EnumType.STRING)
 	@Column(name="missing_i18n_show_rule", nullable=false)
-	private UnavailableI18nDataSubstitution unavailableI18nDataSubstitution =
-		UnavailableI18nDataSubstitution.DO_NOT_SHOW;	
+	private DisabledLanguageShowSetting disabledLanguageShowSetting =
+		DisabledLanguageShowSetting.DO_NOT_SHOW;
 	
 	// CHECKED	
 	@Column(name="activate", nullable=false, updatable=false)
@@ -298,22 +288,33 @@ public class Meta implements Serializable, Cloneable {
 	    name = "new_doc_permission_sets_ex",
 	    joinColumns = @JoinColumn(name="meta_id", referencedColumnName="meta_id"))    
 	private Set<PermisionSetEx> permisionSetExForNew = new HashSet<PermisionSetEx>();
-	
-	/**
-	 * Workaround.
-	 * Map provides quicker access to I18n metas than list.
-	 * Initilized by MetaDAO API, when document is requested.
-	 * TODO: Rewrite initializing logic.
-	 */
-	@Transient
-	private Map<I18nLanguage, I18nMeta> metaMap;
+
+
+	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
+	@JoinTable(
+	    name = "imcms_doc_languages",
+	    joinColumns = @JoinColumn(name="doc_id"),
+            inverseJoinColumns = @JoinColumn(name="language_id")
+        )
+	private Set<I18nLanguage> languages;
+
+
+	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+	@javax.persistence.JoinTable(
+		name = "imcms_doc_keywords",
+		joinColumns={
+		    @JoinColumn(name="doc_id", referencedColumnName="meta_id")
+		}
+	)
+	@Column(name = "value")
+	private Set<String> keywords = new HashSet<String>();
 	
 	@Override
 	public Meta clone() {
 		try {
 			Meta clone = (Meta)super.clone();
 			
-			clone.unavailableI18nDataSubstitution = unavailableI18nDataSubstitution;
+			clone.disabledLanguageShowSetting = disabledLanguageShowSetting;
 
 			clone.permisionSetEx = new HashSet<PermisionSetEx>(permisionSetEx);
 			clone.permisionSetExForNew = new HashSet<PermisionSetEx>(permisionSetExForNew);
@@ -324,16 +325,14 @@ public class Meta implements Serializable, Cloneable {
 			
 			clone.properties = new HashMap<String, String>(properties);
 			clone.categoryIds = new HashSet<Integer>(categoryIds);
-			
-			if (i18nMetas != null) {
-				clone.i18nMetas = new HashSet<I18nMeta>();
-			
-				for (I18nMeta i18nMeta: i18nMetas) {
-					clone.i18nMetas.add(i18nMeta.clone());	
-				}
+
+			if (keywords != null) {
+				clone.keywords = new HashSet<String>(keywords);
 			}
-			
-			clone.initI18nMetaMapping();
+
+			if (languages != null) {
+				clone.keywords = new HashSet<String>(keywords);
+			}
 			
 			return clone;
 		} catch (CloneNotSupportedException e) {
@@ -349,59 +348,14 @@ public class Meta implements Serializable, Cloneable {
 		this.id = id;
 	}
 
-	public Set<I18nMeta> getI18nMetas() {
-		return i18nMetas;
+	
+	public DisabledLanguageShowSetting getI18nShowSetting() {
+		return disabledLanguageShowSetting;
 	}
 	
-	public void setI18nMetas(Set<I18nMeta> i18nMetas) {
-		this.i18nMetas = i18nMetas;		
-	}
-
-	
-	/**
-	 * Use getI18nShowMode instead.
-	 */
-	@Deprecated	
-	public UnavailableI18nDataSubstitution getUnavailableI18nDataSubstitution() {
-		return unavailableI18nDataSubstitution;
-	}
-	
-	
-	/**
-	 * Use setI18nShowMode instead.
-	 */
-	@Deprecated
-	public void setUnavailableI18nDataSubstitution(UnavailableI18nDataSubstitution unavailableI18nDataSubstitution) {
-		this.unavailableI18nDataSubstitution = unavailableI18nDataSubstitution;
-	}
-	
-	public UnavailableI18nDataSubstitution getI18nShowMode() {
-		return getUnavailableI18nDataSubstitution();
-	}
-	
-	public void setI18nShowMode(UnavailableI18nDataSubstitution unavailableI18nDataSubstitution) {
-		setUnavailableI18nDataSubstitution(unavailableI18nDataSubstitution);
+	public void setI18nShowMode(DisabledLanguageShowSetting disabledLanguageShowSetting) {
+		this.disabledLanguageShowSetting = disabledLanguageShowSetting;
 	}	
-	
-	/**
-	 * Initializes language to i18n meta mapping. 
-	 */
-	public void initI18nMetaMapping() {
-		Map<I18nLanguage, I18nMeta> map = new HashMap<I18nLanguage, I18nMeta>();
-		
-		if (i18nMetas != null) {
-			for (I18nMeta i18nMeta: i18nMetas) {
-				map.put(i18nMeta.getLanguage(), i18nMeta);
-			}
-		}		
-		
-		metaMap = Collections.unmodifiableMap(map);
-	}
-	
-	
-	public I18nMeta getI18nMeta(I18nLanguage language) {
-		return metaMap.get(language);
-	}
 
 	// Attributes properties:	
 	public Integer getDocumentType() {
@@ -593,15 +547,28 @@ public class Meta implements Serializable, Cloneable {
 	public void setActivate(Integer activate) {
 		this.activate = activate;
 	}
-	
-	@Deprecated
-	public boolean getShowDisabledI18nDataInDefaultLanguage() {
-		return unavailableI18nDataSubstitution == 
-			UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;
+
+	public Set<String> getKeywords() {
+		return keywords;
 	}
-	
-	public boolean isShowDisabledI18nContentInDefaultLanguage() {
-		return unavailableI18nDataSubstitution == 
-			UnavailableI18nDataSubstitution.SHOW_IN_DEFAULT_LANGUAGE;
+
+	public void setKeywords(Set<String> keywords) {
+		this.keywords = keywords;
 	}
+
+    public DisabledLanguageShowSetting getDisabledLanguageShowSetting() {
+        return disabledLanguageShowSetting;
+    }
+
+    public void setDisabledLanguageShowSetting(DisabledLanguageShowSetting disabledLanguageShowSetting) {
+        this.disabledLanguageShowSetting = disabledLanguageShowSetting;
+    }
+
+    public Set<I18nLanguage> getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(Set<I18nLanguage> languages) {
+        this.languages = languages;
+    }
 }

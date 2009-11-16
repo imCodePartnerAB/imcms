@@ -65,6 +65,7 @@ public class IndexDocumentFactory {
 
         List<I18nLanguage> languages = I18nSupport.getLanguages();
 
+        /*
         for (I18nLanguage language : languages) {
             String headline = document.getHeadline(language);
             String menuText = document.getMenuText(language);
@@ -74,6 +75,7 @@ public class IndexDocumentFactory {
 
             indexDocument.add(new Field(DocumentIndex.FIELD__META_TEXT, menuText, Field.Store.NO, Field.Index.ANALYZED));
         }
+        */
 
         indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__DOC_TYPE_ID, "" + document.getDocumentTypeId()));
         indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__CREATOR_ID, "" + document.getCreatorId()));
@@ -112,6 +114,7 @@ public class IndexDocumentFactory {
             indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__CATEGORY_TYPE_ID, "" + categoryType.getId()));
         }
 
+        /*
         for (I18nLanguage language : languages) {
             Set documentKeywords = document.getKeywords(language);
             for (Iterator iterator = documentKeywords.iterator(); iterator.hasNext();) {
@@ -119,6 +122,7 @@ public class IndexDocumentFactory {
                 indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__KEYWORD, documentKeyword));
             }
         }
+        */
 
         List<Integer[]> parentDocumentAndMenuIds = documentMapper.getParentDocumentAndMenuIdsForDocument(document);
         for (Integer[] pair : parentDocumentAndMenuIds) {

@@ -100,12 +100,14 @@ public class DocumentLoader {
 		if (meta == null) {
 			return null;
 		}
-		
+
+        DocumentLabels labels = metaDao.getLabels(meta.getId(), version.getNo(), language);
 		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
         document.setId(meta.getId());
         document.setMeta(meta);
         document.setLanguage(language);
+        document.setLabels(labels);
         
         document.setVersion(version);
 		

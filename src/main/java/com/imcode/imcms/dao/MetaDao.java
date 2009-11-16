@@ -3,21 +3,16 @@ package com.imcode.imcms.dao;
 import imcode.server.document.DocumentDomainObject;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.DocumentProperty;
-import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.DocumentVersionSelector;
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.api.DocumentLabels;
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.mapping.orm.FileReference;
 import com.imcode.imcms.mapping.orm.HtmlReference;
 import com.imcode.imcms.mapping.orm.Include;
@@ -30,59 +25,38 @@ public class MetaDao extends HibernateTemplate {
 	 * @return Meta.
 	 */
 	@Transactional
-	public Meta getMeta(Integer metaId) {
-		Meta meta = (Meta)get(Meta.class, metaId);
-		
-		return initI18nMetas(meta);
-	}	
-
-	
-	/** 
-	 * Checks and adds if necessary missing i18n-ed parts to meta.
-	 */ 
-	private Meta initI18nMetas(Meta meta) {
-		if (meta == null) {
-			return null;
-		}
-		
-		List<I18nLanguage> languages = (List<I18nLanguage>)
-		findByNamedQueryAndNamedParam("I18nLanguage.missingMetaLanguages", "metaId", meta.getId());
-		
-		if (languages != null) {
-			Collection<I18nMeta> parts = meta.getI18nMetas();
-			
-			for (I18nLanguage language: languages) {
-				I18nMeta part = new I18nMeta();
-				
-				part.setLanguage(language);
-				part.setEnabled(false);
-				part.setHeadline("");
-				part.setMenuImageURL("");
-				part.setMenuText("");
-				
-				parts.add(part);
-			}
-		}
-		
-		meta.initI18nMetaMapping();
-		
-		return meta;		
+	public Meta getMeta(Integer docId) {
+		return (Meta)get(Meta.class, docId);
 	}
+
+	/**
+	 * @return Labels.
+	 */
+	@Transactional
+	public DocumentLabels getLabels(Integer docId, Integer docVersionNo, I18nLanguage language) {
+		DocumentLabels labels = (DocumentLabels)getSession().createQuery("SELECT l FROM DocumentLabels l WHERE l.docId = :docId AND docVersionNo = :docVersionNo AND l.language.id = :languageId")
+                .setParameter("docId", docId)
+                .setParameter("docVersionNo", docVersionNo)
+                .setParameter("languageId", language.getId())
+                .uniqueResult();
+
+        if (labels == null) {
+            labels = new DocumentLabels();
+            labels.setDocId(docId);
+            labels.setDocVersionNo(docVersionNo);
+            labels.setLanguage(language);
+            labels.setHeadline("");
+            labels.setMenuText("");
+            labels.setMenuImageURL("");
+        }
+
+        return labels;
+	}    
+
 	
 	@Transactional
 	public void saveMeta(Meta meta) {
-		boolean setFk = meta.getId() == null;
-		
-		saveOrUpdate(meta); 
-		
-		if (setFk) {
-			//??? Cascading save does not insert foreign keys in certain cases ???
-			//??? temp workaround until bug/feature? is found
-			Integer fk = meta.getId();
-			for (I18nMeta i18nMeta: meta.getI18nMetas()) {
-				i18nMeta.setMetaId(fk);
-			}
-		}
+		saveOrUpdate(meta);
 	}
 		
 	

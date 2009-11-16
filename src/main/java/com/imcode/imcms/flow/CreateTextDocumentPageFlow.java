@@ -32,8 +32,8 @@ public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
                 //textDocument.setText( language, 1, new TextDomainObject( textDocument.getHeadline(language), TextDomainObject.TEXT_TYPE_PLAIN ) );
                 //textDocument.setText( language, 2, new TextDomainObject( textDocument.getMenuText(language), TextDomainObject.TEXT_TYPE_HTML ) );
 
-                textDocument.setText( 1, new TextDomainObject( textDocument.getHeadline(language), TextDomainObject.TEXT_TYPE_PLAIN ) );
-                textDocument.setText( 2, new TextDomainObject( textDocument.getMenuText(language), TextDomainObject.TEXT_TYPE_HTML ) );
+                textDocument.setText( 1, new TextDomainObject( textDocument.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN ) );
+                textDocument.setText( 2, new TextDomainObject( textDocument.getMenuText(), TextDomainObject.TEXT_TYPE_HTML ) );
 
             }
         }

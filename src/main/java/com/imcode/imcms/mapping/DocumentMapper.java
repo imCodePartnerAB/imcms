@@ -168,14 +168,7 @@ public class DocumentMapper implements DocumentGetter {
         
         meta.setId(null);
         //meta.setDocVersionNo(null);
-        //meta.setDocumentVersionTag(null);
-        
-        for (I18nMeta i18nMeta: meta.getI18nMetas()) {
-        	i18nMeta.setHeadline("");
-        	i18nMeta.setMenuText("");
-        	i18nMeta.setMenuImageURL("");
-        	i18nMeta.getKeywords().clear();
-        } 
+        //meta.setDocumentVersionTag(null); 
                 
         newDocument.setProperties(new HashMap());
         makeDocumentLookNew( newDocument, user );
@@ -541,9 +534,11 @@ public class DocumentMapper implements DocumentGetter {
         document.setAlias(null);
         makeDocumentLookNew(document, user);
 
+        /*
         for (I18nMeta i18nMeta: document.getMeta().getI18nMetas()) {
             i18nMeta.setHeadline(i18nMeta.getHeadline() + copyHeadlineSuffix);
         }
+        */
 
         saveNewDocument(document, user, true);
         
@@ -707,8 +702,10 @@ public class DocumentMapper implements DocumentGetter {
      * TODO: Implement two strategies - with intercepting for multi-langual projects 
      * and w/o intercepting for single-language projects.
      */
+    /*
     private DocumentDomainObject createDocumentShowInterceptor(DocumentDomainObject document, UserDomainObject user) {
     	if (document != null) {
+    	*/
     		/*
     		 * Determines document's content language.
     		 * 
@@ -716,6 +713,7 @@ public class DocumentMapper implements DocumentGetter {
     		 * then document language is set to current language, otherwise
     		 * it is set to default language. 
     		 */
+            /*
     		I18nLanguage currentDocumentLanguage = I18nSupport.getCurrentLanguage();
     		DocumentShowSettings showSettings = user.getDocumentShowSettings();
     		
@@ -746,6 +744,7 @@ public class DocumentMapper implements DocumentGetter {
     	return document;
     	
     }
+*/
                
 
     public CategoryMapper getCategoryMapper() {

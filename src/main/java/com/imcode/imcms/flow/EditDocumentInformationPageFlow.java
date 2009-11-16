@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.ObjectUtils;
 
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -142,6 +141,8 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
                 dispatchToFirstPage( request, response );
             }
         } );
+
+        /*
         imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
             public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {            	
             	if (i18nCode != null) {
@@ -157,6 +158,8 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
                 dispatchToFirstPage( request, response );
             }
         } );
+        */
+
         imageBrowser.forward( request, response );
     }
 
@@ -241,7 +244,8 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         final DocumentMapper documentMapper = service.getDocumentMapper();
         
         Meta meta = document.getMeta();
-        
+
+        /*
         for (I18nMeta i18nMeta: meta.getI18nMetas()) {
         	String suffix = "_" + i18nMeta.getLanguage().getCode();
             String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE + suffix);
@@ -266,10 +270,11 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
                         
             i18nMeta.setKeywords(keywords);
         }
+        */
                 
         String missingI18nShowRule = request.getParameter(REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE); 
         
-        meta.setUnavailableI18nDataSubstitution(Meta.UnavailableI18nDataSubstitution.valueOf(missingI18nShowRule));
+        //meta.setUnavailableI18nDataSubstitution(Meta.DisabledLanguageShowSetting.valueOf(missingI18nShowRule));
         
         
         String status = request.getParameter( REQUEST_PARAMETER__STATUS );

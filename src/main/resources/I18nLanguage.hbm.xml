@@ -26,9 +26,12 @@
   </query>  
   
   <!-- Collection -->
+    <!--
   <query name="I18nLanguage.missingMetaLanguages">
     <![CDATA[
 	  select l from I18nLanguage l where l not in (select m.language from I18nMeta m where m.metaId = :metaId)
     ]]>
-  </query>  
+
+  </query>
+    -->
 </hibernate-mapping>
