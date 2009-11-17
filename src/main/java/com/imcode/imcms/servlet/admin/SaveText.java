@@ -43,7 +43,7 @@ public final class SaveText extends HttpServlet {
         //TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id, user.getDocumentShowSettings().getVersionSelector() );
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(meta_id);
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
-        I18nLanguage language = Imcms.getI18nSupport().getCurrentLanguage();
+        I18nLanguage language = Imcms.getRequestInfo().getLanguage();
 
         if (permissionSet.getEditTexts() && req.getParameter( "cancel" ) == null ) {
             int txt_no = Integer.parseInt( req.getParameter( "txt_no" ) );
@@ -85,7 +85,7 @@ public final class SaveText extends HttpServlet {
     		text.setDocId(document.getId());
     		text.setNo(txt_no);
             text.setDocVersionNo(document.getVersion().getNo());
-    		text.setLanguage(Imcms.getI18nSupport().getCurrentLanguage());
+    		text.setLanguage(Imcms.getRequestInfo().getLanguage());
             text.setText(text_string);
             text.setType(text_format);
             text.setLoopNo(loopNo);

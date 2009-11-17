@@ -699,7 +699,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
     
     private boolean languageIsActive(DocumentDomainObject document) {
-    	I18nLanguage currentLanguage = Imcms.getI18nSupport().getCurrentLanguage();
+    	I18nLanguage currentLanguage = Imcms.getRequestInfo().getLanguage();
     	Meta meta = document.getMeta();
     	boolean enabled = meta.getLanguages().contains(currentLanguage);
     	

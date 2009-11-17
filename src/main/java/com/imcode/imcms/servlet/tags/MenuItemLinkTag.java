@@ -28,7 +28,7 @@ public class MenuItemLinkTag extends TagSupport {
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
         DocumentDomainObject document = menuItem.getDocument();
         String pathToDocument = MenuParser.getPathToDocument(request, document, menuTag.getTemplate());
-        String selector = Imcms.getUser().getDocumentShowSettings().getVersionSelector() == DocumentVersionSelector.WORKING_SELECTOR
+        String selector = Imcms.getRequestInfo().getUser().getDocumentShowSettings().getVersionSelector() == DocumentVersionSelector.WORKING_SELECTOR
         	? "w"
         	: "p";
         try {
