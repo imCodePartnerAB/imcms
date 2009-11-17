@@ -53,12 +53,12 @@ List<DocumentVersion> versions = documentMapper.getDocumentVersions(document.get
 /* *******************************************************************************************
  *         Get languages                                                                     *
  ******************************************************************************************* */
-List<I18nLanguage> languages = I18nSupport.getLanguages();
-I18nLanguage defaultLanguage = I18nSupport.getDefaultLanguage() ;
+List<I18nLanguage> languages = Imcms.getI18nSupport().getLanguages();
+Set<I18nLanguage> enabledLanguages = document.getMeta().getLanguages();    
+I18nLanguage defaultLanguage = Imcms.getI18nSupport().getDefaultLanguage() ;
 I18nLanguage currentLanguage = (null != session.getAttribute("lang")) ? (I18nLanguage)session.getAttribute("lang") : defaultLanguage ;
 
 Meta meta = document.getMeta() ;
-Set<I18nMeta> i18nMetas = meta.getI18nMetas() ;
 
 /* *******************************************************************************************
  *         BROWSER SNIFFER                                                                   *
@@ -148,12 +148,11 @@ if (null != languages) { %>
 	<tr><%
 	int iCount = 0 ;
 	int languagesPerRow = 7 ;
-	for ( I18nMeta i18nMeta : i18nMetas ) {
-		I18nLanguage lang     = i18nMeta.getLanguage() ;
+	for (I18nLanguage lang: languages ) {
 		String langCode       = lang.getCode() ;
 		String langName       = lang.getName() ;
 		String langNameNative = lang.getNativeName() ;
-		boolean isEnabled = (i18nMeta.getEnabled()) ;
+		boolean isEnabled = enabledLanguages.contains(lang);
 		boolean isDefault = (null != defaultLanguage && defaultLanguage.equals(lang)) ;
 		boolean isCurrent = (null != currentLanguage && currentLanguage.equals(lang)) ;
 		String href_0     = "<a href=\"" + baseURL + langCode + "\" title=\"" + langName + "/" + langNameNative + "#DATA#\" style=\"#STYLE#\">" ;
@@ -193,7 +192,7 @@ if (null != languages) { %>
 } %>
 
 <%
-boolean isWorkingVersion = versionSupport.isWorkingVersionNumber(version.getNo());
+boolean isWorkingVersion = DocumentVersionInfo.isWorkingVersion(version);
 String sFlags = request.getParameter("flags");
 if (sFlags != null && sFlags.equals("1")) {
 } else {
@@ -211,15 +210,11 @@ if (sFlags != null && sFlags.equals("1")) {
             <% while (iterator.hasNext()) {
             	DocumentVersion v = (DocumentVersion)iterator.next();
             	String sSelected = v.getNo().equals(version.getNo()) ? " selected=\"selected\"" : "";
-            	// !!NB VERY IMPORTANT - if version tag name is WORKING OR PUBLISHED
-            	// then tag name should be used instead of number.           
-            	DocumentVersionTag tag = v.getTag();
-            	String sVersion = tag == DocumentVersionTag.PUBLISHED || tag == DocumentVersionTag.WORKING
-            		? sVersion = tag.name()
-            		: v.getNo().toString();
+                String displayName = DocumentVersionInfo.isWorkingVersion(v)
+                        ? "DRAFT" : v.getNo().toString();
                 %>            
-            	<option value="<%=sVersion%>" <%= sSelected %>>
-            		<%=v.getNo()%> <%=(v.getTag().toString())%>
+            	<option value="<%=v.getNo()%>" <%= sSelected %>>
+            		<%=(displayName)%>
             	</option>
             <% }%>              
           </select>
@@ -234,9 +229,18 @@ if (sFlags != null && sFlags.equals("1")) {
           <input type="hidden" name="lang" value="<%=currentLanguage.getCode()%>"/>
           <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
           <input type="hidden" name="flags" value="4194304"/>
-          <input type="submit" name="cmd" value="Publish"/>
+          <input type="submit" name="cmd" value="Make version"/>
           </form>
-		</td>         
+		</td>
+
+        <td>
+          <form action="$contextPath/servlet/AdminDoc">
+          <input type="hidden" name="lang" value="<%=currentLanguage.getCode()%>"/>
+          <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
+          <input type="hidden" name="flags" value="4194304"/>
+          <input type="submit" name="cmd" value="Set default"/>
+          </form>
+		</td>          
 	    <%	        	  
 	    }
 	    %>

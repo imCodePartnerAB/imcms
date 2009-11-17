@@ -9,19 +9,20 @@ import org.springframework.web.servlet.LocaleResolver;
 
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
+import imcode.server.Imcms;
 
 public class ImcmsLocaleResolver implements LocaleResolver {
 	public Locale resolveLocale(HttpServletRequest request) {
-		return new Locale(I18nSupport.getCurrentLanguage().getCode());
+		return new Locale(Imcms.getI18nSupport().getCurrentLanguage().getCode());
 	}
 	
 	public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
-		I18nLanguage language = I18nSupport.getByCode(locale.getLanguage());
+		I18nLanguage language = Imcms.getI18nSupport().getByCode(locale.getLanguage());
         if (language == null) {
-            language = I18nSupport.getDefaultLanguage();
+            language = Imcms.getI18nSupport().getDefaultLanguage();
         }
         
-        I18nSupport.setCurrentLanguage(language);
+        Imcms.getI18nSupport().setCurrentLanguage(language);
         request.getSession().setAttribute("lang", language);
 	}
 }

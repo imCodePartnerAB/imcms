@@ -40,11 +40,12 @@ import com.imcode.imcms.dao.LanguageDao;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nException;
 import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.RequestInfo;
 import com.imcode.imcms.servlet.ImcmsMode;
 import com.imcode.imcms.servlet.ImcmsFilter;
 
 /**
- * Shared fields and mathods; can not be instantiated.
+ * Runtime.
  */
 public class Imcms {
 
@@ -57,7 +58,7 @@ public class Imcms {
     private static Logger logger = Logger.getLogger(Imcms.class);
 
     /** Cms services. */
-    private static ImcmsServices cmsServices;
+    private static ImcmsServices services;
 
     private static BasicDataSource apiDataSource;
     private static BasicDataSource dataSource;
@@ -72,40 +73,39 @@ public class Imcms {
     private static ImcmsFilter imcmsFilter;
     private static Exception cmsStartupEx;
 
-    private static Map<String, I18nLanguage> i18nHosts;
-
     /** Springframework web application context. */
     public static WebApplicationContext webApplicationContext;
     // TODO: end refactor
 
 
-	/** When running in cms mode a user bound to a current thread in the CmsFilter. */
-	private final static ThreadLocal<UserDomainObject> cmsUsers = new ThreadLocal<UserDomainObject>();
+	/** Request info. */
+	private static ThreadLocal<RequestInfo> requestInfos;
+
+    private static I18nSupport i18nSupport;
 
 
     /** Can not be instantiated directly. */
     private Imcms() {}
 
-    /**
-     * Returns application services.
-     */
     public static ImcmsServices getServices() {
-        // TODO: assign some proxy implementation - null ex might be thrown.
-        return cmsServices;
+        return services;
     }
 
-    /**
-     * TODO: Refactor.
-     */
-    public static void startCms() throws StartupException {
+    //  TODO: Refactor.
+    public static void start() throws StartupException {
+        // Enshure all parameters are set - path, etc 
         setCmsStartupEx(null);
 
         try {
-            beforeStart();
+            File configPath = new File(path, "WEB-INF/conf");
+            Prefs.setConfigPath(configPath);
 
+            requestInfos = new ThreadLocal<RequestInfo>();
 
+            upgradeDatabaseSchema();
+            initI18nSupport();
             
-            cmsServices = createApplicationServices();
+            services = createApplicationServices();
         } catch (Exception e) {
             logger.error(e, e);
             setCmsStartupEx(e);
@@ -174,13 +174,13 @@ public class Imcms {
     }
 
     public synchronized static void restartCms() {
-        stopCms();
-        startCms();
+        stop();
+        start();
     }
 
 
     // TODO - print stack trace to imcms logger not app logger.
-    public static void stopCms() {
+    public static void stop() {
         if ( null != apiDataSource ) {
             try {
                 logger.debug("Closing API DataSource.");
@@ -201,7 +201,7 @@ public class Imcms {
 
         Prefs.flush();
 
-        cmsServices = null;
+        services = null;
     }
 
     private static void logDatabaseVersion(BasicDataSource basicDataSource) throws SQLException {
@@ -246,12 +246,12 @@ public class Imcms {
         }
     }
 
-    public static void setUser(UserDomainObject user) {
-    	cmsUsers.set(user);
+    public static void setRequestInfo(RequestInfo requestInfo) {
+    	requestInfos.set(requestInfo);
     }
 
-    public static UserDomainObject getUser() {
-    	return cmsUsers.get();
+    public static RequestInfo getRequestInfo() {
+    	return requestInfos.get();
     }
 
 
@@ -296,22 +296,6 @@ public class Imcms {
 	}
 
 
-    public static void beforeStart() {
-        File configPath = new File(path, "WEB-INF/conf");
-        Prefs.setConfigPath(configPath);
-
-    	upgradeDatabaseSchema();
-        initI18nSupport();        
-    }
-
-    public static Map<String, I18nLanguage> getI18nHosts() {
-        return i18nHosts;
-    }
-
-    public static void setI18nHosts(Map<String, I18nLanguage> i18nHosts) {
-        Imcms.i18nHosts = i18nHosts;
-    }
-
 
 
     /**
@@ -347,13 +331,12 @@ public class Imcms {
             throw new I18nException(msg);
         }
 
+        I18nSupport i18nSupport = new I18nSupport();
+
         I18nLanguage defaultLanguage = languageDao.getDefaultLanguage();
 
-    	I18nSupport.setDefaultLanguage(defaultLanguage);
-    	I18nSupport.setLanguages(languages);
-
-    	servletContext.setAttribute("defaultLanguage", defaultLanguage);
-    	servletContext.setAttribute("languages", languages);
+    	i18nSupport.setDefaultLanguage(defaultLanguage);
+    	i18nSupport.setLanguages(languages);
 
         // Read "virtual" hosts mapped to languages.
     	String prefix = "i18n.host.";
@@ -361,7 +344,7 @@ public class Imcms {
         Properties properties = Imcms.getServerProperties();
 
         Map<String, I18nLanguage> i18nHosts = new HashMap<String, I18nLanguage>();
-        Imcms.setI18nHosts(i18nHosts);
+        i18nSupport.setHosts(i18nHosts);
 
     	for (Map.Entry entry: properties.entrySet()) {
     		String key = (String)entry.getKey();
@@ -375,7 +358,7 @@ public class Imcms {
 
     		logger.info("I18n configurtion: language code [" + languageCode + "] mapped to host(s) [" + value + "].");
 
-			I18nLanguage language = I18nSupport.getByCode(languageCode);
+			I18nLanguage language = i18nSupport.getByCode(languageCode);
 
 			if (language == null) {
 				String msg = "I18n configuration error. Language with code [" + languageCode + "] is not defined in database.";
@@ -389,6 +372,8 @@ public class Imcms {
 				i18nHosts.put(host.trim(), language);
 			}
     	}
+
+        Imcms.i18nSupport = i18nSupport;
 	}
 
 
@@ -433,5 +418,13 @@ public class Imcms {
 
     public static Exception getCmsStartupEx() {
         return cmsStartupEx;
+    }
+
+    public static I18nSupport getI18nSupport() {
+        return i18nSupport;
+    }
+
+    public static void setI18nSupport(I18nSupport i18nSupport) {
+        Imcms.i18nSupport = i18nSupport;
     }
 }

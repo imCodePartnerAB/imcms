@@ -18,6 +18,9 @@ import javax.persistence.TemporalType;
 @Table(name="imcms_doc_versions")
 public class DocumentVersion implements Cloneable {
 
+    /** Working version is always equals 0.*/
+    public static final Integer WORKING_VERSION_NO = 0;
+
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 

@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.ImcmsConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.DocumentShowSettings;
 import imcode.server.user.UserDomainObject;
@@ -36,13 +37,14 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.RequestInfo;
 
 /**
  * Front filter - intercepts all requests expect backdoor.
  *
- * Also responsible for Imcms initializing.
+ * Also responsible for Imcms runtime initializing.
  *
- * TODO: Move logger configuration routines to Imcms with ability to switch between debug/nondebug? 
+ * @see imcode.server.Imcms
  */
 public class ImcmsFilter implements Filter {
 
@@ -99,15 +101,17 @@ public class ImcmsFilter implements Filter {
                 Utility.makeUserLoggedIn(request, user);
             }
 
-            Imcms.setUser(user);
-
-            updateUserI18nSetting(request, user);
-            updateUserShowSettings(request, user);
-
             ResourceBundle resourceBundle = Utility.getResourceBundle(request);
             Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
             Utility.initRequestWithApi(request, user);
+
+            RequestInfo requestInfo = new RequestInfo();
+            requestInfo.setUser(user);
+            
+            updateRequestInfoLanguageSetting(request, requestInfo);
+            updateRequestInfoShowSettings(request, requestInfo);
+            Imcms.setRequestInfo(requestInfo);
 
             NDC.setMaxDepth( 0 );
             String contextPath = request.getContextPath();
@@ -152,7 +156,7 @@ public class ImcmsFilter implements Filter {
 
         try {
             logger.info("Starting CMS.");
-            Imcms.startCms();
+            Imcms.start();
             Imcms.setCmsMode();
         } catch (Exception e) {
             logger.error("Error starting CMS.", e);
@@ -162,7 +166,7 @@ public class ImcmsFilter implements Filter {
 
 
     public void destroy() {
-        Imcms.stopCms();
+        Imcms.stop();
     }
 
 
@@ -225,21 +229,16 @@ public class ImcmsFilter implements Filter {
      * Bounds user's language to session.
      *
      * @param request servlet request
-     * @param user authenticated user
-     *
+     * @param requestInfo requestInfo
+     * 
      * @throws ServletException in case of an error.
-     * @see com.imcode.imcms.api.I18nSupport
-     *
-     * TODO: refactor - language should remain only in user object.
-     * TODO: refactor - remove session and request language attributes
-     * TODO: refactor - move language support to Imcms object.
      */
-    private void updateUserI18nSetting(HttpServletRequest request, UserDomainObject user)
+    private void updateRequestInfoLanguageSetting(HttpServletRequest request, RequestInfo requestInfo)
     throws ServletException {
     	HttpSession session = request.getSession();
-    	I18nLanguage language = (I18nLanguage)session.getAttribute("lang");
+    	I18nLanguage language = (I18nLanguage)session.getAttribute(ImcmsConstants.LANGUAGE);
 
-        Map<String, I18nLanguage> i18nHosts = Imcms.getI18nHosts();
+        Map<String, I18nLanguage> i18nHosts = Imcms.getI18nSupport().getHosts();
 
     	if (language == null && /*user.isDefaultUser() && */i18nHosts.size() > 0) {
     		String hostname = request.getServerName();
@@ -250,28 +249,27 @@ public class ImcmsFilter implements Filter {
     		}
     	}
 
-    	String languageCode = request.getParameter("lang");
+    	String languageCode = request.getParameter(ImcmsConstants.LANGUAGE);
 
     	if (languageCode != null) {
-    		language = I18nSupport.getByCode(languageCode);
+    		language = Imcms.getI18nSupport().getByCode(languageCode);
     	}
 
     	// TODO: if session does not contain language
     	// do not allow admin operation and forward to front page ??
 
     	if (language == null) {
-    		language = I18nSupport.getDefaultLanguage();
+    		language = Imcms.getI18nSupport().getDefaultLanguage();
     	}
 
 
     	// TODO i18n: remove lang session parameter
     	// request and thread local parameters
 
-		session.setAttribute("lang", language);
-		request.setAttribute("currentLanguage", language);
+		session.setAttribute(ImcmsConstants.LANGUAGE, language);
+		request.setAttribute(ImcmsConstants.LANGUAGE, language);
 
-    	I18nSupport.setCurrentLanguage(language);
-        user.setLanguage(language);
+    	requestInfo.setLanguage(language);
     }
 
 
@@ -279,21 +277,21 @@ public class ImcmsFilter implements Filter {
      * Updates logged in user's show settings.
      *
      * @param request servlet request
-     * @param user authenticated user
+     * @param requestInfo requestInfo
      */
     // TODO: Add security check
     // View settings - comment about WORKING/|PUB mode
-    private void updateUserShowSettings(HttpServletRequest request, UserDomainObject user) {
+    private void updateRequestInfoShowSettings(HttpServletRequest request, RequestInfo requestInfo) {
         String modeValue = request.getParameter("mode");
         if (modeValue != null) {
-        	user.getDocumentShowSettings().setIgnoreI18nShowMode(Boolean.parseBoolean(modeValue.toLowerCase()));
+        	//user.getDocumentShowSettings().setIgnoreI18nShowMode(Boolean.parseBoolean(modeValue.toLowerCase()));
         }
 
         String version = request.getParameter("version");
         if (version != null) {
-        	DocumentShowSettings settings = user.getDocumentShowSettings();
+        	//DocumentShowSettings settings = user.getDocumentShowSettings();
 
-            settings.setVersionSelector(DocumentVersionSelector.getSelector(version));
+            //settings.setVersionSelector(DocumentVersionSelector.getSelector(version));
         }
     }
 

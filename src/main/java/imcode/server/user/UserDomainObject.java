@@ -56,9 +56,6 @@ public class UserDomainObject implements Cloneable, Serializable {
     
     RoleIds roleIds = createRolesSetWithUserRole();
     protected RoleIds userAdminRoleIds = new RoleIds();
-
-    /** Default language. */
-    private I18nLanguage language;
     
     /**
      * Document show mode.DocumentShowSettings
@@ -702,7 +699,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
     
     private boolean languageIsActive(DocumentDomainObject document) {
-    	I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage();
+    	I18nLanguage currentLanguage = Imcms.getI18nSupport().getCurrentLanguage();
     	Meta meta = document.getMeta();
     	boolean enabled = meta.getLanguages().contains(currentLanguage);
     	
@@ -778,12 +775,4 @@ public class UserDomainObject implements Cloneable, Serializable {
 	public void setDocumentShowSettings(DocumentShowSettings documentShowSettings) {
 		this.documentShowSettings = documentShowSettings;
 	}
-
-    public I18nLanguage getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(I18nLanguage language) {
-        this.language = language;
-    }
 }

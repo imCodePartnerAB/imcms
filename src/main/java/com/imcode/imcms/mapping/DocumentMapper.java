@@ -595,7 +595,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return working document in default language.
      */
     public DocumentDomainObject getDocument(Integer docId) {
-        return documentLoaderCachingProxy.getWorkingDocument(docId, I18nSupport.getDefaultLanguage());
+        return documentLoaderCachingProxy.getWorkingDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
     }
 
     /**
@@ -795,7 +795,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
-        return documentLoaderCachingProxy.getDocuments(documentIds, I18nSupport.getDefaultLanguage()) ;
+        return documentLoaderCachingProxy.getDocuments(documentIds, Imcms.getI18nSupport().getDefaultLanguage()) ;
     }
 
     /*

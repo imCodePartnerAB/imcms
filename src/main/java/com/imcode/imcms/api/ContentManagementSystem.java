@@ -71,5 +71,4 @@ public abstract class ContentManagementSystem {
     }
 
     abstract ImcmsServices getInternal() ;
-
 }

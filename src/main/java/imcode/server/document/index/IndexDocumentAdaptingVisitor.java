@@ -7,6 +7,7 @@ import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.Imcms;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
     public void visitTextDocument(TextDocumentDomainObject textDocument) {
         indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__TEMPLATE, textDocument.getTemplateName()));
         
-        List<I18nLanguage> languages = I18nSupport.getLanguages();
+        List<I18nLanguage> languages = Imcms.getI18nSupport().getLanguages();
         
         //for (I18nLanguage language: languages) {
 	        //for ( Map.Entry<Integer,TextDomainObject> textEntry : textDocument.getTexts(language).entrySet() ) {

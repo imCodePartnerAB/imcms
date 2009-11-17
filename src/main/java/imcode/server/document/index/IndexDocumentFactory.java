@@ -63,7 +63,7 @@ public class IndexDocumentFactory {
             indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__ROLE_ID, Integer.toString(mapping.getRoleId().intValue())) );
         }
 
-        List<I18nLanguage> languages = I18nSupport.getLanguages();
+        List<I18nLanguage> languages = Imcms.getI18nSupport().getLanguages();
 
         /*
         for (I18nLanguage language : languages) {

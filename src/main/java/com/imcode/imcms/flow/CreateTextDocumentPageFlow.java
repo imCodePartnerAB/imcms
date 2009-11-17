@@ -2,6 +2,7 @@ package com.imcode.imcms.flow;
 
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.Imcms;
 
 import java.io.IOException;
 
@@ -24,7 +25,7 @@ public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)getDocument() ;
 
 
-        for (I18nLanguage language: I18nSupport.getLanguages()) {
+        for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
         	String parameterName = EditDocumentInformationPageFlow.REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS
         		+ "_" + language.getCode();
         	

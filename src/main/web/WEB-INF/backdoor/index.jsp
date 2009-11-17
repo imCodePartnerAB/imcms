@@ -39,13 +39,13 @@
 
     if (request.getParameter("start") != null) {
         try {
-            Imcms.startCms();
+            Imcms.start();
         } catch (Exception e) {}
     }
 
     if (request.getParameter("stop") != null) {
         try {
-            Imcms.stopCms();
+            Imcms.stop();
         } catch (Exception e) {}
     }
 

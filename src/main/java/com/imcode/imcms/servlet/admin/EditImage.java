@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
 import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.Imcms;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,7 +37,7 @@ public class EditImage extends HttpServlet {
         
         // Create edited image for current language.
         ImageDomainObject image = new ImageDomainObject();
-        image.setLanguage(I18nSupport.getCurrentLanguage());
+        image.setLanguage(Imcms.getI18nSupport().getCurrentLanguage());
         
         ImageEditPage imageEditPage = new ImageEditPage(null, null, null, "", getServletContext(), imageCommand, returnCommand, false);
         
