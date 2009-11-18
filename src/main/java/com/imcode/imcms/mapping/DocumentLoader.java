@@ -45,62 +45,11 @@ public class DocumentLoader {
     
     public DocumentDomainObject loadDocument(Meta meta, DocumentVersion version, I18nLanguage language) {
         return initDocument(createDocument(meta, version, language));
-    }
+    }     
 
     
-    /**
-     * @return working documents.
-     */
-    public List<DocumentDomainObject> loadDocuments(Collection<Integer> docIds, I18nLanguage language) {
-        List<DocumentDomainObject> documents = new LinkedList<DocumentDomainObject>();
-        
-    	for (Integer docId: docIds) {
-            Meta meta = getMeta(docId);
-            DocumentVersion version = documentVersionDao.getVersion(docId, 0);
-            
-    		DocumentDomainObject document = loadDocument(meta, version, language);
-    		
-    		// ??? do not add in case of null
-    		if (document != null) {
-    			documents.add(document);    			
-    		}
-    	}
-                                
-        return documents;
-    } 
-    
-    /**
-     * @return published documents.
-     */
-    public List<DocumentDomainObject> getActiveDocuments(Collection<Integer> docIds) {
-        /*
-        List<DocumentDomainObject> documents = new LinkedList<DocumentDomainObject>();
-        
-    	for (Integer docId: docIds) {
-            Meta meta = getMeta(docId);
-    		DocumentDomainObject document = getActiveDocument(meta);
-    		
-    		// ??? do not add in case of null
-    		if (document != null) {
-    			documents.add(document);    			
-    		}
-    	}
-                                
-        return documents;
-        */
-        //return loadDocuments(docIds);
-        return null;
-    }    
-
-    
-    /**
-     * Creates document instance.
-     */
+    /** Creates document instance. */
     private DocumentDomainObject createDocument(Meta meta, DocumentVersion version, I18nLanguage language) {
-		if (meta == null) {
-			return null;
-		}
-
         DocumentLabels labels = metaDao.getLabels(meta.getId(), version.getNo(), language);
 		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
@@ -272,6 +221,4 @@ public class DocumentLoader {
     public void setDocumentVersionDao(DocumentVersionDao documentVersionDao) {
         this.documentVersionDao = documentVersionDao;
     }
-
-
 }

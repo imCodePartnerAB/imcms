@@ -2,11 +2,7 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.document.DocumentDomainObject;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
@@ -140,8 +136,18 @@ public class DocumentLoaderCachingProxy {
     */
     
             
-    public List<DocumentDomainObject> getDocuments(Collection<Integer> docIds, I18nLanguage language) {
-        return documentLoader.loadDocuments(docIds, language) ;
+    public List<DocumentDomainObject> getWorkingDocuments(Collection<Integer> docIds, I18nLanguage language) {
+        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
+
+        for (Integer docId: docIds) {
+            DocumentDomainObject doc = getWorkingDocument(docId, language);
+
+            if (doc != null) {
+                docs.add(doc);
+            }
+        }
+
+        return docs;
     }
 
     /*
@@ -228,7 +234,7 @@ public class DocumentLoaderCachingProxy {
             DocumentVersionInfo versionInfo = getDocumentVersionInfo(docId);
             DocumentVersion version = versionInfo.getWorkingVersion();
 
-	        document = documentLoader.loadDocument(meta.clone(), version, language);
+	        document = documentLoader.loadDocument(meta.clone(), version.clone(), language.clone());
 
             if (document != null) {
 	            documents.put(docId, document);

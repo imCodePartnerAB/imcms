@@ -68,5 +68,7 @@ public interface ImcmsConstants {
     int DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE = PERM_EDIT_PERMISSIONS;
     int DISPATCH_FLAG__PUBLISH = PERM_PUBLISH;
 
-    public static final String LANGUAGE = "imcms.lang";
+    public static final String REQUEST_PARAM__LANGUAGE = "imcms.language";
+
+    public static final String SESSION_ATTR__REQUEST_INFO = "imcms.requestInfo";
 }

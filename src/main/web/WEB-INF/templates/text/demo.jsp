@@ -1,3 +1,4 @@
+<%@ page import="imcode.server.ImcmsConstants" %>
 <%@taglib prefix="imcms" uri="imcms"
         %><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" 
         %><%@taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%><html>
@@ -38,17 +39,19 @@ LI { padding-bottom:5; }
         <td width="15">&nbsp;</td>
 
         <td width="385">
-        <%      
+        <%
+            String lang = ImcmsConstants.REQUEST_PARAM__LANGUAGE;
+            
             // Refactor
             String queryString = request.getQueryString();
             StringBuffer baseURL = request.getRequestURL();
             
             if (queryString == null) {
-                baseURL.append("?" + "lang=");
+                baseURL.append("?"+lang+"=");
             } else {
                 // TODO 18n: refactor
-                queryString = queryString.replaceFirst("&?lang=..", "");
-                baseURL.append("?" + queryString + "&lang=");
+                queryString = queryString.replaceFirst("&?"+lang+"=..", "");
+                baseURL.append("?" + queryString + "&"+lang+"=");
             }
             
             pageContext.setAttribute("baseURL", baseURL);

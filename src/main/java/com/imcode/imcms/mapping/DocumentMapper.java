@@ -15,7 +15,6 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.user.DocumentShowSettings;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Clock;
@@ -44,14 +43,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.oro.text.perl.Perl5Util;
-import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.NativeQueriesDao;
 import com.imcode.imcms.flow.DocumentPageFlow;
-import com.imcode.imcms.mapping.aop.DocumentAspect;
-import com.imcode.imcms.mapping.aop.TextDocumentAspect;
 
 /**
  * NOTES:
@@ -595,7 +591,25 @@ public class DocumentMapper implements DocumentGetter {
      * @return working document in default language.
      */
     public DocumentDomainObject getDocument(Integer docId) {
-        return documentLoaderCachingProxy.getWorkingDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
+        Meta meta = documentLoaderCachingProxy.getMeta(docId);
+
+        if (meta == null) {
+            return null;
+        }
+        
+        RequestInfo requestInfo = Imcms.getRequestInfo();
+        UserDomainObject user = requestInfo.getUser();
+        I18nLanguage language = requestInfo.getLanguage();
+
+        if (!user.isSuperAdmin() && !language.isDefault() && !meta.getLanguages().contains(language)) {
+            language = meta.getDisabledLanguageShowSetting() == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE
+                ? Imcms.getI18nSupport().getDefaultLanguage()
+                : null;
+        }
+
+        return language == null
+            ? null
+            : documentLoaderCachingProxy.getWorkingDocument(docId, language);
     }
 
     /**
@@ -605,10 +619,10 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @return document.
      */
-    public DocumentDomainObject getDocument(Integer docId, Integer docVersionNo, Integer languageId) {
+    //public DocumentDomainObject getDocument(Integer docId, Integer docVersionNo, Integer languageId) {
         //return documentLoaderCachingProxy.getDocument(docId, docVersionNo, languageId);
-        return null;
-    }
+    //    return null;
+    //}
     
     /**
      * Returns active document.
@@ -795,7 +809,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
-        return documentLoaderCachingProxy.getDocuments(documentIds, Imcms.getI18nSupport().getDefaultLanguage()) ;
+        return documentLoaderCachingProxy.getWorkingDocuments(documentIds, Imcms.getI18nSupport().getDefaultLanguage()) ;
     }
 
     /*

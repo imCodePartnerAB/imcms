@@ -62,7 +62,7 @@ public class GetDoc extends HttpServlet {
     /**
      * Renders document.
      *
-     * This method is called from doGet and from AdminDoc.viewDoc (if a user can not edit a document) only.
+     * This method is called only from doGet and AdminDoc.viewDoc (if a user does not have rights to edit a document).
      *
      * @see com.imcode.imcms.servlet.admin.AdminDoc;
      */
@@ -71,6 +71,7 @@ public class GetDoc extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         UserDomainObject user = Utility.getLoggedOnUser( req );
+        // TODO: remove this crap
         boolean publishedVersionRequest = req.getParameter("p") != null;
         boolean workingVersionRequest = req.getParameter("w") != null;
 
@@ -247,5 +248,4 @@ public class GetDoc extends HttpServlet {
     private static boolean isTextDocument(DocumentDomainObject document) {
         return DocumentTypeDomainObject.TEXT == document.getDocumentType();
     }
-
 }

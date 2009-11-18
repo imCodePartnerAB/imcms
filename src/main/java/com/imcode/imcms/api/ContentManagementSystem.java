@@ -24,6 +24,8 @@ public abstract class ContentManagementSystem {
 
     public abstract void runAsSuperadmin(ContentManagementSystemRunnable runnable) throws NoPermissionException;
 
+    private RequestInfo requestInfo;
+
     /**
         Get a ContentManagementSystem for the given username and password.
     **/
@@ -71,4 +73,12 @@ public abstract class ContentManagementSystem {
     }
 
     abstract ImcmsServices getInternal() ;
+
+    public RequestInfo getRequestInfo() {
+        return requestInfo;
+    }
+
+    public void setRequestInfo(RequestInfo requestInfo) {
+        this.requestInfo = requestInfo;
+    }
 }

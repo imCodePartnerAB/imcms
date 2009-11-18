@@ -1,9 +1,9 @@
 package com.imcode.imcms.admin.backdoor;
 
-public enum ClojureNamespace {
+public class ClojureNamespace {
 	
-	MAINTENANCE_CONTROLLER("com.imcode.imcms.backdoor.controller", "/com/imcode/imcms/backdoor/controller"),
-    SERVER_SCOKET("clojure.contrib.server-socket", "clojure.contrib.server_socket");
+	public static final ClojureNamespace MAINTENANCE_CONTROLLER = new ClojureNamespace("com.imcode.imcms.backdoor.controller", "/com/imcode/imcms/backdoor/controller");
+    public static final ClojureNamespace SERVER_SCOKET = new ClojureNamespace("clojure.contrib.server-socket", "clojure.contrib.server_socket");
 
 
 
@@ -17,7 +17,7 @@ public enum ClojureNamespace {
 	 */
 	public final String resourcePath;
 	
-	ClojureNamespace(String name, String resourcePath) {
+	public ClojureNamespace(String name, String resourcePath) {
 		this.name = name;
 		this.resourcePath = resourcePath;
 	}

@@ -4,7 +4,6 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.user.DocumentShowSettings;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
@@ -34,10 +33,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.RequestInfo;
+import com.imcode.imcms.api.ContentManagementSystem;
 
 /**
  * Front filter - intercepts all requests expect backdoor.
@@ -104,14 +102,23 @@ public class ImcmsFilter implements Filter {
             ResourceBundle resourceBundle = Utility.getResourceBundle(request);
             Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
-            Utility.initRequestWithApi(request, user);
+            RequestInfo requestInfo = (RequestInfo)session.getAttribute(ImcmsConstants.SESSION_ATTR__REQUEST_INFO);
+            
+            if (requestInfo == null) {
+                requestInfo = new RequestInfo();
+                
+                session.setAttribute(ImcmsConstants.SESSION_ATTR__REQUEST_INFO, requestInfo);
+            }
 
-            RequestInfo requestInfo = new RequestInfo();
             requestInfo.setUser(user);
             
-            updateRequestInfoLanguageSetting(request, requestInfo);
+            updateRequestInfoLanguage(request, requestInfo);
             updateRequestInfoShowSettings(request, requestInfo);
+            
             Imcms.setRequestInfo(requestInfo);
+
+            ContentManagementSystem cms = Utility.initRequestWithApi(request, user);
+            cms.setRequestInfo(requestInfo);
 
             NDC.setMaxDepth( 0 );
             String contextPath = request.getContextPath();
@@ -224,52 +231,41 @@ public class ImcmsFilter implements Filter {
     }
 
     /**
-     * Updates I18n setting for current user.
-     * Changes user's language if requested.
-     * Bounds user's language to session.
-     *
+     * Updates user's language.
+     * 
      * @param request servlet request
      * @param requestInfo requestInfo
      * 
      * @throws ServletException in case of an error.
      */
-    private void updateRequestInfoLanguageSetting(HttpServletRequest request, RequestInfo requestInfo)
+    private void updateRequestInfoLanguage(HttpServletRequest request, RequestInfo requestInfo)
     throws ServletException {
-    	HttpSession session = request.getSession();
-    	I18nLanguage language = (I18nLanguage)session.getAttribute(ImcmsConstants.LANGUAGE);
-
-        Map<String, I18nLanguage> i18nHosts = Imcms.getI18nSupport().getHosts();
-
-    	if (language == null && /*user.isDefaultUser() && */i18nHosts.size() > 0) {
-    		String hostname = request.getServerName();
-    		language = i18nHosts.get(hostname);
-
-    		if (logger.isTraceEnabled()) {
-    			logger.trace("Hostname [" + hostname + "] mapped to language [" + language + "].");
-    		}
-    	}
-
-    	String languageCode = request.getParameter(ImcmsConstants.LANGUAGE);
+        I18nLanguage language = requestInfo.getLanguage();
+        String languageCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__LANGUAGE);
 
     	if (languageCode != null) {
     		language = Imcms.getI18nSupport().getByCode(languageCode);
     	}
 
-    	// TODO: if session does not contain language
-    	// do not allow admin operation and forward to front page ??
 
-    	if (language == null) {
-    		language = Imcms.getI18nSupport().getDefaultLanguage();
+    	if (language == null) {// && /*user.isDefaultUser() && */
+            Map<String, I18nLanguage> i18nHosts = Imcms.getI18nSupport().getHosts();
+
+            if (i18nHosts.size() > 0) {
+                String hostname = request.getServerName();
+                language = i18nHosts.get(hostname);
+
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Hostname [" + hostname + "] mapped to language [" + language + "].");
+                }                
+            }
     	}
 
+        if (language == null) {
+            language = Imcms.getI18nSupport().getDefaultLanguage();
+        }
 
-    	// TODO i18n: remove lang session parameter
-    	// request and thread local parameters
-
-		session.setAttribute(ImcmsConstants.LANGUAGE, language);
-		request.setAttribute(ImcmsConstants.LANGUAGE, language);
-
-    	requestInfo.setLanguage(language);
+        requestInfo.setLanguage(language);
     }
 
 
