@@ -13,11 +13,14 @@ public class BackdoorFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest)servletRequest;
         HttpServletResponse response = (HttpServletResponse)servletResponse;
-        String servletPath = request.getServletPath();
+        String uri = request.getRequestURI();
         // TODO: refactor hardcoded
-        String dispatchPath = servletPath.replace("admin", "WEB-INF");
+        //String dispatchPath = servletPath.replace("admin", "WEB-INF");
+        System.out.println("URI: "
+        + uri);
 
-        request.getRequestDispatcher(dispatchPath).forward(request, response);
+        //request.getRequestDispatcher(dispatchPath).forward(request, response);
+        request.getRequestDispatcher(uri).forward(request, response);
     }
 
 

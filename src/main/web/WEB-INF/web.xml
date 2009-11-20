@@ -323,6 +323,11 @@
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-class>
     </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.compojure</servlet-name>
+        <servlet-class>com.imcode.imcms.compojure</servlet-class>
+    </servlet>
     
 	<servlet-mapping>
 	    <servlet-name>newadmin</servlet-name>
@@ -335,7 +340,11 @@
         <url-pattern>*.groovy</url-pattern>
     </servlet-mapping>    
     
-    
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.compojure</servlet-name>
+        <url-pattern>/admin/backdoor/*</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
         <url-pattern>/imcms/admin/profile/*</url-pattern>

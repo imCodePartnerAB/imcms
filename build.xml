@@ -2,13 +2,14 @@
 
 <project name="imCMS" default="package" xmlns:artifact="urn:maven-artifact-ant">
 
-    <!-- Read in 'build.properties' and set the properties therein. -->
-    <!-- Those properties are used as bases for latsproer properties in this file. -->
-    <available file="build.properties" property="build.properties-available" />
-    <available file="build.properties" property="build.properties" value="build.properties"/>
-    <property name="build.properties" value="build.properties.template" />
+    <available file="build.properties" property="build.properties-available"/>
+
+    <!-- One of them must be awailable. -->
+    <property name="build.properties" location="build.properties"/>
+    <property name="build.properties" location="build.properties.template"/>
+
     <property file="${build.properties}"/>
-	
+
     <!-- The current version of imCMS. -->
     <property name="svnurl" value="$URL$"/>
 
@@ -363,7 +364,24 @@
 	<target name="deploy-jar" depends="process-webapp-sources"
 			description="Runs built webapp under jetty on port 9090">
 		<maven goal="jetty:run"/>
-	</target>    
+	</target>
+
+
+	<target name="compile-clojure">
+        <java classname="clojure.lang.Compile" classpathref="pom.classpath" failonerror="true">
+          <classpath>
+              <path location="src/test/clojure"/>
+              <path location="${maven.build.dir}/classes"/>
+          </classpath>
+          <sysproperty key="clojure.compile.path" value="${maven.build.dir}/classes" />
+          <arg value="com.imcode.imcms.compojure" />
+        </java>
+
+        <copy todir="target/imcms-6.0.0-SNAPSHOT/WEB-INF/classes">
+            <fileset dir="${maven.build.dir}/classes"/>
+        </copy>
+	</target>
+
 		
     <!-- Compound targets -->
     <target name="build-tomcat-install" depends="package,tomcat-install" description="Copies the webapp directly into the webapp-directory in the deployroot."/>
