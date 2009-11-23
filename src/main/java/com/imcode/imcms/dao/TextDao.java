@@ -82,7 +82,7 @@ public class TextDao extends HibernateTemplate {
 	}
 	
 	@Transactional
-	public Collection<TextDomainObject> getTexts(Integer docId, Integer docVersionNo) {
+	public List<TextDomainObject> getTexts(Integer docId, Integer docVersionNo) {
 		return findByNamedQueryAndNamedParam("Text.getByDocIdAndDocVersionNo",
 				new String[] {"docId", "docVersionNo"}, 
 				new Object[] {docId, docVersionNo}

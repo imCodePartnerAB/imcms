@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -25,6 +26,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
 import com.imcode.imcms.api.ContentLoop;
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.DocumentLabels;
 import com.imcode.imcms.dao.ContentLoopDao;
 import com.imcode.imcms.dao.MenuDao;
 import com.imcode.imcms.dao.MetaDao;
@@ -138,7 +141,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
          */       
     } 
     
-    // should be run inside transaction
+    // must be run inside transaction
     public void updateTextDocumentContentLoops(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ContentLoopDao dao = (ContentLoopDao)services.getSpringBean("contentLoopDao");
         Integer metaId = textDocument.getMeta().getId();
@@ -154,6 +157,15 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         	
         	dao.saveContentLoop(loop);
         }  	
+    }
+
+    // must be run inside transaction
+    public void updateDocumentLabels(DocumentDomainObject doc, DocumentDomainObject oldDoc, UserDomainObject user) {
+        //Integer docId, Integer docVersionNo, I18nLanguage language
+        DocumentLabels labels = doc.getLabels().clone();
+        MetaDao metaDao = (MetaDao)services.getSpringBean("metaDao");
+        
+        metaDao.saveLabels(labels);
     }
     
     // must be run inside transaction
@@ -175,6 +187,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         	for (ImageDomainObject image: map.values()) {
                 if (image.isModified()) {                	 
                 	// TODO: remove
+		image.setImageUrl(image.getSource().toStorageString());
+		image.setType(image.getSource().getTypeId());                	
+
                 	image.setDocId(metaId);
                 	image.setDocVersionNo(documentVersionNumber);
                     imageDao.saveImage(image);

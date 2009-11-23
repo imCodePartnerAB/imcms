@@ -110,6 +110,8 @@
     <property name="metaDao" ref="metaDao"/>
     <property name="contentLoopDao" ref="contentLoopDao"/>
     <property name="documentVersionDao" ref="documentVersionDao"/>
+    <property name="textDao" ref="textDao"/>
+    <property name="imageDao" ref="imageDao"/>
   </bean>
   
   <bean id="documentLoader" class="com.imcode.imcms.mapping.DocumentLoader">

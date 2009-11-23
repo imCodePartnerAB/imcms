@@ -18,11 +18,11 @@
   "Returns database vendor specific url string."
   [vendor-name host port]
   (let [url-template
-         (cond
-           (= vendor-name "mysql") "jdbc:mysql://%s:%s"
-           (= vendor-name "mssql") "jdbc:jtds:sqlserver://%s:%s"
-           :else (throw (IllegalArgumentException.
-               (format "Invalid vendor: '%s'. Valid values: 'mysql', 'mssql'." vendor-name))))]
+         (condp = vendor-name
+           "mysql" "jdbc:mysql://%s:%s"
+           "mssql" "jdbc:jtds:sqlserver://%s:%s"
+           (throw (IllegalArgumentException.
+             (format "Unsupported vendor: '%s'. Supported vendors: 'mysql', 'mssql'." vendor-name))))]
 
     (format url-template host port)))
 

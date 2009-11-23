@@ -104,7 +104,7 @@ public class AdminDoc extends HttpServlet {
                     && ImcmsConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags ) {
             pageFlow = new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), returnCommand, saveDocumentCommand, null );
         }  else if (ImcmsConstants.DISPATCH_FLAG__PUBLISH == flags ) {
-            pageFlow = new com.imcode.imcms.flow.PublishDocumentPageFlow(document, returnCommand, new DocumentMapper.PublushDocumentCommand(), user );
+            pageFlow = new com.imcode.imcms.flow.PublishDocumentPageFlow(document, returnCommand, new DocumentMapper.MakeDocumentVersionCommand(), user );
         }
         
         return pageFlow;

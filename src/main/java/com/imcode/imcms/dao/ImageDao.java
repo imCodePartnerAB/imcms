@@ -74,16 +74,13 @@ public class ImageDao extends HibernateTemplate {
 	
 	@Transactional
 	public ImageDomainObject saveImage(ImageDomainObject image) {
-		image.setImageUrl(image.getSource().toStorageString());
-		image.setType(image.getSource().getTypeId());
-
 		saveOrUpdate(image);
 		
 		return image;
 	}
 	
 	@Transactional
-	public Collection<ImageDomainObject> getImages(Integer docId, Integer docVersionNo) {
+	public List<ImageDomainObject> getImages(Integer docId, Integer docVersionNo) {
 		return findByNamedQueryAndNamedParam("Image.getByDocIdAndDocVersionNo",
 				new String[] {"docId", "docVersionNo"},
 				new Object[] {docId, docVersionNo}	

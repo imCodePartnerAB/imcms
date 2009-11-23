@@ -8,22 +8,19 @@ import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import com.imcode.imcms.api.DocumentProperty;
-import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.dao.MetaDao;
-import com.imcode.imcms.dao.ContentLoopDao;
-import com.imcode.imcms.dao.DocumentVersionDao;
+import com.imcode.imcms.api.*;
+import com.imcode.imcms.dao.*;
 
 /**
  * This class is instantiated using spring framework.
@@ -39,6 +36,10 @@ public class DocumentSaver {
     private DocumentVersionDao documentVersionDao;
 
     private ContentLoopDao contentLoopDao;
+
+    private TextDao textDao;
+
+    private ImageDao imageDao;
     
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
     
@@ -74,30 +75,55 @@ public class DocumentSaver {
     }
 
     /**
-     * Published working version of a document.
+     * Makes a version of a working document.
      */
     // TODO: Should throw NoPermissionToEditDocumentException ?
+    // TODO: Add history for texts and images
     @Transactional    
-    public void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) 
+    public void makeDocumentVersion(Integer docId, UserDomainObject user)
     throws DocumentSaveException {
     	try {
-    		Integer documentId = document.getMeta().getId();
-            // publish working version
-    		documentVersionDao.createVersion(documentId, user.getId());
-    		DocumentVersion documentVersion = documentVersionDao.createVersion(documentId, user.getId());
-    		
-    		if (document.getDocumentTypeId() == DocumentTypeDomainObject.TEXT_ID) {
-    			TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document.clone();
-    			
-    			textDocument.setDependenciesMetaIdToNull();
-    			textDocument.setId(documentId);    			
-    	        textDocument.setVersion(documentVersion);
-    			
-    	        DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
-    	            	        
-    	        visitor.updateTextDocumentTexts(textDocument, null, user);
-    	        visitor.updateTextDocumentImages(textDocument, null, user);
-    	        visitor.updateTextDocumentContentLoops(textDocument, null, user);
+            Meta meta = metaDao.getMeta(docId);
+
+            DocumentVersion documentVersion = documentVersionDao.createVersion(docId, user.getId());
+            Integer docVersionNo = documentVersion.getNo();
+
+            for (DocumentLabels labels:  metaDao.getLabels(docId, 0)) {
+                labels = labels.clone();
+                labels.setDocVersionNo(docVersionNo);
+
+                metaDao.saveLabels(labels);
+            }
+
+    		if (meta.getDocumentType() == DocumentTypeDomainObject.TEXT_ID) {
+                for (ContentLoop loop: contentLoopDao.getContentLoops(docId, 0)) {
+                    loop = loop.clone();
+                    loop.setId(null);
+                    loop.setDocVersionNo(docVersionNo);
+
+                    for (Content content: loop.getContents()) {
+                        content.setId(null);
+                        content.setLoopId(null);
+                    }
+
+                    contentLoopDao.saveContentLoop(loop);
+                }
+
+                for (TextDomainObject text: textDao.getTexts(docId, 0)) {
+                    text = text.clone();
+                    text.setId(null);
+                    text.setDocVersionNo(docVersionNo);
+
+                    textDao.saveText(text);
+                }
+
+                for (ImageDomainObject image: imageDao.getImages(docId, 0)) {
+                    image = image.clone();
+                    image.setId(null);
+                    image.setDocVersionNo(docVersionNo);
+
+                    imageDao.saveImage(image);
+                }
     		}
     	} catch (RuntimeException e) {
     		throw new DocumentSaveException(e);
@@ -371,5 +397,21 @@ public class DocumentSaver {
 
     public void setDocumentVersionDao(DocumentVersionDao documentVersionDao) {
         this.documentVersionDao = documentVersionDao;
+    }
+
+    public TextDao getTextDao() {
+        return textDao;
+    }
+
+    public void setTextDao(TextDao textDao) {
+        this.textDao = textDao;
+    }
+
+    public ImageDao getImageDao() {
+        return imageDao;
+    }
+
+    public void setImageDao(ImageDao imageDao) {
+        this.imageDao = imageDao;
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.imcode.imcms.api.DocumentVersion;
 
 import java.util.List;
+import java.util.Date;
 
 /**
  *     TODO: implement get active version.
@@ -28,7 +29,7 @@ public class DocumentVersionDao extends HibernateTemplate {
                 ? 0
                 : latestVersion.getNo() + 1;
 
-        DocumentVersion version =  new DocumentVersion(docId, versionNumber, userId);
+        DocumentVersion version =  new DocumentVersion(docId, versionNumber, userId, new Date());
 
 		save(version);
 

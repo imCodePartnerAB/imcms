@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="imcms_doc_labels")
-public class DocumentLabels {
+public class DocumentLabels implements Cloneable {
 
 	@Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)

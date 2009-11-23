@@ -37,6 +37,8 @@ CREATE TABLE imcms_doc_languages (
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- select enabled languages from i8n_metas
+
 
 
 --
@@ -84,6 +86,24 @@ CREATE TABLE imcms_doc_labels (
     CONSTRAINT fk__imcms_doc_labels__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
     CONSTRAINT fk__imcms_doc_labels__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO imcms_doc_labels (
+    doc_id,
+    doc_version_no,
+    language_id,
+    headline,
+    menu_image_url,
+    menu_text
+) SELECT
+    meta_id,
+    0,
+    language_id,
+    meta_headline,
+    meta_image,
+    meta_text
+FROM i18n_meta;
+
+DROP TABLE i18n_meta;
 
 
 --

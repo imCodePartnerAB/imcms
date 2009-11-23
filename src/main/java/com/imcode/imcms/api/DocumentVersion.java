@@ -38,10 +38,11 @@ public class DocumentVersion implements Cloneable {
 
     public DocumentVersion() {}
 	
-	public DocumentVersion(Integer docId, Integer no, Integer createdBy) {
+	public DocumentVersion(Integer docId, Integer no, Integer createdBy, Date createdDt) {
 		this.docId = docId;
 		this.no = no;
         this.createdBy = createdBy;
+        this.createdDt = createdDt;
 	}	
 	
 	@Override

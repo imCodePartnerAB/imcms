@@ -37,3 +37,16 @@
 
 (defn t3 [n]
   (>>= (>>= (>>= (>>= n f) f) f) f))
+
+(def *args-count* 2)
+
+(defmacro liftm* [f]
+  `(let [c# (eval *args-count*)]
+     (println "c=" c)
+     (with-monad maybe-m (m-lift c# ~f))))
+ 
+(defn liftf* [f]
+  (fn [& args]
+    (binding [*args-count* (count args)]
+      (let [lifted-f (liftm* f)]
+        (lifted-f args)))))

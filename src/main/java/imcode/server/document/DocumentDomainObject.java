@@ -545,6 +545,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	 */
 	public void setDependenciesMetaIdToNull() {
 		meta.setId(null);
+        labels.setId(null);
 	}
 
     public I18nLanguage getLanguage() {

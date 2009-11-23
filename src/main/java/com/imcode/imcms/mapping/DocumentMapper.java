@@ -208,14 +208,11 @@ public class DocumentMapper implements DocumentGetter {
         return new GetterDocumentReference(childId, versionSelector);
     }
 
+    //TODO: make new active if flag is set
     public void saveNewDocument(DocumentDomainObject document, UserDomainObject user, boolean copying)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         documentSaver.saveNewDocument(user, document, copying);
-        
-        if (document.getMeta().getPublicationStatusInt() == Document.PublicationStatus.APPROVED.asInt()) {
-        	publishWorkingDocument(document.clone(), user);
-        }
     }
 
     /**
@@ -244,22 +241,19 @@ public class DocumentMapper implements DocumentGetter {
         	if (!versionSupport.hasActiveVersion()) {
             	//document = getWorkingDocument(document.getMeta().getId());
                 document = getDocument(document.getMeta().getId());
-            	publishWorkingDocument(document.clone(), user);
+            	makeDocumentVersion(document.getId(), user);
         	}
         }        
     }
+
     
     /**
-     * Published working version of a document.
+     * Makes a version of a working document.
+     * TODO: Iterate throught all doc languages
      */
-    // TODO: Check exceptions 
-    public void publishWorkingDocument(DocumentDomainObject document, UserDomainObject user) 
-    throws DocumentSaveException, NoPermissionToEditDocumentException {	
-    	try {
-    		documentSaver.publishWorkingDocument(document, user);
-    	} finally {
-    		invalidateDocument(document);
-    	}
+    public void makeDocumentVersion(Integer docId, UserDomainObject user)
+    throws DocumentSaveException, NoPermissionToEditDocumentException {
+    	documentSaver.makeDocumentVersion(docId, user);
 	}
     
     
@@ -884,10 +878,10 @@ public class DocumentMapper implements DocumentGetter {
     }
     
     
-    public static class PublushDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
+    public static class MakeDocumentVersionCommand implements DocumentPageFlow.SaveDocumentCommand {
 
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-            Imcms.getServices().getDocumentMapper().publishWorkingDocument( document, user );
+            Imcms.getServices().getDocumentMapper().makeDocumentVersion(document.getId(), user);
         }
     }
     

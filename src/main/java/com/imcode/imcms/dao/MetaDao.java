@@ -51,7 +51,27 @@ public class MetaDao extends HibernateTemplate {
         }
 
         return labels;
-	}    
+	}
+
+
+	/**
+	 * @return Labels.
+	 */
+	@Transactional
+	public List<DocumentLabels> getLabels(Integer docId, Integer docVersionNo) {
+		return (List<DocumentLabels>)getSession().createQuery("SELECT l FROM DocumentLabels l WHERE l.docId = :docId AND docVersionNo = :docVersionNo")
+                .setParameter("docId", docId)
+                .setParameter("docVersionNo", docVersionNo)
+                .list();
+	}
+
+    
+	@Transactional
+	public DocumentLabels saveLabels(DocumentLabels labels) {
+		save(labels);
+
+        return labels;
+	}
 
 	
 	@Transactional
