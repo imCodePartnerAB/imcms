@@ -1,1 +1,1 @@
-<input type="checkbox" name="archiveDelBox" value="#meta_id#" />
+﻿<input type="checkbox" name="archiveDelBox" value="#meta_id#" />
