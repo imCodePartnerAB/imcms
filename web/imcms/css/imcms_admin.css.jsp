@@ -197,10 +197,7 @@ if (isNS) { %>
 
 BODY {
 	margin: 30px 10px;
-	background-color:#efece7;<%
-	if (isGecko) { %>
-	<%= "overflow: -moz-scrollbars-vertical;" %><%
-	} %>
+	background-color:#efece7;
 }
 
 TH   { text-align: left; }
