@@ -52,7 +52,7 @@ public class TemplateAdd extends HttpServlet {
                 vec.add( "TemplateAdmin" );
                 vec.add( "#formTarget#" );
                 vec.add( "_top" );
-                out.write( imcref.getAdminTemplate("back_button.html", user, vec).getBytes("8859_1") );
+                out.write( imcref.getAdminTemplate("back_button.html", user, vec).getBytes(Imcms.DEFAULT_ENCODING) );
             }
         }
 

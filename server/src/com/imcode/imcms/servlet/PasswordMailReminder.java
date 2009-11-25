@@ -58,7 +58,8 @@ public class PasswordMailReminder extends HttpServlet {
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         String returnString = imcref.getAdminTemplate(RETURNING_DOCUMENT_INPUT, user, tags );
-        out.print( returnString );
+
+        out.write( returnString.getBytes(Imcms.DEFAULT_ENCODING) );
     }
 
     /**
@@ -206,7 +207,7 @@ public class PasswordMailReminder extends HttpServlet {
         Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
 
-        out.print( returnString );
+        out.write( returnString.getBytes(Imcms.DEFAULT_ENCODING) );
 
     }
 

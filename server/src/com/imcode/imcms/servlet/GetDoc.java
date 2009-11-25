@@ -143,7 +143,7 @@ public class GetDoc extends HttpServlet {
             Utility.setDefaultHtmlContentType(res);
             String tempstring = imcref.getAdminTemplate(NO_ACTIVE_DOCUMENT_URL, user, null);
 
-            byte[] tempbytes = tempstring.getBytes("utf-8");
+            byte[] tempbytes = tempstring.getBytes(Imcms.DEFAULT_ENCODING);
             res.setContentLength(tempbytes.length);
             res.getOutputStream().write(tempbytes);
             

@@ -48,7 +48,8 @@ public class AdminSection extends HttpServlet {
 
         //ok so far lets load the admin page
         ServletOutputStream out = res.getOutputStream();
-        out.print(imcref.getAdminTemplate( ADMIN_TEMPLATE, user, null ));
+        String content = imcref.getAdminTemplate( ADMIN_TEMPLATE, user, null );
+        out.write(content.getBytes(Imcms.DEFAULT_ENCODING));
         out.flush();
         out.close();
         return;
@@ -226,7 +227,7 @@ public class AdminSection extends HttpServlet {
         //ok now lets send the page to browser
         Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
-        out.print(htmlToSend.toString());
+        out.write(htmlToSend.toString().getBytes(Imcms.DEFAULT_ENCODING));
         out.flush();
         out.close();
     }//end doPost()

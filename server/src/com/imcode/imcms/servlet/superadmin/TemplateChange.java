@@ -83,7 +83,7 @@ public class TemplateChange extends HttpServlet {
         }
 
         if ( null != htmlStr ) {
-            response.getOutputStream().print(htmlStr);
+            response.getOutputStream().write(htmlStr.getBytes(Imcms.DEFAULT_ENCODING));
         }
     }
 
@@ -229,7 +229,7 @@ public class TemplateChange extends HttpServlet {
         if ( filename == null ) {
             filename = "";
         }
-        byte[] file = templateMapper.getTemplateData(template_id).getBytes();
+        byte[] file = templateMapper.getTemplateData(template_id).getBytes(Imcms.DEFAULT_ENCODING);
         res.setContentType("application/octet-stream; name=\"" + filename + "\"");
         res.setContentLength(file.length);
         res.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\";");
