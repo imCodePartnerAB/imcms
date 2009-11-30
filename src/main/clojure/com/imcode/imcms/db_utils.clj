@@ -15,7 +15,7 @@
 
 
 (defn create-url
-  "Returns database vendor specific url string."
+  "Creates database vendor specific url string."
   [vendor-name host port]
   (let [url-template
          (condp = vendor-name
@@ -43,7 +43,7 @@
 
 
 (defn run-script
-  "Runs sql script using ScriptRunner"
+  "Runs sql script using iBATIS ScriptRunner class."
   ([connection script]
     (run-script connection script false true))
 

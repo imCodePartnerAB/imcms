@@ -26,8 +26,6 @@
 UserDomainObject user = (UserDomainObject)request.getAttribute("user") ;
 DocumentDomainObject document = (DocumentDomainObject)request.getAttribute("document") ;
 DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetFor( document ) ;
-DocumentVersionInfo versionSupport = Imcms.getServices().getDocumentMapper().getDocumentVersionSupport(document.getId());
-DocumentVersion version = document.getVersion();
 
 String queryString = request.getQueryString();
 StringBuffer baseURL = request.getRequestURL();
@@ -36,9 +34,9 @@ StringBuffer baseURL = request.getRequestURL();
 if (queryString == null) {
 	baseURL.append("?" + "lang=");
 } else {
-    queryString = queryString.replaceAll("&version=\\w*", "");	
-	queryString = queryString.replaceFirst("&?lang=..", "");
-	baseURL.append("?" + queryString + "&lang=");
+    queryString = queryString.replaceAll("&imcms.doc.language=\\w*", "");
+	queryString = queryString.replaceFirst("&?imcms.doc.language=..", "");
+	baseURL.append("?" + queryString + "&imcms.doc.language=");
 }
 	
 
@@ -48,17 +46,16 @@ pageContext.setAttribute("baseURL", baseURL);
  *         Available document's versions                                                     *
  ******************************************************************************************* */
 DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-List<DocumentVersion> versions = documentMapper.getDocumentVersions(document.getId());
+DocumentVersionInfo docVersionInfo = documentMapper.getDocumentVersionInfo(document.getId());
+DocumentVersion version = document.getVersion();
 
 /* *******************************************************************************************
  *         Get languages                                                                     *
  ******************************************************************************************* */
 List<I18nLanguage> languages = Imcms.getI18nSupport().getLanguages();
 Set<I18nLanguage> enabledLanguages = document.getMeta().getLanguages();    
-I18nLanguage defaultLanguage = Imcms.getI18nSupport().getDefaultLanguage() ;
-I18nLanguage currentLanguage = (null != session.getAttribute("lang")) ? (I18nLanguage)session.getAttribute("lang") : defaultLanguage ;
-
-Meta meta = document.getMeta() ;
+I18nLanguage defaultLanguage = Imcms.getI18nSupport().getDefaultLanguage();
+I18nLanguage currentLanguage = Imcms.getRequestInfo().getLanguage();
 
 /* *******************************************************************************************
  *         BROWSER SNIFFER                                                                   *
@@ -196,7 +193,7 @@ boolean isWorkingVersion = DocumentVersionInfo.isWorkingVersion(version);
 String sFlags = request.getParameter("flags");
 if (sFlags != null && sFlags.equals("1")) {
 } else {
-	Iterator iterator = new ReverseListIterator(versionSupport.getVersions());
+	Iterator iterator = new ReverseListIterator(docVersionInfo.getVersions());
 %>
 <tr>
   <td>
@@ -204,47 +201,61 @@ if (sFlags != null && sFlags.equals("1")) {
       <tr>     
         <td>	
           <form action="$contextPath/servlet/GetDoc">
-          <input type="hidden" name="lang" value="<%=currentLanguage.getCode()%>"/>
+          <input type="hidden" name="imcms.doc.language" value="<%=currentLanguage.getCode()%>"/>
+          <input type="hidden" name="imcms.doc.id" value="<%=document.getId()%>"/>
           <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
-          <select name="version">          
+          <select name="imcms.doc.version.no">          
             <% while (iterator.hasNext()) {
             	DocumentVersion v = (DocumentVersion)iterator.next();
             	String sSelected = v.getNo().equals(version.getNo()) ? " selected=\"selected\"" : "";
                 String displayName = DocumentVersionInfo.isWorkingVersion(v)
-                        ? "DRAFT" : v.getNo().toString();
+                        ? "DRAFT" : "Version " + v.getNo().toString();
+
+                if (docVersionInfo.isActiveVersion(v)) {
+                    displayName += " (active)";    
+                }
+
                 %>            
             	<option value="<%=v.getNo()%>" <%= sSelected %>>
             		<%=(displayName)%>
             	</option>
             <% }%>              
           </select>
-          <input type="submit" name="cmd" value="Change"/>
+          <input type="submit" name="cmd" value="Show"/>
           </form>
 		</td>
+	    <%
+	    if (user.canEdit(document)) {
+	    %>
+        <td>
+          <form action="$contextPath/servlet/AdminDoc">
+          <input type="text" size="3" name="no" value="<%=docVersionInfo.getActiveVersion().getNo()%>"/>
+          <input type="hidden" name="imcms.doc.language" value="<%=currentLanguage.getCode()%>"/>
+          <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
+          <input type="hidden" name="flags" value="8388608"/>
+          <input type="submit" name="cmd" value="Set default"/>
+          </form>
+		</td>
+	    <%
+	    }
+	    %>
+
 	    <% 
 	    if (user.canEdit(document) && isWorkingVersion) {
 	    %>
         <td>	
           <form action="$contextPath/servlet/AdminDoc">
-          <input type="hidden" name="lang" value="<%=currentLanguage.getCode()%>"/>
+          <input type="hidden" name="imcms.doc.language" value="<%=currentLanguage.getCode()%>"/>
           <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
           <input type="hidden" name="flags" value="4194304"/>
-          <input type="submit" name="cmd" value="Make version"/>
+          <input type="submit" name="cmd" value="Make version from draft"/>
           </form>
 		</td>
-
-        <td>
-          <form action="$contextPath/servlet/AdminDoc">
-          <input type="hidden" name="lang" value="<%=currentLanguage.getCode()%>"/>
-          <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
-          <input type="hidden" name="flags" value="4194304"/>
-          <input type="submit" name="cmd" value="Set default"/>
-          </form>
-		</td>          
-	    <%	        	  
+	    <%
 	    }
 	    %>
-	  </tr>	  
+          
+	  </tr>
     </table>  
   </td>
 </tr>

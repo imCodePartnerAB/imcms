@@ -15,12 +15,12 @@ import imcode.util.Utility;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.*;
+import com.imcode.imcms.mapping.orm.ActiveDocumentVersion;
 
 /**
  * This class is instantiated using spring framework.
@@ -73,6 +73,23 @@ public class DocumentSaver {
     	
     	// TODO: update meta modified time?
     }
+
+
+    @Transactional
+    public void setDocumentActiveVersion(Integer docId, Integer docVersionNo) {
+        ActiveDocumentVersion activeVersion = documentVersionDao.getActiveVersionORM(docId);
+
+        if (activeVersion == null) {
+            activeVersion = new ActiveDocumentVersion();
+            activeVersion.setDocId(docId);
+            activeVersion.setNo(docVersionNo);
+        } else {
+            activeVersion.setNo(docVersionNo);
+        }
+
+        documentVersionDao.saveActiveVersionORM(activeVersion);
+    }
+
 
     /**
      * Makes a version of a working document.

@@ -56,11 +56,11 @@
     ]]>
   </query>
 
-  <!-- Unique - HARDCODED - REWRITE -->
+  <!-- Unique -->
   <query name="DocumentVersion.getActiveVersion">
     <![CDATA[
-	  SELECT v FROM DocumentVersion v
-	  WHERE v.no = 0 AND v.docId = :docId
+	 SELECT v FROM DocumentVersion v, ActiveDocumentVersion a
+	 WHERE v.no = a.no AND v.docId = a.docId AND v.docId = :docId
     ]]>
   </query>
 

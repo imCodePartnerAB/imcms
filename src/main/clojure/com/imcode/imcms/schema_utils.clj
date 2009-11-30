@@ -14,7 +14,18 @@
     (com.imcode.imcms.schema Diff DiffBuilder Vendor SchemaUpgrade)))
 
 
+(defn version
+  "Returns imCMS schema version."
+  [db-spec db-name]
+  (sql/with-connection db-spec
+    (sql/do-commands
+      (format "use %s" db-name))
+
+    (SchemaUpgrade/getSchemaVersion (sql/connection))))
+
+
 (defn upgrade
+  "Upgrades imCMS schema."
   [db-spec schema-name xml-conf-file xsd-conf-file scripts-dir]
   (sql/with-connection db-spec
     (sql/transaction
@@ -26,7 +37,7 @@
 
 
 (defn tables
-  "Returns sequence of schema tables names."
+  "Returns sequence of a schema tables names."
   [db-spec schema-name]
   (sql/with-connection db-spec
     (sql/do-commands
@@ -36,18 +47,8 @@
       (map #(first (vals %)) (doall rs)))))
 
 
-(defn version
-  "Returns schema version."
-  [db-spec db-name]
-  (sql/with-connection db-spec
-    (sql/do-commands
-      (format "use %s" db-name))
-
-    (SchemaUpgrade/getSchemaVersion (sql/connection))))
-
-
 (defn recreate
-  "Recreates schema"
+  "Recreates schema."
   [db-spec schema-name scripts]
   (sql/with-connection db-spec
     (sql/transaction

@@ -54,7 +54,7 @@ CREATE TABLE imcms_doc_versions (
     -- modified by, dt, etc
 
     CONSTRAINT pk__imcms_doc_versions PRIMARY KEY (id),
-    CONSTRAINT uk__imcms_doc_versions__doc__no UNIQUE KEY (doc_id, no),
+    CONSTRAINT uk__imcms_doc_versions__doc_id__no UNIQUE KEY (doc_id, no),
     CONSTRAINT fk__imcms_doc_versions__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
     CONSTRAINT fk__imcms_doc_versions__user FOREIGN KEY (created_by) REFERENCES users (user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -66,6 +66,20 @@ SELECT
 FROM
     meta;
 
+
+CREATE TABLE imcms_doc_active_version (
+    id int AUTO_INCREMENT,
+    doc_id int NOT NULL,
+    version_no int NOT NULL DEFAULT 0,
+
+    CONSTRAINT pk__imcms_doc_active_version PRIMARY KEY (id),
+    CONSTRAINT uk__imcms_doc_active_version__doc_id__version_no UNIQUE KEY (doc_id, version_no),
+    CONSTRAINT fk__imcms_doc_active_version__doc_versions FOREIGN KEY (doc_id, version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO imcms_doc_active_version (doc_id, version_no)
+SELECT doc_id, no
+FROM imcms_doc_versions;
 
 --
 -- Document labels

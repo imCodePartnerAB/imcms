@@ -48,16 +48,16 @@ public class DocumentVersionInfo implements Serializable {
 	 * 
 	 * @param versions document versions list.
 	 */
-	public DocumentVersionInfo(Integer metaId, List<DocumentVersion> versions) {
+	public DocumentVersionInfo(Integer metaId, List<DocumentVersion> versions, DocumentVersion workingVersion, DocumentVersion activeVersion) {
 		versionsMap = new TreeMap<Integer, DocumentVersion>();
 		
 		for (DocumentVersion  version: versions) {
 			versionsMap.put(version.getNo(), version);
 		}
 
-        activeVersion = versions.get(0);
-        workingVersion = versions.get(0);
-        latestVersion = versions.get(0);        
+        this.workingVersion = workingVersion;
+        this.activeVersion = activeVersion;
+        this.latestVersion = versions.get(versions.size() - 1);
 
 		this.metaId = metaId;
 		this.versions = Collections.unmodifiableList(versions);
@@ -79,12 +79,18 @@ public class DocumentVersionInfo implements Serializable {
 	public DocumentVersion getVersion(Integer no) {
 		return versionsMap.get(no);
 	}
+
+    
+    public static boolean isWorkingVersion(DocumentVersion version) {
+        return version != null && DocumentVersion.WORKING_VERSION_NO.equals(version.getNo());
+    }
+    
 	
 	/**
 	 * @returns if given version number belongs to active version.
 	 */
-	public boolean isActiveVersionNo(Integer no) {
-		return hasActiveVersion() && getActiveVersion().getNo().equals(no);
+	public boolean isActiveVersion(DocumentVersion version) {
+		return version != null && getActiveVersion().getNo().equals(version.getNo());
 	}
 	
 	/** 
@@ -118,42 +124,10 @@ public class DocumentVersionInfo implements Serializable {
 		return versions;
 	}
 	
-	/** 
-	 * Return unmodifiable map of document's version 
-	 * sorted by number in ascending order.
-	 * 
-	 * Map key is a document version number.
-	 * 
-	 * @return unmodifiable map of document's versions.
-	 */
-	public Map<Integer, DocumentVersion> getVersionsMap() {
-		return versionsMap;
-	} 
-						
-	/**
-	 * @return if a document has an active version. 
-	 */		
-	public boolean hasActiveVersion() {
-		return activeVersion != null;
-	}
-	
 	/**
 	 * @return document's versions count.
 	 */			
 	public int getVersionsCount() {
 		return versions.size(); 
 	}
-	
-	/**
-	 * @returns active version number or null if there is no active version.
-	 */
-	public Integer getActiveVersionNo() {
-		return hasActiveVersion()
-			? getActiveVersion().getNo()
-			: null;
-	}
-
-    public static boolean isWorkingVersion(DocumentVersion version) {
-        return DocumentVersion.WORKING_VERSION_NO.equals(version.getNo());
-    }
 }

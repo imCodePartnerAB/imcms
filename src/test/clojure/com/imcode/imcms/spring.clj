@@ -26,3 +26,4 @@
 (defbean meta-dao metaDao)
 (defbean language-dao languageDao)
 (defbean loop-dao contentLoopDao)
+

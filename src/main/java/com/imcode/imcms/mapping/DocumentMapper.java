@@ -129,7 +129,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param documentId document id.
      * @return version support for a given document or null if document does not exist.
      */
-    public DocumentVersionInfo getDocumentVersionSupport(Integer documentId) {
+    public DocumentVersionInfo getDocumentVersionInfo(Integer documentId) {
     	return documentLoaderCachingProxy.getDocumentVersionInfo(documentId);
     }
 
@@ -164,7 +164,7 @@ public class DocumentMapper implements DocumentGetter {
         
         meta.setId(null);
         //meta.setDocVersionNo(null);
-        //meta.setDocumentVersionTag(null); 
+        //meta.setDocumentVersionTag(null);
                 
         newDocument.setProperties(new HashMap());
         makeDocumentLookNew( newDocument, user );
@@ -231,29 +231,34 @@ public class DocumentMapper implements DocumentGetter {
     		documentSaver.updateDocument(document, oldDocument, user);
     	} finally {
     		invalidateDocument(document);
-    	}
-        
-        Meta meta = document.getMeta();        
-        
-        if (meta.getPublicationStatusInt() == Document.PublicationStatus.APPROVED.asInt()) {
-        	Integer documentId = meta.getId();
-        	DocumentVersionInfo versionSupport = getDocumentVersionSupport(documentId);
-        	if (!versionSupport.hasActiveVersion()) {
-            	//document = getWorkingDocument(document.getMeta().getId());
-                document = getDocument(document.getMeta().getId());
-            	makeDocumentVersion(document.getId(), user);
-        	}
-        }        
+    	}      
     }
 
     
     /**
-     * Makes a version of a working document.
-     * TODO: Iterate throught all doc languages
+     * Makes next version of a working document.
+     * TODO: Optional - add comments
      */
     public void makeDocumentVersion(Integer docId, UserDomainObject user)
     throws DocumentSaveException, NoPermissionToEditDocumentException {
-    	documentSaver.makeDocumentVersion(docId, user);
+        try {
+    	    documentSaver.makeDocumentVersion(docId, user);
+        } finally {
+            invalidateDocument(docId);
+        }
+	}
+
+
+    /**
+     * Changes document's active version.
+     */
+    public void setDocumentActiveVersion(Integer docId, Integer docVersionNo, UserDomainObject user)
+    throws DocumentSaveException, NoPermissionToEditDocumentException {
+        try {
+    	    documentSaver.setDocumentActiveVersion(docId, docVersionNo);
+        } finally {
+            invalidateDocument(docId);
+        }
 	}
     
     
@@ -313,6 +318,7 @@ public class DocumentMapper implements DocumentGetter {
         return false;
     }    
 
+
     public void invalidateDocument(DocumentDomainObject document) {        
         Integer documentId = document.getId();
         
@@ -322,6 +328,12 @@ public class DocumentMapper implements DocumentGetter {
             documentIndex.indexDocument(document);
         }
     }
+
+
+    public void invalidateDocument(Integer docId) {
+        documentLoaderCachingProxy.removeDocumentFromCache(docId);
+    }
+
 
     public DocumentIndex getDocumentIndex() {
         return documentIndex;
@@ -594,6 +606,7 @@ public class DocumentMapper implements DocumentGetter {
         RequestInfo requestInfo = Imcms.getRequestInfo();
         UserDomainObject user = requestInfo.getUser();
         I18nLanguage language = requestInfo.getLanguage();
+        RequestInfo.DocVersionMode docVersionMode = requestInfo.getDocVersionMode();
 
         if (!user.isSuperAdmin() && !language.isDefault() && !meta.getLanguages().contains(language)) {
             language = meta.getDisabledLanguageShowSetting() == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE
@@ -601,9 +614,19 @@ public class DocumentMapper implements DocumentGetter {
                 : null;
         }
 
-        return language == null
-            ? null
-            : documentLoaderCachingProxy.getWorkingDocument(docId, language);
+        if (language == null) {
+            return null;
+        }
+
+        Integer docVersionNo = requestInfo.getDocVersionNo();
+
+        if (docVersionNo != null && docId.equals(requestInfo.getDocId())) {
+            return documentLoaderCachingProxy.getCustomDocument(docId, docVersionNo, language);    
+        }
+
+        return docVersionMode == RequestInfo.DocVersionMode.WORKING
+            ? documentLoaderCachingProxy.getWorkingDocument(docId, language)
+            : documentLoaderCachingProxy.getActiveDocument(docId, language);
     }
 
     /**
@@ -666,21 +689,6 @@ public class DocumentMapper implements DocumentGetter {
         	: getWorkingDocument(documentId);	
     }
        */
-    
-    /**
-     * @return all document's versions 
-     */
-    public List<DocumentVersion> getDocumentVersions(Integer documentId) {
-    	DocumentVersionInfo support = getDocumentVersionSupport(documentId);
-    	
-    	if (support != null) {
-    		return support.getVersions();
-    	} else {
-    		return new LinkedList<DocumentVersion>();
-    	}
-    	
-    	//return documentSaver.getMetaDao().getAllVersions(documentId);
-    }
     
         
     /** 
@@ -876,12 +884,31 @@ public class DocumentMapper implements DocumentGetter {
             Imcms.getServices().getDocumentMapper().saveDocument(document, user);
         }
     }
-    
-    
+
+    /**
+     * Makes a version from a working/draft version.
+     */
     public static class MakeDocumentVersionCommand implements DocumentPageFlow.SaveDocumentCommand {
 
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().makeDocumentVersion(document.getId(), user);
+        }
+    }
+
+
+    /**
+     * Makes a version from a working/draft version.
+     */
+    public static class SetActiveDocumentVersionCommand implements DocumentPageFlow.SaveDocumentCommand {
+
+        private Integer docVersionNo;
+
+        public SetActiveDocumentVersionCommand(Integer docVersionNo) {
+            this.docVersionNo = docVersionNo; 
+        }
+
+        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+            Imcms.getServices().getDocumentMapper().setDocumentActiveVersion(document.getId(), docVersionNo, user);
         }
     }
     

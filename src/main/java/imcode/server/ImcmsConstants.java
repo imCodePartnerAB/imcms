@@ -47,8 +47,11 @@ public interface ImcmsConstants {
     /** Permission to change content loops of a text-document. **/
     public final static int PERM_EDIT_TEXT_DOCUMENT_CONTENT_LOOPS   = (1 << 21); //  2097152
     
-    /** Permission to publish document. **/
-    public final static int PERM_PUBLISH   = (1 << 22); //  4194304  
+    /** Permission to make document version. **/
+    public final static int PERM_PUBLISH   = (1 << 22); //  4194304
+
+    /** Permission to make document version. **/
+    public final static int SET_ACTIVE_VERSION   = (1 << 23); //  8388608  
 
     /* Log instances. */
 
@@ -67,8 +70,19 @@ public interface ImcmsConstants {
     int DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES = PERM_EDIT_TEXT_DOCUMENT_IMAGES;
     int DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE = PERM_EDIT_PERMISSIONS;
     int DISPATCH_FLAG__PUBLISH = PERM_PUBLISH;
+    int DISPATCH_FLAG__SET_ACTIVE_VERSION = SET_ACTIVE_VERSION;
 
-    public static final String REQUEST_PARAM__LANGUAGE = "imcms.language";
+    public static final String REQUEST_PARAM__LANGUAGE = "imcms.doc.language";
+
+    public static final String REQUEST_PARAM__DOC_ID = "imcms.doc.id";
+
+    public static final String REQUEST_PARAM__DOC_VERSION_NO = "imcms.doc.version.no";
+
+    public static final String REQUEST_PARAM__DOC_VERSION_MODE = "imcms.doc.version.mode";
+
+    public static final String REQUEST_PARAM_VALUE__DOC_VERSION_MODE_WORKING = "w";
+
+    public static final String REQUEST_PARAM_VALUE__DOC_VERSION_MODE_ACTIVE = "a";
 
     public static final String SESSION_ATTR__REQUEST_INFO = "imcms.requestInfo";
 }

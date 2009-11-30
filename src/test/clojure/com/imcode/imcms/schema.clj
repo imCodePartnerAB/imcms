@@ -1,19 +1,20 @@
 (ns com.imcode.imcms.schema
   (:use
-    clojure.contrib.test-is)
+    [clojure.contrib duck-streams test-is])
 
   (:require
     [com.imcode.imcms
       [project :as project]
+      [file-utils :as file-utils]
       [schema-utils :as schema-utils]]))
 
 
-(defn db-schema-name [] (:db-name (project/load-build-properties)))
+(defn db-schema-name [] (:db-name (project/build-properties)))
 (defn test-db-schema-name [] (str (db-schema-name) "_test"))
 
 
-(defn xml-conf-file [] (project/file "src/main/resources-conf/schema-upgrade.xml"))
-(defn xsd-conf-file [] (project/file "src/main/resources-conf/schema-upgrade.xsd"))
+(def xml-conf-file (project/get-file-fn "src/main/resources-conf/schema-upgrade.xml"))
+(def xsd-conf-file (project/get-file-fn "src/main/resources-conf/schema-upgrade.xsd"))
 (defn scripts-dir [] (project/subdir "src/main/sql"))
 
 
@@ -22,8 +23,8 @@
 (defn scripts-dir-path [] (.getCanonicalPath (scripts-dir)))
 
 
-(defn slurp-xml-conf [] (slurp (xml-conf-file-path)))
-(defn slurp-xsd-conf [] (slurp (xsd-conf-file-path)))
+(def slurp-xml-conf (file-utils/call-if-modified xml-conf-file slurp*))
+(def slurp-xsd-conf (file-utils/call-if-modified xsd-conf-file slurp*))
 
 
 (defn init-script-files

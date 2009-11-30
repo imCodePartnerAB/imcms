@@ -66,7 +66,7 @@ public class AdminDoc extends HttpServlet {
             flags = 0;
         }
 
-        PageFlow pageFlow = createFlow( document, flags, user );
+        PageFlow pageFlow = createFlow(req, document, flags, user );
 
         if ( null != pageFlow && user.canEdit( document )) {
             pageFlow.dispatch( req, res );
@@ -85,7 +85,7 @@ public class AdminDoc extends HttpServlet {
      * 
      * @return new page flow
      */
-    private PageFlow createFlow( DocumentDomainObject document, int flags, UserDomainObject user ) {
+    private PageFlow createFlow(HttpServletRequest req, DocumentDomainObject document, int flags, UserDomainObject user ) {
         RedirectToDocumentCommand returnCommand = new RedirectToDocumentCommand( document );
         DocumentMapper.SaveEditedDocumentCommand saveDocumentCommand = new DocumentMapper.SaveEditedDocumentCommand();
 
@@ -105,6 +105,13 @@ public class AdminDoc extends HttpServlet {
             pageFlow = new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), returnCommand, saveDocumentCommand, null );
         }  else if (ImcmsConstants.DISPATCH_FLAG__PUBLISH == flags ) {
             pageFlow = new com.imcode.imcms.flow.PublishDocumentPageFlow(document, returnCommand, new DocumentMapper.MakeDocumentVersionCommand(), user );
+        }  else if (ImcmsConstants.DISPATCH_FLAG__SET_ACTIVE_VERSION == flags ) {
+            try {
+                Integer no = Integer.parseInt(req.getParameter("no"));
+                pageFlow = new com.imcode.imcms.flow.PublishDocumentPageFlow(document, returnCommand, new DocumentMapper.SetActiveDocumentVersionCommand(no), user );
+            } catch (Exception e) {
+                throw new AssertionError(e);
+            }
         }
         
         return pageFlow;

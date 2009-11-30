@@ -14,7 +14,7 @@ Integer textIndex = 1;
 Integer imageIndex = 1;
 
 DocumentMapper dm = Imcms.getServices().getDocumentMapper();
-List<DocumentVersion> documentVersions = dm.getDocumentVersions(documentId);
+List<DocumentVersion> documentVersions = dm.getDocumentVersionInfo(documentId).getVersions();
 %>
 
 <div>

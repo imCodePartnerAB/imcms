@@ -70,18 +70,6 @@ public class GetDoc extends HttpServlet {
                          HttpServletResponse res) throws IOException, ServletException {
         ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        UserDomainObject user = Utility.getLoggedOnUser( req );
-        // TODO: remove this crap
-        boolean publishedVersionRequest = req.getParameter("p") != null;
-        boolean workingVersionRequest = req.getParameter("w") != null;
-
-        /*
-        DocumentDomainObject document = publishedVersionRequest
-        	? documentMapper.getPublishedDocumentForShowing(documentId, user)
-        	: workingVersionRequest 
-        		? documentMapper.getWorkingDocumentForShowing(documentId, user)
-        		: documentMapper.getDocumentForShowing(documentId, user);
-        */
         DocumentDomainObject document = documentMapper.getDocument(documentId);
 
         if (null == document) {

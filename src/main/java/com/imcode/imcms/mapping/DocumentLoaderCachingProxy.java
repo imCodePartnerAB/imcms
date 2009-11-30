@@ -26,23 +26,23 @@ public class DocumentLoaderCachingProxy {
     private Map<Integer, Meta> metas;    
 	
 	/**
-	 * Documents versions supports.
+	 * Documents versions infos.
 	 * 
      * Map key is a document id.
 	 */
-	private Map<Integer, DocumentVersionInfo> versionInfos;
+	private Map<Integer, DocumentVersionInfo> versionInfos;    
 	
 	/**
-	 * Active documents
-	 * 
-     * Map key is a document id.
-	 */
-    private Map<Integer, DocumentDomainObject> activeDocuments;
+	 * Active documents.
+     * 
+     * Inner map key is a document id.
+     */
+    private Map<I18nLanguage, Map<Integer, DocumentDomainObject>> activeDocuments;
     
     /** 
-     * Working (version 0) documents
+     * Working documents.
      * 
-     * Map key is a document id.
+     * Inner map key is a document id.
      */
     private Map<I18nLanguage, Map<Integer, DocumentDomainObject>> workingDocuments;
     
@@ -56,8 +56,6 @@ public class DocumentLoaderCachingProxy {
      */
     private BidiMap aliasesBidiMap;
 
-    
-    /** Wrapped document loader. */
     private DocumentLoader documentLoader;
 
     private int cacheSize;
@@ -96,44 +94,28 @@ public class DocumentLoaderCachingProxy {
 
     
     public DocumentVersionInfo getDocumentVersionInfo(Integer docId) {
-        DocumentVersionInfo versionSupport = versionInfos.get(docId);
+        DocumentVersionInfo versionInfo = versionInfos.get(docId);
         
-    	if (versionSupport == null) {
+    	if (versionInfo == null) {
             List<DocumentVersion> versions =  documentLoader.getDocumentVersionDao()
                     .getAllVersions(docId);
             
             if (versions.size() > 0) {
-                versionSupport = new DocumentVersionInfo(docId, versions);
-                versionInfos.put(docId, versionSupport);
+                DocumentVersion workingVersion = versions.get(0);
+                DocumentVersion activeVersion = documentLoader.getDocumentVersionDao().getActiveVersion(docId);
+
+                if (activeVersion == null) {
+                    activeVersion = workingVersion;    
+                }
+
+                versionInfo = new DocumentVersionInfo(docId, versions, workingVersion, activeVersion);
+                
+                versionInfos.put(docId, versionInfo);
             }
     	}
         
-    	return versionSupport;
+    	return versionInfo;
     } 
-
-    
-     /*
-    public DocumentDomainObject getActiveDocument(Integer docId) {
-        Meta meta = getMeta(docId);
-
-        if (meta == null) {
-            return null;
-        }
-
-        DocumentDomainObject document = activeDocuments.get(docId);
-
-    	if (document == null) {
-            DocumentVersionInfo info = getDocumentVersionInfo(docId);
-	        document = documentLoader.loadDocument(meta.clone(), info.getActiveVersionNo());
-
-            if (document != null) {
-	            activeDocuments.put(docId, document);
-            }
-    	}
-
-        return document;
-    }
-    */
     
             
     public List<DocumentDomainObject> getWorkingDocuments(Collection<Integer> docIds, I18nLanguage language) {
@@ -167,7 +149,10 @@ public class DocumentLoaderCachingProxy {
     
     public void removeDocumentFromCache(Integer docId) {
     	activeDocuments.remove(docId);
-    	workingDocuments.remove(docId);
+        for (Map<Integer, DocumentDomainObject> docs: workingDocuments.values()) {
+            workingDocuments.remove(docId);    
+        }
+
     	versionInfos.remove(docId);
     	aliasesBidiMap.remove(docId);
     } 
@@ -218,6 +203,31 @@ public class DocumentLoaderCachingProxy {
     }
     */
 
+    /**
+     * Returns custom document.
+     * 
+     * @param docId
+     * @param docVersionNo
+     * @param language
+     * @return
+     */
+    public DocumentDomainObject getCustomDocument(Integer docId, Integer docVersionNo, I18nLanguage language) {
+        Meta meta = getMeta(docId);
+
+        if (meta == null) {
+            return null;
+        }
+
+        DocumentVersionInfo versionInfo = getDocumentVersionInfo(docId);
+        DocumentVersion version = versionInfo.getVersion(docVersionNo);
+
+        if (version == null) {
+            return null;
+        }
+
+        return documentLoader.loadDocument(meta.clone(), version.clone(), language.clone());
+    }
+    
 
     public DocumentDomainObject getWorkingDocument(Integer docId, I18nLanguage language) {
         Map<Integer, DocumentDomainObject> documents = getDocuments(workingDocuments, language);
@@ -243,6 +253,32 @@ public class DocumentLoaderCachingProxy {
         
         return document;
     }
+
+
+    public DocumentDomainObject getActiveDocument(Integer docId, I18nLanguage language) {
+        Map<Integer, DocumentDomainObject> documents = getDocuments(activeDocuments, language);
+
+        DocumentDomainObject document = documents.get(docId);
+
+    	if (document == null) {
+            Meta meta = getMeta(docId);
+
+            if (meta == null) {
+                return null;
+            }
+
+            DocumentVersionInfo versionInfo = getDocumentVersionInfo(docId);
+            DocumentVersion version = versionInfo.getActiveVersion();
+
+	        document = documentLoader.loadDocument(meta.clone(), version.clone(), language.clone());
+
+            if (document != null) {
+	            documents.put(docId, document);
+            }
+    	}
+
+        return document;
+    }    
 
 
     private Map<Integer, DocumentDomainObject> getDocuments(Map<I18nLanguage, Map<Integer, DocumentDomainObject>> allDocuments, I18nLanguage language) {

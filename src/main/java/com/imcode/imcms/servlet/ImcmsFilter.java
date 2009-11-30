@@ -106,12 +106,14 @@ public class ImcmsFilter implements Filter {
             
             if (requestInfo == null) {
                 requestInfo = new RequestInfo();
+
+                requestInfo.setUser(user);
+                requestInfo.setLanguage(Imcms.getI18nSupport().getDefaultLanguage());
+                requestInfo.setDocVersionMode(RequestInfo.DocVersionMode.ACTIVE);
                 
                 session.setAttribute(ImcmsConstants.SESSION_ATTR__REQUEST_INFO, requestInfo);
             }
 
-            requestInfo.setUser(user);
-            
             updateRequestInfoLanguage(request, requestInfo);
             updateRequestInfoShowSettings(request, requestInfo);
             
@@ -270,24 +272,41 @@ public class ImcmsFilter implements Filter {
 
 
     /**
-     * Updates logged in user's show settings.
+     * Updates user's main document version to show and and version mode.
      *
      * @param request servlet request
      * @param requestInfo requestInfo
      */
-    // TODO: Add security check
-    // View settings - comment about WORKING/|PUB mode
+    // TODO: Optimize, Add security check?
     private void updateRequestInfoShowSettings(HttpServletRequest request, RequestInfo requestInfo) {
-        String modeValue = request.getParameter("mode");
-        if (modeValue != null) {
-        	//user.getDocumentShowSettings().setIgnoreI18nShowMode(Boolean.parseBoolean(modeValue.toLowerCase()));
+        String docIdStr = request.getParameter("meta_id");
+        String docVersionNoStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_NO);
+
+        if (docIdStr != null && docVersionNoStr != null) {
+            try {
+                Integer docId = Integer.parseInt(docIdStr);
+                Integer docVersionNo = Integer.parseInt(docVersionNoStr);
+
+                requestInfo.setDocId(docId);
+                requestInfo.setDocVersionNo(docVersionNo);
+            } catch (NumberFormatException e) {
+                throw new AssertionError(e);
+            }
+        } else {
+            requestInfo.setDocId(null);
+            requestInfo.setDocVersionNo(null);
         }
 
-        String version = request.getParameter("version");
-        if (version != null) {
-        	//DocumentShowSettings settings = user.getDocumentShowSettings();
+        String docVersionModeStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_MODE);
+        
+        if (docVersionModeStr != null) {
+            RequestInfo.DocVersionMode docVersionMode = RequestInfo.DocVersionMode.ACTIVE;
+            
+            if (docVersionModeStr.toUpperCase().charAt(0) == 'W') {
+                docVersionMode = RequestInfo.DocVersionMode.WORKING;
+            }
 
-            //settings.setVersionSelector(DocumentVersionSelector.getSelector(version));
+            requestInfo.setDocVersionMode(RequestInfo.DocVersionMode.WORKING);
         }
     }
 

@@ -1,4 +1,5 @@
 (ns com.imcode.imcms.project
+  #^{:doc "imCMS project's utils."}   
   (:require
     ;[clojure.contrib.logging :as log]
     [clojure.contrib.str-utils :as su]
@@ -12,6 +13,7 @@
     clojure.contrib.test-is
     clojure.contrib.repl-utils
     clojure.contrib.duck-streams
+    clojure.contrib.def
 
     [clojure.contrib.except :only [throw-if throw-if-not]]
     [com.imcode.imcms.file-utils :as file-utils :only [throw-if-not-dir throw-if-not-file]])
@@ -22,9 +24,6 @@
     (org.apache.commons.dbcp BasicDataSource)))
 
 
-(def PST #(.printStackTrace *e))
-
-
 (def base-dir (atom (.getCanonicalFile (File. "."))))
 
 
@@ -32,7 +31,8 @@
   (reset! base-dir (.getCanonicalFile (File. new-path))))
 
 
-(defn base-dir-path [] (.getCanonicalPath @base-dir))
+(defn base-dir-path []
+  (.getCanonicalPath @base-dir))
 
 
 (defn- filesystem-node
@@ -42,7 +42,7 @@
 
 
 (defn subdir
-  "Returns project's subdir."
+  "Returns project's subdir - non recursive."
   ([relative-path]
     (subdir relative-path true))
 
@@ -71,53 +71,51 @@
 
 
 (defn files
-  "Returns files from project's subdir."
+  "Returns files from project's subdir - non recursive."
   [dir-path filenames]
   (let [dir (subdir dir-path)]
     (map #(throw-if-not-file (File. dir %)) filenames)))
 
+(defn get-file-fn
+  "Creates function which returns project file."
+  [file-path] #(file file-path))
 
 
-(def load-build-properties
-  ;"Loads and returns properties from the project build properties file."
-  (let [lock (Object.)
-        state (atom {:properties nil, :last-modified nil})]
-
-    (fn []
-      (locking lock
-        (let [prop-file (file "build.properties")
-              last-modified (.lastModified prop-file)]
-
-          (if-not (= last-modified (:last-modified @state))
-            (reset! state {:properties (utils/to-keyword-key-map(file-utils/load-properties prop-file))
-                           :last-modified last-modified}))
-
-          (:properties @state))))))
+(def
+  #^{:doc "Function for loading project's build properties from the build.properties file."}
+  
+  build-properties (file-utils/call-if-modified
+                     (get-file-fn "build.properties")
+                     (comp utils/to-keyword-key-map file-utils/load-properties)))
 
 
-(defn create-db-datasource
-  "Creates database datasource based on build properties."
+(def
+   #^{:doc "Function which creates pooled datasource based on the build properties."}
+  db-datasource
+  (file-utils/call-if-modified
+    (get-file-fn "build.properties")
+    (fn file-fn [_]
+      (let [p (build-properties)
+        db-url (db-utils/create-url (:db-target p) (:db-host p) (:db-port p))]
+
+        (doto (BasicDataSource.)
+          (.setUsername (:db-user p))
+          (.setPassword (:db-pass p))
+          (.setDriverClassName (:db-driver p))
+          (.setUrl db-url))))))
+
+
+(defn db-spec
+  "Creates db-spec used by clojure.contrib.sql"
   []
-  (let [properties (load-build-properties)
-        db-url (db-utils/create-url (:db-target properties) (:db-host properties) (:db-port properties))]
-
-    (doto (BasicDataSource.)
-      (.setUsername (:db-user properties))
-      (.setPassword (:db-pass properties))
-      (.setDriverClassName (:db-driver properties))
-      (.setUrl db-url))))
-
-
-(defn db-spec []
-  {:datasource (create-db-datasource)})
+  {:datasource (db-datasource)})
 
 
 (defn db-metadata []
   (db-utils/get-metadata (db-spec)))
 
 
-(defn print-db-metadata
-  []
+(defn print-db-metadata []
   (let [meta-map (bean (db-metadata))
         meta-keys (sort (keys meta-map))]
 
@@ -135,5 +133,5 @@
 
 
 (defmacro sh [& args]
-  (let [cmd# (map str args)]
-    `(shell/sh ~@cmd#)))
+  (let [cmd (map str args)]
+    `(shell/sh ~@cmd)))

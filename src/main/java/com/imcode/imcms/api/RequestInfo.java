@@ -3,12 +3,23 @@ package com.imcode.imcms.api;
 import imcode.server.user.UserDomainObject;
 
 /**
- * Request info.
+ * Request info bound to thread local.
  *
  * @see imcode.server.Imcms
  * @see com.imcode.imcms.servlet.ImcmsFilter
  */
 public class RequestInfo {
+
+    public enum DocVersionMode {
+        WORKING,
+        ACTIVE
+    }
+
+    private Integer docId;
+    
+    private Integer docVersionNo;
+
+    private DocVersionMode docVersionMode;
 
     private UserDomainObject user;
 
@@ -28,5 +39,29 @@ public class RequestInfo {
 
     public void setLanguage(I18nLanguage language) {
         this.language = language;
+    }
+
+    public Integer getDocVersionNo() {
+        return docVersionNo;
+    }
+
+    public void setDocVersionNo(Integer docVersionNo) {
+        this.docVersionNo = docVersionNo;
+    }
+
+    public DocVersionMode getDocVersionMode() {
+        return docVersionMode;
+    }
+
+    public void setDocVersionMode(DocVersionMode docVersionMode) {
+        this.docVersionMode = docVersionMode;
+    }
+
+    public Integer getDocId() {
+        return docId;
+    }
+
+    public void setDocId(Integer docId) {
+        this.docId = docId;
     }
 }

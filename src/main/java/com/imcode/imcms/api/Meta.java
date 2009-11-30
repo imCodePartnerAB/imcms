@@ -29,9 +29,9 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
- * Document meta.
+ * Document's meta.
  * 
- * Every document in a system have a meta.   
+ * Shared by all versions of a same document.
  */
 @Entity
 @Table(name="meta")
