@@ -30,7 +30,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -57,15 +56,6 @@ import com.imcode.imcms.flow.DocumentPageFlow;
  *   
  * DocumentLoader is instantiated using SpringFramework factory
  * in order to support declared (AOP) transactions.
- * 
- * There is a big difference between getDocument and getDocumentForShowing:
- * 
- * getDocument returns document instance unmodified.
- * getDocumentForShowing will throw an exception if a user who have requested 
- * the document does not has appropriate permissions or settings. 
- * Additionally returned document instance is advised using AOP interceptors  
- * to provide workaround for legacy code which does not support translated 
- * (i18n) content - currently this is a prototype implementation.
  */
 public class DocumentMapper implements DocumentGetter {
 
@@ -199,13 +189,13 @@ public class DocumentMapper implements DocumentGetter {
         document.setPublicationStatus(Document.PublicationStatus.NEW);
     }
 
-    public DocumentReference getDocumentReference(DocumentDomainObject document, DocumentVersionSelector versionSelector) {
-        return getDocumentReference(document.getId(), versionSelector);
+    public DocumentReference getDocumentReference(DocumentDomainObject document) {
+        return getDocumentReference(document.getId());
     }
     
 
-    public DocumentReference getDocumentReference(int childId, DocumentVersionSelector versionSelector) {
-        return new GetterDocumentReference(childId, versionSelector);
+    public DocumentReference getDocumentReference(int childId) {
+        return new GetterDocumentReference(childId);
     }
 
     //TODO: make new active if flag is set
@@ -314,7 +304,7 @@ public class DocumentMapper implements DocumentGetter {
     
     
     public boolean hasPublishedVersion(Integer documentId) {
-    	//return documentLoaderCachingProxy.getActiveDocument(documentId) != null;
+    	//return documentLoaderCachingProxy.getDefaultDocument(documentId) != null;
         return false;
     }    
 
@@ -396,7 +386,7 @@ public class DocumentMapper implements DocumentGetter {
             int containingDocumentId = row[0];
             int menuIndex = row[1];
             
-            //TextDocumentDomainObject containingDocument = (TextDocumentDomainObject) getActiveDocument(containingDocumentId);
+            //TextDocumentDomainObject containingDocument = (TextDocumentDomainObject) getDefaultDocument(containingDocumentId);
             TextDocumentDomainObject containingDocument = (TextDocumentDomainObject) getDocument(containingDocumentId);
             documentMenuPairs[i] = new TextDocumentMenuIndexPair(containingDocument, menuIndex);
         }
@@ -553,7 +543,7 @@ public class DocumentMapper implements DocumentGetter {
         	private List<Integer> documentIds = nativeQueriesDao.getDocumentsWithPermissionsForRole(role.getId().intValue()); 
             
         	public DocumentDomainObject get(int index) {
-                //return getActiveDocument(documentIds.get(index));
+                //return getDefaultDocument(documentIds.get(index));
                 return getDocument(documentIds.get(index));
             }
 
@@ -563,31 +553,6 @@ public class DocumentMapper implements DocumentGetter {
         };
     }
     
-    
-    /** 
-     * @return custom version of a document.
-     */
-    /*
-    public DocumentDomainObject getDocument(Integer documentId, DocumentVersionSelector versionSelector) {
-    	return versionSelector.getDocument(this, documentId);
-    }
-    */
-    
-    /**
-     * Returns latest version of a document.
-     *  
-     * Please note this call is expensive since returned document is not cached.
-     * 
-     * @param documentId document id
-     * @returns latest version of a document
-     */
-    /*
-    public DocumentDomainObject getLatestDocumentVersionForShowing(Integer documentId, UserDomainObject user) { 
-        DocumentDomainObject document = getDocument(documentId);
-        
-        return document == null ? null : createDocumentShowInterceptor(document, user);
-    }
-        */
     
     /**
      * Returns working document in default language.
@@ -626,7 +591,7 @@ public class DocumentMapper implements DocumentGetter {
 
         return docVersionMode == RequestInfo.DocVersionMode.WORKING
             ? documentLoaderCachingProxy.getWorkingDocument(docId, language)
-            : documentLoaderCachingProxy.getActiveDocument(docId, language);
+            : documentLoaderCachingProxy.getDefaultDocument(docId, language);
     }
 
     /**
@@ -651,117 +616,12 @@ public class DocumentMapper implements DocumentGetter {
      * TODO: Check all calls to this method and replace with getDocument where appropriate.
      */
     /*
-    public DocumentDomainObject getActiveDocument(Integer metaId) {
-        return documentLoaderCachingProxy.getActiveDocument(metaId);
+    public DocumentDomainObject getDefaultDocument(Integer metaId) {
+        return documentLoaderCachingProxy.getDefaultDocument(metaId);
     }
       */
       
-    /**
-     * Returns published or working (depending on user show settings) document for showing.
-     * 
-     * @param documentIdentity document's id or alias
-     * @param user an user requesting a document 
-     * 
-     * @return published or working AOP adviced document or null if document does not exist.  
-     */
-    /*
-    public DocumentDomainObject getDocumentForShowing(String documentIdentity, UserDomainObject user) {
-        Integer documentId = toDocumentId(documentIdentity);
-        
-        return documentId == null
-        	? null
-        	: getDocumentForShowing(documentId, user);	
-    }
-    
-    public DocumentDomainObject getPublishedDocumentForShowing(String documentIdentity, UserDomainObject user) {
-        Integer documentId = toDocumentId(documentIdentity);
-        
-        return documentId == null
-        	? null
-        	: getActiveDocument(documentId);
-    }  
-    
-    public DocumentDomainObject getWorkingDocumentForShowing(String documentIdentity, UserDomainObject user) {
-        Integer documentId = toDocumentId(documentIdentity);
-        
-        return documentId == null
-        	? null
-        	: getWorkingDocument(documentId);	
-    }
-       */
-    
-        
-    /** 
-     * Returns published, working or custom document version depending on user's view settings
-     * and i18n meta settings. 
-     * 
-     * @param documentId document id
-     * @param user an user requesting a document 
-     *  
-     * @return advised published, working or custom document version depending on user's view settings
-     * or null if document does not exist
-     */
-    /*
-    public DocumentDomainObject getDocumentForShowing(Integer documentId, UserDomainObject user) {
-    	DocumentShowSettings showSettings = user.getDocumentShowSettings();
-    	DocumentDomainObject document = showSettings.getVersionSelector()
-    		.getDocument(this, documentId);
-    	
-    	return createDocumentShowInterceptor(document, user);    	
-    }
-     */
-    
-    /**
-     * Creates document interceptor based on document show settings.
-     * 
-     * TODO: optimize proxy creation - pooling is possible solution. 
-     * TODO: Implement two strategies - with intercepting for multi-langual projects 
-     * and w/o intercepting for single-language projects.
-     */
-    /*
-    private DocumentDomainObject createDocumentShowInterceptor(DocumentDomainObject document, UserDomainObject user) {
-    	if (document != null) {
-    	*/
-    		/*
-    		 * Determines document's content language.
-    		 * 
-    		 * If an user is allowed to see a document's content in a current language
-    		 * then document language is set to current language, otherwise
-    		 * it is set to default language. 
-    		 */
-            /*
-    		I18nLanguage currentDocumentLanguage = I18nSupport.getCurrentLanguage();
-    		DocumentShowSettings showSettings = user.getDocumentShowSettings();
-    		
-    		if (!I18nSupport.getCurrentIsDefault() && !showSettings.isIgnoreI18nShowMode() ) {            
-    			I18nMeta i18nMeta = document.getI18nMeta(I18nSupport.getCurrentLanguage());
-            
-    			if (!i18nMeta.getEnabled()) {
-    				if (document.getMeta().isShowDisabledI18nContentInDefaultLanguage()) {
-    					currentDocumentLanguage = I18nSupport.getDefaultLanguage();
-    				} else {
-    					throw new I18nDisabledException(document, I18nSupport.getCurrentLanguage());
-    				}
-    			}
-    		}
-    		
-    		// TODO: prototype implementation - optimize 	
-        	AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(document);            	
-            aspectJProxyFactory.setProxyTargetClass(true);
-            aspectJProxyFactory.addAspect(new DocumentAspect(currentDocumentLanguage));       
-            
-            if (document instanceof TextDocumentDomainObject) {
-                aspectJProxyFactory.addAspect(new TextDocumentAspect(currentDocumentLanguage));            	
-            }
-                    	
-        	document = aspectJProxyFactory.getProxy();    		
-    	}
-    	
-    	return document;
-    	
-    }
-*/
-               
+
 
     public CategoryMapper getCategoryMapper() {
         return categoryMapper;

@@ -212,7 +212,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
                 addDocumentToIndex( workingDocument, indexWriter );
 
                 // Published document indexing
-                // DocumentDomainObject publishedDocument = documentMapper.getActiveDocument( documentIds[i] );
+                // DocumentDomainObject publishedDocument = documentMapper.getDefaultDocument( documentIds[i] );
                 // if (publishedDocument != null) {
                 //    addDocumentToIndex( publishedDocument, indexWriter );
                 // }

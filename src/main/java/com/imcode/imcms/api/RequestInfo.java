@@ -12,7 +12,7 @@ public class RequestInfo {
 
     public enum DocVersionMode {
         WORKING,
-        ACTIVE
+        DEFAULT
     }
 
     private Integer docId;

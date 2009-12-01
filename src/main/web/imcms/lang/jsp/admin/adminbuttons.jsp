@@ -69,8 +69,6 @@ boolean isIE7   = re.match("/(MSIE 7)/i", uAgent) ;
 boolean isGecko = re.match("/Gecko/i", uAgent) ;
 
 %>
-<%@page import="imcode.server.user.DocumentShowSettings"%>
-
 <%@page import="org.apache.commons.collections.iterators.ReverseListIterator"%>
 <%@page import="java.util.Iterator"%><vel:velocity>
 <style type="text/css">
@@ -211,7 +209,7 @@ if (sFlags != null && sFlags.equals("1")) {
                 String displayName = DocumentVersionInfo.isWorkingVersion(v)
                         ? "DRAFT" : "Version " + v.getNo().toString();
 
-                if (docVersionInfo.isActiveVersion(v)) {
+                if (docVersionInfo.isDefaultVersion(v)) {
                     displayName += " (active)";    
                 }
 
@@ -229,7 +227,7 @@ if (sFlags != null && sFlags.equals("1")) {
 	    %>
         <td>
           <form action="$contextPath/servlet/AdminDoc">
-          <input type="text" size="3" name="no" value="<%=docVersionInfo.getActiveVersion().getNo()%>"/>
+          <input type="text" size="3" name="no" value="<%=docVersionInfo.getDefaultVersion().getNo()%>"/>
           <input type="hidden" name="imcms.doc.language" value="<%=currentLanguage.getCode()%>"/>
           <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
           <input type="hidden" name="flags" value="8388608"/>

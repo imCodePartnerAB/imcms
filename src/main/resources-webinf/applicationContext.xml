@@ -112,6 +112,7 @@
     <property name="documentVersionDao" ref="documentVersionDao"/>
     <property name="textDao" ref="textDao"/>
     <property name="imageDao" ref="imageDao"/>
+    <property name="menuDao" ref="menuDao"/>
   </bean>
   
   <bean id="documentLoader" class="com.imcode.imcms.mapping.DocumentLoader">

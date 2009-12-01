@@ -9,7 +9,7 @@ SET @schema_version__minor_new = 2;
 
 
 
--- fix i18n language!!!
+-- fix i18n language => imcms_doc_languages !!!
 
 CREATE TABLE imcms_doc_keywords (
 
@@ -24,6 +24,7 @@ CREATE TABLE imcms_doc_keywords (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+-- imcms_doc_enabled_languages
 CREATE TABLE imcms_doc_languages (
 
     id int AUTO_INCREMENT,
@@ -67,17 +68,17 @@ FROM
     meta;
 
 
-CREATE TABLE imcms_doc_active_version (
+CREATE TABLE imcms_doc_default_version (
     id int AUTO_INCREMENT,
     doc_id int NOT NULL,
     version_no int NOT NULL DEFAULT 0,
 
-    CONSTRAINT pk__imcms_doc_active_version PRIMARY KEY (id),
-    CONSTRAINT uk__imcms_doc_active_version__doc_id__version_no UNIQUE KEY (doc_id, version_no),
-    CONSTRAINT fk__imcms_doc_active_version__doc_versions FOREIGN KEY (doc_id, version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
+    CONSTRAINT pk__imcms_doc_default_version PRIMARY KEY (id),
+    CONSTRAINT uk__imcms_doc_default_version__doc_id__version_no UNIQUE KEY (doc_id, version_no),
+    CONSTRAINT fk__imcms_doc_default_version__doc_versions FOREIGN KEY (doc_id, version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO imcms_doc_active_version (doc_id, version_no)
+INSERT INTO imcms_doc_default_version (doc_id, version_no)
 SELECT doc_id, no
 FROM imcms_doc_versions;
 
@@ -148,6 +149,8 @@ CREATE TABLE imcms_text_doc_contents (
   UNIQUE KEY uk__imcms_text_doc_contents_loop_id__order_index (loop_id, order_index),
   CONSTRAINT fk__imcms_text_doc_contents__imcms_text_doc_content_loops FOREIGN KEY (loop_id) REFERENCES imcms_text_doc_content_loops (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- drop old content and loops tables
 
 
 -- text documents texts
@@ -504,8 +507,63 @@ ALTER TABLE fileupload_docs
   ADD FOREIGN KEY fk__fileupload_docs__meta(meta_id) REFERENCES meta(meta_id) ON DELETE CASCADE;
 
 
+CREATE TABLE imcms_text_doc_menus (
+  id int NOT NULL AUTO_INCREMENT,
+  doc_id int NOT NULL,
+  doc_version_no int NOT NULL,
+  no int NOT NULL,
+  sort_order int NOT NULL,
+
+  CONSTRAINT pk__imcms_text_doc_menus PRIMARY KEY (id),
+  UNIQUE KEY uk__imcms_text_doc_menus__doc_id__doc_version_no__no (doc_id, doc_version_no, no),
+  CONSTRAINT fk__imcms_text_doc_menus__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  CONSTRAINT fk__imcms_text_doc_menus__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+INSERT INTO imcms_text_doc_menus (
+  id,
+  doc_id,
+  doc_version_no,
+  no,
+  sort_order
+)
+SELECT
+  menu_id,
+  meta_id,
+  0,
+  menu_index,
+  sort_order
+FROM
+  menus;
+
+
+CREATE TABLE imcms_text_doc_menu_items (
+  id int NOT NULL AUTO_INCREMENT,
+  menu_id int NOT NULL,        
+  doc_id int NOT NULL,
+  manual_sort_order int NOT NULL,
+  tree_sort_index varchar(64) NOT NULL,
+
+  CONSTRAINT pk__imcms_text_doc_menu_items PRIMARY KEY (id),
+  UNIQUE KEY uk__imcms_text_doc_menu_items__menu_id__doc_id (menu_id, doc_id),
+  CONSTRAINT fk__imcms_text_doc_menu_items__menu FOREIGN KEY (menu_id) REFERENCES imcms_text_doc_menus (id) ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO imcms_text_doc_menu_items (
+  menu_id,
+  doc_id,
+  manual_sort_order,
+  tree_sort_index
+)
+SELECT
+  menu_id, to_meta_id, manual_sort_order, tree_sort_index
+FROM
+  childs;
+
+-- drop childs, drop menus
 --
 -- Update schema version
 --

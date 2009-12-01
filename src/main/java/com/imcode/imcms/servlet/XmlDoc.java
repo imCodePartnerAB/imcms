@@ -23,7 +23,7 @@ public class XmlDoc extends HttpServlet {
         int documentId = Integer.parseInt( request.getParameter( "meta_id" ) );
 
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-        //DocumentDomainObject document = documentMapper.getActiveDocument( documentId );
+        //DocumentDomainObject document = documentMapper.getDefaultDocument( documentId );
         DocumentDomainObject document = documentMapper.getDocument( documentId );
         UserDomainObject currentUser = Utility.getLoggedOnUser(request);
 

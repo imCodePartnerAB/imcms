@@ -5,10 +5,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
-import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -20,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.*;
-import com.imcode.imcms.mapping.orm.ActiveDocumentVersion;
+import com.imcode.imcms.mapping.orm.DefaultDocumentVersion;
 
 /**
  * This class is instantiated using spring framework.
@@ -40,6 +37,8 @@ public class DocumentSaver {
     private TextDao textDao;
 
     private ImageDao imageDao;
+
+    private MenuDao menuDao;
     
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
     
@@ -77,17 +76,17 @@ public class DocumentSaver {
 
     @Transactional
     public void setDocumentActiveVersion(Integer docId, Integer docVersionNo) {
-        ActiveDocumentVersion activeVersion = documentVersionDao.getActiveVersionORM(docId);
+        DefaultDocumentVersion activeVersion = documentVersionDao.getDefaultVersionORM(docId);
 
         if (activeVersion == null) {
-            activeVersion = new ActiveDocumentVersion();
+            activeVersion = new DefaultDocumentVersion();
             activeVersion.setDocId(docId);
             activeVersion.setNo(docVersionNo);
         } else {
             activeVersion.setNo(docVersionNo);
         }
 
-        documentVersionDao.saveActiveVersionORM(activeVersion);
+        documentVersionDao.saveDefaultVersionORM(activeVersion);
     }
 
 
@@ -141,6 +140,15 @@ public class DocumentSaver {
 
                     imageDao.saveImage(image);
                 }
+
+                for (MenuDomainObject menu: menuDao.getMenusNoInit(docId, 0)) {
+                    menu = menu.clone();
+                    menu.setId(null);
+                    menu.setDocVersionNo(docVersionNo);
+
+                    menuDao.saveMenu(menu);
+                }
+                
     		}
     	} catch (RuntimeException e) {
     		throw new DocumentSaveException(e);
@@ -430,5 +438,13 @@ public class DocumentSaver {
 
     public void setImageDao(ImageDao imageDao) {
         this.imageDao = imageDao;
+    }
+
+    public MenuDao getMenuDao() {
+        return menuDao;
+    }
+
+    public void setMenuDao(MenuDao menuDao) {
+        this.menuDao = menuDao;
     }
 }

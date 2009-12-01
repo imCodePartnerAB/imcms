@@ -98,7 +98,7 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
 
         if ( documentFinder.isDocumentsSelectable() ) {
             try {
-                //selectedDocument = documentMapper.getActiveDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__SELECTED_DOCUMENT_ID ) ) );
+                //selectedDocument = documentMapper.getDefaultDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__SELECTED_DOCUMENT_ID ) ) );
                 selectedDocument = documentMapper.getDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__SELECTED_DOCUMENT_ID ) ) );
             } catch ( NumberFormatException nfe ) {
             }
@@ -249,7 +249,7 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
         DocumentDomainObject documentSelectedForEditing = null;
         try {
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-            //documentSelectedForEditing = documentMapper.getActiveDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID ) ) );
+            //documentSelectedForEditing = documentMapper.getDefaultDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID ) ) );
             documentSelectedForEditing = documentMapper.getDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID ) ) );
         } catch ( NumberFormatException nfe ) {
         }

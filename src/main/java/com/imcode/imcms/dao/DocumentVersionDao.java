@@ -3,7 +3,7 @@ package com.imcode.imcms.dao;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.mapping.orm.ActiveDocumentVersion;
+import com.imcode.imcms.mapping.orm.DefaultDocumentVersion;
 
 import java.util.List;
 import java.util.Date;
@@ -52,24 +52,24 @@ public class DocumentVersionDao extends HibernateTemplate {
 
     
 	@Transactional
-	public DocumentVersion getActiveVersion(Integer docId) {
+	public DocumentVersion getDefaultVersion(Integer docId) {
 		return (DocumentVersion)getSession()
-			.getNamedQuery("DocumentVersion.getActiveVersion")
+			.getNamedQuery("DocumentVersion.getDefaultVersion")
 		    .setParameter("docId", docId)
 		    .uniqueResult();
 	}
     
 
 	@Transactional
-	public ActiveDocumentVersion getActiveVersionORM(Integer docId) {
-		return (ActiveDocumentVersion)getSession()
-            .createQuery("SELECT v FROM ActiveDocumentVersion v WHERE v.docId = :docId")
+	public DefaultDocumentVersion getDefaultVersionORM(Integer docId) {
+		return (DefaultDocumentVersion)getSession()
+            .createQuery("SELECT v FROM DefaultDocumentVersion v WHERE v.docId = :docId")
 		    .setParameter("docId", docId)
 		    .uniqueResult();
 	}
 
 	@Transactional
-	public void saveActiveVersionORM(ActiveDocumentVersion version) {
+	public void saveDefaultVersionORM(DefaultDocumentVersion version) {
         saveOrUpdate(version);
 	}
 

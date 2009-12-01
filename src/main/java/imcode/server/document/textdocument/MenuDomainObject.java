@@ -33,7 +33,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity(name="Menu")
-@Table(name="menus")
+@Table(name="imcms_text_doc_menus")
 public class MenuDomainObject implements Cloneable, Serializable {
 
     public final static int MENU_SORT_ORDER__BY_HEADLINE = 1;
@@ -48,26 +48,29 @@ public class MenuDomainObject implements Cloneable, Serializable {
     private static final int DEFAULT_SORT_KEY_INCREMENT = 10;
     
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="menu_id")
     private Long id;
 	
 	@Column(name="sort_order")
     private int sortOrder;
 	
-	@Column(name="menu_index")
+	@Column(name="no")
 	private Integer index;
 	
-	@Column(name="meta_id")
+
+    @Column(name="doc_version_no")
+	private Integer docVersionNo;
+
+    @Column(name="doc_id")
 	private Integer metaId;
     
 
 	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
 	@JoinTable(
-	    name = "childs",
+	    name = "imcms_text_doc_menu_items",
 	    joinColumns = @JoinColumn(name="menu_id")
 	)	
 	@org.hibernate.annotations.MapKey(
-	   columns = @Column(name="to_meta_id")
+	   columns = @Column(name="doc_id")
 	)
     private Map<Integer, MenuItemDomainObject> menuItems = new HashMap<Integer, MenuItemDomainObject>();
 
@@ -255,4 +258,12 @@ public class MenuDomainObject implements Cloneable, Serializable {
 	public Map<Integer, MenuItemDomainObject> getItemsMap() {
 		return menuItems;
 	}
+
+    public Integer getDocVersionNo() {
+        return docVersionNo;
+    }
+
+    public void setDocVersionNo(Integer docVersionNo) {
+        this.docVersionNo = docVersionNo;
+    }
 }

@@ -109,7 +109,7 @@ public class ImcmsFilter implements Filter {
 
                 requestInfo.setUser(user);
                 requestInfo.setLanguage(Imcms.getI18nSupport().getDefaultLanguage());
-                requestInfo.setDocVersionMode(RequestInfo.DocVersionMode.ACTIVE);
+                requestInfo.setDocVersionMode(RequestInfo.DocVersionMode.DEFAULT);
                 
                 session.setAttribute(ImcmsConstants.SESSION_ATTR__REQUEST_INFO, requestInfo);
             }
@@ -300,7 +300,7 @@ public class ImcmsFilter implements Filter {
         String docVersionModeStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_MODE);
         
         if (docVersionModeStr != null) {
-            RequestInfo.DocVersionMode docVersionMode = RequestInfo.DocVersionMode.ACTIVE;
+            RequestInfo.DocVersionMode docVersionMode = RequestInfo.DocVersionMode.DEFAULT;
             
             if (docVersionModeStr.toUpperCase().charAt(0) == 'W') {
                 docVersionMode = RequestInfo.DocVersionMode.WORKING;

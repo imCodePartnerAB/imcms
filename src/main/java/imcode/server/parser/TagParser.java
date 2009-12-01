@@ -338,7 +338,7 @@ public class TagParser {
             includedParserParameters = (ParserParameters) parserParameters.clone();
             includedParserParameters.setTemplate(attributes.getProperty("template"));
             includedParserParameters.setParameter(attributes.getProperty("param"));
-            //includedParserParameters.getDocumentRequest().setDocument(service.getDocumentMapper().getActiveDocument(included_meta_id));
+            //includedParserParameters.getDocumentRequest().setDocument(service.getDocumentMapper().getDefaultDocument(included_meta_id));
             includedParserParameters.getDocumentRequest().setDocument(service.getDocumentMapper().getDocument(included_meta_id));
             includedParserParameters.getDocumentRequest().setReferrer(document);
             includedParserParameters.setFlags(0);

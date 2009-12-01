@@ -29,7 +29,7 @@ public class DocumentVersionInfo implements Serializable {
 	/**
 	 * Active version.
 	 */
-	private DocumentVersion activeVersion;
+	private DocumentVersion defaultVersion;
 	
 	/**
 	 * Version list sorted ascending.
@@ -48,7 +48,7 @@ public class DocumentVersionInfo implements Serializable {
 	 * 
 	 * @param versions document versions list.
 	 */
-	public DocumentVersionInfo(Integer metaId, List<DocumentVersion> versions, DocumentVersion workingVersion, DocumentVersion activeVersion) {
+	public DocumentVersionInfo(Integer metaId, List<DocumentVersion> versions, DocumentVersion workingVersion, DocumentVersion defaultVersion) {
 		versionsMap = new TreeMap<Integer, DocumentVersion>();
 		
 		for (DocumentVersion  version: versions) {
@@ -56,7 +56,7 @@ public class DocumentVersionInfo implements Serializable {
 		}
 
         this.workingVersion = workingVersion;
-        this.activeVersion = activeVersion;
+        this.defaultVersion = defaultVersion;
         this.latestVersion = versions.get(versions.size() - 1);
 
 		this.metaId = metaId;
@@ -89,8 +89,8 @@ public class DocumentVersionInfo implements Serializable {
 	/**
 	 * @returns if given version number belongs to active version.
 	 */
-	public boolean isActiveVersion(DocumentVersion version) {
-		return version != null && getActiveVersion().getNo().equals(version.getNo());
+	public boolean isDefaultVersion(DocumentVersion version) {
+		return version != null && getDefaultVersion().getNo().equals(version.getNo());
 	}
 	
 	/** 
@@ -110,8 +110,8 @@ public class DocumentVersionInfo implements Serializable {
 	/** 
 	 * @return active version or null there is no active version.
 	 */
-	public DocumentVersion getActiveVersion() {
-		return activeVersion;
+	public DocumentVersion getDefaultVersion() {
+		return defaultVersion;
 	}	
 	
 	/** 

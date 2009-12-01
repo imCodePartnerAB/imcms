@@ -20,9 +20,6 @@ import org.apache.log4j.Logger;
 
 import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.api.DocumentVersionSelector;
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.dao.ContentLoopDao;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.dao.MenuDao;
@@ -112,15 +109,11 @@ public class TextDocumentInitializer {
      * @param document document to initialzie.
      */
     public void initMenus(TextDocumentDomainObject document) {
-    	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getMeta().getId());	
+    	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getId(), document.getVersion().getNo());	
     	Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
-    	DocumentVersionSelector versionSelector = document.getVersion().getNo() == 0
-    		? DocumentVersionSelector.WORKING_SELECTOR
-    		: DocumentVersionSelector.PUBLISHED_SELECTOR;
-    				
-    	
+
     	for (MenuDomainObject menu: menus) {
-    		initMenuItems(menu, documentGetter, versionSelector);
+    		initMenuItems(menu, documentGetter);
 	    	
 	    	menusMap.put(menu.getIndex(), menu);
     	}
@@ -128,13 +121,12 @@ public class TextDocumentInitializer {
     	document.setMenusMap(menusMap);
     }   
     
-    private void initMenuItems(MenuDomainObject menu, DocumentGetter documentGetter,
-    		DocumentVersionSelector versionSelector) {
+    private void initMenuItems(MenuDomainObject menu, DocumentGetter documentGetter) {
     	
     	for (Map.Entry<Integer, MenuItemDomainObject> entry: menu.getItemsMap().entrySet()) {
     		Integer destinationDocumentId = entry.getKey();
     		MenuItemDomainObject menuItem = entry.getValue();
-    		GetterDocumentReference gtr = new GetterDocumentReference(destinationDocumentId, versionSelector);
+    		GetterDocumentReference gtr = new GetterDocumentReference(destinationDocumentId);
     		
     		menuItem.setDocumentReference(gtr);
     		menuItem.setTreeSortKey(new TreeSortKeyDomainObject(menuItem.getTreeSortIndex()));

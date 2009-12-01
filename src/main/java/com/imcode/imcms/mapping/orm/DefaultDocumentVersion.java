@@ -3,8 +3,8 @@ package com.imcode.imcms.mapping.orm;
 import javax.persistence.*;
 
 @Entity
-@Table(name="imcms_doc_active_version")
-public class ActiveDocumentVersion implements Cloneable {
+@Table(name="imcms_doc_default_version")
+public class DefaultDocumentVersion implements Cloneable {
 
 	@Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -17,9 +17,9 @@ public class ActiveDocumentVersion implements Cloneable {
 	private Integer no;
 
     @Override
-    public ActiveDocumentVersion clone() {
+    public DefaultDocumentVersion clone() {
         try {
-            return (ActiveDocumentVersion)super.clone();
+            return (DefaultDocumentVersion)super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);    
         }

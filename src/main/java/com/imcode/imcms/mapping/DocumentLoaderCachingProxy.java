@@ -33,11 +33,11 @@ public class DocumentLoaderCachingProxy {
 	private Map<Integer, DocumentVersionInfo> versionInfos;    
 	
 	/**
-	 * Active documents.
+	 * Default documents.
      * 
      * Inner map key is a document id.
      */
-    private Map<I18nLanguage, Map<Integer, DocumentDomainObject>> activeDocuments;
+    private Map<I18nLanguage, Map<Integer, DocumentDomainObject>> defaultDocuments;
     
     /** 
      * Working documents.
@@ -59,15 +59,14 @@ public class DocumentLoaderCachingProxy {
     private DocumentLoader documentLoader;
 
     private int cacheSize;
-    
+
 
     public DocumentLoaderCachingProxy(DocumentLoader documentLoader, int cacheSize) {
         this.documentLoader = documentLoader;
         
         versionInfos = new HashMap<Integer, DocumentVersionInfo>();
-        //workingDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
         workingDocuments = new HashMap<I18nLanguage, Map<Integer, DocumentDomainObject>>();
-        activeDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
+        defaultDocuments = Collections.synchronizedMap(new LRUMap(cacheSize));
         metas = Collections.synchronizedMap(new LRUMap(cacheSize));
         this.cacheSize = cacheSize;
         
@@ -102,7 +101,7 @@ public class DocumentLoaderCachingProxy {
             
             if (versions.size() > 0) {
                 DocumentVersion workingVersion = versions.get(0);
-                DocumentVersion activeVersion = documentLoader.getDocumentVersionDao().getActiveVersion(docId);
+                DocumentVersion activeVersion = documentLoader.getDocumentVersionDao().getDefaultVersion(docId);
 
                 if (activeVersion == null) {
                     activeVersion = workingVersion;    
@@ -140,7 +139,7 @@ public class DocumentLoaderCachingProxy {
 
     
     public void clearCache() {
-    	activeDocuments.clear();
+    	defaultDocuments.clear();
     	workingDocuments.clear();
     	versionInfos.clear();
     	aliasesBidiMap.clear();
@@ -148,7 +147,7 @@ public class DocumentLoaderCachingProxy {
     
     
     public void removeDocumentFromCache(Integer docId) {
-    	activeDocuments.remove(docId);
+    	defaultDocuments.remove(docId);
         for (Map<Integer, DocumentDomainObject> docs: workingDocuments.values()) {
             workingDocuments.remove(docId);    
         }
@@ -255,8 +254,8 @@ public class DocumentLoaderCachingProxy {
     }
 
 
-    public DocumentDomainObject getActiveDocument(Integer docId, I18nLanguage language) {
-        Map<Integer, DocumentDomainObject> documents = getDocuments(activeDocuments, language);
+    public DocumentDomainObject getDefaultDocument(Integer docId, I18nLanguage language) {
+        Map<Integer, DocumentDomainObject> documents = getDocuments(defaultDocuments, language);
 
         DocumentDomainObject document = documents.get(docId);
 
@@ -268,7 +267,7 @@ public class DocumentLoaderCachingProxy {
             }
 
             DocumentVersionInfo versionInfo = getDocumentVersionInfo(docId);
-            DocumentVersion version = versionInfo.getActiveVersion();
+            DocumentVersion version = versionInfo.getDefaultVersion();
 
 	        document = documentLoader.loadDocument(meta.clone(), version.clone(), language.clone());
 

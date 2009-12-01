@@ -31,7 +31,7 @@ public interface DocumentGetter {
      * 
      * @param metaId document's meta id.
      */
-    //DocumentDomainObject getActiveDocument(Integer metaId);
+    //DocumentDomainObject getDefaultDocument(Integer metaId);
     
     /**
      * Returns working (latest) version of a document.

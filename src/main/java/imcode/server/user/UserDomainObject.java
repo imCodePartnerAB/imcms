@@ -22,7 +22,6 @@ import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.UnhandledException;
 
 import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
 
 public class UserDomainObject implements Cloneable, Serializable {
@@ -56,11 +55,6 @@ public class UserDomainObject implements Cloneable, Serializable {
     
     RoleIds roleIds = createRolesSetWithUserRole();
     protected RoleIds userAdminRoleIds = new RoleIds();
-    
-    /**
-     * Document show mode.DocumentShowSettings
-     */
-    private DocumentShowSettings documentShowSettings = new DocumentShowSettings();        
 
     /** Http session id.*/
     private String sessionId;
@@ -767,12 +761,4 @@ public class UserDomainObject implements Cloneable, Serializable {
             return phoneNumber.getType().equals(phoneNumberType) ;
         }
     }
-
-	public DocumentShowSettings getDocumentShowSettings() {
-		return documentShowSettings;
-	}
-
-	public void setDocumentShowSettings(DocumentShowSettings documentShowSettings) {
-		this.documentShowSettings = documentShowSettings;
-	}
 }

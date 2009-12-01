@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.UnhandledException;
 
-import com.imcode.imcms.api.DocumentVersionSelector;
 import com.imcode.imcms.flow.CreateDocumentPageFlow;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
@@ -150,7 +149,7 @@ public class MenuEditPage extends OkCancelPage {
                         int selectedChildId = Integer.parseInt(selectedChildIdStr);
                         DocumentDomainObject selectedChild = documentMapper.getDocument(selectedChildId);
                         DocumentDomainObject selectedChildCopy = documentMapper.copyDocument(selectedChild, user);
-                        menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(selectedChildCopy, DocumentVersionSelector.WORKING_SELECTOR)));
+                        menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(selectedChildCopy)));
                     }
                 }
             }
@@ -272,7 +271,7 @@ public class MenuEditPage extends OkCancelPage {
                 return;
             }
             MenuDomainObject menu = parentDocument.getMenu(parentMenuIndex.intValue());
-            menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(document, DocumentVersionSelector.WORKING_SELECTOR)));
+            menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(document)));
             documentMapper.saveDocument(parentDocument, user);
         }
 
