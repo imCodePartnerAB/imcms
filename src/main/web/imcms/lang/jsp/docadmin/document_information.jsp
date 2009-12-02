@@ -25,13 +25,13 @@
             java.text.Collator,
             java.text.DateFormat,
             java.text.SimpleDateFormat,
-            java.util.Arrays,
-            java.util.Date,
-            java.util.Set,
-            java.util.TreeSet,
             com.imcode.imcms.api.Meta"
 	
-%><%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"
+%>
+<%@ page import="com.imcode.imcms.api.I18nLanguage" %>
+<%@ page import="java.util.*" %>
+<%@ page import="com.imcode.imcms.api.DocumentLabels" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"
 %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
 %><%@	taglib prefix="vel" uri="imcmsvelocity"
 %><%
@@ -57,6 +57,31 @@
     String calendarButtonTitle = "<? web/imcms/lang/jscalendar/show_calendar_button ?>";
 
     pageContext.setAttribute("document", document);
+
+    // ----
+    Map<I18nLanguage, DocumentLabels> labelsMap = (Map<I18nLanguage, DocumentLabels>)request.getAttribute("labelsMap");
+
+    if (labelsMap == null) {
+        labelsMap = new HashMap<I18nLanguage, DocumentLabels>();
+        for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
+            DocumentLabels labels = new DocumentLabels();
+            labels.setLanguage(language);
+            labels.setMenuImageURL("");
+            labels.setHeadline("");
+            labels.setMenuText("");
+
+            labelsMap.put(language, labels);
+        }
+    }
+
+    // ---
+    Set<I18nLanguage> enabledLanguages = new HashSet<I18nLanguage>();
+    
+    for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
+        enabledLanguages.add(language);
+    }
+
+    pageContext.setAttribute("labelsMap", labelsMap.values());
 %><%!
 
 String formatDate(Date date) {
@@ -168,7 +193,7 @@ function setI18nCodeParameterValue(value) {
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="656">
 	<%-- TODO: Escape XML: $Headline$ --%>
-	<c:forEach items="${document.meta.i18nMetas}" var="i18nPart">
+	<c:forEach items="${labelsMap}" var="i18nPart">
 	
 	<c:set var="prefix" value="_${i18nPart.language.code}"/>
 	
@@ -369,12 +394,12 @@ function setI18nCodeParameterValue(value) {
 		<tr>
 		  <td colspan="6">
 			<table border="0" cellspacing="0" cellpadding="2">
-			<c:forEach items="${document.meta.i18nMetas}" var="i18nPart">
+			<c:forEach items="${labelsMap}" var="i18nPart">
 			<c:set var="prefix" value="_${i18nPart.language.code}"/>
 			<tr>	  
 				<td><input type="checkbox"
 				 name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>"
-				 id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>"<c:if test="${i18nPart.enabled}"> checked="checked"</c:if>/></td>
+				 id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>"<c:if test="${true}"> checked="checked"</c:if>/></td>
 				<td><label for="<%=
 				EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>"><img
 				  src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${i18nPart.language.code}.gif" alt="" style="border:0;" /></label></td>
@@ -401,7 +426,7 @@ function setI18nCodeParameterValue(value) {
 				<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>"
 				id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>0"
 				value="<%=Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE%>"<%=
-				document.getMeta().getUnavailableI18nDataSubstitution() == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE ? " checked=\"checked\"" : "" %> /></td>
+				document.getMeta().getDisabledLanguageShowSetting() == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE ? " checked=\"checked\"" : "" %> /></td>
 				<td style="padding-left:5px;"><label for="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>0"><%=
 				isSwe ? "Visa på standardspråket" : "Show in default language" %></label></td>
 			</tr>
@@ -414,7 +439,7 @@ function setI18nCodeParameterValue(value) {
 				<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>"
 				id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>1"
 				value="<%=Meta.DisabledLanguageShowSetting.DO_NOT_SHOW%>"<%=
-				document.getMeta().getUnavailableI18nDataSubstitution() == Meta.DisabledLanguageShowSetting.DO_NOT_SHOW ? " checked=\"checked\"" : "" %> /></td>
+				document.getMeta().getDisabledLanguageShowSetting() == Meta.DisabledLanguageShowSetting.DO_NOT_SHOW ? " checked=\"checked\"" : "" %> /></td>
 				<td style="padding-left:5px;"><label for="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE%>1"><%=
 				isSwe ? "Visa inte alls" : "Don't show at all" %></label></td>
 			</tr>
@@ -580,7 +605,22 @@ function setI18nCodeParameterValue(value) {
 	<tr>
 		<td class="imcmsAdmText" valign="top" style="padding-top:5px;"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/35 ?></td>
 		<td class="imcmsAdmText">
-		
+
+
+		<table border="0" cellspacing="0" cellpadding="2" style="width:98%;">
+		<tr>
+			<td class="imcmsAdmText" style="padding-left:10px; padding-right:25px;">${i18nPart.language.name}</td>
+			<td><%
+			Set documentKeywords = document.getKeywords();
+			String[] keywords = (String[])documentKeywords.toArray(new String[documentKeywords.size()]);
+			Collator collator = service.getDefaultLanguageCollator() ;
+			Arrays.sort(keywords,collator) ;
+			KeywordsParser keywordsParser = new KeywordsParser();
+			%><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS %>"
+			      size="48" maxlength="200" style="width:100%;"
+			      value="<%=StringEscapeUtils.escapeHtml( keywordsParser.formatKeywords(keywords) )%>" /></td>
+		</tr>
+
 		  <%-- Keywords old code:
 		  
 		  		
@@ -596,9 +636,11 @@ function setI18nCodeParameterValue(value) {
 		<input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SEARCH_DISABLED %>" value="1" <%
 		  
 		  --%>
-		  
+
+            <%--
 		<table border="0" cellspacing="0" cellpadding="2" style="width:98%;">
-		<c:forEach items="${document.meta.i18nMetas}" var="i18nPart">
+
+		<c:forEach items="${labelsMap}" var="i18nPart">
 		<c:set var="prefix" value="_${i18nPart.language.code}"/>
 		<c:set var="keywordsValues" value="${i18nPart.keywords}"/>
 		<tr>
@@ -615,6 +657,8 @@ function setI18nCodeParameterValue(value) {
 			      value="<%=StringEscapeUtils.escapeHtml( keywordsParser.formatKeywords(keywords) )%>" /></td>		
 		</tr>
 		</c:forEach>
+        --%>    
+
 		<tr>
 			<td colspan="3" class="imcmsAdmDim" style="padding-top:10px; padding-bottom:10px;"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/keywords_explanation ?></td>
 		</tr>

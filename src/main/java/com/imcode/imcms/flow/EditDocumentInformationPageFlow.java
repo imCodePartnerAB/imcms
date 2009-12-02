@@ -15,11 +15,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -29,12 +25,15 @@ import org.apache.commons.lang.ObjectUtils;
 
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.Meta;
+import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.DocumentLabels;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.admin.ImageBrowser;
 import com.imcode.imcms.servlet.admin.ListDocumentAliasPage;
 import com.imcode.imcms.servlet.admin.UserFinder;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import com.imcode.imcms.dao.MetaDao;
 import com.imcode.util.KeywordsParser;
 
 public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
@@ -90,9 +89,39 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
     private boolean adminButtonsHidden;
 
+    /** Enabled document languages. */
+    private Set<I18nLanguage> enabledLanguages = new HashSet<I18nLanguage>();
+
+    /** Document labels. */
+    private List<DocumentLabels> labelsList = new LinkedList<DocumentLabels>();
+    
+
     public EditDocumentInformationPageFlow( DocumentDomainObject document, DispatchCommand returnCommand,
                                             SaveDocumentCommand saveDocumentCommand ) {
-        super( document, returnCommand, saveDocumentCommand );       
+        super( document, returnCommand, saveDocumentCommand );
+
+
+        MetaDao metaDao = (MetaDao)Imcms.getSpringBean("metaDao");
+        Integer docId = document.getMeta().getId();
+
+        if (docId == null) {
+            labelsList = new LinkedList<DocumentLabels>();
+
+            for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
+                DocumentLabels labels = new DocumentLabels();
+                labels.setLanguage(language);
+                labels.setMenuImageURL("");
+                labels.setHeadline("");
+                labels.setMenuText("");
+
+                labelsList.add(labels);
+            }
+
+            enabledLanguages = new HashSet(Imcms.getI18nSupport().getLanguages());
+        } else {
+            labelsList = metaDao.getLabels(docId, document.getVersion().getNo());
+            enabledLanguages = new HashSet(metaDao.getEnabledLanguages(docId));
+        }
     }
 
     protected void dispatchFromEditPage( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {

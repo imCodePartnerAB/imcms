@@ -16,12 +16,12 @@ import com.imcode.imcms.mapping.orm.TemplateNames;
 
 /**
  * If this document represents a working version then its menus items also refer to working versions.
- * If this document represents non working version then its menus items also refer to published versions.
+ * If this document represents non working version then its menus items also refer to active versions.
  * TODO: optimize ineffective items (texts, images, loop texts, etc) access.
  */
 public class TextDocumentDomainObject extends DocumentDomainObject {
 		
-	/** Images. */
+	/** Images outside loops. */
     private Map<Integer, ImageDomainObject> images = new HashMap<Integer, ImageDomainObject>();
     
     /** Texts outside loops. */

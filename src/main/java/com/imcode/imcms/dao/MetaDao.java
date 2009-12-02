@@ -261,4 +261,10 @@ public class MetaDao extends HibernateTemplate {
     public Session getSession() {
         return super.getSession();
     }
+
+    @Transactional
+    public List<I18nLanguage> getEnabledLanguages(Integer docId) {
+        //getSession().createQuery("SELECT FROM ")
+        return null;
+    }
 }
