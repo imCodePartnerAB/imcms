@@ -58,30 +58,9 @@
 
     pageContext.setAttribute("document", document);
 
-    // ----
-    Map<I18nLanguage, DocumentLabels> labelsMap = (Map<I18nLanguage, DocumentLabels>)request.getAttribute("labelsMap");
+    pageContext.setAttribute("labelsList", documentInformationPage.getLabelsList());
 
-    if (labelsMap == null) {
-        labelsMap = new HashMap<I18nLanguage, DocumentLabels>();
-        for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
-            DocumentLabels labels = new DocumentLabels();
-            labels.setLanguage(language);
-            labels.setMenuImageURL("");
-            labels.setHeadline("");
-            labels.setMenuText("");
-
-            labelsMap.put(language, labels);
-        }
-    }
-
-    // ---
-    Set<I18nLanguage> enabledLanguages = new HashSet<I18nLanguage>();
-    
-    for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
-        enabledLanguages.add(language);
-    }
-
-    pageContext.setAttribute("labelsMap", labelsMap.values());
+    Map<I18nLanguage, Boolean> languagesState  = documentInformationPage.getLanguagesState();
 %><%!
 
 String formatDate(Date date) {
@@ -193,7 +172,7 @@ function setI18nCodeParameterValue(value) {
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="656">
 	<%-- TODO: Escape XML: $Headline$ --%>
-	<c:forEach items="${labelsMap}" var="i18nPart">
+	<c:forEach items="${labelsList}" var="i18nPart">
 	
 	<c:set var="prefix" value="_${i18nPart.language.code}"/>
 	
@@ -394,12 +373,17 @@ function setI18nCodeParameterValue(value) {
 		<tr>
 		  <td colspan="6">
 			<table border="0" cellspacing="0" cellpadding="2">
-			<c:forEach items="${labelsMap}" var="i18nPart">
+			<c:forEach items="${labelsList}" var="i18nPart">
 			<c:set var="prefix" value="_${i18nPart.language.code}"/>
+                <%
+                DocumentLabels labels = (DocumentLabels)pageContext.getAttribute("i18nPart");
+                Boolean enabled = languagesState.get(labels.getLanguage());
+                pageContext.setAttribute("enabled", enabled);
+                %>
 			<tr>	  
 				<td><input type="checkbox"
 				 name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>"
-				 id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>"<c:if test="${true}"> checked="checked"</c:if>/></td>
+				 id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>"<c:if test="${enabled}"> checked="checked"</c:if>/></td>
 				<td><label for="<%=
 				EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>"><img
 				  src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${i18nPart.language.code}.gif" alt="" style="border:0;" /></label></td>
@@ -640,7 +624,7 @@ function setI18nCodeParameterValue(value) {
             <%--
 		<table border="0" cellspacing="0" cellpadding="2" style="width:98%;">
 
-		<c:forEach items="${labelsMap}" var="i18nPart">
+		<c:forEach items="${labelsList}" var="i18nPart">
 		<c:set var="prefix" value="_${i18nPart.language.code}"/>
 		<c:set var="keywordsValues" value="${i18nPart.keywords}"/>
 		<tr>
