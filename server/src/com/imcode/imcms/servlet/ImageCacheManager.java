@@ -60,9 +60,9 @@ public class ImageCacheManager {
 		if (imageCache.getMetaId() > 0) {
 			// delete any previous document image cache for meta_id and image_index
 			String cacheId = imageCacheMapper.deleteDocumentImageCache(imageCache.getMetaId(), imageCache.getImageIndex());
-			if (cacheId != null) {
-				deleteDocumentImageCacheEntry(cacheId);
-			}
+//			if (cacheId != null) {
+//				deleteDocumentImageCacheEntry(cacheId);
+//			}
 		} else {
 			imageCache.setFrequency(1);
 			
