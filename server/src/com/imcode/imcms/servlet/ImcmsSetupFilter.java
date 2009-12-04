@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 public class ImcmsSetupFilter implements Filter {
 
@@ -73,7 +74,8 @@ public class ImcmsSetupFilter implements Filter {
         path = StringUtils.substringAfter( path, request.getContextPath() ) ;
         String documentIdString = getDocumentIdString(service, path);
         ServletContext servletContext = request.getSession().getServletContext();
-        if ( null == servletContext.getResourcePaths(path) ) {
+        Set resources = servletContext.getResourcePaths(path);
+        if ( null == resources || 0 == resources.size() ) {
             DocumentDomainObject document = service.getDocumentMapper().getDocument(documentIdString);
             if (null != document) {
                 try {
