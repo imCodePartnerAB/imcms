@@ -153,8 +153,10 @@ public class DocumentMapper implements DocumentGetter {
         Meta meta = newDocument.getMeta();
         
         meta.setId(null);
-        //meta.setDocVersionNo(null);
-        //meta.setDocumentVersionTag(null);
+        //TODO: newDocument.setVersion(null);
+        //newDocument.getVersion().setId(null);
+        //newDocument.getVersion().setNo(0);
+        //newDocument.getVersion().setDocId(null);
                 
         newDocument.setProperties(new HashMap());
         makeDocumentLookNew( newDocument, user );
@@ -555,11 +557,9 @@ public class DocumentMapper implements DocumentGetter {
     
     
     /**
-     * Returns working document in default language.
+     * Returns document.
      *
-     * @param docId document id
-     * 
-     * @return working document in default language.
+     * @param docId document id.
      */
     public DocumentDomainObject getDocument(Integer docId) {
         Meta meta = documentLoaderCachingProxy.getMeta(docId);
@@ -572,21 +572,26 @@ public class DocumentMapper implements DocumentGetter {
         UserDomainObject user = requestInfo.getUser();
         I18nLanguage language = requestInfo.getLanguage();
         RequestInfo.DocVersionMode docVersionMode = requestInfo.getDocVersionMode();
+        
+        if (user.isSuperAdmin()) {
+            Integer docVersionNo = requestInfo.getDocVersionNo();
 
-        if (!user.isSuperAdmin() && !language.isDefault() && !meta.getLanguages().contains(language)) {
-            language = meta.getDisabledLanguageShowSetting() == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE
-                ? Imcms.getI18nSupport().getDefaultLanguage()
-                : null;
+            if (docVersionNo != null && docId.equals(requestInfo.getDocId())) {
+                return documentLoaderCachingProxy.getCustomDocument(docId, docVersionNo, language);
+            }
+
+            return docVersionMode == RequestInfo.DocVersionMode.WORKING
+                ? documentLoaderCachingProxy.getWorkingDocument(docId, language)
+                : documentLoaderCachingProxy.getDefaultDocument(docId, language);
         }
+        
 
-        if (language == null) {
-            return null;
-        }
-
-        Integer docVersionNo = requestInfo.getDocVersionNo();
-
-        if (docVersionNo != null && docId.equals(requestInfo.getDocId())) {
-            return documentLoaderCachingProxy.getCustomDocument(docId, docVersionNo, language);    
+        if (!language.isDefault() && !meta.getLanguages().contains(language)) {
+            if (meta.getDisabledLanguageShowSetting() == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE) {
+                language = Imcms.getI18nSupport().getDefaultLanguage();
+            } else {
+                return null;
+            }
         }
 
         return docVersionMode == RequestInfo.DocVersionMode.WORKING

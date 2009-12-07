@@ -14,7 +14,7 @@ import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.api.I18nLanguage;
 
 /**
- * Caches documents returned by wrapped DocumentLoader.
+ * Caches documents returned by DocumentLoader.
  */
 public class DocumentLoaderCachingProxy {
 
@@ -176,31 +176,6 @@ public class DocumentLoaderCachingProxy {
     	
     	return docId;
     }
-    
-    /*
-    public DocumentDomainObject getDocument(Integer docId, Integer docVersionNo, Integer languageId) {
-        Meta meta = getMeta(docId);
-
-        if (meta == null) {
-            return null;
-        }
-
-        DocumentVersionInfo versionInfo = getDocumentVersionInfo(docId);
-        DocumentVersion version = versionInfo.getVersion(docVersionNo);
-
-        DocumentDomainObject document = workingDocuments.get(docId);
-
-    	if (document == null) {
-	        document = documentLoader.loadDocument(meta.clone(), docVersionNo, languageId);
-
-            if (document != null) {
-	            workingDocuments.put(docId, document);
-            }
-    	}
-
-        return document;
-    }
-    */
 
     /**
      * Returns custom document.

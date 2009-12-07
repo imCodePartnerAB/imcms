@@ -82,7 +82,7 @@ public interface ImcmsConstants {
 
     public static final String REQUEST_PARAM_VALUE__DOC_VERSION_MODE_WORKING = "w";
 
-    public static final String REQUEST_PARAM_VALUE__DOC_VERSION_MODE_ACTIVE = "a";
+    public static final String REQUEST_PARAM_VALUE__DOC_VERSION_MODE_DEFAULT = "d";
 
     public static final String SESSION_ATTR__REQUEST_INFO = "imcms.requestInfo";
 }

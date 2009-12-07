@@ -120,7 +120,6 @@ public class ImcmsFilter implements Filter {
             Imcms.setRequestInfo(requestInfo);
 
             ContentManagementSystem cms = Utility.initRequestWithApi(request, user);
-            cms.setRequestInfo(requestInfo);
 
             NDC.setMaxDepth( 0 );
             String contextPath = request.getContextPath();
@@ -306,7 +305,7 @@ public class ImcmsFilter implements Filter {
                 docVersionMode = RequestInfo.DocVersionMode.WORKING;
             }
 
-            requestInfo.setDocVersionMode(RequestInfo.DocVersionMode.WORKING);
+            requestInfo.setDocVersionMode(docVersionMode);
         }
     }
 
