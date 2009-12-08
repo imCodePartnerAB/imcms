@@ -58,9 +58,9 @@
 
     pageContext.setAttribute("document", document);
 
-    pageContext.setAttribute("labelsList", documentInformationPage.getLabelsList());
+    pageContext.setAttribute("labelsColl", documentInformationPage.getLabelsMap().values());
 
-    Map<I18nLanguage, Boolean> languagesState  = documentInformationPage.getLanguagesState();
+    Map<I18nLanguage, Boolean> languagesStates  = documentInformationPage.getLanguagesStates();
 %><%!
 
 String formatDate(Date date) {
@@ -172,7 +172,7 @@ function setI18nCodeParameterValue(value) {
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="656">
 	<%-- TODO: Escape XML: $Headline$ --%>
-	<c:forEach items="${labelsList}" var="i18nPart">
+	<c:forEach items="${labelsColl}" var="i18nPart">
 	
 	<c:set var="prefix" value="_${i18nPart.language.code}"/>
 	
@@ -373,11 +373,11 @@ function setI18nCodeParameterValue(value) {
 		<tr>
 		  <td colspan="6">
 			<table border="0" cellspacing="0" cellpadding="2">
-			<c:forEach items="${labelsList}" var="i18nPart">
+			<c:forEach items="${labelsColl}" var="i18nPart">
 			<c:set var="prefix" value="_${i18nPart.language.code}"/>
                 <%
                 DocumentLabels labels = (DocumentLabels)pageContext.getAttribute("i18nPart");
-                Boolean enabled = languagesState.get(labels.getLanguage());
+                Boolean enabled = languagesStates.get(labels.getLanguage());
                 pageContext.setAttribute("enabled", enabled);
                 %>
 			<tr>	  
@@ -624,7 +624,7 @@ function setI18nCodeParameterValue(value) {
             <%--
 		<table border="0" cellspacing="0" cellpadding="2" style="width:98%;">
 
-		<c:forEach items="${labelsList}" var="i18nPart">
+		<c:forEach items="${labelsColl}" var="i18nPart">
 		<c:set var="prefix" value="_${i18nPart.language.code}"/>
 		<c:set var="keywordsValues" value="${i18nPart.keywords}"/>
 		<tr>

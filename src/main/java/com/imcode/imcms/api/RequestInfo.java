@@ -15,15 +15,28 @@ public class RequestInfo {
         DEFAULT
     }
 
-    private Integer docId;
-    
-    private Integer docVersionNo;
+    /**
+     * 
+     */
+    public static class CustomDoc {
+        
+        public final Integer id;
+
+        public final Integer versionNo;
+
+        public CustomDoc(Integer id, Integer versionNo) {
+            this.id = id;
+            this.versionNo = versionNo;
+        }
+    }
 
     private DocVersionMode docVersionMode;
 
     private UserDomainObject user;
 
     private I18nLanguage language;
+
+    private CustomDoc customDoc;
 
     public UserDomainObject getUser() {
         return user;
@@ -41,14 +54,6 @@ public class RequestInfo {
         this.language = language;
     }
 
-    public Integer getDocVersionNo() {
-        return docVersionNo;
-    }
-
-    public void setDocVersionNo(Integer docVersionNo) {
-        this.docVersionNo = docVersionNo;
-    }
-
     public DocVersionMode getDocVersionMode() {
         return docVersionMode;
     }
@@ -57,11 +62,11 @@ public class RequestInfo {
         this.docVersionMode = docVersionMode;
     }
 
-    public Integer getDocId() {
-        return docId;
+    public CustomDoc getCustomDoc() {
+        return customDoc;
     }
 
-    public void setDocId(Integer docId) {
-        this.docId = docId;
+    public void setCustomDoc(CustomDoc customDoc) {
+        this.customDoc = customDoc;
     }
 }

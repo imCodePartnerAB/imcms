@@ -92,69 +92,43 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     private boolean adminButtonsHidden;
 
     /** Document labels. */
-    private List<DocumentLabels> labelsList = new LinkedList<DocumentLabels>();
+    private Map<I18nLanguage, DocumentLabels> labelsMap = new HashMap<I18nLanguage, DocumentLabels>();
 
-    private Map<I18nLanguage, Boolean> languagesState = new HashMap<I18nLanguage, Boolean>();
+    /** Document languages enabled/disabled states. */
+    private Map<I18nLanguage, Boolean> languagesStates = new HashMap<I18nLanguage, Boolean>();
 
 
     public EditDocumentInformationPageFlow( DocumentDomainObject document, DispatchCommand returnCommand,
                                             SaveDocumentCommand saveDocumentCommand ) {
         super( document, returnCommand, saveDocumentCommand );
 
-        Integer docId = document.getMeta().getId();
+        Set<I18nLanguage> languages = new HashSet(Imcms.getI18nSupport().getLanguages());
 
-        for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
-            languagesState.put(language, true);
+        for (I18nLanguage language: languages) {
+            languagesStates.put(language, false);
+
+            DocumentLabels labels = new DocumentLabels();
+            labels.setLanguage(language);
+            labels.setMenuImageURL("");
+            labels.setHeadline("");
+            labels.setMenuText("");
+
+            labelsMap.put(language, labels);
         }
 
-        if (docId == null) {
-            labelsList = new LinkedList<DocumentLabels>();
+        languagesStates.put(Imcms.getI18nSupport().getDefaultLanguage(), true);
 
-            for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
-                DocumentLabels labels = new DocumentLabels();
-                labels.setLanguage(language);
-                labels.setMenuImageURL("");
-                labels.setHeadline("");
-                labels.setMenuText("");
-
-                labelsList.add(labels);
-            }
-
-        } else {
+        Integer docId = document.getMeta().getId();
+        
+        if (docId != null) {
             MetaDao metaDao = (MetaDao)Imcms.getSpringBean("metaDao");
-            labelsList = metaDao.getLabels(docId, document.getVersion().getNo());
 
-            Set<I18nLanguage> enabledLanguages = document.getMeta().getLanguages();
-
-            Set<I18nLanguage> disabledLanguages = new HashSet(Imcms.getI18nSupport().getLanguages());
-            disabledLanguages.removeAll(enabledLanguages);
-
-
-            for (I18nLanguage language: enabledLanguages) {
-                languagesState.put(language, true);
+            for (I18nLanguage language: document.getMeta().getLanguages()) {
+                languagesStates.put(language, true);    
             }
 
-
-            for (I18nLanguage language: disabledLanguages) {
-                languagesState.put(language, false);
-            }            
-
-            Set<I18nLanguage> labelsLanguages = new HashSet<I18nLanguage>();
-            for (DocumentLabels labels: labelsList) {
-                labelsLanguages.add(labels.getLanguage());
-            }
-
-            Set<I18nLanguage> missingLabelsLanguages = new HashSet(Imcms.getI18nSupport().getLanguages());
-            missingLabelsLanguages.removeAll(labelsLanguages);
-
-            for (I18nLanguage language: missingLabelsLanguages) {
-                DocumentLabels labels = new DocumentLabels();
-                labels.setLanguage(language);
-                labels.setMenuImageURL("");
-                labels.setHeadline("");
-                labels.setMenuText("");
-
-                labelsList.add(labels);
+            for (DocumentLabels labels: metaDao.getLabels(docId, document.getVersion().getNo())) {
+                labelsMap.put(labels.getLanguage(), labels);
             }
         }
     }
@@ -287,8 +261,8 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
     private void dispatchToDocumentInformationPage( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         DocumentInformationPage documentInformationPage = new DocumentInformationPage(getDocument(), adminButtonsHidden, errors);
-        documentInformationPage.setLabelsList(labelsList);
-        documentInformationPage.setLanguagesState(languagesState);
+        documentInformationPage.setLabelsMap(labelsMap);
+        documentInformationPage.setLanguagesStates(languagesStates);
         documentInformationPage.forward( request, response );
     }
 
@@ -311,7 +285,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         
         Meta meta = document.getMeta();
 
-        for (DocumentLabels labels: labelsList) {
+        for (DocumentLabels labels: labelsMap.values()) {
         	String suffix = "_" + labels.getLanguage().getCode();
             String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE + suffix);
             String menuText = request.getParameter( REQUEST_PARAMETER__MENUTEXT + suffix);
@@ -323,7 +297,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
             labels.setMenuImageURL(imageURL);
 
-            languagesState.put(labels.getLanguage(), enabled);
+            languagesStates.put(labels.getLanguage(), enabled);
         }
 
 
@@ -500,10 +474,10 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
         private static final String REQUEST_ATTRIBUTE__DOCUMENT_INFORMATION_PAGE = "documentInformationPage";
         private DocumentDomainObject document;
-        private Map<I18nLanguage, Boolean> languagesState;
+        private Map<I18nLanguage, Boolean> languagesStates;
         private boolean adminButtonsHidden;
         private Set errors;
-        private List<DocumentLabels> labelsList;
+        private Map<I18nLanguage, DocumentLabels> labelsMap;
 
         public DocumentInformationPage( DocumentDomainObject document, boolean adminButtonsHidden, Set errors ) {
             this.document = document;
@@ -535,20 +509,20 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             return errors;
         }
 
-        public List<DocumentLabels> getLabelsList() {
-            return labelsList;
+        public Map<I18nLanguage, DocumentLabels> getLabelsMap() {
+            return labelsMap;
         }
 
-        public void setLabelsList(List<DocumentLabels> labelsList) {
-            this.labelsList = labelsList;
+        public void setLabelsMap(Map<I18nLanguage, DocumentLabels> labelsMap) {
+            this.labelsMap = labelsMap;
         }
 
-        public Map<I18nLanguage, Boolean> getLanguagesState() {
-            return languagesState;
+        public Map<I18nLanguage, Boolean> getLanguagesStates() {
+            return languagesStates;
         }
 
-        public void setLanguagesState(Map<I18nLanguage, Boolean> languagesState) {
-            this.languagesState = languagesState;
+        public void setLanguagesStates(Map<I18nLanguage, Boolean> languagesStates) {
+            this.languagesStates = languagesStates;
         }
     }
 

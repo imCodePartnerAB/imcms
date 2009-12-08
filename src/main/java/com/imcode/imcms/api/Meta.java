@@ -296,7 +296,7 @@ public class Meta implements Serializable, Cloneable {
 	    joinColumns = @JoinColumn(name="doc_id"),
             inverseJoinColumns = @JoinColumn(name="language_id")
         )
-	private Set<I18nLanguage> languages = new HashSet<I18nLanguage>();
+	private Set<I18nLanguage> languages = new HashSet<I18nLanguage>();    
 
 
 	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)

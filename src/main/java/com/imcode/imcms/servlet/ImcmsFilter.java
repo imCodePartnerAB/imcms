@@ -13,6 +13,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -68,7 +69,7 @@ public class ImcmsFilter implements Filter {
 
 
     /** Processes request normally. */
-    private Filter cmsModeFilter = new Filter() {
+    private Filter normalModeFilter = new Filter() {
 
         public void doFilter(ServletRequest r, ServletResponse response, FilterChain filterChain)
                 throws IOException, ServletException {
@@ -115,7 +116,7 @@ public class ImcmsFilter implements Filter {
             }
 
             updateRequestInfoLanguage(request, requestInfo);
-            updateRequestInfoShowSettings(request, requestInfo);
+            updateRequestInfoVersionNoAndMode(request, requestInfo);
             
             Imcms.setRequestInfo(requestInfo);
 
@@ -182,8 +183,8 @@ public class ImcmsFilter implements Filter {
      * Updates delegate filter.
      */
     public void updateDelegateFilter() {
-        delegateFilter = Imcms.getMode() == ImcmsMode.CMS
-                ? cmsModeFilter
+        delegateFilter = Imcms.getMode() == ImcmsMode.NORMAL
+                ? normalModeFilter
                 : maintenanceModeFilter;
     }
 
@@ -194,10 +195,11 @@ public class ImcmsFilter implements Filter {
         path = StringUtils.substringAfter( path, request.getContextPath() ) ;
         String documentIdString = getDocumentIdString(service, path);
         ServletContext servletContext = request.getSession().getServletContext();
-        if ( null == servletContext.getResourcePaths(path) ) {
+        Set resourcePaths = servletContext.getResourcePaths(path);
+        
+        if (resourcePaths == null || resourcePaths.size() == 0) {
             DocumentDomainObject document = service.getDocumentMapper().getDocument(documentIdString);
-        	//UserDomainObject user = Utility.getLoggedOnUser( request );
-        	//DocumentDomainObject document = service.getDocumentMapper().getDocumentForShowing(documentIdString, user);
+            
             if (null != document) {
                 try {
                     GetDoc.viewDoc( document, request, (HttpServletResponse)response );
@@ -205,6 +207,7 @@ public class ImcmsFilter implements Filter {
                 } catch( NumberFormatException nfe ) {}
             }
         }
+        
         chain.doFilter( request, response );
     }
 
@@ -276,8 +279,9 @@ public class ImcmsFilter implements Filter {
      * @param request servlet request
      * @param requestInfo requestInfo
      */
-    // TODO: Optimize, Add security check?
-    private void updateRequestInfoShowSettings(HttpServletRequest request, RequestInfo requestInfo) {
+    // TODO: Refactor, Optimize, Add security check
+    // Requre meta_id - 
+    private void updateRequestInfoVersionNoAndMode(HttpServletRequest request, RequestInfo requestInfo) {
         String docIdStr = request.getParameter("meta_id");
         String docVersionNoStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_NO);
 
@@ -286,21 +290,20 @@ public class ImcmsFilter implements Filter {
                 Integer docId = Integer.parseInt(docIdStr);
                 Integer docVersionNo = Integer.parseInt(docVersionNoStr);
 
-                requestInfo.setDocId(docId);
-                requestInfo.setDocVersionNo(docVersionNo);
+                requestInfo.setCustomDoc(new RequestInfo.CustomDoc(docId, docVersionNo));
             } catch (NumberFormatException e) {
+                // TODO: do not thorw, pass
                 throw new AssertionError(e);
             }
         } else {
-            requestInfo.setDocId(null);
-            requestInfo.setDocVersionNo(null);
+            requestInfo.setCustomDoc(null);
         }
 
         String docVersionModeStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_MODE);
-        
+
         if (docVersionModeStr != null) {
             RequestInfo.DocVersionMode docVersionMode = RequestInfo.DocVersionMode.DEFAULT;
-            
+
             if (docVersionModeStr.toUpperCase().charAt(0) == 'W') {
                 docVersionMode = RequestInfo.DocVersionMode.WORKING;
             }

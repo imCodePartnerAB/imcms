@@ -14,7 +14,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Table(name="i18n_languages")
 public class I18nLanguage implements Serializable, Cloneable {
 
-
     private Integer id;
 	
 	private Boolean systemDefault;

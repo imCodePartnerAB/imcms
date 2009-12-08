@@ -5,5 +5,5 @@ package com.imcode.imcms.servlet;
  */
 public enum ImcmsMode {
 
-    CMS, MAINTENANCE
+    NORMAL, MAINTENANCE
 }

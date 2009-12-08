@@ -252,63 +252,6 @@ public class DocumentMapper implements DocumentGetter {
             invalidateDocument(docId);
         }
 	}
-    
-    
-    /**
-     * Creates document's working version from any previous version.
-     * 
-     * @param documentId existing document id
-     * @param documentVersion any previous document version.
-     * 
-     * @return new working version which is a copy of any previous version.
-     */
-    // TODO: Check exceptions
-    /*
-    public void createWorkingDocument(Integer documentId, Integer documentVersion, UserDomainObject user) 
-    throws DocumentSaveException, NoPermissionToEditDocumentException {
-    	DocumentDomainObject document = getDocument(documentId, documentVersion);
-    	
-	    document = documentSaver.createWorkingDocumentFromExisting(document, user);
-
-        invalidateDocument(document);
-	}
-	*/
-            
-    
-    /**
-     * Returns document by its id and version.
-     * 
-     * Expensive call - returned document may not be cached.
-     * 
-     * @param documentId document id
-     * @param documentVersion document version. If not given (null) then published version is returned.
-     * @return document or null if document can not be found.  
-     */
-    /*
-    public DocumentDomainObject getDocument(Integer documentId, Integer documentVersion) {
-    	return documentLoaderCachingProxy.getDocument(documentId, documentVersion);
-	}
-	*/
-    
-    
-    /**
-     * Returns document for showing by document id and version. 
-     * 
-     * Expensive call - returned document is not cached.
-     */
-    /*
-    public DocumentDomainObject getDocumentForShowing(Integer documentId, Integer versionNumber, UserDomainObject user) {
-    	DocumentDomainObject document = getDocument(documentId, versionNumber);
-    	
-    	return createDocumentShowInterceptor(document, user);
-	}
-	*/
-    
-    
-    public boolean hasPublishedVersion(Integer documentId) {
-    	//return documentLoaderCachingProxy.getDefaultDocument(documentId) != null;
-        return false;
-    }    
 
 
     public void invalidateDocument(DocumentDomainObject document) {        
@@ -451,33 +394,6 @@ public class DocumentMapper implements DocumentGetter {
         	: getDocument(documentId);
     }
     
-    /**
-     * @return custom document's version for showing.
-     */
-    /*
-    public DocumentDomainObject getDocumentForShowing(String documentIdString, Integer versionNumber, UserDomainObject user) {
-    	DocumentDomainObject document = getDocument(documentIdString, versionNumber);
-    	
-    	return createDocumentShowInterceptor(document, user);
-    }
-    */
-    
-    /** 
-     * @param documentIdentity document id or alias.
-     * @param versionNumber document version number.
-     * 
-     * @return document or null if document can not be found. 
-     */
-    /*
-    public DocumentDomainObject getDocument(String documentIdentity, Integer versionNumber) {
-        Integer documentId = toDocumentId(documentIdentity);
-        
-        return documentId == null 
-        	? null
-        	: getDocument(documentId, versionNumber);
-    }
-        */
-    
     /** 
      * @param documentIdentity document id or alias
      * @return document id or null if there is no document with such identity.
@@ -574,10 +490,10 @@ public class DocumentMapper implements DocumentGetter {
         RequestInfo.DocVersionMode docVersionMode = requestInfo.getDocVersionMode();
         
         if (user.isSuperAdmin()) {
-            Integer docVersionNo = requestInfo.getDocVersionNo();
+            RequestInfo.CustomDoc customDoc = requestInfo.getCustomDoc();
 
-            if (docVersionNo != null && docId.equals(requestInfo.getDocId())) {
-                return documentLoaderCachingProxy.getCustomDocument(docId, docVersionNo, language);
+            if (customDoc != null && docId.equals(customDoc.id)) {
+                return documentLoaderCachingProxy.getCustomDocument(docId, customDoc.versionNo, language);
             }
 
             return docVersionMode == RequestInfo.DocVersionMode.WORKING
@@ -598,33 +514,6 @@ public class DocumentMapper implements DocumentGetter {
             ? documentLoaderCachingProxy.getWorkingDocument(docId, language)
             : documentLoaderCachingProxy.getDefaultDocument(docId, language);
     }
-
-    /**
-     * Returns document.
-     *
-     * @param docId document id
-     *
-     * @return document.
-     */
-    //public DocumentDomainObject getDocument(Integer docId, Integer docVersionNo, Integer languageId) {
-        //return documentLoaderCachingProxy.getDocument(docId, docVersionNo, languageId);
-    //    return null;
-    //}
-    
-    /**
-     * Returns active document.
-     * 
-     * @param metaId document's meta id
-     * 
-     * @return active document or null if there is no active document.
-     * 
-     * TODO: Check all calls to this method and replace with getDocument where appropriate.
-     */
-    /*
-    public DocumentDomainObject getDefaultDocument(Integer metaId) {
-        return documentLoaderCachingProxy.getDefaultDocument(metaId);
-    }
-      */
       
 
 
@@ -678,12 +567,6 @@ public class DocumentMapper implements DocumentGetter {
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
         return documentLoaderCachingProxy.getWorkingDocuments(documentIds, Imcms.getI18nSupport().getDefaultLanguage()) ;
     }
-
-    /*
-    public List<DocumentDomainObject> getActiveDocuments(Collection<Integer> documentIds) {
-        return documentLoaderCachingProxy.getActiveDocuments(documentIds) ;
-    }
-        */
 
 
     private void removeNonInheritedCategories(DocumentDomainObject document) {
@@ -831,10 +714,4 @@ public class DocumentMapper implements DocumentGetter {
 	public void setDocumentSaver(DocumentSaver documentSaver) {
 		this.documentSaver = documentSaver;
 	}
-
-    /*
-    public DocumentDomainObject getWorkingDocument(Integer metaId) {
-        return documentLoaderCachingProxy.getWorkingDocument(metaId);
-    }
-    */
 }

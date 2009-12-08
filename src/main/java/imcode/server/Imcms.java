@@ -1,6 +1,5 @@
 package imcode.server;
 
-import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.Prefs;
 
@@ -268,7 +267,7 @@ public class Imcms {
 
 
     public static ImcmsMode setCmsMode() {
-        return setMode(ImcmsMode.CMS);
+        return setMode(ImcmsMode.NORMAL);
     }
 
     public static ImcmsMode getMode() {
