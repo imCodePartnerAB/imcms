@@ -47,6 +47,7 @@ public class DocumentMapper implements DocumentGetter {
     private Database database;
     private DocumentPermissionSetMapper documentPermissionSetMapper;
     private DocumentIndex documentIndex;
+    private Map aliasCache ;
     private Map documentCache ;
     private Clock clock = new SystemClock();
     private ImcmsServices imcmsServices;
@@ -63,6 +64,7 @@ public class DocumentMapper implements DocumentGetter {
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
         documentCache = Collections.synchronizedMap(new LRUMap(documentCacheMaxSize)) ;
+        aliasCache = Collections.synchronizedMap(new LRUMap(documentCacheMaxSize)) ;
         setDocumentGetter(new FragmentingDocumentGetter(new DatabaseDocumentGetter(database, services)));
         this.documentPermissionSetMapper = new DocumentPermissionSetMapper(database);
         this.categoryMapper = new CategoryMapper(database);
@@ -192,6 +194,9 @@ public class DocumentMapper implements DocumentGetter {
     public void invalidateDocument(DocumentDomainObject document) {
         documentIndex.indexDocument(document);
         documentCache.remove(new Integer(document.getId()));
+        if (StringUtils.isNotBlank(document.getAlias())) {
+            aliasCache.remove(document.getAlias());
+        }
     }
 
     public DocumentIndex getDocumentIndex() {
@@ -250,6 +255,9 @@ public class DocumentMapper implements DocumentGetter {
         document.accept(new DocumentDeletingVisitor());
         documentIndex.removeDocument(document);
         documentCache.remove(new Integer(document.getId()));
+        if (StringUtils.isNotBlank(document.getAlias())) {
+            aliasCache.remove(document.getAlias());
+        }
     }
 
     private DatabaseCommand createDeleteDocumentCommand(final DocumentDomainObject document) {
@@ -367,10 +375,15 @@ public class DocumentMapper implements DocumentGetter {
             if ( NumberUtils.isDigits( documentIdString ) ) {
                 document = getDocument(new Integer(documentIdString));
             }else{
-                String[] documentIds = (String[]) getDatabase().execute(
-                        new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
-                                new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdString.toLowerCase() },
-                                Utility.STRING_ARRAY_HANDLER));
+                String documentIdStringLower = documentIdString.toLowerCase();
+                String[] documentIds = (String[])aliasCache.get(documentIdStringLower);
+                if (documentIds == null) {
+                    documentIds = (String[]) getDatabase().execute(
+                            new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
+                                    new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdStringLower },
+                                    Utility.STRING_ARRAY_HANDLER));
+                    aliasCache.put(documentIdStringLower, documentIds);
+                }
 
                 if(documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {
                     document = getDocument(new Integer(documentIds[0]));

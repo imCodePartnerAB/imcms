@@ -17,13 +17,21 @@ import imcode.util.Utility;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
+
+import org.apache.commons.collections.map.LRUMap;
 
 public class CategoryMapper {
+
+    private static final int CACHE_SIZE = 100;
+
     private Database database;
+
+    private Map categoryCache = Collections.synchronizedMap(new LRUMap(CACHE_SIZE));
+    private Map categoryTypeCache = Collections.synchronizedMap(new LRUMap(CACHE_SIZE));
+    private Map categoryTypeByNameCache = Collections.synchronizedMap(new LRUMap(CACHE_SIZE));
+    private Map categoryByTypeAndNameCache = Collections.synchronizedMap(new LRUMap(CACHE_SIZE));
+
     private static final int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
 
     private static final String SQL__CATEGORY__COLUMNS = "categories.category_id, categories.name, categories.description, categories.image";
@@ -95,30 +103,61 @@ public class CategoryMapper {
         return (CategoryTypeDomainObject[]) database.execute(new SqlQueryCommand(SQL__GET_ALL_CATEGORY_TYPES, parameters, CATEGORY_TYPE_ARRAY_HANDLER));
     }
 
+    private String getCacheKeyByTypeAndName(CategoryTypeDomainObject categoryType, String categoryName) {
+        return categoryType.getId() + "-" + categoryName;
+    }
+
     public CategoryDomainObject getCategoryByTypeAndName(CategoryTypeDomainObject categoryType, String categoryName) {
-        String[] parameters = new String[]{categoryName, ""+categoryType.getId()};
-        return (CategoryDomainObject) database.execute(new SqlQueryCommand(SQL__GET_CATEGORY_BY_NAME_AND_CATEGORY_TYPE_ID, parameters, SINGLE_CATEGORY_HANDLER)) ;
+        String cacheKey = getCacheKeyByTypeAndName(categoryType, categoryName);
+        CategoryDomainObject category = (CategoryDomainObject)categoryByTypeAndNameCache.get(cacheKey);
+
+        if (category == null) {
+            String[] parameters = new String[]{categoryName, ""+categoryType.getId()};
+            category = (CategoryDomainObject) database.execute(new SqlQueryCommand(SQL__GET_CATEGORY_BY_NAME_AND_CATEGORY_TYPE_ID, parameters, SINGLE_CATEGORY_HANDLER)) ;
+            categoryByTypeAndNameCache.put(cacheKey, category);
+        }
+
+        return category;
     }
 
     public CategoryDomainObject getCategoryById( int categoryId ) {
-        String[] parameters = new String[]{"" + categoryId};
-        return (CategoryDomainObject) database.execute(new SqlQueryCommand(SQL__GET_CATEGORY_BY_ID, parameters, SINGLE_CATEGORY_HANDLER)) ;
+        CategoryDomainObject category = (CategoryDomainObject)categoryCache.get(categoryId);
+        if (category == null) {
+            String[] parameters = new String[]{"" + categoryId};
+            category = (CategoryDomainObject) database.execute(new SqlQueryCommand(SQL__GET_CATEGORY_BY_ID, parameters, SINGLE_CATEGORY_HANDLER)) ;
+            categoryCache.put(categoryId, category);
+        }
+
+        return category;
     }
 
     public CategoryTypeDomainObject getCategoryTypeByName(String categoryTypeName) {
-        String[] parameters = new String[] { categoryTypeName };
-        return (CategoryTypeDomainObject) database.execute(new SqlQueryCommand(SQL__GET_CATEGORY_TYPE_BY_NAME, parameters, SINGLE_CATEGORY_TYPE_HANDLER));
+        CategoryTypeDomainObject categoryType = (CategoryTypeDomainObject) categoryTypeByNameCache.get(categoryTypeName);
+        if (categoryType == null) {
+            String[] parameters = new String[] { categoryTypeName };
+            categoryType = (CategoryTypeDomainObject) database.execute(new SqlQueryCommand(SQL__GET_CATEGORY_TYPE_BY_NAME, parameters, SINGLE_CATEGORY_TYPE_HANDLER));
+            categoryTypeByNameCache.put(categoryTypeName, categoryType);
+        }
+
+        return categoryType;
     }
 
     public CategoryTypeDomainObject getCategoryTypeById(int categoryTypeId) {
-        String[] parameters = new String[] { "" + categoryTypeId };
-        return (CategoryTypeDomainObject) database.execute(new SqlQueryCommand(SQL__GET_CATEGORY_TYPE_BY_ID, parameters, SINGLE_CATEGORY_TYPE_HANDLER));
+        CategoryTypeDomainObject categoryType = (CategoryTypeDomainObject)categoryTypeCache.get(categoryTypeId);
+        if (categoryType == null) {
+            String[] parameters = new String[] { "" + categoryTypeId };
+            categoryType = (CategoryTypeDomainObject) database.execute(new SqlQueryCommand(SQL__GET_CATEGORY_TYPE_BY_ID, parameters, SINGLE_CATEGORY_TYPE_HANDLER));
+            categoryTypeCache.put(categoryTypeId, categoryType);
+        }
+        return categoryType;
     }
 
     public void deleteCategoryTypeFromDb(CategoryTypeDomainObject categoryType) {
         String sqlstr = "delete from category_types where category_type_id = ?";
         String[] params = new String[]{categoryType.getId() + ""};
         database.execute(new SqlUpdateCommand(sqlstr, params));
+        
+        invalidateCategoryType(categoryType);
     }
 
     public CategoryTypeDomainObject addCategoryTypeToDb(final CategoryTypeDomainObject categoryType
@@ -138,6 +177,7 @@ public class CategoryMapper {
 
     public void updateCategoryType(CategoryTypeDomainObject categoryType) {
         database.execute(new UpdateTableWhereColumnEqualsDatabaseCommand("category_types", "category_type_id", new Integer(categoryType.getId()), getColumnNamesAndValuesForCategoryType(categoryType))) ;
+        invalidateCategoryType(categoryType);
     }
 
     public CategoryDomainObject addCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
@@ -158,12 +198,14 @@ public class CategoryMapper {
 
     public void updateCategory(CategoryDomainObject category) {
         database.execute(new UpdateTableWhereColumnEqualsDatabaseCommand("categories", "category_id", new Integer(category.getId()), getColumnNamesAndValuesForCategory(category))) ;
+        invalidateCategory(category);
     }
 
     public void deleteCategoryFromDb(CategoryDomainObject category) {
         String sqlstr = "delete from categories where category_id = ?";
         String[] params = new String[]{category.getId() + ""};
         database.execute(new SqlUpdateCommand(sqlstr, params));
+        invalidateCategory(category);
     }
 
     void updateDocumentCategories(DocumentDomainObject document) {
@@ -252,6 +294,16 @@ public class CategoryMapper {
             }
         }
         return categoriesOfType ;
+    }
+
+    private void invalidateCategory(CategoryDomainObject category) {
+        categoryCache.remove(category.getId());
+        categoryByTypeAndNameCache.remove(getCacheKeyByTypeAndName(category.getType(), category.getName()));
+    }
+
+    private void invalidateCategoryType(CategoryTypeDomainObject categoryType) {
+        categoryTypeCache.remove(categoryType.getId());
+        categoryTypeByNameCache.remove(categoryType.getName());
     }
 
     private static class CategoryTypeFromRowFactory implements RowTransformer {
