@@ -50,8 +50,8 @@ public interface ImcmsConstants {
     /** Permission to make document version. **/
     public final static int PERM_PUBLISH   = (1 << 22); //  4194304
 
-    /** Permission to make document version. **/
-    public final static int SET_ACTIVE_VERSION   = (1 << 23); //  8388608  
+    /** Permission set default document version. **/
+    public final static int SET_DEFAULT_VERSION = (1 << 23); //  8388608
 
     /* Log instances. */
 
@@ -70,7 +70,7 @@ public interface ImcmsConstants {
     int DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES = PERM_EDIT_TEXT_DOCUMENT_IMAGES;
     int DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE = PERM_EDIT_PERMISSIONS;
     int DISPATCH_FLAG__PUBLISH = PERM_PUBLISH;
-    int DISPATCH_FLAG__SET_ACTIVE_VERSION = SET_ACTIVE_VERSION;
+    int DISPATCH_FLAG__SET_DEFAULT_VERSION = SET_DEFAULT_VERSION;
 
     public static final String REQUEST_PARAM__LANGUAGE = "imcms.doc.language";
 

@@ -200,7 +200,6 @@ public class DocumentMapper implements DocumentGetter {
         return new GetterDocumentReference(childId);
     }
 
-    //TODO: make new active if flag is set
     public void saveNewDocument(DocumentDomainObject document, UserDomainObject user, boolean copying)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
@@ -224,6 +223,31 @@ public class DocumentMapper implements DocumentGetter {
     	} finally {
     		invalidateDocument(document);
     	}      
+    }
+
+
+    /**
+     * Saves document info - the data edited on InformationPage.
+     * 
+     * @param document document to save.
+     * @param labels labels for every language.
+     * @param user
+     * 
+     * @throws DocumentSaveException
+     * @throws NoPermissionToAddDocumentToMenuException
+     * @throws NoPermissionToEditDocumentException
+     */
+    public void saveDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user)
+            throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
+
+        DocumentDomainObject oldDocument =
+    		getDocument(document.getId());
+
+        try {
+            documentSaver.updateDocument(document, labels, user);
+    	} finally {
+    		invalidateDocument(document);
+    	}
     }
 
     
@@ -626,17 +650,24 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    public static class SaveEditedDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
+    public static class SaveEditedDocumentCommand extends DocumentPageFlow.SaveDocumentCommand {
 
+        @Override
         public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveDocument(document, user);
+        }
+
+        @Override
+        public void saveDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user)
+               throws NoPermissionInternalException, DocumentSaveException {
+           Imcms.getServices().getDocumentMapper().saveDocument(document, labels, user);
         }
     }
 
     /**
      * Makes a version from a working/draft version.
      */
-    public static class MakeDocumentVersionCommand implements DocumentPageFlow.SaveDocumentCommand {
+    public static class MakeDocumentVersionCommand extends DocumentPageFlow.SaveDocumentCommand {
 
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().makeDocumentVersion(document.getId(), user);
@@ -645,13 +676,13 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * Makes a version from a working/draft version.
+     * Sets default document version.
      */
-    public static class SetActiveDocumentVersionCommand implements DocumentPageFlow.SaveDocumentCommand {
+    public static class SetDefaultDocumentVersionCommand extends DocumentPageFlow.SaveDocumentCommand {
 
         private Integer docVersionNo;
 
-        public SetActiveDocumentVersionCommand(Integer docVersionNo) {
+        public SetDefaultDocumentVersionCommand(Integer docVersionNo) {
             this.docVersionNo = docVersionNo; 
         }
 

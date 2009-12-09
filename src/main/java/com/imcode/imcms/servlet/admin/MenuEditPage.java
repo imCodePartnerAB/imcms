@@ -249,7 +249,7 @@ public class MenuEditPage extends OkCancelPage {
         documentMapper.saveDocument(textDocument, user);
     }
 
-    public static class SaveNewDocumentAndAddToMenuCommand implements CreateDocumentPageFlow.SaveDocumentCommand {
+    public static class SaveNewDocumentAndAddToMenuCommand extends CreateDocumentPageFlow.SaveDocumentCommand {
 
         private TextDocumentDomainObject parentDocument;
         private Integer parentMenuIndex;

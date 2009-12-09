@@ -619,7 +619,7 @@ public class AdminManager extends HttpServlet {
 
     }
 
-    private static class SaveNewDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
+    private static class SaveNewDocumentCommand extends DocumentPageFlow.SaveDocumentCommand {
 
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveNewDocument( document, user, false);

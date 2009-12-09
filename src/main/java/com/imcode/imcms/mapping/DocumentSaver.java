@@ -12,6 +12,7 @@ import imcode.util.Utility;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Collection;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -268,8 +269,22 @@ public class DocumentSaver {
         document.setVersion(version);        
                 
         document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
+    }
+
+
+    @Transactional
+    public void updateDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+        updateDocument(document, (DocumentDomainObject)null, user);
+
+        metaDao.deleteLabels(document.getId(), document.getVersion().getNo());
+
+        for (DocumentLabels l: labels) {
+            l.setId(null);
+            l.setDocId(document.getId());
+            l.setDocVersionNo(document.getVersion().getNo());
+            metaDao.saveLabels(l);    
+        }
         
-        documentMapper.invalidateDocument(document);
     }
     
     

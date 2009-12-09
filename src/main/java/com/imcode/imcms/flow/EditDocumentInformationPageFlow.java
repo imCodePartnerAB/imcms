@@ -531,7 +531,19 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     @Override
     protected synchronized void saveDocument( HttpServletRequest request ) {
         try {
-            saveDocumentCommand.saveDocument( getDocument(), Utility.getLoggedOnUser( request ) );
+            Collection<I18nLanguage> enabledLanguages = new LinkedList<I18nLanguage>();
+            for (Map.Entry<I18nLanguage, Boolean> state: languagesStates.entrySet()) {
+                if (state.getValue()) {
+                    enabledLanguages.add(state.getKey());
+                }
+            }
+
+            Set<I18nLanguage> metaLanguages = document.getMeta().getLanguages();
+
+            metaLanguages.clear();
+            metaLanguages.addAll(enabledLanguages);
+
+            saveDocumentCommand.saveDocument(getDocument(), labelsMap.values(), Utility.getLoggedOnUser( request ) );
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
         } catch ( NoPermissionToAddDocumentToMenuException e ) {

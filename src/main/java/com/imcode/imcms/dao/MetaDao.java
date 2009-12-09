@@ -65,6 +65,17 @@ public class MetaDao extends HibernateTemplate {
                 .list();
 	}
 
+	/**
+	 * @return Labels.
+	 */
+	@Transactional
+	public void deleteLabels(Integer docId, Integer docVersionNo) {
+		getSession().createQuery("DELETE FROM DocumentLabels l WHERE l.docId = :docId AND docVersionNo = :docVersionNo")
+                .setParameter("docId", docId)
+                .setParameter("docVersionNo", docVersionNo)
+                .executeUpdate();
+	}
+
     
 	@Transactional
 	public DocumentLabels saveLabels(DocumentLabels labels) {

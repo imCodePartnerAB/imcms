@@ -11,15 +11,21 @@ import imcode.util.Utility;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Map;
+import java.util.List;
+import java.util.Collection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.NotImplementedException;
 
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.mapping.NoPermissionInternalException;
+import com.imcode.imcms.api.DocumentLabels;
+import com.imcode.imcms.api.I18nLanguage;
 
 public abstract class DocumentPageFlow extends PageFlow {
 
@@ -54,7 +60,16 @@ public abstract class DocumentPageFlow extends PageFlow {
         return (DocumentPageFlow)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
     }
 
-    public static interface SaveDocumentCommand extends Serializable {
-        void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionInternalException, DocumentSaveException;
+    public static abstract class SaveDocumentCommand implements Serializable {
+        
+       /**
+        * Default implementation ignores labels and languages. 
+        */
+       public void saveDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user)
+               throws NoPermissionInternalException, DocumentSaveException {
+           saveDocument(document, user);
+       }
+
+       public abstract void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException;
     }
 }

@@ -122,7 +122,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 textDao.saveText(text);
                 
                 if (text.isModified()) {                	 
-                    textDao.saveTextHistory(documentId, text, user); 
+                    //textDao.saveTextHistory(documentId, text, user); 
                 }        		
         //	}
         }
