@@ -41,6 +41,7 @@ import com.imcode.util.KeywordsParser;
 public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
     private final static String URL_I15D_PAGE__DOCINFO = "/jsp/docadmin/document_information.jsp";
+    public static final String REQUEST_PARAMETER__INTERNAL_ID = "internal_id";
     public static final String REQUEST_PARAMETER__HEADLINE = "headline";
     public static final String REQUEST_PARAMETER__MENUTEXT = "menutext";
     public static final String REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS = "copy_headline_and_text_to_textfields";
@@ -527,7 +528,11 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     }
 
 
-
+    /**
+     * Overloaded version encounters labels.
+     * 
+     * @param request
+     */
     @Override
     protected synchronized void saveDocument( HttpServletRequest request ) {
         try {
@@ -551,5 +556,9 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         } catch (DocumentSaveException e) {
             throw new UnhandledException(e);
         }
+    }
+
+    public Collection<DocumentLabels> getLabels() {
+        return labelsMap.values();
     }
 }

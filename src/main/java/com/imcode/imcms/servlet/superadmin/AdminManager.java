@@ -18,12 +18,7 @@ import imcode.util.jscalendar.JSCalendar;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,6 +36,7 @@ import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.NoPermissionInternalException;
 import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.SearchDocumentsPage;
@@ -48,6 +44,7 @@ import com.imcode.imcms.servlet.admin.DocumentCreator;
 import com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean;
 import com.imcode.imcms.servlet.beans.AdminManagerSubreport;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import com.imcode.imcms.api.DocumentLabels;
 import com.imcode.util.ChainableReversibleNullComparator;
 
 public class AdminManager extends HttpServlet {
@@ -621,9 +618,16 @@ public class AdminManager extends HttpServlet {
 
     private static class SaveNewDocumentCommand extends DocumentPageFlow.SaveDocumentCommand {
 
+        @Override
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveNewDocument( document, user, false);
         }
+
+        @Override
+        public void saveDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user)
+               throws NoPermissionInternalException, DocumentSaveException {
+           Imcms.getServices().getDocumentMapper().saveNewDocument(document, labels, user, false);
+        }        
     }
 
     private class ShowRecentChangesPageCommand implements DispatchCommand {

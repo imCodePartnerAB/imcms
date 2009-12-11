@@ -3,10 +3,13 @@ package com.imcode.imcms.flow;
 import imcode.server.document.DocumentDomainObject;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.imcode.imcms.api.DocumentLabels;
 
 public abstract class CreateDocumentPageFlow extends DocumentPageFlow {
 
@@ -24,6 +27,10 @@ public abstract class CreateDocumentPageFlow extends DocumentPageFlow {
 
     public DocumentDomainObject getDocument() {
         return editDocumentInformationPageFlow.getDocument();
+    }
+
+    public Collection<DocumentLabels> getLabels() {
+        return editDocumentInformationPageFlow.getLabels();
     }
 
     protected void dispatchFromPage( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {

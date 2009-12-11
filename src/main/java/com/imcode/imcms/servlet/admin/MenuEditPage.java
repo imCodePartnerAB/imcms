@@ -21,10 +21,7 @@ import imcode.util.Utility;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -32,13 +29,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.NotImplementedException;
 
 import com.imcode.imcms.flow.CreateDocumentPageFlow;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.NoPermissionInternalException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import com.imcode.imcms.api.DocumentLabels;
 
 public class MenuEditPage extends OkCancelPage {
 
@@ -47,12 +47,15 @@ public class MenuEditPage extends OkCancelPage {
     public static final String DOCUMENT_TYPE_ID = "documentTypeId";
     public static final String CREATE = "create";
 
+    // Menu owner (parent document)
     private TextDocumentDomainObject textDocument;
     private final MenuDomainObject menu;
     private ServletContext servletContext;
     public static final String COPY = "copy";
     public static final String ARCHIVE = "archive";
     public static final String REMOVE = "remove";
+    
+    // Menu index
     private int menuIndex;
     public static final String SORT_ORDER = "sortOrder";
     public static final String SORT = "sort";
@@ -259,13 +262,15 @@ public class MenuEditPage extends OkCancelPage {
             this.parentDocument = parentDocument;
             this.parentMenuIndex = parentMenuIndex;
         }
-        //should be transacted
-        public synchronized void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+
+        @Override
+        public void saveDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user)
+                throws NoPermissionInternalException, DocumentSaveException {
             if ( null != savedDocument ) {
                 return;
             }
             final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-            documentMapper.saveNewDocument( document, user, false);
+            documentMapper.saveNewDocument( document, labels, user, false);
             savedDocument = document ;
             if ( null == parentMenuIndex ) {
                 return;
@@ -273,6 +278,11 @@ public class MenuEditPage extends OkCancelPage {
             MenuDomainObject menu = parentDocument.getMenu(parentMenuIndex.intValue());
             menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(document)));
             documentMapper.saveDocument(parentDocument, user);
+        }
+
+        @Override
+        public synchronized void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+            throw new NotImplementedException();
         }
 
         public synchronized DocumentDomainObject getSavedDocument() {

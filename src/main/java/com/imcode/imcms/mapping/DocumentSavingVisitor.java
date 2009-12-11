@@ -14,6 +14,8 @@ import com.imcode.imcms.mapping.orm.UrlReference;
 
 /**
  * Not a public API. Must not be used directly.
+ *
+ * @see com.imcode.imcms.mapping.DocumentSaver
  */
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 

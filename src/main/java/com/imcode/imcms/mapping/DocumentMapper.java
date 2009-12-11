@@ -153,10 +153,11 @@ public class DocumentMapper implements DocumentGetter {
         Meta meta = newDocument.getMeta();
         
         meta.setId(null);
-        //TODO: newDocument.setVersion(null);
-        //newDocument.getVersion().setId(null);
-        //newDocument.getVersion().setNo(0);
-        //newDocument.getVersion().setDocId(null);
+        meta.getKeywords().clear();
+
+        newDocument.getVersion().setId(null);
+        newDocument.getVersion().setNo(0);
+        newDocument.getVersion().setDocId(null);
                 
         newDocument.setProperties(new HashMap());
         makeDocumentLookNew( newDocument, user );
@@ -204,6 +205,13 @@ public class DocumentMapper implements DocumentGetter {
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         documentSaver.saveNewDocument(user, document, copying);
+    }
+
+
+    public void saveNewDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user, boolean copying)
+            throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
+
+        documentSaver.saveNewDocument(user, document, labels, copying);
     }
 
     /**
@@ -517,12 +525,12 @@ public class DocumentMapper implements DocumentGetter {
             RequestInfo.CustomDoc customDoc = requestInfo.getCustomDoc();
 
             if (customDoc != null && docId.equals(customDoc.id)) {
-                return documentLoaderCachingProxy.getCustomDocument(docId, customDoc.versionNo, language);
+                return getCustomDocument(docId, customDoc.versionNo, language);
             }
 
             return docVersionMode == RequestInfo.DocVersionMode.WORKING
-                ? documentLoaderCachingProxy.getWorkingDocument(docId, language)
-                : documentLoaderCachingProxy.getDefaultDocument(docId, language);
+                ? getWorkingDocument(docId, language)
+                : getDefaultDocument(docId, language);
         }
         
 
@@ -535,8 +543,40 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         return docVersionMode == RequestInfo.DocVersionMode.WORKING
-            ? documentLoaderCachingProxy.getWorkingDocument(docId, language)
-            : documentLoaderCachingProxy.getDefaultDocument(docId, language);
+            ? getWorkingDocument(docId, language)
+            : getDefaultDocument(docId, language);
+    }
+
+
+    /**
+     * @param docId
+     * @param language
+     * @return working document
+     * @since 6.0
+     */
+    public DocumentDomainObject getWorkingDocument(Integer docId, I18nLanguage language) {
+        return documentLoaderCachingProxy.getWorkingDocument(docId, language);
+    }
+
+    /**
+     * @param docId
+     * @param language
+     * @return default document
+     * @since 6.0
+     */
+    public DocumentDomainObject getDefaultDocument(Integer docId, I18nLanguage language) {
+        return documentLoaderCachingProxy.getDefaultDocument(docId, language);
+    }
+
+    /**
+     * @param docId
+     * @param docVersionNo
+     * @param language
+     * @return custom document
+     * @since 6.0
+     */
+    public DocumentDomainObject getCustomDocument(Integer docId, Integer docVersionNo, I18nLanguage language) {
+        return documentLoaderCachingProxy.getCustomDocument(docId, docVersionNo, language);
     }
       
 

@@ -38,6 +38,8 @@ import com.imcode.imcms.mapping.orm.TemplateNames;
 
 /**
  * Not a public API. Must not be used directly.
+ *
+ * @see com.imcode.imcms.mapping.DocumentSaver
  */
 public class DocumentStoringVisitor extends DocumentVisitor {
 	

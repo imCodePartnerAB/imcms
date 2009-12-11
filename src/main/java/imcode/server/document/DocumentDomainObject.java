@@ -28,16 +28,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	private static Logger log = Logger.getLogger(DocumentDomainObject.class);
 	
 	/** Document's meta. */
-	private Meta meta;
-
-    /** Document id. */
-    private Integer id;
+	private Meta meta = new Meta();
 
 	/** Document's language. */
 	private I18nLanguage language;
 
     /** Document's version. */
-    private DocumentVersion version;
+    private DocumentVersion version = new DocumentVersion();
 
     private DocumentLabels labels = new DocumentLabels(); 
 
@@ -166,12 +163,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public int getId() {
-		return id == null ? ID_NEW : id.intValue();
+        Integer id = meta.getId();
+		return id == null ? ID_NEW : id;
 
 	}
 
 	public void setId(int id) {
-		this.id = id;
+		meta.setId(id);
 	}
 
 	public String getMenuImage() {

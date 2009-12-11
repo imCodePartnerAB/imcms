@@ -273,9 +273,24 @@ public class DocumentSaver {
 
 
     @Transactional
+    public void saveNewDocument(UserDomainObject user,
+                         DocumentDomainObject document, Collection<DocumentLabels> labels, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+        saveNewDocument(user, document, copying);
+
+        for (DocumentLabels l: labels) {
+            l.setId(null);
+            l.setDocId(document.getId());
+            l.setDocVersionNo(document.getVersion().getNo());
+            metaDao.saveLabels(l);
+        }        
+    }
+
+
+    @Transactional
     public void updateDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         updateDocument(document, (DocumentDomainObject)null, user);
 
+        // ???
         metaDao.deleteLabels(document.getId(), document.getVersion().getNo());
 
         for (DocumentLabels l: labels) {

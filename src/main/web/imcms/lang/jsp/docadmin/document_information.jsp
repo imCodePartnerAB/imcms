@@ -171,6 +171,15 @@ function setI18nCodeParameterValue(value) {
     
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="656">
+
+    <%--
+	<tr>
+        <td>Internal id</td>
+		<td><input type="text" name="<%=EditDocumentInformationPageFlow.REQUEST_PARAMETER__INTERNAL_ID%>"></td>
+	<tr>
+    --%>
+
+
 	<%-- TODO: Escape XML: $Headline$ --%>
 	<c:forEach items="${labelsColl}" var="i18nPart">
 	
@@ -204,16 +213,8 @@ function setI18nCodeParameterValue(value) {
 	  <tr>	  
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1002 ?>&nbsp;</td>
 		<td class="imcmsAdmForm">
-		<textarea name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT + pageContext.getAttribute("prefix") %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;"><c:out value="${i18nPart.menuText}"/></textarea><%
-
-		if (creatingNewDocument && document instanceof TextDocumentDomainObject) { %>
-		<table border="0" cellspacing="0" cellpadding="0">
-		<tr>
-			<td><input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS + pageContext.getAttribute("prefix") %>" value="1" checked></td>
-			<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/copy_headline_and_text_to_textfields ?></td>
-		</tr>
-		</table><%
-		} %></td>
+		<textarea name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT + pageContext.getAttribute("prefix") %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;"><c:out value="${i18nPart.menuText}"/></textarea>
+        </td>
 	  </tr>
 	  
 	  <%-- 
@@ -240,7 +241,30 @@ function setI18nCodeParameterValue(value) {
 	</tr>
 	
     </c:forEach>
-    
+
+    <%
+    if (creatingNewDocument && document instanceof TextDocumentDomainObject) {
+    %>
+    <tr>
+        <td colspan="2">
+            <table border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td><input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS%>" value="1" checked></td>
+                    <td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/copy_headline_and_text_to_textfields ?></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2">#gui_hr( 'cccccc' )</td>
+    </tr>
+    <%
+    }
+    %>
+
+
+
     <%-- ERROR MESSAGE--%>
 	<% if( !documentInformationPage.getErrors().isEmpty() &&
             documentInformationPage.getErrors().contains(EditDocumentInformationPageFlow.ALIAS_ERROR__ALREADY_EXIST) ) {%>
@@ -603,45 +627,7 @@ function setI18nCodeParameterValue(value) {
 			%><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS %>"
 			      size="48" maxlength="200" style="width:100%;"
 			      value="<%=StringEscapeUtils.escapeHtml( keywordsParser.formatKeywords(keywords) )%>" /></td>
-		</tr>
-
-		  <%-- Keywords old code:
-		  
-		  		
-		Set documentKeywords = document.getKeywords();
-        String[] keywords = (String[])documentKeywords.toArray(new String[documentKeywords.size()]);
-		Collator collator = service.getDefaultLanguageCollator() ;
-		Arrays.sort(keywords,collator) ;
-        KeywordsParser keywordsParser = new KeywordsParser();
-		%>
-		<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS %>" size="48" maxlength="200" style="width: 100%"
-		value="<%= StringEscapeUtils.escapeHtml( keywordsParser.formatKeywords(keywords) )%>"><br>
-		<span class="imcmsAdmDim"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/keywords_explanation ?></span><br>
-		<input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SEARCH_DISABLED %>" value="1" <%
-		  
-		  --%>
-
-            <%--
-		<table border="0" cellspacing="0" cellpadding="2" style="width:98%;">
-
-		<c:forEach items="${labelsColl}" var="i18nPart">
-		<c:set var="prefix" value="_${i18nPart.language.code}"/>
-		<c:set var="keywordsValues" value="${i18nPart.keywords}"/>
-		<tr>
-			<td><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${i18nPart.language.code}.gif" alt="" style="border:0;" /></td>
-			<td class="imcmsAdmText" style="padding-left:10px; padding-right:25px;">${i18nPart.language.name}</td>
-			<td><%					  
-			Set documentKeywords = (Set) pageContext.getAttribute("keywordsValues");
-			String[] keywords = (String[])documentKeywords.toArray(new String[documentKeywords.size()]);
-			Collator collator = service.getDefaultLanguageCollator() ; // ???
-			Arrays.sort(keywords,collator) ;
-			KeywordsParser keywordsParser = new KeywordsParser();							  
-			%><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS + pageContext.getAttribute("prefix")%>"
-			      size="48" maxlength="200" style="width:100%;"
-			      value="<%=StringEscapeUtils.escapeHtml( keywordsParser.formatKeywords(keywords) )%>" /></td>		
-		</tr>
-		</c:forEach>
-        --%>    
+		</tr>    
 
 		<tr>
 			<td colspan="3" class="imcmsAdmDim" style="padding-top:10px; padding-bottom:10px;"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/keywords_explanation ?></td>

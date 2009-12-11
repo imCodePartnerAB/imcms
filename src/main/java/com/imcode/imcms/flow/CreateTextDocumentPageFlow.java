@@ -2,7 +2,12 @@ package com.imcode.imcms.flow;
 
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
+import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.Imcms;
+import imcode.util.Utility;
+import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 
 import java.io.IOException;
 
@@ -12,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.mapping.DocumentSaveException;
+import org.apache.commons.lang.UnhandledException;
 
 public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
 
@@ -21,22 +28,18 @@ public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
         super( document, returnCommand, saveNewDocumentCommand );
     }
 
+    // Workaround:
+    // TODO: write throughout explaination
+    // In case of new document <this> field is used as a marker.
+    // If set then actual values are copied for all languages from labels.
     protected void dispatchOkFromDocumentInformation( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)getDocument() ;
 
+        String parameterName = EditDocumentInformationPageFlow.REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS;
 
-        for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
-        	String parameterName = EditDocumentInformationPageFlow.REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS
-        		+ "_" + language.getCode();
-        	
-            if ( null != request.getParameter( parameterName ) ) {
-                //textDocument.setText( language, 1, new TextDomainObject( textDocument.getHeadline(language), TextDomainObject.TEXT_TYPE_PLAIN ) );
-                //textDocument.setText( language, 2, new TextDomainObject( textDocument.getMenuText(language), TextDomainObject.TEXT_TYPE_HTML ) );
-
-                textDocument.setText( 1, new TextDomainObject( textDocument.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN ) );
-                textDocument.setText( 2, new TextDomainObject( textDocument.getMenuText(), TextDomainObject.TEXT_TYPE_HTML ) );
-
-            }
+        if (null != request.getParameter( parameterName ) ) {
+            textDocument.setText( 1, new TextDomainObject( textDocument.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN ) );
+            textDocument.setText( 2, new TextDomainObject( textDocument.getMenuText(), TextDomainObject.TEXT_TYPE_HTML ) );
         }
                 
         saveDocumentAndReturn(request, response);
@@ -46,5 +49,18 @@ public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
     }
 
     protected void dispatchOkFromEditPage( HttpServletRequest request, HttpServletResponse response ) throws IOException {
+    }
+
+    @Override
+    protected synchronized void saveDocument( HttpServletRequest request ) {
+        try {
+            saveDocumentCommand.saveDocument( getDocument(), getLabels(), Utility.getLoggedOnUser( request ) );
+        } catch ( NoPermissionToEditDocumentException e ) {
+            throw new ShouldHaveCheckedPermissionsEarlierException(e);
+        } catch ( NoPermissionToAddDocumentToMenuException e ) {
+            throw new ConcurrentDocumentModificationException(e);
+        } catch (DocumentSaveException e) {
+            throw new UnhandledException(e);
+        }
     }
 }
