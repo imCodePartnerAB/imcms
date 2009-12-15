@@ -44,5 +44,4 @@
           2 :sweden})
 
   
-
 (defn textdoc [& data])

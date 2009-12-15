@@ -244,6 +244,7 @@ public class DocumentMapper implements DocumentGetter {
      * @throws DocumentSaveException
      * @throws NoPermissionToAddDocumentToMenuException
      * @throws NoPermissionToEditDocumentException
+     * @since 6.0
      */
     public void saveDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {

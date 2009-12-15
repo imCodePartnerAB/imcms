@@ -264,6 +264,9 @@ public class DocumentSaver {
         
         document.setDependenciesMetaIdToNull();         
         Meta meta = saveMeta(document);
+        Integer docId = meta.getId();
+
+        metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
         
         DocumentVersion version = documentVersionDao.createVersion(meta.getId(), user.getId());
         document.setVersion(version);        

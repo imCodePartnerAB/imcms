@@ -53,6 +53,27 @@ public class MetaDao extends HibernateTemplate {
         return labels;
 	}
 
+    @Transactional
+    public boolean insertPropertyIfNotExists(Integer docId, String name, String value) {
+        Session session = getSession();
+        String existingValue = (String)session.createSQLQuery("SELECT value FROM document_properties WHERE meta_id = :docId AND key_name = :name")
+               .setParameter("docId", docId)
+               .setParameter("name", name)
+               .uniqueResult();
+
+        if (existingValue != null && existingValue.length() > 0) {
+            return false;    
+        }
+
+        session.createSQLQuery("INSERT INTO document_properties (meta_id, key_name, value) VALUES (:docId, :name, :value)")
+               .setParameter("docId", docId)
+               .setParameter("name", name)
+               .setParameter("value", value)
+               .executeUpdate();
+
+        return true;
+    }
+
 
 	/**
 	 * @return Labels.
