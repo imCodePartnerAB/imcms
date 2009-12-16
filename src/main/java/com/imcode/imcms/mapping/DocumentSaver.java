@@ -51,15 +51,10 @@ public class DocumentSaver {
      * @see com.imcode.imcms.servlet.admin.SaveText
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      * 
-     * TODO: Create methods for other doc's fields: 
-     *   saveImages
-     *   saveMenus,
-     *   etc 
+     * TODO: Update modified dt.
      */
     @Transactional     
     public void saveText(TextDocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-    	checkDocumentForSave(document);
-
         Integer loopNo = text.getLoopNo();
 
         if (loopNo != null) {
@@ -70,8 +65,29 @@ public class DocumentSaver {
         }
 
     	new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentText(text, user);
-    	
-    	// TODO: update meta modified time?
+    }
+
+
+    @Transactional
+    public void saveImages(TextDocumentDomainObject document, Collection<ImageDomainObject> images, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        for (ImageDomainObject image: images) {
+            saveImage(document, image, user);
+        }
+    }
+
+
+    @Transactional
+    public void saveImage(TextDocumentDomainObject document, ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        Integer loopNo = image.getLoopNo();
+
+        if (loopNo != null) {
+            ContentLoop loop = document.getContentLoop(loopNo);
+            if (loop.getId() == null) {
+                contentLoopDao.saveContentLoop(loop);
+            }
+        }
+
+    	new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentImage(image, user);
     }
 
 

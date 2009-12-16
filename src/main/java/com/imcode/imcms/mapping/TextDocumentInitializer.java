@@ -97,15 +97,12 @@ public class TextDocumentInitializer {
     	Collection<ImageDomainObject> images = imageDao.getImages(document.getId(), document.getVersion().getNo(), document.getLanguage().getId());
     	
     	for (ImageDomainObject image: images) {
-    		document.setImage(image.getNo(), image);
+    		document.setImage(image.getNo(), setImageSource(image));
     	}
     }
 
 
     /**
-     * Working document menuitems initialized to refer to working documents.
-     * Published and other documents initialized to refer to published documents. 
-     *
      * @param document document to initialzie.
      */
     public void initMenus(TextDocumentDomainObject document) {
@@ -158,7 +155,7 @@ public class TextDocumentInitializer {
 		Map<Integer, ContentLoop> loopsMap = new HashMap<Integer, ContentLoop>();
 		
 		for (ContentLoop loop: loops) {
-			loopsMap.put(loop.getIndex(), loop);
+			loopsMap.put(loop.getNo(), loop);
 			// Loops should have at lest one content.
 			List<Content> contents = loop.getContents();
 			if (contents.size() == 0) {

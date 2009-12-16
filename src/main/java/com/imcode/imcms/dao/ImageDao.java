@@ -58,7 +58,8 @@ public class ImageDao extends HibernateTemplate {
 		return images;
 	}
 	*/
-	
+
+    @Transactional
 	public synchronized ImageDomainObject getImage(int languageId,
 			Integer docId, Integer docVersionNo, int no) {
 		

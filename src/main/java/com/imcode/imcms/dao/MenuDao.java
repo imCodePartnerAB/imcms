@@ -90,11 +90,12 @@ public class MenuDao extends HibernateTemplate {
 	
 	
 	@Transactional
-	public Map<Integer, MenuDomainObject> saveDocumentMenus(Integer documentId, Map<Integer, MenuDomainObject> menusMap) {
+	public Map<Integer, MenuDomainObject> saveDocumentMenus(Integer docId, Integer docVersionNo, Map<Integer, MenuDomainObject> menusMap) {
 		for (Map.Entry<Integer, MenuDomainObject> entry: menusMap.entrySet()) {
 			MenuDomainObject menu = entry.getValue();
 			
-			menu.setMetaId(documentId);
+			menu.setMetaId(docId);
+            menu.setDocVersionNo(docVersionNo);
 			menu.setIndex(entry.getKey());
 			
 			for (Map.Entry<Integer, MenuItemDomainObject> itemEntry: menu.getItemsMap().entrySet()) {

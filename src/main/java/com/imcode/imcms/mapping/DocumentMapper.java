@@ -15,6 +15,7 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Clock;
@@ -615,10 +616,25 @@ public class DocumentMapper implements DocumentGetter {
      */
     public synchronized void saveText(TextDocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
     	try {
-    		documentSaver.saveText(document, text, user);            
+    		documentSaver.saveText(document, text, user);
 	    } finally {
 	        invalidateDocument(document);
 	    }    	
+    }
+
+    /**
+     * Saves images and non-saved enclosing content loop if any.
+     *
+     * Non saved content loop might be added to the document by ContentLoopTag2.
+     *
+     * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
+     */
+    public synchronized void saveImages(TextDocumentDomainObject document, Collection<ImageDomainObject> images, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    	try {
+    		documentSaver.saveImages(document, images, user);
+	    } finally {
+	        invalidateDocument(document);
+	    }
     }
 
     public void setClock(Clock clock) {

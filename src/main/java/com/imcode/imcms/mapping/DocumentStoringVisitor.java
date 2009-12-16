@@ -7,6 +7,7 @@ import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.FileUtility;
@@ -28,10 +29,7 @@ import org.apache.commons.lang.UnhandledException;
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.DocumentLabels;
-import com.imcode.imcms.dao.ContentLoopDao;
-import com.imcode.imcms.dao.MenuDao;
-import com.imcode.imcms.dao.MetaDao;
-import com.imcode.imcms.dao.TextDao;
+import com.imcode.imcms.dao.*;
 import com.imcode.imcms.mapping.orm.FileReference;
 import com.imcode.imcms.mapping.orm.Include;
 import com.imcode.imcms.mapping.orm.TemplateNames;
@@ -175,8 +173,18 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
 
         textDao.saveText(text);
-        textDao.saveTextHistory(text.getDocId(), text, user);
-    }    
+        //textDao.saveTextHistory(text.getDocId(), text, user);
+    }
+
+    public void updateTextDocumentImage(ImageDomainObject image, UserDomainObject user) {
+        ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
+
+        image.setImageUrl(image.getSource().toStorageString());
+        image.setType(image.getSource().getTypeId());
+        
+        imageDao.saveImage(image);
+        //imageDao.saveImageHistory(metaId, text, user); 
+    }
     
     // runs inside transaction
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
@@ -297,6 +305,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     protected void updateTextDocumentMenus(final TextDocumentDomainObject textDocument, final TextDocumentDomainObject oldTextDocument, final UserDomainObject savingUser) {
     	MenuDao dao = (MenuDao)services.getSpringBean("menuDao");
 
-    	dao.saveDocumentMenus(textDocument.getMeta().getId(), textDocument.getMenus());
+    	dao.saveDocumentMenus(textDocument.getId(), textDocument.getVersion().getNo(), textDocument.getMenus());
     }
 }

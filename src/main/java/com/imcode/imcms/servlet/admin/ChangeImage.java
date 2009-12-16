@@ -15,6 +15,7 @@ import imcode.util.Utility;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Collection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -78,13 +79,8 @@ public class ChangeImage extends HttpServlet {
             public void handle(List<ImageDomainObject> images) {
                 ImcmsServices services = Imcms.getServices();
                 
-                for (ImageDomainObject image: images) {
-                	//document.setImage(image.getLanguage(), imageIndex, image);
-                    document.setImage(imageIndex, image);
-                }
-                
                 try {
-                    services.getDocumentMapper().saveDocument(document, user);
+                    services.getDocumentMapper().saveImages(document, images, user);
                 } catch ( NoPermissionToEditDocumentException e ) {
                     throw new ShouldHaveCheckedPermissionsEarlierException(e);
                 } catch ( NoPermissionToAddDocumentToMenuException e ) {

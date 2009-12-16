@@ -147,9 +147,12 @@ public class DocumentLoaderCachingProxy {
     
     
     public void removeDocumentFromCache(Integer docId) {
-    	defaultDocuments.remove(docId);
+        for (Map<Integer, DocumentDomainObject> docs: defaultDocuments.values()) {
+            docs.remove(docId);
+        }
+
         for (Map<Integer, DocumentDomainObject> docs: workingDocuments.values()) {
-            workingDocuments.remove(docId);    
+            docs.remove(docId);    
         }
 
     	versionInfos.remove(docId);

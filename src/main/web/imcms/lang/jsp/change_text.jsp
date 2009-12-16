@@ -9,7 +9,6 @@
 	        java.util.ArrayList,
 	        java.util.Arrays,
 	        java.util.List,
-	        java.util.Set,
 	        com.imcode.imcms.api.ContentManagementSystem"
 
     contentType="text/html; charset=UTF-8"
@@ -69,21 +68,15 @@ try {
  *         Get languages                                                                     *
  ******************************************************************************************* */
 
-LanguageDao languageDao = (LanguageDao) Imcms.getServices().getSpringBean("languageDao") ;
-List<I18nLanguage> languages = languageDao.getAllLanguages() ;
-I18nLanguage defaultLanguage = languageDao.getDefaultLanguage() ;
-I18nLanguage currentLanguage = (null != session.getAttribute("lang")) ? (I18nLanguage)session.getAttribute("lang") : defaultLanguage ;
+List<I18nLanguage> languages = Imcms.getI18nSupport().getLanguages();
+I18nLanguage defaultLanguage = Imcms.getI18nSupport().getDefaultLanguage();
+I18nLanguage currentLanguage = Imcms.getRequestInfo().getLanguage();
 
-DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper() ;
-DocumentDomainObject document = documentMapper.getDocument(textEditPage.getDocumentId()) ;
-Meta meta = document.getMeta() ;
-Set<I18nMeta> i18nMetas = meta.getI18nMetas() ;
+DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 TextDomainObject text = textEditPage.getText();
-
-
-
 %>
-<%@page import="com.imcode.imcms.api.I18nMeta, com.imcode.imcms.dao.LanguageDao, com.imcode.imcms.api.I18nLanguage, com.imcode.imcms.api.Meta, imcode.server.document.DocumentDomainObject, com.imcode.imcms.mapping.DocumentMapper"%>
+<%@page import="com.imcode.imcms.api.I18nLanguage, imcode.server.document.DocumentDomainObject, com.imcode.imcms.mapping.DocumentMapper"%>
+<%@ page import="imcode.server.ImcmsConstants" %>
 <vel:velocity>
 <html>
 <head>
@@ -187,16 +180,15 @@ if (null != languages) { %>
 	<tr><%
 	int iCount = 0 ;
 	int languagesPerRow = 7 ;
-	for ( I18nMeta i18nMeta : i18nMetas ) {
-		I18nLanguage lang     = i18nMeta.getLanguage() ;
+	for (I18nLanguage lang: languages) {
 		String langCode       = lang.getCode() ;
 		String langName       = lang.getName() ;
 		String langNameNative = lang.getNativeName() ;
-		boolean isEnabled  = (i18nMeta.getEnabled()) ;
+		boolean isEnabled  = true;//(i18nMeta.getEnabled()) ;
 		boolean isDefault  = (null != defaultLanguage && defaultLanguage.equals(lang)) ;
 		boolean isCurrent  = (null != currentLanguage && currentLanguage.equals(lang)) ;
 		String queryString = request.getQueryString().replaceAll("lang=[a-z]{2}&?", "") ;
-		String href_0      = "<a href=\"ChangeText?lang=" + langCode + "&amp;" + queryString + "\" title=\"" + langName + "/" + langNameNative + "#DATA#\" style=\"#STYLE#\">" ;
+		String href_0      = "<a href=\"ChangeText?" + ImcmsConstants.REQUEST_PARAM__LANGUAGE + "=" + langCode + "&amp;" + queryString + "\" title=\"" + langName + "/" + langNameNative + "#DATA#\" style=\"#STYLE#\">" ;
 		String href_1      = "</a>" ;
 		String sData = "" ;
 		if (isDefault)  sData += "default " ;
