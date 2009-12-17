@@ -97,7 +97,7 @@ public class TextDocumentInitializer {
     	Collection<ImageDomainObject> images = imageDao.getImages(document.getId(), document.getVersion().getNo(), document.getLanguage().getId());
     	
     	for (ImageDomainObject image: images) {
-    		document.setImage(image.getNo(), setImageSource(image));
+    		document.setImage(image.getNo(), image);
     	}
     }
 
@@ -130,25 +130,6 @@ public class TextDocumentInitializer {
     	}    	
     }
     
-    // Temporary used by ImageDao
-    // after refactoring make it private
-	public static ImageDomainObject setImageSource(ImageDomainObject image) {
-		if (image == null) {
-			return null;
-		}
-		
-		String url = image.getImageUrl();
-		
-		if (!StringUtils.isBlank(url)) {
-			ImageSource imageSource = new ImagesPathRelativePathImageSource(url);
-			image.setSource(imageSource);	
-			image.setImageUrl(url);
-			image.setType(imageSource.getTypeId());
-		}
-				
-		return image;
-	} 
-	
 	
 	public void initContentLoops(TextDocumentDomainObject document) {
 		List<ContentLoop> loops = contentLoopDao.getContentLoops(document.getMeta().getId(), document.getVersion().getNo());

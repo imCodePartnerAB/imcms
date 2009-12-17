@@ -1,7 +1,10 @@
 (ns com.imcode.imcms.sandbox)
 
-(defmulti area :type)
-
-(defmethod area :circle [{r :r}] (* r 3.14))
-(defmethod area :square [{n :n}] (* n n))
-(defmethod area :box [{x :x, y :y :or {:x 1, :y 2}}] (* x y))
+(defn f [xs]
+  (loop [xs xs, evens [], odds []]
+    (let [x (first xs)]
+      (if-not x
+        [evens, odds]
+        (if (even? x)
+          (recur (rest xs) (conj evens x) odds)
+          (recur (rest xs) evens (conj odds x)))))))

@@ -1,7 +1,7 @@
 package com.imcode.imcms.dao;
 
-import static com.imcode.imcms.mapping.TextDocumentInitializer.setImageSource;
 import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import org.apache.commons.lang.StringUtils;
 
 import com.imcode.imcms.api.I18nLanguage;
 
@@ -27,9 +28,9 @@ public class ImageDao extends HibernateTemplate {
 			ImageDomainObject image = getImage(language.getId(), documentId, documentVersion, imageId);
 			
 			if (image == null && createImageIfNotExists) {
-					image = new ImageDomainObject();
-					image.setDocId(documentId);
-					image.setName("" + imageId);
+                image = new ImageDomainObject();
+                image.setDocId(documentId);
+                image.setName("" + imageId);
 				
 				image.setLanguage(language);
 			}
@@ -70,7 +71,7 @@ public class ImageDao extends HibernateTemplate {
 			.setParameter("languageId", languageId)
 			.uniqueResult();
 		
-		return image;
+		return setImageSource(image);
 	}
 	
 	@Transactional
@@ -82,18 +83,22 @@ public class ImageDao extends HibernateTemplate {
 	
 	@Transactional
 	public List<ImageDomainObject> getImages(Integer docId, Integer docVersionNo) {
-		return findByNamedQueryAndNamedParam("Image.getByDocIdAndDocVersionNo",
+		Collection<ImageDomainObject> images =  findByNamedQueryAndNamedParam("Image.getByDocIdAndDocVersionNo",
 				new String[] {"docId", "docVersionNo"},
 				new Object[] {docId, docVersionNo}	
 		);
+
+        return (List<ImageDomainObject>)setImagesSources(images);
     }
 
 	@Transactional
 	public Collection<ImageDomainObject> getImages(Integer docId, Integer docVersionNo, Integer languageId) {
-		return findByNamedQueryAndNamedParam("Image.getByDocIdAndDocVersionNoAndLanguageId",
+        Collection<ImageDomainObject> images = findByNamedQueryAndNamedParam("Image.getByDocIdAndDocVersionNoAndLanguageId",
 				new String[] {"docId", "docVersionNo", "languageId"},
 				new Object[] {docId, docVersionNo, languageId}
 		);
+
+        return setImagesSources(images);
     }
 	
 	public LanguageDao getLanguageDao() {
@@ -102,5 +107,35 @@ public class ImageDao extends HibernateTemplate {
 
 	public void setLanguageDao(LanguageDao languageDao) {
 		this.languageDao = languageDao;
-	}	
+	}
+
+
+    /**
+     * Initializes images sources.
+     */
+	public static Collection<ImageDomainObject> setImagesSources(Collection<ImageDomainObject> images) {
+		for (ImageDomainObject image: images) {
+            setImageSource(image);
+        }
+
+        return images;
+	}
+
+    
+    /**
+     * Initializes image source. 
+     */
+	public static ImageDomainObject setImageSource(ImageDomainObject image) {
+		if (image == null) {
+			return null;
+		}
+
+		String url = image.getImageUrl();
+
+		if (!StringUtils.isBlank(url)) {
+			image.setSource(new ImagesPathRelativePathImageSource(url));
+		}
+
+		return image;
+	}    
 }
