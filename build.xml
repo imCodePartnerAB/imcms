@@ -331,6 +331,7 @@
     <macrodef name="maven">
         <attribute name="goal"/>
         <sequential>
+            <antcall target="compile-clojure"/>
             <exec executable="${ant.maven.executable}" failonerror="true">
                 <arg value="-Dmaven.test.skip=true"/>
             	<arg value="-Dimcms.version=${maven.artifact.version}"/>
@@ -370,11 +371,11 @@
 	<target name="compile-clojure">
         <java classname="clojure.lang.Compile" classpathref="pom.classpath" failonerror="true">
           <classpath>
-              <path location="src/test/clojure"/>
+              <path location="src/main/clojure"/>
               <path location="${maven.build.dir}/classes"/>
           </classpath>
           <sysproperty key="clojure.compile.path" value="${maven.build.dir}/classes" />
-          <arg value="com.imcode.imcms.compojure" />
+          <arg value="com.imcode.imcms.backdoor.BackdoorFilter" />
         </java>
 
         <copy todir="target/imcms-6.0.0-SNAPSHOT/WEB-INF/classes">

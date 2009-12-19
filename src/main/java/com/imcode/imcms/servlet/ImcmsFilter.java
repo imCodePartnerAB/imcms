@@ -41,11 +41,11 @@ import com.imcode.imcms.api.ContentManagementSystem;
 /**
  * Front filter - intercepts all requests expect backdoor.
  *
- * Also responsible for Imcms runtime initializing.
+ * Also initializes and starts Imcms.
  *
  * @see imcode.server.Imcms
  */
-public class ImcmsFilter implements Filter {
+public class ImcmsFilter implements Filter, ImcmsListener {
 
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
@@ -107,14 +107,10 @@ public class ImcmsFilter implements Filter {
             
             if (requestInfo == null) {
                 requestInfo = new RequestInfo();
-
-                requestInfo.setUser(user);
-                requestInfo.setLanguage(Imcms.getI18nSupport().getDefaultLanguage());
-                requestInfo.setDocVersionMode(RequestInfo.DocVersionMode.DEFAULT);
-                
                 session.setAttribute(ImcmsConstants.SESSION_ATTR__REQUEST_INFO, requestInfo);
             }
 
+            requestInfo.setUser(user);
             updateRequestInfoLanguage(request, requestInfo);
             updateRequestInfoVersionNoAndMode(request, requestInfo);
             
@@ -159,14 +155,13 @@ public class ImcmsFilter implements Filter {
         logEnvironment(servletContext);
 
         Imcms.setPath(path);
-        Imcms.setServletContext(servletContext);
-        Imcms.setImcmsFilter(this);
-        Imcms.setWebApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));
+        Imcms.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));
+        Imcms.addListener(this);
 
         try {
             logger.info("Starting CMS.");
             Imcms.start();
-            Imcms.setCmsMode();
+            Imcms.setNormalMode();
         } catch (Exception e) {
             logger.error("Error starting CMS.", e);
             Imcms.setMaintenanceMode();
@@ -182,10 +177,20 @@ public class ImcmsFilter implements Filter {
     /**
      * Updates delegate filter.
      */
-    public void updateDelegateFilter() {
-        delegateFilter = Imcms.getMode() == ImcmsMode.NORMAL
+    public void onImcmsModeChange(ImcmsMode newMode) {
+        delegateFilter = newMode == ImcmsMode.NORMAL
                 ? normalModeFilter
                 : maintenanceModeFilter;
+    }
+
+    public void onImcmsStart() {}
+
+    public void onImcmsStop() {
+        onImcmsModeChange(ImcmsMode.MAINTENANCE);
+    }
+    
+    public void onImcmsStartEx(Exception ex) {
+       onImcmsModeChange(ImcmsMode.MAINTENANCE);
     }
 
 
@@ -268,7 +273,7 @@ public class ImcmsFilter implements Filter {
         if (language == null) {
             language = Imcms.getI18nSupport().getDefaultLanguage();
         }
-
+        
         requestInfo.setLanguage(language);
     }
 
@@ -299,17 +304,21 @@ public class ImcmsFilter implements Filter {
             requestInfo.setCustomDoc(null);
         }
 
+        RequestInfo.DocVersionMode docVersionMode = requestInfo.getDocVersionMode();
+
         String docVersionModeStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_MODE);
 
         if (docVersionModeStr != null) {
-            RequestInfo.DocVersionMode docVersionMode = RequestInfo.DocVersionMode.DEFAULT;
-
-            if (docVersionModeStr.toUpperCase().charAt(0) == 'W') {
-                docVersionMode = RequestInfo.DocVersionMode.WORKING;
-            }
-
-            requestInfo.setDocVersionMode(docVersionMode);
+            docVersionMode = docVersionModeStr.toUpperCase().charAt(0) == 'W'
+                    ? RequestInfo.DocVersionMode.WORKING
+                    : RequestInfo.DocVersionMode.DEFAULT;
         }
+
+        if (docVersionMode == null) {
+            docVersionMode = RequestInfo.DocVersionMode.DEFAULT;        
+        }
+
+        requestInfo.setDocVersionMode(docVersionMode);
     }
 
     

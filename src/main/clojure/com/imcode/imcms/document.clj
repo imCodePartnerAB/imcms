@@ -24,7 +24,7 @@
   (apply struct-map textdoc-struct :doc-type :textdoc args))
 
 
-
+(comment
 (textdoc :sys-id "country/estonia", :title "Welcome to Estonia", :language "eng"
   
   :texts {1 "text field 1"
@@ -52,5 +52,6 @@
            2 "images/image2"}
 
   :menus {1 "country/estonia"
-          2 "country/estonia"})  
+          2 "country/estonia"})
+)  
 

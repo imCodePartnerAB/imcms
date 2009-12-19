@@ -120,10 +120,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             	text.setDocId(documentId);
             	text.setDocVersionNo(documentVersionNumber);
                 textDao.saveText(text);
-                
-                if (text.isModified()) {                	 
-                    //textDao.saveTextHistory(documentId, text, user); 
-                }        		
+                             	 
+                    //textDao.saveTextHistory(documentId, text, user);
         //	}
         }
 

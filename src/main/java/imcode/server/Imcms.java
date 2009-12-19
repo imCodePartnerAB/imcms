@@ -8,13 +8,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.Properties;
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
+import java.util.*;
 
 import javax.sql.DataSource;
-import javax.servlet.ServletContext;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
@@ -22,9 +18,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.log4j.Logger;
 
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.context.ApplicationContext;
 import org.hibernate.Session;
 import org.hibernate.HibernateException;
 
@@ -41,10 +37,12 @@ import com.imcode.imcms.api.I18nException;
 import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.RequestInfo;
 import com.imcode.imcms.servlet.ImcmsMode;
-import com.imcode.imcms.servlet.ImcmsFilter;
+import com.imcode.imcms.servlet.ImcmsListener;
 
 /**
  * Runtime.
+ *
+ * Path and ApplicationContext must be set before the start method invocation.
  */
 public class Imcms {
 
@@ -54,33 +52,36 @@ public class Imcms {
     public static final String UTF_8_ENCODING = "UTF-8";
     public static final String DEFAULT_ENCODING = UTF_8_ENCODING;
 
+    /** Absolute application path. */
+    private static File path;
+    
+    /** Prefs config path relative to application path. */
+    public static final String DEFAULT_PREFS_CONFIG_PATH = "WEB-INF/conf";
+
     private static Logger logger = Logger.getLogger(Imcms.class);
 
-    /** Cms services. */
+    /** Services. */
     private static ImcmsServices services;
 
     private static BasicDataSource apiDataSource;
     private static BasicDataSource dataSource;
 
-    /** Imcms full deployment path. */
-    private static File path;
+    private static boolean upgradeDatabaseSchemaOnStart = true;
 
-
-    // TODO: begin refactor
-    private static ServletContext servletContext;
     private static ImcmsMode mode = ImcmsMode.MAINTENANCE;
-    private static ImcmsFilter imcmsFilter;
-    private static Exception cmsStartupEx;
+    private static List<ImcmsListener> listeners = new LinkedList<ImcmsListener>();
+    private static Exception startEx;
 
-    /** Springframework web application context. */
-    public static WebApplicationContext webApplicationContext;
-    // TODO: end refactor
+    /** Springframework application context. */
+    public static ApplicationContext applicationContext;
 
 
 	/** Request info. */
 	private static ThreadLocal<RequestInfo> requestInfos;
 
     private static I18nSupport i18nSupport;
+
+    private static String prefsConfigPath = DEFAULT_PREFS_CONFIG_PATH;
 
 
     /** Can not be instantiated directly. */
@@ -92,22 +93,36 @@ public class Imcms {
 
     //  TODO: Refactor.
     public static void start() throws StartupException {
-        // Enshure all parameters are set - path, etc 
-        setCmsStartupEx(null);
+        if (path == null) {
+            throw new IllegalStateException("Application path is not set.");
+        }        
+
+        if (applicationContext == null) {
+            throw new IllegalStateException("Spring application context is not set.");
+        }
+        
+        setStartEx(null);
 
         try {
-            File configPath = new File(path, "WEB-INF/conf");
+            File configPath = new File(path, prefsConfigPath);
             Prefs.setConfigPath(configPath);
 
             requestInfos = new ThreadLocal<RequestInfo>();
 
-            upgradeDatabaseSchema();
+            if (upgradeDatabaseSchemaOnStart) {
+                upgradeDatabaseSchema();
+            }
+            
             initI18nSupport();
             
-            services = createApplicationServices();
+            services = createServices();
+
+            for (ImcmsListener listener: listeners) {
+                listener.onImcmsStart();
+            }
         } catch (Exception e) {
             logger.error(e, e);
-            setCmsStartupEx(e);
+            setStartEx(e);
 
             throw new StartupException("" +
                     "Application could not be started. Please see the log file in WEB-INF/logs/ for details.", e);
@@ -123,7 +138,7 @@ public class Imcms {
     }
 
 
-    private static ImcmsServices createApplicationServices() throws Exception {
+    private static ImcmsServices createServices() throws Exception {
         Properties serverprops = getServerProperties();
         logger.debug("Creating main DataSource.");
         Database database = createDatabase(serverprops);
@@ -201,6 +216,10 @@ public class Imcms {
         Prefs.flush();
 
         services = null;
+
+        for (ImcmsListener listener: listeners) {
+            listener.onImcmsStop();
+        }
     }
 
     private static void logDatabaseVersion(BasicDataSource basicDataSource) throws SQLException {
@@ -256,7 +275,9 @@ public class Imcms {
 
     public static ImcmsMode setMode(ImcmsMode mode) {
         Imcms.mode = mode;
-        imcmsFilter.updateDelegateFilter();
+        for (ImcmsListener listener: listeners) {
+            listener.onImcmsModeChange(mode);
+        }
 
         return mode;
     }
@@ -266,7 +287,7 @@ public class Imcms {
     }
 
 
-    public static ImcmsMode setCmsMode() {
+    public static ImcmsMode setNormalMode() {
         return setMode(ImcmsMode.NORMAL);
     }
 
@@ -275,27 +296,23 @@ public class Imcms {
     }
 
 
-    // clear
-    public static void setCmsStartupEx(Exception cmsStartupEx) {
-        Imcms.cmsStartupEx = cmsStartupEx;
-    }
-
-
-    public static ServletContext getServletContext() {
-        return servletContext;
-    }
-
-    public static void setServletContext(ServletContext servletContext) {
-        Imcms.servletContext = servletContext;
+    public static void setStartEx(Exception startEx) {
+        Imcms.startEx = startEx;
+        
+        for (ImcmsListener listener: listeners) {
+            listener.onImcmsStartEx(startEx);
+        }
     }
 
 
 	public static Object getSpringBean(String beanName) {
-		return webApplicationContext.getBean(beanName);
+        if (applicationContext == null) {
+            throw new IllegalStateException("Spring application context is not set.");
+        }
+
+		return applicationContext.getBean(beanName);
 	}
-
-
-
+    
 
     /**
      * Initializes I18N support.
@@ -399,24 +416,16 @@ public class Imcms {
         });
     }
 
-    public static ImcmsFilter getImcmsFilter() {
-        return imcmsFilter;
+    public static ApplicationContext getApplicationContext() {
+        return applicationContext;
     }
 
-    public static void setImcmsFilter(ImcmsFilter imcmsFilter) {
-        Imcms.imcmsFilter = imcmsFilter;
+    public static void setApplicationContext(ApplicationContext applicationContext) {
+        Imcms.applicationContext = applicationContext;
     }
 
-    public static WebApplicationContext getWebApplicationContext() {
-        return webApplicationContext;
-    }
-
-    public static void setWebApplicationContext(WebApplicationContext webApplicationContext) {
-        Imcms.webApplicationContext = webApplicationContext;
-    }
-
-    public static Exception getCmsStartupEx() {
-        return cmsStartupEx;
+    public static Exception getStartEx() {
+        return startEx;
     }
 
     public static I18nSupport getI18nSupport() {
@@ -425,5 +434,25 @@ public class Imcms {
 
     public static void setI18nSupport(I18nSupport i18nSupport) {
         Imcms.i18nSupport = i18nSupport;
+    }
+
+    public static void addListener(ImcmsListener listener) {
+        listeners.add(listener);
+    }
+
+    public static boolean isUpgradeDatabaseSchemaOnStart() {
+        return upgradeDatabaseSchemaOnStart;
+    }
+
+    public static void setUpgradeDatabaseSchemaOnStart(boolean upgradeDatabaseSchemaOnStart) {
+        Imcms.upgradeDatabaseSchemaOnStart = upgradeDatabaseSchemaOnStart;
+    }
+
+    public static String getPrefsConfigPath() {
+        return prefsConfigPath;
+    }
+
+    public static void setPrefsConfigPath(String prefsConfigPath) {
+        Imcms.prefsConfigPath = prefsConfigPath;
     }
 }

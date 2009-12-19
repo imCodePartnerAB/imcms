@@ -24,7 +24,7 @@ public class CacheController {
 	 */
 	@RequestMapping(value="/cache/clear.html")
 	public String clearCache() {
-		Imcms.getServices().getDocumentMapper().getCachingDocumentGetter().clearCache();
+		Imcms.getServices().getDocumentMapper().getDocumentLoaderCachingProxy().clearCache();
 		return "forward:/WEB-INF/admin/cache/DocumentsCache.groovy";
 	}	
 }

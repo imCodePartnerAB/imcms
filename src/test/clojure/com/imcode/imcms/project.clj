@@ -14,13 +14,14 @@
     clojure.contrib.repl-utils
     clojure.contrib.duck-streams
     clojure.contrib.def
-
+    com.imcode.imcms.spring
     [clojure.contrib.except :only [throw-if throw-if-not]]
     [com.imcode.imcms.file-utils :as file-utils :only [throw-if-not-dir throw-if-not-file]])
 
 
   (:import
     (java.io File)
+    (imcode.server Imcms)
     (org.apache.commons.dbcp BasicDataSource)))
 
 
@@ -135,3 +136,11 @@
 (defmacro sh [& args]
   (let [cmd (map str args)]
     `(shell/sh ~@cmd)))
+
+
+(defn init-imcms []
+  (Imcms/setPath (subdir "src/test/resources"))
+  (Imcms/setPrefsConfigPath ".")
+  (Imcms/setApplicationContext spring-app-context)
+  (Imcms/setUpgradeDatabaseSchemaOnStart false)
+  (Imcms/start))

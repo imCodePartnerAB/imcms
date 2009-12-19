@@ -18,7 +18,7 @@
     <filter>
         <description>Imcms Backdoor Filter</description>
         <filter-name>BackdoorFilter</filter-name>
-        <filter-class>com.imcode.imcms.admin.backdoor.BackdoorFilter</filter-class>
+        <filter-class>com.imcode.imcms.backdoor.BackdoorFilter</filter-class>
     </filter>
     
     <filter>
@@ -323,11 +323,6 @@
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-class>
     </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.compojure</servlet-name>
-        <servlet-class>com.imcode.imcms.compojure</servlet-class>
-    </servlet>
     
 	<servlet-mapping>
 	    <servlet-name>newadmin</servlet-name>
@@ -338,11 +333,6 @@
     <servlet-mapping>
         <servlet-name>Groovy</servlet-name>
         <url-pattern>*.groovy</url-pattern>
-    </servlet-mapping>    
-    
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.compojure</servlet-name>
-        <url-pattern>/admin/backdoor/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

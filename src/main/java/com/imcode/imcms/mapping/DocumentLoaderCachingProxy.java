@@ -268,4 +268,13 @@ public class DocumentLoaderCachingProxy {
 
         return documents;
     }
+
+    public Map<I18nLanguage, Map<Integer, DocumentDomainObject>> getDefaultDocuments() {
+        return defaultDocuments;
+    }
+
+
+    public Map<I18nLanguage, Map<Integer, DocumentDomainObject>> getWorkingDocuments() {
+        return workingDocuments;
+    }
 }

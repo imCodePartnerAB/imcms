@@ -3,7 +3,7 @@
     [com.imcode.imcms.project :as project])
 
   (:import
-    (org.springframework.context.support ClassPathXmlApplicationContext FileSystemXmlApplicationContext)))
+    (org.springframework.context.support FileSystemXmlApplicationContext)))
 
 
 (def spring-app-context
@@ -18,9 +18,9 @@
   ([bean-name]
     `(defbean ~bean-name ~bean-name))
 
-  ([name bean-name]
+  ([alias-name bean-name]
     (let [bean-name-str (str bean-name)]
-      `(def ~name (get-spring-bean ~bean-name-str)))))
+      `(def ~alias-name (get-spring-bean ~bean-name-str)))))
 
 
 (defbean meta-dao metaDao)

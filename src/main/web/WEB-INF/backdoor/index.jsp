@@ -32,7 +32,7 @@
 
     if (request.getParameter("error") != null) {
         response.setContentType("text/plain");
-        Imcms.getCmsStartupEx().printStackTrace(new PrintWriter(out));
+        Imcms.getStartEx().printStackTrace(new PrintWriter(out));
 
         return;
     }
@@ -50,16 +50,16 @@
     }
 
     if (request.getParameter("mode") != null) {
-        if (request.getParameter("mode").equals("c"))
-            Imcms.setCmsMode();
+        if (request.getParameter("mode").equals("n"))
+            Imcms.setNormalMode();
         else
             Imcms.setMaintenanceMode();
     }
 
-    String sh = request.getParameter("sh");
+    String repl = request.getParameter("repl");
 
-    if (sh != null) {
-        ClojureUtils.startReplServer(Integer.parseInt(sh));
+    if (repl != null) {
+        ClojureUtils.startReplServer(Integer.parseInt(repl));
     }
 
 
@@ -86,7 +86,7 @@
   :Commands:&nbsp;
     |&nbsp;<a href="?start">Start appliction</a>
     |&nbsp;<a href="?stop">Stop appliction</a>
-    |&nbsp;<a href="?mode=c">CMS MODE</a>
+    |&nbsp;<a href="?mode=n">NORMAL MODE</a>
     |&nbsp;<a href="?mode=m">MAINTENANCE MODE</a>
 
   <hr/>
@@ -95,13 +95,13 @@
     &nbsp;&nbsp;:Running:&nbsp;<%=Imcms.getServices() == null ? "NO" : "YES"%><br/>
     &nbsp;&nbsp;:Startup errors:&nbsp;
       <%
-        if (Imcms.getCmsStartupEx() == null) {
+        if (Imcms.getStartEx() == null) {
             %>
             NO ERRORS
             <%
         } else {
             %>
-            <a href="?error" target="_blank"><%=Imcms.getCmsStartupEx().getClass()%></a>
+            <a href="?error" target="_blank"><%=Imcms.getStartEx().getClass()%></a>
             <%
         }
       %>

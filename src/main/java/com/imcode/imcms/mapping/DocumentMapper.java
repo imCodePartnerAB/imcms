@@ -787,19 +787,15 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-	public DocumentLoaderCachingProxy getDocumentGetter() {
-		return documentLoaderCachingProxy;
-	}
-	
-	public DocumentLoaderCachingProxy getCachingDocumentGetter() {
-		return documentLoaderCachingProxy;
-	}
-
-	public void setCachingDocumentGetter(DocumentLoaderCachingProxy documentLoaderCachingProxy) {
-		this.documentLoaderCachingProxy = documentLoaderCachingProxy;
-	}
-
 	public void setDocumentSaver(DocumentSaver documentSaver) {
 		this.documentSaver = documentSaver;
 	}
+
+    public DocumentLoaderCachingProxy getDocumentLoaderCachingProxy() {
+        return documentLoaderCachingProxy;
+    }
+
+    public void setDocumentLoaderCachingProxy(DocumentLoaderCachingProxy documentLoaderCachingProxy) {
+        this.documentLoaderCachingProxy = documentLoaderCachingProxy;
+    }
 }

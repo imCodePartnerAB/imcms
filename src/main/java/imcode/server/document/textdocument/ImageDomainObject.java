@@ -67,17 +67,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
     private String imageUrl = "";
     
     private Integer type;
-    
-	/**
-	 * Altered if image was modified.
-     *
-     * todo: move to DocumentDomin object modified images list.
-	 * 
-	 * @see TextDocumentDomainObject.setText
-	 * @see DocumentStoringVisitor.updateTextDocumentTexts 
-	 */
-	@Transient
-	private boolean modified;
 
     @Column(name="loop_no")
     private Integer loopNo;
@@ -241,7 +230,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
         }
         try {
             return source.getInputStreamSource( ).getSize( );
-        } catch ( IOException e ) {
+        } catch ( IOException e ) {                                                    
             return 0;
         }
     }
@@ -356,14 +345,6 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
 	public void setNo(Integer no) {
 		setIndex(no);
-	}
-
-	public boolean isModified() {
-		return modified;
-	}
-
-	public void setModified(boolean modified) {
-		this.modified = modified;
 	}
 
 	public Integer getDocVersionNo() {

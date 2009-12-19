@@ -1,6 +1,7 @@
-(ns com.imcode.imcms.rt
+(ns com.imcode.imcms.backdoor.cms
   (:import
     (java.io File)
+    (imcode.server Imcms)
     (org.apache.lucene.store RAMDirectory)
     (org.apache.lucene.document Document Field Field$Store Field$Index)
     (org.apache.lucene.index IndexReader IndexWriter Term)
@@ -52,3 +53,7 @@
 
 (defn search-info [query]
   (map get-info (search query)))
+
+
+(defn get-doc [id]
+  )

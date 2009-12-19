@@ -67,17 +67,6 @@ public class TextDomainObject implements Serializable, Cloneable {
 
     @Column(name="loop_content_index")
     private Integer contentIndex;
-	
-	/**
-	 * Altered if text was modified.
-     *
-     * todo: move to document domain object modified texts list.
-	 * 
-	 * @see TextDocumentDomainObject.setText
-	 * @see DocumentStoringVisitor.updateTextDocumentTexts 
-	 */                                           
-	@Transient
-	private boolean modified;
 		
     String text;        
     
@@ -243,17 +232,6 @@ public class TextDomainObject implements Serializable, Cloneable {
 
 	public void setNo(Integer no) {
 		this.no = no;
-	}
-
-	/**
-	 * @return if text was modified. 
-	 */
-	public boolean isModified() {
-		return modified;
-	}
-
-	public void setModified(boolean modified) {
-		this.modified = modified;
 	}
 
 	public Integer getDocVersionNo() {
