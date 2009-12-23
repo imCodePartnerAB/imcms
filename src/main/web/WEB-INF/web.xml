@@ -16,9 +16,9 @@
     </listener>
 
     <filter>
-        <description>Imcms Backdoor Filter</description>
-        <filter-name>BackdoorFilter</filter-name>
-        <filter-class>com.imcode.imcms.backdoor.BackdoorFilter</filter-class>
+        <description>Imcms Maintenance Filter</description>
+        <filter-name>MaintenanceFilter</filter-name>
+        <filter-class>com.imcode.imcms.maintenance.MaintenanceFilter</filter-class>
     </filter>
     
     <filter>
@@ -34,8 +34,9 @@
     </filter>
 
     <filter-mapping>
-        <filter-name>BackdoorFilter</filter-name>
-        <url-pattern>/admin/backdoor/*</url-pattern>
+        <filter-name>MaintenanceFilter</filter-name>
+        <url-pattern>/admin/maintenance/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
     </filter-mapping>
 
     <filter-mapping>

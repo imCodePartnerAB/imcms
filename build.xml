@@ -375,7 +375,7 @@
               <path location="${maven.build.dir}/classes"/>
           </classpath>
           <sysproperty key="clojure.compile.path" value="${maven.build.dir}/classes" />
-          <arg value="com.imcode.imcms.backdoor.BackdoorFilter" />
+          <arg value="com.imcode.imcms.maintenance.MaintenanceFilter" />
         </java>
 
         <copy todir="target/imcms-6.0.0-SNAPSHOT/WEB-INF/classes">

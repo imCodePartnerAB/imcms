@@ -23,7 +23,7 @@ public class DocumentLoaderCachingProxy {
      *
      * Map key is a document id.
      */
-    private Map<Integer, Meta> metas;    
+    private Map<Integer, Meta> metas;
 	
 	/**
 	 * Documents versions infos.

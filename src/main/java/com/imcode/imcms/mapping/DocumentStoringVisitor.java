@@ -27,7 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
 import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.DocumentLabels;
 import com.imcode.imcms.dao.*;
 import com.imcode.imcms.mapping.orm.FileReference;
@@ -149,7 +148,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         // delete all loops for meta and version
         dao.deleteLoops(metaId, documentVersionNumber);
         
-        for (ContentLoop loop: textDocument.getContentLoopsMap().values()) {
+        for (ContentLoop loop: textDocument.getContentLoops().values()) {
         	loop.setDocId(metaId);
         	loop.setDocVersionNo(documentVersion);
         	

@@ -92,7 +92,7 @@
     [404 "Page Not Found"])                           )
 
 
-(defservice (with-context admin-services "/admin/backdoor"))
+(defservice (with-context admin-services "/admin/maintenance"))
 
 (comment
   
@@ -113,7 +113,7 @@
     (reset! srv
       (run-server
         {:port port}
-        "/admin/backdoor/*" (servlet (with-context admin-services "/admin/backdoor"))))))
+        "/admin/maintenance/*" (servlet (with-context admin-services "/admin/maintenance"))))))
         ;"/*" (servlet admin-services)))))
         ;"/*" (servlet r)))))
 

@@ -1,6 +1,8 @@
 (ns com.imcode.imcms.spring
   (:require
-    [com.imcode.imcms.project :as project])
+    [com.imcode.imcms
+      [project :as project]
+      [runtime :as rt]])
 
   (:import
     (org.springframework.context.support FileSystemXmlApplicationContext)))

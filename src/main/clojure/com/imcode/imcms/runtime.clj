@@ -1,5 +1,7 @@
-(ns com.imcode.imcms.runtime
-  #^{:doc "Imcms static class must be configured."}
+(ns
+  #^{:doc "Provides functions for accessing Imcms at runtime.
+           Imcms class must be properly."}
+  com.imcode.imcms.runtime  
   (:import
     [imcode.server Imcms]))
 
@@ -7,31 +9,31 @@
   `(. Imcms ~f ~@args))
 
 (defn start []
-  (.start Imcms))
+  (. Imcms start))
 
 (defn stop []
-  (.stop Imcms))
+  (. Imcms stop))
 
 (defn get-start-ex []
-  (.getStartEx Imcms))
+  (. Imcms getStartEx))
 
 (defn get-mode []
-  (.getMode Imcms))
+  (. Imcms getMode))
 
 (defn set-normal-mode []
-  (.setNormalMode Imcms))
+  (. Imcms setNormalMode))
 
 (defn set-maintenance-mode []
-  (.getMaintenanceMode Imcms))
+  (. Imcms setMaintenanceMode))
 
 (defn get-services []
-  (.. Imcms getServices))
+  (. Imcms getServices))
 
 (defn get-i18n-support []
-  (.. Imcms getI18nSupport))
+  (. Imcms getI18nSupport))
 
 (defn get-doc-mapper []
-  (.. Imcms getServices getDocumentMapper))
+  (.getDocumentMapper (get-services)))
 
 (defn get-langs []
   (.getLanguages (get-i18n-support)))
@@ -39,17 +41,27 @@
 (defn get-default-lang []
   (.getDefaultLanguage (get-i18n-support)))
 
-(defn get-lang-by-code [code]
-  (.getByCode (get-i18n-support) (if (keyword? code) (name code) code)))
 
-(defn get-working-doc [id lang-code]
-  (.getWorkingDocument (get-doc-mapper) id (get-lang-by-code lang-code)))
+(defn find-lang-by-code [#^String code]
+  (if-let [lang (.getByCode (get-i18n-support) code)]
+    lang
+    (throw (Exception. (format "Language with code [%s] can not be found." code)))))
 
-(defn get-default-doc [id lang-code]
-  (.getDefaultDocument (get-doc-mapper) id (get-lang-by-code lang-code)))
+(defmulti  to-lang class)
 
-(defn get-custom-doc [id version-no lang-code]
-  (.getCustomDocument (get-doc-mapper) id version-no (get-lang-by-code lang-code)))
+(defmethod to-lang com.imcode.imcms.api.I18nLanguage [lang] lang)
+(defmethod to-lang String                            [lang] (find-lang-by-code lang))
+(defmethod to-lang clojure.lang.Keyword              [lang] (find-lang-by-code (name lang)))
+
+
+(defn get-working-doc [id lang]
+  (.getWorkingDocument (get-doc-mapper) id (to-lang lang)))
+
+(defn get-default-doc [id lang]
+  (.getDefaultDocument (get-doc-mapper) id (to-lang lang)))
+
+(defn get-custom-doc [id version-no lang]
+  (.getCustomDocument (get-doc-mapper) id version-no (to-lang lang)))
 
 (defn get-doc-ids []
   (seq (.getAllDocumentIds (get-doc-mapper))))
@@ -57,11 +69,63 @@
 (defn get-doc-cache []
   (.getDocumentLoaderCachingProxy (get-doc-mapper)))
 
-(defn get-cached-default-docs [lang-code]
-  (-> (get-doc-cache) .getDefaultDocuments (.get ,, (get-lang-by-code lang-code))))
+(defn #^java.util.Map get-loaded-default-docs
+  "Returns loaded default documents Map."
+  [lang]
+  (-> (get-doc-cache) .getDefaultDocuments (.get ,, (to-lang lang))))
 
-(defn get-cached-working-docs [lang-code]
-  (-> (get-doc-cache) .getWorkingDocuments (.get ,, (get-lang-by-code lang-code))))
+(defn #^java.util.Map get-loaded-working-docs
+  "Returns loaded working documents Map."
+  [lang]
+  (-> (get-doc-cache) .getWorkingDocuments (.get ,, (to-lang lang))))
 
 
+(defn load-all-docs
+  "Loads all documents from database to the cache. Use with care.
+   Returns nil."
+  []
+  (doseq [get-doc-fn [get-working-doc get-default-doc], id (get-doc-ids), lang (get-langs)]
+    (get-doc-fn id lang)))
 
+
+(defn unload-docs
+  "Unloads doc(s) with the given id(s) from the cache.
+   Returns nil."
+  [id & ids]
+  (let [cache (get-doc-cache)]
+    (doseq [doc-id (cons id ids)] (.removeDocumentFromCache cache doc-id))))
+
+
+(defn clear-cache []
+  (.clearCache (get-doc-cache)))
+
+
+(defn get-loaded-docs-info
+  "Retuns loaded docs info as a map - doc ids mapped to language code set:
+   {1001 #{:en :sv}, 1002 #{:en :sv}, 1003 #{:en :sv}, ...}"
+  []
+  (let [fs [get-loaded-working-docs, get-loaded-default-docs]
+        langs (get-langs)
+        info-maps (for [f fs, lang langs, doc-entry (f lang)]
+                    (sorted-map (key doc-entry), #{(keyword (.getCode lang))}))]
+
+    ;; unions info maps: {1001 #{:en}}, {1001 #{:sv}} -> {1001 #{:en :sv}} 
+    (apply merge-with clojure.set/union info-maps)))
+
+
+(defn get-doc-version-info [id]
+  (.getDocumentVersionInfo (get-doc-cache) id))
+
+
+(defn login
+  "Returns user or null if there is no such user.
+   Login and password can be keywords."
+  [login password]
+  (let [login (if (keyword? login) (name login) login)
+        password (if (keyword? login) (name login) login)]
+    (.verifyUser (get-services) login password)))
+
+
+(defn get-conf []
+  "Returns configuration read from server.properties as a map sorted by property name."
+  (into (sorted-map) (. Imcms getServerProperties)))

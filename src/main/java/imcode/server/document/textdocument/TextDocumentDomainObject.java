@@ -15,18 +15,44 @@ import com.imcode.imcms.api.*;
 import com.imcode.imcms.mapping.orm.TemplateNames;
 
 /**
- * If this document represents a working version then its menus items also refer to working versions.
- * If this document represents non working version then its menus items also refer to active versions.
  * TODO: optimize ineffective items (texts, images, loop texts, etc) access.
  */
 public class TextDocumentDomainObject extends DocumentDomainObject {
+
+    static final class ContentLoopItem {
+        
+        public final int loopNo;
+
+        public final int contentNo;
+
+        public final int itemNo;
+
+        private final int hashCode;
+
+        public ContentLoopItem(int loopNo, int contentNo, int itemNo) {
+            this.loopNo = loopNo;
+            this.contentNo = contentNo;
+            this.itemNo = itemNo;
+
+            this.hashCode = 0;
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return (o instanceof ContentLoopItem) && ((ContentLoopItem)o).hashCode() == hashCode();
+        }
+    }
 		
 	/** Images outside loops. */
     private Map<Integer, ImageDomainObject> images = new HashMap<Integer, ImageDomainObject>();
     
     /** Texts outside loops. */
     private Map<Integer, TextDomainObject> texts = new HashMap<Integer, TextDomainObject>();
-
     
     /**
      * Texts in loops.
@@ -34,6 +60,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      */
     private Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loopTexts
     		= new HashMap<Integer, Map<Integer, Map<Integer, TextDomainObject>>>();
+
+
+    /**
+     * Images in loops.
+     */
+    private Map<ContentLoopItem, ImageDomainObject> loopImages
+    		= new HashMap<ContentLoopItem, ImageDomainObject>();
     
     
     /**
@@ -384,7 +417,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	for (MenuDomainObject menu: menusMap.values()) {
     		menu.setId(null);
     		menu.setMetaId(null);
-    		//menu.setModified(true);
     	}
     	
     	for (ContentLoop loop: contentLoopsMap.values()) {
@@ -479,7 +511,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		this.includesMap = includesMap;
 	}
 
-	public Map<Integer, ContentLoop> getContentLoopsMap() {
+	public Map<Integer, ContentLoop> getContentLoops() {
 		return contentLoopsMap;
 	}
 
