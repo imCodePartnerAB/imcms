@@ -5,7 +5,7 @@
     :init init-instance)
 
   (:require
-    [com.imcode.imcms.backdoor.controller :as controller]))
+    [com.imcode.imcms.maintenance.controller :as controller]))
 
 (defn -init-instance []
   [[] nil])
