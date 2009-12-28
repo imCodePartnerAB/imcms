@@ -38,17 +38,10 @@
     DocumentDomainObject document = documentPermissionsPage.getDocument() ;
     UserDomainObject user = Utility.getLoggedOnUser( request );
 %><vel:velocity>
-<html>
-<head>
-<title><? templates/sv/docinfo/change_meta_rights.html/1 ?></title>
 <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css.jsp">
-</head>
-<body bgcolor="#FFFFFF">
-
+<form method="POST" action="<%= request.getContextPath() %>/servlet/PageDispatcher">    
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )
-
-<form method="POST" action="<%= request.getContextPath() %>/servlet/PageDispatcher">
 <%= Page.htmlHidden( request ) %>
     <table border="0" cellspacing="0" cellpadding="0">
         <tr>
@@ -57,8 +50,7 @@
             <td><input type="button" value="<? templates/sv/docinfo/change_meta_rights.html/2002 ?>" title="<? templates/sv/docinfo/change_meta_rights.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW('Privileges')"></td>
         </tr>
     </table>
-#gui_mid()
-
+    #gui_mid()
     <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
         <tr>
             <td colspan="2">#gui_heading( "<? templates/sv/docinfo/change_meta_rights.html/5/1 ?> <%= document.getId() %>" )</td>
@@ -233,15 +225,7 @@
             </table></td>
         </tr>
     </table>
-</form>
 #gui_bottom()
 #gui_outer_end()
-<%
-    String adminButtons = Html.getAdminButtons( user, document, request, response ) ;
-    if (!"".equals( adminButtons )) {
-        %><center><%= adminButtons %></center><%
-    }
-%>
-</body>
-</html>
+</form>    
 </vel:velocity>

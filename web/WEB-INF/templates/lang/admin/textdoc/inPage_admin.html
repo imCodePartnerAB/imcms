@@ -1,4 +1,4 @@
-﻿<style type="text/css">
+<style type="text/css">
 /*<![CDATA[*/
 /* changePage */
 #changePageDiv { padding: 0 0 10px 0; }
@@ -48,46 +48,44 @@ function resetTarget() {
 //]]>
 </script>
 
-<div id="changePageDiv">
-	<form name="changePageForm" method="post" action="SaveInPage">
-	<input type="hidden" name="meta_id" value="#getMetaId#" />
-	<table border="0" cellspacing="0" cellpadding="2" id="changePageTable">
-	<tr>
-		<td colspan="9" id="changePageTdTop">
-		<table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
-		<tr>
-			<td id="changePageTd1">&nbsp;<span class="changePageHeading"><? templates/sv/textdoc/inPage_admin.html/1001 ?>&nbsp;</span> <? templates/sv/textdoc/inPage_admin.html/1002 ?></td>
-			<td id="changePageTd2" align="right"><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtnSmall" onclick="openHelpW('Appearance')" /></td>
-		</tr>
-		</table></td>
-	</tr>
-	<tr class="changePageTdBottom">
-		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt="" /></td>
-		
-		<td>
-		<select name="group" size="1" class="changePageSelect">
-			#getTemplateGroups#
-		</select></td>
-		
-		<td><input type="submit" name="change_group" value="<? templates/sv/textdoc/inPage_admin.html/2001 ?>" onclick="resetTarget()" class="changePageButton" style="width:90px" /></td>
-		
-		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt="" /></td>
-		
-		<td>
-		<select name="template" size="1" class="changePageSelect">
-			#getTemplatesInGroup#
-			<option></option>
-		</select></td>
-		
-		<td><input type="submit" name="preview" value="<? templates/sv/textdoc/inPage_admin.html/2002 ?>" onclick="targetNewWindow()" class="changePageButton" /></td>
-		
-		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt="" /></td>
-		
-		<td><input type="submit" name="update" value="  <? templates/sv/textdoc/inPage_admin.html/2003 ?>  " onclick="resetTarget()" class="changePageButton" /></td>
-		
-		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt="" /></td>
-	</tr>
-	</table>
-	</form>
-</div>
+<form name="changePageForm" method="post" action="SaveInPage" style="padding: 0px; margin: 0px">
+<input type="hidden" name="meta_id" value="#getMetaId#" />
+<table border="0" cellspacing="0" cellpadding="2" id="changePageTable" align="center">
+<tr>
+    <td colspan="9" id="changePageTdTop">
+    <table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+    <tr>
+        <td id="changePageTd1">&nbsp;<span class="changePageHeading"><? templates/sv/textdoc/inPage_admin.html/1001 ?>&nbsp;</span> <? templates/sv/textdoc/inPage_admin.html/1002 ?></td>
+        <td id="changePageTd2" align="right"><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtnSmall" onclick="openHelpW('Appearance')" /></td>
+    </tr>
+    </table></td>
+</tr>
+<tr class="changePageTdBottom">
+    <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt="" /></td>
+
+    <td>
+    <select name="group" size="1" class="changePageSelect">
+        #getTemplateGroups#
+    </select></td>
+
+    <td><input type="submit" name="change_group" value="<? templates/sv/textdoc/inPage_admin.html/2001 ?>" onclick="resetTarget()" class="changePageButton" style="width:90px" /></td>
+
+    <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt="" /></td>
+
+    <td>
+    <select name="template" size="1" class="changePageSelect">
+        #getTemplatesInGroup#
+        <option></option>
+    </select></td>
+
+    <td><input type="submit" name="preview" value="<? templates/sv/textdoc/inPage_admin.html/2002 ?>" onclick="targetNewWindow()" class="changePageButton" /></td>
+
+    <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt="" /></td>
+
+    <td><input type="submit" name="update" value="  <? templates/sv/textdoc/inPage_admin.html/2003 ?>  " onclick="resetTarget()" class="changePageButton" /></td>
+
+    <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt="" /></td>
+</tr>
+</table>
+</form>
 

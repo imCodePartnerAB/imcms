@@ -13,12 +13,24 @@
 	contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
 	
-%><%@ taglib uri="imcmsvelocity" prefix="vel"
+%>
+<%@ page import="com.imcode.imcms.mapping.DocumentMapper" %>
+<%@ page import="imcode.server.Imcms" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ taglib uri="imcmsvelocity" prefix="vel"
 %><%
 
 UserDomainObject user = (UserDomainObject)request.getAttribute("user") ;
 DocumentDomainObject document = (DocumentDomainObject)request.getAttribute("document") ;
 DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetFor( document ) ;
+DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+int[] dIds = documentMapper.getAllDocumentIds();
+List documentIds = new ArrayList(dIds.length);
+for (int id : dIds) {
+    documentIds.add(new Integer(id));
+}
+List allDocuments = documentMapper.getDocuments(documentIds);
 
 Perl5Util re = new Perl5Util() ;
 
@@ -28,7 +40,49 @@ String uAgent   = StringUtils.defaultString(request.getHeader("USER-AGENT")) ;
 boolean isIE    = re.match("/(MSIE \\d)/i", uAgent) ;
 boolean isGecko = re.match("/Gecko/i", uAgent) ;
 
-%><vel:velocity>
+%>
+<script src="/imcms4/imcms/jquery/jquery-1.3.2.js" type="text/javascript"></script>
+<script language="javascript">
+function adminMenuAction(contentId, query) {
+	$.get("/imcms4/servlet/AdminDoc?template=demo_content&" + query, "", function(data) {
+		$("#" + contentId).html(data);
+	});
+}
+function adminDialogMenuAction(query) {
+    $.get("/imcms4/servlet/AdminDoc?" + query, "", function(data) {
+		$("#adminDialog").html(data);
+
+        //Get the screen height and width
+        var maskHeight = $(document).height();
+        var maskWidth = $(window).width();
+
+        //Set heigth and width to mask to fill up the whole screen
+        $('#mask').css({'width':maskWidth,'height':maskHeight});
+
+        //transition effect
+        $('#mask').fadeIn(1000);
+        $('#mask').fadeTo("slow",0.8);
+
+        //Get the window height and width
+        var winH = $(window).height();
+        var winW = $(window).width();
+
+        //Set the popup window to center
+        $("#adminDialog").css('top',  winH/2-$("#adminDialog").height()/2);
+        $("#adminDialog").css('left', winW/2-$("#adminDialog").width()/2);
+
+        //transition effect
+        $("#adminDialog").fadeIn(500);
+
+	});
+}
+function documentChanged(selectObj) {
+    document.location.replace("/imcms4/" + selectObj.value);
+}
+</script>
+
+<vel:velocity>
+
 <style type="text/css">
 /*<![CDATA[*/
 .imcms_label, .imcms_label:link, .imcms_label:visited { font: 10px Verdana; color:#c00000; text-decoration:none; background-color:#ffc }
@@ -57,8 +111,7 @@ if (isGecko) { %>
 B { font-weight: bold; }
 /*]]>*/
 </style>
-<div id="adminPanelDiv">
-<table border="0" cellspacing="0" cellpadding="2" class="adminPanelTable">
+<table border="0" cellspacing="0" cellpadding="2" class="adminPanelTable" align="center">
 <tr>
 	<td class="adminPanelTd1">
 	<table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
@@ -67,7 +120,11 @@ B { font-weight: bold; }
 		<span class="adminPanelLogo" ondblclick="window.open('http://www.imcms.net/')"><? templates/sv/adminbuttons/adminbuttons.html/1 ?> &nbsp;</span></td>
 		<td id="adminPanelTd1_2" width="50%" align="center" nowrap="nowrap">
 		<span class="adminPanelText">
-		<span title="<? web/imcms/lang/jsp/admin/adminbuttons.jsp/title_id ?>"><b>Id:</b> <%= document.getId() %></span> &nbsp; <span title="<? web/imcms/lang/jsp/admin/adminbuttons.jsp/title_type ?>"><b><? templates/sv/adminbuttons/adminbuttons.html/1001 ?>:</b> <%= document.getDocumentTypeName().toLocalizedString( request ) %></span> &nbsp;</span></td>
+		<span title="<? web/imcms/lang/jsp/admin/adminbuttons.jsp/title_id ?>"><b>Id:</b> <%= document.getId() %></span> &nbsp; <span title="<? web/imcms/lang/jsp/admin/adminbuttons.jsp/title_type ?>"><b><? templates/sv/adminbuttons/adminbuttons.html/1001 ?>:</b> <%= document.getDocumentTypeName().toLocalizedString( request ) %></span> &nbsp;</span>
+        <select onchange="javascript:documentChanged(this)">
+            <%=Html.createOptionListOfDocuments(allDocuments, document) %>
+        </select>
+        </td>
 		<td id="adminPanelTd1_3" width="25%" align="right"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
 	</tr>
 	</table></td>
@@ -85,44 +142,44 @@ B { font-weight: bold; }
         if( document instanceof TextDocumentDomainObject) {
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet ;
             if( textDocumentPermissionSet.getEditTexts() ) {
-                %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&amp;flags=65536" id="admHrefText"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/btn_text.gif"<%
+                %><a href="#" id="admHrefText" onclick="javascript:adminMenuAction('content', 'meta_id=<%= document.getId() %>&amp;flags=65536')" ><img src="$contextPath/imcms/$language/images/admin/adminbuttons/btn_text.gif"<%
               %> alt="<? templates/sv/adminbuttons/adminbutton2_65536.html/2001 ?>"<%
               %> title="<? templates/sv/adminbuttons/adminbutton2_65536.html/2001 ?>" id="admBtnText" border="0" /></a><%
             }
             if( textDocumentPermissionSet.getEditImages() ) {
-                %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&amp;flags=131072" id="admHrefBild"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/btn_image.gif"<%
+                %><a href="#" id="admHrefBild" onclick="javascript:adminMenuAction('content', 'meta_id=<%= document.getId() %>&amp;flags=131072')"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/btn_image.gif"<%
               %> alt="<? templates/sv/adminbuttons/adminbutton2_131072.html/2001 ?>"<%
               %> title="<? templates/sv/adminbuttons/adminbutton2_131072.html/2001 ?>" id="admBtnBild" border="0" /></a><%
             }
             if( textDocumentPermissionSet.getEditMenus() ) {
-                %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&amp;flags=262144" id="admHrefLank"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/meny.gif"<%
+                %><a href="#" id="admHrefLank" onclick="javascript:adminMenuAction('content', 'meta_id=<%= document.getId() %>&amp;flags=262144')"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/meny.gif"<%
               %> alt="<? templates/sv/adminbuttons/adminbutton2_262144.html/2001 ?>"<%
               %> title="<? templates/sv/adminbuttons/adminbutton2_262144.html/2001 ?>" id="admBtnLank" border="0" /></a><%
             }
             if( textDocumentPermissionSet.getEditTemplates() ) {
-                %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&amp;flags=524288" id="admHrefUtseende"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/utseende.gif"<%
+                %><a href="#" id="admHrefUtseende" onclick="javascript:adminMenuAction('content', 'meta_id=<%= document.getId() %>&amp;flags=524288')"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/utseende.gif"<%
               %> alt="<? templates/sv/adminbuttons/adminbutton2_524288.html/2001 ?>"<%
               %> title="<? templates/sv/adminbuttons/adminbutton2_524288.html/2001 ?>" id="admBtnUtseende" border="0" /></a><%
             }
             if( textDocumentPermissionSet.getEditIncludes() ) {
-                %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&amp;flags=1048576" id="admHrefInclude"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/include.gif"<%
+                %><a href="#" id="admHrefInclude" onclick="javascript:adminMenuAction('content', 'meta_id=<%= document.getId() %>&amp;flags=1048576')"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/include.gif"<%
               %> alt="<? templates/sv/adminbuttons/adminbutton2_1048576.html/2001 ?>"<%
               %> title="<? templates/sv/adminbuttons/adminbutton2_1048576.html/2001 ?>" id="admBtnInclude" border="0" /></a><%
             }
         } else {
             if( documentPermissionSet.getEdit() ) {
-                %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&amp;flags=65536" id="admHrefRedigera"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/redigera.gif"<%
+                %><a href="#" id="admHrefRedigera" onclick="javascript:adminMenuAction('content', 'meta_id=<%= document.getId() %>&amp;flags=65536')"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/redigera.gif"<%
               %> alt="<? templates/sv/adminbuttons/adminbutton7_65536.html/2001 ?>"<%
               %> title="<? templates/sv/adminbuttons/adminbutton7_65536.html/2001 ?>" id="admBtnRedigera" border="0" /></a><%
             }
         }
         if( documentPermissionSet.getEditDocumentInformation() ) {
-                %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&amp;flags=1" id="admHrefDokinfo"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/dokinfo.gif"<%
+                %><a href="#" id="admHrefDokinfo" onclick="javascript:adminMenuAction('content', 'meta_id=<%= document.getId() %>&amp;flags=4')"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/dokinfo.gif"<%
             %> alt="<? templates/sv/adminbuttons/adminbutton_1.html/2001 ?>"<%
             %> title="<? templates/sv/adminbuttons/adminbutton_1.html/2001 ?>" id="admBtnDokinfo" border="0" /></a><%
         }
         if( documentPermissionSet.getEditPermissions() ) {
-                %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&amp;flags=4" id="admHrefRattigheter"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/rattigheter.gif"<%
+                %><a href="#" id="admHrefRattigheter" onclick="javascript:adminDialogMenuAction('meta_id=<%= document.getId() %>&amp;flags=4')"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/rattigheter.gif"<%
             %> alt="<? templates/sv/adminbuttons/adminbutton_4.html/2001 ?>"<%
             %> title="<? templates/sv/adminbuttons/adminbutton_4.html/2001 ?>" id="admBtnRattigheter" border="0" /></a><%
         }
@@ -140,7 +197,10 @@ B { font-weight: bold; }
             %> alt="<? templates/sv/adminbuttons/adminbuttons.html/2003 ?>"<%
             %> title="<? templates/sv/adminbuttons/adminbuttons.html/2003 ?>" id="admBtnHelp" border="0" /></a></td>
 </tr>
-</table></div>
+</table>
+
+<div id="mask" style="position:absolute;left:0;top:0;z-index:9000;background-color:#000;display:none;"></div>
+<div id="adminDialog" style="position:absolute;left:0;top:0;display:none; z-index:9999;"></div>
 <script type="text/javascript">
 //<![CDATA[
 function openHelpW(helpDocName){

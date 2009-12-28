@@ -13,6 +13,7 @@ import imcode.server.document.LifeCyclePhase;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
@@ -122,6 +123,18 @@ public class Html {
 
 		return createOptionListOfCategories(new TreeSet(notSelectedCategories), categoryType);
     }
+
+    public static String createOptionListOfDocuments(Collection documents, DocumentDomainObject document) {
+        ToStringPairTransformer documentToStringPairTransformer = new ToStringPairTransformer() {
+            protected String[] transformToStringPair(Object object) {
+                DocumentDomainObject document = (DocumentDomainObject)object;
+                String alias = document.getAlias();
+                return new String[]{"" + document.getId(), StringUtils.isNotEmpty(alias)
+                        ?  document.getId() + " - " + alias : "" + document.getId()};
+            }
+        };
+		return createOptionList( documents, document, documentToStringPairTransformer );
+	}
 
 	public static String createOptionListOfCategories(Collection categories, CategoryTypeDomainObject categoryType){
         ToStringPairTransformer categoryToStringPairTransformer = new ToStringPairTransformer() {

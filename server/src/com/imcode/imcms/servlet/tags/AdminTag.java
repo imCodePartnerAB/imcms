@@ -14,7 +14,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 public class AdminTag extends TagSupport {
-
+    public final static String PARAMETER_SELECT__DOCUMENT_TO_SHOW = "doc_to_show";
+    
     public int doStartTag() throws JspException {
         try {
             UserDomainObject user = Utility.getLoggedOnUser((HttpServletRequest) pageContext.getRequest());
@@ -24,8 +25,12 @@ public class AdminTag extends TagSupport {
                 TextDocumentDomainObject document = (TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument();
                 HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
                 String adminButtons = Html.getAdminButtons(user, document, request, response);
-                pageContext.getOut().print(adminButtons);
-                pageContext.getOut().print(TextDocumentParser.createChangeTemplateUi(parserParameters.isTemplateMode(), user, document, Imcms.getServices()));
+                if ( null != document && ( user.canEdit( document ) || user.isUserAdminAndCanEditAtLeastOneRole() || user.canAccessAdminPages() ) ) {
+                    pageContext.getOut().print("<div style='background-color: lightblue; border: 1px solid navy; padding: 5px; margin: 0px;'>");
+                    pageContext.getOut().print(adminButtons);
+                    pageContext.getOut().print(TextDocumentParser.createChangeTemplateUi(parserParameters.isTemplateMode(), user, document, Imcms.getServices()));
+                    pageContext.getOut().print("</div>");
+                }    
             }
         } catch ( Exception e ) {
             throw new JspException(e);

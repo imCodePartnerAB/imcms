@@ -140,6 +140,7 @@ public class AdminDoc extends HttpServlet {
         DocumentRequest documentRequest = new DocumentRequest( imcref, user, document, null, req, res );
         final ParserParameters parserParameters = new ParserParameters( documentRequest );
         parserParameters.setFlags( flags );
+        parserParameters.setTemplate(req.getParameter("template"));
         imcref.parsePage( parserParameters, res.getWriter());
     }
 

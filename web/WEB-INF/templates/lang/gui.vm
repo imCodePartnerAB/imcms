@@ -4,7 +4,7 @@
 			<td><img
 			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
 			<td class="imcmsAdmBorder"><img
-			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" wgidth="1" height="1"></td>
 		</tr>
 		<tr>
 			<td height="10" class="imcmsAdmBorder"><img

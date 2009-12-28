@@ -11,14 +11,13 @@
 <imcms:variables/>
 <head>
 <title><c:out value="${document.headline}"/> - Powered by imCMS from imCode Partner AB</title>
-
 <style type="text/css">
 /*<![CDATA[*/
 .imcHeading { margin-bottom:1em; font: bold medium Verdana,Geneva,sans-serif; color:#009; }
 TD { font: x-small Verdana,Geneva,sans-serif; color:#000; }
 .small { font: xx-small Verdana,Geneva,sans-serif; color:#000; }
 PRE, TT { font: x-small "Courier New", Courier, monospace; color:#888; }
-
+               admin
 A:link    { color:#009; }
 A:visited { color:#009; }
 A:active  { color:#c00; }
@@ -29,10 +28,9 @@ LI { padding-bottom:5px; }
 </style>
 
 </head>
-<body bgcolor="#f0f0ff" style="margin: 10px 0 10px 10px;">
-
-
-<table border="0" cellspacing="0" cellpadding="5" align="center" style="height:100%; background-color:#fff;">
+<body bgcolor="#f0f0ff" style="margin: 0px">
+<imcms:admin/>
+<table border="0" cellspacing="0" cellpadding="5" align="center" style="height:100%; background-color:#fff; margin-top:10px">
 <tr>
 	<td valign="top">
 	<table border="0" cellspacing="0" cellpadding="0" width="760">
@@ -47,7 +45,7 @@ LI { padding-bottom:5px; }
 
 		<td width="15">&nbsp;</td>
 
-		<td width="385">
+		<td width="385" id="content">
             <imcms:text no="1" label="Text (Rubrik)" pre='<div class="imcHeading">' post='</div>' />
             <imcms:text no='2' label='<br>Text' post='<br><br>' />
             <imcms:menu no='1' label='<br><br>Meny (punktlista)'>
@@ -76,7 +74,7 @@ LI { padding-bottom:5px; }
 	</table></td>
 </tr>
 <tr>
-	<td align="center" valign="bottom">&nbsp;<br><imcms:admin/>
+	<td align="center" valign="bottom">&nbsp;<br>
         <imcms:include url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoBottom"/>        
     </td>
 </tr>
