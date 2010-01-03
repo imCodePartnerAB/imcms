@@ -107,7 +107,7 @@ public class TextDocumentLazyLoadingAspect {
 	
 	/*
 	setMenu(int, MenuDomainObject)
-	setMenusMap(Map<Integer, MenuDomainObject>)
+	setMenus(Map<Integer, MenuDomainObject>)
 	getMenu(int)
 	getMenus() 
 	 */

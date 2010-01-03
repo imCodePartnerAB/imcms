@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.DocIdentityCleanerVisitor;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -24,17 +25,7 @@ import imcode.util.io.FileUtility;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
@@ -66,6 +57,7 @@ public class DocumentMapper implements DocumentGetter {
     private DocumentIndex documentIndex;
     
     private Clock clock = new SystemClock();
+    
     private ImcmsServices imcmsServices;
     
     private NativeQueriesDao nativeQueriesDao;
@@ -124,17 +116,17 @@ public class DocumentMapper implements DocumentGetter {
     	return documentLoaderCachingProxy.getDocumentVersionInfo(documentId);
     }
 
-    public DocumentSaver getDocumentSaver() {
-        return documentSaver ;
-    }
+//    public DocumentSaver getDocumentSaver() {
+//        return documentSaver ;
+//    }
     
     
 
     public DocumentDomainObject createDocumentOfTypeFromParent(int documentTypeId, final DocumentDomainObject parent, UserDomainObject user) {
         DocumentDomainObject newDocument;
         try {
-            if ( DocumentTypeDomainObject.TEXT_ID == documentTypeId) {
-                newDocument = (DocumentDomainObject) parent.clone();
+            if (DocumentTypeDomainObject.TEXT_ID == documentTypeId) {
+                newDocument = parent.clone();
                 TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject) newDocument;
                 newTextDocument.removeAllTexts();
                 newTextDocument.removeAllImages();
@@ -144,27 +136,24 @@ public class DocumentMapper implements DocumentGetter {
                 setTemplateForNewTextDocument( newTextDocument, user, parent );
             } else {
                 newDocument = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
-                newDocument.setAttributes((DocumentDomainObject.Attributes) parent.getAttributes().clone());
+                newDocument.setAttributes(parent.getAttributes().clone());
                 newDocument.setMeta(parent.getMeta().clone());
             }
         } catch (CloneNotSupportedException e) {
             throw new UnhandledException(e);
         }
-        
-        Meta meta = newDocument.getMeta();
-        
-        meta.setId(null);
-        meta.getKeywords().clear();
 
-        newDocument.getVersion().setId(null);
-        newDocument.getVersion().setNo(0);
-        newDocument.getVersion().setDocId(null);
+        newDocument.accept(new DocIdentityCleanerVisitor());
+
+        newDocument.getKeywords().clear();
+        newDocument.getProperties().clear();
                 
-        newDocument.setProperties(new HashMap());
         makeDocumentLookNew( newDocument, user );
-        removeNonInheritedCategories(newDocument) ;
+        removeNonInheritedCategories(newDocument);
+        
         return newDocument;
     }
+
 
     void setTemplateForNewTextDocument( TextDocumentDomainObject newTextDocument, UserDomainObject user,
                                         final DocumentDomainObject parent ) {
@@ -182,6 +171,7 @@ public class DocumentMapper implements DocumentGetter {
             newTextDocument.setTemplateName( templateName );
         }
     }
+    
 
     void makeDocumentLookNew( DocumentDomainObject document, UserDomainObject user ) {
         Date now = new Date();
@@ -238,20 +228,20 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Saves document info - the data edited on InformationPage.
      * 
-     * @param document document to save.
+     * @param document working document in default language. 
      * @param labels labels for every language.
      * @param user
      * 
      * @throws DocumentSaveException
      * @throws NoPermissionToAddDocumentToMenuException
      * @throws NoPermissionToEditDocumentException
+     * 
      * @since 6.0
      */
     public void saveDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
-        DocumentDomainObject oldDocument =
-    		getDocument(document.getId());
+        DocumentDomainObject oldDocument = getDocument(document.getId());
 
         try {
             documentSaver.updateDocument(document, labels, user);
@@ -470,6 +460,15 @@ public class DocumentMapper implements DocumentGetter {
         return documentSaver.getMetaDao().getMinDocumentId();
     }
 
+    /**
+     * Copies working version of a document.
+     *  
+     * @param document
+     * @param user
+     * @return
+     * @throws NoPermissionToAddDocumentToMenuException
+     * @throws DocumentSaveException
+     */
     public DocumentDomainObject copyDocument(DocumentDomainObject document,
                              UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
     	document = document.clone();
@@ -484,8 +483,25 @@ public class DocumentMapper implements DocumentGetter {
         }
         */
 
-        saveNewDocument(document, user, true);
+        Integer docId = document.getId();
+        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
         
+        for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
+            DocumentDomainObject doc = getWorkingDocument(docId, language);
+            if (doc != null) {
+                docs.add(doc.clone());
+            }
+        }
+
+        try {
+            documentSaver.copyDocument(docs, user);
+        } finally {
+            // Invalidate  doc id
+        }
+
+        // saveNewDocument(document, user, true);
+        // Return working version on default language.
+
         return document;
     }
 

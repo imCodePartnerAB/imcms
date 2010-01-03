@@ -1,12 +1,15 @@
 (ns
-  #^{:doc "Provides functions for accessing Imcms at runtime.
-           Imcms class must be properly."}
+  #^{:doc "Provides functions for accessing Imcms runtime."}
   com.imcode.imcms.runtime  
   (:import
-    [imcode.server Imcms]))
+    [imcode.server Imcms]
+    [imcode.server.document DocumentDomainObject]
+    [imcode.server.user UserDomainObject]))
 
-(defmacro invoke [f & args]
-  `(. Imcms ~f ~@args))
+(defmacro invoke
+  "Invokes Imcms static method
+  "[method & args]
+  `(. Imcms ~method ~@args))
 
 (defn start []
   (. Imcms start))
@@ -54,13 +57,16 @@
 (defmethod to-lang clojure.lang.Keyword              [lang] (find-lang-by-code (name lang)))
 
 
-(defn get-working-doc [id lang]
+(defn #^DocumentDomainObject get-working-doc
+  [id lang]
   (.getWorkingDocument (get-doc-mapper) id (to-lang lang)))
 
-(defn get-default-doc [id lang]
+(defn #^DocumentDomainObject get-default-doc
+  [id lang]
   (.getDefaultDocument (get-doc-mapper) id (to-lang lang)))
 
-(defn get-custom-doc [id version-no lang]
+(defn #^DocumentDomainObject get-custom-doc
+  [id version-no lang]
   (.getCustomDocument (get-doc-mapper) id version-no (to-lang lang)))
 
 (defn get-doc-ids []
@@ -106,18 +112,18 @@
   []
   (let [fs [get-loaded-working-docs, get-loaded-default-docs]
         langs (get-langs)
-        info-maps (for [f fs, lang langs, doc-entry (f lang)]
-                    (sorted-map (key doc-entry), #{(keyword (.getCode lang))}))]
+        info-maps (for [f fs, lang langs, [doc-id doc] (f lang)]
+                    (sorted-map doc-id, #{(keyword (.getCode lang))}))]
 
     ;; unions info maps: {1001 #{:en}}, {1001 #{:sv}} -> {1001 #{:en :sv}} 
     (apply merge-with clojure.set/union info-maps)))
 
 
-(defn get-doc-version-info [id]
+(defn #^com.imcode.imcms.api.DocumentVersionInfo get-doc-version-info [id]
   (.getDocumentVersionInfo (get-doc-cache) id))
 
 
-(defn login
+(defn #^UserDomainObject login
   "Returns user or null if there is no such user.
    Login and password can be keywords."
   [login password]
@@ -126,6 +132,7 @@
     (.verifyUser (get-services) login password)))
 
 
-(defn get-conf []
+(defn get-conf
   "Returns configuration read from server.properties as a map sorted by property name."
-  (into (sorted-map) (. Imcms getServerProperties)))
+  []
+  (into (sorted-map) (Imcms/getServerProperties)))

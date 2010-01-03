@@ -82,7 +82,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * 
      * Map index is menu's order index in document.
      */
-    private Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();  
+    private Map<Integer, MenuDomainObject> menus = new HashMap<Integer, MenuDomainObject>();  
     
     /**
      * Template names.
@@ -111,7 +111,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         
         clone.images = cloneImages();
         clone.includesMap = cloneIncludesMap();
-        clone.menusMap = cloneMenusMap();
+        clone.menus = cloneMenusMap();
         clone.templateNames = cloneTemplateNames();
         clone.texts = cloneTexts();
         clone.contentLoopsMap = cloneContentLoopsMap();
@@ -135,15 +135,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         }
         return childDocuments ;
     }
-
-    /**
-     * Returns images map for current language.
-     */
-    private Map<Integer, ImageDomainObject> getImagesMap() {
-    	return images;
-    }
-
-
     
     public Integer getIncludedDocumentId( int includeIndex ) {
         return includesMap.get(includeIndex);
@@ -151,7 +142,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     
 
     public MenuDomainObject getMenu(int menuIndex) {
-        MenuDomainObject menu = menusMap.get(menuIndex);
+        MenuDomainObject menu = menus.get(menuIndex);
         
         if (null == menu) {
             menu = new MenuDomainObject() ;
@@ -185,14 +176,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
 		return text;
 	}
-    
-
-    /**
-     * Returns texts map for current language.
-     */
-    private Map<Integer, TextDomainObject> getTextsMap() {
-    	return texts;
-    }
 
 
     public void accept( DocumentVisitor documentVisitor ) {
@@ -211,7 +194,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void removeAllMenus() {
-        menusMap = new HashMap<Integer, MenuDomainObject>();
+        menus = new HashMap<Integer, MenuDomainObject>();
     }
     
     public void removeAllContentLoops() {
@@ -230,7 +213,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public void setMenu( int menuIndex, MenuDomainObject menu ) {
     	MenuDomainObject newMenu = menu.clone();
-    	MenuDomainObject oldMenu = menusMap.get(menuIndex);
+    	MenuDomainObject oldMenu = menus.get(menuIndex);
     	
     	if (oldMenu != null) {
     		newMenu.setId(oldMenu.getId());
@@ -240,7 +223,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	
     	newMenu.setIndex(menuIndex);
     	    	
-        menusMap.put(menuIndex, menu);
+        menus.put(menuIndex, menu);
     }
 
 
@@ -310,10 +293,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return Collections.unmodifiableMap(includesMap);
     }
 
-    public Map<Integer, MenuDomainObject> getMenus() {
-        return Collections.unmodifiableMap(menusMap);
-    }
-
     public String getTemplateName() {
         return templateNames.getTemplateName();
     }
@@ -323,7 +302,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public Map<Integer, TextDomainObject> getTexts() {
-        return Collections.unmodifiableMap( getTextsMap() );
+        return texts;
     }
 
 
@@ -362,12 +341,13 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public void setDefaultTemplateIdForRestricted2(String defaultTemplateIdForRestricted2) {
     	templateNames.setDefaultTemplateNameForRestricted2(defaultTemplateIdForRestricted2);
     }
+    
 	
     /**
-     * @return Image id mapped to image for current language.
+     * @return images outside ot content loops.
      */
     public Map<Integer, ImageDomainObject> getImages() {
-        return Collections.unmodifiableMap(images);
+        return images;
     }
 
     
@@ -399,44 +379,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		return images.get(no);
 	}
     
-	// TODO: RENAME: beforeSaveAsNewDocumentt
-    @Override
-    public void setDependenciesMetaIdToNull() {
-    	super.setDependenciesMetaIdToNull();
-
-        	for (TextDomainObject text: texts.values()) {
-        		text.setId(null);
-        		text.setDocId(null);
-            }
-
-        	for (ImageDomainObject image: images.values()) {
-        		image.setId(null);
-        		image.setDocId(null);
-            }
-        
-    	for (MenuDomainObject menu: menusMap.values()) {
-    		menu.setId(null);
-    		menu.setMetaId(null);
-    	}
-    	
-    	for (ContentLoop loop: contentLoopsMap.values()) {
-    		loop.setId(null);
-    		loop.setDocId(null);
-    		loop.setModified(true);
-    		
-    		for (Content content: loop.getContents()) {
-    			content.setId(null);
-    		}
-    	}    	
-        
-        templateNames.setId(null);
-        templateNames.setMetaId(null);
-    }
-    
     private Map<Integer, MenuDomainObject> cloneMenusMap() {
     	Map<Integer, MenuDomainObject> menusClone = new HashMap<Integer, MenuDomainObject>();
     	
-    	for (Map.Entry<Integer, MenuDomainObject> entry: menusMap.entrySet()) {
+    	for (Map.Entry<Integer, MenuDomainObject> entry: menus.entrySet()) {
     		MenuDomainObject menu = entry.getValue();
     		MenuDomainObject menuClone = menu.clone();
     		
@@ -503,8 +449,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		this.templateNames = templateNames;
 	}
 
-	public void setMenusMap(Map<Integer, MenuDomainObject> menusMap) {
-		this.menusMap = menusMap;
+    public Map<Integer, MenuDomainObject> getMenus() {
+        return menus;
+    }
+
+	public void setMenus(Map<Integer, MenuDomainObject> menus) {
+		this.menus = menus;
 	}
 
 	public void setIncludesMap(Map<Integer, Integer> includesMap) {

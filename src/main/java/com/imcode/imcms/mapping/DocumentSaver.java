@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.DocIdentityCleanerVisitor;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -10,9 +11,7 @@ import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +50,7 @@ public class DocumentSaver {
      * @see com.imcode.imcms.servlet.admin.SaveText
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      * 
-     * TODO: Update modified dt.
+     * TODO: Update doc modified dt?
      */
     @Transactional     
     public void saveText(TextDocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
@@ -108,7 +107,7 @@ public class DocumentSaver {
 
 
     /**
-     * Makes a version of a working document.
+     * Creates working document copy as a new version. 
      */
     // TODO: Should throw NoPermissionToEditDocumentException ?
     // TODO: Add history for texts and images
@@ -121,7 +120,7 @@ public class DocumentSaver {
             DocumentVersion documentVersion = documentVersionDao.createVersion(docId, user.getId());
             Integer docVersionNo = documentVersion.getNo();
 
-            for (DocumentLabels labels:  metaDao.getLabels(docId, 0)) {
+            for (DocumentLabels labels:  metaDao.getLabels(docId, DocumentVersion.WORKING_VERSION_NO)) {
                 labels = labels.clone();
                 labels.setDocVersionNo(docVersionNo);
 
@@ -129,7 +128,7 @@ public class DocumentSaver {
             }
 
     		if (meta.getDocumentType() == DocumentTypeDomainObject.TEXT_ID) {
-                for (ContentLoop loop: contentLoopDao.getContentLoops(docId, 0)) {
+                for (ContentLoop loop: contentLoopDao.getContentLoops(docId, DocumentVersion.WORKING_VERSION_NO)) {
                     loop = loop.clone();
                     loop.setId(null);
                     loop.setDocVersionNo(docVersionNo);
@@ -142,7 +141,7 @@ public class DocumentSaver {
                     contentLoopDao.saveContentLoop(loop);
                 }
 
-                for (TextDomainObject text: textDao.getTexts(docId, 0)) {
+                for (TextDomainObject text: textDao.getTexts(docId, DocumentVersion.WORKING_VERSION_NO)) {
                     text = text.clone();
                     text.setId(null);
                     text.setDocVersionNo(docVersionNo);
@@ -150,7 +149,7 @@ public class DocumentSaver {
                     textDao.saveText(text);
                 }
 
-                for (ImageDomainObject image: imageDao.getImages(docId, 0)) {
+                for (ImageDomainObject image: imageDao.getImages(docId, DocumentVersion.WORKING_VERSION_NO)) {
                     image = image.clone();
                     image.setId(null);
                     image.setDocVersionNo(docVersionNo);
@@ -158,7 +157,7 @@ public class DocumentSaver {
                     imageDao.saveImage(image);
                 }
 
-                for (MenuDomainObject menu: menuDao.getMenusNoInit(docId, 0)) {
+                for (MenuDomainObject menu: menuDao.getMenus(docId, DocumentVersion.WORKING_VERSION_NO)) {
                     menu = menu.clone();
                     menu.setId(null);
                     menu.setDocVersionNo(docVersionNo);
@@ -202,62 +201,62 @@ public class DocumentSaver {
         document.accept(savingVisitor);
     }
 
-    /**
-     * Creates working document version from existing document.
-     * <p/>
-     * Actually only texts and images are copied into new document.
-     *
-     * @param document an instance of {@link TextDocumentDomainObject}
-     * @return working version of a document.
-     */
-    @Transactional
-    public DocumentDomainObject createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-
-        //checkDocumentForSave(document);
-        //document.loadAllLazilyLoaded();
-
-        //TODO: refactor - very ugly
-        // save document id
-        Meta meta = document.getMeta();
-        Integer documentId = meta.getId();
-
-        //TODO: refactor - very ugly
-        // clone document, reset its dependencies meta id and assign its documentId again
-        TextDocumentDomainObject textDocument = (TextDocumentDomainObject) document.clone();
-        textDocument.setDependenciesMetaIdToNull();
-        textDocument.setId(documentId);
-
-        /*
-        //try {
-            Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
-            Date modifiedDatetime = Utility.truncateDateToMinutePrecision(document.getModifiedDatetime());
-            boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
-            if (modifiedDatetimeUnchanged) {
-                document.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
-            }
-            
-            saveMeta(documentId, document);
-            
-            document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
-        //} finally {
-        //    documentMapper.invalidateDocument(document);
-        //}
-        */
-
-        DocumentVersion documentVersion = documentVersionDao.createVersion(documentId, user.getId());
-        textDocument.setVersion(documentVersion);
-
-        DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
-
-        visitor.updateTextDocumentTexts(textDocument, null, user);
-        visitor.updateTextDocumentImages(textDocument, null, user);
-        visitor.updateTextDocumentContentLoops(textDocument, null, user);
-
-        return document;
-    }
+//    /**
+//     * Creates working document version from existing document.
+//     * <p/>
+//     * Actually only texts and images are copied into new document.
+//     *
+//     * @param document an instance of {@link TextDocumentDomainObject}
+//     * @return working version of a document.
+//     */
+//    @Transactional
+//    public DocumentDomainObject createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+//
+//        //checkDocumentForSave(document);
+//        //document.loadAllLazilyLoaded();
+//
+//        //TODO: refactor - very ugly
+//        // save document id
+//        Meta meta = document.getMeta();
+//        Integer documentId = meta.getId();
+//
+//        //TODO: refactor - very ugly
+//        // clone document, reset its dependencies meta id and assign its documentId again
+//        TextDocumentDomainObject textDocument = (TextDocumentDomainObject) document.clone();
+//        textDocument.setDependenciesMetaIdToNull();
+//        textDocument.setId(documentId);
+//
+//        /*
+//        //try {
+//            Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
+//            Date modifiedDatetime = Utility.truncateDateToMinutePrecision(document.getModifiedDatetime());
+//            boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
+//            if (modifiedDatetimeUnchanged) {
+//                document.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
+//            }
+//
+//            saveMeta(documentId, document);
+//
+//            document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
+//        //} finally {
+//        //    documentMapper.invalidateDocument(document);
+//        //}
+//        */
+//
+//        DocumentVersion documentVersion = documentVersionDao.createVersion(documentId, user.getId());
+//        textDocument.setVersion(documentVersion);
+//
+//        DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
+//
+//        visitor.updateTextDocumentTexts(textDocument, null, user);
+//        visitor.updateTextDocumentImages(textDocument, null, user);
+//        visitor.updateTextDocumentContentLoops(textDocument, null, user);
+//
+//        return document;
+//    }
     
 
-
+    @Deprecated
     @Transactional
     public void saveNewDocument(UserDomainObject user,
                          DocumentDomainObject document, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
@@ -277,8 +276,9 @@ public class DocumentSaver {
 
         // Update permissions
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(document, user, null);
-        
-        document.setDependenciesMetaIdToNull();         
+
+        document.accept(new DocIdentityCleanerVisitor());
+
         Meta meta = saveMeta(document);
         Integer docId = meta.getId();
 
@@ -288,6 +288,33 @@ public class DocumentSaver {
         document.setVersion(version);        
                 
         document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
+    }
+
+
+
+    @Transactional
+    public void copyDocument(List<DocumentDomainObject> docs, UserDomainObject user)
+            throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+
+        // save meta and all labels
+        Collection<DocumentLabels> labels = new LinkedList<DocumentLabels>();
+
+        for (DocumentDomainObject doc: docs) {
+            labels.add(doc.getLabels());
+        }
+
+        DocumentDomainObject firstDoc = docs.get(0);
+
+        saveNewDocument(user, firstDoc, labels, true);
+
+        // save rest docs fields in case of a text document.
+        int docsCount = docs.size();
+        if (firstDoc.getDocumentTypeId() == DocumentTypeDomainObject.TEXT_ID && docsCount > 1) {
+            Integer docId = firstDoc.getId();
+            for (DocumentDomainObject doc: docs.subList(1, docsCount)) {
+                 doc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
+            }
+        }
     }
 
 

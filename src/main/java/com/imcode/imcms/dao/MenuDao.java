@@ -48,38 +48,15 @@ public class MenuDao extends HibernateTemplate {
 		return menu;
 	}
 	*/
-	
+
+
 	@Transactional
 	public List<MenuDomainObject> getMenus(Integer docId, Integer docVersionNo) {
-		String hql = "SELECT m FROM Menu m  WHERE m.metaId = :docId AND m.docVersionNo = :docVersionNo";
-		
-		List<MenuDomainObject> menus = getMenusNoInit(docId, docVersionNo);
-		
-		for (MenuDomainObject menu: menus) {
-			initMenu(menu);
-		}
-		
-		return menus;
-	}
-
-
-	@Transactional
-	public List<MenuDomainObject> getMenusNoInit(Integer docId, Integer docVersionNo) {
 		String hql = "SELECT m FROM Menu m  WHERE m.metaId = :docId AND m.docVersionNo = :docVersionNo";
 
 		return (List<MenuDomainObject>)findByNamedParam(hql,
                 new String[] {"docId", "docVersionNo"},
                 new Object[] {docId, docVersionNo});
-	}
-    
-	
-	/**
-	 * Initializes transient fields.
-	 */
-	private void initMenu(MenuDomainObject menu) {
-		for (MenuItemDomainObject item: menu.getItemsMap().values()) {
-			item.setTreeSortKey(new TreeSortKeyDomainObject(item.getTreeSortIndex()));
-		}		
 	}
 
 

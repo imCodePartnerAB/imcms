@@ -195,22 +195,21 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public Map<String, String> getProperties() {
-		return Collections
-				.unmodifiableMap((Map<String, String>) meta.getProperties());
+		return meta.getProperties();
 	}
 
 	public String getProperty(String key) {
-		Map<String, String> properties = (Map<String, String>) meta.getProperties();
+		Map<String, String> properties = meta.getProperties();
 		return properties.get(key);
 	}
 
 	public void setProperty(String key, String value) {
-		Map<String, String> properties = (Map<String, String>) meta.getProperties();
+		Map<String, String> properties = meta.getProperties();
 		properties.put(key, value);
 	}
 
 	public void removeProperty(String key) {
-		Map<String, String> properties = (Map<String, String>) meta.getProperties();
+		Map<String, String> properties = meta.getProperties();
 		properties.remove(key);
 	}
 
@@ -530,20 +529,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		}
 
 		this.meta = meta.clone();
-	}
-
-
-	/**
-	 * // TODO: refactor into visitor
-	 * 
-	 * For legacy code support: When saving document copy as new document its
-	 * dependencies metaId should be set to null.
-	 * 
-	 * @see DocumentSaver.saveNewDocument
-	 */
-	public void setDependenciesMetaIdToNull() {
-		meta.setId(null);
-        labels.setId(null);
 	}
 
     public I18nLanguage getLanguage() {

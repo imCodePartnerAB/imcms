@@ -2,8 +2,6 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -15,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.imcode.imcms.api.Content;
@@ -102,9 +99,6 @@ public class TextDocumentInitializer {
     }
 
 
-    /**
-     * @param document document to initialzie.
-     */
     public void initMenus(TextDocumentDomainObject document) {
     	Collection<MenuDomainObject> menus = menuDao.getMenus(document.getId(), document.getVersion().getNo());	
     	Map<Integer, MenuDomainObject> menusMap = new HashMap<Integer, MenuDomainObject>();
@@ -115,7 +109,7 @@ public class TextDocumentInitializer {
 	    	menusMap.put(menu.getIndex(), menu);
     	}
     	
-    	document.setMenusMap(menusMap);
+    	document.setMenus(menusMap);
     }   
     
     private void initMenuItems(MenuDomainObject menu, DocumentGetter documentGetter) {
@@ -129,24 +123,21 @@ public class TextDocumentInitializer {
     		menuItem.setTreeSortKey(new TreeSortKeyDomainObject(menuItem.getTreeSortIndex()));
     	}    	
     }
-    
-	
+
+
+    /**
+     * @throws IllegalStateException if a content loop is empty i.e. does not have a contents. 
+     */
 	public void initContentLoops(TextDocumentDomainObject document) {
 		List<ContentLoop> loops = contentLoopDao.getContentLoops(document.getMeta().getId(), document.getVersion().getNo());
 		Map<Integer, ContentLoop> loopsMap = new HashMap<Integer, ContentLoop>();
 		
 		for (ContentLoop loop: loops) {
 			loopsMap.put(loop.getNo(), loop);
-			// Loops should have at lest one content.
+
 			List<Content> contents = loop.getContents();
 			if (contents.size() == 0) {
-				Content content = new Content();
-				
-				content.setLoopId(loop.getId());
-				content.setOrderIndex(0);
-				content.setIndex(0);
-				
-				contents.add(content);
+                throw new IllegalStateException(String.format("Content loop id: %, docId: % does not have contents. A content loop must have at least one content."));
 			}
 		}
 		

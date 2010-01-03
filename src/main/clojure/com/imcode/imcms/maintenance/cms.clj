@@ -1,4 +1,4 @@
-(ns com.imcode.imcms.backdoor.cms
+(ns com.imcode.imcms.maintenance.cms
   (:import
     (java.io File)
     (imcode.server Imcms)

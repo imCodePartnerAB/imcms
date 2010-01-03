@@ -369,6 +369,8 @@
 
 
 	<target name="compile-clojure">
+        <mkdir dir="${maven.build.dir}/classes"/>
+        
         <java classname="clojure.lang.Compile" classpathref="pom.classpath" failonerror="true">
           <classpath>
               <path location="src/main/clojure"/>
