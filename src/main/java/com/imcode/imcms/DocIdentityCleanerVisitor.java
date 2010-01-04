@@ -37,7 +37,6 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
     	for (ContentLoop loop: doc.getContentLoops().values()) {
     		loop.setId(null);
     		loop.setDocId(null);
-    		loop.setModified(true);
 
     		for (Content content: loop.getContents()) {
     			content.setId(null);

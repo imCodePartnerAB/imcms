@@ -33,6 +33,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
 
         content.setOrderIndex(0);
         content.setIndex(0);
+        content.setEnabled(true);
 
         loop.getContents().add(content);
 

@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.api.Content;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;
@@ -105,37 +106,19 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
-        Integer documentId = textDocument.getMeta().getId();
-        Integer documentVersionNumber = textDocument.getVersion().getNo();
+        Integer docId = textDocument.getMeta().getId();
+        Integer docVersionNo = textDocument.getVersion().getNo();
 
-        // delete all texts for meta and version
-        textDao.deleteTexts(documentId, documentVersionNumber);
+        textDao.deleteTexts(docId, docVersionNo);
 
-        // for (Map<Integer, TextDomainObject> map: textDocument.getAllTexts().values()) {
-        
-       // for (Map<Integer, TextDomainObject> map: textDocument.getTexts()) {
-        	for (TextDomainObject text: textDocument.getTexts().values()) {
-        		text.setId(null);
-            	text.setDocId(documentId);
-            	text.setDocVersionNo(documentVersionNumber);
-                textDao.saveText(text);
-                             	 
-                    //textDao.saveTextHistory(documentId, text, user);
-        //	}
+        for (TextDomainObject text: textDocument.getTexts().values()) {
+            saveTextDocumentText(textDocument, text, user);
         }
 
-        /*
 
-        for (Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loopsMap: textDocument.getLoopTexts().values()) {
-        	for (Map<Integer, Map<Integer, TextDomainObject>> contentMaps: loopsMap.values()) {
-                for (Map<Integer, TextDomainObject> textsMap: contentMaps.values()) {
-                    for (TextDomainObject text: textsMap.values()) {
-                        textDao.saveText(text);
-                    }
-                }
-        	}
-        }
-         */       
+        for (TextDomainObject text: textDocument.getLoopTexts().values()) {
+            saveTextDocumentText(textDocument, text, user);
+        }        
     } 
     
     // must be run inside transaction
@@ -164,26 +147,41 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         
         metaDao.saveLabels(labels);
     }
-    
-    // must be run inside transaction
-    public void updateTextDocumentText(TextDomainObject text, UserDomainObject user) {
+
+    /**
+     * Saves text document's text.
+     * 
+     * @param doc
+     * @param text
+     * @param user
+     */
+    // must run inside transaction
+    public void saveTextDocumentText(TextDocumentDomainObject doc, TextDomainObject text, UserDomainObject user) {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
 
+        text.setDocId(doc.getId());
+        text.setDocVersionNo(doc.getVersion().getNo());
+
         textDao.saveText(text);
-        //textDao.saveTextHistory(text.getDocId(), text, user);
+        textDao.saveTextHistory(text.getDocId(), text, user);
     }
 
-    public void updateTextDocumentImage(ImageDomainObject image, UserDomainObject user) {
+    /**
+     * Saves text document's image.
+     */
+    // must run inside transaction
+    public void saveTextDocumentImage(ImageDomainObject image, UserDomainObject user) {
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
 
         image.setImageUrl(image.getSource().toStorageString());
         image.setType(image.getSource().getTypeId());
         
         imageDao.saveImage(image);
-        //imageDao.saveImageHistory(metaId, text, user); 
+        //imageDao.saveImageHistory(image.getDocId(), image, user); 
     }
-    
-    // runs inside transaction
+
+
+
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         /*
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");

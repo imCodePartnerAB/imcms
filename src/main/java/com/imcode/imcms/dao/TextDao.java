@@ -54,18 +54,20 @@ public class TextDao extends HibernateTemplate {
 	 */
 	@Transactional
 	public void saveTextHistory(Integer documentId, TextDomainObject text, UserDomainObject user) {
-		String sql = "INSERT INTO texts_history (meta_id, meta_version, name, text, type, modified_datetime, user_id, language_id) VALUES " +
-		"(:docId,:metaVersion,:index,:text,:type,:modifiedDt,:userId,:languageId)";
+		String sql = "INSERT INTO imcms_text_doc_texts_history (doc_id, doc_version_no, no, text, type, modified_datetime, user_id, language_id,loop_no, loop_content_index) VALUES " +
+		"(:docId,:docVersionNo,:no,:text,:type,:modifiedDt,:userId,:languageId,:loopNo,:loopContentIndex)";
 		
 		getSession().createSQLQuery(sql)
 			.setParameter("docId", documentId)
-			.setParameter("metaVersion", text.getDocVersionNo())
-			.setParameter("index", text.getNo())
+			.setParameter("docVersionNo", text.getDocVersionNo())
+			.setParameter("no", text.getNo())
 			.setParameter("type", text.getType())
 			.setParameter("text", text.getText())
 			.setParameter("modifiedDt", new Date())
 			.setParameter("userId", user.getId())
-			.setParameter("languageId", text.getLanguage().getId()).executeUpdate();
+			.setParameter("languageId", text.getLanguage().getId())
+            .setParameter("loopNo", text.getLoopNo())
+            .setParameter("loopContentIndex", text.getContentIndex()).executeUpdate();
 	}
 
 	/**

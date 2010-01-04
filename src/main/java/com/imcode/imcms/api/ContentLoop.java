@@ -30,13 +30,6 @@ public class ContentLoop implements Cloneable {
     @JoinColumn(name="loop_id")
     @OrderBy("orderIndex")
 	private List<Content> contents = new LinkedList<Content>();
-	
-	/**
-	 * Modified flag.
-	 * Object marked as modified is subject to update.
-	 */
-	@Transient
-	private boolean modified = false;
 
     @Override
 	public ContentLoop clone() {
@@ -100,14 +93,6 @@ public class ContentLoop implements Cloneable {
 
 	public void setContents(List<Content> loops) {
 		this.contents = loops;
-	}
-
-	public boolean isModified() {
-		return modified;
-	}
-
-	public void setModified(boolean modified) {
-		this.modified = modified;
 	}
 
 	public Integer getDocVersionNo() {

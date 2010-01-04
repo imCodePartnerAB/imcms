@@ -33,11 +33,11 @@ public class Content implements Cloneable {
      * Unuque sequence index.
      * This value never changes (once assigned) and never repeats.
      */
-	@Column(name="index", updatable=false)
+	@Column(name="sequence_index", updatable=false)
 	private Integer index;	
 
-
-    private Boolean enabled;
+    // To support history, contents are never deleted physically - they are disabled.
+    private Boolean enabled = true;
 
     @Override
 	public Content clone() {

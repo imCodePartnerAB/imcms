@@ -126,8 +126,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public Set<Integer> getCategoryIds() {
-		return Collections
-				.unmodifiableSet((Set<Integer>) meta.getCategoryIds());
+		return meta.getCategoryIds();
 	}
 
 	public Date getCreatedDatetime() {

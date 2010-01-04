@@ -162,7 +162,7 @@ public class TextDocumentLazyLoadingAspect {
 	getContentLoop(int)
 	getContentLoops()	
 	setContentLoop(int, ContentLoop)
-	setContentLoopsMap(Map<Integer, ContentLoop>) 
+	setContentLoops(Map<Integer, ContentLoop>)
 	 */
 	@Before("execution(* *Loop*(..)) && target(document)")
 	public void loadContentLoops(TextDocumentDomainObject document) {

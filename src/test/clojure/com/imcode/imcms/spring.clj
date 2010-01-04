@@ -25,7 +25,7 @@
       `(def ~alias-name (get-spring-bean ~bean-name-str)))))
 
 
-(defbean meta-dao metaDao)
-(defbean language-dao languageDao)
-(defbean loop-dao contentLoopDao)
+(defbean metaDao)
+(defbean languageDao)
+(defbean contentLoopDao)
 

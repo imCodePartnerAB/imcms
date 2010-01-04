@@ -7,34 +7,38 @@ import imcode.server.document.DocumentVisitor;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.mapping.orm.TemplateNames;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
-/**
- * TODO: optimize ineffective items (texts, images, loop texts, etc) access.
- */
 public class TextDocumentDomainObject extends DocumentDomainObject {
 
-    static final class ContentLoopItem {
+    /**
+     * Content loop unique item key.
+     */
+    private static final class ContentLoopItemKey {
         
         public final int loopNo;
 
-        public final int contentNo;
+        public final int contentIndex;
 
         public final int itemNo;
 
         private final int hashCode;
 
-        public ContentLoopItem(int loopNo, int contentNo, int itemNo) {
+        public ContentLoopItemKey(int loopNo, int contentIndex, int itemNo) {
             this.loopNo = loopNo;
-            this.contentNo = contentNo;
+            this.contentIndex = contentIndex;
             this.itemNo = itemNo;
 
-            this.hashCode = 0;
+            this.hashCode = new HashCodeBuilder(17, 31).
+                append(loopNo).
+                append(contentIndex).
+                append(itemNo).
+                toHashCode();
         }
 
         @Override
@@ -44,57 +48,51 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         @Override
         public boolean equals(Object o) {
-            return (o instanceof ContentLoopItem) && ((ContentLoopItem)o).hashCode() == hashCode();
+            return (o instanceof ContentLoopItemKey) && ((ContentLoopItemKey)o).hashCode() == hashCode();
         }
-    }
+   }
 		
-	/** Images outside loops. */
+	/** Images outside of loops. */
     private Map<Integer, ImageDomainObject> images = new HashMap<Integer, ImageDomainObject>();
     
-    /** Texts outside loops. */
+    /** Texts outside of loops. */
     private Map<Integer, TextDomainObject> texts = new HashMap<Integer, TextDomainObject>();
     
-    /**
-     * Texts in loops.
-     * loopNo->contentIndex->text-no->text
-     */
-    private Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loopTexts
-    		= new HashMap<Integer, Map<Integer, Map<Integer, TextDomainObject>>>();
+    /** Texts in loops. */
+    private Map<ContentLoopItemKey, TextDomainObject> loopTexts
+    		= new HashMap<ContentLoopItemKey, TextDomainObject>();
 
 
-    /**
-     * Images in loops.
-     */
-    private Map<ContentLoopItem, ImageDomainObject> loopImages
-    		= new HashMap<ContentLoopItem, ImageDomainObject>();
+    /** Images in loops. */
+    private Map<ContentLoopItemKey, ImageDomainObject> loopImages
+    		= new HashMap<ContentLoopItemKey, ImageDomainObject>();
     
     
     /**
      * Includes map.
      * 
-     * Map key is include's order index in document.
-     * Map value is included document id. 
+     * Map key is an included doc's order index in this document.
+     * 
+     * Map value is an included doc's id.
      */
     private Map<Integer, Integer> includesMap = new HashMap<Integer, Integer>();
     
     /**
      * Menus map.
      * 
-     * Map index is menu's order index in document.
+     * Map index is a menu's no in this document.
      */
     private Map<Integer, MenuDomainObject> menus = new HashMap<Integer, MenuDomainObject>();  
     
-    /**
-     * Template names.
-     */
+    /** Template names. */
     private TemplateNames templateNames = new TemplateNames();
     
     /**
-     * Content loops map.
+     * Content loops.
      * 
-     * Map key is content's order index in document.
+     * Map key is a content's no in this document.
      */
-    private Map<Integer, ContentLoop> contentLoopsMap = new HashMap<Integer, ContentLoop>();
+    private Map<Integer, ContentLoop> contentLoops = new HashMap<Integer, ContentLoop>();
                 
     
     public TextDocumentDomainObject() {
@@ -110,29 +108,34 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         TextDocumentDomainObject clone = (TextDocumentDomainObject)super.clone();
         
         clone.images = cloneImages();
+        clone.loopImages = cloneLoopImages();
         clone.includesMap = cloneIncludesMap();
         clone.menus = cloneMenusMap();
         clone.templateNames = cloneTemplateNames();
         clone.texts = cloneTexts();
-        clone.contentLoopsMap = cloneContentLoopsMap();
+        clone.loopTexts = cloneLoopTexts();
+        clone.contentLoops = cloneContentLoopsMap();
                 
         return clone;
     }
+
+    public void accept( DocumentVisitor documentVisitor ) {
+        documentVisitor.visitTextDocument(this) ;
+    }    
 
     public DocumentTypeDomainObject getDocumentType() {
         return DocumentTypeDomainObject.TEXT ;
     }
 
     public Set getChildDocumentIds() {
-        Set childDocuments = new HashSet() ;
-        for ( Iterator iterator = getMenus().values().iterator(); iterator.hasNext(); ) {
-            MenuDomainObject menu = (MenuDomainObject)iterator.next();
-            MenuItemDomainObject[] menuItems = menu.getMenuItems() ;
-            for ( int i = 0; i < menuItems.length; i++ ) {
-                MenuItemDomainObject menuItem = menuItems[i];
-                childDocuments.add( new Integer(menuItem.getDocumentId()) ) ;
+        Set childDocuments = new HashSet();
+        
+        for (MenuDomainObject menu:  getMenus().values()) {
+            for (MenuItemDomainObject menuItem:  menu.getMenuItems()) {
+                childDocuments.add(menuItem.getDocumentId()) ;
             }
         }
+        
         return childDocuments ;
     }
     
@@ -162,31 +165,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * @return TextDomainObject or null if text can not be found.
      */
 	public TextDomainObject getText(Integer loopNo, Integer contentIndex, Integer textNo) {
-        TextDomainObject text = null;
-
-        Map<Integer, Map<Integer, TextDomainObject>> contentsMap = loopTexts.get(loopNo);
-
-        if (contentsMap != null) {
-            Map<Integer, TextDomainObject> textsMap = contentsMap.get(contentIndex);
-
-            if (textsMap != null) {
-                text = textsMap.get(textNo);
-            }
-        }
-
-		return text;
+        return loopTexts.get(new ContentLoopItemKey(loopNo, contentIndex, textNo));
 	}
-
-
-    public void accept( DocumentVisitor documentVisitor ) {
-        documentVisitor.visitTextDocument(this) ;
-    }
 
     /**
      * Removes all image.
      */
     public synchronized void removeAllImages() {
         images = new HashMap<Integer, ImageDomainObject>();
+        loopImages = new HashMap<ContentLoopItemKey, ImageDomainObject>();
     }
 
     public void removeAllIncludes() {
@@ -198,11 +185,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
     
     public void removeAllContentLoops() {
-    	contentLoopsMap = new HashMap<Integer, ContentLoop>();
+    	contentLoops = new HashMap<Integer, ContentLoop>();
     }
 
     public void removeAllTexts() {
         texts = new HashMap<Integer, TextDomainObject>();
+        loopTexts = new HashMap<ContentLoopItemKey, TextDomainObject>();
     }
 
     
@@ -227,50 +215,24 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
 
-    
-    /**
-     * Sets text.
-     */   
     public TextDomainObject setText(Integer no, TextDomainObject text) {
         Meta meta = getMeta();
         Integer documentVersion = getVersion().getNo();
         Integer metaId = meta.getId();
 
-        Map<Integer, TextDomainObject> map;
-
         Integer loopNo = text.getLoopNo();
+        Integer contentIndex = text.getContentIndex();
 
-        if (loopNo == null) {
-            map = texts;
-        } else {
-            Integer contentIndex = text.getContentIndex();
-
-            if (contentIndex == null) {
-                throw new RuntimeException(String.format(
-                    "Invalid text field. Content loop is set but content index is not. meta :%s, document version: %s, loop no: %s, text no: %s."
-                    ,meta.getId(), documentVersion, loopNo, no)
-                );
-            }
-
-
-            Map<Integer, Map<Integer, TextDomainObject>> contents = loopTexts.get(loopNo);
-
-            if (contents == null) {
-                contents = new HashMap<Integer, Map<Integer, TextDomainObject>>();
-                loopTexts.put(loopNo, contents);
-            }
-
-
-            map = contents.get(contentIndex);
-
-            if (map == null) {
-                map = new HashMap<Integer, TextDomainObject>();
-                contents.put(contentIndex, map);
-            }
+        if ((loopNo != null && contentIndex == null) || (loopNo == null && contentIndex != null)) {
+            throw new IllegalStateException(String.format(
+                "Invalid text. Both loop no and content index must be set or not set (null). Meta  id :%s, document version: %s, loop no: %s, content index: %s, text no: %s."
+                ,meta.getId(), documentVersion, loopNo, contentIndex, no)
+            );
         }
-    	
 
-        TextDomainObject oldText = map.get(no);
+        ContentLoopItemKey key = loopNo == null ? null : new ContentLoopItemKey(loopNo, contentIndex, no);
+        
+        TextDomainObject oldText = key == null ? texts.get(no) : loopTexts.get(key);
         TextDomainObject newText = text.clone();
 
         if (oldText != null) {
@@ -284,7 +246,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         newText.setNo(no);
         newText.setLanguage(getLanguage());
 
-        map.put(no, newText);
+        if (key == null) texts.put(no, newText); else loopTexts.put(key, newText);
 
         return newText.clone();
     } 
@@ -350,30 +312,45 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return images;
     }
 
-    
-    /**
-     * Sets image.
-     */   
-    public void setImage(int no, ImageDomainObject image) {
-    	ImageDomainObject oldImage = images.get(no);
-    	ImageDomainObject newImage = image.clone();
-    	
-    	if (oldImage != null) {
-    		newImage.setId(oldImage.getId());
-    		newImage.setDocVersionNo(oldImage.getDocVersionNo());
-    	} else {
-    		newImage.setId(null);
-    	}
-    	
-    	newImage.setDocId(getMeta().getId());
-    	newImage.setLanguage(getLanguage());
-    	newImage.setNo(no);
-    	
-    	images.put(no, newImage);
+     
+    public ImageDomainObject setImage(int no, ImageDomainObject image) {
+        Meta meta = getMeta();
+        Integer documentVersion = getVersion().getNo();
+        Integer metaId = meta.getId();
+
+        Integer loopNo = image.getLoopNo();
+        Integer contentIndex = image.getContentIndex();
+
+        if ((loopNo != null && contentIndex == null) || (loopNo == null && contentIndex != null)) {
+            throw new IllegalStateException(String.format(
+                "Invalid image. Both loop no and content index must be set or not set (null). Meta  id :%s, document version: %s, loop no: %s, content index: %s, image no: %s."
+                ,meta.getId(), documentVersion, loopNo, contentIndex, no)
+            );
+        }
+
+        ContentLoopItemKey key = loopNo == null ? null : new ContentLoopItemKey(loopNo, contentIndex, no);
+
+        ImageDomainObject oldImage = key == null ? images.get(no) : loopImages.get(key);
+        ImageDomainObject newImage = image.clone();
+
+        if (oldImage != null) {
+            newImage.setId(oldImage.getId());
+        } else {
+            newImage.setId(null);
+        }
+
+        newImage.setDocId(metaId);
+        newImage.setDocVersionNo(documentVersion);
+        newImage.setNo(no);
+        newImage.setLanguage(getLanguage());
+
+        if (key == null) images.put(no, newImage); else loopImages.put(key, newImage);
+
+        return newImage.clone();
     }	
 	
 	/**
-	 * Returns image for language specified.
+	 * @return image outside of content loop.
 	 */
 	public ImageDomainObject getImage(int no) {
 		return images.get(no);
@@ -394,27 +371,51 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     
     
     private Map<Integer, ImageDomainObject> cloneImages() {
-        Map<Integer, ImageDomainObject> imagesClone
-    		= new HashMap<Integer, ImageDomainObject>();
+        Map<Integer, ImageDomainObject> imagesClone = new HashMap<Integer, ImageDomainObject>();
 
-            for (Map.Entry<Integer, ImageDomainObject> imagesEntry: imagesClone.entrySet()) {
-                ImageDomainObject image = imagesEntry.getValue().clone();
+        for (Map.Entry<Integer, ImageDomainObject> imagesEntry: images.entrySet()) {
+            ImageDomainObject image = imagesEntry.getValue().clone();
 
-                imagesClone.put(imagesEntry.getKey(), image);
-            }
+            imagesClone.put(imagesEntry.getKey(), image);
+        }
 
         return imagesClone;
-    }    
+    }
+
+
+    private Map<ContentLoopItemKey, ImageDomainObject> cloneLoopImages() {
+        Map<ContentLoopItemKey, ImageDomainObject> imagesClone
+    		= new HashMap<ContentLoopItemKey, ImageDomainObject>();
+
+        for (Map.Entry<ContentLoopItemKey, ImageDomainObject> imagesEntry: loopImages.entrySet()) {
+            ImageDomainObject image = imagesEntry.getValue().clone();
+
+            imagesClone.put(imagesEntry.getKey(), image);
+        }
+
+        return imagesClone;
+    }
 
     private Map<Integer, TextDomainObject> cloneTexts() {
-        Map<Integer, TextDomainObject> textsClone
-    		= new HashMap<Integer, TextDomainObject>();
+        Map<Integer, TextDomainObject> textsClone = new HashMap<Integer, TextDomainObject>();
 
-            for (Map.Entry<Integer, TextDomainObject> textsEntry: textsClone.entrySet()) {
-                TextDomainObject text = textsEntry.getValue().clone();
+        for (Map.Entry<Integer, TextDomainObject> textsEntry: texts.entrySet()) {
+            TextDomainObject text = textsEntry.getValue().clone();
 
-                textsClone.put(textsEntry.getKey(), text);
-            }
+            textsClone.put(textsEntry.getKey(), text);
+        }
+
+        return textsClone;
+    }
+
+    private Map<ContentLoopItemKey, TextDomainObject> cloneLoopTexts() {
+        Map<ContentLoopItemKey, TextDomainObject> textsClone = new HashMap<ContentLoopItemKey, TextDomainObject>();
+
+        for (Map.Entry<ContentLoopItemKey, TextDomainObject> textsEntry: loopTexts.entrySet()) {
+            TextDomainObject text = textsEntry.getValue().clone();
+
+            textsClone.put(textsEntry.getKey(), text);
+        }
 
         return textsClone;
     }
@@ -434,7 +435,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private Map<Integer, ContentLoop> cloneContentLoopsMap() {
     	Map<Integer, ContentLoop> contentLoopsMapClone = new HashMap<Integer, ContentLoop>();
     	
-    	for (Map.Entry<Integer, ContentLoop> entry: contentLoopsMap.entrySet()) {
+    	for (Map.Entry<Integer, ContentLoop> entry: contentLoops.entrySet()) {
     		contentLoopsMapClone.put(entry.getKey(), entry.getValue().clone());
     	}
     	
@@ -462,15 +463,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	}
 
 	public Map<Integer, ContentLoop> getContentLoops() {
-		return contentLoopsMap;
+		return contentLoops;
 	}
 
-	public void setContentLoopsMap(Map<Integer, ContentLoop> contentLoopsMap) {
-		this.contentLoopsMap = contentLoopsMap;
+	public void setContentLoops(Map<Integer, ContentLoop> contentLoops) {
+		this.contentLoops = contentLoops;
 	}	
 	
 	public ContentLoop getContentLoop(int no) {
-		return contentLoopsMap.get(no);
+		return contentLoops.get(no);
 	}
 	
 	/**
@@ -478,7 +479,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	 * 
 	 * @param no content loop no in this document.
 	 * @param contentLoop content loop to set.
-	 * @return ContentLoop set to document.
+     * 
+	 * @return clone of a ContentLoop set to this document.
 	 */
 	public ContentLoop setContentLoop(int no, ContentLoop contentLoop) {
 		ContentLoop oldContentLoop = getContentLoop(no);
@@ -496,7 +498,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 			versionNumber = oldContentLoop.getDocVersionNo();
 		}
 		
-		newContentLoop.setModified(true);
 		newContentLoop.setDocId(metaId);
 		newContentLoop.setDocVersionNo(versionNumber);
 		newContentLoop.setId(loopId);		
@@ -507,16 +508,24 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 			content.setId(null);
 		}
 		
-		contentLoopsMap.put(no, newContentLoop);
+		contentLoops.put(no, newContentLoop);
 		
-		return newContentLoop;
+		return newContentLoop.clone();
 	}
 
-    public Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> getLoopTexts() {
+    public Map<ContentLoopItemKey, TextDomainObject> getLoopTexts() {
         return loopTexts;
     }
 
-    public void setLoopTexts(Map<Integer, Map<Integer, Map<Integer, TextDomainObject>>> loopTexts) {
+    public void setLoopTexts(Map<ContentLoopItemKey, TextDomainObject> loopTexts) {
         this.loopTexts = loopTexts;
+    }
+
+    public Map<ContentLoopItemKey, ImageDomainObject> getLoopImages() {
+        return loopImages;
+    }
+
+    public void setLoopImages(Map<ContentLoopItemKey, ImageDomainObject> loopImages) {
+        this.loopImages = loopImages;
     }
 }

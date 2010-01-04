@@ -44,49 +44,80 @@ public class DocumentSaver {
     
     /**
      * Saves text and non-saved enclosing content loop if any.
-     *
-     * Non saved content loop might be added to the document by ContentLoopTag2.
+     * If text refers a content loop, this loop must also exist.
      *
      * @see com.imcode.imcms.servlet.admin.SaveText
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
+     *
+     * @throws IllegalStateException if a text refers non-existing content loop.
      * 
-     * TODO: Update doc modified dt?
+     * TODO: Update doc modified dt
      */
     @Transactional     
-    public void saveText(TextDocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void saveText(TextDocumentDomainObject doc, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         Integer loopNo = text.getLoopNo();
 
         if (loopNo != null) {
-            ContentLoop loop = document.getContentLoop(loopNo);
+            ContentLoop loop = doc.getContentLoop(loopNo);
+
+            if (loop == null) {
+                throw new IllegalStateException(String.format(
+                        "Text no: %s in document id: %s references non-existing content loop no: %s.", text.getNo(), doc.getId(), loopNo));
+            }
+
+            Integer contentIndex = text.getContentIndex();
+
+            if (contentIndex == null) {
+                throw new IllegalStateException(String.format(
+                        "Text's loop context index is not set. Doc id: %s, text no: content loop no: %s.",  doc.getId(), text.getNo(),loopNo));
+            }
+
             if (loop.getId() == null) {
-                contentLoopDao.saveContentLoop(loop);
+                loop = contentLoopDao.saveContentLoop(loop);
+                
+                doc.getContentLoops().put(loopNo, loop);
             }
         }
 
-    	new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentText(text, user);
+    	new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(doc, text, user);
     }
 
 
     @Transactional
-    public void saveImages(TextDocumentDomainObject document, Collection<ImageDomainObject> images, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        for (ImageDomainObject image: images) {
-            saveImage(document, image, user);
-        }
-    }
+    public void saveImages(TextDocumentDomainObject doc, Collection<ImageDomainObject> images, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        ImageDomainObject image = images.iterator().next();
 
+        if (image != null) {
+            Integer loopNo = image.getLoopNo();
 
-    @Transactional
-    public void saveImage(TextDocumentDomainObject document, ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        Integer loopNo = image.getLoopNo();
+            if (loopNo != null) {
+                ContentLoop loop = doc.getContentLoop(loopNo);
 
-        if (loopNo != null) {
-            ContentLoop loop = document.getContentLoop(loopNo);
-            if (loop.getId() == null) {
-                contentLoopDao.saveContentLoop(loop);
+                if (loop == null) {
+                    throw new IllegalStateException(String.format(
+                            "Image no: %s in document id: %s references non-existing content loop no: %s.", image.getNo(), doc.getId(), loopNo));
+                }
+
+                Integer contentIndex = image.getContentIndex();
+
+                if (contentIndex == null) {
+                    throw new IllegalStateException(String.format(
+                            "Image's loop context index is not set. Doc id: %s, text no: content loop no: %s.",  doc.getId(), image.getNo(),loopNo));
+                }
+
+                if (loop.getId() == null) {
+                    loop = contentLoopDao.saveContentLoop(loop);
+
+                    doc.getContentLoops().put(loopNo, loop);
+                }
             }
         }
 
-    	new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentImage(image, user);
+        DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
+
+        for (ImageDomainObject img: images) {
+            storingVisitor.saveTextDocumentImage(img, user);
+        }
     }
 
 

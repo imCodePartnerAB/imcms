@@ -137,11 +137,11 @@ CREATE TABLE imcms_text_doc_content_loops (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- Contnts are never deleted physically - they are disabled.
+-- Contents are never deleted physically - they are disabled.
 CREATE TABLE imcms_text_doc_contents (
   id int NOT NULL AUTO_INCREMENT,
   loop_id int DEFAULT NULL,
-  `index` int NOT NULL,      
+  sequence_index int NOT NULL,      
   order_index int NOT NULL,
   enabled tinyint NOT NULL DEFAULT TRUE,
         
@@ -157,7 +157,7 @@ CREATE TABLE imcms_text_doc_contents (
 CREATE TABLE imcms_text_doc_texts (
     id int NOT NULL AUTO_INCREMENT,
     doc_id int default NULL,
-    doc_version_no INT NOT NULL,
+    doc_version_no int NOT NULL,
     no int NOT NULL,
     text longtext NOT NULL,
     type int default NULL,
@@ -175,7 +175,7 @@ CREATE TABLE imcms_text_doc_texts (
 
 
 --
--- Remove dublicates from texts table before copying
+-- Remove duplicates from texts table before copying
 --
 DELETE FROM texts
 USING texts, texts AS self
@@ -197,10 +197,54 @@ INSERT INTO imcms_text_doc_texts (
 FROM texts;
 
 
--- #####TEXTS HISTORY######
+CREATE TABLE imcms_text_doc_texts_history (
+    id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    doc_id int default NULL,
+    doc_version_no int DEFAULT NULL,
+    no int NOT NULL,
+    text longtext NOT NULL,
+    type int default NULL,
+    language_id smallint NOT NULL,
+    loop_no int DEFAULT NULL,
+    loop_content_index int DEFAULT NULL,
+    modified_datetime datetime NOT NULL,
+    user_id int DEFAULT NULL,
+
+    CONSTRAINT fk__imcms_text_doc_texts_history__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
+    CONSTRAINT fk__imcms_text_doc_texts_history__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+    CONSTRAINT fk__imcms_text_doc_texts_history__users FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE SET NULL,
+    CONSTRAINT fk__imcms_text_doc_texts_history__doc_versions FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- Imqges
+INSERT INTO imcms_text_doc_texts_history (
+    doc_id,
+    doc_version_no,
+    no,
+    text,
+    type,
+    language_id,
+    loop_no,
+    loop_content_index,
+    modified_datetime,
+    user_id
+) SELECT
+    meta_id,
+    0,
+    name,
+    text,
+    type,
+    language_id,
+    null,
+    null,
+    modified_datetime,
+    user_id
+FROM texts_history;
+
+DROP TABLE texts_history;
+
+
+-- Images
 CREATE TABLE imcms_text_doc_images (
   id int NOT NULL AUTO_INCREMENT,
   doc_id int DEFAULT NULL,

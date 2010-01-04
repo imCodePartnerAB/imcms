@@ -21,7 +21,7 @@ public class ContentLoopDao extends HibernateTemplate {
     }
 
     private ContentIndexes getContentIndexes(Long loopId) {
-        Integer[] indexes = (Integer[])getSession().createQuery("SELECT max(c.index) + 1, min(c.orderIndex) - 1, max(c.orderIndex) + 1  FROM Content c WHERE c.looId = ?")
+        Integer[] indexes = (Integer[])getSession().createQuery("SELECT max(c.sequence_index) + 1, min(c.orderIndex) - 1, max(c.orderIndex) + 1  FROM Content c WHERE c.looId = ?")
                 .setParameter(0, loopId)
                 .uniqueResult();
 
@@ -73,16 +73,22 @@ public class ContentLoopDao extends HibernateTemplate {
 	
 	
 	/**
-	 * Saves conent loop.
+	 * Saves content loop.
      *
      * @param loop content loop.
      * @return saved content loop. 
 	 */
 	@Transactional
 	public synchronized ContentLoop saveContentLoop(final ContentLoop loop) {
-        ContentLoop loopClone = loop.clone();
+        if (loop.getContents().size() == 0) {
+            throw new IllegalStateException(String.format(
+                    "Content loop must have at least one content. Doc id: %, doc version: %s, content loop no %s.",
+                    loop.getDocId(), loop.getDocVersionNo(), loop.getNo()));    
+        }
 
-        saveOrUpdate(loop.clone());
+        ContentLoop loopClone = loop.clone();
+        
+        saveOrUpdate(loopClone);
         
         return loopClone;
 	} 
@@ -331,7 +337,7 @@ public class ContentLoopDao extends HibernateTemplate {
 		Long contentId = getContentId(loopId, sequenceIndex);
 		
 		if (contentId == null) {
-			throw new RuntimeException(String.format("Content with loop id=%s and sequence index=%s does not exist.", loopId, sequenceIndex));
+			throw new RuntimeException(String.format("Content with loop id: %s and sequence index: %s does not exist.", loopId, sequenceIndex));
 		}
 		
 		return insertNewContentBefore(loopId, contentId);

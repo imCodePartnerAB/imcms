@@ -6,7 +6,7 @@
     [clojure.contrib.str-utils2 :as su2]
     [clojure.contrib.shell-out :as shell]
     [com.imcode.imcms
-      [runtime :as rt]
+      ;[runtime :as rt]
       [misc-utils :as utils]
       [db-utils :as db-utils]])
   
@@ -21,7 +21,7 @@
 
   (:import
     (java.io File)
-    (imcode.server Imcms)
+    ;(imcode.server Imcms)
     (org.apache.commons.dbcp BasicDataSource)))
 
 
