@@ -170,8 +170,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * Saves text document's image.
      */
     // must run inside transaction
-    public void saveTextDocumentImage(ImageDomainObject image, UserDomainObject user) {
+    public void saveTextDocumentImage(TextDocumentDomainObject doc, ImageDomainObject image, UserDomainObject user) {
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
+     
+        image.setDocId(doc.getId());
+        image.setDocVersionNo(doc.getVersion().getNo());
+
 
         image.setImageUrl(image.getSource().toStorageString());
         image.setType(image.getSource().getTypeId());
@@ -183,26 +187,20 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
 
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
-        /*
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
-        Integer metaId = textDocument.getMeta().getId();
-        Integer documentVersionNumber = textDocument.getVersion().getNo();
-        
-        for (Map<Integer, ImageDomainObject> map: textDocument.getAllImages().values()) {
-        	for (ImageDomainObject image: map.values()) {
-                if (image.isModified()) {                	 
-                	// TODO: remove
-		image.setImageUrl(image.getSource().toStorageString());
-		image.setType(image.getSource().getTypeId());                	
+        Integer docId = textDocument.getMeta().getId();
+        Integer docVersionNo = textDocument.getVersion().getNo();
 
-                	image.setDocId(metaId);
-                	image.setDocVersionNo(documentVersionNumber);
-                    imageDao.saveImage(image);
-                    //imageDao.saveImageHistory(metaId, text, user); 
-                }        		
-        	}
+        imageDao.deleteImages(docId, docVersionNo);
+
+        for (ImageDomainObject image: textDocument.getImages().values()) {
+            saveTextDocumentImage(textDocument, image, user);
         }
-                */
+
+
+        for (ImageDomainObject image: textDocument.getLoopImages().values()) {
+            saveTextDocumentImage(textDocument, image, user);
+        }
     }
     
     

@@ -38,6 +38,12 @@
   <!-- ==================================================================== -->
   <!-- IMAGE -->
   <!-- ==================================================================== -->
+  <query name="Image.deleteImages">
+    <![CDATA[
+    DELETE FROM Image i WHERE i.docId = :docId AND i.docVersionNo = :docVersionNo
+    ]]>
+  </query>
+
   <query name="Image.getByLanguageId">
     <![CDATA[
     select i from Image i where i.docId = :docId and i.language.id = :languageId

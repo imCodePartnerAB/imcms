@@ -44,22 +44,6 @@ public class ImageDao extends HibernateTemplate {
 	}
 
 
-	/*
-	@Transactional
-	public synchronized List<ImageDomainObject> getImagesByLanguage(int docId, int languageId) {
-		List<ImageDomainObject> images = findByNamedQueryAndNamedParam(
-				"Image.getAllDocumentImagesByLanguage", 
-					new String[] {"docId", "languageId"}, 
-					new Object[] {docId, languageId});
-		
-		for (ImageDomainObject image: images) {
-			setImageSource(image);
-		}
-		
-		return images;
-	}
-	*/
-
     @Transactional
 	public synchronized ImageDomainObject getImage(int languageId,
 			Integer docId, Integer docVersionNo, int no) {
@@ -100,14 +84,15 @@ public class ImageDao extends HibernateTemplate {
 
         return setImagesSources(images);
     }
-	
-	public LanguageDao getLanguageDao() {
-		return languageDao;
-	}
 
-	public void setLanguageDao(LanguageDao languageDao) {
-		this.languageDao = languageDao;
-	}
+
+	@Transactional
+	public int deleteImages(Integer docId, Integer docVersionNo) {
+		return getSession().getNamedQuery("Image.deleteImages")
+			.setParameter("docId", docId)
+			.setParameter("docVersionNo", docVersionNo)
+			.executeUpdate();
+	}    
 
 
     /**
@@ -137,5 +122,13 @@ public class ImageDao extends HibernateTemplate {
 		}
 
 		return image;
+	}
+
+	public LanguageDao getLanguageDao() {
+		return languageDao;
+	}
+
+	public void setLanguageDao(LanguageDao languageDao) {
+		this.languageDao = languageDao;
 	}    
 }

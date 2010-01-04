@@ -198,7 +198,7 @@ FROM texts;
 
 
 CREATE TABLE imcms_text_doc_texts_history (
-    id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id int NOT NULL AUTO_INCREMENT,
     doc_id int default NULL,
     doc_version_no int DEFAULT NULL,
     no int NOT NULL,
@@ -210,9 +210,10 @@ CREATE TABLE imcms_text_doc_texts_history (
     modified_datetime datetime NOT NULL,
     user_id int DEFAULT NULL,
 
+    CONSTRAINT pk__imcms_text_doc_texts_history PRIMARY KEY (id),
     CONSTRAINT fk__imcms_text_doc_texts_history__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
     CONSTRAINT fk__imcms_text_doc_texts_history__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-    CONSTRAINT fk__imcms_text_doc_texts_history__users FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE SET NULL,
+    -- CONSTRAINT fk__imcms_text_doc_texts_history__users FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE SET NULL,
     CONSTRAINT fk__imcms_text_doc_texts_history__doc_versions FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -321,7 +322,36 @@ INSERT INTO imcms_text_doc_images (
   NULL
 FROM images;
 
--- ####IMAGES_HISOTRY#####
+
+CREATE TABLE imcms_text_doc_images_history (
+  id int NOT NULL AUTO_INCREMENT,
+  doc_id int DEFAULT NULL,
+  doc_version_no int NOT NULL,
+  width int NOT NULL,
+  height int NOT NULL,
+  border int NOT NULL,
+  v_space int NOT NULL,
+  h_space int NOT NULL,
+  no int NOT NULL,
+  image_name varchar(40) NOT NULL DEFAULT '',
+  target varchar(15) NOT NULL,
+  align varchar(15) NOT NULL,
+  alt_text varchar(255) NOT NULL,
+  low_scr varchar(255) NOT NULL,
+  imgurl varchar(255) NOT NULL,
+  linkurl varchar(255) NOT NULL,
+  type int NOT NULL,
+  language_id smallint(6) NOT NULL,
+  loop_no int DEFAULT NULL,
+  loop_content_index int DEFAULT NULL,
+  modified_datetime datetime NOT NULL,
+  user_id int DEFAULT NULL,  
+
+  CONSTRAINT pk__imcms_text_doc_images_history PRIMARY KEY (id),
+  CONSTRAINT fk__imcms_text_doc_images_history__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
+  CONSTRAINT fk__imcms_text_doc_images_history__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  CONSTRAINT fk__imcms_text_doc_images_history__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 

@@ -116,7 +116,7 @@ public class DocumentSaver {
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
         for (ImageDomainObject img: images) {
-            storingVisitor.saveTextDocumentImage(img, user);
+            storingVisitor.saveTextDocumentImage(doc, img, user);
         }
     }
 
