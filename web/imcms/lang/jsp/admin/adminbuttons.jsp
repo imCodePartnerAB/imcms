@@ -79,6 +79,15 @@ function adminDialogMenuAction(query) {
 function documentChanged(selectObj) {
     document.location.replace("/imcms4/" + selectObj.value);
 }
+
+function setContentHeight() {
+	$("#contentPane").css("height",
+            ((window.innerHeight ? window.innerHeight : document.body.offsetHeight) - 75) + "px");
+}
+
+$(document).ready(setContentHeight);
+$(window).resize(setContentHeight);
+    
 </script>
 
 <vel:velocity>

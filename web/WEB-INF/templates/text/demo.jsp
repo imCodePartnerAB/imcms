@@ -30,6 +30,7 @@ LI { padding-bottom:5px; }
 </head>
 <body bgcolor="#f0f0ff" style="margin: 0px">
 <imcms:admin/>
+<div id="contentPane" style="overflow:auto">
 <table border="0" cellspacing="0" cellpadding="5" align="center" style="height:100%; background-color:#fff; margin-top:10px">
 <tr>
 	<td valign="top">
@@ -79,6 +80,6 @@ LI { padding-bottom:5px; }
     </td>
 </tr>
 </table>
-
+</div>
 </body>
 </html>
