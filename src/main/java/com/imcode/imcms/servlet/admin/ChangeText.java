@@ -20,7 +20,7 @@ import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.mapping.DocumentMapper;
 
 /**
- * Edit textdocument in a document.
+ * Edit text in a text document.
  */
 
 public class ChangeText extends HttpServlet {

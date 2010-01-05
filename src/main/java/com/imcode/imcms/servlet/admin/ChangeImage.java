@@ -32,6 +32,9 @@ import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
 
+/**
+ * Change image withe the same 'no' for all available languages. 
+ */
 public class ChangeImage extends HttpServlet {
 
     public static final String REQUEST_PARAMETER__IMAGE_INDEX = "img";
@@ -54,7 +57,6 @@ public class ChangeImage extends HttpServlet {
         /**
          * Image DTO. Holds generic properties such as size and border. 
          */
-        //final ImageDomainObject defaultImage = document.getImage(I18nSupport.getDefaultLanguage(), imageIndex);
         final ImageDomainObject defaultImage = document.getImage(imageIndex);
         final ImageDomainObject image = defaultImage != null 
         	? defaultImage

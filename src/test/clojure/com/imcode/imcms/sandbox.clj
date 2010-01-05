@@ -109,5 +109,3 @@
 ;    (.setLoopNo text *content-loop-no*)
 ;    (.saveText (rt/get-doc-mapper) text-doc text user)))
 
-(defn e [] (.printStackTrace *e))
-

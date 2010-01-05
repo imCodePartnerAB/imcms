@@ -43,8 +43,8 @@ public class DocumentSaver {
     private DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper();
     
     /**
-     * Saves text and non-saved enclosing content loop if any.
-     * If text refers a content loop, this loop must also exist.
+     * Saves edited text-document text and non-saved enclosing content loop if any.
+     * If text is enclosed into unsaved content loop then the loop must also exist in document.
      *
      * @see com.imcode.imcms.servlet.admin.SaveText
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
@@ -83,6 +83,20 @@ public class DocumentSaver {
     }
 
 
+    /**
+     * Saves changed text-document image(s).
+     * If an image is enclosed into unsaved content loop then this content loop is also saved.
+     *
+     * @see com.imcode.imcms.servlet.admin.ChangeImage
+     * 
+     * @param doc
+     * @param images images with the same 'no' for every language.
+     * @param user
+     * @throws NoPermissionInternalException
+     * @throws DocumentSaveException
+     *
+     * TODO: Update doc modified dt
+     */
     @Transactional
     public void saveImages(TextDocumentDomainObject doc, Collection<ImageDomainObject> images, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         ImageDomainObject image = images.iterator().next();

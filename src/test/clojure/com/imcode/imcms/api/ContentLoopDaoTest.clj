@@ -1,9 +1,11 @@
 (ns com.imcode.imcms.api.ContentLoopDaoTest
   (:require
     [clojure.contrib.sql :as sql]
-    [com.imcode.imcms.project :as project]
-    [com.imcode.imcms.schema :as schema]
-    [com.imcode.imcms.spring :as spring])
+    [com.imcode.imcms
+      [project :as project]
+      [factory :as factory]
+      [schema :as schema]
+      [spring :as spring]])
 
   (:use
     clojure.contrib.test-is)
@@ -18,23 +20,6 @@
 (def *text-doc-id* 1001)
 (def *text-doc-version-no* 0)
 (def *loop-no* 1)
-
-
-(defn new-content-loop
-  "Creates content loop instance with a single content."
-  [doc-id doc-version-no no]
-  (let [loop (doto (ContentLoop.)
-               (.setDocId doc-id)
-               (.setNo no)
-               (.setDocVersionNo doc-version-no))
-
-        content (doto (Content.)
-                  (.setIndex 0)
-                  (.setOrderIndex 0))]
-
-    (-> (.getContents loop) (.add content))
-
-    loop))
 
 (defn get-loops [] (.getContentLoops spring/contentLoopDao *text-doc-id* *text-doc-version-no*))
 
@@ -56,7 +41,7 @@
     (create-loop *text-doc-id* *text-doc-version-no* loop-no))  
 
   ([doc-id doc-version-no loop-no]
-    (let [loop (new-content-loop doc-id doc-version-no loop-no)]
+    (let [loop (factory/new-content-loop doc-id doc-version-no loop-no)]
 
       (.saveContentLoop spring/contentLoopDao loop))))    
 

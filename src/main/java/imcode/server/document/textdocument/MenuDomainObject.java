@@ -85,7 +85,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
             for (Map.Entry<Integer, MenuItemDomainObject> entry: menuItems.entrySet()) {
                 Integer documentId = entry.getKey();
                 MenuItemDomainObject menuItem = entry.getValue();
-                clone.menuItems.put(documentId, (MenuItemDomainObject)menuItem.clone()) ;
+                clone.menuItems.put(documentId, menuItem.clone()) ;
             }
             return clone ;
         } catch ( CloneNotSupportedException e ) {

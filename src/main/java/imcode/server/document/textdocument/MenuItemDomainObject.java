@@ -71,8 +71,8 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
         return documentReference;
     }
     
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    protected MenuItemDomainObject clone() throws CloneNotSupportedException {
+        return (MenuItemDomainObject)super.clone();
     }
 
     public DocumentDomainObject getDocument() {

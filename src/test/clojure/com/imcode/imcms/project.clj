@@ -136,3 +136,5 @@
 (defmacro sh [& args]
   (let [cmd (map str args)]
     `(shell/sh ~@cmd)))
+
+(defn e [] (.printStackTrace *e))

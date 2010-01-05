@@ -21,15 +21,15 @@ public class ContentLoopDao extends HibernateTemplate {
     }
 
     private ContentIndexes getContentIndexes(Long loopId) {
-        Integer[] indexes = (Integer[])getSession().createQuery("SELECT max(c.sequence_index) + 1, min(c.orderIndex) - 1, max(c.orderIndex) + 1  FROM Content c WHERE c.looId = ?")
+        Object[] indexes = (Object[])getSession().createQuery("SELECT max(c.index) + 1, min(c.orderIndex) - 1, max(c.orderIndex) + 1  FROM Content c WHERE c.loopId = ?")
                 .setParameter(0, loopId)
                 .uniqueResult();
 
         ContentIndexes contentIndexes = new ContentIndexes();
 
-        contentIndexes.sequence = indexes[0];
-        contentIndexes.lower = indexes[1];
-        contentIndexes.higher = indexes[2];
+        contentIndexes.sequence = (Integer)indexes[0];
+        contentIndexes.lower = (Integer)indexes[1];
+        contentIndexes.higher = (Integer)indexes[2];
 
         return contentIndexes;
     }
