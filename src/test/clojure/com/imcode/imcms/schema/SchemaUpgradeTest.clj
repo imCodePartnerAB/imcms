@@ -1,4 +1,4 @@
-(ns com.imcode.imcms.schema.upgrade
+(ns com.imcode.imcms.schema.SchemaUpgradeTest
   (:require
     [clojure.contrib.sql :as sql]
     [com.imcode.imcms.schema :as schema])

@@ -1,4 +1,4 @@
-(ns com.imcode.imcms.schema.diff-builder
+(ns com.imcode.imcms.schema.DiffBuilderTest
   (:require
     [com.imcode.imcms.schema :as schema])  
   (:use

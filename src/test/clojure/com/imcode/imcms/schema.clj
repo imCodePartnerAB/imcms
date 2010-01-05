@@ -1,4 +1,6 @@
 (ns com.imcode.imcms.schema
+  #^{:doc "Project's schema manipulation routines."}
+  
   (:use
     [clojure.contrib duck-streams test-is])
 
@@ -122,6 +124,6 @@
     (println "xml-conf-file content length: " (count (slurp-xml-conf)))
     (println "xsd-conf-file content length: " (count (slurp-xsd-conf))))
 
-  (is (= 2 (count (init-script-files)))))
+  (is (= 3 (count (init-script-files)))))
 
 

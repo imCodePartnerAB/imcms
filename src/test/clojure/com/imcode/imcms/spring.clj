@@ -1,4 +1,6 @@
 (ns com.imcode.imcms.spring
+  #^{:doc "Initializes spring app context."}
+  
   (:require
     [com.imcode.imcms
       [project :as project]
@@ -12,11 +14,14 @@
   (FileSystemXmlApplicationContext. (str "file:" (project/file-path "src/test/resources/testApplicationContext.xml"))))
 
 
-(defn get-spring-bean [name]
+(defn get-spring-bean
+  "Returns spring bean from the app context."
+  [name]
   (.getBean spring-app-context name))
 
 
 (defmacro defbean
+  ""
   ([bean-name]
     `(defbean ~bean-name ~bean-name))
 

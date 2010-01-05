@@ -15,7 +15,9 @@
     (imcode.server.document.textdocument TextDomainObject)
     (com.imcode.imcms.api ContentLoop Content)))
 
-(defn init-imcms []
+(defn init-imcms
+  "Initializes and starts Imcms."
+  []
   (Imcms/setPath (project/subdir "src/test/resources"))
   (Imcms/setPrefsConfigPath ".")
   (Imcms/setApplicationContext spring/spring-app-context)
@@ -29,7 +31,9 @@
 (def *working-version-no* 0)
 
 
-(defn create-text [doc-id no text]
+(defn create-text
+  "Creates text domain object instance."
+  [doc-id doc-version-no no text]
   (doto (TextDomainObject.)
     (.setDocId doc-id)
     (.setNo no)
@@ -37,11 +41,13 @@
     (.setDocVersionNo *working-version-no*)))
 
 
-(defn create-loop [doc-id no]
+(defn create-content-loop
+  "Creates content loop instance with single content."
+  [doc-id doc-version-no no]
   (let [loop (doto (ContentLoop.)
                (.setDocId doc-id)
                (.setNo no)
-               (.setDocVersionNo *working-version-no*))
+               (.setDocVersionNo doc-version-no))
 
         content (doto (Content.)
                   (.setIndex 0)
@@ -53,16 +59,20 @@
 
 
 
-(defn test-insert-text []
+(defn test-insert-text
+  "Tests DocumentMapper.saveText."
+  []
   (let [text-doc (rt/get-working-doc *text-doc-id* *lang*)
-        text (create-text *text-doc-id* *text-no* "test")
+        text (create-text *text-doc-id* *working-version-no* *text-no* "test")
         user (rt/login :admin :admin)]
 
     (.setLanguage text (.getLanguage text-doc))
     (.saveText (rt/get-doc-mapper) text-doc text user)))
 
 
-(defn test-update-text []
+(defn test-update-text
+  "Tests DocumentMapper.saveText."
+  []
   (let [text-doc (rt/get-working-doc *text-doc-id* *lang*)
         text (.getText text-doc *text-no*)
         user (rt/login :admin :admin)]
@@ -71,10 +81,12 @@
     (.saveText (rt/get-doc-mapper) text-doc text user)))
 
 
-(defn test-insert-text-with-create-loop []
+(defn test-insert-text-with-create-loop
+  "Tests DocumentMapper.saveText."
+  []
   (let [text-doc (rt/get-working-doc *text-doc-id* *lang*)
-        loop (create-loop *text-doc-id* *content-loop-no*)
-        text (create-text *text-doc-id* *text-no* "test")
+        loop (create-loop *text-doc-id* *working-version-no* *content-loop-no*)
+        text (create-text *text-doc-id* *working-version-no* *text-no* "test")
         user (rt/login :admin :admin)]
 
     (-> (.getContentLoops text-doc) (.put *content-loop-no* loop))
