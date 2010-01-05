@@ -33,26 +33,32 @@
 (def *text-no* 1000)
 (def *content-loop-no* 1000)
 (def *working-version-no* 0)
+(def *superadmin*)
 
-(use-fixtures :once init-imcms-fixture)
+
+(defn bind-users-fixture
+  "Binds imcms users (*superadmin*)."
+  [f]
+  (binding [*superadmin* (rt/login :admin :admin)]
+    (f)))
+
+(use-fixtures :once init-imcms-fixture bind-users-fixture)
 
 
 (deftest test-save-text
   (testing "with new text"
-    (let [user (rt/login :admin :admin)
-          text-doc (rt/get-working-doc *text-doc-id* *lang*)
+    (let [text-doc (rt/get-working-doc *text-doc-id* *lang*)
           text (factory/new-text *text-doc-id* *working-version-no* *text-no* "test")]
 
       (.setLanguage text (.getLanguage text-doc))
-      (.saveText (rt/get-doc-mapper) text-doc text user)))
+      (.saveText (rt/get-doc-mapper) text-doc text *superadmin*)))
 
   (testing "with existings text"
-    (let [user (rt/login :admin :admin)
-          text-doc (rt/get-working-doc *text-doc-id* *lang*)
+    (let [text-doc (rt/get-working-doc *text-doc-id* *lang*)
           text (.getText text-doc *text-no*)]
 
       (.setText text "new text")
-      (.saveText (rt/get-doc-mapper) text-doc text user))))
+      (.saveText (rt/get-doc-mapper) text-doc text *superadmin*))))
 
 
 ;(defn test-insert-text-with-create-loop
