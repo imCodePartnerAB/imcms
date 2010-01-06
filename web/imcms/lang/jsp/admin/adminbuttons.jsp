@@ -18,6 +18,7 @@
 <%@ page import="imcode.server.Imcms" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="imcmsvelocity" prefix="vel"
 %><%
 
@@ -41,15 +42,17 @@ boolean isIE    = re.match("/(MSIE \\d)/i", uAgent) ;
 boolean isGecko = re.match("/Gecko/i", uAgent) ;
 
 %>
-<script src="/imcms4/imcms/jquery/jquery-1.3.2.js" type="text/javascript"></script>
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+
+<script src="${contextPath}/imcms/jquery/jquery-1.3.2.js" type="text/javascript"></script>
 <script language="javascript">
 function adminMenuAction(contentId, query) {
-	$.get("/imcms4/servlet/AdminDoc?template=demo_content&" + query, "", function(data) {
+	$.get("${contextPath}/servlet/AdminDoc?template=demo_content&" + query, "", function(data) {
 		$("#" + contentId).html(data);
 	});
 }
 function adminDialogMenuAction(query) {
-    $.get("/imcms4/servlet/AdminDoc?" + query, "", function(data) {
+    $.get("${contextPath}/servlet/AdminDoc?" + query, "", function(data) {
 		$("#adminDialog").html(data);
 
         //Get the screen height and width
@@ -77,7 +80,7 @@ function adminDialogMenuAction(query) {
 	});
 }
 function documentChanged(selectObj) {
-    document.location.replace("/imcms4/" + selectObj.value);
+    document.location.replace("${contextPath}/" + selectObj.value);
 }
 
 function setContentHeight() {
