@@ -299,11 +299,20 @@ public class DocumentSaver {
 //
 //        return document;
 //    }
-    
 
+
+    /**
+     *
+     * @param user
+     * @param document
+     * @param copying
+     * @return saved document id.
+     * @throws NoPermissionToAddDocumentToMenuException
+     * @throws DocumentSaveException
+     */
     @Deprecated
     @Transactional
-    public void saveNewDocument(UserDomainObject user,
+    public Integer saveNewDocument(UserDomainObject user,
                          DocumentDomainObject document, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(document);
 
@@ -333,12 +342,21 @@ public class DocumentSaver {
         document.setVersion(version);        
                 
         document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
+
+        return docId;
     }
 
 
-
+    /**
+     *
+     * @param docs
+     * @param user
+     * @return saved document id.
+     * @throws NoPermissionToAddDocumentToMenuException
+     * @throws DocumentSaveException
+     */
     @Transactional
-    public void copyDocument(List<DocumentDomainObject> docs, UserDomainObject user)
+    public Integer copyDocument(List<DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         // save meta and all labels
@@ -349,8 +367,7 @@ public class DocumentSaver {
         }
 
         DocumentDomainObject firstDoc = docs.get(0);
-
-        saveNewDocument(user, firstDoc, labels, true);
+        Integer savedDocId = saveNewDocument(user, firstDoc, labels, true);
 
         // save rest docs fields in case of a text document.
         int docsCount = docs.size();
@@ -360,20 +377,25 @@ public class DocumentSaver {
                  doc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
             }
         }
+
+        return savedDocId;
     }
 
 
     @Transactional
-    public void saveNewDocument(UserDomainObject user,
+    public Integer saveNewDocument(UserDomainObject user,
                          DocumentDomainObject document, Collection<DocumentLabels> labels, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-        saveNewDocument(user, document, copying);
+
+        Integer docId = saveNewDocument(user, document, copying);
 
         for (DocumentLabels l: labels) {
             l.setId(null);
             l.setDocId(document.getId());
             l.setDocVersionNo(document.getVersion().getNo());
             metaDao.saveLabels(l);
-        }        
+        }
+
+        return docId;
     }
 
 

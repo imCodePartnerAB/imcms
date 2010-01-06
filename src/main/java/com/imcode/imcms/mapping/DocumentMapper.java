@@ -461,48 +461,43 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     /**
-     * Copies working version of a document.
+     * Creates new working document by coping source document.
      *  
-     * @param document
+     * @param document source document
      * @param user
      * @return
      * @throws NoPermissionToAddDocumentToMenuException
      * @throws DocumentSaveException
      */
-    public DocumentDomainObject copyDocument(DocumentDomainObject document,
-                             UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-    	document = document.clone();
+    public DocumentDomainObject copyDocument(DocumentDomainObject document, UserDomainObject user)
+            throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+
         String copyHeadlineSuffix = imcmsServices.getAdminTemplate(COPY_HEADLINE_SUFFIX_TEMPLATE, user, null);
 
-        document.setAlias(null);
-        makeDocumentLookNew(document, user);
-
-        /*
-        for (I18nMeta i18nMeta: document.getMeta().getI18nMetas()) {
-            i18nMeta.setHeadline(i18nMeta.getHeadline() + copyHeadlineSuffix);
-        }
-        */
-
         Integer docId = document.getId();
-        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
+        Integer docVersionNo = document.getVersion().getNo();
+        List<DocumentDomainObject> sourceDocs = new LinkedList<DocumentDomainObject>();
         
         for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
-            DocumentDomainObject doc = getWorkingDocument(docId, language);
+            DocumentDomainObject doc =  documentLoaderCachingProxy.getCustomDocument(docId, docVersionNo, language);
             if (doc != null) {
-                docs.add(doc.clone());
+                // This should apply only to one doc since we need to alter meta which is shared by all docs with the same version.
+                doc.setAlias(null);
+                makeDocumentLookNew(doc, user);
+                
+                doc.accept(new DocIdentityCleanerVisitor());
+                
+                sourceDocs.add(doc);
             }
         }
 
-        try {
-            documentSaver.copyDocument(docs, user);
-        } finally {
-            // Invalidate  doc id
-        }
+        docId = documentSaver.copyDocument(sourceDocs, user);
 
-        // saveNewDocument(document, user, true);
-        // Return working version on default language.
+        DocumentDomainObject defaultWorkingDoc = getWorkingDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
 
-        return document;
+        // TODO: index workingDocs
+
+        return defaultWorkingDoc;
     }
 
     public List<DocumentDomainObject> getDocumentsWithPermissionsForRole(final RoleDomainObject role) {

@@ -12,8 +12,20 @@
 
   (:import
     (imcode.server Imcms)
+    (imcode.server.user UserDomainObject)
     (imcode.server.document.textdocument TextDomainObject)
     (com.imcode.imcms.api ContentLoop Content)))
+
+
+(def *text-doc-id* 1001)
+(def *lang* :en)
+(def *text-no* 1000)
+(def *content-loop-no* 1000)
+(def *working-version-no* 0)
+(def *doc-mapper*)
+
+(def #^{:tag UserDomainObject :doc "Imcms superuser. Bind in fixture"} *superadmin*)
+
 
 (defn init-imcms-fixture
   "Initializes and starts Imcms."
@@ -23,17 +35,10 @@
   (Imcms/setApplicationContext spring/spring-app-context)
   (Imcms/setUpgradeDatabaseSchemaOnStart false)
   (Imcms/start)
-
-  (f)
+  (binding [*doc-mapper* (rt/get-doc-mapper)]
+    (f))
 
   (Imcms/stop))
-
-(def *text-doc-id* 1001)
-(def *lang* :en)
-(def *text-no* 1000)
-(def *content-loop-no* 1000)
-(def *working-version-no* 0)
-(def *superadmin*)
 
 
 (defn bind-users-fixture
@@ -46,37 +51,40 @@
 
 
 (deftest test-save-text
-  (testing "with new text"
+  (testing "insert"
     (let [text-doc (rt/get-working-doc *text-doc-id* *lang*)
           text (factory/new-text *text-doc-id* *working-version-no* *text-no* "test")]
 
       (.setLanguage text (.getLanguage text-doc))
-      (.saveText (rt/get-doc-mapper) text-doc text *superadmin*)))
+      (.saveText *doc-mapper* text-doc text *superadmin*)))
 
-  (testing "with existings text"
+  (testing "update"
     (let [text-doc (rt/get-working-doc *text-doc-id* *lang*)
           text (.getText text-doc *text-no*)]
 
       (.setText text "new text")
-      (.saveText (rt/get-doc-mapper) text-doc text *superadmin*))))
+      (.saveText *doc-mapper* text-doc text *superadmin*)))
+
+  (testing "insert with enclosing unsaved content loop"
+    (let [text-doc (rt/get-working-doc *text-doc-id* *lang*)
+          loop (factory/new-content-loop *text-doc-id* *working-version-no* *content-loop-no*)
+          text (factory/new-text *text-doc-id* *working-version-no* *text-no* "test")]
+
+      (-> (.getContentLoops text-doc) (.put *content-loop-no* loop))
+
+      (doto text
+        (.setLanguage (.getLanguage text-doc))
+        (.setLoopNo *content-loop-no*)
+        (.setContentIndex 0))
+
+      (.saveText *doc-mapper* text-doc text *superadmin*))))
 
 
-;(defn test-insert-text-with-create-loop
-;  "Tests DocumentMapper.saveText."
-;  []
-;  (let [text-doc (rt/get-working-doc *text-doc-id* *lang*)
-;        loop (create-loop *text-doc-id* *working-version-no* *content-loop-no*)
-;        text (create-text *text-doc-id* *working-version-no* *text-no* "test")
-;        user (rt/login :admin :admin)]
-;
-;    (-> (.getContentLoops text-doc) (.put *content-loop-no* loop))
-;
-;    (doto text
-;      (.setLanguage (.getLanguage text-doc))
-;      (.setLoopNo *content-loop-no*)
-;      (.setContentIndex 0))
-;
-;    (.saveText (rt/get-doc-mapper) text-doc text user)))
+(deftest test-copy-document
+    (let [text-doc (rt/get-working-doc *text-doc-id* *lang*)
+          new-text-doc (.copyDocument *doc-mapper* *superadmin*)]
+      (is new-text-doc)))
+
 
 
 
@@ -86,5 +94,21 @@
 ;        user (rt/login :admin :admin)]
 ;
 ;    (.setLanguage text (.getLanguage text-doc))
-;    (.setLoopNo text *content-loop-no*)
-;    (.saveText (rt/get-doc-mapper) text-doc text user)))
+;    (.setLoopNo text *content-loop-no*)                                          
+;    (.saveText *doc-mapper* text-doc text user)))
+
+(defmacro do-test [ns-name test-name]
+  `(binding [test-ns-hook #(~test-name)]
+     (run-tests ~ns-name)))
+
+
+(defmacro def-test-ns-hook []
+  (let [syms (for [[s v] (ns-publics *ns*) :when (and (.isBound v) (fn? @v) (:test ^v))] `(~s))]
+    `(defn test-ns-hook [] ~@syms)))
+
+;(def-test-ns-hook)
+
+(defn test-ns-hook []
+  (println "Test ns hook")
+  (test-copy-document))
+  

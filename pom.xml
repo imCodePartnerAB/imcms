@@ -75,6 +75,15 @@
         <version>1.5.6</version>
         <scope>test</scope>
     </dependency>
+
+
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>5.10</version>
+      <classifier>jdk15</classifier>
+      <scope>test</scope>
+    </dependency>      
          
              
     <!-- REQUIRED -->
@@ -251,13 +260,7 @@
       <version>1.0.0</version> 
     </dependency>
 
-
-    <dependency>
-      <groupId>org.clojure</groupId>
-      <artifactId>compojure</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    
+      <!--
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
@@ -278,7 +281,7 @@
         </exclusion>              
       </exclusions>                   
     </dependency>
-
+    -->
       
     <dependency>
         <groupId>org.apache.ibatis</groupId>
