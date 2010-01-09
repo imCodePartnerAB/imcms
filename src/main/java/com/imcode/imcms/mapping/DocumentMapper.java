@@ -13,10 +13,7 @@ import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Clock;
@@ -215,13 +212,27 @@ public class DocumentMapper implements DocumentGetter {
     	//DocumentDomainObject oldDocument =
     	//	getDocument(document.getId(), document.getVersion().getNo());
     	DocumentDomainObject oldDocument =
-    		getDocument(document.getId());        
+    		getDocument(document.getId());
 
     	try {
     		documentSaver.updateDocument(document, oldDocument, user);
     	} finally {
     		invalidateDocument(document);
-    	}      
+    	}
+    }
+
+
+    /**
+     * Saves document menu.
+     */
+    public void saveDocumentMenu(TextDocumentDomainObject doc, MenuDomainObject menu, UserDomainObject user)
+            throws DocumentSaveException , NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
+
+        try {
+    		documentSaver.saveMenu(doc, menu, user);
+    	} finally {
+    		invalidateDocument(doc);
+    	}
     }
 
 

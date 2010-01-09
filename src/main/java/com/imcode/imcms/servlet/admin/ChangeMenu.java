@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -42,11 +43,14 @@ public class ChangeMenu extends HttpServlet {
         }
 
         final DispatchCommand cancelCommand = new RedirectToMenuEditDispatchCommand(document, menuIndex);
+        final MenuDomainObject menu = document.getMenu(menuIndex);
+
         DispatchCommand saveCommand = new DispatchCommand() {
             public void dispatch(HttpServletRequest request,
                                  HttpServletResponse response) throws IOException, ServletException {
                 try {
-                    documentMapper.saveDocument(document, user);
+                    documentMapper.saveDocumentMenu(document, menu ,user);
+                    //documentMapper.saveDocument(document, user);
                     //cancelCommand.dispatch(request, response);
                 } catch ( NoPermissionToAddDocumentToMenuException e ) {
                     throw new UnhandledException(e);

@@ -8,7 +8,7 @@
       [runtime :as rt]])
 
   (:use
-    clojure.contrib.test-is)  
+    clojure.test)  
 
   (:import
     (imcode.server Imcms)
@@ -82,7 +82,7 @@
 
 (deftest test-copy-document
     (let [text-doc (rt/get-working-doc *text-doc-id* *lang*)
-          new-text-doc (.copyDocument *doc-mapper* *superadmin*)]
+          new-text-doc (.copyDocument *doc-mapper* text-doc *superadmin*)]
       (is new-text-doc)))
 
 
@@ -97,18 +97,18 @@
 ;    (.setLoopNo text *content-loop-no*)                                          
 ;    (.saveText *doc-mapper* text-doc text user)))
 
-(defmacro do-test [ns-name test-name]
-  `(binding [test-ns-hook #(~test-name)]
-     (run-tests ~ns-name)))
 
-
-(defmacro def-test-ns-hook []
-  (let [syms (for [[s v] (ns-publics *ns*) :when (and (.isBound v) (fn? @v) (:test ^v))] `(~s))]
-    `(defn test-ns-hook [] ~@syms)))
-
-;(def-test-ns-hook)
-
-(defn test-ns-hook []
-  (println "Test ns hook")
-  (test-copy-document))
+;(defmacro do-test [ns-name test-name]
+;  `(binding [test-ns-hook #(~test-name)]
+;     (run-tests ~ns-name)))
+;
+;
+;(defmacro def-test-ns-hook []
+;  (let [syms (for [[s v] (ns-publics *ns*) :when (and (.isBound v) (fn? @v) (:test ^v))] `(~s))]
+;    `(defn test-ns-hook [] ~@syms)))
+;
+;
+;(defn test-ns-hook []
+;  (println "Test ns hook")
+;  (test-copy-document))
   

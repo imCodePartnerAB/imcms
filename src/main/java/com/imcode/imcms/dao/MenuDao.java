@@ -62,6 +62,11 @@ public class MenuDao extends HibernateTemplate {
 
     @Transactional
 	public void saveMenu(MenuDomainObject menu) {
+        for (Map.Entry<Integer, MenuItemDomainObject> itemEntry: menu.getItemsMap().entrySet()) {
+            MenuItemDomainObject item = itemEntry.getValue();
+            item.setTreeSortIndex(item.getTreeSortKey().toString());
+        }
+        
 	    saveOrUpdate(menu);			
 	}
 	

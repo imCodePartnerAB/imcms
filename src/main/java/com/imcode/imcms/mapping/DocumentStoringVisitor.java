@@ -6,6 +6,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -295,9 +296,15 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         return extensions;
     }
 
-    protected void updateTextDocumentMenus(final TextDocumentDomainObject textDocument, final TextDocumentDomainObject oldTextDocument, final UserDomainObject savingUser) {
+    public void updateTextDocumentMenus(final TextDocumentDomainObject textDocument, final TextDocumentDomainObject oldTextDocument, final UserDomainObject savingUser) {
     	MenuDao dao = (MenuDao)services.getSpringBean("menuDao");
 
     	dao.saveDocumentMenus(textDocument.getId(), textDocument.getVersion().getNo(), textDocument.getMenus());
+    }
+
+    public void updateTextDocumentMenu(final TextDocumentDomainObject textDocument, final MenuDomainObject menu, final UserDomainObject savingUser) {
+    	MenuDao dao = (MenuDao)services.getSpringBean("menuDao");
+
+    	dao.saveMenu(menu);
     }
 }

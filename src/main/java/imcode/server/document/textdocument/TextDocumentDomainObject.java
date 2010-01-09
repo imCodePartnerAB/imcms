@@ -205,13 +205,16 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	
     	if (oldMenu != null) {
     		newMenu.setId(oldMenu.getId());
+            newMenu.setSortOrder(oldMenu.getSortOrder());
     	} else {
     		newMenu.setId(null);
     	}
     	
     	newMenu.setIndex(menuIndex);
+        newMenu.setMetaId(getMeta().getId());
+        newMenu.setDocVersionNo(getVersion().getNo());
     	    	
-        menus.put(menuIndex, menu);
+        menus.put(menuIndex, newMenu);
     }
 
 

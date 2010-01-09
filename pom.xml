@@ -83,8 +83,8 @@
       <version>5.10</version>
       <classifier>jdk15</classifier>
       <scope>test</scope>
-    </dependency>      
-         
+    </dependency>
+ 
              
     <!-- REQUIRED -->
 
@@ -251,13 +251,13 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>clojure</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
     </dependency>
 
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>clojure-contrib</artifactId>
-      <version>1.0.0</version> 
+      <version>1.1.0-new-SNAPSHOT</version> 
     </dependency>
 
       <!--
@@ -536,7 +536,19 @@
         <updatePolicy>never</updatePolicy>
       </releases>        
     </repository>
-  </repositories>  
+
+    <repository>
+      <id>clojure</id>
+      <url>http://build.clojure.org/snapshots</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+    </repository>      
+  </repositories>
+
+
+    
+
       
   <build>
    <resources>
