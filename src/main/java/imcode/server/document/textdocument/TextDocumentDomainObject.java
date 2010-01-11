@@ -199,7 +199,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
     
 
-    public void setMenu( int menuIndex, MenuDomainObject menu ) {
+    public MenuDomainObject setMenu( int menuIndex, MenuDomainObject menu ) {
     	MenuDomainObject newMenu = menu.clone();
     	MenuDomainObject oldMenu = menus.get(menuIndex);
     	
@@ -215,6 +215,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         newMenu.setDocVersionNo(getVersion().getNo());
     	    	
         menus.put(menuIndex, newMenu);
+
+        return newMenu;
     }
 
 

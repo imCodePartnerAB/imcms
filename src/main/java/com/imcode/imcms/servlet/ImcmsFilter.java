@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.api.DocumentRequestInfo;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.ImcmsConstants;
@@ -35,7 +36,6 @@ import org.apache.log4j.NDC;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.RequestInfo;
 import com.imcode.imcms.api.ContentManagementSystem;
 
 /**
@@ -103,18 +103,18 @@ public class ImcmsFilter implements Filter, ImcmsListener {
             ResourceBundle resourceBundle = Utility.getResourceBundle(request);
             Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
-            RequestInfo requestInfo = (RequestInfo)session.getAttribute(ImcmsConstants.SESSION_ATTR__REQUEST_INFO);
+            DocumentRequestInfo documentRequestInfo = (DocumentRequestInfo)session.getAttribute(ImcmsConstants.SESSION_ATTR__REQUEST_INFO);
             
-            if (requestInfo == null) {
-                requestInfo = new RequestInfo();
-                session.setAttribute(ImcmsConstants.SESSION_ATTR__REQUEST_INFO, requestInfo);
+            if (documentRequestInfo == null) {
+                documentRequestInfo = new DocumentRequestInfo();
+                session.setAttribute(ImcmsConstants.SESSION_ATTR__REQUEST_INFO, documentRequestInfo);
             }
 
-            requestInfo.setUser(user);
-            updateRequestInfoLanguage(request, requestInfo);
-            updateRequestInfoVersionNoAndMode(request, requestInfo);
+            documentRequestInfo.setUser(user);
+            updateRequestInfoLanguage(request, documentRequestInfo);
+            updateRequestInfoVersionNoAndMode(request, documentRequestInfo);
             
-            Imcms.setRequestInfo(requestInfo);
+            Imcms.setRequestInfo(documentRequestInfo);
 
             ContentManagementSystem cms = Utility.initRequestWithApi(request, user);
 
@@ -243,13 +243,13 @@ public class ImcmsFilter implements Filter, ImcmsListener {
      * Updates user's language.
      * 
      * @param request servlet request
-     * @param requestInfo requestInfo
+     * @param documentRequestInfo documentRequestInfo
      * 
      * @throws ServletException in case of an error.
      */
-    private void updateRequestInfoLanguage(HttpServletRequest request, RequestInfo requestInfo)
+    private void updateRequestInfoLanguage(HttpServletRequest request, DocumentRequestInfo documentRequestInfo)
     throws ServletException {
-        I18nLanguage language = requestInfo.getLanguage();
+        I18nLanguage language = documentRequestInfo.getLanguage();
         String languageCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__LANGUAGE);
 
     	if (languageCode != null) {
@@ -274,7 +274,7 @@ public class ImcmsFilter implements Filter, ImcmsListener {
             language = Imcms.getI18nSupport().getDefaultLanguage();
         }
         
-        requestInfo.setLanguage(language);
+        documentRequestInfo.setLanguage(language);
     }
 
 
@@ -282,11 +282,11 @@ public class ImcmsFilter implements Filter, ImcmsListener {
      * Updates user's main document version to show and and version mode.
      *
      * @param request servlet request
-     * @param requestInfo requestInfo
+     * @param documentRequestInfo documentRequestInfo
      */
     // TODO: Refactor, Optimize, Add security check
     // Requre meta_id - 
-    private void updateRequestInfoVersionNoAndMode(HttpServletRequest request, RequestInfo requestInfo) {
+    private void updateRequestInfoVersionNoAndMode(HttpServletRequest request, DocumentRequestInfo documentRequestInfo) {
         String docIdStr = request.getParameter("meta_id");
         String docVersionNoStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_NO);
 
@@ -295,30 +295,30 @@ public class ImcmsFilter implements Filter, ImcmsListener {
                 Integer docId = Integer.parseInt(docIdStr);
                 Integer docVersionNo = Integer.parseInt(docVersionNoStr);
 
-                requestInfo.setCustomDoc(new RequestInfo.CustomDoc(docId, docVersionNo));
+                documentRequestInfo.setCustomDoc(new DocumentRequestInfo.CustomDoc(docId, docVersionNo));
             } catch (NumberFormatException e) {
                 // TODO: do not thorw, pass
                 throw new AssertionError(e);
             }
         } else {
-            requestInfo.setCustomDoc(null);
+            documentRequestInfo.setCustomDoc(null);
         }
 
-        RequestInfo.DocVersionMode docVersionMode = requestInfo.getDocVersionMode();
+        DocumentRequestInfo.DocVersionMode docVersionMode = documentRequestInfo.getDocVersionMode();
 
         String docVersionModeStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_MODE);
 
         if (docVersionModeStr != null) {
             docVersionMode = docVersionModeStr.toUpperCase().charAt(0) == 'W'
-                    ? RequestInfo.DocVersionMode.WORKING
-                    : RequestInfo.DocVersionMode.DEFAULT;
+                    ? DocumentRequestInfo.DocVersionMode.WORKING
+                    : DocumentRequestInfo.DocVersionMode.DEFAULT;
         }
 
         if (docVersionMode == null) {
-            docVersionMode = RequestInfo.DocVersionMode.DEFAULT;        
+            docVersionMode = DocumentRequestInfo.DocVersionMode.DEFAULT;
         }
 
-        requestInfo.setDocVersionMode(docVersionMode);
+        documentRequestInfo.setDocVersionMode(docVersionMode);
     }
 
     

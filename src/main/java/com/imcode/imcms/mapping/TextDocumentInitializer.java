@@ -105,7 +105,7 @@ public class TextDocumentInitializer {
     	for (MenuDomainObject menu: menus) {
     		initMenuItems(menu, documentGetter);
 	    	
-	    	menusMap.put(menu.getIndex(), menu);
+	    	menusMap.put(menu.getNo(), menu);
     	}
     	
     	document.setMenus(menusMap);

@@ -35,7 +35,7 @@ import com.imcode.imcms.dao.LanguageDao;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.I18nException;
 import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.api.RequestInfo;
+import com.imcode.imcms.api.DocumentRequestInfo;
 import com.imcode.imcms.servlet.ImcmsMode;
 import com.imcode.imcms.servlet.ImcmsListener;
 
@@ -77,7 +77,7 @@ public class Imcms {
 
 
 	/** Request info. */
-	private static ThreadLocal<RequestInfo> requestInfos;
+	private static ThreadLocal<DocumentRequestInfo> requestInfos;
 
     private static I18nSupport i18nSupport;
 
@@ -107,7 +107,7 @@ public class Imcms {
             File configPath = new File(path, prefsConfigPath);
             Prefs.setConfigPath(configPath);
 
-            requestInfos = new ThreadLocal<RequestInfo>();
+            requestInfos = new ThreadLocal<DocumentRequestInfo>();
 
             if (upgradeDatabaseSchemaOnStart) {
                 upgradeDatabaseSchema();
@@ -264,11 +264,11 @@ public class Imcms {
         }
     }
 
-    public static void setRequestInfo(RequestInfo requestInfo) {
-    	requestInfos.set(requestInfo);
+    public static void setRequestInfo(DocumentRequestInfo documentRequestInfo) {
+    	requestInfos.set(documentRequestInfo);
     }
 
-    public static RequestInfo getRequestInfo() {
+    public static DocumentRequestInfo getRequestInfo() {
     	return requestInfos.get();
     }
 

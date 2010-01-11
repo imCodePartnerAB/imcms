@@ -1,5 +1,6 @@
-(ns com.imcode.imcms.factory
+(ns
   #^{:doc "Frequently used objects's factory."} 
+  com.imcode.imcms.factory
   (:import
     (imcode.server.document.textdocument TextDomainObject)
     (com.imcode.imcms.api ContentLoop Content)))

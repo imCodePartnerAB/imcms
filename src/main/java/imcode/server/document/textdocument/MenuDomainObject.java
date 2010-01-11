@@ -167,6 +167,10 @@ public class MenuDomainObject implements Cloneable, Serializable {
     }
 
     public void addMenuItemUnchecked(MenuItemDomainObject menuItem) {
+        if ( null == menuItem.getSortKey() ) {
+            generateSortKey(menuItem);
+        }
+        
         menuItems.put( new Integer(menuItem.getDocumentId()), menuItem );
     }
 
@@ -239,20 +243,34 @@ public class MenuDomainObject implements Cloneable, Serializable {
         return new HashCodeBuilder().append(sortOrder).append(menuItems).toHashCode() ;
     }
 
+    @Deprecated
 	public Integer getIndex() {
 		return index;
 	}
 
+    @Deprecated
 	public void setIndex(Integer index) {
 		this.index = index;
 	}
 
+    @Deprecated
 	public Integer getMetaId() {
 		return metaId;
 	}
 
+    @Deprecated
 	public void setMetaId(Integer metaId) {
 		this.metaId = metaId;
+	}
+
+    @Deprecated
+	public Integer getDocId() {
+		return getMetaId();
+	}
+
+    @Deprecated
+	public void setDocId(Integer docId) {
+		setMetaId(docId);
 	}
 
 	public Map<Integer, MenuItemDomainObject> getItemsMap() {
@@ -266,4 +284,13 @@ public class MenuDomainObject implements Cloneable, Serializable {
     public void setDocVersionNo(Integer docVersionNo) {
         this.docVersionNo = docVersionNo;
     }
+
+    public Integer getNo() {
+        return getIndex();
+    }
+
+    public void setNo(Integer no) {
+        setIndex(no);
+    }
+
 }

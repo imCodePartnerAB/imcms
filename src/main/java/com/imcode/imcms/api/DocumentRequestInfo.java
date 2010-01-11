@@ -3,12 +3,12 @@ package com.imcode.imcms.api;
 import imcode.server.user.UserDomainObject;
 
 /**
- * Request info bound to thread local.
+ * Document request info bound to thread local.
  *
  * @see imcode.server.Imcms
  * @see com.imcode.imcms.servlet.ImcmsFilter
  */
-public class RequestInfo {
+public class DocumentRequestInfo {
 
     public enum DocVersionMode {
         WORKING,

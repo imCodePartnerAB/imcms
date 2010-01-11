@@ -189,17 +189,26 @@ public class DocumentMapper implements DocumentGetter {
         return new GetterDocumentReference(childId);
     }
 
-    public void saveNewDocument(DocumentDomainObject document, UserDomainObject user, boolean copying)
+    /**
+     *
+     * @param document
+     * @param user
+     * @param copying
+     * @return saved document id.
+     * @throws DocumentSaveException
+     * @throws NoPermissionToAddDocumentToMenuException
+     */
+    public Integer saveNewDocument(DocumentDomainObject document, UserDomainObject user, boolean copying)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
-        documentSaver.saveNewDocument(user, document, copying);
+        return documentSaver.saveNewDocument(user, document, copying);
     }
 
 
-    public void saveNewDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user, boolean copying)
+    public Integer saveNewDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user, boolean copying)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
-        documentSaver.saveNewDocument(user, document, labels, copying);
+        return documentSaver.saveNewDocument(user, document, labels, copying);
     }
 
     /**
@@ -483,7 +492,8 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentDomainObject copyDocument(DocumentDomainObject document, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        String copyHeadlineSuffix = imcmsServices.getAdminTemplate(COPY_HEADLINE_SUFFIX_TEMPLATE, user, null);
+        // TODO: Does not work
+        //String copyHeadlineSuffix = imcmsServices.getAdminTemplate(COPY_HEADLINE_SUFFIX_TEMPLATE, user, null);
 
         Integer docId = document.getId();
         Integer docVersionNo = document.getVersion().getNo();
@@ -540,19 +550,19 @@ public class DocumentMapper implements DocumentGetter {
             return null;
         }
         
-        RequestInfo requestInfo = Imcms.getRequestInfo();
-        UserDomainObject user = requestInfo.getUser();
-        I18nLanguage language = requestInfo.getLanguage();
-        RequestInfo.DocVersionMode docVersionMode = requestInfo.getDocVersionMode();
+        DocumentRequestInfo documentRequestInfo = Imcms.getRequestInfo();
+        UserDomainObject user = documentRequestInfo.getUser();
+        I18nLanguage language = documentRequestInfo.getLanguage();
+        DocumentRequestInfo.DocVersionMode docVersionMode = documentRequestInfo.getDocVersionMode();
         
         if (user.isSuperAdmin()) {
-            RequestInfo.CustomDoc customDoc = requestInfo.getCustomDoc();
+            DocumentRequestInfo.CustomDoc customDoc = documentRequestInfo.getCustomDoc();
 
             if (customDoc != null && docId.equals(customDoc.id)) {
                 return getCustomDocument(docId, customDoc.versionNo, language);
             }
 
-            return docVersionMode == RequestInfo.DocVersionMode.WORKING
+            return docVersionMode == DocumentRequestInfo.DocVersionMode.WORKING
                 ? getWorkingDocument(docId, language)
                 : getDefaultDocument(docId, language);
         }
@@ -566,7 +576,7 @@ public class DocumentMapper implements DocumentGetter {
             }
         }
 
-        return docVersionMode == RequestInfo.DocVersionMode.WORKING
+        return docVersionMode == DocumentRequestInfo.DocVersionMode.WORKING
             ? getWorkingDocument(docId, language)
             : getDefaultDocument(docId, language);
     }

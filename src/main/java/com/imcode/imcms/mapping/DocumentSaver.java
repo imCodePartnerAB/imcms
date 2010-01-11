@@ -413,18 +413,21 @@ public class DocumentSaver {
         }
 
         DocumentDomainObject firstDoc = docs.get(0);
-        Integer savedDocId = saveNewDocument(user, firstDoc, labels, true);
+        Integer docId = saveNewDocument(user, firstDoc, labels, true);
 
         // save rest docs fields in case of a text document.
         int docsCount = docs.size();
         if (firstDoc.getDocumentTypeId() == DocumentTypeDomainObject.TEXT_ID && docsCount > 1) {
-            Integer docId = firstDoc.getId();
+            DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
+
             for (DocumentDomainObject doc: docs.subList(1, docsCount)) {
-                 doc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
+                doc.setId(docId);
+                visitor.updateTextDocumentTexts((TextDocumentDomainObject) doc, null, user);
+                visitor.updateTextDocumentImages((TextDocumentDomainObject) doc, null, user);
             }
         }
 
-        return savedDocId;
+        return docId;
     }
 
 

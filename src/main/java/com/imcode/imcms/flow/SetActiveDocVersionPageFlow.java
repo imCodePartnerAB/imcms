@@ -1,5 +1,6 @@
 package com.imcode.imcms.flow;
 
+import com.imcode.imcms.api.DocumentRequestInfo;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.server.Imcms;
@@ -9,8 +10,6 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.imcode.imcms.api.RequestInfo;
 
 // Experimental
 public class SetActiveDocVersionPageFlow extends DocumentPageFlow {
@@ -51,7 +50,7 @@ public class SetActiveDocVersionPageFlow extends DocumentPageFlow {
 	@Override
 	protected void dispatchToFirstPage(HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
 	    saveDocument( request );
-		Imcms.getRequestInfo().setDocVersionMode(RequestInfo.DocVersionMode.DEFAULT);
+		Imcms.getRequestInfo().setDocVersionMode(DocumentRequestInfo.DocVersionMode.DEFAULT);
     	//dispatchReturn( request, response );
 		request.getRequestDispatcher("/servlet/GetDoc").forward(request, response);
 	}
