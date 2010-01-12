@@ -6,10 +6,12 @@ import com.imcode.imcms.servlet.admin.AdminDoc;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.parser.ParserParameters;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.LifeCyclePhase;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -17,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
+import javax.servlet.jsp.PageContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -210,6 +213,22 @@ public class Html {
                 "<input type=\"radio\" name=\"" + StringEscapeUtils.escapeHtml( name ) + "\" value=\""
                 + StringEscapeUtils.escapeHtml( value ) + "\"" + ( selected ? " checked" : "" ) + ">";
 
+    }
+
+    public static boolean isAdminPanelVisible(PageContext pageContext) {
+        UserDomainObject user = Utility.getLoggedOnUser((HttpServletRequest) pageContext.getRequest());
+        HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+        ParserParameters parserParameters = ParserParameters.fromRequest(request);
+        if ( parserParameters.getFlags() >= 0 && parserParameters.isAdminButtonsVisible() ) {
+            TextDocumentDomainObject document = (TextDocumentDomainObject)
+                    parserParameters.getDocumentRequest().getDocument();
+            return ( null != document && ( user.canEdit( document ) ||
+                    user.isUserAdminAndCanEditAtLeastOneRole() ||
+                    user.canAccessAdminPages() ) );
+        }
+        else {
+            return false;
+        }
     }
 
     /**

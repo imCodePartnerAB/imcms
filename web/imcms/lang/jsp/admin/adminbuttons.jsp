@@ -47,7 +47,7 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 <script src="${contextPath}/imcms/jquery/jquery-1.3.2.js" type="text/javascript"></script>
 <script language="javascript">
 function adminMenuAction(contentId, query) {
-	$.get("${contextPath}/servlet/AdminDoc?template=demo_content&" + query, "", function(data) {
+	$.get("${contextPath}/servlet/AdminDoc?template=${requestScope.templateName}_content&" + query, "", function(data) {
 		$("#" + contentId).html(data);
 	});
 }

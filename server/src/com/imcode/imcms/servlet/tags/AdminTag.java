@@ -26,10 +26,8 @@ public class AdminTag extends TagSupport {
                 HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
                 String adminButtons = Html.getAdminButtons(user, document, request, response);
                 if ( null != document && ( user.canEdit( document ) || user.isUserAdminAndCanEditAtLeastOneRole() || user.canAccessAdminPages() ) ) {
-                    pageContext.getOut().print("<div style='background-color: lightblue; border: 1px solid navy; padding: 5px; margin: 0px;'>");
                     pageContext.getOut().print(adminButtons);
                     pageContext.getOut().print(TextDocumentParser.createChangeTemplateUi(parserParameters.isTemplateMode(), user, document, Imcms.getServices()));
-                    pageContext.getOut().print("</div>");
                 }    
             }
         } catch ( Exception e ) {

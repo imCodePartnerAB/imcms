@@ -28,6 +28,7 @@ LI { padding-bottom:5px; }
 </style>
 
 </head>
+<c:set var="templateName" value="demo" scope="request" />
 <body bgcolor="#f0f0ff" style="margin: 0px">
 <imcms:admin/>
 <div id="contentPane" style="overflow:auto">
@@ -47,25 +48,7 @@ LI { padding-bottom:5px; }
 		<td width="15">&nbsp;</td>
 
 		<td width="385" id="content">
-            <imcms:text no="1" label="Text (Rubrik)" pre='<div class="imcHeading">' post='</div>' />
-            <imcms:text no='2' label='<br>Text' post='<br><br>' />
-            <imcms:menu no='1' label='<br><br>Meny (punktlista)'>
-                <ul>
-                    <imcms:menuloop>
-                        <imcms:menuitem>
-                            <li style="color: green;"><imcms:menuitemlink><c:out value="${menuitem.document.headline}"/></imcms:menuitemlink></li>
-                        </imcms:menuitem>
-                        <imcms:menuitem>
-                            <imcms:menuitemhide>
-                                <li style="color: red;"><imcms:menuitemlink><c:out value="${menuitem.document.headline}"/></imcms:menuitemlink></li>
-                            </imcms:menuitemhide>
-                        </imcms:menuitem>
-                    </imcms:menuloop>
-                </ul>
-            </imcms:menu>
-            <imcms:include url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoContent" pre='<hr>' post='<hr>'/>
-            <imcms:image no='3' label='Bild' pre='<br><br>' post='<br>'/><br>
-            <imcms:include no='1' label='Dynamisk inkludering 1'/>
+           <jsp:include page="demo_content.jsp" />
         </td>
     
 		<td width="10">&nbsp;</td>
