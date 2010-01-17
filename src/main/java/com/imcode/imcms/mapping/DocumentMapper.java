@@ -59,10 +59,10 @@ public class DocumentMapper implements DocumentGetter {
     
     private NativeQueriesDao nativeQueriesDao;
     
-    /** TODO: remove. */
+    /** TODO: hide. */
     private DocumentLoader documentLoader;
     
-    /** Document loader. */
+    /** Document loader caching proxy. Intercepts calls to DocumentLoader. */
     private DocumentLoaderCachingProxy documentLoaderCachingProxy;
     
     /**
@@ -116,28 +116,35 @@ public class DocumentMapper implements DocumentGetter {
 //    public DocumentSaver getDocumentSaver() {
 //        return documentSaver ;
 //    }
-    
-    
 
-    public DocumentDomainObject createDocumentOfTypeFromParent(int documentTypeId, final DocumentDomainObject parent, UserDomainObject user) {
+
+    /**
+     * Creates new Document which inherits parent doc's meta.
+     *
+     * Document's data (labels, texts, images, urls, files, etc) is not inherited.
+     * 
+     * @param documentTypeId
+     * @param parentDoc
+     * @param user
+     * @return
+     */
+    public DocumentDomainObject createDocumentOfTypeFromParent(int documentTypeId, final DocumentDomainObject parentDoc, final UserDomainObject user) {
         DocumentDomainObject newDocument;
-        try {
-            if (DocumentTypeDomainObject.TEXT_ID == documentTypeId) {
-                newDocument = parent.clone();
-                TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject) newDocument;
-                newTextDocument.removeAllTexts();
-                newTextDocument.removeAllImages();
-                newTextDocument.removeAllIncludes();
-                newTextDocument.removeAllMenus();
-                newTextDocument.removeAllContentLoops();
-                setTemplateForNewTextDocument( newTextDocument, user, parent );
-            } else {
-                newDocument = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
-                newDocument.setAttributes(parent.getAttributes().clone());
-                newDocument.setMeta(parent.getMeta().clone());
-            }
-        } catch (CloneNotSupportedException e) {
-            throw new UnhandledException(e);
+
+        if (DocumentTypeDomainObject.TEXT_ID == documentTypeId) {
+            newDocument = parentDoc.clone();
+            TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject) newDocument;
+            newTextDocument.removeAllTexts();
+            newTextDocument.removeAllImages();
+            newTextDocument.removeAllIncludes();
+            newTextDocument.removeAllMenus();
+            newTextDocument.removeAllContentLoops();
+            setTemplateForNewTextDocument( newTextDocument, user, parentDoc );
+        } else {
+            newDocument = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
+            newDocument.setAttributes(parentDoc.getAttributes().clone());
+            newDocument.setMeta(parentDoc.getMeta().clone());
+            newDocument.setMeta(parentDoc.getMeta().clone());
         }
 
         newDocument.accept(new DocIdentityCleanerVisitor());
@@ -189,42 +196,62 @@ public class DocumentMapper implements DocumentGetter {
         return new GetterDocumentReference(childId);
     }
 
+    
     /**
-     *
+     * Saves new document.
+     * Document's meta might be a copy of an existing document.
+     * 
      * @param document
      * @param user
-     * @param copying
+     * @param copying controls how document's permissions are saved.
      * @return saved document id.
      * @throws DocumentSaveException
      * @throws NoPermissionToAddDocumentToMenuException
+     *
+     * @see #copyDocument(imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)
      */
-    public Integer saveNewDocument(DocumentDomainObject document, UserDomainObject user, boolean copying)
+    public Integer saveNewDocument(final DocumentDomainObject document, final UserDomainObject user, boolean copying)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
-        return documentSaver.saveNewDocument(user, document, copying);
+        Collection<DocumentLabels> labelsColl = new LinkedList<DocumentLabels>();
+
+        for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
+            DocumentLabels labelsClone = document.getLabels().clone();
+            labelsClone.setLanguage(language);
+
+            labelsColl.add(labelsClone);
+        }
+
+        return saveNewDocument(document, labelsColl, user, copying);
     }
 
-
-    public Integer saveNewDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user, boolean copying)
+    /**
+     * Saves new document.
+     * Document's meta might be a copy of an existing document.
+     * 
+     * @param document
+     * @param labelsColl 
+     * @param user
+     * @param copying
+     * @return
+     * @throws DocumentSaveException
+     * @throws NoPermissionToAddDocumentToMenuException
+     * 
+     * @since 6.0
+     */
+    public Integer saveNewDocument(DocumentDomainObject document, Collection<DocumentLabels> labelsColl, UserDomainObject user, boolean copying)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
-        return documentSaver.saveNewDocument(user, document, labels, copying);
+        return documentSaver.saveNewDocument(user, document, labelsColl, copying);
     }
 
     /**
      * Updates existing document.
      */
-    public void saveDocument(DocumentDomainObject document,
-                             final UserDomainObject user) throws DocumentSaveException , NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException
-    {
-
-    	//DocumentDomainObject oldDocument =
-    	//	getDocument(document.getId(), document.getVersion().getNo());
-    	DocumentDomainObject oldDocument =
-    		getDocument(document.getId());
-
+    public void saveDocument(DocumentDomainObject document, final UserDomainObject user)
+            throws DocumentSaveException , NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
     	try {
-    		documentSaver.updateDocument(document, oldDocument, user);
+    		documentSaver.updateDocument(document, document, user);
     	} finally {
     		invalidateDocument(document);
     	}
@@ -236,7 +263,6 @@ public class DocumentMapper implements DocumentGetter {
      */
     public void saveDocumentMenu(TextDocumentDomainObject doc, MenuDomainObject menu, UserDomainObject user)
             throws DocumentSaveException , NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
-
         try {
     		documentSaver.saveMenu(doc, menu, user);
     	} finally {
@@ -246,7 +272,7 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * Saves document info - the data edited on InformationPage.
+     * Updates an existing document's info - the data edited on InformationPage.
      * 
      * @param document working document in default language. 
      * @param labels labels for every language.
@@ -481,44 +507,61 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     /**
-     * Creates new working document by coping source document.
-     *  
-     * @param document source document
+     * Creates new working document based on existing document.
+     *
+     * @param document existing doc.
      * @param user
      * @return
      * @throws NoPermissionToAddDocumentToMenuException
      * @throws DocumentSaveException
      */
-    public DocumentDomainObject copyDocument(DocumentDomainObject document, UserDomainObject user)
+    public DocumentDomainObject copyDocument(final DocumentDomainObject document, final UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+
+        Integer docId = document.getId();
+        Integer docVersionNo = document.getVersion().getNo();
+
+        return copyDocument(docId, docVersionNo, user);
+    }
+
+
+    /**
+     * @return copied document in default language.
+     * 
+     * @since 6.0
+     */
+    public DocumentDomainObject copyDocument(final Integer docId, final Integer docVersionNo, final UserDomainObject user)
+        throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         // TODO: Does not work
         //String copyHeadlineSuffix = imcmsServices.getAdminTemplate(COPY_HEADLINE_SUFFIX_TEMPLATE, user, null);
 
-        Integer docId = document.getId();
-        Integer docVersionNo = document.getVersion().getNo();
-        List<DocumentDomainObject> sourceDocs = new LinkedList<DocumentDomainObject>();
-        
+        Map<I18nLanguage, DocumentDomainObject> docMap = new HashMap<I18nLanguage, DocumentDomainObject>();
+
         for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
             DocumentDomainObject doc =  documentLoaderCachingProxy.getCustomDocument(docId, docVersionNo, language);
             if (doc != null) {
-                // This should apply only to one doc since we need to alter meta which is shared by all docs with the same version.
                 doc.setAlias(null);
                 makeDocumentLookNew(doc, user);
-                
+
                 doc.accept(new DocIdentityCleanerVisitor());
-                
-                sourceDocs.add(doc);
+
+                docMap.put(language, doc);
             }
         }
 
-        docId = documentSaver.copyDocument(sourceDocs, user);
+        if (docMap.isEmpty()) {
+            throw new IllegalArgumentException(String.format(
+                    "Unable to copy. Source document does not exists. DocId: %s, doc version no: %s.",
+                    docId, docVersionNo));
+        }
 
-        DocumentDomainObject defaultWorkingDoc = getWorkingDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
+        Integer docCopyId = documentSaver.copyDocument(docMap, user);
+        // TODO: index saved doc.
 
-        // TODO: index workingDocs
+        DocumentDomainObject defaultWorkingDoc = getWorkingDocument(docCopyId, Imcms.getI18nSupport().getDefaultLanguage());
 
-        return defaultWorkingDoc;
+        return defaultWorkingDoc;        
     }
 
     public List<DocumentDomainObject> getDocumentsWithPermissionsForRole(final RoleDomainObject role) {
@@ -648,7 +691,6 @@ public class DocumentMapper implements DocumentGetter {
      */
     public synchronized void saveText(TextDocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
     	try {
-    		documentSaver.saveText(document, text, user);
 	    } finally {
 	        invalidateDocument(document);
 	    }    	
@@ -669,6 +711,22 @@ public class DocumentMapper implements DocumentGetter {
 	    }
     }
 
+
+    /**
+     * Saves images and non-saved enclosing content loop if any.
+     *
+     * Non saved content loop might be added to the document by ContentLoopTag2.
+     *
+     * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
+     */
+    public synchronized void saveImage(TextDocumentDomainObject document, ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    	try {
+    		documentSaver.saveImage(document, image, user);
+	    } finally {
+	        invalidateDocument(document);
+	    }
+    }
+
     public void setClock(Clock clock) {
         this.clock = clock;
     }
@@ -678,9 +736,22 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
-        return documentLoaderCachingProxy.getWorkingDocuments(documentIds, Imcms.getI18nSupport().getDefaultLanguage()) ;
+        return getWorkingDocuments(documentIds);
+//        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
+//
+//        for (Integer docId: documentIds) {
+//            DocumentDomainObject doc = getDocument(docId);
+//            if (doc != null) {
+//                docs.add(doc);
+//            }
+//        }
+//
+//        return docs;
     }
 
+    public List<DocumentDomainObject> getWorkingDocuments(Collection<Integer> documentIds) {
+        return documentLoaderCachingProxy.getWorkingDocuments(documentIds, Imcms.getI18nSupport().getDefaultLanguage());
+    }
 
     private void removeNonInheritedCategories(DocumentDomainObject document) {
         Set<CategoryDomainObject> categories = getCategoryMapper().getCategories(document.getCategoryIds());

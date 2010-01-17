@@ -4,13 +4,12 @@ import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.I18nLanguage;
 import imcode.server.document.DocumentReference;
-import imcode.server.document.textdocument.MenuDomainObject;
-import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.textdocument.TreeSortKeyDomainObject;
+import imcode.server.document.textdocument.*;
+
+import java.util.Collection;
 
 /**
- * Frequently used objects factory.
+ * Frequently used objects' factory.
  */
 public class Factory {
 
@@ -21,11 +20,8 @@ public class Factory {
      * @param no
      * @return content loop with single content.
      */
-    public static ContentLoop createLoop(Integer docId, Integer docVersionNo, Integer no) {
-        ContentLoop loop = new ContentLoop();
-        loop.setDocId(docId);
-        loop.setDocVersionNo(docVersionNo);
-        loop.setNo(no);
+    public static ContentLoop createContentLoop(Integer docId, Integer docVersionNo, Integer no) {
+        ContentLoop loop = newInstance(ContentLoop.class, docId, docVersionNo, no);
 
         Content content = new Content();
 
@@ -62,15 +58,21 @@ public class Factory {
      * @return
      */
     public static TextDomainObject createText(Integer docId, Integer docVersionNo, I18nLanguage language, Integer no, Integer contentIndex) {
-        TextDomainObject text = new TextDomainObject();
-
-        text.setDocId(docId);
-        text.setDocVersionNo(docVersionNo);
-        text.setLanguage(language);
-        text.setNo(no);
+        TextDomainObject text = newInstance(TextDomainObject.class, docId, docVersionNo, language, no);
         text.setContentIndex(contentIndex);
 
         return text;
+    }
+
+    public static ImageDomainObject createImage(Integer docId, Integer docVersionNo, I18nLanguage language, Integer no) {
+        return createImage(docId, docVersionNo, language, null);
+    }
+
+    public static ImageDomainObject createImage(Integer docId, Integer docVersionNo, I18nLanguage language, Integer no, Integer contentIndex) {
+        ImageDomainObject image = newInstance(ImageDomainObject.class, docId, docVersionNo, language, no);
+        image.setContentIndex(contentIndex);
+
+        return image;
     }
 
     /**
@@ -82,10 +84,7 @@ public class Factory {
      * @return
      */
     public static MenuDomainObject createMenu(Integer docId, Integer docVersionNo, Integer no, DocumentReference docRef) {
-        MenuDomainObject menu = new MenuDomainObject();
-        menu.setDocId(docId);
-        menu.setDocVersionNo(docVersionNo);
-        menu.setNo(no);
+        MenuDomainObject menu = newInstance(MenuDomainObject.class, docId, docVersionNo, no);
 
         MenuItemDomainObject menuItem = new MenuItemDomainObject();
         menuItem.setSortKey(0);
@@ -96,5 +95,63 @@ public class Factory {
         menu.addMenuItemUnchecked(menuItem);
 
         return menu;
+    }
+
+
+    public static TextDomainObject createNextText(TextDocumentDomainObject doc) {
+        return createNextText(doc, null);
+    }
+    
+    public static TextDomainObject createNextText(TextDocumentDomainObject doc, Integer contentIndex) {
+        return createText(doc.getId(), doc.getVersion().getNo(), doc.getLanguage(), getNextItemNo(doc.getTexts().values()), contentIndex);
+    }
+
+    public static ImageDomainObject createNextImage(TextDocumentDomainObject doc) {
+        return createNextImage(doc, null);
+    }
+
+    public static ImageDomainObject createNextImage(TextDocumentDomainObject doc, Integer contentIndex) {
+        return createImage(doc.getId(), doc.getVersion().getNo(), doc.getLanguage(), getNextItemNo(doc.getImages().values()), contentIndex);
+    }
+
+    public static MenuDomainObject createNextMenu(TextDocumentDomainObject doc, DocumentReference docRef) {
+        return createMenu(doc.getId(), doc.getVersion().getNo(), getNextItemNo(doc.getMenus().values()), docRef);
+    }
+
+    public static ContentLoop createNextContentLoop(TextDocumentDomainObject doc) {
+        return createContentLoop(doc.getId(), doc.getVersion().getNo(), getNextItemNo(doc.getContentLoops().values()));
+    }
+
+    public static Integer getNextItemNo(Collection<? extends DocItem> items) {
+        int no = 0;
+
+        for (DocItem item: items) {
+            no = Math.max(no, item.getNo());
+        }
+
+        return no + 1;
+    }
+
+
+    public static <T extends DocItem & DocI18nItem> T newInstance(Class<T> clazz, Integer docId, Integer docVersionNo, I18nLanguage language, Integer no) throws RuntimeException {
+        T t = newInstance(clazz, docId, docVersionNo, no);
+
+        t.setLanguage(language);
+
+        return t;
+    }
+    
+    public static <T extends DocItem> T newInstance(Class<T> clazz, Integer docId, Integer docVersionNo, Integer no) throws RuntimeException {
+        try {
+            T t = clazz.newInstance();
+
+            t.setDocId(docId);
+            t.setDocVersionNo(docVersionNo);
+            t.setNo(no);
+
+            return t;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

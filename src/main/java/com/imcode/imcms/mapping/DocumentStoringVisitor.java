@@ -36,12 +36,12 @@ import com.imcode.imcms.mapping.orm.Include;
 import com.imcode.imcms.mapping.orm.TemplateNames;
 
 /**
- * Not a public API. Must not be used directly.
+ * This class is not a part of public API. It's methods must not be called directly.
  *
  * @see com.imcode.imcms.mapping.DocumentSaver
  */
 public class DocumentStoringVisitor extends DocumentVisitor {
-	
+
     protected ImcmsServices services;
 
     private static final int FILE_BUFFER_LENGTH = 2048;
@@ -111,6 +111,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         Integer docVersionNo = textDocument.getVersion().getNo();
 
         textDao.deleteTexts(docId, docVersionNo);
+        textDao.flush();
 
         for (TextDomainObject text: textDocument.getTexts().values()) {
             saveTextDocumentText(textDocument, text, user);
@@ -120,9 +121,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         for (TextDomainObject text: textDocument.getLoopTexts().values()) {
             saveTextDocumentText(textDocument, text, user);
         }        
-    } 
-    
-    // must be run inside transaction
+    }
+
+    /**
+     *
+     * @param textDocument
+     * @param oldTextDocument
+     * @param user
+     */
     public void updateTextDocumentContentLoops(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ContentLoopDao dao = (ContentLoopDao)services.getSpringBean("contentLoopDao");
         Integer metaId = textDocument.getMeta().getId();
@@ -131,10 +137,17 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         
         // delete all loops for meta and version
         dao.deleteLoops(metaId, documentVersionNumber);
+        dao.flush();
         
         for (ContentLoop loop: textDocument.getContentLoops().values()) {
+            loop.setId(null);
         	loop.setDocId(metaId);
         	loop.setDocVersionNo(documentVersion);
+
+            for (Content content: loop.getContents()) {
+                content.setId(null);
+                content.setLoopId(null);
+            }
         	
         	dao.saveContentLoop(loop);
         }  	
@@ -170,13 +183,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     /**
      * Saves text document's image.
      */
-    // must run inside transaction
+    // must be executed within transaction
     public void saveTextDocumentImage(TextDocumentDomainObject doc, ImageDomainObject image, UserDomainObject user) {
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
      
         image.setDocId(doc.getId());
         image.setDocVersionNo(doc.getVersion().getNo());
-
 
         image.setImageUrl(image.getSource().toStorageString());
         image.setType(image.getSource().getTypeId());
@@ -186,13 +198,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
 
-
+    // must be executed within transaction
     void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
         Integer docId = textDocument.getMeta().getId();
         Integer docVersionNo = textDocument.getVersion().getNo();
 
         imageDao.deleteImages(docId, docVersionNo);
+        imageDao.flush();
 
         for (ImageDomainObject image: textDocument.getImages().values()) {
             saveTextDocumentImage(textDocument, image, user);
@@ -205,27 +218,32 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
     
     
-    // runs inside transaction
-    void updateTextDocumentIncludes(TextDocumentDomainObject textDocument) {
+    // must be executed within transaction
+    public void updateTextDocumentIncludes(TextDocumentDomainObject doc) {
     	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
     	
     	Set<Include> includes = new HashSet<Include>();
-    	Integer documentId = textDocument.getMeta().getId();
+    	Integer docId = doc.getMeta().getId();
     	
-    	for (Map.Entry<Integer, Integer> entry: textDocument.getIncludesMap().entrySet()) {
+    	for (Map.Entry<Integer, Integer> entry: doc.getIncludesMap().entrySet()) {
     		Include include = new Include();
-    		include.setMetaId(documentId);
+            include.setId(null);
+    		include.setMetaId(docId);
     		include.setIndex(entry.getKey());
     		include.setIncludedDocumentId(entry.getValue());
     		
     		includes.add(include);
     	}
-    	
-    	dao.saveIncludes(documentId, includes);
+
+        if (docId != null) {
+            dao.deleteIncludes(docId, doc.getVersion().getNo());
+        }
+        
+    	dao.saveIncludes(docId, includes);
     }
     
-    // runs inside transaction
-    void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
+    // must be executed within transaction
+    public void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
     	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
     	
     	TemplateNames templateNames = textDocument.getTemplateNames();

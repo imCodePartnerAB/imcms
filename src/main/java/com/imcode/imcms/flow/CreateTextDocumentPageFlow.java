@@ -50,17 +50,4 @@ public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
 
     protected void dispatchOkFromEditPage( HttpServletRequest request, HttpServletResponse response ) throws IOException {
     }
-
-    @Override
-    protected synchronized void saveDocument( HttpServletRequest request ) {
-        try {
-            saveDocumentCommand.saveDocument( getDocument(), getLabels(), Utility.getLoggedOnUser( request ) );
-        } catch ( NoPermissionToEditDocumentException e ) {
-            throw new ShouldHaveCheckedPermissionsEarlierException(e);
-        } catch ( NoPermissionToAddDocumentToMenuException e ) {
-            throw new ConcurrentDocumentModificationException(e);
-        } catch (DocumentSaveException e) {
-            throw new UnhandledException(e);
-        }
-    }
 }

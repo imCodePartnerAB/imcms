@@ -76,9 +76,9 @@ public class MenuDao extends HibernateTemplate {
 		for (Map.Entry<Integer, MenuDomainObject> entry: menusMap.entrySet()) {
 			MenuDomainObject menu = entry.getValue();
 			
-			menu.setMetaId(docId);
+			menu.setDocId(docId);
             menu.setDocVersionNo(docVersionNo);
-			menu.setIndex(entry.getKey());
+			menu.setNo(entry.getKey());
 			
 			for (Map.Entry<Integer, MenuItemDomainObject> itemEntry: menu.getItemsMap().entrySet()) {
 				MenuItemDomainObject item = itemEntry.getValue();

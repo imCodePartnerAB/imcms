@@ -66,7 +66,7 @@ public class TextDao extends HibernateTemplate {
 			.setParameter("modifiedDt", new Date())
 			.setParameter("userId", user.getId())
 			.setParameter("languageId", text.getLanguage().getId())
-            .setParameter("loopNo", text.getLoopNo())
+            .setParameter("loopNo", text.getContentLoopNo())
             .setParameter("loopContentIndex", text.getContentIndex()).executeUpdate();
 	}
 
@@ -141,10 +141,10 @@ public class TextDao extends HibernateTemplate {
 		int i = 0;
 		for (DocumentVersion version: versions) {
 			if (i++ != 0) versionString.append(",");
-			
+
 			versionString.append(version.getNo().toString());
 		}
-				
+
 		return versionString.toString();
 	}
 

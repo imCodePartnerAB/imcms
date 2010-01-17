@@ -36,10 +36,9 @@ pageContext.setAttribute("isSingleContent", isSingleContent);
         <c:if test="${!isSingleContent && !isFirstContent}">
         <td bgcolor="RED">
           <form:form action="${pageContext.servletContext.contextPath}/newadmin/contentloop" method="POST">
-            <input type="hidden" name="metaId" value="${contentLoop.metaId}"/>
-            <input type="hidden" name="loopIndex" value="${contentLoop.index}"/>
-            <input type="hidden" name="loopBaseIndex" value="${contentLoop.baseIndex}"/>
-            <input type="hidden" name="contentIndex" value="${content.sequenceIndex}"/>
+            <input type="hidden" name="docId" value="${contentLoop.docId}"/>
+            <input type="hidden" name="no" value="${contentLoop.no}"/>
+            <input type="hidden" name="contentIndex" value="${content.index}"/>
             <input type="hidden" name="flags" value="${flags}"/>
             <input type="hidden" name="cmd" value="<%=ContentLoopController.Command.MOVE_UP.ordinal()%>"/>
             <input type="submit" value="Move up"/>
@@ -50,10 +49,9 @@ pageContext.setAttribute("isSingleContent", isSingleContent);
         <c:if test="${!isSingleContent && !isLastContent}">
         <td bgcolor="RED">
           <form:form action="${pageContext.servletContext.contextPath}/newadmin/contentloop" method="POST">
-            <input type="hidden" name="metaId" value="${contentLoop.metaId}"/>
-            <input type="hidden" name="loopIndex" value="${contentLoop.index}"/>
-            <input type="hidden" name="loopBaseIndex" value="${contentLoop.baseIndex}"/>
-            <input type="hidden" name="contentIndex" value="${content.sequenceIndex}"/>
+            <input type="hidden" name="docId" value="${contentLoop.docId}"/>
+            <input type="hidden" name="no" value="${contentLoop.no}"/>
+            <input type="hidden" name="contentIndex" value="${content.index}"/>
             <input type="hidden" name="flags" value="${flags}"/>
             <input type="hidden" name="cmd" value="<%=ContentLoopController.Command.MOVE_DOWN.ordinal()%>"/>
             <input type="submit" value="Move down"/>
@@ -63,10 +61,9 @@ pageContext.setAttribute("isSingleContent", isSingleContent);
         
         <td bgcolor="RED">
           <form:form action="${pageContext.servletContext.contextPath}/newadmin/contentloop" method="POST">
-            <input type="hidden" name="metaId" value="${contentLoop.metaId}"/>
-            <input type="hidden" name="loopIndex" value="${contentLoop.index}"/>
-            <input type="hidden" name="loopBaseIndex" value="${contentLoop.baseIndex}"/>
-            <input type="hidden" name="contentIndex" value="${content.sequenceIndex}"/>
+            <input type="hidden" name="docId" value="${contentLoop.docId}"/>
+            <input type="hidden" name="no" value="${contentLoop.no}"/>
+            <input type="hidden" name="contentIndex" value="${content.index}"/>
             <input type="hidden" name="flags" value="${flags}"/>
             <input type="hidden" name="cmd" value="<%=ContentLoopController.Command.ADD_BEFORE.ordinal()%>"/>
             <input type="submit" value="Add before"/>
@@ -75,10 +72,9 @@ pageContext.setAttribute("isSingleContent", isSingleContent);
         
         <td bgcolor="RED">
           <form:form action="${pageContext.servletContext.contextPath}/newadmin/contentloop" method="POST">
-            <input type="hidden" name="metaId" value="${contentLoop.metaId}"/>
-            <input type="hidden" name="loopIndex" value="${contentLoop.index}"/>
-            <input type="hidden" name="loopBaseIndex" value="${contentLoop.baseIndex}"/>
-            <input type="hidden" name="contentIndex" value="${content.sequenceIndex}"/>
+            <input type="hidden" name="docId" value="${contentLoop.docId}"/>
+            <input type="hidden" name="no" value="${contentLoop.no}"/>
+            <input type="hidden" name="contentIndex" value="${content.index}"/>
             <input type="hidden" name="flags" value="${flags}"/>
             <input type="hidden" name="cmd" value="<%=ContentLoopController.Command.ADD_AFTER.ordinal()%>"/>
             <input type="submit" value="Add after"/>
@@ -88,10 +84,9 @@ pageContext.setAttribute("isSingleContent", isSingleContent);
         <c:if test="${!isSingleContent}">
         <td bgcolor="RED">
           <form:form action="${pageContext.servletContext.contextPath}/newadmin/contentloop" method="POST">
-            <input type="hidden" name="metaId" value="${contentLoop.metaId}"/>
-            <input type="hidden" name="loopIndex" value="${contentLoop.index}"/>
-            <input type="hidden" name="loopBaseIndex" value="${contentLoop.baseIndex}"/>
-            <input type="hidden" name="contentIndex" value="${content.sequenceIndex}"/>
+            <input type="hidden" name="docId" value="${contentLoop.docId}"/>
+            <input type="hidden" name="no" value="${contentLoop.no}"/>
+            <input type="hidden" name="contentIndex" value="${content.index}"/>
             <input type="hidden" name="flags" value="${flags}"/>
             <input type="hidden" name="cmd" value="<%=ContentLoopController.Command.DELETE.ordinal()%>"/>
             <input type="submit" value="Delete"/>

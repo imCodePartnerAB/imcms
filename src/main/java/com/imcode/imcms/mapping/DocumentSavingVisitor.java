@@ -68,8 +68,8 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         updateTextDocumentTemplateNames(textDocument, (TextDocumentDomainObject)oldDocument, savingUser);        
         updateTextDocumentTexts( textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
         updateTextDocumentImages( textDocument, (TextDocumentDomainObject)oldDocument, savingUser);
-        updateTextDocumentIncludes( textDocument );
-        updateTextDocumentContentLoops ( textDocument, null, null );
+        updateTextDocumentIncludes(textDocument);
+        updateTextDocumentContentLoops(textDocument, null, null);
 
         if (oldDocument != null) {
 	        boolean menusChanged = !textDocument.getMenus().equals( ( (TextDocumentDomainObject)oldDocument ).getMenus() );

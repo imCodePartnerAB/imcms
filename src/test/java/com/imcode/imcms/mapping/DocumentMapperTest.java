@@ -1,27 +1,23 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.DocumentLabels;
-import com.imcode.imcms.api.DocumentRequestInfo;
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nSupport;
+import com.imcode.imcms.api.*;
 import com.imcode.imcms.util.Factory;
+
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentReference;
 import imcode.server.document.DocumentTypeDomainObject;
-import imcode.server.document.textdocument.MenuDomainObject;
-import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.testng.Assert.*;
-import static org.testng.Assert.assertEquals;
 
 public class DocumentMapperTest {
 
@@ -30,18 +26,6 @@ public class DocumentMapperTest {
     private UserDomainObject admin;
 
     private I18nSupport i18nSupport;
-
-    public static interface ReduceFn<T, E> {
-        T invoke(T t, E e);      
-    }
-
-    public static <T, E> T reduce(ReduceFn<T, E> reduceFn, T t, Iterable<E> elements) {
-        for (E e: elements) {
-            t = reduceFn.invoke(t, e);
-        }
-
-        return t;
-    }
 
 
     @BeforeClass
@@ -58,38 +42,11 @@ public class DocumentMapperTest {
         assertNotNull(doc);
         return doc;
     }
+    
 
-    @Test
-    public void createDocumentOfTypeFromParent() throws Exception {
-        DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage();
-        DocumentDomainObject doc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
-
-        List<DocumentLabels> labels = new LinkedList<DocumentLabels>();
-
-        for (I18nLanguage lang: i18nSupport.getLanguages()) {
-            DocumentLabels l = new DocumentLabels();
-
-            l.setHeadline(":headline in:" + lang.getCode());
-            l.setMenuImageURL(":url in:" + lang.getCode());
-            l.setMenuText(":menuText in:" + lang.getCode());
-        }
-
-        docMapper.saveNewDocument(doc, labels, admin, true);
-    }
-
-
-    @Test(dependsOnMethods = {"createDocumentOfTypeFromParent"})
-    public void updateMenuInsertDoc() throws Exception {
+    @Test//(dependsOnMethods = {"createDocumentOfTypeFromParent"})
+    public void addMenu() throws Exception {
         TextDocumentDomainObject parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
-        Integer menuNo = 1 + reduce(
-                new ReduceFn<Integer, Integer>() {
-                    public Integer invoke(Integer v1, Integer v2) { return Math.max(v1, v2); }
-                },
-
-                0,
-
-                parentDoc.getMenus().keySet());
-        
         DocumentDomainObject menuItemDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
         List<DocumentLabels> labels = new LinkedList<DocumentLabels>();
 
@@ -102,10 +59,10 @@ public class DocumentMapperTest {
         }
         
         Integer menuItemDocId =  docMapper.saveNewDocument(menuItemDoc, labels, admin, true);
-
         DocumentReference docRef = docMapper.getDocumentReference(menuItemDoc);
         
-        MenuDomainObject menu = Factory.createMenu(parentDoc.getId(), parentDoc.getVersion().getNo(), menuNo, docRef);
+        MenuDomainObject menu = Factory.createNextMenu(parentDoc, docRef);
+        Integer menuNo = menu.getNo();
 
         docMapper.saveDocumentMenu(parentDoc, menu, admin);
 
@@ -127,6 +84,99 @@ public class DocumentMapperTest {
         assertEquals(1, menuItems.length);
         assertEquals(menuItemDocId.intValue(), menuItems[0].getDocumentReference().getDocumentId());
     }
+
+
+    @Test(dataProvider = "saveNewDocumentCopyFlag")
+    public void saveNewDocumentWithLabels(boolean copyFlag) throws Exception {
+        DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage();
+        DocumentDomainObject doc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
+
+        List<DocumentLabels> labels = new LinkedList<DocumentLabels>();
+
+        for (I18nLanguage lang: i18nSupport.getLanguages()) {
+            DocumentLabels l = new DocumentLabels();
+
+            l.setHeadline(":headline in:" + lang.getCode());
+            l.setMenuImageURL(":url in:" + lang.getCode());
+            l.setMenuText(":menuText in:" + lang.getCode());
+        }
+
+        docMapper.saveNewDocument(doc, labels, admin, copyFlag);
+    }
+
+
+    @Test(dataProvider = "saveNewDocumentCopyFlag")
+    public void saveNewDocumentWithoutLabels(boolean copyFlag) throws Exception {
+        TextDocumentDomainObject parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
+        TextDocumentDomainObject newDoc = (TextDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
+
+        Integer newDocId =  docMapper.saveNewDocument(newDoc, admin, copyFlag);
+    }
+
+    @Test
+    public void copyTextDocument() throws Exception {
+        TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
+        TextDocumentDomainObject docCopy = (TextDocumentDomainObject)docMapper.copyDocument(doc, admin);
+
+        assertEquals(doc.getLanguage(), docCopy.getLanguage());
+    }
+
+    @Test(dataProvider = "contentInfo")
+    public void insertTextDocumentText(Integer contentLoopNo, Integer contentIndex) throws Exception {
+        TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
+        TextDomainObject text = Factory.createNextText(doc);
+
+        text.setContentLoopNo(contentLoopNo);
+        text.setContentIndex(contentIndex);        
+
+        docMapper.saveText(doc, text, admin);
+    }
+
+    @Test(dataProvider = "contentInfo")
+    public void insertTextDocumentImage(Integer contentLoopNo, Integer contentIndex) throws Exception {
+        TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
+        ImageDomainObject image = Factory.createNextImage(doc);
+
+        image.setSource(new NullImageSource());
+        image.setContentLoopNo(contentLoopNo);
+        image.setContentIndex(contentIndex);
+
+        docMapper.saveImage(doc, image, admin);
+    }
+
+
+    @DataProvider
+    public Object[][] saveNewDocumentCopyFlag() {
+        return new Object [][] {{true}, {false }};
+    }
+
+    /**
+     * Return content loop no and content index:
+     */
+    @DataProvider
+    public Object[][] contentInfo() {
+        TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
+        ContentLoop existingContentLoop = doc.getContentLoops().values().iterator().next();
+        ContentLoop unsavedContentLoop = Factory.createNextContentLoop(doc);
+        
+        Integer noContentLoopNo = null;
+        Integer noContentIndex = null;
+
+        Integer existingContentLoopNo = existingContentLoop.getNo();
+        Integer existingContentIndex = existingContentLoop.getContents().get(0).getIndex();
+
+        Integer unsavedContentLoopNo = unsavedContentLoop.getNo();
+        Integer unsavedContentIndex = unsavedContentLoop.getContents().get(0).getIndex();        
+
+        return new Object [][] {
+                {noContentLoopNo, noContentIndex},
+                {existingContentLoopNo, existingContentIndex},
+                {unsavedContentLoopNo, unsavedContentIndex}
+        };
+    }
+
+    
+
 }
 
 

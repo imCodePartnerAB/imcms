@@ -279,7 +279,7 @@ public class MenuEditPage extends OkCancelPage {
             }
             MenuDomainObject menu = parentDocument.getMenu(parentMenuIndex.intValue());
             menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(document)));
-            documentMapper.saveDocument(parentDocument, user);
+            documentMapper.saveDocumentMenu(parentDocument, menu, user);
         }
 
         @Override

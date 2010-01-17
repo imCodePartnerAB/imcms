@@ -1,5 +1,7 @@
 package com.imcode.imcms.api;
 
+import imcode.server.document.textdocument.DocItem;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,7 +15,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="imcms_text_doc_content_loops")
-public class ContentLoop implements Cloneable {
+public class ContentLoop implements Cloneable, DocItem {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;

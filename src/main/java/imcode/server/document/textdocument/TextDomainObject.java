@@ -11,24 +11,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.mapping.DocumentStoringVisitor;
 
 /**
  * Document text field. 
  */
 @Entity(name="Text")
 @Table(name="imcms_text_doc_texts")
-public class TextDomainObject implements Serializable, Cloneable {
+public class TextDomainObject implements Serializable, Cloneable, DocItem, DocContentLoopItem, DocI18nItem {
 	
     /**
      * Plain text, with linebreaks.
@@ -63,7 +59,7 @@ public class TextDomainObject implements Serializable, Cloneable {
 	private Integer no;
 
     @Column(name="loop_no")
-    private Integer loopNo;
+    private Integer contentLoopNo;
 
     @Column(name="loop_content_index")
     private Integer contentIndex;
@@ -242,12 +238,12 @@ public class TextDomainObject implements Serializable, Cloneable {
 		this.docVersionNo = docVersionNo;
 	}
 
-    public Integer getLoopNo() {
-        return loopNo;
+    public Integer getContentLoopNo() {
+        return contentLoopNo;
     }
 
-    public void setLoopNo(Integer loopNo) {
-        this.loopNo = loopNo;
+    public void setContentLoopNo(Integer loopNo) {
+        this.contentLoopNo = loopNo;
     }
 
     public Integer getContentIndex() {

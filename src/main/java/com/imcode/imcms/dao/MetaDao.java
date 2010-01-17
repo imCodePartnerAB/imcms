@@ -113,11 +113,12 @@ public class MetaDao extends HibernateTemplate {
 		
 	
 	@Transactional
+	public void deleteIncludes(Integer docId, Integer docVersion) {
+		bulkUpdate("delete from Include i where i.metaId = ?", docId);
+	}
+
+ 	@Transactional
 	public void saveIncludes(Integer documentId, Collection<Include> includes) {
-		bulkUpdate("delete from Include i where i.metaId = ?", documentId);
-		
-		//flush();
-		//clear();
 		for (Include include: includes) {
 			saveOrUpdate(include);
 		}
@@ -125,8 +126,6 @@ public class MetaDao extends HibernateTemplate {
 
 	@Transactional
 	public void saveTemplateNames(Integer documentId, TemplateNames templateNames) {
-		// delete first?
-				
 		saveOrUpdate(templateNames);
 	}
 

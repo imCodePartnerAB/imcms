@@ -101,7 +101,7 @@ if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType() && !editorHidden) { 
 <input type="hidden" name="txt_no"   value="<%= textEditPage.getTextIndex() %>">
 
 <%
-Integer loopNo = text.getLoopNo();
+Integer loopNo = text.getContentLoopNo();
 if (loopNo != null) {
     Integer contentIndex = text.getContentIndex();
     %>

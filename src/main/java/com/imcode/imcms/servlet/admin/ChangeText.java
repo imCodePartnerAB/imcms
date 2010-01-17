@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.mapping.DocumentMapper;
 
@@ -76,7 +75,7 @@ public class ChangeText extends HttpServlet {
     		text.setNo(textIndex);
     		text.setLanguage(language);
     		text.setType(TextDomainObject.TEXT_TYPE_HTML);
-            text.setLoopNo(loopNo);
+            text.setContentLoopNo(loopNo);
             text.setContentIndex(contentIndex);
         }        
         

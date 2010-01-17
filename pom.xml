@@ -10,7 +10,7 @@
             <fileset dir="${main.java.dir}/" defaultexcludes="yes">
                 <include name="com/imcode/imcms/api/**"/>
                 <include name="com/imcode/util/**"/>
-                <exclude name="**/Test*.java"/>
+                <exclude name="**/ImcmsSupport*.java"/>
                 <exclude name="**/Mock*.java"/>
             </fileset>
         </javadoc>
@@ -515,7 +515,7 @@
       <artifactId>servlet-api</artifactId>
       <version>2.4</version>
       <scope>provided</scope>
-    </dependency>       
+    </dependency>
   </dependencies>
   
   <repositories>
@@ -549,9 +549,8 @@
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
-    </repository>      
+    </repository>     
   </repositories>
-
 
     
 

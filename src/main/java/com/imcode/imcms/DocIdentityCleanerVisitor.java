@@ -12,6 +12,7 @@ import imcode.server.document.textdocument.TextDomainObject;
 
 /**
  * Cleans doc's identity data.
+ * When new doc is created by cloning an existing one its identity and version fields should be cleared/reseted.
  */
 public class DocIdentityCleanerVisitor extends DocumentVisitor {
 
@@ -31,7 +32,7 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
 
     	for (MenuDomainObject menu: doc.getMenus().values()) {
     		menu.setId(null);
-    		menu.setMetaId(null);
+    		menu.setDocId(null);
     	}
 
     	for (ContentLoop loop: doc.getContentLoops().values()) {
@@ -40,6 +41,7 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
 
     		for (Content content: loop.getContents()) {
     			content.setId(null);
+                content.setLoopId(null);
     		}
     	}
 
@@ -56,8 +58,9 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
         DocumentVersion version = doc.getVersion();
 
         version.setId(null);
-        version.setNo(0);
         version.setDocId(null);
-    }
-    
+        version.setNo(0);
+
+        // TODO: add created by, created dt.
+    }    
 }

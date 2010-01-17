@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.DocIdentityCleanerVisitor;
+import com.imcode.imcms.util.Factory;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -55,29 +56,7 @@ public class DocumentSaver {
      */
     @Transactional     
     public void saveText(TextDocumentDomainObject doc, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        Integer loopNo = text.getLoopNo();
-
-        if (loopNo != null) {
-            ContentLoop loop = doc.getContentLoop(loopNo);
-
-            if (loop == null) {
-                throw new IllegalStateException(String.format(
-                        "Text no: %s in document id: %s references non-existing content loop no: %s.", text.getNo(), doc.getId(), loopNo));
-            }
-
-            Integer contentIndex = text.getContentIndex();
-
-            if (contentIndex == null) {
-                throw new IllegalStateException(String.format(
-                        "Text's loop context index is not set. Doc id: %s, text no: content loop no: %s.",  doc.getId(), text.getNo(),loopNo));
-            }
-
-            if (loop.getId() == null) {
-                loop = contentLoopDao.saveContentLoop(loop);
-                
-                doc.getContentLoops().put(loopNo, loop);
-            }
-        }
+        createEnclosingContentLoopIfNecessary(doc, text);
 
     	new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(doc, text, user);
     }
@@ -96,36 +75,10 @@ public class DocumentSaver {
      */
     @Transactional
     public void saveMenu(TextDocumentDomainObject doc, MenuDomainObject menu, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        menu.setMetaId(doc.getId());
+        menu.setDocId(doc.getId());
         menu.setDocVersionNo(doc.getVersion().getNo());
 
         new DocumentStoringVisitor(Imcms.getServices()).updateTextDocumentMenu(doc, menu, user);
-
-//        Integer loopNo = text.getLoopNo();
-//
-//        if (loopNo != null) {
-//            ContentLoop loop = doc.getContentLoop(loopNo);
-//
-//            if (loop == null) {
-//                throw new IllegalStateException(String.format(
-//                        "Text no: %s in document id: %s references non-existing content loop no: %s.", text.getNo(), doc.getId(), loopNo));
-//            }
-//
-//            Integer contentIndex = text.getContentIndex();
-//
-//            if (contentIndex == null) {
-//                throw new IllegalStateException(String.format(
-//                        "Text's loop context index is not set. Doc id: %s, text no: content loop no: %s.",  doc.getId(), text.getNo(),loopNo));
-//            }
-//
-//            if (loop.getId() == null) {
-//                loop = contentLoopDao.saveContentLoop(loop);
-//
-//                doc.getContentLoops().put(loopNo, loop);
-//            }
-//        }
-//
-//    	new DocumentStoringVisitor(Imcms.getServices()).saveTextDocumentText(doc, text, user);
     }
 
 
@@ -145,39 +98,54 @@ public class DocumentSaver {
      */
     @Transactional
     public void saveImages(TextDocumentDomainObject doc, Collection<ImageDomainObject> images, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-        ImageDomainObject image = images.iterator().next();
+        DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
-        if (image != null) {
-            Integer loopNo = image.getLoopNo();
-
-            if (loopNo != null) {
-                ContentLoop loop = doc.getContentLoop(loopNo);
-
-                if (loop == null) {
-                    throw new IllegalStateException(String.format(
-                            "Image no: %s in document id: %s references non-existing content loop no: %s.", image.getNo(), doc.getId(), loopNo));
-                }
-
-                Integer contentIndex = image.getContentIndex();
-
-                if (contentIndex == null) {
-                    throw new IllegalStateException(String.format(
-                            "Image's loop context index is not set. Doc id: %s, text no: content loop no: %s.",  doc.getId(), image.getNo(),loopNo));
-                }
-
-                if (loop.getId() == null) {
-                    loop = contentLoopDao.saveContentLoop(loop);
-
-                    doc.getContentLoops().put(loopNo, loop);
-                }
-            }
+        for (ImageDomainObject image: images) {
+            createEnclosingContentLoopIfNecessary(doc, image);
+            storingVisitor.saveTextDocumentImage(doc, image, user);
         }
+    }
+
+
+    @Transactional
+    public void saveImage(TextDocumentDomainObject doc, ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+        createEnclosingContentLoopIfNecessary(doc, image);
 
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
-        for (ImageDomainObject img: images) {
-            storingVisitor.saveTextDocumentImage(doc, img, user);
+        storingVisitor.saveTextDocumentImage(doc, image, user);
+    }
+
+    /**
+     * Creates content loop if item references non-saved enclosing content loop.
+     *
+     * @param doc
+     * @param item
+     */
+    @Transactional
+    public ContentLoop createEnclosingContentLoopIfNecessary(TextDocumentDomainObject doc, DocContentLoopItem item) {
+        ContentLoop loop = null;
+        Integer loopNo = item.getContentLoopNo();
+        
+        if (loopNo != null) {
+            Integer contentIndex = item.getContentIndex();
+
+            if (contentIndex == null) {
+                throw new IllegalStateException(String.format(
+                        "Content loop's context index is not set. Doc id: %s, item :%s, content loop no: %s.",  doc.getId(), item, loopNo));
+            }
+
+            loop = contentLoopDao.getContentLoop(doc.getId(), doc.getVersion().getNo(), loopNo);
+
+            if (loop == null) {
+                // Check item references content index 0.
+                loop = Factory.createContentLoop(doc.getId(), doc.getVersion().getNo(), loopNo);
+
+                contentLoopDao.saveContentLoop(loop);
+            }
         }
+
+        return loop;
     }
 
 
@@ -264,7 +232,7 @@ public class DocumentSaver {
     
     
     /**
-     * Updates published or working document.
+     * Updates document.
      */
     @Transactional
     public void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
@@ -292,74 +260,9 @@ public class DocumentSaver {
         document.accept(savingVisitor);
     }
 
-//    /**
-//     * Creates working document version from existing document.
-//     * <p/>
-//     * Actually only texts and images are copied into new document.
-//     *
-//     * @param document an instance of {@link TextDocumentDomainObject}
-//     * @return working version of a document.
-//     */
-//    @Transactional
-//    public DocumentDomainObject createWorkingDocumentFromExisting(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-//
-//        //checkDocumentForSave(document);
-//        //document.loadAllLazilyLoaded();
-//
-//        //TODO: refactor - very ugly
-//        // save document id
-//        Meta meta = document.getMeta();
-//        Integer documentId = meta.getId();
-//
-//        //TODO: refactor - very ugly
-//        // clone document, reset its dependencies meta id and assign its documentId again
-//        TextDocumentDomainObject textDocument = (TextDocumentDomainObject) document.clone();
-//        textDocument.setDependenciesMetaIdToNull();
-//        textDocument.setId(documentId);
-//
-//        /*
-//        //try {
-//            Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
-//            Date modifiedDatetime = Utility.truncateDateToMinutePrecision(document.getModifiedDatetime());
-//            boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
-//            if (modifiedDatetimeUnchanged) {
-//                document.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
-//            }
-//
-//            saveMeta(documentId, document);
-//
-//            document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
-//        //} finally {
-//        //    documentMapper.invalidateDocument(document);
-//        //}
-//        */
-//
-//        DocumentVersion documentVersion = documentVersionDao.createVersion(documentId, user.getId());
-//        textDocument.setVersion(documentVersion);
-//
-//        DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
-//
-//        visitor.updateTextDocumentTexts(textDocument, null, user);
-//        visitor.updateTextDocumentImages(textDocument, null, user);
-//        visitor.updateTextDocumentContentLoops(textDocument, null, user);
-//
-//        return document;
-//    }
-
-
-    /**
-     *
-     * @param user
-     * @param document
-     * @param copying
-     * @return saved document id.
-     * @throws NoPermissionToAddDocumentToMenuException
-     * @throws DocumentSaveException
-     */
-    @Deprecated
-    @Transactional
-    public Integer saveNewDocument(UserDomainObject user,
-                         DocumentDomainObject document, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+    private Integer saveNewDocument(UserDomainObject user, DocumentDomainObject document, boolean copying)
+            throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+        
         checkDocumentForSave(document);
 
         //document.loadAllLazilyLoaded();                
@@ -394,16 +297,17 @@ public class DocumentSaver {
 
 
     /**
-     *
-     * @param docs
+     * @param docMap
      * @param user
      * @return saved document id.
      * @throws NoPermissionToAddDocumentToMenuException
      * @throws DocumentSaveException
      */
     @Transactional
-    public Integer copyDocument(List<DocumentDomainObject> docs, UserDomainObject user)
+    public Integer copyDocument(Map<I18nLanguage, DocumentDomainObject> docMap, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+
+        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>(docMap.values());
 
         // save meta and all labels
         Collection<DocumentLabels> labels = new LinkedList<DocumentLabels>();

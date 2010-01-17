@@ -131,7 +131,7 @@ CREATE TABLE imcms_text_doc_content_loops (
     no int NOT NULL,
 
     CONSTRAINT pk__imcms_text_doc_content_loops PRIMARY KEY (id),
-    UNIQUE KEY uk__imcms_text_doc_content_loops__content (doc_id, doc_version_no, no),
+    UNIQUE KEY uk__imcms_text_doc_content_loops (doc_id, doc_version_no, no),
     CONSTRAINT fk__imcms_text_doc_content_loops__imcms_doc_versions FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -47,16 +47,15 @@ public class ContentLoopController {
 	@RequestMapping(value="/contentloop", method = RequestMethod.POST)
 	public String processCommand (
 			@RequestParam("cmd") int cmd,
-			@RequestParam("metaId") int metaId,
-			@RequestParam("loopIndex") int loopIndex,
-			@RequestParam("loopBaseIndex") int loopBaseIndex,
+			@RequestParam("docId") int docId,
+			@RequestParam("no") int no,
 			@RequestParam("contentIndex") int contentIndex,
 			@RequestParam("flags") int flags) {
 						
 		Command command = getCommand(cmd);
 		DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-		TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(metaId);
-		ContentLoop loop = document.getContentLoop(loopIndex);
+		TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(docId);
+		ContentLoop loop = document.getContentLoop(no);
 		
         try {
             if (loop.getId() == null) {
@@ -104,7 +103,7 @@ public class ContentLoopController {
             documentMapper.invalidateDocument(document);
         }
 		
-		return String.format(view, metaId, flags);
+		return String.format(view, docId, flags);
 	}	
 	
 	

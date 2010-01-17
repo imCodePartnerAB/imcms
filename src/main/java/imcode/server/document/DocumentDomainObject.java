@@ -505,16 +505,20 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		private RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
 
         @Override
-		public Attributes clone() throws CloneNotSupportedException {
-			Attributes clone = (Attributes) super.clone();
+		public Attributes clone() {
+            try {
+                Attributes clone = (Attributes) super.clone();
 
-			clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings
-					.clone();
+                clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings
+                        .clone();
 
-			clone.permissionSets = permissionSets.clone();
-			clone.permissionSetsForNewDocuments = permissionSetsForNewDocuments
-					.clone();
-			return clone;
+                clone.permissionSets = permissionSets.clone();
+                clone.permissionSetsForNewDocuments = permissionSetsForNewDocuments
+                        .clone();
+                return clone;
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            }
 		}
 	}
 

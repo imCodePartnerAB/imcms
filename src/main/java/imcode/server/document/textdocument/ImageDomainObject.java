@@ -20,12 +20,11 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.mapping.DocumentStoringVisitor;
 import com.imcode.util.ImageSize;
 
 @Entity(name="Image")
 @Table(name="imcms_text_doc_images")
-public class ImageDomainObject implements Serializable, Cloneable {
+public class ImageDomainObject implements Serializable, Cloneable, DocItem, DocI18nItem, DocContentLoopItem {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
@@ -69,7 +68,7 @@ public class ImageDomainObject implements Serializable, Cloneable {
     private Integer type;
 
     @Column(name="loop_no")
-    private Integer loopNo;
+    private Integer contentLoopNo;
 
     @Column(name="loop_content_index")
     private Integer contentIndex;    
@@ -355,12 +354,12 @@ public class ImageDomainObject implements Serializable, Cloneable {
 		this.docVersionNo = docVersionNo;
 	}
 
-    public Integer getLoopNo() {
-        return loopNo;
+    public Integer getContentLoopNo() {
+        return contentLoopNo;
     }
 
-    public void setLoopNo(Integer loopNo) {
-        this.loopNo = loopNo;
+    public void setContentLoopNo(Integer loopNo) {
+        this.contentLoopNo = loopNo;
     }
 
     public Integer getContentIndex() {
