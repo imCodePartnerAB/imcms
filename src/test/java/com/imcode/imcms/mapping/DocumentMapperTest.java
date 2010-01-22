@@ -10,14 +10,19 @@ import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.testng.Assert.*;
+import static org.testng.Assert.assertSame;
 
 public class DocumentMapperTest {
 
@@ -74,7 +79,7 @@ public class DocumentMapperTest {
         docRequestInfo.setDocVersionMode(DocumentRequestInfo.DocVersionMode.WORKING);
         docRequestInfo.setLanguage(i18nSupport.getDefaultLanguage());
 
-        Imcms.setRequestInfo(docRequestInfo);
+        Imcms.setDocumentRequestInfo(docRequestInfo);
 
         menu = parentDoc.getMenu(menuNo);
 
@@ -119,6 +124,7 @@ public class DocumentMapperTest {
         TextDocumentDomainObject docCopy = (TextDocumentDomainObject)docMapper.copyDocument(doc, admin);
 
         assertEquals(doc.getLanguage(), docCopy.getLanguage());
+        // add more asserts
     }
 
     @Test(dataProvider = "contentInfo")
@@ -132,6 +138,32 @@ public class DocumentMapperTest {
         docMapper.saveText(doc, text, admin);
     }
 
+
+    @Test
+    public void changeDocDefaultVersionNo() throws Exception {
+        DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage();
+        DocumentDomainObject doc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
+
+        Integer docId =  docMapper.saveNewDocument(doc, admin, false);
+        DocumentVersionInfo vi = docMapper.getDocumentVersionInfo(docId);
+
+        doc = docMapper.getDefaultDocument(docId, i18nSupport.getDefaultLanguage());
+
+        assertNotNull(doc, "New document is exists");
+        assertEquals(doc.getVersion().getNo(), new Integer(0), "Default version of a new document is 0.");
+
+        DocumentVersion version = docMapper.makeDocumentVersion(docId, admin);
+
+        assertEquals(version.getNo(), new Integer(1), "New version no is 1.");
+
+        docMapper.setDocumentDefaultVersion(docId, 1, admin);
+
+        doc = docMapper.getDefaultDocument(docId, i18nSupport.getDefaultLanguage());
+
+        assertEquals(doc.getVersion().getNo(), new Integer(1), "Default version of a document is 1.");
+    }
+
+
     @Test(dataProvider = "contentInfo")
     public void insertTextDocumentImage(Integer contentLoopNo, Integer contentIndex) throws Exception {
         TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
@@ -142,6 +174,15 @@ public class DocumentMapperTest {
         image.setContentIndex(contentIndex);
 
         docMapper.saveImage(doc, image, admin);
+    }
+
+
+    @Test
+    public void getDocuments() throws Exception {
+        List<Integer> ids = docMapper.getAllDocumentIdsAsList();
+        List<DocumentDomainObject> docs = docMapper.getDocuments(ids);
+
+        assertEquals(ids.size(), docs.size());
     }
 
 

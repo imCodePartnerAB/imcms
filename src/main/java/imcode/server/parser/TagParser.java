@@ -401,7 +401,7 @@ public class TagParser {
     public String tagText(Properties attributes, ContentLoop loop, Content content) {
         TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
         UserDomainObject user = documentRequest.getUser();
-        I18nLanguage language = Imcms.getRequestInfo().getLanguage();
+        I18nLanguage language = Imcms.getDocumentRequestInfo().getLanguage();
 
         if ( shouldOutputNothingAccordingToMode(attributes, textMode) || textDocumentToUse==null || textDocumentToUse.getId() != document.getId() && textMode ) {
             return "";
@@ -808,7 +808,7 @@ public class TagParser {
 
     
     private TextDocumentDomainObject getTextDocumentToUse(Properties attributes) {
-    	UserDomainObject user = Imcms.getRequestInfo().getUser();
+    	UserDomainObject user = Imcms.getDocumentRequestInfo().getUser();
     	
         String documentName = attributes.getProperty("document");
         String documentVersionStr = attributes.getProperty("version");

@@ -101,13 +101,13 @@ public class DocumentLoaderCachingProxy {
             
             if (versions.size() > 0) {
                 DocumentVersion workingVersion = versions.get(0);
-                DocumentVersion activeVersion = documentLoader.getDocumentVersionDao().getDefaultVersion(docId);
+                DocumentVersion defaultVersion = documentLoader.getDocumentVersionDao().getDefaultVersion(docId);
 
-                if (activeVersion == null) {
-                    activeVersion = workingVersion;    
+                if (defaultVersion == null) {
+                    defaultVersion = workingVersion.clone();    
                 }
 
-                versionInfo = new DocumentVersionInfo(docId, versions, workingVersion, activeVersion);
+                versionInfo = new DocumentVersionInfo(docId, versions, workingVersion, defaultVersion);
                 
                 versionInfos.put(docId, versionInfo);
             }

@@ -28,7 +28,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.oro.text.perl.Perl5Util;
 
@@ -301,10 +300,10 @@ public class DocumentMapper implements DocumentGetter {
      * Makes next version of a working document.
      * TODO: Optional - add comments
      */
-    public void makeDocumentVersion(Integer docId, UserDomainObject user)
+    public DocumentVersion makeDocumentVersion(Integer docId, UserDomainObject user)
     throws DocumentSaveException, NoPermissionToEditDocumentException {
         try {
-    	    documentSaver.makeDocumentVersion(docId, user);
+    	    return documentSaver.makeDocumentVersion(docId, user);
         } finally {
             invalidateDocument(docId);
         }
@@ -314,10 +313,10 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Changes document's active version.
      */
-    public void setDocumentActiveVersion(Integer docId, Integer docVersionNo, UserDomainObject user)
+    public void setDocumentDefaultVersion(Integer docId, Integer docVersionNo, UserDomainObject user)
     throws DocumentSaveException, NoPermissionToEditDocumentException {
         try {
-    	    documentSaver.setDocumentActiveVersion(docId, docVersionNo);
+    	    documentSaver.setDocumentDefaultVersion(docId, docVersionNo);
         } finally {
             invalidateDocument(docId);
         }
@@ -428,7 +427,11 @@ public class DocumentMapper implements DocumentGetter {
     	List<Integer> ids = documentSaver.getMetaDao().getAllDocumentIds();
     	
     	// Optimize
-    	return ArrayUtils.toPrimitive(ids.toArray(new Integer[] {}));
+    	return ArrayUtils.toPrimitive(getAllDocumentIdsAsList().toArray(new Integer[] {}));
+    }
+
+    public List<Integer> getAllDocumentIdsAsList() {
+    	return documentSaver.getMetaDao().getAllDocumentIds();
     }
     
     public IntRange getDocumentIdRange() {
@@ -584,6 +587,9 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Returns document.
      *
+     * Returned document is based on document info associated with a thread.
+     * If there is no request info then default document in default language is returned.
+     *
      * @param docId document id.
      */
     public DocumentDomainObject getDocument(Integer docId) {
@@ -593,7 +599,12 @@ public class DocumentMapper implements DocumentGetter {
             return null;
         }
         
-        DocumentRequestInfo documentRequestInfo = Imcms.getRequestInfo();
+        DocumentRequestInfo documentRequestInfo = Imcms.getDocumentRequestInfo();
+
+        if (documentRequestInfo == null) {
+            return getDefaultDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
+        }
+
         UserDomainObject user = documentRequestInfo.getUser();
         I18nLanguage language = documentRequestInfo.getLanguage();
         DocumentRequestInfo.DocVersionMode docVersionMode = documentRequestInfo.getDocVersionMode();
@@ -735,23 +746,32 @@ public class DocumentMapper implements DocumentGetter {
         this.documentIndex = documentIndex;
     }
 
+    
+    /**
+     *
+     * @param documentIds
+     * @return
+     */
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
-        return getWorkingDocuments(documentIds);
-//        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
-//
-//        for (Integer docId: documentIds) {
-//            DocumentDomainObject doc = getDocument(docId);
-//            if (doc != null) {
-//                docs.add(doc);
-//            }
-//        }
-//
-//        return docs;
+        DocumentRequestInfo ri = Imcms.getDocumentRequestInfo();
+        I18nLanguage language = ri != null
+                ? ri.getLanguage()
+                : Imcms.getI18nSupport().getDefaultLanguage();
+
+        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
+
+        // todo: filter docs for 
+        for (Integer docId: documentIds) {
+            DocumentDomainObject doc = getDefaultDocument(docId, language);
+            if (doc != null) {
+                docs.add(doc);
+            }
+        }
+
+        return docs;
     }
 
-    public List<DocumentDomainObject> getWorkingDocuments(Collection<Integer> documentIds) {
-        return documentLoaderCachingProxy.getWorkingDocuments(documentIds, Imcms.getI18nSupport().getDefaultLanguage());
-    }
+    
 
     private void removeNonInheritedCategories(DocumentDomainObject document) {
         Set<CategoryDomainObject> categories = getCategoryMapper().getCategories(document.getCategoryIds());
@@ -847,7 +867,7 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-            Imcms.getServices().getDocumentMapper().setDocumentActiveVersion(document.getId(), docVersionNo, user);
+            Imcms.getServices().getDocumentMapper().setDocumentDefaultVersion(document.getId(), docVersionNo, user);
         }
     }
     

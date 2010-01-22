@@ -150,7 +150,7 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void setDocumentActiveVersion(Integer docId, Integer docVersionNo) {
+    public void setDocumentDefaultVersion(Integer docId, Integer docVersionNo) {
         DefaultDocumentVersion activeVersion = documentVersionDao.getDefaultVersionORM(docId);
 
         if (activeVersion == null) {
@@ -171,7 +171,7 @@ public class DocumentSaver {
     // TODO: Should throw NoPermissionToEditDocumentException ?
     // TODO: Add history for texts and images
     @Transactional    
-    public void makeDocumentVersion(Integer docId, UserDomainObject user)
+    public DocumentVersion makeDocumentVersion(Integer docId, UserDomainObject user)
     throws DocumentSaveException {
     	try {
             Meta meta = metaDao.getMeta(docId);
@@ -223,8 +223,9 @@ public class DocumentSaver {
 
                     menuDao.saveMenu(menu);
                 }
-                
     		}
+
+            return documentVersion;
     	} catch (RuntimeException e) {
     		throw new DocumentSaveException(e);
     	}

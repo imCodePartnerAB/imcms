@@ -264,11 +264,11 @@ public class Imcms {
         }
     }
 
-    public static void setRequestInfo(DocumentRequestInfo documentRequestInfo) {
+    public static void setDocumentRequestInfo(DocumentRequestInfo documentRequestInfo) {
     	requestInfos.set(documentRequestInfo);
     }
 
-    public static DocumentRequestInfo getRequestInfo() {
+    public static DocumentRequestInfo getDocumentRequestInfo() {
     	return requestInfos.get();
     }
 

@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.flow.DispatchCommand;
 
 /**
@@ -37,7 +36,7 @@ public class EditImage extends HttpServlet {
         
         // Create edited image for current language.
         ImageDomainObject image = new ImageDomainObject();
-        image.setLanguage(Imcms.getRequestInfo().getLanguage());
+        image.setLanguage(Imcms.getDocumentRequestInfo().getLanguage());
         
         ImageEditPage imageEditPage = new ImageEditPage(null, null, null, "", getServletContext(), imageCommand, returnCommand, false);
         

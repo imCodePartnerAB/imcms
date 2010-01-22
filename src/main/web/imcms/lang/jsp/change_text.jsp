@@ -70,7 +70,7 @@ try {
 
 List<I18nLanguage> languages = Imcms.getI18nSupport().getLanguages();
 I18nLanguage defaultLanguage = Imcms.getI18nSupport().getDefaultLanguage();
-I18nLanguage currentLanguage = Imcms.getRequestInfo().getLanguage();
+I18nLanguage currentLanguage = Imcms.getDocumentRequestInfo().getLanguage();
 
 DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 TextDomainObject text = textEditPage.getText();

@@ -50,7 +50,7 @@ public class SetActiveDocVersionPageFlow extends DocumentPageFlow {
 	@Override
 	protected void dispatchToFirstPage(HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
 	    saveDocument( request );
-		Imcms.getRequestInfo().setDocVersionMode(DocumentRequestInfo.DocVersionMode.DEFAULT);
+		Imcms.getDocumentRequestInfo().setDocVersionMode(DocumentRequestInfo.DocVersionMode.DEFAULT);
     	//dispatchReturn( request, response );
 		request.getRequestDispatcher("/servlet/GetDoc").forward(request, response);
 	}

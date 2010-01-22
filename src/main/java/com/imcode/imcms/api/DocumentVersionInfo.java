@@ -27,7 +27,7 @@ public class DocumentVersionInfo implements Serializable {
 	private DocumentVersion workingVersion;
 	
 	/**
-	 * Active version.
+	 * Default version.
 	 */
 	private DocumentVersion defaultVersion;
 	
@@ -108,7 +108,7 @@ public class DocumentVersionInfo implements Serializable {
 	}	
 	
 	/** 
-	 * @return active version or null there is no active version.
+	 * @return default version of a document.
 	 */
 	public DocumentVersion getDefaultVersion() {
 		return defaultVersion;

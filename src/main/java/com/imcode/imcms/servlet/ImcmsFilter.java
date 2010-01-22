@@ -114,7 +114,7 @@ public class ImcmsFilter implements Filter, ImcmsListener {
             updateRequestInfoLanguage(request, documentRequestInfo);
             updateRequestInfoVersionNoAndMode(request, documentRequestInfo);
             
-            Imcms.setRequestInfo(documentRequestInfo);
+            Imcms.setDocumentRequestInfo(documentRequestInfo);
 
             ContentManagementSystem cms = Utility.initRequestWithApi(request, user);
 

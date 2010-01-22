@@ -51,7 +51,7 @@ public class PublishDocumentPageFlow extends DocumentPageFlow {
 	protected void dispatchToFirstPage(HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
 	    saveDocument( request );
 		//user.getDocumentShowSettings().setVersionSelector(DocumentVersionSelector.PUBLISHED_SELECTOR);
-        Imcms.getRequestInfo().setDocVersionMode(DocumentRequestInfo.DocVersionMode.DEFAULT);
+        Imcms.getDocumentRequestInfo().setDocVersionMode(DocumentRequestInfo.DocVersionMode.DEFAULT);
     	//dispatchReturn( request, response );
 		request.getRequestDispatcher("/servlet/GetDoc").forward(request, response);
 	}
