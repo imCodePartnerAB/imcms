@@ -23,11 +23,11 @@ public final class Version {
     
 
     /**
-     * Factory method - creates and returns new instance of Version.
+     * Factory method - creates and returns new Version instance.
      *
      * @param number version number.
      *
-     * @return new insatnce of Version.
+     * @return new Version instance.
      */
     public static Version newInstance(double number) {
         String[] numbers = Double.toString(number).split("\\.");

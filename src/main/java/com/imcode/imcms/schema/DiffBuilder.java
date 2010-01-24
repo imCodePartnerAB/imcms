@@ -20,7 +20,7 @@ import java.io.StringReader;
  *
  * All functions in that class are pure (without side effects).
  */
-public class DiffBuilder {
+public final class DiffBuilder {
 
 
     /** XPath expression for selecting diff versions numbers. */

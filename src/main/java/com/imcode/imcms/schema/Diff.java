@@ -13,7 +13,7 @@ public final class Diff {
     /** Diff version. */
     final Version version;
 
-    /** Scfript location is a sql script filename with optional relative path. */
+    /** Script location is a sql script filename with optional relative path. */
     final Collection<String> scriptsLocations;
 
 
