@@ -230,18 +230,15 @@ public class DocumentSaver {
     		throw new DocumentSaveException(e);
     	}
     }
-    
-    
-    /**
-     * Updates document.
-     */
+
+
+
     @Transactional
-    public void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument,
-                      final UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument, Collection<DocumentLabels> labels, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(document);
 
         //document.loadAllLazilyLoaded();
-        
+
         Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
         Date modifiedDatetime = Utility.truncateDateToMinutePrecision(document.getModifiedDatetime());
         boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
@@ -253,13 +250,24 @@ public class DocumentSaver {
             newUpdateDocumentRolePermissions(document, user, oldDocument);
             documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(document, user, oldDocument);
         }
-        
+
         DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDocument, documentMapper.getImcmsServices(), user);
-        
+
         saveMeta(document);
-                    
+
         document.accept(savingVisitor);
-    }
+
+        // ???
+        //metaDao.deleteLabels(document.getId(), document.getVersion().getNo());
+
+        for (DocumentLabels l: labels) {
+            //l.setId(null);
+            l.setDocId(document.getId());
+            l.setDocVersionNo(document.getVersion().getNo());
+            metaDao.saveLabels(l);
+        }
+
+    }    
 
     private Integer saveNewDocument(UserDomainObject user, DocumentDomainObject document, boolean copying)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
@@ -350,23 +358,6 @@ public class DocumentSaver {
         }
 
         return docId;
-    }
-
-
-    @Transactional
-    public void updateDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-        updateDocument(document, (DocumentDomainObject)null, user);
-
-        // ???
-        metaDao.deleteLabels(document.getId(), document.getVersion().getNo());
-
-        for (DocumentLabels l: labels) {
-            l.setId(null);
-            l.setDocId(document.getId());
-            l.setDocVersionNo(document.getVersion().getNo());
-            metaDao.saveLabels(l);    
-        }
-        
     }
     
     

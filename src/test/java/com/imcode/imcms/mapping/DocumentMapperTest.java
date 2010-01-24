@@ -215,21 +215,4 @@ public class DocumentMapperTest {
                 {unsavedContentLoopNo, unsavedContentIndex}
         };
     }
-
-    
-
 }
-
-
-//;(deftest test-change-menu
-//;  (testing "add menu"
-//;    (let [text-doc (rt/get-working-doc *text-doc-id* *lang*)
-//;          new-text-doc (.createDocumentOfTypeFromParent *doc-mapper* 2 text-doc *user*)
-//;          menus (.getMenus text-doc)
-//;          menu-no (inc (apply max 0 (keys menus)))
-//;          menu (.setMenu text-doc menu-no (MenuDomainObject.))
-//;
-//;      (if (seq menus)
-//;
-//;          new-text-doc (.copyDocument *doc-mapper* text-doc *superadmin*)]
-//;      (is new-text-doc))))

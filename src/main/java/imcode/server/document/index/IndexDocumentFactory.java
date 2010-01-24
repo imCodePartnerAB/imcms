@@ -44,17 +44,10 @@ public class IndexDocumentFactory {
      * @return lucene document.
      */
     public Document createIndexDocument( DocumentDomainObject document ) {
-        DocumentVersion version = document.getVersion();
-
-        //log.debug(String.format("Indexing document %s, version %s (%s).",
-        //        document.getId(), version.getTag(), version.getNo()));
-        
         Document indexDocument = new Document();
 
         int documentId = document.getId();
         indexDocument.add(new Field(DocumentIndex.FIELD__META_ID, "" + documentId, Field.Store.YES, Field.Index.NOT_ANALYZED));
-        indexDocument.add(new Field(DocumentIndex.FIELD__VERSION_NUMBER, version.getNo().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-        //indexDocument.add(new Field(DocumentIndex.FIELD__VERSION_TAG, version.getTag().name(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, NumberTools.longToString(documentId) ) );
         
@@ -63,19 +56,13 @@ public class IndexDocumentFactory {
             indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__ROLE_ID, Integer.toString(mapping.getRoleId().intValue())) );
         }
 
-        List<I18nLanguage> languages = Imcms.getI18nSupport().getLanguages();
+        String headline = document.getHeadline();
+        String menuText = document.getMenuText();
 
-        /*
-        for (I18nLanguage language : languages) {
-            String headline = document.getHeadline(language);
-            String menuText = document.getMenuText(language);
+        indexDocument.add(new Field(DocumentIndex.FIELD__META_HEADLINE, headline, Field.Store.NO, Field.Index.ANALYZED));
+        indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__META_HEADLINE_KEYWORD, headline));
 
-            indexDocument.add(new Field(DocumentIndex.FIELD__META_HEADLINE, headline, Field.Store.NO, Field.Index.ANALYZED));
-            indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__META_HEADLINE_KEYWORD, headline));
-
-            indexDocument.add(new Field(DocumentIndex.FIELD__META_TEXT, menuText, Field.Store.NO, Field.Index.ANALYZED));
-        }
-        */
+        indexDocument.add(new Field(DocumentIndex.FIELD__META_TEXT, menuText, Field.Store.NO, Field.Index.ANALYZED));
 
         indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__DOC_TYPE_ID, "" + document.getDocumentTypeId()));
         indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__CREATOR_ID, "" + document.getCreatorId()));
@@ -114,15 +101,11 @@ public class IndexDocumentFactory {
             indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__CATEGORY_TYPE_ID, "" + categoryType.getId()));
         }
 
-        /*
-        for (I18nLanguage language : languages) {
-            Set documentKeywords = document.getKeywords(language);
-            for (Iterator iterator = documentKeywords.iterator(); iterator.hasNext();) {
-                String documentKeyword = (String) iterator.next();
-                indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__KEYWORD, documentKeyword));
-            }
+        Set documentKeywords = document.getKeywords();
+        for (Iterator iterator = documentKeywords.iterator(); iterator.hasNext();) {
+            String documentKeyword = (String) iterator.next();
+            indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__KEYWORD, documentKeyword));
         }
-        */
 
         List<Integer[]> parentDocumentAndMenuIds = documentMapper.getParentDocumentAndMenuIdsForDocument(document);
         for (Integer[] pair : parentDocumentAndMenuIds) {

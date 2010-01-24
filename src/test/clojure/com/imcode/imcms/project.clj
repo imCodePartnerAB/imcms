@@ -1,5 +1,5 @@
 (ns
-  #^{:doc "imCMS project's utils."}
+  #^{:doc "imCMS project's interaction."}
   com.imcode.imcms.project     
   (:require
     ;[clojure.contrib.logging :as log]
@@ -27,8 +27,13 @@
 
 (def base-dir (atom (.getCanonicalFile (File. "."))))
 
+(defn base-dir-path
+  "Returns base dir full path."
+  []
+  (.getCanonicalPath @base-dir))
 
-(defn change-base-dir [new-path]
+
+(defn ch-base-dir! [new-path]
   (reset! base-dir (.getCanonicalFile (File. new-path))))
 
 

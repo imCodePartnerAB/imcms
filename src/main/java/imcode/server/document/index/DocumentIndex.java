@@ -41,10 +41,6 @@ public interface DocumentIndex {
     String FIELD__TEMPLATE = "template";
     String FIELD__CHILD_ID = "child_id";
     String FIELD__HAS_CHILDREN = "has_children";
-
-    // Version support fields
-    String FIELD__VERSION_TAG = "version_tag";
-    String FIELD__VERSION_NUMBER = "version_number";
     
     void indexDocument( DocumentDomainObject document ) throws IndexException ;
 
