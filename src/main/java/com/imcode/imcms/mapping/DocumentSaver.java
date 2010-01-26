@@ -312,20 +312,22 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public Integer copyDocument(Map<I18nLanguage, DocumentDomainObject> docMap, UserDomainObject user)
+    public Integer copyDocument(Map<I18nLanguage, DocumentDomainObject> docMap, UserDomainObject user, String copyHeadlineSuffix)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>(docMap.values());
 
         // save meta and all labels
-        Collection<DocumentLabels> labels = new LinkedList<DocumentLabels>();
+        Collection<DocumentLabels> labelsColl = new LinkedList<DocumentLabels>();
 
         for (DocumentDomainObject doc: docs) {
-            labels.add(doc.getLabels());
+            DocumentLabels labels = doc.getLabels();
+            labels.setHeadline(labels.getHeadline() + copyHeadlineSuffix);
+            labelsColl.add(doc.getLabels());
         }
 
         DocumentDomainObject firstDoc = docs.get(0);
-        Integer docId = saveNewDocument(user, firstDoc, labels, true);
+        Integer docId = saveNewDocument(user, firstDoc, labelsColl, true);
 
         // save rest docs fields in case of a text document.
         int docsCount = docs.size();

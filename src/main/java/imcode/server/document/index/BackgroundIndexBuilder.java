@@ -81,15 +81,15 @@ public class BackgroundIndexBuilder {
         rememberIndexParentDirectoryLastModified();
     }
 
-    public synchronized void addDocument(DocumentDomainObject document) {
+    public synchronized void addDocument(Integer docId) {
         if ( null != indexBuildingThread ) {
-            indexBuildingThread.addDocument(document);
+            indexBuildingThread.addDocument(docId);
         }
     }
 
-    public synchronized void removeDocument(DocumentDomainObject document) {
+    public synchronized void removeDocument(Integer docId) {
         if ( null != indexBuildingThread ) {
-            indexBuildingThread.removeDocument(document);
+            indexBuildingThread.removeDocument(docId);
         }
     }
 

@@ -14,8 +14,8 @@ import org.apache.log4j.NDC;
 
 class IndexBuildingThread extends Thread {
 
-    private final Set documentsToAddToNewIndex = Collections.synchronizedSet(new LinkedHashSet());
-    private final Set documentsToRemoveFromNewIndex = Collections.synchronizedSet(new LinkedHashSet());
+    private final Set<Integer> documentsToAddToNewIndex = Collections.synchronizedSet(new LinkedHashSet<Integer>());
+    private final Set<Integer> documentsToRemoveFromNewIndex = Collections.synchronizedSet(new LinkedHashSet<Integer>());
     private final static Logger log = Logger.getLogger(IndexBuildingThread.class.getName());
     private final BackgroundIndexBuilder backgroundIndexBuilder;
     private final File indexDirectory;
@@ -59,27 +59,27 @@ class IndexBuildingThread extends Thread {
 
     private synchronized void considerDocumentsAddedOrRemovedDuringIndexing(DirectoryIndex index) throws IndexException {
         log.debug( "Considering documents added and removed during index rebuild.");
-        for (Iterator iterator = documentsToAddToNewIndex.iterator(); iterator.hasNext(); ) {
-            DocumentDomainObject document = (DocumentDomainObject)iterator.next();
-            index.indexDocument(document);
-            iterator.remove();
+        for (Iterator<Integer> iterator = documentsToAddToNewIndex.iterator(); iterator.hasNext(); ) {
+            Integer docId = iterator.next();
+            index.indexDocument(docId);
         }
-        for (Iterator iterator = documentsToRemoveFromNewIndex.iterator(); iterator.hasNext(); ) {
-            DocumentDomainObject document = (DocumentDomainObject)iterator.next();
-            index.removeDocument(document);
+        
+        for (Iterator<Integer> iterator = documentsToRemoveFromNewIndex.iterator(); iterator.hasNext(); ) {
+            Integer docId = iterator.next();
+            index.removeDocument(docId);
             iterator.remove();
         }
     }
 
-    public synchronized void addDocument(DocumentDomainObject document) {
+    public synchronized void addDocument(Integer docId) {
         if (indexing) {
-            documentsToAddToNewIndex.add(document) ;
+            documentsToAddToNewIndex.add(docId) ;
         }
     }
 
-    public synchronized void removeDocument(DocumentDomainObject document) {
+    public synchronized void removeDocument(Integer docId) {
         if (indexing) {
-            documentsToRemoveFromNewIndex.add(document) ;
+            documentsToRemoveFromNewIndex.add(docId) ;
         }
     }
 }

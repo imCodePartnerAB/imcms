@@ -41,6 +41,7 @@ public class IndexDocumentFactory {
      *
      * @return lucene document.
      */
+    @Deprecated
     public Document createIndexDocument(DocumentDomainObject document) {
         return createIndexDocument(document.getId());
     }

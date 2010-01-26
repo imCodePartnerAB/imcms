@@ -5,6 +5,9 @@ import imcode.server.user.UserDomainObject;
 
 import java.util.List;
 
+/**
+ * @see DefaultDirectoryIndex.
+ */
 public interface DocumentIndex {
 
     String FIELD__DOC_TYPE_ID = "doc_type_id";
@@ -48,10 +51,20 @@ public interface DocumentIndex {
      * @param docId
      * @throws IndexException
      */
-    //void indexDocument(Integer docId) throws IndexException ;
-    
+    void indexDocument(Integer docId) throws IndexException;
+
+    /**
+     * Remove a document from index.
+     * 
+     * @param docId
+     * @throws IndexException
+     */
+    void removeDocument(Integer docId) throws IndexException;
+
+    @Deprecated
     void indexDocument( DocumentDomainObject document ) throws IndexException ;
 
+    @Deprecated
     void removeDocument( DocumentDomainObject document ) throws IndexException;
 
     List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;

@@ -52,6 +52,7 @@ public class PhaseQueryFixingDocumentIndex extends DocumentIndexWrapper {
                 }
             }
         }
+        
         return query ;
     }
 }

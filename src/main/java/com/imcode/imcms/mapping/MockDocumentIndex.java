@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MockDocumentIndex implements DocumentIndex {
+    
     private boolean indexDocumentCalled;
     private boolean removeDocumentCalled;
 
@@ -17,9 +18,19 @@ public class MockDocumentIndex implements DocumentIndex {
         this.indexDocumentCalled = true ;
     }
 
+    public void removeDocument(Integer docId) throws IndexException {
+        this.removeDocumentCalled = true ;
+    }
+
+    public void indexDocument(Integer docId) throws IndexException {
+        this.indexDocumentCalled = true ;
+    }
+
     public void removeDocument( DocumentDomainObject document ) throws IndexException {
         this.removeDocumentCalled = true ;
     }
+
+
 
     public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         return Arrays.asList(new DocumentDomainObject[0]);

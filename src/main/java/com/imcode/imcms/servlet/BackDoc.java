@@ -42,7 +42,6 @@ public class BackDoc extends HttpServlet {
     }
 
     private void redirectToDocumentId( HttpServletRequest request, HttpServletResponse response, int meta_id ) throws IOException {
-        //DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDefaultDocument( meta_id ) ;
         DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument( meta_id ) ;
         response.sendRedirect( Utility.getAbsolutePathToDocument( request, document ) );
     }
@@ -50,13 +49,11 @@ public class BackDoc extends HttpServlet {
     public static DocumentDomainObject getNextToLastTextDocumentFromHistory( Stack history, ImcmsServices imcref ) {
 
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        //DocumentDomainObject document = documentMapper.getDefaultDocument((Integer) history.pop() ); // remove top document from stack ( this is current text document )
         DocumentDomainObject document = documentMapper.getDocument((Integer) history.pop() ); // remove top document from stack ( this is current text document )
 
         if ( null != history && !history.empty() ) {
 
             while ( !history.empty() ) {
-                //document = documentMapper.getDefaultDocument( (Integer)history.pop() );
                 document = documentMapper.getDocument( (Integer)history.pop() );
                 if ( isTextDocument( document ) ) {
                     break;

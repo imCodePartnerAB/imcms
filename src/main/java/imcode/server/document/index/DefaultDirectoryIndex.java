@@ -117,9 +117,13 @@ class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     public void indexDocument( DocumentDomainObject document ) throws IndexException {
+        indexDocument(document.getId());
+    }
+
+    public void indexDocument(Integer docId) throws IndexException {
         try {
-            removeDocument( document );
-            addDocument( document );
+            removeDocument(docId);
+            addDocument(docId);
         } catch ( IOException e ) {
             throw new IndexException( e );
         }
@@ -127,10 +131,15 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
     
     public void removeDocument( DocumentDomainObject document ) throws IndexException {
+        removeDocument(document.getId());
+    }
+
+
+    public void removeDocument(Integer docId) throws IndexException {
         try {
            IndexReader indexReader = IndexReader.open( directory );
             try {
-                indexReader.deleteDocuments(new Term( "meta_id", "" + document.getId() ) );
+                indexReader.deleteDocuments(new Term( "meta_id", "" + docId));
             } finally {
                 indexReader.close();
             }
@@ -139,10 +148,10 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         }
     }
 
-    private void addDocument( DocumentDomainObject document ) throws IOException {
+    private void addDocument(Integer docId) throws IOException {
         IndexWriter indexWriter = createIndexWriter( false );
         try {
-            addDocumentToIndex( document, indexWriter );
+            addDocumentToIndex(docId, indexWriter );
         } finally {
             indexWriter.close();
         }
@@ -161,8 +170,8 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         }
     }
 
-    private void addDocumentToIndex( DocumentDomainObject document, IndexWriter indexWriter ) throws IOException {
-        Document indexDocument = indexDocumentFactory.createIndexDocument( document );
+    private void addDocumentToIndex(Integer docId, IndexWriter indexWriter ) throws IOException {
+        Document indexDocument = indexDocumentFactory.createIndexDocument(docId);
         indexWriter.addDocument( indexDocument );
     }
 
@@ -182,15 +191,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
         for ( int i = 0; i < documentIds.length; i++ ) {
             try {
-                DocumentDomainObject document = documentMapper.getDocument( documentIds[i] );
-
-                addDocumentToIndex( document, indexWriter );
-
-                // Published document indexing
-                // DocumentDomainObject publishedDocument = documentMapper.getDefaultDocument( documentIds[i] );
-                // if (publishedDocument != null) {
-                //    addDocumentToIndex( publishedDocument, indexWriter );
-                // }
+                addDocumentToIndex(documentIds[i], indexWriter );
             } catch ( Exception ex ) {
                 log.error( "Could not index document with meta_id " + documentIds[i] + ", trying next document.", ex );
             }

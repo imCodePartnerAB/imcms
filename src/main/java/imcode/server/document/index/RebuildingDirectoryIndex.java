@@ -134,22 +134,30 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
     }
 
     public void indexDocument(DocumentDomainObject document) {
+        indexDocument(document.getId());
+    }
+
+    public void indexDocument(Integer docId) {
         log.debug("Adding document.");
-        backgroundIndexBuilder.addDocument(document);
+        backgroundIndexBuilder.addDocument(docId);
         try {
-            index.indexDocument(document);
+            index.indexDocument(docId);
         } catch ( IndexException e ) {
-            rebuildBecauseOfError("Failed to add document " + document.getId() + " to index.", e);
+            rebuildBecauseOfError("Failed to add document " + docId + " to index.", e);
         }
     }
 
     public void removeDocument(DocumentDomainObject document) {
+        removeDocument(document.getId());
+    }
+
+    public void removeDocument(Integer docId) {
         log.debug("Removing document.");
-        backgroundIndexBuilder.removeDocument(document);
+        backgroundIndexBuilder.removeDocument(docId);
         try {
-            index.removeDocument(document);
+            index.removeDocument(docId);
         } catch ( IndexException e ) {
-            rebuildBecauseOfError("Failed to remove document " + document.getId() + " from index.", e);
+            rebuildBecauseOfError("Failed to remove document " + docId + " from index.", e);
         }
     }
 
@@ -201,6 +209,12 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
 
         public void removeDocument(DocumentDomainObject document) throws IndexException {
+        }
+
+        public void indexDocument(Integer docId) throws IndexException {
+        }
+
+        public void removeDocument(Integer docId) throws IndexException {
         }
 
         public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {

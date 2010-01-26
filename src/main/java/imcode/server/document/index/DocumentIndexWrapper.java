@@ -21,6 +21,15 @@ public class DocumentIndexWrapper implements DocumentIndex {
         index.rebuild();
     }
 
+    public void removeDocument(Integer docId) throws IndexException {
+        index.removeDocument(docId);
+    }
+
+    public void indexDocument(Integer docId) throws IndexException {
+        index.indexDocument(docId);
+    }
+
+
     public void removeDocument(DocumentDomainObject document) throws IndexException {
         index.removeDocument(document);
     }
@@ -28,4 +37,6 @@ public class DocumentIndexWrapper implements DocumentIndex {
     public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         return index.search(query, searchingUser) ;
     }
+
+
 }
