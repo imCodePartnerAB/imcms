@@ -86,33 +86,40 @@ public class MetaDao extends HibernateTemplate {
                 .list();
 	}
 
-	/**
-	 * @return Labels.
-	 */
+//	@Transactional
+//	public void deleteLabels(Integer docId, Integer docVersionNo) {
+//		getSession().createQuery("DELETE FROM DocumentLabels l WHERE l.docId = :docId AND l.docVersionNo = :docVersionNo")
+//                .setParameter("docId", docId)
+//                .setParameter("docVersionNo", docVersionNo)
+//                .executeUpdate();
+//	}
+
+
 	@Transactional
-	public void deleteLabels(Integer docId, Integer docVersionNo) {
-		getSession().createQuery("DELETE FROM DocumentLabels l WHERE l.docId = :docId AND docVersionNo = :docVersionNo")
+	public void deleteLabels(Integer docId, Integer docVersionNo, I18nLanguage language) {
+		getSession().createQuery("DELETE FROM DocumentLabels l WHERE l.docId = :docId AND l.docVersionNo = :docVersionNo and l.language = :language")
                 .setParameter("docId", docId)
                 .setParameter("docVersionNo", docVersionNo)
+                .setParameter("language", language)
                 .executeUpdate();
 	}
 
-    
-	@Transactional
-	public DocumentLabels saveLabels(DocumentLabels labels) {
-		save(labels);
 
-        return labels;
-	}
-
-	
-	@Transactional
+    @Transactional
 	public void saveMeta(Meta meta) {
 		saveOrUpdate(meta);
 	}
-		
-	
-	@Transactional
+
+
+    @Transactional
+    public DocumentLabels saveLabels(DocumentLabels labels) {
+        save(labels);
+
+        return labels;
+    }
+
+
+    @Transactional
 	public void deleteIncludes(Integer docId, Integer docVersion) {
 		bulkUpdate("delete from Include i where i.metaId = ?", docId);
 	}

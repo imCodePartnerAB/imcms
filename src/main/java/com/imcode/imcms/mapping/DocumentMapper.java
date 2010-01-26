@@ -106,6 +106,7 @@ public class DocumentMapper implements DocumentGetter {
     
     /**
      * @param documentId document id.
+     * 
      * @return version support for a given document or null if document does not exist.
      */
     public DocumentVersionInfo getDocumentVersionInfo(Integer documentId) {
@@ -213,13 +214,7 @@ public class DocumentMapper implements DocumentGetter {
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         Collection<DocumentLabels> labelsColl = new LinkedList<DocumentLabels>();
-
-        for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
-            DocumentLabels labelsClone = document.getLabels().clone();
-            labelsClone.setLanguage(language);
-
-            labelsColl.add(labelsClone);
-        }
+        labelsColl.add(document.getLabels());
 
         return saveNewDocument(document, labelsColl, user, copying);
     }

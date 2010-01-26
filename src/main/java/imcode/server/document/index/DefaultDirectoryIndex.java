@@ -92,7 +92,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
 
     /**
-     * @return working documents.
+     * @return documents.
      */
     private List<DocumentDomainObject> getDocumentListForHits( final TopDocs topDocs, Searcher searcher, final UserDomainObject searchingUser ) {
         DocumentGetter documentGetter = Imcms.getServices().getDocumentMapper();

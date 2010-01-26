@@ -70,84 +70,19 @@ public class TextDao extends HibernateTemplate {
             .setParameter("loopContentIndex", text.getContentIndex()).executeUpdate();
 	}
 
-	/**
-	 * Returns all texts for given document id, text no, text language and versions.
-	 * TODO: Reafactor out HQL call  
-	 */
-	@Transactional
-	public List<TextDomainObject> getTexts(Integer docId, Integer no, I18nLanguage language, Collection<DocumentVersion> versions) {
-		String hql = String.format(
-			"SELECT t FROM Text t WHERE t.docId = ? AND t.no = ? AND t.language.id = ? AND t.docVersionNo IN (%s)",
-			createVersionString(versions));
-		
-		return find(hql, new Object[] {docId, no, language.getId()});
-	}
-	
+    /**
+     * @param docId
+     * @param docVersionNo
+     * @return all texts in all languages.
+     */
 	@Transactional
 	public List<TextDomainObject> getTexts(Integer docId, Integer docVersionNo) {
 		return findByNamedQueryAndNamedParam("Text.getByDocIdAndDocVersionNo",
 				new String[] {"docId", "docVersionNo"}, 
 				new Object[] {docId, docVersionNo}
 		);
-	}
-
-	
-	/**
-	 * Returns text fields for the same document for all versions.
-	 */
-	@Transactional
-	public List<TextDomainObject> getTextsForAllVersions(Integer documentId, I18nLanguage language) {
-		String query = "SELECT t FROM Text t WHERE t.docId = ? AND t.language = ?";
-		
-		return find(query, new Object [] {documentId, language});
-	}
-	
-	/**
-	 * Returns text fields for the same document in version range.
-	 */
-	@Transactional
-	public List<TextDomainObject> getTextsForVersionsInRange(Integer docId,
-			I18nLanguage language, Integer versionFrom, Integer versionTo) {
-		
-		String query = "SELECT t FROM Text t WHERE t.docId=? AND t.language=?" +
-				" AND t.docVersionNo BETWEEN ? AND ?";
-		
-		return find(query, new Object[] {docId, language, versionFrom, versionTo});
-	}
-	
-
-	/**
-	 * Returns text fields for the same document in specific versions.
-	 */
-	@Transactional
-	public List<TextDomainObject> getTextsForVersions(Integer docId,
-			I18nLanguage language, Collection<Integer> versions) {
-		
-		String versionsString = StringUtils.join(versions, ",");
-		
-		String query = String.format(
-			"SELECT t FROM Text t WHERE t.docId = ? AND t.language=? AND t.docVersionNo IN (%s)",
-			versionsString);
-		
-		return find(query, new Object[] {docId, language} );
 	}	
 	
-	/**
-	 * Helper method.
-	 * TODO: replace
-	 */
-	private String createVersionString(Collection<DocumentVersion> versions) {
-		StringBuilder versionString = new StringBuilder();
-		int i = 0;
-		for (DocumentVersion version: versions) {
-			if (i++ != 0) versionString.append(",");
-
-			versionString.append(version.getNo().toString());
-		}
-
-		return versionString.toString();
-	}
-
 
 	/**
 	 * Returns text fields for the same document in version range.

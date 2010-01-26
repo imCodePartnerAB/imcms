@@ -11,10 +11,6 @@
     (org.tmatesoft.svn.core.io SVNRepositoryFactory SVNRepository)
     (org.tmatesoft.svn.core.internal.io.dav DAVRepositoryFactory)))
 
-
-      ;handler (proxy [ISVNDirEntryHandler] []
-      ;          (handleDirEntry [#^SVNDirEntry dirEntry])
-
 ;;; svn-utils ns-docstring: Tiny wrapper around some SVNKit functions.
 
 (def *svn-url-tags* "https://repo.imcode.com/imcode/imcms/tags")

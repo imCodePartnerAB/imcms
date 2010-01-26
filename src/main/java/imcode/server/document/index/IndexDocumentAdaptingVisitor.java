@@ -1,5 +1,7 @@
 package imcode.server.document.index;
 
+import com.imcode.imcms.dao.ImageDao;
+import com.imcode.imcms.dao.TextDao;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -34,22 +36,24 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         this.indexDocument = indexDocument;
     }
 
+    /**
+     * Texts and images are not taken from textDocument. Instead they are queried from DB.
+     */
+    // TODO: refactor and optimize
     public void visitTextDocument(TextDocumentDomainObject textDocument) {
         indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__TEMPLATE, textDocument.getTemplateName()));
-        
-        List<I18nLanguage> languages = Imcms.getI18nSupport().getLanguages();
-        
-        //for (I18nLanguage language: languages) {
-	        //for ( Map.Entry<Integer,TextDomainObject> textEntry : textDocument.getTexts(language).entrySet() ) {
-        for ( Map.Entry<Integer,TextDomainObject> textEntry : textDocument.getTexts().entrySet() ) {
-	            Integer textIndex = textEntry.getKey();
-	            TextDomainObject text = textEntry.getValue();
-	            indexDocument.add(new Field(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText(), Field.Store.NO, Field.Index.ANALYZED));
-	            String htmlStrippedText = stripHtml(text);
-	            indexDocument.add(new Field(DocumentIndex.FIELD__TEXT, htmlStrippedText, Field.Store.NO, Field.Index.ANALYZED));
-	            indexDocument.add(new Field(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText, Field.Store.NO, Field.Index.ANALYZED));
-	        }
-        //}
+
+
+        TextDao textDao = (TextDao)Imcms.getSpringBean("textDao");
+        List<TextDomainObject> texts = textDao.getTexts(textDocument.getId(), textDocument.getVersion().getNo());
+
+        for (TextDomainObject text: texts) {
+            Integer textIndex = text.getNo();
+            indexDocument.add(new Field(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText(), Field.Store.NO, Field.Index.ANALYZED));
+            String htmlStrippedText = stripHtml(text);
+            indexDocument.add(new Field(DocumentIndex.FIELD__TEXT, htmlStrippedText, Field.Store.NO, Field.Index.ANALYZED));
+            indexDocument.add(new Field(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText, Field.Store.NO, Field.Index.ANALYZED));
+	    }
 
         boolean hasChildren = false;
         for ( MenuDomainObject menu : textDocument.getMenus().values() ) {
@@ -61,14 +65,14 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         
         indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__HAS_CHILDREN, Boolean.toString(hasChildren)));
 
-        //for (I18nLanguage language: languages) {
-	        //for ( ImageDomainObject image : textDocument.getImages(language).values() ) {
-        for ( ImageDomainObject image : textDocument.getImages().values() ) {
-	            String imageLinkUrl = image.getLinkUrl();
-	            if ( null != imageLinkUrl && imageLinkUrl.length() > 0 ) {
-	                indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl));
-	            }
-	    //    }
+        ImageDao imageDao = (ImageDao)Imcms.getSpringBean("imageDao");
+        List<ImageDomainObject> images = imageDao.getImages(textDocument.getId(), textDocument.getVersion().getNo());
+
+        for (ImageDomainObject image: images) {
+            String imageLinkUrl = image.getLinkUrl();
+            if ( null != imageLinkUrl && imageLinkUrl.length() > 0 ) {
+                indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl));
+            }
         }
     }
 

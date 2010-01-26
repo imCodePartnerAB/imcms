@@ -41,6 +41,14 @@ public interface DocumentIndex {
     String FIELD__TEMPLATE = "template";
     String FIELD__CHILD_ID = "child_id";
     String FIELD__HAS_CHILDREN = "has_children";
+
+    /**
+     * Indexes existing default document.
+     * 
+     * @param docId
+     * @throws IndexException
+     */
+    //void indexDocument(Integer docId) throws IndexException ;
     
     void indexDocument( DocumentDomainObject document ) throws IndexException ;
 

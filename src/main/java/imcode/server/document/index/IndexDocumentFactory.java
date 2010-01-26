@@ -1,5 +1,7 @@
 package imcode.server.document.index;
 
+import com.imcode.imcms.api.*;
+import com.imcode.imcms.dao.MetaDao;
 import imcode.server.Imcms;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
@@ -10,11 +12,7 @@ import imcode.util.DateConstants;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateTools;
@@ -22,9 +20,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.NumberTools;
 
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 
@@ -32,6 +27,7 @@ import com.imcode.imcms.mapping.DocumentMapper;
  * Create lucene index from document's fields.
  */
 public class IndexDocumentFactory {
+    
     private CategoryMapper categoryMapper;
     private final static Logger log = Logger.getLogger(IndexDocumentFactory.class.getName());
 
@@ -39,14 +35,43 @@ public class IndexDocumentFactory {
         this.categoryMapper = categoryMapper;
     }
 
-    
+
     /**
+     * Document being indexed must exist in a database.
+     *
      * @return lucene document.
      */
-    public Document createIndexDocument( DocumentDomainObject document ) {
+    public Document createIndexDocument(DocumentDomainObject document) {
+        return createIndexDocument(document.getId());
+    }
+
+    
+    /**
+     * 
+     * @return lucene document.
+     * // TODO: refactor and optimize
+     */
+    public Document createIndexDocument(Integer documentId) {
+        if (documentId == null) {
+            throw new IllegalArgumentException("Unable to index document - docId argument is null.");
+        }
+
+
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        DocumentVersionInfo versionInfo = documentMapper.getDocumentVersionInfo(documentId);
+
+        if (versionInfo == null) {
+            throw new RuntimeException(String.format("Unable to index document - document does not exists. Doc id: %s.", documentId));
+        }
+
+        Integer defaultDocVersionNo = versionInfo.getDefaultVersion().getNo();
+        DocumentDomainObject document = documentMapper.getCustomDocument(documentId, defaultDocVersionNo, Imcms.getI18nSupport().getDefaultLanguage());
+
+        MetaDao metaDao = (MetaDao)Imcms.getSpringBean("metaDao");
+        Collection<DocumentLabels> labelsColl = metaDao.getLabels(documentId, defaultDocVersionNo);
+
         Document indexDocument = new Document();
 
-        int documentId = document.getId();
         indexDocument.add(new Field(DocumentIndex.FIELD__META_ID, "" + documentId, Field.Store.YES, Field.Index.NOT_ANALYZED));
 
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__META_ID_LEXICOGRAPHIC, NumberTools.longToString(documentId) ) );
@@ -56,13 +81,16 @@ public class IndexDocumentFactory {
             indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__ROLE_ID, Integer.toString(mapping.getRoleId().intValue())) );
         }
 
-        String headline = document.getHeadline();
-        String menuText = document.getMenuText();
 
-        indexDocument.add(new Field(DocumentIndex.FIELD__META_HEADLINE, headline, Field.Store.NO, Field.Index.ANALYZED));
-        indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__META_HEADLINE_KEYWORD, headline));
+        for (DocumentLabels l: labelsColl) {
+            String headline = l.getHeadline();
+            String menuText = l.getMenuText();
 
-        indexDocument.add(new Field(DocumentIndex.FIELD__META_TEXT, menuText, Field.Store.NO, Field.Index.ANALYZED));
+            indexDocument.add(new Field(DocumentIndex.FIELD__META_HEADLINE, headline, Field.Store.NO, Field.Index.ANALYZED));
+            indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__META_HEADLINE_KEYWORD, headline));
+
+            indexDocument.add(new Field(DocumentIndex.FIELD__META_TEXT, menuText, Field.Store.NO, Field.Index.ANALYZED));
+        }
 
         indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__DOC_TYPE_ID, "" + document.getDocumentTypeId()));
         indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__CREATOR_ID, "" + document.getCreatorId()));
@@ -82,8 +110,6 @@ public class IndexDocumentFactory {
         for (Map.Entry<String, String> entry : document.getProperties().entrySet()) {
             indexDocument.add(unStoredKeyword(entry.getKey(), entry.getValue()));
         }
-
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
         try {
             document.accept(new IndexDocumentAdaptingVisitor(indexDocument));

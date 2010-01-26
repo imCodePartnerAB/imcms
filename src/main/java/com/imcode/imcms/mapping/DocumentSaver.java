@@ -234,7 +234,7 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument, Collection<DocumentLabels> labels, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+    public void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument, Collection<DocumentLabels> labelsColl, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(document);
 
         //document.loadAllLazilyLoaded();
@@ -257,14 +257,13 @@ public class DocumentSaver {
 
         document.accept(savingVisitor);
 
-        // ???
-        //metaDao.deleteLabels(document.getId(), document.getVersion().getNo());
+        for (DocumentLabels labels: labelsColl) {
+            metaDao.deleteLabels(document.getId(), document.getVersion().getNo(), labels.getLanguage());
 
-        for (DocumentLabels l: labels) {
-            //l.setId(null);
-            l.setDocId(document.getId());
-            l.setDocVersionNo(document.getVersion().getNo());
-            metaDao.saveLabels(l);
+            labels.setId(null);
+            labels.setDocId(document.getId());
+            labels.setDocVersionNo(document.getVersion().getNo());
+            metaDao.saveLabels(labels);
         }
 
     }    
@@ -346,11 +345,11 @@ public class DocumentSaver {
 
     @Transactional
     public Integer saveNewDocument(UserDomainObject user,
-                         DocumentDomainObject document, Collection<DocumentLabels> labels, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+                         DocumentDomainObject document, Collection<DocumentLabels> labelsColl, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         Integer docId = saveNewDocument(user, document, copying);
 
-        for (DocumentLabels l: labels) {
+        for (DocumentLabels l: labelsColl) {
             l.setId(null);
             l.setDocId(document.getId());
             l.setDocVersionNo(document.getVersion().getNo());
