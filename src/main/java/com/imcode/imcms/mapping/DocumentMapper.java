@@ -58,7 +58,7 @@ public class DocumentMapper implements DocumentGetter {
     
     private NativeQueriesDao nativeQueriesDao;
     
-    /** TODO: hide. */
+    /** TODO: hide?. */
     private DocumentLoader documentLoader;
     
     /** Document loader caching proxy. Intercepts calls to DocumentLoader. */
@@ -426,16 +426,9 @@ public class DocumentMapper implements DocumentGetter {
     	// Optimize
     	return ArrayUtils.toPrimitive(ids.toArray(new Integer[] {}));
     }
+    
 
-    // TODO: refactor
-    public int[] getAllDocumentIds() {
-    	List<Integer> ids = documentSaver.getMetaDao().getAllDocumentIds();
-    	
-    	// Optimize
-    	return ArrayUtils.toPrimitive(getAllDocumentIdsAsList().toArray(new Integer[] {}));
-    }
-
-    public List<Integer> getAllDocumentIdsAsList() {
+    public List<Integer> getAllDocumentIds() {
     	return documentSaver.getMetaDao().getAllDocumentIds();
     }
     

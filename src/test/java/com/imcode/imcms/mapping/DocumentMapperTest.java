@@ -10,14 +10,10 @@ import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -179,7 +175,7 @@ public class DocumentMapperTest {
 
     @Test
     public void getDocuments() throws Exception {
-        List<Integer> ids = docMapper.getAllDocumentIdsAsList();
+        List<Integer> ids = docMapper.getAllDocumentIds();
         List<DocumentDomainObject> docs = docMapper.getDocuments(ids);
 
         assertEquals(ids.size(), docs.size());

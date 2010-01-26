@@ -177,33 +177,36 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
     
     /**
-     * Indexes all working documents.
+     * Indexes all default documents.
      *
      * @param indexWriter
      * @throws IOException
      */
     private void indexAllDocumentsToIndexWriter( IndexWriter indexWriter ) throws IOException {
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-        int[] documentIds = documentMapper.getAllDocumentIds();
+        List<Integer> documentIds = documentMapper.getAllDocumentIds();
+        int documentsCount = documentIds.size();
 
-        logIndexingStarting( documentIds.length );
+        logIndexingStarting(documentsCount);
         IntervalSchedule indexingLogSchedule = new IntervalSchedule( INDEXING_LOG_PERIOD__MILLISECONDS );
 
-        for ( int i = 0; i < documentIds.length; i++ ) {
+        int i = 0;
+        for (Integer docId: documentIds) {
             try {
-                addDocumentToIndex(documentIds[i], indexWriter );
+                addDocumentToIndex(docId, indexWriter );
             } catch ( Exception ex ) {
-                log.error( "Could not index document with meta_id " + documentIds[i] + ", trying next document.", ex );
+                log.error( "Could not index document with meta_id " + docId + ", trying next document.", ex );
             }
 
             if ( indexingLogSchedule.isTime() ) {
-                logIndexingProgress( i, documentIds.length, indexingLogSchedule.getStopWatch().getTime());
+                logIndexingProgress(i, documentsCount, indexingLogSchedule.getStopWatch().getTime());
             }
-            
+
+            i += 1;
             Thread.yield(); // To make sure other threads with the same priority get a chance to run something once in a while.
         }
 
-        logIndexingCompleted( documentIds.length, indexingLogSchedule.getStopWatch() );
+        logIndexingCompleted(documentsCount, indexingLogSchedule.getStopWatch() );
         optimizeIndex( indexWriter );
     }
 
