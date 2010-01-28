@@ -60,10 +60,13 @@ public abstract class DocumentPageFlow extends PageFlow {
         return (DocumentPageFlow)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
     }
 
+
     public static abstract class SaveDocumentCommand implements Serializable {
         
        /**
-        * Default implementation ignores labels and languages. 
+        * Labels are ignored.
+        * 
+        * @since 6.0
         */
        public void saveDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user)
                throws NoPermissionInternalException, DocumentSaveException {

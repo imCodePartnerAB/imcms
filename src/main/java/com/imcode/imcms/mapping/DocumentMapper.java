@@ -620,46 +620,11 @@ public class DocumentMapper implements DocumentGetter {
      * @param docId document id.
      */
     public DocumentDomainObject getDocument(Integer docId) {
-        Meta meta = documentLoaderCachingProxy.getMeta(docId);
+        DocumentRequestInfo docRequest = Imcms.getDocumentRequestInfo();
 
-        if (meta == null) {
-            return null;
-        }
-        
-        DocumentRequestInfo documentRequestInfo = Imcms.getDocumentRequestInfo();
-
-        if (documentRequestInfo == null) {
-            return getDefaultDocument(docId);
-        }
-
-        UserDomainObject user = documentRequestInfo.getUser();
-        I18nLanguage language = documentRequestInfo.getLanguage();
-        DocumentRequestInfo.DocVersionMode docVersionMode = documentRequestInfo.getDocVersionMode();
-        
-        if (user.isSuperAdmin()) {
-            DocumentRequestInfo.CustomDoc customDoc = documentRequestInfo.getCustomDoc();
-
-            if (customDoc != null && docId.equals(customDoc.id)) {
-                return getCustomDocument(docId, customDoc.versionNo, language);
-            }
-
-            return docVersionMode == DocumentRequestInfo.DocVersionMode.WORKING
-                ? getWorkingDocument(docId, language)
-                : getDefaultDocument(docId, language);
-        }
-        
-
-        if (!language.isDefault() && !meta.getLanguages().contains(language)) {
-            if (meta.getDisabledLanguageShowSetting() == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE) {
-                language = Imcms.getI18nSupport().getDefaultLanguage();
-            } else {
-                return null;
-            }
-        }
-
-        return docVersionMode == DocumentRequestInfo.DocVersionMode.WORKING
-            ? getWorkingDocument(docId, language)
-            : getDefaultDocument(docId, language);
+        return docRequest == null
+            ? getDefaultDocument(docId)
+            : docRequest.getDoc(this, docId);
     }
 
 

@@ -74,7 +74,8 @@ public interface ImcmsConstants {
 
     public static final String REQUEST_PARAM__LANGUAGE = "imcms.doc.language";
 
-    public static final String REQUEST_PARAM__DOC_ID = "imcms.doc.id";
+    /** meta_id is the legacy identifier used across the project. */
+    public static final String REQUEST_PARAM__DOC_ID = "meta_id"; //"imcms.doc.id";
 
     public static final String REQUEST_PARAM__DOC_VERSION_NO = "imcms.doc.version.no";
 
@@ -84,5 +85,5 @@ public interface ImcmsConstants {
 
     public static final String REQUEST_PARAM_VALUE__DOC_VERSION_MODE_DEFAULT = "d";
 
-    public static final String SESSION_ATTR__REQUEST_INFO = "imcms.requestInfo";
+    public static final String SESSION_ATTR__DOC_REQUEST = "imcms.doc.request";
 }

@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.DocumentRequestInfo;
+import com.imcode.imcms.api.I18nSupport;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.ImcmsConstants;
@@ -103,20 +104,9 @@ public class ImcmsFilter implements Filter, ImcmsListener {
             ResourceBundle resourceBundle = Utility.getResourceBundle(request);
             Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
-            DocumentRequestInfo documentRequestInfo = (DocumentRequestInfo)session.getAttribute(ImcmsConstants.SESSION_ATTR__REQUEST_INFO);
-            
-            if (documentRequestInfo == null) {
-                documentRequestInfo = new DocumentRequestInfo();
-                session.setAttribute(ImcmsConstants.SESSION_ATTR__REQUEST_INFO, documentRequestInfo);
-            }
+            updateDocRequest(request, session, user);
 
-            documentRequestInfo.setUser(user);
-            updateRequestInfoLanguage(request, documentRequestInfo);
-            updateRequestInfoVersionNoAndMode(request, documentRequestInfo);
-            
-            Imcms.setDocumentRequestInfo(documentRequestInfo);
-
-            ContentManagementSystem cms = Utility.initRequestWithApi(request, user);
+            Utility.initRequestWithApi(request, user);
 
             NDC.setMaxDepth( 0 );
             String contextPath = request.getContextPath();
@@ -239,88 +229,6 @@ public class ImcmsFilter implements Filter, ImcmsListener {
         }
     }
 
-    /**
-     * Updates user's language.
-     * 
-     * @param request servlet request
-     * @param documentRequestInfo documentRequestInfo
-     * 
-     * @throws ServletException in case of an error.
-     */
-    private void updateRequestInfoLanguage(HttpServletRequest request, DocumentRequestInfo documentRequestInfo)
-    throws ServletException {
-        I18nLanguage language = documentRequestInfo.getLanguage();
-        String languageCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__LANGUAGE);
-
-    	if (languageCode != null) {
-    		language = Imcms.getI18nSupport().getByCode(languageCode);
-    	}
-
-
-    	if (language == null) {// && /*user.isDefaultUser() && */
-            Map<String, I18nLanguage> i18nHosts = Imcms.getI18nSupport().getHosts();
-
-            if (i18nHosts.size() > 0) {
-                String hostname = request.getServerName();
-                language = i18nHosts.get(hostname);
-
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Hostname [" + hostname + "] mapped to language [" + language + "].");
-                }                
-            }
-    	}
-
-        if (language == null) {
-            language = Imcms.getI18nSupport().getDefaultLanguage();
-        }
-        
-        documentRequestInfo.setLanguage(language);
-    }
-
-
-    /**
-     * Updates user's main document version to show and and version mode.
-     *
-     * @param request servlet request
-     * @param documentRequestInfo documentRequestInfo
-     */
-    // TODO: Refactor, Optimize, Add security check
-    // Requre meta_id - 
-    private void updateRequestInfoVersionNoAndMode(HttpServletRequest request, DocumentRequestInfo documentRequestInfo) {
-        String docIdStr = request.getParameter("meta_id");
-        String docVersionNoStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_NO);
-
-        if (docIdStr != null && docVersionNoStr != null) {
-            try {
-                Integer docId = Integer.parseInt(docIdStr);
-                Integer docVersionNo = Integer.parseInt(docVersionNoStr);
-
-                documentRequestInfo.setCustomDoc(new DocumentRequestInfo.CustomDoc(docId, docVersionNo));
-            } catch (NumberFormatException e) {
-                // TODO: do not thorw, pass
-                throw new AssertionError(e);
-            }
-        } else {
-            documentRequestInfo.setCustomDoc(null);
-        }
-
-        DocumentRequestInfo.DocVersionMode docVersionMode = documentRequestInfo.getDocVersionMode();
-
-        String docVersionModeStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_MODE);
-
-        if (docVersionModeStr != null) {
-            docVersionMode = docVersionModeStr.toUpperCase().charAt(0) == 'W'
-                    ? DocumentRequestInfo.DocVersionMode.WORKING
-                    : DocumentRequestInfo.DocVersionMode.DEFAULT;
-        }
-
-        if (docVersionMode == null) {
-            docVersionMode = DocumentRequestInfo.DocVersionMode.DEFAULT;
-        }
-
-        documentRequestInfo.setDocVersionMode(docVersionMode);
-    }
-
     
     public void logEnvironment(ServletContext servletContext) {
         logger.info("Servlet Engine: " + servletContext.getServerInfo());
@@ -338,5 +246,84 @@ public class ImcmsFilter implements Filter, ImcmsListener {
             String systemPropertyName = systemPropertyNames[i];
             logger.info(systemPropertyName + ": " + System.getProperty(systemPropertyName));
         }
+    }
+
+
+    /**
+     *
+     * @param request
+     * @param session
+     * @param user
+     *
+     * todo: add security check
+     */
+    private void updateDocRequest(HttpServletRequest request, HttpSession session, UserDomainObject user) {
+        DocumentRequestInfo newDocRequest;
+        DocumentRequestInfo oldDocRequest = (DocumentRequestInfo)session.getAttribute(ImcmsConstants.SESSION_ATTR__DOC_REQUEST);
+
+        I18nLanguage language = null;
+
+        String languageCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__LANGUAGE);
+
+    	if (languageCode != null) {
+    		language = Imcms.getI18nSupport().getByCode(languageCode);
+    	} else if (oldDocRequest != null) {
+            language = oldDocRequest.getLanguage();
+        } else {
+            if (language == null) {// && /*user.isDefaultUser() && */
+                Map<String, I18nLanguage> i18nHosts = Imcms.getI18nSupport().getHosts();
+
+                if (i18nHosts.size() > 0) {
+                    String hostname = request.getServerName();
+                    language = i18nHosts.get(hostname);
+
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Hostname [" + hostname + "] mapped to language [" + language + "].");
+                    }
+                }
+            }
+
+            if (language == null) {
+                language = Imcms.getI18nSupport().getDefaultLanguage();
+            }
+        }
+
+        Integer docId = null;
+        String docIdStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID);
+
+        if (docIdStr != null) {
+            try {
+                docId = Integer.parseInt(docIdStr); // <- this might be an alias - ??
+            } catch (NumberFormatException e) {
+                throw new AssertionError(e);
+            }
+        } else if (oldDocRequest != null) {
+            docId = oldDocRequest.getDocId();
+        }
+
+        String docVersionNoStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_NO);
+
+        if (docVersionNoStr != null) {
+            try {
+                Integer docVersionNo = Integer.parseInt(docVersionNoStr);
+
+                newDocRequest = DocumentRequestInfo.newCustomDocRequestInstance(user, language, docId, docVersionNo);
+            } catch (NumberFormatException e) {
+                // TODO: do not thorw, pass??
+                throw new AssertionError(e);
+            }
+        } else {
+            String docVersionModeStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_MODE);
+
+            if (docVersionModeStr != null && docVersionModeStr.toUpperCase().charAt(0) == 'W') {
+                newDocRequest = DocumentRequestInfo.newWorkingDocRequestInstance(user, language, docId);
+            } else {
+                newDocRequest = DocumentRequestInfo.newDefaultDocRequestInstance(user, language, docId);
+            }
+        }
+
+        session.setAttribute(ImcmsConstants.SESSION_ATTR__DOC_REQUEST, newDocRequest);
+
+        Imcms.setDocumentRequestInfo(newDocRequest);
     }
 }
