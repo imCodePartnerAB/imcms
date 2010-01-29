@@ -13,26 +13,63 @@ Xinha.prototype._insertImage = function(image)
     }
     if ( image )
     {
-        var rel = image.getAttribute("rel"), 
-            url, format, width, height, cropX1, cropY1, cropX2, cropY2, rotateAngle;
-        if (rel) {
-            var parts = rel.split(";");
+        var src = image.getAttribute("src"),
+            url, format, width, height, cropX1, cropY1, cropX2, cropY2, rotateAngle, queryIndex;
             
-            url = decodeURIComponent(parts[0]);
-            format = parts[1];
-            width = parts[2];
-            height = parts[3];
-            cropX1 = parts[4];
-            cropY1 = parts[5];
-            cropX2 = parts[6];
-            cropY2 = parts[7];
-            rotateAngle = parts[8];
+        if (src && (queryIndex = src.indexOf("?")) != -1) {
+            var parts = src.substring(queryIndex + 1).split("&");
+            
+            for (var i = 0; i < parts.length; ++i) {
+                var keyValue = parts[i].split("=");
+                
+                if (keyValue.length != 2) {
+                    continue;
+                }
+                
+                var key = keyValue[0], 
+                    value = keyValue[1];
+                
+                switch (key) {
+                    case "path":
+                        url = "<%= request.getContextPath() %>" + decodeURIComponent(value);
+                        break;
+                    case "file_id":
+                        url = "<%= request.getContextPath() %>/" + value;
+                        break;
+                    case "width":
+                        width = value;
+                        break;
+                    case "height":
+                        height = value;
+                        break;
+                    case "format":
+                        format = value;
+                        break;
+                    case "crop_x1":
+                        cropX1 = value;
+                        break;
+                    case "crop_y1":
+                        cropY1 = value;
+                        break;
+                    case "crop_x2":
+                        cropX2 = value;
+                        break;
+                    case "crop_y2":
+                        cropY2 = value;
+                        break;
+                    case "rangle":
+                        rotateAngle = value;
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     
         outparam =
         {
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>' : url, 
-            '<%= ImageEditPage.REQUEST_PARAMETER__FORMAT %>' : format, 
+            '<%= ImageEditPage.REQUEST_PARAMETER__FORMAT_EXTENSION %>' : format, 
             '<%= ImageEditPage.REQUEST_PARAMETER__CROP_X1 %>' : cropX1, 
             '<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y1 %>' : cropY1, 
             '<%= ImageEditPage.REQUEST_PARAMETER__CROP_X2 %>' : cropX2, 
@@ -96,6 +133,8 @@ Xinha.prototype._insertImage = function(image)
                     img.src = param.src;
                 }
 
+                img.removeAttribute("rel");
+
                 for ( var field in param )
                 {
                     var value = param[field];
@@ -129,9 +168,6 @@ Xinha.prototype._insertImage = function(image)
                             break;
                         case "name":
                             img.id = value;
-                            break;
-                        case "rel":
-                            img.setAttribute("rel", value);
                             break;
                     }
                 }

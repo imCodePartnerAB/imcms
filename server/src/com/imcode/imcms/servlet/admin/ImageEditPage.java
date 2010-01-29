@@ -95,6 +95,7 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_NAME = "archive_img_nm";
     public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME = "archive_file_nm";
     public static final String REQUEST_PARAMETER__FORMAT = "format";
+    public static final String REQUEST_PARAMETER__FORMAT_EXTENSION = "format_ext";
     public static final String REQUEST_PARAMETER__CROP_X1 = "crop_x1";
     public static final String REQUEST_PARAMETER__CROP_Y1 = "crop_y1";
     public static final String REQUEST_PARAMETER__CROP_X2 = "crop_x2";
@@ -245,7 +246,13 @@ public class ImageEditPage extends OkCancelPage {
         ImageInfo imageInfo = image.getImageInfo();
         image.setFormat((imageInfo != null ? imageInfo.getFormat() : null));
         
-        Format format = Format.findFormat(NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__FORMAT), 0));
+        Format format = null;
+        if (req.getParameter(REQUEST_PARAMETER__FORMAT_EXTENSION) != null) {
+            format = Format.findFormatByExtension(req.getParameter(REQUEST_PARAMETER__FORMAT_EXTENSION));
+        } else {
+            format = Format.findFormat(NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__FORMAT), 0));
+        }
+        
         if (format != null) {
         	image.setFormat(format);
         }
