@@ -110,12 +110,26 @@
   (last (sort-releases releases)))
 
 
+(defn- inc-release-field [release field]
+  (assoc release field (inc (release field))))
+
+(defn- inc-revision-no [release]
+  (inc-release-field release :revision-no))
+
+(defn- inc-build-no [release]
+  (inc-release-field release :build-no))
+
+(defn- set-build-data-to-nil [release]
+  (assoc release :build-name nil, :build-no nil))
+
+
 (defn next-final-release
   "Creates next final release based on provided major-no."
   [releases major-no]
   (if-let [release (last-release (select-releases releases major-no))]
-    (let [revision-no-fn (if (final-release? release) inc identity)]
-      (create-release major-no, (release :minor-no), (revision-no-fn (release :revision-no))))
+    (if (final-release? release)
+      (inc-revision-no release)
+      (set-build-data-to-nil release))
 
     (create-release major-no, 0, 0)))
 
@@ -124,9 +138,9 @@
   "Creates next pre-release based on provided major-no."
   [releases major-no]
   (if-let [release (last-release (select-releases releases major-no))]
-    (if (final-release? release)
-      (merge (next-final-release releases major-no) {:build-name "alpha", :build-no 1})
-      (create-release major-no, (release :minor-no), (release :revision-no), (release :build-name), (inc (release :build-no))))
+    (if (pre-release? release)
+      (inc-build-no release)
+      (merge (inc-revision-no release) {:build-name "alpha", :build-no 1}))
 
     (create-release major-no, 0, 0, "alpha", 1)))
 
