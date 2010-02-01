@@ -21,9 +21,9 @@ import com.imcode.imcms.dao.*;
 import com.imcode.imcms.mapping.orm.DefaultDocumentVersion;
 
 /**
- * This class is instantiated using spring framework.
- * 
- * Used by DocumentMapper. API must not be invoked directly.  
+ * Used internally by DocumentMapper. Must not be used directly.
+ *
+ * Instantiated and initialized using spring framework. 
  */
 public class DocumentSaver {
 
@@ -355,6 +355,7 @@ public class DocumentSaver {
             l.setId(null);
             l.setDocId(document.getId());
             l.setDocVersionNo(document.getVersion().getNo());
+
             metaDao.saveLabels(l);
         }
 
@@ -363,9 +364,6 @@ public class DocumentSaver {
     
     
     /**
-     * Temporary method
-     * Copies data from attributes to meta and stores meta.
-     * 
      * @return saved document meta.
      */
     private Meta saveMeta(DocumentDomainObject document) {
@@ -376,25 +374,7 @@ public class DocumentSaver {
     	if (meta.getId() == null) {
         	meta.setDocumentType(document.getDocumentTypeId());
         	meta.setActivate(1);
-    	} 
-    	
-    	//for update
-        //private static final int META_HEADLINE_MAX_LENGTH = 255;
-        //private static final int META_TEXT_MAX_LENGTH = 1000;
-        //String headlineThatFitsInDB = headline.substring(0, Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
-        //String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
-    	
-    	// Converted from legacy queries:
-    	// Should be handled separately from meta???
-    	//meta.getRoleIdToPermissionSetIdMap();
-    	//meta.getDocPermisionSetEx().clear();
-    	//meta.getDocPermisionSetExForNew().clear();    	
-    	//meta.getPermissionSetBitsMap().clear();
-    	//meta.getPermissionSetBitsForNewMap().clear();    	    	
-    	
-    	// WHAT TO DO WITH THIS on copy save and on base save?    	
-    	//meta.setCategoryIds(document.getCategoryIds());
-    	//meta.setProperties(document.getProperties());
+    	}
     	
     	metaDao.saveMeta(meta);
     	

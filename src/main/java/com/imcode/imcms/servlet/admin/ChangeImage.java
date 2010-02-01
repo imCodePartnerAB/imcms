@@ -15,7 +15,6 @@ import imcode.util.Utility;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Collection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.imcode.imcms.api.I18nSupport;
 import com.imcode.imcms.dao.ImageDao;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -82,7 +80,7 @@ public class ChangeImage extends HttpServlet {
                 ImcmsServices services = Imcms.getServices();
                 
                 try {
-                    services.getDocumentMapper().saveImages(document, images, user);
+                    services.getDocumentMapper().saveTextDocumentImages(document, images, user);
                 } catch ( NoPermissionToEditDocumentException e ) {
                     throw new ShouldHaveCheckedPermissionsEarlierException(e);
                 } catch ( NoPermissionToAddDocumentToMenuException e ) {

@@ -113,7 +113,7 @@ public final class SaveText extends HttpServlet {
                           final int txt_no, final ImcmsServices imcref, int meta_id,
                           final UserDomainObject user) {
         try {
-        	documentMapper.saveText(document, text, user);        
+        	documentMapper.saveTextDocumentText(document, text, user);
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
         } catch ( NoPermissionToAddDocumentToMenuException e ) {

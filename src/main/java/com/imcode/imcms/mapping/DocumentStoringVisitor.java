@@ -6,10 +6,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.textdocument.MenuDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.FileUtility;
@@ -194,26 +191,28 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         image.setType(image.getSource().getTypeId());
         
         imageDao.saveImage(image);
-        //imageDao.saveImageHistory(image.getDocId(), image, user); 
+        imageDao.saveImageHistory(doc.getId(), image, user); 
     }
 
 
     // must be executed within transaction
-    void updateTextDocumentImages(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
+    void updateTextDocumentImages(TextDocumentDomainObject doc, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
-        Integer docId = textDocument.getMeta().getId();
-        Integer docVersionNo = textDocument.getVersion().getNo();
+        Integer docId = doc.getMeta().getId();
+        Integer docVersionNo = doc.getVersion().getNo();
 
         imageDao.deleteImages(docId, docVersionNo);
         imageDao.flush();
 
-        for (ImageDomainObject image: textDocument.getImages().values()) {
-            saveTextDocumentImage(textDocument, image, user);
+        for (ImageDomainObject image: doc.getImages().values()) {
+            saveTextDocumentImage(doc, image, user);
+            imageDao.saveImageHistory(doc.getId(), image, user);
         }
 
 
-        for (ImageDomainObject image: textDocument.getLoopImages().values()) {
-            saveTextDocumentImage(textDocument, image, user);
+        for (ImageDomainObject image: doc.getLoopImages().values()) {
+            saveTextDocumentImage(doc, image, user);
+            imageDao.saveImageHistory(doc.getId(), image, user);
         }
     }
     
@@ -314,15 +313,31 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         return extensions;
     }
 
-    public void updateTextDocumentMenus(final TextDocumentDomainObject textDocument, final TextDocumentDomainObject oldTextDocument, final UserDomainObject savingUser) {
+    public void updateTextDocumentMenus(final TextDocumentDomainObject doc, final TextDocumentDomainObject oldDoc, final UserDomainObject user) {
     	MenuDao dao = (MenuDao)services.getSpringBean("menuDao");
 
-    	dao.saveDocumentMenus(textDocument.getId(), textDocument.getVersion().getNo(), textDocument.getMenus());
+        // delete menu/items?
+        // add menus history?
+
+        Integer docId = doc.getId();
+        Integer docVersionNo = doc.getVersion().getNo();
+
+		for (Map.Entry<Integer, MenuDomainObject> entry: doc.getMenus().entrySet()) {
+			MenuDomainObject menu = entry.getValue();
+
+			menu.setDocId(docId);
+            menu.setDocVersionNo(docVersionNo);
+			menu.setNo(entry.getKey());
+
+			dao.saveMenu(menu);
+		}
     }
 
-    public void updateTextDocumentMenu(final TextDocumentDomainObject textDocument, final MenuDomainObject menu, final UserDomainObject savingUser) {
+    public void updateTextDocumentMenu(final TextDocumentDomainObject textDocument, final MenuDomainObject menu, final UserDomainObject user) {
     	MenuDao dao = (MenuDao)services.getSpringBean("menuDao");
 
+        //delete menu first?
+        
     	dao.saveMenu(menu);
     }
 }

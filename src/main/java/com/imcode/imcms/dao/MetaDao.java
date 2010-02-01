@@ -21,6 +21,9 @@ import com.imcode.imcms.mapping.orm.UrlReference;
 
 public class MetaDao extends HibernateTemplate {
 
+    private static final int META_HEADLINE_MAX_LENGTH = 255;
+    private static final int META_TEXT_MAX_LENGTH = 1000;
+
 	/**
 	 * @return Meta.
 	 */
@@ -113,6 +116,15 @@ public class MetaDao extends HibernateTemplate {
 
     @Transactional
     public DocumentLabels saveLabels(DocumentLabels labels) {
+        String headline = labels.getHeadline();
+        String text = labels.getMenuText();
+        
+        String headlineThatFitsInDB = headline.substring(0, Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
+        String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
+
+        labels.setHeadline(headlineThatFitsInDB);
+        labels.setMenuText(textThatFitsInDB);
+
         save(labels);
 
         return labels;

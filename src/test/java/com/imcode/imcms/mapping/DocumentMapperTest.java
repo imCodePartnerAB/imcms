@@ -127,7 +127,7 @@ public class DocumentMapperTest {
         text.setContentLoopNo(contentLoopNo);
         text.setContentIndex(contentIndex);        
 
-        docMapper.saveText(doc, text, admin);
+        docMapper.saveTextDocumentText(doc, text, admin);
     }
 
 
@@ -165,7 +165,7 @@ public class DocumentMapperTest {
         image.setContentLoopNo(contentLoopNo);
         image.setContentIndex(contentIndex);
 
-        docMapper.saveImage(doc, image, admin);
+        docMapper.saveTextDocumentImage(doc, image, admin);
     }
 
 
