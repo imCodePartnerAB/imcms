@@ -2,7 +2,7 @@
   ;#^{:doc ""})
 
 ;;; Release name regular expression.
-;;; all automatically generated release names match this format.
+;;; All automatically generated releases names match this format.
 ;;;
 ;;; Examples of release tags:
 ;;;   "3.2.1", "4.0.1-beta1", "6.0.0-alpha15"
@@ -11,8 +11,10 @@
 (def release-re #"(\d+)\.(\d+)\.(\d)(?:-(alpha|beta)(\d+))?")
 
 
-;;; build-name and build-no might be nil.
-;;; if build-name is nil then build-no is also nil
+;;; Release structure.
+;;; A release can be 'pre' of 'final'.
+;;; In case of final release build-name and build-no are set to nil.
+;;; In case of pre-release build name is either 'alpha' or 'beta' and build-no is a pre-release sequence number.
 (defstruct release-struct :major-no :minor-no :revision-no :build-name :build-no)
 
 
@@ -29,7 +31,7 @@
 
 
 (defn release-name
-  "Builds and returns release name from s release struct."
+  "Builds and returns release name from s release struct fields."
   [{:keys [major-no minor-no revision-no build-name build-no]}]
   (let [name (format "%d.%d.%d" major-no minor-no revision-no)]
     (if-not build-name
@@ -83,11 +85,12 @@
 
 
 (defn create-releases-from-names
-  "Creates releases from names.
-  Takes sequence of release names and releases structs sec from names seq.
+  "Creates releases from their names.
+  Takes a sequence of releases names and returns a sequence of releases structs.
   Names which are not conform to relase name format are skipped."
   [names]
   (for [release-vals (map #(re-matches release-re %) names) :when release-vals]
+    ;; the first val in release-vals is a name itself, so take the rest 
     (apply create-release (rest release-vals))))
 
 

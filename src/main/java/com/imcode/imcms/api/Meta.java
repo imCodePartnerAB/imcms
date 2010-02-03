@@ -518,8 +518,7 @@ public class Meta implements Serializable, Cloneable {
 		return permissionSetBitsForNewMap;
 	}
 
-	public void setPermissionSetBitsForNewMap(
-			Map<Integer, Integer> permissionSetBitsForNew) {
+	public void setPermissionSetBitsForNewMap(Map<Integer, Integer> permissionSetBitsForNew) {
 		this.permissionSetBitsForNewMap = permissionSetBitsForNew;
 	}
 
@@ -535,8 +534,7 @@ public class Meta implements Serializable, Cloneable {
 		return permisionSetExForNew;
 	}
 
-	public void setPermisionSetExForNew(
-			Set<PermisionSetEx> docPermisionSetExForNew) {
+	public void setPermisionSetExForNew(Set<PermisionSetEx> docPermisionSetExForNew) {
 		this.permisionSetExForNew = docPermisionSetExForNew;
 	}
 
