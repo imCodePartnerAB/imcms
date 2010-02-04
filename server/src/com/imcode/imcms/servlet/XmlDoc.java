@@ -33,7 +33,6 @@ public class XmlDoc extends HttpServlet {
             idRange = new IntRange(documentId, documentId);     
         }
 
-
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         Iterator documentsIterator = documentMapper.getDocumentsIterator(idRange);
         UserDomainObject currentUser = Utility.getLoggedOnUser(request);
