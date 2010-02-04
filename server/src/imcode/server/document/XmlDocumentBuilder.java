@@ -243,6 +243,8 @@ public class XmlDocumentBuilder {
             Element imageElement = xmlDocument.createElement( "image" );
             imageElement.setAttribute( "index", "" + imageIndex );
             imageElement.setAttribute( "path", image.getUrlPath( "" )  );
+            imageElement.setAttribute( "alt-text", image.getAlternateText());
+            
             return imageElement;
         }
 
