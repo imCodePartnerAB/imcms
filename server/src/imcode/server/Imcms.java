@@ -185,23 +185,7 @@ public class Imcms {
         }
     }
 
-    public static DatabaseVersion getRequiredDatabaseVersion()
-    {
-        Properties props = getServerProperties();
-        String version = props.getProperty("DatabaseVersion");
-
-        if (!StringUtils.isBlank(version))
-        {
-            StringTokenizer t = new StringTokenizer(version, ".");
-            return new DatabaseVersion(Integer.parseInt(t.nextToken()), Integer.parseInt(t.nextToken()));
-        }
-        else {
-            return null; 
-        }
-    }
-
-    public static String getDefaultLanguage()
-    {
+    public static String getDefaultLanguage() {
         Properties props = getServerProperties();
         String language = props.getProperty("DefaultLanguage");
 

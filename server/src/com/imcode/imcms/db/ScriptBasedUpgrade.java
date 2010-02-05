@@ -1,5 +1,7 @@
 package com.imcode.imcms.db;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
 import org.apache.ddlutils.model.Database;
 import org.apache.ddlutils.Platform;
 import org.apache.log4j.Logger;
@@ -15,20 +17,20 @@ import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.StringTokenizer;
 
 import imcode.server.Imcms;
 
 /**
- * Extends database upgrade functionality with script based option. New mechanism uses 'db.schema.version'
- * property. This property defines a set of scripts that must be applied to database to upgrade it to
- * actual version.
+ * Extends database upgrade functionality with script based option.
  */
 public class ScriptBasedUpgrade extends ImcmsDatabaseUpgrade {
 
@@ -36,16 +38,13 @@ public class ScriptBasedUpgrade extends ImcmsDatabaseUpgrade {
 
     private String databaseVendor;
     private DatabaseVersion currentVersion;
-    private DatabaseVersion requiredVersion;
 
     public ScriptBasedUpgrade(String databaseVendor,
                               DatabaseVersion currentVersion,
-                              DatabaseVersion requiredVersion,
                               Database ddl) {
         super(ddl);
         this.databaseVendor = databaseVendor;
         this.currentVersion = currentVersion;
-        this.requiredVersion = requiredVersion;
     }
 
     public void upgrade(com.imcode.db.Database database) throws DatabaseException {
@@ -59,15 +58,22 @@ public class ScriptBasedUpgrade extends ImcmsDatabaseUpgrade {
             XPath xpath = xpathFactory.newXPath();
 
             final NodeList scriptList = (NodeList)xpath.evaluate(
-                    String.format("/schema-upgrade/diff[@version <= %s and @version > %s]/vendor[@name = '%s']/script",
-                    requiredVersion, currentVersion, databaseVendor), doc, XPathConstants.NODESET);
+                    String.format("/schema-upgrade/diff[@version > %s]/vendor[@name = '%s']/script",
+                    currentVersion, databaseVendor), doc, XPathConstants.NODESET);
+
+            final int updatesCount = scriptList.getLength();
+
+            if (updatesCount == 0) {
+                LOG.info("Database schema is up to date. Current version " + currentVersion);
+                return;
+            }
 
             database.execute(new TransactionDatabaseCommand() {
                 public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
                     File scriptFile = null;
                     try {
                         Element scriptElement = null;
-                        for (int i = 0; i < scriptList.getLength(); i++) {
+                        for (int i = 0; i < updatesCount; i++) {
                             scriptElement = (Element)scriptList.item(i);
                             String script = scriptElement.getAttribute("location");
                             scriptFile = new File(Imcms.getPath(), "WEB-INF/sql/diff/" + script);

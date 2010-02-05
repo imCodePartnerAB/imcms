@@ -7,6 +7,7 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.TransactionDatabaseCommand;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.db.handlers.SingleObjectHandler;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.ddlutils.platform.SqlBuilder;
 import org.apache.log4j.Logger;
 
@@ -19,7 +20,6 @@ import imcode.server.Imcms;
 public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
 
     private static final String SQL_STATE__MISSING_TABLE = "42S02";
-    private static final DatabaseVersion LAST_OLD_MECHANISM_VERSION = new DatabaseVersion(4, 10);
 
     private final static Logger LOG = Logger.getLogger(StartupDatabaseUpgrade.class);
 
@@ -85,51 +85,35 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
     }
 
     private void upgradeDatabase(DatabaseVersion databaseVersion, Database database) {
-
-        final DatabaseVersion requiredDatabaseVersion = Imcms.getRequiredDatabaseVersion();
         LOG.info("The current database version is " + databaseVersion);
-        LOG.info("The required database version is " + requiredDatabaseVersion);
-        
-        if (requiredDatabaseVersion.compareTo(databaseVersion) > 0) {
-            if (databaseVersion.compareTo(LAST_OLD_MECHANISM_VERSION) < 0)
-            {
-                for (final DatabaseVersionUpgradePair versionUpgradePair : upgrades) {
-                    final DatabaseVersion upgradeVersion = versionUpgradePair.getVersion();
-                    if (upgradeVersion.compareTo(databaseVersion) > 0 && upgradeVersion.compareTo(requiredDatabaseVersion) <= 0) {
-                        LOG.info("Upgrading database to version " + upgradeVersion);
-                        database.execute(new TransactionDatabaseCommand() {
-                            public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
-                                SingleConnectionDatabase database = new SingleConnectionDatabase(connection);
-                                versionUpgradePair.getUpgrade().upgrade(database);
-                                setDatabaseVersion(database, upgradeVersion);
-                                return null;
-                            }
-                        });
-                        databaseVersion = upgradeVersion;
-                    }
-                }
-            }
 
-            if (requiredDatabaseVersion.compareTo(databaseVersion) > 0) {
-                runScriptBasedUpgrade(databaseVersion, database);
-            }
-            else {
-                LOG.info("Database upgraded to version " + databaseVersion);
+        for (final DatabaseVersionUpgradePair versionUpgradePair : upgrades) {
+            final DatabaseVersion upgradeVersion = versionUpgradePair.getVersion();
+            if (upgradeVersion.compareTo(databaseVersion) > 0) {
+                LOG.info("Upgrading database to version " + upgradeVersion);
+                database.execute(new TransactionDatabaseCommand() {
+                    public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
+                        SingleConnectionDatabase database = new SingleConnectionDatabase(connection);
+                        versionUpgradePair.getUpgrade().upgrade(database);
+                        setDatabaseVersion(database, upgradeVersion);
+                        return null;
+                    }
+                });
+                databaseVersion = upgradeVersion;
             }
         }
 
+        runScriptBasedUpgrade(databaseVersion, database);
     }
 
-    private void runScriptBasedUpgrade(DatabaseVersion databaseVersion, Database database) {
-        final DatabaseVersion currentVersion = databaseVersion;
+    private void runScriptBasedUpgrade(final DatabaseVersion currentVersion, Database database) {
         database.execute(new DatabaseCommand() {
             public Object executeOn(DatabaseConnection connection) throws DatabaseException {
                 SingleConnectionDatabase database = new SingleConnectionDatabase(connection);
                 try {
                     String databaseVendor = connection.getConnection().getMetaData()
                         .getDatabaseProductName().toLowerCase();
-                    ScriptBasedUpgrade upgrade = new ScriptBasedUpgrade(databaseVendor, currentVersion,
-                        Imcms.getRequiredDatabaseVersion(), wantedDdl);
+                    ScriptBasedUpgrade upgrade = new ScriptBasedUpgrade(databaseVendor, currentVersion, wantedDdl);
                     upgrade.upgrade(database);
                 }
                 catch (Exception ex)
@@ -159,9 +143,7 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
         DatabaseVersion lastDatabaseVersion = getLastDatabaseVersion();
         setDatabaseVersion(database, lastDatabaseVersion);
 
-        if (lastDatabaseVersion.compareTo(Imcms.getRequiredDatabaseVersion()) < 0) {
-            runScriptBasedUpgrade(lastDatabaseVersion, database);
-        }
+        runScriptBasedUpgrade(lastDatabaseVersion, database);
     }
 
     private DatabaseVersion getLastDatabaseVersion() {
