@@ -2,6 +2,7 @@ package com.imcode.imcms.db;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.ddlutils.model.Database;
 import org.apache.ddlutils.Platform;
 import org.apache.log4j.Logger;
@@ -17,14 +18,12 @@ import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.Collection;
 import java.util.StringTokenizer;
 
 import imcode.server.Imcms;
@@ -32,24 +31,43 @@ import imcode.server.Imcms;
 /**
  * Extends database upgrade functionality with script based option.
  */
-public class ScriptBasedUpgrade extends ImcmsDatabaseUpgrade {
+public class ScriptBasedUpgrade extends DatabaseTypeSpecificUpgrade {
 
     private final static Logger LOG = Logger.getLogger(ScriptBasedUpgrade.class);
 
-    private String databaseVendor;
     private DatabaseVersion currentVersion;
 
-    public ScriptBasedUpgrade(String databaseVendor,
-                              DatabaseVersion currentVersion,
-                              Database ddl) {
+    public ScriptBasedUpgrade(Database ddl, DatabaseVersion currentVersion) {
         super(ddl);
-        this.databaseVendor = databaseVendor;
         this.currentVersion = currentVersion;
     }
 
-    public void upgrade(final com.imcode.db.Database db) throws DatabaseException {
+    @Override
+    public void upgradeMssql(com.imcode.db.Database database) throws DatabaseException {
+        upgrade(database, "mssql");
+    }
+
+    @Override
+    public void upgradeMysql(com.imcode.db.Database database) throws DatabaseException {
+        upgrade(database, "mysql");
+    }
+
+    @Override
+    public void upgradeOther(com.imcode.db.Database database) throws DatabaseException {
+        String msg = String.format("Database schema upgrade is not implemented for platform %s.", database);
+        LOG.error(msg);
+        throw new NotImplementedException(msg);
+    }
+
+    /**
+     *
+     * @param database
+     * @param vendorName used to select upgrade scripts from schema upgrade configuration file. 
+     * @throws DatabaseException
+     */
+    private void upgrade(final com.imcode.db.Database database, final String vendorName) throws DatabaseException {
         LOG.info("Running script-based schema upgrade");
-        
+
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = dbFactory.newDocumentBuilder();
@@ -60,17 +78,17 @@ public class ScriptBasedUpgrade extends ImcmsDatabaseUpgrade {
 
             final NodeList scriptList = (NodeList)xpath.evaluate(
                     String.format("/schema-upgrade/diff[@version > %s]/vendor[@name = '%s']/script",
-                    currentVersion, databaseVendor), doc, XPathConstants.NODESET);
+                    currentVersion, vendorName), doc, XPathConstants.NODESET);
 
             final int updatesCount = scriptList.getLength();
 
             if (updatesCount == 0) {
                 LOG.info(String.format
-                        ("No schema upgrade required for vendor %s. Current version is %s.", databaseVendor, currentVersion));
+                        ("No schema upgrade required for vendor %s. Current version is %s.", vendorName, currentVersion));
                 return;
             }
 
-            db.execute(new TransactionDatabaseCommand() {
+            database.execute(new TransactionDatabaseCommand() {
                 public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
                     File scriptFile = null;
                     try {
@@ -94,7 +112,7 @@ public class ScriptBasedUpgrade extends ImcmsDatabaseUpgrade {
                             DatabaseVersion dv = new DatabaseVersion(
                                     Integer.parseInt(st.nextToken()),
                                     Integer.parseInt(st.nextToken()));
-                            setDatabaseVersion(db, dv);
+                            setDatabaseVersion(database, dv);
 
                             currentVersion = dv;
                         }
@@ -109,11 +127,12 @@ public class ScriptBasedUpgrade extends ImcmsDatabaseUpgrade {
             });
 
             LOG.info("Database upgraded to version " + currentVersion);
-
         } catch (Exception ex) {
             LOG.fatal("Failed to run script based upgrade.", ex);
         }
     }
+
+
 
     private void setDatabaseVersion(com.imcode.db.Database database, DatabaseVersion newVersion) {
         Integer rowsUpdated = (Integer) database.execute(new SqlUpdateCommand("UPDATE database_version SET major = ?, minor = ?",

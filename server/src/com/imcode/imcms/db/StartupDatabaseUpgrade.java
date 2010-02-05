@@ -86,7 +86,7 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
 
     private void upgradeDatabase(DatabaseVersion databaseVersion, Database database) {
         LOG.info("The current database version is " + databaseVersion);
-
+        
         for (final DatabaseVersionUpgradePair versionUpgradePair : upgrades) {
             final DatabaseVersion upgradeVersion = versionUpgradePair.getVersion();
             if (upgradeVersion.compareTo(databaseVersion) > 0) {
@@ -110,16 +110,10 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
         database.execute(new DatabaseCommand() {
             public Object executeOn(DatabaseConnection connection) throws DatabaseException {
                 SingleConnectionDatabase database = new SingleConnectionDatabase(connection);
-                try {
-                    String databaseVendor = connection.getConnection().getMetaData()
-                        .getDatabaseProductName().toLowerCase();
-                    ScriptBasedUpgrade upgrade = new ScriptBasedUpgrade(databaseVendor, currentVersion, wantedDdl);
-                    upgrade.upgrade(database);
-                }
-                catch (Exception ex)
-                {
-                    LOG.fatal("Failed to run script based upgrade.", ex);
-                }
+                ScriptBasedUpgrade upgrade = new ScriptBasedUpgrade(wantedDdl, currentVersion);
+
+                upgrade.upgrade(database);
+                
                 return null;
             }
         });
