@@ -67,12 +67,8 @@ public class XmlDoc extends HttpServlet {
         
         while (documentsIterator.hasNext()) {
             DocumentDomainObject document = (DocumentDomainObject)documentsIterator.next();
-            if ( null == document ) {
-                continue;
-            } else if (!currentUser.canAccess(document) || !document.isPublished() && !currentUser.canEdit(document) ) {
-                continue;
-            }
-            else {
+            
+            if (document != null) {
                 xmlDocumentBuilder.addDocument( document);
             }
         }

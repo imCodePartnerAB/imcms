@@ -47,8 +47,9 @@ public class ScriptBasedUpgrade extends ImcmsDatabaseUpgrade {
         this.currentVersion = currentVersion;
     }
 
-    public void upgrade(com.imcode.db.Database database) throws DatabaseException {
-        final com.imcode.db.Database db = database;
+    public void upgrade(final com.imcode.db.Database db) throws DatabaseException {
+        LOG.info("Running script-based schema upgrade");
+        
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = dbFactory.newDocumentBuilder();
@@ -64,11 +65,12 @@ public class ScriptBasedUpgrade extends ImcmsDatabaseUpgrade {
             final int updatesCount = scriptList.getLength();
 
             if (updatesCount == 0) {
-                LOG.info("Database schema is up to date. Current version " + currentVersion);
+                LOG.info(String.format
+                        ("No schema upgrade required for vendor %s. Current version is %s.", databaseVendor, currentVersion));
                 return;
             }
 
-            database.execute(new TransactionDatabaseCommand() {
+            db.execute(new TransactionDatabaseCommand() {
                 public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
                     File scriptFile = null;
                     try {
