@@ -208,6 +208,25 @@ public class XmlDocumentBuilder {
             this.documentElement = documentElement ;
         }
 
+        public void visitBrowserDocument(BrowserDocumentDomainObject browserDocument) {
+            Element documentElement = xmlDocument.createElement( "document" ) ;
+            documentElement.setAttribute("type", "browser");
+            this.documentElement = documentElement;
+        }
+
+        public void visitHtmlDocument(HtmlDocumentDomainObject htmlDocument) {
+            Element documentElement = xmlDocument.createElement( "document" ) ;
+            documentElement.setAttribute("type", "html");
+            this.documentElement = documentElement;
+        }
+
+        protected void visitOtherDocument(DocumentDomainObject otherDocument) {
+            Element documentElement = xmlDocument.createElement( "document" ) ;
+            DocumentTypeDomainObject type = otherDocument.getDocumentType();
+            documentElement.setAttribute("type", type.getName().toLocalizedString(currentUser));
+            this.documentElement = documentElement;
+        }
+
         private void createTextElements( TextDocumentDomainObject textDocument, Element contentElement ) {
             Map texts = textDocument.getTexts();
             for ( Iterator iterator = texts.entrySet().iterator(); iterator.hasNext(); ) {
