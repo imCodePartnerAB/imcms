@@ -1,5 +1,6 @@
-(ns com.imcode.imcms.release-utils)
-  ;#^{:doc ""})
+(ns
+  #^{:doc ""}
+  com.imcode.imcms.release-utils)
 
 ;;; Release name regular expression.
 ;;; All automatically generated releases names match this format.
@@ -32,9 +33,9 @@
 
 (defn release-name
   "Builds and returns release name from s release struct fields."
-  [{:keys [major-no minor-no revision-no build-name build-no]}]
+  [{:keys [major-no minor-no revision-no build-name build-no] :as release}]
   (let [name (format "%d.%d.%d" major-no minor-no revision-no)]
-    (if-not build-name
+    (if (final-release? release)
       name
       (str name (format "-%s%d" build-name build-no)))))
 
@@ -122,7 +123,7 @@
 (defn- inc-build-no [release]
   (inc-release-field release :build-no))
 
-(defn- set-build-data-to-nil [release]
+(defn- set-build-fields-to-nil [release]
   (assoc release :build-name nil, :build-no nil))
 
 
@@ -132,7 +133,7 @@
   (if-let [release (last-release (select-releases releases major-no))]
     (if (final-release? release)
       (inc-revision-no release)
-      (set-build-data-to-nil release))
+      (set-build-fields-to-nil release))
 
     (create-release major-no, 0, 0)))
 

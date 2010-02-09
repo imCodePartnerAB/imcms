@@ -1,5 +1,5 @@
 (ns
-  #^{:doc "Provides functions for accessing Imcms runtime."}
+  #^{:doc "Provides functions for accessing static methods of imcode.server.Imcms class."}
   com.imcode.imcms.runtime  
   (:import
     [imcode.server Imcms]
@@ -7,33 +7,33 @@
     [imcode.server.user UserDomainObject]))
 
 (defmacro invoke
-  "Invokes Imcms static method
-  "[method & args]
+  "Invokes Imcms class static method."
+  [method & args]
   `(. Imcms ~method ~@args))
 
 (defn start []
-  (. Imcms start))
+  (invoke start))
 
 (defn stop []
-  (. Imcms stop))
+  (invoke stop))
 
 (defn get-start-ex []
-  (. Imcms getStartEx))
+  (invoke getStartEx))
 
 (defn get-mode []
-  (. Imcms getMode))
+  (invoke getMode))
 
 (defn set-normal-mode []
-  (. Imcms setNormalMode))
+  (invoke setNormalMode))
 
 (defn set-maintenance-mode []
-  (. Imcms setMaintenanceMode))
+  (invoke setMaintenanceMode))
 
 (defn get-services []
-  (. Imcms getServices))
+  (invoke getServices))
 
 (defn get-i18n-support []
-  (. Imcms getI18nSupport))
+  (invoke getI18nSupport))
 
 (defn get-doc-mapper []
   (.getDocumentMapper (get-services)))

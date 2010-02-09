@@ -251,19 +251,22 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>clojure</artifactId>
+        <!--
         <version>1.0.0</version>
-      <!--
-      <version>1.1.0</version>
       -->
+      <version>1.1.0</version>
+      
     </dependency>
 
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>clojure-contrib</artifactId>
-        <version>1.0.0</version>
         <!--
-      <version>1.1.0-new-SNAPSHOT</version>
-      -->  
+        <version>1.0.0</version>
+        -->
+
+      <version>1.1.0</version>
+       
     </dependency>
 
       <!--
@@ -552,7 +555,7 @@
 
     <repository>
       <id>clojure</id>
-      <url>http://build.clojure.org/snapshots</url>
+      <url>http://build.clojure.org/releases</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>

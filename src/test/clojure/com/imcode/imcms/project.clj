@@ -22,7 +22,8 @@
   (:import
     (java.io File)
     (imcode.server Imcms)
-    (org.apache.commons.dbcp BasicDataSource)))
+    (org.apache.commons.dbcp BasicDataSource)
+    (org.springframework.context.support FileSystemXmlApplicationContext)))
 
 
 (def base-dir (atom (.getCanonicalFile (File. "."))))
@@ -136,6 +137,10 @@
         cmd (format cmd-template group-id artifact-id version jar-filepath)
         args (su/re-split #"\s" cmd)]
     (apply shell/sh args)))
+
+
+(def spring-app-context
+  (FileSystemXmlApplicationContext. (str "file:" (file-path "src/test/resources/testApplicationContext.xml"))))
 
 
 (defmacro sh [& args]
