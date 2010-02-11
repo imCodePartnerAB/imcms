@@ -1,7 +1,11 @@
-(ns com.imcode.imcms.file-utils
+(ns
+  #^{:doc "File utils."}
+  com.imcode.imcms.file-utils
   (:use
-    clojure.contrib.duck-streams
-    [clojure.contrib.except :only (throw-if throw-if-not)])
+    [clojure.contrib
+      [duck-streams :only (reader)]
+      [except :only (throw-if throw-if-not)]
+      [str-utils2 :only (blank?)]])
 
   (:import
     (java.io File)
@@ -30,7 +34,8 @@
   "Load properties from a file."
   [#^File file]
   (with-open [r (reader file)]
-    (doto (Properties.) (.load r))))
+    (doto (Properties.)
+      (.load r))))
 
 
 (defn call-if-modified
@@ -52,3 +57,34 @@
                            :file-fn-result (file-fn file)}))))
 
           (:file-fn-result @state))))
+
+
+(defn files
+  "Returns lazy file seq under dir which are matches filename re."
+  [#^String dir, filename-re]
+  (filter #(and
+             (.isFile %)
+             (re-find filename-re (.getName %)))
+    
+    (file-seq (java.io.File. dir))))
+
+
+(defn file-loc
+  "Returns lines of code in a text file."
+  [file]
+  (with-open [r (reader file)]
+    (count
+      (remove blank? (line-seq r)))))
+
+
+(defn files-loc
+  "Returns lines of code in text files."
+  [files]
+  (reduce +
+    (map file-loc files)))
+
+
+(defn project-loc
+  "Returns loc in a project's dir."
+  [#^String dir]
+  (files-loc (files "src" #"\.(java|jsp|htm|html|xml|properties|sql|clj)$")))

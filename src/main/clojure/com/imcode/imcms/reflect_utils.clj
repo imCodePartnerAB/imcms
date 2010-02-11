@@ -20,7 +20,7 @@
 
 
 (defn- dump-properties?
-  "Returns if object's properties must be dumped."
+  "Returns if object's properties can be dumped."
   [#^Object obj]
   (when-not (some #(% obj) [nil? class? coll? keyword? number? string?])
     (let [clazz (class obj)]

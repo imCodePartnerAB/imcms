@@ -1,6 +1,7 @@
 (ns com.imcode.imcms.db-utils
   (:require
-    [clojure.contrib.sql :as sql])
+    [clojure.contrib.sql :as sql]
+    [clojure.contrib.str-utils2 :as su2])
   
   (:use
     [clojure.contrib.except :only (throw-if)]
@@ -16,15 +17,17 @@
 
 (defn create-url
   "Creates database vendor specific url string."
-  [vendor-name host port]
-  (let [url-template
-         (condp = vendor-name
-           "mysql" "jdbc:mysql://%s:%s"
-           "mssql" "jdbc:jtds:sqlserver://%s:%s"
-           (throw (IllegalArgumentException.
-             (format "Unsupported vendor: '%s'. Supported vendors: 'mysql', 'mssql'." vendor-name))))]
+  ([vendor-name host port]
+    (let [url-template (condp = vendor-name
+                         "mysql" "jdbc:mysql://%s:%s"
+                         "mssql" "jdbc:jtds:sqlserver://%s:%s"
+                         (throw (IllegalArgumentException.
+                           (format "Unsupported vendor: '%s'. Supported vendors: 'mysql', 'mssql'." vendor-name))))]
 
-    (format url-template host port)))
+      (format url-template host port)))
+
+  ([vendor-name host port schema-name]
+    (str (create-url vendor-name host port) "/" schema-name "?emulateLocators=true")))
 
 
 (defn get-metadata 

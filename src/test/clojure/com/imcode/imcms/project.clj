@@ -103,13 +103,15 @@
     (get-file-fn "build.properties")
     (fn file-fn [_]
       (let [p (build-properties)
-        db-url (db-utils/create-url (:db-target p) (:db-host p) (:db-port p))]
+        db-url (db-utils/create-url (:db-target p) (:db-host p) (:db-port p) "imcms")]
 
         (doto (BasicDataSource.)
           (.setUsername (:db-user p))
           (.setPassword (:db-pass p))
           (.setDriverClassName (:db-driver p))
           (.setUrl db-url))))))
+
+
 
 
 (defn db-spec

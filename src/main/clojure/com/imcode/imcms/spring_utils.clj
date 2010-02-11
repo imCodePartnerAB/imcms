@@ -10,7 +10,7 @@
 
 
 (defmacro defbean
-  ""
+  "Returns bean from the app context."
   ([app-context bean-name]
     (defbean app-context bean-name bean-name))
 
@@ -21,4 +21,3 @@
 ;(defbean metaDao)
 ;(defbean languageDao)
 ;(defbean contentLoopDao)
-
