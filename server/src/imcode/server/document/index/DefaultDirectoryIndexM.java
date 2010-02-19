@@ -116,7 +116,7 @@ public class DefaultDirectoryIndexM implements DirectoryIndex {
         try {
             IndexReader indexReader = IndexReader.open( directory );
             try {
-                indexReader.delete( new Term( "meta_id", "" + document.getId() ) );
+                indexReader.deleteDocuments( new Term( "meta_id", "" + document.getId() ) );
             } finally {
                 indexReader.close();
             }

@@ -12,6 +12,7 @@ import imcode.server.document.index.SimpleDocumentQuery;
 import imcode.util.Utility;
 import org.apache.commons.collections.SetUtils;
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import javax.servlet.ServletException;
@@ -57,10 +58,14 @@ public class DocumentFinder extends WebComponent {
         DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
         final BooleanQuery booleanQuery = new BooleanQuery();
         if ( null != page.getQuery() ) {
-            booleanQuery.add( page.getQuery(), true, false );
+            //// from lucene 1.4.3 -> 2.4
+            //booleanQuery.add( page.getQuery(), true, false );
+            booleanQuery.add( page.getQuery(), BooleanClause.Occur.MUST);
         }
         if ( null != restrictingQuery ) {
-            booleanQuery.add( restrictingQuery, true, false );
+            // from lucene 1.4.3 -> 2.4
+            //booleanQuery.add( restrictingQuery, true, false );
+            booleanQuery.add( restrictingQuery, BooleanClause.Occur.MUST);
         }
         if ( booleanQuery.getClauses().length > 0 ) {
             List documentsFound = index.search(new SimpleDocumentQuery(booleanQuery, null, logged), Utility.getLoggedOnUser( request ) );

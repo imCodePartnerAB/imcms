@@ -50,8 +50,8 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
             BooleanQuery booleanQuery = (BooleanQuery) query ;
             BooleanClause[] clauses = booleanQuery.getClauses();
             for ( BooleanClause clause : clauses ) {
-                if (!clause.prohibited) {
-                    getTerms(clause.query, terms);
+                if (!clause.isProhibited()) {
+                    getTerms(clause.getQuery(), terms);
                 }
             }
         } else if ( query instanceof TermQuery ) {

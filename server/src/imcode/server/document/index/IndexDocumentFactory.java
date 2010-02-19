@@ -36,10 +36,15 @@ public class IndexDocumentFactory {
         Document indexDocument = new Document();
 
         int documentId = document.getId();
-        indexDocument.add( Field.Keyword( DocumentIndex.FIELD__META_ID, "" + documentId ) );
-        indexDocument.add( Field.UnStored( DocumentIndex.FIELD__META_HEADLINE, document.getHeadline() ) );
+        //indexDocument.add( Field.Keyword( DocumentIndex.FIELD__META_ID, "" + documentId ) );
+        indexDocument.add(new Field(DocumentIndex.FIELD__META_ID, "" + documentId, Field.Store.NO, Field.Index.NOT_ANALYZED));
+        //indexDocument.add( Field.UnStored( DocumentIndex.FIELD__META_HEADLINE, document.getHeadline() ) );
+        indexDocument.add(new Field(DocumentIndex.FIELD__META_HEADLINE, document.getHeadline(), Field.Store.NO, Field.Index.ANALYZED) );
+
+
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__META_HEADLINE_KEYWORD, document.getHeadline() ) );
-        indexDocument.add( Field.UnStored( DocumentIndex.FIELD__META_TEXT, document.getMenuText() ) );
+        //indexDocument.add( Field.UnStored( DocumentIndex.FIELD__META_TEXT, document.getMenuText() ) );
+        indexDocument.add(new Field( DocumentIndex.FIELD__META_TEXT, document.getMenuText(), Field.Store.NO, Field.Index.ANALYZED) );
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__DOC_TYPE_ID, "" + document.getDocumentTypeId() ) );
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__CREATOR_ID, "" + document.getCreatorId()) );
         if ( null != document.getPublisherId() ){
@@ -127,12 +132,15 @@ public class IndexDocumentFactory {
     }
 
     static Field unStoredKeyword( String fieldName, String fieldValue ) {
-        return new Field( fieldName, fieldValue.toLowerCase(), false, true, false );
+        //return new Field( fieldName, fieldValue.toLowerCase(), false, true, false );
+        return new Field( fieldName, fieldValue.toLowerCase(), Field.Store.NO, Field.Index.NOT_ANALYZED);
+
     }
 
     private static Field unStoredKeyword( String fieldName, Date fieldValue ) {
         Date truncatedDate = Utility.truncateDateToMinutePrecision( fieldValue );
-        return new Field( fieldName, DateField.dateToString( truncatedDate ), false, true, false );
+        //return new Field( fieldName, DateField.dateToString( truncatedDate ), false, true, false );
+        return new Field( fieldName, DateField.dateToString( truncatedDate ), Field.Store.NO, Field.Index.NOT_ANALYZED);
     }
 
 }

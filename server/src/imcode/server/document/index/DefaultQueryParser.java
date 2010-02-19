@@ -1,5 +1,6 @@
 package imcode.server.document.index;
 
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
@@ -15,6 +16,14 @@ public class DefaultQueryParser implements QueryParser {
                                                 DocumentIndex.FIELD__TEXT,
                                                 DocumentIndex.FIELD__KEYWORD,
                                                 DocumentIndex.FIELD__ALIAS
+                                            },
+                                            new BooleanClause.Occur[] {
+                                                    BooleanClause.Occur.SHOULD,
+                                                    BooleanClause.Occur.SHOULD,
+                                                    BooleanClause.Occur.SHOULD,
+                                                    BooleanClause.Occur.SHOULD,
+                                                    BooleanClause.Occur.SHOULD,
+                                                    BooleanClause.Occur.SHOULD
                                             },
                                             new AnalyzerImpl() );
     }

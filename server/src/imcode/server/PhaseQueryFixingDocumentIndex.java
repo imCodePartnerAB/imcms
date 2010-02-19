@@ -36,7 +36,7 @@ public class PhaseQueryFixingDocumentIndex extends DocumentIndexWrapper {
             BooleanQuery booleanQuery = (BooleanQuery) query ;
             BooleanClause[] clauses = booleanQuery.getClauses();
             for ( BooleanClause clause : clauses ) {
-                clause.query = fixQuery(clause.query);
+                clause.setQuery(fixQuery(clause.getQuery()));
             }
         } else if ( query instanceof TermQuery ) {
             TermQuery termQuery = (TermQuery) query;
