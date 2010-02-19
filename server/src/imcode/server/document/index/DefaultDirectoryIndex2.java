@@ -20,6 +20,8 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 
 import java.io.File;
@@ -30,12 +32,12 @@ import java.util.AbstractList;
 import java.util.Date;
 import java.util.List;
 
-public class DefaultDirectoryIndexM implements DirectoryIndex {
+class DefaultDirectoryIndex2 implements DirectoryIndex {
 
-    private final static Logger log = Logger.getLogger( DefaultDirectoryIndexM.class.getName() );
+    private final static Logger log = Logger.getLogger( DefaultDirectoryIndex2.class.getName() );
     private final static int INDEXING_LOG_PERIOD__MILLISECONDS = DateUtils.MILLIS_IN_MINUTE ;
 
-    private RAMDirectory directory;
+    private Directory directory;
     private final IndexDocumentFactory indexDocumentFactory;
 
     private boolean inconsistent;
@@ -45,14 +47,14 @@ public class DefaultDirectoryIndexM implements DirectoryIndex {
         BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
     }
 
-    public DefaultDirectoryIndexM(IndexDocumentFactory indexDocumentFactory) {
-        this.directory = new RAMDirectory();
+    DefaultDirectoryIndex2(Directory directory, IndexDocumentFactory indexDocumentFactory) {
+        this.directory = directory;
         this.indexDocumentFactory = indexDocumentFactory;
     }
 
     public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         try {
-            IndexSearcher indexSearcher = new IndexSearcher( directory );
+            IndexSearcher indexSearcher = new IndexSearcher( directory);
             try {
                 StopWatch searchStopWatch = new StopWatch();
                 searchStopWatch.start();
@@ -139,7 +141,6 @@ public class DefaultDirectoryIndexM implements DirectoryIndex {
     }
 
     private void indexAllDocuments() throws IOException {
-        delete();
         IndexWriter indexWriter = createIndexWriter( true );
         try {
             indexAllDocumentsToIndexWriter( indexWriter );
@@ -210,9 +211,18 @@ public class DefaultDirectoryIndexM implements DirectoryIndex {
     }
 
     public void delete() {
-            log.debug("Deleting index directory "+directory) ;
-            directory = new RAMDirectory();
-
+//        try {
+//            log.debug("Deleting index directory "+directory) ;
+//            if (directory instanceof FSDirectory) {
+//                FileUtils.forceDelete(((FSDirectory)directory).getFile());
+//            } else if (directory instanceof RAMDirectory) {
+//                directory = new RAMDirectory();
+//            } else {
+//                throw new RuntimeException("Do not know how to delete directory of type " + directory.getClass());
+//            }
+//        } catch ( IOException e ) {
+//            throw new IndexException(e);
+//        }
     }
 
     public boolean equals(Object o) {
@@ -223,7 +233,7 @@ public class DefaultDirectoryIndexM implements DirectoryIndex {
             return false;
         }
 
-        final DefaultDirectoryIndexM that = (DefaultDirectoryIndexM) o;
+        final DefaultDirectoryIndex2 that = (DefaultDirectoryIndex2) o;
 
         return directory.equals(that.directory);
 
@@ -252,5 +262,9 @@ public class DefaultDirectoryIndexM implements DirectoryIndex {
         public int size() {
             return hits.length() ;
         }
+    }
+
+    public Directory getDirectory() {
+        return directory;
     }
 }

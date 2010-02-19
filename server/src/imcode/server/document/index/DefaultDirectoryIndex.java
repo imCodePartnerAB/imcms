@@ -22,6 +22,7 @@ import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.store.Directory;
 
 import java.io.File;
 import java.io.IOException;
@@ -255,5 +256,9 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         public int size() {
             return hits.length() ;
         }
+    }
+
+    public Directory getDirectory() {
+        return null;
     }
 }

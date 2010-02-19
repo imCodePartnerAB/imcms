@@ -96,7 +96,7 @@ public class BackgroundIndexBuilder {
         return (File) Utility.findMatch(new CounterFileFactory(indexParentDirectory), new UniqueFilePredicate()) ;
     }
 
-    public synchronized void notifyRebuildComplete(DefaultDirectoryIndex newIndex) {
+    public synchronized void notifyRebuildComplete(DefaultDirectoryIndex2 newIndex) {
         rebuildingDirectoryIndex.notifyRebuildComplete(newIndex) ;
         rememberIndexParentDirectoryLastModified();
     }

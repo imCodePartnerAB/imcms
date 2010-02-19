@@ -2,7 +2,6 @@ package imcode.server;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.DefaultDirectoryIndexM;
 import imcode.server.document.index.IndexDocumentFactory;
 import imcode.server.document.index.RebuildingDirectoryIndex;
 import imcode.server.parser.ParserParameters;
@@ -228,10 +227,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private void initDocumentMapper() {
         File indexDirectory = new File(getRealContextPath(), "WEB-INF/index");
         documentMapper = new DocumentMapper(this, this.getDatabase());
-        //documentMapper.setDocumentIndex(new LoggingDocumentIndex(database, new PhaseQueryFixingDocumentIndex(new RebuildingDirectoryIndex(indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes(), new IndexDocumentFactory(getCategoryMapper()))))) ;
-
-        documentMapper.setDocumentIndex(new LoggingDocumentIndex(database, new PhaseQueryFixingDocumentIndex(new DefaultDirectoryIndexM(new IndexDocumentFactory(getCategoryMapper()))))) ;
-
+        documentMapper.setDocumentIndex(new LoggingDocumentIndex(database, new PhaseQueryFixingDocumentIndex(new RebuildingDirectoryIndex(indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes(), new IndexDocumentFactory(getCategoryMapper()))))) ;
     }
 
     private void initTemplateMapper() {

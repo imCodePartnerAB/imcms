@@ -37,7 +37,7 @@ public class IndexDocumentFactory {
 
         int documentId = document.getId();
         //indexDocument.add( Field.Keyword( DocumentIndex.FIELD__META_ID, "" + documentId ) );
-        indexDocument.add(new Field(DocumentIndex.FIELD__META_ID, "" + documentId, Field.Store.NO, Field.Index.NOT_ANALYZED));
+        indexDocument.add(new Field(DocumentIndex.FIELD__META_ID, "" + documentId, Field.Store.YES, Field.Index.NOT_ANALYZED));
         //indexDocument.add( Field.UnStored( DocumentIndex.FIELD__META_HEADLINE, document.getHeadline() ) );
         indexDocument.add(new Field(DocumentIndex.FIELD__META_HEADLINE, document.getHeadline(), Field.Store.NO, Field.Index.ANALYZED) );
 
