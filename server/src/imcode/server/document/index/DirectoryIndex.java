@@ -7,6 +7,4 @@ public interface DirectoryIndex extends DocumentIndex {
     boolean isInconsistent();
 
     void delete();
-
-    Directory getDirectory();
 }

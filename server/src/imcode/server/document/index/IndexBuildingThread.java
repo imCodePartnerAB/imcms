@@ -4,10 +4,8 @@ import imcode.server.document.DocumentDomainObject;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.apache.lucene.store.FSDirectory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -36,13 +34,7 @@ class IndexBuildingThread extends Thread {
 
     public void run() {
         NDC.push(Thread.currentThread().getName());
-        DefaultDirectoryIndex2 newIndex = null;
-        try {
-            newIndex = new DefaultDirectoryIndex2(FSDirectory.getDirectory(indexDirectory), indexDocumentFactory) ;
-        } catch (IOException e) {
-            throw new RuntimeException(e);  
-        }
-
+        DefaultDirectoryIndex newIndex = new DefaultDirectoryIndex(indexDirectory, indexDocumentFactory) ;
         try {
             synchronized ( this ) {
                 indexing = true ;

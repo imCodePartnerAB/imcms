@@ -10,8 +10,6 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -39,11 +37,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         long indexModifiedTime = 0;
         if ( null != indexDirectory ) {
             indexModifiedTime = indexDirectory.lastModified();
-            try {
-                index = new DefaultDirectoryIndex2(FSDirectory.getDirectory(indexDirectory), indexDocumentFactory);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            index = new DefaultDirectoryIndex(indexDirectory, indexDocumentFactory);
         } else {
             rebuildBecauseOfError("No existing index.", null);
         }
@@ -182,20 +176,11 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
     }
 
     void notifyRebuildComplete(DirectoryIndex newIndex) {
-        //DirectoryIndex oldIndex = index;
-        //index = newIndex;
-        //if (!oldIndex.equals(index) ) {
-        //    Directory.copy(newIndex.getDirectory(), );
-        //    oldIndex.delete();
-        //}
-        if (!index.equals(newIndex) ) {
-            try {
-                Directory.copy(newIndex.getDirectory(), index.getDirectory(), false);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        DirectoryIndex oldIndex = index;
+        index = newIndex;
+        if (!oldIndex.equals(index) ) {
+            oldIndex.delete();
         }
-
     }
 
     private static class NullDirectoryIndex implements DirectoryIndex {
@@ -219,10 +204,6 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
 
         public void rebuild() throws IndexException {
-        }
-
-        public Directory getDirectory() {
-            return null;
         }
     }
 }

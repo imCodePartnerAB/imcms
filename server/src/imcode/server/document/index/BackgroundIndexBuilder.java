@@ -48,7 +48,7 @@ public class BackgroundIndexBuilder {
             }
 
             log.debug("Created directory "+indexDirectory);
-            
+
             rememberIndexParentDirectoryLastModified();
 
             try {
@@ -96,7 +96,7 @@ public class BackgroundIndexBuilder {
         return (File) Utility.findMatch(new CounterFileFactory(indexParentDirectory), new UniqueFilePredicate()) ;
     }
 
-    public synchronized void notifyRebuildComplete(DefaultDirectoryIndex2 newIndex) {
+    public synchronized void notifyRebuildComplete(DefaultDirectoryIndex newIndex) {
         rebuildingDirectoryIndex.notifyRebuildComplete(newIndex) ;
         rememberIndexParentDirectoryLastModified();
     }
