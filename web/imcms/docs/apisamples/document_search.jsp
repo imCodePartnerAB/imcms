@@ -66,14 +66,14 @@
         <ul>
         <%
             BooleanQuery luceneQuery = new BooleanQuery();
-            luceneQuery.add(new TermQuery(new Term("text1", "test")), true, false);
+            luceneQuery.add(new TermQuery(new Term("text1", "test")), org.apache.lucene.search.BooleanClause.Occur.MUST);
             Calendar calendar = Calendar.getInstance();
             calendar.clear();
             calendar.set(2004,Calendar.JANUARY,1) ;
             Date startDate = calendar.getTime() ;
             calendar.set(2005, Calendar.JANUARY, 1) ;
             Date endDate = calendar.getTime() ;
-            luceneQuery.add(new RangeQuery(new Term("modified_datetime", DateField.dateToString(startDate)), new Term("modified_datetime", DateField.dateToString(endDate)), false), true, false);
+            luceneQuery.add(new RangeQuery(new Term("modified_datetime", DateField.dateToString(startDate)), new Term("modified_datetime", DateField.dateToString(endDate)), false),  org.apache.lucene.search.BooleanClause.Occur.MUST);
             query = new LuceneQuery(luceneQuery);
             query.setSort(new Sort("modified_datetime"));
             documents = documentService.search(query);
@@ -129,10 +129,10 @@
         <ul>
         <%
             luceneQuery = new BooleanQuery();
-            luceneQuery.add(new TermQuery(new Term("status", ""+Document.PublicationStatus.NEW)), true, false) ;
+            luceneQuery.add(new TermQuery(new Term("status", ""+Document.PublicationStatus.NEW)),  org.apache.lucene.search.BooleanClause.Occur.MUST) ;
             Term lowerTerm = new Term("publication_start_datetime", DateField.MIN_DATE_STRING());
             Term upperTerm = new Term("publication_start_datetime", DateField.dateToString(new Date()));
-            luceneQuery.add(new RangeQuery(lowerTerm, upperTerm, false), true, false);
+            luceneQuery.add(new RangeQuery(lowerTerm, upperTerm, false),  org.apache.lucene.search.BooleanClause.Occur.MUST);
             query = new LuceneQuery(luceneQuery) ;
             query.setSort(new Sort("publication_start_datetime"));
             documents = documentService.search(query) ;
