@@ -338,7 +338,7 @@ public class TagParser {
             includedParserParameters = (ParserParameters) parserParameters.clone();
             includedParserParameters.setTemplate(attributes.getProperty("template"));
             includedParserParameters.setParameter(attributes.getProperty("param"));
-            //includedParserParameters.getDocumentRequest().setDocument(service.getDocumentMapper().getDefaultDocument(included_meta_id));
+            //includedParserParameters.getUserDocRequest().setDocument(service.getDocumentMapper().getDefaultDocument(included_meta_id));
             includedParserParameters.getDocumentRequest().setDocument(service.getDocumentMapper().getDocument(included_meta_id));
             includedParserParameters.getDocumentRequest().setReferrer(document);
             includedParserParameters.setFlags(0);
@@ -401,7 +401,7 @@ public class TagParser {
     public String tagText(Properties attributes, ContentLoop loop, Content content) {
         TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
         UserDomainObject user = documentRequest.getUser();
-        I18nLanguage language = Imcms.getDocumentRequest().getLanguage();
+        I18nLanguage language = Imcms.getUserDocRequest().getLanguage();
 
         if ( shouldOutputNothingAccordingToMode(attributes, textMode) || textDocumentToUse==null || textDocumentToUse.getId() != document.getId() && textMode ) {
             return "";
@@ -808,7 +808,7 @@ public class TagParser {
 
     
     private TextDocumentDomainObject getTextDocumentToUse(Properties attributes) {
-    	UserDomainObject user = Imcms.getDocumentRequest().getUser();
+    	UserDomainObject user = Imcms.getUserDocRequest().getUser();
     	
         String documentName = attributes.getProperty("document");
         String documentVersionStr = attributes.getProperty("version");

@@ -620,7 +620,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param docId document id.
      */
     public DocumentDomainObject getDocument(Integer docId) {
-        DocumentRequest docRequest = Imcms.getDocumentRequest();
+        DocumentRequest docRequest = Imcms.getUserDocRequest();
 
         return docRequest == null
             ? getDefaultDocument(docId)
@@ -743,19 +743,17 @@ public class DocumentMapper implements DocumentGetter {
 
     
     /**
-     *
      * @param documentIds
-     * @return
+     * @return default documents.
      */
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
-        DocumentRequest ri = Imcms.getDocumentRequest();
+        DocumentRequest ri = Imcms.getUserDocRequest();
         I18nLanguage language = ri != null
                 ? ri.getLanguage()
                 : Imcms.getI18nSupport().getDefaultLanguage();
 
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
-        // todo: filter docs for 
         for (Integer docId: documentIds) {
             DocumentDomainObject doc = getDefaultDocument(docId, language);
             if (doc != null) {

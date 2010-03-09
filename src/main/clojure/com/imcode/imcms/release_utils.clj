@@ -155,3 +155,10 @@
 
 (defn- test-releases []
   (create-releases-from-names *TEST-RELEASES-NAMES*))
+
+
+(defn mk-counter []
+  (let [c (atom 0)]
+    {:inc #(swap! c inc)
+     :val #(deref c)
+     :reset #(reset! c 0)}))

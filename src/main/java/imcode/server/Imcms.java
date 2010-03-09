@@ -66,6 +66,9 @@ public class Imcms {
     private static BasicDataSource apiDataSource;
     private static BasicDataSource dataSource;
 
+    /**
+     * Used to disable schema upgrade on start-up.
+     */
     private static boolean upgradeDatabaseSchemaOnStart = true;
 
     private static ImcmsMode mode = ImcmsMode.MAINTENANCE;
@@ -76,8 +79,15 @@ public class Imcms {
     public static ApplicationContext applicationContext;
 
 
-	/** Request info. */
-	private static ThreadLocal<DocumentRequest> requestInfos;
+	/**
+     * Document requests bound to HttpRequestSession.
+     *
+     * Since session is not always available in legacy API (such as DocumentMapper) docRequest is also bound to
+     * this thread local.
+     *
+     * @see com.imcode.imcms.servlet.ImcmsFilter
+     */
+	private static ThreadLocal<DocumentRequest> userDocRequests;
 
     private static I18nSupport i18nSupport;
 
@@ -107,7 +117,7 @@ public class Imcms {
             File configPath = new File(path, prefsConfigPath);
             Prefs.setConfigPath(configPath);
 
-            requestInfos = new ThreadLocal<DocumentRequest>();
+            userDocRequests = new ThreadLocal<DocumentRequest>();
 
             if (upgradeDatabaseSchemaOnStart) {
                 upgradeDatabaseSchema();
@@ -264,12 +274,19 @@ public class Imcms {
         }
     }
 
-    public static void setDocumentRequest(DocumentRequest documentRequestInfo) {
-    	requestInfos.set(documentRequestInfo);
+    /**
+     * @param documentRequest document request bound to user's session.
+     */
+    public static void setUserDocRequest(DocumentRequest documentRequest) {
+    	userDocRequests.set(documentRequest);
     }
 
-    public static DocumentRequest getDocumentRequest() {
-    	return requestInfos.get();
+    /**
+     * Returns DocumentRequest instance
+     * @return
+     */
+    public static DocumentRequest getUserDocRequest() {
+    	return userDocRequests.get();
     }
 
 

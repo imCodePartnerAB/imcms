@@ -81,9 +81,9 @@ public interface ImcmsConstants {
 
     public static final String REQUEST_PARAM__DOC_VERSION_MODE = "imcms.doc.version.mode";
 
-    public static final String REQUEST_PARAM_VALUE__DOC_VERSION_MODE_WORKING = "w";
+    public static final char REQUEST_PARAM_VALUE__DOC_VERSION_MODE_WORKING = 'w';
 
-    public static final String REQUEST_PARAM_VALUE__DOC_VERSION_MODE_DEFAULT = "d";
+    public static final char REQUEST_PARAM_VALUE__DOC_VERSION_MODE_DEFAULT = 'd';
 
     public static final String SESSION_ATTR__DOC_REQUEST = "imcms.doc.request";
 }

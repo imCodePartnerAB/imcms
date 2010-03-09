@@ -8,7 +8,8 @@
     [clojure.contrib.shell-out :as shell]
     [com.imcode.imcms
       [misc-utils :as utils]
-      [db-utils :as db-utils]])
+      [db-utils :as db-utils]
+      [file-utils :as file-utils]])
   
   (:use
     clojure.contrib.test-is
@@ -21,7 +22,7 @@
 
   (:import
     (java.io File)
-    (imcode.server Imcms)
+    ;(imcode.server Imcms)
     (org.apache.commons.dbcp BasicDataSource)
     (org.springframework.context.support FileSystemXmlApplicationContext)))
 
@@ -96,22 +97,20 @@
                      (comp utils/to-keyword-key-map file-utils/load-properties)))
 
 
+(defn create-db-datasource []
+  (let [p (build-properties)
+        db-url (db-utils/create-url (:db-target p) (:db-host p) (:db-port p) (:db-name p))]
+
+    (db-utils/create-ds (:db-driver p) (:db-user p) (:db-pass p) db-url)))
+
+
 (def
    #^{:doc "Function which creates pooled datasource based on the build properties."}
   db-datasource
   (file-utils/call-if-modified
     (get-file-fn "build.properties")
     (fn file-fn [_]
-      (let [p (build-properties)
-        db-url (db-utils/create-url (:db-target p) (:db-host p) (:db-port p) "imcms")]
-
-        (doto (BasicDataSource.)
-          (.setUsername (:db-user p))
-          (.setPassword (:db-pass p))
-          (.setDriverClassName (:db-driver p))
-          (.setUrl db-url))))))
-
-
+      (create-db-datasource))))
 
 
 (defn db-spec
@@ -150,3 +149,13 @@
     `(shell/sh ~@cmd)))
 
 (defn e [] (.printStackTrace *e))
+
+
+(defn loc
+  "Returns loc in a project's dir."
+  ([]
+    (loc "."))
+
+  ([#^String dir]
+    (file-utils/loc
+      (file-utils/files dir #"\.(java|jsp|htm|html|xml|properties|sql|clj)$"))))

@@ -48,7 +48,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         @Override
         public boolean equals(Object o) {
-            return (o instanceof ContentLoopItemKey) && ((ContentLoopItemKey)o).hashCode() == hashCode();
+            return (o instanceof ContentLoopItemKey) && o.hashCode() == hashCode();
         }
    }
 		

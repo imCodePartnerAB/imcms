@@ -1,6 +1,5 @@
 package com.imcode.imcms.flow;
 
-import com.imcode.imcms.api.DocumentRequest;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.server.Imcms;
@@ -50,7 +49,7 @@ public class PublishDocumentPageFlow extends DocumentPageFlow {
 	@Override
 	protected void dispatchToFirstPage(HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
 	    saveDocument( request );
-        Imcms.setDocumentRequest(null);
+        Imcms.setUserDocRequest(null);
     	//dispatchReturn( request, response );
 		request.getRequestDispatcher("/servlet/GetDoc").forward(request, response);
 	}

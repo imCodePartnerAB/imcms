@@ -9,6 +9,7 @@
     clojure.contrib.duck-streams)
   
   (:import
+    (org.apache.commons.dbcp BasicDataSource) 
     (com.ibatis.common.jdbc ScriptRunner)))
 
 
@@ -29,6 +30,16 @@
   ([vendor-name host port schema-name]
     (str (create-url vendor-name host port) "/" schema-name "?emulateLocators=true")))
 
+
+(defn create-ds
+  "Creates pooled DBCP datasource."
+  [driver-class-name username password url]
+  (doto (BasicDataSource.)
+    (.setDriverClassName driver-class-name)
+    (.setUsername username)
+    (.setPassword password)
+    (.setUrl url)))
+    
 
 (defn get-metadata 
   "Returns database metadata"

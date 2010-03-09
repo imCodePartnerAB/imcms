@@ -12,7 +12,7 @@ import imcode.server.Imcms;
 
 public class ImcmsLocaleResolver implements LocaleResolver {
 	public Locale resolveLocale(HttpServletRequest request) {
-		return new Locale(Imcms.getDocumentRequest().getLanguage().getCode());
+		return new Locale(Imcms.getUserDocRequest().getLanguage().getCode());
 	}
 	
 	public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
@@ -21,6 +21,6 @@ public class ImcmsLocaleResolver implements LocaleResolver {
             language = Imcms.getI18nSupport().getDefaultLanguage();
         }
         
-        Imcms.getDocumentRequest().setLanguage(language);
+        Imcms.getUserDocRequest().setLanguage(language);
 	}
 }

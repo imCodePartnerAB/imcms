@@ -17,9 +17,8 @@ public class DocumentRequest {
 
     protected I18nLanguage language;
 
-    public DocumentRequest(UserDomainObject user, I18nLanguage language) {
+    public DocumentRequest(UserDomainObject user) {
         this.user = user;
-        this.language = language;
     }
 
     /**
@@ -63,10 +62,11 @@ public class DocumentRequest {
         this.language = language;
     }
 
+    
     public static class WorkingDocRequest extends DocumentRequest {
 
-        public WorkingDocRequest(UserDomainObject user, I18nLanguage language) {
-            super(user, language); 
+        public WorkingDocRequest(UserDomainObject user) {
+            super(user);
         }
 
 
@@ -83,8 +83,8 @@ public class DocumentRequest {
 
         private Integer docVersionNo;
 
-        public CustomDocRequest(UserDomainObject user, I18nLanguage language, Integer docId, Integer docVersionNo) {
-            super(user, language);
+        public CustomDocRequest(UserDomainObject user, Integer docId, Integer docVersionNo) {
+            super(user);
             this.docId = docId;
             this.docVersionNo = docVersionNo;
         }

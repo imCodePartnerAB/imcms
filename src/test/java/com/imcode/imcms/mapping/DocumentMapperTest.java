@@ -70,8 +70,9 @@ public class DocumentMapperTest {
         parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
 
 
-        DocumentRequest docRequestInfo = new DocumentRequest.WorkingDocRequest(admin, i18nSupport.getDefaultLanguage());
-        Imcms.setDocumentRequest(docRequestInfo);
+        DocumentRequest docRequestInfo = new DocumentRequest.WorkingDocRequest(admin);
+        docRequestInfo.setLanguage(i18nSupport.getDefaultLanguage());
+        Imcms.setUserDocRequest(docRequestInfo);
 
         menu = parentDoc.getMenu(menuNo);
 

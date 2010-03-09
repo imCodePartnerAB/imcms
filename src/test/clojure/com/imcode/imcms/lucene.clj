@@ -21,7 +21,8 @@
   (FSDirectory/getDirectory path))
 
 (defn new-dbdir [dataSource tableName]
-  (JdbcDirectory. dataSource (MySQLInnoDBDialect.) tableName))
+  ;(JdbcDirectory. dataSource (MySQLInnoDBDialect.) tableName))
+  (JdbcDirectory. dataSource tableName))
 
 
 (defn- create-document [name, path, content, last-modified]
@@ -45,7 +46,10 @@
                   (.getCanonicalPath file)
                   (slurp* file)
                   (DateTools/timeToString (.lastModified file) DateTools$Resolution/MILLISECOND))]
-        (.addDocument indexWriter doc))))
+        (doto indexWriter
+          (.addDocument doc)
+          ;(.commit)
+          ))))
   dir)
 
 

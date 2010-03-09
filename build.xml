@@ -8,7 +8,7 @@
     <property name="build.properties" location="build.properties"/>
     <property name="build.properties" location="build.properties.template"/>
 
-    <property file="${build.properties}"/>
+    <property file="build.properties"/>
 
     <!-- The current version of imCMS. -->
     <property name="svnurl" value="$URL$"/>
@@ -46,7 +46,7 @@
 	<property name="maven.build.dir" value="${pom.build.directory}"/>
 	<property name="maven.build.webapp.dir" value="${maven.build.dir}/${pom.artifactId}"/>
 	<property name="maven.build.war" value="${maven.build.dir}/${pom.artifactId}.war"/>
-	<property name="maven.build.jar" value="${maven.build.webapp.dir}/WEB-INF/lib/${pom.artifactId}.jar"/>
+	<!--property name="maven.build.jar" value="${maven.build.webapp.dir}/WEB-INF/lib/${pom.artifactId}.jar"/-->
     <!-- End of maven integration -->		
     
     <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="pom.classpath"/>
@@ -88,9 +88,9 @@
 	
     <target name="tomcat-install" depends="init,check-deployroot" 
     		description="Install files already built, without running 'build' first.">
-    	
+
         <copy todir="${webapproot}">
-            <fileset dir="${maven.build.webapp.dir}"/>
+            <fileset dir="${maven.build.webapp.dir}-${maven.artifact.version}"/>
         </copy>
     </target>
 
@@ -117,7 +117,7 @@
         <property name="apidocs" value="${docs}/api"/>
     	<!--???-->
         <dependset>
-            <srcfileset file="${build.properties}"/>
+            <srcfileset file="build.properties"/>
             <targetfileset dir="${webinf.conf.dir}">
             	<include name="imcms_*"/>
             	<include name="server.properties"/>
@@ -294,7 +294,7 @@
 
 	
     <target name="check-build-properties" unless="build-properties-up-to-date">
-        <uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
+        <uptodate targetfile="build.properties" property="build-properties-up-to-date">
             <srcfiles dir="${basedir}" includes="build.properties.template"/>
         </uptodate>
 
