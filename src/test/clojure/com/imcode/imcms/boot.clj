@@ -5,7 +5,7 @@
 
   (:require
     [com.imcode.imcms
-      [spring :as spring]
+      [spring-utils :as spring]
       [project :as project]])
 
   (:import

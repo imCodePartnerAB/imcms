@@ -22,7 +22,7 @@
 
   (:import
     (java.io File)
-    ;(imcode.server Imcms)
+    (imcode.server Imcms)
     (org.apache.commons.dbcp BasicDataSource)
     (org.springframework.context.support FileSystemXmlApplicationContext)))
 
@@ -86,13 +86,14 @@
 
 (defn get-file-fn
   "Creates function which returns project file."
-  [file-path] #(file file-path))
+  [file-path]
+  #(file file-path))
 
 
 (def
   #^{:doc "Function for loading project's build properties from the build.properties file."}
   
-  build-properties (file-utils/call-if-modified
+  build-properties (file-utils/create-file-watcher
                      (get-file-fn "build.properties")
                      (comp utils/to-keyword-key-map file-utils/load-properties)))
 
@@ -107,7 +108,7 @@
 (def
    #^{:doc "Function which creates pooled datasource based on the build properties."}
   db-datasource
-  (file-utils/call-if-modified
+  (file-utils/create-file-watcher
     (get-file-fn "build.properties")
     (fn file-fn [_]
       (create-db-datasource))))
@@ -142,6 +143,13 @@
 
 (def spring-app-context
   (FileSystemXmlApplicationContext. (str "file:" (file-path "src/test/resources/testApplicationContext.xml"))))
+
+(defn init-imcms
+  "Initializes Imcms for tests."
+  []
+  (Imcms/setPath (subdir "src/test/resources") (subdir "src/test/resources"))
+  (Imcms/setApplicationContext spring-app-context)
+  (Imcms/setUpgradeDatabaseSchemaOnStart false))
 
 
 (defmacro sh [& args]

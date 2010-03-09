@@ -56,7 +56,7 @@ public class Imcms {
     private static File path;
     
     /** Prefs config path relative to application path. */
-    public static final String DEFAULT_PREFS_CONFIG_PATH = "WEB-INF/conf";
+    private static final String DEFAULT_RELATIVE_PREFS_CONFIG_PATH = "WEB-INF/conf";
 
     private static Logger logger = Logger.getLogger(Imcms.class);
 
@@ -91,8 +91,6 @@ public class Imcms {
 
     private static I18nSupport i18nSupport;
 
-    private static String prefsConfigPath = DEFAULT_PREFS_CONFIG_PATH;
-
 
     /** Can not be instantiated directly. */
     private Imcms() {}
@@ -114,9 +112,6 @@ public class Imcms {
         setStartEx(null);
 
         try {
-            File configPath = new File(path, prefsConfigPath);
-            Prefs.setConfigPath(configPath);
-
             userDocRequests = new ThreadLocal<DocumentRequest>();
 
             if (upgradeDatabaseSchemaOnStart) {
@@ -140,7 +135,14 @@ public class Imcms {
     }
 
     public static void setPath(File path) {
+        File prefsConfigPath = new File(path, DEFAULT_RELATIVE_PREFS_CONFIG_PATH);
+
+        setPath(path, prefsConfigPath);
+    }
+
+    public static void setPath(File path, File prefsConfigPath) {
         Imcms.path = path;
+        Prefs.setConfigPath(prefsConfigPath);
     }
 
     public static File getPath() {
@@ -463,13 +465,5 @@ public class Imcms {
 
     public static void setUpgradeDatabaseSchemaOnStart(boolean upgradeDatabaseSchemaOnStart) {
         Imcms.upgradeDatabaseSchemaOnStart = upgradeDatabaseSchemaOnStart;
-    }
-
-    public static String getPrefsConfigPath() {
-        return prefsConfigPath;
-    }
-
-    public static void setPrefsConfigPath(String prefsConfigPath) {
-        Imcms.prefsConfigPath = prefsConfigPath;
     }
 }

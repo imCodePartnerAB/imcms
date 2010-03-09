@@ -112,13 +112,6 @@
   (create-resource-watcher file-getter file-handler #(.lastModified %)))
 
 
-
-(defn call-if-modified
-  "Deprecated, use create-file-watcher instead."
-  [get-file-fn, file-fn]
-  (create-file-watcher get-file-fn, file-fn))
-
-
 (defn files
   "Returns lazy file seq under dir which are match filename re."
   [#^String dir, filename-re]
