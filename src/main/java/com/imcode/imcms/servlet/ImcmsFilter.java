@@ -40,7 +40,7 @@ import com.imcode.imcms.api.I18nLanguage;
 /**
  * Front filter - intercepts all requests expect maintenance.
  *
- * Also initializes and starts Imcms.
+ * Also responsible for Imcms initializing and starting.
  *
  * @see imcode.server.Imcms
  */
@@ -144,7 +144,6 @@ public class ImcmsFilter implements Filter, ImcmsListener {
 
         Imcms.setPath(path);
         Imcms.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));
-        Imcms.addListener(this);
 
         try {
             logger.info("Starting CMS.");
@@ -154,6 +153,8 @@ public class ImcmsFilter implements Filter, ImcmsListener {
             logger.error("Error starting CMS.", e);
             Imcms.setMaintenanceMode();
         }
+
+        Imcms.addListener(this);
     }
 
 
@@ -248,7 +249,7 @@ public class ImcmsFilter implements Filter, ImcmsListener {
 
 
     /**
-     * Default user is not allowed to request different document version.
+     * Default user is not allowed to request document version other that default.
      * 
      * @param request
      * @param session
