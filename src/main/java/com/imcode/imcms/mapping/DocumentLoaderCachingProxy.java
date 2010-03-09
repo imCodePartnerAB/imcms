@@ -52,7 +52,7 @@ public class DocumentLoaderCachingProxy {
      * Represented as bidirectional map.
      * 
      * Cache key is a document id - Integer.
-     * Cache value is document alias - String.
+     * Cache value is a document alias - String.
      */
     private BidiMap aliasesBidiMap;
 

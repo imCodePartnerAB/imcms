@@ -57,8 +57,10 @@ public class DocumentMapper implements DocumentGetter {
     private ImcmsServices imcmsServices;
     
     private NativeQueriesDao nativeQueriesDao;
-    
-    /** TODO: hide?. */
+
+    /**
+     * Instantiated using SpringFramework.
+     */
     private DocumentLoader documentLoader;
     
     /** Document loader caching proxy. Intercepts calls to DocumentLoader. */
@@ -83,21 +85,13 @@ public class DocumentMapper implements DocumentGetter {
         
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
-        
-        // old code:
-        // setDocumentGetter(new FragmentingDocumentGetter(new DocumentLoader(services)));
-        
-        // Document getter is used directly without Fragmented getter
-        // DatabseDocumentGetter is instantiated using SpringFramework factory
-        // in order to support declarative (AOP) transactions.        
+
         documentLoader = (DocumentLoader)services.getSpringBean("documentLoader");
         documentLoader.getDocumentInitializingVisitor().getTextDocumentInitializer().setDocumentGetter(this);
         
         documentLoaderCachingProxy = new DocumentLoaderCachingProxy(documentLoader, documentCacheMaxSize);
         categoryMapper = (CategoryMapper)services.getSpringBean("categoryMapper");
         
-        // DocumentSaver is instantiated using SpringFramework
-        // in order to support declarative (AOP) transactions.
         documentSaver = (DocumentSaver)services.getSpringBean("documentSaver");
         documentSaver.setDocumentMapper(this);
           
@@ -112,10 +106,6 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentVersionInfo getDocumentVersionInfo(Integer documentId) {
     	return documentLoaderCachingProxy.getDocumentVersionInfo(documentId);
     }
-
-//    public DocumentSaver getDocumentSaver() {
-//        return documentSaver ;
-//    }
 
 
     /**
@@ -298,7 +288,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     public void saveDocumentMenu(TextDocumentDomainObject doc, MenuDomainObject menu, UserDomainObject user)
-            throws DocumentSaveException , NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
+            throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
         try {
     		documentSaver.saveMenu(doc, menu, user);
     	} finally {
@@ -903,15 +893,7 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-	public void setDocumentSaver(DocumentSaver documentSaver) {
-		this.documentSaver = documentSaver;
-	}
-
     public DocumentLoaderCachingProxy getDocumentLoaderCachingProxy() {
         return documentLoaderCachingProxy;
-    }
-
-    public void setDocumentLoaderCachingProxy(DocumentLoaderCachingProxy documentLoaderCachingProxy) {
-        this.documentLoaderCachingProxy = documentLoaderCachingProxy;
     }
 }
