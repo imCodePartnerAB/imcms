@@ -28,10 +28,7 @@ public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
         super( document, returnCommand, saveNewDocumentCommand );
     }
 
-    // Workaround:
-    // TODO: write throughout explaination
-    // In case of new document <this> field is used as a marker.
-    // If set then actual values are copied for all languages from labels.
+    // todo: copy non-default language headline and text 
     protected void dispatchOkFromDocumentInformation( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)getDocument() ;
 

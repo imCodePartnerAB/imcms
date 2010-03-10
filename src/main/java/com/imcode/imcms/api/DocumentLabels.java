@@ -2,6 +2,9 @@ package com.imcode.imcms.api;
 
 import javax.persistence.*;
 
+/**
+ * Labels is a set of texts and images associated with a document. 
+ */
 @Entity
 @Table(name="imcms_doc_labels")
 public class DocumentLabels implements Cloneable {
@@ -20,9 +23,15 @@ public class DocumentLabels implements Cloneable {
 	@JoinColumn(name="language_id", referencedColumnName="language_id")
     private I18nLanguage language;
 
+    /**
+     * Doc's HTML headline.
+     */
 	@Column(name="headline")
     private String headline;
 
+    /**
+     * Displayed as menu item text when this doc is a part of a menu of other doc.
+     */
 	@Column(name="menu_text")
     private String menuText;
 

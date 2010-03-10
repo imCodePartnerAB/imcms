@@ -217,7 +217,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param document
      * @param labelsColl 
      * @param user
-     * @param copying
+     * @param copying controls how document's permissions are saved.
      * @return saved doc id.
      * @throws DocumentSaveException
      * @throws NoPermissionToAddDocumentToMenuException

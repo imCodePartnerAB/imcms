@@ -111,14 +111,16 @@
   <!-- Content -->
   <!-- ==================================================================== -->
 
+    <!--
   <query name="Content.getByLoopIdAndOrderIndex">
+
     <![CDATA[
 		SELECT c FROM Content c
 		WHERE c.loopId = :loopId AND c.orderIndex = :orderIndex  ORDER BY  c.orderIndex
     ]]>
   </query>
 
-    <!--
+     was commited
   <query name="Content.getNextIndexes">
     <![CDATA[
 		SELECT
@@ -130,7 +132,7 @@
 		WHERE l.id = :loopId
     ]]>
   </query>
-  -->
+
 
   <query name="Content.updateOrderIndex">
     <![CDATA[
@@ -162,5 +164,6 @@
     <![CDATA[
     SELECT c FROM Content c WHERE c.loopId = :loopId AND c.orderIndex > :orderIndex ORDER BY c.orderIndex
     ]]>
-  </query>    
+  </query>
+      -->
 </hibernate-mapping>

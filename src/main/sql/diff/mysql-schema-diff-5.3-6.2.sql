@@ -140,14 +140,17 @@ CREATE TABLE imcms_text_doc_content_loops (
 -- Contents are never deleted physically - they are disabled.
 CREATE TABLE imcms_text_doc_contents (
   id int NOT NULL AUTO_INCREMENT,
-  loop_id int DEFAULT NULL,
-  sequence_index int NOT NULL,      
-  order_index int NOT NULL,
+  doc_id int NOT NULL,
+  doc_version_no int NOT NULL,
+  loop_no int DEFAULT NULL,
+  no int NOT NULL,
+  order_no int NOT NULL,
   enabled tinyint NOT NULL DEFAULT TRUE,
         
   CONSTRAINT pk__imcms_text_doc_contents PRIMARY KEY (id),
-  UNIQUE KEY uk__imcms_text_doc_contents_loop_id__order_index (loop_id, order_index),
-  CONSTRAINT fk__imcms_text_doc_contents__imcms_text_doc_content_loops FOREIGN KEY (loop_id) REFERENCES imcms_text_doc_content_loops (id) ON DELETE CASCADE
+  UNIQUE KEY uk__imcms_text_doc_contents (doc_id, doc_version_no, loop_no, no)
+  -- ,
+  -- CONSTRAINT fk__imcms_text_doc_contents__imcms_text_doc_content_loops FOREIGN KEY (loop_id) REFERENCES imcms_text_doc_content_loops (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- drop old content and loops tables

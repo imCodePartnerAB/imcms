@@ -25,8 +25,8 @@
 (defn scripts-dir-path [] (.getCanonicalPath (scripts-dir)))
 
 
-(def slurp-xml-conf (file-utils/call-if-modified xml-conf-file slurp*))
-(def slurp-xsd-conf (file-utils/call-if-modified xsd-conf-file slurp*))
+(def slurp-xml-conf (file-utils/create-file-watcher xml-conf-file slurp*))
+(def slurp-xsd-conf (file-utils/create-file-watcher xsd-conf-file slurp*))
 
 
 (defn init-script-files

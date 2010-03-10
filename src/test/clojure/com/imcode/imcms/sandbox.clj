@@ -44,7 +44,25 @@
   (import 'org.apache.lucene.index.IndexWriter)
   (import 'org.apache.lucene.analysis.SimpleAnalyzer)
 
+
   nil)
+
+(use 'com.imcode.imcms.spring-utils)
+(import '(com.imcode.imcms.api Content ContentLoop))
+
+(defn s []
+
+  (defbean p/spring-app-context dao contentLoopDao)
+  (def l (ContentLoop.))
+  (-> l .getContents (.add (Content.)))
+  (doto (.getFirst (.getContents l)) (.setNo 0))
+  (doto (.getFirst (.getContents l)) (.setOrderNo 0))
+
+  (.setNo l 1)
+  (.setDocId l 1001)
+  (.setDocVersionNo l 0)
+
+  )
 
 ;(def files (f/files "src" #"\.clj$"))
 
