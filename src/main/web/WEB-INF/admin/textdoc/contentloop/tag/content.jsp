@@ -38,7 +38,7 @@ pageContext.setAttribute("isSingleContent", isSingleContent);
           <form:form action="${pageContext.servletContext.contextPath}/newadmin/contentloop" method="POST">
             <input type="hidden" name="docId" value="${contentLoop.docId}"/>
             <input type="hidden" name="no" value="${contentLoop.no}"/>
-            <input type="hidden" name="contentIndex" value="${content.index}"/>
+            <input type="hidden" name="contentNo" value="${content.no}"/>
             <input type="hidden" name="flags" value="${flags}"/>
             <input type="hidden" name="cmd" value="<%=ContentLoopController.Command.MOVE_UP.ordinal()%>"/>
             <input type="submit" value="Move up"/>
@@ -51,7 +51,7 @@ pageContext.setAttribute("isSingleContent", isSingleContent);
           <form:form action="${pageContext.servletContext.contextPath}/newadmin/contentloop" method="POST">
             <input type="hidden" name="docId" value="${contentLoop.docId}"/>
             <input type="hidden" name="no" value="${contentLoop.no}"/>
-            <input type="hidden" name="contentIndex" value="${content.index}"/>
+            <input type="hidden" name="contentNo" value="${content.no}"/>
             <input type="hidden" name="flags" value="${flags}"/>
             <input type="hidden" name="cmd" value="<%=ContentLoopController.Command.MOVE_DOWN.ordinal()%>"/>
             <input type="submit" value="Move down"/>
@@ -63,7 +63,7 @@ pageContext.setAttribute("isSingleContent", isSingleContent);
           <form:form action="${pageContext.servletContext.contextPath}/newadmin/contentloop" method="POST">
             <input type="hidden" name="docId" value="${contentLoop.docId}"/>
             <input type="hidden" name="no" value="${contentLoop.no}"/>
-            <input type="hidden" name="contentIndex" value="${content.index}"/>
+            <input type="hidden" name="contentNo" value="${content.no}"/>
             <input type="hidden" name="flags" value="${flags}"/>
             <input type="hidden" name="cmd" value="<%=ContentLoopController.Command.ADD_BEFORE.ordinal()%>"/>
             <input type="submit" value="Add before"/>
@@ -74,7 +74,7 @@ pageContext.setAttribute("isSingleContent", isSingleContent);
           <form:form action="${pageContext.servletContext.contextPath}/newadmin/contentloop" method="POST">
             <input type="hidden" name="docId" value="${contentLoop.docId}"/>
             <input type="hidden" name="no" value="${contentLoop.no}"/>
-            <input type="hidden" name="contentIndex" value="${content.index}"/>
+            <input type="hidden" name="contentNo" value="${content.no}"/>
             <input type="hidden" name="flags" value="${flags}"/>
             <input type="hidden" name="cmd" value="<%=ContentLoopController.Command.ADD_AFTER.ordinal()%>"/>
             <input type="submit" value="Add after"/>
@@ -86,7 +86,7 @@ pageContext.setAttribute("isSingleContent", isSingleContent);
           <form:form action="${pageContext.servletContext.contextPath}/newadmin/contentloop" method="POST">
             <input type="hidden" name="docId" value="${contentLoop.docId}"/>
             <input type="hidden" name="no" value="${contentLoop.no}"/>
-            <input type="hidden" name="contentIndex" value="${content.index}"/>
+            <input type="hidden" name="contentNo" value="${content.no}"/>
             <input type="hidden" name="flags" value="${flags}"/>
             <input type="hidden" name="cmd" value="<%=ContentLoopController.Command.DELETE.ordinal()%>"/>
             <input type="submit" value="Delete"/>

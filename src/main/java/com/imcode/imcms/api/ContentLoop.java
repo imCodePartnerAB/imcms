@@ -1,18 +1,18 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.textdocument.DocItem;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CollectionOfElements;
+import org.hibernate.annotations.IndexColumn;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.*;
 
 /**
- * Do not set content indexes values manually.
- * Do not modify contents. 
- *
  * @see com.imcode.imcms.dao.ContentLoopDao
  */
 @Entity
@@ -30,40 +30,15 @@ public class ContentLoop implements Serializable, Cloneable, DocItem {
 	@Column(name="doc_version_no")
 	private Integer docVersionNo;
 
-//	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
-//    @JoinColumn(name="loop_id")
-//    @OrderBy("orderIndex")
-//	private List<Content> contents = new LinkedList<Content>();
-
-    @CollectionOfElements
+    @CollectionOfElements(fetch = FetchType.EAGER)
 	@JoinTable(
 	    name = "imcms_text_doc_contents",
 	    joinColumns = {@JoinColumn(name="doc_id", referencedColumnName="doc_id"),
                        @JoinColumn(name="doc_version_no", referencedColumnName="doc_version_no"),
                        @JoinColumn(name="loop_no", referencedColumnName="no")})
+    @IndexColumn(name = "orderNo")
     private List<Content> contents = new LinkedList<Content>();
 
-    @Override
-	public ContentLoop clone() {
-		ContentLoop clone;
-		
-		try {
-			clone = (ContentLoop)super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
-		
-		List<Content> contentsClone = new LinkedList<Content>();
-		
-		for (Content content: contents) {
-			contentsClone.add(content.clone());
-		}
-		
-		clone.setContents(contentsClone);
-								
-		return clone;
-	}
-	
 	public Long getId() {
 		return id;
 	}
@@ -79,16 +54,6 @@ public class ContentLoop implements Serializable, Cloneable, DocItem {
 
 	public void setNo(Integer no) {
 		this.no = no;
-	}
-
-    @Deprecated
-	public Integer getIndex() {
-		return getNo();
-	}
-
-    @Deprecated
-	public void setIndex(Integer index) {
-		setNo(index);
 	}	
 
 	public Integer getDocId() {
@@ -99,14 +64,6 @@ public class ContentLoop implements Serializable, Cloneable, DocItem {
 		this.docId = docId;
 	}
 
-	public List<Content> getContents() {
-		return contents;
-	}
-
-	public void setContents(List<Content> loops) {
-		this.contents = loops;
-	}
-
 	public Integer getDocVersionNo() {
 		return docVersionNo;
 	}
@@ -114,4 +71,172 @@ public class ContentLoop implements Serializable, Cloneable, DocItem {
 	public void setDocVersionNo(Integer docVersionNo) {
 		this.docVersionNo = docVersionNo;
 	}
+
+    
+    // synchronized methods
+
+    @Override
+    public synchronized String toString() {
+        return String.format("{id: %s, docId: %s, docVersionNo: %s, no: %s, contents: [%s]}",
+                id, docId, docVersionNo, no, StringUtils.join(contents, ", "));
+    }    
+
+    @Override
+	public synchronized ContentLoop clone() {
+		ContentLoop clone;
+
+		try {
+			clone = (ContentLoop)super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+
+		List<Content> contentsClone = new LinkedList<Content>();
+
+		for (Content content: contents) {
+			contentsClone.add(content.clone());
+		}
+
+		clone.contents  = contentsClone;
+
+		return clone;
+	}
+
+    /**
+     *
+     * @param contentNo
+     * @return content index
+     * @throws RuntimeException if there is no such content.
+     */
+    private int getContentIndex(int contentNo) {
+        int contentsCount = contents.size();
+
+        for (int i = 0; i < contentsCount; i++) {
+            Content content = contents.get(i);
+            if (content.getNo() == contentNo) {
+                return i;
+            }
+        }
+
+        throw new RuntimeException(String.format("No such content - docId: %s, docVersionNo: %s, no: %s, contentNo: %s.", getDocId(), getDocVersionNo(), getNo(), contentNo));
+    }
+
+
+    private void updateContentsIndexes() {
+        int contentsCount = contents.size();
+
+        for (int i = 0; i < contentsCount; i++) {
+            contents.get(i).setOrderNo(i);
+        }
+    }
+
+
+    private Content addContent(int contentIndex) {
+        Content content = new Content();
+        content.setNo(contents.size());
+
+        contents.add(contentIndex, content);
+
+        updateContentsIndexes();
+
+        return content;
+    }
+
+    /**
+     * @param contentNo content no.
+     * @return Content with given no.
+     * @throws RuntimeException if there is no such content.
+     */
+    public synchronized Content getContent(int contentNo) {
+        return contents.get(getContentIndex(contentNo));
+    }    
+    
+
+    /**
+     * @return contents sorted by order no.
+     */
+	public synchronized List<Content> getContents() {
+		return Collections.unmodifiableList(contents);
+	}
+
+    public synchronized Content addFirstContent() {
+        return addContent(0);
+    }
+
+    public synchronized Content addLastContent() {
+        return addContent(contents.size());
+    }
+
+    public synchronized Content insertContentAfter(int contentNo) {
+        return addContent(getContentIndex(contentNo) + 1);
+
+    }
+
+    public synchronized Content insertContentBefore(int contentNo) {
+        return addContent(getContentIndex(contentNo));
+    }
+
+    public synchronized Content moveContentBackward(int contentNo) {
+        int contentIndex = getContentIndex(contentNo);
+        Content content = contents.get(contentIndex);
+
+        if (!content.isEnabled()) {
+            throw new RuntimeException(String.format("Can not move disabled content - docId: %s, docVersionNo: %s, no: %s, contentNo: %s.", getDocId(), getDocVersionNo(), getNo(), contentNo));
+        }
+
+        for (int i = contentIndex - 1; i >= 0; i--) {
+            Content prevContent = contents.get(i);
+            if (prevContent.isEnabled()) {
+                contents.set(i, content);
+                contents.set(contentIndex, prevContent);
+
+                updateContentsIndexes();
+
+                break;
+            }
+        }
+        
+        return content;
+    }
+
+    public synchronized Content moveContentForward(int contentNo) {
+        int contentIndex = getContentIndex(contentNo);
+        Content content = contents.get(contentIndex);
+
+        if (!content.isEnabled()) {
+            throw new RuntimeException(String.format("Can not move disabled content - docId: %s, docVersionNo: %s, no: %s, contentNo: %s.", getDocId(), getDocVersionNo(), getNo(), contentNo));            
+        }
+
+        int contentCount = contents.size();
+
+        for (int i = contentIndex + 1; i <  contentCount; i++) {
+            Content nextContent = contents.get(i);
+            if (nextContent.isEnabled()) {
+                contents.set(i, content);
+                contents.set(contentIndex, nextContent);
+
+                updateContentsIndexes();
+
+                break;
+            }
+        }
+
+        return content;
+    }
+
+    public synchronized Content disableContent(int contentNo) {
+        Content content = getContent(contentNo);
+
+        content.setEnabled(false);
+
+        return content;
+    }
+
+    public synchronized Content enableContent(int contentNo) {
+        Content content = getContent(contentNo);
+
+        content.setEnabled(true);
+
+        return content;
+    }
 }

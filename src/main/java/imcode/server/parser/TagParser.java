@@ -414,13 +414,13 @@ public class TagParser {
             no = implicitTextNumber++;
             text = loop == null
                     ? textDocumentToUse.getText(no)
-                    : textDocumentToUse.getText(loop.getNo(), content.getIndex(), no);
+                    : textDocumentToUse.getText(loop.getNo(), content.getNo(), no);
         } else {
             noStr = noStr.trim();
             no = Integer.parseInt(noStr);
             text = loop == null
                     ? textDocumentToUse.getText(no)
-                    : textDocumentToUse.getText(loop.getNo(), content.getIndex(), no);
+                    : textDocumentToUse.getText(loop.getNo(), content.getNo(), no);
             
             implicitTextNumber = no + 1;
         }

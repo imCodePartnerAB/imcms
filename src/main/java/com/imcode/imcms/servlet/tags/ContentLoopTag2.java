@@ -29,14 +29,6 @@ public class ContentLoopTag2 extends BodyTagSupport {
         loop.setNo(no);
         loop.setDocVersionNo(documentVersion);
 
-        Content content = new Content();
-
-        content.setOrderIndex(0);
-        content.setIndex(0);
-        content.setEnabled(true);
-
-        loop.getContents().add(content);
-
         return loop;
     }
 
@@ -98,9 +90,11 @@ public class ContentLoopTag2 extends BodyTagSupport {
         contentsCount = loop.getContents().size();
         contentsIterator = loop.getContents().listIterator();
 
-        handleNextContent();
-
-        return editMode ? EVAL_BODY_BUFFERED : EVAL_BODY_INCLUDE;
+        return !handleNextContent()
+                ? SKIP_BODY
+                : editMode
+                    ? EVAL_BODY_BUFFERED
+                    : EVAL_BODY_INCLUDE;
 	}
 
 	private boolean handleNextContent() {
@@ -112,10 +106,6 @@ public class ContentLoopTag2 extends BodyTagSupport {
         firstContent = !contentsIterator.hasPrevious();
         currentContent = contentsIterator.next();
         lastContent = !contentsIterator.hasNext();
-
-		int sequenceIndex = currentContent.getIndex();
-
-    	//pageContext.setAttribute(indexVar, index);
 
     	return true;
 	}

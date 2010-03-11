@@ -49,7 +49,7 @@ public class ContentLoopController {
 			@RequestParam("cmd") int cmd,
 			@RequestParam("docId") int docId,
 			@RequestParam("no") int no,
-			@RequestParam("contentIndex") int contentIndex,
+			@RequestParam("contentNo") int contentNo,
 			@RequestParam("flags") int flags) {
 						
 		Command command = getCommand(cmd);
@@ -58,47 +58,37 @@ public class ContentLoopController {
 		ContentLoop loop = document.getContentLoop(no);
 		
         try {
-            if (loop.getId() == null) {
-                loop = contentLoopDao.saveContentLoop(loop);
-            }
-            
-            Long loopId = loop.getId();
-
-            int contentsCount = loop.getContents().size();
-
             switch (command) {
             case MOVE_UP:
-                if (contentsCount > 1)
-                    contentLoopDao.moveContentUp(loopId, contentIndex);
+                loop.moveContentBackward(contentNo);
                 break;
 
             case MOVE_DOWN:
-                if (contentsCount > 1)
-                    contentLoopDao.moveContentDown(loopId, contentIndex);
+                loop.moveContentForward(contentNo);
                 break;
 
             case ADD_BEFORE:
-                contentLoopDao.insertNewContentBefore(loopId, contentIndex);
+                loop.insertContentBefore(contentNo);
                 break;
 
             case ADD_AFTER:
-                contentLoopDao.insertNewContentAfter(loopId, contentIndex);
+                loop.insertContentAfter(contentNo);
                 break;
 
             case ADD_FISRT:
-                contentLoopDao.addFisrtContent(loopId);
+                loop.addFirstContent();
                 break;
 
             case ADD_LAST:
-                contentLoopDao.addLastContent(loopId);
+                loop.addLastContent();
                 break;
 
             case DELETE:
-                if (contentsCount > 1)
-                    contentLoopDao.deleteContent(loopId, contentIndex);
-
+                loop.disableContent(contentNo);
                 break;
             }
+
+            loop = contentLoopDao.saveContentLoop(loop);
         } finally {
             documentMapper.invalidateDocument(document);
         }

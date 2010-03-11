@@ -23,14 +23,6 @@ public class Factory {
     public static ContentLoop createContentLoop(Integer docId, Integer docVersionNo, Integer no) {
         ContentLoop loop = newInstance(ContentLoop.class, docId, docVersionNo, no);
 
-        Content content = new Content();
-
-        content.setIndex(0);
-        content.setOrderIndex(0);
-        content.setEnabled(true);
-
-        loop.getContents().add(content);
-
         return loop;
     }
 

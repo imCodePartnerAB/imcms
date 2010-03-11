@@ -144,7 +144,8 @@ public class ImcmsFilter implements Filter, ImcmsListener {
 
         Imcms.setPath(path);
         Imcms.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));
-
+        Imcms.addListener(this);
+        
         try {
             logger.info("Starting CMS.");
             Imcms.start();
@@ -153,8 +154,6 @@ public class ImcmsFilter implements Filter, ImcmsListener {
             logger.error("Error starting CMS.", e);
             Imcms.setMaintenanceMode();
         }
-
-        Imcms.addListener(this);
     }
 
 

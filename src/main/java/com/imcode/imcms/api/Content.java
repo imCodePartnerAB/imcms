@@ -3,48 +3,27 @@ package com.imcode.imcms.api;
 import javax.persistence.*;
 
 /**
- * Never set orderIndex and sequenceIndex manually.
+ * Content is a part of a content loop.
+ * It is never instantiated directly.
+ *
  * 
- * @see com.imcode.imcms.dao.ContentLoopDao
+ * @see com.imcode.imcms.api.ContentLoop
  */
-//@Entity
-//@Table(name="imcms_text_doc_contents")
 @Embeddable
 public class Content implements Cloneable {
-
-	//@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Transient
-    private Long id;
-	
-	//@Column(name="loop_id")
-	@Transient
-    private Long loopId;
-
-    /**
-     * Unuque order index.
-     * This value never repeats but may be changed if a content' position is changed (content moved/swapped).
-     */
-	//@Column(name="order_index")
-	@Transient
-    private Integer orderIndex;
 
     @Column(name="no")
     private Integer no;
 
-    /**
-     * Unuque sequence index.
-     * This value never changes (once assigned) and never repeats.
-     */
-	//@Column(name="sequence_index", updatable=false)
-	@Transient
-    private Integer index;
-    
-	@Column(name="order_no", updatable=false)
+	@Column(name="order_no")
 	private Integer orderNo;
 
+    /**
+     * To support history, contents are never deleted physically - they are disabled. 
+     */
+    private boolean enabled = true;
 
-    // To support history, contents are never deleted physically - they are disabled.
-    private Boolean enabled = true;
+    Content() {}
 
     @Override
 	public Content clone() {
@@ -55,59 +34,28 @@ public class Content implements Cloneable {
 		}		
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Integer getOrderIndex() {
-		return orderIndex;
-	}
-
-	public void setOrderIndex(Integer orderIndex) {
-		this.orderIndex = orderIndex;
-	}
-
-	public Long getLoopId() {
-		return loopId;
-	}
-
-	public void setLoopId(Long loopId) {
-		this.loopId = loopId;
-	}
-
-	public Integer getIndex() {
-		return index;
-	}
-
-	public void setIndex(Integer index) {
-		this.index = index;
-	}
-
-    public Boolean isEnabled() {
-        return enabled;
+    @Override
+    public String toString() {
+        return String.format("{no: %s, orderNo: %s, enabled: %s}", no, orderNo, enabled);
     }
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public Integer getNo() {
         return no;
     }
 
-    public void setNo(Integer no) {
+    void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }    
+
+    void setNo(Integer no) {
         this.no = no;
     }
 
-    public Integer getOrderNo() {
-        return orderNo;
-    }
-
-    public void setOrderNo(Integer orderNo) {
+    void setOrderNo(Integer orderNo) {
         this.orderNo = orderNo;
     }
 }

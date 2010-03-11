@@ -23,20 +23,20 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         
         public final int loopNo;
 
-        public final int contentIndex;
+        public final int contentNo;
 
         public final int itemNo;
 
         private final int hashCode;
 
-        public ContentLoopItemKey(int loopNo, int contentIndex, int itemNo) {
+        public ContentLoopItemKey(int loopNo, int contentNo, int itemNo) {
             this.loopNo = loopNo;
-            this.contentIndex = contentIndex;
+            this.contentNo = contentNo;
             this.itemNo = itemNo;
 
             this.hashCode = new HashCodeBuilder(17, 31).
                 append(loopNo).
-                append(contentIndex).
+                append(contentNo).
                 append(itemNo).
                 toHashCode();
         }
@@ -164,8 +164,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * @return TextDomainObject or null if text can not be found.
      */
-	public TextDomainObject getText(Integer loopNo, Integer contentIndex, Integer textNo) {
-        return loopTexts.get(new ContentLoopItemKey(loopNo, contentIndex, textNo));
+	public TextDomainObject getText(Integer loopNo, Integer contentNo, Integer textNo) {
+        return loopTexts.get(new ContentLoopItemKey(loopNo, contentNo, textNo));
 	}
 
     /**
@@ -226,16 +226,16 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         Integer metaId = meta.getId();
 
         Integer loopNo = text.getContentLoopNo();
-        Integer contentIndex = text.getContentIndex();
+        Integer contentNo = text.getContentIndex();
 
-        if ((loopNo != null && contentIndex == null) || (loopNo == null && contentIndex != null)) {
+        if ((loopNo != null && contentNo == null) || (loopNo == null && contentNo != null)) {
             throw new IllegalStateException(String.format(
                 "Invalid text. Both loop no and content index must be set or not set (null). Meta  id :%s, document version: %s, loop no: %s, content index: %s, text no: %s."
-                ,meta.getId(), documentVersion, loopNo, contentIndex, no)
+                ,meta.getId(), documentVersion, loopNo, contentNo, no)
             );
         }
 
-        ContentLoopItemKey key = loopNo == null ? null : new ContentLoopItemKey(loopNo, contentIndex, no);
+        ContentLoopItemKey key = loopNo == null ? null : new ContentLoopItemKey(loopNo, contentNo, no);
         
         TextDomainObject oldText = key == null ? texts.get(no) : loopTexts.get(key);
         TextDomainObject newText = text.clone();
@@ -324,16 +324,16 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         Integer metaId = meta.getId();
 
         Integer loopNo = image.getContentLoopNo();
-        Integer contentIndex = image.getContentIndex();
+        Integer contentNo = image.getContentIndex();
 
-        if ((loopNo != null && contentIndex == null) || (loopNo == null && contentIndex != null)) {
+        if ((loopNo != null && contentNo == null) || (loopNo == null && contentNo != null)) {
             throw new IllegalStateException(String.format(
                 "Invalid image. Both loop no and content index must be set or not set (null). Meta  id :%s, document version: %s, loop no: %s, content index: %s, image no: %s."
-                ,meta.getId(), documentVersion, loopNo, contentIndex, no)
+                ,meta.getId(), documentVersion, loopNo, contentNo, no)
             );
         }
 
-        ContentLoopItemKey key = loopNo == null ? null : new ContentLoopItemKey(loopNo, contentIndex, no);
+        ContentLoopItemKey key = loopNo == null ? null : new ContentLoopItemKey(loopNo, contentNo, no);
 
         ImageDomainObject oldImage = key == null ? images.get(no) : loopImages.get(key);
         ImageDomainObject newImage = image.clone();
@@ -507,11 +507,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 		newContentLoop.setDocVersionNo(versionNumber);
 		newContentLoop.setId(loopId);		
 		newContentLoop.setNo(no);
-		
-		for (Content content: newContentLoop.getContents()) {
-			content.setLoopId(loopId);
-			content.setId(null);
-		}
 		
 		contentLoops.put(no, newContentLoop);
 		

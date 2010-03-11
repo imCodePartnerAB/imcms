@@ -140,11 +140,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             loop.setId(null);
         	loop.setDocId(metaId);
         	loop.setDocVersionNo(documentVersion);
-
-            for (Content content: loop.getContents()) {
-                content.setId(null);
-                content.setLoopId(null);
-            }
         	
         	dao.saveContentLoop(loop);
         }  	

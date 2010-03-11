@@ -187,25 +187,25 @@ public class DocumentMapperTest {
     /**
      * Return content loop no and content index:
      */
-    @DataProvider
-    public Object[][] contentInfo() {
-        TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
-        ContentLoop existingContentLoop = doc.getContentLoops().values().iterator().next();
-        ContentLoop unsavedContentLoop = Factory.createNextContentLoop(doc);
-        
-        Integer noContentLoopNo = null;
-        Integer noContentIndex = null;
-
-        Integer existingContentLoopNo = existingContentLoop.getNo();
-        Integer existingContentIndex = existingContentLoop.getContents().get(0).getIndex();
-
-        Integer unsavedContentLoopNo = unsavedContentLoop.getNo();
-        Integer unsavedContentIndex = unsavedContentLoop.getContents().get(0).getIndex();        
-
-        return new Object [][] {
-                {noContentLoopNo, noContentIndex},
-                {existingContentLoopNo, existingContentIndex},
-                {unsavedContentLoopNo, unsavedContentIndex}
-        };
-    }
+//    @DataProvider
+//    public Object[][] contentInfo() {
+//        TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
+//        ContentLoop existingContentLoop = doc.getContentLoops().values().iterator().next();
+//        ContentLoop unsavedContentLoop = Factory.createNextContentLoop(doc);
+//
+//        Integer noContentLoopNo = null;
+//        Integer noContentIndex = null;
+//
+//        Integer existingContentLoopNo = existingContentLoop.getNo();
+//        Integer existingContentIndex = existingContentLoop.getContents().get(0).getIndex();
+//
+//        Integer unsavedContentLoopNo = unsavedContentLoop.getNo();
+//        Integer unsavedContentIndex = unsavedContentLoop.getContents().get(0).getIndex();
+//
+//        return new Object [][] {
+//                {noContentLoopNo, noContentIndex},
+//                {existingContentLoopNo, existingContentIndex},
+//                {unsavedContentLoopNo, unsavedContentIndex}
+//        };
+//    }
 }

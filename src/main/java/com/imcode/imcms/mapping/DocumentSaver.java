@@ -192,11 +192,6 @@ public class DocumentSaver {
                     loop.setId(null);
                     loop.setDocVersionNo(docVersionNo);
 
-                    for (Content content: loop.getContents()) {
-                        content.setId(null);
-                        content.setLoopId(null);
-                    }
-
                     contentLoopDao.saveContentLoop(loop);
                 }
 
