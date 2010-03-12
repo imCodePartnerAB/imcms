@@ -159,8 +159,8 @@ public class TextDocumentLazyLoadingAspect {
 	}
 	
 	/*
-	getContentLoop(int)
-	getContentLoops()	
+	getLoop(int)
+	getLoops()
 	setContentLoop(int, ContentLoop)
 	setContentLoops(Map<Integer, ContentLoop>)
 	 */

@@ -26,7 +26,7 @@ public class ContentLoopDaoTest extends DaoTestG {
 
 		int count = loop.getContents().size();
 		loop.getContents().remove(0);
-		ContentLoop newLoop = contentLoopDao.saveContentLoop(loop);
+		ContentLoop newLoop = contentLoopDao.saveLoop(loop);
 		assertTrue(count == newLoop.getContents().size() + 1);
 		
 		// Assert previos loop was removed
@@ -46,6 +46,6 @@ public class ContentLoopDaoTest extends DaoTestG {
 	}
 
 	private ContentLoop getPredefinedLoop() {
-		return contentLoopDao.getContentLoop(1001, 1, 1);
+		return contentLoopDao.getLoop(1001, 1, 1);
 	}
 }

@@ -1,6 +1,5 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.Content;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;
@@ -141,7 +140,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         	loop.setDocId(metaId);
         	loop.setDocVersionNo(documentVersion);
         	
-        	dao.saveContentLoop(loop);
+        	dao.saveLoop(loop);
         }  	
     }
 

@@ -68,10 +68,10 @@ public class ImageDomainObject implements Serializable, Cloneable, DocItem, DocI
     private Integer type;
 
     @Column(name="loop_no")
-    private Integer contentLoopNo;
+    private Integer loopNo;
 
-    @Column(name="loop_content_index")
-    private Integer contentIndex;    
+    @Column(name="content_no")
+    private Integer contentNo;    
     
     /**
      * i18n support 
@@ -354,19 +354,19 @@ public class ImageDomainObject implements Serializable, Cloneable, DocItem, DocI
 		this.docVersionNo = docVersionNo;
 	}
 
-    public Integer getContentLoopNo() {
-        return contentLoopNo;
+    public Integer getLoopNo() {
+        return loopNo;
     }
 
-    public void setContentLoopNo(Integer loopNo) {
-        this.contentLoopNo = loopNo;
+    public void setLoopNo(Integer loopNo) {
+        this.loopNo = loopNo;
     }
 
-    public Integer getContentIndex() {
-        return contentIndex;
+    public Integer getContentNo() {
+        return contentNo;
     }
 
-    public void setContentIndex(Integer contentIndex) {
-        this.contentIndex = contentIndex;
+    public void setContentNo(Integer contentNo) {
+        this.contentNo = contentNo;
     }
 }

@@ -36,7 +36,7 @@ public class ContentLoop implements Serializable, Cloneable, DocItem {
 	    joinColumns = {@JoinColumn(name="doc_id", referencedColumnName="doc_id"),
                        @JoinColumn(name="doc_version_no", referencedColumnName="doc_version_no"),
                        @JoinColumn(name="loop_no", referencedColumnName="no")})
-    @IndexColumn(name = "orderNo")
+    @IndexColumn(name = "order_no")
     private List<Content> contents = new LinkedList<Content>();
 
 	public Long getId() {
@@ -122,22 +122,11 @@ public class ContentLoop implements Serializable, Cloneable, DocItem {
     }
 
 
-    private void updateContentsIndexes() {
-        int contentsCount = contents.size();
-
-        for (int i = 0; i < contentsCount; i++) {
-            contents.get(i).setOrderNo(i);
-        }
-    }
-
-
     private Content addContent(int contentIndex) {
         Content content = new Content();
         content.setNo(contents.size());
 
         contents.add(contentIndex, content);
-
-        updateContentsIndexes();
 
         return content;
     }
@@ -190,8 +179,6 @@ public class ContentLoop implements Serializable, Cloneable, DocItem {
                 contents.set(i, content);
                 contents.set(contentIndex, prevContent);
 
-                updateContentsIndexes();
-
                 break;
             }
         }
@@ -214,8 +201,6 @@ public class ContentLoop implements Serializable, Cloneable, DocItem {
             if (nextContent.isEnabled()) {
                 contents.set(i, content);
                 contents.set(contentIndex, nextContent);
-
-                updateContentsIndexes();
 
                 break;
             }

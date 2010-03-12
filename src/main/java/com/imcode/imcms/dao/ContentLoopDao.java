@@ -2,11 +2,9 @@ package com.imcode.imcms.dao;
 
 import java.util.List;
 
-import org.hibernate.Query;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
 
 /**
@@ -18,7 +16,7 @@ public class ContentLoopDao extends HibernateTemplate {
      * Returns content loop.
      */
     @Transactional
-    public ContentLoop getContentLoop(Long loopId) {
+    public ContentLoop getLoop(Long loopId) {
         return (ContentLoop)get(ContentLoop.class, loopId);
     }
 
@@ -31,7 +29,7 @@ public class ContentLoopDao extends HibernateTemplate {
 	 * @return loop or null if loop can not be found. 
 	 */
 	@Transactional
-	public ContentLoop getContentLoop(Integer docId, Integer docVersionNo, Integer no) {
+	public ContentLoop getLoop(Integer docId, Integer docVersionNo, Integer no) {
 		return (ContentLoop)getSession().getNamedQuery("ContentLoop.getByDocIdAndDocVersionNoAndNo")
 			.setParameter("docId", docId)
 			.setParameter("docVersionNo", docVersionNo)
@@ -48,7 +46,7 @@ public class ContentLoopDao extends HibernateTemplate {
 	 * @return document content loops. 
 	 */
 	@Transactional
-	public List<ContentLoop> getContentLoops(Integer docId, Integer docVersionNo) {
+	public List<ContentLoop> getLoops(Integer docId, Integer docVersionNo) {
 		return findByNamedQueryAndNamedParam("ContentLoop.getByDocIdAndDocVersionNo", 
 				new String[] {"docId", "docVersionNo"}, new Object[] {docId, docVersionNo });
 	}
@@ -61,7 +59,7 @@ public class ContentLoopDao extends HibernateTemplate {
      * @return saved content loop.
 	 */
 	@Transactional
-	public synchronized ContentLoop saveContentLoop(final ContentLoop loop) {
+	public synchronized ContentLoop saveLoop(final ContentLoop loop) {
         ContentLoop loopClone = loop.clone();
 
         saveOrUpdate(loopClone);
@@ -72,7 +70,7 @@ public class ContentLoopDao extends HibernateTemplate {
 	
 	@Transactional
 	public synchronized int deleteLoops(Integer docId, Integer documentVersion) {
-		List<ContentLoop> loops = getContentLoops(docId, documentVersion);
+		List<ContentLoop> loops = getLoops(docId, documentVersion);
 		
 		for (ContentLoop loop: loops) {
 			delete(loop);
@@ -84,6 +82,10 @@ public class ContentLoopDao extends HibernateTemplate {
 
 	@Transactional
 	public void deleteLoop(Long loopId) {
-	    delete(getContentLoop(loopId));
+        ContentLoop loop = getLoop(loopId);
+
+        if (loop != null) {
+	        delete(loop);
+        }
 	}
 }

@@ -7,12 +7,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.I18nLanguage;
 
 public class TextDao extends HibernateTemplate {
 
@@ -66,8 +62,8 @@ public class TextDao extends HibernateTemplate {
 			.setParameter("modifiedDt", new Date())
 			.setParameter("userId", user.getId())
 			.setParameter("languageId", text.getLanguage().getId())
-            .setParameter("loopNo", text.getContentLoopNo())
-            .setParameter("loopContentIndex", text.getContentIndex()).executeUpdate();
+            .setParameter("loopNo", text.getLoopNo())
+            .setParameter("loopContentIndex", text.getContentNo()).executeUpdate();
 	}
 
     /**

@@ -128,7 +128,7 @@ public class TextDocumentInitializer {
      * @throws IllegalStateException if a content loop is empty i.e. does not have a contents. 
      */
 	public void initContentLoops(TextDocumentDomainObject document) {
-		List<ContentLoop> loops = contentLoopDao.getContentLoops(document.getMeta().getId(), document.getVersion().getNo());
+		List<ContentLoop> loops = contentLoopDao.getLoops(document.getMeta().getId(), document.getVersion().getNo());
 		Map<Integer, ContentLoop> loopsMap = new HashMap<Integer, ContentLoop>();
 		
 		for (ContentLoop loop: loops) {

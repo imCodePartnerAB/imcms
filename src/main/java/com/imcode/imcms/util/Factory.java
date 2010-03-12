@@ -1,6 +1,5 @@
 package com.imcode.imcms.util;
 
-import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.I18nLanguage;
 import imcode.server.document.DocumentReference;
@@ -51,7 +50,7 @@ public class Factory {
      */
     public static TextDomainObject createText(Integer docId, Integer docVersionNo, I18nLanguage language, Integer no, Integer contentIndex) {
         TextDomainObject text = newInstance(TextDomainObject.class, docId, docVersionNo, language, no);
-        text.setContentIndex(contentIndex);
+        text.setContentNo(contentIndex);
 
         return text;
     }
@@ -62,7 +61,7 @@ public class Factory {
 
     public static ImageDomainObject createImage(Integer docId, Integer docVersionNo, I18nLanguage language, Integer no, Integer contentIndex) {
         ImageDomainObject image = newInstance(ImageDomainObject.class, docId, docVersionNo, language, no);
-        image.setContentIndex(contentIndex);
+        image.setContentNo(contentIndex);
 
         return image;
     }

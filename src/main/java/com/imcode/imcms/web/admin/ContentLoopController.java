@@ -10,12 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.api.Content;
 import com.imcode.imcms.dao.ContentLoopDao;
 import com.imcode.imcms.mapping.DocumentMapper;
-import java.util.List;
-import java.util.Iterator;
-import java.util.ListIterator;
 
 
 /**
@@ -48,7 +44,7 @@ public class ContentLoopController {
 	public String processCommand (
 			@RequestParam("cmd") int cmd,
 			@RequestParam("docId") int docId,
-			@RequestParam("no") int no,
+			@RequestParam("no") Integer no,
 			@RequestParam("contentNo") int contentNo,
 			@RequestParam("flags") int flags) {
 						
@@ -88,7 +84,7 @@ public class ContentLoopController {
                 break;
             }
 
-            loop = contentLoopDao.saveContentLoop(loop);
+            loop = contentLoopDao.saveLoop(loop);
         } finally {
             documentMapper.invalidateDocument(document);
         }

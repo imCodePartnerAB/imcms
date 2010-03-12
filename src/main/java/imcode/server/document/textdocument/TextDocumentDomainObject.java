@@ -225,8 +225,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         Integer documentVersion = getVersion().getNo();
         Integer metaId = meta.getId();
 
-        Integer loopNo = text.getContentLoopNo();
-        Integer contentNo = text.getContentIndex();
+        Integer loopNo = text.getLoopNo();
+        Integer contentNo = text.getContentNo();
 
         if ((loopNo != null && contentNo == null) || (loopNo == null && contentNo != null)) {
             throw new IllegalStateException(String.format(
@@ -323,8 +323,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         Integer documentVersion = getVersion().getNo();
         Integer metaId = meta.getId();
 
-        Integer loopNo = image.getContentLoopNo();
-        Integer contentNo = image.getContentIndex();
+        Integer loopNo = image.getLoopNo();
+        Integer contentNo = image.getContentNo();
 
         if ((loopNo != null && contentNo == null) || (loopNo == null && contentNo != null)) {
             throw new IllegalStateException(String.format(

@@ -125,23 +125,23 @@ public class DocumentSaver {
     @Transactional
     public ContentLoop createEnclosingContentLoopIfNecessary(TextDocumentDomainObject doc, DocContentLoopItem item) {
         ContentLoop loop = null;
-        Integer loopNo = item.getContentLoopNo();
+        Integer loopNo = item.getLoopNo();
         
         if (loopNo != null) {
-            Integer contentIndex = item.getContentIndex();
+            Integer contentIndex = item.getContentNo();
 
             if (contentIndex == null) {
                 throw new IllegalStateException(String.format(
                         "Content loop's context index is not set. Doc id: %s, item :%s, content loop no: %s.",  doc.getId(), item, loopNo));
             }
 
-            loop = contentLoopDao.getContentLoop(doc.getId(), doc.getVersion().getNo(), loopNo);
+            loop = contentLoopDao.getLoop(doc.getId(), doc.getVersion().getNo(), loopNo);
 
             if (loop == null) {
                 // Check item references content index 0.
                 loop = Factory.createContentLoop(doc.getId(), doc.getVersion().getNo(), loopNo);
 
-                contentLoopDao.saveContentLoop(loop);
+                contentLoopDao.saveLoop(loop);
             }
         }
 
@@ -187,12 +187,12 @@ public class DocumentSaver {
             }
 
     		if (meta.getDocumentType() == DocumentTypeDomainObject.TEXT_ID) {
-                for (ContentLoop loop: contentLoopDao.getContentLoops(docId, DocumentVersion.WORKING_VERSION_NO)) {
+                for (ContentLoop loop: contentLoopDao.getLoops(docId, DocumentVersion.WORKING_VERSION_NO)) {
                     loop = loop.clone();
                     loop.setId(null);
                     loop.setDocVersionNo(docVersionNo);
 
-                    contentLoopDao.saveContentLoop(loop);
+                    contentLoopDao.saveLoop(loop);
                 }
 
                 for (TextDomainObject text: textDao.getTexts(docId, DocumentVersion.WORKING_VERSION_NO)) {

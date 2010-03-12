@@ -3,11 +3,11 @@ package imcode.server.document.textdocument;
 
 public interface DocContentLoopItem {
 
-    Integer getContentLoopNo();
+    Integer getLoopNo();
 
-    void setContentLoopNo(Integer no);
+    void setLoopNo(Integer no);
 
-    Integer getContentIndex();
+    Integer getContentNo();
 
-    void setContentIndex(Integer index);    
+    void setContentNo(Integer index);
 }

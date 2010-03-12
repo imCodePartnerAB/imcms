@@ -15,9 +15,6 @@ public class Content implements Cloneable {
     @Column(name="no")
     private Integer no;
 
-	@Column(name="order_no")
-	private Integer orderNo;
-
     /**
      * To support history, contents are never deleted physically - they are disabled. 
      */
@@ -36,7 +33,7 @@ public class Content implements Cloneable {
 
     @Override
     public String toString() {
-        return String.format("{no: %s, orderNo: %s, enabled: %s}", no, orderNo, enabled);
+        return String.format("{no: %s, enabled: %s}", no, enabled);
     }
 
     public boolean isEnabled() {
@@ -53,9 +50,5 @@ public class Content implements Cloneable {
 
     void setNo(Integer no) {
         this.no = no;
-    }
-
-    void setOrderNo(Integer orderNo) {
-        this.orderNo = orderNo;
     }
 }

@@ -125,8 +125,8 @@ public class DocumentMapperTest {
         TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
         TextDomainObject text = Factory.createNextText(doc);
 
-        text.setContentLoopNo(contentLoopNo);
-        text.setContentIndex(contentIndex);        
+        text.setLoopNo(contentLoopNo);
+        text.setContentNo(contentIndex);
 
         docMapper.saveTextDocumentText(doc, text, admin);
     }
@@ -163,8 +163,8 @@ public class DocumentMapperTest {
         ImageDomainObject image = Factory.createNextImage(doc);
 
         image.setSource(new NullImageSource());
-        image.setContentLoopNo(contentLoopNo);
-        image.setContentIndex(contentIndex);
+        image.setLoopNo(contentLoopNo);
+        image.setContentNo(contentIndex);
 
         docMapper.saveTextDocumentImage(doc, image, admin);
     }
@@ -190,7 +190,7 @@ public class DocumentMapperTest {
 //    @DataProvider
 //    public Object[][] contentInfo() {
 //        TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
-//        ContentLoop existingContentLoop = doc.getContentLoops().values().iterator().next();
+//        ContentLoop existingContentLoop = doc.getLoops().values().iterator().next();
 //        ContentLoop unsavedContentLoop = Factory.createNextContentLoop(doc);
 //
 //        Integer noContentLoopNo = null;
