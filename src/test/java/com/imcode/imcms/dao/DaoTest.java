@@ -10,11 +10,16 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 
-public abstract class DaoTestG {
+public abstract class DaoTest {
 	
 	static final String dataSetRootPath = "src/test/resources/";
 	
 	DataSourceDatabaseTester tester;
+
+
+	protected abstract String getDataSetFileName();
+    
+    public void setupTester() {}
 		
 	@BeforeClass public void initTester() throws Exception {
         DataSource dataSource = (DataSource)Utils.getBean("dataSourceWithAutoCommit");
@@ -22,8 +27,9 @@ public abstract class DaoTestG {
         FlatXmlDataSet dataSet = new FlatXmlDataSet(new FileReader(dataSetFilePath));
         
         tester = new DataSourceDatabaseTester(dataSource);
-        //tester.setSetUpOperation DatabaseOperation.REFRESH
         tester.setDataSet(dataSet);
+
+        setupTester();
 	}
 		
 	
@@ -35,6 +41,4 @@ public abstract class DaoTestG {
 	@AfterMethod public final void afterMethod() throws Exception {
 		tester.onTearDown();
 	}
-	
-	protected abstract String getDataSetFileName();
 }

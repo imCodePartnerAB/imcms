@@ -1,22 +1,42 @@
 package com.imcode.imcms.dao;
 
 import static com.imcode.imcms.dao.Utils.contentLoopDao;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
+import com.imcode.imcms.api.Content;
+import imcode.server.Imcms;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import static org.testng.Assert.*;
 
 import com.imcode.imcms.api.ContentLoop;
 
-public class ContentLoopDaoTest extends DaoTestG {
+import java.util.List;
+
+public class ContentLoopDaoTest extends DaoTest {
+
+    ContentLoopDao loopDao;
+
+    @BeforeClass
+    public void setUpClass() {
+        loopDao = Utils.contentLoopDao; //(ContentLoopDao)Imcms.getSpringBean("contentLoopDao");
+    }
+
+    @Test
+    public void createEmptyLoop() {
+        ContentLoop loop = new ContentLoop();
+        loop.setDocId(1001);
+        loop.setDocVersionNo(0);
+        loop.setNo(1);
+
+        loopDao.saveLoop(loop);
+    }
+    
 
 	@Test
-	public void getExistingLoop() {
+	public void getLoop() {
 		ContentLoop loop = getPredefinedLoop();
 
-		assertNotNull("Existing content loop", loop);
+		assertNotNull(loop, "Loop exists");
 	}
 
 	@Test
@@ -25,27 +45,66 @@ public class ContentLoopDaoTest extends DaoTestG {
 		Long loopId = loop.getId();
 
 		int count = loop.getContents().size();
-		loop.getContents().remove(0);
+
+        loop.addLastContent();
 		ContentLoop newLoop = contentLoopDao.saveLoop(loop);
-		assertTrue(count == newLoop.getContents().size() + 1);
+		assertEquals(count + 1, newLoop.getContents().size());
 		
-		// Assert previos loop was removed
-		assertFalse(loopId.equals(newLoop.getId()));
-		assertNotNull(contentLoopDao.get(ContentLoop.class, newLoop.getId()));
-		assertNull(contentLoopDao.get(ContentLoop.class, loopId));
+		assertNotNull(contentLoopDao.getLoop(newLoop.getId()));
+	}
+
+	@Test(dependsOnMethods = "createEmptyLoop")
+	public void deleteLoop() {
+		ContentLoop loop = loopDao.getLoop(1001, 0, 0);
+
+        assertNotNull(loop, "Loop exists");
+        
+		Long loopId = loop.getId();
+
+		loopDao.deleteLoop(loopId);
+        
+		assertNull(contentLoopDao.getLoop(loopId));
 	}
 
 	@Test
-	public void createLoop() {
-		ContentLoop loop = getPredefinedLoop();
+	public void createNonEmptyLoop() {
+        ContentLoop loop = new ContentLoop();
+        loop.setDocId(1001);
+        loop.setDocVersionNo(0);
+        loop.setNo(3);
+
+        for (int i = 0; i < 5; i++) {
+            loop.addFirstContent();
+        }
+
+        loop = loopDao.saveLoop(loop);
+
+        ContentLoop savedLoop = contentLoopDao.getLoop(loop.getId());
+
+        assertNotNull(savedLoop, "Loop exists");
+
+        List<Content> contents = loop.getContents();
+        List<Content> savedContents = savedLoop.getContents();
+
+        assertEquals(contents.size(), savedContents.size(), "Content count matches");
+
+        for (int i = 0; i < 5; i++) {
+            Content content = contents.get(i);
+            Content savedContent = savedContents.get(i);
+
+            assertEquals(content.getNo(), savedContent.getNo(), "Contents no-s mathces.");
+        }
+
+        
+
 	}
 
 	@Override
 	protected String getDataSetFileName() {
-		return "dbunit-content_loop-data.xml";
+		return "dbunit-content_loop.xml";
 	}
 
 	private ContentLoop getPredefinedLoop() {
-		return contentLoopDao.getLoop(1001, 1, 1);
+		return contentLoopDao.getLoop(1001, 0, 0);
 	}
 }

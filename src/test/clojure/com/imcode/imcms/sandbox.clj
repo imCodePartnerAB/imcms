@@ -59,3 +59,5 @@
 ;(def files (f/files "src" #"\.clj$"))
 
 ;(def dbdir (l/new-dbdir (p/create-db-datasource) "lucene"))
+
+(def cl2 (doto (ContentLoop.) (.setDocId 1001) (.setNo 0) (.setDocVersionNo 0)))

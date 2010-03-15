@@ -25,8 +25,6 @@ public class Utils {
 	public final static DocumentSaver documentSaver = 
 		(DocumentSaver)getBean("documentSaver");	
 	
-	public final static DocumentLoader DOCUMENT_LOADER =
-		(DocumentLoader)getBean("DOCUMENT_LOADER");
 
     public static Object getBean(String beanName) {
 		return classPathXmlApplicationContext.getBean(beanName);
