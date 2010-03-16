@@ -1,8 +1,24 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
 <dataset>
-  <imcms_text_doc_content_loops id="1" doc_id="1001" doc_version_no="0" no="0"/>
 
-  <imcms_text_doc_contents id="1" doc_id="1001" doc_version_no="0"  loop_no="0" no="0" order_no="0"/>
-  
+    <!-- empty loop -->
+    <imcms_text_doc_content_loops doc_id="1001" doc_version_no="0" no="0"/>
+
+    <!-- loop with single content -->
+    <imcms_text_doc_content_loops doc_id="1001" doc_version_no="0" no="1"/>
+    <imcms_text_doc_contents doc_id="1001" doc_version_no="0"  loop_no="1" no="0" order_no="0" enabled="1"/>
+
+    <!-- loop with three contents ordered asc -->
+    <imcms_text_doc_content_loops doc_id="1001" doc_version_no="0" no="2"/>
+    <imcms_text_doc_contents doc_id="1001" doc_version_no="0"  loop_no="2" no="0" order_no="0" enabled="1"/>
+    <imcms_text_doc_contents doc_id="1001" doc_version_no="0"  loop_no="2" no="1" order_no="1" enabled="1"/>
+    <imcms_text_doc_contents doc_id="1001" doc_version_no="0"  loop_no="2" no="2" order_no="2" enabled="1"/>
+
+    <!-- loop with three contents ordered desc -->
+    <imcms_text_doc_content_loops doc_id="1001" doc_version_no="0" no="3"/>
+    <imcms_text_doc_contents doc_id="1001" doc_version_no="0"  loop_no="3" no="0" order_no="2" enabled="1"/>
+    <imcms_text_doc_contents doc_id="1001" doc_version_no="0"  loop_no="3" no="1" order_no="1" enabled="1"/>
+    <imcms_text_doc_contents doc_id="1001" doc_version_no="0"  loop_no="3" no="2" order_no="0" enabled="1"/>
+    
 </dataset>

@@ -344,7 +344,11 @@
 	<target name="compile">
 		<maven goal="compile"/>
 	</target>	
-	
+
+	<target name="test" depends="process-webapp-sources">
+		<maven goal="test"/>
+	</target>
+
 	<target name="package" depends="process-webapp-sources">
 		<maven goal="package"/>
 	</target>

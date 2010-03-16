@@ -12,7 +12,19 @@ import com.imcode.imcms.api.ContentLoop;
 
 import java.util.List;
 
+
 public class ContentLoopDaoTest extends DaoTest {
+
+
+    // loops predefined in src/test/resources/dbunit-content_loop.xml: loop_<contents-count>_[sort-order]_id
+    final int loop_0_id = 0;
+
+    final int loop_1_id = 1;
+
+    final int loop_3_asc_id = 2;
+
+    final int loop_3_desc_id = 3;
+
 
     ContentLoopDao loopDao;
 
@@ -21,27 +33,61 @@ public class ContentLoopDaoTest extends DaoTest {
         loopDao = Utils.contentLoopDao; //(ContentLoopDao)Imcms.getSpringBean("contentLoopDao");
     }
 
+
+    @Test 
+    public void getLoops() {
+        List<ContentLoop> loops = loopDao.getLoops(1001, 0);
+
+        assertEquals(loops.size(), 4, "Loops count in the doc.");
+    }
+
+    
+	@Test
+	public void getLoop() {
+		ContentLoop[] loops = {
+            getLoop(loop_0_id, true),
+            getLoop(loop_1_id, true),
+            getLoop(loop_3_asc_id, true),
+            getLoop(loop_3_desc_id, true)};
+
+        assertEquals(loops[0].getContents().size(), 0, "Contents count.");
+        assertEquals(loops[1].getContents().size(), 1, "Contents count.");
+        assertEquals(loops[2].getContents().size(), 3, "Contents count.");
+        assertEquals(loops[3].getContents().size(), 3, "Contents count.");
+	}
+
+    
+	@Test
+	public void loopContensOrder() {
+		List<Content> ascSortedContens = getLoop(loop_3_asc_id, true).getContents();
+        List<Content> descSortedContens = getLoop(loop_3_desc_id, true).getContents();
+
+        for (int i = 0; i <= 2 ; i++) {
+            assertEquals(new Integer(i), ascSortedContens.get(i).getNo(), "Content order no.");
+        }
+
+
+        for (int i = 0; i <= 2; i++) {
+            assertEquals(new Integer(2 - i), descSortedContens.get(i).getNo(), "Content order no.");
+        }        
+	}
+
     @Test
     public void createEmptyLoop() {
         ContentLoop loop = new ContentLoop();
         loop.setDocId(1001);
         loop.setDocVersionNo(0);
-        loop.setNo(1);
+        loop.setNo(4);
 
         loopDao.saveLoop(loop);
     }
     
 
-	@Test
-	public void getLoop() {
-		ContentLoop loop = getPredefinedLoop();
 
-		assertNotNull(loop, "Loop exists");
-	}
 
 	@Test
 	public void updateLoop() {
-		ContentLoop loop = getPredefinedLoop();
+		ContentLoop loop = getLoop(0, true);
 		Long loopId = loop.getId();
 
 		int count = loop.getContents().size();
@@ -55,7 +101,7 @@ public class ContentLoopDaoTest extends DaoTest {
 
 	@Test(dependsOnMethods = "createEmptyLoop")
 	public void deleteLoop() {
-		ContentLoop loop = loopDao.getLoop(1001, 0, 0);
+		ContentLoop loop = getLoop(0, true);
 
         assertNotNull(loop, "Loop exists");
         
@@ -71,7 +117,7 @@ public class ContentLoopDaoTest extends DaoTest {
         ContentLoop loop = new ContentLoop();
         loop.setDocId(1001);
         loop.setDocVersionNo(0);
-        loop.setNo(3);
+        loop.setNo(4);
 
         for (int i = 0; i < 5; i++) {
             loop.addFirstContent();
@@ -104,7 +150,17 @@ public class ContentLoopDaoTest extends DaoTest {
 		return "dbunit-content_loop.xml";
 	}
 
-	private ContentLoop getPredefinedLoop() {
-		return contentLoopDao.getLoop(1001, 0, 0);
+	private ContentLoop getLoop(int no) {
+		return getLoop(no, false);
+	}
+
+	private ContentLoop getLoop(int no, boolean assertNotNull) {
+        ContentLoop loop = contentLoopDao.getLoop(1001, 0, no);
+
+        if (assertNotNull) {
+            assertNotNull(loop, String.format("Loop exists - docId: %s, docVersionNo: %s, no: %s.", 1001, 0, no));
+        }
+
+        return loop;
 	}
 }
