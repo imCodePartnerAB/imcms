@@ -1,6 +1,12 @@
 <?xml version='1.0' encoding='iso-8859-1'?>
 
-<project name="imCMS">
+<project name="imCMS" default="process-webapp-sources">
+
+    <!--
+    Creates webapp sources.
+    -->
+
+    <property name="version" value="SET BY MAVEN"/>    
 
     <property file="build.properties"/>
 	    
@@ -19,13 +25,6 @@
     <property name="webinf.conf.dir" value="${main.webapp.webinf.dir}/conf"/>
     <property name="webinf.templates.dir" value="${main.webapp.webinf.dir}/templates"/>
 
-    <property name="version" value="6.0.0-SNAPSHOT"/>
-    <property name="versionnumber" value="${version}"/>
-    <property name="maven.artifact.version" value="${version}"/>
-	
-	<property name="maven.build.dir" value="target"/>
-	<property name="maven.build.webapp.dir" value="${maven.build.dir}/imcms"/>
-
     <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate"/>
     <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask"/>   
 	
@@ -37,8 +36,6 @@
 	
     <target name="process-webapp-sources" depends="init,changes"
             description="Translates and copies the webapp sources to webapp.">
-
-        <!--<echo message="FINAL NAME: ${pom.artifactId}-${pom.artifact.version}"/>-->
 
         <property name="texttemplates" value="${webinf.templates.dir}/text"/>
         <property name="demotemplates" value="${texttemplates}/demo"/>
@@ -107,6 +104,8 @@
 
 	
     <target name="web-lang" depends="init">
+        <echo message="VERSION: ${version}"/>
+
         <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${webinf.templates.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
@@ -139,8 +138,8 @@
     	
     	<filter token="defaultlanguage" value="${defaultlanguage}"/>
         
-        <filter token="documentationwebappurl" value="http://${documentation-host}/${versionnumber}"/>
-        <filter token="documentationurl" value="http://${documentation-host}/${versionnumber}"/>
+        <filter token="documentationwebappurl" value="http://${documentation-host}/${version}"/>
+        <filter token="documentationurl" value="http://${documentation-host}/${version}"/>
 
         <filter token="deny-multiple-user-login" value="${deny-multiple-user-login}"/>
 

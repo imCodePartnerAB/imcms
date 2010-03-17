@@ -612,7 +612,7 @@
                 </fail>
 
                 <ant antfile="pom-ant.xml" target="process-webapp-sources">
-                    
+                    <property name="version" value="${project.version}"/>
                 </ant>    
 
               </tasks>
