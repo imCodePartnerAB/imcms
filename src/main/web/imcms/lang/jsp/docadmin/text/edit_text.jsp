@@ -31,12 +31,12 @@
         url += "&rows="+rows ;
     }
 
-    ContentLoop loop = (ContentLoop)request.getAttribute("tag.text.loop");
+    Content loopContent = (Content)request.getAttribute("tag.text.loop.content");
 
-    if (loop != null) {
-        Content loopContent = (Content)request.getAttribute("tag.text.loop.content");
+    if (loopContent != null) {
+            ContentLoop loop = (ContentLoop)request.getAttribute("tag.text.loop");
 
-        url += "&loop_no="+loop.getNo()+"&content_index="+loopContent.getIndex();
+        url += "&loop_no="+loop.getNo()+"&content_index="+loopContent.getNo();
     }
 
 

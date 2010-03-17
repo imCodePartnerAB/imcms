@@ -668,9 +668,7 @@
 	            <directory>src/main/sql</directory>
                 <targetPath>WEB-INF/sql</targetPath>
 	          </resource>
-
 	        </webResources>
-
           </configuration>
         </plugin> 
         

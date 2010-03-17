@@ -88,12 +88,6 @@
         <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
     </filter>      
      -->
-     
-    <!-- Mapped to *.groovy -->
-    <servlet>
-        <servlet-name>Groovy</servlet-name>
-        <servlet-class>groovy.servlet.GroovyServlet</servlet-class>
-    </servlet>
     
     <servlet>
         <servlet-name>RD</servlet-name>
@@ -329,12 +323,6 @@
 	    <servlet-name>newadmin</servlet-name>
 	    <url-pattern>/newadmin/*</url-pattern>
 	</servlet-mapping>
-    
-    
-    <servlet-mapping>
-        <servlet-name>Groovy</servlet-name>
-        <url-pattern>*.groovy</url-pattern>
-    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>

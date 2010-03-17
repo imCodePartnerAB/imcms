@@ -412,13 +412,13 @@ public class TagParser {
         TextDomainObject text;
         if ( null == noStr ) {
             no = implicitTextNumber++;
-            text = loop == null
+            text = content == null
                     ? textDocumentToUse.getText(no)
                     : textDocumentToUse.getText(loop.getNo(), content.getNo(), no);
         } else {
             noStr = noStr.trim();
             no = Integer.parseInt(noStr);
-            text = loop == null
+            text = content == null
                     ? textDocumentToUse.getText(no)
                     : textDocumentToUse.getText(loop.getNo(), content.getNo(), no);
             
@@ -446,7 +446,7 @@ public class TagParser {
             request.setAttribute("formats", formats);
             request.setAttribute("rows", attributes.getProperty("rows"));
 
-            if (loop != null) {
+            if (content != null) {
                 request.setAttribute("tag.text.loop", loop);
                 request.setAttribute("tag.text.loop.content", content);
             }
