@@ -28,24 +28,25 @@
   <groupId>com.imcode.imcms</groupId>
   <artifactId>imcms</artifactId>
   <packaging>war</packaging>
-  <version>${imcms.version}</version>
+  <version>6.0.0-SNAPSHOT</version>
   <name>imCMS</name>
 
   <dependencies>
-    <!-- TEST -->
-    <dependency>
-      <groupId>org.beanshell</groupId>
-      <artifactId>bsh</artifactId>
-      <version>2.0b4</version>
-      <scope>provided</scope>      
-    </dependency>           
-      
+    <!-- TEST -->      
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.4</version>
       <scope>provided</scope>
-    </dependency>  
+    </dependency>
+
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>5.10</version>
+      <classifier>jdk15</classifier>
+      <scope>test</scope>
+    </dependency>      
     
     <dependency>
       <groupId> org.easymock</groupId>
@@ -67,20 +68,9 @@
         <version>1.5.6</version>
         <scope>test</scope>
     </dependency>
-
-
-    <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>5.10</version>
-      <classifier>jdk15</classifier>
-      <scope>test</scope>
-    </dependency>
  
              
-    <!-- REQUIRED -->
-
-    <dependency>
+   <dependency>
       <groupId>antlr</groupId>
       <artifactId>antlr</artifactId>
       <version>2.7.7</version>        
@@ -459,8 +449,8 @@
       <artifactId>imcode-ant-tasks</artifactId>
       <version>1.3</version>
       <scope>provided</scope>
-    </dependency>    
-    
+    </dependency>
+
     <dependency>
       <groupId>jakarta-regexp</groupId>
       <artifactId>jakarta-regexp</artifactId>
@@ -549,6 +539,7 @@
 
       
   <build>
+      
    <resources>
      <resource>
        <directory>src/main/resources</directory>
@@ -564,20 +555,72 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>1.2</version>
+        <dependencies>
+            <dependency>
+              <groupId>ant-contrib</groupId>
+              <artifactId>ant-contrib</artifactId>
+              <version>1.0b3</version>
+            </dependency>
+
+            <dependency>
+              <groupId>org.apache.ant</groupId>
+              <artifactId>ant-trax</artifactId>
+              <version>1.7.1</version>
+            </dependency>
+
+            <dependency>
+              <groupId>com.imcode.ant.tasks</groupId>
+              <artifactId>imcode-ant-tasks</artifactId>
+              <version>1.3</version>
+            </dependency>            
+        </dependencies>
         <executions>
           <execution>
-            <phase>validate</phase>
-            <configuration>
+            <id>clean</id>
+            <phase>clean</phase>
+            <configuration>              
               <tasks>
-                <echo message="${project.build.directory}"/>
-
-
+                  <delete dir="webapp/WEB-INF"/>
               </tasks>
             </configuration>
             <goals>
               <goal>run</goal>
             </goals>
           </execution>
+
+          <execution>
+            <id>generate-sources</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <tasks>
+                  <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+
+                  <if>
+                      <not><available file="build.properties"/></not>
+                      <then>
+                          <copy file="build.properties.template" tofile="build.properties"/>
+                      </then>
+                  </if>
+
+                <uptodate targetfile="build.properties" property="build-properties-up-to-date">
+                    <srcfiles dir="${basedir}" includes="build.properties.template"/>
+                </uptodate>
+
+                <fail unless="build-properties-up-to-date">
+                    'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT for details.)
+                    Copy 'build.properties.template' to 'build.properties' and edit it!
+                </fail>
+
+                <ant antfile="pom-ant.xml" target="process-webapp-sources">
+                    
+                </ant>    
+
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>            
         </executions>
       </plugin>        
 

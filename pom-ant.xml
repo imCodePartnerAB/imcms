@@ -1,0 +1,183 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+
+<project name="imCMS">
+
+    <property file="build.properties"/>
+	    
+	<property name="web.dir" value="web"/>
+		
+	<property name="main.resources-conf.dir" value="src/main/resources-conf"/>	
+	<property name="main.webapp.dir" value="src/main/webapp"/>	
+	<property name="main.webapp.login.dir" value="${main.webapp.dir}/login"/>
+    <property name="main.webapp.imcms.dir" value="${main.webapp.dir}/imcms"/>	    
+	<property name="main.webapp.webinf.dir" value="${main.webapp.dir}/WEB-INF"/>
+	
+    <property name="versionfile" value="${main.webapp.webinf.dir}/version.txt"/>
+
+    <property name="srcincludes" value="MANIFEST.TXT"/>
+		
+    <property name="webinf.conf.dir" value="${main.webapp.webinf.dir}/conf"/>
+    <property name="webinf.templates.dir" value="${main.webapp.webinf.dir}/templates"/>
+
+    <property name="version" value="6.0.0-SNAPSHOT"/>
+    <property name="versionnumber" value="${version}"/>
+    <property name="maven.artifact.version" value="${version}"/>
+	
+	<property name="maven.build.dir" value="target"/>
+	<property name="maven.build.webapp.dir" value="${maven.build.dir}/imcms"/>
+
+    <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate"/>
+    <taskdef name="setsystemproperty" classname="com.imcode.ant.tasks.SetSystemPropertyTask"/>   
+	
+    <setsystemproperty name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
+
+    <target name="changes">
+        <xslt in="docs/changes.xml" style="docs/changes.xsl" out="docs/CHANGES.HTML"/>
+    </target>
+	
+    <target name="process-webapp-sources" depends="init,changes"
+            description="Translates and copies the webapp sources to webapp.">
+
+        <!--<echo message="FINAL NAME: ${pom.artifactId}-${pom.artifact.version}"/>-->
+
+        <property name="texttemplates" value="${webinf.templates.dir}/text"/>
+        <property name="demotemplates" value="${texttemplates}/demo"/>
+        <property name="imagespattern" value="**/*.png,**/*.jpg,**/*.gif"/>
+    	
+        <property name="docs" value="${main.webapp.imcms.dir}/docs"/>
+        <property name="apisamples" value="${docs}/apisamples"/>
+        <property name="apidocs" value="${docs}/api"/>
+    	<!--???-->
+        <dependset>
+            <srcfileset file="build.properties"/>
+            <targetfileset dir="${webinf.conf.dir}">
+            	<include name="imcms_*"/>
+            	<include name="server.properties"/>
+            </targetfileset>
+        </dependset>
+
+        <mkdir dir="${main.webapp.imcms.dir}"/>
+        <mkdir dir="${main.webapp.login.dir}"/>
+        <mkdir dir="${main.webapp.dir}/css"/>
+        <mkdir dir="${main.webapp.dir}/images"/>
+        <mkdir dir="${main.webapp.dir}/javascript"/>
+        <mkdir dir="${main.webapp.dir}/jsp"/>
+        <mkdir dir="${main.webapp.dir}/user"/>
+
+        <mkdir dir="${main.webapp.webinf.dir}/includes"/>
+        <mkdir dir="${main.webapp.webinf.dir}/logs"/>
+        <mkdir dir="${main.webapp.webinf.dir}/uploads"/>
+    	
+    	<echo message="${version}" file="${versionfile}"/>
+        
+        <!-- Copy and filter webinf, conf and classes resources to main webapp dir -->
+    	<copy todir="${webinf.conf.dir}" filtering="true">
+    		<fileset dir="${main.resources-conf.dir}"/>
+    	</copy>    	   	
+    	    		
+        <copy todir="${main.webapp.dir}" filtering="true">
+            <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
+        </copy>
+
+        <copy todir="${main.webapp.dir}">
+            <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern}"/>
+        </copy>
+
+        <antcall target="web-lang">
+            <param name="buildlanguage" value="swe"/>
+        </antcall>
+
+        <antcall target="web-lang">
+            <param name="buildlanguage" value="eng"/>
+        </antcall>
+
+        <mkdir dir="${demotemplates}"/>
+
+        <copy todir="${apisamples}" description="appending .txt on all jsp files making the source browsable">
+            <fileset dir="${apisamples}">
+               <include name="*.jsp"/>
+            </fileset>
+            <mapper type="glob" from="*" to="*.txt"/>
+        </copy>
+
+        <copy todir="${docs}">
+            <fileset dir="docs"/>
+        </copy>
+    </target>
+
+	
+    <target name="web-lang" depends="init">
+        <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${webinf.templates.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
+            <fileset dir="src/main/web/WEB-INF/templates/lang"/>
+        </imtranslate>
+
+        <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${main.webapp.imcms.dir}/${buildlanguage}" filtering="true" encoding="utf-8">
+            <fileset dir="src/main/web/imcms/lang" excludes="${imagespattern}"/>
+        </imtranslate>
+
+        <copy todir="${main.webapp.imcms.dir}/${buildlanguage}" filtering="false">
+            <fileset dir="src/main/web/imcms/lang" includes="${imagespattern}"/>
+        </copy>
+    </target>
+
+	
+    <target name="init" depends="init-global-filters" 
+    		description="Handy target for everything else to depend on.">
+    	
+        <record name="build.log"/>
+
+        <tstamp/>
+ 	
+    </target>
+
+	
+    <target name="init-global-filters">
+    	
+    	<filter token="defaultlanguage" value="${defaultlanguage}"/>
+        
+        <filter token="documentationwebappurl" value="http://${documentation-host}/${versionnumber}"/>
+        <filter token="documentationurl" value="http://${documentation-host}/${versionnumber}"/>
+
+        <filter token="deny-multiple-user-login" value="${deny-multiple-user-login}"/>
+
+        <filter token="db-driver" value="${db-driver}"/>
+        <filter token="db-url" value="${db-url}"/>
+        <filter token="db-name" value="${db-name}"/>
+        <filter token="db-user" value="${db-user}"/>
+        <filter token="db-pass" value="${db-pass}"/>
+        <filter token="db-maxconnections" value="${db-maxconnections}"/>
+
+        <filter token="external-authenticator" value="${external-authenticator}"/>
+        <filter token="external-user-and-role-registry" value="${external-user-and-role-registry}"/>
+
+        <filter token="ldap-url" value="${ldap-url}"/>
+        <filter token="ldap-bind-dn" value="${ldap-bind-dn}"/>
+        <filter token="ldap-password" value="${ldap-password}"/>
+        <filter token="ldap-user-object-class" value="${ldap-user-object-class}"/>
+        <filter token="ldap-attribute-login-name" value="${ldap-attribute-login-name}"/>
+
+
+        <filter token="secondary-external-authenticator" value="${secondary-external-authenticator}"/>
+        <filter token="secondary-external-user-and-role-registry" value="${secondary-external-user-and-role-registry}"/>
+
+        <filter token="secondary-ldap-url" value="${secondary-ldap-url}"/>
+        <filter token="secondary-ldap-bind-dn" value="${secondary-ldap-bind-dn}"/>
+        <filter token="secondary-ldap-password" value="${secondary-ldap-password}"/>
+        <filter token="secondary-ldap-user-object-class" value="${secondary-ldap-user-object-class}"/>
+        <filter token="secondary-ldap-attribute-login-name" value="${secondary-ldap-attribute-login-name}"/>
+
+
+        <filter token="smtp-server" value="${smtp-server}"/>
+
+        <filter token="servermaster-name" value="${servermaster-name}"/>
+        <filter token="servermaster-email" value="${servermaster-email}"/>
+
+        <filter token="webmaster-name" value="${webmaster-name}"/>
+        <filter token="webmaster-email" value="${webmaster-email}"/>
+    </target>
+
+</project>

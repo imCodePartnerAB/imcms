@@ -6,10 +6,6 @@
 # The deployment directory (parent of the webapp directory).
 # Do *not* use back-slashes ('\'). Use forward-slashes ('/').
 # You only need this if you want to use "ant install" and "ant install-war".
-
-# imCMS artifact version
-imcms.version=6.0.0-SNAPSHOT
-
 deployroot =
 
 
