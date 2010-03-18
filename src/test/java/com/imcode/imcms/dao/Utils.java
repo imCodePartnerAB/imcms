@@ -4,11 +4,13 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.imcode.imcms.mapping.DocumentLoader;
 import com.imcode.imcms.mapping.DocumentSaver;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public class Utils {
 
-	public static final ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext("testApplicationContext.xml");
-	
+    public static final FileSystemXmlApplicationContext classPathXmlApplicationContext = new FileSystemXmlApplicationContext("src/main/resources-webinf/applicationContext.xml");
+
+
 	// Essential, well known meta id.
 	public final static Integer META_ID = 1001;
 	

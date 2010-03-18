@@ -142,7 +142,7 @@
 
 
 (def spring-app-context
-  (FileSystemXmlApplicationContext. (str "file:" (file-path "src/test/resources/testApplicationContext.xml"))))
+  (FileSystemXmlApplicationContext. (str "file:" (file-path "src/main/resources-webinf/applicationContext.xml"))))
 
 (defn init-imcms
   "Initializes Imcms for tests."
