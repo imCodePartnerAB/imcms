@@ -97,7 +97,7 @@ public class ImageDao extends HibernateTemplate {
 			.setParameter("modifiedDt", new Date())
 			.setParameter("userId", user.getId())
 			.setParameter("languageId", image.getLanguage().getId())
-            .setParameter("loopNo", image.getLoopNo())
+            .setParameter("loopNo", image.getContentLoopNo())
             .setParameter("loopContentIndex", image.getContentNo()).executeUpdate();
 	}
 

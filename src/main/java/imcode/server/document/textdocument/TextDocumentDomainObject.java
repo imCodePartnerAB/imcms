@@ -225,7 +225,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         Integer documentVersion = getVersion().getNo();
         Integer metaId = meta.getId();
 
-        Integer loopNo = text.getLoopNo();
+        Integer loopNo = text.getContentLoopNo();
         Integer contentNo = text.getContentNo();
 
         if ((loopNo != null && contentNo == null) || (loopNo == null && contentNo != null)) {
@@ -323,7 +323,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         Integer documentVersion = getVersion().getNo();
         Integer metaId = meta.getId();
 
-        Integer loopNo = image.getLoopNo();
+        Integer loopNo = image.getContentLoopNo();
         Integer contentNo = image.getContentNo();
 
         if ((loopNo != null && contentNo == null) || (loopNo == null && contentNo != null)) {

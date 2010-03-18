@@ -104,8 +104,6 @@
 
 	
     <target name="web-lang" depends="init">
-        <echo message="VERSION: ${version}"/>
-
         <imtranslate bundle="${main.resources-conf.dir}/imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${webinf.templates.dir}/${buildlanguage}" filtering="true" encoding="utf-8">

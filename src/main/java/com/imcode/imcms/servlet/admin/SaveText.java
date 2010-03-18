@@ -87,7 +87,7 @@ public final class SaveText extends HttpServlet {
     		text.setLanguage(Imcms.getUserDocRequest().getLanguage());
             text.setText(text_string);
             text.setType(text_format);
-            text.setLoopNo(loopNo);
+            text.setContentLoopNo(loopNo);
             text.setContentNo(contentIndex);
 
             saveText( documentMapper, text, document, txt_no, imcref, meta_id, user );

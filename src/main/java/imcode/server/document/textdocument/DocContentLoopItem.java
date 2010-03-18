@@ -3,9 +3,9 @@ package imcode.server.document.textdocument;
 
 public interface DocContentLoopItem {
 
-    Integer getLoopNo();
+    Integer getContentLoopNo();
 
-    void setLoopNo(Integer no);
+    void setContentLoopNo(Integer no);
 
     Integer getContentNo();
 

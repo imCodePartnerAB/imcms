@@ -2,22 +2,6 @@
 # You just have to fill in the blanks.
 # You shouldn't change any defaults unless you know what you are doing.
 
-
-# The deployment directory (parent of the webapp directory).
-# Do *not* use back-slashes ('\'). Use forward-slashes ('/').
-# You only need this if you want to use "ant install" and "ant install-war".
-deployroot =
-
-
-# The name of the webapp. Used for filenames and URIs.
-
-webappname = imcms
-
-
-# The deployed web application diretory
-
-webapproot = ${deployroot}/${webappname}
-
 # Denies multiple login for same user. To enable this option change property value to true. 
 deny-multiple-user-login = false
 

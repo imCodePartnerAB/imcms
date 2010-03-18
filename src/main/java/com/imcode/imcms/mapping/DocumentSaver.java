@@ -125,7 +125,7 @@ public class DocumentSaver {
     @Transactional
     public ContentLoop createEnclosingContentLoopIfNecessary(TextDocumentDomainObject doc, DocContentLoopItem item) {
         ContentLoop loop = null;
-        Integer loopNo = item.getLoopNo();
+        Integer loopNo = item.getContentLoopNo();
         
         if (loopNo != null) {
             Integer contentIndex = item.getContentNo();

@@ -31,8 +31,7 @@
   <version>6.0.0-SNAPSHOT</version>
   <name>imCMS</name>
 
-  <dependencies>
-    <!-- TEST -->      
+  <dependencies>     
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -539,6 +538,7 @@
 
       
   <build>
+      <finalName>${project.artifactId}</finalName>
       
    <resources>
      <resource>
@@ -572,7 +572,13 @@
               <groupId>com.imcode.ant.tasks</groupId>
               <artifactId>imcode-ant-tasks</artifactId>
               <version>1.3</version>
-            </dependency>            
+            </dependency>
+
+            <dependency>
+              <groupId>com.imcode.util</groupId>
+              <artifactId>imcode-util</artifactId>
+              <version>2.0.1</version>
+            </dependency>
         </dependencies>
         <executions>
           <execution>
@@ -589,20 +595,20 @@
           </execution>
 
           <execution>
-            <id>generate-sources</id>
-            <phase>generate-sources</phase>
+            <id>validate</id>
+            <phase>validate</phase>
             <configuration>
               <tasks>
                   <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
 
                   <if>
-                      <not><available file="build.properties"/></not>
+                      <not><available file="${basedir}/build.properties"/></not>
                       <then>
-                          <copy file="build.properties.template" tofile="build.properties"/>
+                          <copy file="${basedir}/build.properties.template" tofile="${basedir}/build.properties"/>
                       </then>
                   </if>
 
-                <uptodate targetfile="build.properties" property="build-properties-up-to-date">
+                <uptodate targetfile="${basedir}/build.properties" property="build-properties-up-to-date">
                     <srcfiles dir="${basedir}" includes="build.properties.template"/>
                 </uptodate>
 
@@ -610,11 +616,21 @@
                     'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT for details.)
                     Copy 'build.properties.template' to 'build.properties' and edit it!
                 </fail>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>            
 
-                <ant antfile="pom-ant.xml" target="process-webapp-sources">
+          <execution>
+            <id>generate-sources</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <tasks>
+                <ant antfile="${basedir}/pom-ant.xml" target="process-webapp-sources">
                     <property name="version" value="${project.version}"/>
-                </ant>    
-
+                </ant>
               </tasks>
             </configuration>
             <goals>
@@ -647,6 +663,8 @@
             <skipTests>true</skipTests>
           </configuration>
         </plugin>
+
+        
   	      	    
 	    <plugin>
           <artifactId>maven-war-plugin</artifactId>

@@ -75,7 +75,7 @@ public class ChangeText extends HttpServlet {
     		text.setNo(textIndex);
     		text.setLanguage(language);
     		text.setType(TextDomainObject.TEXT_TYPE_HTML);
-            text.setLoopNo(loopNo);
+            text.setContentLoopNo(loopNo);
             text.setContentNo(contentIndex);
         }        
         

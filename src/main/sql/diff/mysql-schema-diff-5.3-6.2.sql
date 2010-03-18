@@ -165,11 +165,11 @@ CREATE TABLE imcms_text_doc_texts (
     text longtext NOT NULL,
     type int default NULL,
     language_id smallint NOT NULL,
-    loop_no int DEFAULT NULL,
+    content_loop_no int DEFAULT NULL,
     content_no int DEFAULT NULL,
 
     CONSTRAINT pk__imcms_text_doc_texts PRIMARY KEY (id),
-    UNIQUE KEY uk__imcms_text_doc_texts__text (doc_id, doc_version_no, no, language_id, loop_no, content_no),
+    UNIQUE KEY uk__imcms_text_doc_texts__text (doc_id, doc_version_no, no, language_id, content_loop_no, content_no),
     CONSTRAINT fk__imcms_text_doc_texts__languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
     CONSTRAINT fk__imcms_text_doc_texts__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
     CONSTRAINT fk__imcms_text_doc_texts__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
@@ -193,7 +193,7 @@ INSERT INTO imcms_text_doc_texts (
     text,
     type,
     language_id,
-    loop_no,
+    content_loop_no,
     content_no
 ) SELECT
     meta_id, 0, name, text, type, language_id, NULL, NULL
@@ -208,7 +208,7 @@ CREATE TABLE imcms_text_doc_texts_history (
     text longtext NOT NULL,
     type int default NULL,
     language_id smallint NOT NULL,
-    loop_no int DEFAULT NULL,
+    content_loop_no int DEFAULT NULL,
     content_no int DEFAULT NULL,
     modified_datetime datetime NOT NULL,
     user_id int DEFAULT NULL,
@@ -228,7 +228,7 @@ INSERT INTO imcms_text_doc_texts_history (
     text,
     type,
     language_id,
-    loop_no,
+    content_loop_no,
     content_no,
     modified_datetime,
     user_id
@@ -268,11 +268,11 @@ CREATE TABLE imcms_text_doc_images (
   linkurl varchar(255) NOT NULL,
   type int NOT NULL,
   language_id smallint(6) NOT NULL,
-  loop_no int DEFAULT NULL,
+  content_loop_no int DEFAULT NULL,
   content_no int DEFAULT NULL,
         
   CONSTRAINT pk__imcms_text_doc_images PRIMARY KEY (id),
-  UNIQUE KEY uk__imcms_text_doc_images__image (doc_id,doc_version_no,no,language_id,loop_no,content_no),
+  UNIQUE KEY uk__imcms_text_doc_images__image (doc_id,doc_version_no,no,language_id,content_loop_no,content_no),
   CONSTRAINT fk__imcms_text_doc_images__i18n_languages FOREIGN KEY (language_id) REFERENCES i18n_languages (language_id),
   CONSTRAINT fk__imcms_text_doc_images__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
   CONSTRAINT fk__imcms_text_doc_images__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
@@ -299,7 +299,7 @@ INSERT INTO imcms_text_doc_images (
   type,
   language_id,
 
-  loop_no,
+  content_loop_no,
   content_no
 
 ) SELECT
@@ -345,7 +345,7 @@ CREATE TABLE imcms_text_doc_images_history (
   linkurl varchar(255) NOT NULL,
   type int NOT NULL,
   language_id smallint(6) NOT NULL,
-  loop_no int DEFAULT NULL,
+  content_loop_no int DEFAULT NULL,
   content_no int DEFAULT NULL,
   modified_datetime datetime NOT NULL,
   user_id int DEFAULT NULL,  
