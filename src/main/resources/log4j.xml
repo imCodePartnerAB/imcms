@@ -2,8 +2,7 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
 
-<!-- Start log4j configuration -->
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" threshold="debug" debug="true">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true">
 
     <!-- Renderer for DocumentRequest -->
     <renderer
@@ -37,6 +36,16 @@
         </layout>
     </appender>
 
+
+    <!-- The errorlog (captures everything that doesn't go to one of the above. -->
+    <appender name="ALL" class="imcode.util.log.DailyRollingFileAppender">
+        <param name="File" value="${webapp.root}/WEB-INF/logs/all.log"/>
+        <param name="DatePattern" value="'.'yyyy-MM"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
+        </layout>
+    </appender>
+
     <!-- Set up accesslog with priority 'info' -->
     <category name="com.imcode.imcms.log.access" additivity="false">
         <priority value="info"/>
@@ -54,10 +63,38 @@
         <appender-ref ref="ERROR"/>
     </category>
 
-    <!-- Set up the errorlog with priority 'info' -->
     <root>
         <priority value="info"/>
+        <appender-ref ref="ALL"/>
         <appender-ref ref="ERROR"/>
     </root>
+
+    <category name="org.hibernate.SQL" additivity="false">
+        <priority value="${build.log4j.hibernalte.level}"/>
+        <appender-ref ref="ALL"/>
+    </category>
+
+    <category name="org.hibernate.type" additivity="false">
+        <priority value="${build.log4j.hibernalte.level}"/>
+        <appender-ref ref="ALL"/>
+    </category>
+
+    <category name="org.hibernate.transaction" additivity="false">
+        <priority value="${build.log4j.hibernalte.level}"/>
+        <appender-ref ref="ALL"/>
+    </category>
+
+    <!--
+    org.hibernate.SQL        Log all SQL DML statements as they are executed
+    org.hibernate.type  Log all JDBC parameters
+    org.hibernate.tool.hbm2ddl  Log all SQL DDL statements as they are executed
+    org.hibernate.pretty    Log the state of all entities (max 20 entities) associated with the session at flush time
+    org.hibernate.cache     Log all second-level cache activity
+    org.hibernate.transaction   Log transaction related activity
+    org.hibernate.jdbc  Log all JDBC resource acquisition
+    org.hibernate.hql.ast.AST   Log HQL and SQL ASTs during query parsing
+    org.hibernate.secure    Log all JAAS authorization requests
+    org.hibernate   Log everything (a lot of information, but very useful for troubleshooting)
+    -->
 
 </log4j:configuration>

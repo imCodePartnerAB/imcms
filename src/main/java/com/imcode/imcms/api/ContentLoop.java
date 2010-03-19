@@ -78,7 +78,7 @@ public class ContentLoop implements Serializable, Cloneable, DocItem {
     @Override
     public synchronized String toString() {
         return String.format("{id: %s, docId: %s, docVersionNo: %s, no: %s, contents: [%s]}",
-                id, docId, docVersionNo, no, StringUtils.join(contents, ", "));
+                id, docId, docVersionNo, no, "..."); // causes hibernate stack overflow: StringUtils.join(contents, ", "));
     }    
 
     @Override
