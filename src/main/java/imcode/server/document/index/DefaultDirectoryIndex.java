@@ -42,7 +42,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
     private boolean inconsistent;
 
-    private static final int NUM_HITS = 50;
+    private static final int NUM_HITS = 10000;
 
     static {
         // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow or memoryconsuming queries?
@@ -266,7 +266,9 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         }
 
         public int size() {
-            return topDocs.totalHits ;
+            // Issue 10029: topDocs.totalHits does not mach topDocs.scoreDocs.length
+            // return topDocs.totalHits ;
+            return topDocs.scoreDocs.length;
         }
     }
 }
