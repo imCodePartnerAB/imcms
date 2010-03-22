@@ -657,12 +657,31 @@
             <goals>
               <goal>run</goal>
             </goals>
-          </execution>            
+          </execution>           
         </executions>
-      </plugin>        
+      </plugin>
 
-
-      <!-- TODO: Add (Jetty?) Jspc plugin for jsps verification? -->
+        <plugin>
+          <groupId>org.mortbay.jetty</groupId>
+          <artifactId>maven-jetty-jspc-plugin</artifactId>
+          <version>6.1.22</version>
+          <executions>
+            <execution>
+              <id>jspc</id>
+              <goals>
+                <goal>jspc</goal>
+              </goals>
+              <configuration>
+                  <excludes>
+                      **/apisamples/*,
+                      **/eng/jsp/category_admin_category.included.jsp, **/eng/jsp/text_restorer.jsp,
+                      **/swe/jsp/category_admin_category.included.jsp, **/swe/jsp/text_restorer.jsp
+                  </excludes> 
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        
 	  <plugin>
 	    <artifactId>maven-compiler-plugin</artifactId>
 		  <configuration>
