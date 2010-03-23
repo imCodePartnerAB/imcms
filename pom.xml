@@ -607,7 +607,7 @@
             <phase>clean</phase>
             <configuration>              
               <tasks>
-                  <delete dir="webapp/WEB-INF"/>
+                  <delete dir="${basedir}/webapp" verbose="true"/>
               </tasks>
             </configuration>
             <goals>
@@ -716,17 +716,12 @@
             <archiveClasses>true</archiveClasses>           
             -->
 
-            <webResources>
-	          <resource>
-	            <directory>src/main/resources-webinf</directory>
-                <targetPath>WEB-INF</targetPath>
-	          </resource>
-
-	          <resource>
-	            <directory>src/main/sql</directory>
-                <targetPath>WEB-INF/sql</targetPath>
-	          </resource>
-	        </webResources>
+            <!--<webResources>-->
+	          <!--<resource>-->
+	            <!--<directory>src/main/sql</directory>-->
+                <!--<targetPath>WEB-INF/sql</targetPath>-->
+	          <!--</resource>-->
+	        <!--</webResources>-->
           </configuration>
         </plugin> 
         

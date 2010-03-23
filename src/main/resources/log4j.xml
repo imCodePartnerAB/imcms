@@ -63,12 +63,6 @@
         <appender-ref ref="ERROR"/>
     </category>
 
-    <root>
-        <priority value="info"/>
-        <appender-ref ref="ALL"/>
-        <appender-ref ref="ERROR"/>
-    </root>
-
     <category name="org.hibernate.SQL" additivity="false">
         <priority value="${build.log4j.hibernalte.level}"/>
         <appender-ref ref="ALL"/>
@@ -96,5 +90,11 @@
     org.hibernate.secure    Log all JAAS authorization requests
     org.hibernate   Log everything (a lot of information, but very useful for troubleshooting)
     -->
+
+    <root>
+        <priority value="info"/>
+        <appender-ref ref="ALL"/>
+        <appender-ref ref="ERROR"/>
+    </root>
 
 </log4j:configuration>

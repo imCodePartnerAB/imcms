@@ -78,34 +78,8 @@ webmaster-email = ${servermaster-email}
 defaultlanguage = eng
 
 
-# The root-URI of the webapp, relative to the server root-URI (/).
-
-rooturl = /${webappname}
-
-
 # The imCMS documents is usually on the imCMS public site, http://doc.imcms.net/
 # If you want to install a local server for handling (modifying) the documents
 # change this:
 
 documentation-host = doc.imcms.net
-
-
-# Whether the build should be optimized or not.
-
-optimize = on
-
-
-# Whether to leave debug info in or not.
-
-debug = on
-
-
-# Whether to compile with deprecation warnings on or not.
-
-deprecation = on
-
-# Tomcat settings for quick deployment during development
-tomcat-admin-username = admin
-tomcat-admin-password =
-tomcat-webapp-manager-url = http://localhost:8080/manager
-tomcat-deployroot-local-directory =

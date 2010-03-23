@@ -9,8 +9,6 @@
     <property name="version" value="SET BY MAVEN"/>    
 
     <property file="build.properties"/>
-	    
-	<property name="web.dir" value="web"/>
 		
 	<property name="main.resources-conf.dir" value="src/main/resources-conf"/>	
 	<property name="main.webapp.dir" value="src/main/webapp"/>	
