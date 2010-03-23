@@ -1,5 +1,8 @@
 package imcode.server;
 
+import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.api.DocumentVersionSupport;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.Prefs;
@@ -15,6 +18,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -69,6 +73,22 @@ public class Imcms {
     public synchronized static void start() throws StartupException {
         try {
             services = createServices();
+            DocumentMapper dm = services.getDocumentMapper();
+
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
+            for (int id: dm.getAllDocumentIds()) {
+                DocumentVersionSupport vs = dm.getDocumentVersionSupport(id);
+
+                dm.getDocument(id);
+                dm.getPublishedDocument(id);
+
+                for (DocumentVersion v: vs.getVersions()) {
+                    dm.getDocument(id, v.getNumber());
+                }
+            }
+
+            stopWatch.stop();            
         } catch (Exception e) {
             throw new StartupException("imCMS could not be started. Please see the log file in WEB-INF/logs/ for details.", e);
         }

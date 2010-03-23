@@ -11,18 +11,8 @@ import com.imcode.imcms.servlet.ImcmsSetupFilter;
  * This class intended to be used as a singleton and can not be instantiated.
  * 
  * @see ImcmsSetupFilter
- * @author Anton Josua
  */
 public class I18nSupport {
-
-	/** 
-	 * Current language.
-	 * 
-	 * Language selected by user or assigned by the system on a first run. 
-	 *  
-	 * @see com.imcode.imcms.servlet.ImcmsSetupFilter 
-	 */
-	private static ThreadLocal<I18nLanguage> currentLanguage = new ThreadLocal<I18nLanguage>();
 		
 	/**
 	 * Default language.  
@@ -89,13 +79,7 @@ public class I18nSupport {
 	 */
 	public static I18nLanguage getCurrentLanguage() 
 	throws I18nException {
-		I18nLanguage language = currentLanguage.get();
-		
-		if (language == null) {
-			throw new I18nException("Current language is not set.");
-		}
-		
-		return language;		
+		return getDefaultLanguage();		
 	}
 	
 	
@@ -107,12 +91,6 @@ public class I18nSupport {
 	 */
 	public static void setCurrentLanguage(I18nLanguage language) 
 	throws IllegalArgumentException {
-		if (language == null) {
-			throw new IllegalArgumentException("Language argument " +
-					"can not be null.");			
-		}
-		
-		currentLanguage.set(language);
 	}
 	
 	/**
@@ -170,10 +148,10 @@ public class I18nSupport {
 	}	
 	
 	public static boolean isEnabled() {
-		return defaultLanguage != null && currentLanguage != null;
+		return defaultLanguage != null;
 	}
 	
 	public static boolean getCurrentIsDefault() {
-		return getCurrentLanguage().equals(getDefaultLanguage());
+		return true;
 	}
 }

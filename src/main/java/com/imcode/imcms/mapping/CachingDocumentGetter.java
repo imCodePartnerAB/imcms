@@ -2,11 +2,7 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.document.DocumentDomainObject;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
@@ -70,19 +66,18 @@ public class CachingDocumentGetter implements DocumentGetter {
     }
     
     public DocumentVersionSupport getDocumentVersionSupport(Integer documentId) {
-    	if (versionsSupports.containsKey(documentId)) {
-    		return versionsSupports.get(documentId);
-    	} 
+        DocumentVersionSupport versionSupport = versionsSupports.get(documentId);
 
-    	DocumentVersionSupport versionSupport = null;
-   		List<DocumentVersion> versions =  databaseDocumentGetter.getMetaDao()
-    			.getDocumentVersions(documentId);
+    	if (versionSupport == null) {
+            List<DocumentVersion> versions = databaseDocumentGetter.getMetaDao()
+                    .getDocumentVersions(documentId);
     		
-   		if (versions.size() > 0) {
-   			versionSupport = new DocumentVersionSupport(documentId, versions);    		
-    	}
+            if (versions.size() > 0) {
+                versionSupport = new DocumentVersionSupport(documentId, versions);
+            }
    		
-   		versionsSupports.put(documentId, versionSupport);
+   		    versionsSupports.put(documentId, versionSupport);
+        }
    		    	
     	return versionSupport;
     } 
@@ -125,9 +120,9 @@ public class CachingDocumentGetter implements DocumentGetter {
 			document = databaseDocumentGetter.getDocument(documentId, versionNumber);
 			documents.put(versionNumber, document);
 		} else {
-			if (documents.containsKey(versionNumber)) {
-				document = documents.get(versionNumber);
-			} else {
+            document = documents.get(versionNumber);
+
+			if (document == null) {
 				document = databaseDocumentGetter.getDocument(documentId, versionNumber);				
 				documents.put(versionNumber, document);
 			}
@@ -138,25 +133,25 @@ public class CachingDocumentGetter implements DocumentGetter {
     
     
     public DocumentDomainObject getPublishedDocument(Integer documentId) {
-    	if (publishedDocuments.containsKey(documentId)) {
-    		return publishedDocuments.get(documentId);
-    	} else {
-	        DocumentDomainObject document = databaseDocumentGetter.getPublishedDocument(documentId);
-        	publishedDocuments.put(documentId, document) ;
-        	
-        	return document;
+        DocumentDomainObject doc = publishedDocuments.get(documentId);
+
+    	if (doc == null) {
+	        doc = databaseDocumentGetter.getPublishedDocument(documentId);
+        	publishedDocuments.put(documentId, doc) ;
     	}
+
+        return doc;
     }
     
     public DocumentDomainObject getWorkingDocument(Integer documentId) {
-    	if (workingDocuments.containsKey(documentId)) {
-    		return workingDocuments.get(documentId);
-    	} else {
-	        DocumentDomainObject document = databaseDocumentGetter.getWorkingDocument(documentId);
-	        workingDocuments.put(documentId, document) ;
-        	
-        	return document;
+        DocumentDomainObject doc = workingDocuments.get(documentId);
+
+        if (doc == null) {
+	        doc = databaseDocumentGetter.getWorkingDocument(documentId);
+	        workingDocuments.put(documentId, doc) ;
     	}
+
+        return doc;
     } 
     
     /**
@@ -167,11 +162,31 @@ public class CachingDocumentGetter implements DocumentGetter {
     }    
             
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
-        return databaseDocumentGetter.getDocuments(documentIds) ;
+        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
+
+        for (Integer docId: documentIds) {
+            DocumentDomainObject doc = getWorkingDocument(docId);
+
+            if (doc != null) {
+                docs.add(doc);
+            }
+        }
+
+        return docs;
     }
     
     public List<DocumentDomainObject> getPublishedDocuments(Collection<Integer> documentIds) {
-        return databaseDocumentGetter.getPublishedDocuments(documentIds) ;
+        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
+
+        for (Integer docId: documentIds) {
+            DocumentDomainObject doc = getPublishedDocument(docId);
+
+            if (doc != null) {
+                docs.add(doc);
+            }
+        }
+
+        return docs;
     }    
 
     

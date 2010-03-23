@@ -696,40 +696,40 @@ public class DocumentMapper implements DocumentGetter {
      * and w/o intercepting for single-language projects.
      */
     private DocumentDomainObject createDocumentShowInterceptor(DocumentDomainObject document, UserDomainObject user) {
-    	if (document != null) {
-    		/*
-    		 * Determines document's content language.
-    		 * 
-    		 * If an user is allowed to see a document's content in a current language
-    		 * then document language is set to current language, otherwise
-    		 * it is set to default language. 
-    		 */
-    		I18nLanguage currentDocumentLanguage = I18nSupport.getCurrentLanguage();
-    		DocumentShowSettings showSettings = user.getDocumentShowSettings();
-    		
-    		if (!I18nSupport.getCurrentIsDefault() && !showSettings.isIgnoreI18nShowMode() ) {            
-    			I18nMeta i18nMeta = document.getI18nMeta(I18nSupport.getCurrentLanguage());
-            
-    			if (!i18nMeta.getEnabled()) {
-    				if (document.getMeta().isShowDisabledI18nContentInDefaultLanguage()) {
-    					currentDocumentLanguage = I18nSupport.getDefaultLanguage();
-    				} else {
-    					throw new I18nDisabledException(document, I18nSupport.getCurrentLanguage());
-    				}
-    			}
-    		}
-    		
-    		// TODO: prototype implementation - optimize 	
-        	AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(document);            	
-            aspectJProxyFactory.setProxyTargetClass(true);
-            aspectJProxyFactory.addAspect(new DocumentAspect(currentDocumentLanguage));       
-            
-            if (document instanceof TextDocumentDomainObject) {
-                aspectJProxyFactory.addAspect(new TextDocumentAspect(currentDocumentLanguage));            	
-            }
-                    	
-        	document = aspectJProxyFactory.getProxy();    		
-    	}
+//    	if (document != null) {
+//    		/*
+//    		 * Determines document's content language.
+//    		 *
+//    		 * If an user is allowed to see a document's content in a current language
+//    		 * then document language is set to current language, otherwise
+//    		 * it is set to default language.
+//    		 */
+//    		I18nLanguage currentDocumentLanguage = I18nSupport.getCurrentLanguage();
+//    		DocumentShowSettings showSettings = user.getDocumentShowSettings();
+//
+//    		if (!I18nSupport.getCurrentIsDefault() && !showSettings.isIgnoreI18nShowMode() ) {
+//    			I18nMeta i18nMeta = document.getI18nMeta(I18nSupport.getCurrentLanguage());
+//
+//    			if (!i18nMeta.getEnabled()) {
+//    				if (document.getMeta().isShowDisabledI18nContentInDefaultLanguage()) {
+//    					currentDocumentLanguage = I18nSupport.getDefaultLanguage();
+//    				} else {
+//    					throw new I18nDisabledException(document, I18nSupport.getCurrentLanguage());
+//    				}
+//    			}
+//    		}
+//
+//    		// TODO: prototype implementation - optimize
+//        	AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(document);
+//            aspectJProxyFactory.setProxyTargetClass(true);
+//            aspectJProxyFactory.addAspect(new DocumentAspect(currentDocumentLanguage));
+//
+//            if (document instanceof TextDocumentDomainObject) {
+//                aspectJProxyFactory.addAspect(new TextDocumentAspect(currentDocumentLanguage));
+//            }
+//
+//        	document = aspectJProxyFactory.getProxy();
+//    	}
     	
     	return document;
     	
@@ -775,7 +775,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
-        return cachingDocumentGetter.getDocuments(documentIds) ;
+        return cachingDocumentGetter.getDocuments(documentIds);
     }
     
     public List<DocumentDomainObject> getPublishedDocuments(Collection<Integer> documentIds) {

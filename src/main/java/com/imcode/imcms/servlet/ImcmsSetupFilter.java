@@ -169,39 +169,11 @@ public class ImcmsSetupFilter implements Filter {
      */
     private void updateUserI18nSetting(HttpServletRequest request, UserDomainObject user) 
     throws ServletException {
-    	HttpSession session = request.getSession();
-    	I18nLanguage language = (I18nLanguage)session.getAttribute("lang");
-    	    	
-    	if (language == null && /*user.isDefaultUser() && */i18nHosts.size() > 0) {
-    		String hostname = request.getServerName();
-    		language = i18nHosts.get(hostname);
-        		
-    		if (logger.isTraceEnabled()) {
-    			logger.trace("Hostname [" + hostname + "] mapped to language [" + language + "].");
-    		}         			
-    	}
-    	
-    	String languageCode = request.getParameter("lang");
-    	
-    	if (languageCode != null) {
-    		language = I18nSupport.getByCode(languageCode);
-    	}    	    	        	
-    	
-    	// TODO: if session does not contain language
-    	// do not allow admin operation and forward to front page ??
-    	
-    	if (language == null) {
-    		language = I18nSupport.getDefaultLanguage();
-    	}
-    	
-    	
-    	// TODO i18n: remove lang session parameter
-    	// request and thread local parameters 
-    	
-		session.setAttribute("lang", language);    	
+        HttpSession session = request.getSession();
+        I18nLanguage language = I18nSupport.getDefaultLanguage();
+
+		session.setAttribute("lang", language);
 		request.setAttribute("currentLanguage", language);
-    	
-    	I18nSupport.setCurrentLanguage(language);
     }
 
     /**
