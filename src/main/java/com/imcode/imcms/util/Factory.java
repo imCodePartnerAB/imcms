@@ -113,10 +113,10 @@ public class Factory {
         return createContentLoop(doc.getId(), doc.getVersion().getNo(), getNextItemNo(doc.getContentLoops().values()));
     }
 
-    public static Integer getNextItemNo(Collection<? extends DocItem> items) {
+    public static Integer getNextItemNo(Collection<? extends DocVersionItem> items) {
         int no = 0;
 
-        for (DocItem item: items) {
+        for (DocVersionItem item: items) {
             no = Math.max(no, item.getNo());
         }
 
@@ -124,7 +124,7 @@ public class Factory {
     }
 
 
-    public static <T extends DocItem & DocI18nItem> T newInstance(Class<T> clazz, Integer docId, Integer docVersionNo, I18nLanguage language, Integer no) throws RuntimeException {
+    public static <T extends DocVersionItem & DocI18nItem> T newInstance(Class<T> clazz, Integer docId, Integer docVersionNo, I18nLanguage language, Integer no) throws RuntimeException {
         T t = newInstance(clazz, docId, docVersionNo, no);
 
         t.setLanguage(language);
@@ -132,7 +132,7 @@ public class Factory {
         return t;
     }
     
-    public static <T extends DocItem> T newInstance(Class<T> clazz, Integer docId, Integer docVersionNo, Integer no) throws RuntimeException {
+    public static <T extends DocVersionItem> T newInstance(Class<T> clazz, Integer docId, Integer docVersionNo, Integer no) throws RuntimeException {
         try {
             T t = clazz.newInstance();
 

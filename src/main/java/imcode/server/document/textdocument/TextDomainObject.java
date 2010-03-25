@@ -24,7 +24,7 @@ import com.imcode.imcms.api.I18nLanguage;
  */
 @Entity(name="Text")
 @Table(name="imcms_text_doc_texts")
-public class TextDomainObject implements Serializable, Cloneable, DocItem, DocContentLoopItem, DocI18nItem {
+public class TextDomainObject implements Serializable, Cloneable, DocVersionItem, DocContentLoopItem, DocI18nItem {
 	
     /**
      * Plain text, with linebreaks.

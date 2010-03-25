@@ -132,9 +132,8 @@ public class DocumentMapper implements DocumentGetter {
             setTemplateForNewTextDocument( newTextDocument, user, parentDoc );
         } else {
             newDocument = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
-            newDocument.setAttributes(parentDoc.getAttributes().clone());
             newDocument.setMeta(parentDoc.getMeta().clone());
-            newDocument.setMeta(parentDoc.getMeta().clone());
+            newDocument.copyAttributesFrom(parentDoc);            
         }
 
         newDocument.accept(new DocIdentityCleanerVisitor());
@@ -605,7 +604,7 @@ public class DocumentMapper implements DocumentGetter {
      * Returns document.
      *
      * Returned document is based on document request info associated with a thread.
-     * If there is no request info then default document in default language is returned.
+     * If there is no docRequest associated with a thread then default document in default language is returned.
      *
      * @param docId document id.
      */

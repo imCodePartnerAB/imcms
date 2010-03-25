@@ -42,7 +42,8 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     	
     	HtmlReference htmlReference = new HtmlReference();
     	
-    	htmlReference.setMetaId(document.getMeta().getId());
+    	htmlReference.setDocId(document.getMeta().getId());
+        htmlReference.setDocVersionNo(document.getVersionNo());
     	htmlReference.setHtml(document.getHtml());
     	    	
     	dao.saveHtmlReference(htmlReference);
@@ -53,7 +54,8 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     	MetaDao dao = (MetaDao)Imcms.getServices().getSpringBean("metaDao");
     	
     	UrlReference reference = new UrlReference();
-    	reference.setMetaId(document.getMeta().getId());
+    	reference.setDocId(document.getMeta().getId());
+        reference.setDocVersionNo(document.getVersionNo());
     	reference.setUrl(document.getUrl());
 	    reference.setUrlTarget("");
     	reference.setUrlText("");

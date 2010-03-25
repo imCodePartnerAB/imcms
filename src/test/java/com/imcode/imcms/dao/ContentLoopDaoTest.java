@@ -4,12 +4,16 @@ import static com.imcode.imcms.dao.Utils.contentLoopDao;
 
 import com.imcode.imcms.api.Content;
 import imcode.server.Imcms;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
 import com.imcode.imcms.api.ContentLoop;
 
+import java.sql.SQLException;
 import java.util.List;
 
 
@@ -77,7 +81,7 @@ public class ContentLoopDaoTest extends DaoTest {
         ContentLoop loop = new ContentLoop();
         loop.setDocId(1001);
         loop.setDocVersionNo(0);
-        loop.setNo(4);
+        loop.setNo(getNextLoopNo());
 
         loopDao.saveLoop(loop);
     }
@@ -117,9 +121,11 @@ public class ContentLoopDaoTest extends DaoTest {
         ContentLoop loop = new ContentLoop();
         loop.setDocId(1001);
         loop.setDocVersionNo(0);
-        loop.setNo(4);
+        loop.setNo(getNextLoopNo());
 
-        for (int i = 0; i < 5; i++) {
+        int contentsCount = 5;
+
+        for (int i = 0; i < contentsCount; i++) {
             loop.addFirstContent();
         }
 
@@ -132,9 +138,9 @@ public class ContentLoopDaoTest extends DaoTest {
         List<Content> contents = loop.getContents();
         List<Content> savedContents = savedLoop.getContents();
 
-        assertEquals(contents.size(), savedContents.size(), "Content count matches");
+        assertEquals(contentsCount, savedContents.size(), "Content count matches");
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < contentsCount; i++) {
             Content content = contents.get(i);
             Content savedContent = savedContents.get(i);
 
@@ -163,4 +169,16 @@ public class ContentLoopDaoTest extends DaoTest {
 
         return loop;
 	}
+
+
+    public Integer getNextLoopNo() {
+        Integer loopNo = (Integer)contentLoopDao.execute(new HibernateCallback() {
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                return session.createQuery(
+                        "select max(l.no) from ContentLoop l where l.docId = 1001 and l.docVersionNo = 0").uniqueResult();
+            }
+        });
+
+        return loopNo == null ? 0 : loopNo + 1;
+    }
 }

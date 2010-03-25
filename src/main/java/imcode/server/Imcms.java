@@ -102,7 +102,7 @@ public class Imcms {
     //  TODO: Refactor.
     public static void start() throws StartupException {
         if (path == null) {
-            throw new IllegalStateException("Application path is not set.");
+            throw new IllegalStateException("Imcms path is not set.");
         }        
 
         if (applicationContext == null) {

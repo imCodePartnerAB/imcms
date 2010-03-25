@@ -23,6 +23,6 @@ public class Fixture {
 
         initFn.invoke();
 
-        Imcms.start();
+        //Imcms.start();
     }
 }

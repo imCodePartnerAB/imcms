@@ -128,21 +128,26 @@ public class DocumentSaver {
         Integer loopNo = item.getContentLoopNo();
         
         if (loopNo != null) {
-            Integer contentIndex = item.getContentNo();
+            Integer contentNo = item.getContentNo();
 
-            if (contentIndex == null) {
+            if (contentNo == null) {
                 throw new IllegalStateException(String.format(
-                        "Content loop's context index is not set. Doc id: %s, item :%s, content loop no: %s.",  doc.getId(), item, loopNo));
+                        "Content loop's context no is not set. Doc id: %s, item :%s, content loop no: %s.",  doc.getId(), item, loopNo));
             }
 
-            loop = contentLoopDao.getLoop(doc.getId(), doc.getVersion().getNo(), loopNo);
+            loop = doc.getContentLoop(loopNo);
 
             if (loop == null) {
-                // Check item references content index 0.
-                loop = Factory.createContentLoop(doc.getId(), doc.getVersion().getNo(), loopNo);
-
-                contentLoopDao.saveLoop(loop);
+                throw new IllegalStateException(String.format(
+                        "Content loop does not exists. Doc id: %s, item :%s, content loop no: %s.",  doc.getId(), item, loopNo));                
             }
+
+            if (!loop.contentExists(contentNo)) {
+                throw new IllegalStateException(String.format(
+                        "Content does not exists. Doc id: %s, item :%s, content loop no: %s.",  doc.getId(), item, loopNo));                                
+            }
+
+            loop = contentLoopDao.saveLoop(loop);
         }
 
         return loop;

@@ -168,7 +168,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         text.setDocVersionNo(doc.getVersion().getNo());
 
         textDao.saveText(text);
-        textDao.saveTextHistory(text.getDocId(), text, user);
+        //textDao.saveTextHistory(text.getDocId(), text, user);
     }
 
     /**
@@ -185,7 +185,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         image.setType(image.getSource().getTypeId());
         
         imageDao.saveImage(image);
-        imageDao.saveImageHistory(doc.getId(), image, user); 
+        //imageDao.saveImageHistory(doc.getId(), image, user); 
     }
 
 
@@ -270,7 +270,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
             boolean isDefaultFile = fileId.equals( fileDocument.getDefaultFileId());
             FileReference fileRef = new FileReference();
-            fileRef.setMetaId(fileDocument.getMeta().getId());
+            fileRef.setDocId(fileDocument.getMeta().getId());
+            fileRef.setDocVersionNo(fileDocument.getVersionNo());
             fileRef.setFileId(fileId);
             fileRef.setFilename(filename);
             fileRef.setDefaultFileId(isDefaultFile);

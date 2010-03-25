@@ -5,7 +5,6 @@ import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
@@ -16,15 +15,16 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.mapping.DocumentSaver;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 	public static final int ID_NEW = 0;
+    
 	public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS = "imcms.document.alias";
 
-	protected Attributes attributes = new Attributes();
+	private Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
+    
 	private static Logger log = Logger.getLogger(DocumentDomainObject.class);
 	
 	/** Document's meta. */
@@ -36,7 +36,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     /** Document's version. */
     private DocumentVersion version = new DocumentVersion();
 
-    private DocumentLabels labels = new DocumentLabels(); 
+    private DocumentLabels labels = new DocumentLabels();
+
+    private DocumentPermissionSets permissionSets = new DocumentPermissionSets();
+
+    private DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
+
+    private RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
 
 
 	@Override
@@ -45,10 +51,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 		try {
 			clone = (DocumentDomainObject) super.clone();
-
-			if (null != attributes) {
-				clone.attributes = attributes.clone();
-			}
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
@@ -65,14 +67,48 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             clone.version = version.clone();
         }
 
+        if (permissionSets != null) {
+            clone.permissionSets = permissionSets.clone();
+        }
+
+        if (permissionSetsForNewDocuments != null) {
+            clone.permissionSetsForNewDocuments = permissionSetsForNewDocuments.clone();
+        }
+
+        if (roleIdToDocumentPermissionSetTypeMappings != null) {
+            clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
+        }
+                
 		return clone;
 	}
+
+
+    /**
+     * Copies non-meta attributes from other doc.
+     * @param doc
+     */
+    public void copyAttributesFrom(DocumentDomainObject doc) {
+        setLabels(doc.getLabels().clone());
+        setLanguage(doc.getLanguage().clone());
+        setPermissionSets(doc.getPermissionSets().clone());
+        setPermissionSetsForNew(doc.getPermissionSetsForNewDocuments().clone());
+        setRoleIdsMappedToDocumentPermissionSetTypes(doc.getRolePermissionMappings().clone());
+    }
 	
 	/**
 	 * Returns this document's version.
 	 */
 	public DocumentVersion getVersion() {
 		return version;
+	}
+
+	/**
+	 * Returns this document's version no.
+	 */
+	public Integer getVersionNo() {
+        DocumentVersion version = getVersion();
+
+		return version == null ? null : version.getNo();
 	}
 
 
@@ -147,10 +183,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 	public void setCreator(UserDomainObject creator) {
 		setCreatorId(creator.getId());
-	}
-
-	public void setAttributes(Attributes attributes) {
-		this.attributes = attributes;
 	}
 
 	public String getHeadline() {
@@ -266,29 +298,27 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public RoleIdToDocumentPermissionSetTypeMappings getRoleIdsMappedToDocumentPermissionSetTypes() {
-		return (RoleIdToDocumentPermissionSetTypeMappings) getRolePermissionMappings()
-				.clone();
+		return getRolePermissionMappings().clone();
 	}
 
 	private RoleIdToDocumentPermissionSetTypeMappings getRolePermissionMappings() {
-		return attributes.roleIdToDocumentPermissionSetTypeMappings;
+		return roleIdToDocumentPermissionSetTypeMappings;
 	}
 
 	public void setRoleIdsMappedToDocumentPermissionSetTypes(
-			RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
-		attributes.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings
-				.clone();
+            RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
+		this.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
 	}
 
 	public Document.PublicationStatus getPublicationStatus() {
-		return attributes.publicationStatus;
+		return publicationStatus;
 	}
 
 	public void setPublicationStatus(Document.PublicationStatus status) {
 		if (null == status) {
 			throw new NullArgumentException("status");
 		}
-		attributes.publicationStatus = status;
+		publicationStatus = status;
 	}
 
 	public String getTarget() {
@@ -425,15 +455,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public DocumentPermissionSets getPermissionSets() {
-		return this.attributes.permissionSets;
+		return permissionSets;
 	}
 
 	public DocumentPermissionSets getPermissionSetsForNewDocuments() {
-		return attributes.permissionSetsForNewDocuments;
-	}
-
-	public Attributes getAttributes() {
-		return attributes;
+		return permissionSetsForNewDocuments;
 	}
 
 	public abstract void accept(DocumentVisitor documentVisitor);
@@ -471,12 +497,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public void setPermissionSets(DocumentPermissionSets permissionSets) {
-		attributes.permissionSets = permissionSets;
+		this.permissionSets = permissionSets;
 	}
 
 	public void setPermissionSetsForNew(
 			DocumentPermissionSets permissionSetsForNew) {
-		attributes.permissionSetsForNewDocuments = permissionSetsForNew;
+		this.permissionSetsForNewDocuments = permissionSetsForNew;
 	}
 
 	public String getAlias() {
@@ -493,33 +519,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 	public String getName() {
 		return StringUtils.defaultString(getAlias(), getId() + "");
-	}
-
-	public static class Attributes implements Cloneable, Serializable {
-
-		private Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
-
-		private DocumentPermissionSets permissionSets = new DocumentPermissionSets();
-		private DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
-
-		private RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
-
-        @Override
-		public Attributes clone() {
-            try {
-                Attributes clone = (Attributes) super.clone();
-
-                clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings
-                        .clone();
-
-                clone.permissionSets = permissionSets.clone();
-                clone.permissionSetsForNewDocuments = permissionSetsForNewDocuments
-                        .clone();
-                return clone;
-            } catch (CloneNotSupportedException e) {
-                throw new RuntimeException(e);
-            }
-		}
 	}
 
 	public Meta getMeta() {

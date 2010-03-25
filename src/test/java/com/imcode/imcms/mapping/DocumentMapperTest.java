@@ -10,10 +10,15 @@ import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.SetUtils;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.lang.ArrayUtils;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,13 +36,14 @@ public class DocumentMapperTest {
 
     @BeforeClass
     public void setUpClass() {
+        Imcms.start();
         i18nSupport = Imcms.getI18nSupport();
         docMapper = Imcms.getServices().getDocumentMapper();
         admin = Imcms.getServices().verifyUser("admin", "admin");
     }
 
 
-    @Test
+    @Test(enabled = false)
     public DocumentDomainObject getMainWorkingDocumentInDefaultLanguage() {
         DocumentDomainObject doc = docMapper.getCustomDocument(1001, 0, i18nSupport.getDefaultLanguage());
         assertNotNull(doc);
@@ -45,7 +51,7 @@ public class DocumentMapperTest {
     }
     
 
-    @Test//(dependsOnMethods = {"createDocumentOfTypeFromParent"})
+    @Test(enabled = false)//(dependsOnMethods = {"createDocumentOfTypeFromParent"})
     public void addMenu() throws Exception {
         TextDocumentDomainObject parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
         DocumentDomainObject menuItemDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
@@ -84,7 +90,7 @@ public class DocumentMapperTest {
     }
 
 
-    @Test(dataProvider = "saveNewDocumentCopyFlag")
+    @Test(enabled = false, dataProvider = "saveNewDocumentCopyFlag")
     public void saveNewDocumentWithLabels(boolean copyFlag) throws Exception {
         DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage();
         DocumentDomainObject doc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
@@ -103,7 +109,7 @@ public class DocumentMapperTest {
     }
 
 
-    @Test(dataProvider = "saveNewDocumentCopyFlag")
+    @Test(enabled = false, dataProvider = "saveNewDocumentCopyFlag")
     public void saveNewDocumentWithoutLabels(boolean copyFlag) throws Exception {
         TextDocumentDomainObject parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
         TextDocumentDomainObject newDoc = (TextDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
@@ -111,7 +117,7 @@ public class DocumentMapperTest {
         Integer newDocId =  docMapper.saveNewDocument(newDoc, admin, copyFlag);
     }
 
-    @Test
+    @Test(enabled = false)
     public void copyTextDocument() throws Exception {
         TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
         TextDocumentDomainObject docCopy = (TextDocumentDomainObject)docMapper.copyDocument(doc, admin);
@@ -120,7 +126,7 @@ public class DocumentMapperTest {
         // add more asserts
     }
 
-    @Test(dataProvider = "contentInfo")
+    @Test(enabled = true, dataProvider = "contentInfo")
     public void insertTextDocumentText(Integer contentLoopNo, Integer contentIndex) throws Exception {
         TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
         TextDomainObject text = Factory.createNextText(doc);
@@ -128,11 +134,25 @@ public class DocumentMapperTest {
         text.setContentLoopNo(contentLoopNo);
         text.setContentNo(contentIndex);
 
+        if (contentLoopNo != null) {
+            ContentLoop loop = doc.getContentLoop(contentLoopNo);
+
+            if (loop == null) {
+                loop = Factory.createContentLoop(doc.getId(), doc.getVersion().getNo(), contentLoopNo);
+                Content content = loop.addFirstContent();
+
+                text.setContentNo(content.getNo());
+                doc.setContentLoop(contentLoopNo, loop);
+            }
+
+            doc.setText(text.getNo(), text);
+        }
+
         docMapper.saveTextDocumentText(doc, text, admin);
     }
 
 
-    @Test
+    @Test(enabled = false)
     public void changeDocDefaultVersionNo() throws Exception {
         DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage();
         DocumentDomainObject doc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
@@ -157,7 +177,7 @@ public class DocumentMapperTest {
     }
 
 
-    @Test(dataProvider = "contentInfo")
+    @Test(enabled = false, dataProvider = "contentInfo")
     public void insertTextDocumentImage(Integer contentLoopNo, Integer contentIndex) throws Exception {
         TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
         ImageDomainObject image = Factory.createNextImage(doc);
@@ -170,7 +190,7 @@ public class DocumentMapperTest {
     }
 
 
-    @Test
+    @Test(enabled = false)
     public void getDocuments() throws Exception {
         List<Integer> ids = docMapper.getAllDocumentIds();
         List<DocumentDomainObject> docs = docMapper.getDocuments(ids);
@@ -184,28 +204,31 @@ public class DocumentMapperTest {
         return new Object [][] {{true}, {false }};
     }
 
+
     /**
      * Return content loop no and content index:
      */
-//    @DataProvider
-//    public Object[][] contentInfo() {
-//        TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
-//        ContentLoop existingContentLoop = doc.getLoops().values().iterator().next();
-//        ContentLoop unsavedContentLoop = Factory.createNextContentLoop(doc);
-//
-//        Integer noContentLoopNo = null;
-//        Integer noContentIndex = null;
-//
-//        Integer existingContentLoopNo = existingContentLoop.getNo();
-//        Integer existingContentIndex = existingContentLoop.getContents().get(0).getIndex();
-//
-//        Integer unsavedContentLoopNo = unsavedContentLoop.getNo();
-//        Integer unsavedContentIndex = unsavedContentLoop.getContents().get(0).getIndex();
-//
-//        return new Object [][] {
-//                {noContentLoopNo, noContentIndex},
-//                {existingContentLoopNo, existingContentIndex},
-//                {unsavedContentLoopNo, unsavedContentIndex}
-//        };
-//    }
+    @DataProvider
+    public Object[][] contentInfo() {
+        TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage();
+        ContentLoop existingContentLoop = doc.getContentLoops().values().iterator().next();
+        ContentLoop unsavedContentLoop = Factory.createNextContentLoop(doc);
+
+        unsavedContentLoop.addFirstContent();
+
+        Integer noContentLoopNo = null;
+        Integer noContentNo = null;
+
+        Integer existingContentLoopNo = existingContentLoop.getNo();
+        Integer existingContentNo = existingContentLoop.getContents().get(0).getNo();
+
+        Integer unsavedContentLoopNo = unsavedContentLoop.getNo();
+        Integer unsavedContentNo = unsavedContentLoop.getContents().get(0).getNo();
+
+        return new Object [][] {
+                {noContentLoopNo, noContentNo},
+                {existingContentLoopNo, existingContentNo},
+                {unsavedContentLoopNo, unsavedContentNo}
+        };
+    }
 }

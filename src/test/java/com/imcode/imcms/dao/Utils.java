@@ -1,5 +1,7 @@
 package com.imcode.imcms.dao;
 
+import imcode.server.Imcms;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.imcode.imcms.mapping.DocumentLoader;
@@ -8,7 +10,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public class Utils {
 
-    public static final FileSystemXmlApplicationContext classPathXmlApplicationContext = new FileSystemXmlApplicationContext("src/main/resources-webinf/applicationContext.xml");
+    //public static final ApplicationContext ctx = new ClassPathXmlApplicationContext("file:src/main/web/WEB-INF/applicationContext.xml");
 
 
 	// Essential, well known meta id.
@@ -29,6 +31,7 @@ public class Utils {
 	
 
     public static Object getBean(String beanName) {
-		return classPathXmlApplicationContext.getBean(beanName);
+		//return ctx.getBean(beanName);
+        return Imcms.getSpringBean(beanName);
 	}
 }

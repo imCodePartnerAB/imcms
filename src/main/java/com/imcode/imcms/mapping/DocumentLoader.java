@@ -9,9 +9,6 @@ import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.user.RoleId;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,13 +34,26 @@ public class DocumentLoader {
         
     /** Initializes document's fields. */
     private DocumentInitializingVisitor documentInitializingVisitor;
-    
-    public Meta getMeta(Integer docId) {
+
+    /**
+     * Loads document's meta.
+     * 
+     * @param docId document id.
+     * @return
+     */
+    public Meta loadMeta(Integer docId) {
        return metaDao.getMeta(docId);
     }
-    
-    
-    public DocumentDomainObject loadDocument(Meta meta, DocumentVersion version, I18nLanguage language) {
+
+    /**
+     * Loads and initializes document's fields.
+     * 
+     * @param meta
+     * @param version
+     * @param language
+     * @return
+     */
+    public DocumentDomainObject loadAndInitDocument(Meta meta, DocumentVersion version, I18nLanguage language) {
         return initDocument(createDocument(meta, version, language));
     }     
 
@@ -85,7 +95,7 @@ public class DocumentLoader {
     	AspectJProxyFactory aspectJProxyFactory = new AspectJProxyFactory(document); 
     	aspectJProxyFactory.setProxyTargetClass(true);
     	
-    	switch (document.getMeta().getDocumentType()) {
+    	switch (document.loadMeta().getDocumentType()) {
     	case DocumentTypeDomainObject.TEXT_ID:
             aspectJProxyFactory.addAspect(new TextDocumentLazyLoadingAspect(
             		documentInitializingVisitor.getTextDocumentInitializer()));       
@@ -104,7 +114,7 @@ public class DocumentLoader {
             break;            
     		
         default:
-        	throw new AssertionError("Unknown document type id: " + document.getMeta().getDocumentType());
+        	throw new AssertionError("Unknown document type id: " + document.loadMeta().getDocumentType());
     	}
         
         return aspectJProxyFactory.getProxy();

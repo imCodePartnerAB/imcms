@@ -19,7 +19,10 @@ public class FileReference {
 	private Long id;
 	
 	@Column(name="meta_id")
-	private Integer metaId;	
+	private Integer docId;
+
+	@Column(name="doc_version_no")
+	private Integer docVersionNo;	    
 	
 	@Column(name="filename")
 	private String filename;
@@ -34,9 +37,9 @@ public class FileReference {
 	private Boolean defaultFileId;
 	
 	@Column(name="variant_name")
-	private String fileId;			
+	private String fileId;
 
-	public String getFilename() {
+    public String getFilename() {
 		return filename;
 	}
 
@@ -76,12 +79,12 @@ public class FileReference {
 		this.id = id;
 	}
 
-	public Integer getMetaId() {
-		return metaId;
+	public Integer getDocId() {
+		return docId;
 	}
 
-	public void setMetaId(Integer metaId) {
-		this.metaId = metaId;
+	public void setDocId(Integer docId) {
+		this.docId = docId;
 	}
 
 	public String getFileId() {
@@ -91,4 +94,12 @@ public class FileReference {
 	public void setFileId(String fileId) {
 		this.fileId = fileId;
 	}
+
+    public Integer getDocVersionNo() {
+        return docVersionNo;
+    }
+
+    public void setDocVersionNo(Integer docVersionNo) {
+        this.docVersionNo = docVersionNo;
+    }
 }

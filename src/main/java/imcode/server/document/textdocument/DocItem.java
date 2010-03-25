@@ -1,7 +1,7 @@
 package imcode.server.document.textdocument;
 
 /**
- * 
+ *
  */
 public interface DocItem {
 
@@ -15,5 +15,5 @@ public interface DocItem {
 
     Integer getDocVersionNo();
 
-    void setDocVersionNo(Integer docVersionNo);    
+    void setDocVersionNo(Integer docVersionNo);
 }

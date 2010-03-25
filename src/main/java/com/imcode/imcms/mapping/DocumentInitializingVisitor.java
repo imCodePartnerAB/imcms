@@ -17,7 +17,7 @@ import com.imcode.imcms.mapping.orm.UrlReference;
 
 /**
  * Initializes document fields depending on document's type.
- * Document's fields are queried from the database.
+ * Document's fields are queried from a database.
  */
 public class DocumentInitializingVisitor extends DocumentVisitor {
 
@@ -25,8 +25,8 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
     
     private MetaDao metaDao;
 
-    public void visitFileDocument(final FileDocumentDomainObject document) {    	
-    	Collection<FileReference> fileReferences = metaDao.getFileReferences(document.getMeta().getId());
+    public void visitFileDocument(final FileDocumentDomainObject doc) {
+    	Collection<FileReference> fileReferences = metaDao.getFileReferences(doc.getMeta().getId(), doc.getVersionNo());
     	
     	for (FileReference fileRef: fileReferences) {
             String fileId = fileRef.getFileId();           
@@ -36,7 +36,7 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
             file.setMimeType(fileRef.getMimeType());
             file.setCreatedAsImage(fileRef.getCreatedAsImage());
             
-            File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(document.getId(), fileId);
+            File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getId(), fileId);
             if ( !fileForFileDocument.exists() ) {
                 File oldlyNamedFileForFileDocument = new File(fileForFileDocument.getParentFile(),
                                                               fileForFileDocument.getName()
@@ -48,23 +48,23 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
             
             file.setInputStreamSource(new FileInputStreamSource(fileForFileDocument));
             
-            document.addFile(fileId, file);
+            doc.addFile(fileId, file);
             
             if (fileRef.isDefaultFileId()) {
-                document.setDefaultFileId(fileId);
+                doc.setDefaultFileId(fileId);
             }
     		
     	}
     }
 
-    public void visitHtmlDocument(HtmlDocumentDomainObject document) {
-    	HtmlReference html = metaDao.getHtmlReference(document.getMeta().getId());
-    	document.setHtml(html.getHtml());    	
+    public void visitHtmlDocument(HtmlDocumentDomainObject doc) {
+    	HtmlReference html = metaDao.getHtmlReference(doc.getMeta().getId(), doc.getVersionNo());
+    	doc.setHtml(html.getHtml());
     }
 
-    public void visitUrlDocument(UrlDocumentDomainObject document) {
-    	UrlReference reference = metaDao.getUrlReference(document.getMeta().getId());
-    	document.setUrl(reference.getUrl());    	
+    public void visitUrlDocument(UrlDocumentDomainObject doc) {
+    	UrlReference reference = metaDao.getUrlReference(doc.getMeta().getId(), doc.getVersionNo());
+    	doc.setUrl(reference.getUrl());
     }
 
     
@@ -87,8 +87,7 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
 		return textDocumentInitializer;
 	}
 
-	public void setTextDocumentInitializer(
-			TextDocumentInitializer textDocumentInitializer) {
+	public void setTextDocumentInitializer(TextDocumentInitializer textDocumentInitializer) {
 		this.textDocumentInitializer = textDocumentInitializer;
 	}
 }

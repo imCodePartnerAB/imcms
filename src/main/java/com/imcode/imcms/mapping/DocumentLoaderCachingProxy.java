@@ -81,7 +81,7 @@ public class DocumentLoaderCachingProxy {
         Meta meta = metas.get(docId);
 
         if (meta == null) {
-            meta = documentLoader.getMeta(docId);
+            meta = documentLoader.loadMeta(docId);
 
             if (meta != null) {
                 metas.put(docId, meta);
@@ -202,7 +202,7 @@ public class DocumentLoaderCachingProxy {
             return null;
         }
 
-        return documentLoader.loadDocument(meta.clone(), version.clone(), language.clone());
+        return documentLoader.loadAndInitDocument(meta.clone(), version.clone(), language.clone());
     }
     
 
@@ -221,7 +221,7 @@ public class DocumentLoaderCachingProxy {
             DocumentVersionInfo versionInfo = getDocumentVersionInfo(docId);
             DocumentVersion version = versionInfo.getWorkingVersion();
 
-	        document = documentLoader.loadDocument(meta.clone(), version.clone(), language.clone());
+	        document = documentLoader.loadAndInitDocument(meta.clone(), version.clone(), language.clone());
 
             if (document != null) {
 	            documents.put(docId, document);
@@ -247,7 +247,7 @@ public class DocumentLoaderCachingProxy {
             DocumentVersionInfo versionInfo = getDocumentVersionInfo(docId);
             DocumentVersion version = versionInfo.getDefaultVersion();
 
-	        document = documentLoader.loadDocument(meta.clone(), version.clone(), language.clone());
+	        document = documentLoader.loadAndInitDocument(meta.clone(), version.clone(), language.clone());
 
             if (document != null) {
 	            documents.put(docId, document);

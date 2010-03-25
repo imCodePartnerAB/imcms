@@ -81,9 +81,9 @@ public class TextDocumentInitializer {
     public void initTemplateNames(TextDocumentDomainObject document) {
     	TemplateNames templateNames = metaDao.getTemplateNames(document.getMeta().getId());
     	
-    	//if (templateNames == null) {
-    	//	templateNames = new TemplateNames();
-    	//}
+    	if (templateNames == null) {
+    		templateNames = new TemplateNames();
+    	}
     	
     	document.setTemplateNames(templateNames);
     }    
@@ -133,11 +133,6 @@ public class TextDocumentInitializer {
 		
 		for (ContentLoop loop: loops) {
 			loopsMap.put(loop.getNo(), loop);
-
-			List<Content> contents = loop.getContents();
-			if (contents.size() == 0) {
-                throw new IllegalStateException(String.format("Content loop id: %, docId: % does not have contents. A content loop must have at least one content."));
-			}
 		}
 		
 		document.setContentLoops(loopsMap);

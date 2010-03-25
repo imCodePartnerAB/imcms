@@ -125,7 +125,7 @@ public class MetaDao extends HibernateTemplate {
         labels.setHeadline(headlineThatFitsInDB);
         labels.setMenuText(textThatFitsInDB);
 
-        save(labels);
+        saveOrUpdate(labels);
 
         return labels;
     }
@@ -161,8 +161,9 @@ public class MetaDao extends HibernateTemplate {
 	}
 
 	@Transactional
-	public Collection<FileReference> getFileReferences(Integer documentId) {
-		return find("select f from FileReference f where f.metaId = ? ORDER BY f.defaultFileId DESC, f.fileId", documentId);
+	public Collection<FileReference> getFileReferences(Integer docId, Integer docVersionNo) {
+		return findByNamedQueryAndNamedParam("FileDoc.getReferences", new String [] {"docId", "docVersionNo"},
+                new Object [] {docId, docVersionNo});
 	}
 
 	@Transactional
@@ -178,10 +179,11 @@ public class MetaDao extends HibernateTemplate {
 	}
 
 	@Transactional
-	public HtmlReference getHtmlReference(Integer documentId) {
-		return (HtmlReference)getSession().createQuery("select h from HtmlReference h where h.metaId = ?")
-		.setParameter(0, documentId)
-		.uniqueResult();
+	public HtmlReference getHtmlReference(Integer docId, Integer docVersionNo) {
+		return (HtmlReference)getSession().getNamedQuery("HtmlDoc.getReference")
+		    .setParameter("docId", docId)
+            .setParameter("docVersionNo", docVersionNo)
+		    .uniqueResult();
 	}	
 	
 	@Transactional
@@ -192,10 +194,11 @@ public class MetaDao extends HibernateTemplate {
 	}
 	
 	@Transactional
-	public UrlReference getUrlReference(Integer documentId) {
-		return (UrlReference)getSession().createQuery("select u from UrlReference u where u.metaId = ?")
-		.setParameter(0, documentId)
-		.uniqueResult();
+	public UrlReference getUrlReference(Integer docId, Integer docVersionNo) {
+		return (UrlReference)getSession().getNamedQuery("UrlDoc.getReference")
+		    .setParameter("docId", docId)
+            .setParameter("docVersionNo", docVersionNo)
+		    .uniqueResult();
 	}
 
 	@Transactional

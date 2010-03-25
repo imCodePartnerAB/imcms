@@ -4,6 +4,18 @@ SET @schema_version__major_new = 6;
 SET @schema_version__minor_new = 2;
 
 
+ALTER TABLE frameset_docs
+    ADD COLUMN doc_version_no int NOT NULL DEFAULT 0;
+
+
+ALTER TABLE url_docs
+    ADD COLUMN doc_version_no int NOT NULL DEFAULT 0;
+
+
+ALTER TABLE fileupload_docs
+    ADD COLUMN doc_version_no int NOT NULL DEFAULT 0;
+
+
 
 
 

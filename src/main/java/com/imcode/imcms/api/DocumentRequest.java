@@ -7,9 +7,12 @@ import imcode.server.user.UserDomainObject;
 
 /**
  * Document request bound to thread local.
+ * 
+ *
  *
  * @see imcode.server.Imcms
  * @see com.imcode.imcms.servlet.ImcmsFilter
+ * @see com.imcode.imcms.mapping.DocumentMapper#getDocument(Integer) 
  */
 public class DocumentRequest {
 

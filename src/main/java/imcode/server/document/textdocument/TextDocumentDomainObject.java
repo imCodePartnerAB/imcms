@@ -219,7 +219,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return newMenu;
     }
 
-
+    /**
+     * Sets a text to this document.
+     *
+     * If a text belongs to a content loop then both loop and its content must exist in this document. 
+     *
+     * @param no
+     * @param text
+     * @return
+     */
     public TextDomainObject setText(Integer no, TextDomainObject text) {
         Meta meta = getMeta();
         Integer documentVersion = getVersion().getNo();
@@ -230,7 +238,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         if ((loopNo != null && contentNo == null) || (loopNo == null && contentNo != null)) {
             throw new IllegalStateException(String.format(
-                "Invalid text. Both loop no and content index must be set or not set (null). Meta  id :%s, document version: %s, loop no: %s, content index: %s, text no: %s."
+                "Invalid text. Both loop no and content index must be set or not set (null). Meta  id :%s, document version: %s, loop no: %s, content no: %s, text no: %s."
                 ,meta.getId(), documentVersion, loopNo, contentNo, no)
             );
         }
@@ -251,7 +259,29 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         newText.setNo(no);
         newText.setLanguage(getLanguage());
 
-        if (key == null) texts.put(no, newText); else loopTexts.put(key, newText);
+        if (key == null) {
+            texts.put(no, newText);
+        } else {
+            ContentLoop loop = getContentLoop(loopNo);
+
+            if (loop == null) {
+                throw new IllegalStateException(String.format(
+                    "Invalid text. Loop does not exists. Meta  id :%s, document version: %s, loop no: %s, content no: %s, text no: %s."
+                    ,meta.getId(), documentVersion, loopNo, contentNo, no)
+                );
+            }
+
+            Content content = loop.getContent(contentNo);
+
+            if (content == null) {
+                throw new IllegalStateException(String.format(
+                    "Invalid text. Content does not exists. Meta  id :%s, document version: %s, loop no: %s, content no: %s, text no: %s."
+                    ,meta.getId(), documentVersion, loopNo, contentNo, no)
+                );
+            }
+
+            loopTexts.put(key, newText);
+        }
 
         return newText.clone();
     } 
@@ -328,7 +358,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         if ((loopNo != null && contentNo == null) || (loopNo == null && contentNo != null)) {
             throw new IllegalStateException(String.format(
-                "Invalid image. Both loop no and content index must be set or not set (null). Meta  id :%s, document version: %s, loop no: %s, content index: %s, image no: %s."
+                "Invalid image. Both loop no and content index must be set or not set (null). Meta  id :%s, document version: %s, loop no: %s, content no: %s, image no: %s."
                 ,meta.getId(), documentVersion, loopNo, contentNo, no)
             );
         }
@@ -350,6 +380,30 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         newImage.setLanguage(getLanguage());
 
         if (key == null) images.put(no, newImage); else loopImages.put(key, newImage);
+
+        if (key == null) {
+            images.put(no, newImage);
+        } else {
+            ContentLoop loop = getContentLoop(loopNo);
+
+            if (loop == null) {
+                throw new IllegalStateException(String.format(
+                    "Invalid image. Loop does not exists. Meta  id :%s, document version: %s, loop no: %s, content no: %s, text no: %s."
+                    ,meta.getId(), documentVersion, loopNo, contentNo, no)
+                );
+            }
+
+            Content content = loop.getContent(contentNo);
+
+            if (content == null) {
+                throw new IllegalStateException(String.format(
+                    "Invalid image. Content does not exists. Meta  id :%s, document version: %s, loop no: %s, content no: %s, text no: %s."
+                    ,meta.getId(), documentVersion, loopNo, contentNo, no)
+                );
+            }
+
+            loopImages.put(key, newImage);
+        }
 
         return newImage.clone();
     }	
@@ -517,15 +571,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return loopTexts;
     }
 
-    public void setLoopTexts(Map<ContentLoopItemKey, TextDomainObject> loopTexts) {
-        this.loopTexts = loopTexts;
-    }
+//    public void setLoopTexts(Map<ContentLoopItemKey, TextDomainObject> loopTexts) {
+//        this.loopTexts = loopTexts;
+//    }
 
     public Map<ContentLoopItemKey, ImageDomainObject> getLoopImages() {
         return loopImages;
     }
 
-    public void setLoopImages(Map<ContentLoopItemKey, ImageDomainObject> loopImages) {
-        this.loopImages = loopImages;
-    }
+//    public void setLoopImages(Map<ContentLoopItemKey, ImageDomainObject> loopImages) {
+//        this.loopImages = loopImages;
+//    }
 }
