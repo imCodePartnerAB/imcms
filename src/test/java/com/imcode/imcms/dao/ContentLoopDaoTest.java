@@ -16,7 +16,7 @@ import com.imcode.imcms.api.ContentLoop;
 import java.sql.SQLException;
 import java.util.List;
 
-
+@Test(groups = "dao")
 public class ContentLoopDaoTest extends DaoTest {
 
 

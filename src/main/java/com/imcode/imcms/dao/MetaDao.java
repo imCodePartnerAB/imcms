@@ -174,8 +174,11 @@ public class MetaDao extends HibernateTemplate {
 	}
 
 	@Transactional
-	public int deleteFileReferences(Integer documentId) {
-		return bulkUpdate("delete from FileReference f where f.metaId = ?", documentId);
+	public int deleteFileReferences(Integer docId, Integer docVersionNo) {
+        return getSession().getNamedQuery("FileDoc.deleteAllReferences")
+                .setParameter("docId", docId)
+                .setParameter("docVersionNo", docVersionNo)
+                .executeUpdate();
 	}
 
 	@Transactional

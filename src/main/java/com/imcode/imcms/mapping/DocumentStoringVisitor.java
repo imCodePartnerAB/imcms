@@ -200,13 +200,13 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
         for (ImageDomainObject image: doc.getImages().values()) {
             saveTextDocumentImage(doc, image, user);
-            imageDao.saveImageHistory(doc.getId(), image, user);
+            //imageDao.saveImageHistory(doc.getId(), image, user);
         }
 
 
         for (ImageDomainObject image: doc.getLoopImages().values()) {
             saveTextDocumentImage(doc, image, user);
-            imageDao.saveImageHistory(doc.getId(), image, user);
+            //imageDao.saveImageHistory(doc.getId(), image, user);
         }
     }
     
@@ -254,7 +254,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         Map fileDocumentFiles = fileDocument.getFiles();
 
         // DELETE
-        dao.deleteFileReferences(fileDocument.getMeta().getId());
+        dao.deleteFileReferences(fileDocument.getMeta().getId(), fileDocument.getVersionNo());
 
         
         // Save point...

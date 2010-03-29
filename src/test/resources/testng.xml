@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="imCMS" verbose="1" parallel="false" thread-count="1" annotations="JDK">
+  <test name="mapping">
+    <groups>
+      <run>
+          <exclude name="dao"/>
+      </run>
+    </groups>
+
+    <packages>
+        <package name="com.imcode.imcms.*"/>
+    </packages>
+  </test>  
+</suite>

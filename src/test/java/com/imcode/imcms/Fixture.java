@@ -4,6 +4,7 @@ import clojure.lang.RT;
 import clojure.lang.Var;
 import imcode.server.Imcms;
 import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -17,7 +18,7 @@ public class Fixture {
         RT.load("com/imcode/imcms/project");
     }
 
-    @BeforeTest
+    @BeforeSuite
     public void initAndStartImcms() throws Exception {
         Var initFn = RT.var("com.imcode.imcms.project", "init-imcms");
 

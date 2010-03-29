@@ -173,5 +173,11 @@
     FROM FileReference r WHERE r.docId = :docId AND r.docVersionNo = :docVersionNo ORDER BY r.defaultFileId DESC, r.fileId
     ]]>
   </query>
+
+  <query name="FileDoc.deleteAllReferences">
+    <![CDATA[
+    DELETE FROM FileReference r WHERE r.docId = :docId AND r.docVersionNo = :docVersionNo
+    ]]>
+  </query>
     
 </hibernate-mapping>

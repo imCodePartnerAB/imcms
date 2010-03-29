@@ -186,6 +186,7 @@ public class DocumentSaver {
 
             for (DocumentLabels labels:  metaDao.getLabels(docId, DocumentVersion.WORKING_VERSION_NO)) {
                 labels = labels.clone();
+                labels.setId(null);
                 labels.setDocVersionNo(docVersionNo);
 
                 metaDao.saveLabels(labels);
