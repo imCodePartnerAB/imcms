@@ -22,5 +22,4 @@ public class DocumentVisitor {
 
     protected void visitOtherDocument( DocumentDomainObject otherDocument ) {
     }
-
 }

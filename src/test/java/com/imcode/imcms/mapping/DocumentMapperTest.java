@@ -255,6 +255,10 @@ public class DocumentMapperTest {
 
         fileDoc.addFile("testFile", file);
         Integer docId = docMapper.saveNewDocument(fileDoc, admin, true);
+
+        DocumentVersion version = docMapper.makeDocumentVersion(docId, admin);
+        DocumentDomainObject doc = docMapper.getCustomDocument(docId, version.getNo());
+        docMapper.saveDocument(doc, admin);
     }
 
     public TextDocumentDomainObject getMainWorkingDocumentInDefaultLanguage(boolean assertExists) {

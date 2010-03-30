@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.api.DocumentVersion;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;
@@ -47,7 +48,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         this.services = services ;
     }
 
-    protected void saveFileDocumentFile( int fileDocumentId, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
+    protected void saveFileDocumentFile(int fileDocumentId, Integer docVersionNo, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
                                          String fileId ) {
         try {
             InputStreamSource inputStreamSource = fileDocumentFile.getInputStreamSource();
@@ -62,7 +63,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 return;
             }
 
-            File file = getFileForFileDocumentFile( fileDocumentId, fileId );
+            File file = getFileForFileDocumentFile(fileDocumentId, docVersionNo, fileId );
 
             FileInputStreamSource fileInputStreamSource = new FileInputStreamSource(file);
             boolean sameFileOnDisk = file.exists() && inputStreamSource.equals(fileInputStreamSource) ;
@@ -86,18 +87,18 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     }
 
-    public static File getFileForFileDocumentFile( int fileDocumentId, String fileId ) {
+    public static File getFileForFileDocumentFile(int fileDocumentId, int docVersionNo, String fileId) {
         File filePath = Imcms.getServices().getConfig().getFilePath();
         String filename = "" + fileDocumentId ;
+
+        if (docVersionNo != DocumentVersion.WORKING_VERSION_NO) {
+            filename += ("_" + docVersionNo);    
+        }
+
         if (StringUtils.isNotBlank( fileId )) {
             filename += "."+FileUtility.escapeFilename(fileId) ;
         }
         return new File(filePath, filename);
-    }
-
-    static String makeSqlInsertString(String tableName, String[] columnNames) {
-        return "INSERT INTO " + tableName + " (" + StringUtils.join(columnNames, ",") + ")"
-                + "VALUES(?" + StringUtils.repeat(",?", columnNames.length - 1) + ")";
     }
    
     
@@ -251,17 +252,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     public void visitFileDocument( FileDocumentDomainObject fileDocument ) {    	
     	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
     	
-        Map fileDocumentFiles = fileDocument.getFiles();
-
-        // DELETE
         dao.deleteFileReferences(fileDocument.getMeta().getId(), fileDocument.getVersionNo());
-
         
-        // Save point...
-        for ( Iterator iterator = fileDocumentFiles.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)iterator.next();
-            String fileId = (String)entry.getKey();
-            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = (FileDocumentDomainObject.FileDocumentFile)entry.getValue();
+        for (Map.Entry<String, FileDocumentDomainObject.FileDocumentFile> entry: fileDocument.getFiles().entrySet()) {
+            String fileId = entry.getKey();
+            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = entry.getValue();
 
             String filename = fileDocumentFile.getFilename();
             if ( filename.length() > DB_FIELD_MAX_LENGTH__FILENAME ) {
@@ -281,7 +276,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             
             dao.saveFileReference(fileRef);
             
-            saveFileDocumentFile( fileDocument.getId(), fileDocumentFile, fileId );
+            saveFileDocumentFile(fileDocument.getId(), fileDocument.getVersionNo(), fileDocumentFile, fileId );
         }
         
         DocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;   

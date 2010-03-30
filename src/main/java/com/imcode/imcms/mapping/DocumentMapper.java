@@ -300,14 +300,44 @@ public class DocumentMapper implements DocumentGetter {
      * Makes next version of a working document.
      * TODO: Optional - add comments
      */
-    public DocumentVersion makeDocumentVersion(Integer docId, UserDomainObject user)
-    throws DocumentSaveException, NoPermissionToEditDocumentException {
-        try {
-    	    return documentSaver.makeDocumentVersion(docId, user);
-        } finally {
-            invalidateDocument(docId);
+//    public DocumentVersion makeDocumentVersion(Integer docId, UserDomainObject user)
+//    throws DocumentSaveException, NoPermissionToEditDocumentException {
+//        try {
+//    	    return documentSaver.makeDocumentVersion(docId, user);
+//        } finally {
+//            invalidateDocument(docId);
+//        }
+//	}
+
+
+    /**
+     * @return copied document in default language.
+     *
+     * @since 6.0
+     * TODO: refactor.
+     */
+    public DocumentVersion makeDocumentVersion(final Integer docId, final UserDomainObject user)
+        throws DocumentSaveException {
+
+        Map<I18nLanguage, DocumentDomainObject> docMap = new HashMap<I18nLanguage, DocumentDomainObject>();
+
+        for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
+            DocumentDomainObject doc =  documentLoaderCachingProxy.getCustomDocument(docId, DocumentVersion.WORKING_VERSION_NO, language);
+            docMap.put(language, doc);
         }
-	}
+
+        if (docMap.isEmpty()) {
+            throw new IllegalArgumentException(String.format(
+                    "Unable to make a version. Source document does not exists: docId: %s.",
+                    docId, DocumentVersion.WORKING_VERSION_NO));
+        }
+
+        DocumentVersion version = documentSaver.makeDocumentVersion2(docId, docMap, user);
+
+        invalidateDocument(docId);
+
+        return  version;
+    }
 
 
     /**
@@ -865,15 +895,19 @@ public class DocumentMapper implements DocumentGetter {
         public boolean accept(File file) {
             String filename = file.getName();
             Perl5Util perl5Util = new Perl5Util();
-            if (perl5Util.match("/(\\d+)(?:_se|\\.(.*))?/", filename)) {
+            if (perl5Util.match("/(?:(\\d+)(?:_(\\d+))?)(?:_se|\\.(.*))?/", filename)) {
                 String idStr = perl5Util.group(1);
-                String variantName = FileUtility.unescapeFilename(StringUtils.defaultString(perl5Util.group(2)));
-                return accept(file, Integer.parseInt(idStr), variantName);
+                String variantName = FileUtility.unescapeFilename(StringUtils.defaultString(perl5Util.group(3)));
+                String docVersionNo = perl5Util.group(2);
+                return accept(file,
+                        Integer.parseInt(idStr),
+                        docVersionNo == null ? 0 : Integer.parseInt(docVersionNo), 
+                        variantName);
             }
             return false;
         }
 
-        public boolean accept(File file, int fileDocumentId, String fileId) {
+        public boolean accept(File file, int fileDocumentId, int docVersionNo, String fileId) {
             return fileDocumentId == fileDocument.getId();
         }
     }
@@ -884,10 +918,12 @@ public class DocumentMapper implements DocumentGetter {
             super(fileDocument);
         }
 
-        public boolean accept(File file, int fileDocumentId, String fileId) {
-            boolean correctFileForFileDocumentFile = file.equals(DocumentSavingVisitor.getFileForFileDocumentFile(fileDocumentId, fileId));
+        @Override
+        public boolean accept(File file, int fileDocumentId, int docVersionNo, String fileId) {
+            boolean correctFileForFileDocumentFile = file.equals(DocumentSavingVisitor.getFileForFileDocumentFile(fileDocumentId, fileDocument.getVersionNo(), fileId));
             boolean fileDocumentHasFile = null != fileDocument.getFile(fileId);
-            return super.accept(file, fileDocumentId, fileId)
+            return fileDocumentId == fileDocument.getId()
+                   && docVersionNo == fileDocument.getVersionNo() 
                    && (!correctFileForFileDocumentFile || !fileDocumentHasFile);
         }
     }

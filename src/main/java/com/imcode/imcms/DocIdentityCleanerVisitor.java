@@ -5,6 +5,7 @@ import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.DocumentVersion;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentVisitor;
+import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -58,5 +59,13 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
         version.setNo(0);
 
         // TODO: add created by, created dt.
-    }    
+    }
+
+    @Override
+    public void visitFileDocument(FileDocumentDomainObject doc) {
+        visitOtherDocument(doc);
+        //for (FileDocumentDomainObject.FileDocumentFile file: doc.getFiles().values()) {
+        //    file.
+        //}
+    }
 }

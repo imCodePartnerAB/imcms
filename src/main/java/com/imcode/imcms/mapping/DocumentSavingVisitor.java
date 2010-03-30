@@ -81,4 +81,12 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 	        }
         }
     }
+
+    public UserDomainObject getSavingUser() {
+        return savingUser;
+    }
+
+    public void setSavingUser(UserDomainObject savingUser) {
+        this.savingUser = savingUser;
+    }
 }

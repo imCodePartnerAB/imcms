@@ -25,6 +25,7 @@ public class I18nLanguage implements Serializable, Cloneable {
     private String name;
     
     private String nativeName;
+    
 
 	@Override
 	public boolean equals(Object object) {

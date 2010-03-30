@@ -8,6 +8,8 @@ import java.util.TreeMap;
 
 /**
  * Document's version info.
+ * 
+ * todo: add isWorkingDefault, single version predicates.
  */
 public class DocumentVersionInfo implements Serializable {
 	

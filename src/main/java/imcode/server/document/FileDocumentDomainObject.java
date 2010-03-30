@@ -14,7 +14,8 @@ import org.apache.commons.lang.UnhandledException;
 
 public class FileDocumentDomainObject extends DocumentDomainObject {
 
-    private Map files = createFilesMap();
+    // fileId -> FileDocumentFile
+    private Map<String, FileDocumentFile> files = createFilesMap();
 
     private String defaultFileId;
     public static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
@@ -53,22 +54,24 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         return fileClone;
     }
 
-    public Map getFiles() {
-        Map map = createFilesMap();
-        map.putAll( files );
+    public Map<String, FileDocumentFile> getFiles() {
+        Map<String, FileDocumentFile> map = createFilesMap();
+        map.putAll(files);
         return map;
     }
 
-    private Map createFilesMap() {
-        return MapUtils.orderedMap( new HashMap() );
+    
+    @SuppressWarnings("unchecked")
+    private Map<String, FileDocumentFile> createFilesMap() {
+        return MapUtils.orderedMap( new HashMap<String, FileDocumentFile>() );
     }
 
     public FileDocumentFile getFile( String fileId ) {
-        return cloneFile( (FileDocumentFile)files.get( fileId ) );
+        return cloneFile(files.get( fileId ) );
     }
 
     public FileDocumentFile removeFile( String fileId ) {
-        FileDocumentFile fileDocumentFile = (FileDocumentFile)files.remove( fileId );
+        FileDocumentFile fileDocumentFile = files.remove( fileId );
         selectDefaultFileName( fileId );
         return fileDocumentFile;
     }
@@ -125,7 +128,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         if ( files.containsKey( newFileId ) ) {
             throw new IllegalStateException( "There already is a file with the id " + newFileId );
         }
-        addFile( newFileId, (FileDocumentFile)files.remove( oldFileId ) );
+        addFile( newFileId, files.remove( oldFileId ) );
         if ( defaultFileId.equals( oldFileId ) ) {
             defaultFileId = newFileId;
         }
