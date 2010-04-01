@@ -624,9 +624,9 @@ public class AdminManager extends HttpServlet {
         }
 
         @Override
-        public void saveDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user)
+        public void saveDocument(List<DocumentDomainObject> docs, UserDomainObject user)
                throws NoPermissionInternalException, DocumentSaveException {
-           Imcms.getServices().getDocumentMapper().saveNewDocument(document, labels, user, false);
+           Imcms.getServices().getDocumentMapper().saveNewDocument(docs, user, false);
         }        
     }
 

@@ -172,17 +172,15 @@ public class DocumentSaver {
 
 
     /**
-     * @param docMap
+     * @param docs
      * @param user
      * @return saved document id.
      * @throws NoPermissionToAddDocumentToMenuException
      * @throws DocumentSaveException
      */
     @Transactional
-    public DocumentVersion makeDocumentVersion2(final Integer docId, Map<I18nLanguage, DocumentDomainObject> docMap, UserDomainObject user)
+    public DocumentVersion makeDocumentVersion(final Integer docId, List<DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-
-        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>(docMap.values());
 
         DocumentVersion documentVersion = documentVersionDao.createVersion(docId, user.getId());
 
@@ -204,72 +202,6 @@ public class DocumentSaver {
 
         return documentVersion;
     }
-
-
-
-    /**
-     * Creates working document copy as a new version.
-     */
-    // TODO: Should throw NoPermissionToEditDocumentException ?
-    // TODO: Add history for texts and images
-    @Transactional
-    public DocumentVersion makeDocumentVersion(Integer docId, UserDomainObject user)
-    throws DocumentSaveException {
-    	try {
-            Meta meta = metaDao.getMeta(docId);
-
-            DocumentVersion documentVersion = documentVersionDao.createVersion(docId, user.getId());
-            Integer docVersionNo = documentVersion.getNo();
-
-            for (DocumentLabels labels:  metaDao.getLabels(docId, DocumentVersion.WORKING_VERSION_NO)) {
-                labels = labels.clone();
-                labels.setId(null);
-                labels.setDocVersionNo(docVersionNo);
-
-                metaDao.saveLabels(labels);
-            }
-
-    		if (meta.getDocumentType() == DocumentTypeDomainObject.TEXT_ID) {
-                for (ContentLoop loop: contentLoopDao.getLoops(docId, DocumentVersion.WORKING_VERSION_NO)) {
-                    loop = loop.clone();
-                    loop.setId(null);
-                    loop.setDocVersionNo(docVersionNo);
-
-                    contentLoopDao.saveLoop(loop);
-                }
-
-                for (TextDomainObject text: textDao.getTexts(docId, DocumentVersion.WORKING_VERSION_NO)) {
-                    text = text.clone();
-                    text.setId(null);
-                    text.setDocVersionNo(docVersionNo);
-
-                    textDao.saveText(text);
-                }
-
-                for (ImageDomainObject image: imageDao.getImages(docId, DocumentVersion.WORKING_VERSION_NO)) {
-                    image = image.clone();
-                    image.setId(null);
-                    image.setDocVersionNo(docVersionNo);
-
-                    imageDao.saveImage(image);
-                }
-
-                for (MenuDomainObject menu: menuDao.getMenus(docId, DocumentVersion.WORKING_VERSION_NO)) {
-                    menu = menu.clone();
-                    menu.setId(null);
-                    menu.setDocVersionNo(docVersionNo);
-
-                    menuDao.saveMenu(menu);
-                }
-    		} else if (meta.getDocumentType() == DocumentTypeDomainObject.FILE_ID) {
-
-            }
-
-            return documentVersion;
-    	} catch (RuntimeException e) {
-    		throw new DocumentSaveException(e);
-    	}
-    }    
 
 
 //    /**
@@ -339,7 +271,9 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument, Collection<DocumentLabels> labelsColl, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+    public void updateDocument(List<DocumentDomainObject> docs, DocumentDomainObject oldDocument, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+        DocumentDomainObject document = docs.get(0); 
+
         checkDocumentForSave(document);
 
         //document.loadAllLazilyLoaded();
@@ -362,15 +296,9 @@ public class DocumentSaver {
 
         document.accept(savingVisitor);
 
-        for (DocumentLabels labels: labelsColl) {
-            metaDao.deleteLabels(document.getId(), document.getVersion().getNo(), labels.getLanguage());
-
-            labels.setId(null);
-            labels.setDocId(document.getId());
-            labels.setDocVersionNo(document.getVersion().getNo());
-            metaDao.saveLabels(labels);
+        for (DocumentDomainObject doc: docs) {
+            doc.accept(savingVisitor);
         }
-
     }    
 
 //    private Integer saveNewDocument(UserDomainObject user, DocumentDomainObject document, boolean copying)

@@ -64,13 +64,12 @@ public abstract class DocumentPageFlow extends PageFlow {
     public static abstract class SaveDocumentCommand implements Serializable {
         
        /**
-        * Labels are ignored.
-        * 
         * @since 6.0
         */
-       public void saveDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user)
+       public void saveDocument(List<DocumentDomainObject> docs, UserDomainObject user)
                throws NoPermissionInternalException, DocumentSaveException {
-           saveDocument(document, user);
+
+           if (!docs.isEmpty()) saveDocument(docs.get(0), user);
        }
 
        public abstract void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException;

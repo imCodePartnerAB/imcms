@@ -266,19 +266,25 @@ public class MenuEditPage extends OkCancelPage {
         }
 
         @Override
-        public void saveDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user)
+        public void saveDocument(List<DocumentDomainObject> docs, UserDomainObject user)
                 throws NoPermissionInternalException, DocumentSaveException {
+            
             if ( null != savedDocument ) {
                 return;
             }
+            
             final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-            documentMapper.saveNewDocument( document, labels, user, false);
-            savedDocument = document ;
+
+            documentMapper.saveNewDocument(docs.get(0), user, false);
+
+            savedDocument = docs.get(0);
+
             if ( null == parentMenuIndex ) {
                 return;
             }
+
             MenuDomainObject menu = parentDocument.getMenu(parentMenuIndex.intValue());
-            menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(document)));
+            menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(savedDocument)));
             documentMapper.saveDocumentMenu(parentDocument, menu, user);
         }
 

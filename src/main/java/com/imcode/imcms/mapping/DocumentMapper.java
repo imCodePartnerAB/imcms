@@ -207,40 +207,22 @@ public class DocumentMapper implements DocumentGetter {
 
         return saveNewDocument(docs, user, copying);
     }
-    
+
 
     /**
      * Saves new document.
-     * 
+     *
      * Document's meta might be a copy of an existing document.
-     * 
-     * @param document
-     * @param labelsColl 
+     *
+     * @param docs
      * @param user
      * @param copying controls how document's permissions are saved.
      * @return saved doc id.
      * @throws DocumentSaveException
      * @throws NoPermissionToAddDocumentToMenuException
-     * 
+     *
      * @since 6.0
      */
-    public Integer saveNewDocument(DocumentDomainObject document, Collection<DocumentLabels> labelsColl, UserDomainObject user, boolean copying)
-            throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
-//
-//        if (document.getLanguage() == null) {
-//            document.setLanguage(Imcms.getI18nSupport().getDefaultLanguage());
-//        }
-//
-//        Integer docId = documentSaver.saveNewDocument(user, document, labelsColl, copying);
-//
-//        invalidateDocument(docId);
-//
-//        return docId;
-
-        return 0;
-    }
-
-
     public Integer saveNewDocument(List<DocumentDomainObject> docs, UserDomainObject user, boolean copying)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
@@ -254,22 +236,21 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Updates existing document.
      */
-    public void saveDocument(DocumentDomainObject document, final UserDomainObject user)
+    public void saveDocument(final DocumentDomainObject doc, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
         
-        Collection<DocumentLabels> labelsColl = new LinkedList<DocumentLabels>();
+        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
-        labelsColl.add(document.getLabels());
+        docs.add(doc);
 
-        saveDocument(document, labelsColl, user);
+        saveDocument(docs, user);
     }
 
 
     /**
-     * Updates existing document.
+     * Updates existing document(s).
      *
-     * @param doc document to update.
-     * @param labels labels for every language.
+     * @param docs documents to update.
      * @param user
      *
      * @throws DocumentSaveException
@@ -278,20 +259,15 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @since 6.0
      */
-    public void saveDocument(DocumentDomainObject doc, Collection<DocumentLabels> labels, UserDomainObject user)
+    public void saveDocument(List<DocumentDomainObject> docs, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
         try {
-            DocumentDomainObject oldDoc = documentLoaderCachingProxy.getCustomDocument(doc.getId(), doc.getVersion().getNo(), doc.getLanguage());
+            DocumentDomainObject doc = docs.get(0);
+            DocumentDomainObject oldDoc = getCustomDocument(doc.getId(), doc.getVersionNo());
 
-            if (oldDoc == null) {
-                throw new DocumentSaveException(String.format(
-                        "Document does not exists. Doc id: %s, doc version no: %s, doc language code: %s.",
-                        doc.getId(), doc.getVersion().getNo(), doc.getLanguage().getCode()));
-            }
-            
-            documentSaver.updateDocument(doc, oldDoc, labels, user);
+            documentSaver.updateDocument(docs, oldDoc, user);
     	} finally {
-    		invalidateDocument(doc);
+    		invalidateDocument(docs.get(0).getId());
     	}
     }    
 
@@ -333,20 +309,20 @@ public class DocumentMapper implements DocumentGetter {
     public DocumentVersion makeDocumentVersion(final Integer docId, final UserDomainObject user)
         throws DocumentSaveException {
 
-        Map<I18nLanguage, DocumentDomainObject> docMap = new HashMap<I18nLanguage, DocumentDomainObject>();
+        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
         for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
-            DocumentDomainObject doc =  documentLoaderCachingProxy.getCustomDocument(docId, DocumentVersion.WORKING_VERSION_NO, language);
-            docMap.put(language, doc);
+            DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDocument(docId, DocumentVersion.WORKING_VERSION_NO, language);
+            docs.add(doc);
         }
 
-        if (docMap.isEmpty()) {
+        if (docs.isEmpty()) {
             throw new IllegalArgumentException(String.format(
-                    "Unable to make a version. Source document does not exists: docId: %s.",
-                    docId, DocumentVersion.WORKING_VERSION_NO));
+                    "Unable to make a version. Source document does not exists: docId: %d.",
+                    docId));
         }
 
-        DocumentVersion version = documentSaver.makeDocumentVersion2(docId, docMap, user);
+        DocumentVersion version = documentSaver.makeDocumentVersion(docId, docs, user);
 
         invalidateDocument(docId);
 
@@ -869,10 +845,11 @@ public class DocumentMapper implements DocumentGetter {
             Imcms.getServices().getDocumentMapper().saveDocument(document, user);
         }
 
+        
         @Override
-        public void saveDocument(DocumentDomainObject document, Collection<DocumentLabels> labels, UserDomainObject user)
+        public void saveDocument(List<DocumentDomainObject> docs, UserDomainObject user)
                throws NoPermissionInternalException, DocumentSaveException {
-           Imcms.getServices().getDocumentMapper().saveDocument(document, labels, user);
+           Imcms.getServices().getDocumentMapper().saveDocument(docs, user);
         }
     }
 
@@ -881,7 +858,8 @@ public class DocumentMapper implements DocumentGetter {
      */
     public static class MakeDocumentVersionCommand extends DocumentPageFlow.SaveDocumentCommand {
 
-        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+        @Override
+        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().makeDocumentVersion(document.getId(), user);
         }
     }
@@ -898,7 +876,8 @@ public class DocumentMapper implements DocumentGetter {
             this.docVersionNo = docVersionNo; 
         }
 
-        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+        @Override
+        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().setDocumentDefaultVersion(document.getId(), docVersionNo, user);
         }
     }

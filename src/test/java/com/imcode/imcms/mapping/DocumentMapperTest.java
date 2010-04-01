@@ -158,43 +158,43 @@ public class DocumentMapperTest {
     }
 
 
-    @Test(enabled = true)//(dependsOnMethods = {"createDocumentOfTypeFromParent"})
-    public void addMenu() throws Exception {
-        TextDocumentDomainObject parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
-        DocumentDomainObject menuItemDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
-        List<DocumentLabels> labels = new LinkedList<DocumentLabels>();
-
-        for (I18nLanguage lang: i18nSupport.getLanguages()) {
-            DocumentLabels l = new DocumentLabels();
-
-            l.setHeadline(":headline in:" + lang.getCode());
-            l.setMenuImageURL(":url in:" + lang.getCode());
-            l.setMenuText(":menuText in:" + lang.getCode());
-        }
-        
-        Integer menuItemDocId =  docMapper.saveNewDocument(menuItemDoc, labels, admin, true);
-        DocumentReference docRef = docMapper.getDocumentReference(menuItemDoc);
-        
-        MenuDomainObject menu = Factory.createNextMenu(parentDoc, docRef);
-        Integer menuNo = menu.getNo();
-
-        docMapper.saveDocumentMenu(parentDoc, menu, admin);
-
-        parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
-
-
-        DocumentRequest docRequestInfo = new DocumentRequest.WorkingDocRequest(admin);
-        docRequestInfo.setLanguage(i18nSupport.getDefaultLanguage());
-        Imcms.setUserDocRequest(docRequestInfo);
-
-        menu = parentDoc.getMenu(menuNo);
-
-        assertNotNull(menu);
-        MenuItemDomainObject[] menuItems = menu.getMenuItems();
-
-        assertEquals(1, menuItems.length);
-        assertEquals(menuItemDocId.intValue(), menuItems[0].getDocumentReference().getDocumentId());
-    }
+//    @Test(enabled = true)//(dependsOnMethods = {"createDocumentOfTypeFromParent"})
+//    public void addMenu() throws Exception {
+//        TextDocumentDomainObject parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
+//        DocumentDomainObject menuItemDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
+//        List<DocumentLabels> labels = new LinkedList<DocumentLabels>();
+//
+//        for (I18nLanguage lang: i18nSupport.getLanguages()) {
+//            DocumentLabels l = new DocumentLabels();
+//
+//            l.setHeadline(":headline in:" + lang.getCode());
+//            l.setMenuImageURL(":url in:" + lang.getCode());
+//            l.setMenuText(":menuText in:" + lang.getCode());
+//        }
+//
+//        Integer menuItemDocId =  docMapper.saveNewDocument(menuItemDoc, labels, admin, true);
+//        DocumentReference docRef = docMapper.getDocumentReference(menuItemDoc);
+//
+//        MenuDomainObject menu = Factory.createNextMenu(parentDoc, docRef);
+//        Integer menuNo = menu.getNo();
+//
+//        docMapper.saveDocumentMenu(parentDoc, menu, admin);
+//
+//        parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
+//
+//
+//        DocumentRequest docRequestInfo = new DocumentRequest.WorkingDocRequest(admin);
+//        docRequestInfo.setLanguage(i18nSupport.getDefaultLanguage());
+//        Imcms.setUserDocRequest(docRequestInfo);
+//
+//        menu = parentDoc.getMenu(menuNo);
+//
+//        assertNotNull(menu);
+//        MenuItemDomainObject[] menuItems = menu.getMenuItems();
+//
+//        assertEquals(1, menuItems.length);
+//        assertEquals(menuItemDocId.intValue(), menuItems[0].getDocumentReference().getDocumentId());
+//    }
 
 
 //    @Test(enabled = true, dataProvider = "docCopyFlag")
