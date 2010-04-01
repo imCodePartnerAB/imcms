@@ -39,10 +39,6 @@
   (reset! base-dir (.getCanonicalFile (File. new-path))))
 
 
-(defn base-dir-path []
-  (.getCanonicalPath @base-dir))
-
-
 (defn- filesystem-node
   [relative-path check-fn]
   (let [node (File. @base-dir relative-path)]

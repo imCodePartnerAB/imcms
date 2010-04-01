@@ -460,6 +460,7 @@ ALTER TABLE doc_permission_sets
 CREATE TABLE __fileupload_docs (
   id int auto_increment PRIMARY KEY,
   meta_id int NOT NULL,
+  doc_version_no int NOT NULL,
   variant_name varchar(100) NOT NULL,
   filename varchar(255) NOT NULL,
   mime varchar(50) NOT NULL,
@@ -469,6 +470,7 @@ CREATE TABLE __fileupload_docs (
 
 INSERT INTO __fileupload_docs (
   meta_id,
+  doc_version_no,
   variant_name,
   filename,
   mime,
@@ -476,6 +478,7 @@ INSERT INTO __fileupload_docs (
   default_variant
 ) SELECT 
   meta_id,
+  0,
   variant_name,
   filename,
   mime,
@@ -487,7 +490,8 @@ DROP TABLE fileupload_docs;
 RENAME TABLE __fileupload_docs TO fileupload_docs;
 
 ALTER TABLE fileupload_docs
-  ADD UNIQUE INDEX ux__fileupload_docs__meta_id__variant_name (meta_id, variant_name),
+  ADD UNIQUE INDEX ux__fileupload_docs__meta_id__doc_version_no__variant_name (meta_id, doc_version_no, variant_name),
+  ADD FOREIGN KEY fk__fileupload_docs__meta_id__doc_version_no (meta_id, doc_version_no) references imcms_doc_version(doc_id, version_no),
   ADD FOREIGN KEY fk__fileupload_docs__meta(meta_id) REFERENCES meta(meta_id) ON DELETE CASCADE;
 
 

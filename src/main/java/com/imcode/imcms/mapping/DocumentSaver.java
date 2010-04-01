@@ -373,99 +373,152 @@ public class DocumentSaver {
 
     }    
 
-    private Integer saveNewDocument(UserDomainObject user, DocumentDomainObject document, boolean copying)
+//    private Integer saveNewDocument(UserDomainObject user, DocumentDomainObject document, boolean copying)
+//            throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+//
+//        checkDocumentForSave(document);
+//
+//        //document.loadAllLazilyLoaded();
+//
+//        documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
+//
+//        boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(document) && !copying;
+//        if (inheritRestrictedPermissions) {
+//            document.getPermissionSets().setRestricted1(document.getPermissionSetsForNewDocuments().getRestricted1());
+//            document.getPermissionSets().setRestricted2(document.getPermissionSetsForNewDocuments().getRestricted2());
+//        }
+//
+//        newUpdateDocumentRolePermissions(document, user, null);
+//
+//        // Update permissions
+//        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(document, user, null);
+//
+//        document.accept(new DocIdentityCleanerVisitor());
+//
+//        Meta meta = saveMeta(document);
+//        Integer docId = meta.getId();
+//
+//        metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
+//
+//        DocumentVersion version = documentVersionDao.createVersion(meta.getId(), user.getId());
+//        document.setVersion(version);
+//
+//        document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
+//
+//        return docId;
+//    }
+
+
+//    /**
+//     * @param docs
+//     * @param user
+//     * @return saved document id.
+//     * @throws NoPermissionToAddDocumentToMenuException
+//     * @throws DocumentSaveException
+//     */
+//    @Transactional
+//    public Integer copyDocument(List<DocumentDomainObject> docs, UserDomainObject user, String copyHeadlineSuffix)
+//            throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+//
+//        int docsCount = docs.size();
+//        DocumentDomainObject firstDoc = docs.get(0);
+//        List<DocumentDomainObject> restDocs = docsCount == 1
+//                ? new LinkedList<DocumentDomainObject>()
+//                : docs.subList(1, docsCount);
+//
+//
+//        for (DocumentDomainObject doc: docs) {
+//            DocumentLabels labels = doc.getLabels();
+//            labels.setHeadline(labels.getHeadline() + copyHeadlineSuffix);
+//            labelsColl.add(doc.getLabels());
+//        }
+//
+//
+//        // save meta and all labels
+//        Collection<DocumentLabels> labelsColl = new LinkedList<DocumentLabels>();
+//
+//        for (DocumentDomainObject doc: docs) {
+//            DocumentLabels labels = doc.getLabels();
+//            labels.setHeadline(labels.getHeadline() + copyHeadlineSuffix);
+//            labelsColl.add(doc.getLabels());
+//        }
+//
+//        Integer docId = saveNewDocument(user, firstDoc, labelsColl, true);
+//
+//        // save rest docs fields in case of a text document.
+//        int docsCount = docs.size();
+//        if (firstDoc.getDocumentTypeId() == DocumentTypeDomainObject.TEXT_ID && docsCount > 1) {
+//            DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
+//
+//            for (DocumentDomainObject doc: docs.subList(1, docsCount)) {
+//                doc.setId(docId);
+//                visitor.updateTextDocumentTexts((TextDocumentDomainObject) doc, null, user);
+//                visitor.updateTextDocumentImages((TextDocumentDomainObject) doc, null, user);
+//            }
+//        }
+//
+//        return docId;
+//    }
+
+
+//    @Transactional
+//    public Integer saveNewDocument(UserDomainObject user,
+//                                   DocumentDomainObject document, Collection<DocumentLabels> labelsColl, boolean copying)
+//            throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+//
+//        Integer docId = saveNewDocument(user, document, copying);
+//
+//        for (DocumentLabels l: labelsColl) {
+//            l.setId(null);
+//            l.setDocId(document.getId());
+//            l.setDocVersionNo(document.getVersion().getNo());
+//
+//            metaDao.saveLabels(l);
+//        }
+//
+//        return docId;
+//    }
+
+
+    @Transactional
+    public Integer saveNewDocument(List<DocumentDomainObject> docs, UserDomainObject user, boolean copying)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-        
-        checkDocumentForSave(document);
 
-        //document.loadAllLazilyLoaded();                
-        
-        documentMapper.setCreatedAndModifiedDatetimes(document, new Date());
+        DocumentDomainObject firstDoc = docs.get(0);
 
-        boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(document) && !copying;
+        checkDocumentForSave(firstDoc);
+
+        documentMapper.setCreatedAndModifiedDatetimes(firstDoc, new Date());
+
+        boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(firstDoc) && !copying;
         if (inheritRestrictedPermissions) {
-            document.getPermissionSets().setRestricted1(document.getPermissionSetsForNewDocuments().getRestricted1());
-            document.getPermissionSets().setRestricted2(document.getPermissionSetsForNewDocuments().getRestricted2());
+            firstDoc.getPermissionSets().setRestricted1(firstDoc.getPermissionSetsForNewDocuments().getRestricted1());
+            firstDoc.getPermissionSets().setRestricted2(firstDoc.getPermissionSetsForNewDocuments().getRestricted2());
         }
-        
-        newUpdateDocumentRolePermissions(document, user, null);
+
+        newUpdateDocumentRolePermissions(firstDoc, user, null);
 
         // Update permissions
-        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(document, user, null);
+        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(firstDoc, user, null);
 
-        document.accept(new DocIdentityCleanerVisitor());
+        // ensure meta is null.
+        firstDoc.getMeta().setId(null);
 
-        Meta meta = saveMeta(document);
+        Meta meta = saveMeta(firstDoc);
         Integer docId = meta.getId();
 
         metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
-        
+
         DocumentVersion version = documentVersionDao.createVersion(meta.getId(), user.getId());
-        document.setVersion(version);        
-                
-        document.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
-
-        return docId;
-    }
-
-
-    /**
-     * @param docMap
-     * @param user
-     * @return saved document id.
-     * @throws NoPermissionToAddDocumentToMenuException
-     * @throws DocumentSaveException
-     */
-    @Transactional
-    public Integer copyDocument(Map<I18nLanguage, DocumentDomainObject> docMap, UserDomainObject user, String copyHeadlineSuffix)
-            throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-
-        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>(docMap.values());
-
-        // save meta and all labels
-        Collection<DocumentLabels> labelsColl = new LinkedList<DocumentLabels>();
 
         for (DocumentDomainObject doc: docs) {
-            DocumentLabels labels = doc.getLabels();
-            labels.setHeadline(labels.getHeadline() + copyHeadlineSuffix);
-            labelsColl.add(doc.getLabels());
-        }
-
-        DocumentDomainObject firstDoc = docs.get(0);
-        Integer docId = saveNewDocument(user, firstDoc, labelsColl, true);
-
-        // save rest docs fields in case of a text document.
-        int docsCount = docs.size();
-        if (firstDoc.getDocumentTypeId() == DocumentTypeDomainObject.TEXT_ID && docsCount > 1) {
-            DocumentCreatingVisitor visitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
-
-            for (DocumentDomainObject doc: docs.subList(1, docsCount)) {
-                doc.setId(docId);
-                visitor.updateTextDocumentTexts((TextDocumentDomainObject) doc, null, user);
-                visitor.updateTextDocumentImages((TextDocumentDomainObject) doc, null, user);
-            }
+            doc.setMeta(meta);
+            doc.setVersion(version);
+            doc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
         }
 
         return docId;
-    }
-
-
-    @Transactional
-    public Integer saveNewDocument(UserDomainObject user,
-                         DocumentDomainObject document, Collection<DocumentLabels> labelsColl, boolean copying) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-
-        Integer docId = saveNewDocument(user, document, copying);
-
-        for (DocumentLabels l: labelsColl) {
-            l.setId(null);
-            l.setDocId(document.getId());
-            l.setDocVersionNo(document.getVersion().getNo());
-
-            metaDao.saveLabels(l);
-        }
-
-        return docId;
-    }
+    }    
     
     
     /**

@@ -190,7 +190,7 @@ public class DocumentMapper implements DocumentGetter {
      * Saves new document.
      * Document's meta might be a copy of an existing document.
      * 
-     * @param document
+     * @param doc
      * @param user
      * @param copying controls how document's permissions are saved.
      * @return saved document id.
@@ -199,14 +199,15 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @see #copyDocument(imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)
      */
-    public Integer saveNewDocument(final DocumentDomainObject document, final UserDomainObject user, boolean copying)
+    public Integer saveNewDocument(final DocumentDomainObject doc, final UserDomainObject user, boolean copying)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
-        Collection<DocumentLabels> labelsColl = new LinkedList<DocumentLabels>();
-        labelsColl.add(document.getLabels());
+        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
+        docs.add(doc);
 
-        return saveNewDocument(document, labelsColl, user, copying);
+        return saveNewDocument(docs, user, copying);
     }
+    
 
     /**
      * Saves new document.
@@ -225,17 +226,30 @@ public class DocumentMapper implements DocumentGetter {
      */
     public Integer saveNewDocument(DocumentDomainObject document, Collection<DocumentLabels> labelsColl, UserDomainObject user, boolean copying)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
+//
+//        if (document.getLanguage() == null) {
+//            document.setLanguage(Imcms.getI18nSupport().getDefaultLanguage());
+//        }
+//
+//        Integer docId = documentSaver.saveNewDocument(user, document, labelsColl, copying);
+//
+//        invalidateDocument(docId);
+//
+//        return docId;
 
-        if (document.getLanguage() == null) {
-            document.setLanguage(Imcms.getI18nSupport().getDefaultLanguage());
-        }
+        return 0;
+    }
 
-        Integer docId = documentSaver.saveNewDocument(user, document, labelsColl, copying);
+
+    public Integer saveNewDocument(List<DocumentDomainObject> docs, UserDomainObject user, boolean copying)
+            throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
+
+        Integer docId = documentSaver.saveNewDocument(docs, user, copying);
 
         invalidateDocument(docId);
-        
+
         return docId;
-    }
+    }    
 
     /**
      * Updates existing document.
@@ -526,63 +540,69 @@ public class DocumentMapper implements DocumentGetter {
         return documentSaver.getMetaDao().getMinDocumentId();
     }
 
+    
     /**
-     * Creates new working document based on existing document.
+     * Creates new document as a copy of an existing document.
      *
-     * @param document existing doc.
+     * Please note that provided document is not used as a new document prototype; it is used as a structure
+     * to pass existing doc identities (id, version, language) to the method.
+     *
+     * @param doc existing doc.
      * @param user
-     * @return
+     *
+     * @return working version of new saved document in original document's language.
+     *
      * @throws NoPermissionToAddDocumentToMenuException
      * @throws DocumentSaveException
      */
-    public DocumentDomainObject copyDocument(final DocumentDomainObject document, final UserDomainObject user)
+    public DocumentDomainObject copyDocument(final DocumentDomainObject doc, final UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        Integer docId = document.getId();
-        Integer docVersionNo = document.getVersion().getNo();
+        Integer docId = copyDocument(doc.getId(), doc.getVersionNo(), user);
 
-        return copyDocument(docId, docVersionNo, user);
+        return getWorkingDocument(docId, doc.getLanguage());
     }
 
 
     /**
-     * @return copied document in default language.
+     * @return new document id.
      * 
      * @since 6.0
-     * TODO: refactor - pass document along with labels, texts and images in case of text document.
      */
-    public DocumentDomainObject copyDocument(final Integer docId, final Integer docVersionNo, final UserDomainObject user)
+    public Integer copyDocument(final Integer docId, final Integer docVersionNo, final UserDomainObject user)
         throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        String copyHeadlineSuffix = imcmsServices.getAdminTemplate(COPY_HEADLINE_SUFFIX_TEMPLATE, user, null);
+        // todo: put into resource file.
+        String copyHeadlineSuffix = "(Copy/Kopia)";
 
-        Map<I18nLanguage, DocumentDomainObject> docMap = new HashMap<I18nLanguage, DocumentDomainObject>();
+        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
         for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
-            DocumentDomainObject doc =  documentLoaderCachingProxy.getCustomDocument(docId, docVersionNo, language);
+            DocumentDomainObject doc = getCustomDocument(docId, docVersionNo, language);
             if (doc != null) {
                 doc.setAlias(null);
                 makeDocumentLookNew(doc, user);
+                DocumentLabels labels = doc.getLabels();
+                labels.setHeadline(labels.getHeadline() + copyHeadlineSuffix);
 
+                // todo: ??? move to makeDocLookNew
                 doc.accept(new DocIdentityCleanerVisitor());
 
-                docMap.put(language, doc);
+                docs.add(doc);
             }
         }
 
-        if (docMap.isEmpty()) {
+        
+        if (docs.isEmpty()) {
             throw new IllegalArgumentException(String.format(
-                    "Unable to copy. Source document does not exists. DocId: %s, doc version no: %s.",
+                    "Unable to copy. Source document does not exists. DocId: %d, doc version no: %d.",
                     docId, docVersionNo));
         }
 
-        Integer copyDocId = documentSaver.copyDocument(docMap, user, copyHeadlineSuffix);
-
-
-        invalidateDocument(copyDocId);
-
-        return getDefaultDocument(copyDocId);        
+        
+        return saveNewDocument(docs, user, true);
     }
+    
 
     public List<DocumentDomainObject> getDocumentsWithPermissionsForRole(final RoleDomainObject role) {
     	

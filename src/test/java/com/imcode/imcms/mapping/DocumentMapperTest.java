@@ -4,10 +4,7 @@ import com.imcode.imcms.api.*;
 import com.imcode.imcms.util.Factory;
 
 import imcode.server.Imcms;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentReference;
-import imcode.server.document.DocumentTypeDomainObject;
-import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 
@@ -44,11 +41,124 @@ public class DocumentMapperTest {
         admin = Imcms.getServices().verifyUser("admin", "admin");
     }
 
+    
+    @Test(enabled = true, dataProvider = "docCopyFlag")
+    public void saveNewTextDocument(boolean copyFlag) throws Exception {
+        saveNewTextDocumentFn(copyFlag);
+    }
 
 
+    @Test(enabled = true, dataProvider = "docCopyFlag")
+    public void saveNewUrlDocument(boolean copyFlag) throws Exception {
+        saveNewUrlDocumentFn(copyFlag);
+    }
+
+
+    @Test(enabled = true, dataProvider = "docCopyFlag")
+    public void saveNewHtmlDocument(boolean copyFlag) throws Exception {
+        saveNewHtmlDocumentFn(copyFlag);
+    }
+
+
+    @Test(enabled = true, dataProvider = "docCopyFlag")
+    public void saveNewFileDocument(boolean copyFlag) throws Exception {
+        saveNewFileDocumentFn(copyFlag);
+    }
     
 
-    @Test(enabled = false)//(dependsOnMethods = {"createDocumentOfTypeFromParent"})
+    public Integer saveNewTextDocumentFn(boolean copyFlag) throws Exception {
+        DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
+        TextDocumentDomainObject newDoc = (TextDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
+
+        return docMapper.saveNewDocument(newDoc, admin, copyFlag);
+    }
+
+    
+    public Integer saveNewUrlDocumentFn(boolean copyFlag) throws Exception {
+        DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
+        UrlDocumentDomainObject newDoc = (UrlDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.URL_ID, parentDoc, admin);
+
+        return docMapper.saveNewDocument(newDoc, admin, copyFlag);
+    }
+
+
+    public Integer saveNewHtmlDocumentFn(boolean copyFlag) throws Exception {
+        DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
+        HtmlDocumentDomainObject newDoc = (HtmlDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.HTML_ID, parentDoc, admin);
+
+        return docMapper.saveNewDocument(newDoc, admin, copyFlag);
+    }    
+
+
+    public Integer saveNewFileDocumentFn(boolean copyFlag) throws Exception {
+        DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
+        FileDocumentDomainObject newDoc = (FileDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.FILE_ID, parentDoc, admin);
+        FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
+
+
+        file.setFilename("file-doc-dile.txt");
+        file.setMimeType("text");
+        file.setCreatedAsImage(false);
+
+        file.setInputStreamSource(new InputStreamSource() {
+            ByteArrayInputStream bin = new ByteArrayInputStream("test content".getBytes());
+
+            public InputStream getInputStream() throws IOException {
+                return bin;
+            }
+
+            public long getSize() throws IOException {
+                return bin.available();
+            }
+        });
+
+
+        newDoc.addFile("testFile", file);
+        Integer docId = docMapper.saveNewDocument(newDoc, admin, true);
+
+        DocumentVersion version = docMapper.makeDocumentVersion(docId, admin);
+        DocumentDomainObject doc = docMapper.getCustomDocument(docId, version.getNo());
+        docMapper.saveDocument(doc, admin);
+
+        return docId;
+    }    
+    
+
+    @Test(enabled = true)
+    public void saveTextDocument() throws Exception {
+        Integer docId = saveNewTextDocumentFn(false);
+        DocumentDomainObject doc = docMapper.getWorkingDocument(docId);
+
+        docMapper.saveDocument(doc, admin);
+    }
+
+    @Test(enabled = true)
+    public void saveHtmlDocument() throws Exception {
+        Integer docId = saveNewHtmlDocumentFn(false);
+        DocumentDomainObject doc = docMapper.getWorkingDocument(docId);
+
+        docMapper.saveDocument(doc, admin);
+    }
+
+    @Test(enabled = true)
+    public void saveUrlDocument() throws Exception {
+        Integer docId = saveNewUrlDocumentFn(false);
+        DocumentDomainObject doc = docMapper.getWorkingDocument(docId);
+
+        docMapper.saveDocument(doc, admin);
+    }
+
+    
+    @Test(enabled = true)
+    public void saveFileDocument() throws Exception {
+        Integer docId = saveNewFileDocumentFn(false);
+        DocumentDomainObject doc = docMapper.getWorkingDocument(docId);
+
+        docMapper.saveDocument(doc, admin);
+    }
+
+
+    @Test(enabled = true)//(dependsOnMethods = {"createDocumentOfTypeFromParent"})
     public void addMenu() throws Exception {
         TextDocumentDomainObject parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
         DocumentDomainObject menuItemDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
@@ -87,43 +197,64 @@ public class DocumentMapperTest {
     }
 
 
-    @Test(enabled = true, dataProvider = "docCopyFlag")
-    public void saveNewDocumentWithLabels(boolean copyFlag) throws Exception {
-        DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
-        DocumentDomainObject doc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
+//    @Test(enabled = true, dataProvider = "docCopyFlag")
+//    public void saveNewDocumentWithLabels(boolean copyFlag) throws Exception {
+//        DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
+//        DocumentDomainObject doc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
+//
+//        List<DocumentLabels> labels = new LinkedList<DocumentLabels>();
+//
+//        for (I18nLanguage lang: i18nSupport.getLanguages()) {
+//            DocumentLabels l = new DocumentLabels();
+//
+//            l.setHeadline(":headline in:" + lang.getCode());
+//            l.setMenuImageURL(":url in:" + lang.getCode());
+//            l.setMenuText(":menuText in:" + lang.getCode());
+//        }
+//
+//        docMapper.saveNewDocument(doc, labels, admin, copyFlag);
+//    }
 
-        List<DocumentLabels> labels = new LinkedList<DocumentLabels>();
-
-        for (I18nLanguage lang: i18nSupport.getLanguages()) {
-            DocumentLabels l = new DocumentLabels();
-
-            l.setHeadline(":headline in:" + lang.getCode());
-            l.setMenuImageURL(":url in:" + lang.getCode());
-            l.setMenuText(":menuText in:" + lang.getCode());
-        }
-
-        docMapper.saveNewDocument(doc, labels, admin, copyFlag);
-    }
 
 
-    @Test(enabled = true, dataProvider = "docCopyFlag")
-    public void saveNewDocumentWithoutLabels(boolean copyFlag) throws Exception {
-        TextDocumentDomainObject parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
-        TextDocumentDomainObject newDoc = (TextDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
 
-        Integer newDocId =  docMapper.saveNewDocument(newDoc, admin, copyFlag);
-    }
-
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void copyTextDocument() throws Exception {
-        TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
-        TextDocumentDomainObject docCopy = (TextDocumentDomainObject)docMapper.copyDocument(doc, admin);
+        Integer docId = saveNewTextDocumentFn(false);
+        TextDocumentDomainObject doc = (TextDocumentDomainObject)docMapper.getWorkingDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
 
-        assertEquals(doc.getLanguage(), docCopy.getLanguage());
-        // add more asserts
+        TextDocumentDomainObject docCopy = (TextDocumentDomainObject)docMapper.copyDocument(doc, admin);
     }
 
-    @Test(enabled = false, dataProvider = "contentInfo")
+
+    @Test(enabled = true)
+    public void copyHtmlsDocument() throws Exception {
+        Integer docId = saveNewHtmlDocumentFn(false);
+        HtmlDocumentDomainObject doc = (HtmlDocumentDomainObject)docMapper.getWorkingDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
+
+        HtmlDocumentDomainObject docCopy = (HtmlDocumentDomainObject)docMapper.copyDocument(doc, admin);
+    }
+
+
+    @Test(enabled = true)
+    public void copyUrlDocument() throws Exception {
+        Integer docId = saveNewUrlDocumentFn(false);
+        UrlDocumentDomainObject doc = (UrlDocumentDomainObject)docMapper.getWorkingDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
+
+        UrlDocumentDomainObject docCopy = (UrlDocumentDomainObject)docMapper.copyDocument(doc, admin);
+    }
+    
+
+    @Test(enabled = true)
+    public void copyFileDocument() throws Exception {
+        Integer docId = saveNewFileDocumentFn(false);
+        FileDocumentDomainObject doc = (FileDocumentDomainObject)docMapper.getWorkingDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
+
+        FileDocumentDomainObject docCopy = (FileDocumentDomainObject)docMapper.copyDocument(doc, admin);
+    }    
+    
+
+    @Test(enabled = true, dataProvider = "contentInfo")
     public void insertTextDocumentText(Integer contentLoopNo, Integer contentIndex) throws Exception {
         TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
         TextDomainObject text = Factory.createNextText(doc);
@@ -174,7 +305,7 @@ public class DocumentMapperTest {
     }
 
 
-    @Test(enabled = false, dataProvider = "contentInfo")
+    @Test(enabled = true, dataProvider = "contentInfo")
     public void insertTextDocumentImage(Integer contentLoopNo, Integer contentIndex) throws Exception {
         TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
         ImageDomainObject image = Factory.createNextImage(doc);
@@ -200,14 +331,7 @@ public class DocumentMapperTest {
     public void getDocument() {
         getMainWorkingDocumentInDefaultLanguage(true);
     }
-
-
-    @Test(enabled = true)
-    public void updateDocument() throws Exception {
-        DocumentDomainObject doc = getMainWorkingDocumentInDefaultLanguage(true);
-
-        docMapper.saveDocument(doc, admin);
-    }    
+    
 
     @Test(enabled = true)
     public void makeTextDocumentVersion() throws Exception {
@@ -227,39 +351,101 @@ public class DocumentMapperTest {
 
         assertNotNull(newVersionDoc);
     }
+
+
+    @Test(enabled = true)
+    public void makeHtmlDocumentVersion() throws Exception {
+        fail();
+    }
+
+
+    @Test(enabled = true)
+    public void makeUrlDocumentVersion() throws Exception {
+        fail();
+    }
+
+
+    @Test(enabled = true)
+    public void makeFileDocumentVersion() throws Exception {
+        fail();
+    }
+
+
+    @Test
+    public void getDocumentVersionInfo() throws Exception {
+        fail();
+    }
+
+    
+    @Test
+    public void saveTextDocumentText() throws Exception {
+        fail();
+    }
+
+
+    @Test
+    public void saveTextDocumentImage() throws Exception {
+        fail();
+    }
+
+
+    @Test
+    public void saveTextDocumentContentLoop() throws Exception {
+        fail();
+    }
     
 
     @Test
-    public void saveNewFileDocument() throws Exception {
-        DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
-        FileDocumentDomainObject fileDoc = (FileDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.FILE_ID, parentDoc, admin);
-        FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
-
-
-        file.setFilename("file-doc-dile.txt");
-        file.setMimeType("text");
-        file.setCreatedAsImage(false);
-
-        file.setInputStreamSource(new InputStreamSource() {
-            ByteArrayInputStream bin = new ByteArrayInputStream("test content".getBytes());
-
-            public InputStream getInputStream() throws IOException {
-                return bin;
-            }
-
-            public long getSize() throws IOException {
-                return bin.available();
-            }
-        });
-
-
-        fileDoc.addFile("testFile", file);
-        Integer docId = docMapper.saveNewDocument(fileDoc, admin, true);
-
-        DocumentVersion version = docMapper.makeDocumentVersion(docId, admin);
-        DocumentDomainObject doc = docMapper.getCustomDocument(docId, version.getNo());
-        docMapper.saveDocument(doc, admin);
+    public void setDocumentDefaultVersion() throws Exception {
+        fail();
     }
+
+    @Test
+    public void invalidateDocument() throws Exception {
+        fail();
+    }
+
+    @Test
+    public void getWorkingDocument() {
+        fail();
+    }
+
+
+    @Test
+    public void getDefaultDocument() {
+        fail();
+    }
+
+
+    @Test
+    public void getCustomDocument() {
+        fail();
+    }
+
+
+    @Test
+    public void deleteTextDocument() {
+        fail();
+    }
+
+
+    @Test
+    public void deleteHtmlDocument() {
+        fail();
+    }
+
+
+    @Test
+    public void deleteUrlDocument() {
+        fail();;
+    }
+
+
+    @Test
+    public void deleteFileDocument() {
+        fail();
+    }
+
 
     public TextDocumentDomainObject getMainWorkingDocumentInDefaultLanguage(boolean assertExists) {
         DocumentDomainObject doc = docMapper.getCustomDocument(1001, 0, i18nSupport.getDefaultLanguage());
