@@ -26,6 +26,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import imcode.server.document.DocumentPermissionSets;
+import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
+import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
@@ -308,6 +311,23 @@ public class Meta implements Serializable, Cloneable {
 	)
 	@Column(name = "value")
 	private Set<String> keywords = new HashSet<String>();
+    
+
+    /**
+     * Moved from DocumentDomainObject. 
+     */
+    @Transient
+    private DocumentPermissionSets permissionSets = new DocumentPermissionSets();
+
+    @Transient
+    private DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
+
+    @Transient
+    private RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
+
+    @Transient
+    private Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
+
 	
 	@Override
 	public Meta clone() {
@@ -326,6 +346,7 @@ public class Meta implements Serializable, Cloneable {
 			clone.properties = new HashMap<String, String>(properties);
 			clone.categoryIds = new HashSet<Integer>(categoryIds);
 
+            // todo: remove null check, add protection from null in setters.
 			if (keywords != null) {
 				clone.keywords = new HashSet<String>(keywords);
 			}
@@ -333,6 +354,18 @@ public class Meta implements Serializable, Cloneable {
 			if (languages != null) {
 				clone.keywords = new HashSet<String>(keywords);
 			}
+
+            if (permissionSets != null) {
+                clone.permissionSets = permissionSets.clone();
+            }
+
+            if (permissionSetsForNewDocuments != null) {
+                clone.permissionSetsForNewDocuments = permissionSetsForNewDocuments.clone();
+            }
+
+            if (roleIdToDocumentPermissionSetTypeMappings != null) {
+                clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
+            }
 			
 			return clone;
 		} catch (CloneNotSupportedException e) {
@@ -569,4 +602,48 @@ public class Meta implements Serializable, Cloneable {
     public void setLanguages(Set<I18nLanguage> languages) {
         this.languages = languages;
     }
+
+    // Transient properties
+    public DocumentPermissionSets getPermissionSets() {
+        return permissionSets;
+    }
+
+    public void setPermissionSets(DocumentPermissionSets permissionSets) {
+        this.permissionSets = permissionSets;
+    }
+
+    public DocumentPermissionSets getPermissionSetsForNewDocuments() {
+        return permissionSetsForNewDocuments;
+    }
+
+	public void setPermissionSetsForNew(DocumentPermissionSets permissionSetsForNew) {
+		this.permissionSetsForNewDocuments = permissionSetsForNew;
+	}
+
+    public void setPermissionSetsForNewDocuments(DocumentPermissionSets permissionSetsForNewDocuments) {
+        this.permissionSetsForNewDocuments = permissionSetsForNewDocuments;
+    }
+
+    public RoleIdToDocumentPermissionSetTypeMappings getRoleIdToDocumentPermissionSetTypeMappings() {
+        return roleIdToDocumentPermissionSetTypeMappings;
+    }
+
+    public void setRoleIdToDocumentPermissionSetTypeMappings(RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
+        this.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings;
+    }
+
+	public void setRoleIdsMappedToDocumentPermissionSetTypes(RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
+		this.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
+	}
+
+	public Document.PublicationStatus getPublicationStatus() {
+		return publicationStatus;
+	}
+
+	public void setPublicationStatus(Document.PublicationStatus status) {
+		if (null == status) {
+			throw new NullArgumentException("status");
+		}
+		publicationStatus = status;
+	}    
 }

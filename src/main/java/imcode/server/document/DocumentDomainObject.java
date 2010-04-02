@@ -23,7 +23,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     
 	public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS = "imcms.document.alias";
 
-	private Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
+	//private Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
     
 	private static Logger log = Logger.getLogger(DocumentDomainObject.class);
 	
@@ -38,13 +38,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private DocumentLabels labels = new DocumentLabels();
 
-    private DocumentPermissionSets permissionSets = new DocumentPermissionSets();
-
-    private DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
-
-    private RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
-
-
+//    private DocumentPermissionSets permissionSets = new DocumentPermissionSets();
+//
+//    private DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
+//
+//    private RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
+//
+//
 	@Override
 	public DocumentDomainObject clone() {
 		DocumentDomainObject clone;
@@ -67,17 +67,17 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             clone.version = version.clone();
         }
 
-        if (permissionSets != null) {
-            clone.permissionSets = permissionSets.clone();
-        }
-
-        if (permissionSetsForNewDocuments != null) {
-            clone.permissionSetsForNewDocuments = permissionSetsForNewDocuments.clone();
-        }
-
-        if (roleIdToDocumentPermissionSetTypeMappings != null) {
-            clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
-        }
+//        if (permissionSets != null) {
+//            clone.permissionSets = permissionSets.clone();
+//        }
+//
+//        if (permissionSetsForNewDocuments != null) {
+//            clone.permissionSetsForNewDocuments = permissionSetsForNewDocuments.clone();
+//        }
+//
+//        if (roleIdToDocumentPermissionSetTypeMappings != null) {
+//            clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
+//        }
                 
 		return clone;
 	}
@@ -87,13 +87,13 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      * Copies non-meta attributes from other doc.
      * @param doc
      */
-    public void copyAttributesFrom(DocumentDomainObject doc) {
-        setLabels(doc.getLabels().clone());
-        setLanguage(doc.getLanguage().clone());
-        setPermissionSets(doc.getPermissionSets().clone());
-        setPermissionSetsForNew(doc.getPermissionSetsForNewDocuments().clone());
-        setRoleIdsMappedToDocumentPermissionSetTypes(doc.getRolePermissionMappings().clone());
-    }
+//    public void copyAttributesFrom(DocumentDomainObject doc) {
+//        setLabels(doc.getLabels().clone());
+//        setLanguage(doc.getLanguage().clone());
+//        setPermissionSets(doc.getPermissionSets().clone());
+//        setPermissionSetsForNew(doc.getPermissionSetsForNewDocuments().clone());
+//        setRoleIdsMappedToDocumentPermissionSetTypes(doc.getRolePermissionMappings().clone());
+//    }
 	
 	/**
 	 * Returns this document's version.
@@ -302,23 +302,19 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	private RoleIdToDocumentPermissionSetTypeMappings getRolePermissionMappings() {
-		return roleIdToDocumentPermissionSetTypeMappings;
+		return meta.getRoleIdToDocumentPermissionSetTypeMappings();
 	}
 
-	public void setRoleIdsMappedToDocumentPermissionSetTypes(
-            RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
-		this.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
+	public void setRoleIdsMappedToDocumentPermissionSetTypes(RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
+		meta.setRoleIdsMappedToDocumentPermissionSetTypes(roleIdToDocumentPermissionSetTypeMappings);
 	}
 
 	public Document.PublicationStatus getPublicationStatus() {
-		return publicationStatus;
+		return meta.getPublicationStatus();
 	}
 
 	public void setPublicationStatus(Document.PublicationStatus status) {
-		if (null == status) {
-			throw new NullArgumentException("status");
-		}
-		publicationStatus = status;
+		meta.setPublicationStatus(status);
 	}
 
 	public String getTarget() {
@@ -437,7 +433,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 	private boolean isPublishedAtTime(Date date) {
 		boolean statusIsApproved = Document.PublicationStatus.APPROVED
-				.equals(getPublicationStatus());
+				.equals(meta.getPublicationStatus());
 		return statusIsApproved && publicationHasStartedAtTime(date)
 				&& !publicationHasEndedAtTime(date);
 	}
@@ -455,11 +451,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public DocumentPermissionSets getPermissionSets() {
-		return permissionSets;
+		return meta.getPermissionSets();
 	}
 
 	public DocumentPermissionSets getPermissionSetsForNewDocuments() {
-		return permissionSetsForNewDocuments;
+		return meta.getPermissionSetsForNewDocuments();
 	}
 
 	public abstract void accept(DocumentVisitor documentVisitor);
@@ -470,7 +466,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 	LifeCyclePhase getLifeCyclePhaseAtTime(Date time) {
 		LifeCyclePhase lifeCyclePhase;
-		Document.PublicationStatus publicationStatus = getPublicationStatus();
+		Document.PublicationStatus publicationStatus = meta.getPublicationStatus();
 		if (Document.PublicationStatus.NEW.equals(publicationStatus)) {
 			lifeCyclePhase = LifeCyclePhase.NEW;
 		} else if (Document.PublicationStatus.DISAPPROVED
@@ -497,12 +493,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public void setPermissionSets(DocumentPermissionSets permissionSets) {
-		this.permissionSets = permissionSets;
+		meta.setPermissionSets(permissionSets);
 	}
 
-	public void setPermissionSetsForNew(
-			DocumentPermissionSets permissionSetsForNew) {
-		this.permissionSetsForNewDocuments = permissionSetsForNew;
+	public void setPermissionSetsForNew(DocumentPermissionSets permissionSetsForNew) {
+		meta.setPermissionSetsForNew(permissionSetsForNew);
 	}
 
 	public String getAlias() {

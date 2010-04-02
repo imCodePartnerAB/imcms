@@ -42,7 +42,20 @@ public class DocumentLoader {
      * @return
      */
     public Meta loadMeta(Integer docId) {
-       return metaDao.getMeta(docId);
+        Meta meta = metaDao.getMeta(docId);
+
+        if (meta != null) {
+            //document.setActualModifiedDatetime(meta.getModifiedDatetime());
+
+            Document.PublicationStatus publicationStatus = publicationStatusFromInt(meta.getPublicationStatusInt());
+            meta.setPublicationStatus(publicationStatus);
+
+            initRoleIdToPermissionSetIdMap(meta);
+            initDocumentsPermissionSets(meta);
+            initDocumentsPermissionSetsForNew(meta);            
+        }
+
+        return meta;
     }
 
     /**
@@ -63,22 +76,11 @@ public class DocumentLoader {
         DocumentLabels labels = metaDao.getLabels(meta.getId(), version.getNo(), language);
 		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
-        document.setId(meta.getId());
         document.setMeta(meta);
         document.setLanguage(language);
         document.setLabels(labels);
         
         document.setVersion(version);
-		
-		document.setActualModifiedDatetime(meta.getModifiedDatetime());
-        
-        Document.PublicationStatus publicationStatus = publicationStatusFromInt(
-        		meta.getPublicationStatusInt());            
-        document.setPublicationStatus(publicationStatus);
-                
-        initRoleIdToPermissionSetIdMap(document, meta);
-        initDocumentsPermissionSets(document, meta);
-        initDocumentsPermissionSetsForNew(document, meta);            
         
         return document;
     }
@@ -135,7 +137,7 @@ public class DocumentLoader {
     }
     
     // Moved from  DocumentInitializer.initDocuments
-    private void initRoleIdToPermissionSetIdMap(DocumentDomainObject document, Meta meta) {
+    private void initRoleIdToPermissionSetIdMap(Meta meta) {
         RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings = 
         	new RoleIdToDocumentPermissionSetTypeMappings();
         
@@ -145,22 +147,22 @@ public class DocumentLoader {
         			DocumentPermissionSetTypeDomainObject.fromInt(roleIdToPermissionSetId.getValue()));
         }
         
-        document.setRoleIdsMappedToDocumentPermissionSetTypes(rolePermissionMappings);    	
+        meta.setRoleIdsMappedToDocumentPermissionSetTypes(rolePermissionMappings);    	
     }
     
-    private void initDocumentsPermissionSets(DocumentDomainObject document, Meta meta) {
+    private void initDocumentsPermissionSets(Meta meta) {
     	DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
     			meta.getPermissionSetBitsMap(), meta.getPermisionSetEx());
     	
-    	document.setPermissionSets(permissionSets);
+    	meta.setPermissionSets(permissionSets);
     }
     
     
-    private void initDocumentsPermissionSetsForNew(DocumentDomainObject document, Meta meta) {
+    private void initDocumentsPermissionSetsForNew(Meta meta) {
     	DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
     			meta.getPermissionSetBitsForNewMap(), meta.getPermisionSetExForNew());
     	
-    	document.setPermissionSetsForNew(permissionSets);
+    	meta.setPermissionSetsForNew(permissionSets);
     }
     
     

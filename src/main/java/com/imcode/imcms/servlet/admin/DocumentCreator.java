@@ -29,6 +29,12 @@ import com.imcode.imcms.flow.EditUrlDocumentPageFlow;
 import com.imcode.imcms.flow.PageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
 
+/**
+ * New documents page flow factory.
+ *
+ * @see com.imcode.imcms.servlet.admin.MenuEditPage
+ * @see com.imcode.imcms.servlet.superadmin.AdminManager
+ */
 public class DocumentCreator {
 
     ServletContext servletContext ;
