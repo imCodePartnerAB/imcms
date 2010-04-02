@@ -92,29 +92,21 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
     private boolean adminButtonsHidden;
 
-    /** Document labels. */
-    private Map<I18nLanguage, DocumentLabels> labelsMap = new HashMap<I18nLanguage, DocumentLabels>();
-
     /** Document languages enabled/disabled states. */
     private Map<I18nLanguage, Boolean> languagesStates = new HashMap<I18nLanguage, Boolean>();
 
+    private Map<I18nLanguage, DocumentDomainObject> docs = new HashMap<I18nLanguage, DocumentDomainObject>();
 
-    public EditDocumentInformationPageFlow( DocumentDomainObject document, DispatchCommand returnCommand,
-                                            SaveDocumentCommand saveDocumentCommand ) {
-        super( document, returnCommand, saveDocumentCommand );
+
+    public EditDocumentInformationPageFlow(DocumentDomainObject document, DispatchCommand returnCommand,
+                                                SaveDocumentCommand saveDocumentCommand ) {
+        
+        super(document, returnCommand, saveDocumentCommand);
 
         Set<I18nLanguage> languages = new HashSet(Imcms.getI18nSupport().getLanguages());
 
         for (I18nLanguage language: languages) {
             languagesStates.put(language, false);
-
-            DocumentLabels labels = new DocumentLabels();
-            labels.setLanguage(language);
-            labels.setMenuImageURL("");
-            labels.setHeadline("");
-            labels.setMenuText("");
-
-            labelsMap.put(language, labels);
         }
 
         languagesStates.put(Imcms.getI18nSupport().getDefaultLanguage(), true);
@@ -126,10 +118,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
             for (I18nLanguage language: document.getMeta().getLanguages()) {
                 languagesStates.put(language, true);    
-            }
-
-            for (DocumentLabels labels: metaDao.getLabels(docId, document.getVersion().getNo())) {
-                labelsMap.put(labels.getLanguage(), labels);
             }
         }
     }
@@ -262,7 +250,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
     private void dispatchToDocumentInformationPage( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         DocumentInformationPage documentInformationPage = new DocumentInformationPage(getDocument(), adminButtonsHidden, errors);
-        documentInformationPage.setLabelsMap(labelsMap);
         documentInformationPage.setLanguagesStates(languagesStates);
         documentInformationPage.forward( request, response );
     }
@@ -284,21 +271,19 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         final CategoryMapper categoryMapper = service.getCategoryMapper();
         final DocumentMapper documentMapper = service.getDocumentMapper();
         
-        Meta meta = document.getMeta();
+        String headline = request.getParameter(REQUEST_PARAMETER__HEADLINE);
+        String menuText = request.getParameter(REQUEST_PARAMETER__MENUTEXT);
+        String imageURL = request.getParameter(REQUEST_PARAMETER__IMAGE);
 
-        for (DocumentLabels labels: labelsMap.values()) {
-        	String suffix = "_" + labels.getLanguage().getCode();
-            String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE + suffix);
-            String menuText = request.getParameter( REQUEST_PARAMETER__MENUTEXT + suffix);
-            String imageURL = request.getParameter( REQUEST_PARAMETER__IMAGE + suffix);           	
+        document.setHeadline(headline);
+        document.setMenuText(menuText);
+        document.setMenuImage(imageURL);
+
+        for (Map.Entry<I18nLanguage, Boolean> state: languagesStates.entrySet()) {
+        	String suffix = "_" + state.getKey().getCode();         	
             boolean enabled = request.getParameter(REQUEST_PARAMETER__ENABLED_I18N + suffix) != null;
             
-            labels.setHeadline(headline);
-            labels.setMenuText(menuText);
-
-            labels.setMenuImageURL(imageURL);
-
-            languagesStates.put(labels.getLanguage(), enabled);
+            state.setValue(enabled);
         }
 
 
@@ -312,11 +297,11 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             keywords.add(keyword);
         }
 
-        meta.setKeywords(keywords);
+        document.setKeywords(keywords);
                         
         String missingI18nShowRule = request.getParameter(REQUEST_PARAMETER__MISSING_I18N_SHOW_RULE); 
         
-        meta.setDisabledLanguageShowSetting(Meta.DisabledLanguageShowSetting.valueOf(missingI18nShowRule));
+        document.getMeta().setDisabledLanguageShowSetting(Meta.DisabledLanguageShowSetting.valueOf(missingI18nShowRule));
         
         
         String status = request.getParameter( REQUEST_PARAMETER__STATUS );
@@ -478,7 +463,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         private Map<I18nLanguage, Boolean> languagesStates;
         private boolean adminButtonsHidden;
         private Set errors;
-        private Map<I18nLanguage, DocumentLabels> labelsMap;
 
         public DocumentInformationPage( DocumentDomainObject document, boolean adminButtonsHidden, Set errors ) {
             this.document = document;
@@ -510,14 +494,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             return errors;
         }
 
-        public Map<I18nLanguage, DocumentLabels> getLabelsMap() {
-            return labelsMap;
-        }
-
-        public void setLabelsMap(Map<I18nLanguage, DocumentLabels> labelsMap) {
-            this.labelsMap = labelsMap;
-        }
-
         public Map<I18nLanguage, Boolean> getLanguagesStates() {
             return languagesStates;
         }
@@ -525,40 +501,5 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         public void setLanguagesStates(Map<I18nLanguage, Boolean> languagesStates) {
             this.languagesStates = languagesStates;
         }
-    }
-
-
-    /**
-     * Overloaded version encounters labels.
-     * 
-     * @param request
-     */
-    @Override
-    protected synchronized void saveDocument( HttpServletRequest request ) {
-        try {
-            Collection<I18nLanguage> enabledLanguages = new LinkedList<I18nLanguage>();
-            for (Map.Entry<I18nLanguage, Boolean> state: languagesStates.entrySet()) {
-                if (state.getValue()) {
-                    enabledLanguages.add(state.getKey());
-                }
-            }
-
-            Set<I18nLanguage> metaLanguages = document.getMeta().getLanguages();
-
-            metaLanguages.clear();
-            metaLanguages.addAll(enabledLanguages);
-
-            saveDocumentCommand.saveDocument(getDocument(), labelsMap.values(), Utility.getLoggedOnUser( request ) );
-        } catch ( NoPermissionToEditDocumentException e ) {
-            throw new ShouldHaveCheckedPermissionsEarlierException(e);
-        } catch ( NoPermissionToAddDocumentToMenuException e ) {
-            throw new ConcurrentDocumentModificationException(e);
-        } catch (DocumentSaveException e) {
-            throw new UnhandledException(e);
-        }
-    }
-
-    public Collection<DocumentLabels> getLabels() {
-        return labelsMap.values();
     }
 }

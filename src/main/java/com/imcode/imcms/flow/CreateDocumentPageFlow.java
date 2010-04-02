@@ -36,10 +36,6 @@ public abstract class CreateDocumentPageFlow extends DocumentPageFlow {
         return editDocumentInformationPageFlow.getDocument();
     }
 
-    public Collection<DocumentLabels> getLabels() {
-        return editDocumentInformationPageFlow.getLabels();
-    }
-
     protected void dispatchFromPage( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {
         editDocumentInformationPageFlow.dispatchFromEditPage( request, response, page );
         if ( !response.isCommitted() ) {
@@ -68,18 +64,4 @@ public abstract class CreateDocumentPageFlow extends DocumentPageFlow {
 
     protected abstract void dispatchOkFromDocumentInformation( HttpServletRequest request,
                                                                HttpServletResponse response ) throws IOException, ServletException;
-
-    @Override
-    protected synchronized void saveDocument( HttpServletRequest request ) {
-        try {
-            saveDocumentCommand.saveDocument( getDocument(), getLabels(), Utility.getLoggedOnUser( request ) );
-        } catch ( NoPermissionToEditDocumentException e ) {
-            throw new ShouldHaveCheckedPermissionsEarlierException(e);
-        } catch ( NoPermissionToAddDocumentToMenuException e ) {
-            throw new ConcurrentDocumentModificationException(e);
-        } catch (DocumentSaveException e) {
-            throw new UnhandledException(e);
-        }
-    }
-
 }

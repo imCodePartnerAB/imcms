@@ -621,13 +621,7 @@ public class AdminManager extends HttpServlet {
         @Override
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveNewDocument( document, user, false);
-        }
-
-        @Override
-        public void saveDocument(List<DocumentDomainObject> docs, UserDomainObject user)
-               throws NoPermissionInternalException, DocumentSaveException {
-           Imcms.getServices().getDocumentMapper().saveNewDocument(docs, user, false);
-        }        
+        }       
     }
 
     private class ShowRecentChangesPageCommand implements DispatchCommand {

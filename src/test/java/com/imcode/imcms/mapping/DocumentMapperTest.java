@@ -353,6 +353,12 @@ public class DocumentMapperTest {
     }
 
 
+    @Test
+    public void saveDocumentContent() {
+        fail();
+    }
+
+
     @Test(enabled = true)
     public void makeHtmlDocumentVersion() throws Exception {
         fail();

@@ -1,5 +1,6 @@
 package com.imcode.imcms.flow;
 
+import com.imcode.imcms.api.Meta;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -31,8 +32,7 @@ public abstract class DocumentPageFlow extends PageFlow {
 
     protected final DocumentPageFlow.SaveDocumentCommand saveDocumentCommand;
 
-    protected DocumentPageFlow( DispatchCommand returnCommand,
-                                SaveDocumentCommand saveDocumentCommand ) {
+    protected DocumentPageFlow(DispatchCommand returnCommand, SaveDocumentCommand saveDocumentCommand ) {
         super( returnCommand );
         this.saveDocumentCommand = saveDocumentCommand;
     }
@@ -62,16 +62,7 @@ public abstract class DocumentPageFlow extends PageFlow {
 
 
     public static abstract class SaveDocumentCommand implements Serializable {
-        
-       /**
-        * @since 6.0
-        */
-       public void saveDocument(List<DocumentDomainObject> docs, UserDomainObject user)
-               throws NoPermissionInternalException, DocumentSaveException {
-
-           if (!docs.isEmpty()) saveDocument(docs.get(0), user);
-       }
-
-       public abstract void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException;
+       public abstract void saveDocument(DocumentDomainObject document, UserDomainObject user)
+               throws NoPermissionInternalException, DocumentSaveException;
     }
 }

@@ -115,6 +115,7 @@ public class DocumentSaver {
 
         storingVisitor.saveTextDocumentImage(doc, image, user);
     }
+    
 
     /**
      * Creates content loop if item references non-saved enclosing content loop.
@@ -179,14 +180,14 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     @Transactional
-    public DocumentVersion makeDocumentVersion(final Integer docId, List<DocumentDomainObject> docs, UserDomainObject user)
+    public DocumentVersion makeDocumentVersion(Meta meta, Map<I18nLanguage, DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        DocumentVersion documentVersion = documentVersionDao.createVersion(docId, user.getId());
+        DocumentVersion documentVersion = documentVersionDao.createVersion(meta.getId(), user.getId());
 
         DocumentVersionCreationVisitor visitor = new DocumentVersionCreationVisitor(documentMapper.getImcmsServices(), user);
 
-        for (DocumentDomainObject doc: docs) {
+        for (DocumentDomainObject doc: docs.values()) {
             doc.accept(new DocIdentityCleanerVisitor());
             
             DocumentLabels labels = doc.getLabels();
@@ -271,9 +272,7 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void updateDocument(List<DocumentDomainObject> docs, DocumentDomainObject oldDocument, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-        DocumentDomainObject document = docs.get(0); 
-
+    public void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(document);
 
         //document.loadAllLazilyLoaded();
@@ -296,9 +295,7 @@ public class DocumentSaver {
 
         document.accept(savingVisitor);
 
-        for (DocumentDomainObject doc: docs) {
-            doc.accept(savingVisitor);
-        }
+        document.accept(savingVisitor);
     }    
 
 //    private Integer saveNewDocument(UserDomainObject user, DocumentDomainObject document, boolean copying)
@@ -408,21 +405,16 @@ public class DocumentSaver {
 //    }
 
 
+
     @Transactional
-    public Integer saveNewDocument(List<DocumentDomainObject> docs, UserDomainObject user, boolean copying)
+    public Integer copyDocument(Meta meta, Map<I18nLanguage, DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        DocumentDomainObject firstDoc = docs.get(0);
+        DocumentDomainObject firstDoc = docs.values().iterator().next();
 
         checkDocumentForSave(firstDoc);
 
         documentMapper.setCreatedAndModifiedDatetimes(firstDoc, new Date());
-
-        boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(firstDoc) && !copying;
-        if (inheritRestrictedPermissions) {
-            firstDoc.getPermissionSets().setRestricted1(firstDoc.getPermissionSetsForNewDocuments().getRestricted1());
-            firstDoc.getPermissionSets().setRestricted2(firstDoc.getPermissionSetsForNewDocuments().getRestricted2());
-        }
 
         newUpdateDocumentRolePermissions(firstDoc, user, null);
 
@@ -432,18 +424,55 @@ public class DocumentSaver {
         // ensure meta is null.
         firstDoc.getMeta().setId(null);
 
-        Meta meta = saveMeta(firstDoc);
-        Integer docId = meta.getId();
+        Meta newMeta = saveMeta(firstDoc);
+        Integer docId = newMeta.getId();
 
         metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
 
-        DocumentVersion version = documentVersionDao.createVersion(meta.getId(), user.getId());
+        DocumentVersion version = documentVersionDao.createVersion(newMeta.getId(), user.getId());
 
-        for (DocumentDomainObject doc: docs) {
-            doc.setMeta(meta);
+        for (DocumentDomainObject doc: docs.values()) {
+            doc.setMeta(newMeta);
             doc.setVersion(version);
             doc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
         }
+
+        return docId;
+    }
+
+    
+    @Transactional
+    public Integer saveNewDocument(DocumentDomainObject doc, UserDomainObject user, boolean copying)
+            throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+
+        checkDocumentForSave(doc);
+
+        documentMapper.setCreatedAndModifiedDatetimes(doc, new Date());
+
+        boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(doc) && !copying;
+        if (inheritRestrictedPermissions) {
+            doc.getPermissionSets().setRestricted1(doc.getPermissionSetsForNewDocuments().getRestricted1());
+            doc.getPermissionSets().setRestricted2(doc.getPermissionSetsForNewDocuments().getRestricted2());
+        }
+
+        newUpdateDocumentRolePermissions(doc, user, null);
+
+        // Update permissions
+        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(doc, user, null);
+
+        // ensure meta is null.
+        doc.getMeta().setId(null);
+
+        Meta newMeta = saveMeta(doc);
+        Integer docId = newMeta.getId();
+
+        metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
+
+        DocumentVersion version = documentVersionDao.createVersion(newMeta.getId(), user.getId());
+
+        doc.setMeta(newMeta);
+        doc.setVersion(version);
+        doc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
 
         return docId;
     }    
@@ -455,7 +484,7 @@ public class DocumentSaver {
     private Meta saveMeta(DocumentDomainObject document) {
     	Meta meta = document.getMeta();
     	
-    	meta.setPublicationStatusInt(document.getPublicationStatus().asInt());
+    	//meta.setPublicationStatusInt(document.getPublicationStatus().asInt());
     	
     	if (meta.getId() == null) {
         	meta.setDocumentType(document.getDocumentTypeId());

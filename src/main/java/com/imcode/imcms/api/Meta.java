@@ -138,6 +138,7 @@ public class Meta implements Serializable, Cloneable {
 	// For processing after load:
 	// Discrimination column - from old code:
 	// DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(permissionData);
+    // todo: rename to documentTypeId
 	private Integer documentType;
 	
 	// CHECKED	
