@@ -194,7 +194,7 @@ public class DocumentMapper implements DocumentGetter {
      * 
      * @param doc
      * @param user
-     * @param copying controls how document's permissions are saved.
+     * @param copying flag controls document's permissions inheritance.
      * @return saved document id.
      * @throws DocumentSaveException
      * @throws NoPermissionToAddDocumentToMenuException
@@ -203,7 +203,12 @@ public class DocumentMapper implements DocumentGetter {
      */
     public Integer saveNewDocument(final DocumentDomainObject doc, final UserDomainObject user, boolean copying)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
-        return saveNewDocument(doc, user, copying);
+
+        Integer docId = documentSaver.saveNewDocument(doc, user, copying);
+
+        invalidateDocument(docId);
+
+        return docId;
     }
 
 
@@ -236,7 +241,14 @@ public class DocumentMapper implements DocumentGetter {
      */
     public void saveDocument(final DocumentDomainObject doc, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {        
-        saveDocument(doc, user);
+        try {
+            // todo: old meta.
+            DocumentDomainObject oldDoc = getCustomDocument(doc.getId(), doc.getVersionNo());
+
+            documentSaver.updateDocument(doc, oldDoc, user);
+    	} finally {
+    		invalidateDocument(doc.getId());
+    	}
     }
 
 
@@ -308,7 +320,7 @@ public class DocumentMapper implements DocumentGetter {
 
         Map<I18nLanguage, DocumentDomainObject> docs = new HashMap<I18nLanguage, DocumentDomainObject>();
 
-        for (I18nLanguage language: meta.getLanguages()) {
+        for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
             DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDocument(docId, DocumentVersion.WORKING_VERSION_NO, language);
             docs.put(language, doc);
         }
@@ -552,7 +564,7 @@ public class DocumentMapper implements DocumentGetter {
 
         Map<I18nLanguage, DocumentDomainObject> docs = new HashMap<I18nLanguage, DocumentDomainObject>();
 
-        for (I18nLanguage language: meta.getLanguages()) {
+        for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
             DocumentDomainObject doc = getCustomDocument(docId, docVersionNo, language);
             if (doc != null) {
                 doc.setAlias(null);

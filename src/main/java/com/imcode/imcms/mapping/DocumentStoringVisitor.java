@@ -108,7 +108,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         Integer docVersionNo = textDocument.getVersion().getNo();
 
         textDao.deleteTexts(docId, docVersionNo);
-        textDao.flush();
+        //textDao.flush();
 
         for (TextDomainObject text: textDocument.getTexts().values()) {
             saveTextDocumentText(textDocument, text, user);
@@ -134,7 +134,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         
         // delete all loops for meta and version
         dao.deleteLoops(metaId, documentVersionNumber);
-        dao.flush();
+        //dao.flush();
         
         for (ContentLoop loop: textDocument.getContentLoops().values()) {
             loop.setId(null);
@@ -197,7 +197,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         Integer docVersionNo = doc.getVersion().getNo();
 
         imageDao.deleteImages(docId, docVersionNo);
-        imageDao.flush();
+        //imageDao.flush();
 
         for (ImageDomainObject image: doc.getImages().values()) {
             saveTextDocumentImage(doc, image, user);
@@ -239,6 +239,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     // must be executed within transaction
     public void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
     	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
+
+        dao.deleteTemplateNames(textDocument.getMeta().getId());
+        //dao.flush();
     	
     	TemplateNames templateNames = textDocument.getTemplateNames();
     	Integer documentId = textDocument.getMeta().getId();

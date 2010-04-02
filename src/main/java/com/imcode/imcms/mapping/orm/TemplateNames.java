@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * Text document templates names. 
@@ -45,6 +46,26 @@ public class TemplateNames implements Cloneable {
             throw new UnhandledException(e);
         }
     }
+
+//    @Override
+//    public int hashCode() {
+//        return new HashCodeBuilder(15, 3)
+//                .append(id)
+//                .append(metaId)
+//                .append(templateName)
+//                .append(templateGroupId)
+//                .append(defaultTemplateNameForRestricted1)
+//                .append(defaultTemplateNameForRestricted2)
+//                .hashCode();
+//
+//    }
+//
+//
+//    @Override
+//    public boolean equals(Object o) {
+//        return o instanceof TemplateNames && o.hashCode() == hashCode();
+//    }
+
 
     public String getTemplateName() {
         return templateName;

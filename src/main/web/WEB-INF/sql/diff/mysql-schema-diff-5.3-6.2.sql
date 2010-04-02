@@ -435,7 +435,10 @@ SELECT meta_id, template_name, group_id, default_template_1, default_template_2,
 
 DROP TABLE text_docs;
 RENAME TABLE __text_docs TO text_docs;
-ALTER TABLE text_docs ADD FOREIGN KEY fk__text_docs__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE;
+
+ALTER TABLE text_docs
+  ADD UNIQUE KEY uk__text_docs__meta_id__template_name (meta_id, template_name),
+  ADD FOREIGN KEY fk__text_docs__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE;
 
 
 --

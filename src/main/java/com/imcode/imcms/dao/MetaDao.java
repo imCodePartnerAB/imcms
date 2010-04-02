@@ -160,6 +160,13 @@ public class MetaDao extends HibernateTemplate {
 			.uniqueResult();
 	}
 
+    @Transactional
+    public int deleteTemplateNames(Integer docId) {
+        return getSession().createQuery("DELETE FROM TemplateNames n WHERE n.metaId = :docId")
+                .setParameter("docId", docId)
+                .executeUpdate();
+    }
+
 	@Transactional
 	public Collection<FileReference> getFileReferences(Integer docId, Integer docVersionNo) {
 		return findByNamedQueryAndNamedParam("FileDoc.getReferences", new String [] {"docId", "docVersionNo"},

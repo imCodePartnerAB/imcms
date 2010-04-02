@@ -45,7 +45,7 @@ public class DocumentLoader {
         Meta meta = metaDao.getMeta(docId);
 
         if (meta != null) {
-            //document.setActualModifiedDatetime(meta.getModifiedDatetime());
+            meta.setActualModifiedDatetime(meta.getModifiedDatetime());
 
             Document.PublicationStatus publicationStatus = publicationStatusFromInt(meta.getPublicationStatusInt());
             meta.setPublicationStatus(publicationStatus);
