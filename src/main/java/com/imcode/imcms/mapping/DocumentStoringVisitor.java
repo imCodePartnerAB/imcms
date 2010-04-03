@@ -37,6 +37,8 @@ import com.imcode.imcms.mapping.orm.TemplateNames;
  *
  * @see com.imcode.imcms.mapping.DocumentSaver
  */
+
+//hibernate.batch_update_versioned
 public class DocumentStoringVisitor extends DocumentVisitor {
 
     protected ImcmsServices services;
@@ -104,18 +106,27 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
+
         Integer docId = textDocument.getMeta().getId();
-        Integer docVersionNo = textDocument.getVersion().getNo();
+        Integer docVersionNo = textDocument.getVersionNo();
 
         textDao.deleteTexts(docId, docVersionNo);
-        //textDao.flush();
+        textDao.flush();
 
         for (TextDomainObject text: textDocument.getTexts().values()) {
+            text.setId(null);
+            text.setDocId(docId);
+            text.setDocVersionNo(docVersionNo);
+            
             saveTextDocumentText(textDocument, text, user);
         }
 
 
         for (TextDomainObject text: textDocument.getLoopTexts().values()) {
+            text.setId(null);
+            text.setDocId(docId);
+            text.setDocVersionNo(docVersionNo);
+            
             saveTextDocumentText(textDocument, text, user);
         }        
     }
@@ -133,8 +144,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         Integer documentVersionNumber = textDocument.getVersion().getNo();
         
         // delete all loops for meta and version
-        dao.deleteLoops(metaId, documentVersionNumber);
-        //dao.flush();
+        if (metaId != null) {
+            dao.deleteLoops(metaId, documentVersionNumber);
+            dao.flush();
+        }
         
         for (ContentLoop loop: textDocument.getContentLoops().values()) {
             loop.setId(null);
@@ -197,15 +210,23 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         Integer docVersionNo = doc.getVersion().getNo();
 
         imageDao.deleteImages(docId, docVersionNo);
-        //imageDao.flush();
+        imageDao.flush();
 
         for (ImageDomainObject image: doc.getImages().values()) {
+            image.setId(null);
+            image.setDocId(docId);
+            image.setDocVersionNo(docVersionNo);
+            
             saveTextDocumentImage(doc, image, user);
             //imageDao.saveImageHistory(doc.getId(), image, user);
         }
 
 
         for (ImageDomainObject image: doc.getLoopImages().values()) {
+            image.setId(null);
+            image.setDocId(docId);
+            image.setDocVersionNo(docVersionNo);
+            
             saveTextDocumentImage(doc, image, user);
             //imageDao.saveImageHistory(doc.getId(), image, user);
         }
@@ -240,16 +261,17 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     public void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
     	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
 
-        dao.deleteTemplateNames(textDocument.getMeta().getId());
-        //dao.flush();
-    	
+        Integer docId = textDocument.getMeta().getId();
+
+        dao.deleteTemplateNames(docId);
+        dao.flush();
+
     	TemplateNames templateNames = textDocument.getTemplateNames();
-    	Integer documentId = textDocument.getMeta().getId();
-    	    	
-    	templateNames.setMetaId(documentId);
-    	
-    	dao.saveTemplateNames(documentId, templateNames);    	
-    }    
+        templateNames.setId(null);
+    	templateNames.setMetaId(docId);
+
+    	dao.saveTemplateNames(templateNames);
+    }
 
 
     public void visitFileDocument( FileDocumentDomainObject fileDocument ) {    	

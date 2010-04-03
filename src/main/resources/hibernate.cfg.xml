@@ -11,6 +11,9 @@
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLInnoDBDialect</property>
 
+        <property name="hibernate.jdbc.batch_versioned_data">true</property>
+
+
 
         <mapping class="com.imcode.imcms.api.Meta"/>
         

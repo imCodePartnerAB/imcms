@@ -23,7 +23,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     }
     
     // requires transaction
-    public void visitHtmlDocument( HtmlDocumentDomainObject document ) {
+    public void visitHtmlDocument(HtmlDocumentDomainObject document) {
     	HtmlReference reference = new HtmlReference();
     	
     	reference.setDocId(document.getMeta().getId());

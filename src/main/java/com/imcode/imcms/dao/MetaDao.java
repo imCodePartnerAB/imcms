@@ -144,7 +144,7 @@ public class MetaDao extends HibernateTemplate {
 	}
 
 	@Transactional
-	public void saveTemplateNames(Integer documentId, TemplateNames templateNames) {
+	public void saveTemplateNames(TemplateNames templateNames) {
 		saveOrUpdate(templateNames);
 	}
 
@@ -198,7 +198,7 @@ public class MetaDao extends HibernateTemplate {
 	
 	@Transactional
 	public HtmlReference saveHtmlReference(HtmlReference reference) {
-		saveOrUpdate(reference);
+		merge(reference);
 		
 		return reference;
 	}
@@ -213,7 +213,7 @@ public class MetaDao extends HibernateTemplate {
 
 	@Transactional
 	public UrlReference saveUrlReference(UrlReference reference) {
-		saveOrUpdate(reference);
+		merge(reference);
 		
 		return reference;
 	}	

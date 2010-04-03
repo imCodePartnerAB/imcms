@@ -195,20 +195,32 @@ public class DocumentMapper implements DocumentGetter {
      * @param doc
      * @param user
      * @param copying flag controls document's permissions inheritance.
-     * @return saved document id.
+     * 
+     * @return saved document.
+     *
      * @throws DocumentSaveException
      * @throws NoPermissionToAddDocumentToMenuException
      *
      * @see #copyDocument(imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)
      */
-    public Integer saveNewDocument(final DocumentDomainObject doc, final UserDomainObject user, boolean copying)
+    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, final UserDomainObject user, boolean copying)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
-        Integer docId = documentSaver.saveNewDocument(doc, user, copying);
+        DocumentDomainObject docClone = doc.clone();
+
+        I18nLanguage language = docClone.getLanguage();
+
+        // todo: ??? throw an exception ???
+        if (language == null) {
+            language = Imcms.getI18nSupport().getDefaultLanguage();
+            docClone.setLanguage(language);
+        }
+
+        Integer docId = documentSaver.saveNewDocument(docClone, user, copying);
 
         invalidateDocument(docId);
 
-        return docId;
+        return (T)getWorkingDocument(docId, language);
     }
 
 
@@ -342,10 +354,10 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Changes document's active version.
      */
-    public void setDocumentDefaultVersion(Integer docId, Integer docVersionNo, UserDomainObject user)
+    public void changeDocumentDefaultVersion(Integer docId, Integer newDocDefaultVersionNo, UserDomainObject user)
     throws DocumentSaveException, NoPermissionToEditDocumentException {
         try {
-    	    documentSaver.setDocumentDefaultVersion(docId, docVersionNo);
+    	    documentSaver.changeDocumentDefaultVersion(docId, newDocDefaultVersionNo, user);
         } finally {
             invalidateDocument(docId);
         }
@@ -882,7 +894,7 @@ public class DocumentMapper implements DocumentGetter {
 
         @Override
         public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-            Imcms.getServices().getDocumentMapper().setDocumentDefaultVersion(document.getId(), docVersionNo, user);
+            Imcms.getServices().getDocumentMapper().changeDocumentDefaultVersion(document.getId(), docVersionNo, user);
         }
     }
     

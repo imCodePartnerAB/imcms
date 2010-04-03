@@ -156,18 +156,18 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void setDocumentDefaultVersion(Integer docId, Integer docVersionNo) {
-        DefaultDocumentVersion activeVersion = documentVersionDao.getDefaultVersionORM(docId);
+    public void changeDocumentDefaultVersion(Integer docId, Integer newDocDefaultVersionNo, UserDomainObject user) {
+        DefaultDocumentVersion defaultVersion = documentVersionDao.getDefaultVersionORM(docId);
 
-        if (activeVersion == null) {
-            activeVersion = new DefaultDocumentVersion();
-            activeVersion.setDocId(docId);
-            activeVersion.setNo(docVersionNo);
+        if (defaultVersion == null) {
+            defaultVersion = new DefaultDocumentVersion();
+            defaultVersion.setDocId(docId);
+            defaultVersion.setNo(newDocDefaultVersionNo);
         } else {
-            activeVersion.setNo(docVersionNo);
+            defaultVersion.setNo(newDocDefaultVersionNo);
         }
 
-        documentVersionDao.saveDefaultVersionORM(activeVersion);
+        documentVersionDao.saveDefaultVersionORM(defaultVersion);
     }
 
 

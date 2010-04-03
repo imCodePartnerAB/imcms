@@ -13,11 +13,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import javax.activation.FileDataSource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.testng.Assert.*;
@@ -66,15 +64,15 @@ public class DocumentMapperTest {
     }
     
 
-    public Integer saveNewTextDocumentFn(boolean copyFlag) throws Exception {
+    public TextDocumentDomainObject saveNewTextDocumentFn(boolean copyFlag) throws Exception {
         DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
         TextDocumentDomainObject newDoc = (TextDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
 
-        return docMapper.saveNewDocument(newDoc, admin, copyFlag);
+        return (TextDocumentDomainObject)docMapper.saveNewDocument(newDoc, admin, copyFlag);
     }
 
     
-    public Integer saveNewUrlDocumentFn(boolean copyFlag) throws Exception {
+    public UrlDocumentDomainObject saveNewUrlDocumentFn(boolean copyFlag) throws Exception {
         DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
         UrlDocumentDomainObject newDoc = (UrlDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.URL_ID, parentDoc, admin);
 
@@ -82,7 +80,7 @@ public class DocumentMapperTest {
     }
 
 
-    public Integer saveNewHtmlDocumentFn(boolean copyFlag) throws Exception {
+    public HtmlDocumentDomainObject saveNewHtmlDocumentFn(boolean copyFlag) throws Exception {
         DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
         HtmlDocumentDomainObject newDoc = (HtmlDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.HTML_ID, parentDoc, admin);
 
@@ -90,7 +88,7 @@ public class DocumentMapperTest {
     }    
 
 
-    public Integer saveNewFileDocumentFn(boolean copyFlag) throws Exception {
+    public FileDocumentDomainObject saveNewFileDocumentFn(boolean copyFlag) throws Exception {
         DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
         FileDocumentDomainObject newDoc = (FileDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.FILE_ID, parentDoc, admin);
         FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
@@ -114,36 +112,33 @@ public class DocumentMapperTest {
 
 
         newDoc.addFile("testFile", file);
-        Integer docId = docMapper.saveNewDocument(newDoc, admin, true);
+        FileDocumentDomainObject savedDoc = docMapper.saveNewDocument(newDoc, admin, true);
 
-        DocumentVersion version = docMapper.makeDocumentVersion(docId, admin);
-        DocumentDomainObject doc = docMapper.getCustomDocument(docId, version.getNo());
+        DocumentVersion version = docMapper.makeDocumentVersion(savedDoc.getId(), admin);
+        DocumentDomainObject doc = docMapper.getCustomDocument(savedDoc.getId(), version.getNo());
         docMapper.saveDocument(doc, admin);
 
-        return docId;
+        return savedDoc;
     }    
     
 
     @Test(enabled = true)
     public void saveTextDocument() throws Exception {
-        Integer docId = saveNewTextDocumentFn(false);
-        DocumentDomainObject doc = docMapper.getWorkingDocument(docId);
+        DocumentDomainObject doc = saveNewTextDocumentFn(false);
 
         docMapper.saveDocument(doc, admin);
     }
 
     @Test(enabled = true)
     public void saveHtmlDocument() throws Exception {
-        Integer docId = saveNewHtmlDocumentFn(false);
-        DocumentDomainObject doc = docMapper.getWorkingDocument(docId);
+        DocumentDomainObject doc = saveNewHtmlDocumentFn(false);
 
         docMapper.saveDocument(doc, admin);
     }
 
     @Test(enabled = true)
     public void saveUrlDocument() throws Exception {
-        Integer docId = saveNewUrlDocumentFn(false);
-        DocumentDomainObject doc = docMapper.getWorkingDocument(docId);
+        DocumentDomainObject doc = saveNewUrlDocumentFn(false);
 
         docMapper.saveDocument(doc, admin);
     }
@@ -151,12 +146,16 @@ public class DocumentMapperTest {
     
     @Test(enabled = true)
     public void saveFileDocument() throws Exception {
-        Integer docId = saveNewFileDocumentFn(false);
-        DocumentDomainObject doc = docMapper.getWorkingDocument(docId);
+        DocumentDomainObject doc = saveNewFileDocumentFn(false);
 
         docMapper.saveDocument(doc, admin);
     }
 
+
+    @Test(enabled = true)
+    public void addMenu() {
+        fail("NOT IMPLEMENTED");
+    }
 
 //    @Test(enabled = true)//(dependsOnMethods = {"createDocumentOfTypeFromParent"})
 //    public void addMenu() throws Exception {
@@ -220,8 +219,7 @@ public class DocumentMapperTest {
 
     @Test(enabled = true)
     public void copyTextDocument() throws Exception {
-        Integer docId = saveNewTextDocumentFn(false);
-        TextDocumentDomainObject doc = (TextDocumentDomainObject)docMapper.getWorkingDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
+        TextDocumentDomainObject doc = saveNewTextDocumentFn(false);
 
         TextDocumentDomainObject docCopy = (TextDocumentDomainObject)docMapper.copyDocument(doc, admin);
     }
@@ -229,8 +227,7 @@ public class DocumentMapperTest {
 
     @Test(enabled = true)
     public void copyHtmlsDocument() throws Exception {
-        Integer docId = saveNewHtmlDocumentFn(false);
-        HtmlDocumentDomainObject doc = (HtmlDocumentDomainObject)docMapper.getWorkingDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
+        HtmlDocumentDomainObject doc = saveNewHtmlDocumentFn(false);
 
         HtmlDocumentDomainObject docCopy = (HtmlDocumentDomainObject)docMapper.copyDocument(doc, admin);
     }
@@ -238,8 +235,7 @@ public class DocumentMapperTest {
 
     @Test(enabled = true)
     public void copyUrlDocument() throws Exception {
-        Integer docId = saveNewUrlDocumentFn(false);
-        UrlDocumentDomainObject doc = (UrlDocumentDomainObject)docMapper.getWorkingDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
+        UrlDocumentDomainObject doc = saveNewUrlDocumentFn(false);
 
         UrlDocumentDomainObject docCopy = (UrlDocumentDomainObject)docMapper.copyDocument(doc, admin);
     }
@@ -247,8 +243,7 @@ public class DocumentMapperTest {
 
     @Test(enabled = true)
     public void copyFileDocument() throws Exception {
-        Integer docId = saveNewFileDocumentFn(false);
-        FileDocumentDomainObject doc = (FileDocumentDomainObject)docMapper.getWorkingDocument(docId, Imcms.getI18nSupport().getDefaultLanguage());
+        FileDocumentDomainObject doc = saveNewFileDocumentFn(false);
 
         FileDocumentDomainObject docCopy = (FileDocumentDomainObject)docMapper.copyDocument(doc, admin);
     }    
@@ -281,11 +276,11 @@ public class DocumentMapperTest {
 
 
     @Test(enabled = true)
-    public void changeDocDefaultVersionNo() throws Exception {
+    public void changeDocumentDefaultVersion() throws Exception {
         DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
         DocumentDomainObject doc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
 
-        Integer docId =  docMapper.saveNewDocument(doc, admin, false);
+        Integer docId = docMapper.saveNewDocument(doc, admin, false).getId();
         DocumentVersionInfo vi = docMapper.getDocumentVersionInfo(docId);
 
         doc = docMapper.getDefaultDocument(docId, i18nSupport.getDefaultLanguage());
@@ -297,7 +292,7 @@ public class DocumentMapperTest {
 
         assertEquals(version.getNo(), new Integer(1), "New version no is 1.");
 
-        docMapper.setDocumentDefaultVersion(docId, 1, admin);
+        docMapper.changeDocumentDefaultVersion(docId, 1, admin);
 
         doc = docMapper.getDefaultDocument(docId, i18nSupport.getDefaultLanguage());
 
@@ -355,101 +350,138 @@ public class DocumentMapperTest {
 
     @Test
     public void saveDocumentContent() {
-        fail();
+        fail("NOT IMPLEMENTED");
     }
 
 
     @Test(enabled = true)
     public void makeHtmlDocumentVersion() throws Exception {
-        fail();
+        HtmlDocumentDomainObject doc = saveNewHtmlDocumentFn(false);
+
+        DocumentVersionInfo info = docMapper.getDocumentVersionInfo(doc.getId());
+
+        docMapper.makeDocumentVersion(doc.getId(), admin);
+
+        DocumentVersionInfo newInfo = docMapper.getDocumentVersionInfo(doc.getId());
+        Integer expectedNewVersionNo = info.getLatestVersion().getNo() + 1;
+
+        assertEquals(info.getVersionsCount() + 1, newInfo.getVersionsCount());
+        assertEquals(newInfo.getLatestVersion().getNo(), expectedNewVersionNo);
+
+        HtmlDocumentDomainObject newVersionDoc = (HtmlDocumentDomainObject)docMapper.getCustomDocument(doc.getId(), expectedNewVersionNo);
+
+        assertNotNull(newVersionDoc);
     }
 
 
     @Test(enabled = true)
     public void makeUrlDocumentVersion() throws Exception {
-        fail();
+        UrlDocumentDomainObject doc = saveNewUrlDocumentFn(false);
+
+        DocumentVersionInfo info = docMapper.getDocumentVersionInfo(doc.getId());
+
+        docMapper.makeDocumentVersion(doc.getId(), admin);
+
+        DocumentVersionInfo newInfo = docMapper.getDocumentVersionInfo(doc.getId());
+        Integer expectedNewVersionNo = info.getLatestVersion().getNo() + 1;
+
+        assertEquals(info.getVersionsCount() + 1, newInfo.getVersionsCount());
+        assertEquals(newInfo.getLatestVersion().getNo(), expectedNewVersionNo);
+
+        UrlDocumentDomainObject newVersionDoc = (UrlDocumentDomainObject)docMapper.getCustomDocument(doc.getId(), expectedNewVersionNo);
+
+        assertNotNull(newVersionDoc);
     }
 
 
     @Test(enabled = true)
     public void makeFileDocumentVersion() throws Exception {
-        fail();
+        FileDocumentDomainObject doc = saveNewFileDocumentFn(false);
+
+        DocumentVersionInfo info = docMapper.getDocumentVersionInfo(doc.getId());
+
+        docMapper.makeDocumentVersion(doc.getId(), admin);
+
+        DocumentVersionInfo newInfo = docMapper.getDocumentVersionInfo(doc.getId());
+        Integer expectedNewVersionNo = info.getLatestVersion().getNo() + 1;
+
+        assertEquals(info.getVersionsCount() + 1, newInfo.getVersionsCount());
+        assertEquals(newInfo.getLatestVersion().getNo(), expectedNewVersionNo);
+
+        FileDocumentDomainObject newVersionDoc = (FileDocumentDomainObject)docMapper.getCustomDocument(doc.getId(), expectedNewVersionNo);
+
+        assertNotNull(newVersionDoc);
     }
 
 
     @Test
     public void getDocumentVersionInfo() throws Exception {
-        fail();
+        fail("NOT IMPLEMENTED");
     }
 
     
     @Test
     public void saveTextDocumentText() throws Exception {
-        fail();
+        fail("NOT IMPLEMENTED");
     }
 
 
     @Test
     public void saveTextDocumentImage() throws Exception {
-        fail();
+        fail("NOT IMPLEMENTED");
     }
 
 
     @Test
     public void saveTextDocumentContentLoop() throws Exception {
-        fail();
+        fail("NOT IMPLEMENTED");
     }
-    
 
-    @Test
-    public void setDocumentDefaultVersion() throws Exception {
-        fail();
-    }
 
     @Test
     public void invalidateDocument() throws Exception {
-        fail();
+        fail("NOT IMPLEMENTED");
     }
 
     @Test
     public void getWorkingDocument() {
-        fail();
+        fail("NOT IMPLEMENTED");
     }
 
 
     @Test
     public void getDefaultDocument() {
-        fail();
+        fail("NOT IMPLEMENTED");
     }
 
 
     @Test
     public void getCustomDocument() {
-        fail();
+        fail("NOT IMPLEMENTED");
     }
 
 
     @Test
     public void deleteTextDocument() {
-        fail();
+        fail("NOT IMPLEMENTED");
     }
 
 
     @Test
     public void deleteHtmlDocument() {
-        fail();
+        fail("NOT IMPLEMENTED");
     }
 
 
     @Test
     public void deleteUrlDocument() {
-        fail();;
+        fail("NOT IMPLEMENTED");;
     }
 
 
     @Test
     public void deleteFileDocument() {
-        fail();
+        fail("NOT IMPLEMENTED");
     }
 
 
