@@ -58,7 +58,7 @@
 
     pageContext.setAttribute("document", document);
 
-    pageContext.setAttribute("labelsColl", documentInformationPage.getLabelsMap().values());
+    //pageContext.setAttribute("labelsColl", documentInformationPage.getLabelsMap().values());
 
     Map<I18nLanguage, Boolean> languagesStates  = documentInformationPage.getLanguagesStates();
 %><%!

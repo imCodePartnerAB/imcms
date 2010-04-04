@@ -18,6 +18,19 @@ public class ClojureUtils {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public static void load(String resource) {
+        logger.info("Loading clojure resource: " + resource);
+
+		try {
+			RT.load(resource);
+		} catch (Exception e) {
+            logger.error("Unable to load clojure resource: " + resource, e);
+			throw new RuntimeException(e);
+		}
+	}
+
+    
 	
 	
 	public static Var var(ClojureNamespace cn, String symbolName, Object value) {
@@ -43,4 +56,22 @@ public class ClojureUtils {
             throw new RuntimeException(e);
         }
     }
+
+    public static void startSwankServer(int port) {
+        logger.info("Starting Clojure swank on port " + port + ".");
+
+        load("swank/swank");
+
+        Var fn = RT.var("swank.swank", "start-repl");
+
+        try {
+            fn.invoke(port);
+        } catch (Exception e) {
+            logger.error("Unable to start Clojure remote REPL.", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
 }

@@ -29,6 +29,8 @@
 
 (def base-dir (atom (.getCanonicalFile (File. "."))))
 
+(def spring-app-context (atom nil))
+
 (defn base-dir-path
   "Returns base dir full path."
   []
@@ -137,15 +139,21 @@
     (apply shell/sh args)))
 
 
-(def spring-app-context
-  (FileSystemXmlApplicationContext. (str "file:" (file-path "src/main/web/WEB-INF/applicationContext.xml"))))
+(defn init-spring-app-context []
+  (reset! spring-app-context
+    (FileSystemXmlApplicationContext. (str "file:" (file-path "src/main/web/WEB-INF/applicationContext.xml")))))
 
 (defn init-imcms
   "Initializes Imcms for tests."
   []
+  (when-not @spring-app-context
+    (init-spring-app-context))
+
+  (init-spring-app-context)
   (Imcms/setPath (subdir "src/test/resources") (subdir "src/test/resources"))
-  (Imcms/setApplicationContext spring-app-context)
+  (Imcms/setApplicationContext @spring-app-context)
   (Imcms/setUpgradeDatabaseSchemaOnStart false))
+
 
 
 (defmacro sh [& args]

@@ -63,6 +63,13 @@
     }
 
 
+    String swank = request.getParameter("swank");
+
+    if (swank != null) {
+        ClojureUtils.startSwankServer(Integer.parseInt(swank));
+    }
+
+
     String cd = request.getParameter("cd");
     File path = null;
 
