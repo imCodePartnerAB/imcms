@@ -3,9 +3,169 @@
 SET @schema_version__major_new = 6;
 SET @schema_version__minor_new = 2;
 
+SET @doc_language_id_en = 1;
+SET @doc_language_id_sw = 2;
+SET @doc_language_id = @doc_language_id_en;
 
+SET @doc_version_no = 0;
+
+
+--
+-- Delete deprecated
+--
 DROP TABLE browser_docs;
 DROP TABLE browsers;
+
+DELETE FROM meta WHERE doc_type = 6;
+DELETE FROM doc_types WHERE doc_type = 6;
+DELETE FROM doc_permissions WHERE doc_type NOT IN (2,5,7,8);
+
+--
+-- Languages support
+--
+-- todo: move default language into sys table.
+CREATE TABLE `imcms_languages` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `code` varchar(3) NOT NULL COMMENT 'Language code.',
+  `name` varchar(128) NOT NULL COMMENT 'Language name in english.',
+  `native_name` varchar(128) DEFAULT NULL COMMENT 'Language native name e.g Svenska, Suomi, etc.',
+  `default` tinyint NOT NULL DEFAULT '0' COMMENT 'Default language flag for application. Only one language can be set as default.',
+  `enabled` tinyint NOT NULL DEFAULT '1' COMMENT 'Language enabled status.',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- Add languages
+INSERT INTO imcms_languages
+  (`id`, `code`, `name`, `native_name`, `default`, `enabled`)
+VALUES
+  (@doc_language_id_en, 'en', 'English', 'English', true, true),
+  (@doc_language_id_sw, 'sw', 'Swedish', 'Svenska', false, true);
+
+
+--
+-- Doc languages
+-- 
+-- languages supported by a document
+CREATE TABLE `imcms_doc_languages` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `doc_id` int NOT NULL,
+  `language_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk__imcms_doc_languages__doc_id__language_id` (`doc_id`,`language_id`),
+  CONSTRAINT `fk__imcms_doc_languages__meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk__imcms_doc_languages__i18n_languages` FOREIGN KEY (`language_id`) REFERENCES `i18n_languages` (`language_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- todo assign default lang id - 1/2 
+INSERT INTO `imcms_doc_languages` (`doc_id`, `language_id`)
+SELECT `meta_id`, @doc_language_id FROM `meta`;
+
+--
+-- Keywords
+--
+CREATE TABLE `imcms_doc_keywords` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `doc_id` int NOT NULL,
+  `value` varchar(128) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk__imcms_doc_keywords__doc_id__value` (`doc_id`,`value`),
+  CONSTRAINT `fk__imcms_doc_keywords__meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- Move keywords to new keyword table
+INSERT INTO `imcms_doc_keywords` (`doc_id`, `value`)
+SELECT mc.meta_id, c.code FROM meta_classification mc join classification c on mc.class_id = c.class_id;
+
+-- Drop old tables
+DELETE FROM meta_classification;
+DELETE FROM classification;
+
+DROP TABLE meta_classification;
+DROP TABLE classification;
+
+--
+-- Version support
+--
+-- todo: data_modified - is a date when meta was modified, not version content.
+--       ?? move fields from meta - such as modified by, at, etc
+CREATE TABLE `imcms_doc_versions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `doc_id` int NOT NULL,
+  `no` int NOT NULL,
+  `created_by` int NOT NULL,
+  `created_dt` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk__imcms_doc_versions__doc_id__no` (`doc_id`,`no`),
+  KEY `fk__imcms_doc_versions__user` (`created_by`),
+  CONSTRAINT `fk__imcms_doc_versions__meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk__imcms_doc_versions__user` FOREIGN KEY (`created_by`) REFERENCES `users` (`user_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+INSERT INTO `imcms_doc_versions` (
+  `doc_id`,
+  `no`,
+  `created_by`
+  `created_dt`
+) SELECT (
+  `meta_id`,
+  @doc_version_no,
+  `owner_id`,
+  `date_created`,
+  -- date_modified
+) FROM `meta`;
+
+
+--
+-- Document labels
+--
+CREATE TABLE `imcms_doc_labels` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `doc_id` int NOT NULL,
+  `doc_version_no` int NOT NULL,
+  `language_id` smallint NOT NULL,
+  `headline` varchar(256) DEFAULT NULL,
+  `menu_image_url` varchar(256) DEFAULT NULL,
+  `menu_text` varchar(1024) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk__imcms_doc_labels__doc_id__doc_version_no__language_id` (`doc_id`,`doc_version_no`,`language_id`),
+  KEY `fk__imcms_doc_labels__i18n_languages` (`language_id`),
+  CONSTRAINT `fk__imcms_doc_labels__meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk__imcms_doc_labels__i18n_languages` FOREIGN KEY (`language_id`) REFERENCES `i18n_languages` (`language_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+INSERT INTO `imcms_doc_labels` (
+  `doc_id`,
+  `doc_version_no`,
+  `language_id`,
+
+  `headline`,
+  `menu_text`,
+  `menu_image_url`
+) SELECT (
+  `meta_id`,
+  @doc_version_no,
+  @doc_language_id,
+
+  `meta_headline`,
+  `meta_text`,
+  `meta_image`,
+) FROM `meta`;
+
+
+
+
+--
+-- Labels
+--
+
+
+
+-- archive xxx - new in RB 4
 
 -- category_roles ADDED ???
 -- category_types Y 4.11 is_image_archive
@@ -16,7 +176,18 @@ DROP TABLE browsers;
 -- doc_permission_sets_ex added id
 -- fileupload_docs - added id, doc_version_no
 -- frameset_docs added doc_version_no, ADD id???
-
+-- image_categories new  in RB4
+-- imcms languages - new in trunk
+-- images : new in trunk id, doc_version_no, language_id, content_loop_no, content_no
+-- images_history -//-
+-- includes id
+-- menus, id, doc_version_no
+-- meta: headline, text, image - gone;
+-- meta_classification - DEL
+-- new_doc_permission_sets ADDED id - remove?
+-- new_doc_permission_sets_ex ADDED id - remove?
+-- text_docs ADDED id - remove?
+ -- url_docs - doc_version_no
 
 
 
@@ -279,7 +450,7 @@ CREATE TABLE imcms_text_doc_images (
   imgurl varchar(255) NOT NULL,
   linkurl varchar(255) NOT NULL,
   type int NOT NULL,
-  language_id smallint(6) NOT NULL,
+  language_id smallint NOT NULL,
   content_loop_no int DEFAULT NULL,
   content_no int DEFAULT NULL,
         
@@ -356,7 +527,7 @@ CREATE TABLE imcms_text_doc_images_history (
   imgurl varchar(255) NOT NULL,
   linkurl varchar(255) NOT NULL,
   type int NOT NULL,
-  language_id smallint(6) NOT NULL,
+  language_id smallint NOT NULL,
   content_loop_no int DEFAULT NULL,
   content_no int DEFAULT NULL,
   modified_datetime datetime NOT NULL,
@@ -386,10 +557,10 @@ DELETE FROM doc_permissions WHERE doc_type NOT IN (2,5,7,8);
 --
 CREATE TABLE __childs (
   id int auto_increment PRIMARY KEY,
-  to_meta_id int(11) NOT NULL,
-  manual_sort_order int(11) NOT NULL,
+  to_meta_id int NOT NULL,
+  manual_sort_order int NOT NULL,
   tree_sort_index varchar(64) NOT NULL,
-  menu_id int(11) NOT NULL
+  menu_id int NOT NULL
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO __childs
@@ -434,9 +605,9 @@ ALTER TABLE includes ADD FOREIGN KEY fk__includes__included_document (included_m
 
 CREATE TABLE __text_docs (
   id int auto_increment PRIMARY KEY,
-  meta_id int(11) NULL,
+  meta_id int NULL,
   template_name varchar(255) NOT NULL,
-  group_id int(11) NOT NULL default '1',
+  group_id int NOT NULL default '1',
   default_template_1 varchar(255) default NULL,
   default_template_2 varchar(255) default NULL,
   default_template varchar(255) default NULL
@@ -459,10 +630,10 @@ ALTER TABLE text_docs
 
 CREATE TABLE __new_doc_permission_sets_ex (
   id int auto_increment PRIMARY KEY,
-  meta_id int(11) NOT NULL,
-  set_id int(11) NOT NULL,
-  permission_id int(11) NOT NULL,
-  permission_data int(11) NOT NULL
+  meta_id int NOT NULL,
+  set_id int NOT NULL,
+  permission_id int NOT NULL,
+  permission_data int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO __new_doc_permission_sets_ex (
@@ -486,10 +657,10 @@ ALTER TABLE new_doc_permission_sets_ex
 
 CREATE TABLE __doc_permission_sets_ex (
   id int auto_increment PRIMARY KEY,
-  meta_id int(11) NOT NULL,
-  set_id int(11) NOT NULL,
-  permission_id int(11) NOT NULL,
-  permission_data int(11) NOT NULL
+  meta_id int NOT NULL,
+  set_id int NOT NULL,
+  permission_id int NOT NULL,
+  permission_data int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO __doc_permission_sets_ex (
@@ -512,9 +683,9 @@ ALTER TABLE doc_permission_sets_ex
 
 CREATE TABLE __new_doc_permission_sets (
   id int auto_increment PRIMARY KEY,
-  meta_id int(11) NOT NULL,
-  set_id int(11) NOT NULL,
-  permission_id int(11) NOT NULL
+  meta_id int NOT NULL,
+  set_id int NOT NULL,
+  permission_id int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -540,9 +711,9 @@ ALTER TABLE new_doc_permission_sets
 
 CREATE TABLE __doc_permission_sets (
   id int auto_increment PRIMARY KEY,
-  meta_id int(11) NOT NULL,
-  set_id int(11) NOT NULL,
-  permission_id int(11) NOT NULL
+  meta_id int NOT NULL,
+  set_id int NOT NULL,
+  permission_id int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO __doc_permission_sets (
@@ -572,8 +743,8 @@ CREATE TABLE __fileupload_docs (
   variant_name varchar(100) NOT NULL,
   filename varchar(255) NOT NULL,
   mime varchar(50) NOT NULL,
-  created_as_image int(11) NOT NULL,
-  default_variant tinyint(1) NOT NULL default '0'
+  created_as_image int NOT NULL,
+  default_variant tinyint NOT NULL default '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO __fileupload_docs (

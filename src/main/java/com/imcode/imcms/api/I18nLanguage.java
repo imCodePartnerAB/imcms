@@ -14,20 +14,23 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Table(name="i18n_languages")
 public class I18nLanguage implements Serializable, Cloneable {
 
+    @Id
     private Integer id;
-	
-	private Boolean systemDefault;
-	
+
+    @Column(name="default")
+	private Boolean default_;
+
 	private Boolean enabled;	
     
     private String code;
     
     private String name;
-    
-    private String nativeName;
-    
 
-	@Override
+     @Column(name="native_name")
+    private String nativeName;
+
+
+    @Override
 	public boolean equals(Object object) {
         if ( !( object instanceof I18nLanguage ) ) {
             return false;
@@ -62,9 +65,7 @@ public class I18nLanguage implements Serializable, Cloneable {
 	public String toString() {
 		return getName();
 	}
-	
-	@Id
-	@Column(name="language_id")	
+
 	public Integer getId() {
 		return id;
 	}
@@ -89,7 +90,6 @@ public class I18nLanguage implements Serializable, Cloneable {
 		this.name = name;
 	}
 
-	@Column(name="native_name")	
 	public String getNativeName() {
 		return nativeName;
 	}
@@ -98,16 +98,14 @@ public class I18nLanguage implements Serializable, Cloneable {
 		this.nativeName = nativeName;
 	}
 
-	@Column(name="is_default")	
 	public Boolean isDefault() {
-		return systemDefault;
+		return default_;
 	}
 
 	public void setDefault(Boolean systemDefault) {
-		this.systemDefault = systemDefault;
+		this.default_ = systemDefault;
 	}
-
-	@Column(name="is_enabled")	
+	
 	public Boolean isEnabled() {
 		return enabled;
 	}
