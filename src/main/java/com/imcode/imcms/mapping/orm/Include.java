@@ -17,15 +17,14 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Table(name="includes")
 public class Include {
 
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
-	
-	@Column(name="meta_id")
+	@Id @Column(name="meta_id")
 	private Integer metaId;
 	
 	@Column(name="included_meta_id")
 	private Integer includedDocumentId;
-	
+
+
+    // Include no
 	@Column(name="include_id")
 	private Integer index;
 	
@@ -50,14 +49,7 @@ public class Include {
         return new HashCodeBuilder()
         		.append(index).toHashCode();
     }
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
+    
 
 	public Integer getMetaId() {
 		return metaId;

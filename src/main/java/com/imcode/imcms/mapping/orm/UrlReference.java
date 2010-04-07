@@ -1,15 +1,15 @@
 package com.imcode.imcms.mapping.orm;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name="url_docs")
+@Table(name="imcms_url_docs")
 public class UrlReference {
+
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Long id;    
 	
-	@Id @Column(name="meta_id")
+	@Id @Column(name="doc_id")
 	private Integer docId;		
 
 	@Column(name="frame_name")

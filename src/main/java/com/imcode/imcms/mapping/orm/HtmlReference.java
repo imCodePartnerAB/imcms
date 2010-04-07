@@ -1,22 +1,21 @@
 package com.imcode.imcms.mapping.orm;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name="frameset_docs")
+@Table(name="imcms_html_docs")
 public class HtmlReference implements Serializable {
+
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Long id;
 	
-	@Id @Column(name="meta_id")
+	@Column(name="doc_id")
 	private Integer docId;
 
     @Column(name="doc_version_no")
     private Integer docVersionNo;
 
-	@Column(name="frame_set")
 	private String html;
 
     public String getHtml() {

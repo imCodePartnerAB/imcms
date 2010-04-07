@@ -17,9 +17,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Table(name="text_docs")
 public class TemplateNames implements Cloneable {
 	
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
-	
+    @Id 
 	@Column(name="meta_id")
 	private Integer metaId;
 	
@@ -106,14 +104,6 @@ public class TemplateNames implements Cloneable {
     public void setDefaultTemplateNameForRestricted2(String defaultTemplateNameForRestricted2) {
         this.defaultTemplateNameForRestricted2 = defaultTemplateNameForRestricted2;
     }
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	public Integer getMetaId() {
 		return metaId;
