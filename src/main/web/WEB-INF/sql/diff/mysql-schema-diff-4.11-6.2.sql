@@ -115,6 +115,26 @@ INSERT INTO `imcms_doc_versions` (
 FROM `meta`;
 
 
+CREATE TABLE imcms_doc_default_version (
+    id int AUTO_INCREMENT,
+    doc_id int NOT NULL,
+    no int NOT NULL DEFAULT 0,
+
+    CONSTRAINT pk__imcms_doc_default_version PRIMARY KEY (id),
+    CONSTRAINT uk__imcms_doc_default_version__doc_id__version_no UNIQUE KEY (doc_id, no),
+    CONSTRAINT fk__imcms_doc_default_version__doc_versions FOREIGN KEY (doc_id,no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+INSERT INTO `imcms_doc_default_version` (
+  `doc_id`,
+  `no`
+) SELECT
+  `meta_id`,
+  @doc_version_no
+FROM `meta`;
+
+
 --
 -- Document labels
 --
@@ -153,7 +173,10 @@ FROM `meta`;
 ALTER TABLE meta
   DROP COLUMN meta_headline,
   DROP COLUMN meta_text,
-  DROP COLUMN meta_image;
+  DROP COLUMN meta_image,
+  ADD COLUMN  `disabled_language_show_rule` varchar(32) NOT NULL DEFAULT 'DO_NOT_SHOW';
+  --  COMMENT 'Possible values: DO_NOT_SHOW, SHOW_IN_DEFAULT_LANGUAGE';
+
 
 
 --
@@ -451,7 +474,33 @@ SELECT
 FROM
   childs;
 
--- todo: history
+
+CREATE TABLE `imcms_text_doc_menus_history` (
+  id int NOT NULL AUTO_INCREMENT,
+  doc_id int NOT NULL,
+  doc_version_no int NOT NULL,
+  no int NOT NULL,
+  sort_order int NOT NULL,
+  
+  `modified_datetime` datetime NOT NULL,
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `menus_history_FK_meta_id_meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- CREATE TABLE `imcms_text_doc_menu_items_history` (
+--   id int NOT NULL AUTO_INCREMENT,
+--   menu_id int NOT NULL,
+--   doc_id int NOT NULL,
+--   manual_sort_order int NOT NULL,
+--   tree_sort_index varchar(64) NOT NULL,
+--
+--   PRIMARY KEY (`menu_id`,`to_meta_id`),
+--   KEY `childs_history_FK_to_meta_id_meta` (`to_meta_id`),
+--   CONSTRAINT `childs_history_FK_menu_id_menus_history` FOREIGN KEY (`menu_id`) REFERENCES `menus_history` (`menu_id`),
+--   CONSTRAINT `childs_history_FK_to_meta_id_meta` FOREIGN KEY (`to_meta_id`) REFERENCES `meta` (`meta_id`)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 -- text documents texts
@@ -646,9 +695,29 @@ CREATE TABLE imcms_text_doc_images_history (
   CONSTRAINT fk__imcms_text_doc_images_history__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+-- todo:
 -- DROP TABLE images;
 -- DROP TABLE images_history;
+
+--
+-- Includes table
+--
+CREATE TABLE __includes (
+  id int auto_increment PRIMARY KEY,
+  meta_id int NULL,
+  include_id int NOT NULL,
+  included_meta_id int NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO __includes (meta_id, include_id, included_meta_id)
+SELECT meta_id, include_id, included_meta_id FROM includes;
+
+DROP TABLE includes;
+RENAME TABLE __includes TO includes;
+
+ALTER TABLE includes ADD UNIQUE INDEX ux__includes__meta_id__include_id(meta_id, include_id);
+ALTER TABLE includes ADD FOREIGN KEY fk__includes__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE;
+ALTER TABLE includes ADD FOREIGN KEY fk__includes__included_document (included_meta_id) REFERENCES meta (meta_id);
 
 
 -- archive xxx - new in RB 4

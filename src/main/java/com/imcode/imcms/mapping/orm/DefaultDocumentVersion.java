@@ -13,7 +13,7 @@ public class DefaultDocumentVersion implements Cloneable {
 	@Column(name="doc_id", updatable=false)
 	private Integer docId;
 
-    @Column(name="version_no")
+    @Column(name="no")
 	private Integer no;
 
     @Override

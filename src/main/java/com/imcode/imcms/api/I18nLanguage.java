@@ -11,7 +11,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
-@Table(name="i18n_languages")
+@Table(name="imcms_languages")
 public class I18nLanguage implements Serializable, Cloneable {
 
     @Id

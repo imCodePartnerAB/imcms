@@ -17,7 +17,10 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Table(name="includes")
 public class Include {
 
-	@Id @Column(name="meta_id")
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Long id;
+
+	@Column(name="meta_id")
 	private Integer metaId;
 	
 	@Column(name="included_meta_id")
@@ -44,12 +47,28 @@ public class Include {
         		.append(index, o.getIndex()).isEquals();
     }
 
+    @Override
+    public Include clone() {
+        try {
+            return (Include)super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
+    }
+
 	@Override 
     public int hashCode() {
         return new HashCodeBuilder()
         		.append(index).toHashCode();
     }
-    
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public Integer getMetaId() {
 		return metaId;

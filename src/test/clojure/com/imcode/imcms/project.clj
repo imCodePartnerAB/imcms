@@ -160,8 +160,6 @@
   (let [cmd (map str args)]
     `(shell/sh ~@cmd)))
 
-(defn e [] (.printStackTrace *e))
-
 
 (defn loc
   "Returns loc in a project's dir."

@@ -33,7 +33,7 @@
   []
   ;(project/files "src/main/sql" ["imcms_6.1_schema.sql" "imcms_6.1_data.sql"]))
   ;(project/files "src/main/web/WEB-INF/sql" ["imcms_5.3_schema.sql" "imcms_5.3_data.sql" "diff/mysql-schema-diff-5.3-6.2.sql"]))
-  (project/files "src/main/web/WEB-INF/sql" ["imcms_rb4.sql" "diff/mysql-schema-diff-4.11-6.2.sql"]))  
+  (project/files "src/main/web/WEB-INF/sql" ["imcms_rb4.sql" "diff/mysql-schema-diff-4.11-6.2.sql"]))
 
 (defn version
   ([]

@@ -132,15 +132,13 @@ public class MetaDao extends HibernateTemplate {
 
 
     @Transactional
-	public void deleteIncludes(Integer docId, Integer docVersion) {
+	public void deleteIncludes(Integer docId) {
 		bulkUpdate("delete from Include i where i.metaId = ?", docId);
 	}
 
  	@Transactional
-	public void saveIncludes(Integer documentId, Collection<Include> includes) {
-		for (Include include: includes) {
-			saveOrUpdate(include);
-		}
+	public void saveInclude(Include include) {
+		saveOrUpdate(include);
 	}
 
 	@Transactional

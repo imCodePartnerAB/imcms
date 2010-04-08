@@ -124,7 +124,7 @@ public class Meta implements Serializable, Cloneable {
 	 * Disabled language's content show rule.
 	 */
 	@Enumerated(EnumType.STRING)
-	@Column(name="missing_i18n_show_rule", nullable=false)
+	@Column(name="disabled_language_show_rule", nullable=false)
 	private DisabledLanguageShowSetting disabledLanguageShowSetting =
 		DisabledLanguageShowSetting.DO_NOT_SHOW;
 	

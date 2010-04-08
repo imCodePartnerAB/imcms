@@ -31,6 +31,7 @@ import com.imcode.imcms.dao.*;
 import com.imcode.imcms.mapping.orm.FileReference;
 import com.imcode.imcms.mapping.orm.Include;
 import com.imcode.imcms.mapping.orm.TemplateNames;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This class is not a part of public API. It's methods must not be called directly.
@@ -233,13 +234,16 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
     
     
-    // must be executed within transaction
+    @Transactional
     public void updateTextDocumentIncludes(TextDocumentDomainObject doc) {
     	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
-    	
-    	Set<Include> includes = new HashSet<Include>();
     	Integer docId = doc.getMeta().getId();
-    	
+
+        if (docId != null) {
+            dao.deleteIncludes(docId);
+        }
+
+        
     	for (Map.Entry<Integer, Integer> entry: doc.getIncludesMap().entrySet()) {
     		Include include = new Include();
             include.setId(null);
@@ -247,17 +251,12 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     		include.setIndex(entry.getKey());
     		include.setIncludedDocumentId(entry.getValue());
     		
-    		includes.add(include);
+    		dao.saveInclude(include);
     	}
-
-        if (docId != null) {
-            dao.deleteIncludes(docId, doc.getVersion().getNo());
-        }
-        
-    	dao.saveIncludes(docId, includes);
     }
+
     
-    // must be executed within transaction
+    @Transactional
     public void updateTextDocumentTemplateNames(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
     	MetaDao dao = (MetaDao)services.getSpringBean("metaDao");
 
@@ -267,7 +266,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         dao.flush();
 
     	TemplateNames templateNames = textDocument.getTemplateNames();
-        templateNames.setId(null);
+        //templateNames.setId(null);
     	templateNames.setMetaId(docId);
 
     	dao.saveTemplateNames(templateNames);
