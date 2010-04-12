@@ -453,19 +453,19 @@ FROM
 CREATE TABLE imcms_text_doc_menu_items (
   id int NOT NULL AUTO_INCREMENT,
   menu_id int NOT NULL,
-  doc_id int NOT NULL,
+  to_doc_id int NOT NULL,
   manual_sort_order int NOT NULL,
   tree_sort_index varchar(64) NOT NULL,
 
   CONSTRAINT pk__imcms_text_doc_menu_items PRIMARY KEY (id),
-  UNIQUE KEY uk__imcms_text_doc_menu_items__menu_id__doc_id (menu_id, doc_id),
+  UNIQUE KEY uk__imcms_text_doc_menu_items__menu_id__doc_id (menu_id, to_doc_id),
   CONSTRAINT fk__imcms_text_doc_menu_items__menu FOREIGN KEY (menu_id) REFERENCES imcms_text_doc_menus (id) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO imcms_text_doc_menu_items (
   menu_id,
-  doc_id,
+  to_doc_id,
   manual_sort_order,
   tree_sort_index
 )
@@ -476,7 +476,7 @@ FROM
 
 
 CREATE TABLE `imcms_text_doc_menus_history` (
-  id int NOT NULL AUTO_INCREMENT,
+  id int NOT NULL PRIMARY KEY,
   doc_id int NOT NULL,
   doc_version_no int NOT NULL,
   no int NOT NULL,
@@ -484,23 +484,22 @@ CREATE TABLE `imcms_text_doc_menus_history` (
   
   `modified_datetime` datetime NOT NULL,
   `user_id` int NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `menus_history_FK_meta_id_meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`)
+  CONSTRAINT `fk__imcms_text_doc_menus_history__meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- CREATE TABLE `imcms_text_doc_menu_items_history` (
---   id int NOT NULL AUTO_INCREMENT,
---   menu_id int NOT NULL,
---   doc_id int NOT NULL,
---   manual_sort_order int NOT NULL,
---   tree_sort_index varchar(64) NOT NULL,
---
---   PRIMARY KEY (`menu_id`,`to_meta_id`),
---   KEY `childs_history_FK_to_meta_id_meta` (`to_meta_id`),
---   CONSTRAINT `childs_history_FK_menu_id_menus_history` FOREIGN KEY (`menu_id`) REFERENCES `menus_history` (`menu_id`),
---   CONSTRAINT `childs_history_FK_to_meta_id_meta` FOREIGN KEY (`to_meta_id`) REFERENCES `meta` (`meta_id`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `imcms_text_doc_menu_items_history` (
+  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  menu_id int NOT NULL,
+  doc_id int NOT NULL,
+  manual_sort_order int NOT NULL,
+  tree_sort_index varchar(64) NOT NULL,
+
+ -- CONSTRAINT uk__imcms_text_doc_menu_items_history__menu_id__doc_id UNIQUE KEY (`menu_id`,`doc_id`),
+  -- CONSTRAINT `fk__imcms_text_doc_menu_items_history__menus_history` FOREIGN KEY (`menu_id`) REFERENCES `imcms_text_doc_menus_history` (`menu_id`),
+  -- CONSTRAINT `fk__imcms_text_doc_menu_items_history__1` FOREIGN KEY (`menu_id`) REFERENCES `imcms_text_doc_menus_history` (`menu_id`),
+  CONSTRAINT `fk__imcms_text_doc_menu_items_history__meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 -- text documents texts

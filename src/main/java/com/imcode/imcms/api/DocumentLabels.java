@@ -20,7 +20,7 @@ public class DocumentLabels implements Cloneable {
     private Integer docVersionNo;
 
 	@OneToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="language_id", referencedColumnName="language_id")
+	@JoinColumn(name="language_id", referencedColumnName="id")
     private I18nLanguage language;
 
     /**

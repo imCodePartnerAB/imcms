@@ -77,7 +77,7 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
      * i18n support 
      */
 	@OneToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="language_id", referencedColumnName="language_id")    
+	@JoinColumn(name="language_id", referencedColumnName="id")
     private I18nLanguage language;
 
     public String getName() {

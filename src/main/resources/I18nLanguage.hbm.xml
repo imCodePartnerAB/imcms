@@ -14,7 +14,7 @@
   <!-- Unique -->
   <query name="I18nLanguage.getDefaultLanguage">
     <![CDATA[
-      select l from I18nLanguage l where l.default is true
+      select l from I18nLanguage l where l.default_ is true
     ]]>
   </query>   
   

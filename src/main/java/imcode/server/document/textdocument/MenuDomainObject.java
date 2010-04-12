@@ -70,7 +70,7 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
 	    joinColumns = @JoinColumn(name="menu_id")
 	)	
 	@org.hibernate.annotations.MapKey(
-	   columns = @Column(name="doc_id")
+	   columns = @Column(name="to_doc_id")
 	)
     private Map<Integer, MenuItemDomainObject> menuItems = new HashMap<Integer, MenuItemDomainObject>();
 
