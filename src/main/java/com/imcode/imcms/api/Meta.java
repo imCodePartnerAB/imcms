@@ -1,7 +1,6 @@
 package com.imcode.imcms.api;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -300,7 +299,7 @@ public class Meta implements Serializable, Cloneable {
 	    joinColumns = @JoinColumn(name="doc_id"),
             inverseJoinColumns = @JoinColumn(name="language_id")
         )
-	private Set<I18nLanguage> languages = new HashSet<I18nLanguage>();    
+	private Set<I18nLanguage> enabledLanguages = new HashSet<I18nLanguage>();    
 
 
 	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
@@ -352,7 +351,7 @@ public class Meta implements Serializable, Cloneable {
 				clone.keywords = new HashSet<String>(keywords);
 			}
 
-			if (languages != null) {
+			if (enabledLanguages != null) {
 				clone.keywords = new HashSet<String>(keywords);
 			}
 
@@ -596,12 +595,12 @@ public class Meta implements Serializable, Cloneable {
         this.disabledLanguageShowSetting = disabledLanguageShowSetting;
     }
 
-    public Set<I18nLanguage> getLanguages() {
-        return languages;
+    public Set<I18nLanguage> getEnabledLanguages() {
+        return enabledLanguages;
     }
 
-    public void setLanguages(Set<I18nLanguage> languages) {
-        this.languages = languages;
+    public void setEnabledLanguages(Set<I18nLanguage> enabledLanguages) {
+        this.enabledLanguages = enabledLanguages;
     }
 
     // Transient properties

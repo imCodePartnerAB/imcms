@@ -364,6 +364,7 @@ CREATE TABLE `imcms_html_docs` (
   `doc_id` int NOT NULL,
   `doc_version_no` int NOT NULL,
   `html` longtext,
+  CONSTRAINT uk__imcms_html_docs__doc_id__doc_version_no  UNIQUE KEY (doc_id, doc_version_no),
   CONSTRAINT `fk__imcms_html_docs__meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

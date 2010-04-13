@@ -179,30 +179,39 @@ public class DocumentSaver {
      * @throws NoPermissionToAddDocumentToMenuException
      * @throws DocumentSaveException
      */
+    //todo: add security check.
     @Transactional
-    public DocumentVersion makeDocumentVersion(Meta meta, Map<I18nLanguage, DocumentDomainObject> docs, UserDomainObject user)
+    public DocumentVersion makeDocumentVersion(final Meta meta, Map<I18nLanguage, DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        DocumentVersion documentVersion = documentVersionDao.createVersion(meta.getId(), user.getId());
+        DocumentVersion nextVersion = documentVersionDao.createVersion(meta.getId(), user.getId());
 
-        DocumentVersionCreationVisitor visitor = new DocumentVersionCreationVisitor(documentMapper.getImcmsServices(), user);
+        // saves labels
+        for (DocumentDomainObject doc: docs.values()) {
+            DocumentLabels labels = doc.getLabels();
+
+            labels.setId(null);
+            labels.setDocVersionNo(nextVersion.getNo());
+            metaDao.saveLabels(labels);
+
+        }
+
+        // save content    
+        DocumentVersionCreationVisitor docCreationVisitor = new DocumentVersionCreationVisitor(documentMapper.getImcmsServices(), user);
 
         for (DocumentDomainObject doc: docs.values()) {
             doc.accept(new DocIdentityCleanerVisitor());
             
-            DocumentLabels labels = doc.getLabels();
-
-            labels.setDocVersionNo(documentVersion.getNo());
-            labels.setId(null);
-            metaDao.saveLabels(labels);
-
-            doc.setVersion(documentVersion);
+            doc.setVersion(nextVersion);
 
             doc.setMeta(meta);
-            doc.accept(visitor);
+            doc.accept(docCreationVisitor);
+
+            // Only text doc has i18n content.
+            if (!(doc instanceof TextDocumentDomainObject)) break; 
         }
 
-        return documentVersion;
+        return nextVersion;
     }
 
 
@@ -405,6 +414,19 @@ public class DocumentSaver {
 
 
 
+//            DocumentDomainObject doc = getCustomDocument(docId, docVersionNo, language);
+//            if (doc != null) {
+//                doc.setAlias(null);
+//                makeDocumentLookNew(doc, user);
+//                DocumentLabels labels = doc.getLabels();
+//                labels.setHeadline(labels.getHeadline() + copyHeadlineSuffix);
+//
+//                // todo: ??? move to makeDocLookNew
+//                doc.accept(new DocIdentityCleanerVisitor());
+//
+//                docs.put(language, doc);
+//            }
+
     @Transactional
     public Integer copyDocument(Meta meta, Map<I18nLanguage, DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
@@ -420,25 +442,38 @@ public class DocumentSaver {
         // Update permissions
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(firstDoc, user, null);
 
-        // ensure meta is null.
-        firstDoc.getMeta().setId(null);
+        Meta copyMeta = meta.clone();
+        
+        copyMeta.setId(null);
+        copyMeta = saveMeta(copyMeta);
+        Integer copyDocId = copyMeta.getId();
 
-        Meta newMeta = saveMeta(firstDoc);
-        Integer docId = newMeta.getId();
+        metaDao.insertPropertyIfNotExists(copyDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, copyDocId.toString());
 
-        metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
-
-        DocumentVersion version = documentVersionDao.createVersion(newMeta.getId(), user.getId());
-
-        //todo: copy labels.
+        DocumentVersion copyDocVersion = documentVersionDao.createVersion(copyDocId, user.getId());
 
         for (DocumentDomainObject doc: docs.values()) {
-            doc.setMeta(newMeta);
-            doc.setVersion(version);
-            doc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
+            DocumentLabels labels = doc.getLabels();
+            labels.setId(null);
+            labels.setDocId(copyDocId);
+            labels.setDocVersionNo(copyDocVersion.getNo());
+
+            metaDao.saveLabels(labels);
         }
 
-        return docId;
+        DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
+
+        for (DocumentDomainObject doc: docs.values()) {
+            doc.setMeta(copyMeta);
+            doc.setVersion(copyDocVersion);
+
+            doc.accept(docCreatingVisitor);
+
+            // Only text doc has i18n content.
+            if (!(doc instanceof TextDocumentDomainObject)) break;
+        }
+
+        return copyDocId;
     }
 
     
@@ -494,6 +529,20 @@ public class DocumentSaver {
     	
     	metaDao.saveMeta(meta);
     	
+    	return meta;
+    }
+
+
+    /**
+     * @return saved document meta.
+     */
+    private Meta saveMeta(Meta meta) {
+    	if (meta.getId() == null) {
+        	meta.setActivate(1);
+    	}
+
+    	metaDao.saveMeta(meta);
+
     	return meta;
     }
     

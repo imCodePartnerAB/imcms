@@ -1,7 +1,6 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.DocumentMapper;
-import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -35,7 +34,7 @@ public class DocumentRequest {
         if (doc != null && !language.isDefault() && !user.isSuperAdmin()) {
             Meta meta = doc.getMeta();
 
-            if (!meta.getLanguages().contains(language)) {
+            if (!meta.getEnabledLanguages().contains(language)) {
                 if (meta.getDisabledLanguageShowSetting() != Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE) {
                     doc = null;
                 } else {

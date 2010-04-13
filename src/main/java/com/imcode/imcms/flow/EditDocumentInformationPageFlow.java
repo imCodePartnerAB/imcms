@@ -3,12 +3,10 @@ package com.imcode.imcms.flow;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
-import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.HttpSessionUtils;
 import imcode.util.Utility;
-import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,15 +20,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.UnhandledException;
 
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.Meta;
 import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.DocumentLabels;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.servlet.admin.ImageBrowser;
 import com.imcode.imcms.servlet.admin.ListDocumentAliasPage;
 import com.imcode.imcms.servlet.admin.UserFinder;
@@ -116,7 +111,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         if (docId != null) {
             MetaDao metaDao = (MetaDao)Imcms.getSpringBean("metaDao");
 
-            for (I18nLanguage language: document.getMeta().getLanguages()) {
+            for (I18nLanguage language: document.getMeta().getEnabledLanguages()) {
                 languagesStates.put(language, true);    
             }
         }

@@ -141,9 +141,20 @@ public class MetaDao extends HibernateTemplate {
 		saveOrUpdate(include);
 	}
 
+
+ 	@Transactional
+	public void deleteHtmlReference(Integer docId, Integer docVersionNo) {
+		bulkUpdate("delete from HtmlReference r where r.docId = ? AND r.docVersionNo = ?", new Object [] {docId, docVersionNo});
+	}
+
+ 	@Transactional
+	public void deleteUrlReference(Integer docId, Integer docVersionNo) {
+		bulkUpdate("delete from UrlReference r where r.docId = ? AND r.docVersionNo = ?", new Object [] {docId, docVersionNo});
+	}
+
 	@Transactional
 	public void saveTemplateNames(TemplateNames templateNames) {
-		saveOrUpdate(templateNames);
+		merge(templateNames);
 	}
 
 	@Transactional
@@ -196,7 +207,7 @@ public class MetaDao extends HibernateTemplate {
 	
 	@Transactional
 	public HtmlReference saveHtmlReference(HtmlReference reference) {
-		merge(reference);
+		saveOrUpdate(reference);
 		
 		return reference;
 	}

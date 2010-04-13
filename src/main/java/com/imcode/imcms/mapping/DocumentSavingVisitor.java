@@ -45,7 +45,8 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     	htmlReference.setDocId(document.getMeta().getId());
         htmlReference.setDocVersionNo(document.getVersionNo());
     	htmlReference.setHtml(document.getHtml());
-    	    	
+
+        dao.deleteHtmlReference(document.getId(), document.getVersionNo());
     	dao.saveHtmlReference(htmlReference);
     }
 
@@ -61,7 +62,8 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     	reference.setUrlText("");
     	reference.setUrlLanguagePrefix("");
     	reference.setUrlFrameName("");
-    	
+
+        dao.deleteUrlReference(document.getId(), document.getVersionNo());
 	    dao.saveUrlReference(reference);
     }
 

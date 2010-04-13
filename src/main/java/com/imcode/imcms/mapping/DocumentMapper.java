@@ -203,6 +203,7 @@ public class DocumentMapper implements DocumentGetter {
      *
      * @see #copyDocument(imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)
      */
+    //todo: ignore copying flag
     public <T extends DocumentDomainObject> T saveNewDocument(final T doc, final UserDomainObject user, boolean copying)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
@@ -223,30 +224,6 @@ public class DocumentMapper implements DocumentGetter {
         return (T)getWorkingDocument(docId, language);
     }
 
-
-    /**
-     * Saves new document.
-     *
-     * Document's meta might be a copy of an existing document.
-     *
-     * @param docs
-     * @param user
-     * @param copying controls how document's permissions are saved.
-     * @return saved doc id.
-     * @throws DocumentSaveException
-     * @throws NoPermissionToAddDocumentToMenuException
-     *
-     * @since 6.0
-     */
-//    public Integer saveNewDocument(Meta meta, Map<I18nLanguage, DocumentDomainObject> docs, UserDomainObject user, boolean copying)
-//            throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
-//
-//        Integer docId = documentSaver.saveNewDocument(meta, docs, user, copying);
-//
-//        invalidateDocument(docId);
-//
-//        return docId;
-//    }
 
     /**
      * Updates existing document.
@@ -320,10 +297,13 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * @return copied document in default language.
+     * Creates next document version.
+     * 
+     * Saves document's working version copy as next document version.
+     *
+     * @return new document version.
      *
      * @since 6.0
-     * TODO: refactor.
      */
     public DocumentVersion makeDocumentVersion(final Integer docId, final UserDomainObject user)
         throws DocumentSaveException {
@@ -334,15 +314,19 @@ public class DocumentMapper implements DocumentGetter {
 
         for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
             DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDocument(docId, DocumentVersion.WORKING_VERSION_NO, language);
-            docs.put(language, doc);
+
+            if (doc != null) {
+                docs.put(language, doc);
+            }
         }
 
         if (docs.isEmpty()) {
             throw new IllegalArgumentException(String.format(
-                    "Unable to make a version. Source document does not exists: docId: %d.",
+                    "Unable to make next document version. Working document does not exists: docId: %d.",
                     docId));
         }
 
+        
         DocumentVersion version = documentSaver.makeDocumentVersion(meta, docs, user);
 
         invalidateDocument(docId);
@@ -539,7 +523,7 @@ public class DocumentMapper implements DocumentGetter {
 
     
     /**
-     * Creates new document as a copy of an existing document.
+     * Creates a new doc as a copy of an existing doc.
      *
      * Please note that provided document is not used as a new document prototype; it is used as a structure
      * to pass existing doc identities (id, version, language) to the method.
@@ -562,7 +546,9 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * @return new document id.
+     * Creates a new doc as a copy of an existing doc.
+     *
+     * @return new doc id.
      * 
      * @since 6.0
      */
@@ -583,8 +569,7 @@ public class DocumentMapper implements DocumentGetter {
                 makeDocumentLookNew(doc, user);
                 DocumentLabels labels = doc.getLabels();
                 labels.setHeadline(labels.getHeadline() + copyHeadlineSuffix);
-
-                // todo: ??? move to makeDocLookNew
+                
                 doc.accept(new DocIdentityCleanerVisitor());
 
                 docs.put(language, doc);
@@ -599,7 +584,7 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         
-        return documentSaver.copyDocument(meta, docs, user);
+        return documentSaver.copyDocument(meta.clone(), docs, user);
     }
     
 

@@ -196,24 +196,6 @@ public class DocumentMapperTest {
 //    }
 
 
-//    @Test(enabled = true, dataProvider = "docCopyFlag")
-//    public void saveNewDocumentWithLabels(boolean copyFlag) throws Exception {
-//        DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
-//        DocumentDomainObject doc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
-//
-//        List<DocumentLabels> labels = new LinkedList<DocumentLabels>();
-//
-//        for (I18nLanguage lang: i18nSupport.getLanguages()) {
-//            DocumentLabels l = new DocumentLabels();
-//
-//            l.setHeadline(":headline in:" + lang.getCode());
-//            l.setMenuImageURL(":url in:" + lang.getCode());
-//            l.setMenuText(":menuText in:" + lang.getCode());
-//        }
-//
-//        docMapper.saveNewDocument(doc, labels, admin, copyFlag);
-//    }
-
 
 
 
@@ -323,8 +305,26 @@ public class DocumentMapperTest {
 
 
     @Test(enabled = true)
-    public void getDocument() {
+    public void getTextDocument() {
         getMainWorkingDocumentInDefaultLanguage(true);
+    }
+
+
+    @Test(enabled = true)
+    public void getFileDocument() {
+        fail("NOT IMPLEMENTED");
+    }
+
+
+    @Test(enabled = true)
+    public void getHtmlDocument() {
+        fail("NOT IMPLEMENTED");
+    }
+
+
+    @Test(enabled = true)
+    public void getUrlDocument() {
+        fail("NOT IMPLEMENTED");
     }
     
 
@@ -462,26 +462,29 @@ public class DocumentMapperTest {
 
 
     @Test
-    public void deleteTextDocument() {
-        fail("NOT IMPLEMENTED");
+    public void deleteTextDocument() throws Exception {
+        DocumentDomainObject doc = saveNewTextDocumentFn(true);
+        docMapper.deleteDocument(doc, admin);
     }
 
 
     @Test
-    public void deleteHtmlDocument() {
-        fail("NOT IMPLEMENTED");
+    public void deleteHtmlDocument() throws Exception {
+        DocumentDomainObject doc = saveNewHtmlDocumentFn(true);
+        docMapper.deleteDocument(doc, admin);
     }
 
 
     @Test
-    public void deleteUrlDocument() {
-        fail("NOT IMPLEMENTED");;
+    public void deleteUrlDocument() throws Exception {
+        DocumentDomainObject doc = saveNewUrlDocumentFn(true);
+        docMapper.deleteDocument(doc, admin);
     }
 
-
     @Test
-    public void deleteFileDocument() {
-        fail("NOT IMPLEMENTED");
+    public void deleteFileDocument()  throws Exception {
+        DocumentDomainObject doc = saveNewFileDocumentFn(true);
+        docMapper.deleteDocument(doc, admin);
     }
 
 

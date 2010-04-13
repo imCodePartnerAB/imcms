@@ -9,7 +9,7 @@ public class UrlReference {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;    
 	
-	@Id @Column(name="doc_id")
+	@Column(name="doc_id")
 	private Integer docId;		
 
 	@Column(name="frame_name")
