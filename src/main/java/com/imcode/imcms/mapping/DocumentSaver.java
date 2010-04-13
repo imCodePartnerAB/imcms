@@ -188,6 +188,7 @@ public class DocumentSaver {
 
         // saves labels
         for (DocumentDomainObject doc: docs.values()) {
+            doc.accept(new DocIdentityCleanerVisitor());
             DocumentLabels labels = doc.getLabels();
 
             labels.setId(null);
@@ -200,8 +201,6 @@ public class DocumentSaver {
         DocumentVersionCreationVisitor docCreationVisitor = new DocumentVersionCreationVisitor(documentMapper.getImcmsServices(), user);
 
         for (DocumentDomainObject doc: docs.values()) {
-            doc.accept(new DocIdentityCleanerVisitor());
-            
             doc.setVersion(nextVersion);
 
             doc.setMeta(meta);
@@ -448,7 +447,7 @@ public class DocumentSaver {
         copyMeta = saveMeta(copyMeta);
         Integer copyDocId = copyMeta.getId();
 
-        metaDao.insertPropertyIfNotExists(copyDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, copyDocId.toString());
+        //metaDao.insertPropertyIfNotExists(copyDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, copyDocId.toString());
 
         DocumentVersion copyDocVersion = documentVersionDao.createVersion(copyDocId, user.getId());
 

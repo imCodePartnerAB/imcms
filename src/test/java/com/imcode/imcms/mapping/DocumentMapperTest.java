@@ -203,7 +203,7 @@ public class DocumentMapperTest {
     public void copyTextDocument() throws Exception {
         TextDocumentDomainObject doc = saveNewTextDocumentFn(false);
 
-        TextDocumentDomainObject docCopy = (TextDocumentDomainObject)docMapper.copyDocument(doc, admin);
+        TextDocumentDomainObject docCopy = docMapper.copyDocument(doc, admin);
     }
 
 
@@ -227,7 +227,7 @@ public class DocumentMapperTest {
     public void copyFileDocument() throws Exception {
         FileDocumentDomainObject doc = saveNewFileDocumentFn(false);
 
-        FileDocumentDomainObject docCopy = (FileDocumentDomainObject)docMapper.copyDocument(doc, admin);
+        FileDocumentDomainObject docCopy = docMapper.copyDocument(doc, admin);
     }    
     
 
@@ -348,6 +348,9 @@ public class DocumentMapperTest {
     }
 
 
+    /**
+     * Saves document's content (all expect meta).
+     */
     @Test
     public void saveDocumentContent() {
         fail("NOT IMPLEMENTED");

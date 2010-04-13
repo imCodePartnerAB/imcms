@@ -315,7 +315,7 @@ public class DocumentMapper implements DocumentGetter {
         for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
             DocumentDomainObject doc = documentLoaderCachingProxy.getCustomDocument(docId, DocumentVersion.WORKING_VERSION_NO, language);
 
-            if (doc != null) {
+            if (doc != null) {                
                 docs.put(language, doc);
             }
         }
@@ -536,12 +536,12 @@ public class DocumentMapper implements DocumentGetter {
      * @throws NoPermissionToAddDocumentToMenuException
      * @throws DocumentSaveException
      */
-    public DocumentDomainObject copyDocument(final DocumentDomainObject doc, final UserDomainObject user)
+    public <T extends DocumentDomainObject> T copyDocument(final T doc, final UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         Integer docId = copyDocument(doc.getId(), doc.getVersionNo(), user);
 
-        return getWorkingDocument(docId, doc.getLanguage());
+        return (T)getWorkingDocument(docId, doc.getLanguage());
     }
 
 

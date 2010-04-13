@@ -67,7 +67,7 @@ public class MetaDao extends HibernateTemplate {
         if (existingValue != null && existingValue.length() > 0) {
             return false;    
         }
-
+        
         session.createSQLQuery("INSERT INTO document_properties (meta_id, key_name, value) VALUES (:docId, :name, :value)")
                .setParameter("docId", docId)
                .setParameter("name", name)
@@ -254,33 +254,38 @@ public class MetaDao extends HibernateTemplate {
 	@Transactional
 	public void deleteDocument(final Integer metaId) {
 		String[] sqls = {
-			"DELETE FROM document_categories WHERE meta_id = ?", 
-			// delete form keywords ???
-			"DELETE FROM childs WHERE to_meta_id = ?", 
-			"DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?)",	
-			"DELETE FROM menus WHERE meta_id = ?", 
+			"DELETE FROM document_categories WHERE meta_id = ?",
+			"DELETE FROM imcms_text_doc_menu_items WHERE to_doc_id = ?",
+			"DELETE FROM imcms_text_doc_menu_items WHERE menu_id IN (SELECT doc_id FROM imcms_text_doc_menus WHERE doc_id = ?)",
+			"DELETE FROM imcms_text_doc_menus WHERE doc_id = ?", 
 			"DELETE FROM text_docs WHERE meta_id = ?", 
-			"DELETE FROM texts WHERE meta_id = ?", 
-			"DELETE FROM images WHERE meta_id = ?", 
+			"DELETE FROM imcms_text_doc_texts WHERE doc_id = ?", 
+			"DELETE FROM imcms_text_doc_images WHERE doc_id = ?", 
 			"DELETE FROM roles_rights WHERE meta_id = ?", 
 			"DELETE FROM user_rights WHERE meta_id = ?", 
-			"DELETE FROM url_docs WHERE meta_id = ?", 
+			"DELETE FROM imcms_url_docs WHERE meta_id = ?",
 			"DELETE FROM fileupload_docs WHERE meta_id = ?", 
-			"DELETE FROM frameset_docs WHERE meta_id = ?", 
+			"DELETE FROM imcms_html_docs WHERE doc_id = ?", 
 			"DELETE FROM new_doc_permission_sets_ex WHERE meta_id = ?", 
 			"DELETE FROM new_doc_permission_sets WHERE meta_id = ?", 
 			"DELETE FROM doc_permission_sets_ex WHERE meta_id = ?", 
 			"DELETE FROM doc_permission_sets WHERE meta_id = ?", 
 			"DELETE FROM includes WHERE meta_id = ?", 
 			"DELETE FROM includes WHERE included_meta_id = ?", 
-			"DELETE FROM texts_history WHERE meta_id = ?", 
-			"DELETE FROM images_history WHERE meta_id = ?", 
-			"DELETE FROM childs_history WHERE to_meta_id = ?", 
-			"DELETE FROM childs_history WHERE menu_id IN (SELECT menu_id FROM menus_history WHERE meta_id = ?)",
-			"DELETE FROM menus_history WHERE meta_id = ?", 
+			"DELETE FROM imcms_text_doc_texts_history WHERE meta_id = ?", 
+			"DELETE FROM imcms_text_doc_images_history WHERE meta_id = ?",
+			"DELETE FROM imcms_text_doc_menu_items_history WHERE to_doc_id = ?", 
+			"DELETE FROM imcms_text_doc_menu_items_history WHERE menu_id IN (SELECT menu_id FROM imcms_text_doc_menus_history WHERE doc_id = ?)",
+			"DELETE FROM imcms_text_doc_menus_history WHERE doc_id = ?", 
 			"DELETE FROM document_properties WHERE meta_id = ?", 	
-			"DELETE FROM i18n_meta WHERE meta_id = ?", 	
-			"DELETE FROM meta WHERE meta_id = ?", 	
+			"DELETE FROM imcms_doc_labels WHERE doc_id = ?",
+            "DELETE FROM imcms_text_doc_contents WHERE doc_id = ?",
+            "DELETE FROM imcms_text_doc_content_loops WHERE doc_id = ?",
+            "DELETE FROM imcms_doc_default_version WHERE doc_id = ?",
+            "DELETE FROM imcms_doc_languages WHERE doc_id = ?",
+            "DELETE FROM imcms_doc_keywords WHERE doc_id = ?",
+            "DELETE FROM imcms_doc_versions WHERE doc_id = ?",
+			"DELETE FROM meta WHERE meta_id = ?",
 		};
 		
 		Session session = getSession();
