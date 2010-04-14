@@ -86,7 +86,7 @@
   <!-- Unique -->
   <query name="DocumentProperty.getDocumentIdByAlias">
     <![CDATA[
-		SELECT p.documentId
+		SELECT p.docId
 		FROM DocumentProperty p
 		WHERE p.name = :name AND value= :value
     ]]>
@@ -109,7 +109,16 @@
 		DocumentProperty p
 		WHERE p.name = :name AND lower(p.value) = lower(:value)
     ]]>
-  </query>    
+  </query>
+
+  <!-- Unique -->
+  <query name="DocumentProperty.getProperty">
+    <![CDATA[
+		SELECT p FROM
+		DocumentProperty p
+		WHERE p.docId = :docId AND p.name = :name
+    ]]>
+  </query>
 
   <!-- ==================================================================== -->
   <!-- CATEGORIES -->

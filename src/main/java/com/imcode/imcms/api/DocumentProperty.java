@@ -18,7 +18,7 @@ public class DocumentProperty {
 	private Long id;
 	
 	@Column(name="meta_id", nullable=false)
-	private Integer documentId;	
+	private Integer docId;	
 	
 	@Column(name="key_name", nullable=false)
 	private String name;
@@ -26,7 +26,7 @@ public class DocumentProperty {
 	@Column(name="value", nullable=false)
 	private String value;
 
-	public Long getId() {
+    public Long getId() {
 		return id;
 	}
 
@@ -34,12 +34,12 @@ public class DocumentProperty {
 		this.id = id;
 	}
 
-	public Integer getDocumentId() {
-		return documentId;
+	public Integer getDocId() {
+		return docId;
 	}
 
-	public void setDocumentId(Integer metaId) {
-		this.documentId = metaId;
+	public void setDocId(Integer metaId) {
+		this.docId = metaId;
 	}
 
 	public String getName() {
@@ -56,5 +56,5 @@ public class DocumentProperty {
 
 	public void setValue(String value) {
 		this.value = value;
-	}	
+	}
 }

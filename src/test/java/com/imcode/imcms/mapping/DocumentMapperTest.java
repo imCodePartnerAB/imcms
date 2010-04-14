@@ -219,7 +219,7 @@ public class DocumentMapperTest {
     public void copyUrlDocument() throws Exception {
         UrlDocumentDomainObject doc = saveNewUrlDocumentFn(false);
 
-        UrlDocumentDomainObject docCopy = (UrlDocumentDomainObject)docMapper.copyDocument(doc, admin);
+        UrlDocumentDomainObject docCopy = docMapper.copyDocument(doc, admin);
     }
     
 

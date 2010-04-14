@@ -1,11 +1,9 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.DocIdentityCleanerVisitor;
-import com.imcode.imcms.util.Factory;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
-import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.RoleId;
@@ -501,6 +499,10 @@ public class DocumentSaver {
         Meta newMeta = saveMeta(doc);
         Integer docId = newMeta.getId();
 
+//        DocumentProperty property = new DocumentProperty();
+//        property.setDocId(docId);
+//        property.setName();
+
         metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
 
         DocumentVersion version = documentVersionDao.createVersion(newMeta.getId(), user.getId());
@@ -617,7 +619,7 @@ public class DocumentSaver {
     		if (property != null) {
     			Integer documentId = document.getId();
     			
-    			if (!property.getDocumentId().equals(documentId)) {
+    			if (!property.getDocId().equals(documentId)) {
                     throw new AliasAlreadyExistsInternalException(
                     		String.format("Alias %s is allready given to document %d.", alias, documentId));    				
     			}			

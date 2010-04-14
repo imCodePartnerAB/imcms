@@ -5,6 +5,7 @@ import imcode.server.document.DocumentDomainObject;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,22 +59,26 @@ public class MetaDao extends HibernateTemplate {
 
     @Transactional
     public boolean insertPropertyIfNotExists(Integer docId, String name, String value) {
-        Session session = getSession();
-        String existingValue = (String)session.createSQLQuery("SELECT value FROM document_properties WHERE meta_id = :docId AND key_name = :name")
-               .setParameter("docId", docId)
-               .setParameter("name", name)
-               .uniqueResult();
+        DocumentProperty property = (DocumentProperty)getSession()
+                .getNamedQuery("DocumentProperty.getProperty")
+                .setParameter("docId", docId)
+                .setParameter("name", name)
+                .uniqueResult();
 
-        if (existingValue != null && existingValue.length() > 0) {
-            return false;    
+        if (property != null) {
+            if (StringUtils.isNotBlank(property.getValue())) {
+                return false;
+            }
+        } else {
+            property = new DocumentProperty();
+            property.setDocId(docId);
+            property.setName(name);
         }
-        
-        session.createSQLQuery("INSERT INTO document_properties (meta_id, key_name, value) VALUES (:docId, :name, :value)")
-               .setParameter("docId", docId)
-               .setParameter("name", name)
-               .setParameter("value", value)
-               .executeUpdate();
 
+        property.setValue(value);
+
+        saveOrUpdate(property);
+        
         return true;
     }
 
@@ -242,14 +247,16 @@ public class MetaDao extends HibernateTemplate {
 				"DocumentProperty.getAllAliases", "name", 
 				DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
 	}	
-	
+
+    
 	@Transactional
 	public DocumentProperty getAliasProperty(String alias) {
 		return (DocumentProperty)getSession().getNamedQuery("DocumentProperty.getAliasProperty")
 			.setParameter("name", DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)
 			.setParameter("value", alias)
 			.uniqueResult();
-	}	
+	}
+    
 	
 	@Transactional
 	public void deleteDocument(final Integer metaId) {
