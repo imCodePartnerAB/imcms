@@ -28,6 +28,8 @@ public class DocumentMapperTest {
 
     private UserDomainObject admin;
 
+    private UserDomainObject user;
+
     private I18nSupport i18nSupport;
 
 
@@ -37,6 +39,7 @@ public class DocumentMapperTest {
         i18nSupport = Imcms.getI18nSupport();
         docMapper = Imcms.getServices().getDocumentMapper();
         admin = Imcms.getServices().verifyUser("admin", "admin");
+        user = Imcms.getServices().verifyUser("user", "user");
     }
 
     
@@ -68,7 +71,7 @@ public class DocumentMapperTest {
         DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
         TextDocumentDomainObject newDoc = (TextDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
 
-        return (TextDocumentDomainObject)docMapper.saveNewDocument(newDoc, admin, copyFlag);
+        return docMapper.saveNewDocument(newDoc, admin, copyFlag);
     }
 
     
@@ -128,6 +131,16 @@ public class DocumentMapperTest {
 
         docMapper.saveDocument(doc, admin);
     }
+
+
+    //@Test(enabled = true, expectedExceptions = NoPermissionToEditDocumentException.class)
+    @Test
+    public void saveTextDocumentNoPermissions() throws Exception {
+        DocumentDomainObject doc = saveNewTextDocumentFn(false);
+
+        docMapper.saveDocument(doc, user);
+    }
+
 
     @Test(enabled = true)
     public void saveHtmlDocument() throws Exception {
@@ -199,12 +212,21 @@ public class DocumentMapperTest {
 
 
 
+    @Test(enabled = false, expectedExceptions = NoPermissionToAddDocumentToMenuException.class)
+    public void copyTextDocumentNoPermission() throws Exception {
+        TextDocumentDomainObject doc = saveNewTextDocumentFn(false);
+
+        TextDocumentDomainObject docCopy = docMapper.copyDocument(doc, user);
+    }
+
+
     @Test(enabled = true)
     public void copyTextDocument() throws Exception {
         TextDocumentDomainObject doc = saveNewTextDocumentFn(false);
 
         TextDocumentDomainObject docCopy = docMapper.copyDocument(doc, admin);
     }
+
 
 
     @Test(enabled = true)
@@ -437,24 +459,35 @@ public class DocumentMapperTest {
 
     @Test
     public void saveTextDocumentContentLoop() throws Exception {
-        fail("NOT IMPLEMENTED");
+        TextDocumentDomainObject doc = saveNewTextDocumentFn(false);
+
+        ContentLoop loop = new ContentLoop();
+        loop.addFirstContent();
+
+        doc.setContentLoop(0, loop);
+
+        docMapper.saveDocument(doc, admin);
     }
 
 
     @Test
     public void invalidateDocument() throws Exception {
-        fail("NOT IMPLEMENTED");
+        TextDocumentDomainObject doc = saveNewTextDocumentFn(false);
+
+        docMapper.invalidateDocument(doc);
     }
 
     @Test
     public void getWorkingDocument() {
-        fail("NOT IMPLEMENTED");
+        TextDocumentDomainObject doc = getMainWorkingDocumentInDefaultLanguage(true);
     }
 
 
     @Test
     public void getDefaultDocument() {
-        fail("NOT IMPLEMENTED");
+        DocumentDomainObject doc = docMapper.getDefaultDocument(1001);
+
+        assertNotNull(doc);
     }
 
 
