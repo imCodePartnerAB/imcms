@@ -447,7 +447,7 @@ public class DocumentSaver {
         copyMeta = saveMeta(copyMeta);
         Integer copyDocId = copyMeta.getId();
 
-        //metaDao.insertPropertyIfNotExists(copyDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, copyDocId.toString());
+        metaDao.insertPropertyIfNotExists(copyDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, copyDocId.toString());
 
         DocumentVersion copyDocVersion = documentVersionDao.createVersion(copyDocId, user.getId());
 

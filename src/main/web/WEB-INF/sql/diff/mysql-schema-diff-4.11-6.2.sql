@@ -492,14 +492,14 @@ CREATE TABLE `imcms_text_doc_menus_history` (
 CREATE TABLE `imcms_text_doc_menu_items_history` (
   id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
   menu_id int NOT NULL,
-  doc_id int NOT NULL,
+  to_doc_id int NOT NULL,
   manual_sort_order int NOT NULL,
   tree_sort_index varchar(64) NOT NULL,
 
  -- CONSTRAINT uk__imcms_text_doc_menu_items_history__menu_id__doc_id UNIQUE KEY (`menu_id`,`doc_id`),
   -- CONSTRAINT `fk__imcms_text_doc_menu_items_history__menus_history` FOREIGN KEY (`menu_id`) REFERENCES `imcms_text_doc_menus_history` (`menu_id`),
   -- CONSTRAINT `fk__imcms_text_doc_menu_items_history__1` FOREIGN KEY (`menu_id`) REFERENCES `imcms_text_doc_menus_history` (`menu_id`),
-  CONSTRAINT `fk__imcms_text_doc_menu_items_history__meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`) ON DELETE CASCADE
+  CONSTRAINT `fk__imcms_text_doc_menu_items_history__meta` FOREIGN KEY (`to_doc_id`) REFERENCES `meta` (`meta_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
