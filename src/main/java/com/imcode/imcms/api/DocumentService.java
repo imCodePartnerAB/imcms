@@ -130,7 +130,7 @@ public class DocumentService {
     public synchronized void saveChanges(Document document) throws NoPermissionException, SaveException {
         try {
             if ( 0 == document.getId() ) {
-                getDocumentMapper().saveNewDocument(document.getInternal(), contentManagementSystem.getCurrentUser().getInternal(), false);
+                getDocumentMapper().saveNewDocument(document.getInternal(), contentManagementSystem.getCurrentUser().getInternal());
             } else {
                 getDocumentMapper().saveDocument(document.getInternal(), contentManagementSystem.getCurrentUser().getInternal());
             }

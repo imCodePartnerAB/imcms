@@ -194,7 +194,6 @@ public class DocumentMapper implements DocumentGetter {
      * 
      * @param doc
      * @param user
-     * @param copying flag controls document's permissions inheritance.
      * 
      * @return saved document.
      *
@@ -204,7 +203,7 @@ public class DocumentMapper implements DocumentGetter {
      * @see #copyDocument(imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)
      */
     //todo: ignore copying flag
-    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, final UserDomainObject user, boolean copying)
+    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         DocumentDomainObject docClone = doc.clone();
@@ -217,7 +216,7 @@ public class DocumentMapper implements DocumentGetter {
             docClone.setLanguage(language);
         }
 
-        Integer docId = documentSaver.saveNewDocument(docClone, user, copying);
+        Integer docId = documentSaver.saveNewDocument(docClone, user);
 
         invalidateDocument(docId);
 
@@ -280,20 +279,6 @@ public class DocumentMapper implements DocumentGetter {
     		invalidateDocument(doc);
     	}
     }
-
-    
-    /**
-     * Makes next version of a working document.
-     * TODO: Optional - add comments
-     */
-//    public DocumentVersion makeDocumentVersion(Integer docId, UserDomainObject user)
-//    throws DocumentSaveException, NoPermissionToEditDocumentException {
-//        try {
-//    	    return documentSaver.makeDocumentVersion(docId, user);
-//        } finally {
-//            invalidateDocument(docId);
-//        }
-//	}
 
 
     /**

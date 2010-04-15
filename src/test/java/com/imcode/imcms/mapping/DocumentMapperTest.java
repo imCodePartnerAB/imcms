@@ -43,55 +43,55 @@ public class DocumentMapperTest {
     }
 
     
-    @Test(enabled = true, dataProvider = "docCopyFlag")
-    public void saveNewTextDocument(boolean copyFlag) throws Exception {
-        saveNewTextDocumentFn(copyFlag);
+    @Test(enabled = true)
+    public void saveNewTextDocument() throws Exception {
+        saveNewTextDocumentFn();
     }
 
 
-    @Test(enabled = true, dataProvider = "docCopyFlag")
-    public void saveNewUrlDocument(boolean copyFlag) throws Exception {
-        saveNewUrlDocumentFn(copyFlag);
+    @Test(enabled = true)
+    public void saveNewUrlDocument() throws Exception {
+        saveNewUrlDocumentFn();
     }
 
 
-    @Test(enabled = true, dataProvider = "docCopyFlag")
-    public void saveNewHtmlDocument(boolean copyFlag) throws Exception {
-        saveNewHtmlDocumentFn(copyFlag);
+    @Test(enabled = true)
+    public void saveNewHtmlDocument() throws Exception {
+        saveNewHtmlDocumentFn();
     }
 
 
-    @Test(enabled = true, dataProvider = "docCopyFlag")
-    public void saveNewFileDocument(boolean copyFlag) throws Exception {
-        saveNewFileDocumentFn(copyFlag);
+    @Test(enabled = true)
+    public void saveNewFileDocument() throws Exception {
+        saveNewFileDocumentFn();
     }
     
 
-    public TextDocumentDomainObject saveNewTextDocumentFn(boolean copyFlag) throws Exception {
+    public TextDocumentDomainObject saveNewTextDocumentFn() throws Exception {
         DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
         TextDocumentDomainObject newDoc = (TextDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
 
-        return docMapper.saveNewDocument(newDoc, admin, copyFlag);
+        return docMapper.saveNewDocument(newDoc, admin);
     }
 
     
-    public UrlDocumentDomainObject saveNewUrlDocumentFn(boolean copyFlag) throws Exception {
+    public UrlDocumentDomainObject saveNewUrlDocumentFn() throws Exception {
         DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
         UrlDocumentDomainObject newDoc = (UrlDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.URL_ID, parentDoc, admin);
 
-        return docMapper.saveNewDocument(newDoc, admin, copyFlag);
+        return docMapper.saveNewDocument(newDoc, admin);
     }
 
 
-    public HtmlDocumentDomainObject saveNewHtmlDocumentFn(boolean copyFlag) throws Exception {
+    public HtmlDocumentDomainObject saveNewHtmlDocumentFn() throws Exception {
         DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
         HtmlDocumentDomainObject newDoc = (HtmlDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.HTML_ID, parentDoc, admin);
 
-        return docMapper.saveNewDocument(newDoc, admin, copyFlag);
+        return docMapper.saveNewDocument(newDoc, admin);
     }    
 
 
-    public FileDocumentDomainObject saveNewFileDocumentFn(boolean copyFlag) throws Exception {
+    public FileDocumentDomainObject saveNewFileDocumentFn() throws Exception {
         DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
         FileDocumentDomainObject newDoc = (FileDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.FILE_ID, parentDoc, admin);
         FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
@@ -115,7 +115,7 @@ public class DocumentMapperTest {
 
 
         newDoc.addFile("testFile", file);
-        FileDocumentDomainObject savedDoc = docMapper.saveNewDocument(newDoc, admin, true);
+        FileDocumentDomainObject savedDoc = docMapper.saveNewDocument(newDoc, admin);
 
         DocumentVersion version = docMapper.makeDocumentVersion(savedDoc.getId(), admin);
         DocumentDomainObject doc = docMapper.getCustomDocument(savedDoc.getId(), version.getNo());
@@ -127,7 +127,7 @@ public class DocumentMapperTest {
 
     @Test(enabled = true)
     public void saveTextDocument() throws Exception {
-        DocumentDomainObject doc = saveNewTextDocumentFn(false);
+        DocumentDomainObject doc = saveNewTextDocumentFn();
 
         docMapper.saveDocument(doc, admin);
     }
@@ -136,7 +136,7 @@ public class DocumentMapperTest {
     //@Test(enabled = true, expectedExceptions = NoPermissionToEditDocumentException.class)
     @Test
     public void saveTextDocumentNoPermissions() throws Exception {
-        DocumentDomainObject doc = saveNewTextDocumentFn(false);
+        DocumentDomainObject doc = saveNewTextDocumentFn();
 
         docMapper.saveDocument(doc, user);
     }
@@ -144,14 +144,14 @@ public class DocumentMapperTest {
 
     @Test(enabled = true)
     public void saveHtmlDocument() throws Exception {
-        DocumentDomainObject doc = saveNewHtmlDocumentFn(false);
+        DocumentDomainObject doc = saveNewHtmlDocumentFn();
 
         docMapper.saveDocument(doc, admin);
     }
 
     @Test(enabled = true)
     public void saveUrlDocument() throws Exception {
-        DocumentDomainObject doc = saveNewUrlDocumentFn(false);
+        DocumentDomainObject doc = saveNewUrlDocumentFn();
 
         docMapper.saveDocument(doc, admin);
     }
@@ -159,7 +159,7 @@ public class DocumentMapperTest {
     
     @Test(enabled = true)
     public void saveFileDocument() throws Exception {
-        DocumentDomainObject doc = saveNewFileDocumentFn(false);
+        DocumentDomainObject doc = saveNewFileDocumentFn();
 
         docMapper.saveDocument(doc, admin);
     }
@@ -214,7 +214,7 @@ public class DocumentMapperTest {
 
     @Test(enabled = false, expectedExceptions = NoPermissionToAddDocumentToMenuException.class)
     public void copyTextDocumentNoPermission() throws Exception {
-        TextDocumentDomainObject doc = saveNewTextDocumentFn(false);
+        TextDocumentDomainObject doc = saveNewTextDocumentFn();
 
         TextDocumentDomainObject docCopy = docMapper.copyDocument(doc, user);
     }
@@ -222,7 +222,7 @@ public class DocumentMapperTest {
 
     @Test(enabled = true)
     public void copyTextDocument() throws Exception {
-        TextDocumentDomainObject doc = saveNewTextDocumentFn(false);
+        TextDocumentDomainObject doc = saveNewTextDocumentFn();
 
         TextDocumentDomainObject docCopy = docMapper.copyDocument(doc, admin);
     }
@@ -231,7 +231,7 @@ public class DocumentMapperTest {
 
     @Test(enabled = true)
     public void copyHtmlsDocument() throws Exception {
-        HtmlDocumentDomainObject doc = saveNewHtmlDocumentFn(false);
+        HtmlDocumentDomainObject doc = saveNewHtmlDocumentFn();
 
         HtmlDocumentDomainObject docCopy = (HtmlDocumentDomainObject)docMapper.copyDocument(doc, admin);
     }
@@ -239,7 +239,7 @@ public class DocumentMapperTest {
 
     @Test(enabled = true)
     public void copyUrlDocument() throws Exception {
-        UrlDocumentDomainObject doc = saveNewUrlDocumentFn(false);
+        UrlDocumentDomainObject doc = saveNewUrlDocumentFn();
 
         UrlDocumentDomainObject docCopy = docMapper.copyDocument(doc, admin);
     }
@@ -247,7 +247,7 @@ public class DocumentMapperTest {
 
     @Test(enabled = true)
     public void copyFileDocument() throws Exception {
-        FileDocumentDomainObject doc = saveNewFileDocumentFn(false);
+        FileDocumentDomainObject doc = saveNewFileDocumentFn();
 
         FileDocumentDomainObject docCopy = docMapper.copyDocument(doc, admin);
     }    
@@ -284,7 +284,7 @@ public class DocumentMapperTest {
         DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
         DocumentDomainObject doc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
 
-        Integer docId = docMapper.saveNewDocument(doc, admin, false).getId();
+        Integer docId = docMapper.saveNewDocument(doc, admin).getId();
         DocumentVersionInfo vi = docMapper.getDocumentVersionInfo(docId);
 
         doc = docMapper.getDefaultDocument(docId, i18nSupport.getDefaultLanguage());
@@ -381,7 +381,7 @@ public class DocumentMapperTest {
 
     @Test(enabled = true)
     public void makeHtmlDocumentVersion() throws Exception {
-        HtmlDocumentDomainObject doc = saveNewHtmlDocumentFn(false);
+        HtmlDocumentDomainObject doc = saveNewHtmlDocumentFn();
 
         DocumentVersionInfo info = docMapper.getDocumentVersionInfo(doc.getId());
 
@@ -401,7 +401,7 @@ public class DocumentMapperTest {
 
     @Test(enabled = true)
     public void makeUrlDocumentVersion() throws Exception {
-        UrlDocumentDomainObject doc = saveNewUrlDocumentFn(false);
+        UrlDocumentDomainObject doc = saveNewUrlDocumentFn();
 
         DocumentVersionInfo info = docMapper.getDocumentVersionInfo(doc.getId());
 
@@ -421,7 +421,7 @@ public class DocumentMapperTest {
 
     @Test(enabled = true)
     public void makeFileDocumentVersion() throws Exception {
-        FileDocumentDomainObject doc = saveNewFileDocumentFn(false);
+        FileDocumentDomainObject doc = saveNewFileDocumentFn();
 
         DocumentVersionInfo info = docMapper.getDocumentVersionInfo(doc.getId());
 
@@ -459,7 +459,7 @@ public class DocumentMapperTest {
 
     @Test
     public void saveTextDocumentContentLoop() throws Exception {
-        TextDocumentDomainObject doc = saveNewTextDocumentFn(false);
+        TextDocumentDomainObject doc = saveNewTextDocumentFn();
 
         ContentLoop loop = new ContentLoop();
         loop.addFirstContent();
@@ -472,7 +472,7 @@ public class DocumentMapperTest {
 
     @Test
     public void invalidateDocument() throws Exception {
-        TextDocumentDomainObject doc = saveNewTextDocumentFn(false);
+        TextDocumentDomainObject doc = saveNewTextDocumentFn();
 
         docMapper.invalidateDocument(doc);
     }
@@ -499,27 +499,27 @@ public class DocumentMapperTest {
 
     @Test
     public void deleteTextDocument() throws Exception {
-        DocumentDomainObject doc = saveNewTextDocumentFn(true);
+        DocumentDomainObject doc = saveNewTextDocumentFn();
         docMapper.deleteDocument(doc, admin);
     }
 
 
     @Test
     public void deleteHtmlDocument() throws Exception {
-        DocumentDomainObject doc = saveNewHtmlDocumentFn(true);
+        DocumentDomainObject doc = saveNewHtmlDocumentFn();
         docMapper.deleteDocument(doc, admin);
     }
 
 
     @Test
     public void deleteUrlDocument() throws Exception {
-        DocumentDomainObject doc = saveNewUrlDocumentFn(true);
+        DocumentDomainObject doc = saveNewUrlDocumentFn();
         docMapper.deleteDocument(doc, admin);
     }
 
     @Test
     public void deleteFileDocument()  throws Exception {
-        DocumentDomainObject doc = saveNewFileDocumentFn(true);
+        DocumentDomainObject doc = saveNewFileDocumentFn();
         docMapper.deleteDocument(doc, admin);
     }
 
@@ -534,19 +534,13 @@ public class DocumentMapperTest {
         return (TextDocumentDomainObject)doc;
     }
 
-    
-    @DataProvider
-    public Object[][] docCopyFlag() {
-        return new Object [][] {{true}, {false }};
-    }
-
 
     /**
      * Return content loop no and content index:
      */
     @DataProvider
     public Object[][] contentInfo() {
-        TextDocumentDomainObject doc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
+        TextDocumentDomainObject doc = getMainWorkingDocumentInDefaultLanguage(true);
         ContentLoop existingContentLoop = doc.getContentLoops().values().iterator().next();
         ContentLoop unsavedContentLoop = Factory.createNextContentLoop(doc);
 

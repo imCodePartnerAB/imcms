@@ -475,14 +475,15 @@ public class DocumentSaver {
 
     
     @Transactional
-    public Integer saveNewDocument(DocumentDomainObject doc, UserDomainObject user, boolean copying)
+    public Integer saveNewDocument(DocumentDomainObject doc, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         checkDocumentForSave(doc);
 
         documentMapper.setCreatedAndModifiedDatetimes(doc, new Date());
 
-        boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(doc) && !copying;
+        boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(doc);
+        
         if (inheritRestrictedPermissions) {
             doc.getPermissionSets().setRestricted1(doc.getPermissionSetsForNewDocuments().getRestricted1());
             doc.getPermissionSets().setRestricted2(doc.getPermissionSetsForNewDocuments().getRestricted2());
@@ -498,10 +499,6 @@ public class DocumentSaver {
 
         Meta newMeta = saveMeta(doc);
         Integer docId = newMeta.getId();
-
-//        DocumentProperty property = new DocumentProperty();
-//        property.setDocId(docId);
-//        property.setName();
 
         metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
 

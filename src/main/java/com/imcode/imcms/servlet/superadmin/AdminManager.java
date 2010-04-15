@@ -620,7 +620,7 @@ public class AdminManager extends HttpServlet {
 
         @Override
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-            Imcms.getServices().getDocumentMapper().saveNewDocument( document, user, false);
+            Imcms.getServices().getDocumentMapper().saveNewDocument( document, user);
         }       
     }
 
