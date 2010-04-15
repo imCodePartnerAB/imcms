@@ -2,13 +2,10 @@ package com.imcode.imcms.mapping.orm;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * Text document templates names. 
@@ -19,7 +16,7 @@ public class TemplateNames implements Cloneable {
 	
     @Id 
 	@Column(name="meta_id")
-	private Integer metaId;
+	private Integer docId;
 	
 	@Column(name="template_name")
     private String templateName;
@@ -36,7 +33,7 @@ public class TemplateNames implements Cloneable {
 	@Column(name="default_template_2")
     private String defaultTemplateNameForRestricted2;
 
-	@Override
+    @Override
     public TemplateNames clone() {
         try {
             return (TemplateNames)super.clone();
@@ -44,26 +41,6 @@ public class TemplateNames implements Cloneable {
             throw new UnhandledException(e);
         }
     }
-
-//    @Override
-//    public int hashCode() {
-//        return new HashCodeBuilder(15, 3)
-//                .append(id)
-//                .append(metaId)
-//                .append(templateName)
-//                .append(templateGroupId)
-//                .append(defaultTemplateNameForRestricted1)
-//                .append(defaultTemplateNameForRestricted2)
-//                .hashCode();
-//
-//    }
-//
-//
-//    @Override
-//    public boolean equals(Object o) {
-//        return o instanceof TemplateNames && o.hashCode() == hashCode();
-//    }
-
 
     public String getTemplateName() {
         return templateName;
@@ -105,11 +82,11 @@ public class TemplateNames implements Cloneable {
         this.defaultTemplateNameForRestricted2 = defaultTemplateNameForRestricted2;
     }
 
-	public Integer getMetaId() {
-		return metaId;
+	public Integer getDocId() {
+		return docId;
 	}
 
-	public void setMetaId(Integer metaId) {
-		this.metaId = metaId;
+	public void setDocId(Integer docId) {
+		this.docId = docId;
 	}
 }

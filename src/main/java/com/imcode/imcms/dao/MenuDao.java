@@ -14,9 +14,7 @@ public class MenuDao extends HibernateTemplate {
 
 	@Transactional
 	public List<MenuDomainObject> getMenus(Integer docId, Integer docVersionNo) {
-		String hql = "SELECT m FROM Menu m  WHERE m.metaId = :docId AND m.docVersionNo = :docVersionNo";
-
-		return (List<MenuDomainObject>)findByNamedParam(hql,
+		return (List<MenuDomainObject>)findByNamedQueryAndNamedParam("Menu.getMenus",
                 new String[] {"docId", "docVersionNo"},
                 new Object[] {docId, docVersionNo});
 	}
@@ -30,6 +28,16 @@ public class MenuDao extends HibernateTemplate {
         }
         
 	    saveOrUpdate(menu);			
+	}
+
+
+
+    @Transactional
+	public int deleteMenus(Integer docId, Integer docVersionNo) {
+        return getSession().getNamedQuery("Menu.deleteMenus")
+                .setParameter("docId", docId)
+                .setParameter("docVersionNo", docVersionNo)
+                .executeUpdate();
 	}
 
 

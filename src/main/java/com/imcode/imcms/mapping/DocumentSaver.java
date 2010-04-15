@@ -184,26 +184,18 @@ public class DocumentSaver {
 
         DocumentVersion nextVersion = documentVersionDao.createVersion(meta.getId(), user.getId());
 
-        // saves labels
-        for (DocumentDomainObject doc: docs.values()) {
-            doc.accept(new DocIdentityCleanerVisitor());
-            DocumentLabels labels = doc.getLabels();
-
-            labels.setId(null);
-            labels.setDocVersionNo(nextVersion.getNo());
-            metaDao.saveLabels(labels);
-
-        }
-
-        // save content    
         DocumentVersionCreationVisitor docCreationVisitor = new DocumentVersionCreationVisitor(documentMapper.getImcmsServices(), user);
 
         for (DocumentDomainObject doc: docs.values()) {
-            doc.setVersion(nextVersion);
-
+            doc.accept(new DocIdentityCleanerVisitor());
             doc.setMeta(meta);
-            doc.accept(docCreationVisitor);
+            doc.setVersion(nextVersion);
+            
+            docCreationVisitor.updateDocumentLabels(doc, null, user);
+        }
 
+        for (DocumentDomainObject doc: docs.values()) {
+            doc.accept(docCreationVisitor);
             // Only text doc has i18n content.
             if (!(doc instanceof TextDocumentDomainObject)) break; 
         }
@@ -446,17 +438,12 @@ public class DocumentSaver {
         metaDao.insertPropertyIfNotExists(copyDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, copyDocId.toString());
 
         DocumentVersion copyDocVersion = documentVersionDao.createVersion(copyDocId, user.getId());
+        DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
         for (DocumentDomainObject doc: docs.values()) {
-            DocumentLabels labels = doc.getLabels();
-            labels.setId(null);
-            labels.setDocId(copyDocId);
-            labels.setDocVersionNo(copyDocVersion.getNo());
-
-            metaDao.saveLabels(labels);
+            doc.setMeta(meta);
+            docCreatingVisitor.updateDocumentLabels(doc, null, user);
         }
-
-        DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
         for (DocumentDomainObject doc: docs.values()) {
             doc.setMeta(meta);

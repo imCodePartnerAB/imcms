@@ -10,7 +10,7 @@
   <!-- ==================================================================== -->
   <query name="Text.deleteTexts">
     <![CDATA[
-    DELETE FROM Text t WHERE t.docId = :docId AND t.docVersionNo = :docVersionNo
+    DELETE FROM Text t WHERE t.docId = :docId AND t.docVersionNo = :docVersionNo AND t.language.id = :languageId
     ]]>
   </query>
 
@@ -40,7 +40,7 @@
   <!-- ==================================================================== -->
   <query name="Image.deleteImages">
     <![CDATA[
-    DELETE FROM Image i WHERE i.docId = :docId AND i.docVersionNo = :docVersionNo
+    DELETE FROM Image i WHERE i.docId = :docId AND i.docVersionNo = :docVersionNo AND i.language.id = :languageId
     ]]>
   </query>
 
@@ -88,8 +88,26 @@
   </query>
 
   <!-- ==================================================================== -->
-  <!-- Content Loop -->
+  <!-- Menus -->
   <!-- ==================================================================== -->
+  <!-- List -->
+  <query name="Menu.getMenus">
+    <![CDATA[
+    SELECT m FROM Menu m  WHERE m.docId = :docId AND m.docVersionNo = :docVersionNo
+    ]]>
+  </query>
+
+  <!-- Bulk delete -->
+  <query name="Menu.deleteMenus">
+    <![CDATA[
+    DELETE FROM Menu m WHERE m.docId = :docId AND m.docVersionNo = :docVersionNo
+    ]]>
+  </query>
+
+
+    <!-- ==================================================================== -->
+    <!-- Content Loop -->
+    <!-- ==================================================================== -->
 
   <!-- Unique -->
   <query name="ContentLoop.getByDocIdAndDocVersionNoAndNo">

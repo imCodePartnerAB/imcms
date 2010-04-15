@@ -61,7 +61,7 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
 	private Integer docVersionNo;
 
     @Column(name="doc_id")
-	private Integer metaId;
+	private Integer docId;
     
 
 	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
@@ -254,21 +254,13 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
 	}
 
     @Deprecated
-	public Integer getMetaId() {
-		return metaId;
+	public Integer getDocId() {
+		return docId;
 	}
 
     @Deprecated
-	public void setMetaId(Integer metaId) {
-		this.metaId = metaId;
-	}
-
-	public Integer getDocId() {
-		return getMetaId();
-	}
-
 	public void setDocId(Integer docId) {
-		setMetaId(docId);
+		this.docId = docId;
 	}
 
 	public Map<Integer, MenuItemDomainObject> getItemsMap() {

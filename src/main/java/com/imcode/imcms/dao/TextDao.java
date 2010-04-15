@@ -1,5 +1,6 @@
 package com.imcode.imcms.dao;
 
+import com.imcode.imcms.api.I18nLanguage;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -24,10 +25,11 @@ public class TextDao extends HibernateTemplate {
 	}
 	
 	@Transactional
-	public int deleteTexts(Integer docId, Integer docVersionNo) {
+	public int deleteTexts(Integer docId, Integer docVersionNo, Integer languageId) {
 		return getSession().getNamedQuery("Text.deleteTexts")
 			.setParameter("docId", docId)
 			.setParameter("docVersionNo", docVersionNo)
+            .setParameter("languageId", languageId)
 			.executeUpdate();
 	}
 	

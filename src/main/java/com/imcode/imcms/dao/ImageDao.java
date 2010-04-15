@@ -123,10 +123,11 @@ public class ImageDao extends HibernateTemplate {
 
 
 	@Transactional
-	public int deleteImages(Integer docId, Integer docVersionNo) {
+	public int deleteImages(Integer docId, Integer docVersionNo, Integer languageId) {
 		return getSession().getNamedQuery("Image.deleteImages")
 			.setParameter("docId", docId)
 			.setParameter("docVersionNo", docVersionNo)
+            .setParameter("languageId", languageId)    
 			.executeUpdate();
 	}
 

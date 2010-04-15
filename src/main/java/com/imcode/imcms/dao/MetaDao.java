@@ -57,6 +57,7 @@ public class MetaDao extends HibernateTemplate {
         return labels;
 	}
 
+
     @Transactional
     public boolean insertPropertyIfNotExists(Integer docId, String name, String value) {
         DocumentProperty property = (DocumentProperty)getSession()
@@ -94,21 +95,13 @@ public class MetaDao extends HibernateTemplate {
                 .list();
 	}
 
-//	@Transactional
-//	public void deleteLabels(Integer docId, Integer docVersionNo) {
-//		getSession().createQuery("DELETE FROM DocumentLabels l WHERE l.docId = :docId AND l.docVersionNo = :docVersionNo")
-//                .setParameter("docId", docId)
-//                .setParameter("docVersionNo", docVersionNo)
-//                .executeUpdate();
-//	}
-
 
 	@Transactional
-	public void deleteLabels(Integer docId, Integer docVersionNo, I18nLanguage language) {
-		getSession().createQuery("DELETE FROM DocumentLabels l WHERE l.docId = :docId AND l.docVersionNo = :docVersionNo and l.language = :language")
+	public void deleteLabels(Integer docId, Integer docVersionNo, Integer LanguageId) {
+		getSession().createQuery("DELETE FROM DocumentLabels l WHERE l.docId = :docId AND l.docVersionNo = :docVersionNo and l.language.id = :languageId")
                 .setParameter("docId", docId)
                 .setParameter("docVersionNo", docVersionNo)
-                .setParameter("language", language)
+                .setParameter("languageId", LanguageId)
                 .executeUpdate();
 	}
 
@@ -168,10 +161,8 @@ public class MetaDao extends HibernateTemplate {
 	}
 
 	@Transactional
-	public TemplateNames getTemplateNames(Integer documentId) {
-		return (TemplateNames)getSession().createQuery("select n from TemplateNames n where n.metaId = ?")
-			.setParameter(0, documentId)
-			.uniqueResult();
+	public TemplateNames getTemplateNames(Integer docId) {
+        return (TemplateNames)get(TemplateNames.class, docId);
 	}
 
     @Transactional

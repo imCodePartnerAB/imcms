@@ -9,6 +9,7 @@ import imcode.server.user.UserDomainObject;
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.imcms.mapping.orm.HtmlReference;
 import com.imcode.imcms.mapping.orm.UrlReference;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Not a public API. Must not be used directly.
@@ -22,7 +23,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         this.currentUser = currentUser;        
     }
     
-    // requires transaction
+    @Transactional
     public void visitHtmlDocument(HtmlDocumentDomainObject document) {
     	HtmlReference reference = new HtmlReference();
     	
@@ -35,7 +36,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     	dao.saveHtmlReference(reference);
     }
 
-    // requires transaction   
+    @Transactional
     public void visitUrlDocument( UrlDocumentDomainObject document ) {
     	UrlReference reference = new UrlReference();
     	
@@ -52,7 +53,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     	dao.saveUrlReference(reference);    	
     }
 
-    // requires transaction
+    @Transactional
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {        
     	updateTextDocumentTemplateNames(textDocument, null, null);
         updateTextDocumentTexts( textDocument, null, currentUser);

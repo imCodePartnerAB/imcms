@@ -211,7 +211,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	}
     	
     	newMenu.setIndex(menuIndex);
-        newMenu.setMetaId(getMeta().getId());
+        newMenu.setDocId(getMeta().getId());
         newMenu.setDocVersionNo(getVersion().getNo());
     	    	
         menus.put(menuIndex, newMenu);

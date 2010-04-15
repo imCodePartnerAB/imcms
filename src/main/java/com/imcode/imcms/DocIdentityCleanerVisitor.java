@@ -1,6 +1,5 @@
 package com.imcode.imcms;
 
-import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
 import com.imcode.imcms.api.DocumentVersion;
 import imcode.server.document.DocumentDomainObject;
@@ -43,7 +42,7 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
     	}
 
         //doc.getTemplateNames().setId(null);
-        doc.getTemplateNames().setMetaId(null);
+        doc.getTemplateNames().setDocId(null);
     }
 
 
