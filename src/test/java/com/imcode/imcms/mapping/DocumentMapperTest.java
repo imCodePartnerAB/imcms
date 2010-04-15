@@ -8,6 +8,7 @@ import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 
+import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.InputStreamSource;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -17,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import static org.testng.Assert.*;
 import static org.testng.Assert.assertSame;
@@ -115,13 +117,7 @@ public class DocumentMapperTest {
 
 
         newDoc.addFile("testFile", file);
-        FileDocumentDomainObject savedDoc = docMapper.saveNewDocument(newDoc, admin);
-
-        DocumentVersion version = docMapper.makeDocumentVersion(savedDoc.getId(), admin);
-        DocumentDomainObject doc = docMapper.getCustomDocument(savedDoc.getId(), version.getNo());
-        docMapper.saveDocument(doc, admin);
-
-        return savedDoc;
+        return docMapper.saveNewDocument(newDoc, admin);
     }    
     
 
@@ -436,6 +432,17 @@ public class DocumentMapperTest {
         FileDocumentDomainObject newVersionDoc = (FileDocumentDomainObject)docMapper.getCustomDocument(doc.getId(), expectedNewVersionNo);
 
         assertNotNull(newVersionDoc);
+
+        Map<String, FileDocumentDomainObject.FileDocumentFile> files = newVersionDoc.getFiles();
+
+        assertEquals(files.size(), 1);
+
+        FileDocumentDomainObject.FileDocumentFile file = doc.getFiles().values().iterator().next();
+        FileDocumentDomainObject.FileDocumentFile newVersionFile = files.values().iterator().next();
+        
+        assertEquals(file.getId(), newVersionFile.getId());
+        assertEquals(file.getFilename(), newVersionFile.getFilename());
+        //assertEquals(((FileInputStreamSource)file.getInputStreamSource()). , newVersionFile.getFilename() + "_" + newVersionDoc.getVersionNo());
     }
 
 

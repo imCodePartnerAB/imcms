@@ -23,7 +23,9 @@ public class DocumentVersionCreationVisitor extends DocumentSavingVisitor {
     }
 
 
-    // runs inside transaction
+    /**
+     * Visits non shared nodes. 
+     */
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
         updateTextDocumentTexts( textDocument, null, getSavingUser());
         updateTextDocumentImages( textDocument, null, getSavingUser());
