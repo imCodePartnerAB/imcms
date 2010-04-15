@@ -233,7 +233,7 @@ public class DocumentMapperTest {
     public void copyHtmlsDocument() throws Exception {
         HtmlDocumentDomainObject doc = saveNewHtmlDocumentFn();
 
-        HtmlDocumentDomainObject docCopy = (HtmlDocumentDomainObject)docMapper.copyDocument(doc, admin);
+        HtmlDocumentDomainObject docCopy = docMapper.copyDocument(doc, admin);
     }
 
 

@@ -138,6 +138,8 @@ public class DocumentMapper implements DocumentGetter {
             //newDocument.copyAttributesFrom(parentDoc);
         }
 
+        newDocument.getMeta().setDocumentType(documentTypeId);
+
         newDocument.accept(new DocIdentityCleanerVisitor());
 
         newDocument.getKeywords().clear();
@@ -189,8 +191,7 @@ public class DocumentMapper implements DocumentGetter {
 
     
     /**
-     * Saves new document.
-     * Document's meta might be a copy of an existing document.
+     * Saves document as new.
      * 
      * @param doc
      * @param user
@@ -200,17 +201,16 @@ public class DocumentMapper implements DocumentGetter {
      * @throws DocumentSaveException
      * @throws NoPermissionToAddDocumentToMenuException
      *
-     * @see #copyDocument(imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)
+     *
+     * @see #createDocumentOfTypeFromParent(int, imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)
+     * @see imcode.server.document.DocumentDomainObject#fromDocumentTypeId(int)
      */
-    //todo: ignore copying flag
     public <T extends DocumentDomainObject> T saveNewDocument(final T doc, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
-        DocumentDomainObject docClone = doc.clone();
-
+        T docClone = (T)doc.clone();
         I18nLanguage language = docClone.getLanguage();
 
-        // todo: ??? throw an exception ???
         if (language == null) {
             language = Imcms.getI18nSupport().getDefaultLanguage();
             docClone.setLanguage(language);
@@ -230,10 +230,9 @@ public class DocumentMapper implements DocumentGetter {
     public void saveDocument(final DocumentDomainObject doc, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {        
         try {
-            // todo: old meta.
-            DocumentDomainObject oldDoc = getCustomDocument(doc.getId(), doc.getVersionNo());
+            DocumentDomainObject oldDoc = getCustomDocument(doc.getId(), doc.getVersionNo(), doc.getLanguage());
 
-            documentSaver.updateDocument(doc, oldDoc, user);
+            documentSaver.updateDocument(doc.clone(), oldDoc.clone(), user);
     	} finally {
     		invalidateDocument(doc.getId());
     	}
@@ -516,7 +515,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param doc existing doc.
      * @param user
      *
-     * @return working version of new saved document in original document's language.
+     * @return working version of new saved document in source document's language.
      *
      * @throws NoPermissionToAddDocumentToMenuException
      * @throws DocumentSaveException
@@ -532,6 +531,7 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * Creates a new doc as a copy of an existing doc.
+     * Not a part of public API - used by admin interface.
      *
      * @return new doc id.
      * 
@@ -543,12 +543,11 @@ public class DocumentMapper implements DocumentGetter {
         // todo: put into resource file.
         String copyHeadlineSuffix = "(Copy/Kopia)";
 
-        Meta meta = documentLoaderCachingProxy.getMeta(docId);
-
         Map<I18nLanguage, DocumentDomainObject> docs = new HashMap<I18nLanguage, DocumentDomainObject>();
 
         for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
-            DocumentDomainObject doc = getCustomDocument(docId, docVersionNo, language);
+            DocumentDomainObject doc = getCustomDocument(docId, docVersionNo, language).clone();
+            
             if (doc != null) {
                 doc.setAlias(null);
                 makeDocumentLookNew(doc, user);
@@ -569,7 +568,7 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         
-        return documentSaver.copyDocument(meta.clone(), docs, user);
+        return documentSaver.copyDocument(docs.values().iterator().next().getMeta(), docs, user);
     }
     
 
@@ -656,7 +655,12 @@ public class DocumentMapper implements DocumentGetter {
         return documentLoaderCachingProxy.getDefaultDocument(docId, language);
     }
 
+    
     /**
+     * Returns custom document.
+     * 
+     * Custom document is never cached. ???
+     *
      * @param docId
      * @param docVersionNo
      * @param language
@@ -685,10 +689,22 @@ public class DocumentMapper implements DocumentGetter {
         return imcmsServices;
     }
 
+
+    @Deprecated
     void setCreatedAndModifiedDatetimes(DocumentDomainObject document, Date now) {
-        document.setCreatedDatetime(now);
-        document.setModifiedDatetime(now);
-        document.setActualModifiedDatetime(now);
+        setCreatedAndModifiedDatetimes(document.getMeta(), now);
+    }
+
+
+    /**
+     * @param meta
+     * @param now
+     * @since 6.0
+     */
+    void setCreatedAndModifiedDatetimes(Meta meta, Date now) {
+        meta.setCreatedDatetime(now);
+        meta.setModifiedDatetime(now);
+        meta.setActualModifiedDatetime(now);
     }
 
 

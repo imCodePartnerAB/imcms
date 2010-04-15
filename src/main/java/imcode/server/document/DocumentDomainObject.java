@@ -1,5 +1,6 @@
 package imcode.server.document;
 
+import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
@@ -38,13 +39,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private DocumentLabels labels = new DocumentLabels();
 
-//    private DocumentPermissionSets permissionSets = new DocumentPermissionSets();
-//
-//    private DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
-//
-//    private RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
-//
-//
+
 	@Override
 	public DocumentDomainObject clone() {
 		DocumentDomainObject clone;
@@ -149,6 +144,9 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 			log.error(errorMessage);
 			throw new IllegalArgumentException(errorMessage);
 		}
+
+        document.setLanguage(Imcms.getI18nSupport().getDefaultLanguage());
+        document.setVersion(new DocumentVersion(null, 0, null, new Date()));
 
 		return document;
 	}
