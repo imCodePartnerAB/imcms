@@ -204,7 +204,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
      * @param text
      * @param user
      */
-    // must run inside transaction
+    @Transactional
     public void saveTextDocumentText(TextDocumentDomainObject doc, TextDomainObject text, UserDomainObject user) {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
 
@@ -220,7 +220,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     /**
      * Saves text document's image.
      */
-    // must be executed within transaction
+    @Transactional
     public void saveTextDocumentImage(TextDocumentDomainObject doc, ImageDomainObject image, UserDomainObject user) {
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
      
@@ -231,11 +231,13 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         image.setType(image.getSource().getTypeId());
         
         imageDao.saveImage(image);
-        //imageDao.saveImageHistory(doc.getId(), image, user); 
+
+        ImageHistory imageHistory = new ImageHistory(image, user);
+        imageDao.saveImageHistory(imageHistory); 
     }
 
 
-    // must be executed within transaction
+    @Transactional
     void updateTextDocumentImages(TextDocumentDomainObject doc, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         ImageDao imageDao = (ImageDao)services.getSpringBean("imageDao");
         Integer docId = doc.getMeta().getId();
@@ -252,7 +254,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             image.setLanguage(language);
             
             saveTextDocumentImage(doc, image, user);
-            //imageDao.saveImageHistory(doc.getId(), image, user);
         }
 
 
@@ -263,7 +264,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             image.setLanguage(language);
             
             saveTextDocumentImage(doc, image, user);
-            //imageDao.saveImageHistory(doc.getId(), image, user);
         }
     }
     

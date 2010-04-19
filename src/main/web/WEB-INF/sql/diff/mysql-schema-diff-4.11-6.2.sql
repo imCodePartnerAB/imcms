@@ -519,7 +519,7 @@ CREATE TABLE imcms_text_doc_texts (
     UNIQUE KEY uk__imcms_text_doc_texts__text (doc_id, doc_version_no, no, language_id, content_loop_no, content_no),
     CONSTRAINT fk__imcms_text_doc_texts__content FOREIGN KEY (doc_id, doc_version_no, content_loop_no, content_no) REFERENCES imcms_text_doc_contents (`doc_id`, `doc_version_no`, `loop_no`, `no`) ON DELETE CASCADE,
     CONSTRAINT fk__imcms_text_doc_texts__languages FOREIGN KEY (language_id) REFERENCES imcms_languages (id),
-    CONSTRAINT fk__imcms_text_doc_texts__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+    -- CONSTRAINT fk__imcms_text_doc_texts__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
     CONSTRAINT fk__imcms_text_doc_texts__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -555,7 +555,7 @@ CREATE TABLE imcms_text_doc_texts_history (
 
     CONSTRAINT pk__imcms_text_doc_texts_history PRIMARY KEY (id),
     CONSTRAINT fk__imcms_text_doc_texts_history__languages FOREIGN KEY (language_id) REFERENCES imcms_languages (id),
-    CONSTRAINT fk__imcms_text_doc_texts_history__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+    -- CONSTRAINT fk__imcms_text_doc_texts_history__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
     CONSTRAINT fk__imcms_text_doc_texts_history__content FOREIGN KEY (doc_id, doc_version_no, content_loop_no, content_no) REFERENCES imcms_text_doc_contents (`doc_id`, `doc_version_no`, `loop_no`, `no`) ON DELETE CASCADE,
     CONSTRAINT fk__imcms_text_doc_texts_history__users FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE SET NULL,
     CONSTRAINT fk__imcms_text_doc_texts_history__doc_versions FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
@@ -617,7 +617,8 @@ CREATE TABLE imcms_text_doc_images (
   CONSTRAINT pk__imcms_text_doc_images PRIMARY KEY (id),
   UNIQUE KEY uk__imcms_text_doc_images__image (doc_id,doc_version_no,no,language_id,content_loop_no,content_no),
   CONSTRAINT fk__imcms_text_doc_images__languages FOREIGN KEY (language_id) REFERENCES imcms_languages (id),
-  CONSTRAINT fk__imcms_text_doc_images__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  -- CONSTRAINT fk__imcms_text_doc_images__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  CONSTRAINT fk__imcms_text_doc_images__content FOREIGN KEY (doc_id, doc_version_no, content_loop_no, content_no) REFERENCES imcms_text_doc_contents (`doc_id`, `doc_version_no`, `loop_no`, `no`) ON DELETE CASCADE,  
   CONSTRAINT fk__imcms_text_doc_images__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -688,12 +689,14 @@ CREATE TABLE imcms_text_doc_images_history (
   language_id int NOT NULL,
   content_loop_no int DEFAULT NULL,
   content_no int DEFAULT NULL,
-  modified_datetime datetime NOT NULL,
+  modified_dt datetime NOT NULL,
   user_id int DEFAULT NULL,
 
   CONSTRAINT pk__imcms_text_doc_images_history PRIMARY KEY (id),
   CONSTRAINT fk__imcms_text_doc_images_history__languages FOREIGN KEY (language_id) REFERENCES imcms_languages (id),
-  CONSTRAINT fk__imcms_text_doc_images_history__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  -- CONSTRAINT fk__imcms_text_doc_images_history__meta FOREIGN KEY (doc_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  CONSTRAINT fk__imcms_text_doc_images_history__users FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE SET NULL,
+  CONSTRAINT fk__imcms_text_doc_images_history__content FOREIGN KEY (doc_id, doc_version_no, content_loop_no, content_no) REFERENCES imcms_text_doc_contents (`doc_id`, `doc_version_no`, `loop_no`, `no`) ON DELETE CASCADE,   
   CONSTRAINT fk__imcms_text_doc_images_history__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

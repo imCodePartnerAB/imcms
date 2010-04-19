@@ -13,21 +13,18 @@ public class TextHistory {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="counter")
 	private Long id;
-	
+
 	@Column(name="doc_id")
 	private Integer docId;
 
 	@Column(name="doc_version_no")
 	private Integer docVersionNo;
-	
+
 	private Integer no;
-		
-	private String text;        
-    
+
+	private String text;
+
 	private Integer type;
-    
-    @Column(name="user_id")
-    private Integer userId;
 
     @Column(name="content_loop_no")
     private Integer contentLoopNo;
@@ -35,6 +32,18 @@ public class TextHistory {
     @Column(name="content_no")
     private Integer contentNo;
 
+    /**
+     * i18n support
+     */
+	@OneToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="language_id", referencedColumnName="id")
+    private I18nLanguage language;
+
+
+    @Column(name="user_id")
+    private Integer userId;
+
+    
     @Column(name="modified_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDt;
@@ -52,13 +61,6 @@ public class TextHistory {
         setUserId(user.getId());
         setModifiedDt(new Date());
     }
-    
-    /**
-     * i18n support 
-     */
-	@OneToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="language_id", referencedColumnName="id")    
-    private I18nLanguage language;    
 
     /**
      * Gets the value of text

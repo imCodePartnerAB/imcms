@@ -1,5 +1,6 @@
 package com.imcode.imcms.dao;
 
+import com.imcode.imcms.api.ImageHistory;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 
@@ -68,37 +69,8 @@ public class ImageDao extends HibernateTemplate {
 	}
 
 	@Transactional
-	public void saveImageHistory(Integer docId, ImageDomainObject image, UserDomainObject user) {
-		String sql = "INSERT INTO imcms_text_doc_images_history (doc_id, doc_version_no, no, " +
-                "width, height, border, v_space, h_space, image_name, target, align, alt_text, low_scr, imgurl, linkurl," +
-                "type, language_id, loop_no, loop_content_index, modified_datetime, user_id) VALUES " +
-		        "(:docId,:docVersionNo,:no, :width, :height, :border, " +
-                ":v_space, :h_space, :image_name, :target, :align, :alt_text, :low_scr, :imgurl, :linkurl," +
-                ":type, :languageId, :loopNo, :loopContentIndex, :modifiedDt, :userId)";
-
-		getSession().createSQLQuery(sql)
-			.setParameter("docId", docId)
-			.setParameter("docVersionNo", image.getDocVersionNo())
-			.setParameter("no", image.getNo())
-
-            .setParameter("width", image.getWidth())
-            .setParameter("height", image.getHeight())
-            .setParameter("border", image.getBorder())
-            .setParameter("v_space", image.getVerticalSpace())
-            .setParameter("h_space", image.getHorizontalSpace())
-            .setParameter("image_name", image.getName())
-            .setParameter("target", image.getTarget())
-            .setParameter("align", image.getAlign())
-            .setParameter("alt_text", image.getAlternateText())
-            .setParameter("low_scr", image.getLowResolutionUrl())
-            .setParameter("imgurl", image.getImageUrl())
-            .setParameter("linkurl", image.getLinkUrl())
-			.setParameter("type", image.getType())
-			.setParameter("modifiedDt", new Date())
-			.setParameter("userId", user.getId())
-			.setParameter("languageId", image.getLanguage().getId())
-            .setParameter("loopNo", image.getContentLoopNo())
-            .setParameter("loopContentIndex", image.getContentNo()).executeUpdate();
+	public void saveImageHistory(ImageHistory imageHistory) {
+        save(imageHistory);
 	}
 
 	@Transactional
