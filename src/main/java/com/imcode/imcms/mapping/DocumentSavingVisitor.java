@@ -13,6 +13,8 @@ import com.imcode.imcms.mapping.orm.HtmlReference;
 import com.imcode.imcms.mapping.orm.UrlReference;
 
 /**
+ * Updates existing document fields.
+ * 
  * Not a public API. Must not be used directly.
  *
  * @see com.imcode.imcms.mapping.DocumentSaver
@@ -75,12 +77,10 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         updateTextDocumentIncludes(textDocument);
         updateTextDocumentContentLoops(textDocument, null, null);
 
-        if (oldDocument != null) {
-	        boolean menusChanged = !textDocument.getMenus().equals( ( (TextDocumentDomainObject)oldDocument ).getMenus() );
+        boolean menusChanged = !textDocument.getMenus().equals( ( (TextDocumentDomainObject)oldDocument ).getMenus() );
 	
-	        if ( menusChanged ) {
-	            updateTextDocumentMenus( textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
-	        }
+        if ( menusChanged ) {
+            updateTextDocumentMenus( textDocument, (TextDocumentDomainObject) oldDocument, savingUser);
         }
     }
 

@@ -253,12 +253,10 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
 		this.index = index;
 	}
 
-    @Deprecated
 	public Integer getDocId() {
 		return docId;
 	}
 
-    @Deprecated
 	public void setDocId(Integer docId) {
 		this.docId = docId;
 	}

@@ -483,7 +483,7 @@ CREATE TABLE `imcms_text_doc_menus_history` (
   no int NOT NULL,
   sort_order int NOT NULL,
   
-  `modified_datetime` datetime NOT NULL,
+  `modified_dt` datetime NOT NULL,
   `user_id` int NOT NULL,
   CONSTRAINT `fk__imcms_text_doc_menus_history__meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

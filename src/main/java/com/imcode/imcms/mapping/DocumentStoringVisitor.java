@@ -380,8 +380,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     public void updateTextDocumentMenu(final TextDocumentDomainObject textDocument, final MenuDomainObject menu, final UserDomainObject user) {
     	MenuDao dao = (MenuDao)services.getSpringBean("menuDao");
 
-        //delete menu first?
-        
     	dao.saveMenu(menu);
     }
 }
