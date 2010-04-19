@@ -4,6 +4,7 @@
   (:import
     [imcode.server Imcms]
     [imcode.server.document DocumentDomainObject]
+    [com.imcode.imcms.misc-utils :only (dump)]    
     [imcode.server.user UserDomainObject]))
 
 (defmacro invoke
@@ -17,10 +18,10 @@
 (defn stop []
   (invoke stop))
 
-(defn get-start-ex []
+(defn start-ex []
   (invoke getStartEx))
 
-(defn get-mode []
+(defn mode []
   (invoke getMode))
 
 (defn set-normal-mode []
@@ -29,20 +30,20 @@
 (defn set-maintenance-mode []
   (invoke setMaintenanceMode))
 
-(defn get-services []
+(defn services []
   (invoke getServices))
 
-(defn get-i18n-support []
+(defn i18n-support []
   (invoke getI18nSupport))
 
-(defn get-doc-mapper []
-  (.getDocumentMapper (get-services)))
+(defn doc-mapper []
+  (.getDocumentMapper (services)))
 
-(defn get-langs []
-  (.getLanguages (get-i18n-support)))
+(defn langs []
+  (.getLanguages (i18n-support)))
 
-(defn get-default-lang []
-  (.getDefaultLanguage (get-i18n-support)))
+(defn default-lang []
+  (.getDefaultLanguage (i18n-support)))
 
 
 (defn find-lang-by-code [#^String code]
@@ -54,36 +55,36 @@
 
 (defmethod to-lang com.imcode.imcms.api.I18nLanguage [lang] lang)
 (defmethod to-lang String                            [lang] (find-lang-by-code lang))
-(defmethod to-lang clojure.lang.Keyword              [lang] (find-lang-by-code (name lang)))
+(defmethod to-lang clojure.lang.Named                [lang] (find-lang-by-code (name lang)))
 
 
-(defn #^DocumentDomainObject get-working-doc
+(defn #^DocumentDomainObject working-doc
   [id lang]
-  (.getWorkingDocument (get-doc-mapper) id (to-lang lang)))
+  (.getWorkingDocument (doc-mapper) id (to-lang lang)))
 
-(defn #^DocumentDomainObject get-default-doc
+(defn #^DocumentDomainObject default-doc
   [id lang]
-  (.getDefaultDocument (get-doc-mapper) id (to-lang lang)))
+  (.getDefaultDocument (doc-mapper) id (to-lang lang)))
 
-(defn #^DocumentDomainObject get-custom-doc
+(defn #^DocumentDomainObject custom-doc
   [id version-no lang]
-  (.getCustomDocument (get-doc-mapper) id version-no (to-lang lang)))
+  (.getCustomDocument (doc-mapper) id version-no (to-lang lang)))
 
-(defn get-doc-ids []
-  (seq (.getAllDocumentIds (get-doc-mapper))))
+(defn doc-ids []
+  (seq (.getAllDocumentIds (doc-mapper))))
 
-(defn get-doc-cache []
-  (.getDocumentLoaderCachingProxy (get-doc-mapper)))
+(defn doc-cache []
+  (.getDocumentLoaderCachingProxy (doc-mapper)))
 
-(defn #^java.util.Map get-loaded-default-docs
+(defn #^java.util.Map loaded-default-docs
   "Returns loaded default documents Map."
   [lang]
-  (-> (get-doc-cache) .getDefaultDocuments (.get ,, (to-lang lang))))
+  (-> (doc-cache) .getDefaultDocuments (.get ,, (to-lang lang))))
 
-(defn #^java.util.Map get-loaded-working-docs
+(defn #^java.util.Map loaded-working-docs
   "Returns loaded working documents Map."
   [lang]
-  (-> (get-doc-cache) .getWorkingDocuments (.get ,, (to-lang lang))))
+  (-> (doc-cache) .getWorkingDocuments (.get ,, (to-lang lang))))
 
 
 (defn load-all-docs
@@ -106,12 +107,12 @@
   (.clearCache (get-doc-cache)))
 
 
-(defn get-loaded-docs-info
+(defn loaded-docs-info
   "Retuns loaded docs info as a map - doc ids mapped to language code set:
    {1001 #{:en :sv}, 1002 #{:en :sv}, 1003 #{:en :sv}, ...}"
   []
-  (let [fs [get-loaded-working-docs, get-loaded-default-docs]
-        langs (get-langs)
+  (let [fs [loaded-working-docs, loaded-default-docs]
+        langs (langs)
         info-maps (for [f fs, lang langs, [doc-id doc] (f lang)]
                     (sorted-map doc-id, #{(keyword (.getCode lang))}))]
 
@@ -119,8 +120,8 @@
     (apply merge-with clojure.set/union info-maps)))
 
 
-(defn #^com.imcode.imcms.api.DocumentVersionInfo get-doc-version-info [id]
-  (.getDocumentVersionInfo (get-doc-cache) id))
+(defn #^com.imcode.imcms.api.DocumentVersionInfo doc-version-info [id]
+  (.getDocumentVersionInfo (doc-cache) id))
 
 
 (defn #^UserDomainObject login
@@ -132,7 +133,11 @@
     (.verifyUser (get-services) login password)))
 
 
-(defn get-conf
+(defn conf
   "Returns configuration read from server.properties as a map sorted by property name."
   []
   (into (sorted-map) (Imcms/getServerProperties)))
+
+
+(defn print-conf []
+  (dump (conf)))

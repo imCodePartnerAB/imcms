@@ -115,19 +115,15 @@
 (defn db-spec
   "Creates db-spec used by clojure.contrib.sql"
   []
-  {:datasource (db-datasource)})
+  (db-utils/spec (create-db-datasource)))
 
 
 (defn db-metadata []
-  (db-utils/get-metadata (db-spec)))
+  (db-utils/metadata (db-spec)))
 
 
 (defn print-db-metadata []
-  (let [meta-map (bean (db-metadata))
-        meta-keys (sort (keys meta-map))]
-
-    (doseq [k meta-keys]
-      (println k " -> " (k meta-map)))))
+  (db-utils/print-metadata (db-metadata)))
 
 
 (defn deploy-maven-jar
