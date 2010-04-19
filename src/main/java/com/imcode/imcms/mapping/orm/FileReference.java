@@ -11,6 +11,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 //ORDER BY default_variant DESC, variant_name
+
+/**
+ * FileDocumentDomainObject Hibernate ORM.
+ */
 @Entity
 @Table(name="fileupload_docs")
 public class FileReference {

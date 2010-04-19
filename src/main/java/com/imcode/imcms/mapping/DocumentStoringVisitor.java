@@ -91,6 +91,20 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     }
 
+    /**
+     * Returns file object for file document file.
+     *
+     * File name is a combination of doc id, doc version no and fileId if present. Doc version no is omitted if
+     * If doc version no is 0.
+     * 
+     * Ex: 1002.xxx where 1002 is a doc id, doc version no is 0 and xxx is fileId.  
+     *     1002_3.xxx where 1002 is a doc id, 3 is a version no and xxx is fileId.
+     *
+     * @param fileDocumentId
+     * @param docVersionNo
+     * @param fileId
+     * @return file object for file document file.
+     */
     public static File getFileForFileDocumentFile(int fileDocumentId, int docVersionNo, String fileId) {
         File filePath = Imcms.getServices().getConfig().getFilePath();
         String filename = "" + fileDocumentId ;

@@ -15,6 +15,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -99,7 +100,7 @@ public class DocumentMapperTest {
         FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
 
 
-        file.setFilename("file-doc-dile.txt");
+        file.setFilename("file-doc-file.txt");
         file.setMimeType("text");
         file.setCreatedAsImage(false);
 
@@ -117,6 +118,7 @@ public class DocumentMapperTest {
 
 
         newDoc.addFile("testFile", file);
+        
         return docMapper.saveNewDocument(newDoc, admin);
     }    
     
@@ -420,29 +422,49 @@ public class DocumentMapperTest {
         FileDocumentDomainObject doc = saveNewFileDocumentFn();
 
         DocumentVersionInfo info = docMapper.getDocumentVersionInfo(doc.getId());
+        DocumentVersion docVersionNew = docMapper.makeDocumentVersion(doc.getId(), admin);
 
-        docMapper.makeDocumentVersion(doc.getId(), admin);
-
-        DocumentVersionInfo newInfo = docMapper.getDocumentVersionInfo(doc.getId());
+        DocumentVersionInfo infoNew = docMapper.getDocumentVersionInfo(doc.getId());
         Integer expectedNewVersionNo = info.getLatestVersion().getNo() + 1;
 
-        assertEquals(info.getVersionsCount() + 1, newInfo.getVersionsCount());
-        assertEquals(newInfo.getLatestVersion().getNo(), expectedNewVersionNo);
+        assertEquals(info.getVersionsCount() + 1, infoNew.getVersionsCount());
+        assertEquals(infoNew.getLatestVersion().getNo(), expectedNewVersionNo);
 
-        FileDocumentDomainObject newVersionDoc = (FileDocumentDomainObject)docMapper.getCustomDocument(doc.getId(), expectedNewVersionNo);
+        FileDocumentDomainObject docNew = (FileDocumentDomainObject)docMapper.getCustomDocument(doc.getId(), expectedNewVersionNo);
 
-        assertNotNull(newVersionDoc);
+        assertNotNull(docNew);
+        assertEquals(doc.getId(), docNew.getId());
 
-        Map<String, FileDocumentDomainObject.FileDocumentFile> files = newVersionDoc.getFiles();
+        Map<String, FileDocumentDomainObject.FileDocumentFile> docFiles = doc.getFiles();
+        Map<String, FileDocumentDomainObject.FileDocumentFile> docFilesNew = docNew.getFiles();
 
-        assertEquals(files.size(), 1);
+        assertEquals(docFiles.size(), 1);
+        assertEquals(docFilesNew.size(), 1);
 
-        FileDocumentDomainObject.FileDocumentFile file = doc.getFiles().values().iterator().next();
-        FileDocumentDomainObject.FileDocumentFile newVersionFile = files.values().iterator().next();
+        Map.Entry<String, FileDocumentDomainObject.FileDocumentFile> docFileEntry = docFiles.entrySet().iterator().next();
+        Map.Entry<String, FileDocumentDomainObject.FileDocumentFile> docFileEntryNew = docFilesNew.entrySet().iterator().next();
+
+
+        FileDocumentDomainObject.FileDocumentFile docFile = docFileEntry.getValue();
+        FileDocumentDomainObject.FileDocumentFile docFileNew = docFileEntryNew.getValue();
         
-        assertEquals(file.getId(), newVersionFile.getId());
-        assertEquals(file.getFilename(), newVersionFile.getFilename());
-        //assertEquals(((FileInputStreamSource)file.getInputStreamSource()). , newVersionFile.getFilename() + "_" + newVersionDoc.getVersionNo());
+        assertEquals(docFile.getId(), docFile.getId());
+        assertEquals(docFile.getFilename(), docFile.getFilename());
+
+        //assertEquals(docFile.getInputStreamSource(), docFileNew.getInputStreamSource());
+
+        String fileId = docFileEntry.getKey();
+        String fileIdNew = docFileEntryNew.getKey();
+
+
+        File file = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getId(), doc.getVersionNo(), fileId);
+        File fileNew = DocumentStoringVisitor.getFileForFileDocumentFile(docNew.getId(), docNew.getVersionNo(), fileIdNew);
+
+        assertTrue(file.exists());
+        assertTrue(fileNew.exists());
+
+        assertEquals(file.getName(), doc.getId() + "." + fileId);
+        assertEquals(fileNew.getName(), docNew.getId() + "_1." + fileId);
     }
 
 
