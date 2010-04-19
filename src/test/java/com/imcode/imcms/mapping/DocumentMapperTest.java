@@ -10,6 +10,7 @@ import imcode.server.user.UserDomainObject;
 
 import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.InputStreamSource;
+import org.apache.commons.io.FileUtils;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -18,8 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.testng.Assert.*;
 import static org.testng.Assert.assertSame;
@@ -91,21 +91,22 @@ public class DocumentMapperTest {
         HtmlDocumentDomainObject newDoc = (HtmlDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.HTML_ID, parentDoc, admin);
 
         return docMapper.saveNewDocument(newDoc, admin);
-    }    
+    }
 
-
+    /**
+     * Saves new file document file containing 3 files.
+     * 
+     * @return
+     * @throws Exception
+     */
     public FileDocumentDomainObject saveNewFileDocumentFn() throws Exception {
-        DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
-        FileDocumentDomainObject newDoc = (FileDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.FILE_ID, parentDoc, admin);
-        FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
+        class Source implements InputStreamSource {
 
+            ByteArrayInputStream bin;
 
-        file.setFilename("file-doc-file.txt");
-        file.setMimeType("text");
-        file.setCreatedAsImage(false);
-
-        file.setInputStreamSource(new InputStreamSource() {
-            ByteArrayInputStream bin = new ByteArrayInputStream("test content".getBytes());
+            Source(String data) {
+                bin = new ByteArrayInputStream(data.getBytes());
+            }
 
             public InputStream getInputStream() throws IOException {
                 return bin;
@@ -114,13 +115,53 @@ public class DocumentMapperTest {
             public long getSize() throws IOException {
                 return bin.available();
             }
-        });
+        }
 
-
-        newDoc.addFile("testFile", file);
         
-        return docMapper.saveNewDocument(newDoc, admin);
-    }    
+        DocumentDomainObject parentDoc = getMainWorkingDocumentInDefaultLanguage(true);
+        FileDocumentDomainObject newDoc = (FileDocumentDomainObject)docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.FILE_ID, parentDoc, admin);
+
+        
+        for (int i = 0; i < 3; i++) {
+            FileDocumentDomainObject.FileDocumentFile fdf = new FileDocumentDomainObject.FileDocumentFile();
+            
+            fdf.setFilename(String.format("test_file_%d.txt", i));
+            fdf.setMimeType("text");
+            fdf.setCreatedAsImage(false);
+            fdf.setInputStreamSource(new Source("test content " + i));
+
+            newDoc.addFile("file_id_" + i, fdf);
+        }
+
+        return assertSavedFiles(docMapper.saveNewDocument(newDoc, admin));
+    }
+
+
+    public FileDocumentDomainObject assertSavedFiles(FileDocumentDomainObject doc) throws IOException {
+        String defaultFileId = doc.getDefaultFileId();
+        FileDocumentDomainObject.FileDocumentFile defaultFile = doc.getDefaultFile();
+        Map<String, FileDocumentDomainObject.FileDocumentFile> docFiles = doc.getFiles();
+
+        assertEquals(defaultFileId, "file_id_0");
+        assertEquals(docFiles.size(), 3);
+
+        for (int i = 0; i < 3; i++) {
+            String fdfId = "file_id_" + i;
+            FileDocumentDomainObject.FileDocumentFile fdf = docFiles.get(fdfId);
+
+            assertNotNull(fdf);
+            assertEquals(fdf.getFilename(), String.format("test_file_%d.txt", i));
+            assertEquals(fdf.getMimeType(), "text");
+
+            File file = DocumentCreatingVisitor.getFileForFileDocumentFile(doc.getId(), doc.getVersionNo(), fdfId);
+            assertTrue(file.exists());
+
+            String content = FileUtils.readFileToString(file);
+            assertEquals(content, "test content " + i);
+        }
+
+        return doc;
+    }
     
 
     @Test(enabled = true)
@@ -435,36 +476,7 @@ public class DocumentMapperTest {
         assertNotNull(docNew);
         assertEquals(doc.getId(), docNew.getId());
 
-        Map<String, FileDocumentDomainObject.FileDocumentFile> docFiles = doc.getFiles();
-        Map<String, FileDocumentDomainObject.FileDocumentFile> docFilesNew = docNew.getFiles();
-
-        assertEquals(docFiles.size(), 1);
-        assertEquals(docFilesNew.size(), 1);
-
-        Map.Entry<String, FileDocumentDomainObject.FileDocumentFile> docFileEntry = docFiles.entrySet().iterator().next();
-        Map.Entry<String, FileDocumentDomainObject.FileDocumentFile> docFileEntryNew = docFilesNew.entrySet().iterator().next();
-
-
-        FileDocumentDomainObject.FileDocumentFile docFile = docFileEntry.getValue();
-        FileDocumentDomainObject.FileDocumentFile docFileNew = docFileEntryNew.getValue();
-        
-        assertEquals(docFile.getId(), docFile.getId());
-        assertEquals(docFile.getFilename(), docFile.getFilename());
-
-        //assertEquals(docFile.getInputStreamSource(), docFileNew.getInputStreamSource());
-
-        String fileId = docFileEntry.getKey();
-        String fileIdNew = docFileEntryNew.getKey();
-
-
-        File file = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getId(), doc.getVersionNo(), fileId);
-        File fileNew = DocumentStoringVisitor.getFileForFileDocumentFile(docNew.getId(), docNew.getVersionNo(), fileIdNew);
-
-        assertTrue(file.exists());
-        assertTrue(fileNew.exists());
-
-        assertEquals(file.getName(), doc.getId() + "." + fileId);
-        assertEquals(fileNew.getName(), docNew.getId() + "_1." + fileId);
+        assertSavedFiles(docNew);
     }
 
 
@@ -548,8 +560,24 @@ public class DocumentMapperTest {
 
     @Test
     public void deleteFileDocument()  throws Exception {
-        DocumentDomainObject doc = saveNewFileDocumentFn();
+        FileDocumentDomainObject doc = saveNewFileDocumentFn();
+
+        for (int i = 0; i < 3; i++) {
+            String fdfId = "file_id_" + i;
+            File file = DocumentCreatingVisitor.getFileForFileDocumentFile(doc.getId(), doc.getVersionNo(), fdfId);
+
+            assertTrue(file.exists());
+        }
+
+
         docMapper.deleteDocument(doc, admin);
+        
+        for (int i = 0; i < 3; i++) {
+            String fdfId = "file_id_" + i;
+            File file = DocumentCreatingVisitor.getFileForFileDocumentFile(doc.getId(), doc.getVersionNo(), fdfId);
+
+            assertTrue(!file.exists());
+        }
     }
 
 
