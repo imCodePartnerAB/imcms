@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.*;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;
@@ -26,8 +25,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
-import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.api.DocumentLabels;
 import com.imcode.imcms.dao.*;
 import com.imcode.imcms.mapping.orm.FileReference;
 import com.imcode.imcms.mapping.orm.Include;
@@ -118,8 +115,18 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
         return new File(filePath, filename);
     }
-   
-    
+
+
+    /**
+     * Saves text document text fields.
+     *
+     * Deletes all existing text fields and then inserts new.
+     *
+     * @param textDocument
+     * @param oldTextDocument
+     * @param user
+     */
+    @Transactional
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument, UserDomainObject user) {
         TextDao textDao = (TextDao)services.getSpringBean("textDao");
 
@@ -147,7 +154,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             text.setLanguage(language);
             
             saveTextDocumentText(textDocument, text, user);
-        }        
+        }
     }
 
     /**
@@ -205,7 +212,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         text.setDocVersionNo(doc.getVersion().getNo());
 
         textDao.saveText(text);
-        //textDao.saveTextHistory(text.getDocId(), text, user);
+        
+        TextHistory textHistory = new TextHistory(text, user);
+        textDao.saveTextHistory(textHistory);
     }
 
     /**

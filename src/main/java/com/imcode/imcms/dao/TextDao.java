@@ -1,6 +1,7 @@
 package com.imcode.imcms.dao;
 
 import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.TextHistory;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -32,46 +33,23 @@ public class TextDao extends HibernateTemplate {
             .setParameter("languageId", languageId)
 			.executeUpdate();
 	}
-	
-	/**
-	 * Updates texts. 
-	 */
-	@Transactional
-	public void updateTexts(Collection<TextDomainObject> texts) {
-		for (TextDomainObject text: texts) {
-			update(text);
-		}
-	}
-	
 
-	
-	
+			
 	/**
 	 * Saves text history.
-	 * TODO: Refactor out SQL call. 
 	 */
 	@Transactional
-	public void saveTextHistory(Integer documentId, TextDomainObject text, UserDomainObject user) {
-		String sql = "INSERT INTO imcms_text_doc_texts_history (doc_id, doc_version_no, no, text, type, modified_datetime, user_id, language_id,loop_no, loop_content_index) VALUES " +
-		"(:docId,:docVersionNo,:no,:text,:type,:modifiedDt,:userId,:languageId,:loopNo,:loopContentIndex)";
-		
-		getSession().createSQLQuery(sql)
-			.setParameter("docId", documentId)
-			.setParameter("docVersionNo", text.getDocVersionNo())
-			.setParameter("no", text.getNo())
-			.setParameter("type", text.getType())
-			.setParameter("text", text.getText())
-			.setParameter("modifiedDt", new Date())
-			.setParameter("userId", user.getId())
-			.setParameter("languageId", text.getLanguage().getId())
-            .setParameter("loopNo", text.getContentLoopNo())
-            .setParameter("loopContentIndex", text.getContentNo()).executeUpdate();
+	public void saveTextHistory(TextHistory textHistory) {
+        save(textHistory);
+
+
 	}
 
     /**
      * @param docId
      * @param docVersionNo
-     * @return all texts in all languages.
+     * 
+     * @return all texts in a doc.
      */
 	@Transactional
 	public List<TextDomainObject> getTexts(Integer docId, Integer docVersionNo) {
@@ -83,7 +61,7 @@ public class TextDao extends HibernateTemplate {
 	
 
 	/**
-	 * Returns text fields for the same document in version range.
+	 * Returns text fields for the same doc, version and language.
 	 */
 	@Transactional
 	public List<TextDomainObject> getTexts(Integer docId, Integer docVersionNo, Integer languageId) {

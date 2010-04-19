@@ -1,33 +1,26 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.user.UserDomainObject;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
-@Table(name="texts_history")
+@Table(name="imcms_text_doc_texts_history")
 public class TextHistory {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="counter")
 	private Long id;
 	
-	@Column(name="meta_id")
-	private Integer metaId;	
+	@Column(name="doc_id")
+	private Integer docId;
+
+	@Column(name="doc_version_no")
+	private Integer docVersionNo;
 	
-    /**
-     * 
-     */	
-	@Column(name="name")
-	private Integer index;
+	private Integer no;
 		
 	private String text;        
     
@@ -35,14 +28,29 @@ public class TextHistory {
     
     @Column(name="user_id")
     private Integer userId;
+
+    @Column(name="content_loop_no")
+    private Integer contentLoopNo;
+
+    @Column(name="content_no")
+    private Integer contentNo;
+
+    @Column(name="modified_dt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modifiedDt;
     
     public TextHistory() {}
     
-    public TextHistory(TextDomainObject textDO) {
-    	//setDocId(textDO.getDocId());
-    	setIndex(textDO.getIndex());
+    public TextHistory(TextDomainObject textDO, UserDomainObject user) {
+    	setDocId(textDO.getDocId());
+        setDocVersionNo(textDO.getDocVersionNo());
+    	setNo(textDO.getNo());
     	setText(textDO.getText());
     	setLanguage(textDO.getLanguage());
+        setContentLoopNo(textDO.getContentLoopNo());
+        setContentNo(textDO.getContentNo());
+        setUserId(user.getId());
+        setModifiedDt(new Date());
     }
     
     /**
@@ -103,14 +111,6 @@ public class TextHistory {
 		this.id = id;
 	}
 
-	public Integer getMetaId() {
-		return metaId;
-	}
-
-	public void setMetaId(Integer metaId) {
-		this.metaId = metaId;
-	}
-
 	public I18nLanguage getLanguage() {
 		return language;
 	}
@@ -119,11 +119,59 @@ public class TextHistory {
 		this.language = language;
 	}
 
-	public Integer getIndex() {
-		return index;
-	}
+    public Integer getDocId() {
+        return docId;
+    }
 
-	public void setIndex(Integer index) {
-		this.index = index;
-	}
+    public void setDocId(Integer docId) {
+        this.docId = docId;
+    }
+
+    public Integer getDocVersionNo() {
+        return docVersionNo;
+    }
+
+    public void setDocVersionNo(Integer docVersionNo) {
+        this.docVersionNo = docVersionNo;
+    }
+
+    public Integer getNo() {
+        return no;
+    }
+
+    public void setNo(Integer no) {
+        this.no = no;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getContentLoopNo() {
+        return contentLoopNo;
+    }
+
+    public void setContentLoopNo(Integer contentLoopNo) {
+        this.contentLoopNo = contentLoopNo;
+    }
+
+    public Integer getContentNo() {
+        return contentNo;
+    }
+
+    public void setContentNo(Integer contentNo) {
+        this.contentNo = contentNo;
+    }
+
+    public Date getModifiedDt() {
+        return modifiedDt;
+    }
+
+    public void setModifiedDt(Date modifiedDt) {
+        this.modifiedDt = modifiedDt;
+    }
 }
