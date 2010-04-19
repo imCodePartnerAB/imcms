@@ -4,8 +4,9 @@
   (:import
     [imcode.server Imcms]
     [imcode.server.document DocumentDomainObject]
-    [com.imcode.imcms.misc-utils :only (dump)]    
-    [imcode.server.user UserDomainObject]))
+    [imcode.server.user UserDomainObject])
+  (:use
+    [com.imcode.imcms.misc-utils :only [dump]]))
 
 (defmacro invoke
   "Invokes Imcms class static method."
@@ -39,6 +40,9 @@
 (defn doc-mapper []
   (.getDocumentMapper (services)))
 
+(defn auth-mapper []
+  (.getImcmsAuthenticatorAndUserAndRoleMapper (services)))
+
 (defn langs []
   (.getLanguages (i18n-support)))
 
@@ -47,7 +51,7 @@
 
 
 (defn find-lang-by-code [#^String code]
-  (if-let [lang (.getByCode (get-i18n-support) code)]
+  (if-let [lang (.getByCode (i18n-support) code)]
     lang
     (throw (Exception. (format "Language with code [%s] can not be found." code)))))
 
@@ -91,20 +95,20 @@
   "Loads all documents from database to the cache. Use with care.
    Returns nil."
   []
-  (doseq [get-doc-fn [get-working-doc get-default-doc], id (get-doc-ids), lang (get-langs)]
-    (get-doc-fn id lang)))
+  (doseq [doc-fn [working-doc default-doc], id (doc-ids), lang (langs)]
+    (doc-fn id lang)))
 
 
 (defn unload-docs
   "Unloads doc(s) with the given id(s) from the cache.
    Returns nil."
   [id & ids]
-  (let [cache (get-doc-cache)]
+  (let [cache (doc-cache)]
     (doseq [doc-id (cons id ids)] (.removeDocumentFromCache cache doc-id))))
 
 
 (defn clear-cache []
-  (.clearCache (get-doc-cache)))
+  (.clearCache (doc-cache)))
 
 
 (defn loaded-docs-info
@@ -130,7 +134,7 @@
   [login password]
   (let [login (if (keyword? login) (name login) login)
         password (if (keyword? login) (name login) login)]
-    (.verifyUser (get-services) login password)))
+    (.verifyUser (services) login password)))
 
 
 (defn conf
@@ -141,3 +145,13 @@
 
 (defn print-conf []
   (dump (conf)))
+
+
+(defn roles []
+  (.getAllRoles (auth-mapper)))
+
+(defn users []
+  (.getUsers (auth-mapper) true true))
+
+(defn users-info []
+  (for [u (users)] {:id (.getId u), :name (.getLoginName u), :password (.getPassword u)}))
