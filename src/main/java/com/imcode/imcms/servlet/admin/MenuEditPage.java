@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.lang.NotImplementedException;
 
 import com.imcode.imcms.flow.CreateDocumentPageFlow;
 import com.imcode.imcms.flow.DispatchCommand;
@@ -38,7 +37,6 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.mapping.NoPermissionInternalException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
-import com.imcode.imcms.api.DocumentLabels;
 
 public class MenuEditPage extends OkCancelPage {
 
@@ -159,7 +157,7 @@ public class MenuEditPage extends OkCancelPage {
             if ( null == request.getParameter(CREATE) ) {
                 //documentMapper.saveDocument(textDocument, user);
                 // -- -- -- menu.setIndex(menuIndex);
-                documentMapper.saveDocumentMenu(textDocument, menu, user);
+                documentMapper.saveTextDocMenu(textDocument, menu, user);
             }
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
@@ -285,7 +283,7 @@ public class MenuEditPage extends OkCancelPage {
 
             MenuDomainObject menu = parentDocument.getMenu(parentMenuIndex.intValue());
             menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(document)));
-            documentMapper.saveDocumentMenu(parentDocument, menu, user);
+            documentMapper.saveTextDocMenu(parentDocument, menu, user);
         }
 
 

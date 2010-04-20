@@ -1,16 +1,8 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.textdocument.DocVersionItem;
 import imcode.server.document.textdocument.MenuDomainObject;
-import imcode.server.document.textdocument.MenuItemComparator;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -18,10 +10,10 @@ import java.util.*;
 
 @Entity
 @Table(name="imcms_text_doc_menus_history")
-public class MenuHistory {
+public class MenuHistory implements Serializable {
 
     @Embeddable
-    public static class MenuItemHistory {
+    public static class MenuItemHistory implements Serializable {
 
         @Column(name="manual_sort_order")
         private Integer sortKey;
@@ -94,9 +86,10 @@ public class MenuHistory {
     public MenuHistory() {}
 
     public MenuHistory(MenuDomainObject menu, UserDomainObject user) {
-        setMenuId(menu.getId());
-        setNo(menu.getNo());
+        setDocId(menu.getDocId());
         setDocVersionNo(menu.getDocVersionNo());
+        setMenuId(menu.getId());
+        setNo(menu.getNo());        
         setModifiedDt(new Date());
         setUserId(user.getId());
 

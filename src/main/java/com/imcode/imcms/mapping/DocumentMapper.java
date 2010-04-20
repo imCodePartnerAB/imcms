@@ -270,7 +270,7 @@ public class DocumentMapper implements DocumentGetter {
      * Saves document menu.
      * @since 6.0
      */
-    public void saveDocumentMenu(TextDocumentDomainObject doc, MenuDomainObject menu, UserDomainObject user)
+    public void saveTextDocMenu(TextDocumentDomainObject doc, MenuDomainObject menu, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
         try {
     		documentSaver.saveMenu(doc, menu, user);
@@ -716,7 +716,7 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.admin.SaveText
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      */
-    public synchronized void saveTextDocumentText(TextDocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public synchronized void saveTextDocText(TextDocumentDomainObject document, TextDomainObject text, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
     	try {
             documentSaver.saveText(document, text, user);
 	    } finally {
@@ -732,7 +732,7 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      * @since 6.0
      */
-    public synchronized void saveTextDocumentImages(TextDocumentDomainObject document, Collection<ImageDomainObject> images, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public synchronized void saveTextDocImages(TextDocumentDomainObject document, Collection<ImageDomainObject> images, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
     	try {
     		documentSaver.saveImages(document, images, user);
 	    } finally {
@@ -749,7 +749,7 @@ public class DocumentMapper implements DocumentGetter {
      * @see com.imcode.imcms.servlet.tags.ContentLoopTag2
      * @since 6.0
      */
-    public synchronized void saveTextDocumentImage(TextDocumentDomainObject document, ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+    public synchronized void saveTextDocImage(TextDocumentDomainObject document, ImageDomainObject image, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
     	try {
     		documentSaver.saveImage(document, image, user);
 	    } finally {

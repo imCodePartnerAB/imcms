@@ -44,7 +44,7 @@ public class NativeQueriesDao extends HibernateTemplate {
 
 	@Transactional
 	public List<Object[]> getParentDocumentAndMenuIdsForDocument(Integer documentId) {
-		String sqlStr = "SELECT meta_id,menu_index FROM childs, menus WHERE menus.menu_id = childs.menu_id AND to_meta_id = ?";
+		String sqlStr = "SELECT doc_id, no FROM imcms_text_doc_menu_items childs, imcms_text_doc_menus menus WHERE menus.id = childs.menu_id AND to_doc_id = ?";
 
 		return getSession().createSQLQuery(sqlStr)
 				.setParameter(0, documentId)
@@ -75,7 +75,7 @@ public class NativeQueriesDao extends HibernateTemplate {
 
 	@Transactional
 	public List<Integer[]> getDocumentMenuPairsContainingDocument(Integer documentId) {
-		String sqlSelectMenus = "SELECT meta_id, menu_index FROM menus, childs WHERE menus.menu_id = childs.menu_id AND childs.to_meta_id = ? ORDER BY meta_id, menu_index";
+		String sqlSelectMenus = "SELECT doc_id, no FROM imcms_text_doc_menus menus, imcms_text_doc_menu_items childs WHERE menus.id = childs.menu_id AND childs.to_doc_id = ? ORDER BY doc_id, no";
 
 		return getSession().createSQLQuery(sqlSelectMenus).setParameter(0, documentId).list();
 	}

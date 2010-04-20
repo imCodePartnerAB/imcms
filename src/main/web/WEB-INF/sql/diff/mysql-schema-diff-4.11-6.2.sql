@@ -477,7 +477,7 @@ FROM
 
 
 CREATE TABLE `imcms_text_doc_menus_history` (
-  id int NOT NULL PRIMARY KEY,
+  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
   menu_id int NOT NULL,  
   doc_id int NOT NULL,
   doc_version_no int NOT NULL,
@@ -502,6 +502,12 @@ CREATE TABLE `imcms_text_doc_menu_items_history` (
   -- CONSTRAINT `fk__imcms_text_doc_menu_items_history__1` FOREIGN KEY (`menu_id`) REFERENCES `imcms_text_doc_menus_history` (`menu_id`),
   CONSTRAINT `fk__imcms_text_doc_menu_items_history__meta` FOREIGN KEY (`to_doc_id`) REFERENCES `meta` (`meta_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE childs;
+DROP TABLE childs_history;
+
+DROP TABLE menus;
+DROP TABLE menus_history;
 
 
 -- text documents texts

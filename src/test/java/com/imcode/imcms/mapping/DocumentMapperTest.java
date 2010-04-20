@@ -8,7 +8,6 @@ import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 
-import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.InputStreamSource;
 import org.apache.commons.io.FileUtils;
 import org.testng.annotations.BeforeClass;
@@ -205,8 +204,19 @@ public class DocumentMapperTest {
 
 
     @Test(enabled = true)
-    public void addMenu() {
-        fail("NOT IMPLEMENTED");
+    public void addMenu() throws Exception {
+        TextDocumentDomainObject textDoc = saveNewTextDocumentFn();
+        DocumentDomainObject menuDoc = saveNewTextDocumentFn();
+
+        MenuDomainObject menu = new MenuDomainObject();
+        MenuItemDomainObject item = new MenuItemDomainObject(docMapper.getDocumentReference(menuDoc));
+        menu.addMenuItem(item);
+        
+
+        textDoc.setMenu(0, menu);
+
+        docMapper.saveDocument(textDoc, admin);
+
     }
 
 //    @Test(enabled = true)//(dependsOnMethods = {"createDocumentOfTypeFromParent"})
@@ -229,7 +239,7 @@ public class DocumentMapperTest {
 //        MenuDomainObject menu = Factory.createNextMenu(parentDoc, docRef);
 //        Integer menuNo = menu.getNo();
 //
-//        docMapper.saveDocumentMenu(parentDoc, menu, admin);
+//        docMapper.saveTextDocMenu(parentDoc, menu, admin);
 //
 //        parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
 //
@@ -314,7 +324,7 @@ public class DocumentMapperTest {
             doc.setText(text.getNo(), text);
         }
 
-        docMapper.saveTextDocumentText(doc, text, admin);
+        docMapper.saveTextDocText(doc, text, admin);
     }
 
 
@@ -352,7 +362,7 @@ public class DocumentMapperTest {
         image.setContentLoopNo(contentLoopNo);
         image.setContentNo(contentIndex);
 
-        docMapper.saveTextDocumentImage(doc, image, admin);
+        docMapper.saveTextDocImage(doc, image, admin);
     }
 
 

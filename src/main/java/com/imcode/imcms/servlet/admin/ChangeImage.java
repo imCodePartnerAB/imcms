@@ -80,7 +80,7 @@ public class ChangeImage extends HttpServlet {
                 ImcmsServices services = Imcms.getServices();
                 
                 try {
-                    services.getDocumentMapper().saveTextDocumentImages(document, images, user);
+                    services.getDocumentMapper().saveTextDocImages(document, images, user);
                 } catch ( NoPermissionToEditDocumentException e ) {
                     throw new ShouldHaveCheckedPermissionsEarlierException(e);
                 } catch ( NoPermissionToAddDocumentToMenuException e ) {
