@@ -9,6 +9,7 @@
     </groups>
 
     <packages>
+        <package name="imcode.server.*"/>
         <package name="com.imcode.imcms.*"/>
     </packages>
   </test>  

@@ -10,6 +10,7 @@ import imcode.server.user.UserDomainObject;
 
 import imcode.util.io.InputStreamSource;
 import org.apache.commons.io.FileUtils;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -42,6 +43,12 @@ public class DocumentMapperTest {
         docMapper = Imcms.getServices().getDocumentMapper();
         admin = Imcms.getServices().verifyUser("admin", "admin");
         user = Imcms.getServices().verifyUser("user", "user");
+    }
+
+
+    @AfterClass
+    public void afterClass() {
+        Imcms.stop();
     }
 
     

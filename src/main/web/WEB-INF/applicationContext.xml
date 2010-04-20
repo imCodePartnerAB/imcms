@@ -112,6 +112,10 @@
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
 
+  <bean id="systemDao" class="com.imcode.imcms.dao.SystemDao">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+
   <bean id="documentVersionDao" class="com.imcode.imcms.dao.DocumentVersionDao">
       <property name="sessionFactory" ref="sessionFactory"/>
       </bean>

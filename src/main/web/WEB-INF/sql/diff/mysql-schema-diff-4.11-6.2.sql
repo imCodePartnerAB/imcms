@@ -23,6 +23,8 @@ DELETE FROM doc_permissions WHERE doc_type NOT IN (2,5,7,8);
 -- Languages support
 --
 -- todo: move default language into sys table.
+-- todo: add internal id 
+
 CREATE TABLE `imcms_languages` (
   `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `code` varchar(3) NOT NULL COMMENT 'Language code.',
@@ -503,6 +505,20 @@ CREATE TABLE `imcms_text_doc_menu_items_history` (
   CONSTRAINT `fk__imcms_text_doc_menu_items_history__meta` FOREIGN KEY (`to_doc_id`) REFERENCES `meta` (`meta_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+INSERT INTO imcms_text_doc_menus_history (
+  menu_id, doc_id, doc_version_no, no, sort_order, modified_dt, user_id
+)
+SELECT menu_id, meta_id, @doc_version_no, menu_index, sort_order, modified_datetime, user_id
+FROM menus_history;
+
+INSERT INTO imcms_text_doc_menu_items_history (
+  menu_id, to_doc_id, manual_sort_order, tree_sort_index
+)
+SELECT menu_id, to_meta_id, manual_sort_order, tree_sort_index
+FROM childs_history;
+
+
 DROP TABLE childs;
 DROP TABLE childs_history;
 
@@ -707,9 +723,10 @@ CREATE TABLE imcms_text_doc_images_history (
   CONSTRAINT fk__imcms_text_doc_images_history__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- todo:
--- DROP TABLE images;
--- DROP TABLE images_history;
+-- todo: populate images history.
+
+DROP TABLE images;
+DROP TABLE images_history;
 
 --
 -- Includes table
