@@ -30,18 +30,29 @@ CREATE TABLE `imcms_languages` (
   `code` varchar(3) NOT NULL COMMENT 'Language code.',
   `name` varchar(128) NOT NULL COMMENT 'Language name in english.',
   `native_name` varchar(128) DEFAULT NULL COMMENT 'Language native name e.g Svenska, Suomi, etc.',
-  `default` tinyint NOT NULL DEFAULT '0' COMMENT 'Default language flag for application. Only one language can be set as default.',
-  `enabled` tinyint NOT NULL DEFAULT '1' COMMENT 'Language enabled status.'
+  `enabled` tinyint NOT NULL DEFAULT true COMMENT 'Language enabled status.'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 -- Add languages
 INSERT INTO imcms_languages
-  (`id`, `code`, `name`, `native_name`, `default`, `enabled`)
+  (`id`, `code`, `name`, `native_name`, `enabled`)
 VALUES
-  (@doc_language_id_en, 'en', 'English', 'English', true, true),
-  (@doc_language_id_sw, 'sw', 'Swedish', 'Svenska', false, true);
+  (@doc_language_id_en, 'en', 'English', 'English', true),
+  (@doc_language_id_sw, 'sw', 'Swedish', 'Svenska', true);
 
+
+INSERT INTO sys_types (
+  `type_id`, `name`
+) VALUES (
+  8, 'LanguageId'
+);
+
+INSERT INTO sys_data (
+  `type_id`, `value`
+) VALUES (
+  8, @doc_language_id
+);
 
 --
 -- Doc languages

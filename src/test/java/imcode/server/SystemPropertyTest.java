@@ -39,15 +39,39 @@ public class SystemPropertyTest {
 
     @Test
     public void getProperty() {
-        SystemProperty property = systemDao.getProperty("startDocument");
+        SystemProperty property = getExistingProperty("startDocument");
 
-        assertNotNull(property);
         assertEquals(property.getValue(), "" + 1001);
     }
 
 
     @Test
     public void savePropery() {
-        fail("NOT IMPLEMENTED");
-    }    
+        SystemProperty property = getExistingProperty("languageId");
+
+        property.setValue("" + 0);
+
+        systemDao.saveProperty(property);
+
+        SystemProperty property2 = getExistingProperty("languageId");
+
+        assertEquals(property2.getValue(), "" + 0);
+
+        property2.setValue("" + 1);
+
+        systemDao.saveProperty(property2);
+
+        SystemProperty property3 = getExistingProperty("languageId");
+
+        assertEquals(property3.getValue(), "" + 1);
+    }
+
+
+    public SystemProperty getExistingProperty(String name) {
+        SystemProperty property = systemDao.getProperty(name);
+
+        assertNotNull(property);
+
+        return property;
+    }
 }

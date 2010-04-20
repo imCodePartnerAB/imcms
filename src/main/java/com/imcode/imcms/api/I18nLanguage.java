@@ -17,9 +17,6 @@ public class I18nLanguage implements Serializable, Cloneable {
     @Id
     private Integer id;
 
-    @Column(name="default")
-	private Boolean default_;
-
 	private Boolean enabled;	
     
     private String code;
@@ -96,14 +93,6 @@ public class I18nLanguage implements Serializable, Cloneable {
 	
 	public void setNativeName(String nativeName) {
 		this.nativeName = nativeName;
-	}
-
-	public Boolean isDefault() {
-		return default_;
-	}
-
-	public void setDefault(Boolean systemDefault) {
-		this.default_ = systemDefault;
 	}
 	
 	public Boolean isEnabled() {

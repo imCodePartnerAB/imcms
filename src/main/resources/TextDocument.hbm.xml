@@ -50,11 +50,11 @@
     ]]>
   </query>
 
-  <query name="Image.getLanguagesToImagesByDocId">
-    <![CDATA[
-    select l, i from Image i right join i.language l where (i.docId = :docId and i.no = :name) or i.docId is null order by l.default_ desc
-    ]]>
-  </query>
+  <!--<query name="Image.getLanguagesToImagesByDocId">-->
+    <!--<![CDATA[-->
+    <!--select l, i from Image i right join i.language l where (i.docId = :docId and i.no = :name) or i.docId is null order by l.default_ desc-->
+    <!--]]>-->
+  <!--</query>-->
 
   <query name="Image.getAllImages">
     <![CDATA[
@@ -68,11 +68,11 @@
     ]]>
   </query>
 
-  <query name="Image.getDefaultImage">
-    <![CDATA[
-    select i from Image i where i.docId = :docId and i.no = :name and i.language.default_ is true
-    ]]>
-  </query>
+  <!--<query name="Image.getDefaultImage">-->
+    <!--<![CDATA[-->
+    <!--select i from Image i where i.docId = :docId and i.no = :name and i.language.default_ is true-->
+    <!--]]>-->
+  <!--</query>-->
 
 
   <query name="Image.getByDocIdAndDocVersionNo">

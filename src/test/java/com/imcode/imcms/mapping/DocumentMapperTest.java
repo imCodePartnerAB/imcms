@@ -232,7 +232,7 @@ public class DocumentMapperTest {
 //        DocumentDomainObject menuItemDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
 //        List<DocumentLabels> labels = new LinkedList<DocumentLabels>();
 //
-//        for (I18nLanguage lang: i18nSupport.getLanguages()) {
+//        for (I18nLanguage lang: i18nSupport.getAllLanguages()) {
 //            DocumentLabels l = new DocumentLabels();
 //
 //            l.setHeadline(":headline in:" + lang.getCode());

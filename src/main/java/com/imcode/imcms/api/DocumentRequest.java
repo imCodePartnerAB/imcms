@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.DocumentMapper;
+import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -31,7 +32,7 @@ public class DocumentRequest {
     public DocumentDomainObject getDoc(DocumentMapper docMapper, Integer docId) {
         DocumentDomainObject doc = docMapper.getDefaultDocument(docId, language);
 
-        if (doc != null && !language.isDefault() && !user.isSuperAdmin()) {
+        if (doc != null && !Imcms.getI18nSupport().isDefault(language) && !user.isSuperAdmin()) {
             Meta meta = doc.getMeta();
 
             if (!meta.getEnabledLanguages().contains(language)) {

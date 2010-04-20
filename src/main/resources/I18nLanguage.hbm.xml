@@ -12,18 +12,25 @@
   -->
 
   <!-- Unique -->
-  <query name="I18nLanguage.getDefaultLanguage">
-    <![CDATA[
-      select l from I18nLanguage l where l.default_ is true
-    ]]>
-  </query>   
+  <!--<query name="I18nLanguage.getDefaultLanguage">-->
+    <!--<![CDATA[-->
+      <!--select l from I18nLanguage l where l.default_ is true-->
+    <!--]]>-->
+  <!--</query>   -->
   
   <!-- Unique -->
   <query name="I18nLanguage.getByCode">
     <![CDATA[
 	  select l from I18nLanguage l where l.code = :code   
     ]]>
-  </query>  
+  </query>
+
+  <!-- Unique -->
+  <query name="I18nLanguage.getById">
+    <![CDATA[
+	  select l from I18nLanguage l where l.id = :id   
+    ]]>
+  </query>
   
   <!-- Collection -->
     <!--

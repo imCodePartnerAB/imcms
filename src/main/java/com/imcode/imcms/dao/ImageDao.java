@@ -5,11 +5,9 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import imcode.server.user.UserDomainObject;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.lang.StringUtils;

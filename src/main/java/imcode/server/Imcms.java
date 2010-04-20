@@ -1,5 +1,8 @@
 package imcode.server;
 
+import com.imcode.imcms.api.*;
+import com.imcode.imcms.api.DocumentRequest;
+import com.imcode.imcms.dao.SystemDao;
 import imcode.util.CachingFileLoader;
 import imcode.util.Prefs;
 
@@ -32,10 +35,6 @@ import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.imcms.schema.SchemaUpgrade;
 import com.imcode.imcms.dao.LanguageDao;
-import com.imcode.imcms.api.I18nLanguage;
-import com.imcode.imcms.api.I18nException;
-import com.imcode.imcms.api.I18nSupport;
-import com.imcode.imcms.api.DocumentRequest;
 import com.imcode.imcms.servlet.ImcmsMode;
 import com.imcode.imcms.servlet.ImcmsListener;
 
@@ -350,25 +349,24 @@ public class Imcms {
     		throw new I18nException(msg);
     	}
 
-        int defaultLanguageRecordCount = CollectionUtils.countMatches(languages, new Predicate() {
-            public boolean evaluate(Object language) {
-                return ((I18nLanguage)language).isDefault();
-            }
-        });
+        SystemDao systemDao = (SystemDao)getSpringBean("systemDao");
+        String languageId = systemDao.getProperty("languageId").getValue();
 
-        if (defaultLanguageRecordCount == 0) {
+        if (languageId == null) {
     		String msg = "I18n configuration error. Default language is not set.";
     		logger.fatal(msg);
     		throw new I18nException(msg);
-        } else if (defaultLanguageRecordCount > 1) {
-            String msg = "I18n configuration error. Only one language must be set default.";
-            logger.fatal(msg);
-            throw new I18nException(msg);
         }
 
-        I18nSupport i18nSupport = new I18nSupport();
+        I18nLanguage defaultLanguage = languageDao.getById(Integer.parseInt(languageId));
 
-        I18nLanguage defaultLanguage = languageDao.getDefaultLanguage();
+        if (defaultLanguage == null) {
+    		String msg = String.format("I18n configuration error. Default language can not be set. There is no language with id %s.", languageId);
+    		logger.fatal(msg);
+    		throw new I18nException(msg);
+        }        
+
+        I18nSupport i18nSupport = new I18nSupport();
 
     	i18nSupport.setDefaultLanguage(defaultLanguage);
     	i18nSupport.setLanguages(languages);
