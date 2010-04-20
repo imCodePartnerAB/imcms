@@ -293,9 +293,12 @@ public class Meta implements Serializable, Cloneable {
 	private Set<PermisionSetEx> permisionSetExForNew = new HashSet<PermisionSetEx>();
 
 
+    /**
+     * Might be empty.
+     */
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
 	@JoinTable(
-	    name = "imcms_doc_languages",
+	    name = "imcms_doc_enabled_languages",
 	    joinColumns = @JoinColumn(name="doc_id"),
             inverseJoinColumns = @JoinColumn(name="language_id")
         )
