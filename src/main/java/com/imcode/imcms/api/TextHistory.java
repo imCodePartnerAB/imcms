@@ -11,7 +11,6 @@ import java.util.Date;
 public class TextHistory {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="counter")
 	private Long id;
 
 	@Column(name="doc_id")

@@ -478,6 +478,7 @@ FROM
 
 CREATE TABLE `imcms_text_doc_menus_history` (
   id int NOT NULL PRIMARY KEY,
+  menu_id int NOT NULL,  
   doc_id int NOT NULL,
   doc_version_no int NOT NULL,
   no int NOT NULL,
@@ -491,7 +492,7 @@ CREATE TABLE `imcms_text_doc_menus_history` (
 
 CREATE TABLE `imcms_text_doc_menu_items_history` (
   id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  menu_id int NOT NULL,
+  menu_id int NULL,
   to_doc_id int NOT NULL,
   manual_sort_order int NOT NULL,
   tree_sort_index varchar(64) NOT NULL,

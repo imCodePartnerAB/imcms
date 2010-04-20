@@ -1,5 +1,6 @@
 package com.imcode.imcms.dao;
 
+import com.imcode.imcms.api.MenuHistory;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TreeSortKeyDomainObject;
@@ -29,6 +30,12 @@ public class MenuDao extends HibernateTemplate {
         
 	    saveOrUpdate(menu);			
 	}
+
+
+    @Transactional
+    public void saveMenuHistory(MenuHistory menuHistory) {
+        saveOrUpdate(menuHistory);	     
+    }
 
 
 
