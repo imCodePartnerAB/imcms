@@ -117,7 +117,7 @@ INSERT INTO `imcms_doc_versions` (
   `date_modified`
 FROM `meta`;
 
-
+-- todo: move to property?
 CREATE TABLE imcms_doc_default_version (
     id int AUTO_INCREMENT PRIMARY KEY,
     doc_id int NOT NULL,
@@ -178,6 +178,7 @@ ALTER TABLE meta
   DROP COLUMN meta_headline,
   DROP COLUMN meta_text,
   DROP COLUMN meta_image,
+  -- todo: move to properties.
   ADD COLUMN  `disabled_language_show_rule` varchar(32) NOT NULL DEFAULT 'DO_NOT_SHOW';
   --  COMMENT 'Possible values: DO_NOT_SHOW, SHOW_IN_DEFAULT_LANGUAGE';
 
@@ -537,6 +538,9 @@ CREATE TABLE imcms_text_doc_texts (
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+-- Delete duplicates from text table
+DELETE FROM texts l USING texts l, texts r WHERE l.meta_id = r.meta_id and l.name = r.name and l.counter < r.counter;
 
 INSERT INTO imcms_text_doc_texts (
     doc_id,
