@@ -14,15 +14,15 @@ SET @doc_version_no = 0;
 --
 -- todo: remove autoincrement?
 CREATE TABLE `imcms_languages` (
-  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `id` int AUTO_INCREMENT PRIMARY KEY,
   `code` varchar(3) NOT NULL COMMENT 'Language code.',
   `name` varchar(128) NOT NULL COMMENT 'Language name in english.',
   `native_name` varchar(128) DEFAULT NULL COMMENT 'Language native name e.g Svenska, Suomi, etc.',
   `enabled` tinyint NOT NULL DEFAULT true COMMENT 'Language enabled status.',
   
-  UNIQUE KEY `uk__imcms_languages__code` (`code`),
-  UNIQUE KEY `uk__imcms_languages__name` (`name`),
-  UNIQUE KEY `uk__imcms_languages__native_name` (`native_name`)  
+  CONSTRAINT `uk__imcms_languages__code` UNIQUE KEY (`code`),
+  CONSTRAINT `uk__imcms_languages__name` UNIQUE KEY (`name`),
+  CONSTRAINT `uk__imcms_languages__native_name` UNIQUE KEY (`native_name`)  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -52,11 +52,11 @@ INSERT INTO sys_data (
 -- 
 -- enabled document languages
 CREATE TABLE `imcms_doc_enabled_languages` (
-  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `id` int AUTO_INCREMENT PRIMARY KEY,
   `doc_id` int NOT NULL,
   `language_id` int NOT NULL,
   
-  UNIQUE KEY `uk__imcms_doc_enabled_languages__doc_id__language_id` (`doc_id`,`language_id`),
+  CONSTRAINT `uk__imcms_doc_enabled_languages__doc_id__language_id` UNIQUE KEY (`doc_id`,`language_id`),
   CONSTRAINT `fk__imcms_doc_enabled_languages__meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`) ON DELETE CASCADE,
   CONSTRAINT `fk__imcms_doc_enabled_languages__languages` FOREIGN KEY (`language_id`) REFERENCES `imcms_languages` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -69,11 +69,11 @@ SELECT `meta_id`, @doc_language_id FROM `meta`;
 -- Keywords
 --
 CREATE TABLE `imcms_doc_keywords` (
-  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `id` int AUTO_INCREMENT PRIMARY KEY,
   `doc_id` int NOT NULL,
   `value` varchar(128) NOT NULL,
   
-  UNIQUE KEY `uk__imcms_doc_keywords__doc_id__value` (`doc_id`,`value`),
+  CONSTRAINT `uk__imcms_doc_keywords__doc_id__value` UNIQUE KEY  (`doc_id`,`value`),
   CONSTRAINT `fk__imcms_doc_keywords__meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -86,7 +86,7 @@ SELECT mc.meta_id, c.code FROM meta_classification mc join classification c on m
 -- Version support
 --
 CREATE TABLE `imcms_doc_versions` (
-  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `id` int AUTO_INCREMENT PRIMARY KEY,
   `doc_id` int NOT NULL,
   `no` int NOT NULL,
   `created_by` int NULL,
@@ -94,7 +94,7 @@ CREATE TABLE `imcms_doc_versions` (
   `modified_by` int NULL,
   `modified_dt` datetime NULL,
   
-  UNIQUE KEY `uk__imcms_doc_versions__doc_id__no` (`doc_id`,`no`),
+  CONSTRAINT `uk__imcms_doc_versions__doc_id__no` UNIQUE KEY (`doc_id`,`no`),
   CONSTRAINT `fk__imcms_doc_versions__meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`) ON DELETE CASCADE,
   CONSTRAINT `fk__imcms_doc_versions__user1` FOREIGN KEY (`created_by`) REFERENCES `users` (`user_id`) ON DELETE SET NULL,
   CONSTRAINT `fk__imcms_doc_versions__user2` FOREIGN KEY (`modified_by`) REFERENCES `users` (`user_id`) ON DELETE SET NULL
@@ -141,7 +141,7 @@ FROM `meta`;
 -- Document labels
 --
 CREATE TABLE `imcms_doc_labels` (
-  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `id` int AUTO_INCREMENT PRIMARY KEY,
   `doc_id` int NOT NULL,
   `doc_version_no` int NOT NULL,
   `language_id` int NOT NULL,
@@ -188,18 +188,18 @@ ALTER TABLE meta
 -- Content loops
 --
 CREATE TABLE `imcms_text_doc_content_loops` (
-  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `id` int AUTO_INCREMENT PRIMARY KEY,
   `doc_id` int NOT NULL,
   `doc_version_no` int NOT NULL,
   `no` int NOT NULL,
   
-  UNIQUE KEY `uk__imcms_text_doc_content_loops` (`doc_id`,`doc_version_no`,`no`),
+  CONSTRAINT `uk__imcms_text_doc_content_loops` UNIQUE KEY (`doc_id`,`doc_version_no`,`no`),
   CONSTRAINT `fk__imcms_text_doc_content_loops__imcms_doc_versions` FOREIGN KEY (`doc_id`, `doc_version_no`) REFERENCES `imcms_doc_versions` (`doc_id`, `no`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `imcms_text_doc_contents` (
-  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `id` int AUTO_INCREMENT PRIMARY KEY,
   `doc_id` int NOT NULL,
   `doc_version_no` int NOT NULL,
   `loop_no` int DEFAULT NULL,
@@ -207,7 +207,7 @@ CREATE TABLE `imcms_text_doc_contents` (
   `order_no` int NOT NULL,
   `enabled` tinyint NOT NULL DEFAULT true,
   
-  UNIQUE KEY `uk__imcms_text_doc_contents__doc_id__doc_version_no__loop_no__no` (`doc_id`,`doc_version_no`,`loop_no`,`no`),
+  CONSTRAINT `uk__imcms_text_doc_contents__doc_id__doc_version_no__loop_no__no` UNIQUE KEY (`doc_id`,`doc_version_no`,`loop_no`,`no`),
   CONSTRAINT `fk__imcms_text_doc_contents__imcms_doc_versions` FOREIGN KEY (`doc_id`, `doc_version_no`) REFERENCES `imcms_doc_versions` (`doc_id`, `no`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -218,7 +218,7 @@ CREATE TABLE `imcms_text_doc_contents` (
 --
 
 CREATE TABLE __new_doc_permission_sets_ex (
-  id int auto_increment PRIMARY KEY,
+  id int AUTO_INCREMENT PRIMARY KEY,
   meta_id int NOT NULL,
   set_id int NOT NULL,
   permission_id int NOT NULL,
@@ -238,14 +238,14 @@ DROP TABLE new_doc_permission_sets_ex;
 RENAME TABLE __new_doc_permission_sets_ex TO new_doc_permission_sets_ex;
 
 ALTER TABLE new_doc_permission_sets_ex
-  ADD UNIQUE INDEX ux__new_doc_permission_sets_ex__1 (meta_id, set_id, permission_id, permission_data),
-  ADD FOREIGN KEY  fk__new_doc_permission_sets_ex__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  ADD FOREIGN KEY  fk__new_doc_permission_sets_ex__permission_sets (set_id) REFERENCES permission_sets (set_id);
+  ADD CONSTRAINT uk__new_doc_permission_sets_ex__1 UNIQUE KEY (meta_id, set_id, permission_id, permission_data),
+  ADD CONSTRAINT fk__new_doc_permission_sets_ex__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  ADD CONSTRAINT fk__new_doc_permission_sets_ex__permission_sets FOREIGN KEY (set_id) REFERENCES permission_sets (set_id);
 
 
 
 CREATE TABLE __doc_permission_sets_ex (
-  id int auto_increment PRIMARY KEY,
+  id int AUTO_INCREMENT PRIMARY KEY,
   meta_id int NOT NULL,
   set_id int NOT NULL,
   permission_id int NOT NULL,
@@ -265,13 +265,13 @@ DROP TABLE doc_permission_sets_ex;
 RENAME TABLE __doc_permission_sets_ex TO doc_permission_sets_ex;
 
 ALTER TABLE doc_permission_sets_ex
-  ADD CONSTRAINT ux__doc_permission_sets_ex__1 UNIQUE INDEX (meta_id, set_id, permission_id, permission_data),
-  ADD FOREIGN KEY  fk__doc_permission_sets_ex__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  ADD FOREIGN KEY  fk__doc_permission_sets_ex__permission_sets (set_id) REFERENCES permission_sets (set_id);
+  ADD CONSTRAINT uk__doc_permission_sets_ex__1 UNIQUE KEY (meta_id, set_id, permission_id, permission_data),
+  ADD CONSTRAINT fk__doc_permission_sets_ex__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  ADD CONSTRAINT fk__doc_permission_sets_ex__permission_sets FOREIGN KEY (set_id) REFERENCES permission_sets (set_id);
 
 
 CREATE TABLE __new_doc_permission_sets (
-  id int auto_increment PRIMARY KEY,
+  id int AUTO_INCREMENT PRIMARY KEY,
   meta_id int NOT NULL,
   set_id int NOT NULL,
   permission_id int NOT NULL
@@ -290,16 +290,16 @@ DROP TABLE new_doc_permission_sets;
 RENAME TABLE __new_doc_permission_sets TO new_doc_permission_sets;
 
 ALTER TABLE new_doc_permission_sets
-  ADD UNIQUE INDEX ux__new_doc_permission_sets__meta_id__set_id (meta_id, set_id),
-  ADD FOREIGN KEY  fk__new_doc_permission_sets__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  ADD FOREIGN KEY  fk__new_doc_permission_sets__permission_sets (set_id) REFERENCES permission_sets (set_id);
+  ADD CONSTRAINT uk__new_doc_permission_sets__meta_id__set_id UNIQUE KEY (meta_id, set_id),
+  ADD CONSTRAINT fk__new_doc_permission_sets__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  ADD CONSTRAINT fk__new_doc_permission_sets__permission_sets FOREIGN KEY (set_id) REFERENCES permission_sets (set_id);
 
 --
 -- Update permissions:
 --
 
 CREATE TABLE __doc_permission_sets (
-  id int auto_increment PRIMARY KEY,
+  id int AUTO_INCREMENT PRIMARY KEY,
   meta_id int NOT NULL,
   set_id int NOT NULL,
   permission_id int NOT NULL
@@ -317,16 +317,16 @@ DROP TABLE doc_permission_sets;
 RENAME TABLE __doc_permission_sets TO doc_permission_sets;
 
 ALTER TABLE doc_permission_sets
-  ADD UNIQUE INDEX ux__doc_permission_sets__meta_id__set_id (meta_id, set_id),
-  ADD FOREIGN KEY  fk__doc_permission_sets__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
-  ADD FOREIGN KEY  fk__doc_permission_sets__permission_sets (set_id) REFERENCES permission_sets (set_id);
+  ADD CONSTRAINT uk__doc_permission_sets__meta_id__set_id UNIQUE KEY (meta_id, set_id),
+  ADD CONSTRAINT fk__doc_permission_sets__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  ADD CONSTRAINT fk__doc_permission_sets__permission_sets FOREIGN KEY (set_id) REFERENCES permission_sets (set_id);
 
 
 --
 -- File upload table:
 --
 CREATE TABLE __fileupload_docs (
-  id int auto_increment PRIMARY KEY,
+  id int AUTO_INCREMENT PRIMARY KEY,
   meta_id int NOT NULL,
   doc_version_no int NOT NULL,
   variant_name varchar(100) NOT NULL,
@@ -359,20 +359,21 @@ DROP TABLE fileupload_docs;
 RENAME TABLE __fileupload_docs TO fileupload_docs;
 
 ALTER TABLE fileupload_docs
-  ADD CONSTRAINT ux__fileupload_docs__1 UNIQUE INDEX (meta_id, doc_version_no, variant_name)
-  ; -- , ADD CONSTRAINT fk__fileupload_docs__doc_version FOREIGN KEY (meta_id, doc_version_no) REFERENCES imcms_doc_version (doc_id, no) ON DELETE CASCADE;
+  ADD CONSTRAINT uk__fileupload_docs__1 UNIQUE KEY (meta_id, doc_version_no, variant_name),
+  ADD CONSTRAINT fk__fileupload_docs__doc_version FOREIGN KEY (meta_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE;
 
 
 --
 -- HTML DOCS
 --
 CREATE TABLE `imcms_html_docs` (
-  `id` int auto_increment PRIMARY KEY,
+  `id` int AUTO_INCREMENT PRIMARY KEY,
   `doc_id` int NOT NULL,
   `doc_version_no` int NOT NULL,
   `html` longtext,
-  CONSTRAINT uk__imcms_html_docs__doc_id__doc_version_no  UNIQUE KEY (doc_id, doc_version_no)
-  -- , CONSTRAINT fk__imcms_html_docs__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_version(doc_id, no) ON DELETE CASCADE
+  
+  CONSTRAINT uk__imcms_html_docs__doc_id__doc_version_no UNIQUE KEY (doc_id, doc_version_no),
+  CONSTRAINT fk__imcms_html_docs__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO imcms_html_docs(
@@ -390,7 +391,7 @@ FROM `frameset_docs`;
 -- URL Documents
 --
 CREATE TABLE `imcms_url_docs` (
-  `id` int auto_increment PRIMARY KEY,
+  `id` int AUTO_INCREMENT PRIMARY KEY,
   `doc_id` int NOT NULL,
   `doc_version_no` int NOT NULL,
   `frame_name` varchar(80) NOT NULL,
@@ -398,8 +399,8 @@ CREATE TABLE `imcms_url_docs` (
   `url_ref` varchar(255) NOT NULL,
   `url_txt` varchar(255) NOT NULL,
   `lang_prefix` varchar(3) NOT NULL,
-  CONSTRAINT uk__imcms_url_docs__doc_id__doc_version_no  UNIQUE KEY (doc_id, doc_version_no)
-  -- , CONSTRAINT fk__imcms_url_docs__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_version(doc_id, version_no) ON DELETE CASCADE
+  CONSTRAINT uk__imcms_url_docs__doc_id__doc_version_no UNIQUE KEY (doc_id, doc_version_no),
+  CONSTRAINT fk__imcms_url_docs__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -433,7 +434,7 @@ CREATE TABLE imcms_text_doc_menus (
   no int NOT NULL,
   sort_order int NOT NULL,
 
-  UNIQUE KEY uk__imcms_text_doc_menus__doc_id__doc_version_no__no (doc_id, doc_version_no, no),
+  CONSTRAINT uk__imcms_text_doc_menus__doc_id__doc_version_no__no UNIQUE KEY (doc_id, doc_version_no, no),
   CONSTRAINT fk__imcms_text_doc_menus__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -462,7 +463,6 @@ CREATE TABLE imcms_text_doc_menu_items (
   manual_sort_order int NOT NULL,
   tree_sort_index varchar(64) NOT NULL,
 
-  --UNIQUE KEY uk__imcms_text_doc_menu_items__menu_id__doc_id (menu_id, to_doc_id),
   CONSTRAINT uk__imcms_text_doc_menu_items__menu_id__doc_id UNIQUE KEY (menu_id, to_doc_id),
   CONSTRAINT fk__imcms_text_doc_menu_items__menu FOREIGN KEY (menu_id) REFERENCES imcms_text_doc_menus (id) ON DELETE CASCADE
 
@@ -481,7 +481,7 @@ FROM
 
 
 CREATE TABLE `imcms_text_doc_menus_history` (
-  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  id int AUTO_INCREMENT PRIMARY KEY,
   menu_id int NOT NULL,  
   doc_id int NOT NULL,
   doc_version_no int NOT NULL,
@@ -496,7 +496,7 @@ CREATE TABLE `imcms_text_doc_menus_history` (
 
 
 CREATE TABLE `imcms_text_doc_menu_items_history` (
-  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  id int AUTO_INCREMENT PRIMARY KEY,
   menu_id int NULL,
   to_doc_id int NOT NULL,
   manual_sort_order int NOT NULL,
@@ -521,7 +521,7 @@ FROM childs_history;
 
 -- text documents texts
 CREATE TABLE imcms_text_doc_texts (
-    id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id int AUTO_INCREMENT PRIMARY KEY,
     doc_id int default NULL,
     doc_version_no int NOT NULL,
     no int NOT NULL,
@@ -531,7 +531,7 @@ CREATE TABLE imcms_text_doc_texts (
     content_loop_no int DEFAULT NULL,
     content_no int DEFAULT NULL,
 
-    UNIQUE KEY uk__imcms_text_doc_texts__text (doc_id, doc_version_no, no, language_id, content_loop_no, content_no),
+    CONSTRAINT uk__imcms_text_doc_texts__text UNIQUE KEY (doc_id, doc_version_no, no, language_id, content_loop_no, content_no),
     CONSTRAINT fk__imcms_text_doc_texts__content FOREIGN KEY (doc_id, doc_version_no, content_loop_no, content_no) REFERENCES imcms_text_doc_contents (`doc_id`, `doc_version_no`, `loop_no`, `no`) ON DELETE CASCADE,
     CONSTRAINT fk__imcms_text_doc_texts__languages FOREIGN KEY (language_id) REFERENCES imcms_languages (id),
     CONSTRAINT fk__imcms_text_doc_texts__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
@@ -539,8 +539,8 @@ CREATE TABLE imcms_text_doc_texts (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- Delete duplicates from text table
-DELETE FROM texts l USING texts l, texts r WHERE l.meta_id = r.meta_id and l.name = r.name and l.counter < r.counter;
+-- todo: Delete duplicates from text table
+-- DELETE FROM texts l USING texts l, texts r WHERE l.meta_id = r.meta_id and l.name = r.name and l.counter < r.counter;
 
 INSERT INTO imcms_text_doc_texts (
     doc_id,
@@ -558,7 +558,7 @@ FROM texts;
   
 
 CREATE TABLE imcms_text_doc_texts_history (
-    id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id int AUTO_INCREMENT PRIMARY KEY,
     doc_id int default NULL,
     doc_version_no int DEFAULT NULL,
     no int NOT NULL,
@@ -605,7 +605,7 @@ FROM texts_history;
 -- Images
 --
 CREATE TABLE imcms_text_doc_images (
-  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  id int AUTO_INCREMENT PRIMARY KEY,
   doc_id int DEFAULT NULL,
   doc_version_no int NOT NULL,
   width int NOT NULL,
@@ -626,7 +626,7 @@ CREATE TABLE imcms_text_doc_images (
   content_loop_no int DEFAULT NULL,
   content_no int DEFAULT NULL,
 
-  UNIQUE KEY uk__imcms_text_doc_images__image (doc_id,doc_version_no,no,language_id,content_loop_no,content_no),
+  CONSTRAINT uk__imcms_text_doc_images__image UNIQUE KEY (doc_id,doc_version_no,no,language_id,content_loop_no,content_no),
   CONSTRAINT fk__imcms_text_doc_images__languages FOREIGN KEY (language_id) REFERENCES imcms_languages (id),
   CONSTRAINT fk__imcms_text_doc_images__content FOREIGN KEY (doc_id, doc_version_no, content_loop_no, content_no) REFERENCES imcms_text_doc_contents (`doc_id`, `doc_version_no`, `loop_no`, `no`) ON DELETE CASCADE,  
   CONSTRAINT fk__imcms_text_doc_images__doc_version FOREIGN KEY (doc_id, doc_version_no) REFERENCES imcms_doc_versions (doc_id, no) ON DELETE CASCADE
@@ -679,7 +679,7 @@ FROM images;
 
 
 CREATE TABLE imcms_text_doc_images_history (
-  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  id int AUTO_INCREMENT PRIMARY KEY,
   doc_id int DEFAULT NULL,
   doc_version_no int NOT NULL,
   width int NOT NULL,
@@ -758,7 +758,7 @@ FROM `images_history`;
 -- Includes table
 --
 CREATE TABLE __includes (
-  id int auto_increment PRIMARY KEY,
+  id int AUTO_INCREMENT PRIMARY KEY,
   meta_id int NULL,
   include_id int NOT NULL,
   included_meta_id int NULL
@@ -770,9 +770,10 @@ SELECT meta_id, include_id, included_meta_id FROM includes;
 DROP TABLE includes;
 RENAME TABLE __includes TO includes;
 
-ALTER TABLE includes ADD UNIQUE INDEX ux__includes__meta_id__include_id (meta_id, include_id);
-ALTER TABLE includes ADD FOREIGN KEY fk__includes__meta (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE;
-ALTER TABLE includes ADD FOREIGN KEY fk__includes__included_document (included_meta_id) REFERENCES meta (meta_id);
+ALTER TABLE includes
+  ADD CONSTRAINT uk__includes__meta_id__include_id UNIQUE KEY (meta_id, include_id),
+  ADD CONSTRAINT fk__includes__meta FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ON DELETE CASCADE,
+  ADD CONSTRAINT fk__includes__included_document FOREIGN KEY (meta_id) REFERENCES meta (meta_id);
 
 
 -- archive xxx - new in RB 4

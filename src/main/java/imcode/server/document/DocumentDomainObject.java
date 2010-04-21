@@ -23,18 +23,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	public static final int ID_NEW = 0;
     
 	public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS = "imcms.document.alias";
-
-	//private Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
     
 	private static Logger log = Logger.getLogger(DocumentDomainObject.class);
 	
-	/** Document's meta. */
 	private Meta meta = new Meta();
 
-	/** Document's language. */
 	private I18nLanguage language;
 
-    /** Document's version. */
+    // todo :remove version, leave only doc version no. ???
     private DocumentVersion version = new DocumentVersion();
 
     private DocumentLabels labels = new DocumentLabels();
@@ -61,18 +57,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         if (version != null) {
             clone.version = version.clone();
         }
-
-//        if (permissionSets != null) {
-//            clone.permissionSets = permissionSets.clone();
-//        }
-//
-//        if (permissionSetsForNewDocuments != null) {
-//            clone.permissionSetsForNewDocuments = permissionSetsForNewDocuments.clone();
-//        }
-//
-//        if (roleIdToDocumentPermissionSetTypeMappings != null) {
-//            clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
-//        }
                 
 		return clone;
 	}
