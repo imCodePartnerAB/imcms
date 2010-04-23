@@ -62,9 +62,9 @@ public class GetDoc extends HttpServlet {
     /**
      * Renders document.
      *
-     * This method is called only from doGet and AdminDoc.viewDoc (if a user does not have rights to edit a document).
+     * This method is called only from doGet and from AdminDoc.adminDoc if a user does not have rights to edit a document.
      *
-     * @see com.imcode.imcms.servlet.admin.AdminDoc;
+     * @see com.imcode.imcms.servlet.admin.AdminDoc#adminDoc
      */
     public static void viewDoc(String documentId, HttpServletRequest req,
                          HttpServletResponse res) throws IOException, ServletException {

@@ -28,7 +28,7 @@ public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
         super( document, returnCommand, saveNewDocumentCommand );
     }
 
-    // todo: copy non-default language headline and text 
+
     protected void dispatchOkFromDocumentInformation( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)getDocument() ;
 

@@ -1,6 +1,7 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.DocIdentityCleanerVisitor;
+import com.imcode.imcms.servlet.admin.DocumentCreator;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -489,7 +490,10 @@ public class DocumentSaver {
         DocumentVersion version = documentVersionDao.createVersion(docId, user.getId());
 
         doc.setVersion(version);
-        doc.accept(new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user));
+
+        DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
+        docCreatingVisitor.updateDocumentLabels(doc, null, user);
+        doc.accept(docCreatingVisitor);
 
         return docId;
     }    

@@ -273,16 +273,14 @@ public class MenuEditPage extends OkCancelPage {
             
             final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
-            documentMapper.saveNewDocument(document, user);
-
-            savedDocument = document;
+            savedDocument = documentMapper.saveNewDocument(document, user);
 
             if ( null == parentMenuIndex ) {
                 return;
             }
 
             MenuDomainObject menu = parentDocument.getMenu(parentMenuIndex.intValue());
-            menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(document)));
+            menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(savedDocument)));
             documentMapper.saveTextDocMenu(parentDocument, menu, user);
         }
 

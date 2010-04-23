@@ -12,8 +12,7 @@ import imcode.server.document.textdocument.TextDomainObject;
 
 /**
  * Cleans doc's identity data.
- * When new doc is created by cloning an existing one its identity and version fields should be cleared/reseted.
- * //todo: clean version?
+ * When new doc is created by cloning an existing one its identity and version fields should be cleared.
  */
 public class DocIdentityCleanerVisitor extends DocumentVisitor {
 

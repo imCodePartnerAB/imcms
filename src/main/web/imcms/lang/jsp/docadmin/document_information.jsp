@@ -58,8 +58,6 @@
 
     pageContext.setAttribute("document", document);
 
-    //pageContext.setAttribute("labelsColl", documentInformationPage.getLabelsMap().values());
-
     Map<I18nLanguage, Boolean> languagesStates  = documentInformationPage.getLanguagesStates();
 %><%!
 
@@ -179,25 +177,21 @@ function setI18nCodeParameterValue(value) {
 	<tr>
     --%>
 
-
-	<%-- TODO: Escape XML: $Headline$ --%>
-	<c:forEach items="${labelsColl}" var="i18nPart">
-	
 	<c:set var="prefix" value="_${i18nPart.language.code}"/>
 	
 	<tr>
 		<td colspan="2" style="padding-bottom:3px;">
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${i18nPart.language.code}.gif" alt="" style="border:0;" /></td>
-			<td class="imcmsAdmText" style="padding-left:10px; font-weight:bold;">${i18nPart.language.name}</td>
+			<td><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${document.language.code}.gif" alt="" style="border:0;" /></td>
+			<td class="imcmsAdmText" style="padding-left:10px; font-weight:bold;">${document.language.name}</td>
 		</tr>
 		</table></td></tr>
 	<tr>
 		<td class="imcmsAdmText" nowrap>
 		<? install/htdocs/sv/jsp/docadmin/document_information.jsp/6 ?><sup class="imNote">1</sup></td>
-		<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE + pageContext.getAttribute("prefix")%>" size="48" maxlength="255" style="width: 100%"
-		value="${i18nPart.headline}"></td>
+		<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE%>" size="48" maxlength="255" style="width: 100%"
+		value="${document.headline}"></td>
 	</tr>	
 	<tr>
 		<td></td>
@@ -213,7 +207,7 @@ function setI18nCodeParameterValue(value) {
 	  <tr>	  
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1002 ?>&nbsp;</td>
 		<td class="imcmsAdmForm">
-		<textarea name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT + pageContext.getAttribute("prefix") %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;"><c:out value="${i18nPart.menuText}"/></textarea>
+		<textarea name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;"><c:out value="${document.menuText}"/></textarea>
         </td>
 	  </tr>
 	  
@@ -227,20 +221,18 @@ function setI18nCodeParameterValue(value) {
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tr>
 			<td width="85%">
-			  <input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__IMAGE + pageContext.getAttribute("prefix") %>" size="40" maxlength="255" style="width: 100%"
-			    value="<c:out value="${i18nPart.menuImageURL}" default=""/>"
+			  <input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__IMAGE%>" size="40" maxlength="255" style="width: 100%"
+			    value="<c:out value="${document.menuImage}" default=""/>"
 			  />
 			</td>
 			<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER%>"
-			value=" <? install/htdocs/global/pageinfo/browse ?> " onClick="setI18nCodeParameterValue('${i18nPart.language.code}')"></td>
+			value=" <? install/htdocs/global/pageinfo/browse ?> " onClick="setI18nCodeParameterValue('${document.language.code}')"></td>
 		</tr>
         </table></td>
 	</tr>
     <tr>
 	    <td colspan="2">#gui_hr( 'cccccc' )</td>
 	</tr>
-	
-    </c:forEach>
 
     <%
     if (creatingNewDocument && document instanceof TextDocumentDomainObject) {
@@ -397,24 +389,30 @@ function setI18nCodeParameterValue(value) {
 		<tr>
 		  <td colspan="6">
 			<table border="0" cellspacing="0" cellpadding="2">
-			<c:forEach items="${labelsColl}" var="i18nPart">
-			<c:set var="prefix" value="_${i18nPart.language.code}"/>
-                <%
-                DocumentLabels labels = (DocumentLabels)pageContext.getAttribute("i18nPart");
-                Boolean enabled = languagesStates.get(labels.getLanguage());
+
+            <%
+            for (Map.Entry<I18nLanguage, Boolean> state: languagesStates.entrySet()) {
+                I18nLanguage language = state.getKey();
+                String postfix = "_" + language.getCode();
+                Boolean enabled = state.getValue();
+
+                pageContext.setAttribute("language", language);
                 pageContext.setAttribute("enabled", enabled);
-                %>
-			<tr>	  
+                
+            %>
+			<tr>
 				<td><input type="checkbox"
-				 name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>"
-				 id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>"<c:if test="${enabled}"> checked="checked"</c:if>/></td>
+				 name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + postfix%>"
+				 id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + postfix%>"<c:if test="${enabled}"> checked="checked"</c:if>/></td>
 				<td><label for="<%=
-				EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>"><img
-				  src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${i18nPart.language.code}.gif" alt="" style="border:0;" /></label></td>
+				EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + postfix%>"><img
+				  src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${language.code}.gif" alt="" style="border:0;" /></label></td>
 				<td class="imcmsAdmText" style="padding-left:10px;"><label for="<%=
-				EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + pageContext.getAttribute("prefix")%>">${i18nPart.language.name}</label></td>
+				EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + postfix%>">${language.name}</label></td>
 			</tr>
-			</c:forEach>	           			 
+            <%
+            }
+            %>
 			</table>		
 		  </td>
 		</tr>

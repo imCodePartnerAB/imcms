@@ -224,6 +224,18 @@ public class DocumentMapperTest {
 
         docMapper.saveDocument(textDoc, admin);
 
+        TextDocumentDomainObject savedTextDoc = (TextDocumentDomainObject)docMapper.getCustomDocument(textDoc.getId(), textDoc.getVersionNo(), textDoc.getLanguage());
+
+        MenuDomainObject savedMenu = savedTextDoc.getMenus().get(0);
+
+        assertNotNull(savedMenu);
+
+        assertEquals(savedMenu.getMenuItems().length, 1);
+
+        DocumentDomainObject savedMenuDoc = savedMenu.getMenuItems()[0].getDocument();
+
+        assertEquals(savedMenuDoc.getId(), menuDoc.getId());
+
     }
 
 //    @Test(enabled = true)//(dependsOnMethods = {"createDocumentOfTypeFromParent"})

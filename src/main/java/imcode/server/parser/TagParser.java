@@ -400,8 +400,8 @@ public class TagParser {
      */
     public String tagText(Properties attributes, ContentLoop loop, Content content) {
         TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
-        UserDomainObject user = documentRequest.getUser();
-        I18nLanguage language = Imcms.getUserDocRequest().getLanguage();
+//        UserDomainObject user = documentRequest.getUser();
+//        I18nLanguage language = Imcms.getUserDocRequest().getLanguage();
 
         if ( shouldOutputNothingAccordingToMode(attributes, textMode) || textDocumentToUse==null || textDocumentToUse.getId() != document.getId() && textMode ) {
             return "";
@@ -808,7 +808,13 @@ public class TagParser {
 
     
     private TextDocumentDomainObject getTextDocumentToUse(Properties attributes) {
-    	UserDomainObject user = Imcms.getUserDocRequest().getUser();
+//        com.imcode.imcms.api.DocumentRequest dr =Imcms.getUserDocRequest();
+//
+//        if (dr == null) {
+//            throw new IllegalStateException("DocumentRequest is not associated with a current thread.");
+//        }
+//
+//    	UserDomainObject user = dr.getUser();
     	
         String documentName = attributes.getProperty("document");
         String documentVersionStr = attributes.getProperty("version");

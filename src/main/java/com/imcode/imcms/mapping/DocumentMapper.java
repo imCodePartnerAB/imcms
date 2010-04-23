@@ -135,7 +135,6 @@ public class DocumentMapper implements DocumentGetter {
             newDocument.setMeta(parentDoc.getMeta().clone());
             newDocument.setLabels(parentDoc.getLabels().clone());
             newDocument.setLanguage(parentDoc.getLanguage().clone());            
-            //newDocument.copyAttributesFrom(parentDoc);
         }
 
         newDocument.getMeta().setDocumentType(documentTypeId);
