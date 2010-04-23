@@ -104,7 +104,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             languagesStates.put(language, false);
         }
 
-        languagesStates.put(Imcms.getI18nSupport().getDefaultLanguage(), true);
+        //languagesStates.put(Imcms.getI18nSupport().getDefaultLanguage(), true);
 
         Integer docId = document.getMeta().getId();
         
@@ -272,11 +272,20 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         document.setMenuText(menuText);
         document.setMenuImage(imageURL);
 
+        Set<I18nLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
+
+        enabledLanguages.clear();
+
         for (Map.Entry<I18nLanguage, Boolean> state: languagesStates.entrySet()) {
-        	String suffix = "_" + state.getKey().getCode();         	
+            I18nLanguage language = state.getKey();
+        	String suffix = "_" + language.getCode();
             boolean enabled = request.getParameter(REQUEST_PARAMETER__ENABLED_I18N + suffix) != null;
             
             state.setValue(enabled);
+
+            if (enabled) {
+                enabledLanguages.add(language);
+            }
         }
 
 
