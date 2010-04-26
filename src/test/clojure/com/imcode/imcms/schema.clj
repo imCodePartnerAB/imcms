@@ -1,5 +1,6 @@
-(ns com.imcode.imcms.schema
+(ns
   #^{:doc "Project's schema manipulation routines."}
+  com.imcode.imcms.schema
   
   (:use
     [clojure.contrib duck-streams test-is])

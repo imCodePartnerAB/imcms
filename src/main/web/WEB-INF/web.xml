@@ -80,7 +80,16 @@
           org.springframework.web.servlet.DispatcherServlet
         </servlet-class>
         <load-on-startup>1</load-on-startup>
-    </servlet>  
+    </servlet>
+
+   <servlet>
+       <servlet-name>Jersey</servlet-name>
+       <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+       <init-param>
+           <param-name>com.sun.jersey.config.property.packages</param-name>
+           <param-value>com.imcode.imcms.ws</param-value>
+       </init-param>
+   </servlet>
     
     <!-- TODO: Map to search/select paths -->
     <!-- 
@@ -323,6 +332,11 @@
 	    <servlet-name>newadmin</servlet-name>
 	    <url-pattern>/newadmin/*</url-pattern>
 	</servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Jersey</servlet-name>
+        <url-pattern>/ws/*</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
