@@ -6,7 +6,7 @@
     [imcode.server.document DocumentDomainObject]
     [imcode.server.user UserDomainObject])
   (:use
-    [com.imcode.imcms.misc-utils :only [dump]]))
+    [com.imcode.cljlib.misc-utils :only [dump]]))
 
 (defmacro invoke
   "Invokes Imcms class static method."

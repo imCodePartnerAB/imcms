@@ -6,9 +6,15 @@
 
   (:require
     [com.imcode.imcms
-      [project :as project]
+      [project :as project]]
+
+    [com.imcode.cljlib
       [file-utils :as file-utils]
-      [schema-utils :as schema-utils]]))
+      [schema-utils :as schema-utils]]
+
+    [clojure.contrib [sql :as sql]])
+
+  (:import com.imcode.imcms.schema.SchemaUpgrade))
 
 
 (defn db-schema-name [] (:db-name (project/build-properties)))
@@ -35,12 +41,21 @@
   ;(project/files "src/main/web/WEB-INF/sql" ["imcms_5.3_schema.sql" "imcms_5.3_data.sql" "diff/mysql-schema-diff-5.3-6.2.sql"]))
   (project/files "src/main/web/WEB-INF/sql" ["imcms_rb4.sql" "diff/mysql-schema-diff-4.11-6.2.sql"]))
 
+(defn version-d
+  "Returns imCMS schema version."
+  [db-spec db-name]
+  (sql/with-connection db-spec
+    (sql/do-commands
+      (format "use %s" db-name))
+
+    (SchemaUpgrade/getSchemaVersion (sql/connection))))
+
 (defn version
   ([]
     (version (db-schema-name)))
 
   ([name]
-    (schema-utils/version (project/db-spec) name)))
+    (version-d (project/db-spec) name)))
 
 
 (defn tables
@@ -88,6 +103,17 @@
 
 
 
+(defn upgrade-d
+  "Upgrades imCMS schema."
+  [db-spec schema-name xml-conf-file xsd-conf-file scripts-dir]
+  (sql/with-connection db-spec
+    (sql/transaction
+      (sql/do-commands
+        (format "use %s" schema-name))
+
+      (doto (SchemaUpgrade/createInstance xml-conf-file xsd-conf-file scripts-dir)
+        (.upgrade (sql/connection))))))
+
 (defn upgrade
   ([]
     (upgrade (db-schema-name)))
@@ -96,7 +122,7 @@
     (upgrade schema-name (xml-conf-file) (xsd-conf-file) (scripts-dir)))
 
   ([schema-name p_xml-conf-file p_xsd-conf-file p_scripts-dir]
-    (schema-utils/upgrade (project/db-spec) schema-name p_xml-conf-file p_xsd-conf-file p_scripts-dir)))
+    (upgrade-d (project/db-spec) schema-name p_xml-conf-file p_xsd-conf-file p_scripts-dir)))
 
 
 (defn recreate-empty-upgrade

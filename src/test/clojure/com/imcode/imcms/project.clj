@@ -6,7 +6,7 @@
     [clojure.contrib.str-utils :as su]
     ;[clojure.contrib.str-utils2 :as su2]
     [clojure.contrib.shell-out :as shell]
-    [com.imcode.imcms
+    [com.imcode.cljlib
       [misc-utils :as utils]
       [db-utils :as db-utils]
       [file-utils :as file-utils]])
@@ -17,7 +17,7 @@
     clojure.contrib.duck-streams
     clojure.contrib.def
     [clojure.contrib.except :only [throw-if throw-if-not]]
-    [com.imcode.imcms.file-utils :as file-utils :only [throw-if-not-dir throw-if-not-file]])
+    [com.imcode.cljlib.file-utils :as file-utils :only [throw-if-not-dir throw-if-not-file]])
 
 
   (:import
@@ -115,7 +115,7 @@
 (defn db-spec
   "Creates db-spec used by clojure.contrib.sql"
   []
-  (db-utils/spec (create-db-datasource)))
+  (db-utils/create-db-spec (create-db-datasource)))
 
 
 (defn db-metadata []
