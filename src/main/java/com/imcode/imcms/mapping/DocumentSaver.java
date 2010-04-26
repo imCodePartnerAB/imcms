@@ -272,28 +272,29 @@ public class DocumentSaver {
 
 
     @Transactional
-    public void updateDocument(DocumentDomainObject document, DocumentDomainObject oldDocument, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
-        checkDocumentForSave(document);
+    public void updateDocument(DocumentDomainObject doc, DocumentDomainObject oldDoc, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+        checkDocumentForSave(doc);
 
         //document.loadAllLazilyLoaded();
 
-        Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
-        Date modifiedDatetime = Utility.truncateDateToMinutePrecision(document.getModifiedDatetime());
+        Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(doc.getActualModifiedDatetime());
+        Date modifiedDatetime = Utility.truncateDateToMinutePrecision(doc.getModifiedDatetime());
         boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
         if (modifiedDatetimeUnchanged) {
-            document.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
+            doc.setModifiedDatetime(documentMapper.getClock().getCurrentDate());
         }
 
-        if (user.canEditPermissionsFor(oldDocument)) {
-            newUpdateDocumentRolePermissions(document, user, oldDocument);
-            documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(document, user, oldDocument);
+        if (user.canEditPermissionsFor(oldDoc)) {
+            newUpdateDocumentRolePermissions(doc, user, oldDoc);
+            documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(doc, user, oldDoc);
         }
 
-        DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDocument, documentMapper.getImcmsServices(), user);
+        DocumentSavingVisitor savingVisitor = new DocumentSavingVisitor(oldDoc, documentMapper.getImcmsServices(), user);
 
-        saveMeta(document.getMeta());
+        saveMeta(doc.getMeta());
 
-        document.accept(savingVisitor);
+        savingVisitor.updateDocumentLabels(doc, oldDoc, user);
+        doc.accept(savingVisitor);
     }    
 
 //    private Integer saveNewDocument(UserDomainObject user, DocumentDomainObject document, boolean copying)

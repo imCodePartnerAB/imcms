@@ -186,7 +186,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public String getMenuImage() {
-		return labels.getHeadline();
+		return labels.getMenuImageURL();
 	}
 
 	public void setMenuImage(String v) {
