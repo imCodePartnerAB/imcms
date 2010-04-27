@@ -272,7 +272,11 @@
       <groupId>com.imcode</groupId>
       <artifactId>cljlib</artifactId>
       <version>1.0.0-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/cljlib.jar</systemPath>  
     </dependency>
+
+      
 
     <dependency>
         <groupId>org.apache.ibatis</groupId>
