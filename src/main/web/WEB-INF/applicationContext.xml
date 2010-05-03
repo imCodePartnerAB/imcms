@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans 
   xmlns="http://www.springframework.org/schema/beans"
+  xmlns:p="http://www.springframework.org/schema/p"  
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:aop="http://www.springframework.org/schema/aop"
   xmlns:tx="http://www.springframework.org/schema/tx"
@@ -120,29 +121,30 @@
       <property name="sessionFactory" ref="sessionFactory"/>
       </bean>
   
-  <bean id="documentSaver" class="com.imcode.imcms.mapping.DocumentSaver">
-    <property name="metaDao" ref="metaDao"/>
-    <property name="contentLoopDao" ref="contentLoopDao"/>
-    <property name="documentVersionDao" ref="documentVersionDao"/>
-    <property name="textDao" ref="textDao"/>
-    <property name="imageDao" ref="imageDao"/>
-    <property name="menuDao" ref="menuDao"/>
-  </bean>
-  
-  <bean id="documentLoader" class="com.imcode.imcms.mapping.DocumentLoader">
-    <property name="metaDao" ref="metaDao"/>
-      <property name="documentVersionDao" ref="documentVersionDao"/>
-    <property name="documentInitializingVisitor" ref="documentInitializingVisitor"/>
-  </bean> 
-  
-  <bean id="textDocumentInitializer" class="com.imcode.imcms.mapping.TextDocumentInitializer">
-    <property name="metaDao" ref="metaDao"/>
-    <property name="textDao" ref="textDao"/>
-    <property name="imageDao" ref="imageDao"/>
-    <property name="menuDao" ref="menuDao"/>
-    <property name="contentLoopDao" ref="contentLoopDao"/>
-  </bean>
-  
+  <bean id="documentSaver" class="com.imcode.imcms.mapping.DocumentSaver"
+        p:metaDao-ref="metaDao"
+        p:contentLoopDao-ref="contentLoopDao"
+        p:documentVersionDao-ref="documentVersionDao"
+        p:textDao-ref="textDao"
+        p:imageDao-ref="imageDao"
+        p:menuDao-ref="menuDao"/>
+
+
+  <bean id="textDocumentInitializer" class="com.imcode.imcms.mapping.TextDocumentInitializer"
+          p:metaDao-ref="metaDao"
+          p:textDao-ref="textDao"
+          p:imageDao-ref="imageDao"
+          p:menuDao-ref="menuDao"
+          p:contentLoopDao-ref="contentLoopDao"/>
+
+
+    <bean id="documentLoader" class="com.imcode.imcms.mapping.DocumentLoader">
+      <property name="metaDao" ref="metaDao"/>
+        <property name="documentVersionDao" ref="documentVersionDao"/>
+      <property name="documentInitializingVisitor" ref="documentInitializingVisitor"/>
+    </bean>
+
+    
   <bean id="documentInitializingVisitor" class="com.imcode.imcms.mapping.DocumentInitializingVisitor">
     <property name="metaDao" ref="metaDao"/>
     <property name="textDocumentInitializer" ref="textDocumentInitializer"/>

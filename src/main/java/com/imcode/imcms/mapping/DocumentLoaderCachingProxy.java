@@ -143,6 +143,7 @@ public class DocumentLoaderCachingProxy {
     	workingDocuments.clear();
     	versionInfos.clear();
     	aliasesBidiMap.clear();
+        metas.clear();
     }
     
     
@@ -155,6 +156,7 @@ public class DocumentLoaderCachingProxy {
             docs.remove(docId);    
         }
 
+        metas.remove(docId);
     	versionInfos.remove(docId);
     	aliasesBidiMap.remove(docId);
     } 

@@ -119,4 +119,16 @@ public class WSDoc {
     public void updateLabelsJson(@PathParam("id") int id, WSLabels wsLabels) {
         updateLabelsXml(id, wsLabels);
     }
+
+
+    @GET
+    @Path("{id}/perms/json")
+    //@Produces({"application/xml", "application/json"})
+    @Produces("application/json")
+    public WSLabels getPermissions(@PathParam("id") int id) {
+        DocumentMapper dm = Imcms.getServices().getDocumentMapper();
+        DocumentDomainObject doc = dm.getDocument(id);
+
+        return null;
+    }
 }
