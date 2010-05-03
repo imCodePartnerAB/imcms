@@ -40,7 +40,7 @@ LI { padding-bottom:5; }
 
         <td width="385">
         <%
-            String lang = ImcmsConstants.REQUEST_PARAM__LANGUAGE;
+            String lang = ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE;
             
             // Refactor
             String queryString = request.getQueryString();

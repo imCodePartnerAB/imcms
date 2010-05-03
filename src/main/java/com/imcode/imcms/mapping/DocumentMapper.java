@@ -464,9 +464,10 @@ public class DocumentMapper implements DocumentGetter {
     
     /** 
      * @param documentIdentity document id or alias
+     * 
      * @return document id or null if there is no document with such identity.
      */
-    private Integer toDocumentId(String documentIdentity) {
+    public Integer toDocumentId(String documentIdentity) {
     	if (documentIdentity == null) {
     		return null;
     	}

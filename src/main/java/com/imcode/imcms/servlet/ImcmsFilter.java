@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.DocumentRequest;
+import com.imcode.imcms.api.DocumentVersion;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.ImcmsConstants;
@@ -248,7 +249,15 @@ public class ImcmsFilter implements Filter, ImcmsListener {
 
 
     /**
-     * Default user is not allowed to request document version other that default.
+     * Creates or updates doc request object associated with current user's session.
+     * Since Session is not accessible from a set of APIs a DocRequest is also bound to current thread.
+     * @see Imcms#getUserDocRequest().
+     *
+     * All users are allowed to change change language but only privileged users are allowed to switch
+     * document's version.
+     *
+     * If document version no parameter is present in a request but not bound to a value (empty) then
+     * it is treated as default version no. 
      * 
      * @param request
      * @param session
@@ -257,10 +266,9 @@ public class ImcmsFilter implements Filter, ImcmsListener {
     private void updateDocRequest(HttpServletRequest request, HttpSession session, UserDomainObject user) {
         DocumentRequest docRequest = (DocumentRequest)session.getAttribute(ImcmsConstants.SESSION_ATTR__DOC_REQUEST);
 
-        String languageCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__LANGUAGE);
-        String docIdStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID);
+        String languageCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
+        String docIdentity = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID);
         String docVersionNoStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_NO);
-        String docVersionModeStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_MODE);
 
         I18nLanguage language = languageCode != null
                 ? Imcms.getI18nSupport().getByCode(languageCode)
@@ -287,29 +295,35 @@ public class ImcmsFilter implements Filter, ImcmsListener {
 
 
         if (!user.isDefaultUser()) {
-            if (docIdStr != null && docVersionNoStr != null) {
+            if (docIdentity != null && docVersionNoStr != null) {
                 try {
-                    Integer docId = Integer.parseInt(docIdStr);
-                    Integer docVersionNo = Integer.parseInt(docVersionNoStr);
+                    Integer docId = Imcms.getServices().getDocumentMapper().toDocumentId(docIdentity);
+                    
+                    if (docId == null) {
+                        throw new RuntimeException(
+                                String.format("Document with identity %s does not exists.", docIdentity));
+                    }
 
-                    docRequest = new DocumentRequest.CustomDocRequest(user, docId, docVersionNo);
-                } catch (NumberFormatException e) {
+                    if (StringUtils.isEmpty(docVersionNoStr)) {
+                        docRequest = new DocumentRequest.DefaultDocRequest(user, language);
+                    } else {
+                        Integer docVersionNo = Integer.parseInt(docVersionNoStr);
+
+                        if (docVersionNo.equals(DocumentVersion.WORKING_VERSION_NO)) {
+                            docRequest = new DocumentRequest.WorkingDocRequest(user, language);
+                        } else {
+                            docRequest = new DocumentRequest.CustomDocRequest(user, language, docId, docVersionNo);
+                        }
+                    }
+               } catch (NumberFormatException e) {
                     throw new AssertionError(e);
-                }
-            } else if (docVersionModeStr != null) {
-                if (docVersionModeStr.toLowerCase().charAt(0) == ImcmsConstants.REQUEST_PARAM_VALUE__DOC_VERSION_MODE_WORKING) {
-                    docRequest = new DocumentRequest.WorkingDocRequest(user);
-                } else {
-                    docRequest = new DocumentRequest(user);
-                }
+               }
             }
         }
 
         if (docRequest == null) {
-            docRequest = new DocumentRequest(user);    
+            docRequest = new DocumentRequest.DefaultDocRequest(user, language);
         }
-
-        docRequest.setLanguage(language);
 
         session.setAttribute(ImcmsConstants.SESSION_ATTR__DOC_REQUEST, docRequest);
 

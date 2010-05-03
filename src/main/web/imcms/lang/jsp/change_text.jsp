@@ -188,7 +188,7 @@ if (null != languages) { %>
 		boolean isDefault  = (null != defaultLanguage && defaultLanguage.equals(lang)) ;
 		boolean isCurrent  = (null != currentLanguage && currentLanguage.equals(lang)) ;
 		String queryString = request.getQueryString().replaceAll("lang=[a-z]{2}&?", "") ;
-		String href_0      = "<a href=\"ChangeText?" + ImcmsConstants.REQUEST_PARAM__LANGUAGE + "=" + langCode + "&amp;" + queryString + "\" title=\"" + langName + "/" + langNameNative + "#DATA#\" style=\"#STYLE#\">" ;
+		String href_0      = "<a href=\"ChangeText?" + ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE + "=" + langCode + "&amp;" + queryString + "\" title=\"" + langName + "/" + langNameNative + "#DATA#\" style=\"#STYLE#\">" ;
 		String href_1      = "</a>" ;
 		String sData = "" ;
 		if (isDefault)  sData += "default " ;

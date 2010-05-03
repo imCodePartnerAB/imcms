@@ -647,4 +647,9 @@ public class DocumentMapperTest {
                 {unsavedContentLoopNo, unsavedContentNo}
         };
     }
+
+
+    public void updateDocumentPermissions() {
+        fail("NOT IMPLEMENTED");
+    }
 }
