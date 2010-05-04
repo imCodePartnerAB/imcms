@@ -305,14 +305,14 @@ public class ImcmsFilter implements Filter, ImcmsListener {
                     }
 
                     if (StringUtils.isEmpty(docVersionNoStr)) {
-                        docRequest = new DocumentRequest.DefaultDocRequest(user, language);
+                        docRequest = new DocumentRequest.DefaultDocRequest(null, language, user);
                     } else {
                         Integer docVersionNo = Integer.parseInt(docVersionNoStr);
 
                         if (docVersionNo.equals(DocumentVersion.WORKING_VERSION_NO)) {
-                            docRequest = new DocumentRequest.WorkingDocRequest(user, language);
+                            docRequest = new DocumentRequest.WorkingDocRequest(docId, language, user);
                         } else {
-                            docRequest = new DocumentRequest.CustomDocRequest(user, language, docId, docVersionNo);
+                            docRequest = new DocumentRequest.CustomDocRequest(docId, docVersionNo, language, user);
                         }
                     }
                } catch (NumberFormatException e) {
@@ -322,7 +322,7 @@ public class ImcmsFilter implements Filter, ImcmsListener {
         }
 
         if (docRequest == null) {
-            docRequest = new DocumentRequest.DefaultDocRequest(user, language);
+            docRequest = new DocumentRequest.DefaultDocRequest(null, language, user);
         }
 
         session.setAttribute(ImcmsConstants.SESSION_ATTR__DOC_REQUEST, docRequest);

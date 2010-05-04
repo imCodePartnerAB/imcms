@@ -42,7 +42,7 @@ public class ImcmsMultipleUserLoginFilter implements Filter {
 
         UserDomainObject user = Utility.getLoggedOnUser(request) ;
 
-        // In case system denies multiple login for same user
+        // In case system denies multiple login for the same user
         // invalidate current session if it does not match to
         // last user's session and redirect user to the login page.
         if (user != null && !user.isDefaultUser()

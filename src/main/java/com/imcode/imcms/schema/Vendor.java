@@ -1,7 +1,7 @@
 package com.imcode.imcms.schema;
 
 /**
- * Suppported databse vendors.
+ * Supported database vendors.
  */
 public enum Vendor {
 

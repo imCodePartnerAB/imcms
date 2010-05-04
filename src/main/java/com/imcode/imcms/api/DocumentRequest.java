@@ -6,9 +6,11 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 /**
- * Holds requested document language and  
+ * Holds information about requested document language and version.  
  *
- * Document request bound to thread local.
+ * DocumentMapper#getDocument uses DocumentRequest getDoc method as a callback.
+ *
+ * DocumentRequest is created per user's session and bound to thread local in Imcms singleton.
  *
  * @see imcode.server.Imcms
  * @see com.imcode.imcms.servlet.ImcmsFilter
@@ -16,13 +18,23 @@ import imcode.server.user.UserDomainObject;
  */
 public abstract class DocumentRequest {
 
-    protected UserDomainObject user;
+    protected final Integer docId;
 
+    // todo: make final
     protected I18nLanguage language;
 
-    public DocumentRequest(UserDomainObject user, I18nLanguage language) {
-        this.user = user;
+    protected final UserDomainObject user;
+
+    
+    public DocumentRequest(Integer docId, I18nLanguage language, UserDomainObject user) {
+        this.docId = docId;
         this.language = language;
+        this.user = user;
+    }
+
+
+    public Integer getDocId() {
+        return docId;
     }
 
     public UserDomainObject getUser() {
@@ -43,27 +55,14 @@ public abstract class DocumentRequest {
     public abstract DocumentDomainObject getDoc(DocumentMapper docMapper, Integer docId);
 
 
-    public static class WorkingDocRequest extends DocumentRequest {
-
-        public WorkingDocRequest(UserDomainObject user, I18nLanguage language) {
-            super(user, language);
-        }
-
-        @Override
-        public DocumentDomainObject getDoc(DocumentMapper docMapper, Integer docId) {
-            return docMapper.getWorkingDocument(docId, language);
-        }
-    }
-    
-    
     public static class DefaultDocRequest extends DocumentRequest {
 
-        public DefaultDocRequest(UserDomainObject user, I18nLanguage language) {
-            super(user, language);
+        public DefaultDocRequest(Integer docId, I18nLanguage language, UserDomainObject user) {
+            super(docId, language, user);
         }
-        
+
         /**
-         * @return default document.
+         * @return default version of a document.
          */
         @Override
         public DocumentDomainObject getDoc(DocumentMapper docMapper, Integer docId) {
@@ -73,10 +72,10 @@ public abstract class DocumentRequest {
                 Meta meta = doc.getMeta();
 
                 if (!meta.getEnabledLanguages().contains(language)) {
-                    if (meta.getDisabledLanguageShowSetting() != Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE) {
-                        doc = null;
-                    } else {
+                    if (meta.getDisabledLanguageShowSetting() == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE) {
                         doc = docMapper.getDefaultDocument(docId);
+                    } else {
+                        doc = null;
                     }
 
                 }
@@ -87,27 +86,42 @@ public abstract class DocumentRequest {
     }
 
     
-    public static class CustomDocRequest extends DefaultDocRequest {
+    public static class WorkingDocRequest extends DefaultDocRequest {
 
-        private Integer docId;
-
-        private Integer docVersionNo;
-        
-        public CustomDocRequest(UserDomainObject user, I18nLanguage language, Integer docId, Integer docVersionNo) {
-            super(user, language);
-            this.docId = docId;
-            this.docVersionNo = docVersionNo;
+        public WorkingDocRequest(Integer docId, I18nLanguage language, UserDomainObject user) {
+            super(docId, language, user);
         }
 
         @Override
         public DocumentDomainObject getDoc(DocumentMapper docMapper, Integer docId) {
-            return docId.equals(this.docId) && user.isSuperAdmin()
-                ? docMapper.getCustomDocument(docId, docVersionNo, language)
+            return docId.equals(this.docId)
+                ? docMapper.getWorkingDocument(docId, language)
                 : super.getDoc(docMapper, docId);
         }
+    }
+    
+    
+    public static class CustomDocRequest extends DefaultDocRequest {
 
-        public Integer getDocId() {
-            return docId;
+        private final Integer docVersionNo;
+
+        public CustomDocRequest(Integer docId, Integer docVersionNo, I18nLanguage language, UserDomainObject user) {
+            super(docId, language, user);
+            this.docVersionNo = docVersionNo;
+        }
+
+        /**
+         * Returns
+         *
+         * @param docMapper
+         * @param docId requested document id.
+         * @return
+         */
+        @Override
+        public DocumentDomainObject getDoc(DocumentMapper docMapper, Integer docId) {
+            return docId.equals(this.docId)
+                ? docMapper.getCustomDocument(docId, docVersionNo, language)
+                : super.getDoc(docMapper, docId);
         }
 
         public Integer getDocVersionNo() {

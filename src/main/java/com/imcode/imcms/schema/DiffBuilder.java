@@ -17,8 +17,6 @@ import java.io.StringReader;
 
 /**
  * Builds diffs from configuration xml string.
- *
- * All functions in that class are pure (without side effects).
  */
 public final class DiffBuilder {
 

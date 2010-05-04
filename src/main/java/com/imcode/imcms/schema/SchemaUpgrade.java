@@ -22,7 +22,7 @@ import com.ibatis.common.jdbc.ScriptRunner;
 /**
  * Intended to run incremental imcms database schema upgrades.
  *
- * If run agains empty schema then the first diff must create databse_version table.
+ * If run against empty schema then the first diff must create databse_version table.
  *
  * TODO: ?Add vendor support?
  */
@@ -270,10 +270,10 @@ public final class SchemaUpgrade {
 
         if (count == 0) {
             throw new SchemaUpgradeException(
-                    "Schema is corrupted - table database_version is empty. It must contain exactley 1 record.");
+                    "Schema is corrupted - table database_version is empty. It must contain exactly 1 record.");
         } else if (count > 1) {
             throw new SchemaUpgradeException(
-                    String.format("Schema is corrupted - it must contain exactley 1 record - %s found.", count));
+                    String.format("Schema is corrupted - it must contain exactly 1 record - %s found.", count));
         }
 
         return schemaVersions.get(0);
