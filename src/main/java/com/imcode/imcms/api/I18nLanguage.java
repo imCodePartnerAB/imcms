@@ -17,6 +17,7 @@ public class I18nLanguage implements Serializable, Cloneable {
     @Id
     private Integer id;
 
+    // Reserved for future use
 	private Boolean enabled;	
     
     private String code;

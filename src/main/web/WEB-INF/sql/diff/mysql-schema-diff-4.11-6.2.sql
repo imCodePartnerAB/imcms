@@ -31,7 +31,7 @@ INSERT INTO imcms_languages
   (`id`, `code`, `name`, `native_name`, `enabled`)
 VALUES
   (@doc_language_id_en, 'en', 'English', 'English', true),
-  (@doc_language_id_sw, 'sw', 'Swedish', 'Svenska', true);
+  (@doc_language_id_sw, 'sv', 'Swedish', 'Svenska', true);
 
 
 -- default language id

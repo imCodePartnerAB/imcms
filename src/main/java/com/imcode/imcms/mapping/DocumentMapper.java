@@ -35,6 +35,7 @@ import com.imcode.db.Database;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.NativeQueriesDao;
 import com.imcode.imcms.flow.DocumentPageFlow;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * NOTES:
@@ -235,6 +236,17 @@ public class DocumentMapper implements DocumentGetter {
     	} finally {
     		invalidateDocument(doc.getId());
     	}
+    }
+
+    
+    /**
+     * todo: implement?
+     * Updates existing document content.
+     * Meta is skipped.
+     */
+    public void saveDocumentContent(final DocumentDomainObject doc, final UserDomainObject user)
+            throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
+        throw new NotImplementedException();
     }
 
 
