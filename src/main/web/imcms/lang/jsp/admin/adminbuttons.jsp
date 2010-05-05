@@ -30,13 +30,14 @@ DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetF
 String queryString = request.getQueryString();
 StringBuffer baseURL = request.getRequestURL();
 
-//TODO: dirty implementation, refactor
+// Page base url
+// TODO: dirty implementation, refactor
 if (queryString == null) {
-	baseURL.append("?" + "lang=");
+	baseURL.append("?" + ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE + "=");
 } else {
-    queryString = queryString.replaceAll("&imcms.doc.language=\\w*", "");
-	queryString = queryString.replaceFirst("&?imcms.doc.language=..", "");
-	baseURL.append("?" + queryString + "&imcms.doc.language=");
+    queryString = queryString.replaceAll("&" + ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE + "=\\w*", "");
+	queryString = queryString.replaceFirst("&?" + ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE + "=..", "");
+	baseURL.append("?" + queryString + "&" + ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE + "=");
 }
 	
 
@@ -55,7 +56,7 @@ DocumentVersion version = document.getVersion();
 List<I18nLanguage> languages = Imcms.getI18nSupport().getLanguages();
 Set<I18nLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
 I18nLanguage defaultLanguage = Imcms.getI18nSupport().getDefaultLanguage();
-I18nLanguage currentLanguage = Imcms.getUserDocRequest().getLanguage();
+I18nLanguage currentLanguage = Imcms.getDocRequestHandler().getLanguage();
 
 /* *******************************************************************************************
  *         BROWSER SNIFFER                                                                   *
@@ -70,7 +71,9 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 
 %>
 <%@page import="org.apache.commons.collections.iterators.ReverseListIterator"%>
-<%@page import="java.util.Iterator"%><vel:velocity>
+<%@page import="java.util.Iterator"%>
+<%@ page import="imcode.server.ImcmsConstants" %>
+<vel:velocity>
 <style type="text/css">
 /*<![CDATA[*/
 .imcms_label,
@@ -200,7 +203,6 @@ if (sFlags != null && sFlags.equals("1")) {
         <td>	
           <form action="$contextPath/servlet/GetDoc">
           <input type="hidden" name="imcms.doc.language" value="<%=currentLanguage.getCode()%>"/>
-          <input type="hidden" name="imcms.doc.id" value="<%=document.getId()%>"/>
           <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
           <select name="imcms.doc.version.no">          
             <% while (iterator.hasNext()) {
@@ -210,7 +212,7 @@ if (sFlags != null && sFlags.equals("1")) {
                         ? "DRAFT" : "Version " + v.getNo().toString();
 
                 if (docVersionInfo.isDefaultVersion(v)) {
-                    displayName += " (active)";    
+                    displayName += " (default)";    
                 }
 
                 %>            
@@ -246,7 +248,7 @@ if (sFlags != null && sFlags.equals("1")) {
           <input type="hidden" name="imcms.doc.language" value="<%=currentLanguage.getCode()%>"/>
           <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
           <input type="hidden" name="flags" value="4194304"/>
-          <input type="submit" name="cmd" value="Make version from draft"/>
+          <input type="submit" name="cmd" value="Save draft as next version"/>
           </form>
 		</td>
 	    <%

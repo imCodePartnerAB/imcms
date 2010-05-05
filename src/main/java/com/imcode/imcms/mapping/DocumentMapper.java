@@ -622,16 +622,16 @@ public class DocumentMapper implements DocumentGetter {
      * Returns document.
      *
      * Returned document is based on document request info associated with a thread.
-     * If there is no docRequest associated with a thread then default document in default language is returned.
+     * If there is no docRequest associated with a current thread then default document in default language is returned.
      *
      * @param docId document id.
      */
     public DocumentDomainObject getDocument(Integer docId) {
-        DocumentRequest docRequest = Imcms.getUserDocRequest();
+        DocRequestHandler docRequestHandler = Imcms.getDocRequestHandler();
 
-        return docRequest == null
+        return docRequestHandler == null
             ? getDefaultDocument(docId)
-            : docRequest.getDoc(this, docId);
+            : docRequestHandler.getDoc(this, docId);
     }
 
 
@@ -771,7 +771,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return default documents.
      */
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
-        DocumentRequest ri = Imcms.getUserDocRequest();
+        DocRequestHandler ri = Imcms.getDocRequestHandler();
         I18nLanguage language = ri != null
                 ? ri.getLanguage()
                 : Imcms.getI18nSupport().getDefaultLanguage();

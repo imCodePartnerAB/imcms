@@ -1,7 +1,7 @@
 package imcode.server;
 
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.api.DocumentRequest;
+import com.imcode.imcms.api.DocRequestHandler;
 import com.imcode.imcms.dao.SystemDao;
 import imcode.util.CachingFileLoader;
 import imcode.util.Prefs;
@@ -17,8 +17,6 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.log4j.Logger;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -51,10 +49,10 @@ public class Imcms {
     public static final String UTF_8_ENCODING = "UTF-8";
     public static final String DEFAULT_ENCODING = UTF_8_ENCODING;
 
-    /** Absolute application path. */
+    /** Absolute deployment path. */
     private static File path;
     
-    /** Prefs config path relative to application path. */
+    /** Prefs config path relative to deployment path. */
     private static final String DEFAULT_RELATIVE_PREFS_CONFIG_PATH = "WEB-INF/conf";
 
     private static Logger logger = Logger.getLogger(Imcms.class);
@@ -86,7 +84,7 @@ public class Imcms {
      *
      * @see com.imcode.imcms.servlet.ImcmsFilter
      */
-	private static ThreadLocal<DocumentRequest> userDocRequests;
+	private static ThreadLocal<DocRequestHandler> docRequestHandlers;
 
     private static I18nSupport i18nSupport;
 
@@ -111,7 +109,7 @@ public class Imcms {
         setStartEx(null);
 
         try {
-            userDocRequests = new ThreadLocal<DocumentRequest>();
+            docRequestHandlers = new ThreadLocal<DocRequestHandler>();
 
             if (upgradeDatabaseSchemaOnStart) {
                 upgradeDatabaseSchema();
@@ -276,18 +274,18 @@ public class Imcms {
     }
 
     /**
-     * @param documentRequest document request bound to user's session.
+     * @param docRequestHandler document request bound to user's session.
      */
-    public static void setUserDocRequest(DocumentRequest documentRequest) {
-    	userDocRequests.set(documentRequest);
+    public static void setDocRequestHandler(DocRequestHandler docRequestHandler) {
+    	docRequestHandlers.set(docRequestHandler);
     }
 
     /**
-     * Returns DocumentRequest instance
+     * Returns DocRequestHandler instance
      * @return
      */
-    public static DocumentRequest getUserDocRequest() {
-    	return userDocRequests.get();
+    public static DocRequestHandler getDocRequestHandler() {
+    	return docRequestHandlers.get();
     }
 
 

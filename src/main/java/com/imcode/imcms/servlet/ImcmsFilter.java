@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.DocumentRequest;
+import com.imcode.imcms.api.DocRequestHandler;
 import com.imcode.imcms.api.DocumentVersion;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -103,7 +103,7 @@ public class ImcmsFilter implements Filter, ImcmsListener {
             ResourceBundle resourceBundle = Utility.getResourceBundle(request);
             Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
-            updateDocRequest(request, session, user);
+            associateDocHandlerRequestWithCurrentThread(request, session, user);
 
             Utility.initRequestWithApi(request, user);
 
@@ -249,9 +249,9 @@ public class ImcmsFilter implements Filter, ImcmsListener {
 
 
     /**
-     * Creates or updates doc request object associated with current user's session.
-     * Since Session is not accessible from a set of APIs a DocRequest is also bound to current thread.
-     * @see Imcms#getUserDocRequest().
+     * Creates or updates doc request object, associates it with a current thread and user's session.
+     *
+     * @see Imcms#getDocRequestHandler().
      *
      * All users are allowed to change change language but only privileged users are allowed to switch
      * document's version.
@@ -263,8 +263,8 @@ public class ImcmsFilter implements Filter, ImcmsListener {
      * @param session
      * @param user
      */
-    private void updateDocRequest(HttpServletRequest request, HttpSession session, UserDomainObject user) {
-        DocumentRequest docRequest = (DocumentRequest)session.getAttribute(ImcmsConstants.SESSION_ATTR__DOC_REQUEST);
+    private void associateDocHandlerRequestWithCurrentThread(HttpServletRequest request, HttpSession session, UserDomainObject user) {
+        DocRequestHandler docRequestHandler = (DocRequestHandler)session.getAttribute(ImcmsConstants.SESSION_ATTR__DOC_REQUEST);
 
         String languageCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
         String docIdentity = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID);
@@ -272,8 +272,8 @@ public class ImcmsFilter implements Filter, ImcmsListener {
 
         I18nLanguage language = languageCode != null
                 ? Imcms.getI18nSupport().getByCode(languageCode)
-                : docRequest != null
-                    ? docRequest.getLanguage()
+                : docRequestHandler != null
+                    ? docRequestHandler.getLanguage()
                     : null;
 
         if (language == null) {
@@ -305,14 +305,14 @@ public class ImcmsFilter implements Filter, ImcmsListener {
                     }
 
                     if (StringUtils.isEmpty(docVersionNoStr)) {
-                        docRequest = new DocumentRequest.DefaultDocRequest(null, language, user);
+                        docRequestHandler = new DocRequestHandler.DefaultDocVersionRequestHandler(language, user);
                     } else {
                         Integer docVersionNo = Integer.parseInt(docVersionNoStr);
 
                         if (docVersionNo.equals(DocumentVersion.WORKING_VERSION_NO)) {
-                            docRequest = new DocumentRequest.WorkingDocRequest(docId, language, user);
+                            docRequestHandler = new DocRequestHandler.WorkingDocVersionRequestHandler(docId, language, user);
                         } else {
-                            docRequest = new DocumentRequest.CustomDocRequest(docId, docVersionNo, language, user);
+                            docRequestHandler = new DocRequestHandler.CustomDocVersionRequestHandler(docId, docVersionNo, language, user);
                         }
                     }
                } catch (NumberFormatException e) {
@@ -321,12 +321,14 @@ public class ImcmsFilter implements Filter, ImcmsListener {
             }
         }
 
-        if (docRequest == null) {
-            docRequest = new DocumentRequest.DefaultDocRequest(null, language, user);
+        if (docRequestHandler == null) {
+            docRequestHandler = new DocRequestHandler.DefaultDocVersionRequestHandler(language, user);
+        } else {
+            docRequestHandler.setLanguage(language);
         }
 
-        session.setAttribute(ImcmsConstants.SESSION_ATTR__DOC_REQUEST, docRequest);
+        session.setAttribute(ImcmsConstants.SESSION_ATTR__DOC_REQUEST, docRequestHandler);
 
-        Imcms.setUserDocRequest(docRequest);
+        Imcms.setDocRequestHandler(docRequestHandler);
     }
 }

@@ -6,36 +6,27 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 /**
- * Holds information about requested document language and version.  
+ * Document request handler - controls document version to return.
  *
- * DocumentMapper#getDocument uses DocumentRequest getDoc method as a callback.
+ * DocumentMapper#getDocument uses DocRequestHandler getDoc method as a callback.
  *
- * DocumentRequest is created per user's session and bound to thread local in Imcms singleton.
+ * DocRequestHandler is created per user's session and bound to thread local in Imcms singleton.
  *
  * @see imcode.server.Imcms
  * @see com.imcode.imcms.servlet.ImcmsFilter
- * @see com.imcode.imcms.mapping.DocumentMapper#getDocument(Integer) 
+ * @see com.imcode.imcms.mapping.DocumentMapper#getDocument(Integer)
  */
-public abstract class DocumentRequest {
+public abstract class DocRequestHandler {
 
-    protected final Integer docId;
-
-    // todo: make final
     protected I18nLanguage language;
 
-    protected final UserDomainObject user;
+    protected UserDomainObject user;
 
-    
-    public DocumentRequest(Integer docId, I18nLanguage language, UserDomainObject user) {
-        this.docId = docId;
+    public DocRequestHandler(I18nLanguage language, UserDomainObject user) {
         this.language = language;
         this.user = user;
     }
 
-
-    public Integer getDocId() {
-        return docId;
-    }
 
     public UserDomainObject getUser() {
         return user;
@@ -48,19 +39,16 @@ public abstract class DocumentRequest {
     public void setLanguage(I18nLanguage language) {
         this.language = language;
     }
-    
-    /**
-     * @return requested document.
-     */
+
     public abstract DocumentDomainObject getDoc(DocumentMapper docMapper, Integer docId);
 
 
-    public static class DefaultDocRequest extends DocumentRequest {
-
-        public DefaultDocRequest(Integer docId, I18nLanguage language, UserDomainObject user) {
-            super(docId, language, user);
+    public static class DefaultDocVersionRequestHandler extends DocRequestHandler {
+        
+        public DefaultDocVersionRequestHandler(I18nLanguage language, UserDomainObject user) {
+            super(language, user);
         }
-
+    
         /**
          * @return default version of a document.
          */
@@ -85,11 +73,15 @@ public abstract class DocumentRequest {
         }
     }
 
-    
-    public static class WorkingDocRequest extends DefaultDocRequest {
 
-        public WorkingDocRequest(Integer docId, I18nLanguage language, UserDomainObject user) {
-            super(docId, language, user);
+
+    public static class WorkingDocVersionRequestHandler extends DefaultDocVersionRequestHandler {
+
+        private Integer docId;
+
+        public WorkingDocVersionRequestHandler(Integer docId, I18nLanguage language, UserDomainObject user) {
+            super(language, user);
+            this.docId = docId;
         }
 
         @Override
@@ -99,14 +91,18 @@ public abstract class DocumentRequest {
                 : super.getDoc(docMapper, docId);
         }
     }
-    
-    
-    public static class CustomDocRequest extends DefaultDocRequest {
 
-        private final Integer docVersionNo;
+    
 
-        public CustomDocRequest(Integer docId, Integer docVersionNo, I18nLanguage language, UserDomainObject user) {
-            super(docId, language, user);
+    public static class CustomDocVersionRequestHandler extends DefaultDocVersionRequestHandler {
+
+        private Integer docId;
+
+        private Integer docVersionNo;                
+
+        public CustomDocVersionRequestHandler(Integer docId, Integer docVersionNo, I18nLanguage language, UserDomainObject user) {
+            super(language, user);
+            this.docId = docId;
             this.docVersionNo = docVersionNo;
         }
 
@@ -123,9 +119,6 @@ public abstract class DocumentRequest {
                 ? docMapper.getCustomDocument(docId, docVersionNo, language)
                 : super.getDoc(docMapper, docId);
         }
+    }    
 
-        public Integer getDocVersionNo() {
-            return docVersionNo;
-        }
-    }
 }

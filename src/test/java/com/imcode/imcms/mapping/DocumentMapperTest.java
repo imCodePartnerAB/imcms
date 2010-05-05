@@ -263,9 +263,9 @@ public class DocumentMapperTest {
 //        parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
 //
 //
-//        DocumentRequest docRequestInfo = new DocumentRequest.WorkingDocRequest(admin);
+//        DocRequestHandler docRequestInfo = new DocRequestHandler.WorkingDocRequestHandler(admin);
 //        docRequestInfo.setLanguage(i18nSupport.getDefaultLanguage());
-//        Imcms.setUserDocRequest(docRequestInfo);
+//        Imcms.setDocRequestHandler(docRequestInfo);
 //
 //        menu = parentDoc.getMenu(menuNo);
 //
