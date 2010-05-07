@@ -36,19 +36,15 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         for ( Map.Entry<Integer,TextDomainObject> textEntry : textDocument.getTexts().entrySet() ) {
             Integer textIndex = textEntry.getKey();
             TextDomainObject text = textEntry.getValue();
-            //indexDocument.add(Field.UnStored(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText()));
-            indexDocument.add(new Field(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText(), Field.Store.NO, Field.Index.ANALYZED));
+            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText()));
             String htmlStrippedText = stripHtml(text);
-            //indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, htmlStrippedText));
-            indexDocument.add(new Field(DocumentIndex.FIELD__TEXT, htmlStrippedText, Field.Store.NO, Field.Index.ANALYZED));
-            //indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText));
-            indexDocument.add(new Field(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText, Field.Store.YES, Field.Index.NOT_ANALYZED));
+            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, htmlStrippedText));
+            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText));
         }
 
         for ( MenuDomainObject menu : textDocument.getMenus().values() ) {
             for ( MenuItemDomainObject menuItem : menu.getMenuItems() ) {
-                //indexDocument.add(Field.Keyword(DocumentIndex.FIELD__CHILD_ID, ""+menuItem.getDocumentId()));
-                indexDocument.add(new Field(DocumentIndex.FIELD__CHILD_ID, ""+menuItem.getDocumentId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+                indexDocument.add(Field.Keyword(DocumentIndex.FIELD__CHILD_ID, ""+menuItem.getDocumentId()));
             }
         }
 
@@ -103,8 +99,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         }
 
         for ( String text : texts ) {
-            //indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, text));
-            indexDocument.add(new Field(DocumentIndex.FIELD__TEXT, text, Field.Store.NO, Field.Index.ANALYZED));
+            indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT, text));
         }
     }
 

@@ -22,7 +22,6 @@ import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
-import org.apache.lucene.store.Directory;
 
 import java.io.File;
 import java.io.IOException;
@@ -118,7 +117,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         try {
             IndexReader indexReader = IndexReader.open( directory );
             try {
-                indexReader.deleteDocuments( new Term( "meta_id", "" + document.getId() ) );
+                indexReader.delete( new Term( "meta_id", "" + document.getId() ) );
             } finally {
                 indexReader.close();
             }
@@ -256,9 +255,5 @@ class DefaultDirectoryIndex implements DirectoryIndex {
         public int size() {
             return hits.length() ;
         }
-    }
-
-    public Directory getDirectory() {
-        return null;
     }
 }

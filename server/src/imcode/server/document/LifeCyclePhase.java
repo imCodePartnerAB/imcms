@@ -1,6 +1,9 @@
 package imcode.server.document;
 
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.RangeQuery;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.document.DateField;
 import com.imcode.imcms.api.Document;
@@ -49,22 +52,16 @@ public abstract class LifeCyclePhase {
 
    
     private static BooleanQuery add(BooleanQuery query, Query otherQuery) {
-        //query.add(
-        //        otherQuery,
-        //        true, false) ;
-        // from lucene 1.4.3 -> 2.4
-        query.add(otherQuery, BooleanClause.Occur.MUST);
-
+        query.add(
+                otherQuery,
+                true, false) ;
         return query;
     }
 
     private static BooleanQuery subtract(BooleanQuery minuend, Query subtrahend) {
-        //minuend.add(
-        //        subtrahend,
-        //        false, true) ;
-        // from lucene 1.4.3 -> 2.4
-        minuend.add(subtrahend, BooleanClause.Occur.MUST_NOT);
-        
+        minuend.add(
+                subtrahend,
+                false, true) ;
         return minuend;
     }
 

@@ -17,7 +17,6 @@ import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.TermQuery;
@@ -195,14 +194,9 @@ public class LinkCheck extends HttpServlet {
     private void addTextAndImageLinks( List links, DocumentIndex reindexingIndex, UserDomainObject user,
                                        HttpServletRequest request, IntRange range ) {
         BooleanQuery query = new BooleanQuery();
-        // from lucene 1.4.3 -> 2.4
-//        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "http" ) ), false, false );
-//        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "href" ) ), false, false );
-//        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__IMAGE_LINK_URL, "http" ) ), false, false );
-
-        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "http" ) ), BooleanClause.Occur.SHOULD);
-        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "href" ) ), BooleanClause.Occur.SHOULD);
-        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__IMAGE_LINK_URL, "http" ) ), BooleanClause.Occur.SHOULD);        
+        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "http" ) ), false, false );
+        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "href" ) ), false, false );
+        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__IMAGE_LINK_URL, "http" ) ), false, false );
 
         List textDocuments = reindexingIndex.search( new SimpleDocumentQuery(query), user );
 

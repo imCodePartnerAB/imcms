@@ -23,7 +23,10 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.RangeQuery;
+import org.apache.lucene.search.TermQuery;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -174,9 +177,7 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
         if ( StringUtils.isNotBlank( queryString ) ) {
             try {
                 Query textQuery = documentFinder.parse( queryString );
-                // from lucene 1.4.3 -> 2.4
-                //newQuery.add( textQuery, true, false );
-                newQuery.add( textQuery, BooleanClause.Occur.MUST);
+                newQuery.add( textQuery, true, false );
             } catch ( ParseException e ) {
                 log.debug( e.getMessage() + " in search-string " + queryString, e );
             }
@@ -186,14 +187,9 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
             BooleanQuery sectionQueries = new BooleanQuery();
             for ( Iterator iterator = sections.iterator(); iterator.hasNext(); ) {
                 SectionDomainObject section = (SectionDomainObject)iterator.next();
-                // from lucene 1.4.3 -> 2.4
-                //sectionQueries.add( new TermQuery( new Term( DocumentIndex.FIELD__SECTION, section.getName().toLowerCase() ) ), false, false );
-                sectionQueries.add( new TermQuery( new Term( DocumentIndex.FIELD__SECTION, section.getName().toLowerCase() ) ), BooleanClause.Occur.SHOULD);
+                sectionQueries.add( new TermQuery( new Term( DocumentIndex.FIELD__SECTION, section.getName().toLowerCase() ) ), false, false );
             }
-
-            // from lucene 1.4.3 -> 2.4
-            //newQuery.add( sectionQueries, true, false );
-            newQuery.add( sectionQueries, BooleanClause.Occur.MUST );
+            newQuery.add( sectionQueries, true, false );
         }
 
         if ( null != phases && phases.length > 0 ) {
@@ -201,15 +197,9 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
             for ( int i = 0; i < phases.length; i++ ) {
                 String phase = phases[i];
                 Query phaseQuery = new TermQuery( new Term( DocumentIndex.FIELD__PHASE, phase ) );
-
-                // from lucene 1.4.3 -> 2.4
-                //phaseQueries.add( phaseQuery, false, false );
-                phaseQueries.add( phaseQuery, BooleanClause.Occur.SHOULD);
+                phaseQueries.add( phaseQuery, false, false );
             }
-
-            // from lucene 1.4.3 -> 2.4
-            //newQuery.add( phaseQueries, true, false );
-            newQuery.add( phaseQueries, BooleanClause.Occur.MUST);
+            newQuery.add( phaseQueries, true, false );
         }
 
         if ( null != documentTypeIds && documentTypeIds.length > 0 ) {
@@ -217,27 +207,19 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
             for ( int i = 0; i < documentTypeIds.length; i++ ) {
                 int documentTypeId = documentTypeIds[i];
                 Query documentTypeQuery = new TermQuery( new Term(DocumentIndex.FIELD__DOC_TYPE_ID, ""+documentTypeId)) ;
-                // from lucene 1.4.3 -> 2.4
-                //documentTypeQueries.add( documentTypeQuery, false, false );
-                documentTypeQueries.add( documentTypeQuery, BooleanClause.Occur.SHOULD);
+                documentTypeQueries.add( documentTypeQuery, false, false );
             }
-            // from lucene 1.4.3 -> 2.4
-            //newQuery.add( documentTypeQueries, true, false ) ;
-            newQuery.add( documentTypeQueries,BooleanClause.Occur.MUST) ;
+            newQuery.add( documentTypeQueries, true, false ) ;
         }
 
         if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER.equals( userDocumentsRestriction ) ) {
             Query createdByUserQuery = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, "" + user.getId() ) );
-            // from lucene 1.4.3 -> 2.4
-            //newQuery.add( createdByUserQuery, true, false );
-            newQuery.add( createdByUserQuery, BooleanClause.Occur.MUST);
+            newQuery.add( createdByUserQuery, true, false );
         }
 
         if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER.equals( userDocumentsRestriction ) ) {
             Query publishedByUserQuery = new TermQuery( new Term( DocumentIndex.FIELD__PUBLISHER_ID, "" + user.getId() ) );
-            // from lucene 1.4.3 -> 2.4
-            //newQuery.add( publishedByUserQuery, true, false );
-            newQuery.add( publishedByUserQuery, BooleanClause.Occur.MUST);
+            newQuery.add( publishedByUserQuery, true, false );
         }
 
         if ( null != startDate || null != endDate ) {
@@ -262,9 +244,7 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
             Term lowerTerm = new Term( dateField, DateField.dateToString( calculatedStartDate ) );
             Term upperTerm = new Term( dateField, DateField.dateToString( calculatedEndDate ) );
             Query publicationStartedQuery = new RangeQuery( lowerTerm, upperTerm, true );
-            // from lucene 1.4.3 -> 2.4
-            //newQuery.add( publicationStartedQuery, true, false );
-            newQuery.add( publicationStartedQuery, BooleanClause.Occur.MUST);
+            newQuery.add( publicationStartedQuery, true, false );
         }
 
         if ( 0 == newQuery.getClauses().length ) {

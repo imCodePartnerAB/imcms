@@ -44,7 +44,10 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.WildcardQuery;
 
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.flow.CreateDocumentPageFlow;
@@ -448,9 +451,7 @@ public class ImageEditPage extends OkCancelPage {
         BooleanQuery imageMimeTypeQuery = new BooleanQuery();
 
         for ( String imageMimeType : IMAGE_MIME_TYPES ) {
-            // from lucene 1.4.3 -> 2.4
-            //imageMimeTypeQuery.add(new TermQuery(new Term(DocumentIndex.FIELD__MIME_TYPE, imageMimeType)), false, false);
-            imageMimeTypeQuery.add(new TermQuery(new Term(DocumentIndex.FIELD__MIME_TYPE, imageMimeType)), BooleanClause.Occur.SHOULD);
+            imageMimeTypeQuery.add(new TermQuery(new Term(DocumentIndex.FIELD__MIME_TYPE, imageMimeType)), false, false);
         }
 
         TermQuery fileDocumentQuery = new TermQuery(new Term(DocumentIndex.FIELD__DOC_TYPE_ID, ""
@@ -458,11 +459,8 @@ public class ImageEditPage extends OkCancelPage {
                 .FILE_ID));
 
         BooleanQuery booleanQuery = new BooleanQuery();
-        // from lucene 1.4.3 -> 2.4
-        //booleanQuery.add(fileDocumentQuery, true, false);
-        //booleanQuery.add(imageMimeTypeQuery, true, false);
-        booleanQuery.add(fileDocumentQuery, BooleanClause.Occur.MUST);
-        booleanQuery.add(imageMimeTypeQuery, BooleanClause.Occur.MUST);        
+        booleanQuery.add(fileDocumentQuery, true, false);
+        booleanQuery.add(imageMimeTypeQuery, true, false);
         return booleanQuery;
     }
 
@@ -537,21 +535,13 @@ public class ImageEditPage extends OkCancelPage {
             String[] queryStrings = StringUtils.split(queryString);
             BooleanQuery wildcardsQuery = new BooleanQuery();
             for ( String queryTerm : queryStrings ) {
-                // from lucene 1.4.3 -> 2.4
-                //wildcardsQuery.add(new WildcardQuery(new Term(DocumentIndex.FIELD__META_HEADLINE, "*" + queryTerm
-                //                                                                                  + "*")), true, false);
                 wildcardsQuery.add(new WildcardQuery(new Term(DocumentIndex.FIELD__META_HEADLINE, "*" + queryTerm
-                                                                                                  + "*")), BooleanClause.Occur.MUST);
-
+                                                                                                  + "*")), true, false);
             }
             BooleanQuery booleanQuery = new BooleanQuery();
-            // from lucene 1.4.3 -> 2.4
-            //booleanQuery.add(wildcardsQuery, false, false);
-            booleanQuery.add(wildcardsQuery, BooleanClause.Occur.SHOULD);
+            booleanQuery.add(wildcardsQuery, false, false);
             try {
-                // from lucene 1.4.3 -> 2.4
-                //booleanQuery.add(new DefaultQueryParser().parse(queryString), false, false);
-                booleanQuery.add(new DefaultQueryParser().parse(queryString), BooleanClause.Occur.SHOULD);
+                booleanQuery.add(new DefaultQueryParser().parse(queryString), false, false);
             } catch ( ParseException e ) {
             }
             return booleanQuery;

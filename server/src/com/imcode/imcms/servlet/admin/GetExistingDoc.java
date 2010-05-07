@@ -20,7 +20,10 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.RangeQuery;
+import org.apache.lucene.search.TermQuery;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -369,14 +372,9 @@ public class GetExistingDoc extends HttpServlet {
         BooleanQuery docTypesQuery = new BooleanQuery();
         for ( int i = 0; null != docTypes && i < docTypes.length; i++ ) {
             String docType = docTypes[i];
-            // from lucene 1.4.3 -> 2.4
-            //docTypesQuery.add( new TermQuery( new Term( "doc_type_id", docType ) ), false, false );
-            docTypesQuery.add( new TermQuery( new Term( "doc_type_id", docType ) ), BooleanClause.Occur.SHOULD);
+            docTypesQuery.add( new TermQuery( new Term( "doc_type_id", docType ) ), false, false );
         }
-        //// from lucene 1.4.3 -> 2.4
-
-        //query.add( docTypesQuery, true, false );
-        query.add( docTypesQuery, BooleanClause.Occur.MUST);
+        query.add( docTypesQuery, true, false );
     }
 
     private void addDateRangesToQuery( Date startDate, Date endDate, HttpServletRequest req, BooleanQuery query ) {
@@ -399,9 +397,7 @@ public class GetExistingDoc extends HttpServlet {
                                                DateField.dateToString( addOneDayToDate( endDate ) ) )
                                    : null;
                 RangeQuery dateRangeQuery = new RangeQuery( startDateTerm, endDateTerm, true );
-                // from lucene 1.4.3 -> 2.4
-                //query.add( dateRangeQuery, true, false );
-                query.add( dateRangeQuery, BooleanClause.Occur.MUST);
+                query.add( dateRangeQuery, true, false );
             }
         }
     }
@@ -416,9 +412,7 @@ public class GetExistingDoc extends HttpServlet {
     private void addStringToQuery(String string, BooleanQuery query)
             throws org.apache.lucene.queryParser.ParseException {
         Query textQuery = new DefaultQueryParser().parse( string );
-        // from lucene 1.4.3 -> 2.4
-        //query.add( textQuery, true, false );
-        query.add( textQuery, BooleanClause.Occur.MUST);
+        query.add( textQuery, true, false );
     }
 
     /**

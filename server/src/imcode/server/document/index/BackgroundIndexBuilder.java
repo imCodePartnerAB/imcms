@@ -48,7 +48,7 @@ public class BackgroundIndexBuilder {
             }
 
             log.debug("Created directory "+indexDirectory);
-
+            
             rememberIndexParentDirectoryLastModified();
 
             try {
