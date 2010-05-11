@@ -19,11 +19,9 @@ public class Fixture {
     }
 
     @BeforeSuite
-    public void initAndStartImcms() throws Exception {
+    public void initImcms() throws Exception {
         Var initFn = RT.var("com.imcode.imcms.project", "init-imcms");
 
         initFn.invoke();
-
-        //Imcms.start();
     }
 }

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<dataset>
+
+    <imcms_languages id="1" code="en" name="English" native_name="English" enabled="true"/>
+    <imcms_languages id="2" code="sw" name="Swedish" native_name="Svenska" enabled="true"/>
+    <imcms_languages id="3" code="ee" name="Estonian" native_name="Eesti" enabled="true"/>
+
+    <sys_types type_id="8" name="LanguageId"/>
+    <sys_data sys_id="8" type_id="8" value="1"/>
+    
+</dataset>

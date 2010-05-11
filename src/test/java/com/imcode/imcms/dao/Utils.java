@@ -25,6 +25,8 @@ public class Utils {
 	public final static TextDao textDao = (TextDao)getBean("textDao");	
 	
 	public final static LanguageDao languageDao = (LanguageDao)getBean("languageDao");
+
+    public final static SystemDao systemDao = (SystemDao)getBean("systemDao");
 	
 	public final static DocumentSaver documentSaver = 
 		(DocumentSaver)getBean("documentSaver");	

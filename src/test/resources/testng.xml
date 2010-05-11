@@ -4,7 +4,7 @@
   <test name="mapping">
     <groups>
       <run>
-          <exclude name="dao"/>
+          <!--<exclude name="dao"/>-->
       </run>
     </groups>
 
