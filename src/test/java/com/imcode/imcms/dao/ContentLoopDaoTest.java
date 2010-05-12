@@ -151,7 +151,7 @@ public class ContentLoopDaoTest extends DaoTest {
 
 	}
 
-	@Override
+	//@Override
 	protected String getDataSetFileName() {
 		return "dbunit-content_loop.xml";
 	}

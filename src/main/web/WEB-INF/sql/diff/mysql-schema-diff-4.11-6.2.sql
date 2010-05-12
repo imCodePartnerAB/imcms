@@ -12,7 +12,6 @@ SET @doc_version_no = 0;
 --
 -- Languages support
 --
--- todo: remove autoincrement?
 CREATE TABLE `imcms_languages` (
   `id` int AUTO_INCREMENT PRIMARY KEY,
   `code` varchar(3) NOT NULL COMMENT 'Language code.',

@@ -1,26 +1,27 @@
 (ns
-  #^{:doc "Project's schema manipulation routines."}
-  com.imcode.imcms.schema
+  #^{:doc "Project's databse schema fns."}
+  com.imcode.imcms.project.db.schema
   
   (:use
-    [clojure.contrib duck-streams test-is])
+    (clojure.contrib duck-streams test-is))
 
   (:require
-    [com.imcode.imcms
-      [project :as project]]
+    (com.imcode.imcms
+      [project :as project])
 
-    [com.imcode.cljlib
-      [file-utils :as file-utils]
-      [schema-utils :as schema-utils]]
+    (com.imcode.imcms.project
+      [db :as db])    
 
-    [clojure.contrib [sql :as sql]])
+    (com.imcode.cljlib
+      [file-utils :as file-utils])
 
-  (:import com.imcode.imcms.schema.SchemaUpgrade))
+    (com.imcode.cljlib.db
+      [schema :as schema-lib])
 
+    (clojure.contrib [sql :as sql]))
 
-(defn db-schema-name [] (:db-name (project/build-properties)))
-(defn test-db-schema-name [] (str (db-schema-name) "_test"))
-
+  (:import
+    com.imcode.imcms.schema.SchemaUpgrade))
 
 (def xml-conf-file (project/get-file-fn "src/main/resources-conf/schema-upgrade.xml"))
 (def xsd-conf-file (project/get-file-fn "src/main/resources-conf/schema-upgrade.xsd"))
@@ -53,54 +54,64 @@
 
 (defn version
   ([]
-    (version (db-schema-name)))
+    (version (project/db-schema-name)))
 
   ([name]
-    (version-d (project/db-spec) name)))
+    (version-d (db/create-spec) name)))
 
 
 (defn tables
   ([]
-    (tables (db-schema-name)))
+    (tables (project/db-schema-name)))
 
   ([schema-name]
-    (schema-utils/tables (project/db-spec) schema-name)))
+    (schema-lib/tables (db/create-spec) schema-name)))
 
 
 (defn delete
   ([]
-    (delete (db-schema-name)))
+    (delete (project/db-schema-name)))
 
   ([schema-name]
-    (schema-utils/delete (project/db-spec) schema-name)))
+    (schema-lib/delete (db/create-spec) schema-name)))
 
 
-(defn recreate
-  "Recreates datatabse schema or PROJECT schema if schema name is not given."
-  ([]
-    (recreate (db-schema-name)))
+(defn- recreate-custom
+  "Recreates datatabse schema."
+  ([db-spec-fn schema-name-fn]
+    (recreate-custom db-spec-fn schema-name-fn (init-script-files)))
 
-  ([schema-name]
-    (recreate schema-name (init-script-files)))  
-
-  ([schema-name scripts]
-    (schema-utils/recreate (project/db-spec) schema-name scripts)))
+  ([db-spec-fn schema-name-fn scripts]
+    (schema-lib/recreate (db-spec-fn) (schema-name-fn) scripts)))
 
 
-(defn recreate-empty
-  "Recreates empty datatabse schema or PROJECT schema if schema name is not given."
-  ([]
-    (recreate (db-schema-name) []))
-
-  ([schema-name]
-    (recreate schema-name [])))
+;"Recreates default schema."
+;[scripts=(init-script-files)]
+(def recreate
+  (partial recreate-custom db/create-spec project/db-schema-name))
 
 
-(defn recreate-sandbox
-  []
-  "Recreates SANDBOX datatabse schema."
-  (let [script-files (project/files "src/test/sql" ["sandbox.sql"])]
-    (recreate "sandbox" script-files)))
+;"Recreates test schema."
+;[scripts=(init-script-files)]
+(def recreate-test
+  (partial recreate-custom db/create-test-spec project/db-test-schema-name))
+
+
+;(defn recreate-empty
+;  "Recreates empty datatabse schema."
+;  ([]
+;    (recreate (empty-schema-name) []))
+;
+;  ([schema-name]
+;    (recreate schema-name [])))
+
+
+
+;(defn recreate-sandbox
+;  []
+;  "Recreates SANDBOX datatabse schema."
+;  (let [script-files (project/files "src/test/sql" ["sandbox.sql"])]
+;    (recreate "sandbox" script-files)))
 
 
 
@@ -117,23 +128,23 @@
 
 (defn upgrade
   ([]
-    (upgrade (db-schema-name)))
+    (upgrade (project/db-schema-name)))
 
   ([schema-name]
     (upgrade schema-name (xml-conf-file) (xsd-conf-file) (scripts-dir)))
 
   ([schema-name p_xml-conf-file p_xsd-conf-file p_scripts-dir]
-    (upgrade-d (project/db-spec) schema-name p_xml-conf-file p_xsd-conf-file p_scripts-dir)))
+    (upgrade-d (db/create-spec false) schema-name p_xml-conf-file p_xsd-conf-file p_scripts-dir)))
 
 
-(defn recreate-empty-upgrade
-  "Recreates empty schema and runs upgrade."
-  ([]
-    (recreate-empty-upgrade (db-schema-name)))
-
-  ([schema-name]
-    (recreate-empty schema-name)
-    (upgrade schema-name)))
+;(defn recreate-empty-upgrade
+;  "Recreates empty schema and runs upgrade."
+;  ([]
+;    (recreate-empty-upgrade (schema-name)))
+;
+;  ([schema-name]
+;    (recreate-empty schema-name)
+;    (upgrade schema-name)))
 
 
 (deftest test-settings

@@ -1,16 +1,25 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="imCMS" verbose="1" parallel="false" thread-count="1" annotations="JDK">
-  <test name="mapping">
-    <groups>
-      <run>
-          <!--<exclude name="dao"/>-->
-      </run>
-    </groups>
 
+  <test name="dao">
     <packages>
         <package name="imcode.server.*"/>
-        <package name="com.imcode.imcms.*"/>
+        <package name="com.imcode.imcms.dao"/>
     </packages>
-  </test>  
+  </test>
+    
+
+  <!--<test name="mapping">-->
+    <!--<groups>-->
+      <!--<run>-->
+          <!--&lt;!&ndash;<exclude name="dao"/>&ndash;&gt;-->
+      <!--</run>-->
+    <!--</groups>-->
+
+    <!--<packages>-->
+        <!--<package name="imcode.server.*"/>-->
+        <!--<package name="com.imcode.imcms.*"/>-->
+    <!--</packages>-->
+  <!--</test>  -->
 </suite>

@@ -8,7 +8,6 @@
     [clojure.contrib.shell-out :as shell]
     [com.imcode.cljlib
       [misc-utils :as utils]
-      [db-utils :as db-utils]
       [file-utils :as file-utils]])
   
   (:use
@@ -23,7 +22,6 @@
   (:import
     (java.io File)
     (imcode.server Imcms)
-    (org.apache.commons.dbcp BasicDataSource)
     (org.springframework.context.support FileSystemXmlApplicationContext)))
 
 
@@ -96,34 +94,8 @@
                      (comp utils/to-keyword-key-map file-utils/load-properties)))
 
 
-(defn create-db-datasource []
-  (let [p (build-properties)
-        db-url (db-utils/create-url (:db-target p) (:db-host p) (:db-port p) (:db-name p))]
-
-    (db-utils/create-ds (:db-driver p) (:db-user p) (:db-pass p) db-url)))
-
-
-(def
-   #^{:doc "Function which creates pooled datasource based on the build properties."}
-  db-datasource
-  (file-utils/create-file-watcher
-    (get-file-fn "build.properties")
-    (fn file-fn [_]
-      (create-db-datasource))))
-
-
-(defn db-spec
-  "Creates db-spec used by clojure.contrib.sql"
-  []
-  (db-utils/create-db-spec (create-db-datasource)))
-
-
-(defn db-metadata []
-  (db-utils/metadata (db-spec)))
-
-
-(defn print-db-metadata []
-  (db-utils/print-metadata (db-metadata)))
+(defn db-schema-name "Default schema name." [] (:db-name (build-properties)))
+(defn db-test-schema-name "Test schema name." [] (str (db-schema-name) "_test"))
 
 
 (defn deploy-maven-jar
