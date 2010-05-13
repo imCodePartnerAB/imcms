@@ -3,7 +3,6 @@ package com.imcode.imcms.dao;
 import static com.imcode.imcms.dao.Utils.contentLoopDao;
 
 import com.imcode.imcms.api.Content;
-import imcode.server.Imcms;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -17,7 +16,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Test(groups = "dao")
-public class ContentLoopDaoTest extends DaoTest {
+public class ContentLoopDaoTest  {
 
 
     // loops predefined in src/test/resources/dbunit-content_loop.xml: loop_<contents-count>_[sort-order]_id

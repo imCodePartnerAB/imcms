@@ -1,9 +1,11 @@
 package com.imcode.imcms.dao;
 
+import com.imcode.imcms.DBUtils;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.SystemProperty;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -12,31 +14,30 @@ import java.io.File;
 import java.util.List;
 
 
-public class LanguageDaoTest extends DaoTest {
+public class LanguageDaoTest {
 
     LanguageDao languageDao;
 
     SystemDao systemDao;
 
-    public LanguageDaoTest() {
-        languageDao = new LanguageDao();
+    @BeforeClass
+    public static void createDB() {
+        DBUtils.recreateTestDB();
+    }
+
+    @Before
+    public void resetDB() {
+        DBUtils.runScriptsOnTestDB("language_dao.sql");
+
+        SessionFactory sf = DBUtils.createTestDBSessionFactory(
+                new Class[] {SystemProperty.class, I18nLanguage.class},
+                "src/main/resources/I18nLanguage.hbm.xml");
+        
         systemDao = new SystemDao();
-    }
-
-
-    @Override
-    public void configure(AnnotationConfiguration c) {
-        c.addAnnotatedClass(I18nLanguage.class);
-        c.addAnnotatedClass(SystemProperty.class);
-
-        c.addFile(new File("src/main/resources/I18nLanguage.hbm.xml"));
-    }
-
-    
-    @Override
-    public void init(SessionFactory f) {
-        languageDao.setSessionFactory(f);
-        systemDao.setSessionFactory(f);        
+        languageDao = new LanguageDao();
+        
+        systemDao.setSessionFactory(sf);
+        languageDao.setSessionFactory(sf);
     }
     
 
@@ -110,7 +111,7 @@ public class LanguageDaoTest extends DaoTest {
 
     @Test
     public void getDefaultLanguage() {
-        SystemProperty property = systemDao.getProperty("LanguageId");
+        SystemProperty property = systemDao.getProperty("languageId");
 
         assertNotNull("LanguageId system property exists.", property);
         assertEquals(String.format("LanguageId system property is set to %d.", 1), new Integer(1), property.getValueAsInteger());
@@ -123,20 +124,12 @@ public class LanguageDaoTest extends DaoTest {
 
     @Test
     public void changeDefaultLanguage() {
-        SystemProperty property = systemDao.getProperty("LanguageId");
+        SystemProperty property = systemDao.getProperty("languageId");
         property.setValue("2");
         systemDao.saveProperty(property);
 
-        I18nLanguage language = languageDao.getById(systemDao.getProperty("LanguageId").getValueAsInteger());
+        I18nLanguage language = languageDao.getById(systemDao.getProperty("languageId").getValueAsInteger());
 
         assertEquals("Language id is correct.", language.getId(), new Integer(2));
-    }
-
-    
-    @Override
-    public String[] getSQLScriptsNames() {
-        return new String[] {
-            "language_dao.sql"
-        };
     }
 }

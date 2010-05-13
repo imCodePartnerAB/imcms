@@ -49,6 +49,11 @@
   (comp db-lib/create-spec create-ds))
 
 
+(defn run-scripts-on-test
+  [scripts]
+  (db-lib/run-scripts (create-test-spec) scripts))
+
+
 (defn metadata []
   (db-lib/metadata (create-spec)))
 

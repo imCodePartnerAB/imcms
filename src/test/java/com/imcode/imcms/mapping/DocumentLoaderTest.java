@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import static org.testng.Assert.fail;
 

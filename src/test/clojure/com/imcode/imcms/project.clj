@@ -25,23 +25,23 @@
     (org.springframework.context.support FileSystemXmlApplicationContext)))
 
 
-(def base-dir (atom (.getCanonicalFile (File. "."))))
+(defonce basedir (atom (.getCanonicalFile (File. "."))))
 
 (def spring-app-context (atom nil))
 
-(defn base-dir-path
+(defn basedir-path
   "Returns base dir full path."
   []
-  (.getCanonicalPath @base-dir))
+  (.getCanonicalPath @basedir))
 
 
-(defn ch-base-dir! [new-path]
-  (reset! base-dir (.getCanonicalFile (File. new-path))))
+(defn ch-basedir! [new-path]
+  (reset! basedir (.getCanonicalFile (File. new-path))))
 
 
-(defn- filesystem-node
+(defn- fs-node
   [relative-path check-fn]
-  (let [node (File. @base-dir relative-path)]
+  (let [node (File. @basedir relative-path)]
     (if check-fn (check-fn node) node)))
 
 
@@ -51,7 +51,7 @@
     (subdir relative-path true))
 
   ([relative-path check]
-    (filesystem-node relative-path (if check throw-if-not-dir))))
+    (fs-node relative-path (if check throw-if-not-dir))))
 
 (defn subdir-path
   "Returns project's subdir canonical path."
@@ -65,7 +65,7 @@
     (file relative-path true))
 
   ([relative-path check]
-    (filesystem-node relative-path (if check throw-if-not-file))))
+    (fs-node relative-path (if check throw-if-not-file))))
 
 
 (defn file-path

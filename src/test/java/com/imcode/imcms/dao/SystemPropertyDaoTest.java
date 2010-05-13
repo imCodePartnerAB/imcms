@@ -1,31 +1,37 @@
-package imcode.server;
+package com.imcode.imcms.dao;
 
+import com.imcode.imcms.DBUtils;
 import com.imcode.imcms.api.SystemProperty;
 import com.imcode.imcms.dao.SystemDao;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.AnnotationConfiguration;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import static org.testng.Assert.*;
 
+import java.io.File;
 import java.util.List;
 
 /**
  * 
  */
-public class SystemPropertyTest {
+public class SystemPropertyDaoTest {
 
-    private SystemDao systemDao;
+    SystemDao systemDao;
 
     @BeforeClass
-    public void setUpClass() {
-        Imcms.start();
-        systemDao = (SystemDao)Imcms.getSpringBean("systemDao");
+    public static void createDB() {
+        DBUtils.recreateTestDB();
     }
 
-
-    @AfterClass
-    public void afterClass() {
-        Imcms.stop();
+    @Before
+    public void resetDB() {
+        DBUtils.runScriptsOnTestDB("system_property_dao.sql");
+        
+        systemDao = new SystemDao();
+        systemDao.setSessionFactory(DBUtils.createTestDBSessionFactory(SystemProperty.class));
     }
 
 

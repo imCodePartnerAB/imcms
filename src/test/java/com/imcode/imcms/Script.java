@@ -1,14 +1,16 @@
 package com.imcode.imcms;
 
+import clojure.lang.ArraySeq;
 import clojure.lang.RT;
 import clojure.lang.Var;
 import org.testng.annotations.*;
 
 import javax.sql.DataSource;
 
-@Test
-public class Suite {
-
+/**
+ * Integration with scripted code.
+ */
+public class Script {
 
     static {
         try {
@@ -18,6 +20,17 @@ public class Suite {
             RT.load("com/imcode/imcms/project/db/schema");
             RT.load("com/imcode/cljlib/db");
             RT.load("com/imcode/cljlib/db/schema");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public static Object callClojureFn(String ns, String fn, Object... args) {
+        try {
+            Var var = RT.var(ns, fn);
+
+            return var.applyTo(RT.seq(args));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -35,13 +48,26 @@ public class Suite {
     }
 
 
-    public static void recreateTestDB(String[] sqlScriptsPaths) throws Exception {
-        RT.var("com.imcode.imcms.project.db.schema", "recreate-test")
-            .invoke(sqlScriptsPaths);
+    public static void recreateTestDB(String[] sqlScriptsPaths) {
+        try {
+            RT.var("com.imcode.imcms.project.db.schema", "recreate-test")
+                .invoke(sqlScriptsPaths);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public static void runScriptsOnTestDB(String[] sqlScriptsPaths) {
+        try {
+            RT.var("com.imcode.imcms.project.db", "run-scripts-on-test-db")
+                .invoke(sqlScriptsPaths);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }    
     
 
-    @BeforeSuite
     public void initImcms() throws Exception {
         RT.var("com.imcode.imcms.project", "init-imcms")
             .invoke();
