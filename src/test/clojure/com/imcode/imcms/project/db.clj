@@ -6,52 +6,113 @@
     (clojure.contrib duck-streams test-is))
 
   (:require
+    (clojure.contrib
+      [sql :as sql])
+      
     (com.imcode.imcms
       [project :as project])
 
     (com.imcode.cljlib
-      [file-utils :as file-utils]
       [db :as db-lib])
 
-    (clojure.contrib [sql :as sql])))
+    (clojure.contrib [sql :as sql]))
+
+  (:import
+    org.hibernate.SessionFactory
+    org.hibernate.cfg.AnnotationConfiguration))
 
 
-(defn- create-custom-ds
-  ([schema-name-fn]
-    (create-custom-ds schema-name-fn true))
+(defn db-name "Database name."
+  []
+  (:db-name (project/build-properties)))
 
-  ([schema-name-fn autocomit]
+
+(defn init-script-files
+  []
+  (project/files "src/main/web/WEB-INF/sql" ["imcms_rb4.sql" "diff/mysql-schema-diff-4.11-6.2.sql"]))
+
+
+(defn create-ds
+  ([]
+    (create-ds true))
+
+  ([autocomit]
     (let [p (project/build-properties)
-          db-url (db-lib/create-url (:db-target p) (:db-host p) (:db-port p) (schema-name-fn))]
+          db-url (db-lib/create-url (:db-target p) (:db-host p) (:db-port p) (db-name))]
 
       (doto
         (db-lib/create-ds (:db-driver p) (:db-user p) (:db-pass p) db-url)
         (.setDefaultAutoCommit autocomit)))))
 
 
-; [autocommit=true]
-(def create-ds
-  (partial create-custom-ds project/db-schema-name))
 
 
-; [autocommit=true]
-(def create-test-ds
-  (partial create-custom-ds project/db-test-schema-name))
-
-
+; Creates db spec
 ; [autocommit=true]
 (def create-spec
   (comp db-lib/create-spec create-ds))
+  
+
+(defn hibernate-properties []
+  (let [p (project/build-properties)
+        db-url (db-lib/create-url (:db-target p) (:db-host p) (:db-port p) (db-name))]
+
+    {"hibernate.dialect", "org.hibernate.dialect.MySQLInnoDBDialect"
+     "hibernate.connection.driver_class", (:db-driver p)
+     "hibernate.connection.url", db-url
+     "hibernate.connection.username", (:db-user p)
+     "hibernate.connection.password", (:db-pass p)
+     "hibernate.connection.pool_size", "1"
+     "hibernate.connection.autocommit", "true"
+     "hibernate.cache.provider_class", "org.hibernate.cache.HashtableCacheProvider"
+     ;"hibernate.hbm2ddl.auto", "create-drop"
+     "hibernate.show_sql", "true"}))
 
 
-; [autocommit=true]
-(def create-test-spec
-  (comp db-lib/create-spec create-ds))
+(defn create-hibernate-sf
+  "Creates hibernate session factory."
+  [annotatedClasses xmlFiles]
+  (let [conf (AnnotationConfiguration.)]
+    (doseq [[k v] (hibernate-properties)]
+      (.setProperty conf k v))
+
+    (doseq [clazz annotatedClasses]
+      (.addAnnotatedClass conf clazz))
+
+    (doseq [xmlFile xmlFiles]
+      (.addFile conf xmlFile))
+
+    (.buildSessionFactory conf)))
 
 
-(defn run-scripts-on-test
+(defn recreate
+  "Recreates datatabse."
   [scripts]
-  (db-lib/run-scripts (create-test-spec) scripts))
+  (db-lib/recreate (create-spec) (db-name) scripts))
+
+
+(defn recreate-empty
+  "Recreates empty datatabse."
+  []
+  (recreate []))
+
+
+(defn run-scripts
+  [scripts]
+  (db-lib/run-scripts (create-spec) scripts))
+
+
+
+
+
+
+
+;(defn version
+;  ([]
+;    (version (db-name)))
+;
+;  ([name]
+;    (version-d (create-spec) name)))
 
 
 (defn metadata []

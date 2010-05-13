@@ -94,10 +94,6 @@
                      (comp utils/to-keyword-key-map file-utils/load-properties)))
 
 
-(defn db-schema-name "Default schema name." [] (:db-name (build-properties)))
-(defn db-test-schema-name "Test schema name." [] (str (db-schema-name) "_test"))
-
-
 (defn deploy-maven-jar
   "Deploy jar file to imcms maven's repo."
   [group-id artifact-id version jar-filepath]

@@ -32,12 +32,13 @@ DELETE FROM sys_data;
 DELETE FROM sys_types;
 DELETE FROM imcms_languages;
 
-INSERT INTO sys_types (type_id, name) VALUES (8, 'LanguageId');
-INSERT INTO sys_data (sys_id, type_id, value) VALUES (8, 8, 1);
 INSERT INTO imcms_languages
   (`id`, `code`, `name`, `native_name`, `enabled`)
 VALUES
   (1, 'en', 'English', 'English', true),
   (2, 'sv', 'Swedish', 'Svenska', true);
+  
+INSERT INTO sys_types (type_id, name) VALUES (8, 'LanguageId');
+INSERT INTO sys_data (sys_id, type_id, value) VALUES (8, 8, 1);
 
 

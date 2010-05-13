@@ -1,17 +1,13 @@
 package com.imcode.imcms.dao;
 
-import com.imcode.imcms.DBUtils;
+import com.imcode.imcms.Script;
 import com.imcode.imcms.api.SystemProperty;
-import com.imcode.imcms.dao.SystemDao;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.testng.Assert.*;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -22,16 +18,16 @@ public class SystemPropertyDaoTest {
     SystemDao systemDao;
 
     @BeforeClass
-    public static void createDB() {
-        DBUtils.recreateTestDB();
+    public static void recreateDB() {
+        Script.recreateEmptyDB();
     }
 
     @Before
-    public void resetDB() {
-        DBUtils.runScriptsOnTestDB("system_property_dao.sql");
+    public void resetDBData() {
+        Script.runDBScripts("system_property_dao.sql");
         
         systemDao = new SystemDao();
-        systemDao.setSessionFactory(DBUtils.createTestDBSessionFactory(SystemProperty.class));
+        systemDao.setSessionFactory(Script.createHibernateSessionFactory(SystemProperty.class));
     }
 
 

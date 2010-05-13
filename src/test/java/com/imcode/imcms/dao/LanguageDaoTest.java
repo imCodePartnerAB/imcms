@@ -1,6 +1,6 @@
 package com.imcode.imcms.dao;
 
-import com.imcode.imcms.DBUtils;
+import com.imcode.imcms.Script;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.SystemProperty;
 import org.hibernate.SessionFactory;
@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.util.List;
 
 
@@ -20,16 +19,18 @@ public class LanguageDaoTest {
 
     SystemDao systemDao;
 
+
     @BeforeClass
-    public static void createDB() {
-        DBUtils.recreateTestDB();
+    public static void recreateDB() {
+        Script.recreateEmptyDB();
     }
 
-    @Before
-    public void resetDB() {
-        DBUtils.runScriptsOnTestDB("language_dao.sql");
 
-        SessionFactory sf = DBUtils.createTestDBSessionFactory(
+    @Before
+    public void resetDBData() {
+        Script.runDBScripts("language_dao.sql");
+
+        SessionFactory sf = Script.createHibernateSessionFactory(
                 new Class[] {SystemProperty.class, I18nLanguage.class},
                 "src/main/resources/I18nLanguage.hbm.xml");
         

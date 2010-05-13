@@ -15,9 +15,6 @@
     (com.imcode.cljlib
       [file-utils :as file-utils])
 
-    (com.imcode.cljlib.db
-      [schema :as schema-lib])
-
     (clojure.contrib [sql :as sql]))
 
   (:import
@@ -37,12 +34,6 @@
 (def slurp-xsd-conf (file-utils/create-file-watcher xsd-conf-file slurp*))
 
 
-(defn init-script-files
-  []
-  ;(project/files "src/main/sql" ["imcms_6.1_schema.sql" "imcms_6.1_data.sql"]))
-  ;(project/files "src/main/web/WEB-INF/sql" ["imcms_5.3_schema.sql" "imcms_5.3_data.sql" "diff/mysql-schema-diff-5.3-6.2.sql"]))
-  (project/files "src/main/web/WEB-INF/sql" ["imcms_rb4.sql" "diff/mysql-schema-diff-4.11-6.2.sql"]))
-
 (defn version-d
   "Returns imCMS schema version."
   [db-spec db-name]
@@ -51,51 +42,6 @@
       (format "use %s" db-name))
 
     (SchemaUpgrade/getSchemaVersion (sql/connection))))
-
-(defn version
-  ([]
-    (version (project/db-schema-name)))
-
-  ([name]
-    (version-d (db/create-spec) name)))
-
-
-(defn tables
-  ([]
-    (tables (project/db-schema-name)))
-
-  ([schema-name]
-    (schema-lib/tables (db/create-spec) schema-name)))
-
-
-(defn delete
-  ([]
-    (delete (project/db-schema-name)))
-
-  ([schema-name]
-    (schema-lib/delete (db/create-spec) schema-name)))
-
-
-(defn- recreate-custom
-  "Recreates datatabse schema."
-  ([db-spec-fn schema-name-fn]
-    (recreate-custom db-spec-fn schema-name-fn (init-script-files)))
-
-  ([db-spec-fn schema-name-fn scripts]
-    (schema-lib/recreate (db-spec-fn) (schema-name-fn) scripts)))
-
-
-;"Recreates default schema."
-;[scripts=(init-script-files)]
-(def recreate
-  (partial recreate-custom db/create-spec project/db-schema-name))
-
-
-;"Recreates test schema."
-;[scripts=(init-script-files)]
-(def recreate-test
-  (partial recreate-custom db/create-test-spec project/db-test-schema-name))
-
 
 ;(defn recreate-empty
 ;  "Recreates empty datatabse schema."
@@ -126,9 +72,10 @@
       (doto (SchemaUpgrade/createInstance xml-conf-file xsd-conf-file scripts-dir)
         (.upgrade (sql/connection))))))
 
+
 (defn upgrade
   ([]
-    (upgrade (project/db-schema-name)))
+    (upgrade (db/db-name)))
 
   ([schema-name]
     (upgrade schema-name (xml-conf-file) (xsd-conf-file) (scripts-dir)))
@@ -162,6 +109,6 @@
     (println "xml-conf-file content length: " (count (slurp-xml-conf)))
     (println "xsd-conf-file content length: " (count (slurp-xsd-conf))))
 
-  (is (= 3 (count (init-script-files)))))
+  (is (= 3 (count (db/init-script-files)))))
 
 
