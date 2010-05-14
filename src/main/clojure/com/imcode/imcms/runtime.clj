@@ -1,12 +1,13 @@
 (ns
-  #^{:doc "Provides functions for accessing static methods of imcode.server.Imcms class."}
+  #^{:doc "Provides functions for accessing app at runtime."}
   com.imcode.imcms.runtime  
   (:import
-    [imcode.server Imcms]
-    [imcode.server.document DocumentDomainObject]
-    [imcode.server.user UserDomainObject])
+    (imcode.server Imcms)
+    (imcode.server.document DocumentDomainObject)
+    (imcode.server.user UserDomainObject))
+    
   (:use
-    [com.imcode.cljlib.misc-utils :only [dump]]))
+    [com.imcode.cljlib.misc :only [dump]]))
 
 (defmacro invoke
   "Invokes Imcms class static method."

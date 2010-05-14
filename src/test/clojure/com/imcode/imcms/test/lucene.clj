@@ -1,4 +1,4 @@
-(ns com.imcode.imcms.lucene
+(ns com.imcode.imcms.test.lucene
   (:import
     (java.io File)
     (org.apache.lucene.store Directory FSDirectory RAMDirectory)

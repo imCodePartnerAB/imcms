@@ -103,7 +103,7 @@ public class ImcmsFilter implements Filter, ImcmsListener {
             ResourceBundle resourceBundle = Utility.getResourceBundle(request);
             Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
-            associateDocHandlerRequestWithCurrentThread(request, session, user);
+            associateDocRequestHandlerWithCurrentThread(request, session, user);
 
             Utility.initRequestWithApi(request, user);
 
@@ -263,7 +263,7 @@ public class ImcmsFilter implements Filter, ImcmsListener {
      * @param session
      * @param user
      */
-    private void associateDocHandlerRequestWithCurrentThread(HttpServletRequest request, HttpSession session, UserDomainObject user) {
+    private void associateDocRequestHandlerWithCurrentThread(HttpServletRequest request, HttpSession session, UserDomainObject user) {
         DocRequestHandler docRequestHandler = (DocRequestHandler)session.getAttribute(ImcmsConstants.SESSION_ATTR__DOC_REQUEST);
 
         String languageCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);

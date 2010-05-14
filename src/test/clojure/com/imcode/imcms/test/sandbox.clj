@@ -1,14 +1,14 @@
 (ns
   #^{:doc "Sandbox."}
-  com.imcode.imcms.sandbox  
+  com.imcode.imcms.test.sandbox  
   (:require
     [clojure.contrib.duck-streams :as ds]
     [clojure.contrib.str-utils :as su]
     [clojure.contrib.str-utils2 :as su2]
     [clojure.contrib.shell-out :as shell]
     
-    [com.imcode.imcms.project :as p]
-    [com.imcode.imcms.lucene :as l]))
+    [com.imcode.imcms.test.project :as p]
+    [com.imcode.imcms.test.lucene :as l]))
 
 
 ;(run-tests

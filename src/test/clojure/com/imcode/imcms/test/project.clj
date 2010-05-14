@@ -1,14 +1,15 @@
 (ns
   #^{:doc "imCMS project's interaction."}
-  com.imcode.imcms.project     
+  com.imcode.imcms.test.project     
   (:require
-    ;[clojure.contrib.logging :as log]
-    [clojure.contrib.str-utils :as su]
-    ;[clojure.contrib.str-utils2 :as su2]
-    [clojure.contrib.shell-out :as shell]
-    [com.imcode.cljlib
-      [misc-utils :as utils]
-      [file-utils :as file-utils]])
+    (clojure.contrib
+      ;[logging :as log]
+      [str-utils :as su]
+      [str-utils2 :as su2]
+      [shell-out :as shell])
+
+    (com.imcode.cljlib
+      [misc :as misc-lib]))
   
   (:use
     clojure.contrib.test-is
@@ -16,7 +17,7 @@
     clojure.contrib.duck-streams
     clojure.contrib.def
     [clojure.contrib.except :only [throw-if throw-if-not]]
-    [com.imcode.cljlib.file-utils :as file-utils :only [throw-if-not-dir throw-if-not-file]])
+    [com.imcode.cljlib.file :as file-lib :only [throw-if-not-dir throw-if-not-file]])
 
 
   (:import
@@ -90,9 +91,9 @@
 (def
   #^{:doc "Function for loading project's build properties from the build.properties file."}
   
-  build-properties (file-utils/create-file-watcher
+  build-properties (file-lib/create-file-watcher
                      (get-file-fn "build.properties")
-                     (comp utils/to-keyword-key-map file-utils/load-properties)))
+                     (comp misc-lib/to-keyword-key-map file-lib/load-properties)))
 
 
 (defn deploy-maven-jar
@@ -127,5 +128,5 @@
     (loc "."))
 
   ([#^String dir]
-    (file-utils/loc
-      (file-utils/files dir #"\.(java|jsp|htm|html|xml|properties|sql|clj)$"))))
+    (file-lib/loc
+      (file-lib/files dir #"\.(java|jsp|htm|html|xml|properties|sql|clj)$"))))
