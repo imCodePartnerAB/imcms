@@ -1,6 +1,6 @@
 (ns
   #^{:doc "Project's databse schema fns."}
-  com.imcode.imcms.project.db.upgrade
+  com.imcode.imcms.test.project.db.upgrade
   
   (:use
     (clojure.contrib duck-streams test-is))
