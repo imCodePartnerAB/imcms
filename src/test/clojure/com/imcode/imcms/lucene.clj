@@ -1,8 +1,6 @@
 (ns com.imcode.imcms.lucene
   (:import
     (java.io File)
-    (org.apache.lucene.store.jdbc JdbcDirectory)
-    (org.apache.lucene.store.jdbc.dialect MySQLInnoDBDialect)
     (org.apache.lucene.store Directory FSDirectory RAMDirectory)
     (org.apache.lucene.document Document Field Field$Store Field$Index DateTools DateTools$Resolution)
     (org.apache.lucene.index IndexReader IndexWriter Term)
@@ -17,12 +15,9 @@
 (defn new-ramdir []
   (RAMDirectory.))
 
+
 (defn new-fsdir [path]
   (FSDirectory/getDirectory path))
-
-(defn new-dbdir [dataSource tableName]
-  ;(JdbcDirectory. dataSource (MySQLInnoDBDialect.) tableName))
-  (JdbcDirectory. dataSource tableName))
 
 
 (defn- create-document [name, path, content, last-modified]

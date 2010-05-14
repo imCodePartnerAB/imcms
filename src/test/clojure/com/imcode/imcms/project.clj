@@ -27,7 +27,7 @@
 
 (defonce basedir (atom (.getCanonicalFile (File. "."))))
 
-(def spring-app-context (atom nil))
+(defonce spring-app-context (atom nil))
 
 (defn basedir-path
   "Returns base dir full path."
@@ -80,6 +80,7 @@
   (let [dir (subdir dir-path)]
     (map #(throw-if-not-file (File. dir %)) filenames)))
 
+
 (defn get-file-fn
   "Creates function which returns project file."
   [file-path]
@@ -107,6 +108,7 @@
   (reset! spring-app-context
     (FileSystemXmlApplicationContext. (str "file:" (file-path "src/main/web/WEB-INF/applicationContext.xml")))))
 
+
 (defn init-imcms
   "Initializes Imcms for tests."
   []
@@ -117,12 +119,6 @@
   (Imcms/setPath (subdir "src/test/resources") (subdir "src/test/resources"))
   (Imcms/setApplicationContext @spring-app-context)
   (Imcms/setUpgradeDatabaseSchemaOnStart false))
-
-
-
-(defmacro sh [& args]
-  (let [cmd (map str args)]
-    `(shell/sh ~@cmd)))
 
 
 (defn loc
