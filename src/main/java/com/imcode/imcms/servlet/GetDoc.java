@@ -53,7 +53,7 @@ public class GetDoc extends HttpServlet {
         doGet(req, res);
     }
 
-    /** doGet() */
+
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         String documentId = req.getParameter("meta_id");
         viewDoc(documentId, req, res);

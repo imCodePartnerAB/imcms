@@ -644,7 +644,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     public UserDomainObject getUserByIpAddress(String ipAddress) {
-
         long ip;
         try {
             ip = Utility.ipStringToLong(ipAddress);

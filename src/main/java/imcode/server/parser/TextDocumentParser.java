@@ -126,7 +126,7 @@ public class TextDocumentParser {
                           stringBuffer.append( imcmsMessage ).append( matchResult.group( 0 ) );
                        }
                     }, contents ) ;
-	                  out.write(contents);
+	                out.write(contents);
                 } catch ( ServletException e ) {
                     throw new UnhandledException(e);
                 }

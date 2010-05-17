@@ -10,14 +10,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-// Experemental
-public class PublishDocumentPageFlow extends DocumentPageFlow {
+// Experimental
+public class ChangeDocDefaultVersionPageFlow extends DocumentPageFlow {
 
 	private DocumentDomainObject document;
 	
 	private UserDomainObject user;
 	
-	public PublishDocumentPageFlow(DocumentDomainObject document, DispatchCommand returnCommand,
+	public ChangeDocDefaultVersionPageFlow(DocumentDomainObject document, DispatchCommand returnCommand,
 			SaveDocumentCommand saveDocumentCommand, UserDomainObject user) {
 		super(returnCommand, saveDocumentCommand);
 		

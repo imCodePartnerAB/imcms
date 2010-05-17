@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.flow.*;
 import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -27,18 +28,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.ObjectUtils;
 
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
-import com.imcode.imcms.flow.EditDocumentPermissionsPageFlow;
-import com.imcode.imcms.flow.EditFileDocumentPageFlow;
-import com.imcode.imcms.flow.EditHtmlDocumentPageFlow;
-import com.imcode.imcms.flow.EditUrlDocumentPageFlow;
-import com.imcode.imcms.flow.PageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.GetDoc;
 
 /**
- * Handles admin buttons actions.  
+ * Handles admin panel commands.
  */
 public class AdminDoc extends HttpServlet {
 
@@ -49,8 +43,11 @@ public class AdminDoc extends HttpServlet {
         doPost( req, res );
     }
 
+
     /**
-     * 
+     * Creates a document page flow and dispatches request to that flow.
+     *
+     * If flow can not be created or an user is not allowed to edit a document adminDoc is called.
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
@@ -79,8 +76,8 @@ public class AdminDoc extends HttpServlet {
     }
 
     /** 
-     * @param document base document for a flow 
-     * @param flags conforms to a command
+     * @param document document associated with a flow.
+     * @param flags command flags.
      * @param user 
      * 
      * @return new page flow
@@ -104,11 +101,11 @@ public class AdminDoc extends HttpServlet {
                     && ImcmsConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags ) {
             pageFlow = new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), returnCommand, saveDocumentCommand, null );
         }  else if (ImcmsConstants.DISPATCH_FLAG__PUBLISH == flags ) {
-            pageFlow = new com.imcode.imcms.flow.PublishDocumentPageFlow(document, returnCommand, new DocumentMapper.MakeDocumentVersionCommand(), user );
+            pageFlow = new ChangeDocDefaultVersionPageFlow(document, returnCommand, new DocumentMapper.MakeDocumentVersionCommand(), user );
         }  else if (ImcmsConstants.DISPATCH_FLAG__SET_DEFAULT_VERSION == flags ) {
             try {
                 Integer no = Integer.parseInt(req.getParameter("no"));
-                pageFlow = new com.imcode.imcms.flow.PublishDocumentPageFlow(document, returnCommand, new DocumentMapper.SetDefaultDocumentVersionCommand(no), user );
+                pageFlow = new ChangeDocDefaultVersionPageFlow(document, returnCommand, new DocumentMapper.SetDefaultDocumentVersionCommand(no), user );
             } catch (Exception e) {
                 throw new AssertionError(e);
             }
@@ -117,8 +114,9 @@ public class AdminDoc extends HttpServlet {
         return pageFlow;
     }
 
+    
     /**
-     * Dispatches to working version view
+     * 
      */
     public static void adminDoc(int meta_id, UserDomainObject user, HttpServletRequest req,
                                 HttpServletResponse res, ServletContext servletContext) throws IOException, ServletException {
@@ -135,7 +133,6 @@ public class AdminDoc extends HttpServlet {
             history.push( meta_int );
         }
 
-        //DocumentDomainObject document = imcref.getDocumentMapper().getLatestDocumentVersionForShowing(meta_id, user);
         DocumentDomainObject document = imcref.getDocumentMapper().getDocument(meta_id);
         
         if ( null == document ) {

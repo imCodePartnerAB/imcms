@@ -85,7 +85,7 @@ public class ParserParameters implements Cloneable {
     }
     
     /**
-     * Please note there is no separate permissions for content loop editing. 
+     * There is no separate permissions for content loop editing. 
      */
     public boolean isContentLoopMode() {
         return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_CONTENT_LOOPS, TextDocumentPermissionSetDomainObject.EDIT_TEXTS );
