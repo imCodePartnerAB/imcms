@@ -18,7 +18,9 @@
 	contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
 	
-%><%@taglib prefix="vel" uri="imcmsvelocity"
+%>
+<%@ page import="imcode.server.Imcms" %>
+<%@taglib prefix="vel" uri="imcmsvelocity"
 %><%!
 
 private String colorCodeSimple(String html) {
@@ -58,7 +60,7 @@ try {
 	isSwe =	imcmsSystem.getCurrentUser().getLanguage().getIsoCode639_2().equals("swe");
 } catch (Exception e) {}
 
-I18nLanguage currentLanguage = I18nSupport.getCurrentLanguage() ;
+I18nLanguage currentLanguage = Imcms.getDocRequestHandler().getLanguage();
 
 
 //DateFormat df  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
@@ -113,7 +115,7 @@ if (action.equals("setDateSpan")) {
 } else if (session.getAttribute("EDITOR_SAVER_DATE_SPAN") != null) {
 	dateSpan = (String) session.getAttribute("EDITOR_SAVER_DATE_SPAN") ;
 } else {
-	dateSpan = " AND t.modified_datetime >= '" + dfD.format(new Date()) + "' AND t.modified_datetime <= '" + dfD.format(tomorrow) + "'" ;
+	dateSpan = " AND t.modified_dt >= '" + dfD.format(new Date()) + "' AND t.modified_dt <= '" + dfD.format(tomorrow) + "'" ;
 }
 
 String sContent  = "" ;
@@ -131,9 +133,9 @@ if (view.matches("^\\d+$") || restore.matches("^\\d+$") || save.matches("^\\d+$"
 		int languageId = currentLanguage.getId();
 		
 		connection = databaseService.getConnection() ;
-		sSql = "SELECT t.text, t.modified_datetime, t.type, u.first_name, u.last_name\n" +
-					 "FROM texts_history t INNER JOIN users u ON t.user_id = u.user_id\n" +
-					 "WHERE t.counter = ? AND language_id = ?" ;
+		sSql = "SELECT t.text, t.modified_dt, t.type, u.first_name, u.last_name\n" +
+					 "FROM imcms_text_doc_texts_history t INNER JOIN users u ON t.user_id = u.user_id\n" +
+					 "WHERE t.id = ? AND language_id = ?" ;
 		preparedStatement = connection.prepareStatement(sSql) ;
 		preparedStatement.setInt(1, (view.matches("\\d+") ? Integer.parseInt(view) : (save.matches("\\d+") ? Integer.parseInt(save) : Integer.parseInt(restore)))) ;
 		preparedStatement.setInt(2, languageId);
@@ -167,7 +169,7 @@ if (view.matches("^\\d+$") || restore.matches("^\\d+$") || save.matches("^\\d+$"
 			isSavedInTextField = true ;
 		}
 	} catch(Exception e) {
-		//out.print("ERROR: Ett fel har uppstått! " + e.getMessage()) ;
+		throw new RuntimeException(e);
 	} finally {
 		try {
 			if (null != resultSet) resultSet.close() ;
@@ -476,29 +478,29 @@ function doSave(id) {
 			<td>
 			<select name="date_span" onChange="this.form.submit()">
 				<option value=""><%= isSwe ? "Alla versioner" : "All versions" %></option>
-				<option value=" AND t.modified_datetime >= '<%= dfD.format(new Date()) %>' AND t.modified_datetime <= '<%= dfD.format(tomorrow) %>'"<%=
-				dateSpan.equals(" AND t.modified_datetime >= '" + dfD.format(new Date()) + "' AND t.modified_datetime <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
+				<option value=" AND t.modified_dt >= '<%= dfD.format(new Date()) %>' AND t.modified_dt <= '<%= dfD.format(tomorrow) %>'"<%=
+				dateSpan.equals(" AND t.modified_dt >= '" + dfD.format(new Date()) + "' AND t.modified_dt <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
 				%><%= isSwe ? "Dagens" : "Today" %></option>
-				<option value=" AND t.modified_datetime >= '<%= dfD.format(last3days) %>' AND t.modified_datetime <= '<%= dfD.format(tomorrow) %>'"<%=
-				dateSpan.equals(" AND t.modified_datetime >= '" + dfD.format(last3days) + "' AND t.modified_datetime <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
+				<option value=" AND t.modified_dt >= '<%= dfD.format(last3days) %>' AND t.modified_dt <= '<%= dfD.format(tomorrow) %>'"<%=
+				dateSpan.equals(" AND t.modified_dt >= '" + dfD.format(last3days) + "' AND t.modified_dt <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
 				%><%= isSwe ? "Senaste 3 dagarna" : "Last 3 days" %></option>
-				<option value=" AND t.modified_datetime >= '<%= dfD.format(lastWeek) %>' AND t.modified_datetime <= '<%= dfD.format(tomorrow) %>'"<%=
-				dateSpan.equals(" AND t.modified_datetime >= '" + dfD.format(lastWeek) + "' AND t.modified_datetime <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
+				<option value=" AND t.modified_dt >= '<%= dfD.format(lastWeek) %>' AND t.modified_dt <= '<%= dfD.format(tomorrow) %>'"<%=
+				dateSpan.equals(" AND t.modified_dt >= '" + dfD.format(lastWeek) + "' AND t.modified_dt <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
 				%><%= isSwe ? "Senaste veckan" : "Last week" %></option>
-				<option value=" AND t.modified_datetime >= '<%= dfD.format(last2Weeks) %>' AND t.modified_datetime <= '<%= dfD.format(tomorrow) %>'"<%=
-				dateSpan.equals(" AND t.modified_datetime >= '" + dfD.format(last2Weeks) + "' AND t.modified_datetime <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
+				<option value=" AND t.modified_dt >= '<%= dfD.format(last2Weeks) %>' AND t.modified_dt <= '<%= dfD.format(tomorrow) %>'"<%=
+				dateSpan.equals(" AND t.modified_dt >= '" + dfD.format(last2Weeks) + "' AND t.modified_dt <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
 				%><%= isSwe ? "Senaste 2 veckorna" : "Last 2 weeks" %></option>
-				<option value=" AND t.modified_datetime >= '<%= dfD.format(lastMonth) %>' AND t.modified_datetime <= '<%= dfD.format(tomorrow) %>'"<%=
-				dateSpan.equals(" AND t.modified_datetime >= '" + dfD.format(lastMonth) + "' AND t.modified_datetime <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
+				<option value=" AND t.modified_dt >= '<%= dfD.format(lastMonth) %>' AND t.modified_dt <= '<%= dfD.format(tomorrow) %>'"<%=
+				dateSpan.equals(" AND t.modified_dt >= '" + dfD.format(lastMonth) + "' AND t.modified_dt <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
 				%><%= isSwe ? "Senaste månaden" : "Last month" %></option>
-				<option value=" AND t.modified_datetime >= '<%= dfD.format(last3Months) %>' AND t.modified_datetime <= '<%= dfD.format(tomorrow) %>'"<%=
-				dateSpan.equals(" AND t.modified_datetime >= '" + dfD.format(last3Months) + "' AND t.modified_datetime <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
+				<option value=" AND t.modified_dt >= '<%= dfD.format(last3Months) %>' AND t.modified_dt <= '<%= dfD.format(tomorrow) %>'"<%=
+				dateSpan.equals(" AND t.modified_dt >= '" + dfD.format(last3Months) + "' AND t.modified_dt <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
 				%><%= isSwe ? "Senaste 3 månaderna" : "Last 3 months" %></option>
-				<option value=" AND t.modified_datetime >= '<%= dfD.format(last6Months) %>' AND t.modified_datetime <= '<%= dfD.format(tomorrow) %>'"<%=
-				dateSpan.equals(" AND t.modified_datetime >= '" + dfD.format(last6Months) + "' AND t.modified_datetime <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
+				<option value=" AND t.modified_dt >= '<%= dfD.format(last6Months) %>' AND t.modified_dt <= '<%= dfD.format(tomorrow) %>'"<%=
+				dateSpan.equals(" AND t.modified_dt >= '" + dfD.format(last6Months) + "' AND t.modified_dt <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
 				%><%= isSwe ? "Senaste 6 månaderna" : "Last 6 months" %></option>
-				<option value=" AND t.modified_datetime >= '<%= dfD.format(lastYear) %>' AND t.modified_datetime <= '<%= dfD.format(tomorrow) %>'"<%=
-				dateSpan.equals(" AND t.modified_datetime >= '" + dfD.format(lastYear) + "' AND t.modified_datetime <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
+				<option value=" AND t.modified_dt >= '<%= dfD.format(lastYear) %>' AND t.modified_dt <= '<%= dfD.format(tomorrow) %>'"<%=
+				dateSpan.equals(" AND t.modified_dt >= '" + dfD.format(lastYear) + "' AND t.modified_dt <= '" + dfD.format(tomorrow) + "'") ? " selected" : "" %>><%
 				%><%= isSwe ? "Senaste året" : "Last year" %></option>
 			</select></td>
 		</tr>
@@ -523,13 +525,13 @@ function doSave(id) {
 
 
 try {
-	int languageId = I18nSupport.getCurrentLanguage().getId();
+	int languageId = currentLanguage.getId();
 	
 	connection = databaseService.getConnection() ;
-	sSql = "SELECT t.counter, t.modified_datetime, t.type, u.first_name, u.last_name, u.login_name\n" +
-				 "FROM texts_history t INNER JOIN users u ON t.user_id = u.user_id\n" +
-				 "WHERE t.meta_id = ? AND t.name = ? AND t.language_id = ?" + dateSpan + "\n" +
-				 "ORDER BY t.counter DESC" ;
+	sSql = "SELECT t.id, t.modified_dt, t.type, u.first_name, u.last_name, u.login_name\n" +
+				 "FROM imcms_text_doc_texts_history t INNER JOIN users u ON t.user_id = u.user_id\n" +
+				 "WHERE t.doc_id = ? AND t.no = ? AND t.language_id = ?" + dateSpan + "\n" +
+				 "ORDER BY t.id DESC" ;
 	preparedStatement = connection.prepareStatement(sSql) ;
 	preparedStatement.setInt(1, meta_id) ;
 	preparedStatement.setInt(2, txtNo) ;
@@ -603,7 +605,7 @@ try {
 	<iframe name="restoreIframe" id="restoreIframe" width="100%" height="600" frameborder="0" marginwidth="0" marginheight="0" style="height:600px;" src="text_restorer.jsp?blank=true"></iframe></td>
 </tr><%
 } catch(Exception e) {
-	//out.print("ERROR: Ett fel har uppstått! " + e.getMessage()) ;
+	throw new RuntimeException(e);
 } finally {
 	try {
 		if (null != resultSet) resultSet.close() ;

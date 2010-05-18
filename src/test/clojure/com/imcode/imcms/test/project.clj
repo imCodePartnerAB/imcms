@@ -17,7 +17,7 @@
     clojure.contrib.duck-streams
     clojure.contrib.def
     [clojure.contrib.except :only [throw-if throw-if-not]]
-    [com.imcode.cljlib.file :as file-lib :only [throw-if-not-dir throw-if-not-file]])
+    [com.imcode.cljlib.fs :as fs-lib :only [throw-if-not-dir throw-if-not-file]])
 
 
   (:import
@@ -91,9 +91,9 @@
 (def
   #^{:doc "Function for loading project's build properties from the build.properties file."}
   
-  build-properties (file-lib/create-file-watcher
+  build-properties (fs-lib/create-file-watcher
                      (get-file-fn "build.properties")
-                     (comp misc-lib/to-keyword-key-map file-lib/load-properties)))
+                     (comp misc-lib/to-keyword-key-map fs-lib/load-properties)))
 
 
 (defn deploy-maven-jar
@@ -128,5 +128,5 @@
     (loc "."))
 
   ([#^String dir]
-    (file-lib/loc
-      (file-lib/files dir #"\.(java|jsp|htm|html|xml|properties|sql|clj)$"))))
+    (fs-lib/loc
+      (fs-lib/files dir #"\.(java|jsp|htm|html|xml|properties|sql|clj)$"))))

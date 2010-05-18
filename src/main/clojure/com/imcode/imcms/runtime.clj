@@ -7,12 +7,22 @@
     (imcode.server.user UserDomainObject))
     
   (:use
-    [com.imcode.cljlib.misc :only [dump]]))
+    (com.imcode.cljlib
+      [misc :only (dump)]
+      [db :as db-lib])))
 
 (defmacro invoke
   "Invokes Imcms class static method."
   [method & args]
   `(. Imcms ~method ~@args))
+
+(defn db-datasource
+  "Returns datasource."
+  [])
+
+(defn db-datasource
+  "Returns spec."
+  [])
 
 (defn start []
   (invoke start))

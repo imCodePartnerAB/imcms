@@ -13,7 +13,7 @@
       [db :as db])    
 
     (com.imcode.cljlib
-      [file-utils :as file-utils])
+      [fs :as fs-lib])
 
     (clojure.contrib [sql :as sql])))
 
@@ -25,8 +25,8 @@
 (defn xsd-conf-file-path [] (.getCanonicalPath (xsd-conf-file)))
 
 
-(def slurp-xml-conf (file-utils/create-file-watcher xml-conf-file slurp*))
-(def slurp-xsd-conf (file-utils/create-file-watcher xsd-conf-file slurp*))
+(def slurp-xml-conf (fs-lib/create-file-watcher xml-conf-file slurp*))
+(def slurp-xsd-conf (fs-lib/create-file-watcher xsd-conf-file slurp*))
 
 
 (deftest test-settings

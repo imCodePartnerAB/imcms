@@ -50,6 +50,7 @@ public class TextHistory {
     public TextHistory() {}
     
     public TextHistory(TextDomainObject textDO, UserDomainObject user) {
+        setType(textDO.getType());
     	setDocId(textDO.getDocId());
         setDocVersionNo(textDO.getDocVersionNo());
     	setNo(textDO.getNo());
