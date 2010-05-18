@@ -85,6 +85,10 @@ public class ImageEditPage extends OkCancelPage {
         this.imageCommand = imageCommand;
         this.heading = heading ;
         this.linkable = linkable ;
+
+        for (ImageDomainObject i: images) {
+            i.setNo(image.getNo());
+        }
     }
 
     public ImageDomainObject getImage() {
@@ -169,6 +173,7 @@ public class ImageEditPage extends OkCancelPage {
         		imageSource = ImcmsImageUtils.createImageSourceFromString(imageUrl);
         	}                        
 
+            i18nImage.setNo(this.image.getNo());
             i18nImage.setImageUrl(imageUrl);
             i18nImage.setType(imageSource.getTypeId());
             i18nImage.setAlternateText(alternateText);
@@ -187,6 +192,8 @@ public class ImageEditPage extends OkCancelPage {
                 i18nImage.setLinkUrl(image.getLinkUrl());
             }
         }
+
+        image.setNo(this.image.getNo());
         
         return image;
     }

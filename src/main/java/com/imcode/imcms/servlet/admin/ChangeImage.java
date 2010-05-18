@@ -60,6 +60,8 @@ public class ChangeImage extends HttpServlet {
         	? defaultImage
         	: new ImageDomainObject();
 
+        image.setNo(imageIndex);
+
         // Check if user has image rights
         if ( !ImageEditPage.userHasImagePermissionsOnDocument(user, document) ) {
             Utility.redirectToStartDocument(request, response);

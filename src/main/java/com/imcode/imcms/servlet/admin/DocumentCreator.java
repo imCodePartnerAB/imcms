@@ -30,7 +30,7 @@ import com.imcode.imcms.flow.PageFlow;
 import com.imcode.imcms.mapping.DocumentMapper;
 
 /**
- * New documents page flow factory.
+ * New document page flow factory.
  *
  * @see com.imcode.imcms.servlet.admin.MenuEditPage
  * @see com.imcode.imcms.servlet.superadmin.AdminManager
