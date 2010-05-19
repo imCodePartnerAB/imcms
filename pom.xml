@@ -59,12 +59,12 @@
   </profiles>
 
   <dependencies>
-    <dependency>
-      <groupId>com.sun.grizzly</groupId>
-      <artifactId>grizzly-servlet-webserver</artifactId>
-      <version>1.9.8</version>
-      <scope>test</scope>
-    </dependency>      
+    <!--<dependency>-->
+      <!--<groupId>com.sun.grizzly</groupId>-->
+      <!--<artifactId>grizzly-servlet-webserver</artifactId>-->
+      <!--<version>1.9.8</version>-->
+      <!--<scope>test</scope>-->
+    <!--</dependency>      -->
 
     <dependency>
       <groupId>junit</groupId>
@@ -545,13 +545,6 @@
       <groupId>javax.servlet.jsp</groupId>
       <artifactId>jsp-api</artifactId>
       <version>2.0</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.4</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

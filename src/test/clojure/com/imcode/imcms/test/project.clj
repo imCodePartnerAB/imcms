@@ -117,7 +117,7 @@
     (init-spring-app-context))
 
   (init-spring-app-context)
-  (Imcms/setPath (subdir "src/test/resources") (subdir "src/test/resources"))
+  (Imcms/setPath (subdir "src/main/webapp"))
   (Imcms/setApplicationContext @spring-app-context)
   (Imcms/setUpgradeDatabaseSchemaOnStart false))
 

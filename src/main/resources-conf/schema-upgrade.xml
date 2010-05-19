@@ -2,53 +2,10 @@
     xsi:noNamespaceSchemaLocation="schema-upgrade.xsd"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-  <!--<diff version="5.0">-->
-    <!--<vendor name="mysql">-->
-      <!--<script location="imcms_5.0_schema.sql"/>-->
-      <!--<script location="imcms_5.0_data.sql"/>-->
-    <!--</vendor>-->
-  <!--</diff>-->
-
-  <!--<diff version="5.1">-->
-    <!--<vendor name="mysql">-->
-      <!--<script location="diff/mysql-schema-diff-5.0-5.1.sql"/>-->
-    <!--</vendor>-->
-  <!--</diff>-->
-
-  <!--<diff version="5.2">-->
-    <!--<vendor name="mysql">-->
-      <!--<script location="diff/mysql-schema-diff-5.1-5.2.sql"/>-->
-    <!--</vendor>-->
-  <!--</diff>-->
-
-  <!--<diff version="5.3">-->
-    <!--<vendor name="mysql">-->
-      <!--<script location="diff/mysql-schema-diff-5.2-5.3.sql"/>-->
-    <!--</vendor>-->
-  <!--</diff>-->
-
-  <!--<diff version="6.0">-->
-    <!--<vendor name="mysql">-->
-      <!--<script location="diff/mysql-schema-diff-5.3-6.0.sql"/>-->
-    <!--</vendor>-->
-  <!--</diff>-->
-
-  <!--<diff version="6.1">-->
-    <!--<vendor name="mysql">-->
-      <!--<script location="diff/mysql-schema-diff-6.0-6.1.sql"/>-->
-    <!--</vendor>-->
-  <!--</diff>-->
-
-  <!--<diff version="6.2">-->
-    <!--<vendor name="mysql">-->
-      <!--<script location="diff/mysql-schema-diff-6.1-6.2.sql"/>-->
-    <!--</vendor>-->
-  <!--</diff>-->
-
-  <diff version="6.2">
+  <diff from="4.11" to="6.2">
     <vendor name="mysql">
-      <script location="imcms_rb4.sql"/>
       <script location="diff/mysql-schema-diff-4.11-6.2.sql"/>  
     </vendor>
   </diff>
+    
 </schema-upgrade>

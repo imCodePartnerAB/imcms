@@ -102,7 +102,7 @@
 
 
 (defn run-scripts
-  [scripts]
+  [& scripts]
   (db-lib/run-scripts (create-spec) scripts))
 
 

@@ -1,6 +1,6 @@
 (ns
   #^{:doc "Provides functions for accessing imCMS at runtime.
-           imcode.server.Imcms singleton should be initialized."}
+           The imcode.server.Imcms singleton should be initialized."}
   
   com.imcode.imcms.runtime  
   (:import
@@ -53,7 +53,11 @@
 
 
 (defn path []
-  (invoke get-path))
+  (invoke getPath))
+
+
+(defn home []
+  (.getCanonicalPath (path))) 
 
 
 (defn services []
@@ -183,20 +187,13 @@
 
 
 
-(defn db-datasource []
+(defn db-ds []
   (spring-lib/get-bean (spring-context) "dataSource"))
 
 
 (defn db-spec []
-  (db-lib/create-speck (db-datasource)))
+  (db-lib/create-spec (db-ds)))
 
 
-(defn upgrade-db []
-  (reload-settings)
-  (let [spec (db-spec)
-        home (.getCanonicalPath (path))
-        sql-scripts-home (fs-lib/compose-path home settings/sql-scripts-dir-path)
-        current-version (db/get-version spec)
-        diffs (db/required-diffs settings/db-diffs current-version)]
-
-    (db/upgrade spec sql-scripts-home diffs)))
+(defn prepare-db []
+  (db/prepare (home) (db-spec)))
