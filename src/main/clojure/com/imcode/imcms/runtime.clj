@@ -1,28 +1,37 @@
 (ns
-  #^{:doc "Provides functions for accessing app at runtime."}
+  #^{:doc "Provides functions for accessing imCMS at runtime.
+           imcode.server.Imcms singleton should be initialized."}
+  
   com.imcode.imcms.runtime  
   (:import
     (imcode.server Imcms)
     (imcode.server.document DocumentDomainObject)
     (imcode.server.user UserDomainObject))
+
+  (:require
+    settings
+    [com.imcode.imcms.db :as db])  
     
   (:use
     (com.imcode.cljlib
       [misc :only (dump)]
-      [db :as db-lib])))
+      [db :as db-lib]
+      [fs :as fs-lib]
+      [spring :as spring-lib])))
+
+
+(defn reload-settings []
+  (require 'settings :reload))
+
 
 (defmacro invoke
   "Invokes Imcms class static method."
   [method & args]
   `(. Imcms ~method ~@args))
 
-(defn db-datasource
-  "Returns datasource."
-  [])
 
-(defn db-datasource
-  "Returns spec."
-  [])
+(defn spring-context []
+  (invoke getApplicationContext))
 
 (defn start []
   (invoke start))
@@ -41,6 +50,11 @@
 
 (defn set-maintenance-mode []
   (invoke setMaintenanceMode))
+
+
+(defn path []
+  (invoke get-path))
+
 
 (defn services []
   (invoke getServices))
@@ -166,3 +180,23 @@
 
 (defn users-info []
   (for [u (users)] {:id (.getId u), :name (.getLoginName u), :password (.getPassword u)}))
+
+
+
+(defn db-datasource []
+  (spring-lib/get-bean (spring-context) "dataSource"))
+
+
+(defn db-spec []
+  (db-lib/create-speck (db-datasource)))
+
+
+(defn upgrade-db []
+  (reload-settings)
+  (let [spec (db-spec)
+        home (.getCanonicalPath (path))
+        sql-scripts-home (fs-lib/compose-path home settings/sql-scripts-dir-path)
+        current-version (db/get-version spec)
+        diffs (db/required-diffs settings/db-diffs current-version)]
+
+    (db/upgrade spec sql-scripts-home diffs)))

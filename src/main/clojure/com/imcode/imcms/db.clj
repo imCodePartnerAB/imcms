@@ -11,9 +11,7 @@
 
   (:use
     (clojure.contrib
-      [except :only (throw-if)]
-      [seq-utils :only (includes?)]
-      [str-utils :only (str-join)])))
+      [except :only (throw-if)])))
 
 
 (defn tables
@@ -29,7 +27,7 @@
 
 
 (defn get-version-rec
-  "Retrns current db version as record {:major x, :minor y} or {:major 0, :minor 0} if database is new."
+  "Retrns current db version as a record {:major x, :minor y} or {:major 0, :minor 0} if database is new."
   [spec]
   (if (new? spec)
     {:major 0, :minor 0}
@@ -63,6 +61,31 @@
     (sql/update-or-insert-values
       "database_version" ["major IS NOT NULL"]
       (double-to-version-rec version))))
+
+
+(defn required-diffs
+  "Selects diffs from settings db-diffs map.
+   Returns db-diffs map sorted by version conatining entries which version is greater than current version."
+  [diffs current-version]
+  (into (sorted-map)
+    (remove
+      (fn exclude? [[version, _]] (< version current-version)
+      diffs))))
+
+
+(defn upgrade
+  "Upgrades database.
+   sql-scripts-home - SQL script dir absolute path.
+   diffs - db-diffs map."
+  [spec sql-scripts-home diffs]
+  (sql/with-connection spec
+    (sql/transaction
+      (let [connection (sql/connection)]
+        (doseq [[version scripts-names] (sort diffs),
+                 script-path (map #(fs-lib/compose-path sql-scripts-home %) scripts-names)]
+          (do
+            (db-lib/run-script connection script-path)
+            (db/set-version version)))))))
 
 
 
