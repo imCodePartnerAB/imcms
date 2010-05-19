@@ -6,6 +6,11 @@
     [clojure.contrib.def :only (defvar)]))    
 
 
+(defvar db-version 6.2
+
+  "Required database version.")
+
+
 (defvar db-scripts-dir "WEB-INF/sql"
 
   "SQL scripts directory path relative to application path.")
@@ -27,17 +32,7 @@
     {:from 4.11
      :to 6.2
      :scripts ["diff/mysql-schema-diff-4.11-6.2.sql"]
-    }
-
-    {:from 6.2
-     :to 7.11
-     :scripts []
-    }
-
-    {:from 7.11
-     :to 8.12
-     :scripts []
-    }    
+    }   
   }
 
   "Database diffs - a set of diffs.

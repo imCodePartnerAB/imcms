@@ -119,7 +119,7 @@
   (init-spring-app-context)
   (Imcms/setPath (subdir "src/main/webapp"))
   (Imcms/setApplicationContext @spring-app-context)
-  (Imcms/setUpgradeDatabaseSchemaOnStart false))
+  (Imcms/setPrepareDatabaseSchemaOnStart false))
 
 
 (defn loc

@@ -23,8 +23,11 @@
 
 (defn tables
   "Returns all db tables."
-  [spec]
-  (sql/with-connection spec
+  ([spec]
+    (sql/with-connection spec
+      (tables)))
+
+  ([]
     (sql/with-query-results rs ["SHOW TABLES"]
       (mapcat vals (doall rs)))))
 
@@ -44,8 +47,7 @@
   "Retrns db version."
   ([spec]
     (sql/with-connection spec
-      (sql/transaction
-        (get-version))))
+      (get-version))))
 
   ([]
     (sql/with-query-results rs ["SELECT major, minor FROM database_version"]
@@ -92,7 +94,7 @@
   (let [scripts-home (fs-lib/compose-path app-home settings/db-scripts-dir)]
     (sql/with-connection spec
       (sql/transaction
-        (when (empty? (tables spec))
+        (when (empty? (tables))
           (log/info "The database is empty and need to be initialized.")
           (let [scripts-paths (fs-lib/extend-paths scripts-home (:scripts settings/db-init))]
             (log/info (format "The following init scripts will be executed: %s" (print-str scripts-paths)))

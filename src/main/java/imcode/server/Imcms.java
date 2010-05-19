@@ -66,7 +66,7 @@ public class Imcms {
     /**
      * Used to disable schema upgrade on start-up.
      */
-    private static boolean upgradeDatabaseSchemaOnStart = true;
+    private static boolean prepareDatabaseSchemaOnStart = true;
 
     private static ImcmsMode mode = ImcmsMode.MAINTENANCE;
     private static List<ImcmsListener> listeners = new LinkedList<ImcmsListener>();
@@ -111,7 +111,7 @@ public class Imcms {
         try {
             docRequestHandlers = new ThreadLocal<DocRequestHandler>();
 
-            if (upgradeDatabaseSchemaOnStart) {
+            if (prepareDatabaseSchemaOnStart) {
                 upgradeDatabaseSchema();
             }
             
@@ -455,11 +455,11 @@ public class Imcms {
         listeners.add(listener);
     }
 
-    public static boolean isUpgradeDatabaseSchemaOnStart() {
-        return upgradeDatabaseSchemaOnStart;
+    public static boolean isPrepareDatabaseSchemaOnStart() {
+        return prepareDatabaseSchemaOnStart;
     }
 
-    public static void setUpgradeDatabaseSchemaOnStart(boolean upgradeDatabaseSchemaOnStart) {
-        Imcms.upgradeDatabaseSchemaOnStart = upgradeDatabaseSchemaOnStart;
+    public static void setPrepareDatabaseSchemaOnStart(boolean prepareDatabaseSchemaOnStart) {
+        Imcms.prepareDatabaseSchemaOnStart = prepareDatabaseSchemaOnStart;
     }
 }
