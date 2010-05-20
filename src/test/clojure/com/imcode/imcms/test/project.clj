@@ -9,15 +9,16 @@
       [shell-out :as shell])
 
     (com.imcode.cljlib
-      [misc :as misc-lib]))
+      [misc :as misc-lib]
+      [fs :as fs-lib]))
   
   (:use
     clojure.contrib.test-is
     clojure.contrib.repl-utils
     clojure.contrib.duck-streams
     clojure.contrib.def
-    [clojure.contrib.except :only [throw-if throw-if-not]]
-    [com.imcode.cljlib.fs :as fs-lib :only [throw-if-not-dir throw-if-not-file]])
+    [com.imcode.cljlib.fs :only (throw-if-not-dir throw-if-not-file)]
+    [clojure.contrib.except :only (throw-if throw-if-not)])
 
 
   (:import
@@ -119,7 +120,7 @@
   (init-spring-app-context)
   (Imcms/setPath (subdir "src/main/webapp"))
   (Imcms/setApplicationContext @spring-app-context)
-  (Imcms/setPrepareDatabaseSchemaOnStart false))
+  (Imcms/setPrepareDatabaseOnStart false))
 
 
 (defn loc

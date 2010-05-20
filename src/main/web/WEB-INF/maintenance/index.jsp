@@ -2,7 +2,7 @@
 <%@ page import="imcode.server.Imcms" %>
 <%@ page import="org.aspectj.util.FileUtil" %>
 <%@ page import="java.io.PrintWriter" %>
-<%@ page import="com.imcode.imcms.admin.backdoor.ClojureUtils" %>
+<%@ page import="com.imcode.imcms.util.clojure.ClojureUtils" %>
 
 <%!
     String node(File node) {

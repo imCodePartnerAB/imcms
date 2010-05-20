@@ -3,6 +3,7 @@ package imcode.server;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.api.DocRequestHandler;
 import com.imcode.imcms.dao.SystemDao;
+import com.imcode.imcms.util.clojure.ClojureUtils;
 import imcode.util.CachingFileLoader;
 import imcode.util.Prefs;
 
@@ -31,7 +32,6 @@ import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
-import com.imcode.imcms.schema.SchemaUpgrade;
 import com.imcode.imcms.dao.LanguageDao;
 import com.imcode.imcms.servlet.ImcmsMode;
 import com.imcode.imcms.servlet.ImcmsListener;
@@ -64,9 +64,9 @@ public class Imcms {
     private static BasicDataSource dataSource;
 
     /**
-     * Used to disable schema upgrade on start-up.
+     * Used to disable db init/upgrade on start-up.
      */
-    private static boolean prepareDatabaseSchemaOnStart = true;
+    private static boolean prepareDatabaseOnStart = true;
 
     private static ImcmsMode mode = ImcmsMode.MAINTENANCE;
     private static List<ImcmsListener> listeners = new LinkedList<ImcmsListener>();
@@ -111,8 +111,8 @@ public class Imcms {
         try {
             docRequestHandlers = new ThreadLocal<DocRequestHandler>();
 
-            if (prepareDatabaseSchemaOnStart) {
-                upgradeDatabaseSchema();
+            if (prepareDatabaseOnStart) {
+                prepareDatabase();
             }
             
             initI18nSupport();
@@ -410,25 +410,26 @@ public class Imcms {
 
 
     /**
-     * Upgrades database schema if necessary.
+     * Init/upgrades database if necessary.
      */
-    private static void upgradeDatabaseSchema() {
-        File confXmlFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xml");
-        File confXsdFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xsd");
-        File scriptsDir = new File(Imcms.getPath(), "WEB-INF/sql");
-
-        final SchemaUpgrade schemaUpgrade = SchemaUpgrade.createInstance(confXmlFile, confXsdFile, scriptsDir);
-
-        // todo: replace with datasource get connection.
-        HibernateTemplate template = (HibernateTemplate)Imcms.getSpringBean("hibernateTemplate");
-
-        template.execute(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                schemaUpgrade.upgrade(session.connection());
-
-                return null;
-            }
-        });
+    private static void prepareDatabase() {
+//        File confXmlFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xml");
+//        File confXsdFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xsd");
+//        File scriptsDir = new File(Imcms.getPath(), "WEB-INF/sql");
+//
+//        final SchemaUpgrade schemaUpgrade = SchemaUpgrade.createInstance(confXmlFile, confXsdFile, scriptsDir);
+//
+//        // todo: replace with datasource get connection.
+//        HibernateTemplate template = (HibernateTemplate)Imcms.getSpringBean("hibernateTemplate");
+//
+//        template.execute(new HibernateCallback() {
+//            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+//                schemaUpgrade.upgrade(session.connection());
+//
+//                return null;
+//            }
+//        });
+        ClojureUtils.prepareDB();
     }
 
     public static ApplicationContext getApplicationContext() {
@@ -455,11 +456,11 @@ public class Imcms {
         listeners.add(listener);
     }
 
-    public static boolean isPrepareDatabaseSchemaOnStart() {
-        return prepareDatabaseSchemaOnStart;
+    public static boolean isPrepareDatabaseOnStart() {
+        return prepareDatabaseOnStart;
     }
 
-    public static void setPrepareDatabaseSchemaOnStart(boolean prepareDatabaseSchemaOnStart) {
-        Imcms.prepareDatabaseSchemaOnStart = prepareDatabaseSchemaOnStart;
+    public static void setPrepareDatabaseOnStart(boolean prepareDatabaseOnStart) {
+        Imcms.prepareDatabaseOnStart = prepareDatabaseOnStart;
     }
 }

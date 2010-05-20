@@ -3,8 +3,6 @@
   com.imcode.imcms.db
 
   (:require
-    settings
-    
     (com.imcode.cljlib
       [fs :as fs-lib]
       [db :as db-lib])
@@ -18,7 +16,7 @@
     [clojure.set :only (select)]
     
     (clojure.contrib
-      [except :only (throw-if)])))
+      [except :only (throw-if throwf)])))
 
 
 (defn tables
@@ -47,7 +45,7 @@
   "Retrns db version."
   ([spec]
     (sql/with-connection spec
-      (get-version))))
+      (get-version)))
 
   ([]
     (sql/with-query-results rs ["SELECT major, minor FROM database_version"]
@@ -55,7 +53,7 @@
         (do
           (let [error-msg "Unable to get database version. Table database_version is empty."]
             (log/error error-msg)
-            (throw error-msg)))
+            (throwf error-msg)))
 
         (version-rec-to-double (first rs))))))
 
@@ -73,42 +71,48 @@
 
 
 (defn required-diff
-  [diffs from]
-  (when-first [diff (select #(= from (:from %)) diffs)]
+  [db-conf-diffs from]
+  (when-first [diff (select #(= from (:from %)) db-conf-diffs)]
     diff))
 
 
 (defn required-diffs
   "Returns diffs seq or nil."
-  [diffs current-version]
-  (loop [from current-version, diffs2 []]
-    (if-let [diff (required-diff diffs from)]
-      (recur (:to diff) (conj diffs2 diff))
-      (seq diffs2))))
+  [db-conf-diffs current-version]
+  (loop [from current-version, diffs []]
+    (if-let [diff (required-diff db-conf-diffs from)]
+      (recur (:to diff) (conj diffs diff))
+      (seq diffs))))
 
 
 (defn prepare
-  "Prepares database - initializes and/or updates db if necessary."
-  [app-home spec]
-  (log/info (format "Preparing the databse. app-home: %s" app-home))
-  (let [scripts-home (fs-lib/compose-path app-home settings/db-scripts-dir)]
+  "Prepares database - initializes and/or updates db if necessary.
+   app-home - application home.
+   conf - configuration map defined in 'conf.clj' file.
+   spec - db spec."
+  [app-home conf spec]
+  (log/info (format "Preparing the databse. app-home: %s, conf: %s." app-home, conf))
+  (let [db-conf (:db conf)
+        db-conf-scripts-dir (:scripts-dir db-conf)
+        db-conf-init (:init db-conf)
+        db-conf-diffs (:diffs db-conf)
+        
+        scripts-home (fs-lib/compose-path app-home db-conf-scripts-dir)]
+    
     (sql/with-connection spec
       (sql/transaction
         (when (empty? (tables))
           (log/info "The database is empty and need to be initialized.")
-          (let [scripts-paths (fs-lib/extend-paths scripts-home (:scripts settings/db-init))]
+          (let [scripts-paths (fs-lib/extend-paths scripts-home (:scripts db-conf-init))]
             (log/info (format "The following init scripts will be executed: %s" (print-str scripts-paths)))
             (doseq [script-path scripts-paths]
               (db-lib/run-script (sql/connection) script-path))
 
-            (set-version (:version settings/db-init)))
+            (set-version (:version db-conf-init)))
 
           (log/info (format "The database is initialized. Database version is %s." (get-version))))
 
-        (when-let [diffs (required-diffs
-                           settings/db-diffs
-                           (get-version))]
-
+        (when-let [diffs (required-diffs db-conf-diffs (get-version))]
           (log/info (format "The database need to be updated. The following diffs will be applied: %s" diffs))
           (doseq [{:keys [to, scripts]} diffs]
             (do

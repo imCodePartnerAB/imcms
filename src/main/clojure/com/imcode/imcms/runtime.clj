@@ -9,19 +9,22 @@
     (imcode.server.user UserDomainObject))
 
   (:require
-    settings
-    [com.imcode.imcms.db :as db])  
+    [com.imcode.imcms.db :as db]
+
+    (com.imcode.cljlib
+      [db :as db-lib]
+      [fs :as fs-lib]
+      [spring :as spring-lib])
+
+    (clojure.contrib
+      [logging :as log]))  
     
   (:use
     (com.imcode.cljlib
-      [misc :only (dump)]
-      [db :as db-lib]
-      [fs :as fs-lib]
-      [spring :as spring-lib])))
+      [misc :only (dump)])
 
-
-(defn reload-settings []
-  (require 'settings :reload))
+    (clojure.contrib
+      [except :only (throw-if throw-if-not throwf)])))
 
 
 (defmacro invoke
@@ -82,7 +85,7 @@
 (defn find-lang-by-code [#^String code]
   (if-let [lang (.getByCode (i18n-support) code)]
     lang
-    (throw (Exception. (format "Language with code [%s] can not be found." code)))))
+    (throwf "Language with code [%s] can not be found." code)))
 
 (defmulti  to-lang class)
 
@@ -166,15 +169,42 @@
     (.verifyUser (services) login password)))
 
 
-(defn conf
-  "Returns configuration read from server.properties as a map sorted by property name."
+(defn server-properties
+  "Returns server.properties content as a map sorted by property name."
   []
   (into (sorted-map) (Imcms/getServerProperties)))
 
 
-(defn print-conf []
-  (dump (conf)))
+(defn print-server-properties []
+  (dump (server-properties)))
 
+
+(defn conf-file
+  "Returns conf file.
+   Throws an exception if conf file can not be found."
+  []
+  (log/debug "Looking for configuration file conf.clj in the classpath.")
+  (if-let [conf-file-url (ClassLoader/getSystemResource "conf.clj")]
+    (java.io.File. (.getPath conf-file-url))
+
+    (let [conf-file-home (str (home) "/WEB-INF/classes")
+          conf-file (java.io.File. conf-file-home "conf.clj")]
+
+      (log/debug "Looking for configuration file conf.clj in %s." conf-file-home)
+      (if (.isFile conf-file)
+        conf-file
+        (let [msg "Configuration file conf.clj can not be found."]
+          (log/error msg)
+          (throwf msg))))))
+
+
+(defn conf
+  "Reads and returns conf map from the conf.clj file.
+   Throws an exception if conf file can not be found."
+  []
+  (let [path (.getCanonicalPath (conf-file))]
+    (read-string (slurp path))))
+  
 
 (defn roles []
   (.getAllRoles (auth-mapper)))
@@ -196,4 +226,4 @@
 
 
 (defn prepare-db []
-  (db/prepare (home) (db-spec)))
+  (db/prepare (home) (conf) (db-spec)))

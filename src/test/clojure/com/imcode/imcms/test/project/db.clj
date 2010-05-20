@@ -2,9 +2,6 @@
   #^{:doc "Project's databse fns."}
   com.imcode.imcms.test.project.db
 
-  (:use
-    (clojure.contrib duck-streams test-is))
-
   (:require
     (clojure.contrib
       [sql :as sql])
@@ -17,6 +14,11 @@
 
     (clojure.contrib
       [sql :as sql]))
+
+  
+  (:use
+    (clojure.contrib duck-streams test-is))
+
 
   (:import
     org.hibernate.SessionFactory
