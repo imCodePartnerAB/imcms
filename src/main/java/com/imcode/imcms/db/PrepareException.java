@@ -1,23 +1,23 @@
-package com.imcode.imcms.servlet;
+package com.imcode.imcms.db;
 
 /**
  * 
  */
-public class ImcmsException extends RuntimeException {
+public class PrepareException extends RuntimeException {
     
-    public ImcmsException() {
+    public PrepareException() {
         super();    //To change body of overridden methods use File | Settings | File Templates.
     }
 
-    public ImcmsException(String message) {
+    public PrepareException(String message) {
         super(message);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
-    public ImcmsException(String message, Throwable cause) {
+    public PrepareException(String message, Throwable cause) {
         super(message, cause);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
-    public ImcmsException(Throwable cause) {
+    public PrepareException(Throwable cause) {
         super(cause);    //To change body of overridden methods use File | Settings | File Templates.
     }
 }

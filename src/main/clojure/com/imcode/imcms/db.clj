@@ -18,19 +18,22 @@
       [set :only (select)])
     
     (clojure.contrib
-      [except :only (throw-if throwf)])))
+      [except :only (throw-if throwf)]))
 
-;;;
-;;; Pure fns
-;;;
+  (:import
+    com.imcode.imcms.db.PrepareException))
 
-(defn version-rec-to-double
+;;;;
+;;;; Pure fns
+;;;;
+
+(defn- version-rec-to-double
   "Creates a double from database_version table row."
   [{:keys [major minor]}]
   (Double/valueOf (format "%s.%s" major minor)))
 
 
-(defn double-to-version-rec
+(defn- double-to-version-rec
   "Creates a record intended to insert/update row in database_version table."
   [version]
   (let [[major minor] (su/re-split #"\." (str version))]
@@ -42,39 +45,40 @@
 
 (defn required-diff
   "Returns a diff required to update db or nil if no corresponding diff exists.
-   db-conf-diffs - a set of diffs; see conf.clj and tests to learn more about diffs definition.
+   diffs-set - a set of diffs; see conf.clj and tests to learn more about diffs set definition.
    current-version - current db version as double."
-  [db-conf-diffs current-version]
-  (when-first [diff (select #(= current-version (:from %)) db-conf-diffs)]
+  [diffs-set current-version]
+  (when-first [diff (select #(= current-version (:from %)) diffs-set)]
     diff))
 
 
 (defn required-diffs
   "Returns a seq of diffs beginning from a current version or nil.
-   db-conf-diffs - a set of diffs; see conf.clj and tests to learn more about diffs definition.
+   diffs-set - a set of diffs; see conf.clj and tests to learn more about diffs set definition.
    current-version - current db version as double."  
-  [db-conf-diffs current-version]
-  (loop [from current-version, diffs []]
-    (if-let [diff (required-diff db-conf-diffs from)]
-      (let [new-current-version (:to diff)
+  [diffs-set current-version]
+  (loop [version current-version, diffs []]
+    (if-let [diff (required-diff diffs-set version)]
+      (let [new-version (:to diff)
             collected-diffs (conj diffs diff)]
-        (recur new-current-version collected-diffs))
+        (recur new-version collected-diffs))
       (seq diffs))))
 
 
-;;;
-;;; Fns with side-effect
-;;;
+;;;;
+;;;; Fns with side-effect
+;;;;
 
-(defn tables
-  "Returns all db tables."
+(defn empty-db?
+  "WARNING! Works properly ONLY with MySQL. 
+   Returns true if current databse is empty or false otherwise."
   ([spec]
     (sql/with-connection spec
-      (tables)))
+      (empty-db?)))
 
   ([]
     (sql/with-query-results rs ["SHOW TABLES"]
-      (mapcat vals (doall rs)))))
+      (empty? rs))))
 
 
 (defn get-version
@@ -86,10 +90,9 @@
   ([]
     (sql/with-query-results rs ["SELECT major, minor FROM database_version"]
       (if (empty? rs)
-        (do
-          (let [error-msg "Unable to get database version. Table database_version is empty."]
-            (log/error error-msg)
-            (throwf error-msg)))
+        (let [error-msg "Unable to get database version. Table database_version is empty."]
+          (log/error error-msg)
+          (throwf PrepareException error-msg))
 
         (version-rec-to-double (first rs))))))
 
@@ -119,10 +122,9 @@
         db-conf-diffs (:diffs db-conf)
         
         scripts-home (fs-lib/compose-path app-home db-conf-scripts-dir)]
-    
     (sql/with-connection spec
       (sql/transaction
-        (when (empty? (tables))
+        (when (empty-db?)
           (log/info "The database is empty and need to be initialized.")
           (let [scripts-paths (fs-lib/extend-paths scripts-home (:scripts db-conf-init))]
             (log/info (format "The following init scripts will be executed: %s" (print-str scripts-paths)))
@@ -145,12 +147,22 @@
     (log/info (format "The database is prepared. Database version is %s." (get-version spec)))))
 
 
-;;;
-;;; Tests
-;;;
+;;;;
+;;;; Tests
+;;;;
+
+(defn- create-h2-mem-spec
+  ([]
+    (create-h2-mem-spec "mem:"))
+
+  ([name]
+    {:classname "org.h2.Driver"
+     :subprotocol "h2"
+     :subname name}))
+
 
 (def
-  #^{:doc "db-diffs test configuration."
+  #^{:doc "db-diffs - test configuration."
      :private true}
 
   db-conf-diffs #{
@@ -233,3 +245,39 @@
                   :scripts ["e.sql" "f.sql"]
               }
          })))
+
+
+(deftest test-set-and-get-version
+  (let [spec (create-h2-mem-spec)]
+    (sql/with-connection spec
+      (sql/do-commands "CREATE TABLE database_version(major INT NOT NULL, minor INT NOT NULL)")
+
+      (is (thrown? PrepareException (get-version)))
+        
+      (set-version 4.11)
+      (is (= 4.11 (get-version)))
+
+      (set-version 6.12)
+      (is (= 6.12 (get-version))))))
+
+
+(deftest test-prepare
+  (let [spec (create-h2-mem-spec "mem:test;DB_CLOSE_DELAY=-1")
+        app-home "/Users/ajosua/projects/imcode/imcms/trunk/src/main/web"
+        conf (read-string (slurp "/Users/ajosua/projects/imcode/imcms/trunk/src/main/resources/conf.clj"))]
+
+    (binding [db-lib/*execute-script-statements* false
+              empty-db? (fn []
+                          ;; 'prepare' calls empty-db? only once to determine is db need to be updated.
+                          ;; Real init scrip(s) creates database_version table and populates it with initial data.
+                          (sql/do-commands
+                            "DROP TABLE IF EXISTS database_version"
+                            "CREATE TABLE database_version (major INT NOT NULL, minor INT NOT NULL)")
+                          true)]
+
+      (try
+        (prepare app-home conf spec)
+        ;; Ensure database is closed
+        (finally
+          (sql/with-connection spec
+            (sql/do-commands "SET DB_CLOSE_DELAY 0")))))))
