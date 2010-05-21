@@ -13,11 +13,58 @@
       [logging :as log]))
 
   (:use
-    [clojure.set :only (select)]
+    (clojure
+      test
+      [set :only (select)])
     
     (clojure.contrib
       [except :only (throw-if throwf)])))
 
+;;;
+;;; Pure fns
+;;;
+
+(defn version-rec-to-double
+  "Creates a double from database_version table row."
+  [{:keys [major minor]}]
+  (Double/valueOf (format "%s.%s" major minor)))
+
+
+(defn double-to-version-rec
+  "Creates a record intended to insert/update row in database_version table."
+  [version]
+  (let [[major minor] (su/re-split #"\." (str version))]
+    {
+      :major major,
+      :minor (if minor minor "0")
+    }))
+
+
+(defn required-diff
+  "Returns a diff required to update db or nil if no corresponding diff exists.
+   db-conf-diffs - a set of diffs; see conf.clj and tests to learn more about diffs definition.
+   current-version - current db version as double."
+  [db-conf-diffs current-version]
+  (when-first [diff (select #(= current-version (:from %)) db-conf-diffs)]
+    diff))
+
+
+(defn required-diffs
+  "Returns a seq of diffs beginning from a current version or nil.
+   db-conf-diffs - a set of diffs; see conf.clj and tests to learn more about diffs definition.
+   current-version - current db version as double."  
+  [db-conf-diffs current-version]
+  (loop [from current-version, diffs []]
+    (if-let [diff (required-diff db-conf-diffs from)]
+      (let [new-current-version (:to diff)
+            collected-diffs (conj diffs diff)]
+        (recur new-current-version collected-diffs))
+      (seq diffs))))
+
+
+;;;
+;;; Fns with side-effect
+;;;
 
 (defn tables
   "Returns all db tables."
@@ -28,17 +75,6 @@
   ([]
     (sql/with-query-results rs ["SHOW TABLES"]
       (mapcat vals (doall rs)))))
-
-
-(defn double-to-version-rec [version]
-  (let [[major minor] (su/re-split #"\." (str version))]
-    {:major major,
-     :minor (if-not minor 0 minor)
-    }))
-
-
-(defn version-rec-to-double [{:keys [major minor]}]
-  (Double/valueOf (format "%s.%s" major (if minor minor 0))))
 
 
 (defn get-version
@@ -68,21 +104,6 @@
     (sql/update-or-insert-values
       "database_version" ["major IS NOT NULL"]
       (double-to-version-rec version))))
-
-
-(defn required-diff
-  [db-conf-diffs from]
-  (when-first [diff (select #(= from (:from %)) db-conf-diffs)]
-    diff))
-
-
-(defn required-diffs
-  "Returns diffs seq or nil."
-  [db-conf-diffs current-version]
-  (loop [from current-version, diffs []]
-    (if-let [diff (required-diff db-conf-diffs from)]
-      (recur (:to diff) (conj diffs diff))
-      (seq diffs))))
 
 
 (defn prepare
@@ -122,3 +143,93 @@
             (set-version to))))))
 
     (log/info (format "The database is prepared. Database version is %s." (get-version spec)))))
+
+
+;;;
+;;; Tests
+;;;
+
+(def
+  #^{:doc "db-diffs test configuration."
+     :private true}
+
+  db-conf-diffs #{
+      {
+          :from 4.11
+          :to 4.12
+          :scripts ["a.sql" "b.sql"]
+      }
+
+      {
+          :from 4.12
+          :to 4.13
+          :scripts ["c.sql" "d.sql"]
+      }
+
+      {
+          :from 4.13
+          :to 6.2
+          :scripts ["e.sql" "f.sql"]
+      }
+  })
+
+
+(deftest test-version-rec-to-double
+  (is (= 4 (version-rec-to-double {:major 4, :minor 0})))
+  (is (= 4.1 (version-rec-to-double {:major 4, :minor 1}))))
+
+
+(deftest test-double-to-version-rec
+  (is (= {:major "4", :minor "0"} (double-to-version-rec 4)))
+  (is (= {:major "4", :minor "0"} (double-to-version-rec 4.0)))
+  (is (= {:major "4", :minor "1"} (double-to-version-rec 4.1))))
+
+
+(deftest test-required-diff
+  (is (nil? (required-diff db-conf-diffs 4.10)))
+
+  (is (= (required-diff db-conf-diffs 4.11)
+         {
+            :from 4.11
+            :to 4.12
+            :scripts ["a.sql" "b.sql"]
+         }))
+
+  (is (= (required-diff db-conf-diffs 4.13)
+         {
+             :from 4.13
+             :to 6.2
+             :scripts ["e.sql" "f.sql"]
+         })))
+
+
+(deftest test-required-diffs
+  (is (nil? (required-diffs db-conf-diffs 4.10)))
+
+  (is (= (set (required-diffs db-conf-diffs 4.11))
+         db-conf-diffs))
+
+  (is (= (set (required-diffs db-conf-diffs 4.12))
+         #{
+              {
+                  :from 4.12
+                  :to 4.13
+                  :scripts ["c.sql" "d.sql"]
+              }
+
+              {
+                  :from 4.13
+                  :to 6.2
+                  :scripts ["e.sql" "f.sql"]
+              }
+         }))
+
+
+  (is (= (set (required-diffs db-conf-diffs 4.13))
+         #{
+              {
+                  :from 4.13
+                  :to 6.2
+                  :scripts ["e.sql" "f.sql"]
+              }
+         })))
