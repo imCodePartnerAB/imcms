@@ -1,6 +1,6 @@
 (ns
-  #^{:doc "imCMS project's interaction."}
-  com.imcode.imcms.test.project     
+  #^{:doc "imCMS project's env."}
+  com.imcode.imcms.project     
   (:require
     (clojure.contrib
       ;[logging :as log]

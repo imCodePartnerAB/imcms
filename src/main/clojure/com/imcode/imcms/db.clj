@@ -59,9 +59,9 @@
   [diffs-set current-version]
   (loop [version current-version, diffs []]
     (if-let [diff (required-diff diffs-set version)]
-      (let [new-version (:to diff)
+      (let [new-current-version (:to diff)
             collected-diffs (conj diffs diff)]
-        (recur new-version collected-diffs))
+        (recur new-current-version collected-diffs))
       (seq diffs))))
 
 
@@ -82,7 +82,6 @@
 
 
 (defn get-version
-  "Retrns db version."
   ([spec]
     (sql/with-connection spec
       (get-version)))
@@ -151,18 +150,8 @@
 ;;;; Tests
 ;;;;
 
-(defn- create-h2-mem-spec
-  ([]
-    (create-h2-mem-spec "mem:"))
-
-  ([name]
-    {:classname "org.h2.Driver"
-     :subprotocol "h2"
-     :subname name}))
-
-
 (def
-  #^{:doc "db-diffs - test configuration."
+  #^{:doc "db-diffs - diffs set, ':db/:db-diffs' section of conf.clj file."
      :private true}
 
   db-conf-diffs #{
@@ -248,7 +237,7 @@
 
 
 (deftest test-set-and-get-version
-  (let [spec (create-h2-mem-spec)]
+  (let [spec (db-lib/create-h2-mem-spec)]
     (sql/with-connection spec
       (sql/do-commands "CREATE TABLE database_version(major INT NOT NULL, minor INT NOT NULL)")
 
@@ -259,25 +248,3 @@
 
       (set-version 6.12)
       (is (= 6.12 (get-version))))))
-
-
-(deftest test-prepare
-  (let [spec (create-h2-mem-spec "mem:test;DB_CLOSE_DELAY=-1")
-        app-home "/Users/ajosua/projects/imcode/imcms/trunk/src/main/web"
-        conf (read-string (slurp "/Users/ajosua/projects/imcode/imcms/trunk/src/main/resources/conf.clj"))]
-
-    (binding [db-lib/*execute-script-statements* false
-              empty-db? (fn []
-                          ;; 'prepare' calls empty-db? only once to determine is db need to be updated.
-                          ;; Real init scrip(s) creates database_version table and populates it with initial data.
-                          (sql/do-commands
-                            "DROP TABLE IF EXISTS database_version"
-                            "CREATE TABLE database_version (major INT NOT NULL, minor INT NOT NULL)")
-                          true)]
-
-      (try
-        (prepare app-home conf spec)
-        ;; Ensure database is closed
-        (finally
-          (sql/with-connection spec
-            (sql/do-commands "SET DB_CLOSE_DELAY 0")))))))

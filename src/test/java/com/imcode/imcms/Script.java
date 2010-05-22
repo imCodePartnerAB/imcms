@@ -17,9 +17,8 @@ public class Script {
         try {
             RT.load("com/imcode/imcms/runtime");
 
-            RT.load("com/imcode/imcms/test/project");
-            RT.load("com/imcode/imcms/test/project/db");
-            RT.load("com/imcode/imcms/test/project/db/upgrade");
+            RT.load("com/imcode/imcms/project");
+            RT.load("com/imcode/imcms/db-test");
 
             RT.load("com/imcode/cljlib/db");
         } catch (Exception e) {
@@ -40,18 +39,18 @@ public class Script {
 
 
     public static String getDBName() throws Exception {
-        return (String)RT.var("com.imcode.imcms.test.project.db", "db-name")
+        return (String)RT.var("com.imcode.imcms.db-test", "db-name")
                .invoke();
     }
 
     public static DataSource createDBDataSource(boolean autocommit) throws Exception {
-        return (DataSource)RT.var("com.imcode.imcms.test.project.db", "create-ds")
+        return (DataSource)RT.var("com.imcode.imcms.db-test", "create-ds")
                .invoke(autocommit);
     }
 
     public static void recreateDB() {
         try {
-            RT.var("com.imcode.imcms.test.project.db", "recreate")
+            RT.var("com.imcode.imcms.db-test", "recreate")
                 .invoke();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -61,7 +60,7 @@ public class Script {
 
     public static void recreateDB(String... sqlScriptsPaths) {
         try {
-            RT.var("com.imcode.imcms.test.project.db", "recreate")
+            RT.var("com.imcode.imcms.db-test", "recreate")
                 .invoke(createPaths(sqlScriptsPaths));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -71,7 +70,7 @@ public class Script {
 
     public static void recreateEmptyDB() {
         try {
-            RT.var("com.imcode.imcms.test.project.db", "recreate-empty")
+            RT.var("com.imcode.imcms.db-test", "recreate-empty")
                 .invoke();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -81,7 +80,7 @@ public class Script {
     
     public static void runDBScripts(String... sqlScriptsPaths) {
         try {
-            RT.var("com.imcode.imcms.test.project.db", "run-scripts")
+            RT.var("com.imcode.imcms.db-test", "run-scripts")
                 .invoke(createPaths(sqlScriptsPaths));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -90,7 +89,7 @@ public class Script {
     
 
     public void initImcms() throws Exception {
-        RT.var("com.imcode.imcms.test.project", "init-imcms")
+        RT.var("com.imcode.imcms.project", "init-imcms")
             .invoke();
     }
 
@@ -114,7 +113,7 @@ public class Script {
     public static SessionFactory createHibernateSessionFactory(Class[] annotatedClasses, String... xmlFiles) {
 
         try {
-            return (SessionFactory)RT.var("com.imcode.imcms.test.project.db", "create-hibernate-sf")
+            return (SessionFactory)RT.var("com.imcode.imcms.db-test", "create-hibernate-sf")
                 .invoke(annotatedClasses, xmlFiles);
         } catch (Exception e) {
             throw new RuntimeException(e);
