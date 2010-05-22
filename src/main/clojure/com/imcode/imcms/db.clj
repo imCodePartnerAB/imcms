@@ -108,8 +108,38 @@
       (double-to-version-rec version))))
 
 
+(defn init
+  "Init empty database.
+   db-conf-init - db init record. See :db/:init definition in conf.clj.
+   scripts-home - init scripts parent directory path."
+  [db-conf-init scripts-home]
+  (let [scripts-paths (fs-lib/extend-paths scripts-home (:scripts db-conf-init))
+        version (:version db-conf-init)]
+    
+    (log/info (format "The following init scripts will be executed: %s." (print-str scripts-paths)))
+    (doseq [script-path scripts-paths]
+      (db-lib/run-script (sql/connection) script-path))
+
+    (log/info (format "Updating db version to: %s." version))
+    (set-version version)))
+
+
+(defn upgrade
+  "Upgrades databse.
+   diffs - seq of diff records.
+   scripts-home - diff scripts parent directory path."
+  [diffs scripts-home]
+  (doseq [{:keys [to, scripts]} diffs]
+    (do
+      ;; log xxx
+      (doseq [script-path (fs-lib/extend-paths scripts-home scripts)]
+        (db-lib/run-script (sql/connection) script-path)))
+
+    (set-version to)))  
+  
+
 (defn prepare
-  "Prepares database - initializes and/or updates db if necessary.
+  "Prepares database - initializes and/or upgrades db if necessary.
    app-home - application home.
    conf - configuration map defined in 'conf.clj' file.
    spec - db spec."
@@ -121,29 +151,27 @@
         db-conf-diffs (:diffs db-conf)
         
         scripts-home (fs-lib/compose-path app-home db-conf-scripts-dir)]
+
     (sql/with-connection spec
       (sql/transaction
         (when (empty-db?)
-          (log/info "The database is empty and need to be initialized.")
-          (let [scripts-paths (fs-lib/extend-paths scripts-home (:scripts db-conf-init))]
-            (log/info (format "The following init scripts will be executed: %s" (print-str scripts-paths)))
-            (doseq [script-path scripts-paths]
-              (db-lib/run-script (sql/connection) script-path))
-
-            (set-version (:version db-conf-init)))
+          (log/info (format "The database is empty and need to be initialized. The following init will be applied: %s."
+                            db-conf-init))
+          
+          (init db-conf-init scripts-home) 
 
           (log/info (format "The database is initialized. Database version is %s." (get-version))))
 
-        (when-let [diffs (required-diffs db-conf-diffs (get-version))]
-          (log/info (format "The database need to be updated. The following diffs will be applied: %s" diffs))
-          (doseq [{:keys [to, scripts]} diffs]
-            (do
-              (doseq [script-path (fs-lib/extend-paths scripts-home scripts)]
-                (db-lib/run-script (sql/connection) script-path))
-              
-            (set-version to))))))
+        (let [current-version (get-version)]
+          (when-let [diffs (required-diffs db-conf-diffs current-version)]
+            (let [last-diff-version (:to (last diffs))]
+              ;; check against required version
+              (log/info (format "The database need to be upgraded from %s to %s. The following diffs will be applied: %s."
+                                current-version, last-diff-version, diffs))
 
-    (log/info (format "The database is prepared. Database version is %s." (get-version spec)))))
+              (upgrade diffs scripts-home))))
+
+    (log/info (format "The database is prepared. Database version is %s." (get-version spec)))))))
 
 
 ;;;;
@@ -151,7 +179,7 @@
 ;;;;
 
 (def
-  #^{:doc "db-diffs - diffs set, ':db/:db-diffs' section of conf.clj file."
+  #^{:doc "db-diffs - diffs set, see ':db/:db-diffs' definition in conf.clj file."
      :private true}
 
   db-conf-diffs #{
@@ -234,17 +262,3 @@
                   :scripts ["e.sql" "f.sql"]
               }
          })))
-
-
-(deftest test-set-and-get-version
-  (let [spec (db-lib/create-h2-mem-spec)]
-    (sql/with-connection spec
-      (sql/do-commands "CREATE TABLE database_version(major INT NOT NULL, minor INT NOT NULL)")
-
-      (is (thrown? PrepareException (get-version)))
-        
-      (set-version 4.11)
-      (is (= 4.11 (get-version)))
-
-      (set-version 6.12)
-      (is (= 6.12 (get-version))))))

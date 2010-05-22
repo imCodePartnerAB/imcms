@@ -7,7 +7,7 @@
     [clojure.contrib.str-utils2 :as su2]
     [clojure.contrib.shell-out :as shell]
     
-    [com.imcode.imcms.test.project :as p]
+    [com.imcode.imcms.project :as p]
     [com.imcode.imcms.test.lucene :as l]))
 
 

@@ -11,7 +11,8 @@
       [project :as project])
 
     (com.imcode.cljlib
-      [db :as db-lib])
+      [db :as db-lib]
+      [fs :as fs-lib])
 
     (clojure.contrib
       [sql :as sql]))
@@ -23,6 +24,7 @@
 
 
   (:import
+    com.imcode.imcms.db.PrepareException
     org.hibernate.SessionFactory
     org.hibernate.cfg.AnnotationConfiguration))
 
@@ -48,7 +50,6 @@
       (doto
         (db-lib/create-ds (:db-driver p) (:db-user p) (:db-pass p) db-url)
         (.setDefaultAutoCommit autocomit)))))
-
 
 
 (def
@@ -111,14 +112,64 @@
 
 ;;;;
 ;;;; Tests
-;;;;
+;;;; todo: refactor
 
-(deftest test-prepare
+(deftest test-set-and-get-version
+  (let [spec (db-lib/create-h2-mem-spec)]
+    (sql/with-connection spec
+      (sql/do-commands "CREATE TABLE database_version(major INT NOT NULL, minor INT NOT NULL)")
+
+      (is (thrown? PrepareException (db/get-version)))
+
+      (db/set-version 4.11)
+      (is (= 4.11 (db/get-version)))
+
+      (db/set-version 6.12)
+      (is (= 6.12 (db/get-version))))))
+
+
+(deftest test-empty-db?
+  (recreate-empty)
+  (is (db/empty-db? (create-spec))))
+
+
+(deftest test-init
+  (recreate-empty)
+
+  (let [app-home (project/subdir-path "src/main/web")
+        conf (read-string (slurp (project/file-path "src/main/resources/conf.clj")))
+        db-conf-init (:init (:db conf))
+        scripts-dir (:scripts-dir (:db conf))
+        scripts-home (fs-lib/compose-path app-home scripts-dir)       
+        spec (create-spec false)]
+
+    (sql/with-connection spec
+      (sql/transaction
+        (db/init db-conf-init scripts-home)))))
+
+
+(deftest test-upgrade
+  (test-init)
+
+  (let [app-home (project/subdir-path "src/main/web")
+        conf (read-string (slurp (project/file-path "src/main/resources/conf.clj")))
+        db-conf-diffs (:diffs (:db conf))
+        scripts-dir (:scripts-dir (:db conf))
+        scripts-home (fs-lib/compose-path app-home scripts-dir)
+        spec (create-spec false)]
+
+    (sql/with-connection spec
+      (sql/transaction
+        (db/upgrade db-conf-diffs scripts-home)))))
+
+
+
+(deftest test-prepare-empty
   (recreate-empty)
   
   (let [app-home (project/subdir-path "src/main/web")
         conf (read-string (slurp (project/file-path "src/main/resources/conf.clj")))
-        spec (create-spec)]
+        spec (create-spec false)]
 
     (db/prepare app-home conf spec)))
 

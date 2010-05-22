@@ -27,23 +27,18 @@
     (org.springframework.context.support FileSystemXmlApplicationContext)))
 
 
-(defonce basedir (atom (.getCanonicalFile (File. "."))))
+(defonce basedir (.getCanonicalPath (File. ".")))
 
-(defonce spring-app-context (atom nil))
-
-(defn basedir-path
-  "Returns base dir full path."
-  []
-  (.getCanonicalPath @basedir))
+(defonce spring-app-context nil)
 
 
 (defn ch-basedir! [new-path]
-  (reset! basedir (.getCanonicalFile (File. new-path))))
+  (alter-var-root #'basedir (fn [_] (.getCanonicalPath (File. new-path)))))
 
 
 (defn- fs-node
   [relative-path check-fn]
-  (let [node (File. @basedir relative-path)]
+  (let [node (File. basedir relative-path)]
     (if check-fn (check-fn node) node)))
 
 
@@ -106,27 +101,26 @@
     (apply shell/sh args)))
 
 
-(defn init-spring-app-context []
-  (reset! spring-app-context
-    (FileSystemXmlApplicationContext. (str "file:" (file-path "src/main/web/WEB-INF/applicationContext.xml")))))
+(defn init-spring-app-context! []
+  (alter-var-root #'spring-app-context
+    (fn [_] (FileSystemXmlApplicationContext. (str "file:" (file-path "src/main/web/WEB-INF/applicationContext.xml"))))))
 
 
 (defn init-imcms
   "Initializes Imcms for tests."
   []
-  (when-not @spring-app-context
-    (init-spring-app-context))
-
-  (init-spring-app-context)
+  (when-not spring-app-context
+    (init-spring-app-context!))
+  
   (Imcms/setPath (subdir "src/main/webapp"))
-  (Imcms/setApplicationContext @spring-app-context)
+  (Imcms/setApplicationContext spring-app-context)
   (Imcms/setPrepareDatabaseOnStart false))
 
 
 (defn loc
-  "Returns loc in a project's dir."
+  "Returns loc in path. By default returns project's loc."
   ([]
-    (loc "."))
+    (loc basedir))
 
   ([#^String dir]
     (fs-lib/loc
