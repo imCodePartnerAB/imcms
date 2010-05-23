@@ -2,8 +2,10 @@
   #^{:doc "imCMS project's env."}
   com.imcode.imcms.project     
   (:require
+    com.imcode.imcms.boot
+    
     (clojure.contrib
-      ;[logging :as log]
+      [logging :as log]
       [str-utils :as su]
       [str-utils2 :as su2]
       [shell-out :as shell])
@@ -13,13 +15,13 @@
       [fs :as fs-lib]))
   
   (:use
-    clojure.contrib.test-is
-    clojure.contrib.repl-utils
-    clojure.contrib.duck-streams
-    clojure.contrib.def
-    [com.imcode.cljlib.fs :only (throw-if-not-dir throw-if-not-file)]
-    [clojure.contrib.except :only (throw-if throw-if-not)])
+    (clojure.contrib
+      repl-utils
+      duck-streams
+      def
+      [except :only (throw-if throw-if-not)])
 
+    [com.imcode.cljlib.fs :only (throw-if-not-dir throw-if-not-file)])
 
   (:import
     (java.io File)

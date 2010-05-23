@@ -1,6 +1,6 @@
 (ns
-  #^{:doc "Provides functions for accessing imCMS at runtime.
-           The imcode.server.Imcms singleton should be initialized."}
+  #^{:doc "Provides functions for accessing imCMS at runtime.      
+           The imcode.server.Imcms singleton must be initialized."}
   
   com.imcode.imcms.runtime  
   (:import

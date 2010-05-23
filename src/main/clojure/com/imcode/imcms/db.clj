@@ -18,7 +18,7 @@
       [set :only (select)])
     
     (clojure.contrib
-      [except :only (throw-if throwf)]))
+      [except :only (throw-if throw-if-not throwf)]))
 
   (:import
     com.imcode.imcms.db.PrepareException))
@@ -54,6 +54,7 @@
 
 (defn required-diffs
   "Returns a seq of diffs beginning from a current version or nil.
+   Chaines diffs by matching a previous diff ':to' field with a sucveeding diff ':from' field. 
    diffs-set - a set of diffs; see conf.clj and tests to learn more about diffs set definition.
    current-version - current db version as double."  
   [diffs-set current-version]
@@ -109,7 +110,7 @@
 
 
 (defn init
-  "Init empty database.
+  "Initializes empty database.
    db-conf-init - db init record. See :db/:init definition in conf.clj.
    scripts-home - init scripts parent directory path."
   [db-conf-init scripts-home]
@@ -146,6 +147,7 @@
   [app-home conf spec]
   (log/info (format "Preparing the databse. app-home: %s, conf: %s." app-home, conf))
   (let [db-conf (:db conf)
+        db-conf-version (:version db-conf)
         db-conf-scripts-dir (:scripts-dir db-conf)
         db-conf-init (:init db-conf)
         db-conf-diffs (:diffs db-conf)
@@ -169,9 +171,17 @@
               (log/info (format "The database need to be upgraded from %s to %s. The following diffs will be applied: %s."
                                 current-version, last-diff-version, diffs))
 
-              (upgrade diffs scripts-home))))
+              (upgrade diffs scripts-home))))))
 
-    (log/info (format "The database is prepared. Database version is %s." (get-version spec)))))))
+    (let [current-version (get-version spec)]
+      (when-not (= current-version db-conf-version)
+        (let [msg (format "Database version %s is not eqaul to required version %s."
+                           current-version, db-conf-version)]
+
+          (log/error msg)
+          (throwf PrepareException msg)))
+
+      (log/info (format "The database is prepared. Database version is %s." (get-version spec))))))
 
 
 ;;;;

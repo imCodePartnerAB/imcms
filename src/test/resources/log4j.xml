@@ -4,12 +4,6 @@
 
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true">
 
-    <!-- Renderer for DocumentRequest -->
-    <renderer
-        renderingClass="imcode.util.log.FakeRequestRenderer"
-        renderedClass="imcode.server.DocumentRequest"/>
-
-
     <!-- The errorlog (captures everything that doesn't go to one of the above. -->
     <appender name="ALL" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
@@ -53,7 +47,6 @@
     <root>
         <priority value="info"/>
         <appender-ref ref="ALL"/>
-        <appender-ref ref="ERROR"/>
     </root>
 
 </log4j:configuration>

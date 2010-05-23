@@ -15,17 +15,17 @@ public class Script {
 
     static {
         try {
-            RT.load("com/imcode/imcms/runtime");
-
+            RT.load("com/imcode/imcms/boot");
             RT.load("com/imcode/imcms/project");
             RT.load("com/imcode/imcms/db-test");
 
+            RT.load("com/imcode/imcms/runtime");
             RT.load("com/imcode/cljlib/db");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
+    
 
 //    public static Object callClojureFn(String ns, String fn, Object... args) {
 //        try {
