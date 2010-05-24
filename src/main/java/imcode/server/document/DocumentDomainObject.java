@@ -18,11 +18,29 @@ import org.apache.log4j.Logger;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 
+/**
+ * Parent of all imCMS document types.
+ *
+ * Holds document content and meta.
+ */
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 	public static final int ID_NEW = 0;
-    
+
+    /**
+     * Document's alias.
+     * Can be set, changed and removed by an user which have rights to modify document information.
+     * Must not be used as a hardcoded identity to access documents through API.
+     * 
+     * @see com.imcode.imcms.mapping.DocumentMapper#getDocument(String) 
+     */
 	public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS = "imcms.document.alias";
+
+    /**
+     * Document's internal id assigned by an application developer.
+     * Intended to be used as a hardcoded identity to access documents through the API.
+     */
+    public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_INTERNAL_ID = "imcms.document.internal.id";
     
 	private static Logger log = Logger.getLogger(DocumentDomainObject.class);
 	

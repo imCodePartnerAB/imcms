@@ -24,7 +24,7 @@ import com.imcode.util.ImageSize;
 
 @Entity(name="Image")
 @Table(name="imcms_text_doc_images")
-public class ImageDomainObject implements Serializable, Cloneable, DocVersionItem, DocI18nItem, DocContentLoopItem {
+public class ImageDomainObject implements Serializable, Cloneable, DocVersionItem, DocI18nItem, DocContentLoopItem, DocOrderedItem {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;

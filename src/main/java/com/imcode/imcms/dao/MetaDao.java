@@ -33,6 +33,14 @@ public class MetaDao extends HibernateTemplate {
 		return (Meta)get(Meta.class, docId);
 	}
 
+	@Transactional
+	public Integer getDocumentIdByAlias(String alias) {
+		return (Integer)getSession().getNamedQuery("DocumentProperty.getDocumentIdByAlias")
+			.setParameter("name", DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)
+			.setParameter("value", alias.toLowerCase())
+			.uniqueResult();
+	}    
+
 	/**
 	 * @return Labels.
 	 */
@@ -55,7 +63,7 @@ public class MetaDao extends HibernateTemplate {
         }
 
         return labels;
-	}
+	}    
 
 
     @Transactional
@@ -224,13 +232,9 @@ public class MetaDao extends HibernateTemplate {
 	}	
 	
 	
-	@Transactional
-	public Integer getDocumentIdByAlias(String alias) {
-		return (Integer)getSession().getNamedQuery("DocumentProperty.getDocumentIdByAlias")
-			.setParameter("name", DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)
-			.setParameter("value", alias.toLowerCase())
-			.uniqueResult();
-	}
+
+
+    
 	
 	@Transactional
 	public List<String> getAllAliases() {

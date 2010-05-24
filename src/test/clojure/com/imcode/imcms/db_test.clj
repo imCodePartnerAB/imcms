@@ -93,21 +93,30 @@
 (defn recreate
   "Recreates datatabse."
   ([]
-    (recreate (init-script-files)))
+    (recreate (db-name)))
 
-  ([scripts]
-    (db-lib/recreate (create-spec) (db-name) scripts)))
+  ([name]
+    (recreate name (init-script-files)))
+
+  ([name scripts]
+    (db-lib/recreate (create-spec) name scripts)))
 
 
 (defn recreate-empty
   "Recreates empty datatabse."
-  []
-  (recreate []))
+  ([]
+    (recreate-empty (db-name)))
+
+  ([name]
+    (db-lib/recreate (create-spec) name [])))
 
 
 (defn run-scripts
-  [& scripts]
-  (db-lib/run-scripts (create-spec) scripts))
+  ([scripts]
+    (run-scripts (db-name) scripts))
+
+  ([name scripts]
+    (db-lib/run-scripts (create-spec) name scripts)))
 
 
 ;;;;

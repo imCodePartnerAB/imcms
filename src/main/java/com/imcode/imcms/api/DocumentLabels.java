@@ -1,5 +1,8 @@
 package com.imcode.imcms.api;
 
+import imcode.server.document.textdocument.DocI18nItem;
+import imcode.server.document.textdocument.DocVersionItem;
+
 import javax.persistence.*;
 
 /**
@@ -7,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="imcms_doc_labels")
-public class DocumentLabels implements Cloneable {
+public class DocumentLabels implements Cloneable, DocVersionItem, DocI18nItem {
 
 	@Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)

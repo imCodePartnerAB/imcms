@@ -42,7 +42,7 @@
     <filter-mapping>
         <filter-name>ImcmsFilter</filter-name>
         <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
+        <!--<dispatcher>REQUEST</dispatcher>-->
     </filter-mapping>
 
     <!--

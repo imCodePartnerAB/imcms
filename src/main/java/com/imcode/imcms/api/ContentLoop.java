@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.textdocument.DocVersionItem;
+import imcode.server.document.textdocument.DocOrderedItem;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.IndexColumn;
 
@@ -16,7 +17,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="imcms_text_doc_content_loops")
-public class ContentLoop implements Serializable, Cloneable, DocVersionItem {
+public class ContentLoop implements Serializable, Cloneable, DocVersionItem, DocOrderedItem {
 	
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;

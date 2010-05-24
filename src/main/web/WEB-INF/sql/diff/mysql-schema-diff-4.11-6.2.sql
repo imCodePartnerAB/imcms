@@ -499,9 +499,7 @@ CREATE TABLE `imcms_text_doc_menu_items_history` (
   menu_id int NULL,
   to_doc_id int NOT NULL,
   manual_sort_order int NOT NULL,
-  tree_sort_index varchar(64) NOT NULL,
-
-  CONSTRAINT `fk__imcms_text_doc_menu_items_history__menus_history` FOREIGN KEY (`menu_id`) REFERENCES `imcms_text_doc_menus_history` (`id`) ON DELETE CASCADE
+  tree_sort_index varchar(64) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -812,27 +810,27 @@ DELETE FROM doc_permissions WHERE doc_type NOT IN (2,5,7,8);
 
 
 -- Drop old tables
-DELETE FROM `meta_classification`;
-DELETE FROM `classification`;
-
-DROP TABLE `meta_classification`;
-DROP TABLE `classification`;
-
--- Drop renamed tables
-DROP TABLE `frameset_docs`;
-
-DROP TABLE `childs`;
-DROP TABLE `childs_history`;
-
-DROP TABLE `menus`;
-DROP TABLE `menus_history`;
-
-DROP TABLE `texts`;
-DROP TABLE `texts_history`;
-
-
-DROP TABLE `images`;
-DROP TABLE `images_history`;
+-- DELETE FROM `meta_classification`;
+-- DELETE FROM `classification`;
+--
+-- DROP TABLE `meta_classification`;
+-- DROP TABLE `classification`;
+--
+-- -- Drop renamed tables
+-- DROP TABLE `frameset_docs`;
+--
+-- DROP TABLE `childs`;
+-- DROP TABLE `childs_history`;
+--
+-- DROP TABLE `menus`;
+-- DROP TABLE `menus_history`;
+--
+-- DROP TABLE `texts`;
+-- DROP TABLE `texts_history`;
+--
+--
+-- DROP TABLE `images`;
+-- DROP TABLE `images_history`;
 
 
 --

@@ -34,7 +34,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity(name="Menu")
 @Table(name="imcms_text_doc_menus")
-public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem {
+public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem, DocOrderedItem {
 
     public final static int MENU_SORT_ORDER__BY_HEADLINE = 1;
     public final static int MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED = 2;

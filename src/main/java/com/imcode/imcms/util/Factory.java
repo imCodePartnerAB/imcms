@@ -1,6 +1,7 @@
 package com.imcode.imcms.util;
 
 import com.imcode.imcms.api.ContentLoop;
+import com.imcode.imcms.api.DocumentLabels;
 import com.imcode.imcms.api.I18nLanguage;
 import imcode.server.document.DocumentReference;
 import imcode.server.document.textdocument.*;
@@ -11,6 +12,17 @@ import java.util.Collection;
  * Frequently used objects' factory.
  */
 public class Factory {
+
+
+    public static DocumentLabels createLabels(Integer docId, Integer docVersionNo, I18nLanguage language) {
+        DocumentLabels labels = newInstance(DocumentLabels.class, docId, docVersionNo, language);
+
+        labels.setHeadline("");
+        labels.setMenuText("");
+        labels.setMenuImageURL("");
+        
+        return labels;
+    }
 
     /**
      *
@@ -54,6 +66,9 @@ public class Factory {
 
         return text;
     }
+
+
+
 
     public static ImageDomainObject createImage(Integer docId, Integer docVersionNo, I18nLanguage language, Integer no) {
         return createImage(docId, docVersionNo, language, null);
@@ -113,18 +128,31 @@ public class Factory {
         return createContentLoop(doc.getId(), doc.getVersion().getNo(), getNextItemNo(doc.getContentLoops().values()));
     }
 
-    public static Integer getNextItemNo(Collection<? extends DocVersionItem> items) {
+    public static Integer getNextItemNo(Collection<? extends DocOrderedItem> items) {
         int no = 0;
 
-        for (DocVersionItem item: items) {
+        for (DocOrderedItem item: items) {
             no = Math.max(no, item.getNo());
         }
 
         return no + 1;
     }
 
+    public static <T extends DocVersionItem & DocI18nItem> T newInstance(Class<T> clazz, Integer docId, Integer docVersionNo, I18nLanguage language) throws RuntimeException {
+        try {
+            T t = clazz.newInstance();
 
-    public static <T extends DocVersionItem & DocI18nItem> T newInstance(Class<T> clazz, Integer docId, Integer docVersionNo, I18nLanguage language, Integer no) throws RuntimeException {
+            t.setDocId(docId);
+            t.setDocVersionNo(docVersionNo);
+            t.setLanguage(language);
+
+            return t;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }    
+
+    public static <T extends DocVersionItem & DocI18nItem & DocOrderedItem> T newInstance(Class<T> clazz, Integer docId, Integer docVersionNo, I18nLanguage language, Integer no) throws RuntimeException {
         T t = newInstance(clazz, docId, docVersionNo, no);
 
         t.setLanguage(language);
@@ -132,7 +160,7 @@ public class Factory {
         return t;
     }
     
-    public static <T extends DocVersionItem> T newInstance(Class<T> clazz, Integer docId, Integer docVersionNo, Integer no) throws RuntimeException {
+    public static <T extends DocVersionItem & DocOrderedItem> T newInstance(Class<T> clazz, Integer docId, Integer docVersionNo, Integer no) throws RuntimeException {
         try {
             T t = clazz.newInstance();
 

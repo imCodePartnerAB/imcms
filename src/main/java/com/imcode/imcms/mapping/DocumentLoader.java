@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.util.Factory;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;
@@ -74,6 +75,11 @@ public class DocumentLoader {
     /** Creates document instance. */
     private DocumentDomainObject createDocument(Meta meta, DocumentVersion version, I18nLanguage language) {
         DocumentLabels labels = metaDao.getLabels(meta.getId(), version.getNo(), language);
+
+        if (labels == null) {
+            labels = Factory.createLabels(meta.getId(), version.getNo(), language);
+        }
+
 		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
         document.setMeta(meta);

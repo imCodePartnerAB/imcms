@@ -57,6 +57,7 @@
     String calendarButtonTitle = "<? web/imcms/lang/jscalendar/show_calendar_button ?>";
 
     pageContext.setAttribute("document", document);
+    pageContext.setAttribute("labelsColl", documentInformationPage.getLabelsMap().values());
 
     Map<I18nLanguage, Boolean> languagesStates  = documentInformationPage.getLanguagesStates();
 %><%!
@@ -177,22 +178,25 @@ function setI18nCodeParameterValue(value) {
 	<tr>
     --%>
 
+	<%-- TODO: Escape XML: $Headline$ --%>
+	<c:forEach items="${labelsColl}" var="i18nPart">
+
 	<c:set var="prefix" value="_${i18nPart.language.code}"/>
-	
+
 	<tr>
 		<td colspan="2" style="padding-bottom:3px;">
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${document.language.code}.gif" alt="" style="border:0;" /></td>
-			<td class="imcmsAdmText" style="padding-left:10px; font-weight:bold;">${document.language.name}</td>
+			<td><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${i18nPart.language.code}.gif" alt="" style="border:0;" /></td>
+			<td class="imcmsAdmText" style="padding-left:10px; font-weight:bold;">${i18nPart.language.name}</td>
 		</tr>
 		</table></td></tr>
 	<tr>
 		<td class="imcmsAdmText" nowrap>
 		<? install/htdocs/sv/jsp/docadmin/document_information.jsp/6 ?><sup class="imNote">1</sup></td>
-		<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE%>" size="48" maxlength="255" style="width: 100%"
-		value="${document.headline}"></td>
-	</tr>	
+		<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE + pageContext.getAttribute("prefix")%>" size="48" maxlength="255" style="width: 100%"
+		value="${i18nPart.headline}"></td>
+	</tr>
 	<tr>
 		<td></td>
 		<td class="imNoteComment"><sup class="imNote">1</sup>
@@ -202,37 +206,39 @@ function setI18nCodeParameterValue(value) {
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="2" alt=""></td>
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="2" alt=""></td>
 	</tr>
-	
+
       <%-- TODO: Escape XML: $MenuText$ --%>
-	  <tr>	  
+	  <tr>
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1002 ?>&nbsp;</td>
 		<td class="imcmsAdmForm">
-		<textarea name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;"><c:out value="${document.menuText}"/></textarea>
+		<textarea name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT + pageContext.getAttribute("prefix") %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;"><c:out value="${i18nPart.menuText}"/></textarea>
         </td>
 	  </tr>
-	  
-	  <%-- 
+
+	  <%--
 	  <%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getMenuImage(), "" )) %>
 	  --%>
-	
+
 	<tr>
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/10 ?></td>
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tr>
 			<td width="85%">
-			  <input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__IMAGE%>" size="40" maxlength="255" style="width: 100%"
-			    value="<c:out value="${document.menuImage}" default=""/>"
+			  <input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__IMAGE + pageContext.getAttribute("prefix") %>" size="40" maxlength="255" style="width: 100%"
+			    value="<c:out value="${i18nPart.menuImageURL}" default=""/>"
 			  />
 			</td>
 			<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER%>"
-			value=" <? install/htdocs/global/pageinfo/browse ?> " onClick="setI18nCodeParameterValue('${document.language.code}')"></td>
+			value=" <? install/htdocs/global/pageinfo/browse ?> " onClick="setI18nCodeParameterValue('${i18nPart.language.code}')"></td>
 		</tr>
         </table></td>
 	</tr>
     <tr>
 	    <td colspan="2">#gui_hr( 'cccccc' )</td>
 	</tr>
+
+    </c:forEach>
 
     <%
     if (creatingNewDocument && document instanceof TextDocumentDomainObject) {

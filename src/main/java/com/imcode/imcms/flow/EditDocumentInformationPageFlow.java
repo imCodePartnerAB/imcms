@@ -1,5 +1,7 @@
 package com.imcode.imcms.flow;
 
+import com.imcode.imcms.api.DocumentLabels;
+import com.imcode.imcms.util.Factory;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
@@ -33,6 +35,12 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.util.KeywordsParser;
 
+/**
+ * Historically DocumentPageFlow is build around a single document editing.
+ * @see com.imcode.imcms.flow.DocumentPageFlow.SaveDocumentCommand
+ *
+ * i18n support requirement - labels editing in different languages required to introduce a hack.
+ */
 public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
     private final static String URL_I15D_PAGE__DOCINFO = "/jsp/docadmin/document_information.jsp";
@@ -90,7 +98,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     /** Document languages enabled/disabled states. */
     private Map<I18nLanguage, Boolean> languagesStates = new HashMap<I18nLanguage, Boolean>();
 
-    private Map<I18nLanguage, DocumentDomainObject> docs = new HashMap<I18nLanguage, DocumentDomainObject>();
+    private Map<I18nLanguage, DocumentLabels> labelsMap = new HashMap<I18nLanguage, DocumentLabels>(); 
 
 
     public EditDocumentInformationPageFlow(DocumentDomainObject document, DispatchCommand returnCommand,
@@ -98,19 +106,39 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         
         super(document, returnCommand, saveDocumentCommand);
 
+        // i18n support
         Set<I18nLanguage> languages = new HashSet(Imcms.getI18nSupport().getLanguages());
 
         for (I18nLanguage language: languages) {
             languagesStates.put(language, false);
         }
 
-        //languagesStates.put(Imcms.getI18nSupport().getDefaultLanguage(), true);
+        // ???
+        // languagesStates.put(Imcms.getI18nSupport().getDefaultLanguage(), true);
 
         Integer docId = document.getMeta().getId();
+        Integer docVersionNo = document.getVersionNo();
         
-        if (docId != null) {
+        MetaDao metaDao = (MetaDao)Imcms.getSpringBean("metaDao");
+        
+        if (docId == null) {
+            for (I18nLanguage language: languages) {
+                labelsMap.put(language, Factory.createLabels(docId, docVersionNo, language));
+            }
+
+            labelsMap.put(document.getLanguage(), document.getLabels());
+        } else {
             for (I18nLanguage language: document.getMeta().getEnabledLanguages()) {
                 languagesStates.put(language, true);
+            }
+
+            for (I18nLanguage language: languages) {
+                DocumentLabels labels = metaDao.getLabels(docId, docVersionNo, language);
+                if (labels == null) {
+                    labels = Factory.createLabels(docId, docVersionNo, language);    
+                }
+
+                labelsMap.put(language, labels);
             }
         }
     }
@@ -244,6 +272,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     private void dispatchToDocumentInformationPage( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         DocumentInformationPage documentInformationPage = new DocumentInformationPage(getDocument(), adminButtonsHidden, errors);
         documentInformationPage.setLanguagesStates(languagesStates);
+        documentInformationPage.setLabelsMap(labelsMap);
         documentInformationPage.forward( request, response );
     }
 
@@ -263,14 +292,31 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         final ImcmsServices service = Imcms.getServices();
         final CategoryMapper categoryMapper = service.getCategoryMapper();
         final DocumentMapper documentMapper = service.getDocumentMapper();
-        
-        String headline = request.getParameter(REQUEST_PARAMETER__HEADLINE);
-        String menuText = request.getParameter(REQUEST_PARAMETER__MENUTEXT);
-        String imageURL = request.getParameter(REQUEST_PARAMETER__IMAGE);
 
-        document.setHeadline(headline);
-        document.setMenuText(menuText);
-        document.setMenuImage(imageURL);
+        for (Map.Entry<I18nLanguage, DocumentLabels> l: labelsMap.entrySet()) {
+        	String suffix = "_" + l.getKey().getCode();
+
+            String headline = request.getParameter(REQUEST_PARAMETER__HEADLINE) + suffix;
+            String menuText = request.getParameter(REQUEST_PARAMETER__MENUTEXT) + suffix;
+            String imageURL = request.getParameter(REQUEST_PARAMETER__IMAGE) + suffix;
+
+            DocumentLabels labels = l.getValue();
+
+            labels.setHeadline(headline);
+            labels.setMenuText(menuText);
+            labels.setMenuImageURL(imageURL);
+        }
+
+        document.setLabels(labelsMap.get(document.getLanguage()));
+        
+//        String headline = request.getParameter(REQUEST_PARAMETER__HEADLINE);
+//        String menuText = request.getParameter(REQUEST_PARAMETER__MENUTEXT);
+//        String imageURL = request.getParameter(REQUEST_PARAMETER__IMAGE);
+//
+//        document.setHeadline(headline);
+//        document.setMenuText(menuText);
+//        document.setMenuImage(imageURL);
+
 
         Set<I18nLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
 
@@ -465,6 +511,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         private Map<I18nLanguage, Boolean> languagesStates;
         private boolean adminButtonsHidden;
         private Set errors;
+        private Map<I18nLanguage, DocumentLabels> labelsMap;
 
         public DocumentInformationPage( DocumentDomainObject document, boolean adminButtonsHidden, Set errors ) {
             this.document = document;
@@ -472,6 +519,15 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             this.errors = errors;
         }
 
+        public Map<I18nLanguage, DocumentLabels> getLabelsMap() {
+            return labelsMap;
+        }
+
+        public void setLabelsMap(Map<I18nLanguage, DocumentLabels> labelsMap) {
+            this.labelsMap = labelsMap;
+        }
+
+        
         public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
             request.setAttribute( REQUEST_ATTRIBUTE__DOCUMENT_INFORMATION_PAGE, this );
             UserDomainObject user = Utility.getLoggedOnUser( request );
