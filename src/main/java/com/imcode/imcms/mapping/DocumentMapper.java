@@ -208,6 +208,14 @@ public class DocumentMapper implements DocumentGetter {
     public <T extends DocumentDomainObject> T saveNewDocument(final T doc, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
+        return saveNewI18nDocument(doc, null, user);
+    }
+
+
+
+    public <T extends DocumentDomainObject> T saveNewI18nDocument(final T doc, Map<I18nLanguage, DocumentLabels> labelsMap, final UserDomainObject user)
+            throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
+
         T docClone = (T)doc.clone();
         I18nLanguage language = docClone.getLanguage();
 
@@ -216,7 +224,13 @@ public class DocumentMapper implements DocumentGetter {
             docClone.setLanguage(language);
         }
 
-        Integer docId = documentSaver.saveNewDocument(docClone, user);
+        if (labelsMap == null) {
+            labelsMap = new HashMap<I18nLanguage, DocumentLabels>();
+        }
+
+        labelsMap.put(docClone.getLanguage(), docClone.getLabels());                
+
+        Integer docId = documentSaver.saveNewDocument(docClone, labelsMap, user);
 
         invalidateDocument(docId);
 
@@ -229,14 +243,34 @@ public class DocumentMapper implements DocumentGetter {
      */
     public void saveDocument(final DocumentDomainObject doc, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {        
-        try {
-            DocumentDomainObject oldDoc = getCustomDocument(doc.getId(), doc.getVersionNo(), doc.getLanguage());
+        saveI18nDocument(doc, null, user);
+    }
 
-            documentSaver.updateDocument(doc.clone(), oldDoc.clone(), user);
+
+    /**
+     * Updates existing document.
+     */
+    public void saveI18nDocument(final DocumentDomainObject doc, Map<I18nLanguage, DocumentLabels> labelsMap, final UserDomainObject user)
+            throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
+
+        DocumentDomainObject docClone = doc.clone();
+        DocumentDomainObject oldDoc = getCustomDocument(doc.getId(), doc.getVersionNo(), doc.getLanguage());
+        
+        if (labelsMap == null) {
+            labelsMap = new HashMap<I18nLanguage, DocumentLabels>();
+        }
+
+        labelsMap.put(docClone.getLanguage(), docClone.getLabels());
+        
+        try {
+            documentSaver.updateDocument(doc.clone(), labelsMap, oldDoc.clone(), user);
     	} finally {
     		invalidateDocument(doc.getId());
     	}
     }
+
+
+
 
     
     /**
@@ -864,6 +898,11 @@ public class DocumentMapper implements DocumentGetter {
         @Override
         public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveDocument(document, user);
+        }
+
+        @Override
+        public void saveI18nDocument(DocumentDomainObject document, Map<I18nLanguage, DocumentLabels> labelsMap, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+            Imcms.getServices().getDocumentMapper().saveI18nDocument(document, labelsMap, user);
         }
     }
 

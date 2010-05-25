@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.imcms.api.I18nLanguage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentComparator;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.lucene.index.Term;
@@ -621,7 +623,14 @@ public class AdminManager extends HttpServlet {
         @Override
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException, DocumentSaveException {
             Imcms.getServices().getDocumentMapper().saveNewDocument( document, user);
-        }       
+        }
+
+        @Override
+        public void saveI18nDocument(DocumentDomainObject document, Map<I18nLanguage, DocumentLabels> labelsMap, UserDomainObject user)
+               throws NoPermissionInternalException, DocumentSaveException {
+
+            Imcms.getServices().getDocumentMapper().saveNewI18nDocument(document, labelsMap, user);
+        }        
     }
 
     private class ShowRecentChangesPageCommand implements DispatchCommand {

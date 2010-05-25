@@ -1,13 +1,16 @@
 package com.imcode.imcms.flow;
 
 import com.imcode.imcms.api.DocumentLabels;
+import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.util.Factory;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.HttpSessionUtils;
+import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
 
 import java.io.File;
@@ -34,6 +37,7 @@ import com.imcode.imcms.servlet.admin.UserFinder;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.util.KeywordsParser;
+import org.apache.commons.lang.UnhandledException;
 
 /**
  * Historically DocumentPageFlow is build around a single document editing.
@@ -142,6 +146,21 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             }
         }
     }
+
+    
+    @Override
+    protected synchronized void saveDocument( HttpServletRequest request ) {
+        try {
+            saveDocumentCommand.saveI18nDocument(getDocument(), labelsMap, Utility.getLoggedOnUser(request));
+        } catch ( NoPermissionToEditDocumentException e ) {
+            throw new ShouldHaveCheckedPermissionsEarlierException(e);
+        } catch ( NoPermissionToAddDocumentToMenuException e ) {
+            throw new ConcurrentDocumentModificationException(e);
+        } catch (DocumentSaveException e) {
+            throw new UnhandledException(e);
+        }
+    }
+
 
     protected void dispatchFromEditPage( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {
         if ( PAGE__DOCUMENT_INFORMATION.equals( page ) ) {
@@ -296,9 +315,9 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         for (Map.Entry<I18nLanguage, DocumentLabels> l: labelsMap.entrySet()) {
         	String suffix = "_" + l.getKey().getCode();
 
-            String headline = request.getParameter(REQUEST_PARAMETER__HEADLINE) + suffix;
-            String menuText = request.getParameter(REQUEST_PARAMETER__MENUTEXT) + suffix;
-            String imageURL = request.getParameter(REQUEST_PARAMETER__IMAGE) + suffix;
+            String headline = request.getParameter(REQUEST_PARAMETER__HEADLINE + suffix);
+            String menuText = request.getParameter(REQUEST_PARAMETER__MENUTEXT + suffix);
+            String imageURL = request.getParameter(REQUEST_PARAMETER__IMAGE + suffix);
 
             DocumentLabels labels = l.getValue();
 
@@ -308,15 +327,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         }
 
         document.setLabels(labelsMap.get(document.getLanguage()));
-        
-//        String headline = request.getParameter(REQUEST_PARAMETER__HEADLINE);
-//        String menuText = request.getParameter(REQUEST_PARAMETER__MENUTEXT);
-//        String imageURL = request.getParameter(REQUEST_PARAMETER__IMAGE);
-//
-//        document.setHeadline(headline);
-//        document.setMenuText(menuText);
-//        document.setMenuImage(imageURL);
-
 
         Set<I18nLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
 

@@ -43,6 +43,17 @@ public abstract class CreateDocumentPageFlow extends DocumentPageFlow {
         }
     }
 
+    
+    /**
+     * Use EditDocumentInformationPageFlow version of save document. 
+     * @param request
+     */
+    @Override
+    protected synchronized void saveDocument( HttpServletRequest request ) {
+        editDocumentInformationPageFlow.saveDocument(request);    
+    }
+
+
     protected void dispatchOk( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {
         if ( EditDocumentInformationPageFlow.PAGE__DOCUMENT_INFORMATION.equals( page ) ) {
             editDocumentInformationPageFlow.dispatchOkFromEditPage( request, response );

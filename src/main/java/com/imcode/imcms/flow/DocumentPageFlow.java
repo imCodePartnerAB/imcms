@@ -51,6 +51,9 @@ public abstract class DocumentPageFlow extends PageFlow {
         }
     }
 
+
+    
+
     protected void saveDocumentAndReturn( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         saveDocument( request );
         dispatchReturn( request, response );
@@ -62,7 +65,15 @@ public abstract class DocumentPageFlow extends PageFlow {
 
 
     public static abstract class SaveDocumentCommand implements Serializable {
-       public abstract void saveDocument(DocumentDomainObject document, UserDomainObject user)
+        
+        public abstract void saveDocument(DocumentDomainObject document, UserDomainObject user)
                throws NoPermissionInternalException, DocumentSaveException;
+
+
+        public void saveI18nDocument(DocumentDomainObject document, Map<I18nLanguage, DocumentLabels> labelsMap, UserDomainObject user)
+               throws NoPermissionInternalException, DocumentSaveException {
+
+            throw new NotImplementedException();
+        }
     }
 }

@@ -270,9 +270,9 @@ public class DocumentSaver {
 //    }
 
 
-
+    //todo: refactor labels saving
     @Transactional
-    public void updateDocument(DocumentDomainObject doc, DocumentDomainObject oldDoc, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+    public void updateDocument(DocumentDomainObject doc, Map<I18nLanguage, DocumentLabels> labelsMap, DocumentDomainObject oldDoc, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(doc);
 
         //document.loadAllLazilyLoaded();
@@ -293,7 +293,14 @@ public class DocumentSaver {
 
         saveMeta(doc.getMeta());
 
-        savingVisitor.updateDocumentLabels(doc, oldDoc, user);
+        // hack, must be refactored
+        for (Map.Entry<I18nLanguage, DocumentLabels> l: labelsMap.entrySet()) {
+            doc.setLanguage(l.getKey());
+            doc.setLabels(l.getValue());
+
+            savingVisitor.updateDocumentLabels(doc, null, user);
+        }
+
         doc.accept(savingVisitor);
     }    
 
@@ -461,8 +468,9 @@ public class DocumentSaver {
     }
 
     
+    // todo: refactor labels saving !!
     @Transactional
-    public  <T extends DocumentDomainObject> Integer saveNewDocument(T doc, UserDomainObject user)
+    public  <T extends DocumentDomainObject> Integer saveNewDocument(T doc, Map<I18nLanguage, DocumentLabels> labelsMap, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         Meta meta = doc.getMeta();
@@ -472,7 +480,7 @@ public class DocumentSaver {
         documentMapper.setCreatedAndModifiedDatetimes(meta, new Date());
 
         boolean inheritRestrictedPermissions = !user.isSuperAdminOrHasFullPermissionOn(doc);
-        
+
         if (inheritRestrictedPermissions) {
             meta.getPermissionSets().setRestricted1(meta.getPermissionSetsForNewDocuments().getRestricted1());
             meta.getPermissionSets().setRestricted2(meta.getPermissionSetsForNewDocuments().getRestricted2());
@@ -492,12 +500,21 @@ public class DocumentSaver {
 
         doc.setVersion(version);
 
+        
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
-        docCreatingVisitor.updateDocumentLabels(doc, null, user);
+
+        // hack, must be refactored
+        for (Map.Entry<I18nLanguage, DocumentLabels> l: labelsMap.entrySet()) {
+            doc.setLanguage(l.getKey());
+            doc.setLabels(l.getValue());
+
+            docCreatingVisitor.updateDocumentLabels(doc, null, user);
+        }
+
         doc.accept(docCreatingVisitor);
 
         return docId;
-    }    
+    }
 
     
     /**

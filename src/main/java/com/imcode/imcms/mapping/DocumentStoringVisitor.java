@@ -197,6 +197,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         metaDao.saveLabels(labels);
     }
 
+    
+
     /**
      * Saves text document's text.
      * 
