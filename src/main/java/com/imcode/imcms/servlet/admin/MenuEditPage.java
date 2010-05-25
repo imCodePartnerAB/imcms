@@ -1,5 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.api.DocumentLabels;
+import com.imcode.imcms.api.I18nLanguage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.ConcurrentDocumentModificationException;
@@ -28,6 +30,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.UnhandledException;
 
 import com.imcode.imcms.flow.CreateDocumentPageFlow;
@@ -266,14 +269,21 @@ public class MenuEditPage extends OkCancelPage {
         @Override
         public void saveDocument(DocumentDomainObject document, UserDomainObject user)
                 throws NoPermissionInternalException, DocumentSaveException {
-            
+            throw new NotImplementedException();
+        }
+
+
+        @Override
+        public void saveI18nDocument(DocumentDomainObject document, Map<I18nLanguage, DocumentLabels> labelsMap, UserDomainObject user)
+                throws NoPermissionInternalException, DocumentSaveException {
+
             if ( null != savedDocument ) {
                 return;
             }
-            
+
             final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
-            savedDocument = documentMapper.saveNewDocument(document, user);
+            savedDocument = documentMapper.saveNewI18nDocument(document, labelsMap, user);
 
             if ( null == parentMenuIndex ) {
                 return;

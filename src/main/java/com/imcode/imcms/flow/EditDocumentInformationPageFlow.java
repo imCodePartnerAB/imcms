@@ -37,6 +37,7 @@ import com.imcode.imcms.servlet.admin.UserFinder;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.dao.MetaDao;
 import com.imcode.util.KeywordsParser;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
 /**
@@ -198,8 +199,19 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     }
 
     private void dispatchToImageBrowser( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        final String i18nCode = request.getParameter(REQUEST_PARAMETER__I18N_CODE);        
-    	final ImageBrowser imageBrowser = new ImageBrowser();
+        ImageBrowser imageBrowser = new ImageBrowser();
+        String i18nCode = request.getParameter(REQUEST_PARAMETER__I18N_CODE);
+
+        if (StringUtils.isBlank(i18nCode)) {
+            throw new IllegalStateException("i18nCode request parameter is blank.");
+        }
+
+        final I18nLanguage language = Imcms.getI18nSupport().getByCode(i18nCode);
+
+        if (language == null) {
+            throw new IllegalArgumentException(String.format("Language with code %s does not exists.", i18nCode));
+        }
+
     	    	
         final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
         imageBrowser.setCancelCommand( new DispatchCommand() {
@@ -209,23 +221,15 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             }
         } );
 
-        /*
+
         imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
-            public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {            	
-            	if (i18nCode != null) {
-                	for (I18nMeta i18nPart: document.getMeta().getI18nMetas()) {
-                		if (i18nPart.getLanguage().getCode().equals(i18nCode)) {
-                			i18nPart.setMenuImageURL(imageUrl);
-                			break;
-                		}	
-                	}
-                }
-                
+            public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+                labelsMap.get(language).setMenuImageURL(imageUrl);
+
                 request.setAttribute( REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
                 dispatchToFirstPage( request, response );
             }
         } );
-        */
 
         imageBrowser.forward( request, response );
     }
