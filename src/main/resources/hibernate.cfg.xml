@@ -37,6 +37,7 @@
         
         <!-- Named queries -->
         <mapping resource="Document.hbm.xml"/>
+        <mapping resource="ContentLoop.hbm.xml"/>
         <mapping resource="I18nLanguage.hbm.xml"/>
         <mapping resource="TextDocument.hbm.xml"/>
     </session-factory>

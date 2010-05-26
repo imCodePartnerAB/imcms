@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+  <!-- Unique -->
+  <query name="ContentLoop.getByDocIdAndDocVersionNoAndNo">
+    <![CDATA[
+    SELECT l FROM ContentLoop l WHERE l.docId = :docId AND l.docVersionNo = :docVersionNo AND l.no = :no
+    ]]>
+  </query>
+
+
+  <!-- List -->
+  <query name="ContentLoop.getByDocIdAndDocVersionNo">
+    <![CDATA[
+    SELECT l FROM ContentLoop l WHERE l.docId = :docId AND l.docVersionNo = :docVersionNo
+    ]]>
+  </query>
+    
+</hibernate-mapping>

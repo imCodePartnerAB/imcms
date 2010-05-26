@@ -8,6 +8,8 @@ import javax.sql.DataSource;
 
 /**
  * Integration with scripted code.
+ *
+ * Part of test related code is implemented in Clojure.
  */
 public class Script {
 
@@ -17,7 +19,7 @@ public class Script {
         try {
             RT.load("com/imcode/imcms/boot");
             RT.load("com/imcode/imcms/project");
-            RT.load("com/imcode/imcms/db-test");
+            RT.load("com/imcode/imcms/db_test");
 
             RT.load("com/imcode/imcms/runtime");
             RT.load("com/imcode/cljlib/db");

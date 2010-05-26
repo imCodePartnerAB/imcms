@@ -104,23 +104,4 @@
     ]]>
   </query>
 
-
-    <!-- ==================================================================== -->
-    <!-- Content Loop -->
-    <!-- ==================================================================== -->
-
-  <!-- Unique -->
-  <query name="ContentLoop.getByDocIdAndDocVersionNoAndNo">
-    <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.docId = :docId AND l.docVersionNo = :docVersionNo AND l.no = :no
-    ]]>
-  </query>
-
-
-  <!-- List -->
-  <query name="ContentLoop.getByDocIdAndDocVersionNo">
-    <![CDATA[
-    SELECT l FROM ContentLoop l WHERE l.docId = :docId AND l.docVersionNo = :docVersionNo
-    ]]>
-  </query>
 </hibernate-mapping>

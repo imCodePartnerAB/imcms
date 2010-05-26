@@ -1,21 +1,19 @@
 package com.imcode.imcms.dao;
 
-import static com.imcode.imcms.dao.Utils.contentLoopDao;
-
+import com.imcode.imcms.Script;
 import com.imcode.imcms.api.Content;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.junit.*;
+import static org.junit.Assert.*;
 import org.springframework.orm.hibernate3.HibernateCallback;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-import static org.testng.Assert.*;
 
 import com.imcode.imcms.api.ContentLoop;
 
 import java.sql.SQLException;
 import java.util.List;
 
-@Test(groups = "dao")
 public class ContentLoopDaoTest  {
 
 
@@ -29,19 +27,34 @@ public class ContentLoopDaoTest  {
     final int loop_3_desc_id = 3;
 
 
-    ContentLoopDao loopDao;
+    static ContentLoopDao contentLoopDao;
+
+
 
     @BeforeClass
-    public void setUpClass() {
-        loopDao = Utils.contentLoopDao; //(ContentLoopDao)Imcms.getSpringBean("contentLoopDao");
+    public static void recreateDB() {
+        Script.recreateEmptyDB();
+    }
+
+
+    @Before
+    public void resetDBData() {
+        Script.runDBScripts("content_loop_dao.sql");
+
+        SessionFactory sf = Script.createHibernateSessionFactory(
+                new Class[] {ContentLoop.class},
+                "src/main/resources/ContentLoop.hbm.xml");
+
+        contentLoopDao = new ContentLoopDao();
+        contentLoopDao.setSessionFactory(sf);
     }
 
 
     @Test 
     public void getLoops() {
-        List<ContentLoop> loops = loopDao.getLoops(1001, 0);
+        List<ContentLoop> loops = contentLoopDao.getLoops(1001, 0);
 
-        assertEquals(loops.size(), 4, "Loops count in the doc.");
+        assertEquals("Loops count in the doc.", loops.size(), 4);
     }
 
     
@@ -53,10 +66,10 @@ public class ContentLoopDaoTest  {
             getLoop(loop_3_asc_id, true),
             getLoop(loop_3_desc_id, true)};
 
-        assertEquals(loops[0].getContents().size(), 0, "Contents count.");
-        assertEquals(loops[1].getContents().size(), 1, "Contents count.");
-        assertEquals(loops[2].getContents().size(), 3, "Contents count.");
-        assertEquals(loops[3].getContents().size(), 3, "Contents count.");
+        assertEquals("Contents count.", loops[0].getContents().size(), 0);
+        assertEquals("Contents count.", loops[1].getContents().size(), 1);
+        assertEquals("Contents count.", loops[2].getContents().size(), 3);
+        assertEquals("Contents count.", loops[3].getContents().size(), 3);
 	}
 
     
@@ -66,12 +79,12 @@ public class ContentLoopDaoTest  {
         List<Content> descSortedContens = getLoop(loop_3_desc_id, true).getContents();
 
         for (int i = 0; i <= 2 ; i++) {
-            assertEquals(new Integer(i), ascSortedContens.get(i).getNo(), "Content order no.");
+            assertEquals("Content order no.", new Integer(i), ascSortedContens.get(i).getNo());
         }
 
 
         for (int i = 0; i <= 2; i++) {
-            assertEquals(new Integer(2 - i), descSortedContens.get(i).getNo(), "Content order no.");
+            assertEquals("Content order no.", new Integer(2 - i), descSortedContens.get(i).getNo());
         }        
 	}
 
@@ -82,7 +95,7 @@ public class ContentLoopDaoTest  {
         loop.setDocVersionNo(0);
         loop.setNo(getNextLoopNo());
 
-        loopDao.saveLoop(loop);
+        contentLoopDao.saveLoop(loop);
     }
     
 
@@ -102,15 +115,15 @@ public class ContentLoopDaoTest  {
 		assertNotNull(contentLoopDao.getLoop(newLoop.getId()));
 	}
 
-	@Test(dependsOnMethods = "createEmptyLoop")
+	@Test
 	public void deleteLoop() {
 		ContentLoop loop = getLoop(0, true);
 
-        assertNotNull(loop, "Loop exists");
+        assertNotNull("Loop exists", loop);
         
 		Long loopId = loop.getId();
 
-		loopDao.deleteLoop(loopId);
+		contentLoopDao.deleteLoop(loopId);
         
 		assertNull(contentLoopDao.getLoop(loopId));
 	}
@@ -128,31 +141,26 @@ public class ContentLoopDaoTest  {
             loop.addFirstContent();
         }
 
-        loop = loopDao.saveLoop(loop);
+        loop = contentLoopDao.saveLoop(loop);
 
         ContentLoop savedLoop = contentLoopDao.getLoop(loop.getId());
 
-        assertNotNull(savedLoop, "Loop exists");
+        assertNotNull("Loop exists", savedLoop);
 
         List<Content> contents = loop.getContents();
         List<Content> savedContents = savedLoop.getContents();
 
-        assertEquals(contentsCount, savedContents.size(), "Content count matches");
+        assertEquals("Content count matches", contentsCount, savedContents.size());
 
         for (int i = 0; i < contentsCount; i++) {
             Content content = contents.get(i);
             Content savedContent = savedContents.get(i);
 
-            assertEquals(content.getNo(), savedContent.getNo(), "Contents no-s mathces.");
+            assertEquals("Contents no-s mathces.", content.getNo(), savedContent.getNo());
         }
 
         
 
-	}
-
-	//@Override
-	protected String getDataSetFileName() {
-		return "dbunit-content_loop.xml";
 	}
 
 	private ContentLoop getLoop(int no) {
@@ -163,7 +171,7 @@ public class ContentLoopDaoTest  {
         ContentLoop loop = contentLoopDao.getLoop(1001, 0, no);
 
         if (assertNotNull) {
-            assertNotNull(loop, String.format("Loop exists - docId: %s, docVersionNo: %s, no: %s.", 1001, 0, no));
+            assertNotNull(String.format("Loop exists - docId: %s, docVersionNo: %s, no: %s.", 1001, 0, no), loop);
         }
 
         return loop;
