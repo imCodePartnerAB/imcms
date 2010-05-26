@@ -90,9 +90,12 @@ public class Script {
     }    
     
 
-    public void initImcms() throws Exception {
-        RT.var("com.imcode.imcms.project", "init-imcms")
-            .invoke();
+    public static void initImcms(Boolean prepareDBOnStart) {
+        try {
+            RT.var("com.imcode.imcms.project", "init-imcms").invoke(prepareDBOnStart);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

@@ -20,6 +20,8 @@
       [logging :as log]))  
     
   (:use
+    com.imcode.imcms.conf-utils
+    
     (com.imcode.cljlib
       [misc :only (dump)])
 
@@ -202,8 +204,7 @@
   "Reads and returns conf map from the conf.clj file.
    Throws an exception if conf file can not be found."
   []
-  (let [path (.getCanonicalPath (conf-file))]
-    (read-string (slurp path))))
+  (create-conf (path) (conf-file)))
   
 
 (defn roles []
@@ -226,4 +227,4 @@
 
 
 (defn prepare-db []
-  (db/prepare (home) (conf) (db-spec)))
+  (db/prepare (create-conf) (db-spec) ))

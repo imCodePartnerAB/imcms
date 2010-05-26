@@ -110,13 +110,16 @@
 
 (defn init-imcms
   "Initializes Imcms for tests."
-  []
-  (when-not spring-app-context
-    (init-spring-app-context!))
-  
-  (Imcms/setPath (subdir "src/main/webapp"))
-  (Imcms/setApplicationContext spring-app-context)
-  (Imcms/setPrepareDatabaseOnStart false))
+  ([]
+    (init-imcms false))
+
+  ([prepare-db-on-start]
+    (when-not spring-app-context
+      (init-spring-app-context!))
+
+    (Imcms/setPath (subdir "src/main/webapp"))
+    (Imcms/setApplicationContext spring-app-context)
+    (Imcms/setPrepareDatabaseOnStart prepare-db-on-start)))
 
 
 (defn loc

@@ -412,7 +412,7 @@ public class Imcms {
     /**
      * Init/upgrades database if necessary.
      */
-    private static void prepareDatabase() {
+    public static void prepareDatabase() {
 //        File confXmlFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xml");
 //        File confXsdFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xsd");
 //        File scriptsDir = new File(Imcms.getPath(), "WEB-INF/sql");
@@ -429,6 +429,8 @@ public class Imcms {
 //                return null;
 //            }
 //        });
+        
+        // todo refactor.
         ClojureUtils.prepareDB();
     }
 

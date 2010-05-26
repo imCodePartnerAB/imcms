@@ -19,6 +19,8 @@
 
   
   (:use
+    com.imcode.imcms.conf-utils
+    
     clojure.test
     (clojure.contrib duck-streams))
 
@@ -145,42 +147,38 @@
 (deftest test-init
   (recreate-empty)
 
-  (let [app-home (project/subdir-path "src/main/web")
-        conf (read-string (slurp (project/file-path "src/main/resources/conf.clj")))
-        db-conf-init (:init (:db conf))
-        scripts-dir (:scripts-dir (:db conf))
-        scripts-home (fs-lib/compose-path app-home scripts-dir)       
+  (let [basedir (project/subdir-path "src/main/web")
+        conf (create-conf (project/file-path "src/main/resources/conf.clj") basedir)
+        db-conf-init (:init (:db conf))  
         spec (create-spec false)]
 
     (sql/with-connection spec
       (sql/transaction
-        (db/init db-conf-init scripts-home)))))
+        (db/init db-conf-init)))))
 
 
 (deftest test-upgrade
   (test-init)
 
-  (let [app-home (project/subdir-path "src/main/web")
-        conf (read-string (slurp (project/file-path "src/main/resources/conf.clj")))
+  (let [basedir (project/subdir-path "src/main/web")
+        conf (create-conf (project/file-path "src/main/resources/conf.clj") basedir)
         db-conf-diffs (:diffs (:db conf))
-        scripts-dir (:scripts-dir (:db conf))
-        scripts-home (fs-lib/compose-path app-home scripts-dir)
         spec (create-spec false)]
 
     (sql/with-connection spec
       (sql/transaction
-        (db/upgrade db-conf-diffs scripts-home)))))
+        (db/upgrade db-conf-diffs)))))
 
 
 
 (deftest test-prepare-empty
   (recreate-empty)
   
-  (let [app-home (project/subdir-path "src/main/web")
-        conf (read-string (slurp (project/file-path "src/main/resources/conf.clj")))
+  (let [basedir (project/subdir-path "src/main/web")
+        conf (create-conf (project/file-path "src/main/resources/conf.clj") basedir)
         spec (create-spec false)]
 
-    (db/prepare app-home conf spec)))
+    (db/prepare conf spec)))
 
 
 

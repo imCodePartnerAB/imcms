@@ -111,15 +111,14 @@
 
 (defn init
   "Initializes empty database.
-   db-conf-init - db init record. See :db/:init definition in conf.clj.
-   scripts-home - init scripts parent directory path."
-  [db-conf-init scripts-home]
-  (let [scripts-paths (fs-lib/extend-paths scripts-home (:scripts db-conf-init))
+   db-conf-init - db init record. See :db/:init definition in conf.clj."
+  [db-conf-init]
+  (let [scripts (:scripts db-conf-init)
         version (:version db-conf-init)]
     
-    (log/info (format "The following init scripts will be executed: %s." (print-str scripts-paths)))
-    (doseq [script-path scripts-paths]
-      (db-lib/run-script (sql/connection) script-path))
+    (log/info (format "The following init scripts will be executed: %s." (print-str scripts)))
+    (doseq [script scripts]
+      (db-lib/run-script (sql/connection) script))
 
     (log/info (format "Updating db version to: %s." version))
     (set-version version)))
@@ -127,32 +126,26 @@
 
 (defn upgrade
   "Upgrades databse.
-   diffs - seq of diff records.
-   scripts-home - diff scripts parent directory path."
-  [diffs scripts-home]
+   diffs - seq of diff records."
+  [diffs]
   (doseq [{:keys [to, scripts]} diffs]
     (do
       ;; log xxx
-      (doseq [script-path (fs-lib/extend-paths scripts-home scripts)]
-        (db-lib/run-script (sql/connection) script-path)))
+      (doseq [script scripts]
+        (db-lib/run-script (sql/connection) script))
 
-    (set-version to)))  
+      (set-version to))))  
   
 
 (defn prepare
   "Prepares database - initializes and/or upgrades db if necessary.
-   app-home - application home.
    conf - configuration map defined in 'conf.clj' file.
    spec - db spec."
-  [app-home conf spec]
-  (log/info (format "Preparing the databse. app-home: %s, conf: %s." app-home, conf))
+  [conf spec]
   (let [db-conf (:db conf)
         db-conf-version (:version db-conf)
-        db-conf-scripts-dir (:scripts-dir db-conf)
         db-conf-init (:init db-conf)
-        db-conf-diffs (:diffs db-conf)
-        
-        scripts-home (fs-lib/compose-path app-home db-conf-scripts-dir)]
+        db-conf-diffs (:diffs db-conf)]
 
     (sql/with-connection spec
       (sql/transaction
@@ -160,7 +153,7 @@
           (log/info (format "The database is empty and need to be initialized. The following init will be applied: %s."
                             db-conf-init))
           
-          (init db-conf-init scripts-home) 
+          (init db-conf-init) 
 
           (log/info (format "The database is initialized. Database version is %s." (get-version))))
 
@@ -171,7 +164,7 @@
               (log/info (format "The database need to be upgraded from %s to %s. The following diffs will be applied: %s."
                                 current-version, last-diff-version, diffs))
 
-              (upgrade diffs scripts-home))))))
+              (upgrade diffs))))))
 
     (let [current-version (get-version spec)]
       (when-not (= current-version db-conf-version)
