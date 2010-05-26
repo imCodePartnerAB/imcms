@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.DocRequestHandler;
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.ImcmsConstants;
@@ -47,6 +48,11 @@ import com.imcode.imcms.api.I18nLanguage;
  */
 public class ImcmsFilter implements Filter, ImcmsListener {
 
+    public final static String TOO_MANY_SESSIONS = "TooManySessions";
+
+    public final static LocalizedMessage LOGIN_MSG_TOO_MANY_SESSIONS
+            = new LocalizedMessage("templates/login/TooManySessions");    
+
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
 
@@ -71,11 +77,12 @@ public class ImcmsFilter implements Filter, ImcmsListener {
     /** Processes request normally. */
     private Filter normalModeFilter = new Filter() {
 
-        public void doFilter(ServletRequest r, ServletResponse response, FilterChain filterChain)
+        public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain)
                 throws IOException, ServletException {
-            r.setCharacterEncoding(Imcms.DEFAULT_ENCODING);
+            req.setCharacterEncoding(Imcms.DEFAULT_ENCODING);
 
-            HttpServletRequest request = (HttpServletRequest) r;
+            HttpServletRequest request = (HttpServletRequest)req;
+            HttpServletResponse response = (HttpServletResponse)res;
 
             HttpSession session = request.getSession();
 
@@ -98,6 +105,33 @@ public class ImcmsFilter implements Filter, ImcmsListener {
                 user = service.verifyUserByIpOrDefault(request.getRemoteAddr()) ;
                 assert user.isActive() ;
                 Utility.makeUserLoggedIn(request, user);
+                
+            // todo: add check AND NOT logged in by IP; optimize;
+            // In case system denies multiple login for the same user
+            // invalidate current session if it does not match to
+            // last user's session and redirect user to the login page.
+            } else if (!user.isDefaultUser() && service.getConfig().isDenyMultipleUserLogin()) {
+                String sessionId = session.getId();
+                String lastUserSessionId = service
+                        .getImcmsAuthenticatorAndUserAndRoleMapper()
+                        .getUserSessionId(user);
+
+                if (lastUserSessionId != null && !lastUserSessionId.equals(sessionId)) {
+
+                    session.invalidate();
+
+                    String redirectURL = request.getContextPath() + "/login?"
+                            + TOO_MANY_SESSIONS;
+
+                    response.sendRedirect(redirectURL);
+                    return;
+                }
+
+                // ??? Clarify the intention of the following code block. 
+//                if (request.getParameter(TOO_MANY_SESSIONS) != null) {
+//                    request.setAttribute(VerifyUser.REQUEST_ATTRIBUTE__ERROR,
+//                            LOGIN_MSG_TOO_MANY_SESSIONS);
+//                }
             }
 
             ResourceBundle resourceBundle = Utility.getResourceBundle(request);

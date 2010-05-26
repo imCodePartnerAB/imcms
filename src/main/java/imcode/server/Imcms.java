@@ -37,8 +37,8 @@ import com.imcode.imcms.servlet.ImcmsMode;
 import com.imcode.imcms.servlet.ImcmsListener;
 
 /**
- * Runtime.
- *
+ * Singleton registry.
+ * 
  * Path and ApplicationContext must be set before the start method invocation.
  */
 public class Imcms {

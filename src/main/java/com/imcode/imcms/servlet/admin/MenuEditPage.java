@@ -82,7 +82,7 @@ public class MenuEditPage extends OkCancelPage {
             int documentTypeId = Integer.parseInt(request.getParameter(DOCUMENT_TYPE_ID));
             if ( 0 == documentTypeId ) {
                 addExistingDocPage( textDocument.getId(), menuIndex, request, response );
-                // todo: investigate why it worked in prev version without return statement.
+                // todo: investigate why it worked in v 4.x without return statement.
                 return;
             } else {
                 DocumentCreator documentCreator = new DocumentCreator(

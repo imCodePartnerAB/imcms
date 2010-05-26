@@ -39,12 +39,6 @@
         <dispatcher>REQUEST</dispatcher>
     </filter-mapping>
 
-    <!--
-    <filter-mapping>
-        <filter-name>ImcmsMultipleUserLoginFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-    -->
 
     <filter-mapping>
         <filter-name>SuperAdminFilter</filter-name>
