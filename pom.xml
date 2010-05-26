@@ -301,8 +301,6 @@
       <!--<systemPath>${basedir}/lib/cljlib.jar</systemPath>  -->
     </dependency>
 
-      
-
     <dependency>
         <groupId>org.apache.ibatis</groupId>
         <artifactId>ibatis-sqlmap</artifactId>

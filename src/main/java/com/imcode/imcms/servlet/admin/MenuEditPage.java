@@ -82,6 +82,8 @@ public class MenuEditPage extends OkCancelPage {
             int documentTypeId = Integer.parseInt(request.getParameter(DOCUMENT_TYPE_ID));
             if ( 0 == documentTypeId ) {
                 addExistingDocPage( textDocument.getId(), menuIndex, request, response );
+                // todo: investigate why it worked in prev version without return statement.
+                return;
             } else {
                 DocumentCreator documentCreator = new DocumentCreator(
                 	new SaveNewDocumentAndAddToMenuCommand(textDocument, menuIndex), 
@@ -89,7 +91,7 @@ public class MenuEditPage extends OkCancelPage {
                 			public void dispatch(HttpServletRequest request,
                 					HttpServletResponse response) throws IOException, ServletException {
                 				forward(request, response);
-                			}
+                			}                       
                     	}, 
                     servletContext);
                 try {
