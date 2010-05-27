@@ -60,7 +60,7 @@ try {
 	isSwe =	imcmsSystem.getCurrentUser().getLanguage().getIsoCode639_2().equals("swe");
 } catch (Exception e) {}
 
-I18nLanguage currentLanguage = Imcms.getDocRequestHandler().getLanguage();
+I18nLanguage currentLanguage = Imcms.getGetDocumentCallback().getLanguage();
 
 
 //DateFormat df  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;

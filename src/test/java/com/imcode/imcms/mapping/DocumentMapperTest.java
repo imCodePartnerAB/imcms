@@ -2,7 +2,6 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.Script;
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.util.Factory;
 
 import imcode.server.Imcms;
 import imcode.server.document.*;
@@ -36,7 +35,7 @@ public class DocumentMapperTest {
 
     @BeforeClass
     public static void setUpClass() {
-        Script.recreateDB();
+        Script.prepareDB(true);
         Script.initImcms(false);
         
         Imcms.start();
@@ -264,9 +263,9 @@ public class DocumentMapperTest {
 //        parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
 //
 //
-//        DocRequestHandler docRequestInfo = new DocRequestHandler.WorkingDocRequestHandler(admin);
+//        GetDocumentCallback docRequestInfo = new GetDocumentCallback.WorkingDocRequestHandler(admin);
 //        docRequestInfo.setLanguage(i18nSupport.getDefaultLanguage());
-//        Imcms.setDocRequestHandler(docRequestInfo);
+//        Imcms.setGetDocumentCallback(docRequestInfo);
 //
 //        menu = parentDoc.getMenu(menuNo);
 //

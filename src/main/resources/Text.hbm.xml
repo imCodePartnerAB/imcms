@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+  <query name="Text.deleteTexts">
+    <![CDATA[
+    DELETE FROM Text t WHERE t.docId = :docId AND t.docVersionNo = :docVersionNo AND t.language.id = :languageId
+    ]]>
+  </query>
+
+  <!-- Collection -->
+  <query name="Text.getByDocIdAndDocVersionNoAndLanguageId">
+    <![CDATA[
+    SELECT t FROM Text t WHERE t.docId = :docId AND t.docVersionNo = :docVersionNo AND t.language.id = :languageId
+    ]]>
+  </query>
+
+  <!-- Collection -->
+  <query name="Text.getByDocIdAndDocVersionNo">
+    <![CDATA[
+    SELECT t FROM Text t WHERE t.docId = :docId AND t.docVersionNo = :docVersionNo
+    ]]>
+  </query>
+
+  <!-- Unique result -->
+  <query name="Text.getByDocIdAndDocVersionNoAndNoAndLanguageId">
+    <![CDATA[
+    SELECT t FROM Text t WHERE t.docId = :docId AND t.docVersionNo = :docVersionNo AND t.no = :no AND t.language.id = :languageId
+    ]]>
+  </query>
+
+</hibernate-mapping>

@@ -33,7 +33,7 @@ public class ContentLoopDaoTest  {
 
     @BeforeClass
     public static void recreateDB() {
-        Script.recreateEmptyDB();
+        Script.recreateDB();
     }
 
 

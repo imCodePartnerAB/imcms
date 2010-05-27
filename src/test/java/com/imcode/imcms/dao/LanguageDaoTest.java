@@ -22,7 +22,7 @@ public class LanguageDaoTest {
 
     @BeforeClass
     public static void recreateDB() {
-        Script.recreateEmptyDB();
+        Script.recreateDB();
     }
 
 

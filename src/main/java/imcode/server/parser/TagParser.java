@@ -338,7 +338,7 @@ public class TagParser {
             includedParserParameters = (ParserParameters) parserParameters.clone();
             includedParserParameters.setTemplate(attributes.getProperty("template"));
             includedParserParameters.setParameter(attributes.getProperty("param"));
-            //includedParserParameters.getDocRequestHandler().setDocument(service.getDocumentMapper().getDefaultDocument(included_meta_id));
+            //includedParserParameters.getGetDocumentCallback().setDocument(service.getDocumentMapper().getDefaultDocument(included_meta_id));
             includedParserParameters.getDocumentRequest().setDocument(service.getDocumentMapper().getDocument(included_meta_id));
             includedParserParameters.getDocumentRequest().setReferrer(document);
             includedParserParameters.setFlags(0);
@@ -401,7 +401,7 @@ public class TagParser {
     public String tagText(Properties attributes, ContentLoop loop, Content content) {
         TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
 //        UserDomainObject user = documentRequest.getUser();
-//        I18nLanguage language = Imcms.getDocRequestHandler().getLanguage();
+//        I18nLanguage language = Imcms.getGetDocumentCallback().getLanguage();
 
         if ( shouldOutputNothingAccordingToMode(attributes, textMode) || textDocumentToUse==null || textDocumentToUse.getId() != document.getId() && textMode ) {
             return "";
@@ -808,10 +808,10 @@ public class TagParser {
 
     
     private TextDocumentDomainObject getTextDocumentToUse(Properties attributes) {
-//        com.imcode.imcms.api.DocRequestHandler dr =Imcms.getDocRequestHandler();
+//        com.imcode.imcms.api.GetDocumentCallback dr =Imcms.getGetDocumentCallback();
 //
 //        if (dr == null) {
-//            throw new IllegalStateException("DocRequestHandler is not associated with a current thread.");
+//            throw new IllegalStateException("GetDocumentCallback is not associated with a current thread.");
 //        }
 //
 //    	UserDomainObject user = dr.getUser();

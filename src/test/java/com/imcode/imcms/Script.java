@@ -60,20 +60,10 @@ public class Script {
     }
 
 
-    public static void recreateDB(String... sqlScriptsPaths) {
+    public static void prepareDB(boolean recreateBofrePrepare) {
         try {
-            RT.var("com.imcode.imcms.db-test", "recreate")
-                .invoke(createPaths(sqlScriptsPaths));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public static void recreateEmptyDB() {
-        try {
-            RT.var("com.imcode.imcms.db-test", "recreate-empty")
-                .invoke();
+            RT.var("com.imcode.imcms.db-test", "prepare")
+                .invoke(recreateBofrePrepare);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

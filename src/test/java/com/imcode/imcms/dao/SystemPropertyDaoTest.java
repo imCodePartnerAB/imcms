@@ -19,7 +19,7 @@ public class SystemPropertyDaoTest {
 
     @BeforeClass
     public static void recreateDB() {
-        Script.recreateEmptyDB();
+        Script.recreateDB();
     }
 
     @Before

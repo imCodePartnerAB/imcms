@@ -3,6 +3,8 @@
   com.imcode.imcms.db-test
 
   (:require
+    [com.imcode.imcms.conf-utils :as conf]
+
     (clojure.contrib
       [sql :as sql])
       
@@ -19,7 +21,7 @@
 
   
   (:use
-    com.imcode.imcms.conf-utils
+
     
     clojure.test
     (clojure.contrib duck-streams))
@@ -36,18 +38,17 @@
   (:db-name (project/build-properties)))
 
 
-(defn init-script-files
-  []
-  (project/files "src/main/web/WEB-INF/sql" ["imcms_rb4.sql" "diff/mysql-schema-diff-4.11-6.2.sql"]))
-
-
 (defn create-ds
   ([]
-    (create-ds true))
+    (create-ds (db-name) true))
 
-  ([autocomit]
+
+  ([name]
+    (create-ds name true))
+
+  ([name autocomit]
     (let [p (project/build-properties)
-          db-url (db-lib/create-url (:db-target p) (:db-host p) (:db-port p) (db-name))]
+          db-url (db-lib/create-url (:db-target p) (:db-host p) (:db-port p) name)]
 
       (doto
         (db-lib/create-ds (:db-driver p) (:db-user p) (:db-pass p) db-url)
@@ -98,19 +99,10 @@
     (recreate (db-name)))
 
   ([name]
-    (recreate name (init-script-files)))
+    (recreate name []))
 
   ([name scripts]
     (db-lib/recreate (create-spec) name scripts)))
-
-
-(defn recreate-empty
-  "Recreates empty datatabse."
-  ([]
-    (recreate-empty (db-name)))
-
-  ([name]
-    (db-lib/recreate (create-spec) name [])))
 
 
 (defn run-scripts
@@ -119,6 +111,25 @@
 
   ([name scripts]
     (db-lib/run-scripts (create-spec) name scripts)))
+
+
+(defn create-conf []
+  (let [basedir (project/subdir-path "src/main/web")]
+    (conf/create-conf (project/file-path "src/main/resources/conf.clj") basedir)))
+
+
+(defn prepare
+  ([]
+    (prepare (db-name)))
+
+  ([name]
+    (prepare name true))
+
+  ([name recreate-before-prepare]
+    (when recreate-before-prepare
+      (recreate name))
+
+      (db/prepare (create-conf) (create-spec name false))))
 
 
 ;;;;
@@ -130,7 +141,8 @@
     (sql/with-connection spec
       (sql/do-commands "CREATE TABLE database_version(major INT NOT NULL, minor INT NOT NULL)")
 
-      (is (thrown? PrepareException (db/get-version)))
+      (testing "When database_version table is empty, get-version must throw a PrepareException."
+        (is (thrown? PrepareException (db/get-version))))
 
       (db/set-version 4.11)
       (is (= 4.11 (db/get-version)))
@@ -140,17 +152,16 @@
 
 
 (deftest test-empty-db?
-  (recreate-empty)
+  (recreate)
   (is (db/empty-db? (create-spec))))
 
 
 (deftest test-init
-  (recreate-empty)
+  (recreate)
 
-  (let [basedir (project/subdir-path "src/main/web")
-        conf (create-conf (project/file-path "src/main/resources/conf.clj") basedir)
-        db-conf-init (:init (:db conf))  
-        spec (create-spec false)]
+  (let [conf (create-conf)
+        db-conf-init (:init (:db conf))
+        spec (create-spec)]
 
     (sql/with-connection spec
       (sql/transaction
@@ -160,10 +171,9 @@
 (deftest test-upgrade
   (test-init)
 
-  (let [basedir (project/subdir-path "src/main/web")
-        conf (create-conf (project/file-path "src/main/resources/conf.clj") basedir)
+  (let [conf (create-conf)
         db-conf-diffs (:diffs (:db conf))
-        spec (create-spec false)]
+        spec (create-spec)]
 
     (sql/with-connection spec
       (sql/transaction
@@ -172,13 +182,9 @@
 
 
 (deftest test-prepare-empty
-  (recreate-empty)
+  (recreate)
   
-  (let [basedir (project/subdir-path "src/main/web")
-        conf (create-conf (project/file-path "src/main/resources/conf.clj") basedir)
-        spec (create-spec false)]
-
-    (db/prepare conf spec)))
+  (db/prepare (create-conf) (create-spec)))
 
 
 

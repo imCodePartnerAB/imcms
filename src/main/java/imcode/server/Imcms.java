@@ -1,7 +1,7 @@
 package imcode.server;
 
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.api.DocRequestHandler;
+import com.imcode.imcms.api.GetDocumentCallback;
 import com.imcode.imcms.dao.SystemDao;
 import com.imcode.imcms.util.clojure.ClojureUtils;
 import imcode.util.CachingFileLoader;
@@ -20,11 +20,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.context.ApplicationContext;
-import org.hibernate.Session;
-import org.hibernate.HibernateException;
 
 import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.Database;
@@ -84,7 +80,7 @@ public class Imcms {
      *
      * @see com.imcode.imcms.servlet.ImcmsFilter
      */
-	private static ThreadLocal<DocRequestHandler> docRequestHandlers;
+	private static ThreadLocal<GetDocumentCallback> getDocumentCallbacks;
 
     private static I18nSupport i18nSupport;
 
@@ -109,7 +105,7 @@ public class Imcms {
         setStartEx(null);
 
         try {
-            docRequestHandlers = new ThreadLocal<DocRequestHandler>();
+            getDocumentCallbacks = new ThreadLocal<GetDocumentCallback>();
 
             if (prepareDatabaseOnStart) {
                 prepareDatabase();
@@ -274,18 +270,18 @@ public class Imcms {
     }
 
     /**
-     * @param docRequestHandler document request bound to user's session.
+     * @param getDocumentCallback document request bound to user's session.
      */
-    public static void setDocRequestHandler(DocRequestHandler docRequestHandler) {
-    	docRequestHandlers.set(docRequestHandler);
+    public static void setGetDocumentCallback(GetDocumentCallback getDocumentCallback) {
+    	getDocumentCallbacks.set(getDocumentCallback);
     }
 
     /**
-     * Returns DocRequestHandler instance
+     * Returns GetDocumentCallback instance
      * @return
      */
-    public static DocRequestHandler getDocRequestHandler() {
-    	return docRequestHandlers.get();
+    public static GetDocumentCallback getGetDocumentCallback() {
+    	return getDocumentCallbacks.get();
     }
 
 

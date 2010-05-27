@@ -6,23 +6,21 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 /**
- * Document request handler - controls document version to return.
- *
- * DocumentMapper#getDocument uses DocRequestHandler getDoc method as a callback.
- *
- * DocRequestHandler is created per user's session and bound to thread local in Imcms singleton.
+ * Parametrized callback used from DocumentMapper#getDocument method.
+ * The callback is created per user's session and bound to request thread (thread local in the Imcms singleton).
  *
  * @see imcode.server.Imcms
  * @see com.imcode.imcms.servlet.ImcmsFilter
  * @see com.imcode.imcms.mapping.DocumentMapper#getDocument(Integer)
+ * @see com.imcode.imcms.mapping.DocumentMapper#getDocuments(java.util.Collection) 
  */
-public abstract class DocRequestHandler {
+public abstract class GetDocumentCallback {
 
     protected I18nLanguage language;
 
     protected UserDomainObject user;
 
-    public DocRequestHandler(I18nLanguage language, UserDomainObject user) {
+    public GetDocumentCallback(I18nLanguage language, UserDomainObject user) {
         this.language = language;
         this.user = user;
     }
@@ -43,9 +41,9 @@ public abstract class DocRequestHandler {
     public abstract DocumentDomainObject getDoc(DocumentMapper docMapper, Integer docId);
 
 
-    public static class DefaultDocVersionRequestHandler extends DocRequestHandler {
+    public static class GetDocumentCallbackDefault extends GetDocumentCallback {
         
-        public DefaultDocVersionRequestHandler(I18nLanguage language, UserDomainObject user) {
+        public GetDocumentCallbackDefault(I18nLanguage language, UserDomainObject user) {
             super(language, user);
         }
     
@@ -75,11 +73,11 @@ public abstract class DocRequestHandler {
 
 
 
-    public static class WorkingDocVersionRequestHandler extends DefaultDocVersionRequestHandler {
+    public static class GetDocumentCallbackWorking extends GetDocumentCallbackDefault {
 
         private Integer docId;
 
-        public WorkingDocVersionRequestHandler(Integer docId, I18nLanguage language, UserDomainObject user) {
+        public GetDocumentCallbackWorking(Integer docId, I18nLanguage language, UserDomainObject user) {
             super(language, user);
             this.docId = docId;
         }
@@ -94,13 +92,13 @@ public abstract class DocRequestHandler {
 
     
 
-    public static class CustomDocVersionRequestHandler extends DefaultDocVersionRequestHandler {
+    public static class GetDocumentCallbackCustom extends GetDocumentCallbackDefault {
 
         private Integer docId;
 
         private Integer docVersionNo;                
 
-        public CustomDocVersionRequestHandler(Integer docId, Integer docVersionNo, I18nLanguage language, UserDomainObject user) {
+        public GetDocumentCallbackCustom(Integer docId, Integer docVersionNo, I18nLanguage language, UserDomainObject user) {
             super(language, user);
             this.docId = docId;
             this.docVersionNo = docVersionNo;
