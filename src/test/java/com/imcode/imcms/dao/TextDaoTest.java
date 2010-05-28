@@ -33,14 +33,6 @@ public class TextDaoTest {
 	@BeforeClass
     public static void init() {
         Script.recreateDB();
-//        dbTester = new DataSourceDatabaseTester(Script.createDBDataSource(true));
-//        dbTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
-//
-//        try {
-//            dbTester.setDataSet(new XmlDataSet(FileUtils.openInputStream(new File(""))));
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
 	}
     
 

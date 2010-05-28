@@ -28,12 +28,12 @@ public class LanguageDaoTest {
 
     @Before
     public void resetDBData() {
-        Script.runDBScripts("language_dao.sql");
-
         SessionFactory sf = Script.createHibernateSessionFactory(
                 new Class[] {SystemProperty.class, I18nLanguage.class},
                 "src/main/resources/I18nLanguage.hbm.xml");
-        
+
+        Script.runDBScripts("language_dao.sql");
+
         systemDao = new SystemDao();
         languageDao = new LanguageDao();
         

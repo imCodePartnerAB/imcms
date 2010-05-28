@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -24,10 +24,10 @@ public class SystemPropertyDaoTest {
 
     @Before
     public void resetDBData() {
-        Script.runDBScripts("system_property_dao.sql");
-        
         systemDao = new SystemDao();
         systemDao.setSessionFactory(Script.createHibernateSessionFactory(SystemProperty.class));
+        
+        Script.runDBScripts("system_property_dao.sql");
     }
 
 
