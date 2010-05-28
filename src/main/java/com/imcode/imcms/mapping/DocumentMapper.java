@@ -667,8 +667,8 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Returns document.
      *
-     * Returned document is based on document request info associated with a thread.
-     * If there is no docRequest associated with a current thread then default document in default language is returned.
+     * Delegates call to a callback associated with a current thread.
+     * If there is no callback then a default document is returned.
      *
      * @param docId document id.
      */

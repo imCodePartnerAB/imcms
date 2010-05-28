@@ -18,7 +18,8 @@
       [set :only (select)])
     
     (clojure.contrib
-      [except :only (throw-if throw-if-not throwf)]))
+      [except :only (throw-if throw-if-not throwf)]
+      [map-utils :only (safe-get safe-get-in)]))
 
   (:import
     com.imcode.imcms.db.PrepareException))
@@ -48,7 +49,7 @@
    diffs-set - a set of diffs; see conf.clj and tests to learn more about diffs set definition.
    current-version - current db version as double."
   [diffs-set current-version]
-  (when-first [diff (select #(= current-version (:from %)) diffs-set)]
+  (when-first [diff (select #(= current-version (safe-get % :from)) diffs-set)]
     diff))
 
 
@@ -60,7 +61,7 @@
   [diffs-set current-version]
   (loop [version current-version, diffs []]
     (if-let [diff (required-diff diffs-set version)]
-      (let [new-current-version (:to diff)
+      (let [new-current-version (safe-get diff :to)
             collected-diffs (conj diffs diff)]
         (recur new-current-version collected-diffs))
       (seq diffs))))
@@ -69,17 +70,23 @@
 ;;;;
 ;;;; Fns with side-effect
 ;;;;
-
-(defn empty-db?
-  "WARNING! Works properly ONLY with MySQL. 
-   Returns true if current databse is empty or false otherwise."
+(defn tables
+  "WARNING! Works properly ONLY with MySQL.
+   Returns database tables."
   ([spec]
     (sql/with-connection spec
-      (empty-db?)))
+      (tables)))
 
   ([]
     (sql/with-query-results rs ["SHOW TABLES"]
-      (empty? rs))))
+      (mapcat #(vals %) (doall rs)))))
+
+
+(def
+  #^{:doc "WARNING! Works properly ONLY with MySQL.
+           Returns true if current databse is empty or false otherwise.
+           See tables fn for params description."}
+  empty-db? (comp empty? tables))
 
 
 (defn get-version
@@ -113,8 +120,8 @@
   "Initializes empty database.
    db-conf-init - db init record. See :db/:init definition in conf.clj."
   [db-conf-init]
-  (let [scripts (:scripts db-conf-init)
-        version (:version db-conf-init)]
+  (let [scripts (safe-get db-conf-init :scripts)
+        version (safe-get db-conf-init :version)]
     
     (log/info (format "The following init scripts will be executed: %s." (print-str scripts)))
     (doseq [script scripts]
@@ -142,10 +149,10 @@
    conf - configuration map defined in 'conf.clj' file.
    spec - db spec."
   [conf spec]
-  (let [db-conf (:db conf)
-        db-conf-version (:version db-conf)
-        db-conf-init (:init db-conf)
-        db-conf-diffs (:diffs db-conf)]
+  (let [db-conf (safe-get conf :db)
+        db-conf-version (safe-get db-conf :version)
+        db-conf-init (safe-get db-conf :init)
+        db-conf-diffs (safe-get db-conf :diffs)]
 
     (sql/with-connection spec
       (sql/transaction

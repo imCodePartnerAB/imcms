@@ -41,9 +41,8 @@ public class TextDao extends HibernateTemplate {
 	@Transactional
 	public void saveTextHistory(TextHistory textHistory) {
         save(textHistory);
-
-
 	}
+    
 
     /**
      * @param docId

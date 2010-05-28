@@ -45,9 +45,13 @@ public class Script {
                .invoke();
     }
 
-    public static DataSource createDBDataSource(boolean autocommit) throws Exception {
-        return (DataSource)RT.var("com.imcode.imcms.db-test", "create-ds")
-               .invoke(autocommit);
+    public static DataSource createDBDataSource(boolean autocommit) {
+        try {
+            return (DataSource)RT.var("com.imcode.imcms.db-test", "create-ds")
+                   .invoke(autocommit);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void recreateDB() {

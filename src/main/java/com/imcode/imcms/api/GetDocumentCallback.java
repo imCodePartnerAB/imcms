@@ -6,13 +6,13 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 /**
- * Parametrized callback used from DocumentMapper#getDocument method.
- * The callback is created per user's session and bound to request thread (thread local in the Imcms singleton).
+ * Parametrized callback used in DocumentMapper#getDocument method.
+ * 
+ * The callback is created per http request (thread local in the Imcms singleton).
  *
  * @see imcode.server.Imcms
  * @see com.imcode.imcms.servlet.ImcmsFilter
  * @see com.imcode.imcms.mapping.DocumentMapper#getDocument(Integer)
- * @see com.imcode.imcms.mapping.DocumentMapper#getDocuments(java.util.Collection) 
  */
 public abstract class GetDocumentCallback {
 

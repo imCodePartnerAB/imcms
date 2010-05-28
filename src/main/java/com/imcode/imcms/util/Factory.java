@@ -13,6 +13,28 @@ import java.util.Collection;
  */
 public class Factory {
 
+    public static I18nLanguage createLanguage(Integer id, String code, String name) {
+        return createLanguage(id, code, name, true);
+    }
+
+
+    public static I18nLanguage createLanguage(Integer id, String code, String name, Boolean enabled) {
+        return createLanguage(id, code, name, name, enabled);
+    }
+    
+
+    public static I18nLanguage createLanguage(Integer id, String code, String name, String nativeName, Boolean enabled) {
+        I18nLanguage language = new I18nLanguage();
+
+        language.setId(id);
+        language.setCode(code);
+        language.setName(name);
+        language.setNativeName(nativeName);
+        language.setEnabled(enabled);
+
+        return language;
+    }
+
 
     public static DocumentLabels createLabels(Integer docId, Integer docVersionNo, I18nLanguage language) {
         DocumentLabels labels = newInstance(DocumentLabels.class, docId, docVersionNo, language);
@@ -46,8 +68,8 @@ public class Factory {
      * @param no
      * @return
      */
-    public static TextDomainObject createText(Integer docId, Integer docVersionNo, I18nLanguage language, Integer no) {
-        return createText(docId, docVersionNo, language, no, null);
+    public static TextDomainObject createText(Integer docId, Integer docVersionNo, Integer no, I18nLanguage language) {
+        return createText(docId, docVersionNo, no, language, null);
     }
 
     
@@ -60,7 +82,7 @@ public class Factory {
      * @param contentIndex
      * @return
      */
-    public static TextDomainObject createText(Integer docId, Integer docVersionNo, I18nLanguage language, Integer no, Integer contentIndex) {
+    public static TextDomainObject createText(Integer docId, Integer docVersionNo, Integer no, I18nLanguage language, Integer contentIndex) {
         TextDomainObject text = newInstance(TextDomainObject.class, docId, docVersionNo, language, no);
         text.setContentNo(contentIndex);
 
@@ -109,7 +131,7 @@ public class Factory {
     }
     
     public static TextDomainObject createNextText(TextDocumentDomainObject doc, Integer contentIndex) {
-        return createText(doc.getId(), doc.getVersion().getNo(), doc.getLanguage(), getNextItemNo(doc.getTexts().values()), contentIndex);
+        return createText(doc.getId(), doc.getVersion().getNo(), getNextItemNo(doc.getTexts().values()), doc.getLanguage(), contentIndex);
     }
 
     public static ImageDomainObject createNextImage(TextDocumentDomainObject doc) {

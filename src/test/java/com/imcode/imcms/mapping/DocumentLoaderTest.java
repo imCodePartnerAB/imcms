@@ -2,7 +2,7 @@ package com.imcode.imcms.mapping;
 
 import org.junit.Test;
 
-import static org.testng.Assert.fail;
+import static org.junit.Assert.fail;
 
 /**
  * 

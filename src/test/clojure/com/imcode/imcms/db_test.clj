@@ -17,7 +17,8 @@
       [fs :as fs-lib])
 
     (clojure.contrib
-      [sql :as sql]))
+      [sql :as sql]
+      [map-utils :as map-utils]))
 
   
   (:use
@@ -32,6 +33,10 @@
     org.hibernate.SessionFactory
     org.hibernate.cfg.AnnotationConfiguration))
 
+
+;;;;
+;;;; Helper fns
+;;;;
 
 (defn db-name "Database name."
   []
@@ -73,7 +78,7 @@
      "hibernate.connection.pool_size", "1"
      "hibernate.connection.autocommit", "true"
      "hibernate.cache.provider_class", "org.hibernate.cache.HashtableCacheProvider"
-     ;"hibernate.hbm2ddl.auto", "create-drop"
+     "hibernate.hbm2ddl.auto", "create-drop"
      "hibernate.show_sql", "true"}))
 
 
@@ -130,6 +135,32 @@
       (recreate name))
 
       (db/prepare (create-conf) (create-spec name false))))
+
+
+(defn tables-ddls
+  "Returns a map of table-name -> table ddl."
+  []
+  (let [create-table-key (keyword "create table")]
+    (into {}
+      (sql/with-connection (create-spec)
+        (doall
+          (for [table (db/tables)]
+            (sql/with-query-results rs [(str "SHOW CREATE TABLE " table)]
+              [table (get (first rs) create-table-key)])))))))
+
+
+
+(defn create-tables
+  "Creates tables in a db from ddls in an order they apper in the tables-names coll. "
+  [db-name ddls tables-names]
+  (sql/with-connection (create-spec)
+    (sql/do-commands
+      (format "USE %s" db-name))
+
+    (doseq [table-name tables-names]
+      (sql/do-commands
+        (map-utils/safe-get ddls table-name)))))
+
 
 
 ;;;;
