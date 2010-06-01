@@ -39,7 +39,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
     private boolean inconsistent;
 
-    private static final int NUM_HITS = 50;
+    private static final int NUM_HITS = Integer.MAX_VALUE;
 
     static {
         // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow or memoryconsuming queries?

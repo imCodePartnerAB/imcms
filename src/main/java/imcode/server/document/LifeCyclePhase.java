@@ -76,6 +76,13 @@ public abstract class LifeCyclePhase {
         return getDateRangeQuery(DocumentIndex.FIELD__ARCHIVED_DATETIME, now);
     }
 
+    
+    /**
+     * @param field range field name.
+     * @param now range upper bound.
+     *
+     * @return a RangeQuery in an interval from infinity to now.
+     */
     private static RangeQuery getDateRangeQuery(String field, Date now) {
         return new RangeQuery(null,
                               new Term(field, DateTools.dateToString(now, DateTools.Resolution.MINUTE)),

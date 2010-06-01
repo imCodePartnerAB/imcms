@@ -1,9 +1,9 @@
-;;; Application configuration
+;;; Application configuration file
 ;;; Consists of a single record (clojure map)
 {
     ;; Application basedir
     ;; Replaced with a real basedir after this configuration has been read
-    :basedir ""
+    :base-dir ""
 
     ;; Database configuration
     :db {
@@ -11,7 +11,7 @@
         :version 6.2
 
 
-        ;; SQL scripts directory path relative to the ':basedir'
+        ;; SQL scripts directory path relative to the ':base-dir'
         :scripts-dir "WEB-INF/sql"
 
 

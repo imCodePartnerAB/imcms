@@ -7,7 +7,8 @@
       [fs :as fs-lib]))
 
   (:use
-    [clojure.walk :only (postwalk)]))  
+    [clojure.walk :only (postwalk)]
+    [clojure.contrib.map-utils :only (safe-get-in)]))  
 
 
 ;;;;
@@ -29,14 +30,14 @@
 
 
 (defn- substitute-paths
-  "All paths in conf are directly or recursively relative to basedir.
+  "All paths in conf are directly or recursively relative to baseidir.
    Substitute all relative paths in configuration with absolute path."
-  [conf basedir]
+  [conf base-dir]
 
-  (let [conf-db-scripts-dir (get-in conf [:db :scripts-dir])
-        real-db-scripts-dir (fs-lib/compose-path basedir conf-db-scripts-dir)]
+  (let [conf-db-scripts-dir (safe-get-in conf [:db :scripts-dir])
+        real-db-scripts-dir (fs-lib/compose-path base-dir conf-db-scripts-dir)]
 
-    (-> conf (assoc-in [:basedir] basedir)
+    (-> conf (assoc-in [:base-dir] base-dir)
              (assoc-in [:db :scripts-dir] real-db-scripts-dir)
 
              (substitute-db-scripts-paths real-db-scripts-dir))))
@@ -48,14 +49,13 @@
 ;;;;
 
 (defn read-conf
-  "Reads and returns conf map from conf file.
-   Throws an exception if conf file can not be found."
+  "Reads and returns conf map from a conf file."
   [conf-file-path]
   (read-string (slurp conf-file-path)))
 
 
-(defn create-conf [conf-file-path basedir]
-  (substitute-paths (read-conf conf-file-path) basedir))
+(defn create-conf [conf-file-path base-dir]
+  (substitute-paths (read-conf conf-file-path) base-dir))
 
 
 ;;;;

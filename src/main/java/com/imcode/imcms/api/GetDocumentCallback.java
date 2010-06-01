@@ -8,7 +8,7 @@ import imcode.server.user.UserDomainObject;
 /**
  * Parametrized callback used in DocumentMapper#getDocument method.
  * 
- * The callback is created per http request (thread local in the Imcms singleton).
+ * A callback is created per a http request and bond to thread local in the Imcms singleton.
  *
  * @see imcode.server.Imcms
  * @see com.imcode.imcms.servlet.ImcmsFilter
@@ -16,9 +16,15 @@ import imcode.server.user.UserDomainObject;
  */
 public abstract class GetDocumentCallback {
 
-    protected I18nLanguage language;
-
+    /**
+     * A user associated with this callback.
+     */
     protected UserDomainObject user;
+    
+    /**
+     * Document language.
+     */
+    protected I18nLanguage language;
 
     public GetDocumentCallback(I18nLanguage language, UserDomainObject user) {
         this.language = language;

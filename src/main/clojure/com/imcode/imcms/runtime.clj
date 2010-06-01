@@ -61,7 +61,7 @@
   (invoke getPath))
 
 
-(defn home []
+(defn base-dir []
   (.getCanonicalPath (path))) 
 
 
@@ -189,10 +189,10 @@
   (if-let [conf-file-url (ClassLoader/getSystemResource "conf.clj")]
     (java.io.File. (.getPath conf-file-url))
 
-    (let [conf-file-home (str (home) "/WEB-INF/classes")
-          conf-file (java.io.File. conf-file-home "conf.clj")]
+    (let [conf-file-path (str (base-dir) "/WEB-INF/classes")
+          conf-file (java.io.File. conf-file-path "conf.clj")]
 
-      (log/debug "Looking for configuration file conf.clj in %s." conf-file-home)
+      (log/debug "Looking for configuration file conf.clj in %s." conf-file-path)
       (if (.isFile conf-file)
         conf-file
         (let [msg "Configuration file conf.clj can not be found."]

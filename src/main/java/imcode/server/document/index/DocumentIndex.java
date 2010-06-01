@@ -50,6 +50,7 @@ public interface DocumentIndex {
      * 
      * @param docId
      * @throws IndexException
+     * @since 6.0
      */
     void indexDocument(Integer docId) throws IndexException;
 
@@ -58,12 +59,19 @@ public interface DocumentIndex {
      * 
      * @param docId
      * @throws IndexException
+     * @since 6.0
      */
     void removeDocument(Integer docId) throws IndexException;
 
+    /**
+     * Deprecated, use indexDocument(Integer) instead.
+     */
     @Deprecated
     void indexDocument( DocumentDomainObject document ) throws IndexException ;
 
+    /**
+     * Deprecated, use removeDocument(Integer) instead.
+     */
     @Deprecated
     void removeDocument( DocumentDomainObject document ) throws IndexException;
 

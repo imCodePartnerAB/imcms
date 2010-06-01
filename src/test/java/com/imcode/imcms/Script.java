@@ -47,8 +47,7 @@ public class Script {
 
     public static DataSource createDBDataSource(boolean autocommit) {
         try {
-            return (DataSource)RT.var("com.imcode.imcms.db-test", "create-ds")
-                   .invoke(autocommit);
+            return (DataSource)RT.var("com.imcode.imcms.db-test", "create-ds").invoke(autocommit);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -56,8 +55,7 @@ public class Script {
 
     public static void recreateDB() {
         try {
-            RT.var("com.imcode.imcms.db-test", "recreate")
-                .invoke();
+            RT.var("com.imcode.imcms.db-test", "recreate").invoke();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -66,8 +64,7 @@ public class Script {
 
     public static void prepareDB(boolean recreateBofrePrepare) {
         try {
-            RT.var("com.imcode.imcms.db-test", "prepare")
-                .invoke(recreateBofrePrepare);
+            RT.var("com.imcode.imcms.db-test", "prepare").invoke(recreateBofrePrepare);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -76,8 +73,7 @@ public class Script {
     
     public static void runDBScripts(String... sqlScriptsPaths) {
         try {
-            RT.var("com.imcode.imcms.db-test", "run-scripts")
-                .invoke(createPaths(sqlScriptsPaths));
+            RT.var("com.imcode.imcms.db-test", "run-scripts").invoke(createPaths(sqlScriptsPaths));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

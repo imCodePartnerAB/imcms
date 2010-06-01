@@ -17,13 +17,12 @@
       [fs :as fs-lib])
 
     (clojure.contrib
-      [sql :as sql]
-      [map-utils :as map-utils]))
+      [sql :as sql]))
 
   
   (:use
 
-    
+    [clojure.contrib.map-utils :only (safe-get safe-get-in)]
     clojure.test
     (clojure.contrib duck-streams))
 
@@ -49,14 +48,14 @@
 
 
   ([name]
-    (create-ds name true))
+    (create-ds db-name true))
 
   ([name autocomit]
     (let [p (project/build-properties)
-          db-url (db-lib/create-url (:db-target p) (:db-host p) (:db-port p) name)]
+          db-url (db-lib/create-url (safe-get p :db-target) (safe-get p :db-host) (safe-get p :db-port) name)]
 
       (doto
-        (db-lib/create-ds (:db-driver p) (:db-user p) (:db-pass p) db-url)
+        (db-lib/create-ds (safe-get p :db-driver p) (safe-get p :db-user) (safe-get p :db-pass) db-url)
         (.setDefaultAutoCommit autocomit)))))
 
 
@@ -137,29 +136,29 @@
       (db/prepare (create-conf) (create-spec name false))))
 
 
-(defn tables-ddls
-  "Returns a map of table-name -> table ddl."
-  []
-  (let [create-table-key (keyword "create table")]
-    (into {}
-      (sql/with-connection (create-spec)
-        (doall
-          (for [table (db/tables)]
-            (sql/with-query-results rs [(str "SHOW CREATE TABLE " table)]
-              [table (get (first rs) create-table-key)])))))))
-
-
-
-(defn create-tables
-  "Creates tables in a db from ddls in an order they apper in the tables-names coll. "
-  [db-name ddls tables-names]
-  (sql/with-connection (create-spec)
-    (sql/do-commands
-      (format "USE %s" db-name))
-
-    (doseq [table-name tables-names]
-      (sql/do-commands
-        (map-utils/safe-get ddls table-name)))))
+;(defn tables-ddls
+;  "Returns a map of table-name -> table ddl."
+;  []
+;  (let [create-table-key (keyword "create table")]
+;    (into {}
+;      (sql/with-connection (create-spec)
+;        (doall
+;          (for [table (db/tables)]
+;            (sql/with-query-results rs [(str "SHOW CREATE TABLE " table)]
+;              [table (get (first rs) create-table-key)])))))))
+;
+;
+;
+;(defn create-tables
+;  "Creates tables in a db from ddls in an order they apper in the tables-names coll. "
+;  [name ddls tables-names]
+;  (sql/with-connection (create-spec)
+;    (sql/do-commands
+;      (format "USE %s" name))
+;
+;    (doseq [table-name tables-names]
+;      (sql/do-commands
+;        (safe-get ddls table-name)))))
 
 
 

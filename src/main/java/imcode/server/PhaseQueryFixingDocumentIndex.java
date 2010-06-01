@@ -17,12 +17,18 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
+/**
+ * Replaces all TermQuery-es in a search query which field is equals to DocumentIndex.FIELD__PHASE with RangeQuery-es.
+ * 
+ * @see imcode.server.document.LifeCyclePhase#asQuery(java.util.Date) 
+ */
 public class PhaseQueryFixingDocumentIndex extends DocumentIndexWrapper {
 
     public PhaseQueryFixingDocumentIndex(DocumentIndex index) {
         super(index);
     }
 
+    
     public List search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
         return super.search(fixQuery(query), searchingUser);
     }
