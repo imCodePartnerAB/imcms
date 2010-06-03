@@ -72,12 +72,13 @@ public interface ImcmsConstants {
     int DISPATCH_FLAG__PUBLISH = PERM_PUBLISH;
     int DISPATCH_FLAG__SET_DEFAULT_VERSION = SET_DEFAULT_VERSION;
 
-    public static final String REQUEST_PARAM__DOC_LANGUAGE = "imcms.doc.language";
-
     /** meta_id is the legacy identifier used across the project. */
     public static final String REQUEST_PARAM__DOC_ID = "meta_id";
+    
+    /** Document language code. */
+    public static final String REQUEST_PARAM__DOC_LANGUAGE = "imcms.doc.language";
 
-    public static final String REQUEST_PARAM__DOC_VERSION_NO = "imcms.doc.version.no";
+    public static final String REQUEST_PARAM__DOC_VERSION = "imcms.doc.version";
 
-    public static final String SESSION_ATTR__DOC_REQUEST = "imcms.doc.request";
+    public static final String SESSION_ATTR__GET_DOC_CALLBACK = "imcms.doc.callback";
 }

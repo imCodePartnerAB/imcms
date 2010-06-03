@@ -298,11 +298,11 @@ public class ImcmsFilter implements Filter, ImcmsListener {
      * @param user
      */
     private void associateGetDocumentCallbackWithCurrentThread(HttpServletRequest request, HttpSession session, UserDomainObject user) {
-        GetDocumentCallback getDocumentCallback = (GetDocumentCallback)session.getAttribute(ImcmsConstants.SESSION_ATTR__DOC_REQUEST);
+        GetDocumentCallback getDocumentCallback = (GetDocumentCallback)session.getAttribute(ImcmsConstants.SESSION_ATTR__GET_DOC_CALLBACK);
 
         String languageCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
         String docIdentity = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID);
-        String docVersionNoStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION_NO);
+        String docVersionNoStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION);
 
         I18nLanguage language = languageCode != null
                 ? Imcms.getI18nSupport().getByCode(languageCode)
@@ -361,7 +361,7 @@ public class ImcmsFilter implements Filter, ImcmsListener {
             getDocumentCallback.setLanguage(language);
         }
 
-        session.setAttribute(ImcmsConstants.SESSION_ATTR__DOC_REQUEST, getDocumentCallback);
+        session.setAttribute(ImcmsConstants.SESSION_ATTR__GET_DOC_CALLBACK, getDocumentCallback);
 
         Imcms.setGetDocumentCallback(getDocumentCallback);
     }

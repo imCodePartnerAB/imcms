@@ -202,9 +202,9 @@ if (sFlags != null && sFlags.equals("1")) {
       <tr>     
         <td>	
           <form action="$contextPath/servlet/GetDoc">
-          <input type="hidden" name="imcms.doc.language" value="<%=currentLanguage.getCode()%>"/>
+          <input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE%>" value="<%=currentLanguage.getCode()%>"/>
           <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
-          <select name="imcms.doc.version.no">          
+          <select name="<%=ImcmsConstants.REQUEST_PARAM__DOC_VERSION%>">          
             <% while (iterator.hasNext()) {
             	DocumentVersion v = (DocumentVersion)iterator.next();
             	String sSelected = v.getNo().equals(version.getNo()) ? " selected=\"selected\"" : "";
@@ -230,7 +230,7 @@ if (sFlags != null && sFlags.equals("1")) {
         <td>
           <form action="$contextPath/servlet/AdminDoc">
           <input type="text" size="3" name="no" value="<%=docVersionInfo.getDefaultVersion().getNo()%>"/>
-          <input type="hidden" name="imcms.doc.language" value="<%=currentLanguage.getCode()%>"/>
+          <input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE%>" value="<%=currentLanguage.getCode()%>"/>
           <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
           <input type="hidden" name="flags" value="8388608"/>
           <input type="submit" name="cmd" value="Set default"/>
@@ -245,7 +245,7 @@ if (sFlags != null && sFlags.equals("1")) {
 	    %>
         <td>	
           <form action="$contextPath/servlet/AdminDoc">
-          <input type="hidden" name="imcms.doc.language" value="<%=currentLanguage.getCode()%>"/>
+          <input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE%>" value="<%=currentLanguage.getCode()%>"/>
           <input type="hidden" name="meta_id" value="<%=document.getId()%>"/>
           <input type="hidden" name="flags" value="4194304"/>
           <input type="submit" name="cmd" value="Save draft as next version"/>

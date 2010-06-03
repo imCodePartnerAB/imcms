@@ -96,7 +96,7 @@ TextDomainObject text = textEditPage.getText();
 if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType() && !editorHidden) { %>?html=true<% } %>"></script>
 <% } %>
 <form method="POST" action="<%= request.getContextPath() %>/servlet/SaveText">
-<input type="hidden" name="lang"  value="${currentLanguage.code}">
+<input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE%>"  value="${currentLanguage.code}">
 <input type="hidden" name="meta_id"  value="<%= textEditPage.getDocumentId() %>">
 <input type="hidden" name="txt_no"   value="<%= textEditPage.getTextIndex() %>">
 
