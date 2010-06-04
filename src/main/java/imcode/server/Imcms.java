@@ -344,14 +344,16 @@ public class Imcms {
     	}
 
         SystemDao systemDao = (SystemDao)getSpringBean("systemDao");
-        String languageId = systemDao.getProperty("languageId").getValue();
+        SystemProperty languageIdProperty =  systemDao.getProperty("DefaultLanguageId");
 
-        if (languageId == null) {
+        if (languageIdProperty == null) {
     		String msg = "I18n configuration error. Default language is not set.";
     		logger.fatal(msg);
     		throw new I18nException(msg);
         }
 
+
+        String languageId = languageIdProperty.getValue();
         I18nLanguage defaultLanguage = languageDao.getById(Integer.parseInt(languageId));
 
         if (defaultLanguage == null) {

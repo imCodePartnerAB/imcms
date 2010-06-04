@@ -112,10 +112,10 @@ public class LanguageDaoTest {
 
     @Test
     public void getDefaultLanguage() {
-        SystemProperty property = systemDao.getProperty("languageId");
+        SystemProperty property = systemDao.getProperty("DefaultLanguageId");
 
-        assertNotNull("LanguageId system property exists.", property);
-        assertEquals(String.format("LanguageId system property is set to %d.", 1), new Integer(1), property.getValueAsInteger());
+        assertNotNull("DefaultLanguageId system property exists.", property);
+        assertEquals(String.format("DefaultLanguageId system property is set to %d.", 1), new Integer(1), property.getValueAsInteger());
 
         I18nLanguage language = languageDao.getById(property.getValueAsInteger());
 
@@ -129,7 +129,7 @@ public class LanguageDaoTest {
         property.setValue("2");
         systemDao.saveProperty(property);
 
-        I18nLanguage language = languageDao.getById(systemDao.getProperty("languageId").getValueAsInteger());
+        I18nLanguage language = languageDao.getById(systemDao.getProperty("DefaultLanguageId").getValueAsInteger());
 
         assertEquals("Language id is correct.", language.getId(), new Integer(2));
     }

@@ -4,7 +4,7 @@ VALUES
   (1, 'en', 'English', 'English', true),
   (2, 'sv', 'Swedish', 'Svenska', true);
   
-INSERT INTO sys_types (type_id, name) VALUES (8, 'LanguageId');
+INSERT INTO sys_types (type_id, name) VALUES (8, 'DefaultLanguageId');
 INSERT INTO sys_data (type_id, value) VALUES (8, 1);
 
 

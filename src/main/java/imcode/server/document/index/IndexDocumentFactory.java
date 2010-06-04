@@ -24,7 +24,7 @@ import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 
 /**
- * Create lucene index from document's fields.
+ * Create lucene index document from imcms document.
  */
 public class IndexDocumentFactory {
     

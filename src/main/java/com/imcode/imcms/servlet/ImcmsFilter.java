@@ -120,14 +120,14 @@ public class ImcmsFilter implements Filter, ImcmsListener {
 
                     session.invalidate();
 
-                    String redirectURL = request.getContextPath() + "/login?"
-                            + TOO_MANY_SESSIONS;
+                    String redirectURL = request.getContextPath() + "/login?" + TOO_MANY_SESSIONS;
 
                     response.sendRedirect(redirectURL);
                     return;
                 }
 
-                // ??? Clarify the intention of the following code block. 
+                // ??? todo: Clarify the intention of the following code block.
+                // ??? uncomment if necessary
 //                if (request.getParameter(TOO_MANY_SESSIONS) != null) {
 //                    request.setAttribute(VerifyUser.REQUEST_ATTRIBUTE__ERROR,
 //                            LOGIN_MSG_TOO_MANY_SESSIONS);

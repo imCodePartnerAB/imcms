@@ -32,7 +32,7 @@
 (defn- substitute-paths
   "All paths in conf are directly or recursively relative to baseidir.
    Substitute all relative paths in configuration with absolute path."
-  [conf base-dir]
+  [base-dir conf]
 
   (let [conf-db-scripts-dir (safe-get-in conf [:db :scripts-dir])
         real-db-scripts-dir (fs-lib/compose-path base-dir conf-db-scripts-dir)]
@@ -54,8 +54,8 @@
   (read-string (slurp conf-file-path)))
 
 
-(defn create-conf [conf-file-path base-dir]
-  (substitute-paths (read-conf conf-file-path) base-dir))
+(defn create-conf [base-dir conf-file-path]
+  (substitute-paths base-dir (read-conf conf-file-path)))
 
 
 ;;;;

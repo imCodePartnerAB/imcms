@@ -2,7 +2,6 @@
 SET @schema_version__major_new = 6;
 SET @schema_version__minor_new = 2;
 
--- todo: add language id _off_ to disable lang support ?? 
 SET @doc_language_id_en = 1;
 SET @doc_language_id_sw = 2;
 SET @doc_language_id = @doc_language_id_en;
@@ -37,7 +36,7 @@ VALUES
 INSERT INTO sys_types (
   `type_id`, `name`
 ) VALUES (
-  8, 'LanguageId'
+  8, 'DefaultLanguageId'
 );
 
 INSERT INTO sys_data (

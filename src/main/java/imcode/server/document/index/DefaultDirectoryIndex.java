@@ -39,7 +39,7 @@ class DefaultDirectoryIndex implements DirectoryIndex {
 
     private boolean inconsistent;
 
-    private static final int NUM_HITS = Integer.MAX_VALUE;
+    private static final int NUM_HITS = 1;
 
     static {
         // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow or memoryconsuming queries?
@@ -62,8 +62,10 @@ class DefaultDirectoryIndex implements DirectoryIndex {
                 TopDocs topDocs = null;
                 if (query.getSort() != null) {
                     topDocs = indexSearcher.search(query.getQuery(), null, NUM_HITS, query.getSort());
+                    topDocs = indexSearcher.search(query.getQuery(), null, topDocs.totalHits, query.getSort());
                 } else {
                     topDocs = indexSearcher.search(query.getQuery(), NUM_HITS);
+                    topDocs = indexSearcher.search(query.getQuery(), topDocs.totalHits);
                 }
                 
                 long searchTime = searchStopWatch.getTime();

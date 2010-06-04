@@ -55,7 +55,7 @@
           db-url (db-lib/create-url (safe-get p :db-target) (safe-get p :db-host) (safe-get p :db-port) name)]
 
       (doto
-        (db-lib/create-ds (safe-get p :db-driver p) (safe-get p :db-user) (safe-get p :db-pass) db-url)
+        (db-lib/create-ds (safe-get p :db-driver) (safe-get p :db-user) (safe-get p :db-pass) db-url)
         (.setDefaultAutoCommit autocomit)))))
 
 
@@ -119,7 +119,7 @@
 
 (defn create-conf []
   (let [basedir (project/subdir-path "src/main/web")]
-    (conf/create-conf (project/file-path "src/main/resources/conf.clj") basedir)))
+    (conf/create-conf basedir (project/file-path "src/main/resources/conf.clj"))))
 
 
 (defn prepare

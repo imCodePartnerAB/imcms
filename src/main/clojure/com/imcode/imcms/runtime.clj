@@ -204,7 +204,7 @@
   "Reads and returns conf map from the conf.clj file.
    Throws an exception if conf file can not be found."
   []
-  (create-conf (path) (conf-file)))
+  (create-conf (.getCanonicalPath (path)) (.getCanonicalPath (conf-file))))
   
 
 (defn roles []
@@ -227,4 +227,4 @@
 
 
 (defn prepare-db []
-  (db/prepare (create-conf) (db-spec) ))
+  (db/prepare (conf) (db-spec) ))
