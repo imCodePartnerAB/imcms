@@ -63,7 +63,7 @@ public abstract class GetDocumentCallback {
             if (doc != null && !Imcms.getI18nSupport().isDefault(language) && !user.isSuperAdmin()) {
                 Meta meta = doc.getMeta();
 
-                if (!meta.getEnabledLanguages().contains(language)) {
+                if (!meta.getLanguages().contains(language)) {
                     if (meta.getDisabledLanguageShowSetting() == Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE) {
                         doc = docMapper.getDefaultDocument(docId);
                     } else {

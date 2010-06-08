@@ -9,7 +9,7 @@ SET @doc_language_id = @doc_language_id_en;
 SET @doc_version_no = 0;
 
 --
--- Languages support
+-- Languages support: 
 --
 CREATE TABLE `imcms_languages` (
   `id` int AUTO_INCREMENT PRIMARY KEY,
@@ -49,18 +49,18 @@ INSERT INTO sys_data (
 -- Doc languages
 -- 
 -- enabled document languages
-CREATE TABLE `imcms_doc_enabled_languages` (
+CREATE TABLE `imcms_doc_languages` (
   `id` int AUTO_INCREMENT PRIMARY KEY,
   `doc_id` int NOT NULL,
   `language_id` int NOT NULL,
   
-  CONSTRAINT `uk__imcms_doc_enabled_languages__doc_id__language_id` UNIQUE KEY (`doc_id`,`language_id`),
-  CONSTRAINT `fk__imcms_doc_enabled_languages__meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`) ON DELETE CASCADE,
-  CONSTRAINT `fk__imcms_doc_enabled_languages__languages` FOREIGN KEY (`language_id`) REFERENCES `imcms_languages` (`id`)
+  CONSTRAINT `uk__imcms_doc_languages__doc_id__language_id` UNIQUE KEY (`doc_id`,`language_id`),
+  CONSTRAINT `fk__imcms_doc_languages__meta` FOREIGN KEY (`doc_id`) REFERENCES `meta` (`meta_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk__imcms_doc_languages__languages` FOREIGN KEY (`language_id`) REFERENCES `imcms_languages` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-INSERT INTO `imcms_doc_enabled_languages` (`doc_id`, `language_id`)
+INSERT INTO `imcms_doc_languages` (`doc_id`, `language_id`)
 SELECT `meta_id`, @doc_language_id FROM `meta`;
 
 --

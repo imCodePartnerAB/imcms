@@ -298,11 +298,11 @@ public class Meta implements Serializable, Cloneable {
      */
 	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
 	@JoinTable(
-	    name = "imcms_doc_enabled_languages",
+	    name = "imcms_doc_languages",
 	    joinColumns = @JoinColumn(name="doc_id"),
             inverseJoinColumns = @JoinColumn(name="language_id")
         )
-	private Set<I18nLanguage> enabledLanguages = new HashSet<I18nLanguage>();    
+	private Set<I18nLanguage> languages = new HashSet<I18nLanguage>();
 
 
 	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
@@ -354,8 +354,8 @@ public class Meta implements Serializable, Cloneable {
 				clone.keywords = new HashSet<String>(keywords);
 			}
 
-			if (enabledLanguages != null) {
-				clone.keywords = new HashSet<String>(keywords);
+			if (languages != null) {
+				clone.languages = new HashSet<I18nLanguage>(languages);
 			}
 
             if (permissionSets != null) {
@@ -598,12 +598,12 @@ public class Meta implements Serializable, Cloneable {
         this.disabledLanguageShowSetting = disabledLanguageShowSetting;
     }
 
-    public Set<I18nLanguage> getEnabledLanguages() {
-        return enabledLanguages;
+    public Set<I18nLanguage> getLanguages() {
+        return languages;
     }
 
-    public void setEnabledLanguages(Set<I18nLanguage> enabledLanguages) {
-        this.enabledLanguages = enabledLanguages;
+    public void setLanguages(Set<I18nLanguage> languages) {
+        this.languages = languages;
     }
 
     // Transient properties

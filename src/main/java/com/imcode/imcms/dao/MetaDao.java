@@ -284,7 +284,7 @@ public class MetaDao extends HibernateTemplate {
             "DELETE FROM imcms_text_doc_contents WHERE doc_id = ?",
             "DELETE FROM imcms_text_doc_content_loops WHERE doc_id = ?",
             "DELETE FROM imcms_doc_default_version WHERE doc_id = ?",
-            "DELETE FROM imcms_doc_default_languages WHERE doc_id = ?",
+            "DELETE FROM imcms_doc_languages WHERE doc_id = ?",
             "DELETE FROM imcms_doc_keywords WHERE doc_id = ?",
             "DELETE FROM imcms_doc_versions WHERE doc_id = ?",
 			"DELETE FROM meta WHERE meta_id = ?",

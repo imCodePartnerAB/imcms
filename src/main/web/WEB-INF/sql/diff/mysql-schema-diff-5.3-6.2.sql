@@ -24,7 +24,7 @@ CREATE TABLE imcms_doc_keywords (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- imcms_doc_enabled_languages
+-- imcms_doc_languages
 CREATE TABLE imcms_doc_languages (
 
     id int AUTO_INCREMENT,

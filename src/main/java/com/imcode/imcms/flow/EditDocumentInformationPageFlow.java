@@ -133,7 +133,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
             labelsMap.put(document.getLanguage(), document.getLabels());
         } else {
-            for (I18nLanguage language: document.getMeta().getEnabledLanguages()) {
+            for (I18nLanguage language: document.getMeta().getLanguages()) {
                 languagesStates.put(language, true);
             }
 
@@ -332,7 +332,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
         document.setLabels(labelsMap.get(document.getLanguage()));
 
-        Set<I18nLanguage> enabledLanguages = document.getMeta().getEnabledLanguages();
+        Set<I18nLanguage> enabledLanguages = document.getMeta().getLanguages();
 
         enabledLanguages.clear();
 
