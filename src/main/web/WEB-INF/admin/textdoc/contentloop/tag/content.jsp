@@ -79,8 +79,7 @@ pageContext.setAttribute("isSingleContent", isSingleContent);
             <input type="submit" value="Add after"/>
           </form:form>   
         </td> 
-        
-        <c:if test="${!isSingleContent}">
+
         <td bgcolor="RED">
           <form:form action="${pageContext.servletContext.contextPath}/newadmin/contentloop" method="POST">
             <input type="hidden" name="docId" value="${contentLoop.docId}"/>
@@ -91,7 +90,6 @@ pageContext.setAttribute("isSingleContent", isSingleContent);
             <input type="submit" value="Delete"/>
           </form:form>   
         </td> 
-        </c:if>
       </tr>      
     </table>
   </td>

@@ -1,6 +1,7 @@
 package com.imcode.imcms;
 
 import clojure.lang.RT;
+import clojure.lang.Symbol;
 import clojure.lang.Var;
 import org.hibernate.SessionFactory;
 
@@ -15,39 +16,34 @@ public class Script {
 
     public static final String TEST_SQL_SCRIPTS_HOME = "src/test/resources/sql";
 
+    public static final Var mNsResolve;
+
     static {
         try {
             RT.load("com/imcode/imcms/boot");
-            RT.load("com/imcode/imcms/project");
-            RT.load("com/imcode/imcms/db_test");
-
-            RT.load("com/imcode/imcms/runtime");
-            RT.load("com/imcode/cljlib/db");
+            mNsResolve = RT.var("com.imcode.imcms.boot", "m-ns-resolve");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
+    public static Var var(String nsName, String varName) {
+        try {
+            return (Var)mNsResolve.invoke(Symbol.create(nsName), Symbol.create(varName));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     
-
-//    public static Object callClojureFn(String ns, String fn, Object... args) {
-//        try {
-//            Var var = RT.var(ns, fn);
-//
-//            return var.applyTo(RT.seq(args));
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
-
     public static String getDBName() throws Exception {
-        return (String)RT.var("com.imcode.imcms.db-test", "db-name")
-               .invoke();
+        return (String)var("com.imcode.imcms.db-test", "db-name").invoke();
     }
 
     public static DataSource createDBDataSource(boolean autocommit) {
         try {
-            return (DataSource)RT.var("com.imcode.imcms.db-test", "create-ds").invoke(autocommit);
+            return (DataSource)var("com.imcode.imcms.db-test", "create-ds").invoke(autocommit);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -55,7 +51,7 @@ public class Script {
 
     public static void recreateDB() {
         try {
-            RT.var("com.imcode.imcms.db-test", "recreate").invoke();
+            var("com.imcode.imcms.db-test", "recreate").invoke();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -64,7 +60,7 @@ public class Script {
 
     public static void prepareDB(boolean recreateBofrePrepare) {
         try {
-            RT.var("com.imcode.imcms.db-test", "prepare").invoke(getDBName(), recreateBofrePrepare);
+            var("com.imcode.imcms.db-test", "prepare").invoke(getDBName(), recreateBofrePrepare);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -73,7 +69,7 @@ public class Script {
     
     public static void runDBScripts(String... sqlScriptsPaths) {
         try {
-            RT.var("com.imcode.imcms.db-test", "run-scripts").invoke(createPaths(sqlScriptsPaths));
+            var("com.imcode.imcms.db-test", "run-scripts").invoke(createPaths(sqlScriptsPaths));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -82,7 +78,7 @@ public class Script {
 
     public static void initImcms(Boolean prepareDBOnStart) {
         try {
-            RT.var("com.imcode.imcms.project", "init-imcms").invoke(prepareDBOnStart);
+            var("com.imcode.imcms.project", "init-imcms").invoke(prepareDBOnStart);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -108,7 +104,7 @@ public class Script {
     public static SessionFactory createHibernateSessionFactory(Class[] annotatedClasses, String... xmlFiles) {
 
         try {
-            return (SessionFactory)RT.var("com.imcode.imcms.db-test", "create-hibernate-sf")
+            return (SessionFactory)var("com.imcode.imcms.db-test", "create-hibernate-sf")
                 .invoke(annotatedClasses, xmlFiles);
         } catch (Exception e) {
             throw new RuntimeException(e);

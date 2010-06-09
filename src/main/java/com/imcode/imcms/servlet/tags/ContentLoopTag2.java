@@ -36,14 +36,13 @@ public class ContentLoopTag2 extends BodyTagSupport {
 	/** Loop number in a TextDocument. */
     private int no;
 
-    /** Loop contentes. */
-    private ListIterator<Content> contentsIterator;
-
     private ContentLoop loop;
 
     private Content currentContent;
 
     private int contentsCount;
+
+    private int contentIndex;
 
     private Properties attributes = new Properties();
 
@@ -88,26 +87,52 @@ public class ContentLoopTag2 extends BodyTagSupport {
 
         currentContent = null;
         contentsCount = loop.getContents().size();
-        contentsIterator = loop.getContents().listIterator();
+        contentIndex = -1;        
 
-        return !handleNextContent()
+        return contentsCount == 0 || !nextContent()
                 ? SKIP_BODY
                 : editMode
                     ? EVAL_BODY_BUFFERED
                     : EVAL_BODY_INCLUDE;
 	}
 
-	private boolean handleNextContent() {
-        if (!contentsIterator.hasNext()) {
-        	//pageContext.removeAttribute(indexVar);
-        	return false;
+    
+    /**
+     * Iterates to next enabled content.
+     * 
+     * @return true if content is available.
+     */
+	private boolean nextContent() {
+        contentIndex += 1;
+        
+        if (contentIndex == contentsCount) {
+            return false;
         }
 
-        firstContent = !contentsIterator.hasPrevious();
-        currentContent = contentsIterator.next();
-        lastContent = !contentsIterator.hasNext();
+        currentContent = loop.getContents().get(contentIndex);
 
-    	return true;
+        if (currentContent.isEnabled()) {
+            firstContent = true;
+            lastContent = true;
+            
+            for (int i = contentIndex - 1; i > -1; i--) {
+                if (loop.getContents().get(i).isEnabled()) {
+                    firstContent = false;
+                    break;
+                }
+            }
+
+            for (int i = contentIndex + 1; i < contentsCount; i++) {
+                if (loop.getContents().get(i).isEnabled()) {
+                    lastContent = false;
+                    break;
+                }
+            }
+
+            return true;
+        } else {
+            return nextContent();
+        }
 	}
 
 
@@ -137,7 +162,7 @@ public class ContentLoopTag2 extends BodyTagSupport {
     		}
     	}
 
-    	return handleNextContent() ? EVAL_BODY_AGAIN : SKIP_BODY;
+    	return nextContent() ? EVAL_BODY_AGAIN : SKIP_BODY;
     }
 
 
