@@ -119,7 +119,8 @@
 
 (defn create-conf []
   (let [basedir (project/subdir-path "src/main/web")]
-    (conf/create-conf basedir (project/file-path "src/main/resources/conf.clj"))))
+    (conf/create-conf (project/file-path "src/main/resources/conf.clj")
+                      {:base.dir basedir})))
 
 
 (defn prepare

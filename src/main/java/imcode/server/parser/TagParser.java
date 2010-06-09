@@ -27,7 +27,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.Date;                                      
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -75,7 +75,7 @@ public class TagParser {
     /**
      * Used as default image in tagImage when document.getImage returns null. 
      */
-    private final static ImageDomainObject NULL_IMAGE = new ImageDomainObject(); 
+    private final static ImageDomainObject DEFAULT_IMAGE = new ImageDomainObject(); 
 
     private final static Logger LOG = Logger.getLogger(TagParser.class.getName());
 
@@ -94,9 +94,10 @@ public class TagParser {
                                                                               | Perl5Compiler.READ_ONLY_MASK);
             attributesPattern = patComp.compile("\\s+(\\w+)\\s*=\\s*([\"'])(.*?)\\2", Perl5Compiler.SINGLELINE_MASK
                                                                                       | Perl5Compiler.READ_ONLY_MASK);
-        } catch ( MalformedPatternException ignored ) {
-            // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
-            LOG.fatal("Danger, Will Robinson!", ignored);
+        } catch ( MalformedPatternException e ) {
+            LOG.fatal("RegExp init failed.", e);
+            
+            throw new RuntimeException(e);
         }
     }
 
@@ -400,8 +401,6 @@ public class TagParser {
      */
     public String tagText(Properties attributes, ContentLoop loop, Content content) {
         TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
-//        UserDomainObject user = documentRequest.getUser();
-//        I18nLanguage language = Imcms.getGetDocumentCallback().getLanguage();
 
         if ( shouldOutputNothingAccordingToMode(attributes, textMode) || textDocumentToUse==null || textDocumentToUse.getId() != document.getId() && textMode ) {
             return "";
@@ -527,7 +526,7 @@ public class TagParser {
         ImageDomainObject image = textDocumentToUse.getImage(imageIndex) ;
         
         if (image == null) {
-        	image = NULL_IMAGE;
+        	image = DEFAULT_IMAGE;
         }
         
         ImageSource imageSource = image.getSource();
@@ -808,14 +807,6 @@ public class TagParser {
 
     
     private TextDocumentDomainObject getTextDocumentToUse(Properties attributes) {
-//        com.imcode.imcms.api.GetDocumentCallback dr =Imcms.getGetDocumentCallback();
-//
-//        if (dr == null) {
-//            throw new IllegalStateException("GetDocumentCallback is not associated with a current thread.");
-//        }
-//
-//    	UserDomainObject user = dr.getUser();
-    	
         String documentName = attributes.getProperty("document");
         String documentVersionStr = attributes.getProperty("version");
         Integer documentVersion = documentVersionStr == null ? null : new Integer(documentVersionStr);
@@ -823,12 +814,9 @@ public class TagParser {
         
         try {
 	        if(StringUtils.isNotBlank(documentName)) {
-	            //textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocumentForShowing(documentName, user);
                 textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocument(documentName);
 	        } else if (documentVersion != null) {
 	        	Integer docmentId = textDocumentToUse.getId();
-	        	
-	        	//textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocumentForShowing(docmentId, documentVersion, user);
                 textDocumentToUse = (TextDocumentDomainObject)service.getDocumentMapper().getDocument(docmentId);
 	        }
         } catch (ClassCastException e) {

@@ -104,10 +104,6 @@ LI { padding-bottom:5; }
 </tr>
 
 <tr>
-  <td><jsp:include page="demo_versions.jsp"/></td>
-</tr>
-
-<tr>
     <td align="center" valign="bottom">&nbsp;<br><imcms:admin/>
         <imcms:include url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoBottom"/>        
     </td>
