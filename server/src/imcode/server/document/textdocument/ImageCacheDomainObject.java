@@ -20,8 +20,6 @@ public class ImageCacheDomainObject implements Serializable {
 	public static final short TYPE_URL = 3;
 	
 	private String id;
-	private int metaId;
-	private int imageIndex;
 	private String resource;
 	private short type;
 	private int fileSize;
@@ -37,12 +35,10 @@ public class ImageCacheDomainObject implements Serializable {
     public ImageCacheDomainObject() {
 	}
     
-	public ImageCacheDomainObject(String id, int metaId, int imageIndex, String resource,  
+	public ImageCacheDomainObject(String id, String resource,  
 			short type, int fileSize, int frequency, Format format, int width, int height, 
 			CropRegion cropRegion, RotateDirection rotateDirection, Timestamp createdDate) {
 		this.id = id;
-		this.metaId = metaId;
-		this.imageIndex = imageIndex;
 		this.resource = resource;
 		this.type = type;
 		this.fileSize = fileSize;
@@ -77,10 +73,6 @@ public class ImageCacheDomainObject implements Serializable {
 		}
 		
 		id = DigestUtils.shaHex(builder.toString());
-	}
-	
-	public boolean isDocumentImage() {
-		return metaId > 0;
 	}
 	
 	public String getId() {
@@ -147,22 +139,6 @@ public class ImageCacheDomainObject implements Serializable {
 		this.createdDate = createdDate;
 	}
 
-	public int getMetaId() {
-		return metaId;
-	}
-
-	public void setMetaId(int metaId) {
-		this.metaId = metaId;
-	}
-
-	public int getImageIndex() {
-		return imageIndex;
-	}
-
-	public void setImageIndex(int imageIndex) {
-		this.imageIndex = imageIndex;
-	}
-
 	public int getFileSize() {
 		return fileSize;
 	}
@@ -191,8 +167,6 @@ public class ImageCacheDomainObject implements Serializable {
 	public int hashCode() {
 		return new HashCodeBuilder()
 				.append(id)
-				.append(metaId)
-				.append(imageIndex)
 				.toHashCode();
 	}
 	
@@ -206,14 +180,12 @@ public class ImageCacheDomainObject implements Serializable {
 		
 		return new EqualsBuilder()
 				.append(id, o.getId())
-				.append(metaId, o.getMetaId())
-				.append(imageIndex, o.getImageIndex())
 				.isEquals();
 	}
 	
 	@Override
 	public String toString() {
 		return String.format("imcode.server.document.textdocument.ImageCacheDomainObject" +
-				"[id: %s, metaId: %d, imageIndex: %d, resource: %s, type: %d, format: %s]", id, metaId, imageIndex, resource, type, format);
+				"[id: %s, resource: %s, type: %d, format: %s]", id, resource, type, format);
 	}
 }

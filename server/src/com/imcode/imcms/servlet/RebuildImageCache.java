@@ -173,7 +173,7 @@ class RebuildImageCacheThread extends Thread {
         
         Format format = imageDomainObject.getFormat();
         
-        ImageCacheDomainObject imageCacheObject = ImageHandling.createImageCacheObject(path, null, fileId, metaId, imageIndex, 
+        ImageCacheDomainObject imageCacheObject = ImageHandling.createImageCacheObject(path, null, fileId,  
                 format, imageDomainObject.getWidth(), imageDomainObject.getHeight(), imageDomainObject.getCropRegion(), 
                 imageDomainObject.getRotateDirection());
         

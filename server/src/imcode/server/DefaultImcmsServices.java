@@ -189,6 +189,14 @@ final public class DefaultImcmsServices implements ImcmsServices {
                 log.error(e, e);
             }
         }
+
+        String jdbcDriver = props.getProperty("JdbcDriver");
+        DatabaseVendor vendor = DatabaseVendor.findByDriverClass(jdbcDriver);
+        if (vendor == null) {
+            throw new RuntimeException("Failed to determine database vendor using JdbcDriver: " + jdbcDriver);
+        }
+        config.setDatabaseVendor(vendor);
+
         return config;
     }
 

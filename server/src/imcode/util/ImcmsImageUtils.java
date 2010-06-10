@@ -27,11 +27,11 @@ public class ImcmsImageUtils {
     private ImcmsImageUtils() {
     }
 
-    public static String getImageHtmlTag(Integer metaId, Integer imageIndex, ImageDomainObject image, HttpServletRequest request, Properties attributes) {
-        return getImageHtmlTag(metaId, imageIndex, image, request, attributes, false);
+    public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes) {
+        return getImageHtmlTag(image, request, attributes, false);
     }
     
-    public static String getImageHtmlTag(Integer metaId, Integer imageIndex, ImageDomainObject image, HttpServletRequest request, Properties attributes, boolean absoluteUrl) {
+    public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes, boolean absoluteUrl) {
         StringBuffer imageTagBuffer = new StringBuffer(96);
         if ( image.getSize() > 0 ) {
 
@@ -43,7 +43,7 @@ public class ImcmsImageUtils {
                 imageTagBuffer.append('>');
             }
             
-            String urlEscapedImageUrl = getImageUrl(metaId, imageIndex, image, request.getContextPath());
+            String urlEscapedImageUrl = getImageUrl(image, request.getContextPath());
             if (absoluteUrl) {
                 StringBuffer requestURL = request.getRequestURL();
                 urlEscapedImageUrl = requestURL.substring(0,StringUtils.ordinalIndexOf(requestURL.toString(), "/", 3))+urlEscapedImageUrl;
@@ -118,7 +118,7 @@ public class ImcmsImageUtils {
         return imageTagBuffer.toString();
     }
     
-    public static String getImageUrl(Integer metaId, Integer imageIndex, ImageDomainObject image, String contextPath) {
+    public static String getImageUrl(ImageDomainObject image, String contextPath) {
     	StringBuilder builder = new StringBuilder();
         builder.append(contextPath);
         builder.append("/imagehandling?");
@@ -130,13 +130,6 @@ public class ImcmsImageUtils {
         } else {
         	builder.append("path=");
         	builder.append(Utility.encodeUrl(image.getUrlPathRelativeToContextPath()));
-        }
-        
-        if (metaId != null && imageIndex != null) {
-        	builder.append("&meta_id=");
-        	builder.append(metaId);
-        	builder.append("&image_index=");
-        	builder.append(imageIndex);
         }
         
         builder.append("&width=");

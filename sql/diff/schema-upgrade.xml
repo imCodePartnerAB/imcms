@@ -9,5 +9,13 @@
       <script location="diff-image_handling-mssql.sql"/>
       <script location="diff-image_archive_support_mssql.sql"/>
     </vendor>
-  </diff>   
+  </diff>
+  <diff version="4.12">
+    <vendor name="mysql">
+      <script location="diff-image_handling-mysql-4.11-4.12.sql"/>
+    </vendor>
+    <vendor name="mssql">
+      <script location="diff-image_handling-mssql-4.11-4.12.sql"/>
+    </vendor>
+  </diff>
 </schema-upgrade>

@@ -42,6 +42,7 @@ public class Config {
     private File imageArchiveImagePath;
     private String imageArchiveImageUrl;
     private File imageMagickPath;
+    private DatabaseVendor databaseVendor;
 
     public String getWorkaroundUriEncoding() {
         return workaroundUriEncoding;
@@ -306,5 +307,13 @@ public class Config {
 
     public void setImageMagickPath(File imageMagickPath) {
         this.imageMagickPath = imageMagickPath;
+    }
+
+    public DatabaseVendor getDatabaseVendor() {
+        return databaseVendor;
+    }
+
+    public void setDatabaseVendor(DatabaseVendor databaseVendor) {
+        this.databaseVendor = databaseVendor;
     }
 }

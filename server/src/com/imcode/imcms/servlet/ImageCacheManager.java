@@ -9,26 +9,20 @@ import imcode.util.image.ImageOp;
 import imcode.util.image.Resize;
 
 import java.io.File;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.imcode.imcms.mapping.ImageCacheMapper;
+import java.util.Collection;
 
 public class ImageCacheManager {
 	private static final Log log = LogFactory.getLog(ImageCacheManager.class);
 	
-	private static final int CACHE_BUCKETS_COUNT = 20;
+	private static final int CACHE_BUCKETS_COUNT = 40;
 	
 	private static final File IMAGE_CACHE_PATH = Imcms.getServices().getConfig().getImageCachePath();
 	private static final long MAX_CACHE_SIZE = Imcms.getServices().getConfig().getImageCacheMaxSize();
-	
-	// images that are assigned to documents using meta_id and image_index go here
-	private static final File DOCUMENT_IMAGE_CACHE_BUCKETS_FILE = new File(IMAGE_CACHE_PATH, "doc_image_cache");
-	
-	// images that are assigned to document texts (in xinha) go here
-	private static final File TEXT_IMAGE_CACHE_BUCKETS_FILE = new File(IMAGE_CACHE_PATH, "text_image_cache");
 	
 	
 	public static File getCacheFile(ImageCacheDomainObject imageCache) {
@@ -38,18 +32,12 @@ public class ImageCacheManager {
 		
 		String entryPath = String.format("%d/%s", bucket, cacheId);
 		
-		File imageFile = new File(DOCUMENT_IMAGE_CACHE_BUCKETS_FILE, entryPath);
+		File imageFile = new File(IMAGE_CACHE_PATH, entryPath);
 		if (!imageFile.exists()) {
-			imageFile = new File(TEXT_IMAGE_CACHE_BUCKETS_FILE, entryPath);
-			
-			if (!imageFile.exists()) {
-				return null;
-			}
+            return null;
 		}
 		
-		if (imageCache.getMetaId() <= 0) {
-			Imcms.getServices().getImageCacheMapper().incrementFrequency(imageCache.getId());
-		}
+        Imcms.getServices().getImageCacheMapper().incrementFrequency(imageCache.getId());
 		
 		return imageFile;
 	}
@@ -57,20 +45,12 @@ public class ImageCacheManager {
 	public static File storeImage(ImageCacheDomainObject imageCache, File imageFile, boolean deleteFile) {
 		ImageCacheMapper imageCacheMapper = Imcms.getServices().getImageCacheMapper();
 		
-		if (imageCache.getMetaId() > 0) {
-			// delete any previous document image cache for meta_id and image_index
-			String cacheId = imageCacheMapper.deleteDocumentImageCache(imageCache.getMetaId(), imageCache.getImageIndex());
-//			if (cacheId != null) {
-//				deleteDocumentImageCacheEntry(cacheId);
-//			}
-		} else {
-			imageCache.setFrequency(1);
-			
-			// clear 10% of text images cache, if too many entries
-			if (imageCacheMapper.getTextImageCacheFileSizeTotal() >= MAX_CACHE_SIZE) {
-				imageCacheMapper.deleteTextImageCacheLFUEntries();
-			}
-		}
+        imageCache.setFrequency(1);
+
+        // clear 10% of text images cache, if too many entries
+        if (imageCacheMapper.getTextImageCacheFileSizeTotal() >= MAX_CACHE_SIZE) {
+            imageCacheMapper.deleteTextImageCacheLFUEntries();
+        }
 		
 		File cacheFile = processImage(imageCache, imageFile, deleteFile);
 		if (cacheFile == null) {
@@ -83,40 +63,24 @@ public class ImageCacheManager {
 		return cacheFile;
 	}
 	
-	public static void deleteTextImageCacheEntries(List<String> cacheIds) {
+	public static void deleteTextImageCacheEntries(Collection<String> cacheIds) {
 		for (String cacheId : cacheIds) {
 			int bucket = getBucket(cacheId);
 			
-			File entryFile = new File(TEXT_IMAGE_CACHE_BUCKETS_FILE, String.format("%d/%s", bucket, cacheId));
+			File entryFile = new File(IMAGE_CACHE_PATH, String.format("%d/%s", bucket, cacheId));
 			if (entryFile.exists()) {
 				entryFile.delete();
 			}
 		}
 	}
 	
-	public static void deleteDocumentImageCacheEntry(String cacheId) {
-		int bucket = getBucket(cacheId);
-		
-		File entryFile = new File(DOCUMENT_IMAGE_CACHE_BUCKETS_FILE, String.format("%d/%s", bucket, cacheId));
-		if (entryFile.exists()) {
-			entryFile.delete();
-		}
-	}
-	
 	private static File processImage(ImageCacheDomainObject imageCache, File imageFile, boolean deleteFile) {
-		File bucketsRootFile = TEXT_IMAGE_CACHE_BUCKETS_FILE;
-		if (imageCache.getMetaId() > 0) {
-			bucketsRootFile = DOCUMENT_IMAGE_CACHE_BUCKETS_FILE;
-		}
-		
-		if (!bucketsRootFile.exists()) {
-			bucketsRootFile.mkdir();
-		}
+		File bucketsRootFile = IMAGE_CACHE_PATH;
 		
 		int bucket = getBucket(imageCache.getId());
 		File bucketFile = new File(bucketsRootFile, Integer.toString(bucket));
 		if (!bucketFile.exists()) {
-			bucketFile.mkdir();
+			bucketFile.mkdirs();
 		}
 		
 		File cacheFile = new File(bucketFile, imageCache.getId());

@@ -3,14 +3,10 @@ package com.imcode.imcms.servlet;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.FileDocumentDomainObject.FileDocumentFile;
 import imcode.server.document.textdocument.ImageCacheDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
-import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.image.Format;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
@@ -88,8 +84,6 @@ public class ImageHandling extends HttpServlet {
 		String path = StringUtils.trimToNull(request.getParameter("path"));
 		String url = StringUtils.trimToNull(request.getParameter("url"));
 		int fileId = NumberUtils.toInt(request.getParameter("file_id"));
-		int metaId = NumberUtils.toInt(request.getParameter("meta_id"));
-		int imageIndex = NumberUtils.toInt(request.getParameter("image_index"));
 		
 		String formatParam = StringUtils.trimToEmpty(request.getParameter("format")).toLowerCase();
 		Format format = Format.findFormatByExtension(formatParam);
@@ -114,19 +108,14 @@ public class ImageHandling extends HttpServlet {
 		int rotateAngle = NumberUtils.toInt(request.getParameter("rangle"));
 		RotateDirection rotateDirection = RotateDirection.getByAngleDefaultIfNull(rotateAngle);
 		 
-		ImageCacheDomainObject imageCache = createImageCacheObject(path, url, fileId, metaId, imageIndex, 
-				format, width, height, cropRegion, rotateDirection);
+		ImageCacheDomainObject imageCache = createImageCacheObject(path, url, fileId, format, width,
+                height, cropRegion, rotateDirection);
 		String cacheId = imageCache.getId();
 		
 		File cacheFile = ImageCacheManager.getCacheFile(imageCache);
 		if (cacheFile != null) {
 			
 			writeImageToResponse(cacheId, cacheFile, format, desiredFilename, response); 
-			return;
-		}
-		
-		if (!canGenerateImage(metaId, request)) {
-			sendNotFound(response);
 			return;
 		}
 		
@@ -167,25 +156,6 @@ public class ImageHandling extends HttpServlet {
 		writeImageToResponse(cacheId, cacheFile, outputFormat, desiredFilename, response);
 	}
 	
-	private static boolean canGenerateImage(int metaId, HttpServletRequest request) {
-		UserDomainObject user = Utility.getLoggedOnUser(request);
-		if (user == null) {
-			return false;
-		}
-		
-		if (metaId > 0) {
-			DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument(metaId);
-			if (document == null || !(document instanceof TextDocumentDomainObject)) {
-				return false;
-			}
-			TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(document);
-			
-			return permissionSet.getEditImages();
-		}
-		
-		return true;
-	}
-	
 	private static void writeImageToResponse(String cacheId, File cacheFile, Format format, String desiredFilename, 
 			HttpServletResponse response) {
 		if (format != null) {
@@ -220,7 +190,7 @@ public class ImageHandling extends HttpServlet {
 		}
 	}
 	
-	static ImageCacheDomainObject createImageCacheObject(String path, String url, int fileId, int metaId, int imageIndex, 
+	static ImageCacheDomainObject createImageCacheObject(String path, String url, int fileId, 
 			Format format, int width, int height, CropRegion cropRegion, RotateDirection rotateDirection) {
 		ImageCacheDomainObject imageCache = new ImageCacheDomainObject();
 		
@@ -235,11 +205,6 @@ public class ImageHandling extends HttpServlet {
 			imageCache.setType(ImageCacheDomainObject.TYPE_URL);
 		} else {
 			throw new RuntimeException("path, url or fileId must be valid");
-		}
-		
-		if (metaId > 0) {
-			imageCache.setMetaId(metaId);
-			imageCache.setImageIndex(imageIndex);
 		}
 		
 		imageCache.setFormat(format);

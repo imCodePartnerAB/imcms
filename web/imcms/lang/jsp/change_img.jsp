@@ -238,7 +238,7 @@ function resetCrop() {
 		<tr>
 			<td colspan="2" align="center" style="padding:0;">
 			<div id="previewDiv" style="padding:0; text-align:center;<%= previewW > 0 ? " width:" + previewW + "px;" : "" %><%= previewH > 0 ? " height:" + previewH + "px;" : "" %><%= overFlow %>">
-				<%= !image.isEmpty() ? ImcmsImageUtils.getImageHtmlTag((document != null ? document.getId() : null), imageEditPage.getImageIndex(), image, request, new Properties()) : "" %>
+				<%= !image.isEmpty() ? ImcmsImageUtils.getImageHtmlTag(image, request, new Properties()) : "" %>
 			</div></td>
 		</tr><%
 				ImageSource imageSource = image.getSource();
