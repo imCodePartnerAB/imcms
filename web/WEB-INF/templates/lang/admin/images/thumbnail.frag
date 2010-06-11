@@ -1,4 +1,4 @@
-﻿#set( $max = 64 )
+#set( $max = 64 )
 #set( $width = $max )
 #set( $height = $max )
 #if( $imageSize.Width > 0 && $imageSize.Height > 0 )
