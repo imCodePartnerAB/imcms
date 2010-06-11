@@ -61,6 +61,7 @@
       (rewrite-expression "${home.dir}/xxx/${project.dir}/src" {:home.dir "/home"
                                                                 :project.dir "project"}))))
 
+;; side effects - move to separate file
 (deftest test-read-conf
   (is (map? (read-conf "src/main/resources/conf.clj"))))
 
