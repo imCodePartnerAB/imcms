@@ -135,6 +135,15 @@ public class Document implements Serializable {
 
     }
 
+    public I18nLanguage getLanguage() {
+        return internalDocument.getLanguage();
+    }
+    
+
+    public Integer getVersionNo() {
+        return internalDocument.getVersionNo();
+    }
+
     public int hashCode() {
         return internalDocument.hashCode();
     }

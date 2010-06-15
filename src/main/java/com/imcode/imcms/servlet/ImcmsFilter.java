@@ -48,12 +48,6 @@ import com.imcode.imcms.api.I18nLanguage;
  */
 public class ImcmsFilter implements Filter, ImcmsListener {
 
-    public final static String TOO_MANY_SESSIONS = "TooManySessions";
-
-    public final static LocalizedMessage LOGIN_MSG_TOO_MANY_SESSIONS
-            = new LocalizedMessage("templates/login/TooManySessions");    
-
-
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -74,7 +68,7 @@ public class ImcmsFilter implements Filter, ImcmsListener {
     };
 
 
-    /** Processes request normally. */
+    /** Processes request in normal mode. */
     private Filter normalModeFilter = new Filter() {
 
         public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain)
@@ -109,7 +103,7 @@ public class ImcmsFilter implements Filter, ImcmsListener {
             // todo: add check AND NOT logged in by IP; optimize;
             // In case system denies multiple login for the same user
             // invalidate current session if it does not match to
-            // last user's session and redirect user to the login page.
+            // last user's session and redirect a user to the login page.
             } else if (!user.isDefaultUser() && service.getConfig().isDenyMultipleUserLogin()) {
                 String sessionId = session.getId();
                 String lastUserSessionId = service
@@ -117,21 +111,10 @@ public class ImcmsFilter implements Filter, ImcmsListener {
                         .getUserSessionId(user);
 
                 if (lastUserSessionId != null && !lastUserSessionId.equals(sessionId)) {
+                    VerifyUser.forwardToLoginPageTooManySessions(request, response);
 
-                    session.invalidate();
-
-                    String redirectURL = request.getContextPath() + "/login?" + TOO_MANY_SESSIONS;
-
-                    response.sendRedirect(redirectURL);
                     return;
                 }
-
-                // ??? todo: Clarify the intention of the following code block.
-                // ??? uncomment if necessary
-//                if (request.getParameter(TOO_MANY_SESSIONS) != null) {
-//                    request.setAttribute(VerifyUser.REQUEST_ATTRIBUTE__ERROR,
-//                            LOGIN_MSG_TOO_MANY_SESSIONS);
-//                }
             }
 
             ResourceBundle resourceBundle = Utility.getResourceBundle(request);
@@ -216,16 +199,29 @@ public class ImcmsFilter implements Filter, ImcmsListener {
        onImcmsModeChange(ImcmsMode.MAINTENANCE);
     }
 
-
+    /**
+     * When request path matches a physical or mapped resource then processes request normally.
+     * Otherwise threats a request as a document request.
+     * @see GetDoc#viewDoc(String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse) 
+     *
+     * @param chain
+     * @param request
+     * @param response
+     * @param service
+     * @param fallbackDecoder
+     * @throws ServletException
+     * @throws IOException
+     */
     private void handleDocumentUri(FilterChain chain, HttpServletRequest request, ServletResponse response,
                                    ImcmsServices service, FallbackDecoder fallbackDecoder) throws ServletException, IOException {
         String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder) ;
         path = StringUtils.substringAfter( path, request.getContextPath() ) ;
-        String documentIdString = getDocumentIdString(service, path);
         ServletContext servletContext = request.getSession().getServletContext();
         Set resourcePaths = servletContext.getResourcePaths(path);
         
         if (resourcePaths == null || resourcePaths.size() == 0) {
+            String documentIdString = getDocumentIdString(service, path);
+            
             DocumentDomainObject document = service.getDocumentMapper().getDocument(documentIdString);
             
             if (null != document) {

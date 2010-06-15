@@ -6,6 +6,11 @@ import java.security.KeyStore;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * Base application configuration.
+ *
+ * Fields names matches properties names in server.properties configuration file.
+ */
 public class Config {
 
     private File templatePath;
@@ -15,7 +20,10 @@ public class Config {
     private String imageUrl;
     private String smtpServer;
     private int smtpPort;
+
+    /** Admin interface language. Not related to default content language (I18nLanguage). */
     private String defaultLanguage;
+    
     private String sessionCookieDomain;
     private String fileAdminRootPaths;
     private float indexingSchedulePeriodInMinutes;
@@ -25,6 +33,8 @@ public class Config {
     private String keyStoreType ;
     private String workaroundUriEncoding;
     private boolean secureLoginRequired;
+
+    /**  */
     private boolean denyMultipleUserLogin;
 
     public String getWorkaroundUriEncoding() {

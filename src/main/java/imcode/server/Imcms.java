@@ -82,12 +82,20 @@ public class Imcms {
      */
 	private static ThreadLocal<GetDocumentCallback> getDocumentCallbacks;
 
+    
+    /**
+     * Internalization support.
+     */
     private static I18nSupport i18nSupport;
 
 
     /** Can not be instantiated directly. */
     private Imcms() {}
 
+    
+    /**
+     * @return ImcmsServices interface implementation.
+     */
     public static ImcmsServices getServices() {
         return services;
     }

@@ -6,7 +6,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 /**
- * Parametrized callback used in DocumentMapper#getDocument method.
+ * Parametrized callback for DocumentMapper#getDocument method.
  * 
  * A callback is created per a http request and bond to thread local in the Imcms singleton.
  *

@@ -21,6 +21,10 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 
 public class VerifyUser extends HttpServlet {
 
+    /** Too many sessions message key. */
+    public final static LocalizedMessage LOGIN_MSG__TOO_MANY_SESSIONS
+            = new LocalizedMessage("templates/login/TooManySessions");    
+
     private static final String SESSION_ATTRIBUTE__NEXT_URL = "next_url";
     public static final String REQUEST_PARAMETER__NEXT_URL = SESSION_ATTRIBUTE__NEXT_URL;
     public static final String REQUEST_PARAMETER__NEXT_META = "next_meta";
@@ -57,11 +61,28 @@ public class VerifyUser extends HttpServlet {
         }
     }
 
+
+    public static void forwardToLogin(HttpServletRequest req, HttpServletResponse res, LocalizedMessage errorMsg) throws IOException, ServletException {
+        String loginPage = "/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2() + "/login/index.jsp";
+
+        req.getSession().invalidate();
+        req.setAttribute(REQUEST_ATTRIBUTE__ERROR, errorMsg);
+        req.getRequestDispatcher(loginPage).forward(req, res);
+    }
+
+    
+    public static void forwardToLoginPageTooManySessions(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        forwardToLogin(req, res, LOGIN_MSG__TOO_MANY_SESSIONS);
+    }
+
     private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
         req.getRequestDispatcher("/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2()
                                  + "/login/index.jsp").forward(req, res);
     }
+
+
+
 
     private void goToLoginSuccessfulPage(HttpServletRequest req,
                                          HttpServletResponse res) throws IOException, ServletException {

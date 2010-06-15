@@ -9,12 +9,11 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Used to load preferences from file.
- * Caches the preferences, so each file is opened only once.
+ * Intended to load and cache preferences from properties files.
  */
 public class Prefs {
 
-    private final static Map CACHE = Collections.synchronizedMap(new HashMap());
+    private final static Map<File, Properties> CACHE = Collections.synchronizedMap(new HashMap());
     private static File configPath;
 
     private Prefs() {
@@ -50,7 +49,7 @@ public class Prefs {
      */
 
     private static Properties getProperties(File file) throws IOException {
-        Properties properties = (Properties) CACHE.get(file);
+        Properties properties = CACHE.get(file);
         if ( properties == null ) {
             FileInputStream in = null;
             try {
@@ -66,6 +65,7 @@ public class Prefs {
                 }
             }
         }
+        
         return properties;
     }
 }
