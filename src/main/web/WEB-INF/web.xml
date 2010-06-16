@@ -16,26 +16,36 @@
     </listener>
 
     <filter>
-        <description>Imcms Maintenance Filter</description>
-        <filter-name>MaintenanceFilter</filter-name>
-        <filter-class>com.imcode.imcms.maintenance.MaintenanceFilter</filter-class>
+        <description>
+            Forwards all requests mapped to this filter to the supervisor's pages(s).
+            Supervisor is a sub-module which allows to monitor and alter imCMS behavior.
+        </description>
+        
+        <display-name>Supervisor Filter</display-name>
+        <filter-name>SupervisorFilter</filter-name>
+        <filter-class>com.imcode.imcms.supervisor.SupervisorFilter</filter-class>
     </filter>
     
     <filter>
-        <description>Imcms Filter</description>
+        <description>Intercepts all but maintenance and superadmin requests</description>
+        
+        <display-name>Imcms Filter</display-name>
         <filter-name>ImcmsFilter</filter-name>
         <filter-class>com.imcode.imcms.servlet.ImcmsFilter</filter-class>
     </filter>
 
     <filter>
-        <description>Restrict api samples to superadmin.</description>
+        <description>
+            Restricts access to mapped resources to users who are in the superadmin role.
+        </description>
+
         <filter-name>SuperAdminFilter</filter-name>
         <filter-class>com.imcode.imcms.servlet.SuperAdminFilter</filter-class>
     </filter>
 
     <filter-mapping>
-        <filter-name>MaintenanceFilter</filter-name>
-        <url-pattern>/admin/maintenance/*</url-pattern>
+        <filter-name>SupervisorFilter</filter-name>
+        <url-pattern>/admin/supervisor/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
     </filter-mapping>
 
@@ -50,16 +60,6 @@
         <filter-name>ImcmsFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-
-    <!--
-    <servlet>
-      <servlet-name>maintenance</servlet-name>
-        <servlet-class>
-          org.springframework.web.servlet.DispatcherServlet
-        </servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    -->
     
     <!-- New administration UI dispatcher servlet -->
     <servlet>

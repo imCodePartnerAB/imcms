@@ -40,13 +40,16 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import com.imcode.imcms.api.I18nLanguage;
 
 /**
- * Front filter - intercepts all requests expect maintenance.
+ * Front filter - initializes Imcms and intercepts all but supervisor requests.
  *
- * Also responsible for Imcms initializing and starting.
+ * Request handling depends on current imcms mode:
+ * When imcms in the maintenance mode then request is ignored and service unavailable error is sent.
+ * Otherwise request is processed normally.
  *
  * @see imcode.server.Imcms
+ * @see imcode.server.Imcms#mode
  */
-public class ImcmsFilter implements Filter, ImcmsListener {
+public class ImcmsFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
 
@@ -68,7 +71,7 @@ public class ImcmsFilter implements Filter, ImcmsListener {
     };
 
 
-    /** Processes request in normal mode. */
+    /** Processes request normally. */
     private Filter normalModeFilter = new Filter() {
 
         public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain)
@@ -140,12 +143,12 @@ public class ImcmsFilter implements Filter, ImcmsListener {
     };
 
 
-    /** Set to maintenanceModeFilter or cmsModeFilter. */
+    /** Set to maintenanceModeFilter or normalModeFilter. */
     private volatile Filter delegateFilter;
 
 
     /**
-     * Routes invocation to the delegate filter.
+     * Routes invocations to the delegate filter.
      */
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
@@ -154,6 +157,14 @@ public class ImcmsFilter implements Filter, ImcmsListener {
     }
 
 
+    /**
+     * Initializes Imcms and attempts to starts Imcms.
+     *
+     * Also creates ImcmsModeListener which changes delegateFilter according to Imcms mode. 
+     *
+     * @param filterConfig
+     * @throws ServletException
+     */
     public void init(FilterConfig filterConfig) throws ServletException {
         ServletContext servletContext = filterConfig.getServletContext();
         File path = new File(servletContext.getRealPath("/"));
@@ -162,7 +173,26 @@ public class ImcmsFilter implements Filter, ImcmsListener {
 
         Imcms.setPath(path);
         Imcms.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));
-        Imcms.addListener(this);
+        Imcms.addListener(new ImcmsListener() {
+
+            public void onImcmsStart() { /*ignore*/ }
+
+            public void onImcmsStop() {
+                onImcmsModeChange(ImcmsMode.MAINTENANCE);
+            }
+
+            public void onImcmsStartEx(Exception ex) {
+                onImcmsModeChange(ImcmsMode.MAINTENANCE);
+            }
+
+            // Change delegate filter.
+            public void onImcmsModeChange(ImcmsMode newMode) {
+                delegateFilter = newMode == ImcmsMode.NORMAL
+                        ? normalModeFilter
+                        : maintenanceModeFilter;
+            }
+        });
+
         
         try {
             logger.info("Starting CMS.");
@@ -178,26 +208,7 @@ public class ImcmsFilter implements Filter, ImcmsListener {
     public void destroy() {
         Imcms.stop();
     }
-
-
-    /**
-     * Updates delegate filter.
-     */
-    public void onImcmsModeChange(ImcmsMode newMode) {
-        delegateFilter = newMode == ImcmsMode.NORMAL
-                ? normalModeFilter
-                : maintenanceModeFilter;
-    }
-
-    public void onImcmsStart() {}
-
-    public void onImcmsStop() {
-        onImcmsModeChange(ImcmsMode.MAINTENANCE);
-    }
     
-    public void onImcmsStartEx(Exception ex) {
-       onImcmsModeChange(ImcmsMode.MAINTENANCE);
-    }
 
     /**
      * When request path matches a physical or mapped resource then processes request normally.

@@ -22,8 +22,8 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 public class VerifyUser extends HttpServlet {
 
     /** Too many sessions message key. */
-    public final static LocalizedMessage LOGIN_MSG__TOO_MANY_SESSIONS
-            = new LocalizedMessage("templates/login/TooManySessions");    
+    private final static LocalizedMessage LOGIN_MSG__TOO_MANY_SESSIONS
+            = new LocalizedMessage("templates/login/TooManySessions");
 
     private static final String SESSION_ATTRIBUTE__NEXT_URL = "next_url";
     public static final String REQUEST_PARAMETER__NEXT_URL = SESSION_ATTRIBUTE__NEXT_URL;
@@ -36,7 +36,7 @@ public class VerifyUser extends HttpServlet {
     public static final String REQUEST_ATTRIBUTE__ERROR = "error";
 
     private final static LocalizedMessage ERROR__LOGIN_FAILED = new LocalizedMessage("templates/login/access_denied.html/4");
-    
+
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         doPost(req, res);
     }
