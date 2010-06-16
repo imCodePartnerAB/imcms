@@ -134,7 +134,6 @@ public class DocumentMapper implements DocumentGetter {
         } else {
             newDocument = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
             newDocument.setMeta(parentDoc.getMeta().clone());
-            newDocument.setLabels(parentDoc.getLabels().clone());
             newDocument.setLanguage(parentDoc.getLanguage().clone());            
         }
 
@@ -142,6 +141,9 @@ public class DocumentMapper implements DocumentGetter {
 
         newDocument.accept(new DocIdentityCleanerVisitor());
 
+        newDocument.setHeadline( "" );
+        newDocument.setMenuText( "" );
+        newDocument.setMenuImage( "" );        
         newDocument.getKeywords().clear();
         newDocument.getProperties().clear();
                 

@@ -419,24 +419,6 @@ public class Imcms {
      * Init/upgrades database if necessary.
      */
     public static void prepareDatabase() {
-//        File confXmlFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xml");
-//        File confXsdFile = new File(Imcms.getPath(), "WEB-INF/conf/schema-upgrade.xsd");
-//        File scriptsDir = new File(Imcms.getPath(), "WEB-INF/sql");
-//
-//        final SchemaUpgrade schemaUpgrade = SchemaUpgrade.createInstance(confXmlFile, confXsdFile, scriptsDir);
-//
-//        // todo: replace with datasource get connection.
-//        HibernateTemplate template = (HibernateTemplate)Imcms.getSpringBean("hibernateTemplate");
-//
-//        template.execute(new HibernateCallback() {
-//            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-//                schemaUpgrade.upgrade(session.connection());
-//
-//                return null;
-//            }
-//        });
-        
-        // todo refactor.
         ClojureUtils.prepareDB();
     }
 

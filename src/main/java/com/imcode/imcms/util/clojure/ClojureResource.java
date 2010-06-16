@@ -2,31 +2,37 @@ package com.imcode.imcms.util.clojure;
 
 public class ClojureResource {
 	
-	public static final ClojureResource BACKDOOR_CONTROLLER = new ClojureResource("com.imcode.imcms.maintenance.controller", "/com/imcode/imcms/maintenance/controller");
-    public static final ClojureResource SERVER_SCOKET = new ClojureResource("clojure.contrib.server-socket", "clojure.contrib.server_socket");
+    public static final ClojureResource SERVER_SCOKET = new ClojureResource("clojure.contrib.server-socket");
+
+    public static final ClojureResource SWANK = new ClojureResource("swank.swank");
 
 	/**
 	 * Namespace name.
 	 */
-	public final String name;
+	public final String nsName;
 	
 	/**
 	 * Namespace resource path relative to classpath.
 	 */
-	public final String resourcePath;
+	public final String scriptBase;
 
 
-    public ClojureResource(String name, String resourcePath) {
-		this.name = name;
-		this.resourcePath = resourcePath;
+    public ClojureResource(String nsName) {
+		this(nsName, nsName.replace('.', '/').replace('-', '_'));
+	}
+
+
+    public ClojureResource(String nsName, String scriptBase) {
+		this.nsName = nsName;
+		this.scriptBase = scriptBase;
 	}
 
 
     @Override
     public String toString() {
         return "ClojureResource{" +
-                "name='" + name + '\'' +
-                ", resourcePath='" + resourcePath + '\'' +
+                "nsName='" + nsName + '\'' +
+                ", scriptBase='" + scriptBase + '\'' +
                 '}';
     }
 }

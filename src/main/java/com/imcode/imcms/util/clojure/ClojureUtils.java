@@ -12,7 +12,7 @@ public class ClojureUtils {
         logger.info("Loading clojure resource: " + cn);
 
 		try {
-			RT.load(cn.resourcePath);
+			RT.load(cn.scriptBase);
 		} catch (Exception e) {
             logger.error("Unable to load clojure resource: " + cn, e);
 			throw new RuntimeException(e);
@@ -34,11 +34,11 @@ public class ClojureUtils {
 	
 	
 	public static Var var(ClojureResource cn, String symbolName, Object value) {
-        return RT.var(cn.name, symbolName, value);
+        return RT.var(cn.nsName, symbolName, value);
 	}
 
     public static Var var(ClojureResource cn, String symbolName) {
-        return RT.var(cn.name, symbolName);
+        return RT.var(cn.nsName, symbolName);
     }
 
 
@@ -61,7 +61,7 @@ public class ClojureUtils {
     public static void startSwankServer(int port) {
         logger.info("Starting Swank server on port " + port + ".");
 
-        load("swank/swank");
+        load(ClojureResource.SWANK);
 
         Var fn = RT.var("swank.swank", "start-repl");
 
@@ -74,9 +74,8 @@ public class ClojureUtils {
     }
 
 
-    // todo: refactor
     public static void prepareDB() {
-        ClojureResource r = new ClojureResource("com.imcode.imcms.runtime", "com/imcode/imcms/runtime");
+        ClojureResource r = new ClojureResource("com.imcode.imcms.runtime");
         
         load(r);
 
