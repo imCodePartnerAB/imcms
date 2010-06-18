@@ -10,11 +10,15 @@
     <listener>
         <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
     </listener>
+
+    <listener>
+        <listener-class>com.imcode.imcms.servlet.ImcmsContextListener</listener-class>
+    </listener>
     
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-
+    
     <filter>
         <description>
             Forwards all requests mapped to this filter to the supervisor's pages(s).
@@ -42,6 +46,16 @@
         <filter-name>SuperAdminFilter</filter-name>
         <filter-class>com.imcode.imcms.servlet.SuperAdminFilter</filter-class>
     </filter>
+    
+    <filter>
+        <filter-name>ImageArchiveAccessFilter</filter-name>
+        <filter-class>com.imcode.imcms.addon.imagearchive.util.AccessFilter</filter-class>
+    </filter>
+
+    <filter>
+        <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
+        <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+    </filter>
 
     <filter-mapping>
         <filter-name>SupervisorFilter</filter-name>
@@ -53,6 +67,16 @@
     <filter-mapping>
         <filter-name>SuperAdminFilter</filter-name>
         <url-pattern>/imcms/docs/apisamples/*</url-pattern>
+    </filter-mapping>
+    
+    <filter-mapping>
+        <filter-name>ImageArchiveAccessFilter</filter-name>
+        <url-pattern>/web/archive/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
+        <url-pattern>/web/archive/*</url-pattern>
     </filter-mapping>
 
     
@@ -69,7 +93,13 @@
         </servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-
+    
+    <servlet>
+        <servlet-name>web</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    
    <servlet>
        <servlet-name>Jersey</servlet-name>
        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
@@ -320,7 +350,12 @@
 	    <servlet-name>newadmin</servlet-name>
 	    <url-pattern>/newadmin/*</url-pattern>
 	</servlet-mapping>
-
+	
+	<servlet-mapping>
+        <servlet-name>web</servlet-name>
+        <url-pattern>/web/*</url-pattern>
+    </servlet-mapping>
+    
     <servlet-mapping>
         <servlet-name>Jersey</servlet-name>
         <url-pattern>/ws/*</url-pattern>

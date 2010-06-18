@@ -58,6 +58,30 @@ public class Role implements Comparable {
         return internalRole.hasPermission( RoleDomainObject.PASSWORD_MAIL_PERMISSION ) ;
     }
 
+    public void setUseImagesInArchivePermission(boolean useImages) {
+        if (useImages) {
+            internalRole.addPermission(RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION);
+        } else {
+            internalRole.removePermission(RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION);
+        }
+    }
+
+    public boolean hasUseImagesInArchivePermission() {
+        return internalRole.hasPermission(RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION);
+    }
+
+    public void setChangeImagesInArchivePermission(boolean changeImages) {
+        if (changeImages) {
+            internalRole.addPermission(RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
+        } else {
+            internalRole.removePermission(RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
+        }
+    }
+
+    public boolean hasChangeImagesInArchivePermission() {
+        return internalRole.hasPermission(RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION);
+    }
+
     public int compareTo( Object o ) {
         return internalRole.compareTo( ((Role)o).internalRole ) ;
     }

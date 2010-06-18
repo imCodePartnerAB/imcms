@@ -62,6 +62,7 @@
         <mkdir dir="${main.webapp.webinf.dir}/includes"/>
         <mkdir dir="${main.webapp.webinf.dir}/logs"/>
         <mkdir dir="${main.webapp.webinf.dir}/uploads"/>
+        <mkdir dir="${main.webapp.webinf.dir}/classes"/>
     	
     	<echo message="${version}" file="${versionfile}"/>
         
@@ -72,6 +73,10 @@
     	    		
         <copy todir="${main.webapp.dir}" filtering="true">
             <fileset dir="src/main/web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
+        </copy>
+        
+        <copy todir="${main.webapp.webinf.dir}/classes" filtering="true">
+            <fileset dir="src/main/resources" includes="hibernate.cfg.xml"/>
         </copy>
 
         <copy todir="${main.webapp.dir}">
@@ -145,6 +150,8 @@
         <filter token="db-user" value="${db-user}"/>
         <filter token="db-pass" value="${db-pass}"/>
         <filter token="db-maxconnections" value="${db-maxconnections}"/>
+        
+        <filter token="hibernate-dialect" value="${hibernate-dialect}"/>
 
         <filter token="external-authenticator" value="${external-authenticator}"/>
         <filter token="external-user-and-role-registry" value="${external-user-and-role-registry}"/>
@@ -173,6 +180,16 @@
 
         <filter token="webmaster-name" value="${webmaster-name}"/>
         <filter token="webmaster-email" value="${webmaster-email}"/>
+        
+        <filter token="image-archive-storage-path" value="${image-archive-storage-path}"/>
+        <filter token="image-archive-temp-path" value="${image-archive-temp-path}"/>
+        <filter token="image-archive-image-magick-path" value="${image-archive-image-magick-path}"/>
+        <filter token="image-archive-images-path" value="${image-archive-images-path}"/>
+        <filter token="image-archive-libraries-path" value="${image-archive-libraries-path}"/>
+        <filter token="image-archive-users-library-folder" value="${image-archive-users-library-folder}"/>
+        <filter token="image-archive-old-library-paths" value="${image-archive-old-library-paths}"/>
+        <filter token="image-archive-max-image-upload-size" value="${image-archive-max-image-upload-size}"/>
+        <filter token="image-archive-max-zip-upload-size" value="${image-archive-max-zip-upload-size}"/>
     </target>
 
 </project>

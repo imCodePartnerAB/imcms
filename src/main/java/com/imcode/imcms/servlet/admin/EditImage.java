@@ -33,12 +33,13 @@ public class EditImage extends HttpServlet {
                 request.getRequestDispatcher(returnPath).forward(request, response);
             }
         };
-        
+
         // Create edited image for current language.
         ImageDomainObject image = new ImageDomainObject();
+        image.setNo(null);
         image.setLanguage(Imcms.getGetDocumentCallback().getLanguage());
         
-        ImageEditPage imageEditPage = new ImageEditPage(null, null, null, "", getServletContext(), imageCommand, returnCommand, false);
+        ImageEditPage imageEditPage = new ImageEditPage(null, image, null, "", getServletContext(), imageCommand, returnCommand, false);
         
         // Page should contain at least one image to edit.
         imageEditPage.getImages().add(image);
@@ -63,7 +64,7 @@ public class EditImage extends HttpServlet {
         private List<ImageDomainObject> images;
 
         public ImageDomainObject getImage() {
-            return images.get(0);
+            return (images != null ? images.get(0) : null);
         }
 
         public void handle(List<ImageDomainObject> images) {

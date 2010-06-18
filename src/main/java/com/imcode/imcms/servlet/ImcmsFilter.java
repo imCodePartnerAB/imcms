@@ -12,7 +12,6 @@ import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
 
 import java.io.IOException;
-import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -167,11 +166,9 @@ public class ImcmsFilter implements Filter {
      */
     public void init(FilterConfig filterConfig) throws ServletException {
         ServletContext servletContext = filterConfig.getServletContext();
-        File path = new File(servletContext.getRealPath("/"));
 
         logEnvironment(servletContext);
 
-        Imcms.setPath(path);
         Imcms.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));
         Imcms.addListener(new ImcmsListener() {
 

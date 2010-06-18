@@ -1,4 +1,8 @@
-<%@ page import="com.imcode.imcms.servlet.admin.ImageEditPage, com.imcode.imcms.servlet.admin.EditImage"%><%@page contentType="text/javascript" %>
+<%@ page import="
+         com.imcode.imcms.servlet.admin.ImageEditPage,
+         com.imcode.imcms.servlet.admin.EditImage,
+         com.imcode.imcms.api.I18nLanguage,
+         imcode.server.Imcms"%><%@page contentType="text/javascript" %>
 Xinha.prototype._insertImage = function(image)
 {
     var editor = this;	// for nested functions
@@ -13,17 +17,26 @@ Xinha.prototype._insertImage = function(image)
     }
     if ( image )
     {
+        <%
+        I18nLanguage lang = Imcms.getGetDocumentCallback().getLanguage();
+        String suffix = "_" + lang.getCode();
+        %>
+
+        var url = (Xinha.is_ie ? editor.stripBaseURL(image.src) : image.getAttribute("src")),
+            altText = image.alt;
+
         outparam =
         {
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>' : Xinha.is_ie ? editor.stripBaseURL(image.src) : image.getAttribute("src"),
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>' : image.alt || image.title,
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>' : url,
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>' : altText,
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL + suffix %>' : url,
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT + suffix %>' : altText,
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>'  : image.style.width.replace(/px/, '') || image.width,
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>'  : image.style.height.replace(/px/, '') || image.height,
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>' : (image.style.borderWidth || image.border || '').replace(/px/, ''),
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>'  : image.align,
             '<%= ImageEditPage.REQUEST_PARAMETER__VERTICAL_SPACE %>'   : (image.style.marginTop || image.vspace || '').replace(/px/, ''),
-            '<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>'  : (image.style.marginRight || image.hspace || '').replace(/px/, ''),
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>'  : image.id || image.name
+            '<%= ImageEditPage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>'  : (image.style.marginRight || image.hspace || '').replace(/px/, '')
         };
     }
     var queryString = '';
@@ -105,11 +118,12 @@ Xinha.prototype._insertImage = function(image)
                             img.style.height = parseInt(value, 10)+"px";
                             img.height = parseInt(value, 10);
                             break;
-                        case "name":
-                            img.id = value;
-                            break;
                     }
                 }
             },
-            outparam);
+            outparam, {
+                scrollbars: "yes",
+                width: screen.availWidth,
+                height: screen.availHeight
+            });
 };

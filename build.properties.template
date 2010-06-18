@@ -20,6 +20,12 @@ db-driver = com.mysql.jdbc.Driver
 db-url-without-db-name = jdbc:mysql://${db-host}:${db-port}/
 db-url = ${db-url-without-db-name}${db-name}?characterEncoding=utf8
 
+# For MySQL
+hibernate-dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+
+# For MSSQL
+# hibernate-dialect = com.imcode.imcms.addon.imagearchive.util.SQLServerDialect
+
 external-authenticator =
 external-user-and-role-registry =
 
@@ -83,3 +89,38 @@ defaultlanguage = eng
 # change this:
 
 documentation-host = doc.imcms.net
+
+# Path where all the images that are uploaded to image archive will be stored, can be relative or absolute.
+# For example: /var/image_archive
+image-archive-storage-path = 
+
+# Path where temporary images that are being processed are stored. 
+# For example: /tmp or C:/tmp
+image-archive-temp-path = /tmp
+
+# ImageMagick is a software suite for creating, editing and composing images. It can be downloaded from http://www.imagemagick.org. 
+# This path should lead to where ImageMagick is installed, and is required only on windows.
+# For example: c:/program files/imagemagick-6.4.9-q16
+image-archive-image-magick-path = 
+
+# Images from image archive that are being used by imCMS will be stored here, can relative or absolute.
+image-archive-images-path = new_images/
+
+# Path to libraries, can be relative or absolute.
+# Each folder in this directory will become a library in image archive -- these folders can be created using 
+# imCMS file manager. Each library can contain one or more raw images which can be activated in image archive.
+image-archive-libraries-path = WEB-INF/libraries/
+
+# Name for a directory within libraries folder, that will contain each users personal library.
+# This directory will be automatically created.
+image-archive-users-library-folder = users
+
+# Absolute or relative paths separated by ";".
+# Each path will become a library in image archive, can be used for gaining access to old image archive.
+image-archive-old-library-paths = 
+
+# Maximum size of an uploaded image in bytes. By default 250 MB.
+image-archive-max-image-upload-size = 262144000
+
+# Maximum size of an uploaded ZIP archive in bytes. By default 250 MB.
+image-archive-max-zip-upload-size = 262144000

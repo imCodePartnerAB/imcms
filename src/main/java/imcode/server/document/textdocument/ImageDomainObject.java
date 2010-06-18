@@ -26,6 +26,8 @@ import com.imcode.util.ImageSize;
 @Table(name="imcms_text_doc_images")
 public class ImageDomainObject implements Serializable, Cloneable, DocVersionItem, DocI18nItem, DocContentLoopItem, DocOrderedItem {
 	
+    public static final int IMAGE_NAME_LENGTH = 40;
+
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
     
@@ -64,8 +66,14 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
     
     @Column(name="imgurl")
     private String imageUrl = "";
+
+    @Column(name="image_name", nullable=false, length=IMAGE_NAME_LENGTH)
+    private String imageName = "";
     
     private Integer type;
+
+    @Column(name="archive_image_id")
+    private Long archiveImageId;
 
     @Column(name="content_loop_no")
     private Integer contentLoopNo;
@@ -368,5 +376,21 @@ public class ImageDomainObject implements Serializable, Cloneable, DocVersionIte
 
     public void setContentNo(Integer contentNo) {
         this.contentNo = contentNo;
+    }
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
+    public Long getArchiveImageId() {
+        return archiveImageId;
+    }
+
+    public void setArchiveImageId(Long archiveImageId) {
+        this.archiveImageId = archiveImageId;
     }
 }

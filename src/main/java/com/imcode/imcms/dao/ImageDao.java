@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.lang.StringUtils;
 
 import com.imcode.imcms.api.I18nLanguage;
+import imcode.server.document.textdocument.ImageArchiveImageSource;
+import imcode.server.document.textdocument.ImageSource;
 
 public class ImageDao extends HibernateTemplate {
 	
@@ -125,7 +127,14 @@ public class ImageDao extends HibernateTemplate {
 		String url = image.getImageUrl();
 
 		if (!StringUtils.isBlank(url)) {
-			image.setSource(new ImagesPathRelativePathImageSource(url));
+			ImageSource imageSource = null;
+		    if (image.getType() == ImageSource.IMAGE_TYPE_ID__IMAGE_ARCHIVE) {
+		        imageSource = new ImageArchiveImageSource(url);
+		    } else {
+		        imageSource = new ImagesPathRelativePathImageSource(url);
+		    }
+
+			image.setSource(imageSource);
 		}
 
 		return image;

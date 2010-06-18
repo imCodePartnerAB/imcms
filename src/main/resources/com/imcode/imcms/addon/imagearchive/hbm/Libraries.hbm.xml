@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+<hibernate-mapping>
+    <query name="libraryRoles">
+        <![CDATA[
+        SELECT 
+          lr.roleId AS roleId, 
+          lr.permissions AS permissions, 
+          r.roleName AS roleName 
+        FROM 
+          LibraryRoles lr 
+        INNER JOIN 
+          lr.role r 
+        WHERE 
+          lr.libraryId = :libraryId 
+        ORDER BY 
+          r.roleName
+        ]]>
+    </query>
+    <query name="deleteLibraryRoles">
+        <![CDATA[
+        DELETE 
+          LibraryRoles lr 
+        WHERE 
+          lr.libraryId IN (SELECT lib.id FROM Libraries lib WHERE lib.libraryType = :type)
+        ]]>
+    </query>
+    <query name="deleteLibraries">
+        <![CDATA[
+        DELETE
+          Libraries lib 
+        WHERE
+          lib.libraryType = :type
+        ]]>
+    </query>
+</hibernate-mapping>

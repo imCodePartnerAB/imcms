@@ -619,8 +619,10 @@ CREATE TABLE imcms_text_doc_images (
   linkurl varchar(255) NOT NULL,
   type int NOT NULL,
   language_id int NOT NULL,
+  archive_image_id bigint,
   content_loop_no int DEFAULT NULL,
   content_no int DEFAULT NULL,
+
 
   CONSTRAINT uk__imcms_text_doc_images__image UNIQUE KEY (doc_id,doc_version_no,no,language_id,content_loop_no,content_no),
   CONSTRAINT fk__imcms_text_doc_images__languages FOREIGN KEY (language_id) REFERENCES imcms_languages (id),
@@ -647,6 +649,7 @@ INSERT INTO imcms_text_doc_images (
   linkurl,
   type,
   language_id,
+  archive_image_id,
 
   content_loop_no,
   content_no
@@ -669,6 +672,7 @@ INSERT INTO imcms_text_doc_images (
   linkurl,
   type,
   @doc_language_id,
+  archive_image_id,
   NULL,
   NULL
 FROM images;
@@ -693,6 +697,7 @@ CREATE TABLE imcms_text_doc_images_history (
   linkurl varchar(255) NOT NULL,
   type int NOT NULL,
   language_id int NOT NULL,
+  archive_image_id bigint,
   content_loop_no int DEFAULT NULL,
   content_no int DEFAULT NULL,
   modified_dt datetime NOT NULL,
@@ -722,6 +727,7 @@ INSERT INTO imcms_text_doc_images_history (
   linkurl,
   type,
   language_id,
+  archive_image_id,
   content_loop_no,
   content_no,
   modified_dt,
@@ -744,6 +750,7 @@ INSERT INTO imcms_text_doc_images_history (
   `linkurl`,
   `type`,
   @doc_language_id,
+  archive_image_id,
   NULL,
   NULL,
   `modified_datetime`,
@@ -806,6 +813,30 @@ DROP TABLE browsers;
 DELETE FROM meta WHERE doc_type = 6;
 DELETE FROM doc_types WHERE doc_type = 6;
 DELETE FROM doc_permissions WHERE doc_type NOT IN (2,5,7,8);
+
+CREATE TABLE archive_category_roles (
+    category_id integer NOT NULL, 
+    role_id integer NOT NULL, 
+    created_dt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+    CONSTRAINT archive_category_roles_pk PRIMARY KEY (category_id, role_id), 
+    CONSTRAINT archive_category_roles_category_id_fk FOREIGN KEY (category_id) REFERENCES categories(category_id), 
+    CONSTRAINT archive_category_roles_role_id_fk FOREIGN KEY (role_id) REFERENCES roles(role_id)
+) ENGINE='InnoDB' DEFAULT CHARACTER SET='utf8';
+
+CREATE TABLE archive_image_categories (
+    image_id bigint NOT NULL, 
+    category_id integer NOT NULL, 
+    created_dt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+    CONSTRAINT archive_image_categories_pk PRIMARY KEY (image_id, category_id), 
+    CONSTRAINT archive_image_categories_image_id_fk FOREIGN KEY (image_id) REFERENCES archive_images(id), 
+    CONSTRAINT archive_image_categories_category_id_fk FOREIGN KEY (category_id) REFERENCES categories(category_id)
+) ENGINE='InnoDB' DEFAULT CHARACTER SET='utf8';
+
+INSERT INTO archive_category_roles SELECT * FROM category_roles;
+INSERT INTO archive_image_categories SELECT * FROM image_categories;
+
+DROP TABLE category_roles;
+DROP TABLE image_categories;
 
 
 -- Drop old tables

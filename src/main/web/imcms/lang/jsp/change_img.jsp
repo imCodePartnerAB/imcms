@@ -74,18 +74,9 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 
 	<script type="text/javascript">
 		<!--
-		function addScrolling() {
-			if (window.opener) {
-				var obj = document.getElementById("outer_container") ;
-				obj.style.height = "100%" ;
-				obj.style.overflow = "scroll" ;
-				window.resizeTo(800,760) ;
-			}
-		}
-		
 		function setDef() {
 			var f   = document.forms[0] ;
-			if (!hasDocumentLayers && f.imageref.value == "") f.image_align.selectedIndex = 0;
+			if (!hasDocumentLayers && f.imageref && f.imageref.value == "") f.image_align.selectedIndex = 0;
 			changeLinkType(1) ;
 		}
 		        
@@ -185,7 +176,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 		//-->
 		</script>
 	</head>
-	<body id="body" bgcolor="#FFFFFF"
+	<body id="body" bgcolor="#FFFFFF" 
 		onload="setDef(); addScrolling(); document.forms[0].imageref.focus();">
 
 	<div id="outer_container">
@@ -308,7 +299,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 
 						<%-- Browse Image button --%>
 						<td style="padding-left:10px;"><input type="submit"
-							name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>"
+							name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_ARCHIVE_BUTTON %>"
 							class="imcmsFormBtnSmall" style="width:180px"
 							value="<? templates/sv/change_img.html/2004 ?>"
 							onClick="setI18nCodeParameterValue('${image.language.code}')"/></td>
@@ -392,7 +383,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 			<td><input type="text"<%
 				%> name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>"<%
 				%> id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>"<%
-				%> size="50" maxlength="255" style="width:350px;" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getName())) %>"></td>
+				%> size="50" maxlength="<%= ImageDomainObject.IMAGE_NAME_LENGTH %>" style="width:350px;" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getImageName())) %>"></td>
 		</tr>
 		<tr>
 			<td nowrap><? templates/sv/change_img.html/16 ?></td>

@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.ImcmsFilter;
 import com.imcode.util.ImageSize;
+import imcode.server.document.textdocument.ImageArchiveImageSource;
 
 public class ImcmsImageUtils {
 
@@ -127,11 +128,19 @@ public class ImcmsImageUtils {
             if ( document instanceof FileDocumentDomainObject ) {
                 imageSource = new FileDocumentImageSource(documentMapper.getDocumentReference(document));
             } else {
+                String imageArchiveImagesUrl = ImageArchiveImageSource.getImagesUrlPath();
                 String imagesPath = ImagesPathRelativePathImageSource.getImagesUrlPath();
-                if (imageUrl.startsWith(imagesPath)) {
-                    imageUrl = imageUrl.substring(imagesPath.length());
+                if (imageUrl.startsWith(imageArchiveImagesUrl)) {
+                    imageUrl = imageUrl.substring(imageArchiveImagesUrl.length());
+
+                    imageSource = new ImageArchiveImageSource(imageUrl);
+                } else {
+                    if (imageUrl.startsWith(imagesPath)) {
+                        imageUrl = imageUrl.substring(imagesPath.length());
+                    }
+
+                    imageSource = new ImagesPathRelativePathImageSource(imageUrl);
                 }
-                imageSource = new ImagesPathRelativePathImageSource(imageUrl);
             }
         }
         return imageSource;

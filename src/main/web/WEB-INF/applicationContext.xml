@@ -12,8 +12,16 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://www.springframework.org/schema/context
     http://www.springframework.org/schema/context/spring-context-2.5.xsd">
-	 
+  
+  <import resource="conf/configContext.xml"/>
+  <import resource="conf/beansContext.xml"/>
+
   <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
+
+  <context:component-scan base-package="com.imcode.imcms.addon.imagearchive"/>
+  <context:annotation-config/>
+  
+  <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
   
   <bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
     <property name="ignoreResourceNotFound" value="true"/>  
@@ -66,6 +74,7 @@
     <property name="basenames">
       <list>
         <value>/WEB-INF/locale/imcms</value>
+        <value>/WEB-INF/locale/image_archive</value>
       </list>
     </property>
     

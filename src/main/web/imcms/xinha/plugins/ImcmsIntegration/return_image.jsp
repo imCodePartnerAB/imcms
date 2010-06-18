@@ -20,7 +20,6 @@
         <% if (0 != image.getHeight()) { %>
             param["height"] = '<%= image.getHeight() %>';
         <% } %>
-        param["name"] = '<%= StringEscapeUtils.escapeJavaScript(image.getName()) %>';
     <% } %>
     window.opener.Dialog._return(param) ;
     window.close();

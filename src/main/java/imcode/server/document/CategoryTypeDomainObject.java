@@ -28,6 +28,9 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
 	@Column(name="inherited")
     private boolean inherited;
 
+    @Column(name="is_image_archive", nullable=false)
+    private boolean imageArchive;
+
 	public CategoryTypeDomainObject() {}
 			
     public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited) {
@@ -63,6 +66,14 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
 
     public void setInherited( boolean inherited ) {
         this.inherited = inherited;
+    }
+
+    public boolean isImageArchive() {
+        return imageArchive;
+    }
+
+    public void setImageArchive(boolean imageArchive) {
+        this.imageArchive = imageArchive;
     }
 
     public boolean equals(Object o) {
