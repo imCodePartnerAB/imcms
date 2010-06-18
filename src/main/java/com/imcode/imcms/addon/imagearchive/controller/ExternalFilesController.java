@@ -36,13 +36,13 @@ import com.imcode.imcms.addon.imagearchive.service.Facade;
 import com.imcode.imcms.addon.imagearchive.service.file.LibrarySort;
 import com.imcode.imcms.addon.imagearchive.util.ArchiveSession;
 import com.imcode.imcms.addon.imagearchive.util.Utils;
-import com.imcode.imcms.addon.imagearchive.util.image.Format;
-import com.imcode.imcms.addon.imagearchive.util.image.ImageInfo;
-import com.imcode.imcms.addon.imagearchive.util.image.ImageOp;
 import com.imcode.imcms.addon.imagearchive.validator.ChangeImageDataValidator;
 import com.imcode.imcms.addon.imagearchive.validator.ExternalFilesValidator;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
+import imcode.util.image.Format;
+import imcode.util.image.ImageInfo;
+import imcode.util.image.ImageOp;
 
 @Controller
 public class ExternalFilesController {
@@ -194,7 +194,7 @@ public class ExternalFilesController {
                     try {
                         File imageFile = facade.getFileService().getImageFileFromLibrary(library, fileName);
                         ImageInfo imageInfo = null;
-                        if (imageFile == null || (imageInfo = ImageOp.getImageInfo(config, imageFile)) == null) {
+                        if (imageFile == null || (imageInfo = ImageOp.getImageInfo(imageFile)) == null) {
                             continue;
                         }
                         
@@ -267,7 +267,7 @@ public class ExternalFilesController {
     private Images activateImage(LibrariesDto library, String fileName, User user) {
         File imageFile = facade.getFileService().getImageFileFromLibrary(library, fileName);
         ImageInfo imageInfo = null;
-        if (imageFile == null || (imageInfo = ImageOp.getImageInfo(config, imageFile)) == null) {
+        if (imageFile == null || (imageInfo = ImageOp.getImageInfo(imageFile)) == null) {
             return null;
         }
         
@@ -401,7 +401,7 @@ public class ExternalFilesController {
             if (name != null) {
                 File imageFile = facade.getFileService().getImageFileFromLibrary(library, name);
                 if (imageFile != null) {
-                    imageInfo = ImageOp.getImageInfo(config, imageFile);
+                    imageInfo = ImageOp.getImageInfo(imageFile);
                 }
             }
         }
@@ -449,7 +449,7 @@ public class ExternalFilesController {
         }
         
         try {
-            byte[] data = new ImageOp(config).input(imageFile)
+            byte[] data = new ImageOp().input(imageFile)
                     .outputFormat(Format.JPEG)
                     .processToByteArray();
             

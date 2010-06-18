@@ -128,7 +128,9 @@
 
   <bean id="documentVersionDao" class="com.imcode.imcms.dao.DocumentVersionDao">
       <property name="sessionFactory" ref="sessionFactory"/>
-      </bean>
+  </bean>
+
+  <bean id="imageCacheMapper" class="com.imcode.imcms.mapping.ImageCacheMapper"/>
   
   <bean id="documentSaver" class="com.imcode.imcms.mapping.DocumentSaver"
         p:metaDao-ref="metaDao"

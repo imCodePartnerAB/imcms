@@ -17,6 +17,10 @@ public class Config {
     private File includePath;
     private File filePath;
     private File imagePath;
+    private File imageCachePath;
+    private String imageCacheAllowedPaths;
+    private long imageCacheMaxSize;
+    private File imageMagickPath;
     private String imageUrl;
     private String smtpServer;
     private int smtpPort;
@@ -199,5 +203,37 @@ public class Config {
 
     public void setImageArchiveImagesPath(File imageArchiveImagesPath) {
         this.imageArchiveImagesPath = imageArchiveImagesPath;
+    }
+
+    public String getImageCacheAllowedPaths() {
+        return imageCacheAllowedPaths;
+    }
+
+    public void setImageCacheAllowedPaths(String imageCacheAllowedPaths) {
+        this.imageCacheAllowedPaths = imageCacheAllowedPaths;
+    }
+
+    public long getImageCacheMaxSize() {
+        return imageCacheMaxSize;
+    }
+
+    public void setImageCacheMaxSize(long imageCacheMaxSize) {
+        this.imageCacheMaxSize = imageCacheMaxSize;
+    }
+
+    public File getImageCachePath() {
+        return imageCachePath;
+    }
+
+    public void setImageCachePath(File imageCachePath) {
+        this.imageCachePath = imageCachePath;
+    }
+
+    public File getImageMagickPath() {
+        return imageMagickPath;
+    }
+
+    public void setImageMagickPath(File imageMagickPath) {
+        this.imageMagickPath = imageMagickPath;
     }
 }

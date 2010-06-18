@@ -620,6 +620,12 @@ CREATE TABLE imcms_text_doc_images (
   type int NOT NULL,
   language_id int NOT NULL,
   archive_image_id bigint,
+  format smallint NOT NULL, 
+  rotate_angle smallint NOT NULL, 
+  crop_x1 integer NOT NULL, 
+  crop_y1 integer NOT NULL, 
+  crop_x2 integer NOT NULL, 
+  crop_y2 integer NOT NULL, 
   content_loop_no int DEFAULT NULL,
   content_no int DEFAULT NULL,
 
@@ -649,7 +655,13 @@ INSERT INTO imcms_text_doc_images (
   linkurl,
   type,
   language_id,
-  archive_image_id,
+  archive_image_id, 
+  format, 
+  rotate_angle, 
+  crop_x1, 
+  crop_y1, 
+  crop_x2, 
+  crop_y2, 
 
   content_loop_no,
   content_no
@@ -672,7 +684,13 @@ INSERT INTO imcms_text_doc_images (
   linkurl,
   type,
   @doc_language_id,
-  archive_image_id,
+  archive_image_id, 
+  format, 
+  rotate_angle, 
+  crop_x1, 
+  crop_y1, 
+  crop_x2, 
+  crop_y2, 
   NULL,
   NULL
 FROM images;
@@ -697,7 +715,13 @@ CREATE TABLE imcms_text_doc_images_history (
   linkurl varchar(255) NOT NULL,
   type int NOT NULL,
   language_id int NOT NULL,
-  archive_image_id bigint,
+  archive_image_id bigint, 
+  format smallint NOT NULL, 
+  rotate_angle smallint NOT NULL, 
+  crop_x1 integer NOT NULL, 
+  crop_y1 integer NOT NULL, 
+  crop_x2 integer NOT NULL, 
+  crop_y2 integer NOT NULL, 
   content_loop_no int DEFAULT NULL,
   content_no int DEFAULT NULL,
   modified_dt datetime NOT NULL,
@@ -728,6 +752,12 @@ INSERT INTO imcms_text_doc_images_history (
   type,
   language_id,
   archive_image_id,
+  format, 
+  rotate_angle,
+  crop_x1,
+  crop_y1,
+  crop_x2,
+  crop_y2,
   content_loop_no,
   content_no,
   modified_dt,
@@ -751,11 +781,70 @@ INSERT INTO imcms_text_doc_images_history (
   `type`,
   @doc_language_id,
   archive_image_id,
+  format, 
+  rotate_angle, 
+  crop_x1, 
+  crop_y1, 
+  crop_x2, 
+  crop_y2, 
   NULL,
   NULL,
   `modified_datetime`,
   `user_id`
 FROM `images_history`;  
+
+CREATE TABLE imcms_text_doc_images_cache (
+    id varchar(40) NOT NULL,
+    resource varchar(255) NOT NULL, 
+    cache_type smallint NOT NULL,
+    file_size integer NOT NULL, 
+    frequency integer NOT NULL, 
+    format smallint NOT NULL,
+    rotate_angle smallint NOT NULL, 
+    width integer NOT NULL, 
+    height integer NOT NULL, 
+    crop_x1 integer NOT NULL, 
+    crop_y1 integer NOT NULL, 
+    crop_x2 integer NOT NULL, 
+    crop_y2 integer NOT NULL, 
+    created_dt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+    
+    CONSTRAINT imcms_text_doc_images_cache_pk PRIMARY KEY (id)
+) ENGINE='InnoDB' DEFAULT CHARSET='utf8';
+
+INSERT INTO imcms_text_doc_images_cache (
+    id, 
+    resource, 
+    cache_type, 
+    file_size, 
+    frequency, 
+    format, 
+    rotate_angle, 
+    width, 
+    height, 
+    crop_x1, 
+    crop_y1, 
+    crop_x2, 
+    crop_y2, 
+    created_dt
+) SELECT 
+    id, 
+    resource, 
+    cache_type, 
+    file_size, 
+    frequency, 
+    format, 
+    rotate_angle, 
+    width, 
+    height, 
+    crop_x1, 
+    crop_y1, 
+    crop_x2, 
+    crop_y2, 
+    created_dt
+FROM images_cache WHERE meta_id <= 0;
+
+DROP TABLE images_cache;
 
 --
 -- Includes table
@@ -838,6 +927,15 @@ INSERT INTO archive_image_categories SELECT * FROM image_categories;
 DROP TABLE category_roles;
 DROP TABLE image_categories;
 
+UPDATE archive_images SET format = 
+    CASE WHEN format >= 0 AND format <= 3 THEN format + 1
+         WHEN format >= 6 AND format <= 10 THEN format - 1
+         WHEN format = 4 THEN 10 
+         WHEN format = 5 THEN 11
+         ELSE format
+    END;
+
+ALTER TABLE archive_images MODIFY COLUMN format smallint  NOT NULL COMMENT '1-BMP, 2-GIF, 3-JPEG, 4-PNG, 5-PSD, 6-SVG, 7-TIFF, 8-XCF, 9-PICT, 10-PDF, 11-PS';
 
 -- Drop old tables
 -- DELETE FROM `meta_classification`;

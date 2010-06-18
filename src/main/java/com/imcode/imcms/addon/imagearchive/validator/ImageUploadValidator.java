@@ -10,8 +10,8 @@ import org.springframework.validation.Validator;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.imcode.imcms.addon.imagearchive.service.Facade;
-import com.imcode.imcms.addon.imagearchive.util.image.ImageInfo;
-import com.imcode.imcms.addon.imagearchive.util.image.ImageOp;
+import imcode.util.image.ImageInfo;
+import imcode.util.image.ImageOp;
 
 public class ImageUploadValidator implements Validator {
     private static final Log log = LogFactory.getLog(ImageUploadValidator.class);
@@ -49,7 +49,7 @@ public class ImageUploadValidator implements Validator {
             try {
                 file.transferTo(tempFile);
                 
-                imageInfo = ImageOp.getImageInfo(facade.getConfig(), tempFile);
+                imageInfo = ImageOp.getImageInfo(tempFile);
                 if (imageInfo == null || imageInfo.getFormat() == null 
                         || imageInfo.getWidth() < 1 || imageInfo.getHeight() < 1) {
                     errors.rejectValue("file", "archive.addImage.invalidImageError");

@@ -7,6 +7,7 @@ import imcode.util.ImcmsImageUtils;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class Image {
 
@@ -131,6 +132,10 @@ public class Image {
 
     public String getSrc(String contextPath) { // image srcurl relative webapp ( /imcms/images/theimage.gif )
         return internalImage.getUrlPath( contextPath ) ;
+    }
+
+    public String toHtmlUrl(String contextPath) {
+        return StringEscapeUtils.escapeHtml(ImcmsImageUtils.getImageUrl(internalImage, contextPath));
     }
 
     public String toHtmlTag(HttpServletRequest request, Properties attributes, boolean absolute) {

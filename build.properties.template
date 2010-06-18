@@ -90,6 +90,12 @@ defaultlanguage = eng
 
 documentation-host = doc.imcms.net
 
+
+# ImageMagick is a software suite for creating, editing and composing images. It can be downloaded from http://www.imagemagick.org. 
+# This path should lead to where ImageMagick is installed, and is required only on windows.
+# For example: c:/program files/imagemagick-6.4.9-q16
+image-magick-path = 
+
 # Path where all the images that are uploaded to image archive will be stored, can be relative or absolute.
 # For example: /var/image_archive
 image-archive-storage-path = 
@@ -97,11 +103,6 @@ image-archive-storage-path =
 # Path where temporary images that are being processed are stored. 
 # For example: /tmp or C:/tmp
 image-archive-temp-path = /tmp
-
-# ImageMagick is a software suite for creating, editing and composing images. It can be downloaded from http://www.imagemagick.org. 
-# This path should lead to where ImageMagick is installed, and is required only on windows.
-# For example: c:/program files/imagemagick-6.4.9-q16
-image-archive-image-magick-path = 
 
 # Images from image archive that are being used by imCMS will be stored here, can relative or absolute.
 image-archive-images-path = new_images/
@@ -124,3 +125,7 @@ image-archive-max-image-upload-size = 262144000
 
 # Maximum size of an uploaded ZIP archive in bytes. By default 250 MB.
 image-archive-max-zip-upload-size = 262144000
+
+# Maximum size in bytes of cache for images. By default 500 MB.
+image-cache-max-size = 524288000
+

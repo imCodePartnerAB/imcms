@@ -1,9 +1,12 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
+import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.NullImageSource;
 import imcode.server.user.UserDomainObject;
+import imcode.util.image.Format;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -62,6 +65,24 @@ public class ImageHistory {
     @Column(name="content_no")
     private Integer contentNo;
 
+    @Column(name="format", nullable=false)
+    private short format;
+
+    @Column(name="crop_x1", nullable=false)
+    private int cropX1;
+
+    @Column(name="crop_y1", nullable=false)
+    private int cropY1;
+
+    @Column(name="crop_x2", nullable=false)
+    private int cropX2;
+
+    @Column(name="crop_y2", nullable=false)
+    private int cropY2;
+
+    @Column(name="rotate_angle", nullable=false)
+    private short rotateAngle;
+
     /**
      * i18n support
      */
@@ -104,6 +125,9 @@ public class ImageHistory {
         setContentNo(imageDO.getContentNo());
         setUserId(user.getId());
         setModifiedDt(new Date());
+        setFormat(imageDO.getFormat());
+        setCropRegion(imageDO.getCropRegion());
+        setRotateDirection(imageDO.getRotateDirection());
     }
 
     public Long getId() {
@@ -280,5 +304,39 @@ public class ImageHistory {
 
     public void setModifiedDt(Date modifiedDt) {
         this.modifiedDt = modifiedDt;
+    }
+
+    public Format getFormat() {
+        return Format.findFormat(format);
+    }
+
+    public void setFormat(Format format) {
+        this.format = (short) (format != null ? format.getOrdinal() : 0);
+    }
+
+    public CropRegion getCropRegion() {
+        return new CropRegion(cropX1, cropY1, cropX2, cropY2);
+    }
+
+    public void setCropRegion(CropRegion region) {
+        if (region.isValid()) {
+            cropX1 = region.getCropX1();
+            cropY1 = region.getCropY1();
+            cropX2 = region.getCropX2();
+            cropY2 = region.getCropY2();
+        } else {
+            cropX1 = -1;
+            cropY1 = -1;
+            cropX2 = -1;
+            cropY2 = -1;
+        }
+    }
+
+    public RotateDirection getRotateDirection() {
+        return RotateDirection.getByAngleDefaultIfNull(rotateAngle);
+    }
+
+    public void setRotateDirection(RotateDirection dir) {
+        this.rotateAngle = (short) (dir != null ? dir.getAngle() : 0);
     }
 }

@@ -39,7 +39,7 @@ public class EditImage extends HttpServlet {
         image.setNo(null);
         image.setLanguage(Imcms.getGetDocumentCallback().getLanguage());
         
-        ImageEditPage imageEditPage = new ImageEditPage(null, image, null, "", getServletContext(), imageCommand, returnCommand, false);
+        ImageEditPage imageEditPage = new ImageEditPage(null, image, null, "", getServletContext(), imageCommand, returnCommand, false, 0, 0);
         
         // Page should contain at least one image to edit.
         imageEditPage.getImages().add(image);

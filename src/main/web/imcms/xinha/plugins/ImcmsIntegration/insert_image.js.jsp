@@ -22,17 +22,74 @@ Xinha.prototype._insertImage = function(image)
         String suffix = "_" + lang.getCode();
         %>
 
-        var url = (Xinha.is_ie ? editor.stripBaseURL(image.src) : image.getAttribute("src")),
-            altText = image.alt;
+        var src = image.getAttribute("src"),
+            url, format, width, height, cropX1, cropY1, cropX2, cropY2, rotateAngle, queryIndex;
+
+        if (src && (queryIndex = src.indexOf("?")) != -1) {
+            var parts = src.substring(queryIndex + 1).split("&");
+
+            for (var i = 0; i < parts.length; ++i) {
+                var keyValue = parts[i].split("=");
+
+                if (keyValue.length != 2) {
+                    continue;
+                }
+
+                var key = keyValue[0],
+                    value = keyValue[1];
+
+                switch (key) {
+                    case "path":
+                        url = "<%= request.getContextPath() %>" + decodeURIComponent(value);
+                        break;
+                    case "file_id":
+                        url = "<%= request.getContextPath() %>/" + value;
+                        break;
+                    case "width":
+                        width = value;
+                        break;
+                    case "height":
+                        height = value;
+                        break;
+                    case "format":
+                        format = value;
+                        break;
+                    case "crop_x1":
+                        cropX1 = value;
+                        break;
+                    case "crop_y1":
+                        cropY1 = value;
+                        break;
+                    case "crop_x2":
+                        cropX2 = value;
+                        break;
+                    case "crop_y2":
+                        cropY2 = value;
+                        break;
+                    case "rangle":
+                        rotateAngle = value;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        var altText = image.alt;
 
         outparam =
         {
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>' : url,
+            '<%= ImageEditPage.REQUEST_PARAMETER__FORMAT_EXTENSION %>' : format, 
+            '<%= ImageEditPage.REQUEST_PARAMETER__CROP_X1 + suffix %>' : cropX1,
+            '<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y1 + suffix %>' : cropY1,
+            '<%= ImageEditPage.REQUEST_PARAMETER__CROP_X2 + suffix %>' : cropX2,
+            '<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y2 + suffix %>' : cropY2,
+            '<%= ImageEditPage.REQUEST_PARAMETER__ROTATE_ANGLE + suffix %>' : rotateAngle || 0,
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>' : altText,
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL + suffix %>' : url,
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT + suffix %>' : altText,
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>'  : image.style.width.replace(/px/, '') || image.width,
-            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>'  : image.style.height.replace(/px/, '') || image.height,
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>'  : width || 0,
+            '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>'  : height || 0,
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>' : (image.style.borderWidth || image.border || '').replace(/px/, ''),
             '<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>'  : image.align,
             '<%= ImageEditPage.REQUEST_PARAMETER__VERTICAL_SPACE %>'   : (image.style.marginTop || image.vspace || '').replace(/px/, ''),
@@ -86,6 +143,8 @@ Xinha.prototype._insertImage = function(image)
                 {
                     img.src = param.src;
                 }
+
+                img.removeAttribute("rel");
 
                 for ( var field in param )
                 {

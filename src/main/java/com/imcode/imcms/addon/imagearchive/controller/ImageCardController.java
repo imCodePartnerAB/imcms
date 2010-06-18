@@ -38,16 +38,16 @@ import com.imcode.imcms.addon.imagearchive.util.ArchiveSession;
 import com.imcode.imcms.addon.imagearchive.util.Utils;
 import com.imcode.imcms.addon.imagearchive.util.exif.ExifData;
 import com.imcode.imcms.addon.imagearchive.util.exif.ExifUtils;
-import com.imcode.imcms.addon.imagearchive.util.image.Filter;
-import com.imcode.imcms.addon.imagearchive.util.image.Format;
-import com.imcode.imcms.addon.imagearchive.util.image.ImageInfo;
-import com.imcode.imcms.addon.imagearchive.util.image.ImageOp;
-import com.imcode.imcms.addon.imagearchive.util.image.Resize;
 import com.imcode.imcms.addon.imagearchive.validator.ChangeImageDataValidator;
 import com.imcode.imcms.addon.imagearchive.validator.ExportImageValidator;
 import com.imcode.imcms.addon.imagearchive.validator.ImageUploadValidator;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
+import imcode.util.image.Filter;
+import imcode.util.image.Format;
+import imcode.util.image.ImageInfo;
+import imcode.util.image.ImageOp;
+import imcode.util.image.Resize;
 
 @Controller
 public class ImageCardController {
@@ -84,7 +84,7 @@ public class ImageCardController {
             ExportImageValidator validator = new ExportImageValidator();
             ValidationUtils.invokeValidator(validator, command, result);
             
-            Format imageFormat = Format.findFormatByImageFormat(command.getFileFormat());            
+            Format imageFormat = Format.findFormat(command.getFileFormat());
             
             if (imageFormat != null && imageFormat.isWritable() && !result.hasErrors()) {
                 if (processExport(imageId, image, imageFormat, command, response)) {
@@ -94,9 +94,9 @@ public class ImageCardController {
             
         } else {
             
-            Format format = Format.findFormatByImageFormat(image.getFormat());
+            Format format = Format.findFormat(image.getFormat());
             if (format.isWritable()) {
-                command.setFileFormat(format.getImageFormat());
+                command.setFileFormat(format.getOrdinal());
             }
         }
         
@@ -118,7 +118,7 @@ public class ImageCardController {
             tempFile = facade.getFileService().createTemporaryFile("export");
             File originalFile = facade.getFileService().getImageOriginalFile(imageId, false);
 
-            ImageOp op = new ImageOp(config).input(originalFile);
+            ImageOp op = new ImageOp().input(originalFile);
 
             Integer width = command.getWidth();
             Integer height = command.getHeight();
@@ -386,7 +386,7 @@ public class ImageCardController {
                 
                 ImageInfo imageInfo = validator.getImageInfo();
                 
-                image.setFormat(imageInfo.getFormat().getImageFormat());
+                image.setFormat(imageInfo.getFormat().getOrdinal());
                 
                 image.setWidth(imageInfo.getWidth());
                 image.setHeight(imageInfo.getHeight());

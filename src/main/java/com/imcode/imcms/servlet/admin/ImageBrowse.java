@@ -28,6 +28,10 @@ import org.apache.log4j.Logger;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.util.HumanReadable;
 import com.imcode.util.MultipartHttpServletRequest;
+import imcode.util.image.Format;
+import imcode.util.image.ImageInfo;
+import imcode.util.image.ImageOp;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Browse images in image-directory.
@@ -58,13 +62,32 @@ public class ImageBrowse extends HttpServlet {
             imageBrowser.cancel( request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__OK_BUTTON )
                     && null != imageUrl ) {
-            imageBrowser.selectImageUrl( imageUrl, request, response );
+            verifyImage(imageUrl, imageBrowser, request, response);
         } else {
-            browse( imageUrl, request, response );
+            browse( imageUrl, false, request, response );
         }
     }
 
-    public static void browse( String imageUrl, HttpServletRequest request,
+    public static void verifyImage(String imageUrl, ImageBrowser imageBrowser,
+    		HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	File imagesRoot = Imcms.getServices().getConfig().getImagePath();
+    	File selectedImage = null;
+    	File image = new File( imagesRoot, imageUrl );
+        if ( FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, image.getParentFile() ) ) {
+            selectedImage = image;
+        }
+
+        if (selectedImage != null) {
+        	ImageInfo info = ImageOp.getImageInfo(image);
+        	if (info == null) {
+        		browse(imageUrl, true, request, response);
+        	} else {
+        		imageBrowser.selectImageUrl( imageUrl, request, response );
+        	}
+         }
+     }
+
+    public static void browse( String imageUrl, boolean fileNotImageError, HttpServletRequest request,
                                HttpServletResponse response ) throws ServletException, IOException {
         File imagesRoot = Imcms.getServices().getConfig().getImagePath();
         boolean changeDirectoryButtonWasPressed = null
@@ -91,6 +114,10 @@ public class ImageBrowse extends HttpServlet {
             upload( request, selectedDirectory, page );
         }
 
+        if (fileNotImageError) {
+        	page.setErrorMessage(ImageEditPage.ERROR_MESSAGE__FILE_NOT_IMAGE);
+        }
+
         page.setLabel( StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__LABEL ) ) );
         page.forward(request,response) ;
     }
@@ -107,12 +134,38 @@ public class ImageBrowse extends HttpServlet {
             } else if ( destinationFile.exists() ) {
                 page.setErrorMessage(ERROR_MESSAGE__FILE_EXISTS) ;
             } else if ( underImagesRoot ) {
+                File tempFile = null;
                 try {
-                    fileItem.write( destinationFile );
-                    page.setCurrentImage( destinationFile ) ;
+                    tempFile = File.createTempFile("upload_img", null);
+                	fileItem.write(tempFile);
+                	ImageInfo info = ImageOp.getImageInfo(tempFile);
+
+                	boolean validImage = false;
+
+                    if (info != null && info.getFormat() != null) {
+                	    Format imageFormat = info.getFormat();
+
+                	    for (Format allowedFormat : ImageEditPage.ALLOWED_FORMATS) {
+                	        if (imageFormat == allowedFormat) {
+                	            validImage = true;
+                	            break;
+                	        }
+                	    }
+                	}
+
+                	if (validImage) {
+                	    FileUtils.copyFile(tempFile, destinationFile);
+                        page.setCurrentImage( destinationFile ) ;
+                	} else {
+                		page.setErrorMessage(ImageEditPage.ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES) ;
+                	}
                 } catch ( Exception e ) {
                     throw new UnhandledException( "Failed to write file " + destinationFile
                                                   + ". Possible permissions problem?", e );
+                } finally {
+                    if (tempFile != null) {
+                        tempFile.delete();
+                    }
                 }
             } else {
                 LOG.info( "User " + Utility.getLoggedOnUser( request ) + " was denied uploading to file "

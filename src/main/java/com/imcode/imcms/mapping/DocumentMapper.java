@@ -429,6 +429,12 @@ public class DocumentMapper implements DocumentGetter {
 
 
     public void deleteDocument(final DocumentDomainObject document, UserDomainObject user) {
+        if (document instanceof TextDocumentDomainObject) {
+    		TextDocumentDomainObject textDoc = (TextDocumentDomainObject) document;
+
+    		imcmsServices.getImageCacheMapper().deleteDocumentImagesCache(document.getId(), textDoc.getImages());
+    	}
+
         documentSaver.getMetaDao().deleteDocument(document.getId());
         document.accept(new DocumentDeletingVisitor());
         documentIndex.removeDocument(document);

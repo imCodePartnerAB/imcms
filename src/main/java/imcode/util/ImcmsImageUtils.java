@@ -19,8 +19,8 @@ import org.apache.commons.lang.StringUtils;
 
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.ImcmsFilter;
-import com.imcode.util.ImageSize;
 import imcode.server.document.textdocument.ImageArchiveImageSource;
+import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
 
 public class ImcmsImageUtils {
 
@@ -32,6 +32,7 @@ public class ImcmsImageUtils {
     }
     
     public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes, boolean absoluteUrl) {
+        
         StringBuffer imageTagBuffer = new StringBuffer(96);
         if ( image.getSize() > 0 ) {
 
@@ -43,7 +44,7 @@ public class ImcmsImageUtils {
                 imageTagBuffer.append('>');
             }
 
-            String urlEscapedImageUrl = Utility.escapeUrl(request.getContextPath() + image.getUrlPathRelativeToContextPath());
+            String urlEscapedImageUrl = getImageUrl(image, request.getContextPath());
             if (absoluteUrl) {
                 StringBuffer requestURL = request.getRequestURL();
                 urlEscapedImageUrl = requestURL.substring(0,StringUtils.ordinalIndexOf(requestURL.toString(), "/", 3))+urlEscapedImageUrl;
@@ -77,9 +78,9 @@ public class ImcmsImageUtils {
 
             styleBuffer.append("border-width: ").append(image.getBorder()).append("px;");
 
-            ImageSize displayImageSize = image.getDisplayImageSize();
-            int width = displayImageSize.getWidth();
-            int height = displayImageSize.getHeight();
+            int width = image.getWidth();
+            int height = image.getHeight();
+
             if ( 0 != width ) {
                 imageTagBuffer.append(" width=\"").append(width).append("\"");
                 styleBuffer.append(" width: ").append(width).append("px;");
@@ -116,6 +117,48 @@ public class ImcmsImageUtils {
             }
         }
         return imageTagBuffer.toString();
+    }
+
+    public static String getImageUrl(ImageDomainObject image, String contextPath) {
+    	StringBuilder builder = new StringBuilder();
+        builder.append(contextPath);
+        builder.append("/imagehandling?");
+
+        if (image.getSource() instanceof FileDocumentImageSource) {
+        	FileDocumentImageSource source = (FileDocumentImageSource) image.getSource();
+        	builder.append("file_id=");
+        	builder.append(source.getFileDocument().getId());
+        } else {
+        	builder.append("path=");
+        	builder.append(Utility.encodeURL(image.getUrlPathRelativeToContextPath()));
+        }
+
+        builder.append("&width=");
+        builder.append(image.getWidth());
+        builder.append("&height=");
+        builder.append(image.getHeight());
+
+        if (image.getFormat() != null) {
+        	builder.append("&format=");
+        	builder.append(image.getFormat().getExtension());
+        }
+
+        CropRegion region = image.getCropRegion();
+        if (region.isValid()) {
+        	builder.append("&crop_x1=");
+            builder.append(region.getCropX1());
+            builder.append("&crop_y1=");
+            builder.append(region.getCropY1());
+            builder.append("&crop_x2=");
+            builder.append(region.getCropX2());
+            builder.append("&crop_y2=");
+            builder.append(region.getCropY2());
+        }
+
+        builder.append("&rangle=");
+        builder.append(image.getRotateDirection().getAngle());
+
+        return builder.toString();
     }
 
     public static ImageSource createImageSourceFromString(String imageUrl) {

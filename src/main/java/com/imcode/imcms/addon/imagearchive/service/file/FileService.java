@@ -30,10 +30,10 @@ import com.imcode.imcms.addon.imagearchive.Config;
 import com.imcode.imcms.addon.imagearchive.dto.LibrariesDto;
 import com.imcode.imcms.addon.imagearchive.dto.LibraryEntryDto;
 import com.imcode.imcms.addon.imagearchive.entity.Libraries;
-import com.imcode.imcms.addon.imagearchive.util.image.Color;
-import com.imcode.imcms.addon.imagearchive.util.image.Format;
-import com.imcode.imcms.addon.imagearchive.util.image.Gravity;
-import com.imcode.imcms.addon.imagearchive.util.image.ImageOp;
+import imcode.util.image.Color;
+import imcode.util.image.Format;
+import imcode.util.image.Gravity;
+import imcode.util.image.ImageOp;
 
 public class FileService {
     private static final Log log = LogFactory.getLog(FileService.class);
@@ -106,7 +106,7 @@ public class FileService {
 
             FileUtils.copyFile(tempFile, originalFile);
             
-            new ImageOp(config).input(originalFile)
+            new ImageOp().input(originalFile)
                     .outputFormat(Format.JPEG)
                     .processToFile(fullFile);
             
@@ -127,7 +127,7 @@ public class FileService {
     }
     
     private void generateThumbnail(File inputFile, File outputFile, ThumbSize thumbnailSize) {
-        new ImageOp(config).input(inputFile)
+        new ImageOp().input(inputFile)
             .resizeProportional(thumbnailSize.getWidth(), thumbnailSize.getHeight(), Color.WHITE, Gravity.CENTER)
             .outputFormat(Format.JPEG)
             .processToFile(outputFile);
@@ -138,7 +138,7 @@ public class FileService {
         File thumbSmallFile = getImageFile(imageId, IMAGE_SMALL_THUMB_INFIX, temporary);
         File thumbMedFile = getImageFile(imageId, IMAGE_MEDIUM_THUMB_INFIX, temporary);
         
-        new ImageOp(config).input(fullFile)
+        new ImageOp().input(fullFile)
                 .rotate(angle)
                 .processToFile(fullFile);
         

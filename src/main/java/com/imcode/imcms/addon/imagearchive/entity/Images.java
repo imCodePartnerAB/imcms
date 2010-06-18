@@ -21,18 +21,6 @@ import javax.persistence.Transient;
 public class Images implements Serializable {
     private static final long serialVersionUID = -1831641612874730366L;
     
-    public static final short FORMAT_BMP = 0;
-    public static final short FORMAT_GIF = 1;
-    public static final short FORMAT_JPEG = 2;
-    public static final short FORMAT_PNG = 3;
-    public static final short FORMAT_PDF = 4;
-    public static final short FORMAT_PS = 5;
-    public static final short FORMAT_PSD = 6;
-    public static final short FORMAT_SVG = 7;
-    public static final short FORMAT_TIFF = 8;
-    public static final short FORMAT_XCF = 9;
-    public static final short FORMAT_PICT = 10;
-    
     public static final short STATUS_UPLOADED = 0;
     public static final short STATUS_ACTIVE = 1;
     public static final short STATUS_ARCHIVED = 2;
