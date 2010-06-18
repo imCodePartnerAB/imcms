@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+    
+    <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+        <property name="customEditors">
+            <map>
+                <entry key="java.io.File">
+                    <bean class="com.imcode.imcms.addon.imagearchive.util.FileEditor"/>
+                </entry>
+                <entry key="java.io.File[]">
+                    <bean class="com.imcode.imcms.addon.imagearchive.util.FileArrayEditor"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+    
+    <bean class="com.imcode.imcms.addon.imagearchive.Config">
+        <property name="storagePath" value="${ImageArchiveStoragePath}"/>
+        <property name="tmpPath" value="${ImageArchiveTempPath}"/>
+        <property name="imageMagickPath" value="${ImageArchiveImageMagickPath}"/>
+        <property name="imagesPath" value="${ImageArchiveImagesPath}"/>
+        <property name="librariesPath" value="${ImageArchiveLibrariesPath}"/>
+        <property name="oldLibraryPaths" value="${ImageArchiveOldLibraryPaths}"/>
+        <property name="usersLibraryFolder" value="${ImageArchiveUsersLibraryFolder}"/>
+        <property name="maxImageUploadSize" value="${ImageArchiveMaxImageUploadSize}"/>
+        <property name="maxZipUploadSize" value="${ImageArchiveMaxZipUploadSize}"/>
+    </bean>
+</beans>
