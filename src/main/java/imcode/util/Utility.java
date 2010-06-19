@@ -69,6 +69,10 @@ import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
 
 public class Utility {
 
@@ -491,6 +495,35 @@ public class Utility {
 
     public static ResourceBundle getResourceBundle(HttpServletRequest request) {
         return Imcms.getServices().getLocalizedMessageProvider().getResourceBundle(Utility.getLoggedOnUser(request).getLanguageIso639_2());
+    }
+
+    // collects a set of "public static final" constants from a class into a map,
+    // which then can be exposed to an JSP as a scoped variable
+    public static Map<String, Object> getConstants(Class<?> klass) {
+    	Map<String, Object> constants = new HashMap<String, Object>();
+    	for (Field field : klass.getFields()) {
+            int mods = field.getModifiers();
+
+            if (Modifier.isStatic(mods) && Modifier.isFinal(mods)) {
+    			try {
+    				constants.put(field.getName(), field.get(null));
+    			} catch (Exception ex) {
+    				log.warn(ex.getMessage(), ex);
+				}
+            }
+    	}
+
+    	return constants;
+    }
+
+    public static String encodeURL(String value) {
+    	try {
+    		return URLEncoder.encode(value, "UTF-8");
+    	} catch (UnsupportedEncodingException ex) {
+    		log.warn(ex.getMessage(), ex);
+    	}
+
+    	return null;
     }
 
 }

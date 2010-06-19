@@ -1,6 +1,6 @@
 package com.imcode.imcms.addon.imagearchive.command;
 
-import com.imcode.imcms.addon.imagearchive.util.image.Format;
+import imcode.util.image.Format;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

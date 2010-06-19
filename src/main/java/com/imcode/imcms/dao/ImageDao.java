@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.imcode.imcms.api.I18nLanguage;
+import java.util.Collection;
 
 public interface ImageDao {
 	
@@ -28,5 +29,7 @@ public interface ImageDao {
 	/**
 	 * Saves text document's images. 
 	 */	
-	void saveImagesMap(int documentId, Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap);	
+	void saveImagesMap(int documentId, Map<I18nLanguage, Map<Integer, ImageDomainObject>> imagesMap);
+
+    void setImagesSources(Collection<ImageDomainObject> images);
 }

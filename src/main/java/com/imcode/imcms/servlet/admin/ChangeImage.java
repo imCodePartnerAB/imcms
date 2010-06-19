@@ -32,17 +32,24 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
+import org.apache.commons.lang.math.NumberUtils;
 
 public class ChangeImage extends HttpServlet {
 
     public static final String REQUEST_PARAMETER__IMAGE_INDEX = "img";
     public static final String REQUEST_PARAMETER__LABEL = "label";
+    public static final String REQUEST_PARAMETER__WIDTH = "width";
+    public static final String REQUEST_PARAMETER__HEIGHT = "height";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final ImcmsServices imcref = Imcms.getServices();
         final DocumentMapper documentMapper = imcref.getDocumentMapper();
         final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(Integer.parseInt(request.getParameter("meta_id")));
-        final int imageIndex = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__IMAGE_INDEX));        
+        final int imageIndex = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__IMAGE_INDEX));
+        int forcedWidth = NumberUtils.toInt(request.getParameter(REQUEST_PARAMETER__WIDTH));
+        int forcedHeight = NumberUtils.toInt(request.getParameter(REQUEST_PARAMETER__HEIGHT));
+        forcedWidth = Math.max(forcedWidth, 0);
+        forcedHeight = Math.max(forcedHeight, 0);
         final UserDomainObject user = Utility.getLoggedOnUser(request);
         
         /**
@@ -117,7 +124,7 @@ public class ChangeImage extends HttpServlet {
         List<ImageDomainObject> images = imageDao.getDocumentImagesByIndex(document.getId(), imageIndex, true);
         
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
-        ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true);
+        ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true, forcedWidth, forcedHeight);
         
         imageEditPage.setImages(images);
         imageEditPage.forward(request, response);

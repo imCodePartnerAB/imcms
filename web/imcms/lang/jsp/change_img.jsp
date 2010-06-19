@@ -181,7 +181,60 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 			    var returnVar = document.layers[id];			
 			
 			return returnVar;
-		}				
+		}
+
+        function getLangCodes() {
+            var langCodes = document.getElementById("lang_codes").value;
+
+            return langCodes.split(",");
+        }
+
+        function resetCrop(langCode) {
+            if (<%= imageEditPage.isShareImages() %>) {
+                var langCodes = getLangCodes();
+
+                for (var i = 0, len = langCodes.length; i < len; ++i) {
+                    resetCropLang(langCodes[i]);
+                }
+            } else {
+                resetCropLang(langCode);
+            }
+        }
+
+        function resetCropLang(langCode) {
+            var cell = document.getElementById("crop_cell_" + langCode);
+            var cropButton = document.getElementById("crop_btn_" + langCode);
+
+            cell.removeChild(cell.getElementsByTagName("table")[0]);
+
+            var croppedSizeRow = document.getElementById("cropped_size_row_" + langCode);
+            croppedSizeRow.parentNode.removeChild(croppedSizeRow);
+
+            document.getElementById("h_crop_x1_" + langCode).value = "-1";
+            document.getElementById("h_crop_y1_" + langCode).value = "-1";
+            document.getElementById("h_crop_x2_" + langCode).value = "-1";
+            document.getElementById("h_crop_y2_" + langCode).value = "-1";
+            document.getElementById("h_rotate_angle_" + langCode).value = "-1";
+
+            var forcedWidth = parseInt(document.getElementById("forced_width").value, 10),
+                forcedHeight = parseInt(document.getElementById("forced_height").value, 10);
+
+            var widthInput = document.getElementById("image_width");
+            if (forcedWidth > 0) {
+                widthInput.value = forcedWidth;
+            } else {
+                widthInput.readOnly = false;
+            }
+
+            var heightInput = document.getElementById("image_height");
+            if (forcedHeight > 0) {
+                heightInput.value = forcedHeight;
+            } else {
+                heightInput.readOnly = false;
+            }
+
+            cropButton.style.display = "inline";
+        }
 		//-->
 		</script>
 	</head>
@@ -195,6 +248,10 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 	<form method="POST"
 		action="<%= request.getContextPath() %>/servlet/PageDispatcher"
 		onsubmit="checkLinkType();" name="mainForm"><%=Page.htmlHidden(request)%>
+
+        <input type="hidden" id="forced_width" value="${imageEditPage.forcedWidth}"/>
+        <input type="hidden" id="forced_height" value="${imageEditPage.forcedHeight}"/>
+        <input type="hidden" id="lang_codes" value="${imageEditPage.langCodes}"/>
       
 	  <%-- 
       Hidden language code parameter.
@@ -296,21 +353,30 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 			<%-- Image URL: may be hidden --%>
 
 			<tr>
-				<td nowrap><? templates/sv/change_img.html/12 ?></td>
+				<td nowrap>
+                    <label for="ImageUrl${suffix}"><? templates/sv/change_img.html/12 ?></label>
+                </td>
 				<td>
 				<table border="0" cellspacing="0" cellpadding="0" width="100%">
 					<tr><%
 						String path = i18nImage.getUrlPathRelativeToContextPath(); %>
 						<td colspan="2"><input type="text" id="ImageUrl${suffix}"
 							name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_URL %>${suffix}"
-							size="50" maxlength="255" style="width:350px;"
+							size="50" maxlength="255" style="width:260px;"
 							value="<%= StringUtils.isBlank(path) ? "" : StringEscapeUtils.escapeHtml(request.getContextPath()+path) %>"></td>
 
-						<%-- Browse Image button --%>
+                        <%-- Browse image button --%>
+						<td style="padding-left:10px;"><input type="submit"
+							name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>"
+							class="imcmsFormBtnSmall" style="width:80px"
+							value="<? templates/sv/change_img.html/2004 ?>"
+							onClick="setI18nCodeParameterValue('${image.language.code}')"/></td>
+
+						<%-- Choose from image archive button --%>
 						<td style="padding-left:10px;"><input type="submit"
 							name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_IMAGE_ARCHIVE_BUTTON %>"
 							class="imcmsFormBtnSmall" style="width:180px"
-							value="<? templates/sv/change_img.html/2004 ?>"
+							value="<? templates/sv/change_img.html/2009 ?>"
 							onClick="setI18nCodeParameterValue('${image.language.code}')"/></td>
 						
 						<td style="padding-left:10px;"><input type="button" class="imcmsFormBtnSmall"
@@ -324,7 +390,9 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 
 			<%-- Image alt text --%>
 			<tr>
-				<td nowrap><? templates/sv/change_img.html/41 ?></td>
+				<td nowrap>
+                    <label for="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>${suffix}"><? templates/sv/change_img.html/41 ?></label>
+                </td>
 				<td><input type="text" <% %>
 					name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALT %>${suffix}"
 					<% %>
@@ -333,6 +401,63 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 					value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(i18nImage.getAlternateText())) %>"></td>
 			</tr>
 
+            <c:set var="cropRegion" value="${image.cropRegion}"/>
+            <tr height="38">
+                <td nowrap>
+                    <input type="hidden" id="h_crop_x1${suffix}" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_X1 %>${suffix}" value="${cropRegion.cropX1}"/>
+                    <input type="hidden" id="h_crop_y1${suffix}" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y1 %>${suffix}" value="${cropRegion.cropY1}"/>
+                    <input type="hidden" id="h_crop_x2${suffix}" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_X2 %>${suffix}" value="${cropRegion.cropX2}"/>
+                    <input type="hidden" id="h_crop_y2${suffix}" name="<%= ImageEditPage.REQUEST_PARAMETER__CROP_Y2 %>${suffix}" value="${cropRegion.cropY2}"/>
+                    <input type="hidden" id="h_rotate_angle${suffix}" name="<%= ImageEditPage.REQUEST_PARAMETER__ROTATE_ANGLE %>${suffix}" value="${image.rotateDirection.angle}"/>
+
+                    <? templates/sv/change_img.html/4003 ?>
+                </td>
+                <td id="crop_cell${suffix}">
+                    <c:if test="${cropRegion.valid}">
+                        <table cellspacing="0" cellpadding="0" border="0">
+                            <tr>
+                                <td>
+                                    <label for="crop_x1${suffix}"><b><? templates/sv/change_img.html/4004 ?></b></label>
+                                </td>
+                                <td>
+                                    <label for="crop_y1${suffix}"><b><? templates/sv/change_img.html/4005 ?></b></label>
+                                </td>
+                                <td>&nbsp;&nbsp;</td>
+                                <td>
+                                    <label for="crop_x2${suffix}"><b><? templates/sv/change_img.html/4006 ?></b></label>
+                                </td>
+                                <td>
+                                    <label for="crop_y2${suffix}"><b><? templates/sv/change_img.html/4007 ?></b></label>
+                                </td>
+                                <td>&nbsp;&nbsp;</td>
+                                <td></td>
+                                <td>&nbsp;</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><input id="crop_x1${suffix}" type="text" value="${cropRegion.cropX1}" readonly="readonly" class="imcmsDisabled" size="4" maxlength="4"/></td>
+                                <td><input id="crop_y1${suffix}" type="text" value="${cropRegion.cropY1}" readonly="readonly" class="imcmsDisabled" size="4" maxlength="4"/></td>
+                                <td>&nbsp;&nbsp;</td>
+                                <td><input id="crop_x2${suffix}" type="text" value="${cropRegion.cropX2}" readonly="readonly" class="imcmsDisabled" size="4" maxlength="4"/></td>
+                                <td><input id="crop_y2${suffix}" type="text" value="${cropRegion.cropY2}" readonly="readonly" class="imcmsDisabled" size="4" maxlength="4"/></td>
+                                <td>&nbsp;&nbsp;</td>
+                                <td>
+                                    <input type="submit" name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_CROP_IMAGE %>"
+                                           class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/4002 ?>"
+                                           onclick="setI18nCodeParameterValue('${image.language.code}')"/>
+                                </td>
+                                <td>&nbsp;</td>
+                                <td>
+                                    <input type="button" class="imcmsFormBtnSmall" onclick="resetCrop('${image.language.code}');" value="<? templates/sv/change_img.html/4008 ?>"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </c:if>
+                    <input id="crop_btn${suffix}" type="submit" name="<%= ImageEditPage.REQUEST_PARAMETER__GO_TO_CROP_IMAGE %>"
+                           style="${cropRegion.valid ? 'display:none;' : ''}}" onclick="setI18nCodeParameterValue('${image.language.code}')"
+                           class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/4002 ?>"/>
+                </td>
+            </tr>
 			<%
 				if (!i18nImage.isEmpty()) {
 							ImageSize realImageSize = i18nImage.getRealImageSize();
@@ -346,6 +471,14 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 				<td><? templates/sv/change_img.html/originalSize ?> (px)</td>
 				<td height="20"><%= realImageSize.getWidth() %> &nbsp;X&nbsp; <%= realImageSize.getHeight() %> &nbsp;</td>
 			</tr>
+
+            <%-- Cropped size label --%>
+            <c:if test="${cropRegion.valid}">
+                <tr id="cropped_size_row${suffix}">
+                    <td><? templates/sv/change_img.html/4010 ?> (px)</td>
+                    <td height="20">${cropRegion.width} &nbsp;X&nbsp; ${cropRegion.height} &nbsp;</td>
+                </tr>
+            </c:if>
 
 			<%-- Display size lable --%>
 			<tr>
@@ -388,7 +521,9 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 		<%-- End of Language Loop --%>
 
 		<tr>
-			<td nowrap><? templates/sv/change_img.html/14 ?></td>
+			<td nowrap>
+                <label for="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>"><? templates/sv/change_img.html/14 ?></label>
+            </td>
 			<td><input type="text"<%
 				%> name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>"<%
 				%> id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_NAME %>"<%
@@ -399,17 +534,25 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 			<td>
 			<table border="0" cellspacing="0" cellpadding="0">
 				<tr>
-					<td style="padding-bottom:3px;"><? templates/sv/change_img.html/17 ?></td>
+					<td style="padding-bottom:3px;">
+                        <label for="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>"><? templates/sv/change_img.html/17 ?></label>
+                    </td>
 					<td>&nbsp;</td>
-					<td style="padding-bottom:3px;"><? templates/sv/change_img.html/18 ?></td>
-					<td colspan="2" style="padding-bottom:3px; padding-left:10px;"><? templates/sv/change_img.html/19 ?></td>
+					<td style="padding-bottom:3px;">
+                        <label for="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>"><? templates/sv/change_img.html/18 ?></label>
+                    </td>
+					<td colspan="2" style="padding-bottom:3px; padding-left:10px;">
+                        <label for="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>"><? templates/sv/change_img.html/19 ?></label>
+                    </td>
 				</tr>
 				<tr>
 					<td><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>" id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_WIDTH %>"
-					           size="4" maxlength="4" value="<%= (image.getWidth() > 0) ? image.getWidth() + "" : "" %>"></td>
+					           size="4" maxlength="4" value="<%= (image.getWidth() > 0) ? image.getWidth() + "" : "" %>"
+                               ${imageEditPage.forcedWidth gt 0 ? 'readonly="readonly" class="imcmsDisabled"' : ''}></td>
 					<td style="padding: 0 5px;">X</td>
 					<td><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>" id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_HEIGHT %>"
-					           size="4" maxlength="4" value="<%= (image.getHeight() > 0) ? image.getHeight() + "" : "" %>"></td>
+					           size="4" maxlength="4" value="<%= (image.getHeight() > 0) ? image.getHeight() + "" : "" %>"
+                               ${imageEditPage.forcedHeight gt 0 ? 'readonly="readonly" class="imcmsDisabled"' : ''}></td>
 					<td style="padding-left:10px;"><input type="text" name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>" id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_BORDER %>"
 					           size="4" maxlength="4" value="<%= image.getBorder() %>"></td>
 					<td style="padding-left:10px;"><? templates/sv/change_img.html/size_explanation ?></td>
@@ -417,6 +560,19 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 			</table>
 			</td>
 		</tr>
+        <tr>
+            <td nowrap><label for="format"><? templates/sv/change_img.html/4009 ?></label></td>
+            <td>
+                <c:set var="image" value="${imageEditPage.image}"/>
+                <select id="format" name="<%= ImageEditPage.REQUEST_PARAMETER__FORMAT %>">
+                    <c:forEach var="format" items="${imageEditPage.allowedFormats}">
+                        <option value="${format.ordinal}" ${format eq image.format ? 'selected="selected"' : ''}>
+                            ${format.format}
+                        </option>
+                    </c:forEach>
+                </select>
+            </td>
+        </tr>
 		<tr>
 			<td nowrap><? templates/sv/change_img.html/25 ?></td>
 			<td>
@@ -436,7 +592,9 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 			</td>
 		</tr>
 		<tr>
-			<td nowrap><? templates/sv/change_img.html/30 ?></td>
+			<td nowrap>
+                <label for="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>"><? templates/sv/change_img.html/30 ?></label>
+            </td>
 			<td><select name="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>" id="<%= ImageEditPage.REQUEST_PARAMETER__IMAGE_ALIGN %>" size="1"><%
 					String align = image.getAlign();
 				%>

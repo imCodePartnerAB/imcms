@@ -1,4 +1,4 @@
-package com.imcode.imcms.addon.imagearchive.util.image;
+package imcode.util.image;
 
 public enum Gravity {
     NORTH_WEST("NorthWest"), 

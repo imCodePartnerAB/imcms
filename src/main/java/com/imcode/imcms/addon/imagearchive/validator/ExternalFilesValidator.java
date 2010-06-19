@@ -3,8 +3,8 @@ package com.imcode.imcms.addon.imagearchive.validator;
 import com.imcode.imcms.addon.imagearchive.command.ExternalFilesCommand;
 import com.imcode.imcms.addon.imagearchive.service.Facade;
 import com.imcode.imcms.addon.imagearchive.service.file.FileService;
-import com.imcode.imcms.addon.imagearchive.util.image.ImageInfo;
-import com.imcode.imcms.addon.imagearchive.util.image.ImageOp;
+import imcode.util.image.ImageInfo;
+import imcode.util.image.ImageOp;
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.zip.ZipFile;
@@ -76,7 +76,7 @@ public class ExternalFilesValidator implements Validator {
                 }
                 
                 if (!zipFile) {
-                    ImageInfo info = ImageOp.getImageInfo(facade.getConfig(), tempFile);
+                    ImageInfo info = ImageOp.getImageInfo(tempFile);
                     if (info == null) {
                         errors.rejectValue("file", "archive.externalFiles.fileError");
                         

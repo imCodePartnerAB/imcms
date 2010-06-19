@@ -14,6 +14,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.I18nLanguage;
+import java.util.Collection;
 
 public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 	
@@ -87,6 +88,12 @@ public class ImageDaoImpl extends HibernateTemplate implements ImageDao {
 		return image;
 	}
 	
+    public void setImagesSources(Collection<ImageDomainObject> images) {
+        for (ImageDomainObject image : images) {
+            setImageSource(image);
+        }
+    }
+
 	private ImageDomainObject setImageSource(ImageDomainObject image) {
 		if (image == null) {
 			return null;

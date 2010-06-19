@@ -1,4 +1,7 @@
-package com.imcode.imcms.addon.imagearchive.util.image;
+package imcode.util.image;
+
+import imcode.server.Config;
+import imcode.server.Imcms;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -13,8 +16,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.imcode.imcms.addon.imagearchive.Config;
 
 public class ImageOp {
     private static final Log log = LogFactory.getLog(ImageOp.class);
@@ -31,14 +32,14 @@ public class ImageOp {
     private Format outputFormat;
     
     
-    public ImageOp(Config config) {
-        args.add(addQuotes(getApplicationPath(config, "convert")));
+    public ImageOp() {
+        args.add(addQuotes(getApplicationPath(Imcms.getServices().getConfig(), "convert")));
     }
     
     private static final String getApplicationPath(Config config, String appName) {
         File magickPath = config.getImageMagickPath();
         
-        if (magickPath != null) {
+        if (magickPath != null && !magickPath.equals(Imcms.getPath())) {
             return new File(magickPath, appName).getAbsolutePath();
         }
         
@@ -132,6 +133,15 @@ public class ImageOp {
         
         args.add("-quality");
         args.add(addQuotes(Integer.toString(quality, 10)));
+        
+        return this;
+    }
+    
+    public ImageOp crop(int x, int y, int width, int height) {
+        args.add("-crop");
+        
+        String cropParam = String.format("%dx%d+%d+%d!", width, height, x, y);
+        args.add(addQuotes(cropParam));
         
         return this;
     }
@@ -299,8 +309,10 @@ public class ImageOp {
         return null;
     }
 
-    public static ImageInfo getImageInfo(Config config, File file) {
+    public static ImageInfo getImageInfo(File file) {
         try {
+            Config config = Imcms.getServices().getConfig();
+
             String fileToIdentify = addQuotes(file.getAbsolutePath() + "[0]");
             Process process = new ProcessBuilder(getIdentifyProcessArgs(config, fileToIdentify)).start();
             StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());

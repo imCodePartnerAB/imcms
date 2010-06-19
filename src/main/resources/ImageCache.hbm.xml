@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <query name="ImageCache.deleteById">
+        <![CDATA[
+        DELETE FROM
+            ImageCache ic
+        WHERE
+            ic.id = :id
+        ]]>
+    </query>
+    <query name="ImageCache.deleteAllById">
+        <![CDATA[
+        DELETE FROM
+            ImageCache ic
+        WHERE
+            ic.id IN (:ids)
+        ]]>
+    </query>
+    <query name="ImageCache.fileSizeTotal">
+        <![CDATA[
+        SELECT
+            sum(ic.fileSize)
+        FROM
+            ImageCache ic
+        ]]>
+    </query>
+    <query name="ImageCache.countEntries">
+        <![CDATA[
+        SELECT
+            count(ic.id)
+        FROM
+            ImageCache ic
+        ]]>
+    </query>
+    <query name="ImageCache.idsByFrequency">
+        <![CDATA[
+        SELECT
+            ic.id
+        FROM
+            ImageCache ic
+        ORDER BY
+            ic.frequency ASC
+        ]]>
+    </query>
+    <query name="ImageCache.incFrequency">
+        <![CDATA[
+        UPDATE
+            ImageCache ic
+        SET
+            ic.frequency = ic.frequency + 1
+        WHERE
+			ic.id = :id AND
+            ic.frequency < :maxFreq
+        ]]>
+    </query>
+    <query name="I18nImage.allImages">
+        <![CDATA[
+        SELECT DISTINCT
+            i
+        FROM
+            I18nImage i
+        ]]>
+    </query>
+</hibernate-mapping>

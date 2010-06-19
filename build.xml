@@ -443,6 +443,9 @@
         <copy todir="${WEB-INF}/conf"    file="${resources.dir}/beansContext.xml" filtering="true"/>
         <copy todir="${WEB-INF}/classes" file="${resources.dir}/hibernate.cfg.xml" filtering="true"/>
         <copy todir="${WEB-INF}/classes" file="${resources.dir}/commons-logging.properties" filtering="true"/>
+        <copy todir="${WEB-INF}/classes">
+            <fileset dir="${resources.dir}" includes="**/*.hbm.xml"/>
+        </copy>
 
         <echo message="${version}" file="${versionfile}"/>
 
@@ -630,16 +633,17 @@
         <filter token="webmaster-email" value="${webmaster-email}"/>
 
         <filter token="i18n.defaultLanguage.code" value="${i18n.defaultLanguage.code}"/>
-	
-	<filter token="image-archive-storage-path" value="${image-archive-storage-path}"/>
-	<filter token="image-archive-temp-path" value="${image-archive-temp-path}"/>
-	<filter token="image-archive-image-magick-path" value="${image-archive-image-magick-path}"/>
-	<filter token="image-archive-images-path" value="${image-archive-images-path}"/>
-	<filter token="image-archive-libraries-path" value="${image-archive-libraries-path}"/>
-	<filter token="image-archive-users-library-folder" value="${image-archive-users-library-folder}"/>
-	<filter token="image-archive-old-library-paths" value="${image-archive-old-library-paths}"/>
-	<filter token="image-archive-max-image-upload-size" value="${image-archive-max-image-upload-size}"/>
-	<filter token="image-archive-max-zip-upload-size" value="${image-archive-max-zip-upload-size}"/>
+
+        <filter token="image-magick-path" value="${image-magick-path}"/>
+        <filter token="image-archive-storage-path" value="${image-archive-storage-path}"/>
+        <filter token="image-archive-temp-path" value="${image-archive-temp-path}"/>
+        <filter token="image-archive-images-path" value="${image-archive-images-path}"/>
+        <filter token="image-archive-libraries-path" value="${image-archive-libraries-path}"/>
+        <filter token="image-archive-users-library-folder" value="${image-archive-users-library-folder}"/>
+        <filter token="image-archive-old-library-paths" value="${image-archive-old-library-paths}"/>
+        <filter token="image-archive-max-image-upload-size" value="${image-archive-max-image-upload-size}"/>
+        <filter token="image-archive-max-zip-upload-size" value="${image-archive-max-zip-upload-size}"/>
+        <filter token="image-cache-max-size" value="${image-cache-max-size}"/>
     </target>
 
     <!-- Check targets -->

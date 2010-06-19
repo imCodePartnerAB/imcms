@@ -65,6 +65,7 @@ import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 
@@ -722,6 +723,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public CategoryMapper getCategoryMapper() {
         return documentMapper.getCategoryMapper();
+    }
+
+    public ImageCacheMapper getImageCacheMapper() {
+        return (ImageCacheMapper) getSpringBean("imageCacheMapper");
     }
 
     public LanguageMapper getLanguageMapper() {

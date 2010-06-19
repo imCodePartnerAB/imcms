@@ -18,6 +18,7 @@
         <mapping class="com.imcode.imcms.api.ContentLoop"/>    	
     	<mapping class="imcode.server.document.textdocument.ImageDomainObject"/>
     	<mapping class="imcode.server.document.textdocument.TextDomainObject"/>
+        <mapping class="imcode.server.document.textdocument.ImageCacheDomainObject"/>
         
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.Images"/>
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.ExifPK"/>
@@ -35,7 +36,8 @@
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.Libraries"/>
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.LibraryRolesPK"/>
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.LibraryRoles"/>
-        
+
+        <mapping resource="ImageCache.hbm.xml"/>
         <mapping resource="com/imcode/imcms/addon/imagearchive/hbm/Images.hbm.xml"/>
         <mapping resource="com/imcode/imcms/addon/imagearchive/hbm/Roles.hbm.xml"/>
         <mapping resource="com/imcode/imcms/addon/imagearchive/hbm/Libraries.hbm.xml"/>

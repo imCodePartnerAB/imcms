@@ -31,11 +31,18 @@ import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.servlet.admin.ImageCropPage.CropResult;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
+import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
+import imcode.util.image.Format;
+import imcode.util.image.ImageInfo;
+import org.apache.commons.lang.math.NumberUtils;
 
 public class ImageEditPage extends OkCancelPage {
 
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON = "goToImageBrowser";
+    public static final String REQUEST_PARAMETER__GO_TO_CROP_IMAGE = "goToCropImage";
     public static final String REQUEST_PARAMETER__PREVIEW_BUTTON = "show_img";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
     public static final String REQUEST_PARAMETER__DELETE_BUTTON = "delete";
@@ -53,6 +60,13 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__IMAGE_LOWSRC = "low_scr";
     public static final String REQUEST_PARAMETER__LINK_URL = "imageref_link";
     public static final String REQUEST_PARAMETER__LINK_TARGET = EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET;
+    public static final String REQUEST_PARAMETER__FORMAT = "format";
+    public static final String REQUEST_PARAMETER__FORMAT_EXTENSION = "format_ext";
+    public static final String REQUEST_PARAMETER__CROP_X1 = "crop_x1";
+    public static final String REQUEST_PARAMETER__CROP_Y1 = "crop_y1";
+    public static final String REQUEST_PARAMETER__CROP_X2 = "crop_x2";
+    public static final String REQUEST_PARAMETER__CROP_Y2 = "crop_y2";
+    public static final String REQUEST_PARAMETER__ROTATE_ANGLE = "rotate_angle";
     public static final String REQUEST_PARAMETER__I18N_CODE = "i18nCode";
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_ARCHIVE_BUTTON = "goToImageArchive";
     public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE = "image_archive";
@@ -60,6 +74,8 @@ public class ImageEditPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_IMAGE_NAME = "archive_img_nm";
     public static final String REQUEST_PARAMETER__IMAGE_ARCHIVE_FILE_NAME = "archive_file_nm";
     static final LocalizedMessage ERROR_MESSAGE__ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images");
+    static final LocalizedMessage ERROR_MESSAGE__FILE_NOT_IMAGE = new LocalizedMessage("error/servlet/images/file_not_image");
+    public static final Format[] ALLOWED_FORMATS = new Format[] { Format.GIF, Format.JPEG, Format.PNG };
     
     public static final String REQUEST_PARAMETER__SHARE_IMAGE = "share_image";
 
@@ -69,6 +85,8 @@ public class ImageEditPage extends OkCancelPage {
     private final LocalizedMessage heading;
     private boolean linkable;
     private boolean shareImages;
+    private int forcedWidth;
+    private int forcedHeight;
     
     /**
      * Image DTO. Contains generic image properties such as size, border,
@@ -84,7 +102,8 @@ public class ImageEditPage extends OkCancelPage {
     public ImageEditPage(TextDocumentDomainObject document, ImageDomainObject image,
                          LocalizedMessage heading, String label, ServletContext servletContext,
                          Handler<List<ImageDomainObject>> imageCommand,
-                         DispatchCommand returnCommand, boolean linkable) {
+                         DispatchCommand returnCommand, boolean linkable,
+                         int forcedWidth, int forcedHeight) {
         super(returnCommand, returnCommand);
         this.document = document;
         this.image = image;
@@ -92,6 +111,25 @@ public class ImageEditPage extends OkCancelPage {
         this.imageCommand = imageCommand;
         this.heading = heading ;
         this.linkable = linkable ;
+        this.forcedWidth = forcedWidth;
+        this.forcedHeight = forcedHeight;
+
+        forceWidthHeight(image);
+
+        if (image != null && image.getFormat() == null) {
+            image.setFormat(Format.PNG);
+        }
+    }
+
+    private void forceWidthHeight(ImageDomainObject img) {
+    	if (img != null) {
+        	if (forcedWidth > 0) {
+        		img.setWidth(forcedWidth);
+        	}
+        	if (forcedHeight > 0) {
+        		img.setHeight(forcedHeight);
+        	}
+        }
     }
 
     public ImageDomainObject getImage() {
@@ -140,19 +178,24 @@ public class ImageEditPage extends OkCancelPage {
         
         for (ImageDomainObject img : images) {
             boolean save = shareImages || img.getLanguage().getCode().equals(lang);         
-            if (fileName != null && save) {
-                img.setImageUrl(urlPath);
-                img.setSource(source);
+            if (!save) {
+                continue;
             }
-            if (imageName != null && save) {
+
+            if (fileName != null) {
+                img.setImageUrl(urlPath);
+                setNewSourceAndClearProps(img, source);
+            }
+            if (imageName != null) {
                 img.setImageName(imageName);
             }
-            if (archiveImageId != null && save) {
+            if (archiveImageId != null) {
                 img.setArchiveImageId(archiveImageId);
             }
         }
         
-        image = getImages().get(0);
+        constrainImageFormat(lang);
+        image = images.get(0);
     }
 
     private ImageDomainObject getImageFromRequest(HttpServletRequest req) {
@@ -194,7 +237,16 @@ public class ImageEditPage extends OkCancelPage {
         ImageSource imageSource = ImcmsImageUtils.createImageSourceFromString(imageUrl);
 
         image.setSource(imageSource);
-                
+        
+        Format format = null;
+        if (req.getParameter(REQUEST_PARAMETER__FORMAT_EXTENSION) != null) {
+            format = Format.findFormatByExtension(req.getParameter(REQUEST_PARAMETER__FORMAT_EXTENSION));
+        } else {
+            format = Format.findFormat((short) NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__FORMAT), 0));
+        }
+
+        image.setFormat(format);
+
         image.setAlternateText(req.getParameter(REQUEST_PARAMETER__IMAGE_ALT));
         
         image.setLowResolutionUrl(req.getParameter(REQUEST_PARAMETER__IMAGE_LOWSRC));
@@ -203,30 +255,52 @@ public class ImageEditPage extends OkCancelPage {
         
         clearArchivePropertiesIfNullSource(image);
         
-        int index = 0;
         ImageDomainObject firstImage = images.get(0);
         
         
-        for (ImageDomainObject i18nImage: images) {
+        for (int i = 0, len = images.size(); i < len; ++i) {
+            boolean first = (i == 0);
+            ImageDomainObject i18nImage = images.get(i);
+
     		String suffix = "_" + i18nImage.getLanguage().getCode();
     		String alternateText = req.getParameter(REQUEST_PARAMETER__IMAGE_ALT
     			+ suffix);
     		
-        	if (shareImages && index++ > 0) {
+
+            CropRegion cropRegion;
+            RotateDirection rotateDirection;
+
+            if (shareImages && !first) {
         		imageSource = firstImage.getSource();
-        	} else {        	
+                cropRegion = firstImage.getCropRegion();
+                rotateDirection = firstImage.getRotateDirection();
+
+        	} else {
         		imageUrl = req.getParameter(REQUEST_PARAMETER__IMAGE_URL + suffix);
         		if ( null != imageUrl && imageUrl.startsWith(req.getContextPath()) ) {
         			imageUrl = imageUrl.substring(req.getContextPath().length());
         		}
         		
         		imageSource = ImcmsImageUtils.createImageSourceFromString(imageUrl);
+
+                cropRegion = new CropRegion();
+                cropRegion.setCropX1(NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__CROP_X1 + suffix), -1));
+                cropRegion.setCropY1(NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__CROP_Y1 + suffix), -1));
+                cropRegion.setCropX2(NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__CROP_X2 + suffix), -1));
+                cropRegion.setCropY2(NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__CROP_Y2 + suffix), -1));
+                cropRegion.updateValid();
+
+                int rotateAngle = NumberUtils.toInt(req.getParameter(REQUEST_PARAMETER__ROTATE_ANGLE + suffix));
+                rotateDirection = RotateDirection.getByAngleDefaultIfNull(rotateAngle);
         	}                        
 
             i18nImage.setImageUrl(imageUrl);
             i18nImage.setType(imageSource.getTypeId());
             i18nImage.setAlternateText(alternateText);
             i18nImage.setSource(imageSource);
+            i18nImage.setFormat(format);
+            i18nImage.setCropRegion(cropRegion);
+            i18nImage.setRotateDirection(rotateDirection);
             
             clearArchivePropertiesIfNullSource(i18nImage);
             
@@ -280,7 +354,39 @@ public class ImageEditPage extends OkCancelPage {
             goToImageArchive(request, response);
         } else if (request.getParameter(REQUEST_PARAMETER__IMAGE_ARCHIVE) != null) {
             forward(request, response);
+        } else if ( null != request.getParameter(REQUEST_PARAMETER__GO_TO_CROP_IMAGE) ) {
+        	goToCropImage(request, response);
         }
+    }
+
+    private void goToCropImage(final HttpServletRequest request, final HttpServletResponse response)
+    		throws IOException, ServletException {
+
+        String lang = request.getParameter(REQUEST_PARAMETER__I18N_CODE);
+        image = getImageByLangCode(lang);
+
+    	DispatchCommand returnCommand = new DispatchCommand() {
+			public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+				forward(request, response);
+			}
+		};
+
+		Handler<CropResult> cropHandler = new Handler<CropResult>() {
+			public void handle(CropResult result) {
+				image.setCropRegion(result.getCropRegion());
+                image.setRotateDirection(result.getRotateDirection());
+
+                if (shareImages) {
+                    for (ImageDomainObject img : images) {
+                        img.setCropRegion(result.getCropRegion());
+                        img.setRotateDirection(result.getRotateDirection());
+                    }
+                }
+			}
+		};
+
+        ImageCropPage cropPage = new ImageCropPage(returnCommand, cropHandler, image, forcedWidth, forcedHeight);
+		cropPage.forward(request, response);
     }
 
     private void goToImageArchive(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -337,17 +443,74 @@ public class ImageEditPage extends OkCancelPage {
                 // TODO i18n: refactor
                 for (ImageDomainObject i18nImage: images) {
                 	if (shareImages || i18nImage.getLanguage().getCode().equals(i18nCode)) {
-                		i18nImage.setSource(new ImagesPathRelativePathImageSource(imageUrl));
+                		setNewSourceAndClearProps(i18nImage, new ImagesPathRelativePathImageSource(imageUrl));
                  	}
                 	
                  	i18nImage.setHeight(height);
                  	i18nImage.setWidth(width);
+                    forceWidthHeight(i18nImage);
                 }
                 
+                constrainImageFormat(i18nCode);
+                image = images.get(0);
+
                 forward(request, response);
             }
         });
         imageBrowser.forward(request, response);
+    }
+
+    public void setNewSourceAndClearProps(ImageDomainObject img, ImageSource imageSource) {
+        img.setSource(imageSource);
+        img.setCropRegion(new CropRegion());
+        img.setRotateDirection(RotateDirection.NORTH);
+    }
+
+    public ImageDomainObject getImageByLangCode(String langCode) {
+        for (ImageDomainObject img : images) {
+            if (img.getLanguage().getCode().equals(langCode)) {
+                return img;
+            }
+        }
+
+        return null;
+    }
+
+    private void constrainImageFormat(String langCode) {
+        if (!shareImages) {
+            return;
+        }
+
+        ImageDomainObject img = null;
+        for (ImageDomainObject i18nImage : images) {
+            if (i18nImage.getLanguage().getCode().equals(langCode)) {
+                img = i18nImage;
+                break;
+            }
+        }
+
+        if (img == null) {
+            return;
+        }
+
+        Format imageFormat = null;
+        ImageInfo info = img.getImageInfo();
+        if (info != null) {
+            imageFormat = info.getFormat();
+        }
+
+        boolean allowedFormat = false;
+        for (Format format : ALLOWED_FORMATS) {
+            if (format == imageFormat) {
+                allowedFormat = true;
+                break;
+            }
+        }
+        imageFormat = (allowedFormat ? imageFormat : Format.PNG);
+
+        for (ImageDomainObject i18nImage : images) {
+            i18nImage.setFormat(imageFormat);
+        }
     }
 
     static boolean userHasImagePermissionsOnDocument(UserDomainObject user, TextDocumentDomainObject document) {
@@ -437,6 +600,16 @@ public class ImageEditPage extends OkCancelPage {
 		return same;
 	}
 
+    public String getLangCodes() {
+        String[] codes = new String[images.size()];
+        
+        for (int i = 0, len = images.size(); i < len; ++i) {
+            codes[i] = images.get(i).getLanguage().getCode();
+        }
+        
+        return StringUtils.join(codes, ',');
+    }
+
 	public boolean isShareImages() {
 		return shareImages;
 	}
@@ -444,5 +617,29 @@ public class ImageEditPage extends OkCancelPage {
 	public void setShareImages(boolean shareImages) {
 		this.shareImages = shareImages;
 	}
+
+    public int getForcedHeight() {
+        return forcedHeight;
+    }
+
+    public void setForcedHeight(int forcedHeight) {
+        this.forcedHeight = forcedHeight;
+    }
+
+    public int getForcedWidth() {
+        return forcedWidth;
+    }
+
+    public void setForcedWidth(int forcedWidth) {
+        this.forcedWidth = forcedWidth;
+    }
+
+    public TextDocumentDomainObject getDocument() {
+        return document;
+    }
+
+    public Format[] getAllowedFormats() {
+        return ALLOWED_FORMATS;
+    }
 
 }

@@ -40,8 +40,8 @@ import com.imcode.imcms.addon.imagearchive.util.Pagination;
 import com.imcode.imcms.addon.imagearchive.util.Utils;
 import com.imcode.imcms.addon.imagearchive.util.exif.ExifData;
 import com.imcode.imcms.addon.imagearchive.util.exif.ExifUtils;
-import com.imcode.imcms.addon.imagearchive.util.image.ImageInfo;
 import com.imcode.imcms.api.User;
+import imcode.util.image.ImageInfo;
 
 @Transactional
 public class ImageService {
@@ -126,7 +126,7 @@ public class ImageService {
         image.setUsersId(user.getId());
         
         image.setImageNm(StringUtils.substring(imageName, 0, 255));
-        image.setFormat(imageInfo.getFormat().getImageFormat());
+        image.setFormat(imageInfo.getFormat().getOrdinal());
         image.setFileSize((int) tempFile.length());
         image.setWidth(imageInfo.getWidth());
         image.setHeight(imageInfo.getHeight());
@@ -178,7 +178,7 @@ public class ImageService {
             image.setUsersId(user.getId());
 
             image.setImageNm(StringUtils.substring(imageName, 0, 255));
-            image.setFormat(imageInfo.getFormat().getImageFormat());
+            image.setFormat(imageInfo.getFormat().getOrdinal());
             image.setFileSize((int) tempFile.length());
             image.setWidth(imageInfo.getWidth());
             image.setHeight(imageInfo.getHeight());

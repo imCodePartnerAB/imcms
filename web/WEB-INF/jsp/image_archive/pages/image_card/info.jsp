@@ -27,7 +27,7 @@
             </label>
             <select id="fileFormat" name="fileFormat" class="left" style="width:80px;margin-left:5px;">
                 <c:forEach var="format" items="${exportImage.fileFormats}">
-                    <option value="${format.imageFormat}" ${exportImage.fileFormat eq format.imageFormat ? 'selected="selected"' : ''} >
+                    <option value="${format.ordinal}" ${exportImage.fileFormat eq format.ordinal ? 'selected="selected"' : ''} >
                         <c:out value="${fn:toLowerCase(format.format)}"/>
                     </option>
                 </c:forEach>

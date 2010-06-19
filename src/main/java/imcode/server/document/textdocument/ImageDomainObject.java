@@ -23,6 +23,10 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.util.ImageSize;
+import imcode.util.image.Format;
+import imcode.util.image.ImageInfo;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity(name="I18nImage")
 //@IdClass(ImageId.class)
@@ -85,6 +89,24 @@ public class ImageDomainObject implements Serializable, Cloneable {
     
     @Column(name="archive_image_id")
     private Long archiveImageId;
+
+    @Column(name="format", nullable=false)
+    private short format;
+
+    @Column(name="crop_x1", nullable=false)
+    private int cropX1;
+
+    @Column(name="crop_y1", nullable=false)
+    private int cropY1;
+
+    @Column(name="crop_x2", nullable=false)
+    private int cropX2;
+
+    @Column(name="crop_y2", nullable=false)
+    private int cropY2;
+
+    @Column(name="rotate_angle", nullable=false)
+    private short rotateAngle;
     
     
     /**
@@ -99,19 +121,45 @@ public class ImageDomainObject implements Serializable, Cloneable {
     }
 
     public ImageSize getDisplayImageSize() {
-        ImageSize realImageSize = getRealImageSize( );
+        ImageSize realImageSize = getRealImageSize();
+        CropRegion region = getCropRegion();
 
-        int wantedWidth = getWidth( );
-        int wantedHeight = getHeight( );
-        if ( 0 == wantedWidth && 0 != wantedHeight && 0 != realImageSize.getHeight( ) ) {
-            wantedWidth = (int)( realImageSize.getWidth( ) * ( (double)wantedHeight / realImageSize.getHeight( ) ) );
-        } else if ( 0 == wantedHeight && 0 != wantedWidth && 0 != realImageSize.getWidth( ) ) {
-            wantedHeight = (int)( realImageSize.getHeight( ) * ( (double)wantedWidth / realImageSize.getWidth( ) ) );
-        } else if ( 0 == wantedWidth && 0 == wantedHeight ) {
-            wantedWidth = realImageSize.getWidth( );
-            wantedHeight = realImageSize.getHeight( );
+        int realWidth;
+        int realHeight;
+
+        if (region.isValid()) {
+            realWidth = region.getWidth();
+            realHeight = region.getHeight();
+        } else {
+            realWidth = realImageSize.getWidth();
+            realHeight = realImageSize.getHeight();
         }
-        return new ImageSize( wantedWidth, wantedHeight );
+
+        int wantedWidth = getWidth();
+        int wantedHeight = getHeight();
+        int displayWidth;
+        int displayHeight;
+
+        if (wantedWidth > 0 || wantedHeight > 0) {
+            float ratio = realWidth / (float)realHeight;
+
+            if (wantedWidth > 0 && wantedHeight > 0) {
+                displayWidth = wantedWidth;
+                displayHeight = wantedHeight;
+            } else if (wantedWidth > 0) {
+                displayWidth = wantedWidth;
+                displayHeight = Math.round(wantedWidth / ratio);
+            } else {
+                displayHeight = wantedHeight;
+                displayWidth = Math.round(wantedHeight * ratio);
+            }
+
+        } else {
+            displayWidth = realWidth;
+            displayHeight = realHeight;
+        }
+
+        return new ImageSize(displayWidth, displayHeight);
     }
 
     public ImageSize getRealImageSize() {
@@ -122,6 +170,16 @@ public class ImageDomainObject implements Serializable, Cloneable {
             } catch ( IOException ignored ) {}
         }
         return imageSize;
+    }
+
+    public ImageInfo getImageInfo() {
+        if (!isEmpty()) {
+    		try {
+    			return source.getImageInfo();
+    		} catch (IOException ex) {}
+    	}
+
+    	return null;
     }
 
     public int getWidth() {
@@ -272,6 +330,12 @@ public class ImageDomainObject implements Serializable, Cloneable {
                 .append(horizontalSpace, o.getHorizontalSpace())
                 .append(target, o.getTarget())
                 .append(linkUrl, o.getLinkUrl())
+                .append(format, o.format)
+                .append(cropX1, o.cropX1)
+                .append(cropY1, o.cropY1)
+                .append(cropX2, o.cropX2)
+                .append(cropY2, o.cropY2)
+                .append(rotateAngle, o.rotateAngle)
                 .isEquals();
    }
 
@@ -282,6 +346,8 @@ public class ImageDomainObject implements Serializable, Cloneable {
                 .append(border).append(align).append(alternateText)
                 .append(lowResolutionUrl).append(verticalSpace).append(horizontalSpace)
                 .append(target).append(linkUrl)
+                .append(language).append(format).append(rotateAngle)
+                .append(cropX1).append(cropY1).append(cropX2).append(cropY2)
                 .toHashCode();
     }
 
@@ -347,5 +413,206 @@ public class ImageDomainObject implements Serializable, Cloneable {
 
     public void setArchiveImageId(Long archiveImageId) {
         this.archiveImageId = archiveImageId;
+    }
+
+    public Format getFormat() {
+        return Format.findFormat(format);
+    }
+
+    public void setFormat(Format format) {
+        this.format = (short) (format != null ? format.getOrdinal() : 0);
+    }
+
+    public CropRegion getCropRegion() {
+        return new CropRegion(cropX1, cropY1, cropX2, cropY2);
+    }
+
+    public void setCropRegion(CropRegion region) {
+        if (region.isValid()) {
+            cropX1 = region.getCropX1();
+            cropY1 = region.getCropY1();
+            cropX2 = region.getCropX2();
+            cropY2 = region.getCropY2();
+        } else {
+            cropX1 = -1;
+            cropY1 = -1;
+            cropX2 = -1;
+            cropY2 = -1;
+        }
+    }
+
+    public RotateDirection getRotateDirection() {
+        return RotateDirection.getByAngleDefaultIfNull(rotateAngle);
+    }
+
+    public void setRotateDirection(RotateDirection dir) {
+        this.rotateAngle = (short) (dir != null ? dir.getAngle() : 0);
+    }
+
+
+    public static class CropRegion implements Serializable {
+        private static final long serialVersionUID = -586488435877347784L;
+
+        private int cropX1;
+        private int cropY1;
+        private int cropX2;
+        private int cropY2;
+
+        private boolean valid;
+
+
+        public CropRegion() {
+            cropX1 = -1;
+            cropY1 = -1;
+            cropX2 = -1;
+            cropY2 = -1;
+        }
+
+        public CropRegion(int cropX1, int cropY1, int cropX2, int cropY2) {
+            if (cropX1 > cropX2) {
+                this.cropX1 = cropX2;
+                this.cropX2 = cropX1;
+            } else {
+                this.cropX1 = cropX1;
+                this.cropX2 = cropX2;
+            }
+
+            if (cropY1 > cropY2) {
+                this.cropY1 = cropY2;
+                this.cropY2 = cropY1;
+            } else {
+                this.cropY1 = cropY1;
+                this.cropY2 = cropY2;
+            }
+
+            updateValid();
+        }
+
+        public void updateValid() {
+            valid = (cropX1 >= 0 && cropY1 >= 0 && cropX2 >= 0 && cropY2 >= 0
+                    && cropX1 != cropX2 && cropY1 != cropY2);
+        }
+
+        public boolean isValid() {
+            return valid;
+        }
+
+        public int getCropX1() {
+            return cropX1;
+        }
+
+        public void setCropX1(int cropX1) {
+            this.cropX1 = cropX1;
+        }
+
+        public int getCropY1() {
+            return cropY1;
+        }
+
+        public void setCropY1(int cropY1) {
+            this.cropY1 = cropY1;
+        }
+
+        public int getCropX2() {
+            return cropX2;
+        }
+
+        public void setCropX2(int cropX2) {
+            this.cropX2 = cropX2;
+        }
+
+        public int getCropY2() {
+            return cropY2;
+        }
+
+        public void setCropY2(int cropY2) {
+            this.cropY2 = cropY2;
+        }
+
+        public int getWidth() {
+            return isValid() ? cropX2 - cropX1 : 0;
+        }
+
+        public int getHeight() {
+            return isValid() ? cropY2 - cropY1 : 0;
+        }
+
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + cropX1;
+            result = prime * result + cropY1;
+            result = prime * result + cropX2;
+            result = prime * result + cropY2;
+
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            } else if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+
+            CropRegion other = (CropRegion) obj;
+            if (cropX1 != other.cropX1 || cropY1 != other.cropY1 ||
+                    cropX2 != other.cropX2 || cropY2 != other.cropY2) {
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public enum RotateDirection {
+        NORTH(0, -90, 90),
+        EAST(90, 0, 180),
+        SOUTH(180, 90, -90),
+        WEST(-90, 180, 0);
+
+        private static final Map<Integer, RotateDirection> ANGLE_MAP =
+            new HashMap<Integer, RotateDirection>(RotateDirection.values().length);
+
+        static {
+            for (RotateDirection direction : RotateDirection.values()) {
+                ANGLE_MAP.put(direction.getAngle(), direction);
+            }
+        }
+
+        private final int angle;
+        private final int leftAngle;
+        private final int rightAngle;
+
+        private RotateDirection(int angle, int leftAngle, int rightAngle) {
+            this.angle = angle;
+            this.leftAngle = leftAngle;
+            this.rightAngle = rightAngle;
+        }
+
+        public int getAngle() {
+            return angle;
+        }
+
+        public RotateDirection getLeftDirection() {
+            return getByAngle(leftAngle);
+        }
+
+        public RotateDirection getRightDirection() {
+            return getByAngle(rightAngle);
+        }
+
+        public static RotateDirection getByAngle(int angle) {
+            return ANGLE_MAP.get(angle);
+        }
+
+        public static RotateDirection getByAngleDefaultIfNull(int angle) {
+            RotateDirection direction = getByAngle(angle);
+
+            return (direction != null ? direction : RotateDirection.NORTH);
+        }
     }
 }

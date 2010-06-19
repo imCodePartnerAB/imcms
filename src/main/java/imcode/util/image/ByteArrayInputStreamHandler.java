@@ -1,4 +1,4 @@
-package com.imcode.imcms.addon.imagearchive.util.image;
+package imcode.util.image;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,20 +6,22 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class StringInputStreamHandler extends Thread {
-    private static final Log log = LogFactory.getLog(StringInputStreamHandler.class);
+public class ByteArrayInputStreamHandler extends Thread {
+    private static final Log log = LogFactory.getLog(ByteArrayInputStreamHandler.class);
 
     private InputStream inputStream;
-    private String data;
+    private byte[] data;
 
-    public StringInputStreamHandler(InputStream input) {
-        inputStream = input;
+
+    public ByteArrayInputStreamHandler(InputStream inputStream) {
+        this.inputStream = inputStream;
     }
 
+    
     @Override
     public void run() {
         try {
-            data = IOUtils.toString(inputStream);
+            data = IOUtils.toByteArray(inputStream);
         } catch (IOException ex) {
             log.warn(ex.getMessage(), ex);
         } finally {
@@ -27,7 +29,7 @@ public class StringInputStreamHandler extends Thread {
         }
     }
 
-    public String getData() {
+    public byte[] getData() {
         return data;
     }
 }

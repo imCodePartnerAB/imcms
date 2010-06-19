@@ -71,6 +71,7 @@ import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.SectionFromIdTransformer;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import com.imcode.util.CountingIterator;
+import org.apache.commons.collections.CollectionUtils;
 
 public class TagParser {
 	
@@ -84,6 +85,8 @@ public class TagParser {
     private static Pattern imcmsTagPattern;
     private static Pattern imcmsEndTagPattern;
     private static Pattern attributesPattern;
+    private static Pattern widthPattern;
+    private static Pattern heightPattern;
 
     private final static Logger LOG = Logger.getLogger(TagParser.class.getName());
 
@@ -102,6 +105,11 @@ public class TagParser {
                                                                               | Perl5Compiler.READ_ONLY_MASK);
             attributesPattern = patComp.compile("\\s+(\\w+)\\s*=\\s*([\"'])(.*?)\\2", Perl5Compiler.SINGLELINE_MASK
                                                                                       | Perl5Compiler.READ_ONLY_MASK);
+            
+            widthPattern = patComp.compile("(?:^|[\\s;])width\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
+
+            heightPattern = patComp.compile("(?:^|[\\s;])height\\s*:\\s*(\\d+)\\s*px", Perl5Compiler.CASE_INSENSITIVE_MASK);
+            
         } catch ( MalformedPatternException ignored ) {
             // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
             LOG.fatal("Danger, Will Robinson!", ignored);
@@ -576,7 +584,28 @@ public class TagParser {
                 admin_template_file = "textdoc/admin_image.frag";
             }
 
-            imageTag = service.getAdminTemplate(admin_template_file, user, Arrays.asList(replace_tags));
+            String imageWidth = "0";
+            String imageHeight = "0";
+            String style = (String) attributes.get("style");
+            if (style != null) {
+            	PatternMatcher matcher = new Perl5Matcher();
+            	if (matcher.contains(style, widthPattern)) {
+            		imageWidth = matcher.getMatch().group(1);
+            	}
+            	if (matcher.contains(style, heightPattern)) {
+            		imageHeight = matcher.getMatch().group(1);
+            	}
+            }
+
+
+            List<String> replaceTags = new ArrayList<String>(replace_tags.length + 4);
+            CollectionUtils.addAll(replaceTags, replace_tags);
+            replaceTags.add("#image_width#");
+            replaceTags.add(imageWidth);
+            replaceTags.add("#image_height#");
+            replaceTags.add(imageHeight);
+
+            imageTag = service.getAdminTemplate(admin_template_file, user, replaceTags);
         }
 
         return imageTag;
