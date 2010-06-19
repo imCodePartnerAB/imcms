@@ -41,12 +41,4 @@ public class SingleConnectionDataSource implements DataSource {
     public int getLoginTimeout() throws SQLException {
         return 0;
     }
-    
-    public boolean isWrapperFor(Class<?> iface) {
-        return false;
-    }
-    
-    public <T> T unwrap(Class<T> iface) {
-        return null;
-    }
 }
