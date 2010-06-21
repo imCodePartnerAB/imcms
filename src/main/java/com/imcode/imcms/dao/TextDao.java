@@ -24,7 +24,14 @@ public class TextDao extends HibernateTemplate {
 		return text;
 		
 	}
-	
+
+
+    @Transactional
+    public int deleteTexts(Integer docId, Integer docVersionNo, I18nLanguage language) {
+        return deleteTexts(docId, docVersionNo, language.getId());
+    }
+
+
 	@Transactional
 	public int deleteTexts(Integer docId, Integer docVersionNo, Integer languageId) {
 		return getSession().getNamedQuery("Text.deleteTexts")
@@ -68,5 +75,13 @@ public class TextDao extends HibernateTemplate {
 				new String[] {"docId", "docVersionNo", "languageId"},
 				new Object[] {docId, docVersionNo, languageId}
 		);
+	}
+
+	/**
+	 * Returns text fields for the same doc, version and language.
+	 */
+	@Transactional
+	public List<TextDomainObject> getTexts(Integer docId, Integer docVersionNo, I18nLanguage language) {
+		return getTexts(docId, docVersionNo, language.getId());
 	}
 }

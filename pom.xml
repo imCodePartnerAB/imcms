@@ -31,7 +31,6 @@
   <version>6.0.0-SNAPSHOT</version>
   <name>imCMS</name>
   
-
   <profiles>
       <profile>
           <id>local</id>
@@ -290,7 +289,7 @@
     <dependency>
       <groupId>com.imcode</groupId>
       <artifactId>cljlib</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.0.0</version>
      </dependency>
 
     <dependency>
@@ -503,10 +502,10 @@
     </dependency>
 
     <dependency>
-        <groupId>com.codestuffs.clojure</groupId>
+        <groupId>swank-clojure</groupId>
         <artifactId>swank-clojure</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </dependency>
+        <version>1.2.1</version>
+    </dependency>      
     
     <dependency>
       <groupId>org.apache.sanselan</groupId>
@@ -563,35 +562,33 @@
   <repositories>
     <repository>
       <id>imcode</id>
-      <url>http://repo.imcode.com/maven2</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>              
+      <url>http://repo.imcode.com/maven2</url>              
     </repository>
       
     <repository>
       <id>ibiblio</id>
-      <url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>        
+      <url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>      
     </repository>    
   
     <repository>
       <id>codehaus</id>
-      <url>http://repository.codehaus.org</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>        
+      <url>http://repository.codehaus.org</url>       
     </repository>
 
     <repository>
       <id>clojure</id>
       <url>http://build.clojure.org/releases</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
     </repository>
+
+    <repository>
+      <id>clojure-snapshots</id>
+      <url>http://build.clojure.org/snapshots</url>
+    </repository>
+      
+    <repository>
+      <id>clojars</id>
+      <url>http://clojars.org/repo/</url>
+    </repository>      
 
     <repository>
         <id>maven2-repository.dev.java.net</id>
@@ -599,6 +596,7 @@
         <url>http://download.java.net/maven/2/</url>
         <layout>default</layout>
     </repository>
+      
     <repository>
         <id>maven-repository.dev.java.net</id>
         <name>Java.net Maven 1 Repository (legacy)</name>
@@ -606,8 +604,6 @@
         <layout>legacy</layout>
     </repository>
   </repositories>
-
-
     
               	
 
@@ -615,25 +611,25 @@
   <build>
       <finalName>${project.artifactId}</finalName>
       
-   <resources>
-     <resource>
-       <directory>src/main/resources</directory>
-       <filtering>true</filtering>
-     </resource>
+       <resources>
+         <resource>
+           <directory>src/main/resources</directory>
+           <filtering>true</filtering>
+         </resource>
 
-     <resource>
-       <directory>src/main/clojure</directory>
-     </resource>
-   </resources>
+         <resource>
+           <directory>src/main/clojure</directory>
+         </resource>
+       </resources>
 
-   <testResources>
-       <testResource>
-        <directory>src/test/resources</directory>    
-       </testResource>
-       <testResource>
-        <directory>src/test/clojure</directory>
-       </testResource>        
-   </testResources>
+       <testResources>
+           <testResource>
+            <directory>src/test/resources</directory>
+           </testResource>
+           <testResource>
+            <directory>src/test/clojure</directory>
+           </testResource>
+       </testResources>
 
     <plugins>
       <plugin>
@@ -809,14 +805,15 @@
   	        
 		<plugin>
 	      <groupId>org.mortbay.jetty</groupId>
-	      <artifactId>maven-jetty-plugin</artifactId>
+	      <artifactId>jetty-maven-plugin</artifactId>
+          <version>7.0.0.RC6</version>  
 	      <configuration>
 	        <connectors>
-	          <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+	          <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
 	            <port>9091</port>
 	            <maxIdleTime>60000</maxIdleTime>
 	          </connector>
-	        </connectors>		          
+	        </connectors>
 	      </configuration>
 		</plugin>
 		 
