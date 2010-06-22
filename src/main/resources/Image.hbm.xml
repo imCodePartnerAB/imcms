@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+  <query name="Image.deleteImages">
+    <![CDATA[
+    DELETE FROM Image i WHERE i.docId = :docId AND i.docVersionNo = :docVersionNo AND i.language.id = :languageId
+    ]]>
+  </query>
+
+  <query name="Image.getByLanguageId">
+    <![CDATA[
+    select i from Image i where i.docId = :docId and i.language.id = :languageId
+    ]]>
+  </query>
+
+  <!--<query name="Image.getLanguagesToImagesByDocId">-->
+    <!--<![CDATA[-->
+    <!--select l, i from Image i right join i.language l where (i.docId = :docId and i.no = :name) or i.docId is null order by l.default_ desc-->
+    <!--]]>-->
+  <!--</query>-->
+
+  <query name="Image.getAllImages">
+    <![CDATA[
+    select i from Image i where i.docId = :docId
+    ]]>
+  </query>
+
+  <query name="Image.getAllDocumentImagesByLanguage">
+    <![CDATA[
+    select i from Image i where i.docId = :docId and i.language.id = :languageId
+    ]]>
+  </query>
+
+  <!--<query name="Image.getDefaultImage">-->
+    <!--<![CDATA[-->
+    <!--select i from Image i where i.docId = :docId and i.no = :name and i.language.default_ is true-->
+    <!--]]>-->
+  <!--</query>-->
+
+
+  <query name="Image.getByDocIdAndDocVersionNo">
+    <![CDATA[
+    SELECT i FROM Image i WHERE i.docId = :docId AND i.docVersionNo = :docVersionNo
+    ]]>
+  </query>
+
+  <query name="Image.getByDocIdAndDocVersionNoAndLanguageId">
+    <![CDATA[
+    SELECT i FROM Image i WHERE i.docId = :docId AND i.docVersionNo = :docVersionNo AND i.language.id = :languageId
+    ]]>
+  </query>
+
+</hibernate-mapping>

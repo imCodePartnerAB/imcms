@@ -21,15 +21,4 @@
   (db/run-scripts "utvakten"
     (p/files "src/main/web/WEB-INF/sql" ["diff/mysql-schema-diff-4.11-6.2.sql"])))
 
-
-(def m (sorted-map-by 
-         (proxy [java.util.Comparator] []
-           (compare [s1 s2]
-             (- (Integer/valueOf s1) (Integer/valueOf s2))))))
-
-
-(def m (sorted-map-by
-  (comparator #(- (Integer/valueOf %1)
-                  (Integer/valueOf %2)))))
-
     

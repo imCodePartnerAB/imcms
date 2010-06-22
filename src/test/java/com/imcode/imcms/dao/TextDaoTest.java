@@ -24,8 +24,6 @@ public class TextDaoTest {
 	
 	static TextDao textDao;
 
-    static DataSourceDatabaseTester dbTester;
-
     static I18nLanguage ENGLISH = Factory.createLanguage(1, "en", "English");
 
     static I18nLanguage SWEDISH = Factory.createLanguage(2, "sv", "Swedish");
@@ -53,6 +51,21 @@ public class TextDaoTest {
         Script.runDBScripts("text_dao.sql");
     }
     
+
+	/*
+	@Test void getExistingText() {
+		def text = textDao.getText(1001, 1, 1)
+
+		Assert.assertNotNull(text)
+	}
+
+
+    @Test void getNonExistingText() {
+        def text = textDao.getText(10001, 1, 1)
+
+        assertNull(text, "Text does not exists")
+    }
+    */    
 
 
     @Test
