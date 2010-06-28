@@ -138,8 +138,8 @@ public class MetaDao extends HibernateTemplate {
 
 
     @Transactional
-	public void deleteIncludes(Integer docId) {
-		bulkUpdate("delete from Include i where i.metaId = ?", docId);
+	public int deleteIncludes(Integer docId) {
+		return bulkUpdate("delete from Include i where i.metaId = ?", docId);
 	}
 
  	@Transactional

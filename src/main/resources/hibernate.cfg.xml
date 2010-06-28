@@ -59,7 +59,7 @@
         <mapping resource="Text.hbm.xml"/>
         <mapping resource="Image.hbm.xml"/>
         <mapping resource="I18nLanguage.hbm.xml"/>
-        <mapping resource="TextDocument.hbm.xml"/>
+        <mapping resource="Menu.hbm.xml"/>
         <mapping resource="ImageCache.hbm.xml"/>
         
         <mapping resource="com/imcode/imcms/addon/imagearchive/hbm/Images.hbm.xml"/>

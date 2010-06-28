@@ -6,9 +6,9 @@ VALUES
 
 
 INSERT INTO imcms_text_doc_images (
-  doc_id, doc_version_no, widht,  height, border,  v_space,  h_space,
+  doc_id, doc_version_no, width,  height, border,  v_space,  h_space,
 
-  no,     image_name,     target, align, alt_text, low_src, imageurl, linkurl,
+  no,     image_name,     target, align, alt_text, low_scr, imgurl, linkurl,
 
   type, language_id,
 
@@ -16,9 +16,7 @@ INSERT INTO imcms_text_doc_images (
 VALUES
   (1001, 0, 0, 0, 0, 0, 0,
 
-   1, "", "_blank", "top", "", "",
-
-   "imCMSpower.gif", "http://www.imcms.net/>",
+   1, "", "_blank", "top", "", "", "imCMSpower.gif", "http://www.imcms.net/>",
 
    0, 1,
 
@@ -39,7 +37,9 @@ VALUES
 
   2, "", "_blank", "top", "", "", "imCMSpower.gif", "http://www.imcms.net/>",
 
-  0, 1),
+  0, 1,
+
+  0, 0, -1, -1, -1, -1),
 
 
   (1001, 0, 0, 0, 0, 0, 0,
