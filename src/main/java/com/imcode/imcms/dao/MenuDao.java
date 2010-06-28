@@ -28,7 +28,7 @@ public class MenuDao extends HibernateTemplate {
             item.setTreeSortIndex(item.getTreeSortKey().toString());
         }
         
-	    saveOrUpdate(menu);			
+	    saveOrUpdate(menu);
 	}
 
 
@@ -48,7 +48,7 @@ public class MenuDao extends HibernateTemplate {
 	}
 
 
-	@Transactional	
+	@Transactional
 	public void deleteMenu(MenuDomainObject menu) {
 		delete(menu);
 	}

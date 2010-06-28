@@ -93,9 +93,9 @@ public class MenuHistory implements Serializable {
         setModifiedDt(new Date());
         setUserId(user.getId());
 
-        for (MenuItemDomainObject item: menu.getMenuItems()) {
-            MenuItemHistory itemHistory = new MenuItemHistory(item);
-            menuItems.put(item.getDocumentReference().getDocumentId(), itemHistory);
+        for (Map.Entry<Integer, MenuItemDomainObject> entry: menu.getItemsMap().entrySet()) {
+            MenuItemHistory itemHistory = new MenuItemHistory(entry.getValue());
+            menuItems.put(entry.getKey(), itemHistory);
         }
     }
 

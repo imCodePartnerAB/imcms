@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
 
 public class TextDaoTest {
 	
-	static TextDao textDao;
+	TextDao textDao;
 
     static I18nLanguage ENGLISH = Factory.createLanguage(1, "en", "English");
 

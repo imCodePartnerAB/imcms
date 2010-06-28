@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-
-<dataset>
-  <includes id="1" meta_id="1001" include_id="1" included_meta_id="1001"/>
-  <includes id="2" meta_id="1001" include_id="2" included_meta_id="1001"/>
-  <includes id="3" meta_id="1001" include_id="3" included_meta_id="1001"/>
-  <includes id="4" meta_id="1001" include_id="4" included_meta_id="1001"/>
-</dataset>

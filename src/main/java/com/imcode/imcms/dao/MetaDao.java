@@ -175,7 +175,7 @@ public class MetaDao extends HibernateTemplate {
 
     @Transactional
     public int deleteTemplateNames(Integer docId) {
-        return getSession().createQuery("DELETE FROM TemplateNames n WHERE n.metaId = :docId")
+        return getSession().createQuery("DELETE FROM TemplateNames n WHERE n.docId = :docId")
                 .setParameter("docId", docId)
                 .executeUpdate();
     }
