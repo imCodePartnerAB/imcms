@@ -5,7 +5,7 @@
 <hibernate-configuration>
 
     <session-factory>
-        <property name="hibernate.dialect">@hibernate-dialect@</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
 
         <mapping class="com.imcode.imcms.api.Meta"/>
         

@@ -2,880 +2,889 @@
 
 <project>
 
-    <!-- TODO: Integrate api and checkstyle
-    <target name="apidocs">
-        <javadoc sourcepath="${main.java.dir}/" destdir="${apidocs}"
-                 windowtitle="imCMS API" classpathref="libraries"
-                 encoding="iso-8859-1">
-            <fileset dir="${main.java.dir}/" defaultexcludes="yes">
-                <include name="com/imcode/imcms/api/**"/>
-                <include name="com/imcode/util/**"/>
-                <exclude name="**/ImcmsSupport*.java"/>
-                <exclude name="**/Mock*.java"/>
-            </fileset>
-        </javadoc>
-    </target>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.imcode.imcms</groupId>
+    <artifactId>imcms</artifactId>
+    <packaging>war</packaging>
+    <version>6.0.0-SNAPSHOT</version>
+    <name>imCMS</name>
 
-    <taskdef resource="checkstyletask.properties" classpathref="pom.classpath"/>
-    <target name="checkstyle" depends="init">
-        <checkstyle config="docs/checkstyle.xml">
-            <fileset dir="${main.java.dir}" includes="**/*.java"/>
-        </checkstyle>
-    </target>
-    -->
+    <profiles>
+        <profile>
+            <id>local</id>
+            <properties>
+                <build.log4j.level>all</build.log4j.level>
+                <build.log4j.hibernalte.level>all</build.log4j.hibernalte.level>
+            </properties>
+        </profile>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <build.log4j.level>debug</build.log4j.level>
+                <build.log4j.hibernalte.level>info</build.log4j.hibernalte.level>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <build.log4j.level>info</build.log4j.level>
+                <build.log4j.hibernalte.level>error</build.log4j.hibernalte.level>
+            </properties>
+        </profile>
+    </profiles>
 
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.imcode.imcms</groupId>
-  <artifactId>imcms</artifactId>
-  <packaging>war</packaging>
-  <version>6.0.0-SNAPSHOT</version>
-  <name>imCMS</name>
-  
-  <profiles>
-      <profile>
-          <id>local</id>
-          <properties>              
-              <build.log4j.level>all</build.log4j.level>
-              <build.log4j.hibernalte.level>all</build.log4j.hibernalte.level>
-          </properties>
-      </profile>
-      <profile>
-          <id>dev</id>
-          <activation>
-              <activeByDefault>true</activeByDefault>
-          </activation>
-          <properties>
-              <build.log4j.level>debug</build.log4j.level>
-              <build.log4j.hibernalte.level>info</build.log4j.hibernalte.level>
-          </properties>
-      </profile>
-      <profile>
-          <id>prod</id>
-          <properties>
-              <build.log4j.level>info</build.log4j.level>
-              <build.log4j.hibernalte.level>error</build.log4j.hibernalte.level>
-          </properties>
-      </profile>      
-  </profiles>
+    <dependencies>
+        <!--<dependency>-->
+        <!--<groupId>com.sun.grizzly</groupId>-->
+        <!--<artifactId>grizzly-servlet-webserver</artifactId>-->
+        <!--<version>1.9.8</version>-->
+        <!--<scope>test</scope>-->
+        <!--</dependency>      -->
 
-  <dependencies>
-    <!--<dependency>-->
-      <!--<groupId>com.sun.grizzly</groupId>-->
-      <!--<artifactId>grizzly-servlet-webserver</artifactId>-->
-      <!--<version>1.9.8</version>-->
-      <!--<scope>test</scope>-->
-    <!--</dependency>      -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.2.135</version>
+        </dependency>
 
-    <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2</artifactId>
-        <version>1.2.135</version>
-    </dependency>
-      
 
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.7</version>
-      <scope>provided</scope>
-    </dependency>      
-    
-    <!--<dependency>-->
-      <!--<groupId> org.easymock</groupId>-->
-      <!--<artifactId>easymock</artifactId>-->
-      <!--<version>2.0</version>-->
-      <!--<scope>test</scope>-->
-    <!--</dependency>-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.7</version>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>1.8.2</version>
-      <scope>test</scope>
-    </dependency>
-      
+        <!--<dependency>-->
+        <!--<groupId> org.easymock</groupId>-->
+        <!--<artifactId>easymock</artifactId>-->
+        <!--<version>2.0</version>-->
+        <!--<scope>test</scope>-->
+        <!--</dependency>-->
 
-    <dependency>
-	  <groupId>org.dbunit</groupId>
-      <artifactId>dbunit</artifactId>
-	  <version>2.3.0</version>
-      <scope>test</scope>
-    </dependency>
-      
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.5.6</version>
-      <!--<scope>test</scope>-->
-    </dependency>
-      
-    <!-- concrete Log4J Implementation for SLF4J API-->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.5.6</version>
-      <!--<scope>test</scope>-->
-    </dependency>
- 
-             
-   <dependency>
-      <groupId>antlr</groupId>
-      <artifactId>antlr</artifactId>
-      <version>2.7.7</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>cglib</groupId>
-      <artifactId>cglib-nodep</artifactId>
-      <version>2.2</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
-      <version>1.7.0</version>        
-    </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.2</version>
+            <scope>test</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.3</version>
-    </dependency>
 
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
-      <version>6.1.9</version>
-      <scope>provided</scope>
-    </dependency>
-            
-    
-    <dependency>
-      <groupId>commons-betwixt</groupId>
-      <artifactId>commons-betwixt</artifactId>
-      <version>0.8</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>3.2</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
-      <version>1.2.2</version>        
-    </dependency>
+        <dependency>
+            <groupId>org.dbunit</groupId>
+            <artifactId>dbunit</artifactId>
+            <version>2.3.0</version>
+            <scope>test</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>commons-dbutils</groupId>
-      <artifactId>commons-dbutils</artifactId>
-      <version>1.0</version>        
-    </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.5.6</version>
+            <!--<scope>test</scope>-->
+        </dependency>
 
-    <dependency>
-      <groupId>commons-digester</groupId>
-      <artifactId>commons-digester</artifactId>
-      <version>1.8</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>org.apache.commons</groupId> <!-- commons-email -->
-      <artifactId>commons-email</artifactId>
-      <version>1.1</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
-      <version>1.2.1</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
-      <version>2.0.2</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>1.4</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.4</version>        
-    </dependency>
-          
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.1.1</version>        
-    </dependency>   
-    
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
-      <version>1.1</version>
-    </dependency>
-       
-    <dependency>
-      <groupId>commons-pool</groupId>
-      <artifactId>commons-pool</artifactId>
-      <version>1.4</version>        
-    </dependency>
-    
-     
-    
-    <dependency>
-      <groupId>dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-      <version>1.6.1</version>        
-    </dependency>
+        <!-- concrete Log4J Implementation for SLF4J API-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.5.6</version>
+            <!--<scope>test</scope>-->
+        </dependency>
 
-    <!-- imCode Internal Repository dependencies -->  
-    <dependency>
-      <groupId>gnu-activation</groupId>
-      <artifactId>gnu-activation</artifactId>
-      <version>1.0</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>gnu-crypto-javax-security</groupId>
-      <artifactId>gnu-crypto-javax-security</artifactId>
-      <version>2.0.1</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>gnu-crypto-javax-security</groupId>
-      <artifactId>gnu-crypto-javax-security</artifactId>
-      <version>2.0.1</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>gnu-inetlib</groupId>
-      <artifactId>gnu-inetlib</artifactId>
-      <version>1.1</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>gnu-mail</groupId>
-      <artifactId>gnu-mail</artifactId>
-      <version>1.0</version>        
-    </dependency>         
-    
-    <dependency>
-      <groupId>gnu-mail-providers</groupId>
-      <artifactId>gnu-mail-providers</artifactId>
-      <version>1.0</version>              
-    </dependency>
-    <!-- imCode Internal Repository dependencies -->
 
-    <dependency>
-      <groupId>org.clojure</groupId>
-      <artifactId>clojure</artifactId>
-      <version>1.1.0</version>     
-    </dependency>
+        <dependency>
+            <groupId>antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>2.7.7</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.clojure</groupId>
-      <artifactId>clojure-contrib</artifactId>
-      <version>1.1.0</version>
-    </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>2.2</version>
+        </dependency>
 
-    <dependency>
-      <groupId>com.imcode</groupId>
-      <artifactId>cljlib</artifactId>
-      <version>1.0.0</version>
-     </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.7.0</version>
+        </dependency>
 
-    <dependency>
-        <groupId>org.apache.ibatis</groupId>
-        <artifactId>ibatis-sqlmap</artifactId>
-        <version>2.3.0</version>
-    </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.3</version>
+        </dependency>
 
-    <dependency>
-        <groupId>asm</groupId>
-        <artifactId>asm</artifactId>
-        <version>3.2</version>
-    </dependency>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty</artifactId>
+            <version>6.1.9</version>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-        <groupId>asm</groupId>
-        <artifactId>asm-attrs</artifactId>
-        <version>2.2.3</version>
-    </dependency>      
 
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate</artifactId>
-      <version>3.2.7.ga</version>
+        <dependency>
+            <groupId>commons-betwixt</groupId>
+            <artifactId>commons-betwixt</artifactId>
+            <version>0.8</version>
+        </dependency>
 
-      <exclusions>
-          <exclusion>
-              <groupId>asm</groupId>
-              <artifactId>asm</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>asm</groupId>
-              <artifactId>asm-attrs</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>cglib</groupId>
-              <artifactId>cglib</artifactId>
-          </exclusion>          
-      </exclusions>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-annotations</artifactId>
-      <version>3.4.0.GA</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-commons-annotations</artifactId>
-      <version>3.3.0.ga</version>        
-    </dependency>      
-     
-    <dependency>
-      <groupId>com.imcode.db</groupId>
-      <artifactId>imcode-db</artifactId>
-      <version>0.3</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>com.imcode.util</groupId>
-      <artifactId>imcode-util</artifactId>
-      <version>2.0.1</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>com.imcode.ldap</groupId>
-      <artifactId>imcode-ldap</artifactId>
-      <version>0.1</version>        
-    </dependency>
-          
-    <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
-      <version>2.0.8</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
-      <version>1.0.1B</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>net.sourceforge.jtds</groupId>
-      <artifactId>jtds</artifactId>
-      <version>1.2.2</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.15</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-      <!--<version>3.0.0</version>-->
-      <version>2.4.1</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.9</version>        
-    </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2</version>
+        </dependency>
 
-    <dependency>
-      <groupId>pdfbox</groupId>
-      <artifactId>pdfbox</artifactId>
-      <version>0.7.1</version>
-    </dependency>
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>1.2.2</version>
+        </dependency>
 
-    <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>persistence-api</artifactId>
-      <version>1.0</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi</artifactId>
-      <version>3.1-FINAL</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi-scratchpad</artifactId>
-      <version>3.1-FINAL</version>        
-    </dependency>
+        <dependency>
+            <groupId>commons-dbutils</groupId>
+            <artifactId>commons-dbutils</artifactId>
+            <version>1.0</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
-      <version>2.5.6</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
-      <version>2.5.6</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-orm</artifactId>
-      <version>2.5.6</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-      <version>2.5.6</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-aop</artifactId>
-      <version>2.5.6</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-      <version>2.5.6</version>
-    </dependency>    
-    
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjrt</artifactId>
-      <version>1.6.2</version>        
-    </dependency>    
-              
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjweaver</artifactId>
-      <version>1.6.2</version>        
-    </dependency>        
-    
-    <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
-      <version>1.1.2</version>        
-    </dependency>
-    
-    <dependency>
-      <groupId>velocity</groupId>
-      <artifactId>velocity</artifactId>
-      <version>1.4</version> 
-      
-      <exclusions>
-        <exclusion>
-          <groupId>velocity</groupId>
-          <artifactId>velocity-dep</artifactId>
-        </exclusion>
-       </exclusions>
-    </dependency>
+        <dependency>
+            <groupId>commons-digester</groupId>
+            <artifactId>commons-digester</artifactId>
+            <version>1.8</version>
+        </dependency>
 
-    <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-server</artifactId>
-        <version>1.1.5.1</version>
-    </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <!-- commons-email -->
+            <artifactId>commons-email</artifactId>
+            <version>1.1</version>
+        </dependency>
 
-    <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-json</artifactId>
-        <version>1.1.5.1</version>
-    </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.2.1</version>
+        </dependency>
 
-    <dependency>
-        <groupId>swank-clojure</groupId>
-        <artifactId>swank-clojure</artifactId>
-        <version>1.2.1</version>
-    </dependency>      
-    
-    <dependency>
-      <groupId>org.apache.sanselan</groupId>
-      <artifactId>sanselan</artifactId>
-      <version>0.94-incubator</version>        
-    </dependency>
-      
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>2.0.2</version>
+        </dependency>
 
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-      <version>1.1.2</version>
-      <!--
-      <version>1.2</version>
-      -->
-    </dependency>
-      
-    <!-- PROVIDED -->           
-    <dependency>
-      <groupId>checkstyle</groupId>
-      <artifactId>checkstyle</artifactId>
-      <version>4.4</version>
-      <scope>provided</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>commons-el</groupId>
-      <artifactId>commons-el</artifactId>
-      <version>1.0</version>
-      <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.4</version>
+        </dependency>
 
-    <dependency>
-      <groupId>jakarta-regexp</groupId>
-      <artifactId>jakarta-regexp</artifactId>
-      <version>1.4</version>
-    </dependency>
-             
-    <dependency>
-      <groupId>javax.servlet.jsp</groupId>
-      <artifactId>jsp-api</artifactId>
-      <version>2.0</version>
-      <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.4</version>
+        </dependency>
 
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.4</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
-  
-  <repositories>
-    <repository>
-      <id>imcode</id>
-      <url>http://repo.imcode.com/maven2</url>              
-    </repository>
-      
-    <repository>
-      <id>ibiblio</id>
-      <url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>      
-    </repository>    
-  
-    <repository>
-      <id>codehaus</id>
-      <url>http://repository.codehaus.org</url>       
-    </repository>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+        </dependency>
 
-    <repository>
-      <id>clojure</id>
-      <url>http://build.clojure.org/releases</url>
-    </repository>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging-api</artifactId>
+            <version>1.1</version>
+        </dependency>
 
-    <repository>
-      <id>clojure-snapshots</id>
-      <url>http://build.clojure.org/snapshots</url>
-    </repository>
-      
-    <repository>
-      <id>clojars</id>
-      <url>http://clojars.org/repo/</url>
-    </repository>      
+        <dependency>
+            <groupId>commons-pool</groupId>
+            <artifactId>commons-pool</artifactId>
+            <version>1.4</version>
+        </dependency>
 
-    <repository>
-        <id>maven2-repository.dev.java.net</id>
-        <name>Java.net Repository for Maven</name>
-        <url>http://download.java.net/maven/2/</url>
-        <layout>default</layout>
-    </repository>
-      
-    <repository>
-        <id>maven-repository.dev.java.net</id>
-        <name>Java.net Maven 1 Repository (legacy)</name>
-        <url>http://download.java.net/maven/1</url>
-        <layout>legacy</layout>
-    </repository>
-  </repositories>
-    
-              	
 
-      
-  <build>
-      <finalName>${project.artifactId}</finalName>
-      
-       <resources>
-         <resource>
-           <directory>src/main/resources</directory>
-           <filtering>true</filtering>
-         </resource>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.6.1</version>
+        </dependency>
 
-         <resource>
-           <directory>src/main/clojure</directory>
-         </resource>
-       </resources>
+        <!-- imCode Internal Repository dependencies -->
+        <dependency>
+            <groupId>gnu-activation</groupId>
+            <artifactId>gnu-activation</artifactId>
+            <version>1.0</version>
+        </dependency>
 
-       <testResources>
-           <testResource>
-            <directory>src/test/resources</directory>
-           </testResource>
-           <testResource>
-            <directory>src/test/clojure</directory>
-           </testResource>
-       </testResources>
+        <dependency>
+            <groupId>gnu-crypto-javax-security</groupId>
+            <artifactId>gnu-crypto-javax-security</artifactId>
+            <version>2.0.1</version>
+        </dependency>
 
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.2</version>
-        <dependencies>
-            <dependency>
-              <groupId>ant-contrib</groupId>
-              <artifactId>ant-contrib</artifactId>
-              <version>1.0b3</version>
+        <dependency>
+            <groupId>gnu-crypto-javax-security</groupId>
+            <artifactId>gnu-crypto-javax-security</artifactId>
+            <version>2.0.1</version>
+        </dependency>
 
-              <exclusions>
-                 <exclusion>
-                     <groupId>ant</groupId>
-                     <artifactId>ant</artifactId>
-                 </exclusion>
-              </exclusions>
-            </dependency>
+        <dependency>
+            <groupId>gnu-inetlib</groupId>
+            <artifactId>gnu-inetlib</artifactId>
+            <version>1.1</version>
+        </dependency>
 
-            <dependency>
-              <groupId>org.apache.ant</groupId>
-              <artifactId>ant-trax</artifactId>
-              <version>1.7.1</version>
-            </dependency>           
+        <dependency>
+            <groupId>gnu-mail</groupId>
+            <artifactId>gnu-mail</artifactId>
+            <version>1.0</version>
+        </dependency>
 
-            <dependency>
-              <groupId>com.imcode.ant.tasks</groupId>
-              <artifactId>imcode-ant-tasks</artifactId>
-              <version>1.3</version>
-            </dependency>
+        <dependency>
+            <groupId>gnu-mail-providers</groupId>
+            <artifactId>gnu-mail-providers</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <!-- imCode Internal Repository dependencies -->
 
-            <dependency>
-              <groupId>com.imcode.util</groupId>
-              <artifactId>imcode-util</artifactId>
-              <version>2.0.1</version>
-            </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <id>clean</id>
-            <phase>clean</phase>
-            <configuration>              
-              <tasks>
-                  <delete dir="${basedir}/webapp" verbose="true"/>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
+        <dependency>
+            <groupId>org.clojure</groupId>
+            <artifactId>clojure</artifactId>
+            <version>1.1.0</version>
+        </dependency>
 
-          <execution>
-            <id>validate</id>
-            <phase>validate</phase>
-            <configuration>
-              <tasks>
-                  <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+        <dependency>
+            <groupId>org.clojure</groupId>
+            <artifactId>clojure-contrib</artifactId>
+            <version>1.1.0</version>
+        </dependency>
 
-                  <if>
-                      <not><available file="${basedir}/build.properties"/></not>
-                      <then>
-                          <copy file="${basedir}/build.properties.template" tofile="${basedir}/build.properties"/>
-                      </then>
-                  </if>
+        <dependency>
+            <groupId>com.imcode</groupId>
+            <artifactId>cljlib</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
-                <uptodate targetfile="${basedir}/build.properties" property="build-properties-up-to-date">
-                    <srcfiles dir="${basedir}" includes="build.properties.template"/>
-                </uptodate>
+        <dependency>
+            <groupId>org.apache.ibatis</groupId>
+            <artifactId>ibatis-sqlmap</artifactId>
+            <version>2.3.0</version>
+        </dependency>
 
-                <fail unless="build-properties-up-to-date">
-                    'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT for details.)
-                    Copy 'build.properties.template' to 'build.properties' and edit it!
-                </fail>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>            
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>3.2</version>
+        </dependency>
 
-          <execution>
-            <id>generate-sources</id>
-            <phase>generate-sources</phase>
-            <configuration>
-              <tasks>
-                <ant antfile="${basedir}/pom-ant.xml" target="process-webapp-sources">
-                    <property name="version" value="${project.version}"/>
-                </ant>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>           
-        </executions>
-      </plugin>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-attrs</artifactId>
+            <version>2.2.3</version>
+        </dependency>
 
-        <plugin>
-          <groupId>org.mortbay.jetty</groupId>
-          <artifactId>maven-jetty-jspc-plugin</artifactId>
-          <version>6.1.22</version>
-          <executions>
-            <execution>
-              <id>jspc</id>
-              <goals>
-                <goal>jspc</goal>
-              </goals>
-              <configuration>
-                  <excludes>
-                      **/apisamples/*,
-                      **/eng/jsp/category_admin_category.included.jsp, **/eng/jsp/text_restorer.jsp,
-                      **/swe/jsp/category_admin_category.included.jsp, **/swe/jsp/text_restorer.jsp
-                  </excludes> 
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        
-	  <plugin>
-	    <artifactId>maven-compiler-plugin</artifactId>
-		  <configuration>
-		    <source>1.5</source>
-		    <target>1.5</target>
-		    
-            <excludes>
-              <exclude>**/Test*.java</exclude>
-              <exclude>**/*TestCase.java</exclude>
-            </excludes>
-		  </configuration>
-  	    </plugin>
-  	    
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <configuration>
-            <!--<skipTests>true</skipTests>-->
-          </configuration>
-        </plugin>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate</artifactId>
+            <version>3.2.7.ga</version>
 
-        
-  	      	    
-	    <plugin>
-          <artifactId>maven-war-plugin</artifactId>
-          <version>2.1-beta-1</version>
-          <configuration>      
-            <attachClasses>true</attachClasses>
+            <exclusions>
+                <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm-attrs</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>cglib</groupId>
+                    <artifactId>cglib</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
+            <version>3.4.0.GA</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-commons-annotations</artifactId>
+            <version>3.3.0.ga</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.imcode.db</groupId>
+            <artifactId>imcode-db</artifactId>
+            <version>0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.imcode.util</groupId>
+            <artifactId>imcode-util</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.imcode.ldap</groupId>
+            <artifactId>imcode-ldap</artifactId>
+            <version>0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>oro</groupId>
+            <artifactId>oro</artifactId>
+            <version>2.0.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <version>1.0.1B</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.jtds</groupId>
+            <artifactId>jtds</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.15</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <!--<version>3.0.0</version>-->
+            <version>2.4.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>0.7.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.1-FINAL</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-scratchpad</artifactId>
+            <version>3.1-FINAL</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.4</version>
+
+            <exclusions>
+                <exclusion>
+                    <groupId>velocity</groupId>
+                    <artifactId>velocity-dep</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>1.1.5.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+            <version>1.1.5.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>swank-clojure</groupId>
+            <artifactId>swank-clojure</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.sanselan</groupId>
+            <artifactId>sanselan</artifactId>
+            <version>0.94-incubator</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.1.2</version>
+            <!--
+            <version>1.2</version>
+            -->
+        </dependency>
+
+        <!-- PROVIDED -->
+        <!--<dependency>-->
+        <!--<groupId>checkstyle</groupId>-->
+        <!--<artifactId>checkstyle</artifactId>-->
+        <!--<version>4.4</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>commons-el</groupId>
+            <artifactId>commons-el</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta-regexp</groupId>
+            <artifactId>jakarta-regexp</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.4</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>imcode</id>
+            <url>http://repo.imcode.com/maven2</url>
+        </repository>
+
+        <repository>
+            <id>ibiblio</id>
+            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
+        </repository>
+
+        <repository>
+            <id>codehaus</id>
+            <url>http://repository.codehaus.org</url>
+        </repository>
+
+        <repository>
+            <id>clojure</id>
+            <url>http://build.clojure.org/releases</url>
+        </repository>
+
+        <repository>
+            <id>clojure-snapshots</id>
+            <url>http://build.clojure.org/snapshots</url>
+        </repository>
+
+        <repository>
+            <id>clojars</id>
+            <url>http://clojars.org/repo/</url>
+        </repository>
+
+        <repository>
+            <id>maven2-repository.dev.java.net</id>
+            <name>Java.net Repository for Maven</name>
+            <url>http://download.java.net/maven/2/</url>
+            <layout>default</layout>
+        </repository>
+
+        <repository>
+            <id>maven-repository.dev.java.net</id>
+            <name>Java.net Maven 1 Repository (legacy)</name>
+            <url>http://download.java.net/maven/1</url>
+            <layout>legacy</layout>
+        </repository>
+    </repositories>
+
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+
+        <!--Please note that there is additional resources dir - resources-conf.-->
+        <!--Those resources are processed by ant script and copied under WEB-INF/conf dir. -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+
+            <!--Clojure sources are keept separately from java sources-->
+            <!--and must be copied into classes dir of webapp.-->
+            <resource>
+                <directory>src/main/clojure</directory>
+            </resource>
+        </resources>
+
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+            <testResource>
+                <directory>src/test/clojure</directory>
+            </testResource>
+        </testResources>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <show>private</show>
+                    <nohelp>true</nohelp>
+                    <excludePackageNames>
+                        *ImcmsSupport*:*Mock*
+                    </excludePackageNames>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <configLocation>${basedir}/docs/checkstyle.xml</configLocation>
+                </configuration>
+
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.2</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>ant-contrib</groupId>
+                        <artifactId>ant-contrib</artifactId>
+                        <version>1.0b3</version>
+
+                        <exclusions>
+                            <exclusion>
+                                <groupId>ant</groupId>
+                                <artifactId>ant</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-trax</artifactId>
+                        <version>1.7.1</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>com.imcode.ant.tasks</groupId>
+                        <artifactId>imcode-ant-tasks</artifactId>
+                        <version>1.3</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>com.imcode.util</groupId>
+                        <artifactId>imcode-util</artifactId>
+                        <version>2.0.1</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>clean</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <tasks>
+                                <delete dir="${basedir}/webapp" verbose="true"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <configuration>
+                            <tasks>
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+
+                                <if>
+                                    <not>
+                                        <available file="${basedir}/build.properties"/>
+                                    </not>
+                                    <then>
+                                        <copy file="${basedir}/build.properties.template"
+                                              tofile="${basedir}/build.properties"/>
+                                    </then>
+                                </if>
+
+                                <uptodate targetfile="${basedir}/build.properties"
+                                          property="build-properties-up-to-date">
+                                    <srcfiles dir="${basedir}" includes="build.properties.template"/>
+                                </uptodate>
+
+                                <fail unless="build-properties-up-to-date">
+                                    'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT
+                                    for details.)
+                                    Copy 'build.properties.template' to 'build.properties' and edit it!
+                                </fail>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>generate-sources</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <tasks>
+                                <ant antfile="${basedir}/pom-ant.xml" target="process-webapp-sources">
+                                    <property name="version" value="${project.version}"/>
+                                </ant>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-jspc-plugin</artifactId>
+                <version>6.1.22</version>
+                <executions>
+                    <execution>
+                        <id>jspc</id>
+                        <goals>
+                            <goal>jspc</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                **/apisamples/*,
+                                **/eng/jsp/category_admin_category.included.jsp, **/eng/jsp/text_restorer.jsp,
+                                **/swe/jsp/category_admin_category.included.jsp, **/swe/jsp/text_restorer.jsp
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+
+                    <excludes>
+                        <exclude>**/Test*.java</exclude>
+                        <exclude>**/*TestCase.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!--<skipTests>true</skipTests>-->
+                </configuration>
+            </plugin>
+
+
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1-beta-1</version>
+                <configuration>
+                    <attachClasses>true</attachClasses>
+
+                    <!--
+                    <archiveClasses>true</archiveClasses>
+                    -->
+
+                    <!--<webResources>-->
+                    <!--<resource>-->
+                    <!--<directory>src/main/sql</directory>-->
+                    <!--<targetPath>WEB-INF/sql</targetPath>-->
+                    <!--</resource>-->
+                    <!--</webResources>-->
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.3</version>
+
+                <configuration>
+                    <!--
+                    <updateReleaseInfo>true</updateReleaseInfo>
+                    -->
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>7.0.0.RC6</version>
+                <configuration>
+                    <connectors>
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                            <port>9091</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                        </connector>
+                    </connectors>
+                </configuration>
+            </plugin>
 
             <!--
-            <archiveClasses>true</archiveClasses>           
-            -->
+           <plugin>
+             <groupId>org.codehaus.mojo</groupId>
+             <artifactId>exec-maven-plugin</artifactId>
+             <version>1.1</version>
+             <executions>
+               <execution>
+               <phase>process-sources</phase>
+               <goals>
+                 <goal>exec</goal>
+               </goals>
+               <configuration>
+                 <executable>ant</executable>
+                 <arguments>
+                   <argument>process-webapp-sources</argument>
+                 </arguments>
+               </configuration>
+             </execution>
+           </executions>
+         </plugin>
+          -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <scmCommentPrefix>Issue 10485: Release.</scmCommentPrefix>
+                </configuration>
+            </plugin>
 
-            <!--<webResources>-->
-	          <!--<resource>-->
-	            <!--<directory>src/main/sql</directory>-->
-                <!--<targetPath>WEB-INF/sql</targetPath>-->
-	          <!--</resource>-->
-	        <!--</webResources>-->
-          </configuration>
-        </plugin> 
-        
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>2.3</version>
-          
-          <configuration>
-            <!--
-            <updateReleaseInfo>true</updateReleaseInfo>
-            -->
-          </configuration>
-        </plugin>         	    
-  	        
-		<plugin>
-	      <groupId>org.mortbay.jetty</groupId>
-	      <artifactId>jetty-maven-plugin</artifactId>
-          <version>7.0.0.RC6</version>  
-	      <configuration>
-	        <connectors>
-	          <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-	            <port>9091</port>
-	            <maxIdleTime>60000</maxIdleTime>
-	          </connector>
-	        </connectors>
-	      </configuration>
-		</plugin>
-		 
-		<!--  
-        <plugin>
-		  <groupId>org.codehaus.mojo</groupId>
-		  <artifactId>exec-maven-plugin</artifactId>
-		  <version>1.1</version>
-		  <executions>
-		    <execution>
-		    <phase>process-sources</phase>
-		    <goals>
-		      <goal>exec</goal>
-		    </goals>
-			<configuration>
-              <executable>ant</executable>                        
-              <arguments>
-                <argument>process-webapp-sources</argument>
-              </arguments>
-            </configuration>
-		  </execution>
-		</executions>
-	  </plugin>
-	   -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <configuration>
-            <scmCommentPrefix>Issue 10485: Release. </scmCommentPrefix>
-          </configuration>
-        </plugin>
+            <plugin>
+                <groupId>com.theoryinpractise</groupId>
+                <artifactId>clojure-maven-plugin</artifactId>
+                <version>1.3.1</version>
 
-        <plugin>
-          <groupId>com.theoryinpractise</groupId>
-          <artifactId>clojure-maven-plugin</artifactId>
-          <version>1.3.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>jline</groupId>
+                        <artifactId>jline</artifactId>
+                        <version>0.9.94</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
 
-          <dependencies>
-            <dependency>
-            <groupId>jline</groupId>
-            <artifactId>jline</artifactId>
-            <version>0.9.94</version>
-            </dependency>
-          </dependencies>
-        </plugin>
-        
-    </plugins>
-  </build> 
-  
-  <distributionManagement>
-    <repository>
-      <id>imcode</id>
-      <name>imCode Internal Repository</name>
-      <url>scp://garm.imcode.com:/srv/www/apache/sites/repo.imcode.com/maven2</url>
-    </repository>
-  </distributionManagement>
+        </plugins>
+    </build>
+
+    <distributionManagement>
+        <repository>
+            <id>imcode</id>
+            <name>imCode Internal Repository</name>
+            <url>scp://garm.imcode.com:/srv/www/apache/sites/repo.imcode.com/maven2</url>
+        </repository>
+    </distributionManagement>
 
 
-  <scm>
-    <connection>scm:svn:https://repo.imcode.com/imcode/imcms/trunk</connection>
-    <developerConnection>scm:svn:https://repo.imcode.com/imcode/imcms/trunk</developerConnection>
-    <url>scm:svn:https://repo.imcode.com/imcode/imcms/trunk</url>
-  </scm>
-  
+    <scm>
+        <connection>scm:svn:https://repo.imcode.com/imcode/imcms/trunk</connection>
+        <developerConnection>scm:svn:https://repo.imcode.com/imcode/imcms/trunk</developerConnection>
+        <url>scm:svn:https://repo.imcode.com/imcode/imcms/trunk</url>
+    </scm>
+
 </project>
