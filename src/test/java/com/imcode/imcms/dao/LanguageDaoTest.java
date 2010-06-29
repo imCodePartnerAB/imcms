@@ -30,7 +30,7 @@ public class LanguageDaoTest {
     public void resetDBData() {
         SessionFactory sf = Script.createHibernateSessionFactory(
                 new Class[] {SystemProperty.class, I18nLanguage.class},
-                "src/main/resources/I18nLanguage.hbm.xml");
+                "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml");
 
         Script.runDBScripts("language_dao.sql");
 

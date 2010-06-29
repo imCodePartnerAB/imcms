@@ -13,8 +13,8 @@
     http://www.springframework.org/schema/context
     http://www.springframework.org/schema/context/spring-context-2.5.xsd">
   
-  <import resource="conf/configContext.xml"/>
-  <import resource="conf/beansContext.xml"/>
+  <import resource="./configContext.xml"/>
+  <import resource="./beansContext.xml"/>
 
   <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
 

@@ -54,13 +54,13 @@
         <mapping class="com.imcode.imcms.addon.imagearchive.entity.LibraryRoles"/>
         
         <!-- Named queries -->
-        <mapping resource="Document.hbm.xml"/>
-        <mapping resource="ContentLoop.hbm.xml"/>
-        <mapping resource="Text.hbm.xml"/>
-        <mapping resource="Image.hbm.xml"/>
-        <mapping resource="I18nLanguage.hbm.xml"/>
-        <mapping resource="Menu.hbm.xml"/>
-        <mapping resource="ImageCache.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/hbm/Document.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/hbm/ContentLoop.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/hbm/Text.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/hbm/Image.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/hbm/I18nLanguage.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/hbm/Menu.hbm.xml"/>
+        <mapping resource="com/imcode/imcms/hbm/ImageCache.hbm.xml"/>
         
         <mapping resource="com/imcode/imcms/addon/imagearchive/hbm/Images.hbm.xml"/>
         <mapping resource="com/imcode/imcms/addon/imagearchive/hbm/Roles.hbm.xml"/>

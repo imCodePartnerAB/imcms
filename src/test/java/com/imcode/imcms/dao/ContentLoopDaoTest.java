@@ -41,7 +41,7 @@ public class ContentLoopDaoTest  {
     public void resetDBData() {
         SessionFactory sf = Script.createHibernateSessionFactory(
                 new Class[] {ContentLoop.class},
-                "src/main/resources/ContentLoop.hbm.xml");
+                "src/main/resources/com/imcode/imcms/hbm/ContentLoop.hbm.xml");
 
         Script.runDBScripts("content_loop_dao.sql");
         

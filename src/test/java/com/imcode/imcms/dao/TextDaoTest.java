@@ -42,8 +42,8 @@ public class TextDaoTest {
 
         SessionFactory sf = Script.createHibernateSessionFactory(
                 new Class[] {I18nLanguage.class, TextDomainObject.class, TextHistory.class},
-                "src/main/resources/I18nLanguage.hbm.xml",
-                "src/main/resources/Text.hbm.xml");
+                "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
+                "src/main/resources/com/imcode/imcms/hbm/Text.hbm.xml");
 
         textDao = new TextDao();
         textDao.setSessionFactory(sf);

@@ -42,7 +42,7 @@ public class MenuDaoTest {
 
         SessionFactory sf = Script.createHibernateSessionFactory(
                 new Class[] {MenuDomainObject.class, MenuHistory.class},
-                "src/main/resources/Menu.hbm.xml");
+                "src/main/resources/com/imcode/imcms/hbm/Menu.hbm.xml");
 
         menuDao = new MenuDao();
         menuDao.setSessionFactory(sf);

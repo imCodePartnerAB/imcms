@@ -92,7 +92,7 @@
       (.addAnnotatedClass conf clazz))
 
     (doseq [xmlFile xmlFiles]
-      (.addFile conf xmlFile))
+      (.addFile conf (str xmlFile)))
 
     (.buildSessionFactory conf)))
 

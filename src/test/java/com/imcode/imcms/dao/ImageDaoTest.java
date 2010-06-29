@@ -44,8 +44,8 @@ public class ImageDaoTest {
 
         SessionFactory sf = Script.createHibernateSessionFactory(
                 new Class[] {I18nLanguage.class, ImageDomainObject.class, TextHistory.class},
-                "src/main/resources/I18nLanguage.hbm.xml",
-                "src/main/resources/Image.hbm.xml");
+                "src/main/resources/com/imcode/imcms/hbm/I18nLanguage.hbm.xml",
+                "src/main/resources/com/imcode/imcms/hbm/Image.hbm.xml");
 
         imageDao = new ImageDao();
         imageDao.setSessionFactory(sf);
