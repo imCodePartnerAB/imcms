@@ -19,9 +19,6 @@
         </profile>
         <profile>
             <id>dev</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <build.log4j.level>debug</build.log4j.level>
                 <build.log4j.hibernalte.level>info</build.log4j.hibernalte.level>
@@ -29,6 +26,9 @@
         </profile>
         <profile>
             <id>prod</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>            
             <properties>
                 <build.log4j.level>info</build.log4j.level>
                 <build.log4j.hibernalte.level>error</build.log4j.hibernalte.level>
@@ -712,7 +712,7 @@
                                 <fail unless="build-properties-up-to-date">
                                     'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT
                                     for details.)
-                                    Copy 'build.properties.template' to 'build.properties' and edit it!
+                                    Copy 'build.properties.template' content into 'build.properties' and edit it!
                                 </fail>
                             </tasks>
                         </configuration>
@@ -819,7 +819,7 @@
                 <configuration>
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                            <port>9091</port>
+                            <port>9090</port>
                             <maxIdleTime>60000</maxIdleTime>
                         </connector>
                     </connectors>

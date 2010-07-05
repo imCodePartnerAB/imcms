@@ -45,7 +45,7 @@
 
 
 (defn required-diff
-  "Returns a diff required to update db or nil if no corresponding diff exists.
+  "Returns a diff required to update db from current to next version or nil if no corresponding diff exists.
    diffs-set - a set of diffs; see conf.clj and tests to learn more about diffs set definition.
    current-version - current db version as double."
   [diffs-set current-version]
@@ -182,93 +182,3 @@
           (throwf PrepareException msg)))
 
       (log/info (format "The database is prepared. Database version is %s." (get-version spec))))))
-
-
-;;;;
-;;;; Tests
-;;;;
-
-(def
-  #^{:doc "db-diffs - diffs set, see ':db/:db-diffs' definition in conf.clj file."
-     :private true}
-
-  db-conf-diffs #{
-      {
-          :from 4.11
-          :to 4.12
-          :scripts ["a.sql" "b.sql"]
-      }
-
-      {
-          :from 4.12
-          :to 4.13
-          :scripts ["c.sql" "d.sql"]
-      }
-
-      {
-          :from 4.13
-          :to 6.2
-          :scripts ["e.sql" "f.sql"]
-      }
-  })
-
-
-(deftest test-version-rec-to-double
-  (is (= 4 (version-rec-to-double {:major 4, :minor 0})))
-  (is (= 4.1 (version-rec-to-double {:major 4, :minor 1}))))
-
-
-(deftest test-double-to-version-rec
-  (is (= {:major "4", :minor "0"} (double-to-version-rec 4)))
-  (is (= {:major "4", :minor "0"} (double-to-version-rec 4.0)))
-  (is (= {:major "4", :minor "1"} (double-to-version-rec 4.1))))
-
-
-(deftest test-required-diff
-  (is (nil? (required-diff db-conf-diffs 4.10)))
-
-  (is (= (required-diff db-conf-diffs 4.11)
-         {
-            :from 4.11
-            :to 4.12
-            :scripts ["a.sql" "b.sql"]
-         }))
-
-  (is (= (required-diff db-conf-diffs 4.13)
-         {
-             :from 4.13
-             :to 6.2
-             :scripts ["e.sql" "f.sql"]
-         })))
-
-
-(deftest test-required-diffs
-  (is (nil? (required-diffs db-conf-diffs 4.10)))
-
-  (is (= (set (required-diffs db-conf-diffs 4.11))
-         db-conf-diffs))
-
-  (is (= (set (required-diffs db-conf-diffs 4.12))
-         #{
-              {
-                  :from 4.12
-                  :to 4.13
-                  :scripts ["c.sql" "d.sql"]
-              }
-
-              {
-                  :from 4.13
-                  :to 6.2
-                  :scripts ["e.sql" "f.sql"]
-              }
-         }))
-
-
-  (is (= (set (required-diffs db-conf-diffs 4.13))
-         #{
-              {
-                  :from 4.13
-                  :to 6.2
-                  :scripts ["e.sql" "f.sql"]
-              }
-         })))

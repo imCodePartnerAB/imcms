@@ -1,6 +1,6 @@
 (ns
   #^{:doc "Sandbox."}
-  com.imcode.imcms.project.sandbox  
+  sandbox  
   (:require
     [clojure.contrib.duck-streams :as ds]
     [clojure.contrib.str-utils :as su]

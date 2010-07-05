@@ -1,166 +1,29 @@
 (ns
-  #^{:doc "Database tests."}
+  #^{:doc "Tests."}
   com.imcode.imcms.db-test
 
   (:require
-    [com.imcode.imcms.conf-utils :as conf]
+    [com.imcode.imcms.project :as project]
 
+    [com.imcode.imcms.project.db :as project-db]
+
+    [com.imcode.imcms.db :as db]
+    
     (clojure.contrib
       [sql :as sql])
-      
-    (com.imcode.imcms
-      [db :as db]
-      [project :as project])
 
     (com.imcode.cljlib
-      [db :as db-lib]
-      [fs :as fs-lib])
-
-    (clojure.contrib
-      [sql :as sql]))
-
+      [db :as db-lib]))
   
   (:use
-
-    [clojure.contrib.map-utils :only (safe-get safe-get-in)]
     clojure.test
+    [clojure.contrib.map-utils :only (safe-get safe-get-in)]
     (clojure.contrib duck-streams))
-
 
   (:import
     com.imcode.imcms.db.PrepareException
     org.hibernate.SessionFactory
     org.hibernate.cfg.AnnotationConfiguration))
-
-
-;;;;
-;;;; Helper fns
-;;;;
-
-(defn db-name "Database name."
-  []
-  (:db-name (project/build-properties)))
-
-
-(defn create-ds
-  ([]
-    (create-ds (db-name) true))
-
-
-  ([name]
-    (create-ds db-name true))
-
-  ([name autocomit]
-    (let [p (project/build-properties)
-          db-url (db-lib/create-url (safe-get p :db-target) (safe-get p :db-host) (safe-get p :db-port) name)]
-
-      (doto
-        (db-lib/create-ds (safe-get p :db-driver) (safe-get p :db-user) (safe-get p :db-pass) db-url)
-        (.setDefaultAutoCommit autocomit)))))
-
-
-(def
-  #^{:doc "Params [autocommit=true]"}
-  create-spec
-  (comp db-lib/create-spec create-ds))
-  
-
-(defn hibernate-properties []
-  (let [p (project/build-properties)
-        db-url (db-lib/create-url (:db-target p) (:db-host p) (:db-port p) (db-name))]
-
-    {"hibernate.dialect", "org.hibernate.dialect.MySQLInnoDBDialect"
-     "hibernate.connection.driver_class", (:db-driver p)
-     "hibernate.connection.url", db-url
-     "hibernate.connection.username", (:db-user p)
-     "hibernate.connection.password", (:db-pass p)
-     "hibernate.connection.pool_size", "1"
-     "hibernate.connection.autocommit", "true"
-     "hibernate.cache.provider_class", "org.hibernate.cache.HashtableCacheProvider"
-     "hibernate.hbm2ddl.auto", "create-drop"
-     "hibernate.show_sql", "true"}))
-
-
-(defn create-hibernate-sf
-  "Creates hibernate session factory."
-  [annotatedClasses xmlFiles]
-  (let [conf (AnnotationConfiguration.)]
-    (doseq [[k v] (hibernate-properties)]
-      (.setProperty conf k v))
-
-    (doseq [clazz annotatedClasses]
-      (.addAnnotatedClass conf clazz))
-
-    (doseq [xmlFile xmlFiles]
-      (.addFile conf (str xmlFile)))
-
-    (.buildSessionFactory conf)))
-
-
-(defn recreate
-  "Recreates datatabse."
-  ([]
-    (recreate (db-name)))
-
-  ([name]
-    (recreate name []))
-
-  ([name scripts]
-    (db-lib/recreate (create-spec) name scripts)))
-
-
-(defn run-scripts
-  ([scripts]
-    (run-scripts (db-name) scripts))
-
-  ([name scripts]
-    (db-lib/run-scripts (create-spec) name scripts)))
-
-
-(defn create-conf []
-  (let [basedir (project/subdir-path "src/main/web")]
-    (conf/create-conf (project/file-path "src/main/resources/conf.clj")
-                      {:base.dir basedir})))
-
-
-(defn prepare
-  ([]
-    (prepare (db-name)))
-
-  ([name]
-    (prepare name true))
-
-  ([name recreate-before-prepare]
-    (when recreate-before-prepare
-      (recreate name))
-
-      (db/prepare (create-conf) (create-spec name false))))
-
-
-;(defn tables-ddls
-;  "Returns a map of table-name -> table ddl."
-;  []
-;  (let [create-table-key (keyword "create table")]
-;    (into {}
-;      (sql/with-connection (create-spec)
-;        (doall
-;          (for [table (db/tables)]
-;            (sql/with-query-results rs [(str "SHOW CREATE TABLE " table)]
-;              [table (get (first rs) create-table-key)])))))))
-;
-;
-;
-;(defn create-tables
-;  "Creates tables in a db from ddls in an order they apper in the tables-names coll. "
-;  [name ddls tables-names]
-;  (sql/with-connection (create-spec)
-;    (sql/do-commands
-;      (format "USE %s" name))
-;
-;    (doseq [table-name tables-names]
-;      (sql/do-commands
-;        (safe-get ddls table-name)))))
-
 
 
 ;;;;
@@ -170,9 +33,9 @@
 (deftest test-set-and-get-version
   (let [spec (db-lib/create-h2-mem-spec)]
     (sql/with-connection spec
-      (sql/do-commands "CREATE TABLE database_version(major INT NOT NULL, minor INT NOT NULL)")
+      (sql/do-commands "CREATE TABLE database_version (major INT NOT NULL, minor INT NOT NULL)")
 
-      (testing "When database_version table is empty, get-version must throw a PrepareException."
+      (testing "When database_version table is empty, get-version must throw PrepareException."
         (is (thrown? PrepareException (db/get-version))))
 
       (db/set-version 4.11)
@@ -183,16 +46,16 @@
 
 
 (deftest test-empty-db?
-  (recreate)
-  (is (db/empty-db? (create-spec))))
+  (project-db/recreate)
+  (is (db/empty-db? (project-db/create-spec))))
 
 
 (deftest test-init
-  (recreate)
+  (project-db/recreate)
 
-  (let [conf (create-conf)
+  (let [conf (project/create-conf)
         db-conf-init (:init (:db conf))
-        spec (create-spec)]
+        spec (project-db/create-spec)]
 
     (sql/with-connection spec
       (sql/transaction
@@ -202,9 +65,9 @@
 (deftest test-upgrade
   (test-init)
 
-  (let [conf (create-conf)
+  (let [conf (project/create-conf)
         db-conf-diffs (:diffs (:db conf))
-        spec (create-spec)]
+        spec (project-db/create-spec)]
 
     (sql/with-connection spec
       (sql/transaction
@@ -213,9 +76,9 @@
 
 
 (deftest test-prepare-empty
-  (recreate)
+  (project-db/recreate)
   
-  (db/prepare (create-conf) (create-spec)))
+  (db/prepare (project/create-conf) (project-db/create-spec)))
 
 
 
@@ -240,3 +103,89 @@
 ;        (finally
 ;          (sql/with-connection spec
 ;            (sql/do-commands "SET DB_CLOSE_DELAY 0")))))))
+
+
+(def
+  #^{:doc "db-diffs - diffs set, see ':db/:db-diffs' definition in conf.clj file."
+     :private true}
+
+  db-conf-diffs #{
+      {
+          :from 4.11
+          :to 4.12
+          :scripts ["a.sql" "b.sql"]
+      }
+
+      {
+          :from 4.12
+          :to 4.13
+          :scripts ["c.sql" "d.sql"]
+      }
+
+      {
+          :from 4.13
+          :to 6.2
+          :scripts ["e.sql" "f.sql"]
+      }
+  })
+
+
+(deftest test-version-rec-to-double
+  (is (= 4 (@#'db/version-rec-to-double {:major 4, :minor 0})))
+  (is (= 4.1 (@#'db/version-rec-to-double {:major 4, :minor 1}))))
+
+
+(deftest test-double-to-version-rec
+  (is (= {:major "4", :minor "0"} (@#'db/double-to-version-rec 4)))
+  (is (= {:major "4", :minor "0"} (@#'db/double-to-version-rec 4.0)))
+  (is (= {:major "4", :minor "1"} (@#'db/double-to-version-rec 4.1))))
+
+
+(deftest test-required-diff
+  (is (nil? (db/required-diff db-conf-diffs 4.10)))
+
+  (is (= (db/required-diff db-conf-diffs 4.11)
+         {
+            :from 4.11
+            :to 4.12
+            :scripts ["a.sql" "b.sql"]
+         }))
+
+  (is (= (db/required-diff db-conf-diffs 4.13)
+         {
+             :from 4.13
+             :to 6.2
+             :scripts ["e.sql" "f.sql"]
+         })))
+
+
+(deftest test-required-diffs
+  (is (nil? (db/required-diffs db-conf-diffs 4.10)))
+
+  (is (= (set (db/required-diffs db-conf-diffs 4.11))
+         db-conf-diffs))
+
+  (is (= (set (db/required-diffs db-conf-diffs 4.12))
+         #{
+              {
+                  :from 4.12
+                  :to 4.13
+                  :scripts ["c.sql" "d.sql"]
+              }
+
+              {
+                  :from 4.13
+                  :to 6.2
+                  :scripts ["e.sql" "f.sql"]
+              }
+         }))
+
+
+  (is (= (set (db/required-diffs db-conf-diffs 4.13))
+         #{
+              {
+                  :from 4.13
+                  :to 6.2
+                  :scripts ["e.sql" "f.sql"]
+              }
+         })))

@@ -1,5 +1,7 @@
 (ns
-  #^{:doc "Configuration utils."}
+  #^{:doc
+      "Configuration utils.
+       Configuration is a plain clojure map stored into a file."}
   com.imcode.imcms.conf-utils
 
   (:use
@@ -12,10 +14,15 @@
 ;;;;
 
 (defn rewrite-expression
-  "Replace ${xxx} claluses in an expression with real param's values."
+  "Replaces params placeholders - ${xxx} in a string with their values.
+   Args:
+     expression - a string which possibly contains params.
+     params - parameters map in the form of :name -> value.
+
+   Throws an exception if an expression contains an unknown parameter."
   ; (re-find #"\$\{([\w\.]+?)\}" "/aaa/${xxx.yyy.zzz}/bbb") => ["${xxx.yyy.zzz}" "xxx.yyy.zzz"]
   [#^String expression, params]
-  (if-let [[clause, param-name] (re-find #"\$\{([\w\.]+?)\}" expression)]
+  (if-let [[clause, param-name] (re-find #"\$\{([\w\.-]+?)\}" expression)]
     (if-let [param-value (get params (keyword param-name))]
       (recur (.replace expression clause param-value) params)
       (throw (RuntimeException. (format  "Can not rewrite expression %s. Parameter %s does not exists in params %s.",
@@ -24,7 +31,7 @@
 
                       
 (defn rewrite-params
-  "Rewrites all string expressions containing ${xxx} clauses found in conf with corresponding values."
+  "Replaces params placeholders - ${xxx} in a conf with their values."
   [conf]
   (postwalk #(if (string? %) (rewrite-expression % conf) %)
             conf))
@@ -47,27 +54,3 @@
   [conf-file-path params]
   (let [conf (read-conf conf-file-path)]
     (rewrite-params (merge conf params))))
-
-
-;;;;
-;;;; Tests
-;;;;
-
-(deftest test-rewrite-expression
-  (is (= "/home/xxx/project/src"
-         (rewrite-expression "${base.dir}/src" {:base.dir "/home/xxx/project"})))
-
-  (is (= "/home/xxx/project/src"
-      (rewrite-expression "${home.dir}/xxx/${project.dir}/src" {:home.dir "/home"
-                                                                :project.dir "project"}))))
-
-;; side effects - move to separate file
-(deftest test-read-conf
-  (is (map? (read-conf "src/main/resources/conf.clj"))))
-
-
-(deftest test-create-conf
-  (let [conf (create-conf "src/main/resources/conf.clj" {:base.dir "/basedir"})]
-    (is (= "/basedir" (get conf :base.dir)))
-    (is (= "/basedir/WEB-INF/sql" (get conf :db.scripts.dir)))))
-

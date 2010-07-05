@@ -1,9 +1,12 @@
 (ns
-  #^{:doc "imCMS project's env."}
-  com.imcode.imcms.project     
+  #^{:doc "imCMS project."}
+  com.imcode.imcms.project
+  
   (:require
     com.imcode.imcms.boot
     
+    [com.imcode.imcms.conf-utils :as conf]
+
     (clojure.contrib
       [logging :as log]
       [str-utils :as su]
@@ -130,3 +133,9 @@
   ([#^String dir]
     (fs-lib/loc
       (fs-lib/files dir #"\.(java|jsp|htm|html|xml|properties|sql|clj)$"))))
+
+
+(defn create-conf []
+  (let [basedir (subdir-path "src/main/web")]
+    (conf/create-conf (file-path "src/main/resources/conf.clj")
+                      {:base.dir basedir})))
