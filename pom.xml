@@ -265,6 +265,32 @@
         </dependency>
 
         <dependency>
+            <groupId>compojure</groupId>
+            <artifactId>compojure</artifactId>
+            <version>0.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ring</groupId>
+            <artifactId>ring-servlet</artifactId>
+            <version>0.2.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ring</groupId>
+            <artifactId>ring-core</artifactId>
+            <version>0.2.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>hiccup</groupId>
+            <artifactId>hiccup</artifactId>
+            <version>0.2.6</version>
+        </dependency>        
+
+
+
+        <dependency>
             <groupId>com.imcode</groupId>
             <artifactId>cljlib</artifactId>
             <version>1.0.0</version>
@@ -606,9 +632,16 @@
             <testResource>
                 <directory>src/test/resources</directory>
             </testResource>
+
+            <!--tests for src/main/clojure/ sources-->
             <testResource>
                 <directory>src/test/clojure</directory>
             </testResource>
+
+            <!--helper clojure scripts-->
+            <testResource>
+                <directory>src/test/scripts</directory>
+            </testResource>            
         </testResources>
 
         <plugins>
@@ -823,6 +856,9 @@
                             <maxIdleTime>60000</maxIdleTime>
                         </connector>
                     </connectors>
+                    <webAppConfig>
+                        <contextPath>/abc</contextPath>
+                    </webAppConfig>
                 </configuration>
             </plugin>
 
@@ -860,6 +896,14 @@
                 <artifactId>clojure-maven-plugin</artifactId>
                 <version>1.3.1</version>
 
+                <configuration>
+                    <namespaces>
+                        <namespace>com.imcode.imcms.MaintenanceServlet</namespace>
+                    </namespaces>
+                      <compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>
+                       <!--<testDeclaredNamespaceOnly>true</testDeclaredNamespaceOnly>-->
+                </configuration>
+                
                 <dependencies>
                     <dependency>
                         <groupId>jline</groupId>
@@ -867,6 +911,7 @@
                         <version>0.9.94</version>
                     </dependency>
                 </dependencies>
+
             </plugin>
 
         </plugins>

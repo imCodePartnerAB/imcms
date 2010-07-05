@@ -38,12 +38,12 @@ public class Script {
 
     
     public static String getDBName() throws Exception {
-        return (String)var("com.imcode.imcms.db-test", "db-name").invoke();
+        return (String)var("com.imcode.imcms.project.db", "db-name").invoke();
     }
 
     public static DataSource createDBDataSource(boolean autocommit) {
         try {
-            return (DataSource)var("com.imcode.imcms.db-test", "create-ds").invoke(autocommit);
+            return (DataSource)var("com.imcode.imcms.project.db", "create-ds").invoke(autocommit);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -51,7 +51,7 @@ public class Script {
 
     public static void recreateDB() {
         try {
-            var("com.imcode.imcms.db-test", "recreate").invoke();
+            var("com.imcode.imcms.project.db", "recreate").invoke();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -60,7 +60,7 @@ public class Script {
 
     public static void prepareDB(boolean recreateBofrePrepare) {
         try {
-            var("com.imcode.imcms.db-test", "prepare").invoke(getDBName(), recreateBofrePrepare);
+            var("com.imcode.imcms.project.db", "prepare").invoke(getDBName(), recreateBofrePrepare);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -69,7 +69,7 @@ public class Script {
     
     public static void runDBScripts(String... sqlScriptsPaths) {
         try {
-            var("com.imcode.imcms.db-test", "run-scripts").invoke(createPaths(sqlScriptsPaths));
+            var("com.imcode.imcms.project.db", "run-scripts").invoke(createPaths(sqlScriptsPaths));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -104,7 +104,7 @@ public class Script {
     public static SessionFactory createHibernateSessionFactory(Class[] annotatedClasses, String... xmlFiles) {
 
         try {
-            return (SessionFactory)var("com.imcode.imcms.db-test", "create-hibernate-sf")
+            return (SessionFactory)var("com.imcode.imcms.project.db", "create-hibernate-sf")
                 .invoke(annotatedClasses, xmlFiles);
         } catch (Exception e) {
             throw new RuntimeException(e);
