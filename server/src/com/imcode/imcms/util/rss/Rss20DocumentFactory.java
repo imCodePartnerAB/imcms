@@ -12,6 +12,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Locale;
 
 import com.imcode.imcms.util.rss.dc.DublinCoreTerms;
 import com.imcode.imcms.util.rss.dc.DublinCoreEntity;
@@ -19,6 +20,7 @@ import com.imcode.imcms.util.rss.dc.DublinCoreEntity;
 public class Rss20DocumentFactory implements RssDocumentFactory {
 
     private static final String RFC822_DATE_PATTERN = "EEE, d MMM yyyy HH:mm:ss Z";
+	private static final Locale EN_LOCALE = Locale.US;
 
     public Document createRssDocument(Channel channel) {
         try {
@@ -75,7 +77,7 @@ public class Rss20DocumentFactory implements RssDocumentFactory {
 
     private Element createItemElement(Document xmlDocument,
                                       Item item) {
-        DateFormat dateFormat = new SimpleDateFormat(RFC822_DATE_PATTERN);
+        DateFormat dateFormat = new SimpleDateFormat(RFC822_DATE_PATTERN, EN_LOCALE);
 
         Element itemElement = xmlDocument.createElement("item");
         appendTextElement(itemElement, "link", item.getLink());
