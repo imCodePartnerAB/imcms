@@ -48,7 +48,8 @@ import com.imcode.imcms.api.I18nLanguage;
  * @see imcode.server.Imcms
  * @see imcode.server.Imcms#mode
  */
-public class ImcmsFilter implements Filter {
+public class
+        ImcmsFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
 

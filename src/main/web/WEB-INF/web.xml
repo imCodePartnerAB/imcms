@@ -109,11 +109,6 @@
        </init-param>
    </servlet>
 
-   <servlet>
-       <servlet-name>SupervisorServlet</servlet-name>
-       <servlet-class>com.imcode.imcms.SupervisorServlet</servlet-class>
-   </servlet>
-
 
     
     <!-- TODO: Map to search/select paths -->
@@ -362,12 +357,6 @@
         <servlet-name>com.imcode.imcms.servlet.RebuildImageCache</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.RebuildImageCache</servlet-class>
     </servlet>
-
-
-    <servlet-mapping>
-        <servlet-name>SupervisorServlet</servlet-name>
-        <url-pattern>/admin/supervisor/</url-pattern>
-    </servlet-mapping>
 
     
 	<servlet-mapping>

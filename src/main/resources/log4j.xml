@@ -63,33 +63,69 @@
         <appender-ref ref="ERROR"/>
     </category>
 
+
+    <!--Log all SQL DML statements as they are executed-->
     <category name="org.hibernate.SQL" additivity="false">
         <priority value="${build.log4j.hibernalte.level}"/>
         <appender-ref ref="ALL"/>
     </category>
 
+    <!--Log all JDBC parameters-->
     <category name="org.hibernate.type" additivity="false">
         <priority value="${build.log4j.hibernalte.level}"/>
         <appender-ref ref="ALL"/>
     </category>
 
+    <!--Log transaction related activity-->
     <category name="org.hibernate.transaction" additivity="false">
         <priority value="${build.log4j.hibernalte.level}"/>
         <appender-ref ref="ALL"/>
     </category>
 
-    <!--
-    org.hibernate.SQL        Log all SQL DML statements as they are executed
-    org.hibernate.type  Log all JDBC parameters
-    org.hibernate.tool.hbm2ddl  Log all SQL DDL statements as they are executed
-    org.hibernate.pretty    Log the state of all entities (max 20 entities) associated with the session at flush time
-    org.hibernate.cache     Log all second-level cache activity
-    org.hibernate.transaction   Log transaction related activity
-    org.hibernate.jdbc  Log all JDBC resource acquisition
-    org.hibernate.hql.ast.AST   Log HQL and SQL ASTs during query parsing
-    org.hibernate.secure    Log all JAAS authorization requests
-    org.hibernate   Log everything (a lot of information, but very useful for troubleshooting)
-    -->
+    
+    <!--DISABLED-->
+    <!--Log all SQL DDL statements as they are executed-->
+    <category name="org.hibernate.tool.hbm2ddl" additivity="false">
+        <priority value="OFF"/>
+        <appender-ref ref="ALL"/>
+    </category>
+
+    <!--Log the state of all entities (max 20 entities) associated with the session at flush time-->
+    <category name="org.hibernate.pretty" additivity="false">
+        <priority value="OFF"/>
+        <appender-ref ref="ALL"/>
+    </category>
+
+    <!--Log all second-level cache activity-->
+    <category name="org.hibernate.cache" additivity="false">
+        <priority value="OFF"/>
+        <appender-ref ref="ALL"/>
+    </category>
+
+    <!--Log all JDBC resource acquisition-->
+    <category name="org.hibernate.jdbc" additivity="false">
+        <priority value="OFF"/>
+        <appender-ref ref="ALL"/>
+    </category>
+
+    <!--Log HQL and SQL ASTs during query parsing-->
+    <category name="org.hibernate.hql.ast.AST" additivity="false">
+        <priority value="OFF"/>
+        <appender-ref ref="ALL"/>
+    </category>
+
+    <!--Log all JAAS authorization requests-->
+    <category name="org.hibernate.secure" additivity="false">
+        <priority value="OFF"/>
+        <appender-ref ref="ALL"/>
+    </category>    
+
+
+    <!--Log everything (a lot of information, but very useful for troubleshooting)-->
+    <category name="org.hibernate" additivity="false">
+        <priority value="OFF"/>
+        <appender-ref ref="ALL"/>
+    </category>
 
     <root>
         <priority value="info"/>

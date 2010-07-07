@@ -2,7 +2,7 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
 
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true" reset="true">
 
     <!-- The errorlog (captures everything that doesn't go to one of the above. -->
     <appender name="ALL" class="org.apache.log4j.ConsoleAppender">

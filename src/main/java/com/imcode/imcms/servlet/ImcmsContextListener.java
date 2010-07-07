@@ -8,7 +8,6 @@ import javax.servlet.ServletContextListener;
 
 public class ImcmsContextListener implements ServletContextListener {
 
-    @Override
     public void contextInitialized(ServletContextEvent event) {
         ServletContext servletContext = event.getServletContext();
         File path = new File(servletContext.getRealPath("/"));
@@ -16,7 +15,6 @@ public class ImcmsContextListener implements ServletContextListener {
         Imcms.setPath(path);
     }
 
-    @Override
     public void contextDestroyed(ServletContextEvent event) {
     }
 

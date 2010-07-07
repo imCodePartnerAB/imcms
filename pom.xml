@@ -264,31 +264,29 @@
             <version>1.1.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>compojure</groupId>
-            <artifactId>compojure</artifactId>
-            <version>0.4.0</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>compojure</groupId>-->
+            <!--<artifactId>compojure</artifactId>-->
+            <!--<version>0.4.0</version>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>ring</groupId>
-            <artifactId>ring-servlet</artifactId>
-            <version>0.2.4</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>ring</groupId>-->
+            <!--<artifactId>ring-servlet</artifactId>-->
+            <!--<version>0.2.4</version>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>ring</groupId>
-            <artifactId>ring-core</artifactId>
-            <version>0.2.4</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>ring</groupId>-->
+            <!--<artifactId>ring-core</artifactId>-->
+            <!--<version>0.2.4</version>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>hiccup</groupId>
-            <artifactId>hiccup</artifactId>
-            <version>0.2.6</version>
-        </dependency>        
-
-
+        <!--<dependency>-->
+            <!--<groupId>hiccup</groupId>-->
+            <!--<artifactId>hiccup</artifactId>-->
+            <!--<version>0.2.6</version>-->
+        <!--</dependency>        -->
 
         <dependency>
             <groupId>com.imcode</groupId>
@@ -898,11 +896,29 @@
 
                 <configuration>
                     <namespaces>
-                        <namespace>com.imcode.imcms.MaintenanceServlet</namespace>
+                        <namespace>com.imcode.imcms.*</namespace>
                     </namespaces>
-                      <compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>
-                       <!--<testDeclaredNamespaceOnly>true</testDeclaredNamespaceOnly>-->
+
+                    <testScript>src/test/clojure/test.clj</testScript>
                 </configuration>
+                    
+                <!--<configuration>-->
+                    <!--&lt;!&ndash;<compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<testDeclaredNamespaceOnly>true</testDeclaredNamespaceOnly>&ndash;&gt;-->
+
+                    <!--<namespaces>-->
+                        <!--&lt;!&ndash;<namespace>com.imcode.imcms.MaintenanceServlet</namespace>&ndash;&gt;-->
+                        <!--<namespace>com.imcode.imcms.*</namespace>-->
+                    <!--</namespaces>-->
+                <!--</configuration>-->
+                <!--<configuration>-->
+                    <!--<testSourceDirectories>-->
+                        <!--<testSourceDirectory>src/test/clojure</testSourceDirectory>-->
+                    <!--</testSourceDirectories>-->
+                    <!--<testNamespaces>-->
+                        <!--<testNamespace>com.imcode.imcms.*</testNamespace>-->
+                    <!--</testNamespaces>-->
+                <!--</configuration>-->
                 
                 <dependencies>
                     <dependency>
