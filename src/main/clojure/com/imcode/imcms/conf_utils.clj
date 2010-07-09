@@ -1,6 +1,5 @@
 (ns
-  #^{:doc
-     "Configuration is a plain clojure map stored into a file."}
+  #^{:doc "Configuration is a plain clojure map stored into a file."} 
   com.imcode.imcms.conf-utils
 
   (:use
@@ -13,13 +12,13 @@
 ;;;;
 
 (defn rewrite-expression
-  "Replaces params placeholders - ${xxx} in a string with their values.
+  "Replaces parameters placeholders - ${xxx} in a expression with their values.
    Args:
-     expression - a string which possibly contains params.
+     expression - a string which possibly contains parameters placeholders.
      params - parameters map in the form of :name -> value.
 
    Throws an exception if an expression contains an unknown parameter."
-  ; (re-find #"\$\{([\w\.]+?)\}" "/aaa/${xxx.yyy.zzz}/bbb") => ["${xxx.yyy.zzz}" "xxx.yyy.zzz"]
+  ; (re-find #"\$\{([\w\.-]+?)\}" "/aaa/${xxx.yyy.zzz}/bbb") => ["${xxx.yyy.zzz}" "xxx.yyy.zzz"]
   [#^String expression, params]
   (if-let [[clause, param-name] (re-find #"\$\{([\w\.-]+?)\}" expression)]
     (if-let [param-value (get params (keyword param-name))]

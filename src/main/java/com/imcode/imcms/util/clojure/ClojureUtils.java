@@ -75,7 +75,7 @@ public class ClojureUtils {
 
 
     public static void prepareDB() {
-        ClojureResource r = new ClojureResource("com.imcode.imcms.runtime");
+        ClojureResource r = new ClojureResource("com.imcode.imcms.instance");
         
         load(r);
 

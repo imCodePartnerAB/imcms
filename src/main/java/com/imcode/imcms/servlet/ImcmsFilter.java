@@ -48,8 +48,7 @@ import com.imcode.imcms.api.I18nLanguage;
  * @see imcode.server.Imcms
  * @see imcode.server.Imcms#mode
  */
-public class
-        ImcmsFilter implements Filter {
+public class ImcmsFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
 
@@ -166,11 +165,6 @@ public class
      * @throws ServletException
      */
     public void init(FilterConfig filterConfig) throws ServletException {
-        ServletContext servletContext = filterConfig.getServletContext();
-
-        logEnvironment(servletContext);
-
-        Imcms.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));
         Imcms.addListener(new ImcmsListener() {
 
             public void onImcmsStart() { /*ignore*/ }
@@ -264,25 +258,6 @@ public class
             cookie.setDomain( domain );
             cookie.setPath( "/" );
             ((HttpServletResponse)response).addCookie( cookie );
-        }
-    }
-
-    
-    public void logEnvironment(ServletContext servletContext) {
-        logger.info("Servlet Engine: " + servletContext.getServerInfo());
-
-        String[] systemPropertyNames = new String[] {
-                "java.version",
-                "java.vendor",
-                "java.class.path",
-                "os.name",
-                "os.arch",
-                "os.version",
-        };
-
-        for ( int i = 0; i < systemPropertyNames.length; i++ ) {
-            String systemPropertyName = systemPropertyNames[i];
-            logger.info(systemPropertyName + ": " + System.getProperty(systemPropertyName));
         }
     }
 

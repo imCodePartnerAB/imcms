@@ -118,7 +118,7 @@
     <category name="org.hibernate.secure" additivity="false">
         <priority value="OFF"/>
         <appender-ref ref="ALL"/>
-    </category>    
+    </category>
 
 
     <!--Log everything (a lot of information, but very useful for troubleshooting)-->

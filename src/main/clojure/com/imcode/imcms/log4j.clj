@@ -1,7 +1,7 @@
 (ns
   #^{:doc "Log4j loggers access."}
   
-  com.imcode.imcms.supervisor.log4j
+  com.imcode.imcms.log4j
   (:import
     (org.apache.log4j Level LogManager Logger)
     (org.apache.log4j.xml DOMConfigurator)))
@@ -22,9 +22,11 @@
   (Logger/getLogger name-or-class))
 
 
-(defn loggers []
+(defn loggers
+  "Returns seq of loggers sodter by name which level is not null."
+  []
   (sort-by #(.getName %)
-           (enumeration-seq (LogManager/getCurrentLoggers))))
+           (filter #(.getLevel %) (enumeration-seq (LogManager/getCurrentLoggers)))))
 
 
 (defn loggers-names []
@@ -45,6 +47,3 @@
 (defn print-loggers []
   (doseq [l (loggers)]
     (printf "%s, %s.%n" (.getName l), (.getLevel l))))
-
-
-  
