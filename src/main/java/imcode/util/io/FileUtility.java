@@ -89,6 +89,13 @@ public class FileUtility {
         return directories;
     }
 
+    /**
+     * Replaces non-word and non-ascii characters with underscore followed by left-padded 4-place hex.   
+     *
+     * @param filename original filename.
+     *
+     * @return escaped filename.
+     */
     public static String escapeFilename( String filename ) {
         StringBuffer escapedFilename = new StringBuffer() ;
         for (int i = 0; i < filename.length(); ++i) {

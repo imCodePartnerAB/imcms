@@ -14,7 +14,8 @@ import org.apache.commons.lang.UnhandledException;
 
 public class FileDocumentDomainObject extends DocumentDomainObject {
 
-    // fileId -> FileDocumentFile
+    // key: fileId
+    // value: FileDocumentFile
     private Map<String, FileDocumentFile> files = createFilesMap();
 
     private String defaultFileId;
@@ -41,6 +42,12 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         files.put( fileId, fileClone );
     }
 
+    
+    /**
+     * @param file file to clone.
+     *
+     * @return file clone or null if provided file is null. 
+     */
     private FileDocumentFile cloneFile( FileDocumentFile file ) {
         if (null == file) {
             return null ;
@@ -185,7 +192,5 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         protected Object clone() throws CloneNotSupportedException {
             return super.clone();
         }
-
     }
-
 }

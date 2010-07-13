@@ -88,32 +88,47 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     }
 
+    
     /**
-     * Returns file object for file document file.
+     * Returns file for FileDocumentFile.
+     */
+    public static File getFileForFileDocumentFile(int fileDocumentId, int docVersionNo, String fileId) {
+        File filePath = Imcms.getServices().getConfig().getFilePath();
+        String filename = getFilenameForFileDocumentFile(fileDocumentId, docVersionNo, fileId);
+
+        return new File(filePath, filename);
+    }
+
+
+    /**
+     * Returns FileDocumentFile filename.
      *
      * File name is a combination of doc id, doc version no and fileId if present. Doc version no is omitted if
-     * If doc version no is 0.
-     * 
-     * Ex: 1002.xxx where 1002 is a doc id, doc version no is 0 and xxx is fileId.  
+     * If doc version no is 0 (working version).
+     *
+     * If fieldId is not blank its added to filename as an extension.  
+     *
+     * Ex: 1002.xxx where 1002 is a doc id, doc version no is 0 and xxx is fileId.
      *     1002_3.xxx where 1002 is a doc id, 3 is a version no and xxx is fileId.
+     *     1002_2 where1002 is a doc id, 2 is a version no fileId is blank.
      *
      * @param fileDocumentId
      * @param docVersionNo
      * @param fileId
-     * @return file object for file document file.
-     */
-    public static File getFileForFileDocumentFile(int fileDocumentId, int docVersionNo, String fileId) {
-        File filePath = Imcms.getServices().getConfig().getFilePath();
+     * @return FileDocumentFile filename
+     */    
+    public static String getFilenameForFileDocumentFile(int fileDocumentId, int docVersionNo, String fileId) {
         String filename = "" + fileDocumentId ;
 
         if (docVersionNo != DocumentVersion.WORKING_VERSION_NO) {
-            filename += ("_" + docVersionNo);    
+            filename += ("_" + docVersionNo);
         }
 
         if (StringUtils.isNotBlank( fileId )) {
-            filename += "."+FileUtility.escapeFilename(fileId) ;
+            filename += "." + FileUtility.escapeFilename(fileId) ;
         }
-        return new File(filePath, filename);
+
+        return filename;
     }
 
 
