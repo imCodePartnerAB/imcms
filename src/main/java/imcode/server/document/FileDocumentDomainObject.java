@@ -12,15 +12,22 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.UnhandledException;
 
+/**
+ * A FileDocumentDomainObject contains a collection files.
+ * In this context a file is set of attributes associated with a data {@link FileDocumentFile}.
+ * 
+ * A file is identified by fileId - a string which is unique to a FileDocumentDomainObject.
+ */
 public class FileDocumentDomainObject extends DocumentDomainObject {
 
-    // key: fileId
-    // value: FileDocumentFile
+    public static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
+
+    public static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
+
+    // key: fileId, value: FileDocumentFile
     private Map<String, FileDocumentFile> files = createFilesMap();
 
     private String defaultFileId;
-    public static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
-    public static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
 
     public DocumentTypeDomainObject getDocumentType() {
         return DocumentTypeDomainObject.FILE;
@@ -44,9 +51,9 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
     
     /**
-     * @param file file to clone.
+     * @param file file to clone
      *
-     * @return file clone or null if provided file is null. 
+     * @return file clone or null if provided file is null 
      */
     private FileDocumentFile cloneFile( FileDocumentFile file ) {
         if (null == file) {
@@ -103,6 +110,12 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         return defaultFileId;
     }
 
+    
+    /**
+     * 
+     * @param fileId
+     * @return file with fileId or default file if fileId is null or there is no file with a such id. 
+     */
     public FileDocumentFile getFileOrDefault( String fileId ) {
         if ( null == fileId ) {
             return getDefaultFile();
@@ -141,10 +154,22 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         }
     }
 
+
+    /**
+     * File attributes associated with a data.
+     * 
+     * @see imcode.util.io.InputStreamSource
+     */
     public static class FileDocumentFile implements Cloneable, Serializable {
 
         private String id;
+
+        /**
+         * If this object represent a new file then assigned by the system before the file is stored in a FS.
+         * Otherwise set by the system when FileDocumentDomainObject is initialized.  
+         */
         private String filename;
+
         private String mimeType;
         private InputStreamSource inputStreamSource;
         private boolean createdAsImage;
