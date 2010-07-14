@@ -6,7 +6,8 @@ import imcode.server.document.textdocument.DocVersionItem;
 import javax.persistence.*;
 
 /**
- * Labels is a set of texts and images associated with a document. 
+ * Labels is a set of texts and images associated with a document.
+ * Labels is both i18n and version item.
  */
 @Entity
 @Table(name="imcms_doc_labels")
@@ -27,17 +28,21 @@ public class DocumentLabels implements Cloneable, DocVersionItem, DocI18nItem {
     private I18nLanguage language;
 
     /**
-     * Doc's HTML headline.
+     * Doc's headline label. Mainly used as HTML page title.
      */
 	@Column(name="headline")
     private String headline;
 
     /**
-     * Displayed as menu item text when this doc is a part of a menu of other doc.
+     * Menu item label.
+     * Used when a doc is included in other doc's menu (as a menu item).
      */
 	@Column(name="menu_text")
     private String menuText;
 
+    /**
+     * Menu item image.
+     */
 	@Column(name="menu_image_url")
     private String menuImageURL;
 

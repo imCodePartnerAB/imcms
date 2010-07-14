@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
@@ -49,6 +50,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         this.services = services ;
     }
 
+    /**
+     * Saves (possibly rewrites) file if its InputStreamSource has been changed. 
+     *
+     * @param fileDocumentId
+     * @param docVersionNo
+     * @param fileDocumentFile
+     * @param fileId
+     */
     protected void saveFileDocumentFile(int fileDocumentId, Integer docVersionNo, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
                                          String fileId ) {
         try {
@@ -69,6 +78,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             FileInputStreamSource fileInputStreamSource = new FileInputStreamSource(file);
             boolean sameFileOnDisk = file.exists() && inputStreamSource.equals(fileInputStreamSource) ;
             if ( sameFileOnDisk ) {
+                in.close();
                 return;
             }
 
@@ -103,8 +113,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     /**
      * Returns FileDocumentFile filename.
      *
-     * File name is a combination of doc id, doc version no and fileId if present. Doc version no is omitted if
-     * If doc version no is 0 (working version).
+     * File name is a combination of doc id, doc version no and fileId if present. For backward compatibility
+     * a doc version no is omitted if it equals to 0 (working version).
      *
      * If fieldId is not blank its added to filename as an extension.  
      *

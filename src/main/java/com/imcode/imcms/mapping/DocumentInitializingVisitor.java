@@ -16,7 +16,8 @@ import com.imcode.imcms.mapping.orm.HtmlReference;
 import com.imcode.imcms.mapping.orm.UrlReference;
 
 /**
- * Initializes document fields depending on document's type.
+ * Initializes a document fields depending on document's type.
+ * 
  * Document's fields are queried from a database.
  */
 public class DocumentInitializingVisitor extends DocumentVisitor {
@@ -25,6 +26,13 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
     
     private MetaDao metaDao;
 
+    /**
+     * Initializes file document.
+     *
+     * Undocumented behavior:
+     *   ?? If file is missing in FS this is not an error.
+     *   ?? If file can not be found by original filename tries to find the same file but with "_se" suffix.
+     */
     public void visitFileDocument(final FileDocumentDomainObject doc) {
     	Collection<FileReference> fileReferences = metaDao.getFileReferences(doc.getMeta().getId(), doc.getVersionNo());
     	
@@ -56,6 +64,7 @@ public class DocumentInitializingVisitor extends DocumentVisitor {
     		
     	}
     }
+    
 
     public void visitHtmlDocument(HtmlDocumentDomainObject doc) {
     	HtmlReference html = metaDao.getHtmlReference(doc.getMeta().getId(), doc.getVersionNo());

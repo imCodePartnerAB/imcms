@@ -9,6 +9,11 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
+/**
+ * Menu item descriptor.
+ * 
+ * @see imcode.server.document.textdocument.MenuDomainObject
+ */
 //TODO: refactor equals, hashcode
 @Embeddable
 public class MenuItemDomainObject implements Cloneable, Serializable {

@@ -32,6 +32,11 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+/**
+ * Menu is a one-level navigation control between documents.
+ * A menu can contain any number of items - links to other documents.
+ * Menu is a version item.
+ */
 @Entity(name="Menu")
 @Table(name="imcms_text_doc_menus")
 public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem, DocOrderedItem {
@@ -54,7 +59,7 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
     private int sortOrder;
 	
 	@Column(name="no")
-	private Integer index;
+	private Integer no;
 	
 
     @Column(name="doc_version_no")
@@ -64,6 +69,7 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
 	private Integer docId;
     
 
+    /** Map of included meta_id to included DocumentDomainObject. -> */
 	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
 	@JoinTable(
 	    name = "imcms_text_doc_menu_items",
@@ -157,6 +163,11 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
         return set;
     }
 
+    
+    /**
+     * Adds menu item to this menu only if it contains a document.
+     * @param menuItem
+     */
     public void addMenuItem( MenuItemDomainObject menuItem ) {
         if ( null == menuItem.getSortKey() ) {
             generateSortKey(menuItem);
@@ -166,6 +177,11 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
         }
     }
 
+
+    /**
+     * Adds menu item to this menu. 
+     * @param menuItem
+     */    
     public void addMenuItemUnchecked(MenuItemDomainObject menuItem) {
         if ( null == menuItem.getSortKey() ) {
             generateSortKey(menuItem);
@@ -243,16 +259,6 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
         return new HashCodeBuilder().append(sortOrder).append(menuItems).toHashCode() ;
     }
 
-    @Deprecated
-	public Integer getIndex() {
-		return index;
-	}
-
-    @Deprecated
-	public void setIndex(Integer index) {
-		this.index = index;
-	}
-
 	public Integer getDocId() {
 		return docId;
 	}
@@ -274,11 +280,22 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
     }
 
     public Integer getNo() {
-        return getIndex();
+        return no;
     }
 
     public void setNo(Integer no) {
-        setIndex(no);
+        this.no = no;
     }
 
+    /** Use {@link MenuDomainObject#getNo()} instead. */
+    @Deprecated
+	public Integer getIndex() {
+		return getNo();
+	}
+
+    /** Use {@link MenuDomainObject#setNo(Integer)} instead. */
+    @Deprecated
+	public void setIndex(Integer index) {
+		setNo(index);
+	}    
 }
