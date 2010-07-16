@@ -110,7 +110,7 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * Creates new Document which inherits parent doc's meta.
+     * Creates new Document which inherits parent doc's meta excluding keywords and properties.
      *
      * Document's data (labels, texts, images, urls, files, etc) is not inherited.
      * 
@@ -214,7 +214,21 @@ public class DocumentMapper implements DocumentGetter {
     }
 
 
-
+    /**
+     * By design spec, when an user creates a new document using imCMS web interface he has ability
+     * to fill labels in all languages available in the system.
+     * However, DocumentDomainObject has one-to-one relationship with Labels. 
+     * To workaround this limitation and preserve backward compatibility with legacy API,
+     * doc labels can be passed in a separate parameters. 
+     *
+     * @param doc
+     * @param labelsMap mignt be null
+     * @param user
+     * @param <T>
+     * @return
+     * @throws DocumentSaveException
+     * @throws NoPermissionToAddDocumentToMenuException
+     */
     public <T extends DocumentDomainObject> T saveNewI18nDocument(final T doc, Map<I18nLanguage, DocumentLabels> labelsMap, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
@@ -251,6 +265,9 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * Updates existing document.
+     * See {@link #saveNewI18nDocument(imcode.server.document.DocumentDomainObject, java.util.Map, imcode.server.user.UserDomainObject)}
+     * to learn more about parameters.
+     * 
      */
     public void saveI18nDocument(final DocumentDomainObject doc, Map<I18nLanguage, DocumentLabels> labelsMap, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {

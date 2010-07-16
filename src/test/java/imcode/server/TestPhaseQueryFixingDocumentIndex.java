@@ -1,5 +1,6 @@
 package imcode.server;
 
+import imcode.server.PhaseQueryFixingDocumentIndex;
 import imcode.server.document.LifeCyclePhase;
 import imcode.server.document.index.DocumentIndex;
 import junit.framework.TestCase;

@@ -1,4 +1,4 @@
-package com.imcode.test.mock;
+package com.imcode.imcms.test.mock;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -470,7 +470,7 @@ public class DocumentSaver {
     
     // todo: refactor labels saving !!
     @Transactional
-    public  <T extends DocumentDomainObject> Integer saveNewDocument(T doc, Map<I18nLanguage, DocumentLabels> labelsMap, UserDomainObject user)
+    public <T extends DocumentDomainObject> Integer saveNewDocument(T doc, Map<I18nLanguage, DocumentLabels> labelsMap, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         Meta meta = doc.getMeta();
