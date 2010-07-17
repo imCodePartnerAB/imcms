@@ -1,10 +1,10 @@
 (ns
   #^{:doc "Tests."}
-  com.imcode.imcms.conf-utils-test
+  com.imcode.imcms.configurator-test
 
   (:use
     clojure.test
-    com.imcode.imcms.conf-utils))
+    com.imcode.imcms.configurator))
 
 
 ;;;;

@@ -1,6 +1,6 @@
 (ns
-  #^{:doc "Configuration is a plain clojure map stored into a file."} 
-  com.imcode.imcms.conf-utils
+  #^{:doc "Part of imCMS configuration is a plain clojure map stored in a file."} 
+  com.imcode.imcms.configurator
 
   (:use
     clojure.test    

@@ -5,7 +5,7 @@
   (:require
     com.imcode.imcms.boot
     
-    [com.imcode.imcms.conf-utils :as conf-utils]
+    [com.imcode.imcms.configurator :as configurator]
 
     (clojure.contrib
       [logging :as log]
@@ -137,5 +137,5 @@
 
 (defn create-conf []
   (let [basedir (subdir-path "src/main/web")]
-    (conf-utils/create-conf (file-path "src/main/resources/conf.clj")
-                            {:base.dir basedir})))
+    (configurator/create-conf (file-path "src/main/resources/conf.clj")
+                              {:base.dir basedir})))
