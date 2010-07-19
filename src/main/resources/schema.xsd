@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="schema">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element ref="init" minOccurs="1" maxOccurs="1"/>
+          <xs:element ref="diffs" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+
+        <xs:attribute name="version" type="xs:double" use="required"/>
+        <xs:attribute name="scripts-dir" type="xs:string" use="required"/>  
+      </xs:complexType>
+    </xs:element>
+
+    <xs:element name="init">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element ref="script" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+
+        <xs:attribute name="version" type="xs:double" use="required"/>
+      </xs:complexType>
+    </xs:element>
+
+    <xs:element name="diffs">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element ref="diff" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name="diff">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element ref="script" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+
+        <xs:attribute name="from" type="xs:double" use="required"/>
+        <xs:attribute name="to" type="xs:double" use="required"/>
+      </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name="script" type="xs:string"/>
+    
+</xs:schema>

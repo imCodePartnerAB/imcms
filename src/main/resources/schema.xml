@@ -1,0 +1,16 @@
+<schema version="6.2" scripts-dir="WEB-INF/sql"
+    xsi:noNamespaceSchemaLocation="schema.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <init version="4.11">
+    <script>imcms_rb4.sql</script>
+  </init>
+    
+
+  <diffs>
+    <diff from="4.11" to="6.2">
+      <script>diff/mysql-schema-diff-4.11-6.2.sql</script>
+    </diff>
+  </diffs>
+    
+</schema>
