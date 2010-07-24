@@ -4,8 +4,6 @@
   
   (:require
     com.imcode.imcms.boot
-    
-    [com.imcode.imcms.configurator :as configurator]
 
     (clojure.contrib
       [logging :as log]
@@ -13,7 +11,7 @@
       [str-utils2 :as su2]
       [shell-out :as shell])
 
-    (com.imcode.cljlib
+    (com.imcode.imcms
       [misc :as misc-lib]
       [fs :as fs-lib]))
   
@@ -24,7 +22,7 @@
       def
       [except :only (throw-if throw-if-not)])
 
-    [com.imcode.cljlib.fs :only (throw-if-not-dir throw-if-not-file)])
+    [com.imcode.imcms.fs :only (throw-if-not-dir throw-if-not-file)])
 
   (:import
     (java.io File)
@@ -133,9 +131,3 @@
   ([#^String dir]
     (fs-lib/loc
       (fs-lib/files dir #"\.(java|jsp|htm|html|xml|properties|sql|clj)$"))))
-
-
-(defn create-conf []
-  (let [basedir (subdir-path "src/main/web")]
-    (configurator/create-conf (file-path "src/main/resources/conf.clj")
-                              {:base.dir basedir})))

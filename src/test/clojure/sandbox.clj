@@ -7,7 +7,7 @@
     [clojure.contrib.str-utils2 :as su2]
     [clojure.contrib.shell-out :as shell]
 
-    [com.imcode.cljlib.fs :as fs-lib]
+    [com.imcode.imcms.fs :as fs-lib]
     [com.imcode.imcms.db-test :as db]
     [com.imcode.imcms.project :as p]
     [com.imcode.imcms.project.lucene :as l]))

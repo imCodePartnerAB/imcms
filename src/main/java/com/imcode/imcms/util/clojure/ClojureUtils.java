@@ -72,21 +72,4 @@ public class ClojureUtils {
             throw new RuntimeException(e);
         }
     }
-
-
-    public static void prepareDB() {
-        ClojureResource r = new ClojureResource("com.imcode.imcms.instance");
-        
-        load(r);
-
-        try {
-            var(r, "prepare-db").invoke();
-        } catch (Exception e) {
-            String msg = "Invocation error.";
-            
-            logger.error(msg, e);
-            
-            throw new RuntimeException(msg, e);
-        }
-    }
 }

@@ -509,12 +509,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.imcode</groupId>
-            <artifactId>cljlib</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        
-        <dependency>
             <groupId>swank-clojure</groupId>
             <artifactId>swank-clojure</artifactId>
             <version>1.2.1</version>

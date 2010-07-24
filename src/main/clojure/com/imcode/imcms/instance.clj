@@ -11,7 +11,7 @@
     (imcode.server.user UserDomainObject))
 
   (:require
-    (com.imcode.cljlib
+    (com.imcode.imcms
       [db :as db-lib]
       [fs :as fs-lib]
       [spring :as spring-lib])
@@ -20,9 +20,7 @@
       [logging :as log]))  
     
   (:use
-    com.imcode.imcms.conf-utils
-    
-    (com.imcode.cljlib
+    (com.imcode.imcms
       [misc :only (dump)])
 
     (clojure.contrib

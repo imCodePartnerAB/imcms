@@ -5,17 +5,13 @@
 
     (clojure.contrib
       [sql :as sql])
-    
-;    (com.imcode.imcms
-;      [db :as db])
 
-    (com.imcode.cljlib
+    (com.imcode.imcms
       [db :as db-lib]
       [fs :as fs-lib])
 
     (clojure.contrib
       [sql :as sql]))
-
   
   (:use
     clojure.test
