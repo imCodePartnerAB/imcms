@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.test.mock.MockHttpServletRequest;
+import test.mock.MockHttpServletRequest;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import junit.framework.TestCase;
 

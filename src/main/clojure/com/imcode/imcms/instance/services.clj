@@ -9,8 +9,6 @@
     (imcode.server.user UserDomainObject))
 
   (:require
-    [com.imcode.imcms.db :as db]
-
     (com.imcode.cljlib
       [db :as db-lib]
       [fs :as fs-lib]

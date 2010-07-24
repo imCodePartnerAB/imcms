@@ -11,8 +11,6 @@
     (imcode.server.user UserDomainObject))
 
   (:require
-    [com.imcode.imcms.db :as db]
-
     (com.imcode.cljlib
       [db :as db-lib]
       [fs :as fs-lib]
@@ -98,40 +96,9 @@
   (dump (server-properties)))
 
 
-(defn conf-file
-  "Returns conf file.
-   Throws an exception if conf file can not be found."
-  []
-  (log/debug "Looking for configuration file conf.clj in the classpath.")
-  (if-let [conf-file-url (ClassLoader/getSystemResource "conf.clj")]
-    (java.io.File. (.getPath conf-file-url))
-
-    (let [conf-file-path (str (base-dir) "/WEB-INF/classes")
-          conf-file (java.io.File. conf-file-path "conf.clj")]
-
-      (log/debug "Looking for configuration file conf.clj in %s." conf-file-path)
-      (if (.isFile conf-file)
-        conf-file
-        (let [msg "Configuration file conf.clj can not be found."]
-          (log/error msg)
-          (throwf msg))))))
-
-
-(defn conf
-  "Reads and returns conf map from the conf.clj file.
-   Throws an exception if conf file can not be found."
-  []
-  (create-conf (.getCanonicalPath (conf-file))
-               {:base.dir (base-dir)}))
-
-
 (defn db-ds []
   (spring-lib/get-bean (spring-context) "dataSource"))
 
 
 (defn db-spec []
   (db-lib/create-spec (db-ds)))
-
-
-(defn prepare-db []
-  (db/prepare (conf) (db-spec) ))

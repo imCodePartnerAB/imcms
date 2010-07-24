@@ -3,6 +3,8 @@ package imcode.server;
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.api.GetDocumentCallback;
 import com.imcode.imcms.dao.SystemDao;
+import com.imcode.imcms.db.DB;
+import com.imcode.imcms.db.Schema;
 import com.imcode.imcms.util.clojure.ClojureUtils;
 import imcode.util.CachingFileLoader;
 import imcode.util.Prefs;
@@ -416,10 +418,18 @@ public class Imcms {
 
 
     /**
-     * Init/upgrades database if necessary.
+     * Inits and/or updates database if necessary.
      */
     public static void prepareDatabase() {
-        ClojureUtils.prepareDB();
+//        ClojureUtils.prepareDB();
+
+        String scriptsDir = new File(path.getAbsolutePath(), "WEB-INF/sql").getAbsolutePath();
+        Schema schema = Schema.load(new File(path, "WEB-INF/classes/schema.xml"));
+
+        DataSource dataSource = (DataSource)getSpringBean("dataSource");
+        DB db = new DB(dataSource);
+
+        db.prepare(schema.changeScriptsDir(scriptsDir));
     }
 
     public static ApplicationContext getApplicationContext() {

@@ -6,7 +6,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import com.imcode.imcms.test.mock.casual.TestLanguagePropertiesInUse;
+import test.mock.casual.TestLanguagePropertiesInUse;
 import com.imcode.util.FileTreeTraverser;
 
 public class TestHelpDocLinks extends TestCase {

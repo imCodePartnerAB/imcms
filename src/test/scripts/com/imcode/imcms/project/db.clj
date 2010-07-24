@@ -6,8 +6,8 @@
     (clojure.contrib
       [sql :as sql])
     
-    (com.imcode.imcms
-      [db :as db])
+;    (com.imcode.imcms
+;      [db :as db])
 
     (com.imcode.cljlib
       [db :as db-lib]
@@ -112,15 +112,15 @@
     (db-lib/run-scripts (create-spec) name scripts)))
 
 
-(defn prepare
-  ([]
-    (prepare (db-name)))
-
-  ([name]
-    (prepare name true))
-
-  ([name recreate-before-prepare]
-    (when recreate-before-prepare
-      (recreate name))
-
-      (db/prepare (project/create-conf) (create-spec name false))))
+;(defn prepare
+;  ([]
+;    (prepare (db-name)))
+;
+;  ([name]
+;    (prepare name true))
+;
+;  ([name recreate-before-prepare]
+;    (when recreate-before-prepare
+;      (recreate name))
+;
+;      (db/prepare (project/create-conf) (create-spec name false))))
