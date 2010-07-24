@@ -14,18 +14,16 @@ class DB(ds: DataSource) extends Logger {
   
   val template = new SimpleJdbcTemplate(ds)
 
-  def tables = template.query("SHOW TABLES",
-    new RowMapper[String] {
-      def mapRow(rs: ResultSet, rowNum: Int) = rs.getString(1)
-    }).toList
+  def tables = template.query("SHOW TABLES", new RowMapper[String] {
+    def mapRow(rs: ResultSet, rowNum: Int) = rs.getString(1)
+  }).toList
 
 
   def isEmpty = tables.isEmpty
   
 
-  def version(): Version = template.queryForObject(
-                                """SELECT concat(major, '.', minor) FROM database_version""",
-                                classOf[String])
+  def version(): Version = template.queryForObject("""SELECT concat(major, '.', minor) FROM database_version""",
+                                                   classOf[String])
 
 
   def updateVersion(newVersion: Version) {
@@ -54,7 +52,7 @@ class DB(ds: DataSource) extends Logger {
     version() match {
       case schema.version => logger.info("Database is up-to-date.")
       case currentVersion => logger.info("Database have to be updated. Required version: %s, current version: %s."
-              format (schema.version, currentVersion))
+                                         format (schema.version, currentVersion))
 
         for (diff <- schema.diffsChain(currentVersion)) {
           logger.info("The following diff will be applied: %s." format diff)

@@ -245,6 +245,13 @@
             <version>6.2.0</version>
         </dependency>
 
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>1.7.1</version>
+      <scope>provided</scope>
+    </dependency>        
+
         <dependency>
             <groupId>org.apache.ibatis</groupId>
             <artifactId>ibatis-sqlmap</artifactId>
