@@ -421,8 +421,6 @@ public class Imcms {
      * Inits and/or updates database if necessary.
      */
     public static void prepareDatabase() {
-//        ClojureUtils.prepareDB();
-
         String scriptsDir = new File(path.getAbsolutePath(), "WEB-INF/sql").getAbsolutePath();
         Schema schema = Schema.load(new File(path, "WEB-INF/classes/schema.xml"));
 

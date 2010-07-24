@@ -22,7 +22,8 @@
   (:import
     com.imcode.imcms.db.PrepareException
     org.hibernate.SessionFactory
-    org.hibernate.cfg.AnnotationConfiguration))
+    org.hibernate.cfg.AnnotationConfiguration
+    (com.imcode.imcms.db DB Schema)))
 
 
 ;;;;
@@ -108,15 +109,18 @@
     (db-lib/run-scripts (create-spec) name scripts)))
 
 
-;(defn prepare
-;  ([]
-;    (prepare (db-name)))
-;
-;  ([name]
-;    (prepare name true))
-;
-;  ([name recreate-before-prepare]
-;    (when recreate-before-prepare
-;      (recreate name))
-;
-;      (db/prepare (project/create-conf) (create-spec name false))))
+(defn prepare
+  ([]
+    (prepare (db-name)))
+
+  ([name]
+    (prepare name true))
+
+  ([name recreate-before-prepare]
+    (when recreate-before-prepare
+      (recreate name))
+
+    (let [scriptsDir (project/subdir-path "src/main/web/WEB-INF/sql")
+          schema (-> (Schema/load (project/file "src/main/resources/schema.xml")) (.changeScriptsDir scriptsDir))]
+
+      (-> (DB. (create-ds name)) (.prepare schema)))))
