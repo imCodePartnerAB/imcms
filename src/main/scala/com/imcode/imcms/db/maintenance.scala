@@ -8,14 +8,15 @@ import java.sql.{ResultSet, Connection}
 import com.ibatis.common.jdbc.ScriptRunner
 import org.springframework.jdbc.core.{ConnectionCallback, RowMapper}
 import java.io.FileReader
-import com.imcode.imcms.logger.Logger
+import com.imcode.Logger
+import com.imcode.Controls._
 
 class DB(ds: DataSource) extends Logger {
   
   val template = new SimpleJdbcTemplate(ds)
 
   def tables = template.query("SHOW TABLES", new RowMapper[String] {
-    def mapRow(rs: ResultSet, rowNum: Int) = rs.getString(1)
+    def mapRow(rs: ResultSet, rowNum: Int) = rs getString 1
   }).toList
 
 
@@ -27,14 +28,17 @@ class DB(ds: DataSource) extends Logger {
 
 
   def updateVersion(newVersion: Version) {
-    logger.info("Updating database version from %s to %s." format (version(), newVersion))
+    logger.info("Updating database version from %s to %s.".format(version(), newVersion))
     template.update("UPDATE database_version SET major=?, minor=?", newVersion.major.asInstanceOf[AnyRef],
                                                                     newVersion.minor.asInstanceOf[AnyRef])
   }
 
-  
+
+  /**
+   * Throws an RuntimeException if database version is greater than required.
+   */
   def prepare(schema: Schema): Version = {
-    def scriptFullPath(script: String) = "%s/%s" format (schema.scriptsDir, script)
+    def scriptFullPath(script: String) = "%s/%s".format(schema.scriptsDir, script)
 
     logger.info("Preparing databse.")
 
@@ -48,24 +52,33 @@ class DB(ds: DataSource) extends Logger {
       logger.info("Database has been initialized.")
     }
 
-    
     version() match {
-      case schema.version => logger.info("Database is up-to-date.")
-      case currentVersion => logger.info("Database have to be updated. Required version: %s, current version: %s."
-                                         format (schema.version, currentVersion))
+      case schema.version =>
+        logger.info("Database is up-to-date.");
+        schema.version
+      
+      case dbVersion if dbVersion < schema.version =>
+        logger.info("Database have to be updated. Required version: %s, database version: %s."
+                    .format(schema.version, dbVersion))
 
-        for (diff <- schema.diffsChain(currentVersion)) {
+        for (diff <- schema diffsChain dbVersion) {
           logger.info("The following diff will be applied: %s." format diff)
-          
+
           runScripts(diff.scripts map scriptFullPath)
           updateVersion(diff.to)
         }
+
+        val updatedDbVersion = version()
+        logger.info("Database has been updated. Database version: %s." format updatedDbVersion)
+        updatedDbVersion      
+
+      case unexpectedDbVersion =>
+        val errorMsg = "Unexpected database version. Database version: %s is greater than required version: %s."
+                       .format(unexpectedDbVersion, schema.version)
+
+        logger error errorMsg
+        error(errorMsg)
     }
-
-
-    val currentVersion = version()
-    logger.info("Database has been prepared. Current version: %s." format currentVersion)
-    currentVersion    
   }
 
   
@@ -77,12 +90,9 @@ class DB(ds: DataSource) extends Logger {
         for (script <- scripts) {
           logger.debug("Running script %s." format script)
 
-          val reader = new FileReader(script)
-
-          try
-            scriptRunner.runScript(reader)
-          finally
-            reader.close
+          using(new FileReader(script)) { reader =>
+            scriptRunner runScript reader
+          }
         }
       }
     })    

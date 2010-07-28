@@ -28,21 +28,24 @@ object Version {
 }
 
 
-case class Init(version: Version, scripts: List[String])
+case class Init(version: Version, scripts: List[String]) {
+  require(scripts.size > 0, "At least one script must be provided.")
+}
 
 
 case class Diff(from: Version, to: Version, scripts: List[String]) {
   require(from < to, "'from' %s must be < 'to' %s." format (from, to))
+  require(scripts.size > 0, "At least one script must be provided.")
 }
 
 
 case class Schema(version: Version, init: Init, diffs: Set[Diff], scriptsDir: String = "") {
   require(diffs.size == diffs.map(_.from).size, "'diffs' 'from' values must must be distinct: %s." format diffs)
-  require(diffs map (diff => diffsChain(diff.from)) forall (chain => chain.last.to == version),
+  require(diffs.map(diff => diffsChain(diff.from)) forall (chain => chain.last.to == version),
           "every diffs-chain's last 'diff.to' must be equal to 'version'.")
 
   def diffsChain(from: Version) = {
-    def diffsChainIter(from: Version = from, diffsAcc: List[Diff] = List()): List[Diff] =
+    def diffsChainIter(from: Version = from, diffsAcc: List[Diff] = Nil): List[Diff] =
       diffs find (_.from == from) match {
         case Some(diff) => diffsChainIter(diff.to, diff::diffsAcc)
         case _ => diffsAcc.reverse
@@ -77,5 +80,5 @@ object Schema {
   }
 
 
-  def load(file: File) = XML.loadFile(file) : Schema
+  def load(file: File) = XML loadFile file : Schema
 }

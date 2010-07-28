@@ -1,4 +1,4 @@
-package com.imcode.imcms.logger
+package com.imcode
 
 import org.slf4j.{LoggerFactory}
 
