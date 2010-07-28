@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.imcode.imcms</groupId>
     <artifactId>imcms</artifactId>
     <packaging>war</packaging>
-    <version>6.0.0-SNAPSHOT</version>
+    <version>6.0.0-alpha38</version>
     <name>imCMS</name>
 
     <profiles>
@@ -751,7 +751,7 @@
                         <phase>clean</phase>
                         <configuration>
                             <tasks>
-                                <delete dir="${basedir}/webapp" verbose="true"/>
+                                <delete dir="${basedir}/webapp" verbose="true" />
                             </tasks>
                         </configuration>
                         <goals>
@@ -764,21 +764,19 @@
                         <phase>validate</phase>
                         <configuration>
                             <tasks>
-                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 
                                 <if>
                                     <not>
-                                        <available file="${basedir}/build.properties"/>
+                                        <available file="${basedir}/build.properties" />
                                     </not>
                                     <then>
-                                        <copy file="${basedir}/build.properties.template"
-                                              tofile="${basedir}/build.properties"/>
+                                        <copy file="${basedir}/build.properties.template" tofile="${basedir}/build.properties" />
                                     </then>
                                 </if>
 
-                                <uptodate targetfile="${basedir}/build.properties"
-                                          property="build-properties-up-to-date">
-                                    <srcfiles dir="${basedir}" includes="build.properties.template"/>
+                                <uptodate targetfile="${basedir}/build.properties" property="build-properties-up-to-date">
+                                    <srcfiles dir="${basedir}" includes="build.properties.template" />
                                 </uptodate>
 
                                 <fail unless="build-properties-up-to-date">
@@ -799,7 +797,7 @@
                         <configuration>
                             <tasks>
                                 <ant antfile="${basedir}/pom-ant.xml" target="process-webapp-sources">
-                                    <property name="version" value="${project.version}"/>
+                                    <property name="version" value="${project.version}" />
                                 </ant>
                             </tasks>
                         </configuration>
@@ -984,9 +982,9 @@
 
 
     <scm>
-        <connection>scm:svn:https://repo.imcode.com/imcode/imcms/trunk</connection>
-        <developerConnection>scm:svn:https://repo.imcode.com/imcode/imcms/trunk</developerConnection>
-        <url>scm:svn:https://repo.imcode.com/imcode/imcms/trunk</url>
+        <connection>scm:svn:https://repo.imcode.com/imcode/imcms/tags/6.0.0-alpha38</connection>
+        <developerConnection>scm:svn:https://repo.imcode.com/imcode/imcms/tags/6.0.0-alpha38</developerConnection>
+        <url>scm:svn:https://repo.imcode.com/imcode/imcms/tags/6.0.0-alpha38</url>
     </scm>
 
 </project>
