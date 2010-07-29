@@ -29,8 +29,8 @@ class DB(ds: DataSource) extends Logger {
 
   def updateVersion(newVersion: Version) {
     logger.info("Updating database version from %s to %s.".format(version(), newVersion))
-    template.update("UPDATE database_version SET major=?, minor=?", newVersion.major.asInstanceOf[AnyRef],
-                                                                    newVersion.minor.asInstanceOf[AnyRef])
+    template.update("UPDATE database_version SET major=?, minor=?", Int.box(newVersion.major),
+                                                                    Int.box(newVersion.minor))
   }
 
 
