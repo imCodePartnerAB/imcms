@@ -7,9 +7,19 @@ import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.vaadin.ui._
 import com.vaadin.data.Property._
 import imcode.server.Imcms
-import com.imcode.imcms.dao.{SystemDao, LanguageDao}
+import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao}
+import imcode.server.document.DocumentDomainObject
+import com.imcode.imcms.api.{Document}
+import com.imcode.imcms.api.Document.PublicationStatus
 
 class App extends com.vaadin.Application {
+
+  val labelNA = new Label("Not Available");
+
+  val labelAbout = new Label("""|Welcome to the imCMS new admin UI prototype -
+                                | please pick a task from the menu.
+                                |""".stripMargin)
+
 
   def init {
     val window = new Window
@@ -19,7 +29,7 @@ class App extends com.vaadin.Application {
     val treeItems = List(
       "About" -> Nil,
       "System" -> List("Languages", "Properties"),
-      "Document" -> List("New", "Search"),
+      "Documents" -> List("New", "Search"),
       "Permissions" -> List("Users", "Roles"))
 
     treeItems foreach {
@@ -34,30 +44,31 @@ class App extends com.vaadin.Application {
             tree setChildrenAllowed (subitem, false)
           }
         }
+
+        tree expandItemsRecursively item
     }
-
-    window setContent splitPanel
-
-    splitPanel setFirstComponent tree
 
     tree addListener (new ValueChangeListener {
       def valueChange(e: ValueChangeEvent) {
-        println(">>> ", e.getProperty.getValue)
-
         e.getProperty.getValue.asInstanceOf[String] match {
           case "Languages" => splitPanel setSecondComponent languagesTable
           case "Properties" => splitPanel setSecondComponent propertiesTable
+          case "About" => splitPanel setSecondComponent labelAbout
+          case "Documents" => splitPanel setSecondComponent documentsTable
 
-          case _ => splitPanel setSecondComponent (new Label("N/A"))
+          case _ => splitPanel setSecondComponent labelNA
         }
       }
     })
 
     tree setImmediate true
+    tree select "About"
 
+    splitPanel setFirstComponent tree
+
+    window setContent splitPanel
+    
     this setMainWindow window
-
-    splitPanel setSecondComponent languagesTable
   }
 
   
@@ -94,5 +105,51 @@ class App extends com.vaadin.Application {
     }
 
     table
+  }
+
+  
+  def documentsTable = {
+    val content = new VerticalLayout
+    content.setMargin(true)
+
+    val table = new Table()
+    table.addContainerProperty("Page alias", classOf[String],  null)
+    table.addContainerProperty("Status", classOf[String],  null)
+    table.addContainerProperty("Type", classOf[java.lang.Integer],  null)
+    table.addContainerProperty("Admin", classOf[String],  null)
+    table.addContainerProperty("Ref.", classOf[String],  null)
+    table.addContainerProperty("Child documents", classOf[String],  null)
+
+    val metaDao = Imcms.getSpringBean("metaDao").asInstanceOf[MetaDao]
+
+    metaDao.getAllDocumentIds.toList.foreach { id =>
+      val meta = metaDao getMeta id
+      val alias = meta.getProperties.get(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) match {
+        case null => ""
+        case value => value
+      }
+
+      val status = meta.getPublicationStatus match {
+        case Document.PublicationStatus.NEW => "New"
+        case Document.PublicationStatus.APPROVED => "Approved"
+        case Document.PublicationStatus.DISAPPROVED => "Disapproved"
+      }
+
+      table.addItem(Array(alias, status, meta.getDocumentType, id.toString, Int box 0, Int box 0), id)
+    }
+
+
+    val controls = new GridLayout(5,1)
+    
+    controls.addComponent(new Label("List between:"))
+    controls.addComponent(new TextField)
+    controls.addComponent(new Label("-"))
+    controls.addComponent(new TextField)
+    controls.addComponent(new Button("List"))
+
+    content.addComponent(controls)
+    content.addComponent(table)
+
+    content
   }
 }
