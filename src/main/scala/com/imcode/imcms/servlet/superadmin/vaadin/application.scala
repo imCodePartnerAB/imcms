@@ -11,8 +11,11 @@ import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao}
 import imcode.server.document.DocumentDomainObject
 import com.imcode.imcms.api.{Document}
 import com.imcode.imcms.api.Document.PublicationStatus
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper
 
 class App extends com.vaadin.Application {
+
+  case class Node(nodes: Node*)
 
   val labelNA = new Label("Not Available");
 
@@ -55,6 +58,8 @@ class App extends com.vaadin.Application {
           case "Properties" => splitPanel setSecondComponent propertiesTable
           case "About" => splitPanel setSecondComponent labelAbout
           case "Documents" => splitPanel setSecondComponent documentsTable
+          case "Roles" => splitPanel setSecondComponent roles
+          case "Users" => splitPanel setSecondComponent users
 
           case _ => splitPanel setSecondComponent labelNA
         }
@@ -151,5 +156,43 @@ class App extends com.vaadin.Application {
     content.addComponent(table)
 
     content
+  }
+
+
+  def roles = {
+    def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
+
+    val table = new Table()
+    table.addContainerProperty("Id", classOf[java.lang.Integer],  null)
+    table.addContainerProperty("Name", classOf[String],  null)
+
+    roleMapper.getAllRoles.foreach { role =>
+      table.addItem(Array(Int box role.getId.intValue, role.getName), role)
+    }
+
+    table
+  }
+
+
+  def users = {
+    def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
+
+    val table = new Table()
+
+    table.addContainerProperty("Id", classOf[java.lang.Integer],  null)
+    table.addContainerProperty("Login name", classOf[String],  null)
+    table.addContainerProperty("Password", classOf[String],  null)
+    table.addContainerProperty("Default user?", classOf[java.lang.Boolean],  null)
+    table.addContainerProperty("Superadmin?", classOf[java.lang.Boolean],  null)
+    table.addContainerProperty("Useradmin?", classOf[java.lang.Boolean],  null)
+
+    roleMapper.getAllUsers.foreach { user =>
+      table.addItem(Array(Int box user.getId, user.getLoginName, user.getPassword,
+                          Boolean box user.isDefaultUser,
+                          Boolean box user.isSuperAdmin,
+                          Boolean box user.isUserAdmin), user)
+    }
+
+    table
   }
 }
