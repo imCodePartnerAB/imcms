@@ -68,11 +68,11 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
     public boolean equals(Object o) {
     	return this == o 
     		|| (o instanceof CategoryTypeDomainObject && 
-    		   ((CategoryTypeDomainObject)o).id == id);
+    		   ((CategoryTypeDomainObject)o).getId() == getId());
     }
 
     public int hashCode() {
-        return id;
+        return getId();
     }
 
     public String toString() {
