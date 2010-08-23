@@ -5,6 +5,7 @@ import clojure.lang.RT
 import com.vaadin.event.ItemClickEvent
 import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.vaadin.ui._
+import com.vaadin.data.Property
 import com.vaadin.data.Property._
 import imcode.server.Imcms
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao}
@@ -23,9 +24,10 @@ class App extends com.vaadin.Application {
                                 | please pick a task from the menu.
                                 |""".stripMargin)
 
+  var wndMain: Window = _
 
   def init {
-    val window = new Window
+    wndMain = new Window
     val splitPanel = new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL)
     val tree = new Tree
 
@@ -71,29 +73,172 @@ class App extends com.vaadin.Application {
 
     splitPanel setFirstComponent tree
 
-    window setContent splitPanel
+    wndMain setContent splitPanel
     
-    this setMainWindow window
+    this setMainWindow wndMain
   }
 
-  
+  // Languages panel
   def languagesTable = {
-    val table = new Table("Languages")
+    class LanguageModalWindow(caption: String) extends Window(caption, new FormLayout) {
+      val txtId = new TextField("Id")
+      val txtCode = new TextField("Code")
+      val txtName = new TextField("Name")
+      val txtNativeName = new TextField("Native name")
+      val chkEnabled = new CheckBox("Enabled")
+
+      addComponent(txtId)
+      addComponent(txtCode)
+      addComponent(txtName)
+      addComponent(txtNativeName)
+      addComponent(chkEnabled)
+
+      val lytControls = new HorizontalLayout
+      val btnSave = new Button("Save")
+      val btnCancel = new Button("Cancel")
+
+      lytControls addComponent btnSave
+      lytControls addComponent btnCancel
+
+      addComponent(lytControls)
+
+      btnCancel addListener new Button.ClickListener {
+        def buttonClick(clickEvent: Button#ClickEvent) = close
+      }
+
+      getContent.asInstanceOf[FormLayout].setMargin(true)
+      setModal(true)
+    }
+
+    val pnlLanguages = new Panel
+
+    
+    val table = new Table
+
+    table setPageLength 10
+    table setSelectable true
+    table setImmediate true
+
     table.addContainerProperty("Id", classOf[java.lang.Integer],  null)
     table.addContainerProperty("Code", classOf[String],  null)
     table.addContainerProperty("Name", classOf[String],  null)
     table.addContainerProperty("Native name", classOf[String],  null)
     table.addContainerProperty("Enabled", classOf[java.lang.Boolean],  null)
+    table.addContainerProperty("Default", classOf[java.lang.Boolean],  null)
+
+    val pnlControls = new Panel with Button.ClickListener {
+      val btnNew = new Button("New")
+      val btnEdit = new Button("Edit")
+      val btnSetDefault = new Button("Set default")
+      val btnDelete = new Button("Delete")
+
+      setContent(new HorizontalLayout)
+      addComponent(btnNew)
+      addComponent(btnEdit)
+      addComponent(btnSetDefault)
+      addComponent(btnDelete)
+
+      btnNew addListener this
+      btnEdit addListener this
+
+      def buttonClick(clickEvent: Button#ClickEvent) {
+        val languageDao = Imcms.getSpringBean("languageDao").asInstanceOf[LanguageDao]
+        val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
+        val defaultLanguageId = Int box systemDao.getProperty("DefaultLanguageId").getValue.toInt
+
+        clickEvent.getButton match {
+
+          case `btnNew` =>
+            val wndEditLanguage = new LanguageModalWindow("New language")
+            val language = new com.imcode.imcms.api.I18nLanguage
+
+            wndMain addWindow wndEditLanguage
+            wndEditLanguage.btnSave.addListener(new Button.ClickListener {
+              def buttonClick(clickEvent: Button#ClickEvent) {
+                language.setId(Int box wndEditLanguage.txtId.getValue.asInstanceOf[Int])
+                language.setCode(wndEditLanguage.txtCode.getValue.asInstanceOf[String])
+                language.setName(wndEditLanguage.txtName.getValue.asInstanceOf[String])
+                language.setNativeName(wndEditLanguage.txtNativeName.getValue.asInstanceOf[String])
+                language.setEnabled(wndEditLanguage.chkEnabled.getValue.asInstanceOf[java.lang.Boolean])
+
+                languageDao.saveLanguage(language)
+                wndMain removeWindow wndEditLanguage
+              }
+            })
+
+          case `btnEdit` =>
+            val languageId = table.getValue.asInstanceOf[java.lang.Integer]
+            val language = languageDao.getById(languageId)
+
+            val wndEditLanguage = new LanguageModalWindow("Edit language")
+            wndMain addWindow wndEditLanguage
+
+            wndEditLanguage.txtId.setValue(language.getId)
+            wndEditLanguage.txtId.setEnabled(false)
+            wndEditLanguage.txtCode.setValue(language.getCode)
+            wndEditLanguage.txtName.setValue(language.getName)
+            wndEditLanguage.txtNativeName.setValue(language.getNativeName)
+            wndEditLanguage.chkEnabled.setValue(language.isEnabled)
+            wndEditLanguage.btnSave.addListener(new Button.ClickListener {
+              def buttonClick(clickEvent: Button#ClickEvent) {
+                language.setCode(wndEditLanguage.txtCode.getValue.asInstanceOf[String])
+                language.setName(wndEditLanguage.txtName.getValue.asInstanceOf[String])
+                language.setNativeName(wndEditLanguage.txtNativeName.getValue.asInstanceOf[String])
+                language.setEnabled(wndEditLanguage.chkEnabled.getValue.asInstanceOf[java.lang.Boolean])
+
+                languageDao.saveLanguage(language)
+                wndMain removeWindow wndEditLanguage
+              }
+          })
+
+
+          case `btnDelete` => ()
+
+          case _ => ()
+        }
+      }
+    }    
+
+    def resetControls = {
+      val languageId = table.getValue.asInstanceOf[java.lang.Integer]
+
+      if (languageId == null) {
+        pnlControls.btnDelete.setEnabled(false)
+        pnlControls.btnEdit.setEnabled(false)
+        pnlControls.btnSetDefault.setEnabled(false)
+      } else {
+        val languageDao = Imcms.getSpringBean("languageDao").asInstanceOf[LanguageDao]
+        val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
+        val defaultLanguageId = Int box systemDao.getProperty("DefaultLanguageId").getValue.toInt
+
+        pnlControls.btnEdit.setEnabled(true)
+        pnlControls.btnDelete.setEnabled(languageId != defaultLanguageId)
+        pnlControls.btnSetDefault.setEnabled(languageId != defaultLanguageId)
+      }
+    }
+    
+    table.addListener(new Property.ValueChangeListener {
+        def valueChange(e: ValueChangeEvent) {
+          resetControls  
+        }
+    })
 
     val languageDao = Imcms.getSpringBean("languageDao").asInstanceOf[LanguageDao]
+    val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
+    val defaultLanguageId = Int box systemDao.getProperty("DefaultLanguageId").getValue.toInt
 
     languageDao.getAllLanguages.toList foreach { language =>
       table.addItem(Array(language.getId, language.getCode, language.getName,
-                          language.getNativeName, language.isEnabled),
+                          language.getNativeName, language.isEnabled,
+                          Boolean box (language.getId == defaultLanguageId)),
                     language.getId)      
     }
 
-    table
+    pnlLanguages addComponent pnlControls
+    pnlLanguages addComponent table
+
+    resetControls
+    pnlLanguages
   }
   
 
