@@ -36,4 +36,9 @@ public class LanguageDao extends HibernateTemplate {
 
         saveOrUpdate(languageClone);
 	}
+
+	@Transactional
+	public void deleteLanguage(Integer id) {
+		getSession().createQuery("DELETE FROM I18nLanguage l WHERE l.id = :id").setParameter("id", id).executeUpdate();
+	}    
 }

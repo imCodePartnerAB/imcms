@@ -1,5 +1,6 @@
 package com.imcode.imcms.dao;
 
+import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.api.MenuHistory;
 import com.imcode.imcms.api.SystemProperty;
 import imcode.server.document.textdocument.MenuDomainObject;
