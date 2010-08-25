@@ -113,7 +113,11 @@
   <bean id="contentLoopDao" class="com.imcode.imcms.dao.ContentLoopDao">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean> 
-  
+
+  <bean id="ipAccessDao" class="com.imcode.imcms.dao.IPAccessDao">
+    <constructor-arg ref="sessionFactory"/>
+  </bean>
+    
   <bean id="nativeQueriesDao" class="com.imcode.imcms.dao.NativeQueriesDao">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>         

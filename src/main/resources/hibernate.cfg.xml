@@ -22,6 +22,7 @@
         <mapping class="com.imcode.imcms.api.TextHistory"/>
         <mapping class="com.imcode.imcms.api.ImageHistory"/>
         <mapping class="com.imcode.imcms.api.MenuHistory"/>
+        <mapping class="com.imcode.imcms.api.IPAccess"/>
 
 
         <mapping class="com.imcode.imcms.api.DocumentVersion"/>

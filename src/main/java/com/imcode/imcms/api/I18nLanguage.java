@@ -6,12 +6,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-@XmlRootElement
 @Entity
 @Table(name="imcms_languages")
 public class I18nLanguage implements Serializable, Cloneable {
