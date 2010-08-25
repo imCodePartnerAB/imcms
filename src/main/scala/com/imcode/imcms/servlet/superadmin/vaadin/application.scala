@@ -17,36 +17,74 @@ import com.vaadin.terminal.UserError
 
 class App extends com.vaadin.Application {
 
+  type ButtonClickHandler = Button#ClickEvent => Unit
+
   val languageDao = Imcms.getSpringBean("languageDao").asInstanceOf[LanguageDao]
   val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
   val ipAccessDao = Imcms.getSpringBean("ipAccessDao").asInstanceOf[IPAccessDao]
 
-  def addClickHandler(button: Button)(handler: Button#ClickEvent => Unit) {
+  def addClickHandler(button: Button)(handler: ButtonClickHandler) {
     button addListener new Button.ClickListener {
       def buttonClick(event: Button#ClickEvent) = handler(event)
     }
   }
 
-  def addClickHandler(button: Button, handler: => Unit): Unit = addClickHandler(button) { _ => handler }
+  def addClickHandler(button: Button, handler: => Unit): Unit =
+    addClickHandler(button) { _ => handler }
 
+  def addClickHandlers(buttonHandlers: (Button, ButtonClickHandler)*) {
+    for ((button, handler) <- buttonHandlers)
+      addClickHandler(button)(handler)
+  }
+  
 
   def addValueChangeHandler(target: AbstractField)(handler: ValueChangeEvent => Unit) {
     target addListener new Property.ValueChangeListener {
-      def valueChange(event: ValueChangeEvent) = handler(event)
+      def valueChange(event: ValueChangeEvent) = handler(event);
     }
   }
 
-  def addValueChangeHandler(target: AbstractField, handler: => Unit): Unit = addValueChangeHandler(target) { _ => handler }
+  def addValueChangeHandler(target: AbstractField, handler: => Unit): Unit =
+    addValueChangeHandler(target) { _ => handler }
 
 
   class ModalWindow(caption: String) extends Window(caption, new FormLayout) {
     setModal(true)
   }
 
-  /**
-   * Modal OKCancel dialog window.
-   */
-  class OkCancelDialog(caption: String) extends Window(caption) {
+  def initAndShow[W <: Window](window: W, modal: Boolean = true)(init: W => Unit) {
+    init(window)
+    window setModal modal
+    wndMain addWindow window
+  }
+
+  def addComponents(container: AbstractComponentContainer, components: Component*) =
+    components foreach {c => container addComponent c}
+
+  /** Message window */
+  class MsgWindow(caption: String, msg: String) extends Window(caption) {
+    val btnOk = new Button("Ok")
+    val lblMessage = new Label(msg)
+
+    val lytContent = new GridLayout(1, 2)
+    
+    lytContent setMargin true
+    lytContent setSpacing true
+    lytContent addComponent lblMessage
+    lytContent addComponent btnOk
+
+    lytContent.setComponentAlignment(lblMessage, Alignment.BOTTOM_CENTER)
+    lytContent.setComponentAlignment(btnOk, Alignment.TOP_CENTER)
+
+    lytContent setSizeFull
+
+    setContent(lytContent)
+
+    addClickHandler(btnOk, close)
+  }
+
+  /** OKCancel window. */
+  class OkCancelWindow(caption: String) extends Window(caption) {
     val btnOk = new Button("Ok")
     val btnCancel = new Button("Cancel")
 
@@ -64,7 +102,6 @@ class App extends com.vaadin.Application {
     lytButtons.setComponentAlignment(btnOk, Alignment.MIDDLE_RIGHT)
     lytButtons.setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
 
-    setModal(true)
     addClickHandler(btnCancel, close)
 
     def setMainContent(c: Component) = lytContent addComponentAsFirst c
@@ -80,6 +117,8 @@ class App extends com.vaadin.Application {
 
   var wndMain: Window = _
 
+  def show(w: Window) = wndMain addWindow w
+  
   def init {
     wndMain = new Window
     val splitPanel = new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL)
@@ -144,11 +183,7 @@ class App extends com.vaadin.Application {
       val txtNativeName = new TextField("Native name")
       val chkEnabled = new CheckBox("Enabled")
 
-      addComponent(txtId)
-      addComponent(txtCode)
-      addComponent(txtName)
-      addComponent(txtNativeName)
-      addComponent(chkEnabled)
+      addComponents(this, txtId, txtCode, txtName, txtNativeName, chkEnabled)
 
       val lytControls = new HorizontalLayout
       val btnOk = new Button("Save")
@@ -159,10 +194,8 @@ class App extends com.vaadin.Application {
 
       addComponent(lytControls)
 
-      btnCancel addListener new Button.ClickListener {
-        def buttonClick(clickEvent: Button#ClickEvent) = close
-      }
-
+      addClickHandler(btnCancel, close)
+      
       getContent.asInstanceOf[FormLayout].setMargin(true)
     }
 
@@ -178,9 +211,7 @@ class App extends com.vaadin.Application {
       addComponent(lblMsg)
       addComponent(lytControls)
 
-      btnCancel addListener new Button.ClickListener {
-        def buttonClick(clickEvent: Button#ClickEvent) = close
-      }
+      addClickHandler(btnCancel, close)
 
       setModal(true)
     }
@@ -268,51 +299,48 @@ class App extends com.vaadin.Application {
             val languageId = table.getValue.asInstanceOf[java.lang.Integer]
             val language = languageDao.getById(languageId)
 
-            val wndEditLanguage = new LanguageModalWindow("Edit language")
+            initAndShow(new LanguageModalWindow("Edit language")) { wndEditLanguage =>
+              wndEditLanguage.txtId.setValue(language.getId)
+              wndEditLanguage.txtId.setEnabled(false)
+              wndEditLanguage.txtCode.setValue(language.getCode)
+              wndEditLanguage.txtName.setValue(language.getName)
+              wndEditLanguage.txtNativeName.setValue(language.getNativeName)
+              wndEditLanguage.chkEnabled.setValue(language.isEnabled)
 
-            wndEditLanguage.txtId.setValue(language.getId)
-            wndEditLanguage.txtId.setEnabled(false)
-            wndEditLanguage.txtCode.setValue(language.getCode)
-            wndEditLanguage.txtName.setValue(language.getName)
-            wndEditLanguage.txtNativeName.setValue(language.getNativeName)
-            wndEditLanguage.chkEnabled.setValue(language.isEnabled)
+              addClickHandler(wndEditLanguage.btnOk) { _ =>
+                language.setCode(wndEditLanguage.txtCode.getValue.asInstanceOf[String])
+                language.setName(wndEditLanguage.txtName.getValue.asInstanceOf[String])
+                language.setNativeName(wndEditLanguage.txtNativeName.getValue.asInstanceOf[String])
+                language.setEnabled(wndEditLanguage.chkEnabled.getValue.asInstanceOf[java.lang.Boolean])
 
-            addClickHandler(wndEditLanguage.btnOk) { _ =>
-              language.setCode(wndEditLanguage.txtCode.getValue.asInstanceOf[String])
-              language.setName(wndEditLanguage.txtName.getValue.asInstanceOf[String])
-              language.setNativeName(wndEditLanguage.txtNativeName.getValue.asInstanceOf[String])
-              language.setEnabled(wndEditLanguage.chkEnabled.getValue.asInstanceOf[java.lang.Boolean])
-
-              languageDao.saveLanguage(language)
-              reloadTable
-              wndMain removeWindow wndEditLanguage
+                languageDao.saveLanguage(language)
+                reloadTable
+                wndMain removeWindow wndEditLanguage
+              }
             }
 
-            wndMain addWindow wndEditLanguage
-
           case `btnSetDefault` =>
-            val wndConfirmation = new ConfirmationModalWindow("Confirmation", "Change default language?")
-            addClickHandler(wndConfirmation.btnOk, {
-              val languageId = table.getValue.asInstanceOf[java.lang.Integer]
-              val property = systemDao.getProperty("DefaultLanguageId")
+            initAndShow(new ConfirmationModalWindow("Confirmation", "Change default language?")) { wndConfirmation =>
+              addClickHandler(wndConfirmation.btnOk, {
+                val languageId = table.getValue.asInstanceOf[java.lang.Integer]
+                val property = systemDao.getProperty("DefaultLanguageId")
 
-              property.setValue(languageId.toString)
-              systemDao.saveProperty(property)
-              reloadTable
-              wndMain removeWindow wndConfirmation
-            })
-
-            wndMain addWindow wndConfirmation
+                property.setValue(languageId.toString)
+                systemDao.saveProperty(property)
+                reloadTable
+                wndMain removeWindow wndConfirmation
+              })
+            }
 
           case `btnDelete` =>
-            val wndConfirmation = new ConfirmationModalWindow("Confirmation", "Delete language from the system?")
-            addClickHandler(wndConfirmation.btnOk, {
-              val languageId = table.getValue.asInstanceOf[java.lang.Integer]
-              languageDao.deleteLanguage(languageId)
-              reloadTable
-              wndMain removeWindow wndConfirmation
-            })
-            wndMain addWindow wndConfirmation
+            initAndShow(new ConfirmationModalWindow("Confirmation", "Delete language from the system?")) { wndConfirmation =>
+              addClickHandler(wndConfirmation.btnOk, {
+                val languageId = table.getValue.asInstanceOf[java.lang.Integer]
+                languageDao.deleteLanguage(languageId)
+                reloadTable
+                wndMain removeWindow wndConfirmation
+              })
+            }
         }
       }
     }    
@@ -341,13 +369,12 @@ class App extends com.vaadin.Application {
     val btnReload = new Button("Reload")
     pnlReloadBar.addComponent(btnReload)
 
-    addClickHandler(btnReload) { _ => reloadTable }
+    addClickHandler(btnReload, reloadTable)
 
     pnlReloadBar.getContent.setSizeFull
     pnlReloadBar.getContent.asInstanceOf[GridLayout].setComponentAlignment(btnReload, Alignment.MIDDLE_RIGHT)
 
     val lytLanguages = new GridLayout(1,3)
-    //lytLanguages.setSpacing(true)
     pnlLanguages.setContent(lytLanguages)
     lytLanguages.setMargin(true)
 
@@ -406,8 +433,6 @@ class App extends com.vaadin.Application {
       table.addItem(Array(alias, status, meta.getDocumentType, id.toString, Int box 0, Int box 0), id)
     }
 
-
-    //val controls = new GridLayout(5,1)
     val controls = new HorizontalLayout
     
     controls.addComponent(new Label("List between:"))
@@ -462,7 +487,7 @@ class App extends com.vaadin.Application {
 
 
   def ipAccess = {
-    class IPAccessModalWindow(caption: String) extends OkCancelDialog(caption) {
+    class IPAccessWindow(caption: String) extends OkCancelWindow(caption) {
       val sltUser = new Select("Users")
       val txtFrom = new TextField("Code")
       val txtTo = new TextField("Name")
@@ -475,7 +500,6 @@ class App extends com.vaadin.Application {
 
       setMainContent(lytMainContent)
     }
-
 
     val table = new Table
     val btnReload = new Button("Reload")
@@ -503,27 +527,27 @@ class App extends com.vaadin.Application {
     lytMenuBar.setSpacing(true)
     pnlMenuBar.setContent(lytMenuBar)
 
-    def menuBarButtonClickHandler(e: Button#ClickEvent): Unit = e.getButton match {
-      case `btnAdd` =>
-        val wndAdd = new IPAccessModalWindow("Add new IP Access")
-        addClickHandler(wndAdd.btnOk, wndMain removeWindow wndAdd)
-        
-        wndMain addWindow wndAdd
+    addClickHandlers(
+      btnAdd -> { _ =>
+        initAndShow(new IPAccessWindow("Add new IP Access")) { w =>
+          addClickHandler(w.btnOk, wndMain removeWindow w)
+        }
+      },
 
-      case `btnEdit` =>
-        val wndAdd = new IPAccessModalWindow("Edit IP Access")
-        addClickHandler(wndAdd.btnOk, wndMain removeWindow wndAdd)
+      btnEdit -> { _ =>
+        initAndShow(new IPAccessWindow("Edit IP Access")) { w =>
+          addClickHandler(w.btnOk, wndMain removeWindow w)
+        }
+      },
+    
+      btnDelete -> { _ =>
+        initAndShow(new MsgWindow("Delete", "IP Access entry delete is not yet implemented.")) { w =>
+          //addClickHandler(w.btnOk, wndMain removeWindow w)
+        }
+      }
+    )
 
-        wndMain addWindow wndAdd
-      
-      case `btnDelete` => ()
-    }
-
-
-    List(btnAdd, btnEdit, btnDelete) foreach { btn =>
-      pnlMenuBar addComponent btn
-      addClickHandler(btn)(menuBarButtonClickHandler)
-    }    
+    addComponents(pnlMenuBar, btnAdd, btnEdit, btnDelete)
 
     pnlContent
   }
