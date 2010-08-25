@@ -36,7 +36,7 @@ class App extends com.vaadin.Application {
       "About" -> Nil,
       "System" -> List("Languages", "Properties"),
       "Documents" -> List("New", "Search"),
-      "Permissions" -> List("Users", "Roles"))
+      "Permissions" -> List("Users", "Roles", "IP Access"))
 
     treeItems foreach {
       case (item, subitems) =>
@@ -57,7 +57,7 @@ class App extends com.vaadin.Application {
     tree addListener (new ValueChangeListener {
       def valueChange(e: ValueChangeEvent) {
         e.getProperty.getValue.asInstanceOf[String] match {
-          case "Languages" => splitPanel setSecondComponent languagesTable
+          case "Languages" => splitPanel setSecondComponent languagesPanel
           case "Properties" => splitPanel setSecondComponent propertiesTable
           case "About" => splitPanel setSecondComponent labelAbout
           case "Documents" => splitPanel setSecondComponent documentsTable
@@ -79,8 +79,10 @@ class App extends com.vaadin.Application {
     this setMainWindow wndMain
   }
 
+  //
   // Languages panel
-  def languagesTable = {
+  // 
+  def languagesPanel = {
     val languageDao = Imcms.getSpringBean("languageDao").asInstanceOf[LanguageDao]
     val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
     
@@ -152,13 +154,28 @@ class App extends com.vaadin.Application {
     table.addContainerProperty("Enabled", classOf[java.lang.Boolean],  null)
     table.addContainerProperty("Default", classOf[java.lang.Boolean],  null)
 
+    def reloadTable {
+      table.removeAllItems
+
+      val defaultLanguageId = Int box systemDao.getProperty("DefaultLanguageId").getValue.toInt
+
+      languageDao.getAllLanguages.toList foreach { language =>
+        table.addItem(Array(language.getId, language.getCode, language.getName,
+                            language.getNativeName, language.isEnabled,
+                            Boolean box (language.getId == defaultLanguageId)),
+                      language.getId)
+      }
+    }    
+
     val pnlControls = new Panel with Button.ClickListener {
       val btnNew = new Button("New")
       val btnEdit = new Button("Edit")
       val btnSetDefault = new Button("Set default")
       val btnDelete = new Button("Delete")
 
-      setContent(new HorizontalLayout)
+      val layout = new HorizontalLayout
+      setContent(layout)
+      layout.setSpacing(true)
 
       List(btnNew, btnEdit, btnSetDefault, btnDelete).foreach { btn =>
         this addComponent btn
@@ -192,6 +209,7 @@ class App extends com.vaadin.Application {
                   language.setEnabled(wndEditLanguage.chkEnabled.getValue.asInstanceOf[java.lang.Boolean])
 
                   languageDao.saveLanguage(language)
+                  reloadTable
                   wndMain removeWindow wndEditLanguage
                 }
               }
@@ -221,6 +239,7 @@ class App extends com.vaadin.Application {
                 language.setEnabled(wndEditLanguage.chkEnabled.getValue.asInstanceOf[java.lang.Boolean])
 
                 languageDao.saveLanguage(language)
+                reloadTable
                 wndMain removeWindow wndEditLanguage
               }
             })
@@ -236,6 +255,8 @@ class App extends com.vaadin.Application {
 
                 property.setValue(languageId.toString)
                 systemDao.saveProperty(property)
+                reloadTable
+                wndMain removeWindow wndConfirmation
               }
             })
 
@@ -247,6 +268,8 @@ class App extends com.vaadin.Application {
               def buttonClick(clickEvent: Button#ClickEvent) {
                 val languageId = table.getValue.asInstanceOf[java.lang.Integer]
                 languageDao.deleteLanguage(languageId)
+                reloadTable
+                wndMain removeWindow wndConfirmation
               }
             })
             wndMain addWindow wndConfirmation
@@ -276,17 +299,28 @@ class App extends com.vaadin.Application {
         }
     })
 
-    val defaultLanguageId = Int box systemDao.getProperty("DefaultLanguageId").getValue.toInt
+    reloadTable
 
-    languageDao.getAllLanguages.toList foreach { language =>
-      table.addItem(Array(language.getId, language.getCode, language.getName,
-                          language.getNativeName, language.isEnabled,
-                          Boolean box (language.getId == defaultLanguageId)),
-                    language.getId)      
-    }
+    val pnlReloadBar = new Panel(new GridLayout(1,1))
+    val btnReload = new Button("Reload")
+    pnlReloadBar.addComponent(btnReload)
+    btnReload.addListener(new Button.ClickListener {
+      def buttonClick(clickEvent: Button#ClickEvent) {
+        reloadTable
+      }
+    })
+
+    pnlReloadBar.getContent.setSizeFull
+    pnlReloadBar.getContent.asInstanceOf[GridLayout].setComponentAlignment(btnReload, Alignment.MIDDLE_RIGHT)
+
+    val lytLanguages = new GridLayout(1,3)
+    //lytLanguages.setSpacing(true)
+    pnlLanguages.setContent(lytLanguages)
+    lytLanguages.setMargin(true)
 
     pnlLanguages addComponent pnlControls
-    pnlLanguages addComponent table
+    pnlLanguages addComponent table    
+    pnlLanguages addComponent pnlReloadBar
 
     resetControls
     pnlLanguages
@@ -340,7 +374,8 @@ class App extends com.vaadin.Application {
     }
 
 
-    val controls = new GridLayout(5,1)
+    //val controls = new GridLayout(5,1)
+    val controls = new HorizontalLayout
     
     controls.addComponent(new Label("List between:"))
     controls.addComponent(new TextField)
