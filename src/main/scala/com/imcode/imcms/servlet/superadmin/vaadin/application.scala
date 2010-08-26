@@ -10,14 +10,16 @@ import com.vaadin.data.Property._
 import imcode.server.Imcms
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import imcode.server.document.DocumentDomainObject
-import com.imcode.imcms.api.{Document}
 import com.imcode.imcms.api.Document.PublicationStatus
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper
 import com.vaadin.terminal.UserError
+import com.imcode.imcms.api.{IPAccess, Document}
+import imcode.util.Utility
 
 class App extends com.vaadin.Application {
 
   type ButtonClickHandler = Button#ClickEvent => Unit
+  type PropertyValueChangeHandler = ValueChangeEvent => Unit 
 
   val languageDao = Imcms.getSpringBean("languageDao").asInstanceOf[LanguageDao]
   val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
@@ -33,16 +35,17 @@ class App extends com.vaadin.Application {
 //      def buttonClick(event: Button#ClickEvent) = handler(event)
 //    }
 //  }
-  
 
-  def addValueChangeHandler(target: AbstractField)(handler: ValueChangeEvent => Unit) {
-    target addListener new Property.ValueChangeListener {
-      def valueChange(event: ValueChangeEvent) = handler(event);
+  implicit def BlockToPropertyValueChangeListener(block: => Unit): Property.ValueChangeListener =
+    new Property.ValueChangeListener {
+      def valueChange(event: ValueChangeEvent) = block
     }
-  }
 
-  def addValueChangeHandler(target: AbstractField, handler: => Unit): Unit =
-    addValueChangeHandler(target) { _ => handler }
+//  def addValueChangeHandler(target: AbstractField)(handler: ValueChangeEvent => Unit) {
+//    target addListener new Property.ValueChangeListener {
+//      def valueChange(event: ValueChangeEvent) = handler(event)
+//    }
+//  }
 
   def initAndShow[W <: Window](window: W, modal: Boolean = true)(init: W => Unit) {
     init(window)
@@ -349,7 +352,7 @@ class App extends com.vaadin.Application {
       }
     }
 
-    addValueChangeHandler(table, resetControls)
+    table addListener resetControls
 
     reloadTable
 
@@ -475,10 +478,20 @@ class App extends com.vaadin.Application {
 
 
   def ipAccess = {
+    val table = new Table
+    val btnReload = new Button("Reload")
+    val btnAdd = new Button("Add")
+    val btnEdit = new Button("Edit")
+    val btnDelete = new Button("Delete")
+
+    table.addContainerProperty("User", classOf[String],  null)
+    table.addContainerProperty("IP range from", classOf[String],  null)
+    table.addContainerProperty("IP range to", classOf[String],  null)
+    
     class IPAccessWindow(caption: String) extends OkCancelDialog(caption) {
       val sltUser = new Select("Users")
-      val txtFrom = new TextField("Code")
-      val txtTo = new TextField("Name")
+      val txtFrom = new TextField("From")
+      val txtTo = new TextField("To")
 
       val lytMainContent = new FormLayout
 
@@ -489,15 +502,31 @@ class App extends com.vaadin.Application {
       setMainContent(lytMainContent)
     }
 
-    val table = new Table
-    val btnReload = new Button("Reload")
-    val btnAdd = new Button("Add")
-    val btnEdit = new Button("Edit")
-    val btnDelete = new Button("Delete")
+    def toDDN(internalFormat: String) = Utility.ipLongToString(internalFormat.toLong)
+    def fromDDN(humanFormat: String) = Utility.ipStringToLong(humanFormat).toString
 
-    table.addContainerProperty("User", classOf[java.lang.Integer],  null)
-    table.addContainerProperty("IP range from", classOf[String],  null)
-    table.addContainerProperty("IP range to", classOf[String],  null)
+    def reloadTable {
+      table removeAllItems
+
+      ipAccessDao.getAll.toList foreach { i =>
+        val user = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper getUser (Int unbox i.getUserId)
+        table.addItem(Array(user.getLoginName, toDDN(i.getStart), toDDN(i.getEnd)), i.getId)
+      }
+    }
+
+    def resetControls = {
+      val ipAccessId = table.getValue.asInstanceOf[java.lang.Integer]
+
+      if (ipAccessId == null) {
+        btnDelete.setEnabled(false)
+        btnEdit.setEnabled(false)
+      } else {
+        btnEdit.setEnabled(true)
+        btnDelete.setEnabled(true)
+      }
+    }    
+
+    table addListener resetControls
 
     val pnlMenuBar = new Panel
     val pnlReloadBar = new Panel
@@ -507,9 +536,8 @@ class App extends com.vaadin.Application {
     lytContent.setMargin(true)
     pnlContent.setContent(lytContent)
 
-    pnlContent addComponent pnlMenuBar
-    pnlContent addComponent table
-    pnlContent addComponent pnlReloadBar
+    addComponents(pnlContent, new Label("Users from a specific IP number or an intervall of numbers are given direct access to the system (so that the user does not have to log in)."),
+      pnlMenuBar, table, pnlReloadBar)
 
     val lytMenuBar = new HorizontalLayout
     lytMenuBar.setSpacing(true)
@@ -517,21 +545,65 @@ class App extends com.vaadin.Application {
 
     btnAdd addListener {
       initAndShow(new IPAccessWindow("Add new IP Access")) { w =>
+        Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllUsers foreach { u =>
+          w.sltUser addItem u.getId
+          w.sltUser setItemCaption (u.getId, u.getLoginName)
+        }
+
+        w.setOkButonClickListener {
+          val ipAccess = new IPAccess
+          ipAccess setUserId w.sltUser.getValue.asInstanceOf[Integer]
+          ipAccess setStart fromDDN(w.txtFrom.getValue.asInstanceOf[String])
+          ipAccess setEnd fromDDN(w.txtTo.getValue.asInstanceOf[String])
+
+          ipAccessDao.save(ipAccess)
+
+          reloadTable
+        }
       }
     }
 
     btnEdit addListener {
       initAndShow(new IPAccessWindow("Edit IP Access")) { w =>
+        Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllUsers foreach { u =>
+          w.sltUser addItem u.getId
+          w.sltUser setItemCaption (u.getId, u.getLoginName)
+        }              
+
+        val ipAccessId = table.getValue.asInstanceOf[java.lang.Integer]
+        val ipAccess = ipAccessDao get ipAccessId
+
+        w.sltUser select ipAccess.getUserId
+        w.txtFrom setValue toDDN(ipAccess.getStart)
+        w.txtTo setValue toDDN(ipAccess.getEnd)
+        
+        w.setOkButonClickListener {
+          val ipAccess = new IPAccess
+          ipAccess setUserId w.sltUser.getValue.asInstanceOf[Integer]
+          ipAccess setStart fromDDN(w.txtFrom.getValue.asInstanceOf[String])
+          ipAccess setEnd fromDDN(w.txtTo.getValue.asInstanceOf[String])
+
+          ipAccessDao.save(ipAccess)
+
+          reloadTable
+        }
       }
     }
 
     btnDelete addListener {
-      initAndShow(new MsgDialog("Delete", "IP Access entry delete is not yet implemented.")) { w =>
+      initAndShow(new ConfirmationDialog("Confirmation", "Delete IP Access?")) { w =>
+        w.setOkButonClickListener {
+          ipAccessDao delete table.getValue.asInstanceOf[java.lang.Integer]
+          reloadTable
+        }
       }
     }
 
     addComponents(pnlMenuBar, btnAdd, btnEdit, btnDelete)
 
+    table setSelectable true
+    reloadTable
+    
     pnlContent
   }
 }
