@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin.vaadin;
 
 import scala.collection.JavaConversions._
-import clojure.lang.RT
+import com.imcode.Controls._
 import com.vaadin.event.ItemClickEvent
 import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.vaadin.ui._
@@ -23,19 +23,16 @@ class App extends com.vaadin.Application {
   val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
   val ipAccessDao = Imcms.getSpringBean("ipAccessDao").asInstanceOf[IPAccessDao]
 
-  def addClickHandler(button: Button)(handler: ButtonClickHandler) {
-    button addListener new Button.ClickListener {
-      def buttonClick(event: Button#ClickEvent) = handler(event)
-    }
-  }
+  implicit def BlockToButtonClickListener(handler: => Unit): Button.ClickListener =
+    new Button.ClickListener {
+      def buttonClick(event: Button#ClickEvent) = handler
+    }  
 
-  def addClickHandler(button: Button, handler: => Unit): Unit =
-    addClickHandler(button) { _ => handler }
-
-  def addClickHandlers(buttonHandlers: (Button, ButtonClickHandler)*) {
-    for ((button, handler) <- buttonHandlers)
-      addClickHandler(button)(handler)
-  }
+//  def addButtonClickListener(button: Button)(handler: ButtonClickHandler) {
+//    button addListener new Button.ClickListener {
+//      def buttonClick(event: Button#ClickEvent) = handler(event)
+//    }
+//  }
   
 
   def addValueChangeHandler(target: AbstractField)(handler: ValueChangeEvent => Unit) {
@@ -56,54 +53,71 @@ class App extends com.vaadin.Application {
   def addComponents(container: AbstractComponentContainer, components: Component*) =
     components foreach {c => container addComponent c}
 
-  /** Message window */
-  class MsgWindow(caption: String, msg: String) extends Window(caption) {
-    val btnOk = new Button("Ok")
-    val lblMessage = new Label(msg)
-
+  class DialogWindow(caption: String) extends Window(caption) {
     val lytContent = new GridLayout(1, 2)
-    
+
     lytContent setMargin true
     lytContent setSpacing true
-    lytContent addComponent lblMessage
-    lytContent addComponent btnOk
-
-    lytContent.setComponentAlignment(lblMessage, Alignment.BOTTOM_CENTER)
-    lytContent.setComponentAlignment(btnOk, Alignment.TOP_CENTER)
-
     lytContent setSizeFull
 
     setContent(lytContent)
 
-    addClickHandler(btnOk, close)
+    def setMainContent(c: Component) {
+      lytContent.addComponent(c, 0, 0)
+      lytContent.setComponentAlignment(c, Alignment.BOTTOM_CENTER)
+    }
+    
+    def setButtonsContent(c: Component) {
+      lytContent.addComponent(c, 0, 1)
+      lytContent.setComponentAlignment(c, Alignment.TOP_CENTER)
+    }
   }
 
-  /** OKCancel window. */
-  class OkCancelWindow(caption: String) extends Window(caption) {
+  /** Message dialog window. */
+  class MsgDialog(caption: String, msg: String) extends DialogWindow(caption) {
+    val btnOk = new Button("Ok")
+    val lblMessage = new Label(msg)
+
+    setMainContent(lblMessage)
+    setButtonsContent(btnOk)
+
+    btnOk addListener close
+  }
+
+  /** OKCancel dialog window. */
+  class OkCancelDialog(caption: String) extends DialogWindow(caption) {
     val btnOk = new Button("Ok")
     val btnCancel = new Button("Cancel")
-
     val lytButtons = new GridLayout(2, 1)
-    val lytContent = new VerticalLayout
-
-    setContent(lytContent)
-    lytContent addComponent lytButtons
-    lytContent setMargin true
-
+    
     lytButtons setSpacing true
     lytButtons addComponent btnOk
     lytButtons addComponent btnCancel
-    
     lytButtons.setComponentAlignment(btnOk, Alignment.MIDDLE_RIGHT)
     lytButtons.setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
 
-    addClickHandler(btnCancel, close)
+    setButtonsContent(lytButtons)
 
-    def setMainContent(c: Component) = lytContent addComponentAsFirst c
+    btnCancel addListener close
+
+    def setOkButonClickListener(block: => Unit) {
+      btnOk addListener {
+        try {
+          block
+          close
+        } catch {
+          case ex: Exception => using(new java.io.StringWriter) { w =>
+            ex.printStackTrace(new java.io.PrintWriter(w))
+            show(wndMain, new MsgDialog("ERROR", "%s  ##  ##  ##  ## ## %s" format (ex.getMessage, w.getBuffer)))
+            throw ex
+          }
+        }
+      }
+    }
   }
 
-  /** Confirmation window. */
-  class ConfirmationWindow(caption: String, msg: String) extends OkCancelWindow(caption) {
+  /** Confirmation dialog window. */
+  class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(caption) {
     val lblMessage = new Label(msg)
 
     setMainContent(lblMessage)
@@ -119,7 +133,10 @@ class App extends com.vaadin.Application {
 
   var wndMain: Window = _
 
-  def show(w: Window) = wndMain addWindow w
+  def show(wndParent: Window, wndChild: Window, modal: Boolean = true) {
+    wndChild setModal modal
+    wndParent addWindow wndChild
+  }
   
   def init {
     wndMain = new Window
@@ -178,7 +195,7 @@ class App extends com.vaadin.Application {
   // Languages panel
   // 
   def languagesPanel = {
-    class LanguageWindow(caption: String) extends OkCancelWindow(caption) {
+    class LanguageWindow(caption: String) extends OkCancelDialog(caption) {
       val txtId = new TextField("Id")
       val txtCode = new TextField("Code")
       val txtName = new TextField("Name")
@@ -253,7 +270,7 @@ class App extends com.vaadin.Application {
             initAndShow(new LanguageWindow("New language")) { wndEditLanguage =>
               val language = new com.imcode.imcms.api.I18nLanguage
 
-              addClickHandler(wndEditLanguage.btnOk) { _ =>
+              wndEditLanguage setOkButonClickListener {
                 if (!isInt(wndEditLanguage.txtId.getValue)) {
                   wndEditLanguage.txtId.setComponentError(new UserError("Id must be an Int"))
                 } else {
@@ -265,7 +282,6 @@ class App extends com.vaadin.Application {
 
                   languageDao.saveLanguage(language)
                   reloadTable
-                  wndMain removeWindow wndEditLanguage
                 }
               }
             }
@@ -282,7 +298,7 @@ class App extends com.vaadin.Application {
               wndEditLanguage.txtNativeName.setValue(language.getNativeName)
               wndEditLanguage.chkEnabled.setValue(language.isEnabled)
 
-              addClickHandler(wndEditLanguage.btnOk) { _ =>
+              wndEditLanguage setOkButonClickListener {
                 language.setCode(wndEditLanguage.txtCode.getValue.asInstanceOf[String])
                 language.setName(wndEditLanguage.txtName.getValue.asInstanceOf[String])
                 language.setNativeName(wndEditLanguage.txtNativeName.getValue.asInstanceOf[String])
@@ -290,31 +306,28 @@ class App extends com.vaadin.Application {
 
                 languageDao.saveLanguage(language)
                 reloadTable
-                wndMain removeWindow wndEditLanguage
               }
             }
 
           case `btnSetDefault` =>
-            initAndShow(new ConfirmationWindow("Confirmation", "Change default language?")) { wndConfirmation =>
-              addClickHandler(wndConfirmation.btnOk, {
+            initAndShow(new ConfirmationDialog("Confirmation", "Change default language?")) { wndConfirmation =>
+              wndConfirmation setOkButonClickListener {
                 val languageId = table.getValue.asInstanceOf[java.lang.Integer]
                 val property = systemDao.getProperty("DefaultLanguageId")
 
                 property.setValue(languageId.toString)
                 systemDao.saveProperty(property)
                 reloadTable
-                wndMain removeWindow wndConfirmation
-              })
+              }
             }
 
           case `btnDelete` =>
-            initAndShow(new ConfirmationWindow("Confirmation", "Delete language from the system?")) { wndConfirmation =>
-              addClickHandler(wndConfirmation.btnOk, {
+            initAndShow(new ConfirmationDialog("Confirmation", "Delete language from the system?")) { wndConfirmation =>
+              wndConfirmation setOkButonClickListener {
                 val languageId = table.getValue.asInstanceOf[java.lang.Integer]
                 languageDao.deleteLanguage(languageId)
                 reloadTable
-                wndMain removeWindow wndConfirmation
-              })
+              }
             }
         }
       }
@@ -344,7 +357,7 @@ class App extends com.vaadin.Application {
     val btnReload = new Button("Reload")
     pnlReloadBar.addComponent(btnReload)
 
-    addClickHandler(btnReload, reloadTable)
+    btnReload addListener reloadTable
 
     pnlReloadBar.getContent.setSizeFull
     pnlReloadBar.getContent.asInstanceOf[GridLayout].setComponentAlignment(btnReload, Alignment.MIDDLE_RIGHT)
@@ -462,7 +475,7 @@ class App extends com.vaadin.Application {
 
 
   def ipAccess = {
-    class IPAccessWindow(caption: String) extends OkCancelWindow(caption) {
+    class IPAccessWindow(caption: String) extends OkCancelDialog(caption) {
       val sltUser = new Select("Users")
       val txtFrom = new TextField("Code")
       val txtTo = new TextField("Name")
@@ -502,25 +515,20 @@ class App extends com.vaadin.Application {
     lytMenuBar.setSpacing(true)
     pnlMenuBar.setContent(lytMenuBar)
 
-    addClickHandlers(
-      btnAdd -> { _ =>
-        initAndShow(new IPAccessWindow("Add new IP Access")) { w =>
-          addClickHandler(w.btnOk, wndMain removeWindow w)
-        }
-      },
-
-      btnEdit -> { _ =>
-        initAndShow(new IPAccessWindow("Edit IP Access")) { w =>
-          addClickHandler(w.btnOk, wndMain removeWindow w)
-        }
-      },
-    
-      btnDelete -> { _ =>
-        initAndShow(new MsgWindow("Delete", "IP Access entry delete is not yet implemented.")) { w =>
-          //addClickHandler(w.btnOk, wndMain removeWindow w)
-        }
+    btnAdd addListener {
+      initAndShow(new IPAccessWindow("Add new IP Access")) { w =>
       }
-    )
+    }
+
+    btnEdit addListener {
+      initAndShow(new IPAccessWindow("Edit IP Access")) { w =>
+      }
+    }
+
+    btnDelete addListener {
+      initAndShow(new MsgDialog("Delete", "IP Access entry delete is not yet implemented.")) { w =>
+      }
+    }
 
     addComponents(pnlMenuBar, btnAdd, btnEdit, btnDelete)
 
