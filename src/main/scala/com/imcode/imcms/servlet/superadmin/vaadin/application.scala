@@ -53,8 +53,14 @@ class App extends com.vaadin.Application {
     wndMain addWindow window
   }
 
-  def addComponents(container: AbstractComponentContainer, components: Component*) =
-    components foreach {c => container addComponent c}
+  def addComponents(container: AbstractComponentContainer, components: Component*) = {
+    components foreach { c => container addComponent c }
+    container
+  }
+
+  def addContainerProperties(table: Table, properties: (Any, java.lang.Class[_], Any)*) =
+    for ((propertyId, propertyType, defaultValue) <- properties)
+      table.addContainerProperty(propertyId, propertyType, defaultValue)
 
   class DialogWindow(caption: String) extends Window(caption) {
     val lytContent = new GridLayout(1, 2)
@@ -91,19 +97,19 @@ class App extends com.vaadin.Application {
   class OkCancelDialog(caption: String) extends DialogWindow(caption) {
     val btnOk = new Button("Ok")
     val btnCancel = new Button("Cancel")
-    val lytButtons = new GridLayout(2, 1)
+    val lytButtons = new GridLayout(2, 1) {
+      setSpacing(true)
+      addComponent(btnOk)
+      addComponent(btnCancel)
+      setComponentAlignment(btnOk, Alignment.MIDDLE_RIGHT)
+      setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
+    }
     
-    lytButtons setSpacing true
-    lytButtons addComponent btnOk
-    lytButtons addComponent btnCancel
-    lytButtons.setComponentAlignment(btnOk, Alignment.MIDDLE_RIGHT)
-    lytButtons.setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
-
     setButtonsContent(lytButtons)
 
     btnCancel addListener close
 
-    def setOkButonClickListener(block: => Unit) {
+    def addOkButtonClickListener(block: => Unit) {
       btnOk addListener {
         try {
           block
@@ -111,7 +117,7 @@ class App extends com.vaadin.Application {
         } catch {
           case ex: Exception => using(new java.io.StringWriter) { w =>
             ex.printStackTrace(new java.io.PrintWriter(w))
-            show(wndMain, new MsgDialog("ERROR", "%s  ##  ##  ##  ## ## %s" format (ex.getMessage, w.getBuffer)))
+            show(new MsgDialog("ERROR", "%s  ##  ##  ##  ## ## %s" format (ex.getMessage, w.getBuffer)))
             throw ex
           }
         }
@@ -126,6 +132,52 @@ class App extends com.vaadin.Application {
     setMainContent(lblMessage)
   }
 
+  abstract class TableViewTemplate extends GridLayout(1,3) {
+    val tblItems = new Table {
+      setSelectable(true)
+      setImmediate(true)
+      setPageLength(10)
+
+      setSizeFull
+    }
+
+    val pnlHeader = new Panel {
+      val layout = new HorizontalLayout {
+        setSpacing(true)
+      }
+
+      setContent(layout)
+    }
+
+    val btnReload = new Button("Reload") {
+      addListener { reloadTableItems }
+    }
+    
+    val pnlFooter = new Panel {
+      val layout = new GridLayout(1,1) {
+        addComponent(btnReload)
+        setComponentAlignment(btnReload, Alignment.MIDDLE_RIGHT)
+        setSizeFull
+      }
+
+      setContent(layout)
+    }
+
+    addComponents(this, pnlHeader, tblItems, pnlFooter)
+
+    // Investigate: List[(AnyRef, Array[AnyRef])]
+    def getTableItems: List[(AnyRef, List[AnyRef])]
+
+    def reloadTableItems {
+      tblItems.removeAllItems
+
+      for((id, cells) <- getTableItems) tblItems.addItem(cells.toArray, id)
+      //for ((id:, cells:) <- getTableItems) tblItems.addItem(cells, id)
+    }
+    
+    reloadTableItems
+  }
+
   case class Node(nodes: Node*)
 
   val labelNA = new Label("Not Available");
@@ -136,11 +188,11 @@ class App extends com.vaadin.Application {
 
   var wndMain: Window = _
 
-  def show(wndParent: Window, wndChild: Window, modal: Boolean = true) {
+  def show(wndChild: Window, modal: Boolean = true) {
     wndChild setModal modal
-    wndParent addWindow wndChild
+    wndMain addWindow wndChild
   }
-  
+
   def init {
     wndMain = new Window
     val splitPanel = new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL)
@@ -150,7 +202,8 @@ class App extends com.vaadin.Application {
       "About" -> Nil,
       "System" -> List("Languages", "Properties"),
       "Documents" -> List("New", "Search"),
-      "Permissions" -> List("Users", "Roles", "IP Access"))
+      "Permissions" -> List("Users", "Roles", "IP Access"),
+      "Statistics" -> List("Session counter", "Search terms"))
 
     treeItems foreach {
       case (item, subitems) =>
@@ -273,7 +326,7 @@ class App extends com.vaadin.Application {
             initAndShow(new LanguageWindow("New language")) { wndEditLanguage =>
               val language = new com.imcode.imcms.api.I18nLanguage
 
-              wndEditLanguage setOkButonClickListener {
+              wndEditLanguage addOkButtonClickListener {
                 if (!isInt(wndEditLanguage.txtId.getValue)) {
                   wndEditLanguage.txtId.setComponentError(new UserError("Id must be an Int"))
                 } else {
@@ -301,7 +354,7 @@ class App extends com.vaadin.Application {
               wndEditLanguage.txtNativeName.setValue(language.getNativeName)
               wndEditLanguage.chkEnabled.setValue(language.isEnabled)
 
-              wndEditLanguage setOkButonClickListener {
+              wndEditLanguage addOkButtonClickListener {
                 language.setCode(wndEditLanguage.txtCode.getValue.asInstanceOf[String])
                 language.setName(wndEditLanguage.txtName.getValue.asInstanceOf[String])
                 language.setNativeName(wndEditLanguage.txtNativeName.getValue.asInstanceOf[String])
@@ -314,7 +367,7 @@ class App extends com.vaadin.Application {
 
           case `btnSetDefault` =>
             initAndShow(new ConfirmationDialog("Confirmation", "Change default language?")) { wndConfirmation =>
-              wndConfirmation setOkButonClickListener {
+              wndConfirmation addOkButtonClickListener {
                 val languageId = table.getValue.asInstanceOf[java.lang.Integer]
                 val property = systemDao.getProperty("DefaultLanguageId")
 
@@ -326,7 +379,7 @@ class App extends com.vaadin.Application {
 
           case `btnDelete` =>
             initAndShow(new ConfirmationDialog("Confirmation", "Delete language from the system?")) { wndConfirmation =>
-              wndConfirmation setOkButonClickListener {
+              wndConfirmation addOkButtonClickListener {
                 val languageId = table.getValue.asInstanceOf[java.lang.Integer]
                 languageDao.deleteLanguage(languageId)
                 reloadTable
@@ -438,22 +491,7 @@ class App extends com.vaadin.Application {
     content
   }
 
-
-  def roles = {
-    def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
-
-    val table = new Table
-    table.addContainerProperty("Id", classOf[java.lang.Integer],  null)
-    table.addContainerProperty("Name", classOf[String],  null)
-
-    roleMapper.getAllRoles.foreach { role =>
-      table.addItem(Array(Int box role.getId.intValue, role.getName), role)
-    }
-
-    table
-  }
-
-
+  
   def users = {
     def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
@@ -478,16 +516,9 @@ class App extends com.vaadin.Application {
 
 
   def ipAccess = {
-    val table = new Table
-    val btnReload = new Button("Reload")
-    val btnAdd = new Button("Add")
-    val btnEdit = new Button("Edit")
-    val btnDelete = new Button("Delete")
+    def toDDN(internalFormat: String) = Utility.ipLongToString(internalFormat.toLong)
+    def fromDDN(humanFormat: String) = Utility.ipStringToLong(humanFormat).toString
 
-    table.addContainerProperty("User", classOf[String],  null)
-    table.addContainerProperty("IP range from", classOf[String],  null)
-    table.addContainerProperty("IP range to", classOf[String],  null)
-    
     class IPAccessWindow(caption: String) extends OkCancelDialog(caption) {
       val sltUser = new Select("Users")
       val txtFrom = new TextField("From")
@@ -501,109 +532,135 @@ class App extends com.vaadin.Application {
 
       setMainContent(lytMainContent)
     }
+    
+    class IPAccessView extends TableViewTemplate {
+      val btnAdd = new Button("Add")
+      val btnEdit = new Button("Edit")
+      val btnDelete = new Button("Delete")
 
-    def toDDN(internalFormat: String) = Utility.ipLongToString(internalFormat.toLong)
-    def fromDDN(humanFormat: String) = Utility.ipStringToLong(humanFormat).toString
+      addComponents(pnlHeader, btnAdd, btnEdit, btnDelete)
 
-    def reloadTable {
-      table removeAllItems
+      addContainerProperties(tblItems,
+        ("User", classOf[String],  null),
+        ("IP range from", classOf[String],  null),
+        ("IP range to", classOf[String],  null))
 
-      ipAccessDao.getAll.toList foreach { i =>
-        val user = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper getUser (Int unbox i.getUserId)
-        table.addItem(Array(user.getLoginName, toDDN(i.getStart), toDDN(i.getEnd)), i.getId)
+      def getTableItems = ipAccessDao.getAll.toList map { ipAccess =>
+        val user = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper getUser (Int unbox ipAccess.getUserId)
+        ipAccess.getUserId -> List(user.getLoginName, toDDN(ipAccess.getStart), toDDN(ipAccess.getEnd))
       }
+
+      def resetControls =
+        if (tblItems.getValue == null) {
+          btnDelete setEnabled false
+          btnEdit setEnabled false
+        } else {
+          btnEdit setEnabled true
+          btnDelete setEnabled true
+        }
+
+      tblItems addListener resetControls
+
+      btnAdd addListener {
+        initAndShow(new IPAccessWindow("Add new IP Access")) { w =>
+          Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllUsers foreach { u =>
+            w.sltUser addItem u.getId
+            w.sltUser setItemCaption (u.getId, u.getLoginName)
+          }
+
+          w.addOkButtonClickListener {
+            val ipAccess = new IPAccess
+            ipAccess setUserId w.sltUser.getValue.asInstanceOf[Integer]
+            ipAccess setStart fromDDN(w.txtFrom.getValue.asInstanceOf[String])
+            ipAccess setEnd fromDDN(w.txtTo.getValue.asInstanceOf[String])
+
+            ipAccessDao.save(ipAccess)
+
+            reloadTableItems
+          }
+        }
+      }
+
+      btnEdit addListener {
+        initAndShow(new IPAccessWindow("Edit IP Access")) { w =>
+          Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllUsers foreach { u =>
+            w.sltUser addItem u.getId
+            w.sltUser setItemCaption (u.getId, u.getLoginName)
+          }
+
+          val ipAccessId = tblItems.getValue.asInstanceOf[java.lang.Integer]
+          val ipAccess = ipAccessDao get ipAccessId
+
+          w.sltUser select ipAccess.getUserId
+          w.txtFrom setValue toDDN(ipAccess.getStart)
+          w.txtTo setValue toDDN(ipAccess.getEnd)
+
+          w.addOkButtonClickListener {
+            val ipAccess = new IPAccess
+            ipAccess setUserId w.sltUser.getValue.asInstanceOf[Integer]
+            ipAccess setStart fromDDN(w.txtFrom.getValue.asInstanceOf[String])
+            ipAccess setEnd fromDDN(w.txtTo.getValue.asInstanceOf[String])
+
+            ipAccessDao.save(ipAccess)
+
+            reloadTableItems
+          }
+        }
+      }
+
+      btnDelete addListener {
+        initAndShow(new ConfirmationDialog("Confirmation", "Delete IP Access?")) { w =>
+          w.addOkButtonClickListener {
+            ipAccessDao delete tblItems.getValue.asInstanceOf[java.lang.Integer]
+            reloadTableItems
+          }
+        }
+      }
+      
+      // Bug in vaadin? - items are not displayed
+      reloadTableItems
     }
-
-    def resetControls = {
-      val ipAccessId = table.getValue.asInstanceOf[java.lang.Integer]
-
-      if (ipAccessId == null) {
-        btnDelete.setEnabled(false)
-        btnEdit.setEnabled(false)
-      } else {
-        btnEdit.setEnabled(true)
-        btnDelete.setEnabled(true)
-      }
-    }    
-
-    table addListener resetControls
-
-    val pnlMenuBar = new Panel
-    val pnlReloadBar = new Panel
-    val pnlContent = new Panel
 
     val lytContent = new VerticalLayout
-    lytContent.setMargin(true)
-    pnlContent.setContent(lytContent)
-
-    addComponents(pnlContent, new Label("Users from a specific IP number or an intervall of numbers are given direct access to the system (so that the user does not have to log in)."),
-      pnlMenuBar, table, pnlReloadBar)
-
-    val lytMenuBar = new HorizontalLayout
-    lytMenuBar.setSpacing(true)
-    pnlMenuBar.setContent(lytMenuBar)
-
-    btnAdd addListener {
-      initAndShow(new IPAccessWindow("Add new IP Access")) { w =>
-        Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllUsers foreach { u =>
-          w.sltUser addItem u.getId
-          w.sltUser setItemCaption (u.getId, u.getLoginName)
-        }
-
-        w.setOkButonClickListener {
-          val ipAccess = new IPAccess
-          ipAccess setUserId w.sltUser.getValue.asInstanceOf[Integer]
-          ipAccess setStart fromDDN(w.txtFrom.getValue.asInstanceOf[String])
-          ipAccess setEnd fromDDN(w.txtTo.getValue.asInstanceOf[String])
-
-          ipAccessDao.save(ipAccess)
-
-          reloadTable
-        }
-      }
-    }
-
-    btnEdit addListener {
-      initAndShow(new IPAccessWindow("Edit IP Access")) { w =>
-        Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllUsers foreach { u =>
-          w.sltUser addItem u.getId
-          w.sltUser setItemCaption (u.getId, u.getLoginName)
-        }              
-
-        val ipAccessId = table.getValue.asInstanceOf[java.lang.Integer]
-        val ipAccess = ipAccessDao get ipAccessId
-
-        w.sltUser select ipAccess.getUserId
-        w.txtFrom setValue toDDN(ipAccess.getStart)
-        w.txtTo setValue toDDN(ipAccess.getEnd)
-        
-        w.setOkButonClickListener {
-          val ipAccess = new IPAccess
-          ipAccess setUserId w.sltUser.getValue.asInstanceOf[Integer]
-          ipAccess setStart fromDDN(w.txtFrom.getValue.asInstanceOf[String])
-          ipAccess setEnd fromDDN(w.txtTo.getValue.asInstanceOf[String])
-
-          ipAccessDao.save(ipAccess)
-
-          reloadTable
-        }
-      }
-    }
-
-    btnDelete addListener {
-      initAndShow(new ConfirmationDialog("Confirmation", "Delete IP Access?")) { w =>
-        w.setOkButonClickListener {
-          ipAccessDao delete table.getValue.asInstanceOf[java.lang.Integer]
-          reloadTable
-        }
-      }
-    }
-
-    addComponents(pnlMenuBar, btnAdd, btnEdit, btnDelete)
-
-    table setSelectable true
-    reloadTable
+    lytContent setMargin true
+    lytContent setSpacing true
     
-    pnlContent
+    addComponents(lytContent,
+      new Label("Users from a specific IP number or an intervall of numbers are given direct access to the system (so that the user does not have to log in)."),
+      new IPAccessView)
   }
+
+
+  def roles = {
+    def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
+
+    class RoleDataWindow(caption: String) extends OkCancelDialog(caption) {}
+
+    class RolesView extends TableViewTemplate {
+      val btnAdd = new Button("Add")
+      val btnEdit = new Button("Edit")
+      val btnDelete = new Button("Delete")
+
+      addComponents(pnlHeader, btnAdd, btnEdit, btnDelete)
+
+      addContainerProperties(tblItems,
+        ("Id", classOf[java.lang.Integer],  null),
+        ("Name", classOf[String],  null))
+
+      def getTableItems = 
+        roleMapper.getAllRoles.toList map { role =>
+          role.getId -> List(Int box role.getId.intValue, role.getName)
+        }
+
+      reloadTableItems
+    }
+
+    val lytContent = new VerticalLayout
+    lytContent setMargin true
+    lytContent setSpacing true
+
+    addComponents(lytContent,
+      new Label("Roles and their permissions."),
+      new RolesView)    
+  }  
 }
