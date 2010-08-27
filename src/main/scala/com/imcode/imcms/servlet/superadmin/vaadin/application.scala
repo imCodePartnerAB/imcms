@@ -142,7 +142,7 @@ class App extends com.vaadin.Application {
 
       addListener { resetComponents }
 
-      getTableProperties foreach { p => addContainerProperties(this, p) }
+      tableProperties foreach { p => addContainerProperties(this, p) }
     }
 
     val pnlHeader = new Panel {
@@ -170,15 +170,15 @@ class App extends com.vaadin.Application {
     addComponents(this, pnlHeader, tblItems, pnlFooter)
 
     // Investigate: List[(AnyRef, Array[AnyRef])]
-    def getTableItems: List[(AnyRef, List[AnyRef])]
+    def tableItems(): List[(AnyRef, List[AnyRef])]
 
-    def getTableProperties: List[(AnyRef, java.lang.Class[_], AnyRef)]
+    def tableProperties: List[(AnyRef, java.lang.Class[_], AnyRef)]
 
     def reloadTableItems {
       tblItems.removeAllItems
 
-      for((id, cells) <- getTableItems) tblItems.addItem(cells.toArray, id)
-      //for ((id:, cells:) <- getTableItems) tblItems.addItem(cells, id)
+      for((id, cells) <- tableItems()) tblItems.addItem(cells.toArray, id)
+      //for ((id:, cells:) <- tableItems()) tblItems.addItem(cells, id)
     }
 
     def resetComponents = {}
@@ -500,31 +500,7 @@ class App extends com.vaadin.Application {
 
     content
   }
-
-  
-  def users = {
-    def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
-
-    val table = new Table
-
-    table.addContainerProperty("Id", classOf[java.lang.Integer],  null)
-    table.addContainerProperty("Login name", classOf[String],  null)
-    table.addContainerProperty("Password", classOf[String],  null)
-    table.addContainerProperty("Default user?", classOf[java.lang.Boolean],  null)
-    table.addContainerProperty("Superadmin?", classOf[java.lang.Boolean],  null)
-    table.addContainerProperty("Useradmin?", classOf[java.lang.Boolean],  null)
-
-    roleMapper.getAllUsers.foreach { user =>
-      table.addItem(Array(Int box user.getId, user.getLoginName, user.getPassword,
-                          Boolean box user.isDefaultUser,
-                          Boolean box user.isSuperAdmin,
-                          Boolean box user.isUserAdmin), user)
-    }
-
-    table
-  }
-
-
+ 
   def ipAccess = {
     def toDDN(internalFormat: String) = Utility.ipLongToString(internalFormat.toLong)
     def fromDDN(humanFormat: String) = Utility.ipStringToLong(humanFormat).toString
@@ -550,12 +526,12 @@ class App extends com.vaadin.Application {
 
       addComponents(pnlHeader, btnAdd, btnEdit, btnDelete)
 
-      def getTableProperties = List(
+      def tableProperties = List(
         ("User", classOf[String],  null),
         ("IP range from", classOf[String],  null),
         ("IP range to", classOf[String],  null))
 
-      def getTableItems = ipAccessDao.getAll.toList map { ipAccess =>
+      def tableItems() = ipAccessDao.getAll.toList map { ipAccess =>
         val user = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper getUser (Int unbox ipAccess.getUserId)
         ipAccess.getUserId -> List(user.getLoginName, toDDN(ipAccess.getStart), toDDN(ipAccess.getEnd))
       }
@@ -624,9 +600,6 @@ class App extends com.vaadin.Application {
           }
         }
       }
-      
-      // Bug in vaadin? - items are not displayed
-      //reloadTableItems
     }
 
     val lytContent = new VerticalLayout
@@ -677,11 +650,11 @@ class App extends com.vaadin.Application {
 
       addComponents(pnlHeader, btnAdd, btnEdit, btnDelete)
 
-      def getTableProperties = List(
+      def tableProperties = List(
         ("Id", classOf[java.lang.Integer],  null),
         ("Name", classOf[String],  null))
 
-      def getTableItems = 
+      def tableItems() =
         roleMapper.getAllRoles.toList map { role =>
           role.getId -> List(Int box role.getId.intValue, role.getName)
         }
@@ -736,9 +709,6 @@ class App extends com.vaadin.Application {
           btnEdit setEnabled true
           btnDelete setEnabled true
         }
-
-      
-      //reloadTableItems
     }
 
     val lytContent = new VerticalLayout
@@ -748,5 +718,70 @@ class App extends com.vaadin.Application {
     addComponents(lytContent,
       new Label("Roles and their permissions."),
       new RolesView)    
+  }
+
+  //
+  //
+  //
+  def users = {
+    def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
+
+    class UsersView extends TableViewTemplate {
+      def tableProperties = List(
+        ("Id", classOf[java.lang.Integer],  null),
+        ("Login name", classOf[String],  null),
+        ("Password", classOf[String],  null),
+        ("Default user?", classOf[java.lang.Boolean],  null),
+        ("Superadmin?", classOf[java.lang.Boolean],  null),
+        ("Useradmin?", classOf[java.lang.Boolean],  null))
+
+      def tableItems() =
+        roleMapper.getAllUsers.toList map { user =>
+          val userId = Int box user.getId
+          
+          userId -> List(userId,
+                         user.getLoginName,
+                         user.getPassword,
+                         Boolean box user.isDefaultUser,
+                         Boolean box user.isSuperAdmin,
+                         Boolean box user.isUserAdmin)          
+        }
+
+      val frmFilter = new Form {
+        setCaption("Filter")
+        val layout = new VerticalLayout
+        setLayout(layout)        
+
+        val txtFilter = new TextField("Login, first name, last name, title, email, company")
+        val sltRoles = new ListSelect("Role(s)")
+        val chkInactive = new CheckBox("Include inactive users")
+        val btnClear = new Button("Clear")
+        val lytFooter = new GridLayout(2, 1)
+
+        setFooter(lytFooter)
+
+        lytFooter addComponent chkInactive
+        lytFooter addComponent btnClear
+
+        lytFooter.setComponentAlignment(chkInactive, Alignment.MIDDLE_LEFT)
+        lytFooter.setComponentAlignment(btnClear, Alignment.MIDDLE_RIGHT)
+
+        layout addComponent txtFilter
+        layout addComponent sltRoles
+      }
+
+      //val 
+
+      //pnlHeader setContent lytFilter
+      pnlFooter setContent new VerticalLayout { addComponent(frmFilter) }
+    }
+
+    val lytContent = new VerticalLayout
+    lytContent setMargin true
+    lytContent setSpacing true
+
+    addComponents(lytContent,
+      new Label("Users and their permissions."),
+      new UsersView)    
   }  
 }
