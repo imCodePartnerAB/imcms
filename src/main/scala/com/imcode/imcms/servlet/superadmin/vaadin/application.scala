@@ -11,10 +11,10 @@ import imcode.server.Imcms
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import imcode.server.document.DocumentDomainObject
 import com.imcode.imcms.api.Document.PublicationStatus
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper
 import com.vaadin.terminal.UserError
 import com.imcode.imcms.api.{IPAccess, Document}
 import imcode.util.Utility
+import imcode.server.user._
 
 class App extends com.vaadin.Application {
 
@@ -58,7 +58,7 @@ class App extends com.vaadin.Application {
     container
   }
 
-  def addContainerProperties(table: Table, properties: (Any, java.lang.Class[_], Any)*) =
+  def addContainerProperties(table: Table, properties: (AnyRef, java.lang.Class[_], AnyRef)*) =
     for ((propertyId, propertyType, defaultValue) <- properties)
       table.addContainerProperty(propertyId, propertyType, defaultValue)
 
@@ -139,6 +139,10 @@ class App extends com.vaadin.Application {
       setPageLength(10)
 
       setSizeFull
+
+      addListener { resetComponents }
+
+      getTableProperties foreach { p => addContainerProperties(this, p) }
     }
 
     val pnlHeader = new Panel {
@@ -168,14 +172,19 @@ class App extends com.vaadin.Application {
     // Investigate: List[(AnyRef, Array[AnyRef])]
     def getTableItems: List[(AnyRef, List[AnyRef])]
 
+    def getTableProperties: List[(AnyRef, java.lang.Class[_], AnyRef)]
+
     def reloadTableItems {
       tblItems.removeAllItems
 
       for((id, cells) <- getTableItems) tblItems.addItem(cells.toArray, id)
       //for ((id:, cells:) <- getTableItems) tblItems.addItem(cells, id)
     }
+
+    def resetComponents = {}
     
     reloadTableItems
+    resetComponents
   }
 
   case class Node(nodes: Node*)
@@ -200,10 +209,11 @@ class App extends com.vaadin.Application {
 
     val treeItems = List(
       "About" -> Nil,
-      "System" -> List("Languages", "Properties"),
-      "Documents" -> List("New", "Search"),
+      "Documents" -> List("Categories", "Templates"),    
+      "Settings" -> List("Languages", "Properties"),
       "Permissions" -> List("Users", "Roles", "IP Access"),
-      "Statistics" -> List("Session counter", "Search terms"))
+      "Statistics" -> List("Session counter", "Search terms"),
+      "Filesystem" -> Nil)
 
     treeItems foreach {
       case (item, subitems) =>
@@ -534,13 +544,13 @@ class App extends com.vaadin.Application {
     }
     
     class IPAccessView extends TableViewTemplate {
-      val btnAdd = new Button("Add")
-      val btnEdit = new Button("Edit")
-      val btnDelete = new Button("Delete")
+      lazy val btnAdd = new Button("Add")
+      lazy val btnEdit = new Button("Edit")
+      lazy val btnDelete = new Button("Delete")
 
       addComponents(pnlHeader, btnAdd, btnEdit, btnDelete)
 
-      addContainerProperties(tblItems,
+      def getTableProperties = List(
         ("User", classOf[String],  null),
         ("IP range from", classOf[String],  null),
         ("IP range to", classOf[String],  null))
@@ -550,7 +560,7 @@ class App extends com.vaadin.Application {
         ipAccess.getUserId -> List(user.getLoginName, toDDN(ipAccess.getStart), toDDN(ipAccess.getEnd))
       }
 
-      def resetControls =
+      override def resetComponents =
         if (tblItems.getValue == null) {
           btnDelete setEnabled false
           btnEdit setEnabled false
@@ -558,8 +568,6 @@ class App extends com.vaadin.Application {
           btnEdit setEnabled true
           btnDelete setEnabled true
         }
-
-      tblItems addListener resetControls
 
       btnAdd addListener {
         initAndShow(new IPAccessWindow("Add new IP Access")) { w =>
@@ -618,7 +626,7 @@ class App extends com.vaadin.Application {
       }
       
       // Bug in vaadin? - items are not displayed
-      reloadTableItems
+      //reloadTableItems
     }
 
     val lytContent = new VerticalLayout
@@ -634,16 +642,42 @@ class App extends com.vaadin.Application {
   def roles = {
     def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
-    class RoleDataWindow(caption: String) extends OkCancelDialog(caption) {}
+    class RoleDataWindow(caption: String) extends OkCancelDialog(caption) {
+      val txtName = new TextField("Name")
+      val chkPermGetPasswordByEmail = new CheckBox("Permission to get password by email")
+      val chkPermAccessMyPages = new CheckBox("""Permission to access "My pages" """)
+      val chkPermUseImagesFromArchive = new CheckBox("Permission to use images from image archive")
+      val chkPermChangeImagesInArchive = new CheckBox("Permission to change images in image archive")
+
+      val lytForm = new FormLayout {
+        addComponents(this, txtName, chkPermGetPasswordByEmail, chkPermAccessMyPages, chkPermUseImagesFromArchive,
+          chkPermChangeImagesInArchive)
+      }
+
+      val permsToChkBoxes = Map(
+        RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION -> chkPermChangeImagesInArchive,
+        RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION -> chkPermUseImagesFromArchive,
+        RoleDomainObject.PASSWORD_MAIL_PERMISSION -> chkPermGetPasswordByEmail,
+        RoleDomainObject.ADMIN_PAGES_PERMISSION -> chkPermAccessMyPages 
+      )
+      
+      def checkedPermissions =
+        for ((permission, chkBox) <- permsToChkBoxes if chkBox.getValue.asInstanceOf[Boolean]) yield permission
+
+      def checkPermissions(permissions: Set[RolePermissionDomainObject]) =
+        permissions foreach { p => permsToChkBoxes(p).setValue(true) }
+
+      setMainContent(lytForm)
+    }
 
     class RolesView extends TableViewTemplate {
-      val btnAdd = new Button("Add")
-      val btnEdit = new Button("Edit")
-      val btnDelete = new Button("Delete")
+      lazy val btnAdd = new Button("Add")
+      lazy val btnEdit = new Button("Edit")
+      lazy val btnDelete = new Button("Delete")
 
       addComponents(pnlHeader, btnAdd, btnEdit, btnDelete)
 
-      addContainerProperties(tblItems,
+      def getTableProperties = List(
         ("Id", classOf[java.lang.Integer],  null),
         ("Name", classOf[String],  null))
 
@@ -652,7 +686,59 @@ class App extends com.vaadin.Application {
           role.getId -> List(Int box role.getId.intValue, role.getName)
         }
 
-      reloadTableItems
+      btnAdd addListener {
+        initAndShow(new RoleDataWindow("New role")) { w =>
+          w.addOkButtonClickListener {
+            val role = new RoleDomainObject(w.txtName.getValue.asInstanceOf[String])
+            w.checkedPermissions foreach { p => role.addPermission(p) }
+
+            roleMapper saveRole role
+
+            reloadTableItems
+          }
+        }
+      }
+
+      btnEdit addListener {
+        initAndShow(new RoleDataWindow("Edit role")) { w =>
+          val roleId = tblItems.getValue.asInstanceOf[RoleId]
+          val role = roleMapper.getRole(roleId)
+
+          w.txtName setValue role.getName
+          w checkPermissions role.getPermissions.toSet
+
+          w.addOkButtonClickListener {
+            role.removeAllPermissions
+            w.checkedPermissions foreach { p => role.addPermission(p) }
+            roleMapper saveRole role
+            reloadTableItems
+          }
+        }        
+      }
+
+      btnDelete addListener {
+        initAndShow(new ConfirmationDialog("Confirmation", "Delete role?")) { w =>
+          val roleId = tblItems.getValue.asInstanceOf[RoleId]
+          val role = roleMapper.getRole(roleId)
+          
+          w.addOkButtonClickListener {
+            roleMapper deleteRole role
+            reloadTableItems
+          }
+        }
+      }
+
+      override def resetComponents =
+        if (tblItems.getValue == null) {
+          btnDelete setEnabled false
+          btnEdit setEnabled false
+        } else {
+          btnEdit setEnabled true
+          btnDelete setEnabled true
+        }
+
+      
+      //reloadTableItems
     }
 
     val lytContent = new VerticalLayout

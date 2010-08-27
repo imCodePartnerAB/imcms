@@ -102,6 +102,10 @@ public class RoleDomainObject implements Serializable, Comparable {
         permissions.remove( permission ) ;
     }
 
+    public void removeAllPermissions() {
+        permissions.clear();
+    }
+
     public RolePermissionDomainObject[] getPermissions() {
         return (RolePermissionDomainObject[])permissions.toArray( new RolePermissionDomainObject[permissions.size()] );
     }
