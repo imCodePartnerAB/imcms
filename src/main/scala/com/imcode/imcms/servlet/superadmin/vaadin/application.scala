@@ -17,6 +17,7 @@ import imcode.util.Utility
 import imcode.server.user._
 import com.imcode.imcms.api.{SystemProperty, IPAccess, Document}
 import imcode.server.{SystemData, Imcms}
+import java.util.Date
 
 class App extends com.vaadin.Application {
 
@@ -237,7 +238,8 @@ class App extends com.vaadin.Application {
       def valueChange(e: ValueChangeEvent) {
         e.getProperty.getValue.asInstanceOf[String] match {
           case "Languages" => splitPanel setSecondComponent languagesPanel
-          case "Properties" => splitPanel setSecondComponent propertiesTable
+          case "Properties" => splitPanel setSecondComponent settingsProperties
+          case "Session counter" => splitPanel setSecondComponent settingSessionCounter
           case "About" => splitPanel setSecondComponent labelAbout
           case "Documents" => splitPanel setSecondComponent documentsTable
           case "Roles" => splitPanel setSecondComponent roles
@@ -771,7 +773,7 @@ class App extends com.vaadin.Application {
       new UsersView)    
   }
 
-  def propertiesTable = {
+  def settingsProperties = {
     val pnlStartPage = new Panel("Start page") {
       val txtNumber = new TextField("Number")
 
@@ -848,7 +850,56 @@ class App extends com.vaadin.Application {
 
     lytContent
   }
-  
+
+  def settingSessionCounter = {
+    val frmSessionCounter = new Form {
+      setCaption("Session counter")
+
+      val layout = new VerticalLayout {
+        setSpacing(true)
+        setMargin(true)
+      }
+
+      setLayout(layout)
+
+      val txtValue = new TextField("Value")
+      val calStart = new DateField("Start date")
+      calStart.setStyle("calendar")
+
+
+
+      val lytButtons = new HorizontalLayout {
+        val btnRevert = new Button("Revert")
+        val btnSave = new Button("Save")
+
+        setSpacing(true)
+
+        addComponents(this, btnRevert, btnSave)
+      }
+
+      addComponents(layout, txtValue, calStart, lytButtons)
+
+      //setFooter(lytButtons)
+    }
+
+    def reload() {
+      frmSessionCounter.txtValue setValue Imcms.getServices.getSessionCounter.toString
+      frmSessionCounter.calStart setValue Imcms.getServices.getSessionCounterDate
+    }
+
+    frmSessionCounter.lytButtons.btnRevert addListener reload()
+    frmSessionCounter.lytButtons.btnSave addListener {
+      Imcms.getServices setSessionCounter frmSessionCounter.txtValue.getValue.asInstanceOf[String].toInt
+      Imcms.getServices setSessionCounterDate frmSessionCounter.calStart.getValue.asInstanceOf[Date]      
+    }
+
+    reload()
+
+    new VerticalLayout {
+      setMargin(true)
+      addComponent(frmSessionCounter)
+    }
+  }
 }
 
 
