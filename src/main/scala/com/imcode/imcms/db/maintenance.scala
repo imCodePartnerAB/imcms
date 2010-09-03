@@ -9,7 +9,7 @@ import com.ibatis.common.jdbc.ScriptRunner
 import org.springframework.jdbc.core.{ConnectionCallback, RowMapper}
 import java.io.FileReader
 import com.imcode.Logger
-import com.imcode.Controls._
+import com.imcode._
 
 class DB(ds: DataSource) extends Logger {
   

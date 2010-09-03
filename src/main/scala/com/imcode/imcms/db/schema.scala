@@ -1,8 +1,5 @@
 package com.imcode.imcms.db
 
-import java.io.File
-import xml.XML
-
 case class Version(major: Int, minor: Int) extends Ordered[Version] {
   require(major > 0, "'major' must be > 0 but was %d." format major)
   require(minor >= 0, "'minor' must be >= 0 but was %d." format minor)
@@ -44,20 +41,28 @@ case class Schema(version: Version, init: Init, diffs: Set[Diff], scriptsDir: St
   require(diffs.map(diff => diffsChain(diff.from)) forall (chain => chain.last.to == version),
           "every diffs-chain's last 'diff.to' must be equal to 'version'.")
 
-  def diffsChain(from: Version) = {
-    def diffsChainIter(from: Version = from, diffsAcc: List[Diff] = Nil): List[Diff] =
-      diffs find (_.from == from) match {
-        case Some(diff) => diffsChainIter(diff.to, diff::diffsAcc)
-        case _ => diffsAcc.reverse
-      }
-
-    diffsChainIter()
+  def diffsChain(from: Version): List[Diff] = diffs find (_.from == from) match {
+    case Some(diff) => diff :: diffsChain(diff.to)
+    case _ => Nil
   }
+
+//  def diffsChain(from: Version) = {
+//    def diffsChainIter(from: Version = from, diffsAcc: List[Diff] = Nil): List[Diff] =
+//      diffs find (_.from == from) match {
+//        case Some(diff) => diffsChainIter(diff.to, diff::diffsAcc)
+//        case _ => diffsAcc.reverse
+//      }
+//
+//    diffsChainIter()
+//  }
 
   def changeScriptsDir(newScriptsDir: String): Schema = copy(scriptsDir = newScriptsDir)
 }
 
 object Schema {
+
+  import java.io.File
+  import xml.XML
 
   implicit def xmlToSchema(xml: scala.xml.Elem) = {
     val version = (xml \ "@version").text

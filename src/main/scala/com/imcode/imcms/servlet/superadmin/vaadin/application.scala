@@ -1,20 +1,22 @@
 package com.imcode.imcms.servlet.superadmin.vaadin;
 
+import java.lang.{Boolean => JBoolean, Integer => JInteger}
+
 import scala.collection.JavaConversions._
-import com.imcode.Controls._
+import com.imcode._
 import com.vaadin.event.ItemClickEvent
 import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.vaadin.ui._
 import com.vaadin.data.Property
 import com.vaadin.data.Property._
-import imcode.server.Imcms
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import imcode.server.document.DocumentDomainObject
 import com.imcode.imcms.api.Document.PublicationStatus
 import com.vaadin.terminal.UserError
-import com.imcode.imcms.api.{IPAccess, Document}
 import imcode.util.Utility
 import imcode.server.user._
+import com.imcode.imcms.api.{SystemProperty, IPAccess, Document}
+import imcode.server.{SystemData, Imcms}
 
 class App extends com.vaadin.Application {
 
@@ -286,12 +288,12 @@ class App extends com.vaadin.Application {
     table setSelectable true
     table setImmediate true
 
-    table.addContainerProperty("Id", classOf[java.lang.Integer],  null)
+    table.addContainerProperty("Id", classOf[JInteger],  null)
     table.addContainerProperty("Code", classOf[String],  null)
     table.addContainerProperty("Name", classOf[String],  null)
     table.addContainerProperty("Native name", classOf[String],  null)
-    table.addContainerProperty("Enabled", classOf[java.lang.Boolean],  null)
-    table.addContainerProperty("Default", classOf[java.lang.Boolean],  null)
+    table.addContainerProperty("Enabled", classOf[JBoolean],  null)
+    table.addContainerProperty("Default", classOf[JBoolean],  null)
 
     def reloadTable {
       table.removeAllItems
@@ -344,7 +346,7 @@ class App extends com.vaadin.Application {
                   language.setCode(wndEditLanguage.txtCode.getValue.asInstanceOf[String])
                   language.setName(wndEditLanguage.txtName.getValue.asInstanceOf[String])
                   language.setNativeName(wndEditLanguage.txtNativeName.getValue.asInstanceOf[String])
-                  language.setEnabled(wndEditLanguage.chkEnabled.getValue.asInstanceOf[java.lang.Boolean])
+                  language.setEnabled(wndEditLanguage.chkEnabled.getValue.asInstanceOf[JBoolean])
 
                   languageDao.saveLanguage(language)
                   reloadTable
@@ -353,7 +355,7 @@ class App extends com.vaadin.Application {
             }
 
           case `btnEdit` =>
-            val languageId = table.getValue.asInstanceOf[java.lang.Integer]
+            val languageId = table.getValue.asInstanceOf[JInteger]
             val language = languageDao.getById(languageId)
 
             initAndShow(new LanguageWindow("Edit language")) { wndEditLanguage =>
@@ -368,7 +370,7 @@ class App extends com.vaadin.Application {
                 language.setCode(wndEditLanguage.txtCode.getValue.asInstanceOf[String])
                 language.setName(wndEditLanguage.txtName.getValue.asInstanceOf[String])
                 language.setNativeName(wndEditLanguage.txtNativeName.getValue.asInstanceOf[String])
-                language.setEnabled(wndEditLanguage.chkEnabled.getValue.asInstanceOf[java.lang.Boolean])
+                language.setEnabled(wndEditLanguage.chkEnabled.getValue.asInstanceOf[JBoolean])
 
                 languageDao.saveLanguage(language)
                 reloadTable
@@ -378,7 +380,7 @@ class App extends com.vaadin.Application {
           case `btnSetDefault` =>
             initAndShow(new ConfirmationDialog("Confirmation", "Change default language?")) { wndConfirmation =>
               wndConfirmation addOkButtonClickListener {
-                val languageId = table.getValue.asInstanceOf[java.lang.Integer]
+                val languageId = table.getValue.asInstanceOf[JInteger]
                 val property = systemDao.getProperty("DefaultLanguageId")
 
                 property.setValue(languageId.toString)
@@ -390,7 +392,7 @@ class App extends com.vaadin.Application {
           case `btnDelete` =>
             initAndShow(new ConfirmationDialog("Confirmation", "Delete language from the system?")) { wndConfirmation =>
               wndConfirmation addOkButtonClickListener {
-                val languageId = table.getValue.asInstanceOf[java.lang.Integer]
+                val languageId = table.getValue.asInstanceOf[JInteger]
                 languageDao.deleteLanguage(languageId)
                 reloadTable
               }
@@ -400,7 +402,7 @@ class App extends com.vaadin.Application {
     }    
 
     def resetControls = {
-      val languageId = table.getValue.asInstanceOf[java.lang.Integer]
+      val languageId = table.getValue.asInstanceOf[JInteger]
 
       if (languageId == null) {
         pnlControls.btnDelete.setEnabled(false)
@@ -441,22 +443,6 @@ class App extends com.vaadin.Application {
   }
   
 
-  def propertiesTable = {
-    val table = new Table("Properties")
-    table.addContainerProperty("Id", classOf[java.lang.Integer],  null)
-    table.addContainerProperty("Name", classOf[String],  null)
-    table.addContainerProperty("Value", classOf[String],  null)
-
-    val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
-
-    systemDao.getProperties.toList foreach { property =>
-      table.addItem(Array(property.getId, property.getName, property.getValue), property.getId)
-    }
-
-    table
-  }
-
-  
   def documentsTable = {
     val content = new VerticalLayout
     content.setMargin(true)
@@ -464,7 +450,7 @@ class App extends com.vaadin.Application {
     val table = new Table()
     table.addContainerProperty("Page alias", classOf[String],  null)
     table.addContainerProperty("Status", classOf[String],  null)
-    table.addContainerProperty("Type", classOf[java.lang.Integer],  null)
+    table.addContainerProperty("Type", classOf[JInteger],  null)
     table.addContainerProperty("Admin", classOf[String],  null)
     table.addContainerProperty("Ref.", classOf[String],  null)
     table.addContainerProperty("Child documents", classOf[String],  null)
@@ -572,7 +558,7 @@ class App extends com.vaadin.Application {
             w.sltUser setItemCaption (u.getId, u.getLoginName)
           }
 
-          val ipAccessId = tblItems.getValue.asInstanceOf[java.lang.Integer]
+          val ipAccessId = tblItems.getValue.asInstanceOf[JInteger]
           val ipAccess = ipAccessDao get ipAccessId
 
           w.sltUser select ipAccess.getUserId
@@ -595,7 +581,7 @@ class App extends com.vaadin.Application {
       btnDelete addListener {
         initAndShow(new ConfirmationDialog("Confirmation", "Delete IP Access?")) { w =>
           w.addOkButtonClickListener {
-            ipAccessDao delete tblItems.getValue.asInstanceOf[java.lang.Integer]
+            ipAccessDao delete tblItems.getValue.asInstanceOf[JInteger]
             reloadTableItems
           }
         }
@@ -651,7 +637,7 @@ class App extends com.vaadin.Application {
       addComponents(pnlHeader, btnAdd, btnEdit, btnDelete)
 
       def tableProperties = List(
-        ("Id", classOf[java.lang.Integer],  null),
+        ("Id", classOf[JInteger],  null),
         ("Name", classOf[String],  null))
 
       def tableItems() =
@@ -728,12 +714,12 @@ class App extends com.vaadin.Application {
 
     class UsersView extends TableViewTemplate {
       def tableProperties = List(
-        ("Id", classOf[java.lang.Integer],  null),
+        ("Id", classOf[JInteger],  null),
         ("Login name", classOf[String],  null),
         ("Password", classOf[String],  null),
-        ("Default user?", classOf[java.lang.Boolean],  null),
-        ("Superadmin?", classOf[java.lang.Boolean],  null),
-        ("Useradmin?", classOf[java.lang.Boolean],  null))
+        ("Default user?", classOf[JBoolean],  null),
+        ("Superadmin?", classOf[JBoolean],  null),
+        ("Useradmin?", classOf[JBoolean],  null))
 
       def tableItems() =
         roleMapper.getAllUsers.toList map { user =>
@@ -783,5 +769,86 @@ class App extends com.vaadin.Application {
     addComponents(lytContent,
       new Label("Users and their permissions."),
       new UsersView)    
-  }  
+  }
+
+  def propertiesTable = {
+    val pnlStartPage = new Panel("Start page") {
+      val txtNumber = new TextField("Number")
+
+      addComponent(txtNumber)
+    }
+
+    val pnlSystemMessage = new Panel("System message") {
+      val txtMessage = new TextField("Text")
+
+      txtMessage.setRows(5)
+
+      addComponent(txtMessage)
+    }
+
+    val pnlServerMaster = new Panel("Server master") {
+      val txtName = new TextField("Name")
+      val txtEmail = new TextField("Email")
+
+      addComponents(this, txtName, txtEmail)
+    }
+
+    val pnlWebMaster = new Panel("Web master") {
+      val txtName = new TextField("Name")
+      val txtEmail = new TextField("Email")
+
+      addComponents(this, txtName, txtEmail)
+    }
+
+    val lytButtons = new HorizontalLayout {
+      val btnRevert = new Button("Revert")
+      val btnSave = new Button("Save")
+
+      setSpacing(true)
+
+      addComponents(this, btnRevert, btnSave)
+    }
+    
+    val lytContent = new VerticalLayout {
+      setSpacing(true)
+      setMargin(true)
+    }
+
+    addComponents(lytContent, pnlStartPage, pnlSystemMessage, pnlServerMaster, pnlWebMaster, lytButtons)
+
+    def reload() {
+      let(Imcms.getServices.getSystemData) { d =>
+        pnlStartPage.txtNumber setValue d.getStartDocument.toString
+        pnlSystemMessage.txtMessage setValue d.getSystemMessage
+        pnlWebMaster.txtName setValue d.getWebMaster
+        pnlWebMaster.txtEmail setValue d.getWebMasterAddress
+        pnlServerMaster.txtName setValue d.getServerMaster
+        pnlServerMaster.txtEmail setValue d.getServerMasterAddress        
+      }
+    }
+
+    lytButtons.btnRevert addListener {
+      reload() 
+    }
+
+    lytButtons.btnSave addListener {
+      let(new SystemData) { d =>
+        d setStartDocument pnlStartPage.txtNumber.getValue.asInstanceOf[String].toInt
+        d setSystemMessage pnlSystemMessage.txtMessage.getValue.asInstanceOf[String]
+        d setServerMaster pnlServerMaster.txtName.getValue.asInstanceOf[String]
+        d setServerMasterAddress pnlServerMaster.txtEmail.getValue.asInstanceOf[String]
+        d setWebMaster pnlWebMaster.txtName.getValue.asInstanceOf[String]
+        d setWebMasterAddress pnlWebMaster.txtEmail.getValue.asInstanceOf[String]
+
+        Imcms.getServices.setSystemData(d)
+      }
+    }
+
+    reload()
+
+    lytContent
+  }
+  
 }
+
+
