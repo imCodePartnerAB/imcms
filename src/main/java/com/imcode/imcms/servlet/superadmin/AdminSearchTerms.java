@@ -71,7 +71,7 @@ public class AdminSearchTerms extends HttpServlet {
         return date;
     }
 
-    private List<TermCount> getTermCounts(Date fromDate, Date toDate) {
+    public static List<TermCount> getTermCounts(Date fromDate, Date toDate) {
         Database database = Imcms.getServices().getDatabase();
         List<String> whereClauses = new ArrayList<String>();
         List<Date> parameters = new ArrayList<Date>();

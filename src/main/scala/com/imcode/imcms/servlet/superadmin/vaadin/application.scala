@@ -10,6 +10,7 @@ import com.vaadin.ui._
 import com.vaadin.data.Property
 import com.vaadin.data.Property._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
+import imcms.servlet.superadmin.AdminSearchTerms
 import imcode.server.document.DocumentDomainObject
 import com.imcode.imcms.api.Document.PublicationStatus
 import com.vaadin.terminal.UserError
@@ -173,9 +174,9 @@ class App extends com.vaadin.Application {
     addComponents(this, pnlHeader, tblItems, pnlFooter)
 
     // Investigate: List[(AnyRef, Array[AnyRef])]
-    def tableItems(): List[(AnyRef, List[AnyRef])]
+    def tableItems(): List[(AnyRef, List[AnyRef])] = List.empty
 
-    def tableProperties: List[(AnyRef, java.lang.Class[_], AnyRef)]
+    def tableProperties: List[(AnyRef, java.lang.Class[_], AnyRef)] = List.empty
 
     def reloadTableItems {
       tblItems.removeAllItems
@@ -237,6 +238,8 @@ class App extends com.vaadin.Application {
     tree addListener (new ValueChangeListener {
       def valueChange(e: ValueChangeEvent) {
         e.getProperty.getValue.asInstanceOf[String] match {
+          case "Search terms" => splitPanel setSecondComponent searchTerms
+          case "Categories" => splitPanel setSecondComponent categories
           case "Languages" => splitPanel setSecondComponent languagesPanel
           case "Properties" => splitPanel setSecondComponent settingsProperties
           case "Session counter" => splitPanel setSecondComponent settingSessionCounter
@@ -514,12 +517,12 @@ class App extends com.vaadin.Application {
 
       addComponents(pnlHeader, btnAdd, btnEdit, btnDelete)
 
-      def tableProperties = List(
+      override def tableProperties = List(
         ("User", classOf[String],  null),
         ("IP range from", classOf[String],  null),
         ("IP range to", classOf[String],  null))
 
-      def tableItems() = ipAccessDao.getAll.toList map { ipAccess =>
+      override def tableItems() = ipAccessDao.getAll.toList map { ipAccess =>
         val user = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper getUser (Int unbox ipAccess.getUserId)
         ipAccess.getUserId -> List(user.getLoginName, toDDN(ipAccess.getStart), toDDN(ipAccess.getEnd))
       }
@@ -638,11 +641,11 @@ class App extends com.vaadin.Application {
 
       addComponents(pnlHeader, btnAdd, btnEdit, btnDelete)
 
-      def tableProperties = List(
+      override def tableProperties = List(
         ("Id", classOf[JInteger],  null),
         ("Name", classOf[String],  null))
 
-      def tableItems() =
+      override def tableItems() =
         roleMapper.getAllRoles.toList map { role =>
           role.getId -> List(Int box role.getId.intValue, role.getName)
         }
@@ -715,7 +718,7 @@ class App extends com.vaadin.Application {
     def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
     class UsersView extends TableViewTemplate {
-      def tableProperties = List(
+      override def tableProperties = List(
         ("Id", classOf[JInteger],  null),
         ("Login name", classOf[String],  null),
         ("Password", classOf[String],  null),
@@ -723,7 +726,7 @@ class App extends com.vaadin.Application {
         ("Superadmin?", classOf[JBoolean],  null),
         ("Useradmin?", classOf[JBoolean],  null))
 
-      def tableItems() =
+      override def tableItems() =
         roleMapper.getAllUsers.toList map { user =>
           val userId = Int box user.getId
           
@@ -866,8 +869,6 @@ class App extends com.vaadin.Application {
       val calStart = new DateField("Start date")
       calStart.setStyle("calendar")
 
-
-
       val lytButtons = new HorizontalLayout {
         val btnRevert = new Button("Revert")
         val btnSave = new Button("Save")
@@ -899,6 +900,108 @@ class App extends com.vaadin.Application {
       setMargin(true)
       addComponent(frmSessionCounter)
     }
+  }
+
+  def categories = {
+    new VerticalLayout {
+      setMargin(true)      
+      addComponent(new TabSheet {
+        addTab(new TableViewTemplate {
+          setCaption("Category")
+
+          override def tableProperties =
+            ("Id", classOf[JInteger],  null) ::
+            ("Name", classOf[String],  null) ::
+            ("Description", classOf[String],  null) ::
+            ("Icon", classOf[String],  null) ::
+            ("Type", classOf[String],  null) ::
+            Nil
+        })
+        
+        addTab(new TableViewTemplate {
+          setCaption("Category type")
+          override def tableProperties = List(
+            ("Id", classOf[JInteger],  null),
+            ("Name", classOf[String],  null),
+            ("Multi select?", classOf[JBoolean],  null),
+            ("Inherited to new documents?", classOf[JBoolean],  null),
+            ("Used by image archive?", classOf[JBoolean],  null))
+
+//            ("Id", classOf[JInteger],  null) ::
+//            ("Name", classOf[String],  null) ::
+//            ("Multi select?", classOf[JBoolean],  null) ::
+//            ("Inherited to new documents?", classOf[JBoolean],  null) ::
+//            ("Used by image archive?", classOf[JBoolean],  null) ::
+//            Nil
+//
+//          override def tableProperties =
+//            ("Id", classOf[JInteger],  null) ::
+//            ("Name", classOf[String],  null) ::
+//            ("Multi select?", classOf[JBoolean],  null) ::
+//            ("Inherited to new documents?", classOf[JBoolean],  null) ::
+//            ("Used by image archive?", classOf[JBoolean],  null) ::
+//            Nil
+        })
+      })
+    }
+  }
+
+  //
+  def searchTerms =  new VerticalLayout {
+    setMargin(true)
+    setSpacing(true)
+
+    val frmSearchTerm = new Form {
+      setCaption("Popular search terms")
+      val layout = new VerticalLayout {
+        setSpacing(true)
+        setMargin(true)
+      }
+
+      setLayout(layout)
+
+      val tblTerms = new Table {
+        addContainerProperties(this, ("Term", classOf[String], null), ("Count", classOf[String], null))
+        setPageLength(10)
+      }
+
+      val lytBar = new HorizontalLayout {
+        setSpacing(true)
+        setCaption("Date range")
+        val calFrom = new DateField()
+        val calTo = new DateField()
+        val btnReload = new Button("Reload")
+
+        calFrom.setValue(new Date)
+        calFrom.setStyle("calendar")
+        calFrom.setResolution(DateField.RESOLUTION_DAY)
+
+        calTo.setValue(new Date)
+        calTo.setStyle("calendar")
+        calTo.setResolution(DateField.RESOLUTION_DAY)
+
+        addComponents(this, calFrom, calTo, btnReload)
+      }
+
+      addComponents(layout, tblTerms, lytBar)
+
+      def reload() {
+        val terms = AdminSearchTerms.getTermCounts(lytBar.calFrom.getValue.asInstanceOf[Date],
+          lytBar.calTo.getValue.asInstanceOf[Date])
+
+        tblTerms.removeAllItems
+        terms foreach { t =>
+          val item = Array[AnyRef](t.getTerm, t.getCount.toString)
+          tblTerms.addItem(item, item)
+        }
+      }
+
+      lytBar.btnReload addListener reload()
+
+      reload()
+    }
+
+    addComponent(frmSearchTerm)
   }
 }
 
