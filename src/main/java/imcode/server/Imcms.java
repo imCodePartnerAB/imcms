@@ -73,25 +73,36 @@ public class Imcms {
     public synchronized static void start() throws StartupException {
         try {
             services = createServices();
-            DocumentMapper dm = services.getDocumentMapper();
-
-            StopWatch stopWatch = new StopWatch();
-            stopWatch.start();
-            for (int id: dm.getAllDocumentIds()) {
-                DocumentVersionSupport vs = dm.getDocumentVersionSupport(id);
-
-                dm.getDocument(id);
-                dm.getPublishedDocument(id);
-
-                for (DocumentVersion v: vs.getVersions()) {
-                    dm.getDocument(id, v.getNumber());
-                }
-            }
-
-            stopWatch.stop();            
+            
+            if (services.getSystemData().isLoadDocumentsOnStart()) loadPublishedDocuments();
         } catch (Exception e) {
             throw new StartupException("imCMS could not be started. Please see the log file in WEB-INF/logs/ for details.", e);
         }
+    }
+
+    public static void loadPublishedDocuments() {
+        DocumentMapper dm = services.getDocumentMapper();
+
+        LOG.info("Loading published documents.");
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        for (int id: dm.getAllDocumentIds()) {
+            DocumentVersionSupport vs = dm.getDocumentVersionSupport(id);
+
+            dm.getDocument(id);
+            dm.getPublishedDocument(id);
+
+            for (DocumentVersion v: vs.getVersions()) {
+                dm.getDocument(id, v.getNumber());
+            }
+        }
+
+        stopWatch.stop();
+        LOG.info(String.format(
+                "Published documents have been loaded. Elapsed time is about %s sec.",
+                stopWatch.getTime() / 1000));
     }
 
     private synchronized static ImcmsServices createServices() throws Exception {

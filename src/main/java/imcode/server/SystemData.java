@@ -23,6 +23,12 @@ public class SystemData implements java.io.Serializable {
     /** The systemmessage */
     private String systemMessage ;
 
+    /**
+     * If set to true then all documents will loaded to the cache on Imcms start.
+     * @see imcode.server.Imcms#start();
+     */
+    private boolean loadDocumentsOnStart = true;
+
 
     /** Get the startdocument **/
     public int getStartDocument() {
@@ -81,5 +87,13 @@ public class SystemData implements java.io.Serializable {
     /** Get the systemmessage */
     public void setSystemMessage(String systemMessage) {
 	this.systemMessage = systemMessage ;
+    }
+
+    public boolean isLoadDocumentsOnStart() {
+        return loadDocumentsOnStart;
+    }
+
+    public void setLoadDocumentsOnStart(boolean loadDocumentsOnStart) {
+        this.loadDocumentsOnStart = loadDocumentsOnStart;
     }
 }
