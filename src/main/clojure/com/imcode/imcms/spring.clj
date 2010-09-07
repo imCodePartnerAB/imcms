@@ -2,6 +2,7 @@
   #^{:doc "Spring utils."}
   com.imcode.imcms.spring)
 
+
 (defn get-bean
   "Returns bean from the app context."
   [app-context name]

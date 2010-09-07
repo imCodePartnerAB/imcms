@@ -20,8 +20,54 @@ import com.imcode.imcms.api.{SystemProperty, IPAccess, Document}
 import imcode.server.{SystemData, Imcms}
 import java.util.Date
 
+/** Creates root item; root is not displayed */
+class MenuItem(val parent: MenuItem = null, val handler: () => Unit = () => {}) {
+
+  import collection.mutable.ListBuffer
+
+  private val itemsBuffer = new ListBuffer[MenuItem]
+
+  def items = itemsBuffer.toList
+
+  override val toString = getClass.getName split '$' last
+
+  val id = {
+    def pathToRoot(m: MenuItem): List[MenuItem] = m :: (if (m.parent == null) Nil else pathToRoot(m.parent))
+
+    pathToRoot(this).reverse map (_.toString) map camelCaseToUnderscore mkString "."
+  }
+
+  if (parent != null) parent.itemsBuffer += this
+
+  // forces initialization of items declared as inner objects
+  for (m <- getClass.getDeclaredMethods if m.getParameterTypes().length == 0)
+    m.invoke(this)
+}
+
 class App extends com.vaadin.Application {
 
+  object Menu extends MenuItem {
+    object About extends MenuItem(this)
+    object Settings extends MenuItem(this) {
+      object Languages extends MenuItem(this)
+      object Properties extends MenuItem(this)
+    }
+    object Documents extends MenuItem(this) {
+      object Categories extends MenuItem(this)
+      object Templates extends MenuItem(this)
+    }
+    object Permissions extends MenuItem(this) {
+      object Users extends MenuItem(this)
+      object Roles extends MenuItem(this)
+      object IP_Access extends MenuItem(this)
+    }
+    object Statistics extends MenuItem(this) {
+      object SearchTerms extends MenuItem(this)
+      object SessionCounter extends MenuItem(this)
+    }
+    object Filesystem extends MenuItem(this)
+  }
+  
   type ButtonClickHandler = Button#ClickEvent => Unit
   type PropertyValueChangeHandler = ValueChangeEvent => Unit 
 
@@ -199,7 +245,51 @@ class App extends com.vaadin.Application {
                                 | please pick a task from the menu.
                                 |""".stripMargin)
 
-  var wndMain: Window = _
+  val wndMain = new Window {
+    val content = new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL)
+    val treeMenu = new Tree
+
+    def initMenu(menu: MenuItem) {
+      treeMenu addItem menu
+
+      menu.parent match {
+        case null => ()
+        case parent => treeMenu.setParent(menu, parent)
+      }
+
+      menu.items match {
+        case Nil => treeMenu setChildrenAllowed (menu, false)
+        case items => items foreach initMenu
+      }
+    }
+
+    treeMenu addListener (new ValueChangeListener {
+      def valueChange(e: ValueChangeEvent) {
+        content.setSecondComponent(
+          e.getProperty.getValue match {
+            case Menu.Statistics.SearchTerms => searchTerms
+            case Menu.Documents.Categories => categories
+            case Menu.Settings.Languages => languagesPanel
+            case Menu.Settings.Properties => settingsProperties
+            case Menu.Statistics.SessionCounter => settingSessionCounter
+            case Menu.About => labelAbout
+            case Menu.Documents => documentsTable
+            case Menu.Permissions.Roles => roles
+            case Menu.Permissions.Users => users
+            case Menu.Permissions.IP_Access => ipAccess
+
+            case _ => labelNA
+          })
+      }
+    })
+
+    treeMenu setImmediate true
+    treeMenu select Menu.About
+    treeMenu expandItemsRecursively Menu
+
+    content setFirstComponent treeMenu
+    this setContent content
+  }
 
   def show(wndChild: Window, modal: Boolean = true) {
     wndChild setModal modal
@@ -207,60 +297,7 @@ class App extends com.vaadin.Application {
   }
 
   def init {
-    wndMain = new Window
-    val splitPanel = new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL)
-    val tree = new Tree
-
-    val treeItems = List(
-      "About" -> Nil,
-      "Documents" -> List("Categories", "Templates"),    
-      "Settings" -> List("Languages", "Properties"),
-      "Permissions" -> List("Users", "Roles", "IP Access"),
-      "Statistics" -> List("Session counter", "Search terms"),
-      "Filesystem" -> Nil)
-
-    treeItems foreach {
-      case (item, subitems) =>
-        tree addItem item
-        if (subitems.isEmpty) {
-          tree setChildrenAllowed (item, false)
-        } else {
-          subitems foreach {subitem =>
-            tree addItem subitem
-            tree setParent (subitem, item)
-            tree setChildrenAllowed (subitem, false)
-          }
-        }
-
-        tree expandItemsRecursively item
-    }
-
-    tree addListener (new ValueChangeListener {
-      def valueChange(e: ValueChangeEvent) {
-        e.getProperty.getValue.asInstanceOf[String] match {
-          case "Search terms" => splitPanel setSecondComponent searchTerms
-          case "Categories" => splitPanel setSecondComponent categories
-          case "Languages" => splitPanel setSecondComponent languagesPanel
-          case "Properties" => splitPanel setSecondComponent settingsProperties
-          case "Session counter" => splitPanel setSecondComponent settingSessionCounter
-          case "About" => splitPanel setSecondComponent labelAbout
-          case "Documents" => splitPanel setSecondComponent documentsTable
-          case "Roles" => splitPanel setSecondComponent roles
-          case "Users" => splitPanel setSecondComponent users
-          case "IP Access" => splitPanel setSecondComponent ipAccess
-
-          case _ => splitPanel setSecondComponent labelNA
-        }
-      }
-    })
-
-    tree setImmediate true
-    tree select "About"
-
-    splitPanel setFirstComponent tree
-
-    wndMain setContent splitPanel
-    
+    wndMain initMenu Menu
     this setMainWindow wndMain
   }
 
@@ -982,7 +1019,7 @@ class App extends com.vaadin.Application {
 
         addComponents(this, calFrom, calTo, btnReload)
       }
-
+      
       addComponents(layout, tblTerms, lytBar)
 
       def reload() {
@@ -1002,6 +1039,7 @@ class App extends com.vaadin.Application {
     }
 
     addComponent(frmSearchTerm)
+
   }
 }
 

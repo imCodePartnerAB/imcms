@@ -151,6 +151,7 @@
 
 (defmulti loc class)
 
+
 ;"Returns lines of code in a text file."
 (defmethod loc String [file-path]
   (loc (File. file-path)))

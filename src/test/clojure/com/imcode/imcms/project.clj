@@ -18,11 +18,10 @@
   (:use
     (clojure.contrib
       repl-utils
-      duck-streams
       def
       [except :only (throw-if throw-if-not)])
-
-    [com.imcode.imcms.fs :only (throw-if-not-dir throw-if-not-file)])
+      [clojure.contrib.map-utils :only (safe-get safe-get-in)]
+      [com.imcode.imcms.fs :only (throw-if-not-dir throw-if-not-file)])
 
   (:import
     (java.io File)
@@ -94,14 +93,11 @@
                      (get-file-fn "build.properties")
                      (comp misc-lib/to-keyword-key-map fs-lib/load-properties)))
 
+(defn build-properties* [name & names]
+  (for [name (cons name names)] (safe-get build-properties name)))
 
-(defn deploy-maven-jar
-  "Deploy jar file to imcms maven's repo."
-  [group-id artifact-id version jar-filepath]
-  (let [cmd-template "mvn deploy:deploy-file -DrepositoryId=imcode -Durl=scp://garm.imcode.com:/srv/www/apache/sites/repo.imcode.com/maven2 -DgroupId=%s -DartifactId=%s -Dversion=%s -Dfile=%s -Dpackaging=jar"
-        cmd (format cmd-template group-id artifact-id version jar-filepath)
-        args (su/re-split #"\s" cmd)]
-    (apply shell/sh args)))
+
+(defn build-property [name] (first (build-properties* name)))
 
 
 (defn init-spring-app-context! []
@@ -122,12 +118,26 @@
     (Imcms/setApplicationContext spring-app-context)
     (Imcms/setPrepareDatabaseOnStart prepare-db-on-start)))
 
+(def *file-exts* "java|jsp|htm|html|xml|properties|sql|clj|scala")
+
 
 (defn loc
   "Returns loc in path. By default returns project's loc."
   ([]
-    (loc basedir))
+    (loc *file-exts*))
 
-  ([#^String dir]
+  ([file-exts]
+    (loc basedir file-exts))
+
+  ([^String dir file-exts] 
     (fs-lib/loc
-      (fs-lib/files dir #"\.(java|jsp|htm|html|xml|properties|sql|clj)$"))))
+      (fs-lib/files dir (re-pattern (str "\\.(" file-exts ")$"))))))
+
+
+(defn deploy-maven-jar
+  "Deploy jar file to imcms maven's repo."
+  [group-id artifact-id version jar-filepath]
+  (let [cmd-template "mvn deploy:deploy-file -DrepositoryId=imcode -Durl=scp://garm.imcode.com:/srv/www/apache/sites/repo.imcode.com/maven2 -DgroupId=%s -DartifactId=%s -Dversion=%s -Dfile=%s -Dpackaging=jar"
+        cmd (format cmd-template group-id artifact-id version jar-filepath)
+        args (su/re-split #"\s" cmd)]
+    (apply shell/sh args)))

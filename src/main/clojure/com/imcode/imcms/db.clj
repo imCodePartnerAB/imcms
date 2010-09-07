@@ -72,9 +72,6 @@
      :subname (str "mem:" name (str-join ";" params))}))
 
 
-
-
-
 (defn- print-script-info
   "Prints SQL script name and lines count.
   This fn is called when *execute-script-statements* is set to false."
@@ -85,7 +82,7 @@
 
 
 (defn run-script
-  "Runs sql script."
+  "Runs sql script using existing connection."
   ([connection script]
     (run-script connection script false true))
 
@@ -98,27 +95,22 @@
         (print-script-info script (count (line-seq script-reader)))))))
 
 
-(defn run-scripts [spec scripts]
-  "Run sql scripts."
-  (sql/with-connection spec
-    (sql/transaction
-      (let [connection (sql/connection)]
-        (doseq [script scripts]
-          (run-script connection script))))))
-
-
 (defn run-scripts
   "Run sql scripts."
-  [spec schema-name scripts]
-  (sql/with-connection spec
-    (sql/transaction
-      (sql/do-commands
-        (format "use %s" schema-name))
+  ([spec scripts]
+    (run-scripts spec nil scripts))
 
-      (doseq [script scripts]
-        (run-script (sql/connection) script)))))
+  ([spec schema-name scripts]
+    (sql/with-connection spec
+      (sql/transaction
+        (when schema-name
+          (sql/do-commands
+            (format "use %s" schema-name)))
 
+        (doseq [script scripts]
+          (run-script (sql/connection) script))))))
 
+  
 (defn recreate
   "Recreates databse."
   [spec schema-name scripts]
@@ -134,7 +126,7 @@
 
 
 (defn delete
-  "Deletes schema."
+  "Deletes database."
   [spec schema-name]
   (sql/with-connection spec
     (sql/do-commands

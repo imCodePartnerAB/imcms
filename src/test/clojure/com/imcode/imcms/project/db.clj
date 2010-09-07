@@ -1,7 +1,7 @@
 (ns com.imcode.imcms.project.db
 
   (:require
-    [com.imcode.imcms.project :as project]
+    [com.imcode.imcms.project :as p]
 
     (clojure.contrib
       [sql :as sql])
@@ -15,7 +15,6 @@
   
   (:use
     clojure.test
-    [clojure.contrib.map-utils :only (safe-get safe-get-in)]
     (clojure.contrib duck-streams))
 
 
@@ -30,24 +29,24 @@
 ;;;; Helper fns
 ;;;;
 
-(defn db-name "Database name."
-  []
-  (:db-name (project/build-properties)))
+(def db-name #(p/build-property :db-name))
+(def db-host #(p/build-property :db-host))
+(def db-port #(p/build-property :db-port))
+(def db-user #(p/build-property :db-user))
+(def db-pass #(p/build-property :db-pass))
+(def db-target #(p/build-property :db-target))
 
 
 (defn create-ds
   ([]
-    (create-ds (db-name) true))
+    (create-ds (db-name)))
 
   ([name]
-    (create-ds db-name true))
+    (create-ds name true))
 
   ([name autocomit]
-    (let [p (project/build-properties)
-          db-url (db-lib/create-url (safe-get p :db-target) (safe-get p :db-host) (safe-get p :db-port) name)]
-
-      (doto
-        (db-lib/create-ds (safe-get p :db-driver) (safe-get p :db-user) (safe-get p :db-pass) db-url)
+    (let [db-url (db-lib/create-url (db-target) (db-host) (db-port) name)]
+      (doto (db-lib/create-ds (db-driver) (db-user) (db-pass) db-url)
         (.setDefaultAutoCommit autocomit)))))
 
 
@@ -58,14 +57,14 @@
   
 
 (defn hibernate-properties []
-  (let [p (project/build-properties)
-        db-url (db-lib/create-url (:db-target p) (:db-host p) (:db-port p) (db-name))]
+  (let [p (p/build-properties)
+        db-url (db-lib/create-url (db-target) (db-host) (db-port) (db-name))]
 
     {"hibernate.dialect", "org.hibernate.dialect.MySQLInnoDBDialect"
-     "hibernate.connection.driver_class", (:db-driver p)
+     "hibernate.connection.driver_class", (db-driver )
      "hibernate.connection.url", db-url
-     "hibernate.connection.username", (:db-user p)
-     "hibernate.connection.password", (:db-pass p)
+     "hibernate.connection.username", (db-user)
+     "hibernate.connection.password", (db-pass)
      "hibernate.connection.pool_size", "1"
      "hibernate.connection.autocommit", "true"
      "hibernate.cache.provider_class", "org.hibernate.cache.HashtableCacheProvider"
@@ -120,7 +119,7 @@
     (when recreate-before-prepare
       (recreate name))
 
-    (let [scriptsDir (project/subdir-path "src/main/web/WEB-INF/sql")
-          schema (-> (Schema/load (project/file "src/main/resources/schema.xml")) (.changeScriptsDir scriptsDir))]
+    (let [scriptsDir (p/subdir-path "src/main/web/WEB-INF/sql")
+          schema (-> (Schema/load (p/file "src/main/resources/schema.xml")) (.changeScriptsDir scriptsDir))]
 
       (-> (DB. (create-ds name)) (.prepare schema)))))
