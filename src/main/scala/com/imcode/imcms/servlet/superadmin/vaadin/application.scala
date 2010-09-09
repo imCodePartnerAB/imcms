@@ -138,7 +138,11 @@ class App extends com.vaadin.Application {
     lytContent setSpacing true
     lytContent setSizeFull
 
-    setContent(lytContent)
+    // auto size
+    setContent(new VerticalLayout {
+      addComponent(lytContent)
+      setSizeUndefined
+    })
 
     def setMainContent(c: Component) {
       lytContent.addComponent(c, 0, 0)
@@ -284,7 +288,9 @@ class App extends com.vaadin.Application {
 
   val wndMain = new Window {
     val content = new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL)
-    val treeMenu = new Tree
+    val treeMenu = new Tree {
+      setImmediate(true)
+    }
 
     def initMenu(menu: MenuItem) {
       treeMenu addItem menu
@@ -321,10 +327,6 @@ class App extends com.vaadin.Application {
       }
     })
 
-    treeMenu setImmediate true
-    treeMenu select Menu.About
-    treeMenu expandItemsRecursively Menu
-
     content setFirstComponent treeMenu
     this setContent content
   }
@@ -337,6 +339,9 @@ class App extends com.vaadin.Application {
   def init {
     wndMain initMenu Menu
     this setMainWindow wndMain
+
+    wndMain.treeMenu expandItemsRecursively Menu
+    wndMain.treeMenu select Menu.About    
   }
 
   //
@@ -929,52 +934,82 @@ class App extends com.vaadin.Application {
     lytContent
   }
 
-  def settingSessionCounter = {
-    val frmSessionCounter = new Form {
-      setCaption("Session counter")
+  def settingSessionCounter = new TabView {
+    addTab(new ViewVerticalLayout("Session counter") { self =>
+      setSpacing(false)
+      
+      val lytData = new FormLayout {
+        val txtValue = new TextField("Value:")
+        val calStart = new DateField("Start date:")
+        calStart.setResolution(DateField.RESOLUTION_DAY)
 
-      val layout = new VerticalLayout {
-        setSpacing(true)
-        setMargin(true)
+        txtValue.setReadOnly(true)
+        calStart.setReadOnly(true)
+
+        addComponents(this, txtValue, calStart)
       }
-
-      setLayout(layout)
-
-      val txtValue = new TextField("Value")
-      val calStart = new DateField("Start date")
-      calStart.setStyle("calendar")
 
       val lytButtons = new HorizontalLayout {
-        val btnRevert = new Button("Revert")
-        val btnSave = new Button("Save")
-
+        val btnReload = new Button("Reload")
+        val btnClear = new Button ("Clear")
+        val btnEdit = new Button("Edit")
         setSpacing(true)
 
-        addComponents(this, btnRevert, btnSave)
+        addComponents(this, btnEdit, btnClear, btnReload)
       }
 
-      addComponents(layout, txtValue, calStart, lytButtons)
+      addComponents(this, lytData, lytButtons)
 
-      //setFooter(lytButtons)
-    }
+      def reload() {
+        // ?!?! when read only throws exception ?!?!
+        lytData.txtValue setReadOnly false
+        lytData.calStart setReadOnly false
 
-    def reload() {
-      frmSessionCounter.txtValue setValue Imcms.getServices.getSessionCounter.toString
-      frmSessionCounter.calStart setValue Imcms.getServices.getSessionCounterDate
-    }
+        lytData.txtValue setValue Imcms.getServices.getSessionCounter.toString
+        lytData.calStart setValue Imcms.getServices.getSessionCounterDate
 
-    frmSessionCounter.lytButtons.btnRevert addListener reload()
-    frmSessionCounter.lytButtons.btnSave addListener {
-      Imcms.getServices setSessionCounter frmSessionCounter.txtValue.getValue.asInstanceOf[String].toInt
-      Imcms.getServices setSessionCounterDate frmSessionCounter.calStart.getValue.asInstanceOf[Date]      
-    }
+        lytData.txtValue setReadOnly true
+        lytData.calStart setReadOnly true         
+      }
 
-    reload()
+      lytButtons.btnReload addListener reload()
+      lytButtons.btnClear addListener {
+        initAndShow(new ConfirmationDialog("Confirmation", "Clear counter statistics?")) { w =>
+          w.addOkButtonClickListener {
+            Imcms.getServices setSessionCounter 0
+            Imcms.getServices setSessionCounterDate new Date
 
-    new VerticalLayout {
-      setMargin(true)
-      addComponent(frmSessionCounter)
-    }
+            reload()
+          }          
+        }
+      }
+
+      lytButtons.btnEdit addListener {
+        initAndShow(new OkCancelDialog("Edit session counter")) { w =>
+          val txtValue = new TextField("Value")
+          val calStart = new DateField("Start date")
+
+          calStart.setResolution(DateField.RESOLUTION_DAY)
+          txtValue setValue Imcms.getServices.getSessionCounter.toString
+          calStart setValue Imcms.getServices.getSessionCounterDate
+
+          w.setMainContent(new FormLayout {
+            addComponents(this, txtValue, calStart)
+          })
+
+          w.addOkButtonClickListener {
+            Imcms.getServices setSessionCounter txtValue.getValue.asInstanceOf[String].toInt
+            Imcms.getServices setSessionCounterDate calStart.getValue.asInstanceOf[Date]
+
+            reload()
+          }
+
+          reload() // enshure form and dialog values are same
+        }
+      }
+
+      reload()
+    })
   }
 
   def categories = {
@@ -1040,11 +1075,11 @@ class App extends com.vaadin.Application {
         val btnReload = new Button("Reload")
 
         calFrom.setValue(new Date)
-        calFrom.setStyle("calendar")
+        //calFrom.setStyle("calendar")
         calFrom.setResolution(DateField.RESOLUTION_DAY)
 
         calTo.setValue(new Date)
-        calTo.setStyle("calendar")
+        //calTo.setStyle("calendar")
         calTo.setResolution(DateField.RESOLUTION_DAY)
 
         addComponents(this, calFrom, calTo, btnReload)
