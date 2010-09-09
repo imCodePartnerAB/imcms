@@ -75,6 +75,8 @@ class App extends com.vaadin.Application {
     object Documents extends MenuItem(this) {
       object Categories extends MenuItem(this)
       object Templates extends MenuItem(this)
+      object Profiles extends MenuItem(this)
+      object Links extends MenuItem(this)
     }
     object Permissions extends MenuItem(this) {
       object Users extends MenuItem(this)
@@ -263,13 +265,8 @@ class App extends com.vaadin.Application {
 
   case class Node(nodes: Node*)
 
-  def NA(id: Any) = new ViewVerticalLayout {
-    addComponent(new Panel(id.toString) {
-      let(getContent.asInstanceOf[VerticalLayout]) { c =>
-        c.setMargin(true)
-        c.setSpacing(true)
-      }
-
+  def NA(id: Any) = new TabView {
+    addTab(new ViewVerticalLayout(id.toString) {
       addComponent(new Label("NOT AVAILABLE"))
     })
   }
@@ -293,17 +290,19 @@ class App extends com.vaadin.Application {
       setImmediate(true)
     }
 
-    def initMenu(menu: MenuItem) {
-      treeMenu addItem menu
-
+    def initMenu(menu: MenuItem, setParent: Boolean = false) {
       menu.parent match {
-        case null => ()
-        case parent => treeMenu.setParent(menu, parent)
-      }
-
-      menu.items match {
-        case Nil => treeMenu setChildrenAllowed (menu, false)
-        case items => items foreach initMenu
+        case null =>
+          menu.items foreach (initMenu(_))
+        
+        case parent =>
+          treeMenu addItem menu
+          if (setParent) treeMenu setParent (menu, parent)
+          
+          menu.items match {
+            case Nil => treeMenu setChildrenAllowed (menu, false)
+            case items => items foreach (initMenu(_, setParent=true))
+          }
       }
     }
 
@@ -340,10 +339,9 @@ class App extends com.vaadin.Application {
 
   def init {
     wndMain initMenu Menu
-    this setMainWindow wndMain
-
-    wndMain.treeMenu expandItemsRecursively Menu
-    wndMain.treeMenu select Menu.About    
+    Menu.items foreach { wndMain.treeMenu expandItemsRecursively _ }
+    wndMain.treeMenu select Menu.About
+    this setMainWindow wndMain    
   }
 
   //
@@ -366,9 +364,6 @@ class App extends com.vaadin.Application {
       setMainContent(lytMainContent)
     }
 
-    val pnlLanguages = new Panel
-
-    
     val table = new Table
 
     table setPageLength 10
@@ -506,7 +501,6 @@ class App extends com.vaadin.Application {
 
     table addListener resetControls
 
-    reloadTable
 
     val pnlReloadBar = new Panel(new GridLayout(1,1))
     val btnReload = new Button("Reload")
@@ -517,61 +511,57 @@ class App extends com.vaadin.Application {
     pnlReloadBar.getContent.setSizeFull
     pnlReloadBar.getContent.asInstanceOf[GridLayout].setComponentAlignment(btnReload, Alignment.MIDDLE_RIGHT)
 
-    val lytLanguages = new GridLayout(1,3)
-    pnlLanguages.setContent(lytLanguages)
-    lytLanguages.setMargin(true)
-
-    pnlLanguages addComponent pnlControls
-    pnlLanguages addComponent table    
-    pnlLanguages addComponent pnlReloadBar
-
+    reloadTable    
     resetControls
-    pnlLanguages
+
+    new TabView {
+      addTab(new ViewVerticalLayout("Languages") {
+        addComponent(new GridLayout(1,3) {
+          addComponents(this, pnlControls, table, pnlReloadBar)
+        })
+      })
+    }
   }
   
 
-  def documentsTable = {
-    val content = new VerticalLayout
-    content.setMargin(true)
+  def documentsTable = new TabView {
+    addTab(new ViewVerticalLayout("Documents") {
+      val table = new Table()
+      table.addContainerProperty("Page alias", classOf[String],  null)
+      table.addContainerProperty("Status", classOf[String],  null)
+      table.addContainerProperty("Type", classOf[JInteger],  null)
+      table.addContainerProperty("Admin", classOf[String],  null)
+      table.addContainerProperty("Ref.", classOf[String],  null)
+      table.addContainerProperty("Child documents", classOf[String],  null)
 
-    val table = new Table()
-    table.addContainerProperty("Page alias", classOf[String],  null)
-    table.addContainerProperty("Status", classOf[String],  null)
-    table.addContainerProperty("Type", classOf[JInteger],  null)
-    table.addContainerProperty("Admin", classOf[String],  null)
-    table.addContainerProperty("Ref.", classOf[String],  null)
-    table.addContainerProperty("Child documents", classOf[String],  null)
+      val metaDao = Imcms.getSpringBean("metaDao").asInstanceOf[MetaDao]
 
-    val metaDao = Imcms.getSpringBean("metaDao").asInstanceOf[MetaDao]
+      metaDao.getAllDocumentIds.toList.foreach { id =>
+        val meta = metaDao getMeta id
+        val alias = meta.getProperties.get(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) match {
+          case null => ""
+          case value => value
+        }
 
-    metaDao.getAllDocumentIds.toList.foreach { id =>
-      val meta = metaDao getMeta id
-      val alias = meta.getProperties.get(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS) match {
-        case null => ""
-        case value => value
+        val status = meta.getPublicationStatus match {
+          case Document.PublicationStatus.NEW => "New"
+          case Document.PublicationStatus.APPROVED => "Approved"
+          case Document.PublicationStatus.DISAPPROVED => "Disapproved"
+        }
+
+        table.addItem(Array(alias, status, meta.getDocumentType, id.toString, Int box 0, Int box 0), id)
       }
 
-      val status = meta.getPublicationStatus match {
-        case Document.PublicationStatus.NEW => "New"
-        case Document.PublicationStatus.APPROVED => "Approved"
-        case Document.PublicationStatus.DISAPPROVED => "Disapproved"
-      }
+      val controls = new HorizontalLayout
 
-      table.addItem(Array(alias, status, meta.getDocumentType, id.toString, Int box 0, Int box 0), id)
-    }
+      controls.addComponent(new Label("List between:"))
+      controls.addComponent(new TextField)
+      controls.addComponent(new Label("-"))
+      controls.addComponent(new TextField)
+      controls.addComponent(new Button("List"))
 
-    val controls = new HorizontalLayout
-    
-    controls.addComponent(new Label("List between:"))
-    controls.addComponent(new TextField)
-    controls.addComponent(new Label("-"))
-    controls.addComponent(new TextField)
-    controls.addComponent(new Button("List"))
-
-    content.addComponent(controls)
-    content.addComponent(table)
-
-    content
+      addComponents(this, controls, table)
+    })
   }
  
   def ipAccess = {
@@ -675,17 +665,17 @@ class App extends com.vaadin.Application {
       }
     }
 
-    val lytContent = new VerticalLayout
-    lytContent setMargin true
-    lytContent setSpacing true
-    
-    addComponents(lytContent,
-      new Label("Users from a specific IP number or an intervall of numbers are given direct access to the system (so that the user does not have to log in)."),
-      new IPAccessView)
+    new TabView {
+      addTab(new ViewVerticalLayout("IP Access") {    
+        addComponents(this,
+          new Label("Users from a specific IP number or an intervall of numbers are given direct access to the system (so that the user does not have to log in)."),
+          new IPAccessView)
+      })
+    }
   }
 
 
-  def roles = {
+  lazy val roles = {
     def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
     class RoleDataWindow(caption: String) extends OkCancelDialog(caption) {
@@ -784,19 +774,17 @@ class App extends com.vaadin.Application {
         }
     }
 
-    val lytContent = new VerticalLayout
-    lytContent setMargin true
-    lytContent setSpacing true
-
-    addComponents(lytContent,
-      new Label("Roles and their permissions."),
-      new RolesView)    
+    new TabView {
+      addTab(new ViewVerticalLayout("Roles and their permissions.") {
+        addComponent(new RolesView)
+      })
+    }
   }
 
   //
   //
   //
-  def users = {
+  lazy val users = {
     def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
     class UsersView extends TableViewTemplate {
@@ -849,13 +837,11 @@ class App extends com.vaadin.Application {
       pnlFooter setContent new VerticalLayout { addComponent(frmFilter) }
     }
 
-    val lytContent = new VerticalLayout
-    lytContent setMargin true
-    lytContent setSpacing true
-
-    addComponents(lytContent,
-      new Label("Users and their permissions."),
-      new UsersView)    
+    new TabView {
+      addTab(new ViewVerticalLayout("Users and their permissions.") {
+        addComponent(new UsersView)
+      })
+    }
   }
 
   def settingsProperties = {
@@ -933,7 +919,11 @@ class App extends com.vaadin.Application {
 
     reload()
 
-    lytContent
+    new TabView {
+      addTab(new ViewVerticalLayout("System Properties") {
+        addComponent(lytContent)
+      })
+    }   
   }
 
   def settingSessionCounter = new TabView {
@@ -1014,49 +1004,47 @@ class App extends com.vaadin.Application {
     })
   }
 
-  def categories = {
-    new VerticalLayout {
-      setMargin(true)      
-      addComponent(new TabSheet {
-        addTab(new TableViewTemplate {
-          setCaption("Category")
+  def categories = new TabView {
+    addTab(new ViewVerticalLayout("Category") {
+      addComponent(new TableViewTemplate {
 
-          override def tableProperties =
-            ("Id", classOf[JInteger],  null) ::
-            ("Name", classOf[String],  null) ::
-            ("Description", classOf[String],  null) ::
-            ("Icon", classOf[String],  null) ::
-            ("Type", classOf[String],  null) ::
-            Nil
-        })
-        
-        addTab(new TableViewTemplate {
-          setCaption("Category type")
-          override def tableProperties = List(
-            ("Id", classOf[JInteger],  null),
-            ("Name", classOf[String],  null),
-            ("Multi select?", classOf[JBoolean],  null),
-            ("Inherited to new documents?", classOf[JBoolean],  null),
-            ("Used by image archive?", classOf[JBoolean],  null))
-
-//            ("Id", classOf[JInteger],  null) ::
-//            ("Name", classOf[String],  null) ::
-//            ("Multi select?", classOf[JBoolean],  null) ::
-//            ("Inherited to new documents?", classOf[JBoolean],  null) ::
-//            ("Used by image archive?", classOf[JBoolean],  null) ::
-//            Nil
-//
-//          override def tableProperties =
-//            ("Id", classOf[JInteger],  null) ::
-//            ("Name", classOf[String],  null) ::
-//            ("Multi select?", classOf[JBoolean],  null) ::
-//            ("Inherited to new documents?", classOf[JBoolean],  null) ::
-//            ("Used by image archive?", classOf[JBoolean],  null) ::
-//            Nil
-        })
+        override def tableProperties =
+          ("Id", classOf[JInteger],  null) ::
+          ("Name", classOf[String],  null) ::
+          ("Description", classOf[String],  null) ::
+          ("Icon", classOf[String],  null) ::
+          ("Type", classOf[String],  null) ::
+          Nil
       })
-    }
+    })
+
+    addTab(new ViewVerticalLayout("Category type") {
+      addComponent(new TableViewTemplate {
+        override def tableProperties = List(
+          ("Id", classOf[JInteger],  null),
+          ("Name", classOf[String],  null),
+          ("Multi select?", classOf[JBoolean],  null),
+          ("Inherited to new documents?", classOf[JBoolean],  null),
+          ("Used by image archive?", classOf[JBoolean],  null))
+
+  //            ("Id", classOf[JInteger],  null) ::
+  //            ("Name", classOf[String],  null) ::
+  //            ("Multi select?", classOf[JBoolean],  null) ::
+  //            ("Inherited to new documents?", classOf[JBoolean],  null) ::
+  //            ("Used by image archive?", classOf[JBoolean],  null) ::
+  //            Nil
+  //
+  //          override def tableProperties =
+  //            ("Id", classOf[JInteger],  null) ::
+  //            ("Name", classOf[String],  null) ::
+  //            ("Multi select?", classOf[JBoolean],  null) ::
+  //            ("Inherited to new documents?", classOf[JBoolean],  null) ::
+  //            ("Used by image archive?", classOf[JBoolean],  null) ::
+  //            Nil
+      })
+    })
   }
+
 
 
   lazy val searchTerms = new TabView {
@@ -1107,21 +1095,18 @@ class App extends com.vaadin.Application {
     setImmediate(true)
     setSelectable(true)
 
-    def expandDir(dir: File) {
-      getChildren(dir) match {
+    addListener(new Tree.ExpandListener {
+      def nodeExpand(e: Tree#ExpandEvent) = e.getItemId match {
+        case dir: File => dir.listFiles foreach (addItem(_, dir))
+      }
+    })
+
+    addListener(new Tree.CollapseListener {
+      def nodeCollapse(e: Tree#CollapseEvent) = getChildren(e.getItemId) match {
         case null =>
         case children => children foreach (removeItem(_))
       }
-
-      dir.listFiles foreach (addItem(_, dir))
-    }
-    
-    addListener(new Tree.ExpandListener {
-      def nodeExpand(e: Tree#ExpandEvent) = expandDir(e.getItemId.asInstanceOf[File])
-    }) 
-
-    addItem(root)
-    expandDir(root)
+    })
 
     def addItem(fsNode: File) {
       super.addItem(fsNode)
@@ -1133,8 +1118,24 @@ class App extends com.vaadin.Application {
       addItem(fsNode)
       setParent(fsNode, parentDir)
     }
+
+    addItem(root)
+    expandItem(root)    
   }
 
+
+//  lazy val documentsLinks = new TabView {
+//    addTab(new ViewVerticalLayout("Validate links"))
+//  }
+//
+//  lazy val documentsProfiles = new TabView {
+//    addTab(new ViewVerticalLayout("Profiles"))
+//  }
+//
+//  lazy val documentsTemplates = new TabView {
+//    addTab(new ViewVerticalLayout("Templates"))
+//  }
+  
   lazy val filesystem = new TabView {
     addTab(new ViewVerticalLayout("File manager") {
       val lytButtons = new HorizontalLayout {
