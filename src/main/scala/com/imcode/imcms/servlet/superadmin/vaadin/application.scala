@@ -44,8 +44,27 @@ class MenuItem(val parent: MenuItem = null, val handler: () => Unit = () => {}) 
     m.invoke(this)
 }
 
+
+class TabView extends VerticalLayout {
+  val tabSheet = new TabSheet
+  addComponent(tabSheet)
+  setMargin(true)
+
+  def addTab(c: Component) = tabSheet.addTab(c)
+}
+
+
+class ViewVerticalLayout(caption: String = "") extends VerticalLayout {
+  setCaption(caption)
+  setMargin(true)
+  setSpacing(true)
+}
+
+
 class App extends com.vaadin.Application {
 
+  setTheme("imcms")
+  
   object Menu extends MenuItem {
     object About extends MenuItem(this)
     object Settings extends MenuItem(this) {
@@ -239,11 +258,29 @@ class App extends com.vaadin.Application {
 
   case class Node(nodes: Node*)
 
-  val labelNA = new Label("Not Available");
+  def NA(id: Any) = new ViewVerticalLayout {
+    addComponent(new Panel(id.toString) {
+      let(getContent.asInstanceOf[VerticalLayout]) { c =>
+        c.setMargin(true)
+        c.setSpacing(true)
+      }
 
-  val labelAbout = new Label("""|Welcome to the imCMS new admin UI prototype -
-                                | please pick a task from the menu.
-                                |""".stripMargin)
+      addComponent(new Label("NOT AVAILABLE"))
+    })
+  }
+
+  val labelAbout = new ViewVerticalLayout {
+    addComponent(new Panel("About") {
+      let(getContent.asInstanceOf[VerticalLayout]) { c =>
+        c.setMargin(true)
+        c.setSpacing(true)
+      }
+
+      addComponent(new Label("""|Welcome to the imCMS new admin UI prototype -
+                     | please pick a task from the menu. Note that some views are not (yet) available. 
+                     |""".stripMargin))
+    })
+  }
 
   val wndMain = new Window {
     val content = new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL)
@@ -267,18 +304,19 @@ class App extends com.vaadin.Application {
       def valueChange(e: ValueChangeEvent) {
         content.setSecondComponent(
           e.getProperty.getValue match {
+            case null | Menu.About => labelAbout
+            
             case Menu.Statistics.SearchTerms => searchTerms
             case Menu.Documents.Categories => categories
             case Menu.Settings.Languages => languagesPanel
             case Menu.Settings.Properties => settingsProperties
             case Menu.Statistics.SessionCounter => settingSessionCounter
-            case Menu.About => labelAbout
             case Menu.Documents => documentsTable
             case Menu.Permissions.Roles => roles
             case Menu.Permissions.Users => users
             case Menu.Permissions.IP_Access => ipAccess
 
-            case _ => labelNA
+            case other => NA(other)
           })
       }
     })
@@ -983,20 +1021,12 @@ class App extends com.vaadin.Application {
     }
   }
 
-  //
-  def searchTerms =  new VerticalLayout {
-    setMargin(true)
-    setSpacing(true)
-
-    val frmSearchTerm = new Form {
-      setCaption("Popular search terms")
-      val layout = new VerticalLayout {
-        setSpacing(true)
-        setMargin(true)
-      }
-
-      setLayout(layout)
-
+  lazy val filesystem = new ViewVerticalLayout {
+    addComponent(new Panel("File manager"))
+  }
+  
+  lazy val searchTerms = new TabView {
+    addTab(new ViewVerticalLayout("Popular search terms") {
       val tblTerms = new Table {
         addContainerProperties(this, ("Term", classOf[String], null), ("Count", classOf[String], null))
         setPageLength(10)
@@ -1019,8 +1049,8 @@ class App extends com.vaadin.Application {
 
         addComponents(this, calFrom, calTo, btnReload)
       }
-      
-      addComponents(layout, tblTerms, lytBar)
+
+      addComponents(this, tblTerms, lytBar)
 
       def reload() {
         val terms = AdminSearchTerms.getTermCounts(lytBar.calFrom.getValue.asInstanceOf[Date],
@@ -1036,10 +1066,7 @@ class App extends com.vaadin.Application {
       lytBar.btnReload addListener reload()
 
       reload()
-    }
-
-    addComponent(frmSearchTerm)
-
+    })
   }
 }
 

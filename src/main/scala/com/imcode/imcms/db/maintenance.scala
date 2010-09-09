@@ -27,17 +27,17 @@ class DB(ds: DataSource) extends Logger {
                                                    classOf[String])
 
 
-  def updateVersion(newVersion: Version) {
+  def updateVersion(newVersion: Version): Unit = synchronized {
     logger.info("Updating database version from %s to %s.".format(version(), newVersion))
-    template.update("UPDATE database_version SET major=?, minor=?", Int.box(newVersion.major),
-                                                                    Int.box(newVersion.minor))
+    template.update("UPDATE database_version SET major=?, minor=?", Int box newVersion.major,
+                                                                    Int box newVersion.minor)
   }
 
 
   /**
    * Throws an RuntimeException if database version is greater than required.
    */
-  def prepare(schema: Schema): Version = {
+  def prepare(schema: Schema): Version = synchronized {
     def scriptFullPath(script: String) = "%s/%s".format(schema.scriptsDir, script)
 
     logger.info("Preparing databse.")
@@ -82,12 +82,12 @@ class DB(ds: DataSource) extends Logger {
   }
 
   
-  def runScripts(scripts: List[String]) {
-    template.getJdbcOperations.execute(new ConnectionCallback[Unit] {
+  def runScripts(scripts: List[String]): Unit = synchronized {
+    template.getJdbcOperations execute new ConnectionCallback[Unit] {
       def doInConnection(connection: Connection) {
         val scriptRunner = new ScriptRunner(ds.getConnection, false, true)
 
-        for (script <- scripts) {
+        scripts foreach { script =>
           logger.debug("Running script %s." format script)
 
           using(new FileReader(script)) { reader =>
@@ -95,6 +95,6 @@ class DB(ds: DataSource) extends Logger {
           }
         }
       }
-    })    
+    }
   }
 }

@@ -46,16 +46,6 @@ case class Schema(version: Version, init: Init, diffs: Set[Diff], scriptsDir: St
     case _ => Nil
   }
 
-//  def diffsChain(from: Version) = {
-//    def diffsChainIter(from: Version = from, diffsAcc: List[Diff] = Nil): List[Diff] =
-//      diffs find (_.from == from) match {
-//        case Some(diff) => diffsChainIter(diff.to, diff::diffsAcc)
-//        case _ => diffsAcc.reverse
-//      }
-//
-//    diffsChainIter()
-//  }
-
   def changeScriptsDir(newScriptsDir: String): Schema = copy(scriptsDir = newScriptsDir)
 }
 

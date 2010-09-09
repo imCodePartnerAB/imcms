@@ -2,16 +2,14 @@
   #^{:doc "Database utils."}
   com.imcode.imcms.db
   (:require
-    (clojure.contrib [sql :as sql]
-                     [str-utils2 :as su2]))
+    (clojure.contrib [sql :as sql]))
   
   (:use
     [clojure.contrib.except :only (throw-if)]
     [clojure.contrib.def :only (defvar)]
-    [clojure.contrib.str-utils :only (str-join)]
+    [clojure.string :only (join lower-case)]
     [com.imcode.imcms.misc :only (dump)]
-    clojure.contrib.test-is
-    clojure.contrib.duck-streams)
+    [clojure.java.io :only (reader)])
   
   (:import
     (org.apache.commons.dbcp BasicDataSource) 
@@ -25,7 +23,7 @@
 (defn create-url
   "Creates database vendor specific url string."
   ([vendor-name host port]
-    (let [url-template (condp = (.toLowerCase vendor-name)
+    (let [url-template (condp = (lower-case vendor-name)
                          "mysql" "jdbc:mysql://%s:%s"
                          "mssql" "jdbc:jtds:sqlserver://%s:%s"
                          (throw (IllegalArgumentException.
@@ -69,7 +67,7 @@
   ([name & params]
     {:classname "org.h2.Driver"
      :subprotocol "h2"
-     :subname (str "mem:" name (str-join ";" params))}))
+     :subname (str "mem:" name (join ";" params))}))
 
 
 (defn- print-script-info

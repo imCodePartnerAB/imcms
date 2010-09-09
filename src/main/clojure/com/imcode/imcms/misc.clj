@@ -23,3 +23,5 @@
 
 (defmethod dump nil [_] 
   (println nil))
+
+for ((k, v) <- map) yeld Symbol(k) -> v

@@ -1,0 +1,10 @@
+@import "../runo/styles.css";
+/*
+.v-app {
+    background: yellow;
+}
+*/
+
+.v-form fieldset {
+    border: thin solid;
+}
