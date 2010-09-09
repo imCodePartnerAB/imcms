@@ -19,6 +19,7 @@ import imcode.server.user._
 import com.imcode.imcms.api.{SystemProperty, IPAccess, Document}
 import imcode.server.{SystemData, Imcms}
 import java.util.Date
+import java.io.File
 
 /** Creates root item; root is not displayed */
 class MenuItem(val parent: MenuItem = null, val handler: () => Unit = () => {}) {
@@ -321,6 +322,7 @@ class App extends com.vaadin.Application {
             case Menu.Permissions.Roles => roles
             case Menu.Permissions.Users => users
             case Menu.Permissions.IP_Access => ipAccess
+            case Menu.Filesystem => filesystem
 
             case other => NA(other)
           })
@@ -1056,10 +1058,7 @@ class App extends com.vaadin.Application {
     }
   }
 
-  lazy val filesystem = new ViewVerticalLayout {
-    addComponent(new Panel("File manager"))
-  }
-  
+
   lazy val searchTerms = new TabView {
     addTab(new ViewVerticalLayout("Popular search terms") {
       val tblTerms = new Table {
@@ -1103,6 +1102,60 @@ class App extends com.vaadin.Application {
       reload()
     })
   }
+
+  class FileBrowser(val root: File) extends Tree {
+    setImmediate(true)
+    setSelectable(true)
+
+    def expandDir(dir: File) {
+      getChildren(dir) match {
+        case null =>
+        case children => children foreach (removeItem(_))
+      }
+
+      dir.listFiles foreach (addItem(_, dir))
+    }
+    
+    addListener(new Tree.ExpandListener {
+      def nodeExpand(e: Tree#ExpandEvent) = expandDir(e.getItemId.asInstanceOf[File])
+    }) 
+
+    addItem(root)
+    expandDir(root)
+
+    def addItem(fsNode: File) {
+      super.addItem(fsNode)
+      setItemCaption(fsNode, (if (fsNode.isDirectory) "/" else "") + fsNode.getName)
+      setChildrenAllowed(fsNode, fsNode.isDirectory)
+    }
+
+    def addItem(fsNode: File, parentDir: File) {
+      addItem(fsNode)
+      setParent(fsNode, parentDir)
+    }
+  }
+
+  lazy val filesystem = new TabView {
+    addTab(new ViewVerticalLayout("File manager") {
+      val lytButtons = new HorizontalLayout {
+        setSpacing(true)
+
+        val btnReload = new Button("Reload")
+        val btnView = new Button("View")
+        val btnEdit = new Button("Edit")
+        val btnCopy = new Button("Copy")
+        val btnMove = new Button("Move")
+        val btnDelete = new Button("Delete")
+
+        val btnDownload = new Button("Download")
+        val btnUpload = new Button("Upload")
+
+        addComponents(this, btnReload, new Label("|"), btnView, btnEdit, new Label("|"), btnCopy, btnMove, btnDelete, new Label("|"), btnDownload, btnUpload)
+      }
+
+      addComponents(this, lytButtons, new FileBrowser(Imcms.getPath))
+    })
+  }  
 }
 
 
