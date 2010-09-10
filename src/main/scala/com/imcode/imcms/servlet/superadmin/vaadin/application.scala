@@ -18,8 +18,9 @@ import imcode.util.Utility
 import imcode.server.user._
 import com.imcode.imcms.api.{SystemProperty, IPAccess, Document}
 import imcode.server.{SystemData, Imcms}
-import java.util.Date
+import java.util.{Date, Collection => JCollection}
 import java.io.File
+import com.vaadin.ui.Layout.MarginInfo
 
 /** Creates root item; root is not displayed */
 class MenuItem(val parent: MenuItem = null, val handler: () => Unit = () => {}) {
@@ -119,9 +120,11 @@ class App extends com.vaadin.Application {
 //    }
 //  }
 
-  def initAndShow[W <: Window](window: W, modal: Boolean = true)(init: W => Unit) {
+  def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
     init(window)
     window setModal modal
+    window setResizable resizable
+    window setDraggable draggable
     wndMain addWindow window
   }
 
@@ -170,7 +173,7 @@ class App extends com.vaadin.Application {
   }
 
   /** OKCancel dialog window. */
-  class OkCancelDialog(caption: String) extends DialogWindow(caption) {
+  class OkCancelDialog(caption: String = "") extends DialogWindow(caption) {
     val btnOk = new Button("Ok")
     val btnCancel = new Button("Cancel")
     val lytButtons = new GridLayout(2, 1) {
@@ -218,15 +221,17 @@ class App extends com.vaadin.Application {
 
       addListener { resetComponents }
 
-      tableProperties foreach { p => addContainerProperties(this, p) }
+      tableProperties foreach (addContainerProperties(this, _))
     }
 
     val pnlHeader = new Panel {
       val layout = new HorizontalLayout {
         setSpacing(true)
+        setMargin(true, false, true, false)
       }
 
       setContent(layout)
+      addStyleName("light")
     }
 
     val btnReload = new Button("Reload") {
@@ -238,17 +243,19 @@ class App extends com.vaadin.Application {
         addComponent(btnReload)
         setComponentAlignment(btnReload, Alignment.MIDDLE_RIGHT)
         setSizeFull
-      }
 
+      }
+      setMargin(true, false, true, false)
       setContent(layout)
+      addStyleName("light")
     }
 
     addComponents(this, pnlHeader, tblItems, pnlFooter)
 
     // Investigate: List[(AnyRef, Array[AnyRef])]
-    def tableItems(): List[(AnyRef, List[AnyRef])] = List.empty
+    def tableItems(): Seq[(AnyRef, Seq[AnyRef])] = List.empty
 
-    def tableProperties: List[(AnyRef, java.lang.Class[_], AnyRef)] = List.empty
+    def tableProperties: Seq[(AnyRef, java.lang.Class[_], AnyRef)] = List.empty
 
     def reloadTableItems {
       tblItems.removeAllItems
@@ -262,8 +269,6 @@ class App extends com.vaadin.Application {
     reloadTableItems
     resetComponents
   }
-
-  case class Node(nodes: Node*)
 
   def NA(id: Any) = new TabView {
     addTab(new ViewVerticalLayout(id.toString) {
@@ -322,6 +327,7 @@ class App extends com.vaadin.Application {
             case Menu.Permissions.Users => users
             case Menu.Permissions.IP_Access => ipAccess
             case Menu.Filesystem => filesystem
+            case Menu.Documents.Templates => templates
 
             case other => NA(other)
           })
@@ -1156,7 +1162,157 @@ class App extends com.vaadin.Application {
 
       addComponents(this, lytButtons, new FileBrowser(Imcms.getPath))
     })
-  }  
+  }
+
+  def forevery[T <: Any](t: T*)(block: T => Unit) = t foreach block
+
+  class TwinSelect(caption: String = "") extends GridLayout(3, 1) {
+    setCaption(caption)
+    
+    val btnAdd = new Button("<< Add")
+    val btnRemove = new Button("Remove >>")
+    val lstAvailable = new ListSelect("Available")
+    val lstChosen = new ListSelect("Chosen")
+    val lytButtons = new VerticalLayout {
+      addComponents(this, btnAdd, btnRemove)
+    }
+
+    forevery(btnAdd, btnRemove) (_.setSizeUndefined)
+
+    addComponents(this, lstChosen, lytButtons, lstAvailable)
+    setComponentAlignment(lytButtons, Alignment.MIDDLE_CENTER)
+
+    forevery(lstAvailable, lstChosen) { l =>
+      l setMultiSelect true
+      l setImmediate true
+      l setColumns 11
+    }
+
+    def move(src: ListSelect, dest: ListSelect) = src.getValue.asInstanceOf[JCollection[_]] foreach { item =>
+      src removeItem item
+      dest addItem item
+    }
+
+    btnAdd addListener move(lstAvailable, lstChosen)
+
+    btnRemove addListener move(lstChosen, lstAvailable)
+
+    lstAvailable addListener new ValueChangeListener {
+      def valueChange(e: com.vaadin.data.Property.ValueChangeEvent) {
+        btnAdd.setEnabled(lstAvailable.getValue.asInstanceOf[JCollection[_]].size > 0)
+      }
+    }
+
+    lstChosen addListener new ValueChangeListener {
+      def valueChange(e: com.vaadin.data.Property.ValueChangeEvent) {
+        btnRemove.setEnabled(lstChosen.getValue.asInstanceOf[JCollection[_]].size > 0)
+      }
+    }
+
+    //def reset = forevery(lstAvailable, lstChosen) (l => l.)
+  }
+
+  class TemplateGroupWindow(caption: String) extends OkCancelDialog(caption) {
+    val txtId = new TextField("Id")
+    val txtName = new TextField("Name")
+    txtId.setEnabled(false)
+
+    val twsTemplates = new TwinSelect("Templates")
+
+    setMainContent(new FormLayout {
+      addComponents(this, txtId, txtName, twsTemplates)
+    })
+  }
+
+  lazy val templates = new TabView {
+    val templateMapper = Imcms.getServices.getTemplateMapper
+
+    // templates tab
+    addTab(new ViewVerticalLayout("Templates") {
+      addComponent(new TableViewTemplate {
+        override def tableProperties() =
+          ("Name", classOf[String], null) ::
+          ("Filename", classOf[String], null) ::
+          ("Documents count", classOf[JInteger], null) ::
+          Nil
+
+        override def tableItems() = templateMapper.getAllTemplates map { t =>
+          (t.getName, List(t.getName, t.getFileName, Int box templateMapper.getCountOfDocumentsUsingTemplate(t)))
+        }
+
+        val btnNew = new Button("New")
+        val btnEdit = new Button("Edit")
+        val btnDelete = new Button("Delete")
+        val btnEditContent = new Button("Edit content")
+        val btnDownload = new Button("Donwload")
+        val btnUploadDemo = new Button("!?! Upload demo template !?!")
+
+        addComponents(pnlHeader, btnNew, btnEdit, btnDelete, new Label(" "), btnEditContent, btnDownload, new Label(" "), btnUploadDemo)        
+      }) // templates table view
+    }) // templates tab
+
+
+    // templates groups
+    addTab(new ViewVerticalLayout("Template group") {
+      addComponent(new TableViewTemplate {
+        override def tableProperties() =
+          ("Id", classOf[JInteger], null) ::
+          ("Name", classOf[String], null) ::
+          ("Templates count", classOf[JInteger], null) ::
+          Nil
+        
+        override def tableItems() = templateMapper.getAllTemplateGroups map { g =>
+          (Int box g.getId, List(Int box g.getId, g.getName, Int box templateMapper.getTemplatesInGroup(g).length))
+        }
+
+        val btnNew = new Button("New")
+        val btnEdit = new Button("Edit")
+        val btnDelete = new Button("Delete")
+
+        addComponents(pnlHeader, btnNew, btnEdit, btnDelete)
+
+        btnNew addListener {
+          initAndShow(new TemplateGroupWindow("New group")) { w =>
+            templateMapper.getAllTemplates foreach (w.twsTemplates.lstAvailable addItem _.getName)
+            
+            w.addOkButtonClickListener {
+              templateMapper.createTemplateGroup(w.txtName.getValue.asInstanceOf[String])
+              // addTemplates
+              reloadTableItems
+            }
+          }
+        }
+
+        btnEdit addListener  {
+          initAndShow(new TemplateGroupWindow("Edit group")) { w =>
+            let(tblItems.getValue) {
+              case null =>
+              case id: JInteger =>
+                let(templateMapper.getTemplateGroupById(id.intValue)) { g =>
+                  templateMapper.getTemplatesInGroup(g) foreach (w.twsTemplates.lstChosen addItem _.getName)
+                  templateMapper.getTemplatesNotInGroup(g) foreach (w.twsTemplates.lstAvailable addItem _.getName)
+                }
+            }
+
+            w.addOkButtonClickListener {
+//              templateMapper.createTemplateGroup(w.txtName.getValue.asInstanceOf[String])
+//              // addTemplates
+//              reloadTableItems
+            }
+          }
+        }
+        
+        btnDelete addListener {
+          initAndShow(new ConfirmationDialog("Confirmation", "Detelete template group?")) { w =>
+            w.addOkButtonClickListener {
+              templateMapper.deleteTemplateGroup(tblItems.getValue.asInstanceOf[Int])
+              reloadTableItems
+            }
+          }          
+        }
+      })  
+    })
+  }
 }
 
 

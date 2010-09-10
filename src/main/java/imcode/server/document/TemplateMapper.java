@@ -176,7 +176,7 @@ public class TemplateMapper {
         return new ArrayList<TemplateDomainObject>(templates);
     }
 
-    private int getCountOfDocumentsUsingTemplate( TemplateDomainObject template ) {
+    public int getCountOfDocumentsUsingTemplate( TemplateDomainObject template ) {
         String queryResult = (String) database.execute(new SqlQueryCommand("SELECT COUNT(meta_id)" + " FROM text_docs"
                                                                            + " WHERE template_name = ?", new String[]{"" + template.getName()}, Utility.SINGLE_STRING_HANDLER));
         return Integer.parseInt( queryResult );
