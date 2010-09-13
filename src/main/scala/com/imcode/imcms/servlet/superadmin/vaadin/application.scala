@@ -1,7 +1,6 @@
-package com.imcode.imcms.servlet.superadmin.vaadin;
+package com.imcode.imcms.servlet.superadmin.vaadin
 
-import java.lang.{Boolean => JBoolean, Integer => JInteger}
-
+import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
 import scala.collection.JavaConversions._
 import com.imcode._
 import com.vaadin.event.ItemClickEvent
@@ -19,48 +18,11 @@ import imcode.server.user._
 import com.imcode.imcms.api.{SystemProperty, IPAccess, Document}
 import imcode.server.{SystemData, Imcms}
 import java.util.{Date, Collection => JCollection}
-import java.io.File
 import com.vaadin.ui.Layout.MarginInfo
-
-/** Creates root item; root is not displayed */
-class MenuItem(val parent: MenuItem = null, val handler: () => Unit = () => {}) {
-
-  import collection.mutable.ListBuffer
-
-  private val itemsBuffer = new ListBuffer[MenuItem]
-
-  def items = itemsBuffer.toList
-
-  override val toString = getClass.getName split '$' last
-
-  val id = {
-    def pathToRoot(m: MenuItem): List[MenuItem] = m :: (if (m.parent == null) Nil else pathToRoot(m.parent))
-
-    pathToRoot(this).reverse map (_.toString) map camelCaseToUnderscore mkString "."
-  }
-
-  if (parent != null) parent.itemsBuffer += this
-
-  // forces initialization of items declared as inner objects
-  for (m <- getClass.getDeclaredMethods if m.getParameterTypes().length == 0)
-    m.invoke(this)
-}
-
-
-class TabView extends VerticalLayout {
-  val tabSheet = new TabSheet
-  addComponent(tabSheet)
-  setMargin(true)
-
-  def addTab(c: Component) = tabSheet.addTab(c)
-}
-
-
-class ViewVerticalLayout(caption: String = "") extends VerticalLayout {
-  setCaption(caption)
-  setMargin(true)
-  setSpacing(true)
-}
+import java.io.{OutputStream, FileOutputStream, File}
+import com.imcode.imcms.servlet.superadmin.vaadin.ui._
+import com.imcode.imcms.servlet.superadmin.vaadin.ui.UI._
+import java.util.concurrent.atomic.AtomicReference
 
 
 class App extends com.vaadin.Application {
@@ -89,36 +51,11 @@ class App extends com.vaadin.Application {
       object SessionCounter extends MenuItem(this)
     }
     object Filesystem extends MenuItem(this)
-  }
-  
-  type ButtonClickHandler = Button#ClickEvent => Unit
-  type PropertyValueChangeHandler = ValueChangeEvent => Unit 
+  } 
 
   val languageDao = Imcms.getSpringBean("languageDao").asInstanceOf[LanguageDao]
   val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
-  val ipAccessDao = Imcms.getSpringBean("ipAccessDao").asInstanceOf[IPAccessDao]
-
-  implicit def BlockToButtonClickListener(handler: => Unit): Button.ClickListener =
-    new Button.ClickListener {
-      def buttonClick(event: Button#ClickEvent) = handler
-    }  
-
-//  def addButtonClickListener(button: Button)(handler: ButtonClickHandler) {
-//    button addListener new Button.ClickListener {
-//      def buttonClick(event: Button#ClickEvent) = handler(event)
-//    }
-//  }
-
-  implicit def BlockToPropertyValueChangeListener(block: => Unit): Property.ValueChangeListener =
-    new Property.ValueChangeListener {
-      def valueChange(event: ValueChangeEvent) = block
-    }
-
-//  def addValueChangeHandler(target: AbstractField)(handler: ValueChangeEvent => Unit) {
-//    target addListener new Property.ValueChangeListener {
-//      def valueChange(event: ValueChangeEvent) = handler(event)
-//    }
-//  }
+  val ipAccessDao = Imcms.getSpringBean("ipAccessDao").asInstanceOf[IPAccessDao]  
 
   def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
     init(window)
@@ -128,88 +65,6 @@ class App extends com.vaadin.Application {
     wndMain addWindow window
   }
 
-  def addComponents(container: AbstractComponentContainer, components: Component*) = {
-    components foreach { c => container addComponent c }
-    container
-  }
-
-  def addContainerProperties(table: Table, properties: (AnyRef, java.lang.Class[_], AnyRef)*) =
-    for ((propertyId, propertyType, defaultValue) <- properties)
-      table.addContainerProperty(propertyId, propertyType, defaultValue)
-
-  class DialogWindow(caption: String) extends Window(caption) {
-    val lytContent = new GridLayout(1, 2)
-
-    lytContent setMargin true
-    lytContent setSpacing true
-    lytContent setSizeFull
-
-    // auto size
-    setContent(new VerticalLayout {
-      addComponent(lytContent)
-      setSizeUndefined
-    })
-
-    def setMainContent(c: Component) {
-      lytContent.addComponent(c, 0, 0)
-      lytContent.setComponentAlignment(c, Alignment.BOTTOM_CENTER)
-    }
-    
-    def setButtonsContent(c: Component) {
-      lytContent.addComponent(c, 0, 1)
-      lytContent.setComponentAlignment(c, Alignment.TOP_CENTER)
-    }
-  }
-
-  /** Message dialog window. */
-  class MsgDialog(caption: String, msg: String) extends DialogWindow(caption) {
-    val btnOk = new Button("Ok")
-    val lblMessage = new Label(msg)
-
-    setMainContent(lblMessage)
-    setButtonsContent(btnOk)
-
-    btnOk addListener close
-  }
-
-  /** OKCancel dialog window. */
-  class OkCancelDialog(caption: String = "") extends DialogWindow(caption) {
-    val btnOk = new Button("Ok")
-    val btnCancel = new Button("Cancel")
-    val lytButtons = new GridLayout(2, 1) {
-      setSpacing(true)
-      addComponent(btnOk)
-      addComponent(btnCancel)
-      setComponentAlignment(btnOk, Alignment.MIDDLE_RIGHT)
-      setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
-    }
-    
-    setButtonsContent(lytButtons)
-
-    btnCancel addListener close
-
-    def addOkButtonClickListener(block: => Unit) {
-      btnOk addListener {
-        try {
-          block
-          close
-        } catch {
-          case ex: Exception => using(new java.io.StringWriter) { w =>
-            ex.printStackTrace(new java.io.PrintWriter(w))
-            show(new MsgDialog("ERROR", "%s  ##  ##  ##  ## ## %s" format (ex.getMessage, w.getBuffer)))
-            throw ex
-          }
-        }
-      }
-    }
-  }
-
-  /** Confirmation dialog window. */
-  class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(caption) {
-    val lblMessage = new Label(msg)
-
-    setMainContent(lblMessage)
-  }
 
   abstract class TableViewTemplate extends GridLayout(1,3) {
     val tblItems = new Table {
@@ -255,7 +110,7 @@ class App extends com.vaadin.Application {
     // Investigate: List[(AnyRef, Array[AnyRef])]
     def tableItems(): Seq[(AnyRef, Seq[AnyRef])] = List.empty
 
-    def tableProperties: Seq[(AnyRef, java.lang.Class[_], AnyRef)] = List.empty
+    def tableProperties: Seq[(AnyRef, JClass[_], AnyRef)] = List.empty
 
     def reloadTableItems {
       tblItems.removeAllItems
@@ -270,17 +125,18 @@ class App extends com.vaadin.Application {
     resetComponents
   }
 
-  def NA(id: Any) = new TabView {
-    addTab(new ViewVerticalLayout(id.toString) {
+  def NA(id: Any) = new TabSheetView {
+    addTab(new VerticalLayoutView(id.toString) {
       addComponent(new Label("NOT AVAILABLE"))
     })
   }
 
-  val labelAbout = new ViewVerticalLayout {
+  val labelAbout = new VerticalLayoutView {
     addComponent(new Panel("About") {
-      let(getContent.asInstanceOf[VerticalLayout]) { c =>
-        c.setMargin(true)
-        c.setSpacing(true)
+      let(getContent) {
+        case c: VerticalLayout =>
+          c.setMargin(true)
+          c.setSpacing(true)
       }
 
       addComponent(new Label("""|Welcome to the imCMS new admin UI prototype -
@@ -520,8 +376,8 @@ class App extends com.vaadin.Application {
     reloadTable    
     resetControls
 
-    new TabView {
-      addTab(new ViewVerticalLayout("Languages") {
+    new TabSheetView {
+      addTab(new VerticalLayoutView("Languages") {
         addComponent(new GridLayout(1,3) {
           addComponents(this, pnlControls, table, pnlReloadBar)
         })
@@ -530,8 +386,8 @@ class App extends com.vaadin.Application {
   }
   
 
-  def documentsTable = new TabView {
-    addTab(new ViewVerticalLayout("Documents") {
+  def documentsTable = new TabSheetView {
+    addTab(new VerticalLayoutView("Documents") {
       val table = new Table()
       table.addContainerProperty("Page alias", classOf[String],  null)
       table.addContainerProperty("Status", classOf[String],  null)
@@ -671,8 +527,8 @@ class App extends com.vaadin.Application {
       }
     }
 
-    new TabView {
-      addTab(new ViewVerticalLayout("IP Access") {    
+    new TabSheetView {
+      addTab(new VerticalLayoutView("IP Access") {    
         addComponents(this,
           new Label("Users from a specific IP number or an intervall of numbers are given direct access to the system (so that the user does not have to log in)."),
           new IPAccessView)
@@ -780,8 +636,8 @@ class App extends com.vaadin.Application {
         }
     }
 
-    new TabView {
-      addTab(new ViewVerticalLayout("Roles and their permissions.") {
+    new TabSheetView {
+      addTab(new VerticalLayoutView("Roles and their permissions.") {
         addComponent(new RolesView)
       })
     }
@@ -843,8 +699,8 @@ class App extends com.vaadin.Application {
       pnlFooter setContent new VerticalLayout { addComponent(frmFilter) }
     }
 
-    new TabView {
-      addTab(new ViewVerticalLayout("Users and their permissions.") {
+    new TabSheetView {
+      addTab(new VerticalLayoutView("Users and their permissions.") {
         addComponent(new UsersView)
       })
     }
@@ -925,15 +781,15 @@ class App extends com.vaadin.Application {
 
     reload()
 
-    new TabView {
-      addTab(new ViewVerticalLayout("System Properties") {
+    new TabSheetView {
+      addTab(new VerticalLayoutView("System Properties") {
         addComponent(lytContent)
       })
     }   
   }
 
-  def settingSessionCounter = new TabView {
-    addTab(new ViewVerticalLayout("Session counter") { self =>
+  def settingSessionCounter = new TabSheetView {
+    addTab(new VerticalLayoutView("Session counter") { self =>
       setSpacing(false)
       
       val lytData = new FormLayout {
@@ -1010,8 +866,8 @@ class App extends com.vaadin.Application {
     })
   }
 
-  def categories = new TabView {
-    addTab(new ViewVerticalLayout("Category") {
+  def categories = new TabSheetView {
+    addTab(new VerticalLayoutView("Category") {
       addComponent(new TableViewTemplate {
 
         override def tableProperties =
@@ -1024,7 +880,7 @@ class App extends com.vaadin.Application {
       })
     })
 
-    addTab(new ViewVerticalLayout("Category type") {
+    addTab(new VerticalLayoutView("Category type") {
       addComponent(new TableViewTemplate {
         override def tableProperties = List(
           ("Id", classOf[JInteger],  null),
@@ -1053,8 +909,8 @@ class App extends com.vaadin.Application {
 
 
 
-  lazy val searchTerms = new TabView {
-    addTab(new ViewVerticalLayout("Popular search terms") {
+  lazy val searchTerms = new TabSheetView {
+    addTab(new VerticalLayoutView("Popular search terms") {
       val tblTerms = new Table {
         addContainerProperties(this, ("Term", classOf[String], null), ("Count", classOf[String], null))
         setPageLength(10)
@@ -1130,20 +986,20 @@ class App extends com.vaadin.Application {
   }
 
 
-//  lazy val documentsLinks = new TabView {
-//    addTab(new ViewVerticalLayout("Validate links"))
+//  lazy val documentsLinks = new TabSheetView {
+//    addTab(new VerticalLayoutView("Validate links"))
 //  }
 //
-//  lazy val documentsProfiles = new TabView {
-//    addTab(new ViewVerticalLayout("Profiles"))
+//  lazy val documentsProfiles = new TabSheetView {
+//    addTab(new VerticalLayoutView("Profiles"))
 //  }
 //
-//  lazy val documentsTemplates = new TabView {
-//    addTab(new ViewVerticalLayout("Templates"))
+//  lazy val documentsTemplates = new TabSheetView {
+//    addTab(new VerticalLayoutView("Templates"))
 //  }
   
-  lazy val filesystem = new TabView {
-    addTab(new ViewVerticalLayout("File manager") {
+  lazy val filesystem = new TabSheetView {
+    addTab(new VerticalLayoutView("File manager") {
       val lytButtons = new HorizontalLayout {
         setSpacing(true)
 
@@ -1164,54 +1020,6 @@ class App extends com.vaadin.Application {
     })
   }
 
-  def forevery[T <: Any](t: T*)(block: T => Unit) = t foreach block
-
-  class TwinSelect(caption: String = "") extends GridLayout(3, 1) {
-    setCaption(caption)
-    
-    val btnAdd = new Button("<< Add")
-    val btnRemove = new Button("Remove >>")
-    val lstAvailable = new ListSelect("Available")
-    val lstChosen = new ListSelect("Chosen")
-    val lytButtons = new VerticalLayout {
-      addComponents(this, btnAdd, btnRemove)
-    }
-
-    forevery(btnAdd, btnRemove) (_.setSizeUndefined)
-
-    addComponents(this, lstChosen, lytButtons, lstAvailable)
-    setComponentAlignment(lytButtons, Alignment.MIDDLE_CENTER)
-
-    forevery(lstAvailable, lstChosen) { l =>
-      l setMultiSelect true
-      l setImmediate true
-      l setColumns 11
-    }
-
-    def move(src: ListSelect, dest: ListSelect) = src.getValue.asInstanceOf[JCollection[_]] foreach { item =>
-      src removeItem item
-      dest addItem item
-    }
-
-    btnAdd addListener move(lstAvailable, lstChosen)
-
-    btnRemove addListener move(lstChosen, lstAvailable)
-
-    lstAvailable addListener new ValueChangeListener {
-      def valueChange(e: com.vaadin.data.Property.ValueChangeEvent) {
-        btnAdd.setEnabled(lstAvailable.getValue.asInstanceOf[JCollection[_]].size > 0)
-      }
-    }
-
-    lstChosen addListener new ValueChangeListener {
-      def valueChange(e: com.vaadin.data.Property.ValueChangeEvent) {
-        btnRemove.setEnabled(lstChosen.getValue.asInstanceOf[JCollection[_]].size > 0)
-      }
-    }
-
-    //def reset = forevery(lstAvailable, lstChosen) (l => l.)
-  }
-
   class TemplateGroupWindow(caption: String) extends OkCancelDialog(caption) {
     val txtId = new TextField("Id")
     val txtName = new TextField("Name")
@@ -1224,11 +1032,19 @@ class App extends com.vaadin.Application {
     })
   }
 
-  lazy val templates = new TabView {
+
+
+
+  class TemplateView extends FormLayout {
+    //val txtName = new
+  }
+
+
+  lazy val templates = new TabSheetView {
     val templateMapper = Imcms.getServices.getTemplateMapper
 
     // templates tab
-    addTab(new ViewVerticalLayout("Templates") {
+    addTab(new VerticalLayoutView("Templates") {
       addComponent(new TableViewTemplate {
         override def tableProperties() =
           ("Name", classOf[String], null) ::
@@ -1247,13 +1063,46 @@ class App extends com.vaadin.Application {
         val btnDownload = new Button("Donwload")
         val btnUploadDemo = new Button("!?! Upload demo template !?!")
 
-        addComponents(pnlHeader, btnNew, btnEdit, btnDelete, new Label(" "), btnEditContent, btnDownload, new Label(" "), btnUploadDemo)        
+        addComponents(pnlHeader, btnNew, btnEdit, btnDelete, new Label(" "), btnEditContent, btnDownload)        
+
+        btnNew addListener {
+          initAndShow(new OkCancelDialog("Add new template")) { w =>
+            w.btnOk.setEnabled(false)      
+
+            val txtName = new TextField("Name")
+            val lstGroups = new ListSelect("Groups") {
+              setMultiSelect(true)
+            }
+            val uplFile = new Upload("Template file", new FileUploadReceiver("/tmp/upload")) with UploadEventHandler {
+              def handleEvent(e: com.vaadin.ui.Component.Event) = e match {
+                case e: Upload#SucceededEvent =>
+                  w.btnOk.setEnabled(true)
+                  txtName setValue e.getFilename
+                case e: Upload#FailedEvent =>
+                  w.btnOk.setEnabled(false)
+                  
+                case _ => // not interested
+              }
+            }
+
+
+            w setMainContent new FormLayout {
+              addComponents(this, txtName, lstGroups, uplFile)
+            }
+
+            templateMapper.getAllTemplateGroups foreach (lstGroups.addItem(_.getName))
+
+            w.addOkButtonClickListener {
+              println("SAving...")
+            }
+          }
+        }
       }) // templates table view
     }) // templates tab
 
 
     // templates groups
-    addTab(new ViewVerticalLayout("Template group") {
+    addTab(new VerticalLayoutView("Template group") {
       addComponent(new TableViewTemplate {
         override def tableProperties() =
           ("Id", classOf[JInteger], null) ::
@@ -1264,10 +1113,16 @@ class App extends com.vaadin.Application {
         override def tableItems() = templateMapper.getAllTemplateGroups map { g =>
           (Int box g.getId, List(Int box g.getId, g.getName, Int box templateMapper.getTemplatesInGroup(g).length))
         }
+        
+        lazy val btnNew = new Button("New")
+        lazy val btnEdit = new Button("Edit")
+        lazy val btnDelete = new Button("Delete")
 
-        val btnNew = new Button("New")
-        val btnEdit = new Button("Edit")
-        val btnDelete = new Button("Delete")
+        override def resetComponents() {
+          forlet(btnEdit, btnDelete) { b =>
+            b.setEnabled(tblItems.getValue != null)
+          }
+        }
 
         addComponents(pnlHeader, btnNew, btnEdit, btnDelete)
 
@@ -1278,38 +1133,40 @@ class App extends com.vaadin.Application {
             w.addOkButtonClickListener {
               templateMapper.createTemplateGroup(w.txtName.getValue.asInstanceOf[String])
               // addTemplates
-              reloadTableItems
+              reloadTableItems 
             }
           }
-        }
+        } // btnNew handler
 
         btnEdit addListener  {
           initAndShow(new TemplateGroupWindow("Edit group")) { w =>
             let(tblItems.getValue) {
               case null =>
               case id: JInteger =>
-                let(templateMapper.getTemplateGroupById(id.intValue)) { g =>
+                let(templateMapper getTemplateGroupById id.intValue) { g =>
                   templateMapper.getTemplatesInGroup(g) foreach (w.twsTemplates.lstChosen addItem _.getName)
                   templateMapper.getTemplatesNotInGroup(g) foreach (w.twsTemplates.lstAvailable addItem _.getName)
-                }
-            }
 
-            w.addOkButtonClickListener {
-//              templateMapper.createTemplateGroup(w.txtName.getValue.asInstanceOf[String])
-//              // addTemplates
-//              reloadTableItems
-            }
+                  w.txtId setValue id
+                  w.txtName setValue templateMapper.getTemplateGroupById(id.intValue).getName  
+
+                  w.addOkButtonClickListener {
+                    templateMapper.renameTemplateGroup(g, w.txtName.getValue.asInstanceOf[String])
+                    reloadTableItems
+                  }
+                }
+            } // let
           }
-        }
+        } // btnEdit handler
         
         btnDelete addListener {
           initAndShow(new ConfirmationDialog("Confirmation", "Detelete template group?")) { w =>
             w.addOkButtonClickListener {
-              templateMapper.deleteTemplateGroup(tblItems.getValue.asInstanceOf[Int])
+              templateMapper deleteTemplateGroup tblItems.getValue.asInstanceOf[Int]
               reloadTableItems
             }
           }          
-        }
+        } // btnDelete handler
       })  
     })
   }

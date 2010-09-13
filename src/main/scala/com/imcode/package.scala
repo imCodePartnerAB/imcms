@@ -2,7 +2,9 @@ package com
 
 package object imcode {
 
-  def let[B, T](binding: B)(block: B => T): T = block(binding)
+  def let[B, T](expr: B)(block: B => T): T = block(expr)
+
+  def forlet[T](exprs: T*)(block: T => Unit): Unit = exprs foreach block  
 
   def using[R <: {def close(): Unit}, T](resource: R)(block: R => T): T = try {
     block(resource)
