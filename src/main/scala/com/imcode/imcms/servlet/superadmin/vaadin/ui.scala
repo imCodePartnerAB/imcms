@@ -67,27 +67,26 @@ import UI._
 
 
 class DialogWindow(caption: String) extends Window(caption) {
-  val lytContent = new GridLayout(1, 2)
-
-  lytContent setMargin true
-  lytContent setSpacing true
-  lytContent setSizeFull
-
-  // auto size
-  setContent(new VerticalLayout {
-    addComponent(lytContent)
-    setSizeUndefined
-  })
+  val layout = new GridLayout(1, 2) {
+    setMargin(true)
+    setSpacing(true)   
+  }
 
   def setMainContent(c: Component) {
-    lytContent.addComponent(c, 0, 0)
-    lytContent.setComponentAlignment(c, Alignment.BOTTOM_CENTER)
+    layout.addComponent(c, 0, 0)
+    layout.setComponentAlignment(c, Alignment.BOTTOM_CENTER)
   }
 
   def setButtonsContent(c: Component) {
-    lytContent.addComponent(c, 0, 1)
-    lytContent.setComponentAlignment(c, Alignment.TOP_CENTER)
+    layout.addComponent(c, 0, 1)
+    layout.setComponentAlignment(c, Alignment.TOP_CENTER)
   }
+
+  // auto size
+  setContent(new VerticalLayout {
+    addComponent(layout)
+    setSizeUndefined
+  })  
 }
 
 
@@ -138,11 +137,11 @@ class OkCancelDialog(caption: String = "") extends DialogWindow(caption) {
 
 /** Confirmation dialog window. */
 class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(caption) {
+  def this(msg: String = "") = this("Confirmation", msg)
+  
   val lblMessage = new Label(msg)
 
   setMainContent(lblMessage)
-
-  def this(msg: String = "") = this("Confirmation", msg)
 }
 
 
