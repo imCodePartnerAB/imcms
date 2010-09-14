@@ -237,7 +237,19 @@ class VerticalLayoutView(caption: String = "") extends VerticalLayout {
 
 
 class FileUploadReceiver(uploadDir: String) extends Upload.Receiver {
-  def receiveUpload(filename :String, MIMEType: String) = new FileOutputStream(uploadDir+"/"+filename)
+  type MIMEType = String
+  
+  val upload: AtomicReference[Option[(File, MIMEType)]] = new AtomicReference(None)
+
+  def receiveUpload(filename :String, mimeType: MIMEType) = let(new File(uploadDir+"/"+filename)) { file =>
+    new FileOutputStream(file) {
+      override def close() {
+        super.close
+        upload set Some(file, mimeType)
+        println("Uploaded: " + upload.get)
+      }
+    }
+  }
 }
 
 //sealed abstract class UploadStatus

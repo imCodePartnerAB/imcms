@@ -1090,7 +1090,7 @@ class App extends com.vaadin.Application {
               addComponents(this, txtName, lstGroups, uplFile)
             }
 
-            templateMapper.getAllTemplateGroups foreach (lstGroups.addItem(_.getName))
+            templateMapper.getAllTemplateGroups foreach (g => lstGroups.addItem(g.getName))
 
             w.addOkButtonClickListener {
               println("SAving...")
