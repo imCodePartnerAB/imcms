@@ -488,7 +488,7 @@ public class DocumentMapper implements DocumentGetter {
     // TODO: refactor
     private int[] getDocumentIds(IntRange idRange) {
     	List<Integer> ids = documentSaver.getMetaDao().getDocumentIdsInRange(
-    			idRange.getMaximumInteger(),
+    			idRange.getMinimumInteger(),
     			idRange.getMaximumInteger());
     	
     	// Optimize

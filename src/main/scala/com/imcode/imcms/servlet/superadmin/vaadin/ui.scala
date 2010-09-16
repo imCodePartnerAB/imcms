@@ -66,37 +66,38 @@ object UI {
 import UI._
 
 
-class DialogWindow(caption: String) extends Window(caption) {
-  val layout = new GridLayout(1, 2) {
+class DialogWindow(caption: String = "") extends Window(caption) {
+  val lytArea = new GridLayout(1, 2) {
     setMargin(true)
-    setSpacing(true)   
+    setSpacing(true)
+    setSizeFull
   }
 
-  def setMainContent(c: Component) {
-    layout.addComponent(c, 0, 0)
-    layout.setComponentAlignment(c, Alignment.BOTTOM_CENTER)
+  def setMainAreaContent(c: Component) {
+    lytArea.addComponent(c, 0, 0)
+    lytArea.setComponentAlignment(c, Alignment.BOTTOM_CENTER)
   }
 
-  def setButtonsContent(c: Component) {
-    layout.addComponent(c, 0, 1)
-    layout.setComponentAlignment(c, Alignment.TOP_CENTER)
+  def setButtonsAreaContent(c: Component) {
+    lytArea.addComponent(c, 0, 1)
+    lytArea.setComponentAlignment(c, Alignment.TOP_CENTER)
   }
 
   // auto size
   setContent(new VerticalLayout {
-    addComponent(layout)
+    addComponent(lytArea)
     setSizeUndefined
-  })  
+  })
 }
 
 
 /** Message dialog window. */
-class MsgDialog(caption: String, msg: String) extends DialogWindow(caption) {
+class MsgDialog(caption: String = "", msg: String ="") extends DialogWindow(caption) {
   val btnOk = new Button("Ok")
   val lblMessage = new Label(msg)
 
-  setMainContent(lblMessage)
-  setButtonsContent(btnOk)
+  setMainAreaContent(lblMessage)
+  setButtonsAreaContent(btnOk)
 
   btnOk addListener close
 }
@@ -114,7 +115,7 @@ class OkCancelDialog(caption: String = "") extends DialogWindow(caption) {
     setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
   }
 
-  setButtonsContent(lytButtons)
+  setButtonsAreaContent(lytButtons)
 
   btnCancel addListener close
 
@@ -138,10 +139,10 @@ class OkCancelDialog(caption: String = "") extends DialogWindow(caption) {
 /** Confirmation dialog window. */
 class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(caption) {
   def this(msg: String = "") = this("Confirmation", msg)
-  
+
   val lblMessage = new Label(msg)
 
-  setMainContent(lblMessage)
+  setMainAreaContent(lblMessage)
 }
 
 
@@ -219,11 +220,11 @@ class TwinSelect(caption: String = "") extends GridLayout(3, 1) {
 /** Vertical layout containing tab sheet. */
 class TabSheetView extends VerticalLayout {
   val tabSheet = new TabSheet
-  
+
   addComponent(tabSheet)
   setMargin(true)
-  
-  // short cut 
+
+  // short cut
   def addTab(c: Component) = tabSheet.addTab(c)
 }
 

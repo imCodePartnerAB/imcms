@@ -87,17 +87,32 @@
 
 
 (def
-  #^{:doc "Function for loading project's build properties from the build.properties file."}
+  #^{:doc "Function of zero arity.
+           Loads and returns project's build properties from the build.properties file as a map.
+           Map keys are converted into keywords."}
   
   build-properties (fs-lib/create-file-watcher
                      (get-file-fn "build.properties")
                      (comp misc-lib/to-keyword-key-map fs-lib/load-properties)))
 
-(defn build-properties* [name & names]
-  (for [name (cons name names)] (safe-get build-properties name)))
+
+(defn safe-select-keys [map key & keys]
+  (into {}
+    (for [k (cons key keys)]
+      [k, (safe-get map k)]))) 
 
 
-(defn build-property [name] (first (build-properties* name)))
+;(defn build-properties*
+;  "Returns build properties as a map.
+;  Throws an exception if property does not exists."
+;  [key & keys]
+;  (let [bp (build-properties)]
+;    (into {}
+;      (for [k (cons key keys)]
+;        [k, (safe-get bp k)]))))
+
+
+(defn build-property [name] (safe-get (build-properties) name))
 
 
 (defn init-spring-app-context! []

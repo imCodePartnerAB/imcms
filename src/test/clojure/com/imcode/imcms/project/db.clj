@@ -13,11 +13,6 @@
     (clojure.contrib
       [sql :as sql]))
   
-  (:use
-    clojure.test
-    (clojure.contrib duck-streams))
-
-
   (:import
     com.imcode.imcms.db.PrepareException
     org.hibernate.SessionFactory
@@ -35,6 +30,7 @@
 (def db-user #(p/build-property :db-user))
 (def db-pass #(p/build-property :db-pass))
 (def db-target #(p/build-property :db-target))
+(def db-driver #(p/build-property :db-driver))
 
 
 (defn create-ds

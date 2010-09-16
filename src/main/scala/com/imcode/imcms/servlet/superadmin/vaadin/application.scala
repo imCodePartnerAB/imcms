@@ -249,7 +249,7 @@ class App extends com.vaadin.Application {
       
       addComponents(lytMainContent, txtId, txtCode, txtName, txtNativeName, chkEnabled)
 
-      setMainContent(lytMainContent)
+      setMainAreaContent(lytMainContent)
     }
 
     val table = new Table
@@ -467,7 +467,7 @@ class App extends com.vaadin.Application {
       lytMainContent.addComponent(txtFrom)
       lytMainContent.addComponent(txtTo)
 
-      setMainContent(lytMainContent)
+      setMainAreaContent(lytMainContent)
     }
     
     class IPAccessView extends TableViewTemplate {
@@ -591,7 +591,7 @@ class App extends com.vaadin.Application {
       def checkPermissions(permissions: Set[RolePermissionDomainObject]) =
         permissions foreach { p => permsToChkBoxes(p).setValue(true) }
 
-      setMainContent(lytForm)
+      setMainAreaContent(lytForm)
     }
 
     class RolesView extends TableViewTemplate {
@@ -665,69 +665,6 @@ class App extends com.vaadin.Application {
     new TabSheetView {
       addTab(new VerticalLayoutView("Roles and their permissions.") {
         addComponent(new RolesView)
-      })
-    }
-  }
-
-  //
-  //
-  //
-  lazy val users = {
-    def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
-
-    class UsersView extends TableViewTemplate {
-      override def tableProperties = List(
-        ("Id", classOf[JInteger],  null),
-        ("Login name", classOf[String],  null),
-        ("Password", classOf[String],  null),
-        ("Default user?", classOf[JBoolean],  null),
-        ("Superadmin?", classOf[JBoolean],  null),
-        ("Useradmin?", classOf[JBoolean],  null))
-
-      override def tableItems() =
-        roleMapper.getAllUsers.toList map { user =>
-          val userId = Int box user.getId
-          
-          userId -> List(userId,
-                         user.getLoginName,
-                         user.getPassword,
-                         Boolean box user.isDefaultUser,
-                         Boolean box user.isSuperAdmin,
-                         Boolean box user.isUserAdmin)          
-        }
-
-      val frmFilter = new Form {
-        setCaption("Filter")
-        val layout = new VerticalLayout
-        setLayout(layout)        
-
-        val txtFilter = new TextField("Login, first name, last name, title, email, company")
-        val sltRoles = new ListSelect("Role(s)")
-        val chkInactive = new CheckBox("Include inactive users")
-        val btnClear = new Button("Clear")
-        val lytFooter = new GridLayout(2, 1)
-
-        setFooter(lytFooter)
-
-        lytFooter addComponent chkInactive
-        lytFooter addComponent btnClear
-
-        lytFooter.setComponentAlignment(chkInactive, Alignment.MIDDLE_LEFT)
-        lytFooter.setComponentAlignment(btnClear, Alignment.MIDDLE_RIGHT)
-
-        layout addComponent txtFilter
-        layout addComponent sltRoles
-      }
-
-      //val 
-
-      //pnlHeader setContent lytFilter
-      pnlFooter setContent new VerticalLayout { addComponent(frmFilter) }
-    }
-
-    new TabSheetView {
-      addTab(new VerticalLayoutView("Users and their permissions.") {
-        addComponent(new UsersView)
       })
     }
   }
@@ -873,7 +810,7 @@ class App extends com.vaadin.Application {
           txtValue setValue Imcms.getServices.getSessionCounter.toString
           calStart setValue Imcms.getServices.getSessionCounterDate
 
-          w.setMainContent(new FormLayout {
+          w.setMainAreaContent(new FormLayout {
             addComponents(this, txtValue, calStart)
           })
 
@@ -1014,7 +951,7 @@ class App extends com.vaadin.Application {
 
     val twsTemplates = new TwinSelect("Templates")
 
-    setMainContent(new FormLayout {
+    setMainAreaContent(new FormLayout {
       addComponents(this, txtId, txtName, twsTemplates)
     })
   }
@@ -1073,7 +1010,7 @@ class App extends com.vaadin.Application {
             }
 
 
-            w setMainContent new FormLayout {
+            w setMainAreaContent new FormLayout {
               addComponents(this, txtName, lstGroups, uplFile)
             }
 
@@ -1173,10 +1110,11 @@ class App extends com.vaadin.Application {
     }
     val embIcon = new Embedded("Icon")
 
-    setMainContent(new FormLayout {
+    setMainAreaContent(new FormLayout {
       addComponents(this, txtId, txtName, txtDescription, sltType, embIcon)  
     })
   }
+
 
   def categories = new TabSheetView {
     val categoryMapper = Imcms.getServices.getCategoryMapper
@@ -1273,7 +1211,7 @@ class App extends com.vaadin.Application {
             val chkInherited = new CheckBox("Inherited to new documents")
             val chkImageArchive = new CheckBox("Used by image archive")
             
-            w setMainContent new FormLayout {
+            w setMainAreaContent new FormLayout {
               addComponents(this, txtId, txtName, chkMultiSelect, chkInherited, chkImageArchive)
 
               w.addOkButtonClickListener {
@@ -1309,8 +1247,11 @@ class App extends com.vaadin.Application {
         }
       })
     })
-  }
+  } // category
 
+  //
+  // Chat
+  //
   lazy val chat = new TabSheetView{
     addTab(new VerticalLayoutView("Chat topic") {
       val tblMessages = new Table {
@@ -1344,7 +1285,176 @@ class App extends com.vaadin.Application {
       addComponents(this, tblMessages, txtMessage, btnSend)
       ChatTopic ! ChatTopic.Subscribe(subscriber)
     })
+  } //chat
+
+
+  trait UserDialog { this: OkCancelDialog =>
+    val txtUsername = new TextField("Username")
+    val txtPassword = new TextField("4-16 characters") {setInputPrompt(">>")}
+    val txtVerifyPassword = new TextField("4-16 characters (retype)")
+    val txtFirstName = new TextField("Firstn name")
+    val txtLastName = new TextField("Last name")
+    val txtTitle = new TextField("Title")
+    val txtCompany = new TextField("Company")
+    val txtAddress = new TextField("Address")
+    val txtZip = new TextField("Zip")
+    val txtCity = new TextField("City")
+
+    val txtEmail = new TextField("Email")
+    val chkActivated = new CheckBox("Activated")
+
+    val lstRoles = new ListSelect("User roles")
+    val lstManagedRoles = new ListSelect("Managed roles")
+
+    forlet(lstRoles, lstManagedRoles) {_ setColumns 3}
+
+    val lytRoles = new HorizontalLayout {
+      addComponent(new VerticalLayoutView {
+        addComponent(lstRoles)
+      })
+
+      addComponent(new VerticalLayoutView {
+          addComponent(lstManagedRoles)
+      })
+    }
+
+    val lytPassword = new HorizontalLayout {
+      setCaption("Password")
+      addComponent(new VerticalLayout {
+        addComponent(txtPassword)
+      })
+      addComponent(new VerticalLayout {
+        addComponent(txtVerifyPassword)
+      })      
+    }
+
+           val btnAdd = new Button("Add")
+        val btnRemove = new Button("Remove")
+
+    val lytPhoneNumbers = new VerticalLayout {
+      setCaption("Phone numbers")
+      val lytButtons = new HorizontalLayout {
+
+        setSpacing(true)
+        addComponents(this, btnAdd, btnRemove)
+      }
+
+      val tblPhoneNumbers = new Table {
+        addContainerProperties(this, ("Kind", classOf[String], null), ("Nr", classOf[String], null))
+        setEditable(true)
+        setImmediate(true)
+        setPageLength(2)
+      }
+
+      addComponents(this, tblPhoneNumbers, lytButtons)
+
+      btnAdd addListener {
+        val id = 1 + tblPhoneNumbers.getItemIds.map(_.asInstanceOf[Int]).foldLeft(0){_ max _}
+        tblPhoneNumbers.addItem(Array("", ""), Int box id)
+        println("CLICK")
+
+      }
+
+
+      btnRemove addListener {
+        tblPhoneNumbers.getValue match {
+          case null =>
+          case id: JInteger => tblPhoneNumbers removeItem id
+          case ids: Seq[JInteger] => ids foreach { tblPhoneNumbers removeItem _}
+        }
+
+        println("CLICK")
+      }
+    }
+
+    val frmRoles = new Form {
+      setCaption("Roles")
+      getLayout.addComponent(lytRoles)
+    }
+    
+    val frmGeneral = new FormLayout {
+      setCaption("General")
+      addComponents(this, txtUsername, lytPassword, txtFirstName, txtLastName, txtTitle, txtCompany,
+        txtAddress, txtZip, txtCity, txtEmail, lytPhoneNumbers, frmRoles)
+    }
+
+
+
+    setMainAreaContent(new VerticalLayoutView {
+      addComponents(this, frmGeneral)
+    })
   }
+
+  //
+  // Users
+  //
+  lazy val users = {
+    def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
+
+    class UsersView extends TableViewTemplate {
+      override def tableProperties = List(
+        ("Id", classOf[JInteger],  null),
+        ("Login name", classOf[String],  null),
+        ("Password", classOf[String],  null),
+        ("Default user?", classOf[JBoolean],  null),
+        ("Superadmin?", classOf[JBoolean],  null),
+        ("Useradmin?", classOf[JBoolean],  null))
+
+      override def tableItems() =
+        roleMapper.getAllUsers.toList map { user =>
+          val userId = Int box user.getId
+
+          userId -> List(userId,
+                         user.getLoginName,
+                         user.getPassword,
+                         Boolean box user.isDefaultUser,
+                         Boolean box user.isSuperAdmin,
+                         Boolean box user.isUserAdmin)
+        }
+
+      val frmFilter = new Form {
+        setCaption("Filter")
+        val layout = new VerticalLayout
+        setLayout(layout)
+
+        val txtFilter = new TextField("Login, first name, last name, title, email, company")
+        val sltRoles = new ListSelect("Role(s)")
+        val chkInactive = new CheckBox("Include inactive users")
+        val btnClear = new Button("Clear")
+        val lytFooter = new GridLayout(2, 1)
+
+        setFooter(lytFooter)
+
+        lytFooter addComponent chkInactive
+        lytFooter addComponent btnClear
+
+        lytFooter.setComponentAlignment(chkInactive, Alignment.MIDDLE_LEFT)
+        lytFooter.setComponentAlignment(btnClear, Alignment.MIDDLE_RIGHT)
+
+        layout addComponent txtFilter
+        layout addComponent sltRoles
+      }
+
+      //val
+
+      //pnlHeader setContent lytFilter
+      pnlFooter setContent new VerticalLayout { addComponent(frmFilter) }
+    }
+
+    val btnNew = new Button("New")
+
+    new TabSheetView {
+      addTab(new VerticalLayoutView("Users and their permissions.") {
+        addComponent(btnNew)
+        addComponent(new UsersView)
+      })
+
+      btnNew addListener {
+        initAndShow(new OkCancelDialog("New user") with UserDialog) { w =>
+        }
+      }
+    }
+  }  
 }
 
 

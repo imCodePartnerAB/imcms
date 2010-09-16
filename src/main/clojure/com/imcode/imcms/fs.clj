@@ -114,7 +114,7 @@
 
           @resource-handler-result)))))
 
-
+     
 (defn- create-file-getter
   "Creates file getter function which returns file from provided file path.
    A getter function throws an exception if file does not exists."

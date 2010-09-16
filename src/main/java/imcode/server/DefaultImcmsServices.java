@@ -99,11 +99,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private final LocalizedMessageProvider localizedMessageProvider;
-
     static {
         mainLog.info("Main log started.");
     }
-    
+         
     /**
      * Constructor for unit testing. 
      */

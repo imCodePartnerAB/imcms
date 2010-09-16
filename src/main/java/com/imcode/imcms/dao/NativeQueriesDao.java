@@ -3,10 +3,7 @@ package com.imcode.imcms.dao;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Temporal native queries - moved from the DocumentMapper.
@@ -76,7 +73,13 @@ public class NativeQueriesDao extends HibernateTemplate {
 	@Transactional
 	public List<Integer[]> getDocumentMenuPairsContainingDocument(Integer documentId) {
 		String sqlSelectMenus = "SELECT doc_id, no FROM imcms_text_doc_menus menus, imcms_text_doc_menu_items childs WHERE menus.id = childs.menu_id AND childs.to_doc_id = ? ORDER BY doc_id, no";
+        List<Object[]> items = getSession().createSQLQuery(sqlSelectMenus).setParameter(0, documentId).list();
+        List<Integer[]> pairs = new LinkedList<Integer[]>();
 
-		return getSession().createSQLQuery(sqlSelectMenus).setParameter(0, documentId).list();
+        for (Object[] item: items) {
+            pairs.add(new Integer[] {(Integer)item[0], (Integer)item[1]});
+        }
+
+		return pairs;
 	}
 }
