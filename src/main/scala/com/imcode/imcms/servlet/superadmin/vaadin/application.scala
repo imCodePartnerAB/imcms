@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicReference
 import imcode.server.document.{CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
 import scala.actors.Actor._
 import scala.actors._
+import imcode.server.document.textdocument.TextDocumentDomainObject
 
 object ChatTopic extends Actor {
 
@@ -64,6 +65,7 @@ class App extends com.vaadin.Application {
       object Templates extends MenuItem(this)
       object Profiles extends MenuItem(this)
       object Links extends MenuItem(this)
+      object Structure extends MenuItem(this)
     }
     object Permissions extends MenuItem(this) {
       object Users extends MenuItem(this)
@@ -84,6 +86,14 @@ class App extends com.vaadin.Application {
 
   def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=true, draggable: Boolean=true)(init: W => Unit) {
     init(window)
+    window setModal modal
+    window setResizable resizable
+    window setDraggable draggable
+    wndMain addWindow window
+  }
+
+  // broiler...
+  def show[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=true, draggable: Boolean=true) {
     window setModal modal
     window setResizable resizable
     window setDraggable draggable
@@ -171,7 +181,9 @@ class App extends com.vaadin.Application {
   }
 
   val wndMain = new Window {
-    val content = new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL)
+    val content = new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) {
+      setSplitPosition(20)
+    }
     val treeMenu = new Tree {
       setImmediate(true)
     }
@@ -209,7 +221,8 @@ class App extends com.vaadin.Application {
             case Menu.Permissions.IP_Access => ipAccess
             case Menu.Filesystem => filesystem
             case Menu.Documents.Templates => templates
-            case Menu.Chat => chat 
+            case Menu.Chat => chat
+            case Menu.Documents.Structure => docStructure
 
             case other => NA(other)
           })
@@ -218,11 +231,6 @@ class App extends com.vaadin.Application {
 
     content setFirstComponent treeMenu
     this setContent content
-  }
-
-  def show(wndChild: Window, modal: Boolean = true) {
-    wndChild setModal modal
-    wndMain addWindow wndChild
   }
 
   def init {
@@ -1507,7 +1515,73 @@ class App extends com.vaadin.Application {
         }
       }
     }
-  }  
+  }
+
+  //
+  //
+  def docStructure = new TabSheetView {
+    addTab(new VerticalLayoutView("Document structure outline") {
+      val lytMenu = new HorizontalLayout {
+        setSpacing(true)
+        val txtId = new TextField("Text doc (meta) id")
+        val btnShow = new Button("Show")
+
+        addComponents(this, txtId, btnShow)
+      }
+      val lytStructure = new VerticalLayout {
+        setSpacing(true)
+      }
+
+      lytMenu.btnShow addListener {
+        lytMenu.txtId.getValue match {
+          case IntNumber(id) =>
+            Imcms.getServices.getDocumentMapper.getDocument(id) match {
+              case null =>
+                show(new MsgDialog("Information", "No document with id ["+id+"]."))
+              case doc: TextDocumentDomainObject =>
+                lytStructure.removeAllComponents
+                lytStructure.addComponent(new Form(new GridLayout(2,1)) {
+                  setSpacing(true)
+                  setCaption("Texts")
+                  let(getLayout.asInstanceOf[GridLayout]) { l =>
+                    for ((textId, text) <- doc.getTexts) {
+                      addComponents(l, new Label(textId.toString), new Label(text.getText))
+                    }
+                  }
+                })
+
+               lytStructure.addComponent(new Form(new GridLayout(2,1)) {
+                  setSpacing(true)
+                  setCaption("Images")
+                  let(getLayout.asInstanceOf[GridLayout]) { l =>
+                    for ((imageId, image) <- doc.getImages) {
+                      addComponents(l, new Label(imageId.toString), new Label(image.getImageUrl))
+                    }
+                  }
+                })
+
+               lytStructure.addComponent(new Form(new GridLayout(2,1)) {
+                  setSpacing(true)
+                  setCaption("Menus")
+                  let(getLayout.asInstanceOf[GridLayout]) { l =>
+                    for ((menuId, menu) <- doc.getMenus) {
+                      addComponents(l, new Label(menuId.toString), new Label(menu.getMenuItems.map(_.getDocumentId).mkString(", ")))
+                    }
+                  }
+                })              
+
+              case _ =>
+                show(new MsgDialog("Information", "Not a text document."))
+                
+            }
+          case _: String =>
+            show(new MsgDialog("Information", "Document id must be integer."))
+        }
+      }
+
+      addComponents(this, lytMenu, lytStructure)
+    })
+  }
 }
 
 

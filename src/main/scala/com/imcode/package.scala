@@ -2,6 +2,30 @@ package com
 
 package object imcode {
 
+  def flip[A1, A2, B](f: A1 => A2 => B): A2 => A1 => B = x1 => x2 => f(x2)(x1)
+
+  object IntNumber {
+    def unapply(s: String): Option[Int] = try {
+      Some(s.toInt)
+    } catch {
+      case _ : java.lang.NumberFormatException => None
+    }
+  }
+
+//  object PosInt {
+//    def unapply(s: String): Boolean = s match {
+//      case Int(n) => n >= 0
+//      case _ => false
+//    }
+//  }
+//
+//  object NegInt {
+//    def unapply(s: String): Boolean = s match {
+//      case Int(n) => n < 0
+//      case _ => false
+//    }
+//  }
+
   def let[B, T](expr: B)(block: B => T): T = block(expr)
 
   def forlet[T](exprs: T*)(block: T => Unit): Unit = exprs foreach block  
