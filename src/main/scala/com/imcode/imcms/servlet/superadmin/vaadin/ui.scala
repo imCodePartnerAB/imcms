@@ -70,24 +70,22 @@ class DialogWindow(caption: String = "") extends Window(caption) {
   val lytArea = new GridLayout(1, 2) {
     setMargin(true)
     setSpacing(true)
-    setSizeFull
-  }
+    setSizeUndefined
+  }  
 
   def setMainAreaContent(c: Component) {
+    c.setSizeUndefined
     lytArea.addComponent(c, 0, 0)
     lytArea.setComponentAlignment(c, Alignment.BOTTOM_CENTER)
   }
 
   def setButtonsAreaContent(c: Component) {
+    c.setSizeUndefined
     lytArea.addComponent(c, 0, 1)
     lytArea.setComponentAlignment(c, Alignment.TOP_CENTER)
   }
-
-  // auto size
-  setContent(new VerticalLayout {
-    addComponent(lytArea)
-    setSizeUndefined
-  })
+         
+  setContent(lytArea)
 }
 
 

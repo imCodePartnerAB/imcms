@@ -82,7 +82,7 @@ class App extends com.vaadin.Application {
   val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
   val ipAccessDao = Imcms.getSpringBean("ipAccessDao").asInstanceOf[IPAccessDao]  
 
-  def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
+  def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=true, draggable: Boolean=true)(init: W => Unit) {
     init(window)
     window setModal modal
     window setResizable resizable
@@ -1289,9 +1289,9 @@ class App extends com.vaadin.Application {
 
 
   trait UserDialog { this: OkCancelDialog =>
-    val txtUsername = new TextField("Username")
-    val txtPassword = new TextField("4-16 characters") {setInputPrompt(">>")}
-    val txtVerifyPassword = new TextField("4-16 characters (retype)")
+    val txtUsername = new TextField("Username XXXXXXXXXXX")
+    val txtPassword = new TextField("4-16 characters XXXXXXXXXXX")
+    val txtVerifyPassword = new TextField("4-16 characters (retype) XXXXXXXXXXX")
     val txtFirstName = new TextField("Firstn name")
     val txtLastName = new TextField("Last name")
     val txtTitle = new TextField("Title")
@@ -1309,6 +1309,7 @@ class App extends com.vaadin.Application {
     forlet(lstRoles, lstManagedRoles) {_ setColumns 3}
 
     val lytRoles = new HorizontalLayout {
+      setCaption("Roles")
       addComponent(new VerticalLayoutView {
         addComponent(lstRoles)
       })
@@ -1319,11 +1320,14 @@ class App extends com.vaadin.Application {
     }
 
     val lytPassword = new HorizontalLayout {
+      setSizeFull
       setCaption("Password")
       addComponent(new VerticalLayout {
+        setSizeFull
         addComponent(txtPassword)
       })
       addComponent(new VerticalLayout {
+        setSizeFull
         addComponent(txtVerifyPassword)
       })      
     }
@@ -1332,9 +1336,10 @@ class App extends com.vaadin.Application {
         val btnRemove = new Button("Remove")
 
     val lytPhoneNumbers = new VerticalLayout {
+      setSizeUndefined
       setCaption("Phone numbers")
       val lytButtons = new HorizontalLayout {
-
+        setSizeUndefined
         setSpacing(true)
         addComponents(this, btnAdd, btnRemove)
       }
@@ -1367,22 +1372,70 @@ class App extends com.vaadin.Application {
       }
     }
 
-    val frmRoles = new Form {
-      setCaption("Roles")
-      getLayout.addComponent(lytRoles)
-    }
+//    val frmRoles = new Form {
+//      setCaption("Roles")
+//      getLayout.addComponent(lytRoles)
+//    }
     
-    val frmGeneral = new FormLayout {
-      setCaption("General")
-      addComponents(this, txtUsername, lytPassword, txtFirstName, txtLastName, txtTitle, txtCompany,
-        txtAddress, txtZip, txtCity, txtEmail, lytPhoneNumbers, frmRoles)
+    val lytGeneral = new FormLayout {
+      setSizeUndefined
+      //setCaption("General")
+      //addComponents(this, txtUsername, lytPassword, chkActivated)
+      addComponents(this, txtUsername, txtPassword, txtVerifyPassword)
+      //setSizeFull
     }
 
+    val lytContacts = new FormLayout {
+      setCaption("Contacts")
+      addComponents(this, txtFirstName, txtLastName, txtTitle, txtCompany,
+        txtAddress, txtZip, txtCity, txtEmail, lytPhoneNumbers)
+    }
 
+//    setMainAreaContent(new TabSheet{
+//      setSizeUndefined
+//      addTab(lytGeneral)
+//    })
 
-    setMainAreaContent(new VerticalLayoutView {
-      addComponents(this, frmGeneral)
-    })
+    lytContacts.setSizeUndefined
+    val tabSheet = new TabSheet
+    tabSheet.setSizeUndefined
+    tabSheet.addTab(new ListSelect {1 to 100 foreach (i => addItem(0 to i mkString)); setColumns(50)}, "AS", null)
+    tabSheet.addTab(lytGeneral, "Gen-l", null)
+    tabSheet.addTab(txtUsername, "u", null)
+    //tabSheet.addTab(lytContacts, "Cont-s", null)
+    setMainAreaContent(tabSheet)
+
+//    setMainAreaContent(new TabSheetView {
+//      //tabSheet.setSizeFull
+//      //setSizeUndefined
+//      setMargin(false)
+//      //addTab(lytContacts)
+//      addTab(lytGeneral)
+      //addTab(lytRoles)
+//      addTab(new FormLayout {
+//        //setSizeUndefined
+//        setCaption("Test")
+//
+//        val txtUsername = new TextField("Username")
+//        val txtPassword = new TextField("Password")
+//        val chkActivated = new CheckBox("Activated")
+////        val lytData = new FormLayout {
+////          setCaption("DATA")
+////          setSizeUndefined
+////          //val lt = new FormLayout {
+////          //  setCaption("Data in Data")
+////            val txtA = new TextField("A")
+////            val txtB = new TextField("B")
+////            val txtC = new TextField("Caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+////            addComponents(this, txtA, txtB, txtC)
+////          //}
+////          //addComponent(lt)
+////        }
+//        val txtC = new TextField("Caaaaaaaaaaaaaaaaaaaaaaa")
+//
+//        addComponents(this, txtUsername, txtPassword, chkActivated /*, lytData*/, txtC)
+//      })
+//    })
   }
 
   //
