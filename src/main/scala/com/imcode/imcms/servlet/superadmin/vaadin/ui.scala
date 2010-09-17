@@ -53,8 +53,8 @@ object UI {
 //    }
 //  }
 
-  def addComponents(container: AbstractComponentContainer, components: Component*) = {
-    components foreach { c => container addComponent c }
+  def addComponents(container: AbstractComponentContainer, component: Component, components: Component*) = {
+    component +: components foreach { c => container addComponent c }
     container
   }
 
@@ -65,6 +65,18 @@ object UI {
 
 import UI._
 
+class AbstractFieldWrapper(f: com.vaadin.ui.AbstractField) {
+  def stringValue = f.getValue.asInstanceOf[String]
+  //def asJCollection = f.getValue.asInstanceOf[JCollection[_]]
+  def asList[T <: AnyRef] = f.getValue.asInstanceOf[JCollection[T]].toList
+
+  //def jIntegerValue = f.getValue.asInstanceOf[JInteger]
+}
+
+object AbstractFieldWrapper {
+  //implicit def wrapAbstractField[T <: AbstractField](f: T) = new AbstractFieldWrapper(f)
+  implicit def wrapAbstractField(f: AbstractField) = new AbstractFieldWrapper(f)
+}
 
 class DialogWindow(caption: String = "") extends Window(caption) {
   val lytArea = new GridLayout(1, 2) {
@@ -227,10 +239,17 @@ class TabSheetView extends VerticalLayout {
 }
 
 /** Vertical layout with margin, spacing and optional caption. */
-class VerticalLayoutView(caption: String = "") extends VerticalLayout {
+class VerticalLayoutView(caption: String = "", spacing: Boolean=true, margin: Boolean=true) extends VerticalLayout {
   setCaption(caption)
-  setMargin(true)
-  setSpacing(true)
+  setMargin(margin)
+  setSpacing(spacing)
+}
+
+/** Horizontal layout with optional margin, spacing and caption. */
+class HorizontalLayoutView(caption: String = "", spacing: Boolean=true, margin: Boolean=false) extends HorizontalLayout {
+  setCaption(caption)
+  setMargin(margin)
+  setSpacing(spacing)
 }
 
 
