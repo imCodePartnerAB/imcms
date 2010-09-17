@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.superadmin.vaadin
 
+import com.imcode.imcms.servlet.superadmin.vaadin.filemanager._
 import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
 import scala.collection.JavaConversions._
 import com.imcode._
@@ -181,6 +182,7 @@ class App extends com.vaadin.Application {
   val wndMain = new Window {
     val content = new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) {
       setSplitPosition(15)
+      setSizeFull
     }
     
     val treeMenu = new Tree {
@@ -884,38 +886,6 @@ class App extends com.vaadin.Application {
     })
   }
 
-  class FileBrowser(val root: File) extends Tree {
-    setImmediate(true)
-    setSelectable(true)
-
-    addListener(new Tree.ExpandListener {
-      def nodeExpand(e: Tree#ExpandEvent) = e.getItemId match {
-        case dir: File => dir.listFiles foreach (addItem(_, dir))
-      }
-    })
-
-    addListener(new Tree.CollapseListener {
-      def nodeCollapse(e: Tree#CollapseEvent) = getChildren(e.getItemId) match {
-        case null =>
-        case children => children foreach (removeItem(_))
-      }
-    })
-
-    def addItem(fsNode: File) {
-      super.addItem(fsNode)
-      setItemCaption(fsNode, (if (fsNode.isDirectory) "/" else "") + fsNode.getName)
-      setChildrenAllowed(fsNode, fsNode.isDirectory)
-    }
-
-    def addItem(fsNode: File, parentDir: File) {
-      addItem(fsNode)
-      setParent(fsNode, parentDir)
-    }
-
-    addItem(root)
-    expandItem(root)    
-  }
-
 
 //  lazy val documentsLinks = new TabSheetView {
 //    addTab(new VerticalLayoutView("Validate links"))
@@ -928,12 +898,23 @@ class App extends com.vaadin.Application {
 //  lazy val documentsTemplates = new TabSheetView {
 //    addTab(new VerticalLayoutView("Templates"))
 //  }
-  
+
+//  lazy val filesystem = new FileBrowser {
+//        addDirectoryTree(new DirectoryTree(Imcms.getPath) {setCaption("Home (root)")})
+//        addDirectoryTree(new DirectoryTree(new File(Imcms.getPath, "WEB-INF/templates/text")) {setCaption("Templates")})
+//        addDirectoryTree(new DirectoryTree(new File(Imcms.getPath, "images")) {setCaption("Images")})
+//        addDirectoryTree(new DirectoryTree(new File(Imcms.getPath, "WEB-INF/conf")) {setCaption("Conf")})
+//        addDirectoryTree(new DirectoryTree(new File(Imcms.getPath, "WEB-INF/logs")) {setCaption("Logs")})
+//      }
+
   lazy val filesystem = new TabSheetView {
+    tabSheet.setSizeFull
+    setSizeFull
     addTab(new VerticalLayoutView("File manager") {
+      setSizeFull
       val lytButtons = new HorizontalLayout {
         setSpacing(true)
-
+ 
         val btnReload = new Button("Reload")
         val btnView = new Button("View")
         val btnEdit = new Button("Edit")
@@ -947,7 +928,17 @@ class App extends com.vaadin.Application {
         addComponents(this, btnReload, new Label("|"), btnView, btnEdit, new Label("|"), btnCopy, btnMove, btnDelete, new Label("|"), btnDownload, btnUpload)
       }
 
-      addComponents(this, lytButtons, new FileBrowser(Imcms.getPath))
+      val fileBrowser = new FileBrowser {
+        addDirectoryTree(Imcms.getPath, "Home")
+        addDirectoryTree(new File(Imcms.getPath, "WEB-INF/templates/text"), "Templates")
+        addDirectoryTree(new File(Imcms.getPath, "images"), "Images")
+        addDirectoryTree(new File(Imcms.getPath, "WEB-INF/conf"), "Conf")
+        addDirectoryTree(new File(Imcms.getPath, "WEB-INF/logs"), "Logs")
+      }
+
+      addComponents(this, lytButtons, fileBrowser)
+
+      setExpandRatio(fileBrowser, 1.0f)
     })
   }
 

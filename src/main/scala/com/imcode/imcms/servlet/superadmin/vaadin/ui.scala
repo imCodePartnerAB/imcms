@@ -67,14 +67,10 @@ import UI._
 
 class AbstractFieldWrapper(f: com.vaadin.ui.AbstractField) {
   def stringValue = f.getValue.asInstanceOf[String]
-  //def asJCollection = f.getValue.asInstanceOf[JCollection[_]]
   def asList[T <: AnyRef] = f.getValue.asInstanceOf[JCollection[T]].toList
-
-  //def jIntegerValue = f.getValue.asInstanceOf[JInteger]
 }
 
 object AbstractFieldWrapper {
-  //implicit def wrapAbstractField[T <: AbstractField](f: T) = new AbstractFieldWrapper(f)
   implicit def wrapAbstractField(f: AbstractField) = new AbstractFieldWrapper(f)
 }
 
