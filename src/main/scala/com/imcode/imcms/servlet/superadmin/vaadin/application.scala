@@ -87,7 +87,7 @@ class App extends com.vaadin.Application {
   val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
   val ipAccessDao = Imcms.getSpringBean("ipAccessDao").asInstanceOf[IPAccessDao]  
 
-  def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=true, draggable: Boolean=true)(init: W => Unit) {
+  def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
     init(window)
     window setModal modal
     window setResizable resizable
@@ -96,7 +96,7 @@ class App extends com.vaadin.Application {
   }
 
 
-  def show[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=true, draggable: Boolean=true) =
+  def show[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true) =
    initAndShow(window, modal, resizable, draggable) { _ => }
   
 
@@ -899,13 +899,6 @@ class App extends com.vaadin.Application {
 //    addTab(new VerticalLayoutView("Templates"))
 //  }
 
-//  lazy val filesystem = new FileBrowser {
-//        addDirectoryTree(new DirectoryTree(Imcms.getPath) {setCaption("Home (root)")})
-//        addDirectoryTree(new DirectoryTree(new File(Imcms.getPath, "WEB-INF/templates/text")) {setCaption("Templates")})
-//        addDirectoryTree(new DirectoryTree(new File(Imcms.getPath, "images")) {setCaption("Images")})
-//        addDirectoryTree(new DirectoryTree(new File(Imcms.getPath, "WEB-INF/conf")) {setCaption("Conf")})
-//        addDirectoryTree(new DirectoryTree(new File(Imcms.getPath, "WEB-INF/logs")) {setCaption("Logs")})
-//      }
 
   lazy val filesystem = new TabSheetView {
     tabSheet.setSizeFull
@@ -918,14 +911,14 @@ class App extends com.vaadin.Application {
         val btnReload = new Button("Reload")
         val btnView = new Button("View")
         val btnEdit = new Button("Edit")
-        val btnCopy = new Button("Copy")
-        val btnMove = new Button("Move")
+        val btnCopy = new Button("Copy to..")
+        val btnMove = new Button("Move to..")
         val btnDelete = new Button("Delete")
 
         val btnDownload = new Button("Download")
         val btnUpload = new Button("Upload")
 
-        addComponents(this, btnReload, new Label("|"), btnView, btnEdit, new Label("|"), btnCopy, btnMove, btnDelete, new Label("|"), btnDownload, btnUpload)
+        addComponents(this, btnReload, btnCopy, btnMove, btnDelete, new Label("|"), new Label("|"), btnView, btnEdit, new Label("|"), btnDownload, btnUpload)
       }
 
       val fileBrowser = new FileBrowser {
@@ -934,11 +927,38 @@ class App extends com.vaadin.Application {
         addDirectoryTree(new File(Imcms.getPath, "images"), "Images")
         addDirectoryTree(new File(Imcms.getPath, "WEB-INF/conf"), "Conf")
         addDirectoryTree(new File(Imcms.getPath, "WEB-INF/logs"), "Logs")
+
+        tblDirContent.setSelectable(true)
+        tblDirContent.setMultiSelect(true)
       }
 
       addComponents(this, lytButtons, fileBrowser)
 
       setExpandRatio(fileBrowser, 1.0f)
+
+      lytButtons.btnReload addListener {fileBrowser.reload()}
+      lytButtons.btnCopy addListener {
+        initAndShow(new OkCancelDialog("Choose destination directory"), resizable = true) { w =>
+          let(w setMainAreaContent new FileBrowser) { b =>
+            b setSplitPosition 30
+            b addDirectoryTree (Imcms.getPath, "Home")
+            b addDirectoryTree(new File(Imcms.getPath, "WEB-INF/templates/text"), "Templates")
+            b addDirectoryTree(new File(Imcms.getPath, "images"), "Images")
+            b addDirectoryTree(new File(Imcms.getPath, "WEB-INF/conf"), "Conf")
+            b addDirectoryTree(new File(Imcms.getPath, "WEB-INF/logs"), "Logs")            
+            b.setSizeFull
+
+            w.lytArea.setComponentAlignment(b, Alignment.TOP_LEFT)
+          }
+
+          w.lytArea.setSizeFull
+          w.lytArea setMargin false
+          w.lytArea.setColumnExpandRatio(0, 1f)
+          w.lytArea.setRowExpandRatio(0, 1f)
+          w setWidth "600px"
+          w setHeight "500px"
+        }
+      }
     })
   }
 

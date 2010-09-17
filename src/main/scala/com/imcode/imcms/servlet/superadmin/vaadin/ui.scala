@@ -78,19 +78,21 @@ class DialogWindow(caption: String = "") extends Window(caption) {
   val lytArea = new GridLayout(1, 2) {
     setMargin(true)
     setSpacing(true)
-    setSizeUndefined
+    //setSizeUndefined
   }  
 
-  def setMainAreaContent(c: Component) {
+  def setMainAreaContent[C <: Component](c: C): C = {
     c.setSizeUndefined
     lytArea.addComponent(c, 0, 0)
     lytArea.setComponentAlignment(c, Alignment.BOTTOM_CENTER)
+    c
   }
 
-  def setButtonsAreaContent(c: Component) {
+  def setButtonsAreaContent[C <: Component](c: C): C = {
     c.setSizeUndefined
     lytArea.addComponent(c, 0, 1)
     lytArea.setComponentAlignment(c, Alignment.TOP_CENTER)
+    c
   }
          
   setContent(lytArea)
@@ -254,15 +256,16 @@ class FileUploadReceiver(uploadDir: String) extends Upload.Receiver {
   
   val upload: AtomicReference[Option[(File, MIMEType)]] = new AtomicReference(None)
 
-  def receiveUpload(filename :String, mimeType: MIMEType) = let(new File(uploadDir+"/"+filename)) { file =>
-    new FileOutputStream(file) {
-      override def close() {
-        super.close
-        upload set Some(file, mimeType)
-        println("Uploaded: " + upload.get)
+  def receiveUpload(filename :String, mimeType: MIMEType) =
+    let(new File(uploadDir+"/"+filename)) { file =>
+      new FileOutputStream(file) {
+        override def close() {
+          super.close
+          upload set Some(file, mimeType)
+          println("Uploaded: " + upload.get)
+        }
       }
     }
-  }
 }
 
 //sealed abstract class UploadStatus

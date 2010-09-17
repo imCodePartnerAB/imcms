@@ -34,7 +34,8 @@ class DirectoryTree(val root: File) extends Tree {
     require(root.isDirectory,
       "Tree root [%s] does not exists or not a directory." format root.getAbsoluteFile)
 
-    removeAllItems
+    getItemIds foreach (collapseItem(_)) // workaround; without collapsing root remains expanded
+    removeAllItems()
     addDir(root)
     expandItem(root)
   }
@@ -66,7 +67,7 @@ class DirectoryContentTable extends Table {
     removeAllItems
     dir match {
       case Some(dir) => dir.listFiles filter (_.isFile) foreach { file =>
-        addItem(Array(file.getName, new Date(file.lastModified), Long box file.getTotalSpace, "-"), file)
+        addItem(Array(file.getName, new Date(file.lastModified), Long box file.length, "-"), file)
       }
 
       case _ =>
@@ -114,6 +115,18 @@ class FileBrowser extends SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) {
       dirTree addListener dirTreeValueChangeListener
       accDirTrees addTab (dirTree, caption, icon)
     }
+
+  def reload() {
+    accDirTrees.getComponentIterator foreach {
+      case dirTree: DirectoryTree => dirTree.reload
+      case _ =>
+    }
+
+    accDirTrees.getComponentIterator.toStream.headOption match {
+      case Some(c) => accDirTrees setSelectedTab c
+      case _ =>
+    }
+  }
 
   setFirstComponent(accDirTrees)
   setSecondComponent(tblDirContent)
