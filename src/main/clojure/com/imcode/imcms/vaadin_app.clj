@@ -10,7 +10,8 @@
     (org.eclipse.jetty.servlet ServletContextHandler ServletHolder))
   
   (:use
-    com.imcode.imcms.vaadin-app-handler))
+    com.imcode.imcms.vaadin-app-handler
+    (clojure (main :only [load-script]))))
 
 
 (def apps (atom []))
@@ -40,7 +41,7 @@
 
 
 (defn reload []
-  (use 'com.imcode.imcms.vaadin-app :reload-all)
+  (load-script "@com/imcode/imcms/vaadin_app_handler.clj")
   (doseq [app @apps] (.close app))
   (reset! apps []))
 
