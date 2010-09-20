@@ -962,7 +962,7 @@ class App extends com.vaadin.Application {
           w.lytArea.setColumnExpandRatio(0, 1f)
           w.lytArea.setRowExpandRatio(0, 1f)
           w setWidth "600px"
-          w setHeight "500px"
+          w setHeight "400px"
         }
       }
     })
@@ -1277,6 +1277,7 @@ class App extends com.vaadin.Application {
   // Chat
   //
   lazy val chat = new Chat {
+    setCaption("Chat messages")
       setMargin(true)
       val subscriber = actor {
         loop {

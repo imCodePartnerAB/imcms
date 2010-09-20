@@ -1,5 +1,5 @@
 (ns 
-  #^{:doc ""}
+  ^{:doc ""}
   com.imcode.imcms.misc)
 
 (defn to-keyword-key-map

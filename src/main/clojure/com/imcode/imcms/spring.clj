@@ -1,5 +1,5 @@
 (ns
-  #^{:doc "Spring utils."}
+  ^{:doc "Spring utils."}
   com.imcode.imcms.spring)
 
 

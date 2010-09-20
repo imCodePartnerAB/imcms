@@ -1,6 +1,5 @@
 (ns
-  #^{:doc "Initialized ImCMS instance services access fns."}
-
+  ^{:doc "Initialized ImCMS instance services access fns."}
   com.imcode.imcms.instance.services
   
   (:import

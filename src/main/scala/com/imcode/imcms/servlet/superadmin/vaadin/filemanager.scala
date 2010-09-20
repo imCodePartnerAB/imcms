@@ -134,3 +134,6 @@ class FileBrowser extends SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) {
   setSplitPosition(15)
   setSizeFull
 }
+
+
+//class ImagePreview extends 
