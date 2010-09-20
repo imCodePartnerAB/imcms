@@ -26,6 +26,8 @@ package object imcode {
 //    }
 //  }
 
+  def ?[A <: AnyRef](nullable: A): Option[A] = if (nullable eq null) None else Some(nullable)
+
   def let[B, T](expr: B)(block: B => T): T = block(expr)
 
   def letret[B, T](expr: B)(block: B => T): B = {

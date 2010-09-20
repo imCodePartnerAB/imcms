@@ -4,28 +4,8 @@
     /*background: green;*/
 /*}*/
 
-
-
-/*.v-form fieldset {*/
-    /*border: thin solid;*/
+/*.v-label {*/
+    /*background: green;*/
 /*}*/
 
-.v-gridlayout-gridexpandratio {
-    background: blue; /* Creates a "border" around the grid. */
-    margin:     10px; /* Empty space around the layout. */
-}
-/* Add padding through which the background color shows. */
-.v-gridlayout-gridexpandratio .v-gridlayout-margin {
-    padding: 2px;
-}
-/* Add cell borders and make the cell backgrounds white.
- * Warning: This depends heavily on the HTML structure. */
-.v-gridlayout-gridexpandratio > div > div > div {
-    padding:    2px;   /* Layout background will show through. */
-    background: white; /* The cells will be colored white. */
-}
-/* Components inside the layout are a safe way to style cells. */
-.v-gridlayout-gridexpandratio .v-label {
-    text-align: left;
-    background: #ffffc0; /* Pale yellow */
-}
+

@@ -15,6 +15,7 @@ import imcms.mapping.CategoryMapper
 import imcms.servlet.superadmin.AdminSearchTerms
 import com.imcode.imcms.api.Document.PublicationStatus
 import com.vaadin.terminal.UserError
+import imcms.servlet.superadmin.vaadin.ChatTopic.Message
 import imcode.util.Utility
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
@@ -43,7 +44,6 @@ object ChatTopic extends Actor {
       react {
         case Subscribe(subscriber) =>
           subscribers += subscriber // send 10 last messages?
-          subscriber ! Message("WELCOME TO CHAT")
         case msg : Message => subscribers foreach (_ ! msg) 
         case other => println("Unknown message: " + other)
       }
@@ -80,7 +80,6 @@ class App extends com.vaadin.Application {
       object SessionCounter extends MenuItem(this)
     }
     object Filesystem extends MenuItem(this)
-    object Chat extends MenuItem(this) 
   } 
 
   val languageDao = Imcms.getSpringBean("languageDao").asInstanceOf[LanguageDao]
@@ -222,7 +221,6 @@ class App extends com.vaadin.Application {
             case Menu.Permissions.IP_Access => ipAccess
             case Menu.Filesystem => filesystem
             case Menu.Documents.Templates => templates
-            case Menu.Chat => chat
             case Menu.Documents.Structure => docStructure
 
             case other => NA(other)
@@ -231,7 +229,15 @@ class App extends com.vaadin.Application {
     })
 
     content setFirstComponent treeMenu
-    this setContent content
+    //this setContent content
+
+    val splitView = new SplitPanel {
+      setFirstComponent(content)
+      setSecondComponent(chat)
+      setSplitPosition(85)
+    }
+
+    this setContent splitView
   }
 
   def init {
@@ -918,7 +924,7 @@ class App extends com.vaadin.Application {
         val btnDownload = new Button("Download")
         val btnUpload = new Button("Upload")
 
-        addComponents(this, btnReload, btnCopy, btnMove, btnDelete, new Label("|"), new Label("|"), btnView, btnEdit, new Label("|"), btnDownload, btnUpload)
+        addComponents(this, btnReload, new Label("|"), btnCopy, btnMove, btnDelete, new Label("|"), btnView, btnEdit, new Label("|"), btnDownload, btnUpload)
       }
 
       val fileBrowser = new FileBrowser {
@@ -938,7 +944,7 @@ class App extends com.vaadin.Application {
 
       lytButtons.btnReload addListener {fileBrowser.reload()}
       lytButtons.btnCopy addListener {
-        initAndShow(new OkCancelDialog("Choose destination directory"), resizable = true) { w =>
+        initAndShow(new OkCancelDialog("Copy to - choose destination directory"), resizable = true) { w =>
           let(w setMainAreaContent new FileBrowser) { b =>
             b setSplitPosition 30
             b addDirectoryTree (Imcms.getPath, "Home")
@@ -1270,40 +1276,25 @@ class App extends com.vaadin.Application {
   //
   // Chat
   //
-  lazy val chat = new TabSheetView{
-    addTab(new VerticalLayoutView("Chat topic") {
-      val tblMessages = new Table {
-        setImmediate(true)
-        addContainerProperties(this,
-          ("Date", classOf[Date], null), ("Sender", classOf[String], null), ("Message", classOf[String], null))
-      }
-      val txtMessage = new TextField {
-        setRows(3)
-        setColumns(30)
-      }
-      val btnSend = new Button("Send")
+  lazy val chat = new Chat {
+      setMargin(true)
       val subscriber = actor {
         loop {
           react {
             case ChatTopic.Message(text) =>
-              tblMessages.addItem(Array(new Date, "#user#", text), Int box text.hashCode)
-              if (tblMessages.getItemIds.size > 10) tblMessages.removeItem(tblMessages.getItemIds.head)
-              tblMessages.requestRepaintAll
-
+              pnlMessages addMessage new MessageView("#user#", text)
+              pnlMessages.requestRepaint
             case _ =>
           }
         }
       }
 
       btnSend addListener {
-        ChatTopic ! ChatTopic.Message(txtMessage.getValue.asInstanceOf[String])
-        txtMessage setValue ""
+        ChatTopic ! ChatTopic.Message(txtText.getValue.asInstanceOf[String])
+        txtText setValue ""
       }
-
-      addComponents(this, tblMessages, txtMessage, btnSend)
       ChatTopic ! ChatTopic.Subscribe(subscriber)
-    })
-  } //chat
+    } //chat
 
 
   trait UserDialog { this: OkCancelDialog =>
