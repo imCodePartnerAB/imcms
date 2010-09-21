@@ -30,7 +30,8 @@ public class ContentLoop implements Serializable, Cloneable, DocVersionItem, Doc
     @Column(name="doc_version_no")
     private Integer docVersionNo;
 
-    @CollectionOfElements(fetch = FetchType.EAGER)
+    //@CollectionOfElements(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.EAGER)
     @JoinTable(
         name = "imcms_text_doc_contents",
         joinColumns = {@JoinColumn(name="doc_id", referencedColumnName="doc_id"),
