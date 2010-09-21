@@ -7,38 +7,6 @@
     <tlib-version>0.1</tlib-version>
     <short-name>imcms</short-name>
     <uri>imcms</uri>
-    
-    <tag>
-        <name>contentloop</name>
-        <tag-class>com.imcode.imcms.servlet.tags.ContentLoopTag</tag-class>
-        <body-content>JSP</body-content>
-        
-        <attribute>
-            <name>no</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-                        
-        <attribute>
-            <name>document</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        
-        <attribute>
-            <name>indexVar</name>
-            <required>true</required>
-            <rtexprvalue>false</rtexprvalue>
-        </attribute>
-        
-        <attribute>
-            <name>baseIndex</name>
-            <required>true</required>
-            <rtexprvalue>false</rtexprvalue>
-        </attribute>                                
-    </tag>
-
-
 
     <tag>
         <name>contentloop2</name>

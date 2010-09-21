@@ -6,6 +6,7 @@ import com.imcode._
 import com.vaadin.event.ItemClickEvent
 import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.vaadin.ui._
+import com.vaadin.terminal.Resource
 import com.vaadin.data.Property
 import com.vaadin.data.Property._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
@@ -28,6 +29,58 @@ import imcode.server.document.{CategoryDomainObject, CategoryTypeDomainObject, D
 import scala.actors.Actor._
 import scala.actors._
 import imcode.server.document.textdocument.TextDocumentDomainObject
+
+class FileBrowser extends SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) {
+  val tblDirContent = new DirectoryContentTable
+  val accDirTrees = new Accordion {
+    addListener(new TabSheet.SelectedTabChangeListener {
+      def selectedTabChange(e: TabSheet#SelectedTabChangeEvent) {
+        getSelectedTab match {
+          case dirTree: DirectoryTree => dirTree.getValue match {
+            case dir: File => tblDirContent reload Some(dir)
+            case _ => dirTree select dirTree.getItemIds.head
+          }
+
+          case _ => tblDirContent reload None
+        }
+      }
+    })
+
+    setSizeFull
+  }
+
+  val dirTreeValueChangeListener = new ValueChangeListener {
+    def valueChange(e: ValueChangeEvent) = e.getProperty.getValue match {
+        case dir: File => tblDirContent reload Some(dir)
+        case _ => tblDirContent reload None
+    }
+  }
+
+  def addDirectoryTree(caption: String, root: File, icon: Option[Resource] = None) =
+    letret(new DirectoryTree(root)) { dirTree =>
+      dirTree addListener dirTreeValueChangeListener
+      accDirTrees addTab (dirTree, caption, icon.orNull)
+    }
+
+  def reload() {
+    accDirTrees.getComponentIterator foreach {
+      case dirTree: DirectoryTree => dirTree.reload
+      case _ =>
+    }
+
+    accDirTrees.getComponentIterator.toStream.headOption match {
+      case Some(c) => accDirTrees setSelectedTab c
+      case _ =>
+    }
+  }
+
+  setFirstComponent(accDirTrees)
+  setSecondComponent(tblDirContent)
+
+  setSplitPosition(15)
+  setSizeFull
+}
+
 
 class DirectoryTree(val root: File) extends Tree {
   def reload() {
@@ -81,58 +134,6 @@ class DirectoryContentTable extends Table {
 
   setImmediate(true)
   setSizeFull  
-}
-
-
-class FileBrowser extends SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) {
-  val tblDirContent = new DirectoryContentTable
-  val accDirTrees = new Accordion {
-    addListener(new TabSheet.SelectedTabChangeListener {
-      def selectedTabChange(e: TabSheet#SelectedTabChangeEvent) {
-        getSelectedTab match {
-          case dirTree: DirectoryTree => dirTree.getValue match {
-            case dir: File => tblDirContent reload Some(dir)
-            case _ => dirTree select dirTree.getItemIds.head
-          }
-          
-          case _ => tblDirContent reload None
-        }
-      }
-    })
-
-    setSizeFull
-  }
-
-  val dirTreeValueChangeListener = new ValueChangeListener {
-    def valueChange(e: ValueChangeEvent) = e.getProperty.getValue match {
-        case dir: File => tblDirContent reload Some(dir)
-        case _ => tblDirContent reload None
-    }
-  }
-
-  def addDirectoryTree(root: File, caption: String, icon: com.vaadin.terminal.Resource=null) =
-    letret(new DirectoryTree(root)) { dirTree =>
-      dirTree addListener dirTreeValueChangeListener
-      accDirTrees addTab (dirTree, caption, icon)
-    }
-
-  def reload() {
-    accDirTrees.getComponentIterator foreach {
-      case dirTree: DirectoryTree => dirTree.reload
-      case _ =>
-    }
-
-    accDirTrees.getComponentIterator.toStream.headOption match {
-      case Some(c) => accDirTrees setSelectedTab c
-      case _ =>
-    }
-  }
-
-  setFirstComponent(accDirTrees)
-  setSecondComponent(tblDirContent)
-
-  setSplitPosition(15)
-  setSizeFull
 }
 
 

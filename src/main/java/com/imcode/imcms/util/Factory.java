@@ -51,7 +51,7 @@ public class Factory {
      * @param docId
      * @param docVersionNo
      * @param no
-     * @return content loop with single content.
+     * @return content loop.
      */
     public static ContentLoop createContentLoop(Integer docId, Integer docVersionNo, Integer no) {
         ContentLoop loop = newInstance(ContentLoop.class, docId, docVersionNo, no);

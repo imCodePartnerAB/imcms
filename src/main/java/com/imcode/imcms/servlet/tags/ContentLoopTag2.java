@@ -17,7 +17,7 @@ import com.imcode.imcms.api.Content;
 import com.imcode.imcms.api.ContentLoop;
 
 /**
- * Second version of content loop tag.
+ * Content loop tag v2.
  */
 public class ContentLoopTag2 extends BodyTagSupport {
 

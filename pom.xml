@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -7,7 +8,7 @@
     <packaging>war</packaging>
     <version>6.0.0-alpha40-SNAPSHOT</version>
     <name>imCMS</name>
-
+            
     <profiles>
         <profile>
             <id>local</id>
@@ -112,14 +113,14 @@
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
             <version>7.0.0.RC6</version>
-            <scope>test</scope>
+            <!--<scope>test</scope>-->
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlet</artifactId>
             <version>7.0.0.RC6</version>
-            <scope>test</scope>
+            <!--<scope>test</scope>-->
         </dependency>        
 
 
@@ -286,24 +287,35 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>3.3.2.GA</version>
+            <version>3.5.6-Final</version>
         </dependency>
 
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-annotations</artifactId>
-            <version>3.4.0.GA</version>
+            <version>3.5.6-Final</version>
         </dependency>
 
         <dependency>
+    <groupId>javassist</groupId>
+    <artifactId>javassist</artifactId>
+    <version>3.8.0.GA</version>
+</dependency>
+        
+        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-commons-annotations</artifactId>
-            <version>3.3.0.ga</version>
+            <version>3.2.0.Final</version>
             <exclusions>
                 <exclusion>
                     <groupId>cglib</groupId>
                     <artifactId>cglib</artifactId>
                 </exclusion>
+                <!--<exclusion>-->
+                    <!--<groupId>org.hibernate</groupId>-->
+                    <!--<artifactId>hibernate</artifactId>-->
+                <!--</exclusion>-->
+                
             </exclusions>
         </dependency>
 
@@ -495,7 +507,7 @@
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.4</version>
-            <scope>provided</scope>
+            <!--<scope>provided</scope>-->
         </dependency>
 
         <!-- ================ -->
@@ -549,6 +561,11 @@
             <id>codehaus</id>
             <url>http://repository.codehaus.org</url>
         </repository>
+
+        <repository>
+            <id>jboss</id>
+            <url>http://repository.jboss.org/nexus/content/groups/public-jboss</url>
+        </repository>        
 
         <repository>
             <id>clojure</id>

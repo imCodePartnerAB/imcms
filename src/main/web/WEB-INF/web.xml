@@ -96,14 +96,14 @@
     </init-param>
   </servlet>
     
-    <!-- New administration UI dispatcher servlet -->
-    <!--<servlet>-->
-      <!--<servlet-name>newadmin</servlet-name>-->
-        <!--<servlet-class>-->
-          <!--org.springframework.web.servlet.DispatcherServlet-->
-        <!--</servlet-class>-->
-        <!--<load-on-startup>1</load-on-startup>-->
-    <!--</servlet>-->
+     New administration UI dispatcher servlet 
+    <servlet>
+      <servlet-name>newadmin</servlet-name>
+        <servlet-class>
+          org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
     
     <servlet>
         <servlet-name>web</servlet-name>
@@ -359,10 +359,10 @@
     </servlet>
 
     
-	<!--<servlet-mapping>-->
-	    <!--<servlet-name>newadmin</servlet-name>-->
-	    <!--<url-pattern>/newadmin/*</url-pattern>-->
-	<!--</servlet-mapping>-->
+	<servlet-mapping>
+	    <servlet-name>newadmin</servlet-name>
+	    <url-pattern>/newadmin/*</url-pattern>
+	</servlet-mapping>
 	
 	<servlet-mapping>
         <servlet-name>web</servlet-name>
@@ -616,7 +616,7 @@
 
       <servlet-mapping>
         <servlet-name>superadmin-vaadin</servlet-name>
-        <url-pattern>/newadmin/*</url-pattern>
+        <url-pattern>/vaadin/*</url-pattern>
       </servlet-mapping>
 
       <servlet-mapping>

@@ -928,11 +928,11 @@ class App extends com.vaadin.Application {
       }
 
       val fileBrowser = new FileBrowser {
-        addDirectoryTree(Imcms.getPath, "Home")
-        addDirectoryTree(new File(Imcms.getPath, "WEB-INF/templates/text"), "Templates")
-        addDirectoryTree(new File(Imcms.getPath, "images"), "Images")
-        addDirectoryTree(new File(Imcms.getPath, "WEB-INF/conf"), "Conf")
-        addDirectoryTree(new File(Imcms.getPath, "WEB-INF/logs"), "Logs")
+        addDirectoryTree("Home", Imcms.getPath)
+        addDirectoryTree("Templates", new File(Imcms.getPath, "WEB-INF/templates/text"))
+        addDirectoryTree("Images", new File(Imcms.getPath, "images"))
+        addDirectoryTree("Conf", new File(Imcms.getPath, "WEB-INF/conf"))
+        addDirectoryTree("Logs", new File(Imcms.getPath, "WEB-INF/logs"))
 
         tblDirContent.setSelectable(true)
         tblDirContent.setMultiSelect(true)
@@ -947,11 +947,11 @@ class App extends com.vaadin.Application {
         initAndShow(new OkCancelDialog("Copy to - choose destination directory"), resizable = true) { w =>
           let(w setMainAreaContent new FileBrowser) { b =>
             b setSplitPosition 30
-            b addDirectoryTree (Imcms.getPath, "Home")
-            b addDirectoryTree(new File(Imcms.getPath, "WEB-INF/templates/text"), "Templates")
-            b addDirectoryTree(new File(Imcms.getPath, "images"), "Images")
-            b addDirectoryTree(new File(Imcms.getPath, "WEB-INF/conf"), "Conf")
-            b addDirectoryTree(new File(Imcms.getPath, "WEB-INF/logs"), "Logs")            
+            b addDirectoryTree("Home", Imcms.getPath)
+            b addDirectoryTree("Templates", new File(Imcms.getPath, "WEB-INF/templates/text"))
+            b addDirectoryTree("Images", new File(Imcms.getPath, "images"))
+            b addDirectoryTree("Conf", new File(Imcms.getPath, "WEB-INF/conf"))
+            b addDirectoryTree("Logs", new File(Imcms.getPath, "WEB-INF/logs"))           
             b.setSizeFull
 
             w.lytArea.setComponentAlignment(b, Alignment.TOP_LEFT)

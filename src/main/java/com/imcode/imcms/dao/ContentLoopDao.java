@@ -63,6 +63,7 @@ public class ContentLoopDao extends HibernateTemplate {
         ContentLoop loopClone = loop.clone();
 
         saveOrUpdate(loopClone);
+        flush();
 
         return loopClone;
 	}
