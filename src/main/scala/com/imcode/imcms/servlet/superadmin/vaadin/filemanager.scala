@@ -6,7 +6,6 @@ import com.imcode._
 import com.vaadin.event.ItemClickEvent
 import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.vaadin.ui._
-import com.vaadin.terminal.Resource
 import com.vaadin.data.Property
 import com.vaadin.data.Property._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
@@ -14,7 +13,6 @@ import imcms.api.{CategoryType, SystemProperty, IPAccess, Document}
 import imcms.mapping.CategoryMapper
 import imcms.servlet.superadmin.AdminSearchTerms
 import com.imcode.imcms.api.Document.PublicationStatus
-import com.vaadin.terminal.UserError
 import imcode.util.Utility
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
@@ -29,6 +27,7 @@ import imcode.server.document.{CategoryDomainObject, CategoryTypeDomainObject, D
 import scala.actors.Actor._
 import scala.actors._
 import imcode.server.document.textdocument.TextDocumentDomainObject
+import com.vaadin.terminal.{FileResource, Resource, UserError}
 
 class FileBrowser extends SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) {
   val tblDirContent = new DirectoryContentTable
@@ -137,4 +136,42 @@ class DirectoryContentTable extends Table {
 }
 
 
-//class ImagePreview extends 
+// image file preview - prototype
+class ImagePreview extends VerticalLayout {
+
+  def showImage(file: File) =
+    let(new Embedded("", new FileResource(file, getApplication))) { e =>
+      e setSizeFull
+      
+      addComponent(e)
+      setComponentAlignment(e, Alignment.MIDDLE_CENTER)
+    }
+
+  def hideImage = removeAllComponents
+
+  setMargin(true)
+  this setWidth "100px"
+  this setHeight "100px"
+}
+
+// prototype
+class FileBrowserWithImagePreview extends HorizontalLayout {
+  val browser = new FileBrowser
+  val preview = new ImagePreview
+
+  // refactor to predicate fn taken as parameter
+  def canPreview(file: File) = file.getName matches ".*\\.(gif|jpg|jpeg|png)$"
+
+  addComponents(this, browser, preview)
+  setComponentAlignment(preview, Alignment.MIDDLE_LEFT)
+  setExpandRatio(browser, 1.0f)
+
+  browser.tblDirContent addListener {
+    browser.tblDirContent.getValue match {
+      case file: File if canPreview(file) => preview showImage file
+      case _ => preview.hideImage
+    }
+  }
+
+  setSizeFull
+}
