@@ -24,6 +24,8 @@
 ;;;; Helper fns
 ;;;;
 
+;;(map #()) - recreate on nonexisting db gives an error.
+
 (def db-name #(p/build-property :db-name))
 (def db-host #(p/build-property :db-host))
 (def db-port #(p/build-property :db-port))

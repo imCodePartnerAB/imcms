@@ -60,7 +60,7 @@ object UI {
 
   def addContainerProperties(table: Table, properties: (AnyRef, JClass[_], AnyRef)*) =
     for ((propertyId, propertyType, defaultValue) <- properties)
-      table.addContainerProperty(propertyId, propertyType, defaultValue)  
+      table.addContainerProperty(propertyId, propertyType, defaultValue)
 }
 
 import UI._
@@ -266,6 +266,7 @@ class FileUploadReceiver(uploadDir: String) extends Upload.Receiver {
       }
     }
 }
+
 
 //sealed abstract class UploadStatus
 //case class NotUploaded extends UploadStatus

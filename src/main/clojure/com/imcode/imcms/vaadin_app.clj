@@ -45,3 +45,9 @@
   (doseq [app @apps] (.close app))
   (reset! apps []))
 
+
+(comment
+  "Copy-paste to repl"
+  (use 'com.imcode.imcms.vaadin-app)
+  (.start @(def s (create-server 9999)))
+)

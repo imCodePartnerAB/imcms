@@ -55,6 +55,12 @@ class FileBrowser extends SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) {
     }
   }
 
+  setFirstComponent(accDirTrees)
+  setSecondComponent(tblDirContent)
+
+  setSplitPosition(15)
+  setSizeFull  
+
   def addDirectoryTree(caption: String, root: File, icon: Option[Resource] = None) =
     letret(new DirectoryTree(root)) { dirTree =>
       dirTree addListener dirTreeValueChangeListener
@@ -72,16 +78,19 @@ class FileBrowser extends SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) {
       case _ =>
     }
   }
-
-  setFirstComponent(accDirTrees)
-  setSecondComponent(tblDirContent)
-
-  setSplitPosition(15)
-  setSizeFull
 }
 
 
 class DirectoryTree(val root: File) extends Tree {
+  addListener(new Tree.ExpandListener {
+    def nodeExpand(e: Tree#ExpandEvent) = e.getItemId match {
+      case dir: File => dir.listFiles filter (_.isDirectory) foreach (addDir(_, Some(dir)))
+    }
+  })
+
+  setImmediate(true)
+  reload()
+  
   def reload() {
     require(root.isDirectory,
       "Tree root [%s] does not exists or not a directory." format root.getAbsoluteFile)
@@ -102,19 +111,18 @@ class DirectoryTree(val root: File) extends Tree {
       case _ =>
     }
   }
-
-  addListener(new Tree.ExpandListener {
-    def nodeExpand(e: Tree#ExpandEvent) = e.getItemId match {
-      case dir: File => dir.listFiles filter (_.isDirectory) foreach (addDir(_, Some(dir)))
-    }
-  })
-  
-  setImmediate(true)
-  reload()
 }
 
 
 class DirectoryContentTable extends Table {
+  addContainerProperty("Name", classOf[String], null)
+  addContainerProperty("Date modified", classOf[Date], null)
+  addContainerProperty("Size", classOf[JLong], null)
+  addContainerProperty("Kind", classOf[String], null)
+
+  setImmediate(true)
+  setSizeFull
+
   def reload(dir: Option[File]) {
     removeAllItems
     dir match {
@@ -124,55 +132,60 @@ class DirectoryContentTable extends Table {
 
       case _ =>
     }
-  }
-
-  addContainerProperty("Name", classOf[String], null)
-  addContainerProperty("Date modified", classOf[Date], null)
-  addContainerProperty("Size", classOf[JLong], null)
-  addContainerProperty("Kind", classOf[String], null)
-
-  setImmediate(true)
-  setSizeFull  
+  }  
 }
 
 
 // image file preview - prototype
-class ImagePreview extends VerticalLayout {
-  val lblPreview = new Label("PREVIEW")
-  val btnEnlarge = new Button("Enlarge") {setEnabled(false)}
+class ImagePreview(imgWidth: Int, imgHeight: Int) extends GridLayout(1, 2) {
+  val lytStub = new VerticalLayout {
+    val lblStub = new Label("NO IMAGE SELECTED")
+
+    addComponent(lblStub)
+    setComponentAlignment(lblStub, Alignment.MIDDLE_CENTER)
+  }  
+
+  val btnEnlarge = new Button("Enlarge") {setWidth("100%")}
+  addComponent(btnEnlarge, 0, 1)
+  setMargin(true)
+  setSpacing(true)
+  
+  showStub()
 
   def showImage(file: File) =
     let(new Embedded("", new FileResource(file, getApplication))) { e =>
-      e setSizeFull
-
-      removeAllComponents
-      addComponent(e)
-      setComponentAlignment(e, Alignment.MIDDLE_CENTER)
+      show(e)
     }
 
-  def hideImage = removeAllComponents
+  def showStub() = show(lytStub)
 
-  setMargin(true)
-  this setWidth "100px"
-  this setHeight "100px"
+  private def show(component: Component) {
+    component.setHeight (imgHeight+"px")
+    component.setWidth (imgWidth+"px")
+
+    removeComponent(0, 0)
+    addComponent(new Panel {addComponent(component);  setSizeUndefined}, 0, 0)
+
+    btnEnlarge setEnabled component.isInstanceOf[Embedded]
+  }
 }
 
 // prototype
-class FileBrowserWithImagePreview extends HorizontalLayout {
+class FileBrowserWithImagePreview(previewImgWidth: Int, previewImgHeight: Int) extends HorizontalLayout {
   val browser = new FileBrowser
-  val preview = new ImagePreview
+  val preview = new ImagePreview(previewImgWidth, previewImgHeight)
 
   // refactor to predicate fn taken as parameter
   def canPreview(file: File) = file.getName matches ".*\\.(gif|jpg|jpeg|png)$"
 
   addComponents(this, browser, preview)
-  setComponentAlignment(preview, Alignment.MIDDLE_LEFT)
+  setComponentAlignment(preview, Alignment.MIDDLE_CENTER)
   setExpandRatio(browser, 1.0f)
 
   browser.tblDirContent addListener {
     browser.tblDirContent.getValue match {
       case file: File if canPreview(file) => preview showImage file
-      case _ => preview.hideImage
+      case _ => preview.showStub()
     }
   }
 
