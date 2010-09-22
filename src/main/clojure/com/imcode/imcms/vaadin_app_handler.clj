@@ -1,16 +1,19 @@
-(ns com.imcode.imcms.vaadin-app-handler
+(ns
+  ^{:doc "Vaadin test/prototype application handler."}
+  com.imcode.imcms.vaadin-app-handler
+  
   (:require
-   (clojure.java [io :as io]))
+    (clojure.java [io :as io]))
 
   (:import
-   com.vaadin.Application
-   (scala Some None$)
-   (com.vaadin.ui Window SplitPanel Button Panel Label Button$ClickListener Embedded GridLayout HorizontalLayout
-                  VerticalLayout Alignment)
-   (com.vaadin.terminal ExternalResource ClassResource FileResource)
-   (com.vaadin.data Property Property$ValueChangeListener)
-   (com.imcode.imcms.servlet.superadmin.vaadin.ui OkCancelDialog)
-   (com.imcode.imcms.servlet.superadmin.vaadin.filemanager FileBrowser FileBrowserWithImagePreview)))
+    com.vaadin.Application
+    (scala Some None$)
+    (com.vaadin.ui Window SplitPanel Button Panel Label Button$ClickListener Embedded GridLayout HorizontalLayout
+                   VerticalLayout Alignment)
+    (com.vaadin.terminal ExternalResource ClassResource FileResource)
+    (com.vaadin.data Property Property$ValueChangeListener)
+    (com.imcode.imcms.servlet.superadmin.vaadin.ui OkCancelDialog)
+    (com.imcode.imcms.servlet.superadmin.vaadin.filemanager FileBrowser FileBrowserWithImagePreview)))
 
 
 (def None None$/MODULE$)
@@ -243,7 +246,7 @@
     ))
 
 
-(defn init-app[^com.vaadin.Application app]
+(defn init[^com.vaadin.Application app]
   (let [wnd (Window. "Application main window")]
     (.setTheme app "runo")
     (.setMainWindow app wnd)

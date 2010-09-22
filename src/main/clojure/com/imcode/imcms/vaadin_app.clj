@@ -1,25 +1,23 @@
 (ns
-  ^{:doc "Vaadin test application."}
-  
+  ^{:doc "Vaadin test/prototype application."}  
   com.imcode.imcms.vaadin-app
+
   (:gen-class
    :extends com.vaadin.Application)
   
   (:import
     org.eclipse.jetty.server.Server
     (org.eclipse.jetty.servlet ServletContextHandler ServletHolder))
+
+  (:require
+    [com.imcode.imcms.vaadin-app-handler :as vaadin-app-handler])
   
-  (:use
-    com.imcode.imcms.vaadin-app-handler
-    (clojure (main :only [load-script]))))
-
-
-(def apps (atom []))
+  (:use    
+    [clojure.main :only [load-script]]))
 
 
 (defn -init[^com.vaadin.Application this]
-  (init-app this)
-  (swap! apps conj this))
+  (vaadin-app-handler/init this))
 
 
 (defn create-server [port]
@@ -37,17 +35,13 @@
       (.setHandler context))))
 
 
-(defn restart-server [server] (doto server .stop .start))
+(defn restart [server]
+  (load-script "@com/imcode/imcms/vaadin_app_handler.clj")  
+  (doto server .stop .start))
 
 
-(defn reload []
-  (load-script "@com/imcode/imcms/vaadin_app_handler.clj")
-  (doseq [app @apps] (.close app))
-  (reset! apps []))
-
-
-(comment
-  "Copy-paste to repl"
+(comment "Copy-paste into repl."
   (use 'com.imcode.imcms.vaadin-app)
-  (.start @(def s (create-server 9999)))
+  (def server (create-server 9999))
+  (restart server)
 )
