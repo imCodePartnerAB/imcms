@@ -113,14 +113,14 @@
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
             <version>7.0.0.RC6</version>
-            <!--<scope>test</scope>-->
+            <scope>required</scope>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlet</artifactId>
             <version>7.0.0.RC6</version>
-            <!--<scope>test</scope>-->
+            <scope>required</scope>
         </dependency>        
 
 
@@ -507,7 +507,7 @@
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.4</version>
-            <!--<scope>provided</scope>-->
+            <scope>required</scope>
         </dependency>
 
         <!-- ================ -->

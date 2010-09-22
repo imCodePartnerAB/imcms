@@ -8,6 +8,7 @@
    (com.vaadin.ui Window SplitPanel Button Panel Label Button$ClickListener Embedded)
    (com.vaadin.terminal ExternalResource ClassResource FileResource)
    (com.vaadin.data Property Property$ValueChangeListener)
+   (com.imcode.imcms.servlet.superadmin.vaadin.ui OkCancelDialog)
    (com.imcode.imcms.servlet.superadmin.vaadin.filemanager FileBrowser FileBrowserWithImagePreview)))
 
 
@@ -48,6 +49,7 @@
     (.setHeight "500px")))
 
 
+
 (defn mk-file-browser-with-img-preview []
   (let [browser-with-img-preview (FileBrowserWithImagePreview.)]
 
@@ -63,11 +65,17 @@
       (.setHeight "150px"))      
 
     (doto browser-with-img-preview
-      (.setWidth "100%")
-      (.setHeight "500px"))))
+      (.setWidth "650px")
+      (.setHeight "400px"))))
 
 
+(defn mk-select-img-dlg []
+  (let [dlg (OkCancelDialog. "Select image - *.gif, *.png, *.jpg *.jpeg")
+        file-browser-with-preview (mk-file-browser-with-img-preview)]
 
+    (.setMainAreaContent dlg file-browser-with-preview)
+    (doto file-browser-with-preview (.setWidth "650px") (.setHeight "400px"))
+    dlg))
 
 
 (defn file-resource [app resource-name]
@@ -96,6 +104,7 @@
         content (Panel.)
         file-browser (mk-file-browser)
         file-browser-with-img-preview (mk-file-browser-with-img-preview)
+        btn-select-img-dlg (Button. "Select image")
         btn-app-info (Button. "Print app info")
         btn-file-img (Button. "File image")
         btn-cls-img (Button. "Cls image")
@@ -128,8 +137,21 @@
     (add-click-listener* btn-app-info
       #(println (bean app)))
 
+    (add-click-listener* btn-select-img-dlg
+      (let [dlg (mk-select-img-dlg)]
+        (doto dlg
+          (.setModal true)
+          (.setResizable true)
+          (.setDraggable true))
+        
+      #(.addWindow wnd dlg)))
+    
+;    window setModal modal
+;    window setResizable resizable
+;    window setDraggable draggable
+
     (add-components content
-      file-browser-with-img-preview, file-browser, btn-app-info, btn-file-img, btn-cls-img, btn-ext-img)))
+      btn-select-img-dlg, file-browser-with-img-preview, file-browser, btn-app-info, btn-file-img, btn-cls-img, btn-ext-img)))
 
 
 (defn init-app[^com.vaadin.Application app]

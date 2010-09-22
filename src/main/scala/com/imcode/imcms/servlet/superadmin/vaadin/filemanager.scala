@@ -138,11 +138,14 @@ class DirectoryContentTable extends Table {
 
 // image file preview - prototype
 class ImagePreview extends VerticalLayout {
+  val lblPreview = new Label("PREVIEW")
+  val btnEnlarge = new Button("Enlarge") {setEnabled(false)}
 
   def showImage(file: File) =
     let(new Embedded("", new FileResource(file, getApplication))) { e =>
       e setSizeFull
-      
+
+      removeAllComponents
       addComponent(e)
       setComponentAlignment(e, Alignment.MIDDLE_CENTER)
     }

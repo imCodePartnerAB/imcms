@@ -78,7 +78,6 @@ class DialogWindow(caption: String = "") extends Window(caption) {
   val lytArea = new GridLayout(1, 2) {
     setMargin(true)
     setSpacing(true)
-    //setSizeUndefined
   }  
 
   def setMainAreaContent[C <: Component](c: C): C = {
