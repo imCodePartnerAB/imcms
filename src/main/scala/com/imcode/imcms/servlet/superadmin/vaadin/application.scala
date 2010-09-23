@@ -1132,7 +1132,7 @@ class App extends com.vaadin.Application {
     val sltType = new Select("Type") {
       setNullSelectionAllowed(false)
     }
-    val embIcon = new IconPicker(40, 40) {
+    val embIcon = new IconPicker(50, 50) {
       setCaption("Icon")
       btnChoose addListener {
         initAndShow(new OkCancelDialog("Select icon: *.gif, *.png, *.jpg, *.jpeg"), resizable = true) { w =>
