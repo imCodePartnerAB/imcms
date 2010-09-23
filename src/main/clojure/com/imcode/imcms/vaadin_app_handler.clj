@@ -9,7 +9,7 @@
     com.vaadin.Application
     (scala Some None$)
     (com.vaadin.ui Window SplitPanel Button Panel Label Button$ClickListener Embedded GridLayout HorizontalLayout
-                   VerticalLayout Alignment)
+                   VerticalLayout Alignment TextField)
     (com.vaadin.terminal ExternalResource ClassResource FileResource)
     (com.vaadin.data Property Property$ValueChangeListener)
     (com.imcode.imcms.servlet.superadmin.vaadin.ui OkCancelDialog)
@@ -183,6 +183,33 @@
 
     lyt))
 
+(defn mk-vertical-layout-demo
+  "Three button with expand ratio 1.0 inside a vertical layout with *defined* size.
+   Details:
+   Expand ratio does not affect a component width unlsess layout size is defined and component's wdth is 100%.
+   "
+  [^String width]
+  (let [btn1 (Button. "1--")
+        btn2 (Button. "2----")
+        btn3 (Button. "3--------")]
+
+    (doseq [btn [btn1 btn2 btn3]] (.setWidth btn "100%"))
+
+    (doto (VerticalLayout.)
+      (.setWidth width)
+      (add-components btn1 btn2 btn3)
+      (.setExpandRatio btn1 1.0)
+      (.setExpandRatio btn2 1.0)
+      (.setExpandRatio btn3 1.0))))
+
+
+(defn mk-horizontal-layout-demo
+  "Horizontal layout containing some components with captions.
+   By default caption is shown above a compoment."
+  []
+  (doto (HorizontalLayout.)
+    (add-components (TextField. "Text 1") (TextField. "Text 2") (Panel. "Panel 1"))))
+
 
 (defn mk-main-wnd-content [wnd]
   (let [app (.getApplication wnd)
@@ -232,6 +259,8 @@
       #(.addWindow wnd dlg)))
 
     (add-components content
+      (mk-vertical-layout-demo "250px")
+      (mk-horizontal-layout-demo)
       btn-select-img-dlg
       (mk-layout-with-button-in-center-demo "250px", "250px")
       (mk-panel-with-button-in-center-demo "250px", "250px")

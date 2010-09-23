@@ -1119,12 +1119,13 @@ class App extends com.vaadin.Application {
     })
   }
 
-  trait CategoryDialog { this: OkCancelDialog =>
+  
+  class CategoryDialogContent extends HorizontalLayout {
     val txtId = new TextField("Id") {
       setEnabled(false)
       setColumns(11)
     }
-    val txtName = new TextField("Name") 
+    val txtName = new TextField("Name")
     val txtDescription = new TextField("Description") {
       setRows(5)
       setColumns(11)
@@ -1132,7 +1133,7 @@ class App extends com.vaadin.Application {
     val sltType = new Select("Type") {
       setNullSelectionAllowed(false)
     }
-    val embIcon = new IconPicker(50, 50) {
+    val iconPicker = new IconPicker(50, 50) {
       setCaption("Icon")
       btnChoose addListener {
         initAndShow(new OkCancelDialog("Select icon: *.gif, *.png, *.jpg, *.jpeg"), resizable = true) { w =>
@@ -1154,9 +1155,51 @@ class App extends com.vaadin.Application {
         }
       }
     }
+    
+  }
 
-    setMainAreaContent(new FormLayout {
-      addComponents(this, txtId, txtName, txtDescription, sltType, embIcon)  
+  
+
+  trait CategoryDialog { this: OkCancelDialog =>
+    val txtId = new TextField("Id") {
+      setEnabled(false)
+      setColumns(11)
+    }
+    val txtName = new TextField("Name") 
+    val txtDescription = new TextField("Description") {
+      setRows(5)
+      setColumns(11)
+    }
+    val sltType = new Select("Type") {
+      setNullSelectionAllowed(false)
+    }
+    val embIcon = new IconPicker2(50, 50) {
+      setCaption("Icon")
+      btnChoose addListener {
+        initAndShow(new OkCancelDialog("Select icon image: .gif  .png  .jpg  .jpeg"), resizable = true) { w =>
+          let(w setMainAreaContent new FileBrowserWithImagePreview(100, 100)) { b =>
+            b.browser setSplitPosition 30
+            b.browser addDirectoryTree("Images", new File(Imcms.getPath, "images"))
+            b.browser.tblDirContent setSelectable true
+            b.setSizeFull
+
+            w.lytArea.setComponentAlignment(b, Alignment.TOP_LEFT)
+          }
+
+          w.lytArea.setSizeFull
+          w.lytArea setMargin false
+          w.lytArea.setColumnExpandRatio(0, 1f)
+          w.lytArea.setRowExpandRatio(0, 1f)
+          w setWidth "650px"
+          w setHeight "350px"
+        }
+      }
+    }
+
+    setMainAreaContent(new HorizontalLayout {
+      setSizeUndefined
+      addComponents(this, new FormLayout { addComponents(this, txtId, txtName, sltType, embIcon, txtDescription) })
+      //setComponentAlignment(embIcon, Alignment.TOP_LEFT)
     })
   }
 
