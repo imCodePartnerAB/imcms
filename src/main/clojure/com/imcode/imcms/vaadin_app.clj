@@ -40,7 +40,7 @@
   (doto server .stop .start))
 
 
-(comment "Copy-paste into repl."
+(comment "Copy-paste into a repl."
   (use 'com.imcode.imcms.vaadin-app)
   (def server (create-server 9999))
   (restart server)

@@ -1132,7 +1132,28 @@ class App extends com.vaadin.Application {
     val sltType = new Select("Type") {
       setNullSelectionAllowed(false)
     }
-    val embIcon = new Embedded("Icon")
+    val embIcon = new IconPicker(40, 40) {
+      setCaption("Icon")
+      btnChoose addListener {
+        initAndShow(new OkCancelDialog("Select icon: *.gif, *.png, *.jpg, *.jpeg"), resizable = true) { w =>
+          let(w setMainAreaContent new FileBrowserWithImagePreview(100, 100)) { b =>
+            b.browser setSplitPosition 30
+            b.browser addDirectoryTree("Images", new File(Imcms.getPath, "images"))
+            b.browser.tblDirContent setSelectable true
+            b.setSizeFull
+
+            w.lytArea.setComponentAlignment(b, Alignment.TOP_LEFT)
+          }
+
+          w.lytArea.setSizeFull
+          w.lytArea setMargin false
+          w.lytArea.setColumnExpandRatio(0, 1f)
+          w.lytArea.setRowExpandRatio(0, 1f)
+          w setWidth "650px"
+          w setHeight "350px"
+        }
+      }
+    }
 
     setMainAreaContent(new FormLayout {
       addComponents(this, txtId, txtName, txtDescription, sltType, embIcon)  

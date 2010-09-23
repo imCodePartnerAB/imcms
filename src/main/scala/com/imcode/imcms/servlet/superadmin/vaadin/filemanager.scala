@@ -93,9 +93,10 @@ class DirectoryTree(val root: File) extends Tree {
   
   def reload() {
     require(root.isDirectory,
-      "Tree root [%s] does not exists or not a directory." format root.getAbsoluteFile)
+            "Tree root [%s] does not exists or not a directory." format root.getAbsoluteFile)
 
-    getItemIds foreach (collapseItem(_)) // workaround; without collapsing root remains expanded
+    //getItemIds foreach (collapseItem(_)) // workaround; without collapsing root remains expanded
+    getItemIds foreach collapseItem
     removeAllItems()
     addDir(root)
     expandItem(root)
@@ -190,4 +191,41 @@ class FileBrowserWithImagePreview(previewImgWidth: Int, previewImgHeight: Int) e
   }
 
   setSizeFull
+}
+
+
+// image file preview - prototype
+class IconPicker(imgWidth: Int, imgHeight: Int) extends GridLayout(1, 3) {
+  val lytStub = new VerticalLayout {
+    val lblStub = new Label("NO ICON")
+
+    addComponent(lblStub)
+    setComponentAlignment(lblStub, Alignment.MIDDLE_CENTER)
+  }
+
+  val btnChoose = new Button("Choose") {setWidth("100%")}
+  val btnRemove = new Button("Remove") {setWidth("100%")}
+  
+  addComponent(btnChoose, 0, 1)
+  addComponent(btnRemove, 0, 2)
+  setMargin(true)
+  setSpacing(true)
+
+  showStub()
+
+  def showImage(file: File) =
+    let(new Embedded("", new FileResource(file, getApplication))) { e =>
+      show(e)
+    }
+
+  def showStub() = show(lytStub)
+
+  private def show(component: Component) {
+    component.setHeight (imgHeight+"px")
+    component.setWidth (imgWidth+"px")
+
+    removeComponent(0, 0)
+    addComponent(new Panel {addComponent(component);  setSizeUndefined}, 0, 0)
+    btnRemove setEnabled component.isInstanceOf[Embedded]
+  }
 }

@@ -53,10 +53,15 @@ object UI {
 //    }
 //  }
 
+//  def addComponents(container: AbstractComponentContainer, component: Component, components: Component*) = {
+//    component +: components foreach { c => container addComponent c }
+//    container
+//  }
+
   def addComponents(container: AbstractComponentContainer, component: Component, components: Component*) = {
-    component +: components foreach { c => container addComponent c }
+    component +: components foreach container.addComponent
     container
-  }
+  }  
 
   def addContainerProperties(table: Table, properties: (AnyRef, JClass[_], AnyRef)*) =
     for ((propertyId, propertyType, defaultValue) <- properties)
