@@ -24,21 +24,12 @@
   container)
 
 
-(defn mk-click-listener [click-handler-fn]
-  (reify Button$ClickListener
-    (buttonClick [this, event] (click-handler-fn event))))
-
-
-(defn add-click-listener [button click-handler-fn]
-  (.addListener button (mk-click-listener click-handler-fn)))
-
-
-(defn mk-click-listener* [click-handler-fn-zero-arity]
-  (mk-click-listener (fn [_] (click-handler-fn-zero-arity))))
-
-
-(defn add-click-listener* [button, click-handler-fn-zero-arity]
-  (add-click-listener button  (fn [_] (click-handler-fn-zero-arity))))
+(defmacro add-btn-click-listener [button event & body]
+  `(let [btn# ~button]
+     (. btn# ~'addListener
+       (reify Button$ClickListener
+         (~'buttonClick [~'_, ~event] ~@body)))
+     btn#))
 
 
 (defn mk-file-browser []
@@ -112,7 +103,6 @@
   [^String width, ^String height]
   (let [layout (VerticalLayout.) ; might be Horizontal or Grid as well 
         button (Button. "CENTER")]
-
     (doto layout
       (.addComponent button)
       (.setComponentAlignment button Alignment/MIDDLE_CENTER)
@@ -142,6 +132,27 @@
       (.setHeight height))
     (doto panel
       (.addComponent lytButtonHolder)
+      .setSizeUndefined)))
+
+
+(defn mk-panel-with-label-in-center-demo
+  "See comments on mk-panel-with-button-in-center-demo
+   However, a label differs from a button - by default its width 100%.
+   Should label apperar in center its width (size) must be set to undefined."
+  [^String width, ^String height]
+  (let [panel (Panel.)
+        label (Label. "CENTER")
+        lytLabelHolder (HorizontalLayout.)]
+
+    (.setSizeUndefined label)
+
+    (doto lytLabelHolder
+      (.addComponent label)
+      (.setComponentAlignment label Alignment/MIDDLE_CENTER)
+      (.setWidth width)
+      (.setHeight height))
+    (doto panel
+      (.addComponent lytLabelHolder)
       .setSizeUndefined)))
 
 
@@ -176,8 +187,8 @@
                  (.removeComponent lyt 0 0)
                  (.addComponent lyt component 0 0))]
 
-    (add-click-listener* btn1 #(switch btn2))
-    (add-click-listener* btn2 #(switch btn1))
+    (add-btn-click-listener btn1 _ (switch btn2))
+    (add-btn-click-listener btn2 _ (switch btn1))
 
     (switch btn1)
 
@@ -231,39 +242,41 @@
                 (doto img (.setWidth "100px") (.setHeight "100px"))
                 (.addComponent content img)))))))
     
-    (add-click-listener* btn-file-img
-      #(.addComponent content
-                      (embedded "FILE RESOURCE IMAGE" (file-resource app
+    (add-btn-click-listener btn-file-img _
+      (.addComponent content
+                     (embedded "FILE RESOURCE IMAGE" (file-resource app
                                 "/Users/ajosua/projects/imcode/imcms/trunk/src/main/web/images/imCMSpower.gif"))))
 
-    (add-click-listener* btn-cls-img
-      #(.addComponent content
-                      (embedded "CLASS RESOURCE IMAGE" (class-resource app
+    (add-btn-click-listener btn-cls-img _
+      (.addComponent content
+                     (embedded "CLASS RESOURCE IMAGE" (class-resource app
                                 "src/main/web/images/imCMSpower.gif"))))
 
-    (add-click-listener* btn-ext-img
-      #(.addComponent content
-                      (embedded "EXTERNAL RESOURCE IMAGE" (external-resource
+    (add-btn-click-listener btn-ext-img _
+      (.addComponent content
+                     (embedded "EXTERNAL RESOURCE IMAGE" (external-resource
                                 (str (.. app getURL toString) "images/imCMSpower.gif")))))
 
-    (add-click-listener* btn-app-info
-      #(println (bean app)))
+    (add-btn-click-listener btn-app-info _
+      (println (bean app)))
 
-    (add-click-listener* btn-select-img-dlg
+    (add-btn-click-listener btn-select-img-dlg _
       (let [dlg (mk-select-img-dlg)]
         (doto dlg
           (.setModal true)
           (.setResizable true)
           (.setDraggable true))
         
-      #(.addWindow wnd dlg)))
+      (.addWindow wnd dlg)))
 
     (add-components content
+
       (mk-vertical-layout-demo "250px")
       (mk-horizontal-layout-demo)
       btn-select-img-dlg
       (mk-layout-with-button-in-center-demo "250px", "250px")
       (mk-panel-with-button-in-center-demo "250px", "250px")
+      (mk-panel-with-label-in-center-demo "250px", "250px")
       ;btn-select-img-dlg, file-browser-with-img-preview, 
       file-browser, btn-app-info, btn-file-img, btn-cls-img, btn-ext-img)
 
@@ -280,3 +293,6 @@
     (.setTheme app "runo")
     (.setMainWindow app wnd)
     (.setContent wnd (mk-main-wnd-content wnd))))
+
+
+

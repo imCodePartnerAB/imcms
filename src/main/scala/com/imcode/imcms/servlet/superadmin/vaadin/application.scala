@@ -1119,47 +1119,10 @@ class App extends com.vaadin.Application {
     })
   }
 
-  
-  class CategoryDialogContent extends HorizontalLayout {
-    val txtId = new TextField("Id") {
-      setEnabled(false)
-      setColumns(11)
-    }
-    val txtName = new TextField("Name")
-    val txtDescription = new TextField("Description") {
-      setRows(5)
-      setColumns(11)
-    }
-    val sltType = new Select("Type") {
-      setNullSelectionAllowed(false)
-    }
-    val iconPicker = new IconPicker(50, 50) {
-      setCaption("Icon")
-      btnChoose addListener {
-        initAndShow(new OkCancelDialog("Select icon: *.gif, *.png, *.jpg, *.jpeg"), resizable = true) { w =>
-          let(w setMainAreaContent new FileBrowserWithImagePreview(100, 100)) { b =>
-            b.browser setSplitPosition 30
-            b.browser addDirectoryTree("Images", new File(Imcms.getPath, "images"))
-            b.browser.tblDirContent setSelectable true
-            b.setSizeFull
 
-            w.lytArea.setComponentAlignment(b, Alignment.TOP_LEFT)
-          }
-
-          w.lytArea.setSizeFull
-          w.lytArea setMargin false
-          w.lytArea.setColumnExpandRatio(0, 1f)
-          w.lytArea.setRowExpandRatio(0, 1f)
-          w setWidth "650px"
-          w setHeight "350px"
-        }
-      }
-    }
-    
-  }
 
   
-
+  // CategoryDialogContent
   trait CategoryDialog { this: OkCancelDialog =>
     val txtId = new TextField("Id") {
       setEnabled(false)
@@ -1173,10 +1136,10 @@ class App extends com.vaadin.Application {
     val sltType = new Select("Type") {
       setNullSelectionAllowed(false)
     }
-    val embIcon = new IconPicker2(50, 50) {
+    val embIcon = new IconImagePicker(50, 50) {
       setCaption("Icon")
       btnChoose addListener {
-        initAndShow(new OkCancelDialog("Select icon image: .gif  .png  .jpg  .jpeg"), resizable = true) { w =>
+        initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg"), resizable = true) { w =>
           let(w setMainAreaContent new FileBrowserWithImagePreview(100, 100)) { b =>
             b.browser setSplitPosition 30
             b.browser addDirectoryTree("Images", new File(Imcms.getPath, "images"))
@@ -1184,6 +1147,13 @@ class App extends com.vaadin.Application {
             b.setSizeFull
 
             w.lytArea.setComponentAlignment(b, Alignment.TOP_LEFT)
+
+            w.addOkButtonClickListener {
+              b.preview.image match {
+                case Some(source) => showImage(source)
+                case _ => showStub
+              }
+            }
           }
 
           w.lytArea.setSizeFull
@@ -1197,9 +1167,8 @@ class App extends com.vaadin.Application {
     }
 
     setMainAreaContent(new HorizontalLayout {
-      setSizeUndefined
       addComponents(this, new FormLayout { addComponents(this, txtId, txtName, sltType, embIcon, txtDescription) })
-      //setComponentAlignment(embIcon, Alignment.TOP_LEFT)
+      setSizeUndefined
     })
   }
 
@@ -1245,6 +1214,36 @@ class App extends com.vaadin.Application {
                 reloadTableItems
               }
             }
+          }
+        }
+
+        btnEdit addListener {
+          tblItems.getValue match {
+            case id: JInteger =>
+              categoryMapper.getCategoryById(id.intValue) match {
+                case null => error("No such category")
+                case category =>
+                  initAndShow(new OkCancelDialog("Edit category") with CategoryDialog) { w =>
+                    categoryMapper.getAllCategoryTypes foreach { c =>
+                      w.sltType addItem c.getName
+                    }
+
+                    w.txtId setValue id
+                    w.txtName setValue category.getName
+                    w.txtDescription setValue category.getDescription
+
+                    w addOkButtonClickListener {
+                      category setName w.txtName.stringValue
+                      category setDescription w.txtDescription.stringValue
+                      category setType categoryMapper.getCategoryTypeByName(w.sltType.stringValue)
+
+                      categoryMapper saveCategory category
+                      reloadTableItems
+                    }
+                  } // initAndShow
+              }
+
+            case _ =>
           }
         }
 

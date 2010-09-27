@@ -140,7 +140,7 @@ class DirectoryContentTable extends Table {
 // image file preview - prototype
 class ImagePreview(imgWidth: Int, imgHeight: Int) extends GridLayout(1, 2) {
   val lytStub = new VerticalLayout {
-    val lblStub = new Label("NO IMAGE SELECTED")
+    val lblStub = new Label("No Image Selected")
 
     addComponent(lblStub)
     setComponentAlignment(lblStub, Alignment.MIDDLE_CENTER)
@@ -169,9 +169,15 @@ class ImagePreview(imgWidth: Int, imgHeight: Int) extends GridLayout(1, 2) {
 
     btnEnlarge setEnabled component.isInstanceOf[Embedded]
   }
+
+  def image: Option[Embedded] = getComponent(0, 0) match {
+    case e: Embedded => Some(e)
+    case _ => None
+  }
 }
 
 // prototype
+// todo add predicate - see comments on canPreview
 class FileBrowserWithImagePreview(previewImgWidth: Int, previewImgHeight: Int) extends HorizontalLayout {
   val browser = new FileBrowser
   val preview = new ImagePreview(previewImgWidth, previewImgHeight)
@@ -194,46 +200,9 @@ class FileBrowserWithImagePreview(previewImgWidth: Int, previewImgHeight: Int) e
 }
 
 
-// image file preview - prototype
-class IconPicker(imgWidth: Int, imgHeight: Int) extends GridLayout(1, 3) {
+class IconImagePicker(imgWidth: Int, imgHeight: Int) extends GridLayout(2, 1) {
   val lytStub = new VerticalLayout {
-    val lblStub = new Label("NO ICON")
-
-    addComponent(lblStub)
-    setComponentAlignment(lblStub, Alignment.MIDDLE_CENTER)
-  }
-
-  val btnChoose = new Button("Choose") {setWidth("100%")}
-  val btnRemove = new Button("Remove") {setWidth("100%")}
-  
-  addComponent(btnChoose, 0, 1)
-  addComponent(btnRemove, 0, 2)
-  setMargin(true)
-  setSpacing(true)
-
-  showStub()
-
-  def showImage(file: File) =
-    let(new Embedded("", new FileResource(file, getApplication))) { e =>
-      show(e)
-    }
-
-  def showStub() = show(lytStub)
-
-  private def show(component: Component) {
-    component.setHeight (imgHeight+"px")
-    component.setWidth (imgWidth+"px")
-
-    removeComponent(0, 0)
-    addComponent(new Panel {addComponent(component);  setSizeUndefined}, 0, 0)
-    btnRemove setEnabled component.isInstanceOf[Embedded]
-  }
-}
-
-
-class IconPicker2(imgWidth: Int, imgHeight: Int) extends GridLayout(2, 1) {
-  val lytStub = new VerticalLayout {
-    val lblStub = new Label("no icon")
+    val lblStub = new Label("No Icon")
 
     addComponent(lblStub)
     setComponentAlignment(lblStub, Alignment.MIDDLE_CENTER)
@@ -254,10 +223,7 @@ class IconPicker2(imgWidth: Int, imgHeight: Int) extends GridLayout(2, 1) {
 
   showStub()
 
-  def showImage(file: File) =
-    let(new Embedded("", new FileResource(file, getApplication))) { e =>
-      show(e)
-    }
+  def showImage(embedded: Embedded) = show(embedded)
 
   def showStub() = show(lytStub)
 

@@ -22,27 +22,39 @@ import java.io.{OutputStream, FileOutputStream, File}
 import java.util.concurrent.atomic.AtomicReference
 import java.lang.{String, Class => JClass, Boolean => JBoolean, Integer => JInteger}
 
+//class ButtonWrapper(button: Button) {
+//
+//  def addListener(eventHandler: Button#ClickEvent => Unit) =
+//    button add new Button.ClickListener {
+//      def buttonClick(event: Button#ClickEvent) = eventHandler(event)
+//    }
+//
+//  def addListener(block: => Unit) = addListener { _ => block }
+//}
+//
+//object ButtonWrapper {
+//  implicit def wrapButton(button: Button) = new ButtonWrapper(button)
+//}
+
+//class AbstractComponentContainerWrapper(container: AbstractComponentContainer) {  
+//
+//  def addComponents(component: Component, components: Component*) = {
+//    component +: components foreach container.addComponent
+//    container
+//  }
+//}
+
+
 object UI {
 
-  type ButtonClickHandler = Button#ClickEvent => Unit
-  type PropertyValueChangeHandler = ValueChangeEvent => Unit
-  
-  implicit def BlockToButtonClickListener(handler: => Unit): Button.ClickListener =
+  implicit def funToButtonClickListener(eventHandler: Button#ClickEvent => Unit) =
     new Button.ClickListener {
-      def buttonClick(event: Button#ClickEvent) = handler
+      def buttonClick(event: Button#ClickEvent) = eventHandler(event)
     }
   
-//  def Button(caption: String="") = new Button(caption)
-//
-//  def TextField(caption: String="") = new TextField(caption)
+  implicit def blockToButtonClickListener(block: => Unit) = funToButtonClickListener { _ => block}
 
-//  def addButtonClickListener(button: Button)(handler: ButtonClickHandler) {
-//    button addListener new Button.ClickListener {
-//      def buttonClick(event: Button#ClickEvent) = handler(event)
-//    }
-//  }
-
-  implicit def BlockToPropertyValueChangeListener(block: => Unit): Property.ValueChangeListener =
+  implicit def blockToPropertyValueChangeListener(block: => Unit): Property.ValueChangeListener =
     new Property.ValueChangeListener {
       def valueChange(event: ValueChangeEvent) = block
     }
@@ -53,15 +65,18 @@ object UI {
 //    }
 //  }
 
+  def addComponents(container: AbstractComponentContainer, component: Component, components: Component*) = {
+    component +: components foreach { c => container addComponent c }
+    container
+  }
+
+//  implicit def wrapAbstractComponentContainer(container: AbstractComponentContainer): AbstractComponentContainerWrapper =
+//    new AbstractComponentContainerWrapper(container)
+
 //  def addComponents(container: AbstractComponentContainer, component: Component, components: Component*) = {
-//    component +: components foreach { c => container addComponent c }
+//    component +: components foreach container.addComponent
 //    container
 //  }
-
-  def addComponents(container: AbstractComponentContainer, component: Component, components: Component*) = {
-    component +: components foreach container.addComponent
-    container
-  }  
 
   def addContainerProperties(table: Table, properties: (AnyRef, JClass[_], AnyRef)*) =
     for ((propertyId, propertyType, defaultValue) <- properties)
@@ -131,6 +146,7 @@ class OkCancelDialog(caption: String = "") extends DialogWindow(caption) {
 
   btnCancel addListener close
 
+  // refactor
   def addOkButtonClickListener(block: => Unit) {
     btnOk addListener {
       try {
