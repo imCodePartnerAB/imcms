@@ -174,10 +174,10 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
   btnCancel addListener close
 
   // refactor
-  def addOkButtonClickListener(block: => Unit) {
-    btnOk addListener {
+  def addOkButtonClickListener(listener: Button.ClickListener) {
+    btnOk addListener { e: Button#ClickEvent =>
       try {
-        block
+        listener buttonClick e
         close
       } catch {
         case ex: Exception => using(new java.io.StringWriter) { w =>

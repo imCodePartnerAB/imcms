@@ -971,17 +971,10 @@ class App extends com.vaadin.Application {
   }
 
 
-
-
-  class TemplateView extends FormLayout {
-    //val txtName = new
-  }
-
-
-  class TempalteDialogContent extends FormLayout {
+  class TemplateDialogContent extends FormLayout {
     val txtName = new TextField
-    val txtFile = new TextField
-    val chkUseFilenameAsName = new CheckBox("Use filename as name")
+    val txtFile = new TextField {setReadOnly(true); setInputPrompt("No file selected")}
+    val chkUseFilenameAsName = new CheckBox("Use filename as name") {setValue(true)}
     val btnChooseFile = new Button("Choose")
 
     val lytName = new HorizontalLayout {
@@ -998,10 +991,33 @@ class App extends com.vaadin.Application {
       setSizeUndefined
     }
 
-    addComponents(this, lytName, lytFile)
+    addComponents(this, lytFile, lytName)
 
     btnChooseFile addListener {
-      
+      initAndShow(new OkCancelDialog("Select template file - .htm .html .xhtml .jsp .jspx")
+              with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
+
+        let(w.mainContent = new FileBrowser) { b =>
+          b setSplitPosition 30
+          b addDirectoryTree("Templates", new File(Imcms.getPath, "WEB-INF/templates"))
+          b.tblDirContent setSelectable true
+
+          w.addOkButtonClickListener {
+            b.tblDirContent.getValue match {
+              case file: File /*if canPreview(file)*/=>
+                txtFile.setValue(file.getName)
+                if (chkUseFilenameAsName.booleanValue) {
+                  txtName setValue file.getName.slice(0, file.getName.lastIndexOf("."))
+                }
+              
+              case _ => 
+            }
+          }
+        }
+
+        w setWidth "650px"
+        w setHeight "350px"
+      }
     }
   }
   
@@ -1031,33 +1047,23 @@ class App extends com.vaadin.Application {
 
         btnNew addListener {
           initAndShow(new OkCancelDialog("Add new template")) { w =>
-            w.btnOk.setEnabled(false)      
-
-            val txtName = new TextField("Name")
-            val lstGroups = new ListSelect("Groups") {
-              setMultiSelect(true)
-            }
-            val uplFile = new Upload("Template file", new FileUploadReceiver("/tmp/upload")) with UploadEventHandler {
-              def handleEvent(e: com.vaadin.ui.Component.Event) = e match {
-                case e: Upload#SucceededEvent =>
-                  w.btnOk.setEnabled(true)
-                  txtName setValue e.getFilename
-                case e: Upload#FailedEvent =>
-                  w.btnOk.setEnabled(false)
-                  
-                case _ => // not interested
-              }
-            }
+//            val uplFile = new Upload("Template file", new FileUploadReceiver("/tmp/upload")) with UploadEventHandler {
+//              def handleEvent(e: com.vaadin.ui.Component.Event) = e match {
+//                case e: Upload#SucceededEvent =>
+//                  w.btnOk.setEnabled(true)
+//                  txtName setValue e.getFilename
+//                case e: Upload#FailedEvent =>
+//                  w.btnOk.setEnabled(false)
+//
+//                case _ => // not interested
+//              }
+//            }
 
 
-            w.mainContent = new FormLayout {
-              addComponents(this, txtName, lstGroups, uplFile)
-            }
-
-            templateMapper.getAllTemplateGroups foreach (g => lstGroups.addItem(g.getName))
+            w.mainContent = new TemplateDialogContent
 
             w.addOkButtonClickListener {
-              println("SAving...")
+              println("Saving...")
             }
           }
         }
