@@ -65,7 +65,7 @@
   (let [dlg (OkCancelDialog. "Select image - *.gif, *.png, *.jpg *.jpeg")
         file-browser-with-preview (mk-file-browser-with-img-preview)]
     (doto dlg
-      (.setMainAreaContent file-browser-with-preview)
+      (.setMainContent file-browser-with-preview)
       (-> ,, .lytArea (.setComponentAlignment file-browser-with-preview Alignment/TOP_LEFT))
       (-> ,, .lytArea (.setMargin false))
       (-> ,, .lytArea .setSizeFull)

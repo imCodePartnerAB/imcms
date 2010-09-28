@@ -258,13 +258,9 @@ class App extends com.vaadin.Application {
       val txtNativeName = new TextField("Native name")
       val chkEnabled = new CheckBox("Enabled")
 
-      val lytMainContent = new FormLayout
-
-      // lytMainContent setMargin true
-      
-      addComponents(lytMainContent, txtId, txtCode, txtName, txtNativeName, chkEnabled)
-
-      setMainAreaContent(lytMainContent)
+      mainContent = new FormLayout {
+        addComponents(this, txtId, txtCode, txtName, txtNativeName, chkEnabled)  
+      }
     }
 
     val table = new Table
@@ -482,7 +478,7 @@ class App extends com.vaadin.Application {
       lytMainContent.addComponent(txtFrom)
       lytMainContent.addComponent(txtTo)
 
-      setMainAreaContent(lytMainContent)
+      mainContent = lytMainContent
     }
     
     class IPAccessView extends TableViewTemplate {
@@ -606,7 +602,7 @@ class App extends com.vaadin.Application {
       def checkPermissions(permissions: Set[RolePermissionDomainObject]) =
         permissions foreach { p => permsToChkBoxes(p).setValue(true) }
 
-      setMainAreaContent(lytForm)
+      mainContent = lytForm
     }
 
     class RolesView extends TableViewTemplate {
@@ -825,9 +821,9 @@ class App extends com.vaadin.Application {
           txtValue setValue Imcms.getServices.getSessionCounter.toString
           calStart setValue Imcms.getServices.getSessionCounterDate
 
-          w.setMainAreaContent(new FormLayout {
+          w.mainContent = new FormLayout {
             addComponents(this, txtValue, calStart)
-          })
+          }
 
           w.addOkButtonClickListener {
             Imcms.getServices setSessionCounter txtValue.getValue.asInstanceOf[String].toInt
@@ -944,23 +940,17 @@ class App extends com.vaadin.Application {
 
       lytButtons.btnReload addListener {fileBrowser.reload()}
       lytButtons.btnCopy addListener {
-        initAndShow(new OkCancelDialog("Copy to - choose destination directory"), resizable = true) { w =>
-          let(w setMainAreaContent new FileBrowser) { b =>
+        initAndShow(new OkCancelDialog("Copy to - choose destination directory")
+            with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
+          let(w.mainContent = new FileBrowser) { b =>
             b setSplitPosition 30
             b addDirectoryTree("Home", Imcms.getPath)
             b addDirectoryTree("Templates", new File(Imcms.getPath, "WEB-INF/templates/text"))
             b addDirectoryTree("Images", new File(Imcms.getPath, "images"))
             b addDirectoryTree("Conf", new File(Imcms.getPath, "WEB-INF/conf"))
-            b addDirectoryTree("Logs", new File(Imcms.getPath, "WEB-INF/logs"))           
-            b.setSizeFull
-
-            w.lytArea.setComponentAlignment(b, Alignment.TOP_LEFT)
+            b addDirectoryTree("Logs", new File(Imcms.getPath, "WEB-INF/logs"))
           }
 
-          w.lytArea.setSizeFull
-          w.lytArea setMargin false
-          w.lytArea.setColumnExpandRatio(0, 1f)
-          w.lytArea.setRowExpandRatio(0, 1f)
           w setWidth "600px"
           w setHeight "400px"
         }
@@ -975,9 +965,9 @@ class App extends com.vaadin.Application {
 
     val twsTemplates = new TwinSelect("Templates")
 
-    setMainAreaContent(new FormLayout {
+    mainContent = new FormLayout {
       addComponents(this, txtId, txtName, twsTemplates)
-    })
+    }
   }
 
 
@@ -987,6 +977,34 @@ class App extends com.vaadin.Application {
     //val txtName = new
   }
 
+
+  class TempalteDialogContent extends FormLayout {
+    val txtName = new TextField
+    val txtFile = new TextField
+    val chkUseFilenameAsName = new CheckBox("Use filename as name")
+    val btnChooseFile = new Button("Choose")
+
+    val lytName = new HorizontalLayout {
+      setCaption("Name")
+      addComponents(this, txtName, chkUseFilenameAsName)
+      setSpacing(true)
+      setSizeUndefined
+    }
+
+    val lytFile = new HorizontalLayout {
+      setCaption("File")
+      addComponents(this, txtFile, btnChooseFile)
+      setSpacing(true)
+      setSizeUndefined
+    }
+
+    addComponents(this, lytName, lytFile)
+
+    btnChooseFile addListener {
+      
+    }
+  }
+  
 
   lazy val templates = new TabSheetView {
     val templateMapper = Imcms.getServices.getTemplateMapper
@@ -1007,11 +1025,9 @@ class App extends com.vaadin.Application {
         val btnNew = new Button("New")
         val btnEdit = new Button("Edit")
         val btnDelete = new Button("Delete")
-        val btnEditContent = new Button("Edit content")
-        val btnDownload = new Button("Donwload")
-        val btnUploadDemo = new Button("!?! Upload demo template !?!")
+        val btnContentPreview = new Button("Content preview")
 
-        addComponents(pnlHeader, btnNew, btnEdit, btnDelete, new Label(" "), btnEditContent, btnDownload)        
+        addComponents(pnlHeader, btnNew, btnEdit, btnDelete, new Label(" "), btnContentPreview)        
 
         btnNew addListener {
           initAndShow(new OkCancelDialog("Add new template")) { w =>
@@ -1034,7 +1050,7 @@ class App extends com.vaadin.Application {
             }
 
 
-            w setMainAreaContent new FormLayout {
+            w.mainContent = new FormLayout {
               addComponents(this, txtName, lstGroups, uplFile)
             }
 
@@ -1138,15 +1154,15 @@ class App extends com.vaadin.Application {
     }
     val embIcon = new IconImagePicker(50, 50) {
       setCaption("Icon")
+
       btnChoose addListener {
-        initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg"), resizable = true) { w =>
-          let(w setMainAreaContent new FileBrowserWithImagePreview(100, 100)) { b =>
+        initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg")
+                with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
+                
+          let(w.mainContent = new FileBrowserWithImagePreview(100, 100)) { b =>
             b.browser setSplitPosition 30
             b.browser addDirectoryTree("Images", new File(Imcms.getPath, "images"))
             b.browser.tblDirContent setSelectable true
-            b.setSizeFull
-
-            w.lytArea.setComponentAlignment(b, Alignment.TOP_LEFT)
 
             w.addOkButtonClickListener {
               b.preview.image match {
@@ -1156,20 +1172,16 @@ class App extends com.vaadin.Application {
             }
           }
 
-          w.lytArea.setSizeFull
-          w.lytArea setMargin false
-          w.lytArea.setColumnExpandRatio(0, 1f)
-          w.lytArea.setRowExpandRatio(0, 1f)
           w setWidth "650px"
           w setHeight "350px"
         }
       }
     }
 
-    setMainAreaContent(new HorizontalLayout {
+    mainContent = new HorizontalLayout {
       addComponents(this, new FormLayout { addComponents(this, txtId, txtName, sltType, embIcon, txtDescription) })
       setSizeUndefined
-    })
+    }
   }
 
 
@@ -1298,7 +1310,7 @@ class App extends com.vaadin.Application {
             val chkInherited = new CheckBox("Inherited to new documents")
             val chkImageArchive = new CheckBox("Used by image archive")
             
-            w setMainAreaContent new FormLayout {
+            w.mainContent = new FormLayout {
               addComponents(this, txtId, txtName, chkMultiSelect, chkInherited, chkImageArchive)
 
               w.addOkButtonClickListener {
@@ -1478,7 +1490,7 @@ class App extends com.vaadin.Application {
       addComponents(this, txtLogin, lytPassword, lytName, sltUILanguage, lstRoles, chkActivated)
     }
 
-    setMainAreaContent(lytGeneral)
+    mainContent = lytGeneral
   }
 
 //    val lytContacts = new FormLayout {
@@ -1487,7 +1499,7 @@ class App extends com.vaadin.Application {
 //        txtAddress, txtZip, txtCity, txtEmail, lytPhoneNumbers)
 //    }
 
-//    setMainAreaContent(new TabSheet{
+//    mainContent = new TabSheet{
 //      setSizeUndefined
 //      addTab(lytGeneral)
 //    })
@@ -1501,7 +1513,7 @@ class App extends com.vaadin.Application {
 //    //tabSheet.addTab(lytContacts, "Cont-s", null)
 
 
-//    setMainAreaContent(new TabSheetView {
+//    mainContent = new TabSheetView {
 //      //tabSheet.setSizeFull
 //      //setSizeUndefined
 //      setMargin(false)

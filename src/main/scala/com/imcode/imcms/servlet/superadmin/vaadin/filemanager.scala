@@ -140,7 +140,7 @@ class DirectoryContentTable extends Table {
 // image file preview - prototype
 class ImagePreview(imgWidth: Int, imgHeight: Int) extends GridLayout(1, 2) {
   val lytStub = new VerticalLayout {
-    val lblStub = new Label("No Image Selected")
+    val lblStub = new Label("No Image Selected") {setSizeUndefined}
 
     addComponent(lblStub)
     setComponentAlignment(lblStub, Alignment.MIDDLE_CENTER)

@@ -94,44 +94,71 @@ object AbstractFieldWrapper {
   implicit def wrapAbstractField(f: AbstractField) = new AbstractFieldWrapper(f)
 }
 
-class DialogWindow(caption: String = "") extends Window(caption) {
-  val lytArea = new GridLayout(1, 2) {
+// Fixed size dialog window with full margin
+// Buttons are centered
+class Dialog(caption: String = "") extends Window(caption) {
+  protected [this] val content = new GridLayout(1, 2) {
     setMargin(true)
     setSpacing(true)
+    setColumnExpandRatio(0, 1f)
+    setRowExpandRatio(0, 1f)    
   }  
 
-  def setMainAreaContent[C <: Component](c: C): C = {
-    c.setSizeUndefined
-    lytArea.addComponent(c, 0, 0)
-    lytArea.setComponentAlignment(c, Alignment.BOTTOM_CENTER)
-    c
+  setContent(content)
+
+  def mainContent = content.getComponent(0, 0)
+  
+  def mainContent_=[C <: Component](component: C): C = {
+    component.setSizeUndefined
+    
+    content.addComponent(component, 0, 0)
+    content.setComponentAlignment(component, Alignment.TOP_LEFT)
+
+    component
   }
 
-  def setButtonsAreaContent[C <: Component](c: C): C = {
-    c.setSizeUndefined
-    lytArea.addComponent(c, 0, 1)
-    lytArea.setComponentAlignment(c, Alignment.TOP_CENTER)
-    c
+
+  def buttonsBarContent = content.getComponent(0, 1)
+
+  def buttonsBarContent_=(component: Component) {
+    component.setSizeUndefined
+    
+    content.addComponent(component, 0, 1)
+    content.setComponentAlignment(component, Alignment.TOP_CENTER)
   }
-         
-  setContent(lytArea)
+}
+
+
+trait CustomSizeDialog extends Dialog {
+  content.setSizeFull
+  
+  override def mainContent_=[C <: Component](component: C): C = {
+    super.mainContent = component
+    component.setSizeFull
+
+    component
+  }
+}
+
+trait BottomMarginOnlyDialog extends Dialog {
+  content.setMargin(false, false, true, false)
 }
 
 
 /** Message dialog window. */
-class MsgDialog(caption: String = "", msg: String ="") extends DialogWindow(caption) {
+class MsgDialog(caption: String = "", msg: String ="") extends Dialog(caption) {
   val btnOk = new Button("Ok")
   val lblMessage = new Label(msg)
 
-  setMainAreaContent(lblMessage)
-  setButtonsAreaContent(btnOk)
+  mainContent = lblMessage
+  buttonsBarContent = btnOk
 
   btnOk addListener close
 }
 
 
 /** OKCancel dialog window. */
-class OkCancelDialog(caption: String = "") extends DialogWindow(caption) {
+class OkCancelDialog(caption: String = "") extends Dialog(caption) {
   val btnOk = new Button("Ok")
   val btnCancel = new Button("Cancel")
   val lytButtons = new GridLayout(2, 1) {
@@ -142,7 +169,7 @@ class OkCancelDialog(caption: String = "") extends DialogWindow(caption) {
     setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
   }
 
-  setButtonsAreaContent(lytButtons)
+  buttonsBarContent = lytButtons
 
   btnCancel addListener close
 
@@ -170,7 +197,7 @@ class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(ca
 
   val lblMessage = new Label(msg)
 
-  setMainAreaContent(lblMessage)
+  mainContent = lblMessage
 }
 
 
