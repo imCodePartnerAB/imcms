@@ -9,7 +9,7 @@
     com.vaadin.Application
     (scala Some None$)
     (com.vaadin.ui Window SplitPanel Button Panel Label Button$ClickListener Embedded GridLayout HorizontalLayout
-                   VerticalLayout Alignment TextField)
+                   VerticalLayout Alignment TextField CheckBox)
     (com.vaadin.terminal ExternalResource ClassResource FileResource)
     (com.vaadin.data Property Property$ValueChangeListener)
     (com.imcode.imcms.servlet.superadmin.vaadin.ui OkCancelDialog)
@@ -77,6 +77,18 @@
     (doto dlg
       (.setWidth "650px")
       (.setHeight "400px"))))
+
+
+(defn check-box-value-test
+  "Check box value is in instance of Boolean."
+  []
+  (let [checkBox (CheckBox. "Check me!")
+        value-off (.getValue checkBox)]
+
+    (println "Value off: " value-off ", value-off class " (class value-off))
+    (.setValue checkBox true)
+    (let [value-on (.getValue checkBox)]
+      (println "Value on: " value-on ", value-on class " (class value-on)))))
 
 
 (defn file-resource [app resource-name]
@@ -279,6 +291,14 @@
       (mk-panel-with-label-in-center-demo "250px", "250px")
       ;btn-select-img-dlg, file-browser-with-img-preview, 
       file-browser, btn-app-info, btn-file-img, btn-cls-img, btn-ext-img)
+
+    (add-components content
+      (add-btn-click-listener (Button. "Checkbox test") _ (check-box-value-test)))
+
+    (let [txtReadOnly (TextField. "ReadOnly")]
+      (.setEnabled txtReadOnly false)
+      (add-components content txtReadOnly
+        (add-btn-click-listener (Button. "Test read-only") _ (.setValue txtReadOnly "???"))))
 
     (add-components content
       (mk-grid-lyt-demo-1 "250px", "250px")

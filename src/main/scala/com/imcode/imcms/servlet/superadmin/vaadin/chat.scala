@@ -21,7 +21,6 @@ import java.util.{Date, Collection => JCollection}
 import com.vaadin.ui.Layout.MarginInfo
 import java.io.{OutputStream, FileOutputStream, File}
 import com.imcode.imcms.servlet.superadmin.vaadin.ui._
-import com.imcode.imcms.servlet.superadmin.vaadin.ui.UI._
 import com.imcode.imcms.servlet.superadmin.vaadin.ui.AbstractFieldWrapper._
 import java.util.concurrent.atomic.AtomicReference
 import imcode.server.document.{CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}

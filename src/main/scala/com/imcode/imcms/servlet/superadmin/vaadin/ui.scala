@@ -18,9 +18,9 @@ import com.imcode.imcms.api.{SystemProperty, IPAccess, Document}
 import imcode.server.{SystemData, Imcms}
 import java.util.{Date, Collection => JCollection}
 import com.vaadin.ui.Layout.MarginInfo
-import java.io.{OutputStream, FileOutputStream, File}
 import java.util.concurrent.atomic.AtomicReference
 import java.lang.{String, Class => JClass, Boolean => JBoolean, Integer => JInteger}
+import java.io.{ByteArrayOutputStream, OutputStream, FileOutputStream, File}
 
 //class ButtonWrapper(button: Button) {
 //
@@ -44,49 +44,9 @@ import java.lang.{String, Class => JClass, Boolean => JBoolean, Integer => JInte
 //  }
 //}
 
-
-object UI {
-
-  implicit def funToButtonClickListener(eventHandler: Button#ClickEvent => Unit) =
-    new Button.ClickListener {
-      def buttonClick(event: Button#ClickEvent) = eventHandler(event)
-    }
-  
-  implicit def blockToButtonClickListener(block: => Unit) = funToButtonClickListener { _ => block}
-
-  implicit def blockToPropertyValueChangeListener(block: => Unit): Property.ValueChangeListener =
-    new Property.ValueChangeListener {
-      def valueChange(event: ValueChangeEvent) = block
-    }
-
-//  def addValueChangeHandler(target: AbstractField)(handler: ValueChangeEvent => Unit) {
-//    target addListener new Property.ValueChangeListener {
-//      def valueChange(event: ValueChangeEvent) = handler(event)
-//    }
-//  }
-
-  def addComponents(container: AbstractComponentContainer, component: Component, components: Component*) = {
-    component +: components foreach { c => container addComponent c }
-    container
-  }
-
-//  implicit def wrapAbstractComponentContainer(container: AbstractComponentContainer): AbstractComponentContainerWrapper =
-//    new AbstractComponentContainerWrapper(container)
-
-//  def addComponents(container: AbstractComponentContainer, component: Component, components: Component*) = {
-//    component +: components foreach container.addComponent
-//    container
-//  }
-
-  def addContainerProperties(table: Table, properties: (AnyRef, JClass[_], AnyRef)*) =
-    for ((propertyId, propertyType, defaultValue) <- properties)
-      table.addContainerProperty(propertyId, propertyType, defaultValue)
-}
-
-import UI._
-
 class AbstractFieldWrapper(f: com.vaadin.ui.AbstractField) {
   def stringValue = f.getValue.asInstanceOf[String]
+  def booleanValue = Boolean unbox f.getValue.asInstanceOf[JBoolean] 
   def asList[T <: AnyRef] = f.getValue.asInstanceOf[JCollection[T]].toList
 }
 
@@ -174,10 +134,25 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
   btnCancel addListener close
 
   // refactor
-  def addOkButtonClickListener(listener: Button.ClickListener) {
-    btnOk addListener { e: Button#ClickEvent =>
+//  def addOkButtonClickListener(listener: Button.ClickListener) {
+//    btnOk addListener { e: Button#ClickEvent =>
+//      try {
+//        listener buttonClick e
+//        close
+//      } catch {
+//        case ex: Exception => using(new java.io.StringWriter) { w =>
+//          ex.printStackTrace(new java.io.PrintWriter(w))
+//          //show(new MsgDialog("ERROR", "%s  ##  ##  ##  ## ## %s" format (ex.getMessage, w.getBuffer)))
+//          throw ex
+//        }
+//      }
+//    }
+//  }
+
+  def addOkButtonClickListener(block: => Unit) {
+    btnOk addListener {
       try {
-        listener buttonClick e
+        block
         close
       } catch {
         case ex: Exception => using(new java.io.StringWriter) { w =>
@@ -187,7 +162,7 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
         }
       }
     }
-  }
+  }  
 }
 
 
@@ -311,6 +286,22 @@ class FileUploadReceiver(uploadDir: String) extends Upload.Receiver {
           upload set Some(file, mimeType)
           println("Uploaded: " + upload.get)
         }
+      }
+    }
+}
+
+
+case class MemoryUpload(filename: String, mimeType: String, content: Array[Byte])
+
+class MemoryUploadReceiver extends Upload.Receiver {
+
+  val upload: AtomicReference[Option[MemoryUpload]] = new AtomicReference(None)
+
+  def receiveUpload(filename: String, mimeType: String) =
+    new ByteArrayOutputStream {
+      override def close() {
+        super.close
+        upload set Some(MemoryUpload(filename, mimeType, toByteArray))
       }
     }
 }

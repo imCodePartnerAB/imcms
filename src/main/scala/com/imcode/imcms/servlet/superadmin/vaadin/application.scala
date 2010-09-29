@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.superadmin.vaadin
 
 import com.imcode.imcms.servlet.superadmin.vaadin.filemanager._
+import com.imcode.imcms.servlet.superadmin.vaadin.template._
 import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
 import scala.collection.JavaConversions._
 import com.imcode._
@@ -21,15 +22,14 @@ import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
 import java.util.{Date, Collection => JCollection}
 import com.vaadin.ui.Layout.MarginInfo
-import java.io.{OutputStream, FileOutputStream, File}
 import com.imcode.imcms.servlet.superadmin.vaadin.ui._
-import com.imcode.imcms.servlet.superadmin.vaadin.ui.UI._
 import com.imcode.imcms.servlet.superadmin.vaadin.ui.AbstractFieldWrapper._
 import java.util.concurrent.atomic.AtomicReference
-import imcode.server.document.{CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
 import scala.actors.Actor._
 import scala.actors._
 import imcode.server.document.textdocument.TextDocumentDomainObject
+import imcode.server.document.{TemplateDomainObject, CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
+import java.io.{ByteArrayInputStream, OutputStream, FileOutputStream, File}
 
 
 object ChatTopic extends Actor {
@@ -971,55 +971,6 @@ class App extends com.vaadin.Application {
   }
 
 
-  class TemplateDialogContent extends FormLayout {
-    val txtName = new TextField
-    val txtFile = new TextField {setReadOnly(true); setInputPrompt("No file selected")}
-    val chkUseFilenameAsName = new CheckBox("Use filename as name") {setValue(true)}
-    val btnChooseFile = new Button("Choose")
-
-    val lytName = new HorizontalLayout {
-      setCaption("Name")
-      addComponents(this, txtName, chkUseFilenameAsName)
-      setSpacing(true)
-      setSizeUndefined
-    }
-
-    val lytFile = new HorizontalLayout {
-      setCaption("File")
-      addComponents(this, txtFile, btnChooseFile)
-      setSpacing(true)
-      setSizeUndefined
-    }
-
-    addComponents(this, lytFile, lytName)
-
-    btnChooseFile addListener {
-      initAndShow(new OkCancelDialog("Select template file - .htm .html .xhtml .jsp .jspx")
-              with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
-
-        let(w.mainContent = new FileBrowser) { b =>
-          b setSplitPosition 30
-          b addDirectoryTree("Templates", new File(Imcms.getPath, "WEB-INF/templates"))
-          b.tblDirContent setSelectable true
-
-          w.addOkButtonClickListener {
-            b.tblDirContent.getValue match {
-              case file: File /*if canPreview(file)*/=>
-                txtFile.setValue(file.getName)
-                if (chkUseFilenameAsName.booleanValue) {
-                  txtName setValue file.getName.slice(0, file.getName.lastIndexOf("."))
-                }
-              
-              case _ => 
-            }
-          }
-        }
-
-        w setWidth "650px"
-        w setHeight "350px"
-      }
-    }
-  }
   
 
   lazy val templates = new TabSheetView {
@@ -1047,23 +998,23 @@ class App extends com.vaadin.Application {
 
         btnNew addListener {
           initAndShow(new OkCancelDialog("Add new template")) { w =>
-//            val uplFile = new Upload("Template file", new FileUploadReceiver("/tmp/upload")) with UploadEventHandler {
-//              def handleEvent(e: com.vaadin.ui.Component.Event) = e match {
-//                case e: Upload#SucceededEvent =>
-//                  w.btnOk.setEnabled(true)
-//                  txtName setValue e.getFilename
-//                case e: Upload#FailedEvent =>
-//                  w.btnOk.setEnabled(false)
-//
-//                case _ => // not interested
-//              }
-//            }
+            let(w.mainContent = new TemplateDialogContent) { c =>
+              w addOkButtonClickListener {
+                c.uploadReceiver.upload.get match {
+                  case Some(memoryUpload) =>
+                    val upload = c.uploadReceiver.upload.get.get
+                    val in = new ByteArrayInputStream(upload.content)
+                    templateMapper.saveTemplate(c.txtName.stringValue,
+                        upload.filename, in, c.chkOverwriteExisting.booleanValue) match {
+                      case _ =>
+                    }
 
+                    reloadTableItems
 
-            w.mainContent = new TemplateDialogContent
+                  case _ => println("WTF?")
+                }
 
-            w.addOkButtonClickListener {
-              println("Saving...")
+              }
             }
           }
         }
@@ -1738,5 +1689,39 @@ class App extends com.vaadin.Application {
     })
   }
 }
+
+
+
+
+//    btnChooseFile addListener {
+//      initAndShow(new OkCancelDialog("Select template file - .htm .html .xhtml .jsp .jspx")
+//              with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
+//
+//        let(w.mainContent = new FileBrowser) { b =>
+//          b setSplitPosition 30
+//          b addDirectoryTree("Templates", new File(Imcms.getPath, "WEB-INF/templates"))
+//          b.tblDirContent setSelectable true
+//
+//          w.addOkButtonClickListener {
+//            b.tblDirContent.getValue match {
+//              case file: File /*if canPreview(file)*/=>
+//                txtFilename.setReadOnly(false)
+//                txtFilename.setValue(file.getName)
+//                txtFilename.setData(file)
+//                txtFilename.setReadOnly(true)
+//
+//              case _ =>
+//                txtFilename.setReadOnly(false)
+//                txtFilename.setValue("")
+//                txtFilename.setData(null)
+//                txtFilename.setReadOnly(true)
+//            }
+//          }
+//        }
+//
+//        w setWidth "650px"
+//        w setHeight "350px"
+//      }
+//    }
 
 
