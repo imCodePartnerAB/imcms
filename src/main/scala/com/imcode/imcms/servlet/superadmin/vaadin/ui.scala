@@ -295,13 +295,13 @@ case class MemoryUpload(filename: String, mimeType: String, content: Array[Byte]
 
 class MemoryUploadReceiver extends Upload.Receiver {
 
-  val upload: AtomicReference[Option[MemoryUpload]] = new AtomicReference(None)
+  val uploadRef: AtomicReference[Option[MemoryUpload]] = new AtomicReference(None)
 
   def receiveUpload(filename: String, mimeType: String) =
     new ByteArrayOutputStream {
       override def close() {
         super.close
-        upload set Some(MemoryUpload(filename, mimeType, toByteArray))
+        uploadRef set Some(MemoryUpload(filename, mimeType, toByteArray))
       }
     }
 }

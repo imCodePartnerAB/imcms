@@ -1000,16 +1000,18 @@ class App extends com.vaadin.Application {
           initAndShow(new OkCancelDialog("Add new template")) { w =>
             let(w.mainContent = new TemplateDialogContent) { c =>
               w addOkButtonClickListener {
-                c.uploadReceiver.upload.get match {
-                  case Some(memoryUpload) =>
-                    val upload = c.uploadReceiver.upload.get.get
+                c.uploadReceiver.uploadRef.get match {
+                  case Some(upload) =>
                     val in = new ByteArrayInputStream(upload.content)
-                    templateMapper.saveTemplate(c.txtName.stringValue,
-                        upload.filename, in, c.chkOverwriteExisting.booleanValue) match {
-                      case _ =>
-                    }
+                    val result = templateMapper.saveTemplate(c.txtName.stringValue,
+                        upload.filename, in, c.chkOverwriteExisting.booleanValue)
 
-                    reloadTableItems
+                    result match {
+                      case 0 => reloadTableItems // ok
+                      case -1 => error("File exists") // file exists
+                      case -2 => error("IO error")  // io error
+                      case n => error("Unknown error: " + n)
+                    }
 
                   case _ => println("WTF?")
                 }

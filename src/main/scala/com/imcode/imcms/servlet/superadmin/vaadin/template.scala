@@ -10,52 +10,70 @@ import com.vaadin.ui._
 class TemplateDialogContent extends FormLayout {
   val uploadReceiver = new MemoryUploadReceiver
   val txtName = new TextField
-  val chkUseFilenameAsName = new CheckBox("Use filename as name")
-  val chkOverwriteExisting = new CheckBox("Overwrite existing")
+  val chkUseFilenameAsName = new CheckBox("Use filename") { setImmediate(true) }
+  val chkOverwriteExisting = new CheckBox("Replace existing")
 
-  val upload = new Upload("File", uploadReceiver) with UploadEventHandler {
+  val upload = new Upload(null, uploadReceiver) with UploadEventHandler {
+    setImmediate(true)
+    setButtonCaption("Select")
+    
     def handleEvent(e: com.vaadin.ui.Component.Event) = e match {
       case e: Upload#SucceededEvent =>
         alterNameTextField()
       case e: Upload#FailedEvent =>
-        uploadReceiver.upload.set(None)
+        uploadReceiver.uploadRef.set(None)
         alterNameTextField()
       case _ => 
     }
   }
+  val lblUploadStatus = new Label
 
   val lytName = new HorizontalLayout {
     setCaption("Name")
-    addComponents(this, txtName, chkUseFilenameAsName, chkOverwriteExisting)
     setSpacing(true)
     setSizeUndefined
+    addComponents(this, chkUseFilenameAsName, txtName)
+    setComponentAlignment(chkUseFilenameAsName, Alignment.MIDDLE_LEFT)
+  }
+
+  val lytUpload = new HorizontalLayout {
+    setCaption("File")
+    setSpacing(true)
+    setSizeUndefined    
+    addComponents(this, upload, lblUploadStatus)
+    setComponentAlignment(lblUploadStatus, Alignment.MIDDLE_LEFT)
   }
 
   chkUseFilenameAsName addListener new ValueChangeListener {
     def valueChange(e: ValueChangeEvent) = alterNameTextField()
   }
   
-  chkUseFilenameAsName addListener { alterNameTextField() }
+  //chkUseFilenameAsName addListener { alterNameTextField() }
   chkUseFilenameAsName setValue true
-  addComponents(this, upload, lytName)  
+  addComponents(this, lytUpload, lytName, chkOverwriteExisting)  
 
   def alterNameTextField() {
-    let(uploadReceiver.upload.get.isDefined) { uploaded =>
-      forall(lytName, chkOverwriteExisting) {
-        _ setEnabled uploaded
+    let(uploadReceiver.uploadRef.get) { uploadOpt =>
+      forlet(lytName, chkOverwriteExisting) {
+        _ setEnabled uploadOpt.isDefined
       }
-    }
 
-    let (chkUseFilenameAsName.booleanValue) { useFilenameAsName =>
-      txtName setEnabled !useFilenameAsName
-      if (useFilenameAsName) {
-        txtName.setValue(uploadReceiver.upload.get match {
-          case Some(memoryUpload) => let(memoryUpload.filename) { filename =>
-            filename.slice(0, filename.lastIndexOf("."))
-          }
+      uploadOpt match {
+        case Some(upload) => lblUploadStatus.setValue(upload.filename)
+        case _ => lblUploadStatus.setValue("No file selected")
+      }
 
-          case _ => ""
-        })
+      let (chkUseFilenameAsName.booleanValue) { useFilenameAsName =>
+        txtName setEnabled !useFilenameAsName
+        if (useFilenameAsName) {
+          txtName.setValue(uploadOpt match {
+            case Some(upload) => let(upload.filename) { filename =>
+              filename.slice(0, filename.lastIndexOf("."))
+            }
+
+            case _ => ""
+          })
+        }
       }
     }
   }

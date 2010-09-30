@@ -300,6 +300,12 @@
       (add-components content txtReadOnly
         (add-btn-click-listener (Button. "Test read-only") _ (.setValue txtReadOnly "???"))))
 
+    (let [chkBox (CheckBox. "Check box")]
+      (.setImmediate chkBox true)
+      (add-btn-click-listener chkBox _ (println "checked: " (.booleanValue chkBox)))
+
+      (add-components content chkBox))
+
     (add-components content
       (mk-grid-lyt-demo-1 "250px", "250px")
       (mk-grid-lyt-demo-2))
