@@ -2,23 +2,36 @@ package com.imcode.imcms.servlet.superadmin.vaadin
 
 import com.imcode._
 import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
-import com.vaadin.ui.{Table, Component, AbstractComponentContainer, Button}
+import com.vaadin.ui.{Table, Component, AbstractComponentContainer, Button, MenuBar}
 import com.vaadin.data.Property
 import com.vaadin.data.Property._
+import _root_.com.vaadin.ui.MenuBar
 
 package object ui {
+
+  def unit(block: => Unit) = block _
+
+  def menuCommand(handler: MenuBar#MenuItem => Unit) = new MenuBar.Command {
+    def menuSelected(mi: MenuBar#MenuItem) = handler(mi)
+  }
   
-  implicit def funToButtonClickListener(eventHandler: Button#ClickEvent => Unit) =
+  implicit def unitToMenuCommand(u: () => Unit) = menuCommand { _ => u() }
+
+  def buttonClickListener(eventHandler: Button#ClickEvent => Unit) =
     new Button.ClickListener {
       def buttonClick(event: Button#ClickEvent) = eventHandler(event)
     }
 
-  implicit def blockToButtonClickListener(block: => Unit) = funToButtonClickListener { _ => block}
+  implicit def unitToButtonClickListener(u: () => Unit) = buttonClickListener { _ => u() }
 
-  implicit def blockToPropertyValueChangeListener(block: => Unit): Property.ValueChangeListener =
+  def propertyValueChangeListener(handler: ValueChangeEvent => Unit): Property.ValueChangeListener =
     new Property.ValueChangeListener {
-      def valueChange(event: ValueChangeEvent) = block
+      def valueChange(event: ValueChangeEvent) = handler(event)
     }
+ 
+  implicit def unitToPropertyValueChangeListenerB(u: () => Unit) = propertyValueChangeListener { _ => u() }
+
+
 
 //  def addValueChangeHandler(target: AbstractField)(handler: ValueChangeEvent => Unit) {
 //    target addListener new Property.ValueChangeListener {

@@ -3,7 +3,7 @@ package com.imcode.imcms.servlet.superadmin.vaadin.template
 import com.imcode._
 import com.imcode.imcms.servlet.superadmin.vaadin.ui._
 import com.imcode.imcms.servlet.superadmin.vaadin.ui.{UploadEventHandler, MemoryUploadReceiver}
-import com.vaadin.data.Property
+//import com.vaadin.data.Property
 import com.vaadin.data.Property._
 import com.vaadin.ui._
 
@@ -40,28 +40,40 @@ class TemplateDialogContent extends FormLayout {
     setCaption("File")
     setSpacing(true)
     setSizeUndefined    
-    addComponents(this, upload, lblUploadStatus)
+    addComponents(this, lblUploadStatus, upload)
     setComponentAlignment(lblUploadStatus, Alignment.MIDDLE_LEFT)
   }
 
-  chkUseFilenameAsName addListener new ValueChangeListener {
-    def valueChange(e: ValueChangeEvent) = alterNameTextField()
+  chkUseFilenameAsName addListener unit {
+    alterNameTextField()
   }
   
-  //chkUseFilenameAsName addListener { alterNameTextField() }
   chkUseFilenameAsName setValue true
   addComponents(this, lytUpload, lytName, chkOverwriteExisting)  
 
   def alterNameTextField() {
+    def formatStatusMsg(Length: Int, msg: String): String = {
+      val formattedMsg = let(wrapString(msg)) { s =>
+        s.length match {
+          case Length => s
+          case n if n > Length => s take (Length - 3) padTo (Length, ".")
+          case _ => s.padTo(Length, " ")
+        }
+      }
+
+      formattedMsg.mkString
+    }
+
     let(uploadReceiver.uploadRef.get) { uploadOpt =>
       forlet(lytName, chkOverwriteExisting) {
         _ setEnabled uploadOpt.isDefined
       }
 
-      uploadOpt match {
-        case Some(upload) => lblUploadStatus.setValue(upload.filename)
-        case _ => lblUploadStatus.setValue("No file selected")
-      }
+      lblUploadStatus setValue formatStatusMsg(30, 
+        uploadOpt match {
+          case Some(upload) => upload.filename
+          case _ => "No file selected"
+        })
 
       let (chkUseFilenameAsName.booleanValue) { useFilenameAsName =>
         txtName setEnabled !useFilenameAsName
@@ -77,4 +89,19 @@ class TemplateDialogContent extends FormLayout {
       }
     }
   }
+}
+
+
+class RenameTemplateDialogContent extends FormLayout {
+  val txtName = new TextField("Name")
+  addComponent(txtName)
+}
+
+
+class EditTemplateContentDialogContent extends VerticalLayout {
+  val pnlContent = new Panel {setSizeFull}
+  val txtContent = new TextField {setRows(20); setSizeFull}
+
+  pnlContent addComponent txtContent
+  addComponent(pnlContent)
 }

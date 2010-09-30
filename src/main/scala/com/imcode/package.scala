@@ -51,6 +51,8 @@ package object imcode {
     ret.toList
   }
 
+  //def unit(block: => Unit) = block _
+
   /**
    * Converts camel-case string into underscore.
    * ex: IPAccess => ip_access, SearchTerms => search_terms, mrX => mr_x, iBot => i_bot

@@ -182,8 +182,9 @@ public class TemplateMapper {
         return Integer.parseInt( queryResult );
     }
 
+    // todo: fix meta headline
     public DocumentDomainObject[] getDocumentsUsingTemplate( TemplateDomainObject template ) {
-        String[][] temp = (String[][]) database.execute(new SqlQueryCommand("select td.meta_id, meta_headline from text_docs td join meta m on td.meta_id = m.meta_id where template_name = ? order by td.meta_id", new String[]{template.getName()}, Utility.STRING_ARRAY_ARRAY_HANDLER));
+        String[][] temp = (String[][]) database.execute(new SqlQueryCommand("select td.meta_id, td.meta_id as meta_headline from text_docs td join meta m on td.meta_id = m.meta_id where template_name = ? order by td.meta_id", new String[]{template.getName()}, Utility.STRING_ARRAY_ARRAY_HANDLER));
         DocumentMapper documentMapper = services.getDocumentMapper();
         DocumentDomainObject[] documents = new DocumentDomainObject[temp.length];
         for ( int i = 0; i < documents.length; i++ ) {

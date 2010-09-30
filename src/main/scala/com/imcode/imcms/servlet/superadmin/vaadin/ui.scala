@@ -113,7 +113,7 @@ class MsgDialog(caption: String = "", msg: String ="") extends Dialog(caption) {
   mainContent = lblMessage
   buttonsBarContent = btnOk
 
-  btnOk addListener close
+  btnOk addListener unit { close }
 }
 
 
@@ -131,7 +131,7 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
 
   buttonsBarContent = lytButtons
 
-  btnCancel addListener close
+  btnCancel addListener unit { close }
 
   // refactor
 //  def addOkButtonClickListener(listener: Button.ClickListener) {
@@ -150,7 +150,7 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
 //  }
 
   def addOkButtonClickListener(block: => Unit) {
-    btnOk addListener {
+    btnOk addListener unit {
       try {
         block
         close
@@ -228,20 +228,16 @@ class TwinSelect(caption: String = "") extends GridLayout(3, 1) {
     dest addItem item
   }
 
-  btnAdd addListener move(lstAvailable, lstChosen)
+  btnAdd addListener unit { move(lstAvailable, lstChosen) }
 
-  btnRemove addListener move(lstChosen, lstAvailable)
+  btnRemove addListener unit { move(lstChosen, lstAvailable) }
 
-  lstAvailable addListener new ValueChangeListener {
-    def valueChange(e: com.vaadin.data.Property.ValueChangeEvent) {
-      btnAdd.setEnabled(lstAvailable.getValue.asInstanceOf[JCollection[_]].size > 0)
-    }
+  lstAvailable addListener unit {
+    btnAdd.setEnabled(lstAvailable.getValue.asInstanceOf[JCollection[_]].size > 0)
   }
 
-  lstChosen addListener new ValueChangeListener {
-    def valueChange(e: com.vaadin.data.Property.ValueChangeEvent) {
-      btnRemove.setEnabled(lstChosen.getValue.asInstanceOf[JCollection[_]].size > 0)
-    }
+  lstChosen addListener unit {
+    btnRemove.setEnabled(lstChosen.getValue.asInstanceOf[JCollection[_]].size > 0)
   }
 
   //def reset = forlet(lstAvailable, lstChosen) (l => l.)

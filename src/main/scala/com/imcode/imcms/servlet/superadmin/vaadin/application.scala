@@ -15,7 +15,6 @@ import imcms.api.{CategoryType, SystemProperty, IPAccess, Document}
 import imcms.mapping.CategoryMapper
 import imcms.servlet.superadmin.AdminSearchTerms
 import com.imcode.imcms.api.Document.PublicationStatus
-import com.vaadin.terminal.UserError
 import imcms.servlet.superadmin.vaadin.ChatTopic.Message
 import imcode.util.Utility
 import imcode.server.user._
@@ -30,6 +29,7 @@ import scala.actors._
 import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.document.{TemplateDomainObject, CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
 import java.io.{ByteArrayInputStream, OutputStream, FileOutputStream, File}
+import com.vaadin.terminal.{ThemeResource, UserError}
 
 
 object ChatTopic extends Actor {
@@ -55,7 +55,7 @@ object ChatTopic extends Actor {
 
 class App extends com.vaadin.Application {
 
-  setTheme("imcms")
+  setTheme("runo")
   
   object Menu extends MenuItem {
     object About extends MenuItem(this)
@@ -105,41 +105,30 @@ class App extends com.vaadin.Application {
       setImmediate(true)
       setPageLength(10)
 
-      setSizeFull
-
-      addListener { resetComponents }
+      addListener(unit { resetComponents })
 
       tableProperties foreach (addContainerProperties(this, _))
     }
 
-    val pnlHeader = new Panel {
-      val layout = new HorizontalLayout {
-        setSpacing(true)
-        setMargin(true, false, true, false)
-      }
-
-      setContent(layout)
-      addStyleName("light")
+    //lyt!
+    val pnlHeader = new HorizontalLayout {
+      setSizeUndefined
+      setSpacing(true)
     }
 
     val btnReload = new Button("Reload") {
-      addListener { reloadTableItems }
+      addListener(unit { reloadTableItems })
+      setStyleName(Button.STYLE_LINK)
+      setIcon(new ThemeResource("icons/16/reload.png"))
     }
+
+    setSpacing(true)
+    addComponents(this, pnlHeader, tblItems, btnReload)
+    setComponentAlignment(btnReload, Alignment.BOTTOM_RIGHT)
+
+    reloadTableItems
+    resetComponents
     
-    val pnlFooter = new Panel {
-      val layout = new GridLayout(1,1) {
-        addComponent(btnReload)
-        setComponentAlignment(btnReload, Alignment.MIDDLE_RIGHT)
-        setSizeFull
-
-      }
-      setMargin(true, false, true, false)
-      setContent(layout)
-      addStyleName("light")
-    }
-
-    addComponents(this, pnlHeader, tblItems, pnlFooter)
-
     // Investigate: List[(AnyRef, Array[AnyRef])]
     def tableItems(): Seq[(AnyRef, Seq[AnyRef])] = List.empty
 
@@ -153,9 +142,6 @@ class App extends com.vaadin.Application {
     }
 
     def resetComponents = {}
-    
-    reloadTableItems
-    resetComponents
   }
 
   def NA(id: Any) = new TabSheetView {
@@ -398,14 +384,14 @@ class App extends com.vaadin.Application {
       }
     }
 
-    table addListener resetControls
+    table addListener unit { resetControls }
 
 
     val pnlReloadBar = new Panel(new GridLayout(1,1))
     val btnReload = new Button("Reload")
     pnlReloadBar.addComponent(btnReload)
 
-    btnReload addListener reloadTable
+    btnReload addListener unit { reloadTable }
 
     pnlReloadBar.getContent.setSizeFull
     pnlReloadBar.getContent.asInstanceOf[GridLayout].setComponentAlignment(btnReload, Alignment.MIDDLE_RIGHT)
@@ -507,7 +493,7 @@ class App extends com.vaadin.Application {
           btnDelete setEnabled true
         }
 
-      btnAdd addListener {
+      btnAdd addListener unit {
         initAndShow(new IPAccessWindow("Add new IP Access")) { w =>
           Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllUsers foreach { u =>
             w.sltUser addItem u.getId
@@ -527,7 +513,7 @@ class App extends com.vaadin.Application {
         }
       }
 
-      btnEdit addListener {
+      btnEdit addListener unit {
         initAndShow(new IPAccessWindow("Edit IP Access")) { w =>
           Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllUsers foreach { u =>
             w.sltUser addItem u.getId
@@ -554,7 +540,7 @@ class App extends com.vaadin.Application {
         }
       }
 
-      btnDelete addListener {
+      btnDelete addListener unit {
         initAndShow(new ConfirmationDialog("Confirmation", "Delete IP Access?")) { w =>
           w.addOkButtonClickListener {
             ipAccessDao delete tblItems.getValue.asInstanceOf[JInteger]
@@ -621,7 +607,7 @@ class App extends com.vaadin.Application {
           role.getId -> List(Int box role.getId.intValue, role.getName)
         }
 
-      btnAdd addListener {
+      btnAdd addListener unit {
         initAndShow(new RoleDataWindow("New role")) { w =>
           w.addOkButtonClickListener {
             val role = new RoleDomainObject(w.txtName.getValue.asInstanceOf[String])
@@ -634,7 +620,7 @@ class App extends com.vaadin.Application {
         }
       }
 
-      btnEdit addListener {
+      btnEdit addListener unit {
         initAndShow(new RoleDataWindow("Edit role")) { w =>
           val roleId = tblItems.getValue.asInstanceOf[RoleId]
           val role = roleMapper.getRole(roleId)
@@ -651,7 +637,7 @@ class App extends com.vaadin.Application {
         }        
       }
 
-      btnDelete addListener {
+      btnDelete addListener unit {
         initAndShow(new ConfirmationDialog("Confirmation", "Delete role?")) { w =>
           val roleId = tblItems.getValue.asInstanceOf[RoleId]
           val role = roleMapper.getRole(roleId)
@@ -736,11 +722,11 @@ class App extends com.vaadin.Application {
       }
     }
 
-    lytButtons.btnRevert addListener {
+    lytButtons.btnRevert addListener unit {
       reload() 
     }
 
-    lytButtons.btnSave addListener {
+    lytButtons.btnSave addListener unit {
       let(new SystemData) { d =>
         d setStartDocument pnlStartPage.txtNumber.getValue.asInstanceOf[String].toInt
         d setSystemMessage pnlSystemMessage.txtMessage.getValue.asInstanceOf[String]
@@ -800,8 +786,8 @@ class App extends com.vaadin.Application {
         lytData.calStart setReadOnly true         
       }
 
-      lytButtons.btnReload addListener reload()
-      lytButtons.btnClear addListener {
+      lytButtons.btnReload addListener unit { reload() }
+      lytButtons.btnClear addListener unit {
         initAndShow(new ConfirmationDialog("Confirmation", "Clear counter statistics?")) { w =>
           w.addOkButtonClickListener {
             Imcms.getServices setSessionCounter 0
@@ -812,7 +798,7 @@ class App extends com.vaadin.Application {
         }
       }
 
-      lytButtons.btnEdit addListener {
+      lytButtons.btnEdit addListener unit {
         initAndShow(new OkCancelDialog("Edit session counter")) { w =>
           val txtValue = new TextField("Value")
           val calStart = new DateField("Start date")
@@ -882,7 +868,7 @@ class App extends com.vaadin.Application {
         }
       }
 
-      lytBar.btnReload addListener reload()
+      lytBar.btnReload addListener unit { reload() }
 
       reload()
     })
@@ -938,8 +924,8 @@ class App extends com.vaadin.Application {
 
       setExpandRatio(fileBrowser, 1.0f)
 
-      lytButtons.btnReload addListener {fileBrowser.reload()}
-      lytButtons.btnCopy addListener {
+      lytButtons.btnReload addListener unit { fileBrowser.reload()}
+      lytButtons.btnCopy addListener unit {
         initAndShow(new OkCancelDialog("Copy to - choose destination directory")
             with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
           let(w.mainContent = new FileBrowser) { b =>
@@ -973,7 +959,7 @@ class App extends com.vaadin.Application {
 
   
 
-  lazy val templates = new TabSheetView {
+  def templates = new TabSheetView {
     val templateMapper = Imcms.getServices.getTemplateMapper
 
     // templates tab
@@ -981,22 +967,40 @@ class App extends com.vaadin.Application {
       addComponent(new TableViewTemplate {
         override def tableProperties() =
           ("Name", classOf[String], null) ::
-          ("Filename", classOf[String], null) ::
-          ("Documents count", classOf[JInteger], null) ::
+          ("Kind", classOf[String], null) ::
+          ("Documents count using template", classOf[JInteger], null) ::
           Nil
 
-        override def tableItems() = templateMapper.getAllTemplates map { t =>
-          (t.getName, List(t.getName, t.getFileName, Int box templateMapper.getCountOfDocumentsUsingTemplate(t)))
+        override def tableItems = templateMapper.getAllTemplates map { t =>
+          val kind = let(t.getFileName) { filename =>
+            filename.lastIndexOf(".") match {
+              case -1 => ""
+              case n if (n + 1) == filename.length => ""
+              case n => filename.substring(n + 1)
+            }
+          }
+
+          (t.getName, List(t.getName, kind, Int box templateMapper.getCountOfDocumentsUsingTemplate(t)))
         }
 
-        val btnNew = new Button("New")
-        val btnEdit = new Button("Edit")
+        val btnNew = new Button("Add new")
+        val btnRename = new Button("Rename")
         val btnDelete = new Button("Delete")
-        val btnContentPreview = new Button("Content preview")
+        val btnEditContent = new Button("Edit content")
 
-        addComponents(pnlHeader, btnNew, btnEdit, btnDelete, new Label(" "), btnContentPreview)        
+        val menuBar = new MenuBar
+        val miAddNew = menuBar.addItem("Add new", new ThemeResource("icons/16/document-add.png"), null)
+        val miRename = menuBar.addItem("Rename", new ThemeResource("icons/16/settings.png"), null)
+        val miDelete = menuBar.addItem("Delete", new ThemeResource("icons/16/document-delete.png"), null)
+        val miEditContent = menuBar.addItem("Edit content", new ThemeResource("icons/16/document-txt.png"), null)
 
-        btnNew addListener {
+        //addComponents(pnlHeader, btnNew, btnRename, btnEditContent, new Label(" "), btnDelete)
+        //pnlHeader.addComponent(menuBar)
+        removeComponent(pnlHeader)
+        addComponent(menuBar, 0, 0)
+
+        //btnNew addListener {
+        miAddNew setCommand unit {
           initAndShow(new OkCancelDialog("Add new template")) { w =>
             let(w.mainContent = new TemplateDialogContent) { c =>
               w addOkButtonClickListener {
@@ -1015,11 +1019,71 @@ class App extends com.vaadin.Application {
 
                   case _ => println("WTF?")
                 }
-
               }
             }
           }
-        }
+        } // btnNew
+
+        //btnRename addListener {
+        miRename setCommand unit {
+          println("INSIDE MI-RENAME")
+          tblItems getValue match {
+            case name: String =>
+              initAndShow(new OkCancelDialog("Rename template")) { w =>
+                let(w.mainContent = new RenameTemplateDialogContent) { c =>
+                  c.txtName setValue name      
+                  w addOkButtonClickListener {
+                    templateMapper.renameTemplate(name, c.txtName.stringValue)
+                    reloadTableItems
+                  }
+                }
+              }
+
+            case _ => println("WTF? MI-RENAME")
+          }
+        } // btnRename
+
+        //btnDelete addListener {
+        miDelete setCommand unit {
+          println("INSIDE MI-DELETE")
+          tblItems getValue match {
+            case name: String =>
+              initAndShow(new ConfirmationDialog("Delete template %s?" format name)) { w =>
+                w addOkButtonClickListener {
+                  templateMapper deleteTemplate templateMapper.getTemplateByName(name)
+                  reloadTableItems
+                }
+              }
+
+            case _ => println("WTF? MI-DELETE")
+          }          
+        } // btnDelete
+
+        //btnEditContent addListener {
+        miEditContent setCommand unit {
+          println("INSIDE MI-EDIT CONTENT")
+          tblItems getValue match {
+            case name: String =>
+              initAndShow(new OkCancelDialog("Edit template content")
+                      with CustomSizeDialog with BottomMarginOnlyDialog) { w =>
+                let(w.mainContent = new EditTemplateContentDialogContent) { c =>
+                  val file = new File(Imcms.getServices.getConfig.getTemplatePath,
+                                      "text/" + templateMapper.getTemplateByName(name).getFileName)
+                  
+                  c.txtContent setValue scala.io.Source.fromFile(file).mkString
+                  w addOkButtonClickListener {
+                    // save content
+                  }
+                }
+
+                w setWidth "600px"
+                w setHeight "800px"
+              }
+
+            case _ =>
+          }
+        } // btnEditContent
+
       }) // templates table view
     }) // templates tab
 
@@ -1049,7 +1113,7 @@ class App extends com.vaadin.Application {
 
         addComponents(pnlHeader, btnNew, btnEdit, btnDelete)
 
-        btnNew addListener {
+        btnNew addListener unit {
           initAndShow(new TemplateGroupWindow("New group")) { w =>
             templateMapper.getAllTemplates foreach (w.twsTemplates.lstAvailable addItem _.getName)
             
@@ -1061,7 +1125,7 @@ class App extends com.vaadin.Application {
           }
         } // btnNew handler
 
-        btnEdit addListener  {
+        btnEdit addListener unit {
           initAndShow(new TemplateGroupWindow("Edit group")) { w =>
             let(tblItems.getValue) {
               case null =>
@@ -1082,7 +1146,7 @@ class App extends com.vaadin.Application {
           }
         } // btnEdit handler
         
-        btnDelete addListener {
+        btnDelete addListener unit {
           initAndShow(new ConfirmationDialog("Confirmation", "Detelete template group?")) { w =>
             w.addOkButtonClickListener {
               templateMapper deleteTemplateGroup tblItems.getValue.asInstanceOf[Int]
@@ -1114,7 +1178,7 @@ class App extends com.vaadin.Application {
     val embIcon = new IconImagePicker(50, 50) {
       setCaption("Icon")
 
-      btnChoose addListener {
+      btnChoose addListener unit {
         initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg")
                 with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
                 
@@ -1168,7 +1232,7 @@ class App extends com.vaadin.Application {
 
         addComponents(pnlHeader, btnAdd, btnEdit, btnDelete)
 
-        btnAdd addListener {
+        btnAdd addListener unit {
           initAndShow(new OkCancelDialog("New category") with CategoryDialog) { w =>
             categoryMapper.getAllCategoryTypes foreach { c =>
               w.sltType addItem c.getName
@@ -1188,7 +1252,7 @@ class App extends com.vaadin.Application {
           }
         }
 
-        btnEdit addListener {
+        btnEdit addListener unit {
           tblItems.getValue match {
             case id: JInteger =>
               categoryMapper.getCategoryById(id.intValue) match {
@@ -1218,7 +1282,7 @@ class App extends com.vaadin.Application {
           }
         }
 
-        btnDelete addListener {
+        btnDelete addListener unit {
           initAndShow(new ConfirmationDialog("Delete category")) { w =>
             w addOkButtonClickListener {
               tblItems.getValue match {
@@ -1261,7 +1325,7 @@ class App extends com.vaadin.Application {
 
         addComponents(pnlHeader, btnNew, btnEdit, btnDelete)
 
-        btnNew addListener {
+        btnNew addListener unit {
           initAndShow(new OkCancelDialog("New categor type")) { w =>
             val txtId = new TextField("Id")
             val txtName = new TextField("Name")
@@ -1289,7 +1353,7 @@ class App extends com.vaadin.Application {
           }
         }
 
-        btnDelete addListener {
+        btnDelete addListener unit {
           tblItems.getValue match {
             case null =>
             case id: JInteger =>
@@ -1324,7 +1388,7 @@ class App extends com.vaadin.Application {
         }
       }
 
-      btnSend addListener {
+      btnSend addListener unit {
         ChatTopic ! ChatTopic.Message(txtText.getValue.asInstanceOf[String])
         txtText setValue ""
       }
@@ -1557,7 +1621,8 @@ class App extends com.vaadin.Application {
       //val
 
       //pnlHeader setContent lytFilter
-      pnlFooter setContent new VerticalLayout { addComponent(frmFilter) }
+      removeComponent(0,2)
+      addComponent(new VerticalLayout { addComponent(frmFilter) }, 0, 2)
     }
 
     val btnNew = new Button("New")
@@ -1573,7 +1638,7 @@ class App extends com.vaadin.Application {
         addComponent(userView)
       })
 
-      btnNew addListener {
+      btnNew addListener unit {
         initAndShow(new OkCancelDialog("New user") with UserDialog) { w =>
           roleMapper.getAllRoles foreach { r =>
             w.lytGeneral.lstRoles addItem r.getId
@@ -1602,12 +1667,12 @@ class App extends com.vaadin.Application {
         }
       }
 
-      btnEdit addListener {
+      btnEdit addListener unit {
         initAndShow(new OkCancelDialog("Edit user") with UserDialog) { w =>
         }
       }
 
-      btnDelete addListener {
+      btnDelete addListener unit {
         initAndShow(new ConfirmationDialog(msg="Delete user?")) { w =>
           w addOkButtonClickListener {
             userView.tblItems.getValue match {
@@ -1640,7 +1705,7 @@ class App extends com.vaadin.Application {
         setSpacing(true)
       }
 
-      lytMenu.btnShow addListener {
+      lytMenu.btnShow addListener unit {
         lytMenu.txtId.getValue match {
           case IntNumber(id) =>
             Imcms.getServices.getDocumentMapper.getDocument(id) match {

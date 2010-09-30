@@ -9,8 +9,8 @@
     com.vaadin.Application
     (scala Some None$)
     (com.vaadin.ui Window SplitPanel Button Panel Label Button$ClickListener Embedded GridLayout HorizontalLayout
-                   VerticalLayout Alignment TextField CheckBox)
-    (com.vaadin.terminal ExternalResource ClassResource FileResource)
+                   VerticalLayout Alignment TextField CheckBox MenuBar MenuBar$MenuItem MenuBar$Command)
+    (com.vaadin.terminal ExternalResource ClassResource FileResource ThemeResource)
     (com.vaadin.data Property Property$ValueChangeListener)
     (com.imcode.imcms.servlet.superadmin.vaadin.ui OkCancelDialog)
     (com.imcode.imcms.servlet.superadmin.vaadin.filemanager FileBrowser FileBrowserWithImagePreview)))
@@ -310,6 +310,42 @@
       (mk-grid-lyt-demo-1 "250px", "250px")
       (mk-grid-lyt-demo-2))
 
+    (add-components content
+      (let [lytHorisontal (HorizontalLayout.)
+            lblMsg (Label. "Default message")
+            txtMsg (TextField. "")
+            btnOk (Button. "Ok")]
+        (.setWidth lblMsg "50px")
+        (doto lytHorisontal (.setSpacing true) (.setMargin true))
+
+        (add-btn-click-listener btnOk _ (.setValue lblMsg (.getValue txtMsg)))
+        (add-components lytHorisontal lblMsg txtMsg btnOk)))
+
+    (add-components content
+      (let [mb (MenuBar.)
+            lt (HorizontalLayout.)]
+        (.addItem mb "Add new" (ThemeResource. "icons/32/document-add.png")
+                     (reify MenuBar$Command
+                       (menuSelected [this item] (println "ADD NEW"))))
+
+        (.addItem mb "Edit" (ThemeResource. "icons/32/document-txt.png")
+                     (reify MenuBar$Command
+                       (menuSelected [this item] (println "EDIT"))))
+
+        (.addItem mb "Delete" (ThemeResource. "icons/32/document-delete.png")
+                     (reify MenuBar$Command
+                       (menuSelected [this item] (println "DELETE"))))
+
+        (doto lt
+          (.addComponent mb))
+        (println ">>>>>>>>>>> " (.getWidth mb) ", " (.getHeight mb))
+        (.setHeight mb "40px")
+        mb))
+
+    (add-components content
+      (doto (Button. "Reload")
+        ;(.setStyleName Button/STYLE_LINK)
+        (.setIcon (ThemeResource. "icons/64/reload.png"))))
     ; let
     ))
 
