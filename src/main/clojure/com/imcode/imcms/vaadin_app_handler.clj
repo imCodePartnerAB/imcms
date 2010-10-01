@@ -9,7 +9,7 @@
     com.vaadin.Application
     (scala Some None$)
     (com.vaadin.ui Window SplitPanel Button Panel Label Button$ClickListener Embedded GridLayout HorizontalLayout
-                   VerticalLayout Alignment TextField CheckBox MenuBar MenuBar$MenuItem MenuBar$Command)
+                   FormLayout VerticalLayout Alignment TextField CheckBox MenuBar MenuBar$MenuItem MenuBar$Command)
     (com.vaadin.terminal ExternalResource ClassResource FileResource ThemeResource)
     (com.vaadin.data Property Property$ValueChangeListener)
     (com.imcode.imcms.servlet.superadmin.vaadin.ui OkCancelDialog)
@@ -346,6 +346,30 @@
           (.addComponent (doto (Button. "Reload")
                            (.setStyleName Button/STYLE_LINK)
                            (.setIcon (ThemeResource. "icons/16/reload.png")))))))
+
+
+;      val btnContacts = new Button("Edit (optional)") {
+;    setCaption("Contacts")
+;    setStyleName(Button.STYLE_LINK)
+;    setIcon(new ThemeResource("icons/16/globe.png"))
+;  }
+      (add-components content
+        (let [fl (FormLayout.)
+              hl (HorizontalLayout.)
+              btn (Button. "Edit...")]
+          (doto btn
+             (.setStyleName Button/STYLE_LINK)
+             )
+
+          (doto hl
+            (.setIcon (ThemeResource. "icons/16/globe.png"))
+            (.setCaption "Contacts")
+            (.addComponent btn))
+          
+          (doto fl
+            (.addComponent hl))))
+
+
     ; let
     ))
 

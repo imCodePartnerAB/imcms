@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.superadmin.vaadin
 
+import com.imcode.imcms.servlet.superadmin.vaadin.permissions._
 import com.imcode.imcms.servlet.superadmin.vaadin.filemanager._
 import com.imcode.imcms.servlet.superadmin.vaadin.template._
 import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
@@ -1422,178 +1423,6 @@ class App extends com.vaadin.Application {
     } //chat
 
 
-  trait UserDialog { this: OkCancelDialog =>
-//    val txtUsername = new TextField("Username")
-//    val txtPassword = new TextField("4-16 characters")
-//    val txtVerifyPassword = new TextField("4-16 characters (retype)")
-//    val txtFirstName = new TextField("Firstn name")
-//    val txtLastName = new TextField("Last name")
-//
-////    val txtTitle = new TextField("Title")
-////    val txtCompany = new TextField("Company")
-////    val txtAddress = new TextField("Address")
-////    val txtZip = new TextField("Zip")
-////    val txtCity = new TextField("City")
-////
-////    val txtEmail = new TextField("Email")
-//    val chkActivated = new CheckBox("Activated")
-//
-//    val lstRoles = new ListSelect("User roles")
-//    val lstManagedRoles = new ListSelect("Managed roles")
-
-//    forlet(lstRoles, lstManagedRoles) {_ setColumns 3}
-//
-//    val lytRoles = new HorizontalLayout {
-//      setCaption("Roles")
-//      addComponent(new VerticalLayoutView {
-//        addComponent(lstRoles)
-//      })
-//
-//      addComponent(new VerticalLayoutView {
-//          addComponent(lstManagedRoles)
-//      })
-//    }
-
-//           val btnAdd = new Button("Add")
-//        val btnRemove = new Button("Remove")
-//
-//    val lytPhoneNumbers = new VerticalLayout {
-//      setSizeUndefined
-//      setCaption("Phone numbers")
-//      val lytButtons = new HorizontalLayout {
-//        setSizeUndefined
-//        setSpacing(true)
-//        addComponents(this, btnAdd, btnRemove)
-//      }
-//
-//      val tblPhoneNumbers = new Table {
-//        addContainerProperties(this, ("Kind", classOf[String], null), ("Nr", classOf[String], null))
-//        setEditable(true)
-//        setImmediate(true)
-//        setPageLength(2)
-//      }
-//
-//      addComponents(this, tblPhoneNumbers, lytButtons)
-
-//      btnAdd addListener {
-//        val id = 1 + tblPhoneNumbers.getItemIds.map(_.asInstanceOf[Int]).foldLeft(0){_ max _}
-//        tblPhoneNumbers.addItem(Array("", ""), Int box id)
-//        println("CLICK")
-//
-//      }
-//
-//
-//      btnRemove addListener {
-//        tblPhoneNumbers.getValue match {
-//          case null =>
-//          case id: JInteger => tblPhoneNumbers removeItem id
-//          case ids: Seq[JInteger] => ids foreach { tblPhoneNumbers removeItem _}
-//        }
-//
-//        println("CLICK")
-//      }
-
-
-//    val frmRoles = new Form {
-//      setCaption("Roles")
-//      getLayout.addComponent(lytRoles)
-//    }
-    
-    val lytGeneral = new FormLayout {
-      val txtLogin = new TextField("Login")
-      val txtPassword = new TextField("4-16 characters")
-      val txtVerifyPassword = new TextField("4-16 characters (retype)")
-      val txtFirstName = new TextField("First")
-      val txtLastName = new TextField("Last")
-      val chkActivated = new CheckBox("Activated")
-      val sltUILanguage = new Select("Interface language") {
-        setNullSelectionAllowed(false)
-        setRequired(true)
-      }
-
-
-      val lstRoles = new ListSelect("Roles") {
-        setMultiSelect(true)
-        setNullSelectionAllowed(false)
-      }
-      val lytPassword = new HorizontalLayoutView("Password") {
-        addComponent(new VerticalLayout {
-          addComponent(txtPassword)
-        })
-        addComponent(new VerticalLayout {
-          addComponent(txtVerifyPassword)
-        })
-      }
-
-      val lytName = new HorizontalLayoutView("Name") {
-        addComponent(new VerticalLayout {
-          addComponent(txtFirstName)
-        })
-        addComponent(new VerticalLayout {
-          addComponent(txtLastName)
-        })
-      }
-
-      forlet(txtLogin, txtPassword, txtVerifyPassword, chkActivated, lstRoles, sltUILanguage) {_ setRequired true}
-
-      addComponents(this, txtLogin, lytPassword, lytName, sltUILanguage, lstRoles, chkActivated)
-    }
-
-    mainContent = lytGeneral
-  }
-
-//    val lytContacts = new FormLayout {
-//      setCaption("Contacts")
-//      addComponents(this, txtFirstName, txtLastName, txtTitle, txtCompany,
-//        txtAddress, txtZip, txtCity, txtEmail, lytPhoneNumbers)
-//    }
-
-//    mainContent = new TabSheet{
-//      setSizeUndefined
-//      addTab(lytGeneral)
-//    })
-
-//    lytContacts.setSizeUndefined
-//    val tabSheet = new TabSheet
-//    tabSheet.setSizeUndefined
-//    tabSheet.addTab(new ListSelect {1 to 100 foreach (i => addItem(0 to i mkString)); setColumns(50)}, "AS", null)
-//    tabSheet.addTab(lytGeneral, "Gen-l", null)
-//    tabSheet.addTab(txtUsername, "u", null)
-//    //tabSheet.addTab(lytContacts, "Cont-s", null)
-
-
-//    mainContent = new TabSheetView {
-//      //tabSheet.setSizeFull
-//      //setSizeUndefined
-//      setMargin(false)
-//      //addTab(lytContacts)
-//      addTab(lytGeneral)
-      //addTab(lytRoles)
-//      addTab(new FormLayout {
-//        //setSizeUndefined
-//        setCaption("Test")
-//
-//        val txtUsername = new TextField("Username")
-//        val txtPassword = new TextField("Password")
-//        val chkActivated = new CheckBox("Activated")
-////        val lytData = new FormLayout {
-////          setCaption("DATA")
-////          setSizeUndefined
-////          //val lt = new FormLayout {
-////          //  setCaption("Data in Data")
-////            val txtA = new TextField("A")
-////            val txtB = new TextField("B")
-////            val txtC = new TextField("Caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-////            addComponents(this, txtA, txtB, txtC)
-////          //}
-////          //addComponent(lt)
-////        }
-//        val txtC = new TextField("Caaaaaaaaaaaaaaaaaaaaaaa")
-//
-//        addComponents(this, txtUsername, txtPassword, chkActivated /*, lytData*/, txtC)
-//      })
-//    })
-
   //
   // Users
   //
@@ -1651,54 +1480,62 @@ class App extends com.vaadin.Application {
       //addComponent(new VerticalLayout { addComponent(frmFilter) }, 0, 2)
     }
 
-    val btnNew = new Button("New")
-    val btnEdit = new Button("Edit")
-    val btnDelete = new Button("Delete")
+//    val btnNew = new Button("New")
+//    val btnEdit = new Button("Edit")
+//    val btnDelete = new Button("Delete")
+//
+    val mbUser = new MenuBar
+    val miNew = mbUser.addItem("Add new", new ThemeResource("icons/16/document-add.png"), null)
+    val miEdit = mbUser.addItem("Edit", new ThemeResource("icons/16/settings.png"), null)
+    val miDelete = mbUser.addItem("Delete", new ThemeResource("icons/16/document-delete.png"), null)
     
-    val userView = new UsersView 
+    val userView = new UsersView {
+      lytMenu.addComponent(mbUser)
+    }
+    
     new TabSheetView {
       addTab(new VerticalLayoutView("Users and their permissions.") {
-        addComponent(new HorizontalLayoutView {
-          addComponents(this, btnNew, btnEdit, btnDelete)
-        })
-        addComponent(userView)
+       addComponent(userView)
       })
 
-      btnNew addListener unit {
-        initAndShow(new OkCancelDialog("New user") with UserDialog) { w =>
-          roleMapper.getAllRoles foreach { r =>
-            w.lytGeneral.lstRoles addItem r.getId
-            w.lytGeneral.lstRoles setItemCaption (r.getId, r.getName)
-          }
+      //btnNew addListener unit {
+      miNew setCommand unit {
+        initAndShow(new OkCancelDialog("New user")) { w =>
+          let(w.mainContent = new UserDialogContent) { c =>
+            roleMapper.getAllRoles foreach { r =>
+              c.lstRoles addItem r.getId
+              c.lstRoles setItemCaption (r.getId, r.getName)
+            }
 
-          w.lytGeneral.sltUILanguage.addItem(Imcms.getServices.getLanguageMapper.getDefaultLanguage)
-          w.lytGeneral.chkActivated.setValue(true)
+            c.sltUILanguage.addItem(Imcms.getServices.getLanguageMapper.getDefaultLanguage)
+            c.chkActivated.setValue(true)
 
-          w addOkButtonClickListener {
-            let(new UserDomainObject) { u =>
-              let(w.lytGeneral) { l =>
-                u setActive l.chkActivated.booleanValue
-                u setFirstName l.txtFirstName.stringValue
-                u setLastName l.txtLastName.stringValue
-                u setLoginName l.txtLogin.stringValue
-                u setPassword l.txtPassword.stringValue
-                u setRoleIds l.lstRoles.asList[RoleId].toArray
-                u setLanguageIso639_2 l.sltUILanguage.getValue.asInstanceOf[String]
+            w addOkButtonClickListener {
+              let(new UserDomainObject) { u =>
+                u setActive c.chkActivated.booleanValue
+                u setFirstName c.txtFirstName.stringValue
+                u setLastName c.txtLastName.stringValue
+                u setLoginName c.txtLogin.stringValue
+                u setPassword c.txtPassword.stringValue
+                u setRoleIds c.lstRoles.asList[RoleId].toArray
+                u setLanguageIso639_2 c.sltUILanguage.stringValue
+
+                roleMapper.addUser(u)
+                userView.reloadTableItems
               }
-
-              roleMapper.addUser(u)
-              userView.reloadTableItems
             }
           }
         }
       }
 
-      btnEdit addListener unit {
-        initAndShow(new OkCancelDialog("Edit user") with UserDialog) { w =>
+      //btnEdit addListener unit {
+      miEdit setCommand unit {
+        initAndShow(new OkCancelDialog("Edit user")) { w =>
         }
       }
 
-      btnDelete addListener unit {
+      //btnDelete addListener unit {
+      miDelete setCommand unit {
         initAndShow(new ConfirmationDialog(msg="Delete user?")) { w =>
           w addOkButtonClickListener {
             userView.tblItems.getValue match {
