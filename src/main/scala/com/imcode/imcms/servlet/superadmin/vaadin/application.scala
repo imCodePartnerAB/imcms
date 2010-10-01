@@ -1119,11 +1119,13 @@ class App extends com.vaadin.Application {
               w.addOkButtonClickListener {
                 templateMapper.createTemplateGroup(c.txtName.stringValue)
                 val group = templateMapper.getTemplateGroupByName(c.txtName.stringValue)
-                c.twsTemplates.lstChosen.asList[String] foreach { name =>
-                  templateMapper.getTemplateByName(name) match {
-                    case null =>
-                    case t => templateMapper.addTemplateToGroup(t, group)
-                  }
+                c.twsTemplates.lstChosen.getItemIds foreach {
+                  case name: String =>
+                    templateMapper.getTemplateByName(name) match {
+                      case null =>
+                      case t => templateMapper.addTemplateToGroup(t, group)
+                    }
+                  case _ =>
                 }
                 
                 reloadTableItems
@@ -1148,6 +1150,19 @@ class App extends com.vaadin.Application {
 
                     w.addOkButtonClickListener {
                       templateMapper.renameTemplateGroup(g, c.txtName.stringValue)
+                      templateMapper.getTemplatesInGroup(g) foreach { t =>
+                        templateMapper.removeTemplateFromGroup(t, g) 
+                      }
+                      
+                      c.twsTemplates.lstChosen.getItemIds foreach {
+                        case name: String =>
+                          templateMapper.getTemplateByName(name) match {
+                            case null =>
+                            case t => templateMapper.addTemplateToGroup(t, g)
+                          }
+                        case _ =>
+                      }
+                      
                       reloadTableItems
                     }
                   }

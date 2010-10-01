@@ -110,7 +110,7 @@ class EditTemplateContentDialogContent extends VerticalLayout {
 class TemplateGroupDialogContent extends FormLayout {
   val txtId = new TextField("Id") {setEnabled(false)}
   val txtName = new TextField("Name")
-  val twsTemplates = new TwinSelect("Templates")
+  val twsTemplates = new TwinSelect("Templates") {lstChosen.setCaption("In group")}
 
   addComponents(this, txtId, txtName, twsTemplates)
 }

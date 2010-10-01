@@ -11,7 +11,6 @@ import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import imcms.servlet.superadmin.AdminSearchTerms
 import imcode.server.document.DocumentDomainObject
 import com.imcode.imcms.api.Document.PublicationStatus
-import com.vaadin.terminal.UserError
 import imcode.util.Utility
 import imcode.server.user._
 import com.imcode.imcms.api.{SystemProperty, IPAccess, Document}
@@ -21,6 +20,7 @@ import com.vaadin.ui.Layout.MarginInfo
 import java.util.concurrent.atomic.AtomicReference
 import java.lang.{String, Class => JClass, Boolean => JBoolean, Integer => JInteger}
 import java.io.{ByteArrayOutputStream, OutputStream, FileOutputStream, File}
+import com.vaadin.terminal.{ThemeResource, UserError}
 
 //class ButtonWrapper(button: Button) {
 //
@@ -107,7 +107,8 @@ trait BottomMarginOnlyDialog extends Dialog {
 
 /** Message dialog window. */
 class MsgDialog(caption: String = "", msg: String ="") extends Dialog(caption) {
-  val btnOk = new Button("Ok")
+  val btnOk = new Button("Ok") { setIcon(new ThemeResource("icons/16/ok.png")) }
+
   val lblMessage = new Label(msg)
 
   mainContent = lblMessage
@@ -119,8 +120,8 @@ class MsgDialog(caption: String = "", msg: String ="") extends Dialog(caption) {
 
 /** OKCancel dialog window. */
 class OkCancelDialog(caption: String = "") extends Dialog(caption) {
-  val btnOk = new Button("Ok")
-  val btnCancel = new Button("Cancel")
+  val btnOk = new Button("Ok") { setIcon(new ThemeResource("icons/16/ok.png")) }
+  val btnCancel = new Button("Cancel") { setIcon(new ThemeResource("icons/16/cancel.png")) }
   val lytButtons = new GridLayout(2, 1) {
     setSpacing(true)
     addComponent(btnOk)
@@ -204,8 +205,8 @@ class MenuItem(val parent: MenuItem = null, val handler: () => Unit = () => {}) 
 class TwinSelect(caption: String = "") extends GridLayout(3, 1) {
   setCaption(caption)
 
-  val btnAdd = new Button("<< Add")
-  val btnRemove = new Button("Remove >>")
+  val btnAdd = new Button("<<")
+  val btnRemove = new Button(">>")
   val lstAvailable = new ListSelect("Available")
   val lstChosen = new ListSelect("Chosen")
   val lytButtons = new VerticalLayout {
@@ -222,7 +223,7 @@ class TwinSelect(caption: String = "") extends GridLayout(3, 1) {
     l setImmediate true
     l setColumns 11
   }
-
+                                                               //
   def move(src: ListSelect, dest: ListSelect) = src.getValue.asInstanceOf[JCollection[_]] foreach { item =>
     src removeItem item
     dest addItem item
