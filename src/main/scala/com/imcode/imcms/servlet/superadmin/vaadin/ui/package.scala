@@ -31,14 +31,6 @@ package object ui {
  
   implicit def unitToPropertyValueChangeListenerB(u: () => Unit) = propertyValueChangeListener { _ => u() }
 
-
-
-//  def addValueChangeHandler(target: AbstractField)(handler: ValueChangeEvent => Unit) {
-//    target addListener new Property.ValueChangeListener {
-//      def valueChange(event: ValueChangeEvent) = handler(event)
-//    }
-//  }
-
   def addComponents(container: AbstractComponentContainer, component: Component, components: Component*) = {
     component +: components foreach { c => container addComponent c }
     container

@@ -99,7 +99,7 @@ class App extends com.vaadin.Application {
    initAndShow(window, modal, resizable, draggable) { _ => }
   
 
-  abstract class TableViewTemplate extends GridLayout(1,3) {
+  abstract class TableViewTemplate extends VerticalLayout {
     val tblItems = new Table {
       setSelectable(true)
       setImmediate(true)
@@ -110,21 +110,30 @@ class App extends com.vaadin.Application {
       tableProperties foreach (addContainerProperties(this, _))
     }
 
-    //lyt!
-    val pnlHeader = new HorizontalLayout {
-      setSizeUndefined
-      setSpacing(true)
-    }
-
     val btnReload = new Button("Reload") {
       addListener(unit { reloadTableItems })
       setStyleName(Button.STYLE_LINK)
       setIcon(new ThemeResource("icons/16/reload.png"))
     }
+    
+    // todo - refactor into lytMenu
+    val pnlHeader = new HorizontalLayout {
+      setWidth("100%")
+      setSpacing(true)
+    }
+
+    val lytHeader = new HorizontalLayout {
+      setWidth("100%")
+      setSpacing(true)
+    }
+    
+    val lytMenu = pnlHeader
+
+    addComponents(lytHeader, lytMenu, btnReload)
+    lytHeader.setExpandRatio(lytMenu, 1.0f)
 
     setSpacing(true)
-    addComponents(this, pnlHeader, tblItems, btnReload)
-    setComponentAlignment(btnReload, Alignment.BOTTOM_RIGHT)
+    addComponents(this, lytHeader, tblItems)
 
     reloadTableItems
     resetComponents
@@ -944,21 +953,6 @@ class App extends com.vaadin.Application {
     })
   }
 
-  class TemplateGroupWindow(caption: String) extends OkCancelDialog(caption) {
-    val txtId = new TextField("Id")
-    val txtName = new TextField("Name")
-    txtId.setEnabled(false)
-
-    val twsTemplates = new TwinSelect("Templates")
-
-    mainContent = new FormLayout {
-      addComponents(this, txtId, txtName, twsTemplates)
-    }
-  }
-
-
-  
-
   def templates = new TabSheetView {
     val templateMapper = Imcms.getServices.getTemplateMapper
 
@@ -983,21 +977,20 @@ class App extends com.vaadin.Application {
           (t.getName, List(t.getName, kind, Int box templateMapper.getCountOfDocumentsUsingTemplate(t)))
         }
 
-        val btnNew = new Button("Add new")
-        val btnRename = new Button("Rename")
-        val btnDelete = new Button("Delete")
-        val btnEditContent = new Button("Edit content")
+//        val btnNew = new Button("Add new")
+//        val btnRename = new Button("Rename")
+//        val btnDelete = new Button("Delete")
+//        val btnEditContent = new Button("Edit content")
 
         val menuBar = new MenuBar
         val miAddNew = menuBar.addItem("Add new", new ThemeResource("icons/16/document-add.png"), null)
-        val miRename = menuBar.addItem("Rename", new ThemeResource("icons/16/settings.png"), null)
+        val miRename = menuBar.addItem("Edit", new ThemeResource("icons/16/settings.png"), null)
         val miDelete = menuBar.addItem("Delete", new ThemeResource("icons/16/document-delete.png"), null)
         val miEditContent = menuBar.addItem("Edit content", new ThemeResource("icons/16/document-txt.png"), null)
 
         //addComponents(pnlHeader, btnNew, btnRename, btnEditContent, new Label(" "), btnDelete)
         //pnlHeader.addComponent(menuBar)
-        removeComponent(pnlHeader)
-        addComponent(menuBar, 0, 0)
+        lytMenu.addComponent(menuBar)
 
         //btnNew addListener {
         miAddNew setCommand unit {
@@ -1017,7 +1010,7 @@ class App extends com.vaadin.Application {
                       case n => error("Unknown error: " + n)
                     }
 
-                  case _ => println("WTF?")
+                  case _ =>
                 }
               }
             }
@@ -1026,11 +1019,10 @@ class App extends com.vaadin.Application {
 
         //btnRename addListener {
         miRename setCommand unit {
-          println("INSIDE MI-RENAME")
           tblItems getValue match {
             case name: String =>
-              initAndShow(new OkCancelDialog("Rename template")) { w =>
-                let(w.mainContent = new RenameTemplateDialogContent) { c =>
+              initAndShow(new OkCancelDialog("Edit template")) { w =>
+                let(w.mainContent = new EditTemplateDialogContent) { c =>
                   c.txtName setValue name      
                   w addOkButtonClickListener {
                     templateMapper.renameTemplate(name, c.txtName.stringValue)
@@ -1039,29 +1031,27 @@ class App extends com.vaadin.Application {
                 }
               }
 
-            case _ => println("WTF? MI-RENAME")
+            case _ =>
           }
         } // btnRename
 
         //btnDelete addListener {
         miDelete setCommand unit {
-          println("INSIDE MI-DELETE")
           tblItems getValue match {
             case name: String =>
-              initAndShow(new ConfirmationDialog("Delete template %s?" format name)) { w =>
+              initAndShow(new ConfirmationDialog("Delete selected template?")) { w =>
                 w addOkButtonClickListener {
                   templateMapper deleteTemplate templateMapper.getTemplateByName(name)
                   reloadTableItems
                 }
               }
 
-            case _ => println("WTF? MI-DELETE")
+            case _ =>
           }          
         } // btnDelete
 
         //btnEditContent addListener {
         miEditContent setCommand unit {
-          println("INSIDE MI-EDIT CONTENT")
           tblItems getValue match {
             case name: String =>
               initAndShow(new OkCancelDialog("Edit template content")
@@ -1101,52 +1091,73 @@ class App extends com.vaadin.Application {
           (Int box g.getId, List(Int box g.getId, g.getName, Int box templateMapper.getTemplatesInGroup(g).length))
         }
         
-        lazy val btnNew = new Button("New")
-        lazy val btnEdit = new Button("Edit")
-        lazy val btnDelete = new Button("Delete")
+//        lazy val btnNew = new Button("New")
+//        lazy val btnEdit = new Button("Edit")
+//        lazy val btnDelete = new Button("Delete")
+
+        lazy val menuBar = new MenuBar
+        lazy val miAddNew = menuBar.addItem("Add new", new ThemeResource("icons/16/document-add.png"), null)
+        lazy val miEdit = menuBar.addItem("Edit", new ThemeResource("icons/16/settings.png"), null)
+        lazy val miDelete = menuBar.addItem("Delete", new ThemeResource("icons/16/document-delete.png"), null)        
 
         override def resetComponents() {
-          forlet(btnEdit, btnDelete) { b =>
+          forlet(miEdit, miDelete) { b =>
             b.setEnabled(tblItems.getValue != null)
           }
         }
 
-        addComponents(pnlHeader, btnNew, btnEdit, btnDelete)
+        lytMenu.addComponent(menuBar)
+        //addComponents(pnlHeader, btnNew, btnEdit, btnDelete)
+//        replaceComponent(pnlHeader, menuBar)
 
-        btnNew addListener unit {
-          initAndShow(new TemplateGroupWindow("New group")) { w =>
-            templateMapper.getAllTemplates foreach (w.twsTemplates.lstAvailable addItem _.getName)
-            
-            w.addOkButtonClickListener {
-              templateMapper.createTemplateGroup(w.txtName.getValue.asInstanceOf[String])
-              // addTemplates
-              reloadTableItems 
+        //btnNew addListener unit {
+        miAddNew setCommand unit {
+          initAndShow(new OkCancelDialog("New group")) { w =>
+            let(w.mainContent = new TemplateGroupDialogContent) { c =>
+              templateMapper.getAllTemplates foreach (c.twsTemplates.lstAvailable addItem _.getName)
+
+              w.addOkButtonClickListener {
+                templateMapper.createTemplateGroup(c.txtName.stringValue)
+                val group = templateMapper.getTemplateGroupByName(c.txtName.stringValue)
+                c.twsTemplates.lstChosen.asList[String] foreach { name =>
+                  templateMapper.getTemplateByName(name) match {
+                    case null =>
+                    case t => templateMapper.addTemplateToGroup(t, group)
+                  }
+                }
+                
+                reloadTableItems
+              }
             }
           }
         } // btnNew handler
 
-        btnEdit addListener unit {
-          initAndShow(new TemplateGroupWindow("Edit group")) { w =>
-            let(tblItems.getValue) {
-              case null =>
-              case id: JInteger =>
-                let(templateMapper getTemplateGroupById id.intValue) { g =>
-                  templateMapper.getTemplatesInGroup(g) foreach (w.twsTemplates.lstChosen addItem _.getName)
-                  templateMapper.getTemplatesNotInGroup(g) foreach (w.twsTemplates.lstAvailable addItem _.getName)
+        //btnEdit addListener unit {
+        miEdit setCommand unit {
+          initAndShow(new OkCancelDialog("Edit group")) { w =>
+            let(w.mainContent = new TemplateGroupDialogContent) { c =>
+              let(tblItems.getValue) {
+                case null =>
+                case id: JInteger =>
+                  let(templateMapper getTemplateGroupById id.intValue) { g =>
+                    templateMapper.getTemplatesInGroup(g) foreach (c.twsTemplates.lstChosen addItem _.getName)
+                    templateMapper.getTemplatesNotInGroup(g) foreach (c.twsTemplates.lstAvailable addItem _.getName)
 
-                  w.txtId setValue id
-                  w.txtName setValue templateMapper.getTemplateGroupById(id.intValue).getName  
+                    c.txtId setValue id
+                    c.txtName setValue templateMapper.getTemplateGroupById(id.intValue).getName
 
-                  w.addOkButtonClickListener {
-                    templateMapper.renameTemplateGroup(g, w.txtName.getValue.asInstanceOf[String])
-                    reloadTableItems
+                    w.addOkButtonClickListener {
+                      templateMapper.renameTemplateGroup(g, c.txtName.stringValue)
+                      reloadTableItems
+                    }
                   }
-                }
-            } // let
+              } // let
+            }
           }
         } // btnEdit handler
         
-        btnDelete addListener unit {
+        //btnDelete addListener unit {
+        miDelete setCommand unit {
           initAndShow(new ConfirmationDialog("Confirmation", "Detelete template group?")) { w =>
             w.addOkButtonClickListener {
               templateMapper deleteTemplateGroup tblItems.getValue.asInstanceOf[Int]
@@ -1621,8 +1632,8 @@ class App extends com.vaadin.Application {
       //val
 
       //pnlHeader setContent lytFilter
-      removeComponent(0,2)
-      addComponent(new VerticalLayout { addComponent(frmFilter) }, 0, 2)
+      //removeComponent(0,2)
+      //addComponent(new VerticalLayout { addComponent(frmFilter) }, 0, 2)
     }
 
     val btnNew = new Button("New")

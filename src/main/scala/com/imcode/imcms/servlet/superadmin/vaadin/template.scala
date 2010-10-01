@@ -4,7 +4,7 @@ import com.imcode._
 import com.imcode.imcms.servlet.superadmin.vaadin.ui._
 import com.imcode.imcms.servlet.superadmin.vaadin.ui.{UploadEventHandler, MemoryUploadReceiver}
 //import com.vaadin.data.Property
-import com.vaadin.data.Property._
+//import com.vaadin.data.Property._
 import com.vaadin.ui._
 
 class TemplateDialogContent extends FormLayout {
@@ -92,16 +92,25 @@ class TemplateDialogContent extends FormLayout {
 }
 
 
-class RenameTemplateDialogContent extends FormLayout {
+class EditTemplateDialogContent extends FormLayout {
   val txtName = new TextField("Name")
   addComponent(txtName)
 }
 
 
 class EditTemplateContentDialogContent extends VerticalLayout {
-  val pnlContent = new Panel {setSizeFull}
+  val pnlContent = new Panel {setSizeFull; setStyleName(Panel.STYLE_LIGHT); getContent.setSizeFull}
   val txtContent = new TextField {setRows(20); setSizeFull}
 
   pnlContent addComponent txtContent
   addComponent(pnlContent)
+}
+
+
+class TemplateGroupDialogContent extends FormLayout {
+  val txtId = new TextField("Id") {setEnabled(false)}
+  val txtName = new TextField("Name")
+  val twsTemplates = new TwinSelect("Templates")
+
+  addComponents(this, txtId, txtName, twsTemplates)
 }

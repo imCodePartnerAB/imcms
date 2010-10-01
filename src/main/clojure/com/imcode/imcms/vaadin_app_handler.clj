@@ -311,7 +311,7 @@
       (mk-grid-lyt-demo-2))
 
     (add-components content
-      (let [lytHorisontal (HorizontalLayout.)
+      (let [lytHorisontal (VerticalLayout.)
             lblMsg (Label. "Default message")
             txtMsg (TextField. "")
             btnOk (Button. "Ok")]
@@ -323,29 +323,29 @@
 
     (add-components content
       (let [mb (MenuBar.)
-            lt (HorizontalLayout.)]
-        (.addItem mb "Add new" (ThemeResource. "icons/32/document-add.png")
+            lt (VerticalLayout.)
+            hl (HorizontalLayout.)]
+        (.addItem mb "Add new" (ThemeResource. "icons/16/document-add.png")
                      (reify MenuBar$Command
                        (menuSelected [this item] (println "ADD NEW"))))
 
-        (.addItem mb "Edit" (ThemeResource. "icons/32/document-txt.png")
+        (.addItem mb "Edit" (ThemeResource. "icons/16/document-txt.png")
                      (reify MenuBar$Command
                        (menuSelected [this item] (println "EDIT"))))
 
-        (.addItem mb "Delete" (ThemeResource. "icons/32/document-delete.png")
+        (.addItem mb "Delete" (ThemeResource. "icons/16/document-delete.png")
                      (reify MenuBar$Command
                        (menuSelected [this item] (println "DELETE"))))
 
-        (doto lt
-          (.addComponent mb))
-        (println ">>>>>>>>>>> " (.getWidth mb) ", " (.getHeight mb))
-        (.setHeight mb "40px")
-        mb))
-
-    (add-components content
-      (doto (Button. "Reload")
-        ;(.setStyleName Button/STYLE_LINK)
-        (.setIcon (ThemeResource. "icons/64/reload.png"))))
+        
+        (.setWidth hl "100%")
+        (.setWidth mb "100%")
+        (doto hl
+          (.addComponent mb)
+          (.setExpandRatio mb 1.0)
+          (.addComponent (doto (Button. "Reload")
+                           (.setStyleName Button/STYLE_LINK)
+                           (.setIcon (ThemeResource. "icons/16/reload.png")))))))
     ; let
     ))
 
