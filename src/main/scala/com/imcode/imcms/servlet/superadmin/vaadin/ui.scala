@@ -54,7 +54,9 @@ object AbstractFieldWrapper {
   implicit def wrapAbstractField(f: AbstractField) = new AbstractFieldWrapper(f)
 }
 
-// Fixed size dialog window with full margin
+import AbstractFieldWrapper._
+
+// Fixed size dialog window with full margin   
 // Buttons are centered
 class Dialog(caption: String = "") extends Window(caption) {
   protected [this] val content = new GridLayout(1, 2) {
@@ -205,7 +207,7 @@ class MenuItem(val parent: MenuItem = null, val handler: () => Unit = () => {}) 
 }
 
 
-class TwinSelect(caption: String = "") extends GridLayout(3, 1) {
+class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
   setCaption(caption)
 
   val btnAdd = new Button("<<")
@@ -216,8 +218,6 @@ class TwinSelect(caption: String = "") extends GridLayout(3, 1) {
     addComponents(this, btnAdd, btnRemove)
   }
 
-  forlet(btnAdd, btnRemove) (_.setSizeUndefined)
-
   addComponents(this, lstChosen, lytButtons, lstAvailable)
   setComponentAlignment(lytButtons, Alignment.MIDDLE_CENTER)
 
@@ -225,26 +225,45 @@ class TwinSelect(caption: String = "") extends GridLayout(3, 1) {
     l setMultiSelect true
     l setImmediate true
     l setColumns 11
-  }
-                                                               //
-  def move(src: ListSelect, dest: ListSelect) = src.getValue.asInstanceOf[JCollection[_]] foreach { item =>
-    src removeItem item
-    dest addItem item
+    l setItemCaptionMode AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT
   }
 
   btnAdd addListener unit { move(lstAvailable, lstChosen) }
-
   btnRemove addListener unit { move(lstChosen, lstAvailable) }
 
-  lstAvailable addListener unit {
-    btnAdd.setEnabled(lstAvailable.getValue.asInstanceOf[JCollection[_]].size > 0)
+  lstAvailable addListener unit { reset() }
+  lstChosen addListener unit { reset() }
+
+  reset()
+
+  def reset() {
+    btnAdd.setEnabled(lstAvailable.asList[T].size > 0)
+    btnRemove.setEnabled(lstChosen.asList[T].size > 0)
   }
 
-  lstChosen addListener unit {
-    btnRemove.setEnabled(lstChosen.getValue.asInstanceOf[JCollection[_]].size > 0)
+  private [this] def move(src: ListSelect, dest: ListSelect) = src.asList[T]  foreach { itemId =>
+    let (src getItemCaption itemId) { itemCaption =>
+      addItem(dest, itemId, itemCaption)
+    }
+
+    src removeItem itemId
   }
 
-  //def reset = forlet(lstAvailable, lstChosen) (l => l.)
+  def availableItemIds = lstAvailable.getItemIds.asInstanceOf[JCollection[T]].toList
+  def chosenItemIds = lstChosen.getItemIds.asInstanceOf[JCollection[T]].toList
+
+  def addAvailableItem(itemId: T)(implicit ev: T =:= String): Unit = addAvailableItem(itemId, itemId)
+  
+  def addAvailableItem(itemId: T, caption: String) = addItem(lstAvailable, itemId, caption)
+
+  def addChosenItem(itemId: T)(implicit ev: T =:= String): Unit = addChosenItem(itemId, itemId)
+
+  def addChosenItem(itemId: T, caption: String)  = addItem(lstChosen, itemId, caption)
+
+  private [this] def addItem(listSelect: ListSelect, itemId: T, caption: String) {
+    listSelect.addItem(itemId)
+    listSelect.setItemCaption(itemId, caption)    
+  }
 }
 
 /** Vertical layout containing tab sheet. */

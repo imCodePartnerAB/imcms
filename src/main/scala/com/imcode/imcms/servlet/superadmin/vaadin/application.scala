@@ -1115,12 +1115,12 @@ class App extends com.vaadin.Application {
         miAddNew setCommand unit {
           initAndShow(new OkCancelDialog("New group")) { w =>
             let(w.setMainContent(new TemplateGroupDialogContent)) { c =>
-              templateMapper.getAllTemplates foreach (c.cblTemplates addItem _.getName)
+              templateMapper.getAllTemplates foreach (c.twsTemplates addAvailableItem _.getName)
 
               w.addOkButtonClickListener {
                 templateMapper.createTemplateGroup(c.txtName.stringValue)
                 val group = templateMapper.getTemplateGroupByName(c.txtName.stringValue)
-                c.cblTemplates.selected foreach { name =>
+                c.twsTemplates.chosenItemIds foreach { name =>
                   templateMapper.getTemplateByName(name) match {
                     case null =>
                     case t => templateMapper.addTemplateToGroup(t, group)
@@ -1136,37 +1136,35 @@ class App extends com.vaadin.Application {
         //btnEdit addListener unit {
         miEdit setCommand unit {
           initAndShow(new OkCancelDialog("Edit group")) { w =>
-//            let(w.mainContent = new TemplateGroupDialogContent) { c =>
-//              let(tblItems.getValue) {
-//                case null =>
-//                case id: JInteger =>
-//                  let(templateMapper getTemplateGroupById id.intValue) { g =>
-//                    templateMapper.getTemplatesInGroup(g) foreach (c.twsTemplates.lstChosen addItem _.getName)
-//                    templateMapper.getTemplatesNotInGroup(g) foreach (c.twsTemplates.lstAvailable addItem _.getName)
-//
-//                    c.txtId setValue id
-//                    c.txtName setValue templateMapper.getTemplateGroupById(id.intValue).getName
-//
-//                    w.addOkButtonClickListener {
-//                      templateMapper.renameTemplateGroup(g, c.txtName.stringValue)
-//                      templateMapper.getTemplatesInGroup(g) foreach { t =>
-//                        templateMapper.removeTemplateFromGroup(t, g)
-//                      }
-//
-//                      c.twsTemplates.lstChosen.getItemIds foreach {
-//                        case name: String =>
-//                          templateMapper.getTemplateByName(name) match {
-//                            case null =>
-//                            case t => templateMapper.addTemplateToGroup(t, g)
-//                          }
-//                        case _ =>
-//                      }
-//
-//                      reloadTableItems
-//                    }
-//                  }
-//              } // let
-//            }
+            let(w.setMainContent(new TemplateGroupDialogContent)) { c =>
+              let(tblItems.getValue) {
+                case null =>
+                case id: JInteger =>
+                  let(templateMapper getTemplateGroupById id.intValue) { g =>
+                    templateMapper.getTemplatesInGroup(g) foreach (c.twsTemplates addChosenItem _.getName)
+                    templateMapper.getTemplatesNotInGroup(g) foreach (c.twsTemplates addAvailableItem _.getName)
+
+                    c.txtId setValue id
+                    c.txtName setValue templateMapper.getTemplateGroupById(id.intValue).getName
+
+                    w.addOkButtonClickListener {
+                      templateMapper.renameTemplateGroup(g, c.txtName.stringValue)
+                      templateMapper.getTemplatesInGroup(g) foreach { t =>
+                        templateMapper.removeTemplateFromGroup(t, g)
+                      }
+                                          
+                      c.twsTemplates.chosenItemIds foreach { name =>
+                        templateMapper.getTemplateByName(name) match {
+                          case null =>
+                          case t => templateMapper.addTemplateToGroup(t, g)
+                        }
+                      }
+
+                      reloadTableItems
+                    }
+                  }
+              } // let
+            }
           }
         } // btnEdit handler
         
