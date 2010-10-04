@@ -15,5 +15,3 @@
   (recreate-utvakten-db)
   (db/run-scripts "utvakten"
     (p/files "src/main/web/WEB-INF/sql" ["diff/mysql-schema-diff-4.11-6.2.sql"])))
-
-    

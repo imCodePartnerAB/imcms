@@ -33,7 +33,7 @@ import com.vaadin.terminal.{ThemeResource, UserError}
 
 
 class UserDialogContent extends FormLayout {
-  val txtLogin = new TextField
+  val txtLogin = new TextField("Username")
   val txtPassword = new TextField("4-16 characters") { setSecret(true) }
   val txtVerifyPassword = new TextField("4-16 characters (retype)") { setSecret(true) }
   val txtFirstName = new TextField("First")
@@ -41,40 +41,50 @@ class UserDialogContent extends FormLayout {
   val chkActivated = new CheckBox("Activated")
   val sltUILanguage = new Select("Interface language") {
     setNullSelectionAllowed(false)
-    setRequired(true)
   }
-  val lstRoles = new ListSelect("Roles") {
+
+  val lstUseradminRoles = new ListSelect("Can manage if useradmin") {
     setMultiSelect(true)
     setNullSelectionAllowed(false)
+    setRows(5)
+    setColumns(10)
   }
+  val lstRoles = new ListSelect("Assigned") {
+    setMultiSelect(true)
+    setNullSelectionAllowed(false)
+    setRows(5)
+    setColumns(10)
+    setImmediate(true)
+  }
+
+  lstRoles addListener unit {
+    lstUseradminRoles setEnabled lstRoles.asList[String].contains("Useradmin")
+  }
+
+  try { lstUseradminRoles.setValue(null) } catch { case e => println("@@@@" + e) }
+  
   val lytPassword = new HorizontalLayoutView("Password") {
-    //setSpacing(true)
-    //addComponent(new VerticalLayout {
       addComponent(txtPassword)
-    //})
-    //addComponent(new VerticalLayout {
       addComponent(txtVerifyPassword)
-    //})
   }
 
   val lytName = new HorizontalLayoutView("Name") {
-    //addComponent(new VerticalLayout {
       addComponent(txtFirstName)
-    //})
-    //addComponent(new VerticalLayout {
       addComponent(txtLastName)
-    //})
   }
 
-  val lytLogin = new HorizontalLayout {
-    setCaption("Login")
+  val lytRoles = new HorizontalLayoutView("Roles") {
+    addComponents(this, lstRoles, lstUseradminRoles)
+  }
+
+  val lytLogin = new HorizontalLayoutView("Login") {
     addComponents(this, txtLogin, chkActivated)
-    setComponentAlignment(chkActivated, Alignment.MIDDLE_LEFT)
+    setComponentAlignment(chkActivated, Alignment.BOTTOM_LEFT)
   }
 
   val btnContacts = new Button("Edit...") {
     setStyleName(Button.STYLE_LINK)
-    setIcon(new ThemeResource("icons/16/globe.png"))
+//    setIcon(new ThemeResource("icons/16/globe.png"))
   }
 
   val lytContacts = new HorizontalLayout {
@@ -82,9 +92,9 @@ class UserDialogContent extends FormLayout {
     addComponent(btnContacts)
   }
 
-  forlet(lytLogin, txtPassword, txtVerifyPassword, lstRoles, sltUILanguage) { _ setRequired true }
+  forlet(txtLogin, txtPassword, txtVerifyPassword, lstRoles) { _ setRequired true }
 
-  addComponents(this, lytLogin, lytPassword, lytName, sltUILanguage, lstRoles, lytContacts)
+  addComponents(this, lytLogin, lytPassword, lytName, sltUILanguage, lytRoles, lytContacts)
 
 //    val txtUsername = new TextField("Username")
 //    val txtPassword = new TextField("4-16 characters")

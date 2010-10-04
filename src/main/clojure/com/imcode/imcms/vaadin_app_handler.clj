@@ -10,6 +10,9 @@
     (scala Some None$)
     (com.vaadin.ui Window SplitPanel Button Panel Label Button$ClickListener Embedded GridLayout HorizontalLayout
                    FormLayout VerticalLayout Alignment TextField CheckBox MenuBar MenuBar$MenuItem MenuBar$Command)
+
+   ; (com.vaadin.ui.themes BaseTheme)
+
     (com.vaadin.terminal ExternalResource ClassResource FileResource ThemeResource)
     (com.vaadin.data Property Property$ValueChangeListener)
     (com.imcode.imcms.servlet.superadmin.vaadin.ui OkCancelDialog)
@@ -368,6 +371,21 @@
           
           (doto fl
             (.addComponent hl))))
+
+      (add-components content
+        (let [p (Panel.)]
+          (dotimes [i 10]
+            (.addComponent p (CheckBox. (str "Checkbox " i))))
+
+          (doto p
+            .setSizeUndefined
+           (-> .getContent (.setMargin false))
+            (-> .getContent .setSizeUndefined)
+            (.setHeight "120px")
+            (.setWidth "150px")
+            ;(.addStyleName Runo/PANEL_LIGHT)
+            (.addStyleName Panel/STYLE_LIGHT)
+            )))
 
 
     ; let

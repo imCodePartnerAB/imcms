@@ -67,14 +67,17 @@ class Dialog(caption: String = "") extends Window(caption) {
   setContent(content)
 
   def mainContent = content.getComponent(0, 0)
-  
-  def mainContent_=[C <: Component](component: C): C = {
+
+  // deprecated, breaks LSP !!
+  def mainContent_=[C <: Component](component: C): C = setMainContent(component)
+
+  def setMainContent[C <: Component](component: C): C = {
     component.setSizeUndefined
-    
+
     content.addComponent(component, 0, 0)
     content.setComponentAlignment(component, Alignment.TOP_LEFT)
 
-    component
+    component    
   }
 
 

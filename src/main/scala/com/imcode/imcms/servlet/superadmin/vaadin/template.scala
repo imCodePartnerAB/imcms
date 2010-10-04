@@ -6,6 +6,7 @@ import com.imcode.imcms.servlet.superadmin.vaadin.ui.{UploadEventHandler, Memory
 //import com.vaadin.data.Property
 //import com.vaadin.data.Property._
 import com.vaadin.ui._
+import scala.collection.JavaConversions._
 
 class TemplateDialogContent extends FormLayout {
   val uploadReceiver = new MemoryUploadReceiver
@@ -107,10 +108,49 @@ class EditTemplateContentDialogContent extends VerticalLayout {
 }
 
 
+class CheckBoxList[T](caption: String="") extends Panel(caption) {
+  let(getContent.asInstanceOf[VerticalLayout]) { lyt =>
+    lyt setSpacing true
+    lyt setMargin false
+  }
+
+  setStyleName(Panel.STYLE_LIGHT)
+  setSizeFull
+
+  def selected: List[T] =
+    for { component <- getComponentIterator.toList
+          item <- component match { 
+            case checkBox: CheckBox if checkBox.booleanValue => Some(checkBox.getData.asInstanceOf[T])
+            case _ => None
+          }
+    } yield item
+
+  def addItem(item: T)(implicit ev: T =:= String): Unit = addItem(item, item)
+
+  def addItem(caption: String, item: T) {
+    let(new CheckBox(caption)) { c =>
+      c setData item
+      addComponent(c)
+    }
+  }
+
+  def select(item: T*) = getComponentIterator foreach {
+    case c: CheckBox if c.getData == item => c setValue true
+    case _ =>
+  }
+}
+
+
 class TemplateGroupDialogContent extends FormLayout {
   val txtId = new TextField("Id") {setEnabled(false)}
   val txtName = new TextField("Name")
-  val twsTemplates = new TwinSelect("Templates") {lstChosen.setCaption("In group")}
+  //val twsTemplates = new TwinSelect("Templates") {lstChosen.setCaption("In group")}
+  val cblTemplates = new CheckBoxList[String]
 
-  addComponents(this, txtId, txtName, twsTemplates)
+  val lytTemplates = new HorizontalLayout {setWidth("150px"); setHeight("60px")
+    setCaption("Templates")
+    addComponent(cblTemplates)
+  }
+
+  addComponents(this, txtId, txtName, lytTemplates)
 }

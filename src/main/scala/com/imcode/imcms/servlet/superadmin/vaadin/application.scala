@@ -1114,19 +1114,17 @@ class App extends com.vaadin.Application {
         //btnNew addListener unit {
         miAddNew setCommand unit {
           initAndShow(new OkCancelDialog("New group")) { w =>
-            let(w.mainContent = new TemplateGroupDialogContent) { c =>
-              templateMapper.getAllTemplates foreach (c.twsTemplates.lstAvailable addItem _.getName)
+            let(w.setMainContent(new TemplateGroupDialogContent)) { c =>
+              templateMapper.getAllTemplates foreach (c.cblTemplates addItem _.getName)
 
               w.addOkButtonClickListener {
                 templateMapper.createTemplateGroup(c.txtName.stringValue)
                 val group = templateMapper.getTemplateGroupByName(c.txtName.stringValue)
-                c.twsTemplates.lstChosen.getItemIds foreach {
-                  case name: String =>
-                    templateMapper.getTemplateByName(name) match {
-                      case null =>
-                      case t => templateMapper.addTemplateToGroup(t, group)
-                    }
-                  case _ =>
+                c.cblTemplates.selected foreach { name =>
+                  templateMapper.getTemplateByName(name) match {
+                    case null =>
+                    case t => templateMapper.addTemplateToGroup(t, group)
+                  }
                 }
                 
                 reloadTableItems
@@ -1138,37 +1136,37 @@ class App extends com.vaadin.Application {
         //btnEdit addListener unit {
         miEdit setCommand unit {
           initAndShow(new OkCancelDialog("Edit group")) { w =>
-            let(w.mainContent = new TemplateGroupDialogContent) { c =>
-              let(tblItems.getValue) {
-                case null =>
-                case id: JInteger =>
-                  let(templateMapper getTemplateGroupById id.intValue) { g =>
-                    templateMapper.getTemplatesInGroup(g) foreach (c.twsTemplates.lstChosen addItem _.getName)
-                    templateMapper.getTemplatesNotInGroup(g) foreach (c.twsTemplates.lstAvailable addItem _.getName)
-
-                    c.txtId setValue id
-                    c.txtName setValue templateMapper.getTemplateGroupById(id.intValue).getName
-
-                    w.addOkButtonClickListener {
-                      templateMapper.renameTemplateGroup(g, c.txtName.stringValue)
-                      templateMapper.getTemplatesInGroup(g) foreach { t =>
-                        templateMapper.removeTemplateFromGroup(t, g) 
-                      }
-                      
-                      c.twsTemplates.lstChosen.getItemIds foreach {
-                        case name: String =>
-                          templateMapper.getTemplateByName(name) match {
-                            case null =>
-                            case t => templateMapper.addTemplateToGroup(t, g)
-                          }
-                        case _ =>
-                      }
-                      
-                      reloadTableItems
-                    }
-                  }
-              } // let
-            }
+//            let(w.mainContent = new TemplateGroupDialogContent) { c =>
+//              let(tblItems.getValue) {
+//                case null =>
+//                case id: JInteger =>
+//                  let(templateMapper getTemplateGroupById id.intValue) { g =>
+//                    templateMapper.getTemplatesInGroup(g) foreach (c.twsTemplates.lstChosen addItem _.getName)
+//                    templateMapper.getTemplatesNotInGroup(g) foreach (c.twsTemplates.lstAvailable addItem _.getName)
+//
+//                    c.txtId setValue id
+//                    c.txtName setValue templateMapper.getTemplateGroupById(id.intValue).getName
+//
+//                    w.addOkButtonClickListener {
+//                      templateMapper.renameTemplateGroup(g, c.txtName.stringValue)
+//                      templateMapper.getTemplatesInGroup(g) foreach { t =>
+//                        templateMapper.removeTemplateFromGroup(t, g)
+//                      }
+//
+//                      c.twsTemplates.lstChosen.getItemIds foreach {
+//                        case name: String =>
+//                          templateMapper.getTemplateByName(name) match {
+//                            case null =>
+//                            case t => templateMapper.addTemplateToGroup(t, g)
+//                          }
+//                        case _ =>
+//                      }
+//
+//                      reloadTableItems
+//                    }
+//                  }
+//              } // let
+//            }
           }
         } // btnEdit handler
         
@@ -1507,7 +1505,11 @@ class App extends com.vaadin.Application {
               c.lstRoles setItemCaption (r.getId, r.getName)
             }
 
-            c.sltUILanguage.addItem(Imcms.getServices.getLanguageMapper.getDefaultLanguage)
+            let(Imcms.getServices.getLanguageMapper.getDefaultLanguage) { l =>
+              c.sltUILanguage.addItem(l)
+              c.sltUILanguage.select(l)
+            }
+
             c.chkActivated.setValue(true)
 
             w addOkButtonClickListener {
