@@ -254,7 +254,7 @@ public class TextDocumentParser {
             // Oh! I need a set of tags to be replaced in the templatefiles we'll load...
             List temptags = new ArrayList();
 
-            temptags.add( "#getDocId#" );
+            temptags.add( "#getMetaId#" );
             temptags.add( "" + document.getId() );
             temptags.add( "#group#" );
             temptags.add( selectedTemplateGroup.getName() );
