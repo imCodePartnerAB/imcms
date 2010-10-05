@@ -206,9 +206,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     	if (oldMenu != null) {
     		newMenu.setId(oldMenu.getId());
             newMenu.setSortOrder(oldMenu.getSortOrder());
-    	} else {
-    		newMenu.setId(null);
-    	}
+    	} 
     	
     	newMenu.setNo(no);
         newMenu.setDocId(getMeta().getId());
@@ -250,8 +248,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         if (oldText != null) {
             newText.setId(oldText.getId());
-        } else {
-            newText.setId(null);
         }
 
         newText.setDocId(metaId);
@@ -370,8 +366,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         if (oldImage != null) {
             newImage.setId(oldImage.getId());
-        } else {
-            newImage.setId(null);
         }
 
         newImage.setDocId(metaId);
