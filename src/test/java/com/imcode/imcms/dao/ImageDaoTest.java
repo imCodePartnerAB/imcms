@@ -60,7 +60,7 @@ public class ImageDaoTest {
 
     @Test
 	public void testGetImagesByIndex() {
-        List<ImageDomainObject> images = imageDao.getImagesByIndex(1001, 0, 0, false);
+        List<ImageDomainObject> images = imageDao.getImagesByIndex(1001, 0, 0, null, null, false);
         assertEquals(2, images.size());
     }
 
@@ -82,7 +82,7 @@ public class ImageDaoTest {
 
     @Test
 	public void getImageByDocIdAndDocVersionNoAndNoAndLanguage() {
-		ImageDomainObject image = imageDao.getImage (ENGLISH.getId(), 1001, 0, 0);
+		ImageDomainObject image = imageDao.getImage (ENGLISH.getId(), 1001, 0, 0, null, null);
 
         assertNotNull(image);
 	}

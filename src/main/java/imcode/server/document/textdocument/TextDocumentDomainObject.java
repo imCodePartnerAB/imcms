@@ -29,7 +29,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
         private final int hashCode;
 
-        public ContentLoopItemKey(int loopNo, int contentNo, int itemNo) {
+        public ContentLoopItemKey(int itemNo, int loopNo, int contentNo) {
             this.loopNo = loopNo;
             this.contentNo = contentNo;
             this.itemNo = itemNo;
@@ -164,8 +164,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * @return TextDomainObject or null if text can not be found.
      */
-	public TextDomainObject getText(Integer loopNo, Integer contentNo, Integer textNo) {
-        return loopTexts.get(new ContentLoopItemKey(loopNo, contentNo, textNo));
+	public TextDomainObject getText(Integer textNo, Integer loopNo, Integer contentNo) {
+        return loopTexts.get(new ContentLoopItemKey(textNo, loopNo, contentNo));
 	}
 
     /**
@@ -241,7 +241,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
             );
         }
 
-        ContentLoopItemKey key = loopNo == null ? null : new ContentLoopItemKey(loopNo, contentNo, no);
+        ContentLoopItemKey key = loopNo == null ? null : new ContentLoopItemKey(no, loopNo, contentNo);
         
         TextDomainObject oldText = key == null ? texts.get(no) : loopTexts.get(key);
         TextDomainObject newText = text.clone();
@@ -359,7 +359,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
             );
         }
 
-        ContentLoopItemKey key = loopNo == null ? null : new ContentLoopItemKey(loopNo, contentNo, no);
+        ContentLoopItemKey key = loopNo == null ? null : new ContentLoopItemKey(no, loopNo, contentNo);
 
         ImageDomainObject oldImage = key == null ? images.get(no) : loopImages.get(key);
         ImageDomainObject newImage = image.clone();
@@ -372,8 +372,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         newImage.setDocVersionNo(documentVersion);
         newImage.setNo(no);
         newImage.setLanguage(getLanguage());
-
-        if (key == null) images.put(no, newImage); else loopImages.put(key, newImage);
 
         if (key == null) {
             images.put(no, newImage);
@@ -407,6 +405,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 	 */
 	public ImageDomainObject getImage(int no) {
 		return images.get(no);
+	}
+
+	public ImageDomainObject getImage(Integer imageNo, Integer loopNo, Integer contentNo) {
+        return loopImages.get(new ContentLoopItemKey(imageNo, loopNo, contentNo));
 	}
     
     private Map<Integer, MenuDomainObject> cloneMenusMap() {

@@ -421,13 +421,13 @@ public class TagParser {
             no = implicitTextNumber++;
             text = content == null
                     ? textDocumentToUse.getText(no)
-                    : textDocumentToUse.getText(loop.getNo(), content.getNo(), no);
+                    : textDocumentToUse.getText(no, loop.getNo(), content.getNo());
         } else {
             noStr = noStr.trim();
             no = Integer.parseInt(noStr);
             text = content == null
                     ? textDocumentToUse.getText(no)
-                    : textDocumentToUse.getText(loop.getNo(), content.getNo(), no);
+                    : textDocumentToUse.getText(no, loop.getNo(), content.getNo());
             
             implicitTextNumber = no + 1;
         }
@@ -510,12 +510,22 @@ public class TagParser {
      * @param attributes The attributes of the image tag
      */
     public String tagImage(Properties attributes) {
-        return tagImage(attributes, imageMode, implicitImageIndex, documentRequest.getUser(), document, documentRequest.getHttpServletRequest(), service);
+        ContentLoop loop = null;
+        Content content = null;
+        
+        return tagImage(attributes, imageMode, implicitImageIndex, documentRequest.getUser(), document,
+                documentRequest.getHttpServletRequest(), service, loop, content);
     }
+
+    public String tagImage(Properties attributes, ContentLoop loop, Content content) {
+        return tagImage(attributes, imageMode, implicitImageIndex, documentRequest.getUser(), document,
+                documentRequest.getHttpServletRequest(), service, loop, content);
+    }    
 
     public String tagImage(Properties attributes, boolean imageMode, int[] implicitImageIndex,
                            UserDomainObject user, TextDocumentDomainObject document,
-                           HttpServletRequest httpServletRequest, ImcmsServices service) {
+                           HttpServletRequest httpServletRequest, ImcmsServices service,
+                           ContentLoop loop, Content content) {
 
         TextDocumentDomainObject textDocumentToUse = getTextDocumentToUse(attributes);
         if ( shouldOutputNothingAccordingToMode(attributes, imageMode) || textDocumentToUse==null || textDocumentToUse.getId() != document.getId() && imageMode ) {
@@ -531,7 +541,9 @@ public class TagParser {
             imageIndex = Integer.parseInt(noStr);
             implicitImageIndex[0] = imageIndex + 1;
         }
-        ImageDomainObject image = textDocumentToUse.getImage(imageIndex) ;
+        ImageDomainObject image = loop == null
+                ? textDocumentToUse.getImage(imageIndex)
+                : textDocumentToUse.getImage(imageIndex, loop.getNo(), content.getNo());
         
         if (image == null) {
         	image = DEFAULT_IMAGE;
@@ -574,6 +586,10 @@ public class TagParser {
             replaceTags.add(imageWidth);
             replaceTags.add("#image_height#");
             replaceTags.add(imageHeight);
+            replaceTags.add("#loop_no#");
+            replaceTags.add(loop != null ? loop.getNo().toString() : "");
+            replaceTags.add("#content_no#");
+            replaceTags.add(content != null ? content.getNo().toString() : "");
 
             imageTag = service.getAdminTemplate(admin_template_file, user, replaceTags);
         }

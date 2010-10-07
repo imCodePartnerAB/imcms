@@ -77,7 +77,7 @@ public final class SaveText extends HttpServlet {
 
             TextDomainObject text = loopNo == null
                     ? document.getText(txt_no)
-                    : document.getText(loopNo, contentIndex, txt_no);            
+                    : document.getText(txt_no, loopNo, contentIndex);            
 
             text = text == null ? new TextDomainObject() : text.clone();
 

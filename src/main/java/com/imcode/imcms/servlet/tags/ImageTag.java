@@ -1,11 +1,18 @@
 package com.imcode.imcms.servlet.tags;
 
+import com.imcode.imcms.api.Content;
+import com.imcode.imcms.api.ContentLoop;
 import imcode.server.parser.TagParser;
 
 public class ImageTag extends SimpleImcmsTag {
-	
+
     protected String getContent(TagParser tagParser) {
-        return tagParser.tagImage(attributes);
+        ContentLoopTag2 clTag = (ContentLoopTag2)findAncestorWithClass(this, ContentLoopTag2.class);
+        ContentLoop loop =  clTag == null ? null : clTag.getLoop();
+        Content content = clTag == null ? null : clTag.getCurrentContent();
+
+
+        return tagParser.tagImage(attributes, loop, content);
     }
 
     public void setMode(String mode) {

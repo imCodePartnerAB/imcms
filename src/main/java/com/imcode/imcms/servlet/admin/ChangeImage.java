@@ -46,6 +46,10 @@ public class ChangeImage extends HttpServlet {
         final UserDomainObject user = Utility.getLoggedOnUser(request);
         final DocumentMapper documentMapper = imcref.getDocumentMapper();
         final Integer documentId = Integer.parseInt(request.getParameter("meta_id"));
+        String loopNoStr = request.getParameter("loop_no");
+        String contentNoStr = request.getParameter("content_no");        
+        Integer loopNo = StringUtils.isBlank(loopNoStr) ? null : Integer.valueOf(loopNoStr);
+        Integer contentNo = StringUtils.isBlank(contentNoStr) ? null : Integer.valueOf(contentNoStr);
         
         //final TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(
         //		documentId, user.getDocumentShowSettings().getVersionSelector());
@@ -62,12 +66,16 @@ public class ChangeImage extends HttpServlet {
         /**
          * Image DTO. Holds generic properties such as size and border. 
          */
-        final ImageDomainObject defaultImage = document.getImage(imageIndex);
+        final ImageDomainObject defaultImage = loopNo == null
+                ? document.getImage(imageIndex)
+                : document.getImage(imageIndex, loopNo, contentNo);
         final ImageDomainObject image = defaultImage != null 
         	? defaultImage
         	: new ImageDomainObject();
 
         image.setNo(imageIndex);
+        image.setContentLoopNo(loopNo);
+        image.setContentNo(contentNo);
 
         // Check if user has image rights
         if ( !ImageEditPage.userHasImagePermissionsOnDocument(user, document) ) {
@@ -107,7 +115,8 @@ public class ChangeImage extends HttpServlet {
         
         ImageDao imageDao = (ImageDao)Imcms.getServices().getSpringBean("imageDao");
         
-        List<ImageDomainObject> images = imageDao.getImagesByIndex(document.getMeta().getId(), document.getVersion().getNo() ,imageIndex, true);
+        List<ImageDomainObject> images = imageDao.getImagesByIndex(document.getMeta().getId(),
+                document.getVersion().getNo() ,imageIndex, loopNo, contentNo, true);
         
         LocalizedMessage heading = new LocalizedMessageFormat("image/edit_image_on_page", imageIndex, document.getId());
         ImageEditPage imageEditPage = new ImageEditPage(document, image, heading, StringUtils.defaultString(request.getParameter(REQUEST_PARAMETER__LABEL)), getServletContext(), imageCommand, returnCommand, true, forcedWidth, forcedHeight);

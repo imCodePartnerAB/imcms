@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.hibernate.Query;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.lang.StringUtils;
@@ -20,22 +21,35 @@ public class ImageDao extends HibernateTemplate {
 	
 	private LanguageDao languageDao;
 
+    /**
+     * Please note that createImageIfNotExists merely creates an instance of ImageDomainObject not a database entry.
+     *
+     * @param documentId
+     * @param documentVersion
+     * @param imageNo
+     * @param loopNo
+     * @param contentNo
+     * @param createImageIfNotExists
+     * @return
+     */
 	@Transactional
 	public synchronized List<ImageDomainObject> getImagesByIndex(
-			Integer documentId, Integer documentVersion, int imageId, boolean createImageIfNotExists) {
+			Integer documentId, Integer documentVersion, int imageNo, Integer loopNo, Integer contentNo, boolean createImageIfNotExists) {
 
 		List<I18nLanguage> languages = languageDao.getAllLanguages();
 		List<ImageDomainObject> images = new LinkedList<ImageDomainObject>();
 
 		for (I18nLanguage language: languages) {
-			ImageDomainObject image = getImage(language.getId(), documentId, documentVersion, imageId);
+			ImageDomainObject image = getImage(language.getId(), documentId, documentVersion, imageNo, loopNo, contentNo);
 
 			if (image == null && createImageIfNotExists) {
                 image = new ImageDomainObject();
                 image.setDocId(documentId);
-                image.setName("" + imageId);
+                image.setName("" + imageNo);
 
 				image.setLanguage(language);
+                image.setContentLoopNo(loopNo);
+                image.setContentNo(contentNo);
 			}
 
 			if (image != null) {
@@ -49,14 +63,23 @@ public class ImageDao extends HibernateTemplate {
 
     @Transactional
 	public synchronized ImageDomainObject getImage(int languageId,
-			Integer docId, Integer docVersionNo, int no) {
+			Integer docId, Integer docVersionNo, int no, Integer loopNo, Integer contentNo) {
 
-		ImageDomainObject image = (ImageDomainObject)getSession().createQuery("select i from Image i where i.docId = :docId AND i.docVersionNo = :docVersionNo and i.no = :no and i.language.id = :languageId")
+        String queryStr = loopNo == null
+            ? "select i from Image i where i.docId = :docId AND i.docVersionNo = :docVersionNo and i.no = :no and i.language.id = :languageId AND i.contentLoopNo IS NULL AND i.contentNo IS NULL"
+            : "select i from Image i where i.docId = :docId AND i.docVersionNo = :docVersionNo and i.no = :no and i.language.id = :languageId AND i.contentLoopNo = :contentLoopNo AND i.contentNo = :contentNo";    
+
+        Query query = getSession().createQuery(queryStr)
 			.setParameter("docId", docId)
 			.setParameter("docVersionNo", docVersionNo)
 			.setParameter("no", "" + no)
-			.setParameter("languageId", languageId)
-			.uniqueResult();
+			.setParameter("languageId", languageId);
+
+        if (loopNo != null) {
+            query.setParameter("contentLoopNo", loopNo).setParameter("contentNo", contentNo);
+        }
+
+		ImageDomainObject image = (ImageDomainObject)query.uniqueResult();
 
 		return setImageSource(image);
 	}

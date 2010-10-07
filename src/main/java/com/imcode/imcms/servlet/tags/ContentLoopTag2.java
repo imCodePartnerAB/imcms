@@ -21,7 +21,7 @@ import com.imcode.imcms.api.ContentLoop;
  */
 public class ContentLoopTag2 extends BodyTagSupport {
 
-    /** Creates content loop with a single content. */
+    /** Creates empty content loop. */
     private static ContentLoop createLoop(Integer metaId, Integer documentVersion, Integer no) {
         ContentLoop loop = new ContentLoop();
 

@@ -99,8 +99,9 @@ public class DocumentSaver {
     public void saveImages(TextDocumentDomainObject doc, Collection<ImageDomainObject> images, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
         DocumentStoringVisitor storingVisitor = new DocumentStoringVisitor(Imcms.getServices());
 
+        createEnclosingContentLoopIfNecessary(doc, images.iterator().next());
+        
         for (ImageDomainObject image: images) {
-            createEnclosingContentLoopIfNecessary(doc, image);
             storingVisitor.saveTextDocumentImage(doc, image, user);
         }
     }

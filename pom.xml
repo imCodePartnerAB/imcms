@@ -112,7 +112,7 @@
             <!--<groupId>org.eclipse.jetty</groupId>-->
             <!--<artifactId>jetty-server</artifactId>-->
             <!--<version>7.0.0.RC6</version>-->
-        <!--</dependency>       -->
+        <!--</dependency>-->
 
         <!--<dependency>-->
             <!--<groupId>org.eclipse.jetty</groupId>-->
@@ -504,7 +504,7 @@
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.4</version>
-            <!--<scope>provided</scope>-->
+            <scope>provided</scope>
         </dependency>
 
         <!-- ================ -->
@@ -674,7 +674,7 @@
                 <artifactId>maven-scala-plugin</artifactId>
                 <version>2.14.1</version>
                 <configuration>
-                    <scalaVersion>2.8.0</scalaVersion>
+                    <scalaVersion>2.8.1.RC1</scalaVersion>
                 </configuration>
 
                 <executions>

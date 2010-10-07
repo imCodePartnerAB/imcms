@@ -6,6 +6,7 @@
     (clojure.java [io :as io]))
 
   (:import
+    (java.net URL)
     com.vaadin.Application
     (scala Some None$)
     (com.vaadin.ui Window SplitPanel Button Panel Label Button$ClickListener Embedded GridLayout HorizontalLayout
@@ -69,15 +70,6 @@
         file-browser-with-preview (mk-file-browser-with-img-preview)]
     (doto dlg
       (.setMainContent file-browser-with-preview)
-      (-> ,, .lytArea (.setComponentAlignment file-browser-with-preview Alignment/TOP_LEFT))
-      (-> ,, .lytArea (.setMargin false))
-      (-> ,, .lytArea .setSizeFull)
-      (-> ,, .lytArea (.setColumnExpandRatio 0 1.0))
-      (-> ,, .lytArea (.setRowExpandRatio 0 1.0)))
-
-    (.setSizeFull file-browser-with-preview)
-
-    (doto dlg
       (.setWidth "650px")
       (.setHeight "400px"))))
 
@@ -237,16 +229,36 @@
     (add-components (TextField. "Text 1") (TextField. "Text 2") (Panel. "Panel 1"))))
 
 
-(defn mk-main-wnd-content [wnd]
-  (let [app (.getApplication wnd)
-        content (Panel.)
-        file-browser (mk-file-browser)
-        file-browser-with-img-preview (mk-file-browser-with-img-preview)
-        btn-select-img-dlg (Button. "Select image")
-        btn-app-info (Button. "Print app info")
+(defn mk-embedded-demo [app]
+  (let [content (VerticalLayout.)
         btn-file-img (Button. "File image")
         btn-cls-img (Button. "Cls image")
         btn-ext-img (Button. "External image")]
+    
+    (add-components content
+      (add-btn-click-listener btn-file-img _
+        (.addComponent content
+                       (embedded "FILE RESOURCE IMAGE" (file-resource app
+                                  "/Users/ajosua/projects/imcode/imcms/trunk/src/main/web/images/imCMSpower.gif"))))
+
+      (add-btn-click-listener btn-cls-img _
+        (.addComponent content
+                       (embedded "CLASS RESOURCE IMAGE" (class-resource app
+                                  "src/main/web/images/imCMSpower.gif"))))
+
+      (add-btn-click-listener btn-ext-img _
+        (.addComponent content
+                       (embedded "EXTERNAL RESOURCE IMAGE" (external-resource
+                                  (str (.. app getURL toString) "images/imCMSpower.gif"))))))))
+
+
+(defn mk-main-wnd-content [wnd]
+  (let [app (.getApplication wnd)
+        content (GridLayout. 1 2)
+        file-browser (mk-file-browser)
+        menu (VerticalLayout.)
+        url (URL. "http://imcms.dev.imcode.com" )
+             embedded (Embedded. "" (ExternalResource. url))]
 
     (.addListener (.tblDirContent file-browser)
       (reify Property$ValueChangeListener
@@ -256,99 +268,96 @@
               (let [img (embedded "" (file-resource app file))]
                 (doto img (.setWidth "100px") (.setHeight "100px"))
                 (.addComponent content img)))))))
+
+
+    ;(doto menu (.setHeight "500px"))
+
+    (.setSizeFull content)
+    ;;;
+    (add-components content
+      (doto menu
+        (.addComponent
+          (add-btn-click-listener (Button. "Resize!") _ (println (bean embedded)))))
+;            (.addComponent menu
+;              (add-btn-click-listener  (Button. "new!!") e
+;                                                         (.removeComponent menu (.getButton e)))))))
+
+       (let []
+            (doto embedded
+              (.setType Embedded/TYPE_BROWSER)
+              ;(.setWidth "400px") (.setHeight "500px"))))
+              .setSizeFull)))
+
+    ;(.setColumnExpandRatio content 1 1.0)
+    (.setRowExpandRatio content 1 1.0)
+
     
-    (add-btn-click-listener btn-file-img _
-      (.addComponent content
-                     (embedded "FILE RESOURCE IMAGE" (file-resource app
-                                "/Users/ajosua/projects/imcode/imcms/trunk/src/main/web/images/imCMSpower.gif"))))
 
-    (add-btn-click-listener btn-cls-img _
-      (.addComponent content
-                     (embedded "CLASS RESOURCE IMAGE" (class-resource app
-                                "src/main/web/images/imCMSpower.gif"))))
 
-    (add-btn-click-listener btn-ext-img _
-      (.addComponent content
-                     (embedded "EXTERNAL RESOURCE IMAGE" (external-resource
-                                (str (.. app getURL toString) "images/imCMSpower.gif")))))
+;    (add-components content
+;
+;      (mk-vertical-layout-demo "250px")
+;      (mk-horizontal-layout-demo)
+;      (mk-layout-with-button-in-center-demo "250px", "250px")
+;      (mk-panel-with-button-in-center-demo "250px", "250px")
+;      (mk-panel-with-label-in-center-demo "250px", "250px")
+;
+;      file-browser, btn-app-info, btn-file-img, btn-cls-img, btn-ext-img)
 
-    (add-btn-click-listener btn-app-info _
-      (println (bean app)))
+;    (add-components content
+;      (add-btn-click-listener (Button. "Checkbox test") _ (check-box-value-test)))
+;
+;    (let [txtReadOnly (TextField. "ReadOnly")]
+;      (.setEnabled txtReadOnly false)
+;      (add-components content txtReadOnly
+;        (add-btn-click-listener (Button. "Test read-only") _ (.setValue txtReadOnly "???"))))
+;
+;    (let [chkBox (CheckBox. "Check box")]
+;      (.setImmediate chkBox true)
+;      (add-btn-click-listener chkBox _ (println "checked: " (.booleanValue chkBox)))
 
-    (add-btn-click-listener btn-select-img-dlg _
-      (let [dlg (mk-select-img-dlg)]
-        (doto dlg
-          (.setModal true)
-          (.setResizable true)
-          (.setDraggable true))
-        
-      (.addWindow wnd dlg)))
+;      (add-components content chkBox))
 
-    (add-components content
+;    (add-components content
+;      (mk-grid-lyt-demo-1 "250px", "250px")
+;      (mk-grid-lyt-demo-2))
+;
+;    (add-components content
+;      (let [lytHorisontal (VerticalLayout.)
+;            lblMsg (Label. "Default message")
+;            txtMsg (TextField. "")
+;            btnOk (Button. "Ok")]
+;        (.setWidth lblMsg "50px")
+;        (doto lytHorisontal (.setSpacing true) (.setMargin true))
+;
+;        (add-btn-click-listener btnOk _ (.setValue lblMsg (.getValue txtMsg)))
+;        (add-components lytHorisontal lblMsg txtMsg btnOk)))
 
-      (mk-vertical-layout-demo "250px")
-      (mk-horizontal-layout-demo)
-      btn-select-img-dlg
-      (mk-layout-with-button-in-center-demo "250px", "250px")
-      (mk-panel-with-button-in-center-demo "250px", "250px")
-      (mk-panel-with-label-in-center-demo "250px", "250px")
-      ;btn-select-img-dlg, file-browser-with-img-preview, 
-      file-browser, btn-app-info, btn-file-img, btn-cls-img, btn-ext-img)
-
-    (add-components content
-      (add-btn-click-listener (Button. "Checkbox test") _ (check-box-value-test)))
-
-    (let [txtReadOnly (TextField. "ReadOnly")]
-      (.setEnabled txtReadOnly false)
-      (add-components content txtReadOnly
-        (add-btn-click-listener (Button. "Test read-only") _ (.setValue txtReadOnly "???"))))
-
-    (let [chkBox (CheckBox. "Check box")]
-      (.setImmediate chkBox true)
-      (add-btn-click-listener chkBox _ (println "checked: " (.booleanValue chkBox)))
-
-      (add-components content chkBox))
-
-    (add-components content
-      (mk-grid-lyt-demo-1 "250px", "250px")
-      (mk-grid-lyt-demo-2))
-
-    (add-components content
-      (let [lytHorisontal (VerticalLayout.)
-            lblMsg (Label. "Default message")
-            txtMsg (TextField. "")
-            btnOk (Button. "Ok")]
-        (.setWidth lblMsg "50px")
-        (doto lytHorisontal (.setSpacing true) (.setMargin true))
-
-        (add-btn-click-listener btnOk _ (.setValue lblMsg (.getValue txtMsg)))
-        (add-components lytHorisontal lblMsg txtMsg btnOk)))
-
-    (add-components content
-      (let [mb (MenuBar.)
-            lt (VerticalLayout.)
-            hl (HorizontalLayout.)]
-        (.addItem mb "Add new" (ThemeResource. "icons/16/document-add.png")
-                     (reify MenuBar$Command
-                       (menuSelected [this item] (println "ADD NEW"))))
-
-        (.addItem mb "Edit" (ThemeResource. "icons/16/document-txt.png")
-                     (reify MenuBar$Command
-                       (menuSelected [this item] (println "EDIT"))))
-
-        (.addItem mb "Delete" (ThemeResource. "icons/16/document-delete.png")
-                     (reify MenuBar$Command
-                       (menuSelected [this item] (println "DELETE"))))
-
-        
-        (.setWidth hl "100%")
-        (.setWidth mb "100%")
-        (doto hl
-          (.addComponent mb)
-          (.setExpandRatio mb 1.0)
-          (.addComponent (doto (Button. "Reload")
-                           (.setStyleName Button/STYLE_LINK)
-                           (.setIcon (ThemeResource. "icons/16/reload.png")))))))
+;    (add-components content
+;      (let [mb (MenuBar.)
+;            lt (VerticalLayout.)
+;            hl (HorizontalLayout.)]
+;        (.addItem mb "Add new" (ThemeResource. "icons/16/document-add.png")
+;                     (reify MenuBar$Command
+;                       (menuSelected [this item] (println "ADD NEW"))))
+;
+;        (.addItem mb "Edit" (ThemeResource. "icons/16/document-txt.png")
+;                     (reify MenuBar$Command
+;                       (menuSelected [this item] (println "EDIT"))))
+;
+;        (.addItem mb "Delete" (ThemeResource. "icons/16/document-delete.png")
+;                     (reify MenuBar$Command
+;                       (menuSelected [this item] (println "DELETE"))))
+;
+;
+;        (.setWidth hl "100%")
+;        (.setWidth mb "100%")
+;        (doto hl
+;          (.addComponent mb)
+;          (.setExpandRatio mb 1.0)
+;          (.addComponent (doto (Button. "Reload")
+;                           (.setStyleName Button/STYLE_LINK)
+;                           (.setIcon (ThemeResource. "icons/16/reload.png")))))))
 
 
 ;      val btnContacts = new Button("Edit (optional)") {
@@ -356,39 +365,41 @@
 ;    setStyleName(Button.STYLE_LINK)
 ;    setIcon(new ThemeResource("icons/16/globe.png"))
 ;  }
-      (add-components content
-        (let [fl (FormLayout.)
-              hl (HorizontalLayout.)
-              btn (Button. "Edit...")]
-          (doto btn
-             (.setStyleName Button/STYLE_LINK)
-             )
-
-          (doto hl
-            (.setIcon (ThemeResource. "icons/16/globe.png"))
-            (.setCaption "Contacts")
-            (.addComponent btn))
-          
-          (doto fl
-            (.addComponent hl))))
-
-      (add-components content
-        (let [p (Panel.)]
-          (dotimes [i 10]
-            (.addComponent p (CheckBox. (str "Checkbox " i))))
-
-          (doto p
-            .setSizeUndefined
-           (-> .getContent (.setMargin false))
-            (-> .getContent .setSizeUndefined)
-            (.setHeight "120px")
-            (.setWidth "150px")
-            ;(.addStyleName Runo/PANEL_LIGHT)
-            (.addStyleName Panel/STYLE_LIGHT)
-            )))
+;      (add-components content
+;        (let [fl (FormLayout.)
+;              hl (HorizontalLayout.)
+;              btn (Button. "Edit...")]
+;          (doto btn
+;             (.setStyleName Button/STYLE_LINK)
+;             )
+;
+;          (doto hl
+;            (.setIcon (ThemeResource. "icons/16/globe.png"))
+;            (.setCaption "Contacts")
+;            (.addComponent btn))
+;
+;          (doto fl
+;            (.addComponent hl))))
+;
+;      (add-components content
+;        (let [p (Panel.)]
+;          (dotimes [i 10]
+;            (.addComponent p (CheckBox. (str "Checkbox " i))))
+;
+;          (doto p
+;            .setSizeUndefined
+;           (-> .getContent (.setMargin false))
+;            (-> .getContent .setSizeUndefined)
+;            (.setHeight "120px")
+;            (.setWidth "150px")
+;            ;(.addStyleName Runo/PANEL_LIGHT)
+;            (.addStyleName Panel/STYLE_LIGHT)
+;            )))
 
 
     ; let
+
+    content
     ))
 
 

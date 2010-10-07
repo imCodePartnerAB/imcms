@@ -60,8 +60,8 @@ public class ChangeText extends HttpServlet {
         //        : textDocument.getText(language, loopNo, contentIndex, textIndex );
 
         TextDomainObject text = loopNo == null
-                ? textDocument.getText(textIndex )
-                : textDocument.getText(loopNo, contentIndex, textIndex );        
+                ? textDocument.getText(textIndex)
+                : textDocument.getText(textIndex, loopNo, contentIndex);        
         
         Integer metaId = textDocument.getId();
         Meta meta = textDocument.getMeta();
