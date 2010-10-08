@@ -23,13 +23,16 @@
 (defn create-server [port]
   (let [server (Server. port)
         context (ServletContextHandler. ServletContextHandler/SESSIONS)
-        servlet-holder (ServletHolder. (com.vaadin.terminal.gwt.server.ApplicationServlet.))]
+        servlet-holder (ServletHolder. (com.vaadin.terminal.gwt.server.ApplicationServlet.))
+        servlet-holder2 (ServletHolder. (com.vaadin.terminal.gwt.server.ApplicationServlet.))]
 
     (.setInitParameter servlet-holder "application" "com.imcode.imcms.vaadin_app")
+    (.setInitParameter servlet-holder2 "application" "com.imcode.imcms.vaadin_app")
 
     (doto context
       (.setContextPath "/")
-      (.addServlet servlet-holder "/*"))
+      (.addServlet servlet-holder "/*")
+      (.addServlet servlet-holder "/ui/*"))
 
     (doto server
       (.setHandler context))))

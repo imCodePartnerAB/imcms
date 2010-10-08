@@ -1,3 +1,5 @@
+// SYSADMIN APP
+
 package com.imcode.imcms.servlet.superadmin.vaadin
 
 import com.imcode.imcms.servlet.superadmin.vaadin.permissions._
@@ -53,6 +55,7 @@ object ChatTopic extends Actor {
 
   start()
 }
+
 
 class App extends com.vaadin.Application {
 
@@ -175,6 +178,7 @@ class App extends com.vaadin.Application {
   }
 
   val wndMain = new Window {
+    System.out.println("INITIAZLIES WND")
     val content = new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) {
       setSplitPosition(15)
       setSizeFull
