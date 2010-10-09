@@ -144,9 +144,10 @@
   ([file-exts]
     (loc basedir file-exts))
 
-  ([^String dir file-exts] 
-    (fs-lib/loc
-      (fs-lib/files dir (re-pattern (str "\\.(" file-exts ")$"))))))
+  ([^String dir file-exts]
+    (reduce +
+      (map fs-lib/loc
+      (fs-lib/files dir (re-pattern (str "\\.(" file-exts ")$")))))))
 
 
 (defn deploy-maven-jar

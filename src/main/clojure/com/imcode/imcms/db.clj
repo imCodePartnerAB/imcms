@@ -2,14 +2,14 @@
   #^{:doc "Database utils."}
   com.imcode.imcms.db
   (:require
-    (clojure.contrib [sql :as sql]))
+    (clojure.contrib [sql :as sql])
+    (clojure [string :as str])
+    (clojure.java [io :as io]))
   
   (:use
     [clojure.contrib.except :only (throw-if)]
     [clojure.contrib.def :only (defvar)]
-    [clojure.string :only (join lower-case)]
-    [com.imcode.imcms.misc :only (dump)]
-    [clojure.java.io :only (reader)])
+    [com.imcode.imcms.misc :only (dump)])
   
   (:import
     (org.apache.commons.dbcp BasicDataSource) 
@@ -23,7 +23,7 @@
 (defn create-url
   "Creates database vendor specific url string."
   ([vendor-name host port]
-    (let [url-template (condp = (lower-case vendor-name)
+    (let [url-template (condp = (str/lower-case vendor-name)
                          "mysql" "jdbc:mysql://%s:%s"
                          "mssql" "jdbc:jtds:sqlserver://%s:%s"
                          (throw (IllegalArgumentException.
@@ -67,7 +67,7 @@
   ([name & params]
     {:classname "org.h2.Driver"
      :subprotocol "h2"
-     :subname (str "mem:" name (join ";" params))}))
+     :subname (str "mem:" name (str/join ";" params))}))
 
 
 (defn- print-script-info
@@ -85,12 +85,12 @@
     (run-script connection script false true))
 
   ([connection script autocommit stop-on-error]
-    (with-open [script-reader (reader script)]
+    (with-open [reader (io/reader script)]
       (if *execute-script-statements*
         (doto (ScriptRunner. connection autocommit stop-on-error)
-          (.runScript script-reader))
+          (.runScript reader))
 
-        (print-script-info script (count (line-seq script-reader)))))))
+        (print-script-info script (count (line-seq reader)))))))
 
 
 (defn run-scripts

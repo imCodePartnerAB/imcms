@@ -1,16 +1,19 @@
 (ns
   #^{:doc "Filesystem utils."}
   com.imcode.imcms.fs
+
+  (:require
+   [clojure.java.io :as io])
+  
   (:use
     (clojure.contrib
-      [duck-streams :only (reader)]
-      [except :only (throw-if throw-if-not)]
-      [str-utils :only (str-join)]
-      [str-utils2 :only (blank?)]))
+      [except :only (throw-if throw-if-not)])
+    
+    (clojure
+      [string :only (blank?)]))
 
   (:import
     (java.io File)
-    (clojure.lang ISeq)
     (java.util Properties)))
 
 
@@ -47,13 +50,6 @@
 ;(defmethod dir? nil [fs-node]
 ;  nil)
 
-(defn compose-path [parent-path pathelement & pathelements]
-  (str parent-path "/" pathelement (str-join "/" pathelements)))
-
-
-(defn extend-paths [parent-path relative-paths]
-  (map #(compose-path parent-path %) relative-paths))
-
 
 (defn throw-if-not-exists
   "Throws an exception if filesystem node does not exists."
@@ -86,7 +82,7 @@
 (defn load-properties
   "Returns new Properties object's instance populated with data from provided properties file."
   [#^File file]
-  (with-open [r (reader file)]
+  (with-open [r (io/reader file)]
     (doto (Properties.)
       (.load r))))
 
@@ -149,22 +145,9 @@
     (file-seq (File. dir-path))))
 
 
-(defmulti loc class)
-
-
-;"Returns lines of code in a text file."
-(defmethod loc String [file-path]
-  (loc (File. file-path)))
-
-  
-;"Returns lines of code in a text file."
-(defmethod loc File [file]
-  (with-open [r (reader file)]
+(defn loc
+  "Returns lines of code in a text file."
+  [file]
+  (with-open [r (io/reader (io/as-file file))]
     (count
       (remove blank? (line-seq r)))))
-
-
-;"Returns lines of code in text files."
-(defmethod loc ISeq [files]
-  (reduce +
-    (map loc files)))

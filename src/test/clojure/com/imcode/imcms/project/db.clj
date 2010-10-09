@@ -24,7 +24,8 @@
 ;;;; Helper fns
 ;;;;
 
-;;(map #()) - recreate on nonexisting db gives an error.
+;;BUG# - recreate on non-existing db throws an error.
+;;     reason: datasource must not use DB name 
 
 (def db-name #(p/build-property :db-name))
 (def db-host #(p/build-property :db-host))
