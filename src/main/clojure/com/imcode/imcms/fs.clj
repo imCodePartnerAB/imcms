@@ -91,23 +91,33 @@
   "Creates resource watcher function.
    resource-getter is a fn of no args which returns a resource being watched;
    resource-handler is a fn of one arg which is called if resource was modified since its last call, takes a resource as a parameter.;
-   resource-state-creator is a fn of one arg intended to create a watched resource's state snapshot, takes a resource as a parameter.;
+   resource-state-reader is a fn of one arg intended to read a watched resource's state, takes a resource as a parameter.;
    Return resource-handler fn's call result."
-  [resource-getter, resource-handler, resource-state-creator]
+  [resource-getter, resource-handler, resource-state-reader]
   (let [lock (Object.)
+        last-access-time-ms (ref nil)
         resource-state (ref nil)
-        resource-handler-result (ref nil)]
+        resource-handler-result (ref nil)
+        state-read-delay 1000]
 
     (fn resource-watcher []
       (locking lock
-        (let [resource (resource-getter)
-              new-resource-state (resource-state-creator resource)]
-          (when-not (= @resource-state new-resource-state)
-            (dosync
-              (ref-set resource-state new-resource-state)
-              (ref-set resource-handler-result (resource-handler resource))))
+        (let [time-ms (.getTime (java.util.Date.))]
+          (if (and @last-access-time-ms
+                   (< (- time-ms @last-access-time-ms) state-read-delay))
+            
+            @resource-handler-result
+            
+            (let [resource (resource-getter)
+                  new-resource-state (resource-state-reader resource)]
+              (when-not (= @resource-state new-resource-state)
+                (dosync
+                  (ref-set resource-state new-resource-state)
+                  (ref-set resource-handler-result (resource-handler resource))))))
 
-
+          (dosync
+            (ref-set last-access-time-ms time-ms))
+          
           @resource-handler-result)))))
 
      
@@ -115,24 +125,24 @@
   "Creates file getter function which returns file from provided file path.
    A getter function throws an exception if file does not exists."
   [file-path]
-  #(throw-if-not-file (File. file-path)))
+  #(throw-if-not-file (io/as-file file-path)))
 
 
 (defn create-file-watcher
   "Creates and returns a file watcher."
   [file-getter, file-handler]
-  (create-resource-watcher file-getter file-handler #(.lastModified %)))
+  (let [file-state-reader  #(.lastModified %)]
+    (create-resource-watcher file-getter file-handler file-state-reader)))
 
 
-(defn create-file-watcher-new
+(defn create-file-watcher*
   "Creates a file watcher.
    file-path is a relative or absolute file path;
    file-handler is a fn which takes file created from file-path.
    file-handler is invoked if file was modified."
   [file-path, file-handler]
-  (create-resource-watcher (create-file-getter file-path) 
-			   file-handler 
-			   #(.lastModified %)))
+  (let [file-getter (create-file-getter file-path)]
+    (create-file-watcher file-getter file-handler)))
 
 
 (defn files
@@ -142,7 +152,7 @@
              (.isFile %)
              (re-find filename-re (.getName %)))
 
-    (file-seq (File. dir-path))))
+    (file-seq (io/as-file dir-path))))
 
 
 (defn loc

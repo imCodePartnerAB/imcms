@@ -254,7 +254,7 @@
 
 (defn mk-main-wnd-content [wnd]
   (let [app (.getApplication wnd)
-        content (GridLayout. 1 2)
+        content (VerticalLayout.)
         file-browser (mk-file-browser)
         menu (VerticalLayout.)
         url (URL. "http://imcms.dev.imcode.com" )
@@ -274,22 +274,22 @@
 
     (.setSizeFull content)
     ;;;
-    (add-components content
-      (doto menu
-        (.addComponent
-          (add-btn-click-listener (Button. "Resize!") _ (println (bean embedded)))))
-;            (.addComponent menu
-;              (add-btn-click-listener  (Button. "new!!") e
-;                                                         (.removeComponent menu (.getButton e)))))))
-
-       (let []
-            (doto embedded
-              (.setType Embedded/TYPE_BROWSER)
-              ;(.setWidth "400px") (.setHeight "500px"))))
-              .setSizeFull)))
-
-    ;(.setColumnExpandRatio content 1 1.0)
-    (.setRowExpandRatio content 1 1.0)
+;    (add-components content
+;      (doto menu
+;        (.addComponent
+;          (add-btn-click-listener (Button. "Resize!") _ (println (bean embedded)))))
+;;            (.addComponent menu
+;;              (add-btn-click-listener  (Button. "new!!") e
+;;                                                         (.removeComponent menu (.getButton e)))))))
+;
+;       (let []
+;            (doto embedded
+;              (.setType Embedded/TYPE_BROWSER)
+;              ;(.setWidth "400px") (.setHeight "500px"))))
+;              .setSizeFull)))
+;
+;    ;(.setColumnExpandRatio content 1 1.0)
+;    (.setRowExpandRatio content 1 1.0)
 
     
 
@@ -312,11 +312,26 @@
 ;      (add-components content txtReadOnly
 ;        (add-btn-click-listener (Button. "Test read-only") _ (.setValue txtReadOnly "???"))))
 ;
-;    (let [chkBox (CheckBox. "Check box")]
-;      (.setImmediate chkBox true)
-;      (add-btn-click-listener chkBox _ (println "checked: " (.booleanValue chkBox)))
+    (let [chkBox (CheckBox. "Check box")]
+      (.setImmediate chkBox true)
+      (add-btn-click-listener chkBox _ (println "checked: " (.booleanValue chkBox)))
 
-;      (add-components content chkBox))
+      (add-components content chkBox))
+
+    (add-components content
+      (let [l (HorizontalLayout.)
+            b (new Button "test")]
+
+        (add-btn-click-listener b _ (println "ok!!!"))
+        (.addComponent l b)
+        (dotimes [i 10]
+          (.addComponent l (new Button (str "button " i))))
+
+        l))
+
+    (add-components content (doto (TextField. "Mail") (.setWidth "100%")))
+
+
 
 ;    (add-components content
 ;      (mk-grid-lyt-demo-1 "250px", "250px")
@@ -398,6 +413,8 @@
 
 
     ; let
+
+    (add-components content (Button. "Clock me!"))
 
     content
     ))

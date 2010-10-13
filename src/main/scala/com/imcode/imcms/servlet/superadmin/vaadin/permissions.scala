@@ -30,7 +30,41 @@ import imcode.server.document.textdocument.TextDocumentDomainObject
 import imcode.server.document.{TemplateDomainObject, CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
 import java.io.{ByteArrayInputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
+import com.vaadin.data.Container.ItemSetChangeListener
 
+
+// user-admin-roles???
+
+class UserViewFilter extends VerticalLayout { //CustomLayout
+  val chkEnable = new CheckBox("Use filter")
+  val lytParams = new FormLayout
+  
+  val txtText = new TextField("Username, email, first name, last name, title, email, company") {
+    setColumns(20)
+  }
+  val lytText = new VerticalLayout {
+    setCaption("Free text")
+    addComponent(txtText)
+  }
+  val btnApply = new Button("Apply")
+  val btnClear = new Button("Clear")
+  val chkShowInactive = new CheckBox("Show inactive")
+  val lstRoles = new ListSelect("Role(s)") {
+    setColumns(21)
+    setRows(5)
+  }
+
+  val lytControls = new HorizontalLayout {
+    setSpacing(true)
+    addComponents(this, chkShowInactive, btnClear, btnApply)
+  }
+
+  addComponents(lytParams, lytText, lstRoles, lytControls)
+  addComponents(this, chkEnable, lytParams)
+  setSpacing(true)
+}
+
+//
 
 class UserDialogContent extends FormLayout {
   val txtLogin = new TextField("Username")
@@ -39,29 +73,11 @@ class UserDialogContent extends FormLayout {
   val txtFirstName = new TextField("First")
   val txtLastName = new TextField("Last")
   val chkActivated = new CheckBox("Activated")
+  val tslRoles = new TwinSelect[RoleId]("Roles")
   val sltUILanguage = new Select("Interface language") {
     setNullSelectionAllowed(false)
   }
-
-  val lstUseradminRoles = new ListSelect("Can manage if useradmin") {
-    setMultiSelect(true)
-    setNullSelectionAllowed(false)
-    setRows(5)
-    setColumns(10)
-  }
-  val lstRoles = new ListSelect("Assigned") {
-    setMultiSelect(true)
-    setNullSelectionAllowed(false)
-    setRows(5)
-    setColumns(10)
-    setImmediate(true)
-  }
-
-  lstRoles addListener unit {
-    lstUseradminRoles setEnabled lstRoles.asList[String].contains("Useradmin")
-  }
-
-  try { lstUseradminRoles.setValue(null) } catch { case e => println("@@@@" + e) }
+  val txtEmail = new TextField("Email")
   
   val lytPassword = new HorizontalLayoutView("Password") {
       addComponent(txtPassword)
@@ -73,9 +89,6 @@ class UserDialogContent extends FormLayout {
       addComponent(txtLastName)
   }
 
-  val lytRoles = new HorizontalLayoutView("Roles") {
-    addComponents(this, lstRoles, lstUseradminRoles)
-  }
 
   val lytLogin = new HorizontalLayoutView("Login") {
     addComponents(this, txtLogin, chkActivated)
@@ -84,7 +97,6 @@ class UserDialogContent extends FormLayout {
 
   val btnContacts = new Button("Edit...") {
     setStyleName(Button.STYLE_LINK)
-//    setIcon(new ThemeResource("icons/16/globe.png"))
   }
 
   val lytContacts = new HorizontalLayout {
@@ -92,9 +104,9 @@ class UserDialogContent extends FormLayout {
     addComponent(btnContacts)
   }
 
-  forlet(txtLogin, txtPassword, txtVerifyPassword, lstRoles) { _ setRequired true }
+  forlet(txtLogin, txtPassword, txtVerifyPassword, txtEmail) { _ setRequired true }
 
-  addComponents(this, lytLogin, lytPassword, lytName, sltUILanguage, lytRoles, lytContacts)
+  addComponents(this, lytLogin, lytPassword, lytName, txtEmail, sltUILanguage, tslRoles, lytContacts)
 
 //    val txtUsername = new TextField("Username")
 //    val txtPassword = new TextField("4-16 characters")

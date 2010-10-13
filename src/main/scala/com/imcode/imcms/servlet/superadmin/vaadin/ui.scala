@@ -224,7 +224,8 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
   forlet(lstAvailable, lstChosen) { l =>
     l setMultiSelect true
     l setImmediate true
-    l setColumns 11
+    l setColumns 10
+    l setRows 5
     l setItemCaptionMode AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT
   }
 
@@ -264,6 +265,9 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
     listSelect.addItem(itemId)
     listSelect.setItemCaption(itemId, caption)    
   }
+
+  def setListRows(count: Int) = forlet(lstAvailable, lstChosen) { _ setRows count }
+  def setListColumns(count: Int) = forlet(lstAvailable, lstChosen) { _ setColumns count }
 }
 
 /** Vertical layout containing tab sheet. */
@@ -408,3 +412,68 @@ trait UploadEventHandler extends Upload.SucceededListener with Upload.FailedList
 ////                + event.getMIMEType() + "' failed."));
 //  }
 //}
+
+
+class TableView extends VerticalLayout {
+
+  val table = new Table {
+    setSelectable(true)
+    setImmediate(true)
+    setPageLength(10)
+
+    this addListener unit { resetComponents }
+
+    tableFields foreach { addContainerProperties(this, _) }
+  }
+
+  val btnReload = new Button("Reload") {
+    this addListener unit { reloadTable }
+    setStyleName(Button.STYLE_LINK)
+    setIcon(new ThemeResource("icons/16/reload.png"))
+  }
+
+  val lytToolBar = new HorizontalLayout {
+    setWidth("100%")
+    setSpacing(true)
+  }
+
+  val lytHeader = new HorizontalLayout {
+    setWidth("100%")
+    setSpacing(true)
+  }
+
+  val lytTable = new VerticalLayout {
+    setSpacing(true)
+    addComponent(table)
+  }
+
+  addComponents(lytHeader, lytToolBar, btnReload)
+  lytHeader.setExpandRatio(lytToolBar, 1.0f)
+
+  setSpacing(true)
+  addComponents(this, lytHeader, lytTable)
+
+  reloadTable()
+  resetComponents()
+
+  type RowId = AnyRef
+  type RowData = Seq[AnyRef]
+  type Row = (RowId, RowData)
+  
+  type PropertyId = AnyRef
+  type PropertyType = JClass[_]
+  type PropertyDefaultValue = AnyRef
+  type Property = (PropertyId, PropertyType, PropertyDefaultValue)
+
+  def tableRows: Seq[Row] = List.empty
+
+  def tableFields: Seq[Property] = List.empty
+
+  def reloadTable() {
+    table.removeAllItems
+
+    for((id, data) <- tableRows) table.addItem(data.toArray, id)
+  }
+
+  def resetComponents() {}
+}

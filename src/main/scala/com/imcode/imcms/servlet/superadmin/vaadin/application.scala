@@ -178,7 +178,6 @@ class App extends com.vaadin.Application {
   }
 
   val wndMain = new Window {
-    System.out.println("INITIAZLIES WND")
     val content = new SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) {
       setSplitPosition(15)
       setSizeFull
@@ -1429,8 +1428,8 @@ class App extends com.vaadin.Application {
   lazy val users = {
     def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
 
-    class UsersView extends TableViewTemplate {
-      override def tableProperties = List(
+    class UsersView extends TableView {
+      override def tableFields = List(
         ("Id", classOf[JInteger],  null),
         ("Login name", classOf[String],  null),
         ("Password", classOf[String],  null),
@@ -1438,7 +1437,7 @@ class App extends com.vaadin.Application {
         ("Superadmin?", classOf[JBoolean],  null),
         ("Useradmin?", classOf[JBoolean],  null))
 
-      override def tableItems() =
+      override def tableRows =
         roleMapper.getAllUsers.toList map { user =>
           val userId = Int box user.getId
 
@@ -1449,62 +1448,27 @@ class App extends com.vaadin.Application {
                          Boolean box user.isSuperAdmin,
                          Boolean box user.isUserAdmin)
         }
-
-      val frmFilter = new Form {
-        setCaption("Filter")
-        val layout = new VerticalLayout
-        setLayout(layout)
-
-        val txtFilter = new TextField("Login, first name, last name, title, email, company")
-        val sltRoles = new ListSelect("Role(s)")
-        val chkInactive = new CheckBox("Include inactive users")
-        val btnClear = new Button("Clear")
-        val lytFooter = new GridLayout(2, 1)
-
-        setFooter(lytFooter)
-
-        lytFooter addComponent chkInactive
-        lytFooter addComponent btnClear
-
-        lytFooter.setComponentAlignment(chkInactive, Alignment.MIDDLE_LEFT)
-        lytFooter.setComponentAlignment(btnClear, Alignment.MIDDLE_RIGHT)
-
-        layout addComponent txtFilter
-        layout addComponent sltRoles
-      }
-
-      //val
-
-      //pnlHeader setContent lytFilter
-      //removeComponent(0,2)
-      //addComponent(new VerticalLayout { addComponent(frmFilter) }, 0, 2)
     }
 
-//    val btnNew = new Button("New")
-//    val btnEdit = new Button("Edit")
-//    val btnDelete = new Button("Delete")
-//
     val mbUser = new MenuBar
     val miNew = mbUser.addItem("Add new", new ThemeResource("icons/16/document-add.png"), null)
     val miEdit = mbUser.addItem("Edit", new ThemeResource("icons/16/settings.png"), null)
-    val miDelete = mbUser.addItem("Delete", new ThemeResource("icons/16/document-delete.png"), null)
     
     val userView = new UsersView {
-      lytMenu.addComponent(mbUser)
+      lytToolBar.addComponent(mbUser)
+      lytTable.addComponent(new UserViewFilter, 0)
     }
     
     new TabSheetView {
       addTab(new VerticalLayoutView("Users and their permissions.") {
-       addComponent(userView)
+        addComponent(userView)
       })
 
-      //btnNew addListener unit {
       miNew setCommand unit {
         initAndShow(new OkCancelDialog("New user")) { w =>
-          let(w.mainContent = new UserDialogContent) { c =>
-            roleMapper.getAllRoles foreach { r =>
-              c.lstRoles addItem r.getId
-              c.lstRoles setItemCaption (r.getId, r.getName)
+          let(w setMainContent new UserDialogContent) { c =>
+            for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
+              c.tslRoles.addAvailableItem(role.getId, role.getName)
             }
 
             let(Imcms.getServices.getLanguageMapper.getDefaultLanguage) { l =>
@@ -1521,38 +1485,66 @@ class App extends com.vaadin.Application {
                 u setLastName c.txtLastName.stringValue
                 u setLoginName c.txtLogin.stringValue
                 u setPassword c.txtPassword.stringValue
-                u setRoleIds c.lstRoles.asList[RoleId].toArray
+                u setRoleIds c.tslRoles.chosenItemIds.toArray
                 u setLanguageIso639_2 c.sltUILanguage.stringValue
 
                 roleMapper.addUser(u)
-                userView.reloadTableItems
+                userView.reloadTable
               }
             }
           }
         }
       }
 
-      //btnEdit addListener unit {
       miEdit setCommand unit {
-        initAndShow(new OkCancelDialog("Edit user")) { w =>
+        userView.table.getValue match {
+          case null =>
+          case userId: JInteger =>
+            initAndShow(new OkCancelDialog("Edit user")) { w =>
+              let(w setMainContent new UserDialogContent) { c =>
+                val user = roleMapper.getUser(userId.intValue)
+                val userRoleIds = user.getRoleIds
+                
+                c.chkActivated setValue user.isActive
+                c.txtFirstName setValue user.getFirstName
+                c.txtLastName setValue user.getLastName
+                c.txtLogin setValue user.getLoginName
+                c.txtPassword setValue user.getPassword
+
+                for {
+                  role <- roleMapper.getAllRoles
+                  roleId = role.getId
+                  if roleId != RoleId.USERS
+                } {
+                  if (userRoleIds contains roleId) {
+                    c.tslRoles.addChosenItem(roleId, role.getName)
+                  } else {
+                    c.tslRoles.addAvailableItem(roleId, role.getName)
+                  }
+                }
+    
+                let(Imcms.getServices.getLanguageMapper.getDefaultLanguage) { l =>
+                  c.sltUILanguage.addItem(l)
+                }
+
+                c.sltUILanguage.select(user.getLanguageIso639_2)
+
+                w addOkButtonClickListener {
+                  user setActive c.chkActivated.booleanValue
+                  user setFirstName c.txtFirstName.stringValue
+                  user setLastName c.txtLastName.stringValue
+                  user setLoginName c.txtLogin.stringValue
+                  user setPassword c.txtPassword.stringValue
+                  user setRoleIds c.tslRoles.chosenItemIds.toArray
+                  user setLanguageIso639_2 c.sltUILanguage.stringValue
+
+                  roleMapper.saveUser(user)
+                  userView.reloadTable
+                }
+              }
+            }
         }
       }
-
-      //btnDelete addListener unit {
-      miDelete setCommand unit {
-        initAndShow(new ConfirmationDialog(msg="Delete user?")) { w =>
-          w addOkButtonClickListener {
-            userView.tblItems.getValue match {
-              case null =>
-              case id: JInteger =>
-                //roleMapper.
-                userView.reloadTableItems
-            }
-
-          }
-
-        }
-      }        
     }
   }
 
