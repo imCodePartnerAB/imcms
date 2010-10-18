@@ -14,7 +14,7 @@ import com.vaadin.ui._
 import com.vaadin.data.Property
 import com.vaadin.data.Property._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
-import imcms.api.{CategoryType, SystemProperty, IPAccess, Document}
+import imcms.api._
 import imcms.mapping.CategoryMapper
 import imcms.servlet.superadmin.AdminSearchTerms
 import com.imcode.imcms.api.Document.PublicationStatus
@@ -57,7 +57,7 @@ object ChatTopic extends Actor {
 }
 
 
-class App extends com.vaadin.Application {
+class AdminApplication extends com.vaadin.Application with VaadinApplication { application =>
 
   setTheme("runo")
   
@@ -73,6 +73,7 @@ class App extends com.vaadin.Application {
       object Profiles extends MenuItem(this)
       object Links extends MenuItem(this)
       object Structure extends MenuItem(this)
+      object New extends MenuItem(this)
     }
     object Permissions extends MenuItem(this) {
       object Users extends MenuItem(this)
@@ -90,19 +91,7 @@ class App extends com.vaadin.Application {
   val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
   val ipAccessDao = Imcms.getSpringBean("ipAccessDao").asInstanceOf[IPAccessDao]  
 
-  def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
-    init(window)
-    window setModal modal
-    window setResizable resizable
-    window setDraggable draggable
-    wndMain addWindow window
-  }
-
-
-  def show[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true) =
-   initAndShow(window, modal, resizable, draggable) { _ => }
   
-
   abstract class TableViewTemplate extends VerticalLayout {
     val tblItems = new Table {
       setSelectable(true)
@@ -221,6 +210,7 @@ class App extends com.vaadin.Application {
             case Menu.Filesystem => filesystem
             case Menu.Documents.Templates => templates
             case Menu.Documents.Structure => docStructure
+             case Menu.Documents.New => newDocument
 
             case other => NA(other)
           })
@@ -244,6 +234,20 @@ class App extends com.vaadin.Application {
     Menu.items foreach { wndMain.treeMenu expandItemsRecursively _ }
     wndMain.treeMenu select Menu.About
     this setMainWindow wndMain    
+  }
+
+  def newDocument = {
+    import com.imcode.imcms.admin.ui.MetaMVC
+
+    val doc = Imcms.getServices.getDocumentMapper.getDocument(1001)
+
+    val mvc = new MetaMVC(
+      application,
+      doc,
+      Imcms.getI18nSupport.getLanguages map ((_, true)) toMap,
+      Imcms.getSpringBean("metaDao").asInstanceOf[MetaDao].getLabels(1001, 0) map (l => (l.getLanguage, l)) toMap)
+
+    mvc.view
   }
 
   //
@@ -1426,125 +1430,10 @@ class App extends com.vaadin.Application {
   // Users
   //
   lazy val users = {
-    def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
-
-    class UsersView extends TableView {
-      override def tableFields = List(
-        ("Id", classOf[JInteger],  null),
-        ("Login name", classOf[String],  null),
-        ("Password", classOf[String],  null),
-        ("Default user?", classOf[JBoolean],  null),
-        ("Superadmin?", classOf[JBoolean],  null),
-        ("Useradmin?", classOf[JBoolean],  null))
-
-      override def tableRows =
-        roleMapper.getAllUsers.toList map { user =>
-          val userId = Int box user.getId
-
-          userId -> List(userId,
-                         user.getLoginName,
-                         user.getPassword,
-                         Boolean box user.isDefaultUser,
-                         Boolean box user.isSuperAdmin,
-                         Boolean box user.isUserAdmin)
-        }
-    }
-
-    val mbUser = new MenuBar
-    val miNew = mbUser.addItem("Add new", new ThemeResource("icons/16/document-add.png"), null)
-    val miEdit = mbUser.addItem("Edit", new ThemeResource("icons/16/settings.png"), null)
-    
-    val userView = new UsersView {
-      lytToolBar.addComponent(mbUser)
-      lytTable.addComponent(new UserViewFilter, 0)
-    }
-    
     new TabSheetView {
       addTab(new VerticalLayoutView("Users and their permissions.") {
-        addComponent(userView)
+        addComponent(new UsersView(application))
       })
-
-      miNew setCommand unit {
-        initAndShow(new OkCancelDialog("New user")) { w =>
-          let(w setMainContent new UserDialogContent) { c =>
-            for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
-              c.tslRoles.addAvailableItem(role.getId, role.getName)
-            }
-
-            let(Imcms.getServices.getLanguageMapper.getDefaultLanguage) { l =>
-              c.sltUILanguage.addItem(l)
-              c.sltUILanguage.select(l)
-            }
-
-            c.chkActivated.setValue(true)
-
-            w addOkButtonClickListener {
-              let(new UserDomainObject) { u =>
-                u setActive c.chkActivated.booleanValue
-                u setFirstName c.txtFirstName.stringValue
-                u setLastName c.txtLastName.stringValue
-                u setLoginName c.txtLogin.stringValue
-                u setPassword c.txtPassword.stringValue
-                u setRoleIds c.tslRoles.chosenItemIds.toArray
-                u setLanguageIso639_2 c.sltUILanguage.stringValue
-
-                roleMapper.addUser(u)
-                userView.reloadTable
-              }
-            }
-          }
-        }
-      }
-
-      miEdit setCommand unit {
-        userView.table.getValue match {
-          case null =>
-          case userId: JInteger =>
-            initAndShow(new OkCancelDialog("Edit user")) { w =>
-              let(w setMainContent new UserDialogContent) { c =>
-                val user = roleMapper.getUser(userId.intValue)
-                val userRoleIds = user.getRoleIds
-                
-                c.chkActivated setValue user.isActive
-                c.txtFirstName setValue user.getFirstName
-                c.txtLastName setValue user.getLastName
-                c.txtLogin setValue user.getLoginName
-                c.txtPassword setValue user.getPassword
-
-                for {
-                  role <- roleMapper.getAllRoles
-                  roleId = role.getId
-                  if roleId != RoleId.USERS
-                } {
-                  if (userRoleIds contains roleId) {
-                    c.tslRoles.addChosenItem(roleId, role.getName)
-                  } else {
-                    c.tslRoles.addAvailableItem(roleId, role.getName)
-                  }
-                }
-    
-                let(Imcms.getServices.getLanguageMapper.getDefaultLanguage) { l =>
-                  c.sltUILanguage.addItem(l)
-                }
-
-                c.sltUILanguage.select(user.getLanguageIso639_2)
-
-                w addOkButtonClickListener {
-                  user setActive c.chkActivated.booleanValue
-                  user setFirstName c.txtFirstName.stringValue
-                  user setLastName c.txtLastName.stringValue
-                  user setLoginName c.txtLogin.stringValue
-                  user setPassword c.txtPassword.stringValue
-                  user setRoleIds c.tslRoles.chosenItemIds.toArray
-                  user setLanguageIso639_2 c.sltUILanguage.stringValue
-
-                  roleMapper.saveUser(user)
-                  userView.reloadTable
-                }
-              }
-            }
-        }
-      }
     }
   }
 

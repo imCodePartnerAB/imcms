@@ -215,7 +215,7 @@ public class DocumentMapper implements DocumentGetter {
 
 
     /**
-     * By design spec, when an user creates a new document using imCMS web interface he has ability
+     * According to spec, when an user creates a new document using imCMS web interface he has ability
      * to fill labels in all languages available in the system.
      * However, DocumentDomainObject has one-to-one relationship with Labels. 
      * To workaround this limitation and preserve backward compatibility with legacy API,

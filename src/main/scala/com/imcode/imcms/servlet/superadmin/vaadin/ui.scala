@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReference
 import java.lang.{String, Class => JClass, Boolean => JBoolean, Integer => JInteger}
 import java.io.{ByteArrayOutputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
+import com.vaadin.Application
 
 //class ButtonWrapper(button: Button) {
 //
@@ -43,6 +44,20 @@ import com.vaadin.terminal.{ThemeResource, UserError}
 //    container
 //  }
 //}
+
+trait VaadinApplication { this: Application =>  
+
+  def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
+    init(window)
+    window setModal modal
+    window setResizable resizable
+    window setDraggable draggable
+    getMainWindow addWindow window
+  }
+
+  def show[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true) =
+   initAndShow(window, modal, resizable, draggable) { _ => }
+}
 
 class AbstractFieldWrapper(f: com.vaadin.ui.AbstractField) {
   def stringValue = f.getValue.asInstanceOf[String]

@@ -47,4 +47,11 @@ package object ui {
   def addContainerProperties(table: Table, properties: (AnyRef, JClass[_], AnyRef)*) =
     for ((propertyId, propertyType, defaultValue) <- properties)
       table.addContainerProperty(propertyId, propertyType, defaultValue)
+
+
+  def whenSelected[A](field: com.vaadin.ui.AbstractField)(fn: A => Unit) = field.getValue match {
+    case null =>
+    case value: A => fn(value)
+    case other => error("Unexpected field value: %s." format other)
+  }
 }

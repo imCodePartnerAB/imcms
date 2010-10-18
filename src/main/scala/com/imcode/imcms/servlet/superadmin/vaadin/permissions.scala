@@ -39,7 +39,7 @@ class UserViewFilter extends VerticalLayout { //CustomLayout
   val chkEnable = new CheckBox("Use filter")
   val lytParams = new FormLayout
   
-  val txtText = new TextField("Username, email, first name, last name, title, email, company") {
+  val txtText = new TextField("Username, email, first name, last name, email") {
     setColumns(20)
   }
   val lytText = new VerticalLayout {
@@ -49,9 +49,10 @@ class UserViewFilter extends VerticalLayout { //CustomLayout
   val btnApply = new Button("Apply")
   val btnClear = new Button("Clear")
   val chkShowInactive = new CheckBox("Show inactive")
-  val lstRoles = new ListSelect("Role(s)") {
+  val lstRoles = new ListSelect("Only with role(s)") {
     setColumns(21)
     setRows(5)
+    setNullSelectionAllowed(false)
   }
 
   val lytControls = new HorizontalLayout {
@@ -97,6 +98,7 @@ class UserDialogContent extends FormLayout {
 
   val btnContacts = new Button("Edit...") {
     setStyleName(Button.STYLE_LINK)
+    setEnabled(false)
   }
 
   val lytContacts = new HorizontalLayout {
@@ -107,80 +109,124 @@ class UserDialogContent extends FormLayout {
   forlet(txtLogin, txtPassword, txtVerifyPassword, txtEmail) { _ setRequired true }
 
   addComponents(this, lytLogin, lytPassword, lytName, txtEmail, sltUILanguage, tslRoles, lytContacts)
-
-//    val txtUsername = new TextField("Username")
-//    val txtPassword = new TextField("4-16 characters")
-//    val txtVerifyPassword = new TextField("4-16 characters (retype)")
-//    val txtFirstName = new TextField("Firstn name")
-//    val txtLastName = new TextField("Last name")
-//
-////    val txtTitle = new TextField("Title")
-////    val txtCompany = new TextField("Company")
-////    val txtAddress = new TextField("Address")
-////    val txtZip = new TextField("Zip")
-////    val txtCity = new TextField("City")
-////
-////    val txtEmail = new TextField("Email")
-//    val chkActivated = new CheckBox("Activated")
-//
-//    val lstRoles = new ListSelect("User roles")
-//    val lstManagedRoles = new ListSelect("Managed roles")
-
-//    forlet(lstRoles, lstManagedRoles) {_ setColumns 3}
-//
-//    val lytRoles = new HorizontalLayout {
-//      setCaption("Roles")
-//      addComponent(new VerticalLayoutView {
-//        addComponent(lstRoles)
-//      })
-//
-//      addComponent(new VerticalLayoutView {
-//          addComponent(lstManagedRoles)
-//      })
-//    }
-
-//           val btnAdd = new Button("Add")
-//        val btnRemove = new Button("Remove")
-//
-//    val lytPhoneNumbers = new VerticalLayout {
-//      setSizeUndefined
-//      setCaption("Phone numbers")
-//      val lytButtons = new HorizontalLayout {
-//        setSizeUndefined
-//        setSpacing(true)
-//        addComponents(this, btnAdd, btnRemove)
-//      }
-//
-//      val tblPhoneNumbers = new Table {
-//        addContainerProperties(this, ("Kind", classOf[String], null), ("Nr", classOf[String], null))
-//        setEditable(true)
-//        setImmediate(true)
-//        setPageLength(2)
-//      }
-//
-//      addComponents(this, tblPhoneNumbers, lytButtons)
-
-//      btnAdd addListener {
-//        val id = 1 + tblPhoneNumbers.getItemIds.map(_.asInstanceOf[Int]).foldLeft(0){_ max _}
-//        tblPhoneNumbers.addItem(Array("", ""), Int box id)
-//        println("CLICK")
-//
-//      }
-//
-//
-//      btnRemove addListener {
-//        tblPhoneNumbers.getValue match {
-//          case null =>
-//          case id: JInteger => tblPhoneNumbers removeItem id
-//          case ids: Seq[JInteger] => ids foreach { tblPhoneNumbers removeItem _}
-//        }
-//
-//        println("CLICK")
-//      }
+}
 
 
-//    val frmRoles = new Form {
-//      setCaption("Roles")
-//      getLayout.addComponent(lytRoles)
-//    }
+class UsersView(application: VaadinApplication) extends {
+  val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
+} with TableView {
+  
+  val mbUser = new MenuBar
+  val miNew = mbUser.addItem("Add new", new ThemeResource("icons/16/document-add.png"), null)
+  val miEdit = mbUser.addItem("Edit", new ThemeResource("icons/16/settings.png"), null)
+  val filter = new UserViewFilter {
+    roleMapper.getAllRoleNames foreach { name =>
+      lstRoles addItem name
+    }
+  }
+
+  lytToolBar.addComponent(mbUser)
+  lytTable.addComponent(filter, 0)
+
+  miNew setCommand unit {
+    application.initAndShow(new OkCancelDialog("New user")) { w =>
+      let(w setMainContent new UserDialogContent) { c =>
+        for (role <- roleMapper.getAllRoles if role.getId != RoleId.USERS) {
+          c.tslRoles.addAvailableItem(role.getId, role.getName)
+        }
+
+        let(Imcms.getServices.getLanguageMapper.getDefaultLanguage) { l =>
+          c.sltUILanguage.addItem(l)
+          c.sltUILanguage.select(l)
+        }
+
+        c.chkActivated.setValue(true)
+
+        w addOkButtonClickListener {
+          let(new UserDomainObject) { u =>
+            u setActive c.chkActivated.booleanValue
+            u setFirstName c.txtFirstName.stringValue
+            u setLastName c.txtLastName.stringValue
+            u setLoginName c.txtLogin.stringValue
+            u setPassword c.txtPassword.stringValue
+            u setRoleIds c.tslRoles.chosenItemIds.toArray
+            u setLanguageIso639_2 c.sltUILanguage.stringValue
+
+            roleMapper.addUser(u)
+            reloadTable
+          }
+        }
+      }
+    }
+  }
+
+  miEdit setCommand unit {
+    whenSelected[JInteger](table) { userId =>
+      application.initAndShow(new OkCancelDialog("Edit user")) { w =>
+        let(w setMainContent new UserDialogContent) { c =>
+          val user = roleMapper.getUser(userId.intValue)
+          val userRoleIds = user.getRoleIds
+
+          c.chkActivated setValue user.isActive
+          c.txtFirstName setValue user.getFirstName
+          c.txtLastName setValue user.getLastName
+          c.txtLogin setValue user.getLoginName
+          c.txtPassword setValue user.getPassword
+
+          for {
+            role <- roleMapper.getAllRoles
+            roleId = role.getId
+            if roleId != RoleId.USERS
+          } {
+            if (userRoleIds contains roleId) {
+              c.tslRoles.addChosenItem(roleId, role.getName)
+            } else {
+              c.tslRoles.addAvailableItem(roleId, role.getName)
+            }
+          }
+
+          let(Imcms.getServices.getLanguageMapper.getDefaultLanguage) { l =>
+            c.sltUILanguage.addItem(l)
+          }
+
+          c.sltUILanguage.select(user.getLanguageIso639_2)
+
+          w addOkButtonClickListener {
+            user setActive c.chkActivated.booleanValue
+            user setFirstName c.txtFirstName.stringValue
+            user setLastName c.txtLastName.stringValue
+            user setLoginName c.txtLogin.stringValue
+            user setPassword c.txtPassword.stringValue
+            user setRoleIds c.tslRoles.chosenItemIds.toArray
+            user setLanguageIso639_2 c.sltUILanguage.stringValue
+
+            roleMapper.saveUser(user)
+            reloadTable
+          }
+        }
+      }
+    }
+  }
+
+  override def tableFields = List(
+    ("Id", classOf[JInteger],  null),
+    ("Username", classOf[String],  null),
+    ("First name", classOf[String],  null),
+    ("Last name", classOf[String],  null),
+    ("Superadmin?", classOf[JBoolean],  null),
+    ("Useradmin?", classOf[JBoolean],  null),
+    ("Active?", classOf[JBoolean],  null))
+
+  override def tableRows =
+    roleMapper.getAllUsers.toList map { user =>
+      val userId = Int box user.getId
+
+      userId -> List(userId,
+                     user.getLoginName,
+                     user.getFirstName,
+                     user.getLastName,
+                     Boolean box user.isSuperAdmin,
+                     Boolean box user.isUserAdmin,
+                     Boolean box user.isActive)
+    }  
 }

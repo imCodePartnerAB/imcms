@@ -17,7 +17,8 @@
     (com.vaadin.terminal ExternalResource ClassResource FileResource ThemeResource)
     (com.vaadin.data Property Property$ValueChangeListener)
     (com.imcode.imcms.servlet.superadmin.vaadin.ui OkCancelDialog)
-    (com.imcode.imcms.servlet.superadmin.vaadin.filemanager FileBrowser FileBrowserWithImagePreview)))
+    (com.imcode.imcms.servlet.superadmin.vaadin.filemanager FileBrowser FileBrowserWithImagePreview)
+    com.vaadin.data.util.ObjectProperty))
 
 
 (def None None$/MODULE$)
@@ -26,6 +27,9 @@
 (defn add-components [container & components]
   (doseq [c components] (.addComponent container c))
   container)
+
+(defmacro when-selected [[sym field] & forms]
+  `(when-let [~sym (.getValue ~field)] ~@forms))
 
 
 (defmacro add-btn-click-listener [button event & body]
@@ -252,179 +256,22 @@
                                   (str (.. app getURL toString) "images/imCMSpower.gif"))))))))
 
 
-(defn mk-main-wnd-content [wnd]
-  (let [app (.getApplication wnd)
-        content (VerticalLayout.)
-        file-browser (mk-file-browser)
-        menu (VerticalLayout.)
-        url (URL. "http://imcms.dev.imcode.com" )
-             embedded (Embedded. "" (ExternalResource. url))]
 
-    (.addListener (.tblDirContent file-browser)
-      (reify Property$ValueChangeListener
-        (valueChange [this event]
-          (when-let [file (.. event getProperty getValue)]
-            (when (image? file)
-              (let [img (embedded "" (file-resource app file))]
-                (doto img (.setWidth "100px") (.setHeight "100px"))
-                (.addComponent content img)))))))
-
-
-    ;(doto menu (.setHeight "500px"))
+(defn mk-main-wnd [app]
+  (let [wnd (Window. "Application main window")
+        content (VerticalLayout.)]
 
     (.setSizeFull content)
-    ;;;
-;    (add-components content
-;      (doto menu
-;        (.addComponent
-;          (add-btn-click-listener (Button. "Resize!") _ (println (bean embedded)))))
-;;            (.addComponent menu
-;;              (add-btn-click-listener  (Button. "new!!") e
-;;                                                         (.removeComponent menu (.getButton e)))))))
-;
-;       (let []
-;            (doto embedded
-;              (.setType Embedded/TYPE_BROWSER)
-;              ;(.setWidth "400px") (.setHeight "500px"))))
-;              .setSizeFull)))
-;
-;    ;(.setColumnExpandRatio content 1 1.0)
-;    (.setRowExpandRatio content 1 1.0)
 
-    
-
-
-;    (add-components content
-;
-;      (mk-vertical-layout-demo "250px")
-;      (mk-horizontal-layout-demo)
-;      (mk-layout-with-button-in-center-demo "250px", "250px")
-;      (mk-panel-with-button-in-center-demo "250px", "250px")
-;      (mk-panel-with-label-in-center-demo "250px", "250px")
-;
-;      file-browser, btn-app-info, btn-file-img, btn-cls-img, btn-ext-img)
-
-;    (add-components content
-;      (add-btn-click-listener (Button. "Checkbox test") _ (check-box-value-test)))
-;
-;    (let [txtReadOnly (TextField. "ReadOnly")]
-;      (.setEnabled txtReadOnly false)
-;      (add-components content txtReadOnly
-;        (add-btn-click-listener (Button. "Test read-only") _ (.setValue txtReadOnly "???"))))
-;
-    (let [chkBox (CheckBox. "Check box")]
-      (.setImmediate chkBox true)
-      (add-btn-click-listener chkBox _ (println "checked: " (.booleanValue chkBox)))
-
-      (add-components content chkBox))
-
-    (add-components content
-      (let [l (HorizontalLayout.)
-            b (new Button "test")]
-
-        (add-btn-click-listener b _ (println "ok!!!"))
-        (.addComponent l b)
-        (dotimes [i 10]
-          (.addComponent l (new Button (str "button " i))))
-
-        l))
-
-    (add-components content (doto (TextField. "Mail") (.setWidth "100%")))
-
-
-
-;    (add-components content
-;      (mk-grid-lyt-demo-1 "250px", "250px")
-;      (mk-grid-lyt-demo-2))
-;
-;    (add-components content
-;      (let [lytHorisontal (VerticalLayout.)
-;            lblMsg (Label. "Default message")
-;            txtMsg (TextField. "")
-;            btnOk (Button. "Ok")]
-;        (.setWidth lblMsg "50px")
-;        (doto lytHorisontal (.setSpacing true) (.setMargin true))
-;
-;        (add-btn-click-listener btnOk _ (.setValue lblMsg (.getValue txtMsg)))
-;        (add-components lytHorisontal lblMsg txtMsg btnOk)))
-
-;    (add-components content
-;      (let [mb (MenuBar.)
-;            lt (VerticalLayout.)
-;            hl (HorizontalLayout.)]
-;        (.addItem mb "Add new" (ThemeResource. "icons/16/document-add.png")
-;                     (reify MenuBar$Command
-;                       (menuSelected [this item] (println "ADD NEW"))))
-;
-;        (.addItem mb "Edit" (ThemeResource. "icons/16/document-txt.png")
-;                     (reify MenuBar$Command
-;                       (menuSelected [this item] (println "EDIT"))))
-;
-;        (.addItem mb "Delete" (ThemeResource. "icons/16/document-delete.png")
-;                     (reify MenuBar$Command
-;                       (menuSelected [this item] (println "DELETE"))))
-;
-;
-;        (.setWidth hl "100%")
-;        (.setWidth mb "100%")
-;        (doto hl
-;          (.addComponent mb)
-;          (.setExpandRatio mb 1.0)
-;          (.addComponent (doto (Button. "Reload")
-;                           (.setStyleName Button/STYLE_LINK)
-;                           (.setIcon (ThemeResource. "icons/16/reload.png")))))))
-
-
-;      val btnContacts = new Button("Edit (optional)") {
-;    setCaption("Contacts")
-;    setStyleName(Button.STYLE_LINK)
-;    setIcon(new ThemeResource("icons/16/globe.png"))
-;  }
-;      (add-components content
-;        (let [fl (FormLayout.)
-;              hl (HorizontalLayout.)
-;              btn (Button. "Edit...")]
-;          (doto btn
-;             (.setStyleName Button/STYLE_LINK)
-;             )
-;
-;          (doto hl
-;            (.setIcon (ThemeResource. "icons/16/globe.png"))
-;            (.setCaption "Contacts")
-;            (.addComponent btn))
-;
-;          (doto fl
-;            (.addComponent hl))))
-;
-;      (add-components content
-;        (let [p (Panel.)]
-;          (dotimes [i 10]
-;            (.addComponent p (CheckBox. (str "Checkbox " i))))
-;
-;          (doto p
-;            .setSizeUndefined
-;           (-> .getContent (.setMargin false))
-;            (-> .getContent .setSizeUndefined)
-;            (.setHeight "120px")
-;            (.setWidth "150px")
-;            ;(.addStyleName Runo/PANEL_LIGHT)
-;            (.addStyleName Panel/STYLE_LIGHT)
-;            )))
-
-
-    ; let
-
-    (add-components content (Button. "Clock me!"))
-
-    content
-    ))
+    (doto wnd
+      (.setContent content))))
 
 
 (defn init[^com.vaadin.Application app]
-  (let [wnd (Window. "Application main window")]
-    (.setTheme app "runo")
-    (.setMainWindow app wnd)
-    (.setContent wnd (mk-main-wnd-content wnd))))
+  (let [wnd (mk-main-wnd app)]
+    (doto app
+      (.setTheme "runo")
+      (.setMainWindow wnd))))
 
 
 
