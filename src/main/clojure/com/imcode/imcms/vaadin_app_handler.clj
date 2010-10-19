@@ -263,6 +263,13 @@
 
     (.setSizeFull content)
 
+    (let [b (Button. "Clock me!")
+          t (TextField. "abc")]
+
+
+
+      (add-components content b t))
+
     (doto wnd
       (.setContent content))))
 

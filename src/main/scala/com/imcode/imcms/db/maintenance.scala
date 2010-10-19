@@ -51,7 +51,7 @@ class DB(ds: DataSource) extends Logger {
 
       logger.info("Database has been initialized.")
     }
-
+    
     version() match {
       case schema.version =>
         logger.info("Database is up-to-date.");

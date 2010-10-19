@@ -415,8 +415,6 @@ public class Imcms {
         Imcms.i18nSupport = i18nSupport;
 	}
 
-
-
     /**
      * Inits and/or updates database if necessary.
      */

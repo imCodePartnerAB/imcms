@@ -55,7 +55,14 @@ class MetaMVC(app: VaadinApplication,
         l.txtMenuText  setValue labels.getMenuText
       }
 
-      v.lytI18n.tsLabels.addTab(lytLabels, language.getName, null).setEnabled(enabled)
+      let(v.lytI18n.tsLabels.addTab(lytLabels)) { tab =>
+        if (Imcms.getI18nSupport.isDefault(language)) {
+          tab.setCaption(language.getName + " (default)")  
+        } else {
+          tab.setCaption(language.getName)
+          tab.setEnabled(enabled)
+        }
+      }
     }
 
     v.lytI18n.btnSettings addListener unit {
@@ -68,6 +75,7 @@ class MetaMVC(app: VaadinApplication,
             setEnabled(!Imcms.getI18nSupport.isDefault(language))
             // add listner - disable tab
           }
+          content.lytLanguages.addComponent(chkLanguage)
         }
 
         w.setMainContent(content)
@@ -80,20 +88,19 @@ class MetaMVC(app: VaadinApplication,
 //
 //}
 
+
 class I18nSettingsDialogContent extends FormLayout {
   val ogDisabledShowMode = new OptionGroup(
-    "When disabled", 
+    "When disabled",
     List("Show in default language", "Show 'Not found' page")
   )
 
-  val pnlLanguages = new Panel {
+  val lytLanguages = new VerticalLayout {
     setCaption("Enabled languages")
-    setStyleName(Panel.STYLE_LIGHT)
-    setHeight("150px")
-    setScrollable(true)
+    setSizeUndefined
   }
 
-  addComponents(this, pnlLanguages, ogDisabledShowMode)
+  addComponents(this, lytLanguages, ogDisabledShowMode)
 }
 
 
@@ -103,15 +110,24 @@ class LabelsLyt extends FormLayout {
   val embLinkImage = new TextField("Link image")
 
   addComponents(this, txtTitle, txtMenuText, embLinkImage)
+  setSpacing(false)
+  setSizeUndefined
 }
 
-class MetaLyt extends VerticalLayout {
+class MetaLyt extends FormLayout {
+  val txtName = new TextField("Name")
   val lytI18n = new VerticalLayout {
-    val tsLabels = new TabSheet
-    val btnSettings = new Button("Settings...")
+    val tsLabels = new TabSheet {setWidth("100%")}
+    val btnSettings = new Button("Settings...") {
+      setStyleName(Button.STYLE_LINK)
+    }
 
+    setCaption("Appearence")
     addComponents(this, tsLabels, btnSettings)
+    setSizeUndefined
   }
 
-  addComponent(lytI18n)
+  addComponents(this, txtName, lytI18n)
+  setMargin(true)
+  setWidth("100%")
 }
