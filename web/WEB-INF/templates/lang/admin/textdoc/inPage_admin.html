@@ -1,52 +1,3 @@
-<style type="text/css">
-/*<![CDATA[*/
-/* changePage */
-#changePageDiv { padding: 0 0 10px 0; }
-#changePageTable { border-right: 1px solid #000; border-bottom: 1px solid #000; background-color:#f5f5f7; }
-#changePageTdTop { padding: 2px; background-color:#20568D; }
-#changePageTd1, #changePageTd1 SPAN { font: 10px Verdana,Geneva,sans-serif; color:#fff; }
-#changePageTd2 {  }
-.changePageTdBottom TD { padding-top: 3px; }
-.changePageSelect { font: 10px Verdana,Geneva,sans-serif; color:#000; }
-.changePageHeading { font: bold 11px Verdana,Geneva,sans-serif; color:#cce; }
-.changePageButton {
-	background-color:#e2e2e4;
-	font: 10px Tahoma, Arial, sans-serif;
-	color:#000;
-	padding: 0 4px;
-	border-width: 1px;
-	border-style: outset;
-	border-color: #ccc #666 #666 #ccc;
-	cursor:pointer;
-}
-INPUT.imcmsFormBtnSmall {
-	background-color: #20568D;
-	color: #ffffff;
-	font: 10px Tahoma, Arial, sans-serif;
-	border: 2px outset #668DB6;
-	border-color: #668DB6 #000 #000 #668DB6;
-	padding: 0 2px;
-	cursor:pointer;
-}
-A.imLinkHelp:link, A.imLinkHelp:visited, A.imLinkHelp:active, A.imLinkHelp:hover {
-	font: bold 15px Arial, Tahoma,Verdana,sans-serif; color:#ee0; text-decoration:none;
-}
-B { font-weight: bold; }
-/*]]>*/
-</style>
-
-<script type="text/javascript">
-//<![CDATA[
-function targetNewWindow() {
-	var exampelWindow = window.open("", "Exempelmall", "scrollbars=yes,toolbar=0,resizable=yes,location=0,directories=0,status=0,menubar=0,height=500,width=800") ;
-	document.changePageForm.target = "Exempelmall" ;
-	exampelWindow.focus() ;
-}
-function resetTarget() {
-	document.changePageForm.target = "" ;
-}
-//]]>
-</script>
 
 <div id="changePageDiv">
 	<form name="changePageForm" method="post" action="SaveInPage">
@@ -69,7 +20,7 @@ function resetTarget() {
 			#getTemplateGroups#
 		</select></td>
 		
-		<td><input type="submit" name="change_group" value="<? templates/sv/textdoc/inPage_admin.html/2001 ?>" onclick="resetTarget()" class="changePageButton" style="width:90px" /></td>
+		<td><input type="submit" name="change_group" value="<? templates/sv/textdoc/inPage_admin.html/2001 ?>" onclick="imcmsResetTarget()" class="changePageButton" style="width:90px" /></td>
 		
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt="" /></td>
 		
@@ -79,11 +30,11 @@ function resetTarget() {
 			<option></option>
 		</select></td>
 		
-		<td><input type="submit" name="preview" value="<? templates/sv/textdoc/inPage_admin.html/2002 ?>" onclick="targetNewWindow()" class="changePageButton" /></td>
+		<td><input type="submit" name="preview" value="<? templates/sv/textdoc/inPage_admin.html/2002 ?>" onclick="imcmsTargetNewWindow()" class="changePageButton" /></td>
 		
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt="" /></td>
 		
-		<td><input type="submit" name="update" value="  <? templates/sv/textdoc/inPage_admin.html/2003 ?>  " onclick="resetTarget()" class="changePageButton" /></td>
+		<td><input type="submit" name="update" value="  <? templates/sv/textdoc/inPage_admin.html/2003 ?>  " onclick="imcmsResetTarget()" class="changePageButton" /></td>
 		
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt="" /></td>
 	</tr>

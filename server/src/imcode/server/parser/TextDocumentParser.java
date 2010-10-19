@@ -34,6 +34,7 @@ public class TextDocumentParser {
     static Pattern hashtagPattern;
     private static Pattern htmlTagPattern;
     private static Pattern htmlTagHtmlPattern;
+    private static Pattern headEndTagHtmlPattern;
 
     static {
         Perl5Compiler patComp = new Perl5Compiler();
@@ -43,6 +44,8 @@ public class TextDocumentParser {
             htmlTagPattern = patComp.compile( "<[^>]+?>", Perl5Compiler.READ_ONLY_MASK );
 
             htmlTagHtmlPattern = patComp.compile( "<[hH][tT][mM][lL]\\b", Perl5Compiler.READ_ONLY_MASK );
+
+            headEndTagHtmlPattern = patComp.compile( "<\\/[hH][eE][aA][dD]\\b", Perl5Compiler.READ_ONLY_MASK );
 
             hashtagPattern = patComp.compile( "#[^ #\"<>&;\\t\\r\\n]+#", Perl5Compiler.READ_ONLY_MASK );
         } catch ( MalformedPatternException ignored ) {
@@ -96,21 +99,33 @@ public class TextDocumentParser {
 
             Perl5Matcher patMat = new Perl5Matcher();
 
-            final String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
-            if (null == template) {
+            final String imcmsMessage     = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
+            final String imcmsAdminScript = service.getAdminTemplate( "textdoc/imcms_admin_headtag.html", user, null );
+						HttpServletRequest request    = null;
+						HttpServletResponse response  = null;
+						boolean hasAdminPanel         = false;
+						try {
+							request = documentRequest.getHttpServletRequest();
+							response = documentRequest.getHttpServletResponse();
+							hasAdminPanel = !"".equals(Html.getAdminButtons(user, document, request, response));
+						} catch (Exception e) {}
+						if (null == template) {
                 throw new RuntimeException("Template not found: "+templateName);
             } else if (template.getFileName().endsWith(".jsp") || template.getFileName().endsWith(".jspx")) {
                 try {
-                    HttpServletRequest request = documentRequest.getHttpServletRequest();
-                    HttpServletResponse response = documentRequest.getHttpServletResponse();
                     String contents = Utility.getContents("/WEB-INF/templates/text/" + template.getFileName(), request, response);
                     contents = Util.substitute( patMat, htmlTagHtmlPattern, new Substitution() {
-                    public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
-                                                    PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
-                                                    Pattern pattern ) {
+                       public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i, PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher, Pattern pattern ) {
                           stringBuffer.append( imcmsMessage ).append( matchResult.group( 0 ) );
                        }
                     }, contents ) ;
+	                  if (hasAdminPanel) {
+											contents = Util.substitute( patMat, headEndTagHtmlPattern, new Substitution() {
+												 public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i, PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher, Pattern pattern ) {
+														stringBuffer.append( imcmsAdminScript ).append( matchResult.group( 0 ) );
+												 }
+											}, contents ) ;
+	                  }
 	                  out.write(contents);
                 } catch ( ServletException e ) {
                     throw new UnhandledException(e);
@@ -128,13 +143,19 @@ public class TextDocumentParser {
                 tagsReplaced = Util.substitute( patMat, hashtagPattern, hashtagsubstitution, tagsReplaced, Util.SUBSTITUTE_ALL );
 
                 String emphasizedAndTagsReplaced = applyEmphasis( documentRequest, user, tagsReplaced, patMat );
-                out.write(Util.substitute( patMat, htmlTagHtmlPattern, new Substitution() {
-                    public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
-                                                    PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
-                                                    Pattern pattern ) {
+                String cont = Util.substitute( patMat, htmlTagHtmlPattern, new Substitution() {
+                    public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i, PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher, Pattern pattern ) {
                         stringBuffer.append( imcmsMessage ).append( matchResult.group( 0 ) );
                     }
-                }, emphasizedAndTagsReplaced ));
+                }, emphasizedAndTagsReplaced );
+	              if (hasAdminPanel) {
+									cont = Util.substitute( patMat, headEndTagHtmlPattern, new Substitution() {
+											public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i, PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher, Pattern pattern ) {
+													stringBuffer.append( imcmsAdminScript ).append( matchResult.group( 0 ) );
+											}
+									}, cont );
+	              }
+								out.write(cont);
             }
         } finally {
             if (null != previousViewing) {
