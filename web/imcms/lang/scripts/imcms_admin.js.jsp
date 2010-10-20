@@ -1,5 +1,24 @@
-<%@page contentType="text/javascript"%>
-<%@taglib prefix="vel" uri="imcmsvelocity"%>
+<%@ page
+	
+	contentType="text/javascript"
+	pageEncoding="UTF-8"
+	
+%><%@ taglib prefix="vel" uri="imcmsvelocity" %><%
+
+String cp = request.getContextPath() ;
+
+%>
+
+<jsp:include page="imcms_jquery_1.4.2.js" />
+
+<jsp:include page="imcms_jquery-ui_1.8.5.js" />
+
+<%--
+jQ(document).ready(function($) {
+	//...
+}) ;
+--%>
+
 <vel:velocity>
 
 /* *******************************************************************************************
@@ -19,7 +38,7 @@ var isSafari  = inStr(ua,"Safari");
 var isWindows = inStr(platf,"Win32");
 var isMac     = inStr(platf,"Mac");
 
-var isIE55    = (isWindows && hasDocumentAll && hasGetElementById && (inStr(ua,"MSIE 5.5") || inStr(ua,"MSIE 6.0") || inStr(ua,"MSIE 6.5") || inStr(ua,"MSIE 7.0") || !/MSIE \d+/.test(ua)) && !isOpera);
+var isIE55    = (isWindows && hasDocumentAll && hasGetElementById && /MSIE \d+/.test(ua) && !isOpera);
 
 function inStr(str,val,cas) {
 	var ret;

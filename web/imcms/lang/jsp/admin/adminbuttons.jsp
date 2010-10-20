@@ -6,7 +6,7 @@
 	        imcode.server.document.textdocument.TextDocumentDomainObject,
 	        imcode.server.user.UserDomainObject,
 	        imcode.util.Html,
-	        imcode.util.Utility"
+	        imcode.util.Utility, org.apache.commons.lang.StringUtils, org.apache.commons.lang.StringEscapeUtils"
 	
 	contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
@@ -30,6 +30,8 @@ DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetF
 			<td id="adminPanelTd1_2" width="50%" align="center" nowrap="nowrap">
 			<span class="adminPanelText">
 			<span title="<? web/imcms/lang/jsp/admin/adminbuttons.jsp/title_id ?>"><b>Id:</b> <%= document.getId() %></span> &nbsp;
+			<span title="<? web/imcms/lang/jsp/admin/adminbuttons.jsp/title_alias ?>"><b>Alias:</b> <%=
+			(null != document.getAlias()) ? "<span title=\"" + StringEscapeUtils.escapeHtml(document.getAlias()) + "\">" + StringUtils.abbreviate(document.getAlias(), 23) + "</span>" : "-" %></span> &nbsp;
 			<span title="<? web/imcms/lang/jsp/admin/adminbuttons.jsp/title_type ?>"><b><? templates/sv/adminbuttons/adminbuttons.html/1001 ?>:</b>
 			<%= document.getDocumentTypeName().toLocalizedString( request ) %></span> &nbsp;</span></td>
 			<td id="adminPanelTd1_3" width="25%" align="right"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>

@@ -17,69 +17,139 @@ boolean isIE    = re.match("/(MSIE \\d)/i", uAgent) ;
 boolean isGecko = re.match("/Gecko/i", uAgent) ;
 
 %>
-.imcms_label, .imcms_label:link, .imcms_label:visited { font: 10px Verdana; color:#c00000; text-decoration:none; background-color:#ffc }
-.imcms_label:active, .imcms_label:hover { font: 10px Verdana; color:#009; text-decoration:underline; background-color:#ffc }
+.imcms_label,
+.imcms_label:link,
+.imcms_label:visited {
+	font: 10px Verdana !important;
+	color: #c00000 !important;
+	text-decoration: none !important;
+	background-color: #ffc !important;
+}
+.imcms_label:active,
+.imcms_label:hover {
+	font: 10px Verdana !important;
+	color: #009 !important;
+	text-decoration: underline !important;
+	background-color: #ffc !important;
+}
 
 /* adminMode */
 
-#adminPanelDiv    { padding: 15px 0 10px 0; }
-.adminPanelTable  { border-right: 1px solid #000; border-bottom: 1px solid #000; background-color: #f5f5f7; }
-.adminPanelTd1    { padding: 2px; background-color: #20568D; }
-#adminPanelTd1_1  { }
-.adminPanelLogo   { font: bold 11px Verdana,Geneva,sans-serif; color: #ddf; letter-spacing: -1px; }
-#adminPanelTd1_2  {  }
+#adminPanelDiv {
+	padding: 15px 0 10px 0 !important;
+}
+.adminPanelTable {
+	border-right: 1px solid #000 !important;
+	border-bottom: 1px solid #000 !important;
+	background-color: #f5f5f7 !important;
+}
+.adminPanelTd1 {
+	padding: 2px !important;
+	background-color: #20568D !important;
+}
+#adminPanelTd1_1 {}
+.adminPanelLogo {
+	font: bold 11px Verdana,Geneva,sans-serif !important;
+	color: #ddf !important;
+	letter-spacing: -1px !important;
+}
+#adminPanelTd1_2 {}
 .adminPanelText,
-.adminPanelText SPAN { font: 11px Verdana,Geneva,sans-serif; color: #fff; }
-#adminPanelTd1_3  {  }
-.adminPanelTd2    { padding: 3px; height: 32px; vertical-align: top; }
+.adminPanelText SPAN {
+	font: 11px Verdana,Geneva,sans-serif !important;
+	color: #fff !important;
+}
+#adminPanelTd1_2 .adminPanelText SPAN {
+	white-space: nowrap !important;
+}
+#adminPanelTd1_3 {}
+.adminPanelTd2 {
+	padding: 3px !important;
+	height: 32px !important;
+	vertical-align: top !important;
+}
 
 .adminPanelTd2 A:hover IMG {<%
 	if (isGecko) { %>
-	<%= "-moz-opacity: 0.5;" %><%
+	<%= "-moz-opacity: 0.5 !important;" %><%
 	} else if (isIE) { %>
-	<%= "filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=0, xray=0, mirror=0, invert=0, opacity=0.5, rotation=0);" %><%
+	<%= "filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=0, xray=0, mirror=0, invert=0, opacity=0.5, rotation=0) !important;" %><%
 	} else { %>
-	<%= "opacity: 0.5;" %><%
+	<%= "opacity: 0.5 !important;" %><%
 	} %>
 }
-.adminPanelTable B { font-weight: bold; }
+.adminPanelTable B {
+	font-weight: bold !important;
+}
 
 /* changePage */
 
-#changePageDiv { padding: 0 0 10px 0; }
-#changePageTable { border-right: 1px solid #000; border-bottom: 1px solid #000; background-color:#f5f5f7; }
-#changePageTdTop { padding: 2px; background-color:#20568D; }
-#changePageTd1, #changePageTd1 SPAN { font: 10px Verdana,Geneva,sans-serif; color:#fff; }
-#changePageTd2 {  }
-.changePageTdBottom TD { padding-top: 3px; }
-.changePageSelect { font: 10px Verdana,Geneva,sans-serif; color:#000; }
-.changePageHeading { font: bold 11px Verdana,Geneva,sans-serif; color:#cce; }
+#changePageDiv {
+	padding: 0 0 10px 0 !important;
+}
+#changePageTable {
+	border-right: 1px solid #000 !important;
+	border-bottom: 1px solid #000 !important;
+	background-color: #f5f5f7 !important;
+}
+#changePageTdTop {
+	padding: 2px !important;
+	background-color: #20568d !important;
+}
+#changePageTd1 {
+	font: 10px Verdana,Geneva,sans-serif !important;
+	color: #fff !important;
+	padding-left: 5px !important;
+}
+#changePageTd1 SPAN {
+	white-space: nowrap !important;
+}
+#changePageTd2 {
+	padding-left: 10px !important;
+}
+.changePageTdBottom TD {
+	padding-top: 3px !important;
+}
+.changePageSelect {
+	font: 10px Verdana,Geneva,sans-serif !important;
+	color: #000 !important;
+}
+.changePageHeading {
+	font: 10px Verdana,Geneva,sans-serif !important;
+	color: #fff !important;
+}
 .changePageButton {
-	background-color:#e2e2e4;
-	font: 10px Tahoma, Arial, sans-serif;
-	color:#000;
-	padding: 0 4px;
-	border-width: 1px;
-	border-style: outset;
-	border-color: #ccc #666 #666 #ccc;
-	cursor:pointer;
+	background-color: #e2e2e4 !important;
+	font: 10px Tahoma, Arial, sans-serif !important;
+	color: #000 !important;
+	padding: 0 4px !important;
+	border-width: 1px !important;
+	border-style: outset !important;
+	border-color: #ccc #666 #666 #ccc !important;
+	cursor:pointer !important;
 }
-INPUT.imcmsFormBtnSmall {
-	background-color: #20568D;
-	color: #ffffff;
-	font: 10px Tahoma, Arial, sans-serif;
-	border: 2px outset #668DB6;
-	border-color: #668DB6 #000 #000 #668DB6;
-	padding: 0 2px;
-	cursor:pointer;
+#changePageDiv .imcmsFormBtnSmall {
+	background-color: #20568d !important;
+	color: #fff !important;
+	font: 10px Tahoma, Arial, sans-serif !important;
+	border: 1px outset #668db6 !important;
+	border-color: #668db6 #000 #000 #668db6 !important;
+	padding: 0 2px !important;
+	cursor: pointer !important;
 }
-#changePageTable B { font-weight: bold; }
-A.imLinkHelp:link, A.imLinkHelp:visited, A.imLinkHelp:active, A.imLinkHelp:hover {
-	font: bold 15px Arial, Tahoma,Verdana,sans-serif; color:#ee0; text-decoration:none;
+#changePageTable B {
+	font-weight: bold !important;
+}
+A.imLinkHelp:link,
+A.imLinkHelp:visited,
+A.imLinkHelp:active,
+A.imLinkHelp:hover {
+	font: bold 15px Arial, Tahoma,Verdana,sans-serif !important;
+	color: #ee0 !important;
+	text-decoration:none !important;
 }
 
-
-
+<%-- Testing feature --%>
 .ui-effects-transfer {
-	border: 2px dotted gray;
+	border: 2px dotted #20568d !important;
 }

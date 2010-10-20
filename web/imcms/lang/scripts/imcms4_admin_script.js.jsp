@@ -38,7 +38,7 @@ public static String getURLcontent( String urlString, String encoding ) {
 		}
 }
 
-%><%-- Did some playing. Thought I'd continue later.
+%><%-- Did some playing. Thought I'd continue later.<%
 
 Perl5Util re = new Perl5Util() ;
 
@@ -68,7 +68,7 @@ jQ(document).ready(function($) {
 		'height' : ($('#adminPanelDiv .adminPanelTable').height()) + 'px'
 	}).prependTo('body') ;
 	
-	$('#adminPanelDiv .adminPanelTable').show('transfer',{ to: '#adminPanelFixed', className: 'ui-effects-transfer' }, 1000, function() {
+	$('#adminPanelDiv .adminPanelTable').show('transfer',{ to: '#adminPanelFixed', className: 'ui-effects-transfer' }, 2000, function() {
 		$('#adminPanelFixed').html($('#adminPanelDiv').html()) ;
 		$('#adminPanelDiv').html('').hide() ;
 		//alert('transfered!') ;
@@ -77,8 +77,8 @@ jQ(document).ready(function($) {
 	
 }) ;
 
---%>
 
+--%>
 <vel:velocity>
 
 <%-- Moved from inPage_admin.html --%>

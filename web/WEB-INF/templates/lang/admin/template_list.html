@@ -50,7 +50,33 @@
 </form>
 </table>
 #gui_mid()
-
+<script type="text/javascript">
+//<![CDATA[
+jQ(document).ready(function($) {
+	
+	$('#templateListShowDocBtn').attr('title', (('swe' == '$language') ? '[Ctrl] eller [Shift] när du klickar medför att sidan öppnas i ett nytt fönster' : '[Ctrl] or [Shift] when you click makes the page open in a new window')) ;
+	
+	$('#templateListShowDocBtn').click(function(event) {
+		if (1 == $('#templateListMetaIdSelect option:selected').length) {
+			event.preventDefault() ;
+			var sMetaId = $('#templateListMetaIdSelect option:selected:first').val() ;
+			if (event && (event.shiftKey || event.ctrlKey)) {
+				window.open('$contextPath/' + sMetaId) ;
+				$('#message').html(('swe' == '$language') ? 'Sidan har laddats i ett nytt fönster.' : 'The page was loaded in a new window.').slideDown('slow').delay(7000).slideUp('slow') ;
+			} else {
+				try {
+					parent.opener.document.location = '$contextPath/' + sMetaId ;
+					$('#message').html(('swe' == '$language') ? 'Sidan har laddats i det underliggande fönstret.' : 'The page was loaded in the underlaying window.').slideDown('slow').delay(7000).slideUp('slow') ;
+				} catch (e) {
+					document.location = '$contextPath/' + sMetaId ;
+				}
+			}
+		}
+	}) ;
+	
+}) ;
+//]]>
+</script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateChange" action="TemplateChange" method="post">
 <input type="hidden" name="group_id" value="#group_id#">
@@ -68,19 +94,19 @@
 	</tr>
 	<tr>
 		<td align="right">
-		<select name="template" size="10" style="width:100%" multiple>
+		<select name="template" size="10" style="width:100%" multiple ondblclick="jQ('input[name=list_templates_docs]').click();">
 		#template_list#
 		</select></td>
 		<td align="center">
 		&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="list_templates_docs" value="<? templates/sv/template_list.html/2014 ?>" alt="<? templates/sv/template_list.html/2015 ?>" title="<? templates/sv/template_list.html/2016 ?>" style="width:70">&nbsp;</td>
 		<td>
-		<select name="templates_doc" size="10" style="width:100%" multiple>
+		<select id="templateListMetaIdSelect" name="templates_doc" size="10" style="width:100%" multiple ondblclick="jQ('#templateListShowDocBtn').click();">
 		#templates_docs#
 		</select></td>
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>
-		<td><input type="submit" class="imcmsFormBtnSmall" name="show_doc" value="<? templates/sv/template_list.html/2017 ?>"></td>
+		<td><input type="submit" id="templateListShowDocBtn" class="imcmsFormBtnSmall" name="show_doc" value="<? templates/sv/template_list.html/2017 ?>"><div id="message" style="display:none; padding-top:10px; color:#0a0;"></div></td>
 	</tr>
 	</table></td>
 </tr>
