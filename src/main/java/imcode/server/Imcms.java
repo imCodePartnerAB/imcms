@@ -11,6 +11,7 @@ import imcode.util.Prefs;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -420,7 +421,11 @@ public class Imcms {
      */
     public static void prepareDatabase() {
         String scriptsDir = new File(path.getAbsolutePath(), "WEB-INF/sql").getAbsolutePath();
-        Schema schema = Schema.load(new File(path, "WEB-INF/classes/schema.xml"));
+        URL schemaConfFileURL = Imcms.class.getResource("/schema.xml");
+
+        if (schemaConfFileURL == null) throw new RuntimeException("Schema file could not be found");
+
+        Schema schema =  Schema.load(new File(schemaConfFileURL.getFile()));
 
         DataSource dataSource = (DataSource)getSpringBean("dataSource");
         DB db = new DB(dataSource);

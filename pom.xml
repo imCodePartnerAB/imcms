@@ -630,7 +630,6 @@
 
     <build>
         <finalName>${project.artifactId}</finalName>
-
         <!--Please note that there is additional resources dir - resources-conf.-->
         <!--Those resources are processed by ant script and copied under WEB-INF/conf dir. -->
         <resources>
@@ -919,7 +918,8 @@
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>7.0.0.RC6</version>
-                <configuration>                    
+                <configuration>
+                    <!--<classesDirectory>${project.build.directory}/classes</classesDirectory>-->
                     <!--<webAppSourceDirectory>${project.build.directory}/${project.build.finalName}</webAppSourceDirectory>-->
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
