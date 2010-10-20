@@ -919,7 +919,9 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>7.0.0.RC6</version>
                 <configuration>
-                    <!--<classesDirectory>${project.build.directory}/classes</classesDirectory>-->
+                        <!--<scanIntervalSeconds>3</scanIntervalSeconds>-->
+                        <stopKey>${project.name}</stopKey>
+                        <stopPort>9696</stopPort>
                     <!--<webAppSourceDirectory>${project.build.directory}/${project.build.finalName}</webAppSourceDirectory>-->
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">

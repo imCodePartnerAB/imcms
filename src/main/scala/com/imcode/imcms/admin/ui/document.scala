@@ -81,6 +81,12 @@ class MetaMVC(app: VaadinApplication,
         w.setMainContent(content)
       }
     }
+
+    v.btnKeywords addListener unit {
+      app.initAndShow(new OkCancelDialog("Keywords")) { w =>
+        w setMainContent new KeywordsDialogContent(List("Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Fi", "Lambda"))
+      }
+    }
   }
 }
 
@@ -114,20 +120,70 @@ class LabelsLyt extends FormLayout {
   setSizeUndefined
 }
 
+class KeywordsDialogContent(keywords: Seq[String] = List.empty) extends GridLayout(3,2) {
+  val lstKeywords = new ListSelect("Keywords") {
+    setNullSelectionAllowed(true)
+    setMultiSelect(true)
+    setRows(10)
+  }
+
+  val btnAdd = new Button("+")
+  val btnRemove = new Button("-")
+  val txtKeyword = new TextField {
+    setInputPrompt("New keyword")
+  }
+
+  addComponent(txtKeyword, 0, 0)
+  addComponent(btnAdd, 1, 0)
+  addComponent(btnRemove, 2, 0)
+  addComponent(lstKeywords, 0, 1, 2, 1)
+
+  btnAdd addListener unit {
+    txtKeyword.stringValue.trim.toLowerCase match {
+      case value if value.length > 0 && lstKeywords.getItem(value) == null =>
+        setKeywords(value :: lstKeywords.getItemIds.asInstanceOf[JCollection[String]].toList)
+      case _ =>
+    }
+
+    txtKeyword setValue ""
+  }
+
+  btnRemove addListener unit {
+    whenSelected[JCollection[String]](lstKeywords) { _ foreach { lstKeywords removeItem _ } }
+  }
+
+  setKeywords(keywords)
+  
+  def setKeywords(keywords: Seq[String]) {
+    lstKeywords.removeAllItems
+    keywords.sorted foreach { lstKeywords addItem _ }
+  }
+}
+
 class MetaLyt extends FormLayout {
   val txtName = new TextField("Name")
+  val txtAlias = new TextField("Alias")
   val lytI18n = new VerticalLayout {
     val tsLabels = new TabSheet {setWidth("100%")}
     val btnSettings = new Button("Settings...") {
       setStyleName(Button.STYLE_LINK)
     }
+    val chkCopyLabelsTextToPage = new CheckBox("Copy link heading & subheading to text 1 & text 2 in page")
 
     setCaption("Appearence")
-    addComponents(this, tsLabels, btnSettings)
+    addComponents(this, tsLabels, btnSettings, chkCopyLabelsTextToPage)
     setSizeUndefined
   }
 
-  addComponents(this, txtName, lytI18n)
+  //refactor
+  val btnKeywords = new Button("Keywords"){
+    setStyleName(Button.STYLE_LINK)
+  }
+  val btnCategories = new Button("Categories"){
+    setStyleName(Button.STYLE_LINK)
+  }
+
+  addComponents(this, txtName, txtAlias, lytI18n, btnKeywords, btnCategories)
   setMargin(true)
   setWidth("100%")
 }
