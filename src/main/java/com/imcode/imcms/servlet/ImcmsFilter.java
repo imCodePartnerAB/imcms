@@ -39,10 +39,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import com.imcode.imcms.api.I18nLanguage;
 
 /**
- * Front filter - initializes Imcms and intercepts all but supervisor requests.
+ * Front filter - initializes Imcms and intercepts all requests.
  *
- * Request handling depends on current imcms mode:
- * When imcms in the maintenance mode then request is ignored and service unavailable error is sent.
+ * Request handling depends on a current imcms mode:
+ * When in maintenance mode service unavailable error is sent.
  * Otherwise request is processed normally.
  *
  * @see imcode.server.Imcms
@@ -151,7 +151,6 @@ public class ImcmsFilter implements Filter {
      */
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
-
         delegateFilter.doFilter(request, response, filterChain);
     }
 

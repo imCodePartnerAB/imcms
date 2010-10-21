@@ -122,13 +122,12 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         // languagesStates.put(Imcms.getI18nSupport().getDefaultLanguage(), true);
 
         Integer docId = document.getMeta().getId();
-        Integer docVersionNo = document.getVersionNo();
         
         MetaDao metaDao = (MetaDao)Imcms.getSpringBean("metaDao");
         
         if (docId == null) {
             for (I18nLanguage language: languages) {
-                labelsMap.put(language, Factory.createLabels(docId, docVersionNo, language));
+                labelsMap.put(language, Factory.createLabels(docId, language));
             }
 
             labelsMap.put(document.getLanguage(), document.getLabels());
@@ -138,9 +137,9 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             }
 
             for (I18nLanguage language: languages) {
-                DocumentLabels labels = metaDao.getLabels(docId, docVersionNo, language);
+                DocumentLabels labels = metaDao.getLabels(docId, language);
                 if (labels == null) {
-                    labels = Factory.createLabels(docId, docVersionNo, language);    
+                    labels = Factory.createLabels(docId, language);    
                 }
 
                 labelsMap.put(language, labels);

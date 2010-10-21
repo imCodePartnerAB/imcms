@@ -1,17 +1,17 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.textdocument.DocI18nItem;
+import imcode.server.document.textdocument.DocItem;
 import imcode.server.document.textdocument.DocVersionItem;
 
 import javax.persistence.*;
 
 /**
- * Labels is a set of texts and images associated with a document.
- * Labels is both i18n and version item.
+ * Document labels
  */
 @Entity
 @Table(name="imcms_doc_labels")
-public class DocumentLabels implements Cloneable, DocVersionItem, DocI18nItem {
+public class DocumentLabels implements Cloneable, DocItem, DocI18nItem {
 
 	@Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -19,9 +19,6 @@ public class DocumentLabels implements Cloneable, DocVersionItem, DocI18nItem {
 
 	@Column(name="doc_id")
     private Integer docId;
-
-    @Column(name="doc_version_no")
-    private Integer docVersionNo;
 
 	@OneToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="language_id", referencedColumnName="id")
@@ -94,14 +91,6 @@ public class DocumentLabels implements Cloneable, DocVersionItem, DocI18nItem {
 
     public void setMenuImageURL(String menuImageURL) {
         this.menuImageURL = menuImageURL;
-    }
-
-    public Integer getDocVersionNo() {
-        return docVersionNo;
-    }
-
-    public void setDocVersionNo(Integer docVersionNo) {
-        this.docVersionNo = docVersionNo;
     }
 
     public I18nLanguage getLanguage() {

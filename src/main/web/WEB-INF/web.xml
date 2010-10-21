@@ -18,21 +18,8 @@
     <listener>
         <listener-class>com.imcode.imcms.servlet.ImcmsContextListener</listener-class>
     </listener>
-
-    <filter>
-        <description>
-            Forwards all requests mapped to this filter to the supervisor's pages(s).
-            Supervisor is a sub-module which allows to monitor and alter imCMS behavior.
-        </description>
-        
-        <display-name>Supervisor Filter</display-name>
-        <filter-name>SupervisorFilter</filter-name>
-        <filter-class>com.imcode.imcms.supervisor.SupervisorFilter</filter-class>
-    </filter>
     
     <filter>
-        <description>Intercepts all but supervisor and superadmin requests</description>
-        
         <display-name>Imcms Filter</display-name>
         <filter-name>ImcmsFilter</filter-name>
         <filter-class>com.imcode.imcms.servlet.ImcmsFilter</filter-class>
@@ -56,13 +43,6 @@
         <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
         <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
     </filter>
-
-    <filter-mapping>
-        <filter-name>SupervisorFilter</filter-name>
-        <url-pattern>/admin/supervisor/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-    </filter-mapping>
-
 
     <filter-mapping>
         <filter-name>SuperAdminFilter</filter-name>

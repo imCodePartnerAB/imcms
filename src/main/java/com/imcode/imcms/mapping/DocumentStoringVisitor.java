@@ -212,10 +212,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         DocumentLabels labels = doc.getLabels();
         MetaDao metaDao = (MetaDao)services.getSpringBean("metaDao");
 
-        metaDao.deleteLabels(doc.getId(), doc.getVersionNo(), doc.getLanguage().getId());
+        metaDao.deleteLabels(doc.getId(), doc.getLanguage().getId());
 
         labels.setId(null);
-        labels.setDocVersionNo(doc.getVersionNo());
         labels.setDocId(doc.getMeta().getId());
         labels.setLanguage(doc.getLanguage());
 

@@ -74,10 +74,10 @@ public class DocumentLoader {
     
     /** Creates document instance. */
     private DocumentDomainObject createDocument(Meta meta, DocumentVersion version, I18nLanguage language) {
-        DocumentLabels labels = metaDao.getLabels(meta.getId(), version.getNo(), language);
+        DocumentLabels labels = metaDao.getLabels(meta.getId(), language);
 
         if (labels == null) {
-            labels = Factory.createLabels(meta.getId(), version.getNo(), language);
+            labels = Factory.createLabels(meta.getId(), language);
         }
 
 		DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());

@@ -167,6 +167,7 @@ class MetaLyt extends FormLayout {
     val tsLabels = new TabSheet {setWidth("100%")}
     val btnSettings = new Button("Settings...") {
       setStyleName(Button.STYLE_LINK)
+      
     }
     val chkCopyLabelsTextToPage = new CheckBox("Copy link heading & subheading to text 1 & text 2 in page")
 

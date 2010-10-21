@@ -45,7 +45,9 @@ import com.vaadin.Application
 //  }
 //}
 
-trait VaadinApplication { this: Application =>  
+// generic application
+
+trait VaadinApplication extends Application {  
 
   def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
     init(window)

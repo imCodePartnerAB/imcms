@@ -270,6 +270,8 @@
 
       (add-components content b t))
 
+    (add-components content (Button. "CLICK ME PLEASE!!!!"))
+
     (doto wnd
       (.setContent content))))
 

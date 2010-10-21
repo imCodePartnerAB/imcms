@@ -45,17 +45,15 @@ public class MetaDao extends HibernateTemplate {
 	 * @return Labels.
 	 */
 	@Transactional
-	public DocumentLabels getLabels(Integer docId, Integer docVersionNo, I18nLanguage language) {
-		DocumentLabels labels = (DocumentLabels)getSession().createQuery("SELECT l FROM DocumentLabels l WHERE l.docId = :docId AND docVersionNo = :docVersionNo AND l.language.id = :languageId")
+	public DocumentLabels getLabels(Integer docId, I18nLanguage language) {
+		DocumentLabels labels = (DocumentLabels)getSession().getNamedQuery("Document.getLabelsByDocIdAndLanguageId")
                 .setParameter("docId", docId)
-                .setParameter("docVersionNo", docVersionNo)
                 .setParameter("languageId", language.getId())
                 .uniqueResult();
 
         if (labels == null) {
             labels = new DocumentLabels();
             labels.setDocId(docId);
-            labels.setDocVersionNo(docVersionNo);
             labels.setLanguage(language);
             labels.setHeadline("");
             labels.setMenuText("");
@@ -96,19 +94,17 @@ public class MetaDao extends HibernateTemplate {
 	 * @return Labels.
 	 */
 	@Transactional
-	public List<DocumentLabels> getLabels(Integer docId, Integer docVersionNo) {
-		return (List<DocumentLabels>)getSession().createQuery("SELECT l FROM DocumentLabels l WHERE l.docId = :docId AND docVersionNo = :docVersionNo")
+	public List<DocumentLabels> getLabels(Integer docId) {
+		return (List<DocumentLabels>)getSession().getNamedQuery("Document.getLabelsByDocId")
                 .setParameter("docId", docId)
-                .setParameter("docVersionNo", docVersionNo)
                 .list();
 	}
 
 
 	@Transactional
-	public void deleteLabels(Integer docId, Integer docVersionNo, Integer LanguageId) {
-		getSession().createQuery("DELETE FROM DocumentLabels l WHERE l.docId = :docId AND l.docVersionNo = :docVersionNo and l.language.id = :languageId")
+	public void deleteLabels(Integer docId, Integer LanguageId) {
+		getSession().getNamedQuery("Document.deleteLabelsByDocIdAndLanguageId")
                 .setParameter("docId", docId)
-                .setParameter("docVersionNo", docVersionNo)
                 .setParameter("languageId", LanguageId)
                 .executeUpdate();
 	}

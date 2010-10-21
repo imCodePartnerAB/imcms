@@ -41,6 +41,26 @@
     ]]>
   </query>
 
+  <query name="Document.getLabelsByDocId">
+    <![CDATA[
+    SELECT l FROM DocumentLabels l WHERE l.docId = :docId
+    ]]>
+  </query>    
+
+  <query name="Document.getLabelsByDocIdAndLanguageId">
+    <![CDATA[
+    SELECT l FROM DocumentLabels l WHERE l.docId = :docId AND l.language.id = :languageId
+    ]]>
+  </query>
+
+  <query name="Document.deleteLabelsByDocIdAndLanguageId">
+    <![CDATA[
+    DELETE FROM DocumentLabels l WHERE l.docId = :docId AND l.language.id = :languageId
+    ]]>
+  </query>
+
+
+
   <!-- ==================================================================== -->
   <!-- VERSION -->
   <!-- ==================================================================== -->

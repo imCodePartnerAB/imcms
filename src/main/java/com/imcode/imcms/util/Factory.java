@@ -36,8 +36,8 @@ public class Factory {
     }
 
 
-    public static DocumentLabels createLabels(Integer docId, Integer docVersionNo, I18nLanguage language) {
-        DocumentLabels labels = newInstance(DocumentLabels.class, docId, docVersionNo, language);
+    public static DocumentLabels createLabels(Integer docId, I18nLanguage language) {
+        DocumentLabels labels = newInstance(DocumentLabels.class, docId, language);
 
         labels.setHeadline("");
         labels.setMenuText("");
@@ -160,12 +160,11 @@ public class Factory {
         return no + 1;
     }
 
-    public static <T extends DocVersionItem & DocI18nItem> T newInstance(Class<T> clazz, Integer docId, Integer docVersionNo, I18nLanguage language) throws RuntimeException {
+    public static <T extends DocItem & DocI18nItem> T newInstance(Class<T> clazz, Integer docId, I18nLanguage language) throws RuntimeException {
         try {
             T t = clazz.newInstance();
 
             t.setDocId(docId);
-            t.setDocVersionNo(docVersionNo);
             t.setLanguage(language);
 
             return t;

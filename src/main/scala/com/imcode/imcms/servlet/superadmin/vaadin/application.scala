@@ -1,5 +1,3 @@
-// SYSADMIN APP
-
 package com.imcode.imcms.servlet.superadmin.vaadin
 
 import com.imcode.imcms.servlet.superadmin.vaadin.permissions._
@@ -245,7 +243,7 @@ class AdminApplication extends com.vaadin.Application with VaadinApplication { a
       application,
       doc,
       Imcms.getI18nSupport.getLanguages map ((_, true)) toMap,
-      Imcms.getSpringBean("metaDao").asInstanceOf[MetaDao].getLabels(1001, 0) map (l => (l.getLanguage, l)) toMap)
+      Imcms.getSpringBean("metaDao").asInstanceOf[MetaDao].getLabels(1001) map (l => (l.getLanguage, l)) toMap)
 
     mvc.view
   }
