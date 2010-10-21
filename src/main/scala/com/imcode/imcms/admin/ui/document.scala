@@ -120,11 +120,16 @@ class LabelsLyt extends FormLayout {
   setSizeUndefined
 }
 
-class KeywordsDialogContent(keywords: Seq[String] = List.empty) extends GridLayout(3,2) {
+class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2) {
+
+  type ItemIds = JCollection[String]
+
   val lstKeywords = new ListSelect("Keywords") {
     setNullSelectionAllowed(true)
     setMultiSelect(true)
     setRows(10)
+    setColumns(10)
+    setImmediate(true)
   }
 
   val btnAdd = new Button("+")
@@ -141,7 +146,7 @@ class KeywordsDialogContent(keywords: Seq[String] = List.empty) extends GridLayo
   btnAdd addListener unit {
     txtKeyword.stringValue.trim.toLowerCase match {
       case value if value.length > 0 && lstKeywords.getItem(value) == null =>
-        setKeywords(value :: lstKeywords.getItemIds.asInstanceOf[JCollection[String]].toList)
+        setKeywords(value :: lstKeywords.getItemIds.asInstanceOf[ItemIds].toList)
       case _ =>
     }
 
@@ -149,14 +154,22 @@ class KeywordsDialogContent(keywords: Seq[String] = List.empty) extends GridLayo
   }
 
   btnRemove addListener unit {
-    whenSelected[JCollection[String]](lstKeywords) { _ foreach { lstKeywords removeItem _ } }
+    whenSelected[ItemIds](lstKeywords) { _ foreach { lstKeywords removeItem _ } }
+  }
+
+  lstKeywords addListener unit {
+    lstKeywords.getValue.asInstanceOf[ItemIds].toList match {
+      case value :: Nil => txtKeyword setValue value
+      case _ :: _ :: _ => txtKeyword setValue ""
+      case _ =>
+    }
   }
 
   setKeywords(keywords)
   
   def setKeywords(keywords: Seq[String]) {
     lstKeywords.removeAllItems
-    keywords.sorted foreach { lstKeywords addItem _ }
+    keywords.map(_.toLowerCase).sorted.foreach { lstKeywords addItem _ }
   }
 }
 
