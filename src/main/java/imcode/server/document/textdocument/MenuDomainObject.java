@@ -15,15 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -31,11 +23,11 @@ import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.hibernate.annotations.ForeignKey;
 
 /**
  * Menu is a one-level navigation control between documents.
  * A menu can contain any number of items - links to other documents.
- * Menu is a version item.
  */
 @Entity(name="Menu")
 @Table(name="imcms_text_doc_menus")
@@ -70,14 +62,12 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
     
 
     /** Map of included meta_id to included DocumentDomainObject. -> */
-	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+	@ElementCollection(fetch=FetchType.EAGER)
 	@JoinTable(
 	    name = "imcms_text_doc_menu_items",
 	    joinColumns = @JoinColumn(name="menu_id")
-	)	
-	@org.hibernate.annotations.MapKey(
-	   columns = @Column(name="to_doc_id")
 	)
+    @MapKeyColumn(name="to_doc_id")
     private Map<Integer, MenuItemDomainObject> menuItems = new HashMap<Integer, MenuItemDomainObject>();
 
     public MenuDomainObject() {

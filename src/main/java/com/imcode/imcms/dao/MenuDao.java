@@ -41,10 +41,21 @@ public class MenuDao extends HibernateTemplate {
 
     @Transactional
 	public int deleteMenus(Integer docId, Integer docVersionNo) {
-        return getSession().getNamedQuery("Menu.deleteMenus")
-                .setParameter("docId", docId)
-                .setParameter("docVersionNo", docVersionNo)
-                .executeUpdate();
+        // bulk delete problem - see comments on "Menu.deleteMenus"  
+        //        return getSession().getNamedQuery("Menu.deleteMenus")
+        //                .setParameter("docId", docId)
+        //                .setParameter("docVersionNo", docVersionNo)
+        //                .executeUpdate();        
+        int rowsAffected = 0;
+        
+        for (MenuDomainObject menu: (List<MenuDomainObject>)findByNamedQueryAndNamedParam(
+                "Menu.getMenus", new String [] {"docId", "docVersionNo"}, new Object[] {docId, docVersionNo})) {
+            deleteMenu(menu);
+
+            rowsAffected += 1;
+        }
+
+        return rowsAffected;
 	}
 
 

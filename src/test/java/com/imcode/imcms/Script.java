@@ -16,12 +16,12 @@ public class Script {
 
     public static final String TEST_SQL_SCRIPTS_HOME = "src/test/resources/sql";
 
-    public static final Var mNsResolve;
+    public static final Var nsResolveSTAR;
 
     static {
         try {
             RT.load("com/imcode/imcms/boot");
-            mNsResolve = RT.var("com.imcode.imcms.boot", "m-ns-resolve");
+            nsResolveSTAR = RT.var("com.imcode.imcms.boot", "ns-resolve*");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -29,7 +29,7 @@ public class Script {
 
     public static Var var(String nsName, String varName) {
         try {
-            return (Var)mNsResolve.invoke(Symbol.create(nsName), Symbol.create(varName));
+            return (Var)nsResolveSTAR.invoke(Symbol.create(nsName), Symbol.create(varName));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -102,7 +102,6 @@ public class Script {
 
 
     public static SessionFactory createHibernateSessionFactory(Class[] annotatedClasses, String... xmlFiles) {
-
         try {
             return (SessionFactory)var("com.imcode.imcms.project.db", "create-hibernate-sf")
                 .invoke(annotatedClasses, xmlFiles);

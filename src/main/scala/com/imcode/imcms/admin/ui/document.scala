@@ -154,7 +154,7 @@ class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2)
   }
 
   btnRemove addListener unit {
-    whenSelected[ItemIds](lstKeywords) { _ foreach { lstKeywords removeItem _ } }
+    whenSelected[ItemIds](lstKeywords) { _ foreach (lstKeywords removeItem _) }
   }
 
   lstKeywords addListener unit {

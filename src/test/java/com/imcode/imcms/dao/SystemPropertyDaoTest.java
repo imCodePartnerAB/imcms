@@ -17,6 +17,9 @@ public class SystemPropertyDaoTest {
 
     SystemDao systemDao;
 
+    final String DEFAULT_LANGUAGE_ID = "DefaultLanguageId";
+    final String START_DOC = "startDocument";
+
     @BeforeClass
     public static void recreateDB() {
         Script.recreateDB();
@@ -41,7 +44,7 @@ public class SystemPropertyDaoTest {
 
     @Test
     public void getProperty() {
-        SystemProperty property = getExistingProperty("startDocument");
+        SystemProperty property = getExistingProperty(START_DOC);
 
         assertEquals(property.getValue(), "" + 1001);
     }
@@ -49,13 +52,13 @@ public class SystemPropertyDaoTest {
 
     @Test
     public void savePropery() {
-        SystemProperty property = getExistingProperty("languageId");
+        SystemProperty property = getExistingProperty(DEFAULT_LANGUAGE_ID);
 
         property.setValue("" + 0);
 
         systemDao.saveProperty(property);
 
-        SystemProperty property2 = getExistingProperty("languageId");
+        SystemProperty property2 = getExistingProperty(DEFAULT_LANGUAGE_ID);
 
         assertEquals(property2.getValue(), "" + 0);
 
@@ -63,7 +66,7 @@ public class SystemPropertyDaoTest {
 
         systemDao.saveProperty(property2);
 
-        SystemProperty property3 = getExistingProperty("languageId");
+        SystemProperty property3 = getExistingProperty(DEFAULT_LANGUAGE_ID);
 
         assertEquals(property3.getValue(), "" + 1);
     }
