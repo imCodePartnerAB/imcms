@@ -87,12 +87,18 @@ class MetaMVC(app: VaadinApplication,
         w setMainContent new KeywordsDialogContent(List("Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Fi", "Lambda"))
       }
     }
+
+    v.btnCategories addListener unit {
+      app.initAndShow(new OkCancelDialog("Categories")) { w =>
+        val mainContent = new CategoriesDialogContent
+        
+        let(w.setMainContent(mainContent)) { c =>
+          c.setHeight("350px")
+        }
+      }
+    } 
   }
 }
-
-//class LanguagesArea extends VerticalLayout {
-//
-//}
 
 
 class I18nSettingsDialogContent extends FormLayout {
@@ -118,6 +124,55 @@ class LabelsLyt extends FormLayout {
   addComponents(this, txtTitle, txtMenuText, embLinkImage)
   setSpacing(false)
   setSizeUndefined
+}
+
+
+class PublicationLyt extends VerticalLayout {
+  val sltStatus = new Select {
+    setNullSelectionAllowed(false)
+    addItem("Approved")
+    addItem("Disapproved")
+    select("Disapproved")
+  }
+
+  val lytStatus = new GridLayout(3, 2) {
+    val calStart = new DateField {setValue(new Date)}
+    val calEnd = new DateField
+    val chkStart = new CheckBox("Start date") { setValue(true); setEnabled(false) } // decoration, always disabled
+    val chkEnd = new CheckBox("End date") { setEnabled(false) }
+    val btnResetStart = new Button("now") { setStyleName(Button.STYLE_LINK) }
+    val btnResetEnd = new Button("now") { setStyleName(Button.STYLE_LINK) }
+
+    addComponent(new Label("Status"))
+    addComponent(sltStatus, 1, 0, 2, 0)
+
+    setCursorX(0); setCursorY(1)
+    forlet(chkStart, calStart, btnResetStart, chkEnd, calEnd, btnResetEnd) { c =>
+      addComponent(c)
+      setComponentAlignment(c, Alignment.MIDDLE_LEFT)
+    }
+
+    setSpacing(true)    
+  }
+
+  val lytVersionSupport = new VerticalLayout {
+    val lytInfo = new GridLayout(2, 2) { setSpacing(true) }
+
+    val chkEnabled = new CheckBox("Enable version support")
+    val lblCurrentVersion = new Label("Current version:")
+    val lblCurrentVersionStatus = new Label("not set")
+    val lblAwaitingVersion = new Label("Awaiting version:")
+    val lblAwaitingVersionStatus = new Label("not set")
+    
+    val btnConfigure = new Button("Configure...") { setStyleName(Button.STYLE_LINK) }
+
+    addComponents(lytInfo, lblCurrentVersion, lblCurrentVersionStatus, lblAwaitingVersion, lblAwaitingVersionStatus)
+
+    addComponents(this, chkEnabled, lytInfo, btnConfigure)
+  }
+
+  setCaption("Publication")
+  addComponents(this, lytStatus, lytVersionSupport)
 }
 
 class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2) {
@@ -159,8 +214,8 @@ class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2)
 
   lstKeywords addListener unit {
     lstKeywords.getValue.asInstanceOf[ItemIds].toList match {
-      case value :: Nil => txtKeyword setValue value
-      case _ :: _ :: _ => txtKeyword setValue ""
+      case List(value) => txtKeyword setValue value
+      case List(_, _, _*) => txtKeyword setValue ""
       case _ =>
     }
   }
@@ -173,12 +228,54 @@ class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2)
   }
 }
 
+
+class CategoriesDialogContent extends Panel {
+  setStyleName(Panel.STYLE_LIGHT)
+
+  val lytContent = new FormLayout
+
+  setContent(lytContent)
+
+  for {
+    categoryType <- Imcms.getServices.getCategoryMapper.getAllCategoryTypes
+    categories = Imcms.getServices.getCategoryMapper.getAllCategoriesOfType(categoryType)
+    if categories.nonEmpty
+  } {
+    val sltCategory =
+      if (categoryType.isSingleSelect) {
+        letret(new Select) { slt =>
+          slt.setNullSelectionAllowed(false)
+          slt.setMultiSelect(false)
+
+          categories foreach { c =>
+            slt.addItem(c)
+            slt.setItemCaption(c, c.getName)
+          }
+        }
+      } else {
+        letret(new TwinSelect[CategoryDomainObject]) { tws =>
+          categories foreach { c =>
+            tws.addAvailableItem(c, c.getName)
+          }
+        }
+      }
+
+    sltCategory.setCaption(categoryType.getName)
+
+    lytContent.addComponent(sltCategory)
+  }
+}
+
+
 class MetaLyt extends FormLayout {
+  val txtId = new TextField("System Id") {
+    setEnabled(false)
+  }
   val txtName = new TextField("Name")
   val txtAlias = new TextField("Alias")
   val lytI18n = new VerticalLayout {
     val tsLabels = new TabSheet {setWidth("100%")}
-    val btnSettings = new Button("Settings...") {
+    val btnSettings = new Button("Configure...") {
       setStyleName(Button.STYLE_LINK)
       
     }
@@ -189,15 +286,41 @@ class MetaLyt extends FormLayout {
     setSizeUndefined
   }
 
-  //refactor
-  val btnKeywords = new Button("Keywords"){
-    setStyleName(Button.STYLE_LINK)
+  val lytIdentity = new HorizontalLayout {
+    setCaption("Identity")
+    setSpacing(true)
+    addComponents(this, txtId, txtName, txtAlias)
   }
-  val btnCategories = new Button("Categories"){
+
+  //refactor
+  val btnKeywords = new Button("Edit..."){
     setStyleName(Button.STYLE_LINK)
   }
 
-  addComponents(this, txtName, txtAlias, lytI18n, btnKeywords, btnCategories)
+  val chkExclude = new CheckBox("Exclude this page (by default) from internal search results")
+
+  val btnCategories = new Button("Edit..."){
+    setStyleName(Button.STYLE_LINK)
+  }
+
+  val lytSearch = new VerticalLayout {
+    val lblKeywords = new Label("No keywords assigned")
+
+    setCaption("Search")
+    setSpacing(true)
+    addComponents(this, lblKeywords, btnKeywords, chkExclude)
+  }
+
+  val lytCategories = new VerticalLayout {
+    val lblCategories = new Label("No categories assigned")
+    setCaption("Categories")
+    setSpacing(true)
+    addComponents(this, lblCategories, btnCategories)
+  }
+
+  val lytPublication = new PublicationLyt
+ 
+  addComponents(this, lytIdentity, lytI18n, lytSearch, lytCategories, lytPublication)
   setMargin(true)
   setWidth("100%")
 }

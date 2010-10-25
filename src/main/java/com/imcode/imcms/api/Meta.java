@@ -7,23 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import imcode.server.document.DocumentPermissionSets;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
@@ -225,7 +209,7 @@ public class Meta implements Serializable, Cloneable {
     @Column(name = "value", nullable = false)
     private Map<String, String> properties = new HashMap<String, String>();
     
-    @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+    @ElementCollection(fetch=FetchType.EAGER)
    	@JoinTable(
     	name = "document_categories",
     	joinColumns = @JoinColumn(name = "meta_id", referencedColumnName="meta_id"))
@@ -236,7 +220,7 @@ public class Meta implements Serializable, Cloneable {
     // Roles are user defined or system predefined roles
     // RoleId to permission-set id mapping.  
     // For processing after load:
-    @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+    @ElementCollection(fetch=FetchType.EAGER)
     @JoinTable(
     	name = "roles_rights",
     	joinColumns = @JoinColumn(name = "meta_id", referencedColumnName="meta_id"))    		
@@ -251,7 +235,7 @@ public class Meta implements Serializable, Cloneable {
      */    
     // For processing after load:
     // permisionId in the table actually is not an 'id' but a bit set value.
-    @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+    @ElementCollection(fetch=FetchType.EAGER)
     @JoinTable(
     	name = "doc_permission_sets",
     	joinColumns = @JoinColumn(name = "meta_id", referencedColumnName="meta_id"))    		
@@ -266,7 +250,7 @@ public class Meta implements Serializable, Cloneable {
      */
     // For processing after load:
     // permisionId in the table actually is not an 'id' but a bit set value.
-    @org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+    @ElementCollection(fetch=FetchType.EAGER)
     @JoinTable(
     	name = "new_doc_permission_sets",
     	joinColumns = @JoinColumn(name = "meta_id", referencedColumnName="meta_id"))    		
@@ -278,7 +262,7 @@ public class Meta implements Serializable, Cloneable {
      * 
      */
     // For processing after load:
-	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+	@ElementCollection(fetch=FetchType.EAGER)
 	@JoinTable(
 	    name = "doc_permission_sets_ex",
 	    joinColumns = @JoinColumn(name="meta_id", referencedColumnName="meta_id"))    
@@ -286,7 +270,7 @@ public class Meta implements Serializable, Cloneable {
 	
 	
     // For processing after load:
-	@org.hibernate.annotations.CollectionOfElements(fetch=FetchType.EAGER)
+	@ElementCollection(fetch=FetchType.EAGER)
 	@JoinTable(
 	    name = "new_doc_permission_sets_ex",
 	    joinColumns = @JoinColumn(name="meta_id", referencedColumnName="meta_id"))    

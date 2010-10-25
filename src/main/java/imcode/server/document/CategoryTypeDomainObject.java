@@ -106,4 +106,12 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
         }
         return hasImages;
     }
+
+    public boolean isMultiselect() {
+        return maxChoices > 0;
+    }
+
+    public boolean isSingleSelect() {
+        return !isMultiselect();
+    }
 }
