@@ -6,6 +6,7 @@ import com.imcode.imcms.dao.SystemDao;
 import com.imcode.imcms.db.DB;
 import com.imcode.imcms.db.Schema;
 import com.imcode.imcms.util.clojure.ClojureUtils;
+import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.Prefs;
 
@@ -76,16 +77,10 @@ public class Imcms {
 
 
 	/**
-     * Document requests bound to HttpRequestSession.
-     *
-     * Since session is not always available in legacy API (such as DocumentMapper) docRequest is also bound to
-     * this thread local.
-     *
      * @see com.imcode.imcms.servlet.ImcmsFilter
      */
-	private static ThreadLocal<GetDocumentCallback> getDocumentCallbacks;
-
-    
+	private static ThreadLocal<UserDomainObject> users;
+   
     /**
      * Internalization support.
      */
@@ -116,7 +111,7 @@ public class Imcms {
         setStartEx(null);
 
         try {
-            getDocumentCallbacks = new ThreadLocal<GetDocumentCallback>();
+            users = new ThreadLocal<UserDomainObject>();
 
             if (prepareDatabaseOnStart) {
                 prepareDatabase();
@@ -280,19 +275,16 @@ public class Imcms {
         }
     }
 
-    /**
-     * @param getDocumentCallback document request bound to user's session.
-     */
-    public static void setGetDocumentCallback(GetDocumentCallback getDocumentCallback) {
-    	getDocumentCallbacks.set(getDocumentCallback);
+    public static void setUser(UserDomainObject user) {
+    	users.set(user);
     }
 
     /**
      * Returns GetDocumentCallback instance
      * @return
      */
-    public static GetDocumentCallback getGetDocumentCallback() {
-    	return getDocumentCallbacks.get();
+    public static UserDomainObject getUser() {
+    	return users.get();
     }
 
 

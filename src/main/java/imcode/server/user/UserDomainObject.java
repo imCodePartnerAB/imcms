@@ -1,5 +1,6 @@
 package imcode.server.user;
 
+import com.imcode.imcms.api.GetDocumentCallback;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;
@@ -15,6 +16,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -271,6 +273,16 @@ public class UserDomainObject implements Cloneable, Serializable {
     public void setEmailAddress( String emailAddress ) {
         this.emailAddress = emailAddress;
     }
+
+    private AtomicReference<GetDocumentCallback> docGetterCallbackRef = new AtomicReference<GetDocumentCallback>();
+
+    public GetDocumentCallback getDocGetterCallback() {
+        return docGetterCallbackRef.get();
+    }
+
+    public void setDocGetterCallback(GetDocumentCallback callback) {
+        docGetterCallbackRef.set(callback);
+    }    
 
     /**
      * Get the users workphone
@@ -693,7 +705,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
     
     private boolean languageIsActive(DocumentDomainObject document) {
-    	I18nLanguage currentLanguage = Imcms.getGetDocumentCallback().getLanguage();
+    	I18nLanguage currentLanguage = getDocGetterCallback().getParams().language;
     	Meta meta = document.getMeta();
     	boolean enabled = meta.getLanguages().contains(currentLanguage);
     	

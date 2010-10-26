@@ -692,13 +692,14 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Returns document.
      *
-     * Delegates call to a callback associated with a current thread.
+     * Delegates call to a callback associated with a user.
      * If there is no callback then a default document is returned.
      *
      * @param docId document id.
      */
     public DocumentDomainObject getDocument(Integer docId) {
-        GetDocumentCallback callback = Imcms.getGetDocumentCallback();
+        UserDomainObject user = Imcms.getUser();
+        GetDocumentCallback callback = user == null ? null : user.getDocGetterCallback();
 
         return callback == null
             ? getDefaultDocument(docId)
@@ -842,9 +843,10 @@ public class DocumentMapper implements DocumentGetter {
      * @return default documents.
      */
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
-        GetDocumentCallback callback = Imcms.getGetDocumentCallback();
+        UserDomainObject user = Imcms.getUser();
+        GetDocumentCallback callback = user == null ? null : user.getDocGetterCallback();
         I18nLanguage language = callback != null
-                ? callback.getLanguage()
+                ? callback.getParams().language
                 : Imcms.getI18nSupport().getDefaultLanguage();
 
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();

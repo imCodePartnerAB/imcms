@@ -78,7 +78,6 @@ public interface ImcmsConstants {
     /** Document language code. */
     public static final String REQUEST_PARAM__DOC_LANGUAGE = "imcms.doc.language";
 
+    /** Document version no. */
     public static final String REQUEST_PARAM__DOC_VERSION = "imcms.doc.version";
-
-    public static final String SESSION_ATTR__GET_DOC_CALLBACK = "imcms.doc.callback";
 }

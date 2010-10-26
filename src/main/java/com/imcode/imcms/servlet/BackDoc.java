@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.api.GetDocumentCallback;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -18,6 +19,17 @@ import com.imcode.imcms.mapping.DocumentMapper;
 
 public class BackDoc extends HttpServlet {
 
+    public static class HistoryElement {
+        public final Integer docId;
+
+        public final GetDocumentCallback docGetterCallback;
+
+        public HistoryElement(Integer docId, GetDocumentCallback docGetterCallback) {
+            this.docId = docId;
+            this.docGetterCallback = docGetterCallback;
+        }
+    }
+
     /**
      * doGet()
      */
@@ -26,13 +38,15 @@ public class BackDoc extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         Utility.setDefaultHtmlContentType( res );
 
-        Stack history = (Stack)req.getSession().getAttribute( "history" );
+        Stack<HistoryElement> history = (Stack<HistoryElement>)req.getSession().getAttribute( "history" );
         DocumentDomainObject lastTextDocument = getNextToLastTextDocumentFromHistory( history, imcref );
 
         if (null != lastTextDocument ) {
-            req.getSession().setAttribute( "history", history );
             redirectToDocumentId( req, res, lastTextDocument.getId() );
         } else {
+            GetDocumentCallback.Params params = new GetDocumentCallback.Params(Imcms.getUser(), Imcms.getI18nSupport().getDefaultLanguage(), Imcms.getI18nSupport().getDefaultLanguage());
+            GetDocumentCallback callback = new GetDocumentCallback.GetDocumentCallbackDefault(params);
+            Imcms.getUser().setDocGetterCallback(callback);
             redirectToDocumentId( req, res, imcref.getSystemData().getStartDocument() );
         }
     }
@@ -46,15 +60,20 @@ public class BackDoc extends HttpServlet {
         response.sendRedirect( Utility.getAbsolutePathToDocument( request, document ) );
     }
 
-    public static DocumentDomainObject getNextToLastTextDocumentFromHistory( Stack history, ImcmsServices imcref ) {
+    // todo: refactor
+    public static DocumentDomainObject getNextToLastTextDocumentFromHistory( Stack<HistoryElement> history, ImcmsServices imcref ) {
 
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument((Integer) history.pop() ); // remove top document from stack ( this is current text document )
+        HistoryElement he = history.pop();
+        Imcms.getUser().setDocGetterCallback(he.docGetterCallback);
+        DocumentDomainObject document = documentMapper.getDocument(he.docId); // remove top document from stack ( this is current text document )
 
-        if ( null != history && !history.empty() ) {
+        if (!history.empty() ) {
 
             while ( !history.empty() ) {
-                document = documentMapper.getDocument( (Integer)history.pop() );
+                he = history.pop();
+                Imcms.getUser().setDocGetterCallback(he.docGetterCallback);
+                document = documentMapper.getDocument(he.docId);
                 if ( isTextDocument( document ) ) {
                     break;
                 }

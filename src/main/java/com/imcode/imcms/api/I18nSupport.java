@@ -111,4 +111,6 @@ public class I18nSupport {
     public void setHosts(Map<String, I18nLanguage> hosts) {
         this.hosts = hosts;
     }
+
+    public I18nLanguage getForHost(String host) { return hosts.get(host); }
 }

@@ -113,15 +113,15 @@ public class GetDoc extends HttpServlet {
             return ;
         }                                
 
-        Stack history = (Stack) req.getSession().getAttribute("history");
+        Stack<BackDoc.HistoryElement> history = (Stack<BackDoc.HistoryElement>) req.getSession().getAttribute("history");
         if ( history == null ) {
-            history = new Stack();
+            history = new Stack<BackDoc.HistoryElement>();
             req.getSession().setAttribute("history", history);
         }
 
-        Integer meta_int = new Integer(document.getId());
-        if ( isTextDocument(document) && ( history.empty() || !history.peek().equals(meta_int))) {
-            history.push(meta_int);
+        Integer docId = document.getId();
+        if ( isTextDocument(document) && ( history.empty() || !history.peek().docId.equals(docId))) {
+            history.push(new BackDoc.HistoryElement(docId, user.getDocGetterCallback()));
         }
 
         String referrer = req.getHeader(HTTP_HEADER_REFERRER);

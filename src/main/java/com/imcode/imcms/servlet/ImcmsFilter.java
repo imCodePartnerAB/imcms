@@ -122,7 +122,8 @@ public class ImcmsFilter implements Filter {
             ResourceBundle resourceBundle = Utility.getResourceBundle(request);
             Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
-            associateGetDocumentCallbackWithCurrentThread(request, session, user);
+            Imcms.setUser(user);
+            createAndSetDocGetterCallback(request, user);
 
             Utility.initRequestWithApi(request, user);
 
@@ -262,70 +263,55 @@ public class ImcmsFilter implements Filter {
 
 
     /**
-     * Creates or updates GetDocumentCallback object and associates it with a current thread.
+     * Create and sets doc getter callback to an user. 
      *
-     * @see Imcms#getGetDocumentCallback().
-     *
-     * All users are allowed to change change language but only privileged users are allowed to switch
+     * All users allowed to change document language but only privileged users allowed to switch
      * document's version.
      *
-     * If document version no parameter is present in a request but not bound to a value (empty) then
-     * it is treated as default version no. 
+     * If document version parameter is present but it is a blank then it is treated as default version no.
      * 
      * @param request
-     * @param session
      * @param user
      */
-    private void associateGetDocumentCallbackWithCurrentThread(HttpServletRequest request, HttpSession session, UserDomainObject user) {
-        GetDocumentCallback getDocumentCallback = (GetDocumentCallback)session.getAttribute(ImcmsConstants.SESSION_ATTR__GET_DOC_CALLBACK);
+    private void createAndSetDocGetterCallback(HttpServletRequest request, UserDomainObject user) {
+        GetDocumentCallback docGetterCallback = user.getDocGetterCallback();
 
         String languageCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
-        String docIdentity = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID);
-        String docVersionNoStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION);
-
+        I18nLanguage defaultLanguage = Imcms.getI18nSupport().getDefaultLanguage();
         I18nLanguage language = languageCode != null
                 ? Imcms.getI18nSupport().getByCode(languageCode)
-                : getDocumentCallback != null
-                    ? getDocumentCallback.getLanguage()
+                : docGetterCallback != null
+                    ? docGetterCallback.getParams().language
                     : null;
 
-        if (language == null) {
-            Map<String, I18nLanguage> i18nHosts = Imcms.getI18nSupport().getHosts();
+        if (language == null) language = Imcms.getI18nSupport().getForHost(request.getServerName());
+        if (language == null) language = defaultLanguage;
+        
+        GetDocumentCallback.Params params = new GetDocumentCallback.Params(user, language, defaultLanguage);
 
-            if (i18nHosts.size() > 0) {
-                String hostname = request.getServerName();
-                language = i18nHosts.get(hostname);
-
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Hostname [" + hostname + "] mapped to language [" + language + "].");
-                }
-            }
-        }
-
-        if (language == null) {
-            language = Imcms.getI18nSupport().getDefaultLanguage();
-        }
-
-
+        // Switch version
         if (!user.isDefaultUser()) {
+            String docIdentity = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID);
+            String docVersionNoStr = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION);
+            
             if (docIdentity != null && docVersionNoStr != null) {
                 try {
                     Integer docId = Imcms.getServices().getDocumentMapper().toDocumentId(docIdentity);
-                    
+
                     if (docId == null) {
                         throw new RuntimeException(
                                 String.format("Document with identity %s does not exists.", docIdentity));
                     }
 
                     if (StringUtils.isEmpty(docVersionNoStr)) {
-                        getDocumentCallback = new GetDocumentCallback.GetDocumentCallbackDefault(language, user);
+                        docGetterCallback = new GetDocumentCallback.GetDocumentCallbackDefault(params);
                     } else {
                         Integer docVersionNo = Integer.parseInt(docVersionNoStr);
 
                         if (docVersionNo.equals(DocumentVersion.WORKING_VERSION_NO)) {
-                            getDocumentCallback = new GetDocumentCallback.GetDocumentCallbackWorking(docId, language, user);
+                            docGetterCallback = new GetDocumentCallback.GetDocumentCallbackWorking(params, docId);
                         } else {
-                            getDocumentCallback = new GetDocumentCallback.GetDocumentCallbackCustom(docId, docVersionNo, language, user);
+                            docGetterCallback = new GetDocumentCallback.GetDocumentCallbackCustom(params, docId, docVersionNo);
                         }
                     }
                } catch (NumberFormatException e) {
@@ -334,14 +320,10 @@ public class ImcmsFilter implements Filter {
             }
         }
 
-        if (getDocumentCallback == null) {
-            getDocumentCallback = new GetDocumentCallback.GetDocumentCallbackDefault(language, user);
-        } else {
-            getDocumentCallback.setLanguage(language);
-        }
+        docGetterCallback = docGetterCallback == null
+                ? new GetDocumentCallback.GetDocumentCallbackDefault(params)
+                : docGetterCallback.copy(params);
 
-        session.setAttribute(ImcmsConstants.SESSION_ATTR__GET_DOC_CALLBACK, getDocumentCallback);
-
-        Imcms.setGetDocumentCallback(getDocumentCallback);
+        user.setDocGetterCallback(docGetterCallback);
     }
 }

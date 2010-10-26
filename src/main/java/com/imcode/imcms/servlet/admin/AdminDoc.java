@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.*;
+import com.imcode.imcms.servlet.BackDoc;
 import imcode.server.DocumentRequest;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -123,14 +124,14 @@ public class AdminDoc extends HttpServlet {
         final ImcmsServices imcref = Imcms.getServices();
 
         HttpSession session = req.getSession();
-        Stack history = (Stack)session.getAttribute( "history" );
+        Stack<BackDoc.HistoryElement> history = (Stack<BackDoc.HistoryElement>)session.getAttribute( "history" );
         if ( history == null ) {
-            history = new Stack();
+            history = new Stack<BackDoc.HistoryElement>();
             session.setAttribute( "history", history );
         }
-        Integer meta_int = new Integer( meta_id );
-        if ( history.empty() || !history.peek().equals( meta_int ) ) {
-            history.push( meta_int );
+
+        if ( history.empty() || !history.peek().docId.equals( meta_id ) ) {
+            history.push(new BackDoc.HistoryElement(meta_id, user.getDocGetterCallback()));
         }
 
         DocumentDomainObject document = imcref.getDocumentMapper().getDocument(meta_id);
