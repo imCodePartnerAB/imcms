@@ -1,11 +1,9 @@
 package imcode.server;
 
 import com.imcode.imcms.api.*;
-import com.imcode.imcms.api.GetDocumentCallback;
 import com.imcode.imcms.dao.SystemDao;
 import com.imcode.imcms.db.DB;
 import com.imcode.imcms.db.Schema;
-import com.imcode.imcms.util.clojure.ClojureUtils;
 import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.Prefs;
@@ -280,7 +278,7 @@ public class Imcms {
     }
 
     /**
-     * Returns GetDocumentCallback instance
+     * Returns DocGetterCallback instance
      * @return
      */
     public static UserDomainObject getUser() {

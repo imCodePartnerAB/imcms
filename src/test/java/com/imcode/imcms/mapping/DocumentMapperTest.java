@@ -263,7 +263,7 @@ public class DocumentMapperTest {
 //        parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
 //
 //
-//        GetDocumentCallback docRequestInfo = new GetDocumentCallback.WorkingDocRequestHandler(admin);
+//        DocGetterCallback docRequestInfo = new DocGetterCallback.WorkingDocRequestHandler(admin);
 //        docRequestInfo.setLanguage(i18nSupport.getDefaultLanguage());
 //        Imcms.setGetDocumentCallback(docRequestInfo);
 //

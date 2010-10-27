@@ -1,7 +1,6 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.DocumentMapper;
-import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -16,7 +15,7 @@ import imcode.server.user.UserDomainObject;
  * @see com.imcode.imcms.servlet.ImcmsFilter
  * @see com.imcode.imcms.mapping.DocumentMapper#getDocument(Integer)
  */
-public abstract class GetDocumentCallback implements Cloneable {
+public abstract class DocGetterCallback implements Cloneable {
 
     /** Common callback parameters. */
     public static class Params {
@@ -44,21 +43,27 @@ public abstract class GetDocumentCallback implements Cloneable {
 
     public Params getParams() { return params; }
 
-    public GetDocumentCallback(Params params) {
+    public UserDomainObject getUser() { return params.user; }
+
+    public I18nLanguage getLanguage() { return params.language; }
+
+    public I18nLanguage getDefaultLanguage() { return params.defaultLanguage; }
+
+    public DocGetterCallback(Params params) {
         this.params = params;
     }
 
-    public GetDocumentCallback copy(Params params) {
-        GetDocumentCallback copy = clone();
+    public DocGetterCallback copy(Params params) {
+        DocGetterCallback copy = clone();
         copy.params = params;
 
         return copy;
     }
 
     @Override
-    public GetDocumentCallback clone() {
+    public DocGetterCallback clone() {
         try {
-            return (GetDocumentCallback)super.clone();
+            return (DocGetterCallback)super.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
@@ -66,9 +71,9 @@ public abstract class GetDocumentCallback implements Cloneable {
 
     public abstract DocumentDomainObject getDoc(DocumentMapper docMapper, Integer docId);
 
-    public static class GetDocumentCallbackDefault extends GetDocumentCallback {
+    public static class DocGetterCallbackDefault extends DocGetterCallback {
 
-        public GetDocumentCallbackDefault(Params params) {
+        public DocGetterCallbackDefault(Params params) {
             super(params);
         }
 
@@ -98,11 +103,11 @@ public abstract class GetDocumentCallback implements Cloneable {
 
 
 
-    public static class GetDocumentCallbackWorking extends GetDocumentCallbackDefault {
+    public static class DocGetterCallbackWorking extends DocGetterCallbackDefault {
 
         private Integer docId;
 
-        public GetDocumentCallbackWorking(Params params, Integer docId) {
+        public DocGetterCallbackWorking(Params params, Integer docId) {
             super(params);
             this.docId = docId;
         }
@@ -117,13 +122,13 @@ public abstract class GetDocumentCallback implements Cloneable {
 
     
 
-    public static class GetDocumentCallbackCustom extends GetDocumentCallbackDefault {
+    public static class DocGetterCallbackCustom extends DocGetterCallbackDefault {
 
         private Integer docId;
 
         private Integer docVersionNo;                
 
-        public GetDocumentCallbackCustom(Params params, Integer docId, Integer docVersionNo) {
+        public DocGetterCallbackCustom(Params params, Integer docId, Integer docVersionNo) {
             super(params);
             this.docId = docId;
             this.docVersionNo = docVersionNo;

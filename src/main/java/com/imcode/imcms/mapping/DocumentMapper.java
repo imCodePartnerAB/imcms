@@ -699,7 +699,7 @@ public class DocumentMapper implements DocumentGetter {
      */
     public DocumentDomainObject getDocument(Integer docId) {
         UserDomainObject user = Imcms.getUser();
-        GetDocumentCallback callback = user == null ? null : user.getDocGetterCallback();
+        DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
 
         return callback == null
             ? getDefaultDocument(docId)
@@ -844,7 +844,7 @@ public class DocumentMapper implements DocumentGetter {
      */
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
         UserDomainObject user = Imcms.getUser();
-        GetDocumentCallback callback = user == null ? null : user.getDocGetterCallback();
+        DocGetterCallback callback = user == null ? null : user.getDocGetterCallback();
         I18nLanguage language = callback != null
                 ? callback.getParams().language
                 : Imcms.getI18nSupport().getDefaultLanguage();

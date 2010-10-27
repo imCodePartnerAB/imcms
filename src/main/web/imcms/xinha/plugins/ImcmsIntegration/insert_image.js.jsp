@@ -18,7 +18,7 @@ Xinha.prototype._insertImage = function(image)
     if ( image )
     {
         <%
-        I18nLanguage lang = Imcms.getGetDocumentCallback().getLanguage();
+        I18nLanguage lang = Imcms.getUser().getDocGetterCallback().getLanguage();
         String suffix = "_" + lang.getCode();
         %>
 

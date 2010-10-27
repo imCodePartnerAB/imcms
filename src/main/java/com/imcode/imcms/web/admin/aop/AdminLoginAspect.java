@@ -20,7 +20,7 @@ public class AdminLoginAspect {
 	@Around("execution(public * com.imcode.imcms.web.admin.controller.*.*Handler(..))")
 	public Object chackAdminLogin(ProceedingJoinPoint pjp) throws Throwable {
 		
-		return Imcms.getGetDocumentCallback().getUser().isSuperAdmin() ? pjp.proceed() : null;
+		return Imcms.getUser().isSuperAdmin() ? pjp.proceed() : null;
 
 	}
 }

@@ -1,8 +1,7 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.GetDocumentCallback;
+import com.imcode.imcms.api.DocGetterCallback;
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.ImcmsConstants;
@@ -13,7 +12,6 @@ import imcode.util.Utility;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -34,7 +32,6 @@ import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.imcode.imcms.api.I18nLanguage;
 
@@ -274,7 +271,7 @@ public class ImcmsFilter implements Filter {
      * @param user
      */
     private void createAndSetDocGetterCallback(HttpServletRequest request, UserDomainObject user) {
-        GetDocumentCallback docGetterCallback = user.getDocGetterCallback();
+        DocGetterCallback docGetterCallback = user.getDocGetterCallback();
 
         String languageCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
         I18nLanguage defaultLanguage = Imcms.getI18nSupport().getDefaultLanguage();
@@ -287,7 +284,7 @@ public class ImcmsFilter implements Filter {
         if (language == null) language = Imcms.getI18nSupport().getForHost(request.getServerName());
         if (language == null) language = defaultLanguage;
         
-        GetDocumentCallback.Params params = new GetDocumentCallback.Params(user, language, defaultLanguage);
+        DocGetterCallback.Params params = new DocGetterCallback.Params(user, language, defaultLanguage);
 
         // Switch version
         if (!user.isDefaultUser()) {
@@ -304,14 +301,14 @@ public class ImcmsFilter implements Filter {
                     }
 
                     if (StringUtils.isEmpty(docVersionNoStr)) {
-                        docGetterCallback = new GetDocumentCallback.GetDocumentCallbackDefault(params);
+                        docGetterCallback = new DocGetterCallback.DocGetterCallbackDefault(params);
                     } else {
                         Integer docVersionNo = Integer.parseInt(docVersionNoStr);
 
                         if (docVersionNo.equals(DocumentVersion.WORKING_VERSION_NO)) {
-                            docGetterCallback = new GetDocumentCallback.GetDocumentCallbackWorking(params, docId);
+                            docGetterCallback = new DocGetterCallback.DocGetterCallbackWorking(params, docId);
                         } else {
-                            docGetterCallback = new GetDocumentCallback.GetDocumentCallbackCustom(params, docId, docVersionNo);
+                            docGetterCallback = new DocGetterCallback.DocGetterCallbackCustom(params, docId, docVersionNo);
                         }
                     }
                } catch (NumberFormatException e) {
@@ -321,7 +318,7 @@ public class ImcmsFilter implements Filter {
         }
 
         docGetterCallback = docGetterCallback == null
-                ? new GetDocumentCallback.GetDocumentCallbackDefault(params)
+                ? new DocGetterCallback.DocGetterCallbackDefault(params)
                 : docGetterCallback.copy(params);
 
         user.setDocGetterCallback(docGetterCallback);

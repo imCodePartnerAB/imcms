@@ -1,6 +1,6 @@
 package imcode.server.user;
 
-import com.imcode.imcms.api.GetDocumentCallback;
+import com.imcode.imcms.api.DocGetterCallback;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetDomainObject;
@@ -274,13 +274,13 @@ public class UserDomainObject implements Cloneable, Serializable {
         this.emailAddress = emailAddress;
     }
 
-    private AtomicReference<GetDocumentCallback> docGetterCallbackRef = new AtomicReference<GetDocumentCallback>();
+    private AtomicReference<DocGetterCallback> docGetterCallbackRef = new AtomicReference<DocGetterCallback>();
 
-    public GetDocumentCallback getDocGetterCallback() {
+    public DocGetterCallback getDocGetterCallback() {
         return docGetterCallbackRef.get();
     }
 
-    public void setDocGetterCallback(GetDocumentCallback callback) {
+    public void setDocGetterCallback(DocGetterCallback callback) {
         docGetterCallbackRef.set(callback);
     }    
 

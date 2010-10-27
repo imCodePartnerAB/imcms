@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.GetDocumentCallback;
+import com.imcode.imcms.api.DocGetterCallback;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -22,9 +22,9 @@ public class BackDoc extends HttpServlet {
     public static class HistoryElement {
         public final Integer docId;
 
-        public final GetDocumentCallback docGetterCallback;
+        public final DocGetterCallback docGetterCallback;
 
-        public HistoryElement(Integer docId, GetDocumentCallback docGetterCallback) {
+        public HistoryElement(Integer docId, DocGetterCallback docGetterCallback) {
             this.docId = docId;
             this.docGetterCallback = docGetterCallback;
         }
@@ -44,8 +44,8 @@ public class BackDoc extends HttpServlet {
         if (null != lastTextDocument ) {
             redirectToDocumentId( req, res, lastTextDocument.getId() );
         } else {
-            GetDocumentCallback.Params params = new GetDocumentCallback.Params(Imcms.getUser(), Imcms.getI18nSupport().getDefaultLanguage(), Imcms.getI18nSupport().getDefaultLanguage());
-            GetDocumentCallback callback = new GetDocumentCallback.GetDocumentCallbackDefault(params);
+            DocGetterCallback.Params params = new DocGetterCallback.Params(Imcms.getUser(), Imcms.getI18nSupport().getDefaultLanguage(), Imcms.getI18nSupport().getDefaultLanguage());
+            DocGetterCallback callback = new DocGetterCallback.DocGetterCallbackDefault(params);
             Imcms.getUser().setDocGetterCallback(callback);
             redirectToDocumentId( req, res, imcref.getSystemData().getStartDocument() );
         }

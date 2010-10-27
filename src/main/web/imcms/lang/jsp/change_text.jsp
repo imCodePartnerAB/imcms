@@ -70,7 +70,7 @@ try {
 
 List<I18nLanguage> languages = Imcms.getI18nSupport().getLanguages();
 I18nLanguage defaultLanguage = Imcms.getI18nSupport().getDefaultLanguage();
-I18nLanguage currentLanguage = Imcms.getGetDocumentCallback().getLanguage();
+I18nLanguage currentLanguage = Imcms.getUser().getDocGetterCallback().getLanguage();
 
 DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 TextDomainObject text = textEditPage.getText();
@@ -96,7 +96,7 @@ TextDomainObject text = textEditPage.getText();
 if (TextDomainObject.TEXT_TYPE_HTML==textEditPage.getType() && !editorHidden) { %>?html=true<% } %>"></script>
 <% } %>
 <form method="POST" action="<%= request.getContextPath() %>/servlet/SaveText">
-<input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE%>"  value="${currentLanguage.code}">
+<input type="hidden" name="<%=ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE%>"  value="<%= currentLanguage.getCode() %>">
 <input type="hidden" name="meta_id"  value="<%= textEditPage.getDocumentId() %>">
 <input type="hidden" name="txt_no"   value="<%= textEditPage.getTextIndex() %>">
 
