@@ -116,18 +116,25 @@ class I18nSettingsDialogContent extends FormLayout {
 }
 
 
-class LabelsLyt extends FormLayout {
+class LabelsLyt extends FormLayout with NoSpacing with UndefinedSize {
   val txtTitle = new TextField("Title")
   val txtMenuText = new TextField("Menu text")
   val embLinkImage = new TextField("Link image")
 
   addComponents(this, txtTitle, txtMenuText, embLinkImage)
-  setSpacing(false)
-  setSizeUndefined
 }
 
 
-class PublicationLyt extends VerticalLayout {
+class PublicationLyt extends GridLayout(2, 4) with Spacing {
+  val lblPublisher = new Label("Publisher") with UndefinedSize
+  val lblPublisherName = new Label("No publisher selected") with UndefinedSize
+  val btnChoosePublisher = new Button("...") with LinkStyle
+
+  val lytPublisher = new HorizontalLayout with Spacing {
+    addComponents(this, lblPublisherName, btnChoosePublisher)    
+  }
+
+  val lblStatus = new Label("Status") with UndefinedSize
   val sltStatus = new Select {
     setNullSelectionAllowed(false)
     addItem("Approved")
@@ -135,56 +142,40 @@ class PublicationLyt extends VerticalLayout {
     select("Disapproved")
   }
 
-  val lytStatus = new GridLayout(3, 2) {
-    val calStart = new DateField {setValue(new Date)}
-    val calEnd = new DateField
-    val chkStart = new CheckBox("Start date") { setValue(true); setEnabled(false) } // decoration, always disabled
-    val chkEnd = new CheckBox("End date") { setEnabled(false) }
-    val btnResetStart = new Button("now") { setStyleName(Button.STYLE_LINK) }
-    val btnResetEnd = new Button("now") { setStyleName(Button.STYLE_LINK) }
+  val lblVersion = new Label("Version") with UndefinedSize
+  val sltVersion = new Select {
+    setNullSelectionAllowed(false)
+    addItem("Working")
+    select("Working")
+  }
 
-    addComponent(new Label("Status"))
-    addComponent(sltStatus, 1, 0, 2, 0)
-
-    setCursorX(0); setCursorY(1)
-    forlet(chkStart, calStart, btnResetStart, chkEnd, calEnd, btnResetEnd) { c =>
-      addComponent(c)
-      setComponentAlignment(c, Alignment.MIDDLE_LEFT)
+  val calStart = new DateField { setValue(new Date) }
+  val calEnd = new DateField
+  val chkStart = new CheckBox("Start date") { setValue(true); setEnabled(false) } // decoration, always disabled
+  val chkEnd = new CheckBox("End date") with Immediate {
+    setValue(false)
+  }
+  
+  val frmSchedule = new Form with UndefinedSize {
+    setCaption("Schedule")
+    let(new GridLayout(2, 2) with Spacing) { lyt =>
+      addComponents(lyt, chkStart, calStart, chkEnd, calEnd)
+      setLayout(lyt)
     }
-
-    setSpacing(true)    
   }
 
-  val lytVersionSupport = new VerticalLayout {
-    val lytInfo = new GridLayout(2, 2) { setSpacing(true) }
-
-    val chkEnabled = new CheckBox("Enable version support")
-    val lblCurrentVersion = new Label("Current version:")
-    val lblCurrentVersionStatus = new Label("not set")
-    val lblAwaitingVersion = new Label("Awaiting version:")
-    val lblAwaitingVersionStatus = new Label("not set")
-    
-    val btnConfigure = new Button("Configure...") { setStyleName(Button.STYLE_LINK) }
-
-    addComponents(lytInfo, lblCurrentVersion, lblCurrentVersionStatus, lblAwaitingVersion, lblAwaitingVersionStatus)
-
-    addComponents(this, chkEnabled, lytInfo, btnConfigure)
-  }
-
-  setCaption("Publication")
-  addComponents(this, lytStatus, lytVersionSupport)
+  addComponents(this, lblStatus, sltStatus, lblVersion, sltVersion, lblPublisher, lytPublisher)
+  addComponent(frmSchedule, 0, 3, 1, 3)
 }
+
 
 class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2) {
 
   type ItemIds = JCollection[String]
 
-  val lstKeywords = new ListSelect("Keywords") {
-    setNullSelectionAllowed(true)
-    setMultiSelect(true)
+  val lstKeywords = new ListSelect("Keywords") with Immediate with NullSelection with MultiSelect {
     setRows(10)
     setColumns(10)
-    setImmediate(true)
   }
 
   val btnAdd = new Button("+")
@@ -268,59 +259,60 @@ class CategoriesDialogContent extends Panel {
 
 
 class MetaLyt extends FormLayout {
-  val txtId = new TextField("System Id") {
-    setEnabled(false)
-  }
+  val txtId = new TextField("System Id") with Disabled
   val txtName = new TextField("Name")
   val txtAlias = new TextField("Alias")
-  val lytI18n = new VerticalLayout {
-    val tsLabels = new TabSheet {setWidth("100%")}
-    val btnSettings = new Button("Configure...") {
-      setStyleName(Button.STYLE_LINK)
-      
-    }
+  val lytI18n = new VerticalLayout with UndefinedSize {
+    val tsLabels = new TabSheet with FullWidth
+    val btnSettings = new Button("Configure...") with LinkStyle
     val chkCopyLabelsTextToPage = new CheckBox("Copy link heading & subheading to text 1 & text 2 in page")
-
+                                                                                              
     setCaption("Appearence")
     addComponents(this, tsLabels, btnSettings, chkCopyLabelsTextToPage)
-    setSizeUndefined
+  }
+  val lytLink = new VerticalLayout with Spacing with FullWidth with Margin {
+    val lblLink = new Label("Show in")
+    val ogLink = new OptionGroup("", List("Same frame", "New window", "Replace all", "Other frame:"))
+    val txtFrameName = new TextField
+    val chkShowToUnauthorizedUser = new CheckBox("Show to unauthorized user")
+
+    val lytShowIn = new HorizontalLayout with Spacing {
+      addComponents(this, lblLink, ogLink, txtFrameName)  
+    }
+
+    ogLink.addStyleName("horizontalgroup")
+    setCaption("Link/menu item")
+    addComponents(this, lytShowIn, chkShowToUnauthorizedUser)
   }
 
-  val lytIdentity = new HorizontalLayout {
+  val lytIdentity = new HorizontalLayout with Spacing {
     setCaption("Identity")
-    setSpacing(true)
     addComponents(this, txtId, txtName, txtAlias)
   }
 
   //refactor
-  val btnKeywords = new Button("Edit..."){
-    setStyleName(Button.STYLE_LINK)
-  }
+  val btnKeywords = new Button("Edit...") with LinkStyle
 
   val chkExclude = new CheckBox("Exclude this page (by default) from internal search results")
 
-  val btnCategories = new Button("Edit..."){
-    setStyleName(Button.STYLE_LINK)
-  }
+  val btnCategories = new Button("Edit...") with LinkStyle
 
-  val lytSearch = new VerticalLayout {
+  val lytSearch = new VerticalLayout with Spacing {
     val lblKeywords = new Label("No keywords assigned")
 
     setCaption("Search")
-    setSpacing(true)
     addComponents(this, lblKeywords, btnKeywords, chkExclude)
   }
 
-  val lytCategories = new VerticalLayout {
+  val lytCategories = new VerticalLayout with Spacing {
     val lblCategories = new Label("No categories assigned")
     setCaption("Categories")
-    setSpacing(true)
     addComponents(this, lblCategories, btnCategories)
   }
 
-  val lytPublication = new PublicationLyt
+  val lytPublication = new PublicationLyt {
+    setCaption("Publication")
+  }
  
-  addComponents(this, lytIdentity, lytI18n, lytSearch, lytCategories, lytPublication)
-  setMargin(true)
-  setWidth("100%")
+  addComponents(this, lytIdentity, new Label(""), lytI18n, new Label(""), lytLink, new Label(""), lytSearch, new Label(""), lytCategories, new Label(""), lytPublication)
 }

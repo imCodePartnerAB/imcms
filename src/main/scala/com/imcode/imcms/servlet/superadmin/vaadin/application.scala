@@ -57,7 +57,7 @@ object ChatTopic extends Actor {
 
 class AdminApplication extends com.vaadin.Application with VaadinApplication { application =>
 
-  setTheme("runo")
+  setTheme("imcms")
   
   object Menu extends MenuItem {
     object About extends MenuItem(this)

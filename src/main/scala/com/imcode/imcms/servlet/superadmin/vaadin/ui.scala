@@ -73,6 +73,75 @@ object AbstractFieldWrapper {
 
 import AbstractFieldWrapper._
 
+trait Disabled { this: Component =>
+  setEnabled(false)
+}
+
+trait Margin { this: AbstractLayout =>
+  setMargin(true)
+}
+
+trait Spacing { this: Layout.SpacingHandler =>
+  setSpacing(true)
+}
+
+trait NoSpacing { this: Layout.SpacingHandler =>
+  setSpacing(false)
+}
+
+trait UndefinedSize { this: AbstractComponent =>
+  setSizeUndefined
+}
+
+trait FullSize { this: AbstractComponent =>
+  setSizeFull
+}
+
+trait FullWidth { this: AbstractComponent =>
+  setWidth("100%")
+}
+
+trait FullHeight { this: AbstractComponent =>
+  setHeight("100%")
+}
+
+trait LinkStyle { this: Button =>
+  setStyleName(Button.STYLE_LINK)
+}
+
+trait Immediate { this: AbstractField =>
+  setImmediate(true)
+}
+
+trait NullSelection { this: AbstractSelect
+  setNullSelectionAllowed(true)
+}
+
+trait NoNullSelection { this: AbstractSelect
+  setNullSelectionAllowed(false)
+}
+
+trait MultiSelect { this: AbstractSelect
+  setMultiSelect(true)
+}
+
+trait NoMultiSelect { this: AbstractSelect
+  setMultiSelect(false)
+}
+
+//trait UndefiedWidth { this: AbstractComponent =>
+//  setSizeFull
+//  setWid
+//}
+//
+//trait UndefiedHeight { this: Layout.SpacingHandler =>
+//  setSpacing(true)
+//}
+
+
+
+
+
 // Fixed size dialog window with full margin   
 // Buttons are centered
 class Dialog(caption: String = "") extends Window(caption) {
