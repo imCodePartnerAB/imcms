@@ -63,7 +63,11 @@ public class MenuDomainObject implements Cloneable, Serializable, DocVersionItem
 
     /** Map of included meta_id to included DocumentDomainObject. -> */
 	@ElementCollection(fetch=FetchType.EAGER)
-	@JoinTable(
+//	@JoinTable(
+//	    name = "imcms_text_doc_menu_items",
+//	    joinColumns = @JoinColumn(name="menu_id")
+//	)
+    @CollectionTable(
 	    name = "imcms_text_doc_menu_items",
 	    joinColumns = @JoinColumn(name="menu_id")
 	)

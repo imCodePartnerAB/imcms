@@ -73,6 +73,11 @@ object AbstractFieldWrapper {
 
 import AbstractFieldWrapper._
 
+trait ValueType[V] extends Property {
+  def value_=(v: V) = setValue(v)
+  def value() = getValue.asInstanceOf[V]
+}
+
 trait Disabled { this: Component =>
   setEnabled(false)
 }
@@ -113,19 +118,19 @@ trait Immediate { this: AbstractField =>
   setImmediate(true)
 }
 
-trait NullSelection { this: AbstractSelect
+trait NullSelection extends AbstractSelect {
   setNullSelectionAllowed(true)
 }
 
-trait NoNullSelection { this: AbstractSelect
+trait NoNullSelection extends AbstractSelect {
   setNullSelectionAllowed(false)
 }
 
-trait MultiSelect { this: AbstractSelect
+trait MultiSelect extends AbstractSelect {
   setMultiSelect(true)
 }
 
-trait NoMultiSelect { this: AbstractSelect
+trait NoMultiSelect extends AbstractSelect {
   setMultiSelect(false)
 }
 

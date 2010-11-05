@@ -28,9 +28,9 @@ import java.util.concurrent.atomic.AtomicReference
 import scala.actors.Actor._
 import scala.actors._
 import imcode.server.document.textdocument.TextDocumentDomainObject
-import imcode.server.document.{TemplateDomainObject, CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
 import java.io.{ByteArrayInputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
+import imcode.server.document._
 
 
 object ChatTopic extends Actor {
@@ -235,17 +235,21 @@ class AdminApplication extends com.vaadin.Application with VaadinApplication { a
   }
 
   def newDocument = {
-    import com.imcode.imcms.admin.ui.MetaMVC
+    import com.imcode.imcms.admin.ui.{MetaMVC, DocFlowComponentImpl, Flow}
 
-    val doc = Imcms.getServices.getDocumentMapper.getDocument(1001)
+    val flowComponent = new DocFlowComponentImpl(this)
+    val parentDoc = Imcms.getServices.getDocumentMapper.getDocument(1001)
+    val flow = flowComponent.docFlow.createDoc(DocumentTypeDomainObject.TEXT, parentDoc)
 
-    val mvc = new MetaMVC(
-      application,
-      doc,
-      Imcms.getI18nSupport.getLanguages map ((_, true)) toMap,
-      Imcms.getSpringBean("metaDao").asInstanceOf[MetaDao].getLabels(1001) map (l => (l.getLanguage, l)) toMap)
+    flow
+//
+//    val mvc = new MetaMVC(
+//      application,
+//      doc,
+//      Imcms.getI18nSupport.getLanguages map ((_, true)) toMap,
+//      Imcms.getSpringBean("metaDao").asInstanceOf[MetaDao].getLabels(1001) map (l => (l.getLanguage, l)) toMap)
 
-    mvc.view
+//    mvc.view
   }
 
   //

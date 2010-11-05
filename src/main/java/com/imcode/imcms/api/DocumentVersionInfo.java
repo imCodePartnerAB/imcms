@@ -8,8 +8,6 @@ import java.util.TreeMap;
 
 /**
  * Document's version info.
- * 
- * todo: add isWorkingDefault, single version predicates.
  */
 public class DocumentVersionInfo implements Serializable {
 	
@@ -132,4 +130,8 @@ public class DocumentVersionInfo implements Serializable {
 	public int getVersionsCount() {
 		return versions.size(); 
 	}
+
+    public boolean workingIsActive() {
+        return getDefaultVersion().getId().equals(getWorkingVersion().getId());
+    }
 }

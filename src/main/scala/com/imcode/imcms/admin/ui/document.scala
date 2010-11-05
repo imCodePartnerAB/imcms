@@ -28,18 +28,107 @@ import java.util.concurrent.atomic.AtomicReference
 import scala.actors.Actor._
 import scala.actors._
 import imcode.server.document.textdocument.TextDocumentDomainObject
-import imcode.server.document.{TemplateDomainObject, CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
 import java.io.{ByteArrayInputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
+import scala.collection.mutable.{Map => MMap}
+import imcode.server.document._
 
-/**
- * @param doc document in default language
- */
-class MetaMVC(app: VaadinApplication,
-              doc: DocumentDomainObject,
-              languagesMap: Map[I18nLanguage, Boolean],
-              labelsMap: Map[I18nLanguage, DocumentLabels]) {
 
+class MetaModel(val meta: Meta,
+                val defaultLanguage: I18nLanguage,
+                val languages: MMap[I18nLanguage, Boolean],
+                val labels: Map[I18nLanguage, DocumentLabels],
+                val versionInfo: Option[DocumentVersionInfo] = None) {
+
+  val isNew = versionInfo.isEmpty
+}
+
+//trait MetaControllerComponent {
+//
+//  val metaController: MetaController
+//
+//  class MetaController {
+//    def createMeta(docType: Int, parentDoc: DocumentDomainObject): Int
+//    def editMeta: Unit
+//  }
+//}
+//
+//
+//class MetaControllerComponentImpl extends MetaControllerComponent {
+//  val metaController = new MetaController {
+//    def createMeta(docType: Int, parentDoc: DocumentDomainObject) = {
+//      Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent()
+//    }
+//  }
+//}
+
+
+trait DocFlowComponent {
+
+  val docFlow: DocFlow
+
+  trait DocFlow {
+    def createDoc(docType: DocumentTypeDomainObject, parentDoc: DocumentDomainObject): Flow
+    def deleteDoc(id: Int) = error("not implemented")
+  }
+}
+
+class DocFlowComponentImpl(app: VaadinApplication) extends DocFlowComponent {
+  
+  val docFlow = new DocFlow {
+    def createDoc(docType: DocumentTypeDomainObject, parentDoc: DocumentDomainObject) = {
+      val doc = Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent(docType.getId, parentDoc, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(UserDomainObject.DEFAULT_USER_ID))
+      val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage
+      val availableLanguages = Imcms.getI18nSupport.getLanguages
+      val languages = availableLanguages.zip(Stream.continually(false)).toMap.updated(defaultLanguage, true)
+      val labels = availableLanguages map { language =>
+        let(new DocumentLabels) { labels =>
+          labels.setHeadline("")
+          labels.setMenuText("")
+          labels.setMenuImageURL("")
+          labels.setLanguage(language)
+
+          language -> labels
+        }
+      } toMap
+
+      val metaModel = new MetaModel(
+        doc.getMeta,
+        Imcms.getI18nSupport.getDefaultLanguage,
+        MMap(languages.toSeq : _*),
+        labels)
+      
+      docType match {
+        case DocumentTypeDomainObject.TEXT =>
+          val metaMVC = new MetaMVC(app, metaModel)
+
+          new Flow(metaMVC.view)
+          // setOkButton, setFlowButtons....
+
+        case otherType => error("Not implemented. doc type: " + otherType)
+      }
+    }
+  }
+}
+
+class Flow(page: Component, pages: Component*) extends VerticalLayout {
+  addComponent(page)  
+  
+
+
+//  def firstPage: Component
+//  def lastPage = firstPage
+
+//  def setOkButton(b: Button): Unit
+//  def setCancelButton(b: Button): Unit
+//  def setNextButton(b: Button): Unit
+//  def setPrevButton(b: Button): Unit
+}
+
+
+class MetaMVC(val app: VaadinApplication, val metaModel: MetaModel) {
+              // versionInfo/
+  
   val view = createView 
   
 //  def addLanguage(la: LanguagesArea) = {}
@@ -47,8 +136,8 @@ class MetaMVC(app: VaadinApplication,
 
   def createView = letret(new MetaLyt) { v =>
     for {
-      (language, enabled) <- languagesMap
-      labels = labelsMap.getOrElse(language, { new DocumentLabels {setLanguage(language)}})
+      (language, enabled) <- metaModel.languages
+      labels = metaModel.labels(language)
     } {     
       val lytLabels = letret(new LabelsLyt) { l =>        
         l.txtTitle setValue labels.getHeadline
@@ -69,7 +158,7 @@ class MetaMVC(app: VaadinApplication,
       app.initAndShow(new OkCancelDialog("Settings")) { w =>
         val content = new I18nSettingsDialogContent
 
-        for ((language, enabled) <- languagesMap) {
+        for ((language, enabled) <- metaModel.languages) {
           val chkLanguage = new CheckBox(language.getName) {
             setValue(enabled)
             setEnabled(!Imcms.getI18nSupport.isDefault(language))
@@ -82,18 +171,23 @@ class MetaMVC(app: VaadinApplication,
       }
     }
 
-    v.btnKeywords addListener unit {
+    v.lytSearch.lytKeywords.btnEdit addListener unit {
       app.initAndShow(new OkCancelDialog("Keywords")) { w =>
-        w setMainContent new KeywordsDialogContent(List("Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Fi", "Lambda"))
+        val content = new KeywordsDialogContent(List("Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Fi", "Lambda"))
+        
+        w setMainContent content
+        w addOkButtonClickListener unit {
+          content.txtKeyword setValue content.lstKeywords.asList[String].mkString(", ") 
+        }
       }
     }
 
-    v.btnCategories addListener unit {
+    v.lytCategories.btnEdit addListener unit {
       app.initAndShow(new OkCancelDialog("Categories")) { w =>
         val mainContent = new CategoriesDialogContent
         
         let(w.setMainContent(mainContent)) { c =>
-          c.setHeight("350px")
+          c.setHeight("250px")
         }
       }
     } 
@@ -107,9 +201,8 @@ class I18nSettingsDialogContent extends FormLayout {
     List("Show in default language", "Show 'Not found' page")
   )
 
-  val lytLanguages = new VerticalLayout {
+  val lytLanguages = new VerticalLayout with UndefinedSize {
     setCaption("Enabled languages")
-    setSizeUndefined
   }
 
   addComponents(this, lytLanguages, ogDisabledShowMode)
@@ -135,23 +228,21 @@ class PublicationLyt extends GridLayout(2, 4) with Spacing {
   }
 
   val lblStatus = new Label("Status") with UndefinedSize
-  val sltStatus = new Select {
-    setNullSelectionAllowed(false)
+  val sltStatus = new Select with NoNullSelection {
     addItem("Approved")
     addItem("Disapproved")
     select("Disapproved")
   }
 
   val lblVersion = new Label("Version") with UndefinedSize
-  val sltVersion = new Select {
-    setNullSelectionAllowed(false)
+  val sltVersion = new Select with NoNullSelection {
     addItem("Working")
     select("Working")
   }
 
   val calStart = new DateField { setValue(new Date) }
   val calEnd = new DateField
-  val chkStart = new CheckBox("Start date") { setValue(true); setEnabled(false) } // decoration, always disabled
+  val chkStart = new CheckBox("Start date") with Disabled { setValue(true) } // decoration, always disabled
   val chkEnd = new CheckBox("End date") with Immediate {
     setValue(false)
   }
@@ -169,11 +260,11 @@ class PublicationLyt extends GridLayout(2, 4) with Spacing {
 }
 
 
-class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2) {
+class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2) with Spacing {
 
   type ItemIds = JCollection[String]
 
-  val lstKeywords = new ListSelect("Keywords") with Immediate with NullSelection with MultiSelect {
+  val lstKeywords = new ListSelect with MultiSelect with Immediate with NullSelection {
     setRows(10)
     setColumns(10)
   }
@@ -258,10 +349,17 @@ class CategoriesDialogContent extends Panel {
 }
 
 
-class MetaLyt extends FormLayout {
-  val txtId = new TextField("System Id") with Disabled
-  val txtName = new TextField("Name")
-  val txtAlias = new TextField("Alias")
+class MetaLyt extends FormLayout with Margin {
+
+  val lytIdentity = new HorizontalLayout with Spacing {
+    val txtId = new TextField("Document Id") with Disabled
+    val txtName = new TextField("Name")
+    val txtAlias = new TextField("Alias")
+
+    setCaption("Identity")    
+    addComponents(this, txtId, txtName, txtAlias)
+  }
+  
   val lytI18n = new VerticalLayout with UndefinedSize {
     val tsLabels = new TabSheet with FullWidth
     val btnSettings = new Button("Configure...") with LinkStyle
@@ -270,49 +368,41 @@ class MetaLyt extends FormLayout {
     setCaption("Appearence")
     addComponents(this, tsLabels, btnSettings, chkCopyLabelsTextToPage)
   }
-  val lytLink = new VerticalLayout with Spacing with FullWidth with Margin {
-    val lblLink = new Label("Show in")
-    val ogLink = new OptionGroup("", List("Same frame", "New window", "Replace all", "Other frame:"))
-    val txtFrameName = new TextField
+  
+  val lytLink = new VerticalLayout with Spacing {
+    val chkOpenInNewWindow = new CheckBox("Open in new window")
     val chkShowToUnauthorizedUser = new CheckBox("Show to unauthorized user")
 
-    val lytShowIn = new HorizontalLayout with Spacing {
-      addComponents(this, lblLink, ogLink, txtFrameName)  
-    }
-
-    ogLink.addStyleName("horizontalgroup")
     setCaption("Link/menu item")
-    addComponents(this, lytShowIn, chkShowToUnauthorizedUser)
+    addComponents(this, chkOpenInNewWindow, chkShowToUnauthorizedUser)
   }
-
-  val lytIdentity = new HorizontalLayout with Spacing {
-    setCaption("Identity")
-    addComponents(this, txtId, txtName, txtAlias)
-  }
-
-  //refactor
-  val btnKeywords = new Button("Edit...") with LinkStyle
-
-  val chkExclude = new CheckBox("Exclude this page (by default) from internal search results")
-
-  val btnCategories = new Button("Edit...") with LinkStyle
 
   val lytSearch = new VerticalLayout with Spacing {
-    val lblKeywords = new Label("No keywords assigned")
+    val chkExclude = new CheckBox("Exclude this page from internal search")
+    val lytKeywords = new HorizontalLayout with Spacing {
+      val lblKeywords = new Label("Keywords")
+      val txtKeywords = new TextField with Disabled { setColumns(30) }
+      val btnEdit = new Button("Edit...") with LinkStyle
+
+      addComponents(this, lblKeywords, txtKeywords, btnEdit)
+    }
 
     setCaption("Search")
-    addComponents(this, lblKeywords, btnKeywords, chkExclude)
+    addComponents(this, lytKeywords, chkExclude)
   }
 
-  val lytCategories = new VerticalLayout with Spacing {
-    val lblCategories = new Label("No categories assigned")
-    setCaption("Categories")
-    addComponents(this, lblCategories, btnCategories)
+  val lytCategories = new HorizontalLayout with Spacing {
+    val lblCategories = new Label("Categories")
+    val txtCategories = new TextField with Disabled { setColumns(30) }
+    val btnEdit = new Button("Edit...") with LinkStyle
+    
+    addComponents(this, lblCategories, txtCategories, btnEdit)
   }
 
-  val lytPublication = new PublicationLyt {
-    setCaption("Publication")
+  val lytPublication = new PublicationLyt { setCaption("Publication") }
+
+  forlet(lytIdentity, lytI18n, lytLink, lytSearch, lytCategories, lytPublication) { c =>
+    c.setMargin(true)
+    addComponent(c)
   }
- 
-  addComponents(this, lytIdentity, new Label(""), lytI18n, new Label(""), lytLink, new Label(""), lytSearch, new Label(""), lytCategories, new Label(""), lytPublication)
 }
