@@ -23,25 +23,7 @@
   
   <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
   
-  <bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-    <property name="ignoreResourceNotFound" value="true"/>  
-    <property name="locations">
-      <list>
-        <value>classpath:server.properties</value>
-        <value>WEB-INF/conf/server.properties</value>
-      </list>
-    </property>
-  </bean>
-    
-  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="ignoreResourceNotFound" value="true"/> 
-    <property name="locations">
-      <list>
-        <value>classpath:server.properties</value>
-        <value>WEB-INF/conf/server.properties</value>
-      </list>
-    </property>  
-  </bean>  
+  <context:property-placeholder location="**/conf/server.properties"/>
 	 
   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
     <property name="driverClassName" value="${JdbcDriver}"/>
@@ -62,10 +44,6 @@
     <property name="configLocation" value="classpath:hibernate.cfg.xml"/>
     
     <property name="dataSource" ref="dataSource"/>
-
-    <property name="hibernateProperties">
-      <ref bean="properties"/>
-    </property>
   </bean>  
   
   <bean id="localeResolver" class="com.imcode.imcms.web.util.ImcmsLocaleResolver"/>

@@ -63,5 +63,5 @@ public class MenuDao extends HibernateTemplate {
 	@Transactional
 	public void deleteMenu(MenuDomainObject menu) {
 		delete(menu);
-	}
+	}   
 }

@@ -33,6 +33,8 @@
         <mapping class="imcode.server.document.textdocument.TextDomainObject"/>
         <mapping class="imcode.server.document.textdocument.MenuDomainObject"/>
         <mapping class="imcode.server.document.textdocument.ImageCacheDomainObject"/>
+        <mapping class="imcode.server.document.textdocument.MenuItem2"/>
+        <mapping class="imcode.server.document.textdocument.MenuItem3"/>
         
         <mapping class="imcode.server.document.CategoryTypeDomainObject"/>
         <mapping class="imcode.server.document.CategoryDomainObject"/>

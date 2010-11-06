@@ -1,10 +1,10 @@
 (ns
-  #^{:doc "imCMS project."}
+  ^{:doc "imCMS project."}
   com.imcode.imcms.project
   
   (:require
     (com.imcode.imcms
-      boot ;must always appear first
+      boot ;configures logging. must always appear first
       [misc :as misc-lib]
       [fs :as fs-lib])
     
@@ -115,7 +115,8 @@
 
 (defn init-spring-app-context! []
   (alter-var-root #'spring-app-context
-    (fn [_] (FileSystemXmlApplicationContext. (str "file:" (file-path "src/main/web/WEB-INF/applicationContext.xml"))))))
+    (fn [_] (FileSystemXmlApplicationContext. (str "file:" (file-path "src/test/resources/applicationContextTest.xml"))))))
+    ;(fn [_] (FileSystemXmlApplicationContext. (str "file:" (file-path "src/main/web/WEB-INF/applicationContext.xml"))))))
 
 
 (defn init-imcms
@@ -127,7 +128,7 @@
     (when-not spring-app-context
       (init-spring-app-context!))
 
-    (Imcms/setPath (subdir "src/main/webapp"))
+    (Imcms/setPath (subdir "target/imcms"))
     (Imcms/setApplicationContext spring-app-context)
     (Imcms/setPrepareDatabaseOnStart prepare-db-on-start)))
 
