@@ -235,11 +235,11 @@ class AdminApplication extends com.vaadin.Application with VaadinApplication { a
   }
 
   def newDocument = {
-    import com.imcode.imcms.admin.ui.{MetaMVC, DocFlowComponentImpl, Flow}
+    import com.imcode.imcms.admin.ui.{MetaMVC, FlowUI, DocFlowFactory}
 
-    val flowComponent = new DocFlowComponentImpl(this)
+    val flowFactory = new DocFlowFactory(this)
     val parentDoc = Imcms.getServices.getDocumentMapper.getDocument(1001)
-    val flow = flowComponent.docFlow.createDoc(DocumentTypeDomainObject.TEXT, parentDoc)
+    val flow = flowFactory.newDocFlow(DocumentTypeDomainObject.TEXT, parentDoc)
 
     flow
 //

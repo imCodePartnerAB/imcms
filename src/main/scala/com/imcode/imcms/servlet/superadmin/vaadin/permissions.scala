@@ -36,7 +36,6 @@ import com.vaadin.data.Container.ItemSetChangeListener
 // user-admin-roles???
 
 class UserViewFilter extends VerticalLayout { //CustomLayout
-  val chkEnable = new CheckBox("Use filter")
   val lytParams = new FormLayout
   
   val txtText = new TextField("Username, email, first name, last name, email") {
@@ -46,8 +45,8 @@ class UserViewFilter extends VerticalLayout { //CustomLayout
     setCaption("Free text")
     addComponent(txtText)
   }
-  val btnApply = new Button("Apply")
-  val btnClear = new Button("Clear")
+  val btnApply = new Button("Search") with LinkStyle
+  val btnClear = new Button("Clear") with LinkStyle
   val chkShowInactive = new CheckBox("Show inactive")
   val lstRoles = new ListSelect("Only with role(s)") {
     setColumns(21)
@@ -61,7 +60,7 @@ class UserViewFilter extends VerticalLayout { //CustomLayout
   }
 
   addComponents(lytParams, lytText, lstRoles, lytControls)
-  addComponents(this, chkEnable, lytParams)
+  addComponents(this, lytParams)
   setSpacing(true)
 }
 
@@ -210,11 +209,10 @@ class UsersView(application: VaadinApplication) extends {
 
   override def tableFields = List(
     ("Id", classOf[JInteger],  null),
-    ("Username", classOf[String],  null),
+    ("Login", classOf[String],  null),
     ("First name", classOf[String],  null),
     ("Last name", classOf[String],  null),
     ("Superadmin?", classOf[JBoolean],  null),
-    ("Useradmin?", classOf[JBoolean],  null),
     ("Active?", classOf[JBoolean],  null))
 
   override def tableRows =
@@ -226,7 +224,47 @@ class UsersView(application: VaadinApplication) extends {
                      user.getFirstName,
                      user.getLastName,
                      Boolean box user.isSuperAdmin,
-                     Boolean box user.isUserAdmin,
                      Boolean box user.isActive)
     }  
+}
+
+case class TableProperty(id: AnyRef, clazz: JClass[_], defaultValue: AnyRef = null)
+
+class UserUI extends VerticalLayout {
+  val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
+  val filterUI = new UserViewFilter
+  val tblUsers = new Table {
+    val properties =
+      TableProperty("Id", classOf[JInteger]) ::
+      TableProperty ("Login", classOf[String]) ::
+      TableProperty("First name", classOf[String]) ::
+      TableProperty("Last name", classOf[String]) ::
+      TableProperty("Superadmin?", classOf[JBoolean]) ::
+      TableProperty("Active?", classOf[JBoolean]) :: Nil
+
+    properties foreach { c => addContainerProperty(c.id, c.clazz, c.defaultValue) }
+    
+    setSelectable(true)
+    setImmediate(true)
+    setPageLength(5)
+  }
+
+  addComponents(this, filterUI, tblUsers)
+
+  tblUsers addListener unit {
+    whenSelected[Integer](tblUsers) { id =>
+      tblUsers.removeAllItems
+      
+      roleMapper.getAllUsers.toList map { user =>
+        val userId = Int box user.getId
+
+        userId -> List(userId,
+                       user.getLoginName,
+                       user.getFirstName,
+                       user.getLastName,
+                       Boolean box user.isSuperAdmin,
+                       Boolean box user.isActive)
+      }
+    }
+  }
 }

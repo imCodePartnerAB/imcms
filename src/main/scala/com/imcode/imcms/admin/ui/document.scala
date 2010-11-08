@@ -1,13 +1,10 @@
 package com.imcode.imcms.admin.ui
 
-import com.imcode.imcms.servlet.superadmin.vaadin.permissions._
-import com.imcode.imcms.servlet.superadmin.vaadin.filemanager._
 import com.imcode.imcms.servlet.superadmin.vaadin.template._
 import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
 import scala.collection.JavaConversions._
 import com.imcode._
 import com.vaadin.event.ItemClickEvent
-import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.vaadin.ui._
 import com.vaadin.data.Property
 import com.vaadin.data.Property._
@@ -17,6 +14,7 @@ import imcms.mapping.CategoryMapper
 import imcms.servlet.superadmin.AdminSearchTerms
 import com.imcode.imcms.api.Document.PublicationStatus
 import imcms.servlet.superadmin.vaadin.ChatTopic.Message
+import imcms.servlet.superadmin.vaadin.permissions.{UserUI, UsersView}
 import imcode.util.Utility
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
@@ -33,87 +31,19 @@ import com.vaadin.terminal.{ThemeResource, UserError}
 import scala.collection.mutable.{Map => MMap}
 import imcode.server.document._
 
-
 class MetaModel(val meta: Meta,
                 val defaultLanguage: I18nLanguage,
                 val languages: MMap[I18nLanguage, Boolean],
                 val labels: Map[I18nLanguage, DocumentLabels],
-                val versionInfo: Option[DocumentVersionInfo] = None) {
+                val versionInfo: Option[DocumentVersionInfo] = Option.empty) {
 
   val isNew = versionInfo.isEmpty
 }
 
-//trait MetaControllerComponent {
-//
-//  val metaController: MetaController
-//
-//  class MetaController {
-//    def createMeta(docType: Int, parentDoc: DocumentDomainObject): Int
-//    def editMeta: Unit
-//  }
-//}
-//
-//
-//class MetaControllerComponentImpl extends MetaControllerComponent {
-//  val metaController = new MetaController {
-//    def createMeta(docType: Int, parentDoc: DocumentDomainObject) = {
-//      Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent()
-//    }
-//  }
-//}
 
+class FlowUI(page: Component, pages: Component*) extends VerticalLayout {
+  addComponent(page)
 
-trait DocFlowComponent {
-
-  val docFlow: DocFlow
-
-  trait DocFlow {
-    def createDoc(docType: DocumentTypeDomainObject, parentDoc: DocumentDomainObject): Flow
-    def deleteDoc(id: Int) = error("not implemented")
-  }
-}
-
-class DocFlowComponentImpl(app: VaadinApplication) extends DocFlowComponent {
-  
-  val docFlow = new DocFlow {
-    def createDoc(docType: DocumentTypeDomainObject, parentDoc: DocumentDomainObject) = {
-      val doc = Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent(docType.getId, parentDoc, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(UserDomainObject.DEFAULT_USER_ID))
-      val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage
-      val availableLanguages = Imcms.getI18nSupport.getLanguages
-      val languages = availableLanguages.zip(Stream.continually(false)).toMap.updated(defaultLanguage, true)
-      val labels = availableLanguages map { language =>
-        let(new DocumentLabels) { labels =>
-          labels.setHeadline("")
-          labels.setMenuText("")
-          labels.setMenuImageURL("")
-          labels.setLanguage(language)
-
-          language -> labels
-        }
-      } toMap
-
-      val metaModel = new MetaModel(
-        doc.getMeta,
-        Imcms.getI18nSupport.getDefaultLanguage,
-        MMap(languages.toSeq : _*),
-        labels)
-      
-      docType match {
-        case DocumentTypeDomainObject.TEXT =>
-          val metaMVC = new MetaMVC(app, metaModel)
-
-          new Flow(metaMVC.view)
-          // setOkButton, setFlowButtons....
-
-        case otherType => error("Not implemented. doc type: " + otherType)
-      }
-    }
-  }
-}
-
-class Flow(page: Component, pages: Component*) extends VerticalLayout {
-  addComponent(page)  
-  
 
 
 //  def firstPage: Component
@@ -126,8 +56,47 @@ class Flow(page: Component, pages: Component*) extends VerticalLayout {
 }
 
 
+class DocFlowFactory(app: VaadinApplication) {
+
+  def editDocFlow: FlowUI = error("Not implemented")
+
+  def newDocFlow(docType: DocumentTypeDomainObject, parentDoc: DocumentDomainObject): FlowUI = {
+    val doc = Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent(docType.getId, parentDoc, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(UserDomainObject.DEFAULT_USER_ID))
+    val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage
+    val availableLanguages = Imcms.getI18nSupport.getLanguages
+    val languages = availableLanguages.zip(Stream.continually(false)).toMap.updated(defaultLanguage, true)
+    val labels = availableLanguages map { language =>
+      let(new DocumentLabels) { labels =>
+        labels.setHeadline("")
+        labels.setMenuText("")
+        labels.setMenuImageURL("")
+        labels.setLanguage(language)
+
+        language -> labels
+      }
+    } toMap
+
+    val metaModel = new MetaModel(
+      doc.getMeta,
+      Imcms.getI18nSupport.getDefaultLanguage,
+      MMap(languages.toSeq : _*),
+      labels
+    )
+
+    docType match {
+      case DocumentTypeDomainObject.TEXT =>
+        val metaMVC = new MetaMVC(app, metaModel)
+
+        new FlowUI(metaMVC.view)
+        // setOkButton, setFlowButtons....
+
+      case otherType => error("Not implemented. doc type: " + otherType)
+    }
+  }
+}
+
+
 class MetaMVC(val app: VaadinApplication, val metaModel: MetaModel) {
-              // versionInfo/
   
   val view = createView 
   
@@ -190,7 +159,13 @@ class MetaMVC(val app: VaadinApplication, val metaModel: MetaModel) {
           c.setHeight("250px")
         }
       }
-    } 
+    }
+
+    v.lytPublication.btnChoosePublisher addListener unit {
+      app.initAndShow(new OkCancelDialog("Publisher")) { w =>
+        w.setMainContent(new UserUI)
+      }      
+    }
   }
 }
 
