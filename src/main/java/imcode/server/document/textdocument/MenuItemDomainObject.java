@@ -81,6 +81,9 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
     }
 
     public DocumentDomainObject getDocument() {
+        if (documentReference == null)
+            throw new IllegalStateException("Document reference is not initialized.");
+
         return documentReference.getDocument();
     }    
 
