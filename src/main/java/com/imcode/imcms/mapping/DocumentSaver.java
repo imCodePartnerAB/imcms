@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.DocIdentityCleanerVisitor;
-import com.imcode.imcms.servlet.admin.DocumentCreator;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
@@ -20,7 +19,7 @@ import com.imcode.imcms.dao.*;
 import com.imcode.imcms.mapping.orm.DefaultDocumentVersion;
 
 /**
- * Used internally by DocumentMapper. Must not be used directly.
+ * Used internally by DocumentMapper. Must NOT be used directly.
  *
  * Instantiated and initialized using spring framework. 
  */
@@ -220,7 +219,7 @@ public class DocumentSaver {
 //            DocumentVersion documentVersion = documentVersionDao.createVersion(docId, user.getId());
 //            Integer docVersionNo = documentVersion.getNo();
 //
-//            for (DocumentLabels labels:  metaDao.getLabels(docId, DocumentVersion.WORKING_VERSION_NO)) {
+//            for (I18nMeta labels:  metaDao.getLabels(docId, DocumentVersion.WORKING_VERSION_NO)) {
 //                labels = labels.clone();
 //                labels.setId(null);
 //                labels.setDocVersionNo(docVersionNo);
@@ -273,7 +272,7 @@ public class DocumentSaver {
 
     //todo: refactor labels saving
     @Transactional
-    public void updateDocument(DocumentDomainObject doc, Map<I18nLanguage, DocumentLabels> labelsMap, DocumentDomainObject oldDoc, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+    public void updateDocument(DocumentDomainObject doc, Map<I18nLanguage, I18nMeta> labelsMap, DocumentDomainObject oldDoc, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(doc);
 
         //document.loadAllLazilyLoaded();
@@ -295,9 +294,9 @@ public class DocumentSaver {
         saveMeta(doc.getMeta());
 
         // hack, must be refactored
-        for (Map.Entry<I18nLanguage, DocumentLabels> l: labelsMap.entrySet()) {
+        for (Map.Entry<I18nLanguage, I18nMeta> l: labelsMap.entrySet()) {
             doc.setLanguage(l.getKey());
-            doc.setLabels(l.getValue());
+            doc.setI18nMeta(l.getValue());
 
             savingVisitor.updateDocumentLabels(doc, null, user);
         }
@@ -360,17 +359,17 @@ public class DocumentSaver {
 //
 //
 //        for (DocumentDomainObject doc: docs) {
-//            DocumentLabels labels = doc.getLabels();
+//            I18nMeta labels = doc.getLabels();
 //            labels.setHeadline(labels.getHeadline() + copyHeadlineSuffix);
 //            labelsColl.add(doc.getLabels());
 //        }
 //
 //
 //        // save meta and all labels
-//        Collection<DocumentLabels> labelsColl = new LinkedList<DocumentLabels>();
+//        Collection<I18nMeta> labelsColl = new LinkedList<I18nMeta>();
 //
 //        for (DocumentDomainObject doc: docs) {
-//            DocumentLabels labels = doc.getLabels();
+//            I18nMeta labels = doc.getLabels();
 //            labels.setHeadline(labels.getHeadline() + copyHeadlineSuffix);
 //            labelsColl.add(doc.getLabels());
 //        }
@@ -395,12 +394,12 @@ public class DocumentSaver {
 
 //    @Transactional
 //    public Integer saveNewDocument(UserDomainObject user,
-//                                   DocumentDomainObject document, Collection<DocumentLabels> labelsColl, boolean copying)
+//                                   DocumentDomainObject document, Collection<I18nMeta> labelsColl, boolean copying)
 //            throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 //
 //        Integer docId = saveNewDocument(user, document, copying);
 //
-//        for (DocumentLabels l: labelsColl) {
+//        for (I18nMeta l: labelsColl) {
 //            l.setId(null);
 //            l.setDocId(document.getId());
 //            l.setDocVersionNo(document.getVersion().getNo());
@@ -417,7 +416,7 @@ public class DocumentSaver {
 //            if (doc != null) {
 //                doc.setAlias(null);
 //                makeDocumentLookNew(doc, user);
-//                DocumentLabels labels = doc.getLabels();
+//                I18nMeta labels = doc.getLabels();
 //                labels.setHeadline(labels.getHeadline() + copyHeadlineSuffix);
 //
 //                // todo: ??? move to makeDocLookNew
@@ -426,16 +425,23 @@ public class DocumentSaver {
 //                docs.put(language, doc);
 //            }
 
-    // todo: refactor
+    /**
+     * @param meta
+     * @param i18nMetas
+     * @param docs
+     * @param user
+     * @return
+     * @throws NoPermissionToAddDocumentToMenuException
+     * @throws DocumentSaveException
+     */
     @Transactional
-    public Integer copyDocument(Meta meta, Map<I18nLanguage, DocumentDomainObject> docs, UserDomainObject user)
+    public Integer copyDocument(Meta meta, List<I18nMeta> i18nMetas, List<DocumentDomainObject> docs, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
-        DocumentDomainObject firstDoc = docs.values().iterator().next();
-
+        DocumentDomainObject firstDoc = docs.get(0);
         checkDocumentForSave(firstDoc);
 
-        documentMapper.setCreatedAndModifiedDatetimes(firstDoc, new Date());
+        documentMapper.setCreatedAndModifiedDatetimes(meta, new Date());
 
         newUpdateDocumentRolePermissions(firstDoc, user, null);
 
@@ -444,24 +450,24 @@ public class DocumentSaver {
 
         meta.setId(null);
         Integer copyDocId = saveMeta(meta).getId();
-
         metaDao.insertPropertyIfNotExists(copyDocId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, copyDocId.toString());
+        for (I18nMeta i18nMeta: i18nMetas) {
+            i18nMeta.setId(null);
+            i18nMeta.setDocId(copyDocId);
+
+            metaDao.saveI18nMeta(i18nMeta);
+        }
 
         DocumentVersion copyDocVersion = documentVersionDao.createVersion(copyDocId, user.getId());
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
-        for (DocumentDomainObject doc: docs.values()) {
-            doc.setMeta(meta);
-            docCreatingVisitor.updateDocumentLabels(doc, null, user);
-        }
-
-        for (DocumentDomainObject doc: docs.values()) {
+        // Currently only text doc has i18n content.
+        for (DocumentDomainObject doc: docs) {
             doc.setMeta(meta);
             doc.setVersion(copyDocVersion);
 
             doc.accept(docCreatingVisitor);
 
-            // Only text doc has i18n content.
             if (!(doc instanceof TextDocumentDomainObject)) break;
         }
 
@@ -471,7 +477,7 @@ public class DocumentSaver {
     
     // todo: refactor labels saving !!
     @Transactional
-    public <T extends DocumentDomainObject> Integer saveNewDocument(T doc, Map<I18nLanguage, DocumentLabels> labelsMap, UserDomainObject user)
+    public <T extends DocumentDomainObject> Integer saveNewDocument(T doc, Map<I18nLanguage, I18nMeta> labelsMap, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         Meta meta = doc.getMeta();
@@ -505,9 +511,9 @@ public class DocumentSaver {
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
 
         // hack, must be refactored
-        for (Map.Entry<I18nLanguage, DocumentLabels> l: labelsMap.entrySet()) {
+        for (Map.Entry<I18nLanguage, I18nMeta> l: labelsMap.entrySet()) {
             doc.setLanguage(l.getKey());
-            doc.setLabels(l.getValue());
+            doc.setI18nMeta(l.getValue());
 
             docCreatingVisitor.updateDocumentLabels(doc, null, user);
         }
@@ -542,10 +548,8 @@ public class DocumentSaver {
      * @throws DocumentSaveException
      */
     private void checkDocumentForSave(DocumentDomainObject document) throws NoPermissionInternalException, DocumentSaveException {
-
         documentMapper.getCategoryMapper().checkMaxDocumentCategoriesOfType(document);
         checkIfAliasAlreadyExist(document);
-
     }
     
     
@@ -607,7 +611,7 @@ public class DocumentSaver {
     			
     			if (!property.getDocId().equals(documentId)) {
                     throw new AliasAlreadyExistsInternalException(
-                    		String.format("Alias %s is allready given to document %d.", alias, documentId));    				
+                    		String.format("Alias %s is already in use by document %d.", alias, documentId));    				
     			}			
     		}
     	}

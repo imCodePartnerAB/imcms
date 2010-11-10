@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentPermissionSets;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import org.apache.commons.lang.NullArgumentException;
@@ -632,5 +633,21 @@ public class Meta implements Serializable, Cloneable {
 			throw new NullArgumentException("status");
 		}
 		publicationStatus = status;
-	}    
+	}
+
+    public String getAlias() {
+        return properties.get(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);    
+    }
+
+    public void setAlias(String alias) {
+		if (alias == null) {
+			removeAlis();
+		} else {
+			properties.put(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, alias);
+		}
+    }
+
+    public void removeAlis() {
+        properties.remove(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+    }
 }

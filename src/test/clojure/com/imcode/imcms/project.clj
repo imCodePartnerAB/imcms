@@ -93,6 +93,15 @@
                      (get-file-fn "build.properties")
                      (comp misc-lib/to-keyword-key-map fs-lib/load-properties)))
 
+(def
+  #^{:doc "Function of zero arity.
+           Loads and returns project's test properties from the src/test/resources/test.properties file as a map.
+           Map keys are converted into keywords."}
+
+  test-properties (fs-lib/create-file-watcher
+                      (get-file-fn "src/test/resources/server.properties")
+                      (comp misc-lib/to-keyword-key-map fs-lib/load-properties)))
+
 
 (defn safe-select-keys [map key & keys]
   (into {}
@@ -100,17 +109,12 @@
       [k, (safe-get map k)]))) 
 
 
-;(defn build-properties*
-;  "Returns build properties as a map.
-;  Throws an exception if property does not exists."
-;  [key & keys]
-;  (let [bp (build-properties)]
-;    (into {}
-;      (for [k (cons key keys)]
-;        [k, (safe-get bp k)]))))
+(defn build-property [name]
+  (safe-get (build-properties) name))
 
 
-(defn build-property [name] (safe-get (build-properties) name))
+(defn test-property [name]
+  (safe-get (test-properties) name))
 
 
 (defn init-spring-app-context! []
@@ -128,7 +132,8 @@
     (when-not spring-app-context
       (init-spring-app-context!))
 
-    (Imcms/setPath (subdir "target/imcms"))
+    (Imcms/setRelativePrefsConfigPath "")    
+    (Imcms/setPath (subdir "src/test/resources"))
     (Imcms/setApplicationContext spring-app-context)
     (Imcms/setPrepareDatabaseOnStart prepare-db-on-start)))
 

@@ -30,7 +30,7 @@
 %>
 <%@ page import="com.imcode.imcms.api.I18nLanguage" %>
 <%@ page import="java.util.*" %>
-<%@ page import="com.imcode.imcms.api.DocumentLabels" %>
+<%@ page import="com.imcode.imcms.api.I18nMeta" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"
 %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
 %><%@	taglib prefix="vel" uri="imcmsvelocity"

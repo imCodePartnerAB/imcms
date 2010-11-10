@@ -2,16 +2,15 @@ package com.imcode.imcms.api;
 
 import imcode.server.document.textdocument.DocI18nItem;
 import imcode.server.document.textdocument.DocItem;
-import imcode.server.document.textdocument.DocVersionItem;
 
 import javax.persistence.*;
 
 /**
- * Document labels
+ * Document i18n meta.
  */
 @Entity
-@Table(name="imcms_doc_labels")
-public class DocumentLabels implements Cloneable, DocItem, DocI18nItem {
+@Table(name="imcms_doc_i18n_meta")
+public class I18nMeta implements Cloneable, DocItem, DocI18nItem {
 
 	@Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -44,9 +43,9 @@ public class DocumentLabels implements Cloneable, DocItem, DocI18nItem {
     private String menuImageURL;
 
     @Override
-    public DocumentLabels clone() {
+    public I18nMeta clone() {
         try {
-            return (DocumentLabels)super.clone();   
+            return (I18nMeta)super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
         }

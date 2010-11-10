@@ -173,14 +173,19 @@ public class DocumentMapper implements DocumentGetter {
     
 
     void makeDocumentLookNew( DocumentDomainObject document, UserDomainObject user ) {
-        Date now = new Date();
-        document.setCreator(user);
-        setCreatedAndModifiedDatetimes(document, now);
-        document.setPublicationStartDatetime(now);
-        document.setArchivedDatetime(null);
-        document.setPublicationEndDatetime(null);
-        document.setPublicationStatus(Document.PublicationStatus.NEW);
+        makeDocumentLookNew(document.getMeta(), user);
     }
+
+    void makeDocumentLookNew(Meta meta, UserDomainObject user) {
+        Date now = new Date();
+        
+        meta.setCreatorId(user.getId());
+        setCreatedAndModifiedDatetimes(meta, now);
+        meta.setPublicationStartDatetime(now);
+        meta.setArchivedDatetime(null);
+        meta.setPublicationEndDatetime(null);
+        meta.setPublicationStatus(Document.PublicationStatus.NEW);
+    }    
 
     public DocumentReference getDocumentReference(DocumentDomainObject document) {
         return getDocumentReference(document.getId());
@@ -209,8 +214,21 @@ public class DocumentMapper implements DocumentGetter {
      */
     public <T extends DocumentDomainObject> T saveNewDocument(final T doc, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
+        T docClone = (T)doc.clone();
+        I18nLanguage language = docClone.getLanguage();
 
-        return saveNewI18nDocument(doc, null, user);
+        if (language == null) {
+            language = Imcms.getI18nSupport().getDefaultLanguage();
+            docClone.setLanguage(language);            
+        }
+
+        I18nMeta i18nMeta = docClone.get18nMeta();
+        i18nMeta.setLanguage(language);
+
+        Map<I18nLanguage, I18nMeta> i18nMetas = new HashMap<I18nLanguage, I18nMeta>();
+        i18nMetas.put(language, i18nMeta);
+
+        return saveNewDocument(doc, i18nMetas, user);
     }
 
 
@@ -219,34 +237,28 @@ public class DocumentMapper implements DocumentGetter {
      * to fill labels in all languages available in the system.
      * However, DocumentDomainObject has one-to-one relationship with Labels. 
      * To workaround this limitation and preserve backward compatibility with legacy API,
-     * doc labels can be passed in a separate parameters. 
+     * doc labels are passed in a separate parameters. 
      *
      * @param doc
-     * @param labelsMap mignt be null
+     * @param i18nMetas
      * @param user
      * @param <T>
      * @return
      * @throws DocumentSaveException
      * @throws NoPermissionToAddDocumentToMenuException
      */
-    public <T extends DocumentDomainObject> T saveNewI18nDocument(final T doc, Map<I18nLanguage, DocumentLabels> labelsMap, final UserDomainObject user)
+    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<I18nLanguage, I18nMeta> i18nMetas, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         T docClone = (T)doc.clone();
         I18nLanguage language = docClone.getLanguage();
+        Map<I18nLanguage, I18nMeta> i18nMetasClone = new HashMap<I18nLanguage, I18nMeta>();
 
-        if (language == null) {
-            language = Imcms.getI18nSupport().getDefaultLanguage();
-            docClone.setLanguage(language);
+        for (Map.Entry<I18nLanguage, I18nMeta> e: i18nMetas.entrySet()) {
+            i18nMetasClone.put(e.getKey(), e.getValue().clone());
         }
 
-        if (labelsMap == null) {
-            labelsMap = new HashMap<I18nLanguage, DocumentLabels>();
-        }
-
-        labelsMap.put(docClone.getLanguage(), docClone.getLabels());                
-
-        Integer docId = documentSaver.saveNewDocument(docClone, labelsMap, user);
+        Integer docId = documentSaver.saveNewDocument(docClone, i18nMetasClone, user);
 
         invalidateDocument(docId);
 
@@ -258,39 +270,42 @@ public class DocumentMapper implements DocumentGetter {
      * Updates existing document.
      */
     public void saveDocument(final DocumentDomainObject doc, final UserDomainObject user)
-            throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {        
-        saveI18nDocument(doc, null, user);
+            throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
+        DocumentDomainObject docClone = doc.clone();
+        I18nLanguage language = docClone.getLanguage();
+        I18nMeta i18nMeta = docClone.get18nMeta();
+
+        Map<I18nLanguage, I18nMeta> i18nMetas = new HashMap<I18nLanguage, I18nMeta>();
+        i18nMetas.put(language, i18nMeta);
+        
+        saveDocument(doc, i18nMetas, user);
     }
 
 
     /**
      * Updates existing document.
-     * See {@link #saveNewI18nDocument(imcode.server.document.DocumentDomainObject, java.util.Map, imcode.server.user.UserDomainObject)}
+     * See {@link #saveNewDocument(imcode.server.document.DocumentDomainObject, java.util.Map, imcode.server.user.UserDomainObject)}
      * to learn more about parameters.
      * 
      */
-    public void saveI18nDocument(final DocumentDomainObject doc, Map<I18nLanguage, DocumentLabels> labelsMap, final UserDomainObject user)
+    public void saveDocument(final DocumentDomainObject doc, Map<I18nLanguage, I18nMeta> i18nMetas, final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         DocumentDomainObject docClone = doc.clone();
+        Map<I18nLanguage, I18nMeta> i18nMetasClone = new HashMap<I18nLanguage, I18nMeta>();
+
+        for (Map.Entry<I18nLanguage, I18nMeta> e: i18nMetas.entrySet()) {
+            i18nMetasClone.put(e.getKey(), e.getValue().clone());
+        }
+        
         DocumentDomainObject oldDoc = getCustomDocument(doc.getId(), doc.getVersionNo(), doc.getLanguage());
         
-        if (labelsMap == null) {
-            labelsMap = new HashMap<I18nLanguage, DocumentLabels>();
-        }
-
-        labelsMap.put(docClone.getLanguage(), docClone.getLabels());
-        
         try {
-            documentSaver.updateDocument(doc.clone(), labelsMap, oldDoc.clone(), user);
+            documentSaver.updateDocument(doc.clone(), i18nMetas, oldDoc.clone(), user);
     	} finally {
     		invalidateDocument(doc.getId());
     	}
     }
-
-
-
-
     
     /**
      * todo: implement?
@@ -580,7 +595,7 @@ public class DocumentMapper implements DocumentGetter {
     /**
      * Creates a new doc as a copy of an existing doc.
      *
-     * Please note that provided document is not used as a new document prototype; it is used as a structure
+     * Please note that provided document is not used as a new document prototype/template; it is used as a DTO
      * to pass existing doc identities (id, version, language) to the method.
      *
      * @param doc existing doc.
@@ -614,23 +629,29 @@ public class DocumentMapper implements DocumentGetter {
         // todo: put into resource file.
         String copyHeadlineSuffix = "(Copy/Kopia)";
 
-        Map<I18nLanguage, DocumentDomainObject> docs = new HashMap<I18nLanguage, DocumentDomainObject>();
+        Meta meta =  documentSaver.getMetaDao().getMeta(docId);
+        List<I18nMeta> i18nMetas = documentSaver.getMetaDao().getI18nMeta(docId);
+        List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
-        for (I18nLanguage language: Imcms.getI18nSupport().getLanguages()) {
-            DocumentDomainObject doc = getCustomDocument(docId, docVersionNo, language).clone();
+        makeDocumentLookNew(meta, user);
+        meta.setId(null);
+        meta.removeAlis();
+
+        for (I18nMeta i18nMeta: i18nMetas) {
+            i18nMeta.setId(null);
+            i18nMeta.setDocId(null);
             
-            if (doc != null) {
-                doc.setAlias(null);
-                makeDocumentLookNew(doc, user);
-                DocumentLabels labels = doc.getLabels();
-                labels.setHeadline(labels.getHeadline() + copyHeadlineSuffix);
-                
-                doc.accept(new DocIdentityCleanerVisitor());
+            i18nMeta.setHeadline(i18nMeta.getHeadline() + copyHeadlineSuffix);
+            
+            I18nLanguage language = i18nMeta.getLanguage();
+            DocumentDomainObject doc = getCustomDocument(docId, docVersionNo, language).clone();
 
-                docs.put(language, doc);
-            }
+            doc.accept(new DocIdentityCleanerVisitor());
+            doc.setMeta(meta);
+            doc.setI18nMeta(i18nMeta);
+
+            docs.add(doc);
         }
-
         
         if (docs.isEmpty()) {
             throw new IllegalArgumentException(String.format(
@@ -639,7 +660,7 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         
-        return documentSaver.copyDocument(docs.values().iterator().next().getMeta(), docs, user);
+        return documentSaver.copyDocument(meta, i18nMetas, docs, user);
     }
     
 
@@ -928,8 +949,8 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         @Override
-        public void saveI18nDocument(DocumentDomainObject document, Map<I18nLanguage, DocumentLabels> labelsMap, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
-            Imcms.getServices().getDocumentMapper().saveI18nDocument(document, labelsMap, user);
+        public void saveI18nDocument(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, UserDomainObject user) throws NoPermissionInternalException, DocumentSaveException {
+            Imcms.getServices().getDocumentMapper().saveDocument(document, labelsMap, user);
         }
     }
 

@@ -41,21 +41,21 @@
     ]]>
   </query>
 
-  <query name="Document.getLabelsByDocId">
+  <query name="I18nMeta.getByDocId">
     <![CDATA[
-    SELECT l FROM DocumentLabels l WHERE l.docId = :docId
+    SELECT l FROM I18nMeta l WHERE l.docId = :docId
     ]]>
   </query>    
 
-  <query name="Document.getLabelsByDocIdAndLanguageId">
+  <query name="I18nMeta.getByDocIdAndLanguageId">
     <![CDATA[
-    SELECT l FROM DocumentLabels l WHERE l.docId = :docId AND l.language.id = :languageId
+    SELECT l FROM I18nMeta l WHERE l.docId = :docId AND l.language.id = :languageId
     ]]>
   </query>
 
-  <query name="Document.deleteLabelsByDocIdAndLanguageId">
+  <query name="I18nMeta.deleteByDocIdAndLanguageId">
     <![CDATA[
-    DELETE FROM DocumentLabels l WHERE l.docId = :docId AND l.language.id = :languageId
+    DELETE FROM I18nMeta l WHERE l.docId = :docId AND l.language.id = :languageId
     ]]>
   </query>
 

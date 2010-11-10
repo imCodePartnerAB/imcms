@@ -73,6 +73,7 @@ public class Imcms {
     /** Springframework application context. */
     public static ApplicationContext applicationContext;
 
+    private static String relativePrefsConfigPath = DEFAULT_RELATIVE_PREFS_CONFIG_PATH; 
 
 	/**
      * @see com.imcode.imcms.servlet.ImcmsFilter
@@ -132,7 +133,7 @@ public class Imcms {
     }
 
     public static void setPath(File path) {
-        File prefsConfigPath = new File(path, DEFAULT_RELATIVE_PREFS_CONFIG_PATH);
+        File prefsConfigPath = new File(path, relativePrefsConfigPath);
 
         setPath(path, prefsConfigPath);
     }
@@ -445,6 +446,14 @@ public class Imcms {
 
     public static void addListener(ImcmsListener listener) {
         listeners.add(listener);
+    }
+
+    public static String getRelativePrefsConfigPath() {
+        return relativePrefsConfigPath;
+    }
+
+    public static void setRelativePrefsConfigPath(String relativePrefsConfigPath) {
+        Imcms.relativePrefsConfigPath = relativePrefsConfigPath;
     }
 
     public static boolean isPrepareDatabaseOnStart() {

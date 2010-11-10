@@ -184,6 +184,8 @@ public class DocumentLoaderCachingProxy {
 
     /**
      * Returns custom document.
+     * This is an expensive call since only document's meta and version info is loaded from the cache.
+     * However document content is never cached and always re-loaded from db.
      * 
      * @param docId
      * @param docVersionNo

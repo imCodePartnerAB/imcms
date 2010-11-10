@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -46,12 +45,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	
 	private Meta meta = new Meta();
 
+    private I18nMeta i18nMeta = new I18nMeta();
+        
 	private I18nLanguage language;
 
     // todo :remove version, leave only doc version no. ???
     private DocumentVersion version = new DocumentVersion();
-
-    private DocumentLabels labels = new DocumentLabels();
 
 
 	@Override
@@ -68,8 +67,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 			clone.meta = meta.clone();
 		}
 
-		if (clone.labels != null) {
-			clone.labels = labels.clone();
+		if (clone.i18nMeta != null) {
+			clone.i18nMeta = i18nMeta.clone();
 		}
 
         if (version != null) {
@@ -85,7 +84,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      * @param doc
      */
 //    public void copyAttributesFrom(DocumentDomainObject doc) {
-//        setLabels(doc.getLabels().clone());
+//        seti18nMeta(doc.geti18nMeta().clone());
 //        setLanguage(doc.getLanguage().clone());
 //        setPermissionSets(doc.getPermissionSets().clone());
 //        setPermissionSetsForNew(doc.getPermissionSetsForNewDocuments().clone());
@@ -186,11 +185,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public String getHeadline() {
-		return labels.getHeadline();
+		return i18nMeta.getHeadline();
 	}
 
 	public void setHeadline(String v) {
-		labels.setHeadline(v);
+		i18nMeta.setHeadline(v);
 	}
 
 	public int getId() {
@@ -204,11 +203,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public String getMenuImage() {
-		return labels.getMenuImageURL();
+		return i18nMeta.getMenuImageURL();
 	}
 
 	public void setMenuImage(String v) {
-        labels.setMenuImageURL(v);
+        i18nMeta.setMenuImageURL(v);
 	}
 
 
@@ -245,12 +244,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public String getMenuText() {
-		return labels.getMenuText();
+		return i18nMeta.getMenuText();
 	}
 
 
 	public void setMenuText(String v) {
-		labels.setMenuText(v);
+		i18nMeta.setMenuText(v);
 	}	
 
 	public Date getModifiedDatetime() {
@@ -501,15 +500,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 	}
 
 	public String getAlias() {
-		return getProperty(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+		return meta.getAlias();
 	}
 
 	public void setAlias(String alias) {
-		if (alias == null) {
-			removeProperty(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
-		} else {
-			setProperty(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, alias);
-		}
+		meta.setAlias(alias);
 	}
 
 	public String getName() {
@@ -522,7 +517,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
 	public void setMeta(Meta meta) {
 		if (meta == null) {
-			throw new NullPointerException("Meta argument can not be null.");
+			throw new IllegalArgumentException("Meta argument can not be null.");
 		}
 
 		this.meta = meta.clone();
@@ -537,11 +532,15 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     
-    public DocumentLabels getLabels() {
-        return labels;
+    public I18nMeta get18nMeta() {
+        return i18nMeta;
     }
 
-    public void setLabels(DocumentLabels labels) {
-        this.labels = labels;
+    public void setI18nMeta(I18nMeta i18nMeta) {
+		if (i18nMeta == null) {
+			throw new IllegalArgumentException("i18nMeta argument can not be null.");
+		}
+        
+        this.i18nMeta = i18nMeta;
     }
 }

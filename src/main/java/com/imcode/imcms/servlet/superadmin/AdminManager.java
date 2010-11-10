@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.api.I18nLanguage;
+import com.imcode.imcms.api.I18nMeta;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentComparator;
@@ -27,7 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.lucene.index.Term;
@@ -46,7 +46,6 @@ import com.imcode.imcms.servlet.admin.DocumentCreator;
 import com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean;
 import com.imcode.imcms.servlet.beans.AdminManagerSubreport;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
-import com.imcode.imcms.api.DocumentLabels;
 import com.imcode.util.ChainableReversibleNullComparator;
 
 public class AdminManager extends HttpServlet {
@@ -626,10 +625,10 @@ public class AdminManager extends HttpServlet {
         }
 
         @Override
-        public void saveI18nDocument(DocumentDomainObject document, Map<I18nLanguage, DocumentLabels> labelsMap, UserDomainObject user)
+        public void saveI18nDocument(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, UserDomainObject user)
                throws NoPermissionInternalException, DocumentSaveException {
 
-            Imcms.getServices().getDocumentMapper().saveNewI18nDocument(document, labelsMap, user);
+            Imcms.getServices().getDocumentMapper().saveNewDocument(document, labelsMap, user);
         }        
     }
 

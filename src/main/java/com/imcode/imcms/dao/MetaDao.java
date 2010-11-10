@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.DocumentProperty;
 import com.imcode.imcms.api.Meta;
-import com.imcode.imcms.api.DocumentLabels;
+import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nLanguage;
 import com.imcode.imcms.mapping.orm.FileReference;
 import com.imcode.imcms.mapping.orm.HtmlReference;
@@ -41,18 +41,15 @@ public class MetaDao extends HibernateTemplate {
 			.uniqueResult();
 	}    
 
-	/**
-	 * @return Labels.
-	 */
 	@Transactional
-	public DocumentLabels getLabels(Integer docId, I18nLanguage language) {
-		DocumentLabels labels = (DocumentLabels)getSession().getNamedQuery("Document.getLabelsByDocIdAndLanguageId")
+	public I18nMeta getI18nMeta(Integer docId, I18nLanguage language) {
+		I18nMeta labels = (I18nMeta)getSession().getNamedQuery("I18nMeta.getByDocIdAndLanguageId")
                 .setParameter("docId", docId)
                 .setParameter("languageId", language.getId())
                 .uniqueResult();
 
         if (labels == null) {
-            labels = new DocumentLabels();
+            labels = new I18nMeta();
             labels.setDocId(docId);
             labels.setLanguage(language);
             labels.setHeadline("");
@@ -61,8 +58,38 @@ public class MetaDao extends HibernateTemplate {
         }
 
         return labels;
-	}    
+	}
 
+
+	@Transactional
+	public List<I18nMeta> getI18nMeta(Integer docId) {
+        return (List<I18nMeta>)findByNamedQueryAndNamedParam("I18nMeta.getByDocId", "docId", docId);
+	}
+
+
+	@Transactional
+	public void deleteI18nMeta(Integer docId, Integer LanguageId) {
+		getSession().getNamedQuery("I18nMeta.deleteByDocIdAndLanguageId")
+                .setParameter("docId", docId)
+                .setParameter("languageId", LanguageId)
+                .executeUpdate();
+	}
+
+    @Transactional
+    public I18nMeta saveI18nMeta(I18nMeta i18nMeta) {
+        String headline = i18nMeta.getHeadline();
+        String text = i18nMeta.getMenuText();
+
+        String headlineThatFitsInDB = headline.substring(0, Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
+        String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
+
+        i18nMeta.setHeadline(headlineThatFitsInDB);
+        i18nMeta.setMenuText(textThatFitsInDB);
+
+        saveOrUpdate(i18nMeta);
+
+        return i18nMeta;
+    }    
 
     @Transactional
     public boolean insertPropertyIfNotExists(Integer docId, String name, String value) {
@@ -90,24 +117,7 @@ public class MetaDao extends HibernateTemplate {
     }
 
 
-	/**
-	 * @return Labels.
-	 */
-	@Transactional
-	public List<DocumentLabels> getLabels(Integer docId) {
-		return (List<DocumentLabels>)getSession().getNamedQuery("Document.getLabelsByDocId")
-                .setParameter("docId", docId)
-                .list();
-	}
 
-
-	@Transactional
-	public void deleteLabels(Integer docId, Integer LanguageId) {
-		getSession().getNamedQuery("Document.deleteLabelsByDocIdAndLanguageId")
-                .setParameter("docId", docId)
-                .setParameter("languageId", LanguageId)
-                .executeUpdate();
-	}
 
 
     @Transactional
@@ -116,21 +126,7 @@ public class MetaDao extends HibernateTemplate {
 	}
 
 
-    @Transactional
-    public DocumentLabels saveLabels(DocumentLabels labels) {
-        String headline = labels.getHeadline();
-        String text = labels.getMenuText();
-        
-        String headlineThatFitsInDB = headline.substring(0, Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
-        String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
 
-        labels.setHeadline(headlineThatFitsInDB);
-        labels.setMenuText(textThatFitsInDB);
-
-        saveOrUpdate(labels);
-
-        return labels;
-    }
 
 
     @Transactional
@@ -276,7 +272,7 @@ public class MetaDao extends HibernateTemplate {
 			"DELETE FROM imcms_text_doc_menu_items_history WHERE menu_id IN (SELECT menu_id FROM imcms_text_doc_menus_history WHERE doc_id = ?)",
 			"DELETE FROM imcms_text_doc_menus_history WHERE doc_id = ?", 
 			"DELETE FROM document_properties WHERE meta_id = ?", 	
-			"DELETE FROM imcms_doc_labels WHERE doc_id = ?",
+			"DELETE FROM imcms_doc_i18n_meta WHERE doc_id = ?",
             "DELETE FROM imcms_text_doc_contents WHERE doc_id = ?",
             "DELETE FROM imcms_text_doc_content_loops WHERE doc_id = ?",
             "DELETE FROM imcms_doc_default_version WHERE doc_id = ?",

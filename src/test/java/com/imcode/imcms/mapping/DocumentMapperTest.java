@@ -242,10 +242,10 @@ public class DocumentMapperTest {
 //    public void addMenu() throws Exception {
 //        TextDocumentDomainObject parentDoc = (TextDocumentDomainObject)getMainWorkingDocumentInDefaultLanguage(true);
 //        DocumentDomainObject menuItemDoc = docMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, admin);
-//        List<DocumentLabels> labels = new LinkedList<DocumentLabels>();
+//        List<I18nMeta> labels = new LinkedList<I18nMeta>();
 //
 //        for (I18nLanguage lang: i18nSupport.getAllLanguages()) {
-//            DocumentLabels l = new DocumentLabels();
+//            I18nMeta l = new I18nMeta();
 //
 //            l.setHeadline(":headline in:" + lang.getCode());
 //            l.setMenuImageURL(":url in:" + lang.getCode());

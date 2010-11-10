@@ -11,7 +11,7 @@ public class LanguageDao extends HibernateTemplate {
 
 	@Transactional
 	public List<I18nLanguage> getAllLanguages() {
-		return (List<I18nLanguage>) loadAll(I18nLanguage.class);
+		return loadAll(I18nLanguage.class);
 	}
 	    
 	@Transactional

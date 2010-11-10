@@ -1,22 +1,12 @@
 package com.imcode.imcms.flow;
 
-import com.imcode.imcms.mapping.DocumentSaveException;
-import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.DocumentDomainObject;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.imcode.imcms.api.DocumentLabels;
-import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
-import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
-import imcode.util.Utility;
-import org.apache.commons.lang.UnhandledException;
 
 public abstract class CreateDocumentPageFlow extends DocumentPageFlow {
 

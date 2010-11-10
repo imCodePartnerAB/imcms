@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.api.DocumentLabels;
+import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nLanguage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -276,7 +276,7 @@ public class MenuEditPage extends OkCancelPage {
 
 
         @Override
-        public void saveI18nDocument(DocumentDomainObject document, Map<I18nLanguage, DocumentLabels> labelsMap, UserDomainObject user)
+        public void saveI18nDocument(DocumentDomainObject document, Map<I18nLanguage, I18nMeta> labelsMap, UserDomainObject user)
                 throws NoPermissionInternalException, DocumentSaveException {
 
             if ( null != savedDocument ) {
@@ -285,7 +285,7 @@ public class MenuEditPage extends OkCancelPage {
 
             final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
-            savedDocument = documentMapper.saveNewI18nDocument(document, labelsMap, user);
+            savedDocument = documentMapper.saveNewDocument(document, labelsMap, user);
 
             if ( null == parentMenuIndex ) {
                 return;

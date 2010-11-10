@@ -1,7 +1,7 @@
 package com.imcode.imcms.util;
 
 import com.imcode.imcms.api.ContentLoop;
-import com.imcode.imcms.api.DocumentLabels;
+import com.imcode.imcms.api.I18nMeta;
 import com.imcode.imcms.api.I18nLanguage;
 import imcode.server.document.DocumentReference;
 import imcode.server.document.textdocument.*;
@@ -36,8 +36,8 @@ public class Factory {
     }
 
 
-    public static DocumentLabels createLabels(Integer docId, I18nLanguage language) {
-        DocumentLabels labels = newInstance(DocumentLabels.class, docId, language);
+    public static I18nMeta createLabels(Integer docId, I18nLanguage language) {
+        I18nMeta labels = newInstance(I18nMeta.class, docId, language);
 
         labels.setHeadline("");
         labels.setMenuText("");

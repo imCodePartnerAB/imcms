@@ -60,7 +60,7 @@ public class Script {
 
     public static void prepareDB(boolean recreateBofrePrepare) {
         try {
-            var("com.imcode.imcms.project.db", "prepare").invoke(getDBName(), recreateBofrePrepare);
+            var("com.imcode.imcms.project.db", "prepare").invoke(recreateBofrePrepare);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

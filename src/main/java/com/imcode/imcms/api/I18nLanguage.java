@@ -27,7 +27,7 @@ public class I18nLanguage implements Serializable, Cloneable {
      @Column(name="native_name")
     private String nativeName;
 
-
+    
     @Override
 	public boolean equals(Object object) {
         if ( !( object instanceof I18nLanguage ) ) {

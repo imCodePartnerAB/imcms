@@ -20,38 +20,14 @@
   "Controls if script's statement will be executed by run-script fn.")
 
 
-(defn create-url
-  "Creates database vendor specific url string."
-  ([vendor-name host port]
-    (let [url-template (condp = (str/lower-case vendor-name)
-                         "mysql" "jdbc:mysql://%s:%s"
-                         "mssql" "jdbc:jtds:sqlserver://%s:%s"
-                         (throw (IllegalArgumentException.
-                           (format "Unsupported vendor: '%s'. Supported vendors: 'mysql', 'mssql'." vendor-name))))]
-
-      (format url-template host port)))
-
-  ([vendor-name host port schema-name]
-    (str (create-url vendor-name host port) "/" schema-name)))
-
-
 (defn create-ds
   "Creates DBCP datasource."
-  [driver-class-name username password url]
+  [driver-class-name url username password]
   (doto (BasicDataSource.)
     (.setDriverClassName driver-class-name)
     (.setUsername username)
     (.setPassword password)
     (.setUrl url)))
-
-
-(defn create-mysql-ds
-  "Creates MySQL DBCP datasource."
-  ([username password]
-     (create-mysql-ds "localhost" 3306 username password))
-
-  ([host port username password]
-     (create-ds "com.mysql.jdbc.Driver" username password (create-url "mysql" host port))))
 
 
 (defn create-spec

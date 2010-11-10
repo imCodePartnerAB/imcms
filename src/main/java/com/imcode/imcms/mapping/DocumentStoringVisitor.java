@@ -22,7 +22,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
@@ -209,16 +208,16 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     
     @Transactional
     public void updateDocumentLabels(DocumentDomainObject doc, DocumentDomainObject oldDoc, UserDomainObject user) {
-        DocumentLabels labels = doc.getLabels();
+        I18nMeta labels = doc.get18nMeta();
         MetaDao metaDao = (MetaDao)services.getSpringBean("metaDao");
 
-        metaDao.deleteLabels(doc.getId(), doc.getLanguage().getId());
+        metaDao.deleteI18nMeta(doc.getId(), doc.getLanguage().getId());
 
         labels.setId(null);
         labels.setDocId(doc.getMeta().getId());
         labels.setLanguage(doc.getLanguage());
 
-        metaDao.saveLabels(labels);
+        metaDao.saveI18nMeta(labels);
     }
 
     

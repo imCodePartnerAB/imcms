@@ -47,7 +47,7 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
     @Override
     protected void visitOtherDocument(DocumentDomainObject doc) {
 		doc.getMeta().setId(null);
-        doc.getLabels().setId(null);
+        doc.get18nMeta().setId(null);
 
         DocumentVersion version = doc.getVersion();
 
@@ -55,7 +55,7 @@ public class DocIdentityCleanerVisitor extends DocumentVisitor {
         version.setDocId(null);
         version.setNo(0);
 
-        // TODO: add created by, created dt.
+        // TODO: add created by, created dt?
     }
 
     @Override

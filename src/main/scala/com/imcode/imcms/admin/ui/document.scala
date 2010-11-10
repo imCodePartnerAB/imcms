@@ -34,7 +34,7 @@ import imcode.server.document._
 class MetaModel(val meta: Meta,
                 val defaultLanguage: I18nLanguage,
                 val languages: MMap[I18nLanguage, Boolean],
-                val labels: Map[I18nLanguage, DocumentLabels],
+                val labels: Map[I18nLanguage, I18nMeta],
                 val versionInfo: Option[DocumentVersionInfo] = Option.empty) {
 
   val isNew = versionInfo.isEmpty
@@ -66,7 +66,7 @@ class DocFlowFactory(app: VaadinApplication) {
     val availableLanguages = Imcms.getI18nSupport.getLanguages
     val languages = availableLanguages.zip(Stream.continually(false)).toMap.updated(defaultLanguage, true)
     val labels = availableLanguages map { language =>
-      let(new DocumentLabels) { labels =>
+      let(new I18nMeta) { labels =>
         labels.setHeadline("")
         labels.setMenuText("")
         labels.setMenuImageURL("")
