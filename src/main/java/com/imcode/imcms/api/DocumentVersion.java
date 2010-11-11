@@ -32,9 +32,16 @@ public class DocumentVersion implements Cloneable {
 	@Column(name="created_by", updatable=false)	
 	private Integer createdBy;
 	
-	@Column(name="created_dt")	
+	@Column(name="created_dt", updatable = false)	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdDt;
+
+	@Column(name="modified_by", updatable=true, nullable=true)
+	private Integer modifiedBy;
+
+	@Column(name="modified_dt", updatable=true, nullable=true)
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date modifiedDt;    
 
     public DocumentVersion() {}
 	
@@ -95,4 +102,20 @@ public class DocumentVersion implements Cloneable {
 	public void setCreatedDt(Date createdDt) {
 		this.createdDt = createdDt;
 	}
+
+    public Integer getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(Integer modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public Date getModifiedDt() {
+        return modifiedDt;
+    }
+
+    public void setModifiedDt(Date modifiedDt) {
+        this.modifiedDt = modifiedDt;
+    }
 }

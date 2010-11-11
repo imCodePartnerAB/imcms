@@ -270,6 +270,9 @@ public class DocumentSaver {
 //    }
 
 
+    /**
+     * If lastModifiedDate was not changed explicitly since the document had been loaded then it is set to `now`.
+     */
     @Transactional
     public void updateDocument(DocumentDomainObject doc, List<I18nMeta> i18nMetas, DocumentDomainObject oldDoc, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(doc);

@@ -152,10 +152,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 		return document;
 	}
 
+    /** Deprecated with no replacement. */
+    @Deprecated
 	public Date getArchivedDatetime() {
 		return meta.getArchivedDatetime();
 	}
 
+    /** Deprecated with no replacement. */
+    @Deprecated
 	public void setArchivedDatetime(Date v) {
 		meta.setArchivedDatetime(v);
 	}

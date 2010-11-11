@@ -140,9 +140,9 @@ public class Meta implements Serializable, Cloneable {
     // CHECKED	
     @Column(name="show_meta", nullable=false)
     private Boolean linkedForUnauthorizedUsers;
-    
-    // Not a property. 
-    // TODO: Delete this field from the database table
+
+    /** Deprecated with no replacement. */
+    @Deprecated
     @Column(name="lang_prefix", nullable=false)
     @SuppressWarnings("unused")
     private String lang_prefix = "";
@@ -157,11 +157,13 @@ public class Meta implements Serializable, Cloneable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDatetime;
     
-    // NB! Same as modifiedDatetime
-    
-    //For processing after load:
-    //@Column(name="date_modified")
-    //@Temporal(TemporalType.TIMESTAMP)
+    /**
+     * (Saved) value of modified dt at the time this meta was actually loaded.
+     * When loaded from the db its value is set to modifiedDatetime.
+     * Used to test if modifiedDatetime was changed explicitly. 
+     * 
+     * @see com.imcode.imcms.mapping.DocumentSaver#updateDocument 
+     */
     @Transient
     private Date actualModifiedDatetime;
         
@@ -172,8 +174,9 @@ public class Meta implements Serializable, Cloneable {
     // CHECKED	
     @Column(name="target", nullable=false)
 	private String target;
-	         
-    // CHECKED	
+    
+    /** Deprecated with no replacement. */
+    @Deprecated
     @Column(name="archived_datetime", nullable=true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date archivedDatetime;
@@ -460,10 +463,14 @@ public class Meta implements Serializable, Cloneable {
 		this.target = target;
 	}
 
+    /** Deprecated with no replacement. */
+    @Deprecated
 	public Date getArchivedDatetime() {
 		return archivedDatetime;
 	}
 
+    /** Deprecated with no replacement. */
+    @Deprecated
 	public void setArchivedDatetime(Date archivedDatetime) {
 		this.archivedDatetime = archivedDatetime;
 	}
