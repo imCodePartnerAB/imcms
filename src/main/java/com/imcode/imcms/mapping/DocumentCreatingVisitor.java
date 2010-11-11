@@ -57,9 +57,9 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {        
     	updateTextDocumentTemplateNames(textDocument, null, null);
         updateTextDocumentTexts( textDocument, null, currentUser);
-        updateTextDocumentImages( textDocument, null, null);
+        updateTextDocumentImages( textDocument, null, currentUser);
         updateTextDocumentIncludes( textDocument );
-        updateTextDocumentMenus( textDocument, null, null);
-        updateTextDocumentContentLoops (textDocument, null, null);
+        updateTextDocumentMenus( textDocument, null, currentUser);
+        updateTextDocumentContentLoops (textDocument, null, currentUser);
     }
 }

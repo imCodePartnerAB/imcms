@@ -290,9 +290,23 @@ public class DocumentMapperTest {
 
     @Test
     public void copyTextDocument() throws Exception {
-        TextDocumentDomainObject doc = saveNewTextDocumentFn();
+        //TextDocumentDomainObject doc = saveNewTextDocumentFn();
+        for (I18nLanguage l: Imcms.getI18nSupport().getLanguages()) {
+            DocumentDomainObject doc = (TextDocumentDomainObject)docMapper.getDocument(1001);
+            assertNotNull(doc);
+        }
+
+        TextDocumentDomainObject doc = (TextDocumentDomainObject)docMapper.getDocument(1001);
 
         TextDocumentDomainObject docCopy = docMapper.copyDocument(doc, admin);
+        Integer docCopyId = docCopy.getId();
+
+        assertNotSame(doc.getId(), docCopyId);
+
+        for (I18nLanguage l: Imcms.getI18nSupport().getLanguages()) {
+            DocumentDomainObject d = (TextDocumentDomainObject)docMapper.getDocument(docCopyId);
+            assertNotNull(doc);
+        }
     }
 
 
