@@ -529,6 +529,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public void setLanguage(I18nLanguage language) {
         this.language = language;
+        this.i18nMeta.setLanguage(language);
     }
 
     

@@ -119,7 +119,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         }
 
         // ???
-        // languagesStates.put(Imcms.getI18nSupport().getDefaultLanguage(), true);
+        languagesStates.put(Imcms.getI18nSupport().getDefaultLanguage(), true);
 
         Integer docId = document.getMeta().getId();
         
@@ -129,8 +129,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             for (I18nLanguage language: languages) {
                 labelsMap.put(language, Factory.createLabels(docId, language));
             }
-
-            labelsMap.put(document.getLanguage(), document.get18nMeta());
         } else {
             for (I18nLanguage language: document.getMeta().getLanguages()) {
                 languagesStates.put(language, true);

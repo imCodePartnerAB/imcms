@@ -270,9 +270,8 @@ public class DocumentSaver {
 //    }
 
 
-    //todo: refactor labels saving
     @Transactional
-    public void updateDocument(DocumentDomainObject doc, Map<I18nLanguage, I18nMeta> labelsMap, DocumentDomainObject oldDoc, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+    public void updateDocument(DocumentDomainObject doc, List<I18nMeta> i18nMetas, DocumentDomainObject oldDoc, UserDomainObject user) throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
         checkDocumentForSave(doc);
 
         //document.loadAllLazilyLoaded();
@@ -293,12 +292,8 @@ public class DocumentSaver {
 
         saveMeta(doc.getMeta());
 
-        // hack, must be refactored
-        for (Map.Entry<I18nLanguage, I18nMeta> l: labelsMap.entrySet()) {
-            doc.setLanguage(l.getKey());
-            doc.setI18nMeta(l.getValue());
-
-            savingVisitor.updateDocumentLabels(doc, null, user);
+        for (I18nMeta i18nMeta: i18nMetas) {
+            metaDao.saveI18nMeta(i18nMeta);
         }
 
         doc.accept(savingVisitor);
@@ -477,7 +472,7 @@ public class DocumentSaver {
     
     // todo: refactor labels saving !!
     @Transactional
-    public <T extends DocumentDomainObject> Integer saveNewDocument(T doc, Map<I18nLanguage, I18nMeta> labelsMap, UserDomainObject user)
+    public <T extends DocumentDomainObject> Integer saveNewDocument(T doc, List<I18nMeta> i18nMetas, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         Meta meta = doc.getMeta();
@@ -498,25 +493,22 @@ public class DocumentSaver {
 
         meta.setId(null);
         meta.setDocumentType(doc.getDocumentTypeId());
-
         Integer docId = saveMeta(meta).getId();
+
+        for (I18nMeta i18nMeta: i18nMetas) {
+            i18nMeta.setId(null);
+            i18nMeta.setDocId(docId);
+
+            metaDao.saveI18nMeta(i18nMeta);
+        }        
 
         metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
 
         DocumentVersion version = documentVersionDao.createVersion(docId, user.getId());
 
         doc.setVersion(version);
-
         
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
-
-        // hack, must be refactored
-        for (Map.Entry<I18nLanguage, I18nMeta> l: labelsMap.entrySet()) {
-            doc.setLanguage(l.getKey());
-            doc.setI18nMeta(l.getValue());
-
-            docCreatingVisitor.updateDocumentLabels(doc, null, user);
-        }
 
         doc.accept(docCreatingVisitor);
 

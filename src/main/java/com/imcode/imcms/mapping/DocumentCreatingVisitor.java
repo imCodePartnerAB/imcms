@@ -55,7 +55,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
     @Transactional
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {        
-    	updateTextDocumentTemplateNames(textDocument, null, null);
+    	updateTextDocumentTemplateNames(textDocument, null, currentUser);
         updateTextDocumentTexts( textDocument, null, currentUser);
         updateTextDocumentImages( textDocument, null, currentUser);
         updateTextDocumentIncludes( textDocument );

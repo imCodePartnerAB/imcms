@@ -57,7 +57,7 @@
     String calendarButtonTitle = "<? web/imcms/lang/jscalendar/show_calendar_button ?>";
 
     pageContext.setAttribute("document", document);
-    pageContext.setAttribute("labelsColl", documentInformationPage.getLabelsMap().values());
+    pageContext.setAttribute("i18nMetas", documentInformationPage.getLabelsMap().values());
 
     Map<I18nLanguage, Boolean> languagesStates  = documentInformationPage.getLanguagesStates();
 %><%!
@@ -179,23 +179,23 @@ function setI18nCodeParameterValue(value) {
     --%>
 
 	<%-- TODO: Escape XML: $Headline$ --%>
-	<c:forEach items="${labelsColl}" var="i18nPart">
+	<c:forEach items="${i18nMetas}" var="i18nMeta">
 
-	<c:set var="prefix" value="_${i18nPart.language.code}"/>
+	<c:set var="prefix" value="_${i18nMeta.language.code}"/>
 
 	<tr>
 		<td colspan="2" style="padding-bottom:3px;">
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${i18nPart.language.code}.gif" alt="" style="border:0;" /></td>
-			<td class="imcmsAdmText" style="padding-left:10px; font-weight:bold;">${i18nPart.language.name}</td>
+			<td><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${i18nMeta.language.code}.gif" alt="" style="border:0;" /></td>
+			<td class="imcmsAdmText" style="padding-left:10px; font-weight:bold;">${i18nMeta.language.name}</td>
 		</tr>
 		</table></td></tr>
 	<tr>
 		<td class="imcmsAdmText" nowrap>
 		<? install/htdocs/sv/jsp/docadmin/document_information.jsp/6 ?><sup class="imNote">1</sup></td>
-		<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE + pageContext.getAttribute("prefix")%>" size="48" maxlength="255" style="width: 100%"
-		value="${i18nPart.headline}"></td>
+		<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE%>${prefix}" size="48" maxlength="255" style="width: 100%"
+		value="${i18nMeta.headline}"></td>
 	</tr>
 	<tr>
 		<td></td>
@@ -211,7 +211,7 @@ function setI18nCodeParameterValue(value) {
 	  <tr>
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1002 ?>&nbsp;</td>
 		<td class="imcmsAdmForm">
-		<textarea name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT + pageContext.getAttribute("prefix") %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;"><c:out value="${i18nPart.menuText}"/></textarea>
+		<textarea name="<%=EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT%>${prefix}" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;"><c:out value="${i18nMeta.menuText}"/></textarea>
         </td>
 	  </tr>
 
@@ -225,12 +225,12 @@ function setI18nCodeParameterValue(value) {
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tr>
 			<td width="85%">
-			  <input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__IMAGE + pageContext.getAttribute("prefix") %>" size="40" maxlength="255" style="width: 100%"
-			    value="<c:out value="${i18nPart.menuImageURL}" default=""/>"
+			  <input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__IMAGE%>${prefix}" size="40" maxlength="255" style="width: 100%"
+			    value="<c:out value="${i18nMeta.menuImageURL}" default=""/>"
 			  />
 			</td>
 			<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER%>"
-			value=" <? install/htdocs/global/pageinfo/browse ?> " onClick="setI18nCodeParameterValue('${i18nPart.language.code}')"></td>
+			value=" <? install/htdocs/global/pageinfo/browse ?> " onClick="setI18nCodeParameterValue('${i18nMeta.language.code}')"></td>
 		</tr>
         </table></td>
 	</tr>
@@ -621,7 +621,7 @@ function setI18nCodeParameterValue(value) {
 
 		<table border="0" cellspacing="0" cellpadding="2" style="width:98%;">
 		<tr>
-			<td class="imcmsAdmText" style="padding-left:10px; padding-right:25px;">${i18nPart.language.name}</td>
+			<td class="imcmsAdmText" style="padding-left:10px; padding-right:25px;">${i18nMeta.language.name}</td>
 			<td><%
 			Set documentKeywords = document.getKeywords();
 			String[] keywords = (String[])documentKeywords.toArray(new String[documentKeywords.size()]);

@@ -252,10 +252,10 @@ public class DocumentMapper implements DocumentGetter {
 
         T docClone = (T)doc.clone();
         I18nLanguage language = docClone.getLanguage();
-        Map<I18nLanguage, I18nMeta> i18nMetasClone = new HashMap<I18nLanguage, I18nMeta>();
+        List<I18nMeta> i18nMetasClone = new LinkedList<I18nMeta>();
 
         for (Map.Entry<I18nLanguage, I18nMeta> e: i18nMetas.entrySet()) {
-            i18nMetasClone.put(e.getKey(), e.getValue().clone());
+            i18nMetasClone.add(e.getValue().clone());
         }
 
         Integer docId = documentSaver.saveNewDocument(docClone, i18nMetasClone, user);
@@ -292,16 +292,16 @@ public class DocumentMapper implements DocumentGetter {
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         DocumentDomainObject docClone = doc.clone();
-        Map<I18nLanguage, I18nMeta> i18nMetasClone = new HashMap<I18nLanguage, I18nMeta>();
+        List<I18nMeta> i18nMetasClone = new LinkedList<I18nMeta>();
 
         for (Map.Entry<I18nLanguage, I18nMeta> e: i18nMetas.entrySet()) {
-            i18nMetasClone.put(e.getKey(), e.getValue().clone());
+            i18nMetasClone.add(e.getValue().clone());
         }
         
         DocumentDomainObject oldDoc = getCustomDocument(doc.getId(), doc.getVersionNo(), doc.getLanguage());
         
         try {
-            documentSaver.updateDocument(doc.clone(), i18nMetas, oldDoc.clone(), user);
+            documentSaver.updateDocument(docClone, i18nMetasClone, oldDoc.clone(), user);
     	} finally {
     		invalidateDocument(doc.getId());
     	}
