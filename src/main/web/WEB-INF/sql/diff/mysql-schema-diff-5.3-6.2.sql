@@ -52,7 +52,6 @@ CREATE TABLE imcms_doc_versions (
     no int NOT NULL,
     created_by INT NULL,
     created_dt datetime NOT NULL,
-    -- modified by, dt, etc
 
     CONSTRAINT pk__imcms_doc_versions PRIMARY KEY (id),
     CONSTRAINT uk__imcms_doc_versions__doc_id__no UNIQUE KEY (doc_id, no),

@@ -3,15 +3,23 @@
 SET @schema_version__major_new = 6;
 SET @schema_version__minor_new = 6;
 
-ALTER TABLE imcms_doc_versions
-  ADD COLUMN modified_dt datetime NULL,
-  ADD COLUMN modified_by int NULL,
-  ADD CONSTRAINT fk__imcms_doc_versions__users FOREIGN KEY (modified_dt) REFERENCES users (user_id);
+UPDATE imcms_doc_versions v, meta m
+SET v.created_dt = m.date_created, v.created_by = m.owner_id, v.modified_dt = m.date_modified, v.modified_by = m.owner_id
+WHERE v.doc_id = m.meta_id;
 
--- UPDATE imcms_doc_versions 
--- INSERT INTO imcms_doc_versions (create_dt, created_by, modified_dt, modified_by)
--- SELECT `owner_id`, `date_created`, `owner_id`, `date_modified`
--- FROM meta
+ALTER TABLE imcms_doc_versions
+  DROP FOREIGN KEY fk__imcms_doc_versions__user1,
+  DROP FOREIGN KEY fk__imcms_doc_versions__user2;
+
+ALTER TABLE imcms_doc_versions
+  MODIFY created_dt datetime NOT NULL,
+  MODIFY modified_dt datetime NOT NULL,
+  MODIFY created_by int NOT NULL,
+  MODIFY modified_by int NOT NULL;
+
+ALTER TABLE imcms_doc_versions
+   ADD CONSTRAINT `fk__imcms_doc_versions__user1` FOREIGN KEY (`created_by`) REFERENCES `users` (`user_id`),
+   ADD CONSTRAINT `fk__imcms_doc_versions__user2` FOREIGN KEY (`modified_by`) REFERENCES `users` (`user_id`);
 
 --
 -- Update schema version
