@@ -1,4 +1,8 @@
 -- Adds NOT NULL constraints to imcms_doc_versions created_XX, modified_XX.
+-- Simplifies default version handling:
+--   drops imcms_doc_default_version;
+--   moves default version no into meta table.
+ 
 -- Replaces FK constraints to users table (removed 'ON DELETE SET NULL').
 
 SET @schema_version__major_new = 6;
@@ -7,6 +11,17 @@ SET @schema_version__minor_new = 6;
 UPDATE imcms_doc_versions v, meta m
 SET v.created_dt = m.date_created, v.created_by = m.owner_id, v.modified_dt = m.date_modified, v.modified_by = m.owner_id
 WHERE v.doc_id = m.meta_id;
+
+
+ALTER TABLE meta
+  ADD COLUMN default_version_no int NOT NULL DEFAULT 0;
+
+UPDATE meta m, imcms_doc_default_version v
+SET m.default_version_no = v.no
+WHERE m.meta_id = v.doc_id;
+
+DROP TABLE imcms_doc_default_version;
+
 
 ALTER TABLE imcms_doc_versions
   DROP FOREIGN KEY fk__imcms_doc_versions__user1,

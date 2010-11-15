@@ -178,7 +178,6 @@ function setI18nCodeParameterValue(value) {
 	<tr>
     --%>
 
-	<%-- TODO: Escape XML: $Headline$ --%>
 	<c:forEach items="${i18nMetas}" var="i18nMeta">
 
 	<c:set var="prefix" value="_${i18nMeta.language.code}"/>
@@ -195,7 +194,7 @@ function setI18nCodeParameterValue(value) {
 		<td class="imcmsAdmText" nowrap>
 		<? install/htdocs/sv/jsp/docadmin/document_information.jsp/6 ?><sup class="imNote">1</sup></td>
 		<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE%>${prefix}" size="48" maxlength="255" style="width: 100%"
-		value="${i18nMeta.headline}"></td>
+		value="<c:out value='${i18nMeta.headline}' escapeXml='true'/>"/></td>
 	</tr>
 	<tr>
 		<td></td>
@@ -207,11 +206,10 @@ function setI18nCodeParameterValue(value) {
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="2" alt=""></td>
 	</tr>
 
-      <%-- TODO: Escape XML: $MenuText$ --%>
 	  <tr>
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1002 ?>&nbsp;</td>
 		<td class="imcmsAdmForm">
-		<textarea name="<%=EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT%>${prefix}" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;"><c:out value="${i18nMeta.menuText}"/></textarea>
+		<textarea name="<%=EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT%>${prefix}" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;"><c:out escapeXml="true" value="${i18nMeta.menuText}"/></textarea>
         </td>
 	  </tr>
 
@@ -226,7 +224,7 @@ function setI18nCodeParameterValue(value) {
 		<tr>
 			<td width="85%">
 			  <input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__IMAGE%>${prefix}" size="40" maxlength="255" style="width: 100%"
-			    value="<c:out value="${i18nMeta.menuImageURL}" default=""/>"
+			    value="<c:out escapeXml="true" value="${i18nMeta.menuImageURL}" default=""/>"
 			  />
 			</td>
 			<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER%>"

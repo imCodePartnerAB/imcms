@@ -79,10 +79,19 @@
   <!-- Unique -->
   <query name="DocumentVersion.getDefaultVersion">
     <![CDATA[
-	 SELECT v FROM DocumentVersion v, DefaultDocumentVersion d
-	 WHERE v.no = d.no AND v.docId = d.docId AND v.docId = :docId
+	 SELECT v FROM Meta m, DocumentVersion v 
+	 WHERE m.defaultVersionNo = v.no AND m.id = v.docId AND m.id = :docId
     ]]>
   </query>
+
+  <query name="DocumentVersion.changeDefaultVersion">
+    <![CDATA[
+	  UPDATE Meta m
+	  SET m.defaultVersionNo = :defaultVersionNo, m.modifiedDatetime = :modifiedDatetime, m.publisherId = :publisherId
+	  WHERE m.id = :docId
+    ]]>
+  </query>
+    
 
   <!-- Unique -->
   <query name="DocumentVersion.getByDocIdAndNo">

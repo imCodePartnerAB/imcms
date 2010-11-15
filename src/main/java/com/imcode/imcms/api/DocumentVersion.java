@@ -36,10 +36,10 @@ public class DocumentVersion implements Cloneable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdDt;
 
-	@Column(name="modified_by", updatable=true, nullable=true)
+	@Column(name="modified_by", updatable=true, nullable=false)
 	private Integer modifiedBy;
 
-	@Column(name="modified_dt", updatable=true, nullable=true)
+	@Column(name="modified_dt", updatable=true, nullable=false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modifiedDt;    
 

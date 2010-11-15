@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.imcode.imcms.api.*;
 import com.imcode.imcms.dao.*;
-import com.imcode.imcms.mapping.orm.DefaultDocumentVersion;
 
 /**
  * Used internally by DocumentMapper. Must NOT be used directly.
@@ -153,20 +152,28 @@ public class DocumentSaver {
         return loop;
     }
 
-
+    /**
+     * Document publisher is changed to a user.
+     * Document modified date-time is set to a version's modified date-time.
+     * 
+     * @param docId
+     * @param versionNo
+     * @param user
+     */
     @Transactional
-    public void changeDocumentDefaultVersion(Integer docId, Integer newDocDefaultVersionNo, UserDomainObject user) {
-        DefaultDocumentVersion defaultVersion = documentVersionDao.getDefaultVersionORM(docId);
+    public void changeDocumentDefaultVersion(Integer docId, Integer versionNo, UserDomainObject user) {              
+        DocumentVersion currentDefaultVersion = documentVersionDao.getDefaultVersion(docId);
 
-        if (defaultVersion == null) {
-            defaultVersion = new DefaultDocumentVersion();
-            defaultVersion.setDocId(docId);
-            defaultVersion.setNo(newDocDefaultVersionNo);
-        } else {
-            defaultVersion.setNo(newDocDefaultVersionNo);
+        if (currentDefaultVersion.getNo() != versionNo) {
+            DocumentVersion version = documentVersionDao.getVersion(docId, versionNo);
+            if (version == null) {
+                throw new IllegalStateException(
+                        String.format("Can not change doc %d version. Version no %d does not exists.",
+                        docId, versionNo));
+            }
+
+            documentVersionDao.changeDefaultVersion(docId, version, user);
         }
-
-        documentVersionDao.saveDefaultVersionORM(defaultVersion);
     }
 
 
@@ -472,8 +479,7 @@ public class DocumentSaver {
         return copyDocId;
     }
 
-    
-    // todo: refactor labels saving !!
+
     @Transactional
     public <T extends DocumentDomainObject> Integer saveNewDocument(T doc, List<I18nMeta> i18nMetas, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
@@ -495,6 +501,7 @@ public class DocumentSaver {
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(doc, user, null);
 
         meta.setId(null);
+        meta.setDefaultVersionNo(DocumentVersion.WORKING_VERSION_NO);
         meta.setDocumentType(doc.getDocumentTypeId());
         Integer docId = saveMeta(meta).getId();
 
@@ -508,7 +515,6 @@ public class DocumentSaver {
         metaDao.insertPropertyIfNotExists(docId, DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, docId.toString());
 
         DocumentVersion version = documentVersionDao.createVersion(docId, user.getId());
-
         doc.setVersion(version);
         
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);

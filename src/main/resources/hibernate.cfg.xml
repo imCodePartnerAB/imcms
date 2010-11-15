@@ -14,7 +14,6 @@
         <mapping class="com.imcode.imcms.mapping.orm.FileReference"/>
         <mapping class="com.imcode.imcms.mapping.orm.HtmlReference"/>
         <mapping class="com.imcode.imcms.mapping.orm.UrlReference"/>
-        <mapping class="com.imcode.imcms.mapping.orm.DefaultDocumentVersion"/>
 
         <mapping class="com.imcode.imcms.api.SystemProperty"/>
         <mapping class="com.imcode.imcms.api.I18nMeta"/>

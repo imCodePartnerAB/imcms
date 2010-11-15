@@ -103,6 +103,9 @@ public class Meta implements Serializable, Cloneable {
 	@Column(name="meta_id")
 	private Integer id;
 
+    @Column(name = "default_version_no", nullable = false)
+    private Integer defaultVersionNo = 0;
+
 	
 	/**
 	 * Disabled language's content show rule.
@@ -656,5 +659,13 @@ public class Meta implements Serializable, Cloneable {
 
     public void removeAlis() {
         properties.remove(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
+    }
+
+    public Integer getDefaultVersionNo() {
+        return defaultVersionNo;
+    }
+
+    public void setDefaultVersionNo(Integer defaultVersionNo) {
+        this.defaultVersionNo = defaultVersionNo;
     }
 }

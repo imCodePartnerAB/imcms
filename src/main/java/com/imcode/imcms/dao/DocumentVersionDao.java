@@ -1,16 +1,13 @@
 package com.imcode.imcms.dao;
 
+import imcode.server.user.UserDomainObject;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.mapping.orm.DefaultDocumentVersion;
 
 import java.util.List;
 import java.util.Date;
 
-/**
- *     TODO: implement get active version.
- */
 public class DocumentVersionDao extends HibernateTemplate {
 
 	/**
@@ -30,7 +27,10 @@ public class DocumentVersionDao extends HibernateTemplate {
                 ? 0
                 : latestVersion.getNo() + 1;
 
-        DocumentVersion version =  new DocumentVersion(docId, versionNumber, userId, new Date());
+        Date now = new Date();
+        DocumentVersion version =  new DocumentVersion(docId, versionNumber, userId, now);
+        version.setModifiedBy(userId);
+        version.setModifiedDt(now);
 
 		save(version);
 
@@ -58,19 +58,16 @@ public class DocumentVersionDao extends HibernateTemplate {
 		    .setParameter("docId", docId)
 		    .uniqueResult();
 	}
-    
 
 	@Transactional
-	public DefaultDocumentVersion getDefaultVersionORM(Integer docId) {
-		return (DefaultDocumentVersion)getSession()
-            .createQuery("SELECT v FROM DefaultDocumentVersion v WHERE v.docId = :docId")
-		    .setParameter("docId", docId)
-		    .uniqueResult();
-	}
-
-	@Transactional
-	public void saveDefaultVersionORM(DefaultDocumentVersion version) {
-        saveOrUpdate(version);
+	public void changeDefaultVersion(Integer docId, DocumentVersion version, UserDomainObject user) {
+		getSession()
+			.getNamedQuery("DocumentVersion.changeDefaultVersion")
+            .setParameter("defaultVersionNo", version.getNo())
+            .setParameter("modifiedDatetime", version.getModifiedDt())
+            .setParameter("publisherId", user.getId())   
+            .setParameter("docId", docId)    
+		    .executeUpdate();
 	}
 
 

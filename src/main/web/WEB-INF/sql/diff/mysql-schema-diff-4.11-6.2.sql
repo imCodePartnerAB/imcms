@@ -115,7 +115,7 @@ INSERT INTO `imcms_doc_versions` (
   `date_modified`
 FROM `meta`;
 
--- todo: move to property?
+-- in 5.5->5.6 default no is moved into the meta table
 CREATE TABLE imcms_doc_default_version (
     id int AUTO_INCREMENT PRIMARY KEY,
     doc_id int NOT NULL,
