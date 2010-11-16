@@ -1,5 +1,7 @@
 package imcode.server.parser;
 
+import com.imcode.imcms.api.TextDocumentViewing;
+import com.imcode.imcms.servlet.AdminPanelServlet;
 import imcode.server.DocumentRequest;
 import imcode.server.ImcmsServices;
 import imcode.server.document.TemplateDomainObject;
@@ -12,7 +14,15 @@ import imcode.util.DateConstants;
 import imcode.util.Html;
 import imcode.util.ShouldNotBeThrownException;
 import imcode.util.Utility;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
+import org.apache.oro.text.regex.*;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
@@ -21,27 +31,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.MatchResult;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.PatternMatcher;
-import org.apache.oro.text.regex.PatternMatcherInput;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
-import org.apache.oro.text.regex.Perl5Substitution;
-import org.apache.oro.text.regex.Substitution;
-import org.apache.oro.text.regex.Util;
-
-import com.imcode.imcms.api.TextDocumentViewing;
-
 public class TextDocumentParser {
 
     private final static Logger LOG = Logger.getLogger( TextDocumentParser.class );
@@ -49,6 +38,7 @@ public class TextDocumentParser {
     static Pattern hashtagPattern;
     private static Pattern htmlTagPattern;
     private static Pattern htmlTagHtmlPattern;
+    private static Pattern headEndTagPattern;
 
     static {
         Perl5Compiler patComp = new Perl5Compiler();
@@ -58,6 +48,8 @@ public class TextDocumentParser {
             htmlTagPattern = patComp.compile( "<[^>]+?>", Perl5Compiler.READ_ONLY_MASK );
 
             htmlTagHtmlPattern = patComp.compile( "<[hH][tT][mM][lL]\\b", Perl5Compiler.READ_ONLY_MASK );
+
+            headEndTagPattern = patComp.compile( "<\\/[hH][eE][aA][dD]\\b", Perl5Compiler.READ_ONLY_MASK );
 
             hashtagPattern = patComp.compile( "#[^ #\"<>&;\\t\\r\\n]+#", Perl5Compiler.READ_ONLY_MASK );
         } catch ( MalformedPatternException ignored ) {
@@ -109,9 +101,17 @@ public class TextDocumentParser {
 
             TemplateDomainObject template = templateMapper.getTemplateByName(templateName);
 
+            boolean hasAdminPanel = user.hasAdminPanelForDocument(document) ;
+
             Perl5Matcher patMat = new Perl5Matcher();
 
-            final String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
+            final String imcmsMessage      = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
+            List imcmsAdminHeadTagTags = new ArrayList();
+            imcmsAdminHeadTagTags.add( "#getMetaId#" );
+            imcmsAdminHeadTagTags.add( "" + document.getId() );
+            imcmsAdminHeadTagTags.add( "#getFlag#" );
+            imcmsAdminHeadTagTags.add( "" + parserParameters.getFlags() );
+            final String imcmsAdminHeadTag = service.getAdminTemplate( "textdoc/imcms_admin_headtag.html", user, imcmsAdminHeadTagTags );
             if (null == template) {
                 throw new RuntimeException("Template not found: "+templateName);
             } else if (template.getFileName().endsWith(".jsp") || template.getFileName().endsWith(".jspx")) {
@@ -120,13 +120,24 @@ public class TextDocumentParser {
                     HttpServletResponse response = documentRequest.getHttpServletResponse();
                     String contents = Utility.getContents("/WEB-INF/templates/text/" + template.getFileName(), request, response);
                     contents = Util.substitute( patMat, htmlTagHtmlPattern, new Substitution() {
-                    public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
-                                                    PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
-                                                    Pattern pattern ) {
+                       public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
+                                                       PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
+                                                       Pattern pattern ) {
                           stringBuffer.append( imcmsMessage ).append( matchResult.group( 0 ) );
                        }
                     }, contents ) ;
-	                out.write(contents);
+                    if (hasAdminPanel) {
+                        contents = Util.substitute( patMat, headEndTagPattern, new Substitution() {
+                            public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
+                                                            PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
+                                                            Pattern pattern ) {
+                                stringBuffer.append( imcmsAdminHeadTag ).append( matchResult.group( 0 ) );
+                            }
+                        }, contents ) ;
+                    } else {
+                        AdminPanelServlet.setCookie(AdminPanelServlet.PARAM_COOKIE_PANEL_HIDE, "", documentRequest.getHttpServletResponse()) ;
+                    }
+                    out.write(contents);
                 } catch ( ServletException e ) {
                     throw new UnhandledException(e);
                 }
@@ -143,13 +154,25 @@ public class TextDocumentParser {
                 tagsReplaced = Util.substitute( patMat, hashtagPattern, hashtagsubstitution, tagsReplaced, Util.SUBSTITUTE_ALL );
 
                 String emphasizedAndTagsReplaced = applyEmphasis( documentRequest, user, tagsReplaced, patMat );
-                out.write(Util.substitute( patMat, htmlTagHtmlPattern, new Substitution() {
+                String cont = Util.substitute( patMat, htmlTagHtmlPattern, new Substitution() {
                     public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
                                                     PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
                                                     Pattern pattern ) {
                         stringBuffer.append( imcmsMessage ).append( matchResult.group( 0 ) );
                     }
-                }, emphasizedAndTagsReplaced ));
+                }, emphasizedAndTagsReplaced );
+                if (hasAdminPanel) {
+                    cont = Util.substitute( patMat, headEndTagPattern, new Substitution() {
+                        public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
+                                                        PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
+                                                        Pattern pattern ) {
+                            stringBuffer.append( imcmsAdminHeadTag ).append( matchResult.group( 0 ) );
+                        }
+                    }, cont );
+                } else {
+                    AdminPanelServlet.setCookie(AdminPanelServlet.PARAM_COOKIE_PANEL_HIDE, "", documentRequest.getHttpServletResponse()) ;
+                }
+                out.write(cont) ;
             }
         } finally {
             if (null != previousViewing) {

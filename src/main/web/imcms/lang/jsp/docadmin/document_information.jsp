@@ -186,7 +186,7 @@ function setI18nCodeParameterValue(value) {
 		<td colspan="2" style="padding-bottom:3px;">
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${i18nMeta.language.code}.gif" alt="" style="border:0;" /></td>
+			<td><img src="$contextPath/imcms/images/icons/flags_iso_639_1/${i18nMeta.language.code}.gif" alt="" style="border:0;" /></td>
 			<td class="imcmsAdmText" style="padding-left:10px; font-weight:bold;">${i18nMeta.language.name}</td>
 		</tr>
 		</table></td></tr>
@@ -410,7 +410,7 @@ function setI18nCodeParameterValue(value) {
 				 id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + postfix%>"<c:if test="${enabled}"> checked="checked"</c:if>/></td>
 				<td><label for="<%=
 				EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + postfix%>"><img
-				  src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${language.code}.gif" alt="" style="border:0;" /></label></td>
+				  src="$contextPath/imcms/images/icons/flags_iso_639_1/${language.code}.gif" alt="" style="border:0;" /></label></td>
 				<td class="imcmsAdmText" style="padding-left:10px;"><label for="<%=
 				EditDocumentInformationPageFlow.REQUEST_PARAMETER__ENABLED_I18N + postfix%>">${language.name}</label></td>
 			</tr>

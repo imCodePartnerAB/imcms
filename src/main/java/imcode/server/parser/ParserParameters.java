@@ -103,7 +103,7 @@ public class ParserParameters implements Cloneable {
         return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE, TextDocumentPermissionSetDomainObject.EDIT_TEMPLATE );
     }
 
-    private boolean isMode( int flag,
+    public boolean isMode( int flag,
                             DocumentPermission permission ) {
         return ( flags & flag ) != 0 && getPermissionSet().hasPermission(permission);
     }

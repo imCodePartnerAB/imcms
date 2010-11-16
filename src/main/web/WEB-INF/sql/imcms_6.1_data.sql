@@ -36,35 +36,35 @@ SET @language_id__default = @language_id__english;
 
 -- Initial values for start page in English
 SET @start_document__headline__english = 'Start page';
-SET @start_document__text1__english = '<h3>Welcome to imCMS</h3>';
-SET @start_document__text2__english = '<a href="<?imcms:contextpath?>/login/" title="Link to login-page"><b>Log in!</b></a><br><br><br>
-  <a href="<?imcms:contextpath?>/servlet/SearchDocuments" target="_blank" title="Link to search-page"><b>Search-page</b></a><br>
-  Opens in new window.<br><br>
-  <a href="@documentationwebappurl@/" target="_blank" title="Link to documentation-site"><b>Documentation</b></a><br>
-  External site, opens in new window.<br><br>
-  <a href="http://www.imcms.net" target="_blank" title="Link to www.imcms.net"><b>More about imCMS</b></a><br>
-  imCMS Product-site. External site, opens in new window.<br><br>
-  <a href="<?imcms:contextpath?>/imcms/docs/" target="_blank" title="Link to included documentation."><b>Included documentation.</b></a><br>
-  For administrators and developers, in english. Opens in new window.<br><br>
-  <a href="<?imcms:contextpath?>/imcms/docs/apisamples/" target="_blank" title="Link to API-samples"><b>API examples</b></a><br>
-  Only for developers, in english. Opens in new window.<br>
-  Note! Only to be used in test environment - not sites for public use.';
+SET @start_document__text1__english = 'Welcome to imCMS';
+SET @start_document__text2__english = '<p><a href="<?imcms:contextpath?>/login/" title="Link to login-page"><b>Log in!</b></a></p>
+  <p><a href="<?imcms:contextpath?>/servlet/SearchDocuments" target="_blank" title="Link to search-page"><b>Search-page</b></a><br/>
+  Opens in new window.</p>
+  <p><a href="@documentationwebappurl@/" target="_blank" title="Link to documentation-site"><b>Documentation</b></a><br/>
+  External site, opens in new window.</p>
+  <p><a href="http://www.imcms.net" target="_blank" title="Link to www.imcms.net"><b>More about imCMS</b></a><br/>
+  imCMS Product-site. External site, opens in new window.</p>
+  <p><a href="<?imcms:contextpath?>/imcms/docs/" target="_blank" title="Link to included documentation."><b>Included documentation.</b></a><br/>
+  For administrators and developers, in english. Opens in new window.</p>
+  <p><a href="<?imcms:contextpath?>/imcms/docs/apisamples/" target="_blank" title="Link to API-samples"><b>API examples</b></a><br/>
+  Only for developers, in english. Opens in new window.<br/>
+  Note! Only to be used in test environment - not sites for public use.</p>';
 
 -- Initial values for start page in Swedish
 SET @start_document__headline__swedish = 'Startsidan';
-SET @start_document__text1__swedish = '<h3>Välkommen till imCMS</h3>';
-SET @start_document__text2__swedish = '<a href="<?imcms:contextpath?>/login/" title="Länk till inloggningssida"><b>Logga in!</b></a><br><br><br>
-  <a href="<?imcms:contextpath?>/servlet/SearchDocuments" target="_blank" title="Länk till söksida"><b>Söksida</b></a><br>
-  Öppnas i nytt fönster.<br><br>
-  <a href="@documentationwebappurl@/" target="_blank" title="Länk till dokumentationssajt"><b>Dokumentation</b></a><br>
-  Extern sajt, öppnas i nytt fönster.<br><br>
-  <a href="http://www.imcms.net" target="_blank" title="Länk till www.imcms.net"><b>Mer om imCMS</b></a><br>
-  Produktsajt om imCMS. Extern sajt, öppnas i nytt fönster.<br><br>
-  <a href="<?imcms:contextpath?>/imcms/docs/" target="_blank" title="Länk till medföljande dokumentation."><b>Medföljande dokumentation</b></a><br>
-  För administratörer och utvecklare, på engelska. Öppnas i nytt fönster.<br><br>
-  <a href="<?imcms:contextpath?>/imcms/docs/apisamples/" target="_blank" title="Länk till API-exempel"><b>API-exempel</b></a><br>
-  Endast för utvecklare, på engelska. Öppnas i nytt fönster.<br>
-  OBS! Endast för testmiljö - använd inte på publika sajter.';
+SET @start_document__text1__swedish = 'Välkommen till imCMS';
+SET @start_document__text2__swedish = '<p><a href="<?imcms:contextpath?>/login/" title="Länk till inloggningssida"><b>Logga in!</b></a></p>
+  <p><a href="<?imcms:contextpath?>/servlet/SearchDocuments" target="_blank" title="Länk till söksida"><b>Söksida</b></a><br/>
+  Öppnas i nytt fönster.</p>
+  <p><a href="@documentationwebappurl@/" target="_blank" title="Länk till dokumentationssajt"><b>Dokumentation</b></a><br/>
+  Extern sajt, öppnas i nytt fönster.</p>
+  <p><a href="http://www.imcms.net" target="_blank" title="Länk till www.imcms.net"><b>Mer om imCMS</b></a><br/>
+  Produktsajt om imCMS. Extern sajt, öppnas i nytt fönster.</p>
+  <p><a href="<?imcms:contextpath?>/imcms/docs/" target="_blank" title="Länk till medföljande dokumentation."><b>Medföljande dokumentation</b></a><br/>
+  För administratörer och utvecklare, på engelska. Öppnas i nytt fönster.</p>
+  <p><a href="<?imcms:contextpath?>/imcms/docs/apisamples/" target="_blank" title="Länk till API-exempel"><b>API-exempel</b></a><br/>
+  Endast för utvecklare, på engelska. Öppnas i nytt fönster.<br/>
+  OBS! Endast för testmiljö - använd inte på publika sajter.</p>';
 
 
 -- ============================================================================

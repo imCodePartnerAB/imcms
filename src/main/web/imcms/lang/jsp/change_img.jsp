@@ -290,7 +290,7 @@ pageContext.setAttribute("imagesCount", imageEditPage.getImages().size());
 					<td colspan="2" style="padding-bottom:3px;">
 					<table border="0" cellspacing="0" cellpadding="0">
 					<tr>
-						<td><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/${image.language.code}.gif" alt="" style="border:0;" /></td>
+						<td><img src="$contextPath/imcms/images/icons/flags_iso_639_1/${image.language.code}.gif" alt="" style="border:0;" /></td>
 						<td class="imcmsAdmText" style="padding-left:10px; font-weight:bold;">
 						${image.language.name}${image.language eq defaultLanguage ? " <span title=\"Default\">(d)</span>" : ""}${image.language eq currentLanguage ? " <span title=\"Current/Active\">(c)</span>" : ""}</td>
 					</tr>

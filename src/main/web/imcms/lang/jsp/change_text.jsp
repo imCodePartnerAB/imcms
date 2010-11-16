@@ -210,7 +210,7 @@ if (null != languages) { %>
 	</tr>
 	<tr><%
 		} %>
-		<td><%= href_0 %><img src="$contextPath/imcms/$language/images/admin/flags_iso_639_1/<%= langCode %>.gif" alt="" style="border:0;" /><%= href_1 %></td>
+		<td><%= href_0 %><img src="$contextPath/imcms/images/icons/flags_iso_639_1/<%= langCode %>.gif" alt="" style="border:0;" /><%= href_1 %></td>
 		<td style="width:<%= isDefault ? 4.6 : 2.2 %>em; padding-left:5px; font: 13px Verdana, Arial, sans-serif;"><%
 		%><%= href_0 %><%= langCode %><%= isDefault ? "&nbsp;(d)" : "" %><%= href_1 %></td><%
 		iCount++ ;

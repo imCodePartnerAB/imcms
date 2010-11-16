@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,6 +49,19 @@ public class Version extends HttpServlet {
     private String getImcmsVersion() {
         try {
             Reader in = new InputStreamReader(getServletContext().getResourceAsStream(VERSION_FILE));
+            try {
+                return "imCMS "+IOUtils.toString(in).trim();
+            } finally {
+                in.close();
+            }
+        } catch ( Exception npe ) {
+            return "imCMS";
+        }
+    }
+
+    public static String getImcmsVersion(ServletContext servletContext) {
+        try {
+            Reader in = new InputStreamReader(servletContext.getResourceAsStream(VERSION_FILE));
             try {
                 return "imCMS "+IOUtils.toString(in).trim();
             } finally {

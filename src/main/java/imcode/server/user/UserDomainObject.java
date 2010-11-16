@@ -773,4 +773,9 @@ public class UserDomainObject implements Cloneable, Serializable {
             return phoneNumber.getType().equals(phoneNumberType) ;
         }
     }
+    
+    public boolean hasAdminPanelForDocument(DocumentDomainObject document) {
+        return !(null == document || !(canEdit(document) || isUserAdminAndCanEditAtLeastOneRole() || canAccessAdminPages()));
+    }
+    
 }

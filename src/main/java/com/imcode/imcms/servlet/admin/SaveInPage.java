@@ -98,18 +98,20 @@ public class SaveInPage extends HttpServlet {
             }
 
             Utility.setDefaultHtmlContentType( res );
-            AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
+            //AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
+            res.sendRedirect( "AdminDoc?meta_id=" + documentId + "&flags=" + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE );
 
         } else if ( req.getParameter( "change_group" ) != null ) {
             Utility.setDefaultHtmlContentType( res );
 
-            req.getSession().setAttribute( "flags", new Integer( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) );
+            req.getSession().setAttribute( "flags", ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE );
 
             if ( null != requestedTemplateGroup ) {
                 user.setTemplateGroup( requestedTemplateGroup );
             }
 
-            AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
+            //AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
+            res.sendRedirect( "AdminDoc?meta_id=" + documentId + "&flags=" + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE );
 
         }
     }
@@ -119,7 +121,8 @@ public class SaveInPage extends HttpServlet {
     ) throws IOException, ServletException {
         Utility.setDefaultHtmlContentType( res );
 
-        AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
+        //AdminDoc.adminDoc( documentId, user, req, res, getServletContext() );
+        res.sendRedirect( "AdminDoc?meta_id=" + documentId + "&flags=" + imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE );
     }
 
     private void errorNoTemplateSelected(int documentId, ImcmsServices services, UserDomainObject user,

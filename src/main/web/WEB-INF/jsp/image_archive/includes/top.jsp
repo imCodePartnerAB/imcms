@@ -52,12 +52,12 @@
                 <c:param name="lang" value="en"/>
                 <c:param name="redir" value="${requestScope.requestUrl}"/>
             </c:url>
-            <a href="${enUrl}" style="margin-right:4px;"><img src="${pageContext.servletContext.contextPath}/imcms/<%= isoLang2 %>/images/admin/flags_iso_639_1/en.gif" width="16" height="11"/></a>
+            <a href="${enUrl}" style="margin-right:4px;"><img src="${pageContext.servletContext.contextPath}/imcms/images/icons/flags_iso_639_1/en.gif" width="16" height="11"/></a>
             <c:url var="svUrl" value="/web/archive/language">
                 <c:param name="lang" value="sv"/>
                 <c:param name="redir" value="${requestScope.requestUrl}"/>
             </c:url>
-            <a href="${svUrl}"><img src="${pageContext.servletContext.contextPath}/imcms/<%= isoLang2 %>/images/admin/flags_iso_639_1/sv.gif" width="16" height="11"/></a>
+            <a href="${svUrl}"><img src="${pageContext.servletContext.contextPath}/imcms/images/icons/flags_iso_639_1/sv.gif" width="16" height="11"/></a>
         </span>
     </div>
     <div class="clearheight"></div>

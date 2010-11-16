@@ -348,6 +348,11 @@
         <servlet-class>com.imcode.imcms.servlet.RebuildImageCache</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.AdminPanelServlet</servlet-class>
+    </servlet>
+
     
 	<servlet-mapping>
 	    <servlet-name>newadmin</servlet-name>
@@ -618,6 +623,11 @@
         <servlet-name>superadmin-vaadin</servlet-name>
         <url-pattern>/VAADIN/*</url-pattern>
       </servlet-mapping>
+
+	<servlet-mapping>
+	    <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>
+	    <url-pattern>/servlet/AdminPanelServlet</url-pattern>
+	</servlet-mapping>
 
     <session-config>
         <session-timeout>

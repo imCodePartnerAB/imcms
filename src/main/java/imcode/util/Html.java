@@ -153,7 +153,7 @@ public class Html {
         if ( user.canEditDocumentInformationFor( document ) ) {
             statusIconTemplate = "<a href=\"" + request.getContextPath() + "/servlet/AdminDoc?meta_id="
                                  + document.getId()
-                                 + "&"
+                                 + "&amp;"
                                  + AdminDoc.PARAMETER__DISPATCH_FLAGS
                                  + "=1\" target=\"_blank\">" +
                                  statusIconTemplate +

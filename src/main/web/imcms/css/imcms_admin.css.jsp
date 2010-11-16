@@ -1,5 +1,5 @@
 <%@ page
-	import="org.apache.oro.text.perl.Perl5Util"
+	import="org.apache.commons.lang.StringUtils"
 	contentType="text/css"
 %><%!
 
@@ -13,14 +13,13 @@ private int fontSize( int size, boolean isNS ) {
 
 %><%
 
-Perl5Util re = new Perl5Util() ;
-
 /* Check browser */
 
-String uAgent = request.getHeader("USER-AGENT") ;
-boolean isIE  = re.match("/(MSIE 4|MSIE 5|MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) ;
-boolean isGecko = re.match("/Gecko/i", uAgent) ;
-boolean isNS  = re.match("/Mozilla/i", uAgent) && !isGecko && !isIE ;
+String uAgent    = StringUtils.defaultString(request.getHeader("USER-AGENT")).toLowerCase() ;
+boolean isIE     = uAgent.contains("msie") ;
+boolean isGecko  = uAgent.contains("gecko") ;
+boolean isWebKit = uAgent.contains("webkit") ;
+boolean isNS     = false ;//NO NEED FOR NS 4 SUPPORT!!!      uAgent.contains("mozilla") && !isIE && !isGecko && !isWebKit ;
 
 String BORDER_COLOR_NORMAL     = "#668DB6 #000000 #000000 #668DB6" ;
 String BORDER_COLOR_NORMAL_SUB = "#668DB6 #999999 #999999 #668DB6" ;
@@ -40,7 +39,7 @@ if (isGecko) {
 	font-size: <%= fontSize(17, isNS) %>px;
 	font-family: Tahoma,Arial,Verdana,sans-serif;
 	color: #ffffff;
-	padding: 5 0 0 0;
+	padding: 5px 0 0 0;
 }
 
 .imcmsAdmHeading {
@@ -48,7 +47,7 @@ if (isGecko) {
 	font-size: <%= fontSize(11, isNS) %>px;
 	font-family: Tahoma,Arial,sans-serif;
 	color: #20568D;
-	padding: 5 0 0 0;
+	padding: 5px 0 0 0;
 }
 
 .imcmsAdmText, .imcmsAdmTable TD, INPUT, SELECT, TEXTAREA, .imcmsAdmForm {
@@ -103,13 +102,13 @@ if (isNS) { %>
 .imcmsFormBtn, .imcmsFormBtnActive, .imcmsFormBtnDisabled, .imcmsAdmTable TD .imcmsFormBtn {
 	font-size: 12px;
 	font-family: Tahoma, Arial, sans-serif;
-	color: #ffffff;
+	color: #000;
 }
 
 .imcmsFormBtnSmall, .imcmsFormBtnSmallDisabled {
 	font-size: 11px;
 	font-family: Tahoma, Arial, sans-serif;
-	color: #ffffff;
+	color: #000;
 }<%
 } else { %>
 
@@ -122,7 +121,7 @@ if (isNS) { %>
 	border: <%= isGecko ? 1 : 2 %>px outset #668DB6;
 	border-color: <%= BORDER_COLOR_NORMAL %>;
 	cursor:pointer;
-	padding: <%= isGecko ? 3 : 2 %> 8; }
+	padding: <%= isGecko ? 3 : 2 %>px 8px; }
 
 .imcmsFormBtnSub {
 	background-color: #4076ad;
@@ -131,7 +130,7 @@ if (isNS) { %>
 	border: <%= isGecko ? 1 : 2 %>px outset #668DB6;
 	border-color: <%= BORDER_COLOR_NORMAL_SUB %>;
 	cursor:pointer;
-	padding: <%= isGecko ? 3 : 2 %> 8; }
+	padding: <%= isGecko ? 3 : 2 %>px 8px; }
 
 .imcmsFormBtnActive {
 	background-color: #30669D;
@@ -140,7 +139,7 @@ if (isNS) { %>
 	border: <%= isGecko ? 1 : 2 %>px inset #668DB6;
 	border-color: <%= BORDER_COLOR_NORMAL_ACT %>;
 	cursor:pointer;
-	padding: 3 8 1 8; }
+	padding: 3px 8px 1px 8px; }
 
 .imcmsFormBtnDisabled {
 	background-color: #B8C6D5;
@@ -149,7 +148,7 @@ if (isNS) { %>
 	border: <%= isGecko ? 1 : 2 %>px outset #DAE4EF;
 	border-color: <%= BORDER_COLOR_DISABLED %>;
 	cursor:pointer;
-	padding: <%= isGecko ? 3 : 2 %> 8; }
+	padding: <%= isGecko ? 3 : 2 %>px 8px; }
 
 .imcmsFormBtnSubDisabled {
 	background-color: #B8C6D5;
@@ -158,7 +157,7 @@ if (isNS) { %>
 	border: <%= isGecko ? 1 : 2 %>px outset #DAE4EF;
 	border-color: <%= BORDER_COLOR_DISABLED %>;
 	cursor:pointer;
-	padding: <%= isGecko ? 3 : 2 %> 8; }
+	padding: <%= isGecko ? 3 : 2 %>px 8px; }
 
 <% /* Small */ %>
 
@@ -169,7 +168,7 @@ if (isNS) { %>
 	border: <%= isGecko ? 1 : 2 %>px outset #668DB6;
 	border-color: <%= BORDER_COLOR_NORMAL %>;
 	cursor:pointer;
-	padding: <%= isGecko ? 1 : 0 %> 2; }
+	padding: <%= isGecko ? 1 : 0 %>px 2px; }
 
 .imcmsFormBtnSmallDisabled {
 	background-color: #B8C6D5;
@@ -178,7 +177,7 @@ if (isNS) { %>
 	border: <%= isGecko ? 1 : 2 %>px outset #DAE4EF;
 	border-color: <%= BORDER_COLOR_DISABLED %>;
 	cursor:pointer;
-	padding: <%= isGecko ? 1 : 0 %> 2; }<%
+	padding: <%= isGecko ? 1 : 0 %>px 2px; }<%
 }
 
 /* *******************************************************************************************
@@ -192,9 +191,9 @@ if (isNS) { %>
 .error { color: red; }
 
 BODY {
-	margin: 30 10;
+	margin: 30px 10px;
 	background-color:#efece7;
-	overflow: -moz-scrollbars-vertical;
+	<%= "overflow: -moz-scrollbars-vertical;" %>
 }
 
 TH   { text-align: left; }

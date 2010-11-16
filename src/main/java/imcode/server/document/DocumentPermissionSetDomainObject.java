@@ -41,7 +41,7 @@ public class DocumentPermissionSetDomainObject implements Serializable, LazilyLo
         }
     } ;
 
-    static final DocumentPermission EDIT = new DocumentPermission( "edit" );
+    public static final DocumentPermission EDIT = new DocumentPermission( "edit" );
 
     private static final String PERMISSION_SET_NAME__FULL = "Full";
     private static final String PERMISSION_SET_NAME__RESTRICTED_1 = "Restricted One";
@@ -52,8 +52,8 @@ public class DocumentPermissionSetDomainObject implements Serializable, LazilyLo
     private DocumentPermissionSetTypeDomainObject type;
 
     private HashSet permissions = new HashSet();
-    static final DocumentPermission EDIT_DOCUMENT_INFORMATION = new DocumentPermission( "editDocumentInformation" );
-    static final DocumentPermission EDIT_PERMISSIONS = new DocumentPermission( "editPermissions" );
+    public static final DocumentPermission EDIT_DOCUMENT_INFORMATION = new DocumentPermission( "editDocumentInformation" );
+    public static final DocumentPermission EDIT_PERMISSIONS = new DocumentPermission( "editPermissions" );
 
     public final static int EDIT_DOCINFO_PERMISSION_ID = ImcmsConstants.PERM_EDIT_DOCINFO;
     public final static int EDIT_PERMISSIONS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_PERMISSIONS;
