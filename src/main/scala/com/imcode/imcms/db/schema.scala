@@ -1,41 +1,5 @@
 package com.imcode.imcms.db
 
-case class Version(major: Int, minor: Int) extends Ordered[Version] {
-  require(major > 0, "'major' must be > 0 but was %d." format major)
-  require(minor >= 0, "'minor' must be >= 0 but was %d." format minor)
-
-  def compare(that: Version) = this.major - that.major match {
-    case 0 => this.minor - that.minor
-    case i => i
-  }
-}
-
-object Version {
-
-  val VersionRe = """([1-9][0-9]*)\.([0-9]+)""".r
-
-  implicit val stringToVersion: String => Version = {
-    case VersionRe(major, minor) => Version(major.toInt, minor.toInt)
-    case illegalArgument => throw new IllegalArgumentException(
-                              """|Provided value "%s" can not be converted into a Version.
-                                 |Expected value must be a string in a format 'major.minor' where major and minor
-                                 |are positive integers and major is greater than zero."""
-                                 .stripMargin format illegalArgument)
-  }
-}
-
-
-case class Init(version: Version, scripts: List[String]) {
-  require(scripts.size > 0, "At least one script must be provided.")
-}
-
-
-case class Diff(from: Version, to: Version, scripts: List[String]) {
-  require(from < to, "'from' %s must be < 'to' %s." format (from, to))
-  require(scripts.size > 0, "At least one script must be provided.")
-}
-
-
 case class Schema(version: Version, init: Init, diffs: Set[Diff], scriptsDir: String = "") {
   require(diffs.size == diffs.map(_.from).size, "'diffs' 'from' values must must be distinct: %s." format diffs)
   require(diffs.map(diff => diffsChain(diff.from)) forall (chain => chain.last.to == version),
@@ -76,4 +40,40 @@ object Schema {
 
 
   def load(file: File) = XML loadFile file : Schema
+}
+
+
+case class Version(major: Int, minor: Int) extends Ordered[Version] {
+  require(major > 0, "'major' must be > 0 but was %d." format major)
+  require(minor >= 0, "'minor' must be >= 0 but was %d." format minor)
+
+  def compare(that: Version) = this.major - that.major match {
+    case 0 => this.minor - that.minor
+    case i => i
+  }
+}
+
+object Version {
+
+  val VersionRe = """([1-9][0-9]*)\.([0-9]+)""".r
+
+  implicit val stringToVersion: String => Version = {
+    case VersionRe(major, minor) => Version(major.toInt, minor.toInt)
+    case illegalArgument => throw new IllegalArgumentException(
+                              """|Provided value "%s" can not be converted into a Version.
+                                 |Expected value must be a string in a format 'major.minor' where major and minor
+                                 |are positive integers and major is greater than zero."""
+                                 .stripMargin format illegalArgument)
+  }
+}
+
+
+case class Init(version: Version, scripts: List[String]) {
+  require(scripts.size > 0, "At least one script must be provided.")
+}
+
+
+case class Diff(from: Version, to: Version, scripts: List[String]) {
+  require(from < to, "'from' %s must be < 'to' %s." format (from, to))
+  require(scripts.size > 0, "At least one script must be provided.")
 }

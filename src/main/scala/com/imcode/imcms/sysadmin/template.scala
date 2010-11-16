@@ -1,8 +1,7 @@
-package com.imcode.imcms.servlet.superadmin.vaadin.template
+package com.imcode.imcms.sysadmin.template
 
 import com.imcode._
-import com.imcode.imcms.servlet.superadmin.vaadin.ui._
-import com.imcode.imcms.servlet.superadmin.vaadin.ui.{UploadEventHandler, MemoryUploadReceiver}
+import com.imcode.imcms.vaadin._
 //import com.vaadin.data.Property
 //import com.vaadin.data.Property._
 import com.vaadin.ui._

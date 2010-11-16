@@ -1,13 +1,11 @@
-package com.imcode.imcms.servlet.superadmin.vaadin
+package com.imcode.imcms
 
-import com.imcode._
 import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
 import com.vaadin.ui.{Table, Component, AbstractComponentContainer, Button, MenuBar}
 import com.vaadin.data.Property
 import com.vaadin.data.Property._
-import _root_.com.vaadin.ui.MenuBar
 
-package object ui {
+package object vaadin {
 
   def unit(block: => Unit) = block _
 

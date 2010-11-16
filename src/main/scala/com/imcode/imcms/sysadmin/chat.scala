@@ -1,4 +1,4 @@
-package com.imcode.imcms.servlet.superadmin.vaadin.filemanager
+package com.imcode.imcms.sysadmin.chat
 
 import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger, Long => JLong}
 import scala.collection.JavaConversions._
@@ -20,13 +20,8 @@ import imcode.server.{SystemData, Imcms}
 import java.util.{Date, Collection => JCollection}
 import com.vaadin.ui.Layout.MarginInfo
 import java.io.{OutputStream, FileOutputStream, File}
-import com.imcode.imcms.servlet.superadmin.vaadin.ui._
-import com.imcode.imcms.servlet.superadmin.vaadin.ui.AbstractFieldWrapper._
-import java.util.concurrent.atomic.AtomicReference
 import imcode.server.document.{CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
-import scala.actors.Actor._
-import scala.actors._
-import imcode.server.document.textdocument.TextDocumentDomainObject
+import com.imcode.imcms.vaadin._;
 
 class MessageView(sender: String, message: String) extends VerticalLayout {
   val lytHeader = new HorizontalLayout {

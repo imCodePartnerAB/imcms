@@ -1,35 +1,24 @@
-package com.imcode.imcms.admin.ui
+package com.imcode.imcms.docadmin
 
-import com.imcode.imcms.servlet.superadmin.vaadin.template._
+import com.imcode.imcms.sysadmin.template._
 import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
 import scala.collection.JavaConversions._
 import com.imcode._
 import com.vaadin.event.ItemClickEvent
 import com.vaadin.ui._
-import com.vaadin.data.Property
-import com.vaadin.data.Property._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import imcms.api._
-import imcms.mapping.CategoryMapper
-import imcms.servlet.superadmin.AdminSearchTerms
-import com.imcode.imcms.api.Document.PublicationStatus
-import imcms.servlet.superadmin.vaadin.ChatTopic.Message
-import imcms.servlet.superadmin.vaadin.permissions.{UserUI, UsersView}
+import com.imcode.imcms.sysadmin.permissions.{UserUI, UsersView}
 import imcode.util.Utility
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
 import java.util.{Date, Collection => JCollection}
-import com.vaadin.ui.Layout.MarginInfo
-import com.imcode.imcms.servlet.superadmin.vaadin.ui._
-import com.imcode.imcms.servlet.superadmin.vaadin.ui.AbstractFieldWrapper._
-import java.util.concurrent.atomic.AtomicReference
-import scala.actors.Actor._
-import scala.actors._
-import imcode.server.document.textdocument.TextDocumentDomainObject
 import java.io.{ByteArrayInputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
 import scala.collection.mutable.{Map => MMap}
 import imcode.server.document._
+import com.imcode.imcms.vaadin._
+import com.imcode.imcms.vaadin.AbstractFieldWrapper._
 
 class MetaModel(val meta: Meta,
                 val defaultLanguage: I18nLanguage,

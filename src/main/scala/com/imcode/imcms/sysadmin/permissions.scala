@@ -1,7 +1,5 @@
-package com.imcode.imcms.servlet.superadmin.vaadin.permissions
+package com.imcode.imcms.sysadmin.permissions
 
-import com.imcode.imcms.servlet.superadmin.vaadin.filemanager._
-import com.imcode.imcms.servlet.superadmin.vaadin.template._
 import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
 import scala.collection.JavaConversions._
 import com.imcode._
@@ -12,25 +10,15 @@ import com.vaadin.data.Property
 import com.vaadin.data.Property._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import imcms.api.{CategoryType, SystemProperty, IPAccess, Document}
-import imcms.mapping.CategoryMapper
-import imcms.servlet.superadmin.AdminSearchTerms
-import com.imcode.imcms.api.Document.PublicationStatus
-import imcms.servlet.superadmin.vaadin.ChatTopic.Message
-import imcode.util.Utility
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
 import java.util.{Date, Collection => JCollection}
-import com.vaadin.ui.Layout.MarginInfo
-import com.imcode.imcms.servlet.superadmin.vaadin.ui._
-import com.imcode.imcms.servlet.superadmin.vaadin.ui.AbstractFieldWrapper._
-import java.util.concurrent.atomic.AtomicReference
-import scala.actors.Actor._
-import scala.actors._
-import imcode.server.document.textdocument.TextDocumentDomainObject
+import com.imcode.imcms.vaadin._;
 import imcode.server.document.{TemplateDomainObject, CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
 import java.io.{ByteArrayInputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
-import com.vaadin.data.Container.ItemSetChangeListener
+import com.imcode.imcms.vaadin._;
+import com.imcode.imcms.vaadin.AbstractFieldWrapper._;
 
 
 // user-admin-roles???
