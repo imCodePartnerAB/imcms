@@ -28,6 +28,7 @@ public class DatabaseSanityCheck implements SanityCheck {
     public Collection<Problem> execute() {
         DdlUtilsPlatformCommand databaseCommand = new DdlUtilsPlatformCommand() {
             protected Object executePlatform(DatabaseConnection databaseConnection, Platform platform) {
+                platform.setDelimitedIdentifierModeOn(true);
                 org.apache.ddlutils.model.Database actualModel = platform.readModelFromDatabase(null);
                 ModelComparator modelComparator = new ModelComparator(platform.getPlatformInfo(), false);
                 List<ModelChange> changes = modelComparator.compare(actualModel, wantedModel);
