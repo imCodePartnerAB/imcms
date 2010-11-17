@@ -1,12 +1,13 @@
 package com.imcode.imcms
 
-import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
 import com.vaadin.ui.{Table, Component, AbstractComponentContainer, Button, MenuBar}
-import com.vaadin.data.Property
-import com.vaadin.data.Property._
+import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
+import com.vaadin.data.{Container, Property}
+import com.imcode.imcms.vaadin.ContainerProperty
+import com.imcode._;
 
 package object vaadin {
-
+  
   def unit(block: => Unit) = block _
 
   def menuCommand(handler: MenuBar#MenuItem => Unit) = new MenuBar.Command {
@@ -22,7 +23,7 @@ package object vaadin {
 
   implicit def unitToButtonClickListener(u: () => Unit) = buttonClickListener { _ => u() }
 
-  def propertyValueChangeListener(handler: ValueChangeEvent => Unit): Property.ValueChangeListener =
+  def propertyValueChangeListener(handler: ValueChangeEvent => Unit): ValueChangeListener =
     new Property.ValueChangeListener {
       def valueChange(event: ValueChangeEvent) = handler(event)
     }
@@ -42,10 +43,14 @@ package object vaadin {
 //    container
 //  }
 
+  def addContainerProperties(container: Container, properties: ContainerProperty[_]*) =
+    properties foreach { p =>
+      container.addContainerProperty(p.id, p.clazz, p.defaultValue)
+    }
+
   def addContainerProperties(table: Table, properties: (AnyRef, JClass[_], AnyRef)*) =
     for ((propertyId, propertyType, defaultValue) <- properties)
       table.addContainerProperty(propertyId, propertyType, defaultValue)
-
 
   def whenSelected[A](field: com.vaadin.ui.AbstractField)(fn: A => Unit) = field.getValue match {
     case null =>

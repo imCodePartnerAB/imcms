@@ -1,6 +1,14 @@
 package com
 
+import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
+
 package object imcode {
+
+  type JClass[T <: AnyRef] = java.lang.Class[T]
+  type JBoolean = java.lang.Boolean
+  type JInteger = java.lang.Integer
+  type JFloat = java.lang.Float
+  type JDouble = java.lang.Double
 
   def flip[A1, A2, B](f: A1 => A2 => B): A2 => A1 => B = x1 => x2 => f(x2)(x1)
 

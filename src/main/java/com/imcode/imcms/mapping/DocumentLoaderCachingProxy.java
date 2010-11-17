@@ -281,4 +281,6 @@ public class DocumentLoaderCachingProxy {
     public Map<I18nLanguage, Map<Integer, DocumentDomainObject>> getWorkingDocuments() {
         return workingDocuments;
     }
+
+    public Map<Integer, Meta> getMetas() { return metas; }
 }

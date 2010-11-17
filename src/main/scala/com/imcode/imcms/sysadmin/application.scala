@@ -55,7 +55,7 @@ object ChatTopic extends Actor {
 }
 
 
-class AdminApplication extends com.vaadin.Application with VaadinApplication { application =>
+class Application extends com.vaadin.Application with VaadinApplication { application =>
 
   setTheme("imcms")
   
@@ -83,6 +83,9 @@ class AdminApplication extends com.vaadin.Application with VaadinApplication { a
       object SessionCounter extends MenuItem(this)
     }
     object Filesystem extends MenuItem(this)
+    object System extends MenuItem(this) {
+      object Cache extends MenuItem(this)  
+    }
   } 
 
   val languageDao = Imcms.getSpringBean("languageDao").asInstanceOf[LanguageDao]
@@ -194,7 +197,7 @@ class AdminApplication extends com.vaadin.Application with VaadinApplication { a
       def valueChange(e: ValueChangeEvent) {
         content.setSecondComponent(
           e.getProperty.getValue match {
-            case null | Menu.About => labelAbout
+            case null | Menu.About => systemCacheView //labelAbout
             
             case Menu.Statistics.SearchTerms => searchTerms
             case Menu.Documents.Categories => categories
@@ -208,7 +211,8 @@ class AdminApplication extends com.vaadin.Application with VaadinApplication { a
             case Menu.Filesystem => filesystem
             case Menu.Documents.Templates => templates
             case Menu.Documents.Structure => docStructure
-             case Menu.Documents.New => newDocument
+            case Menu.Documents.New => newDocument
+            case Menu.System.Cache => systemCacheView 
 
             case other => NA(other)
           })
@@ -251,6 +255,13 @@ class AdminApplication extends com.vaadin.Application with VaadinApplication { a
 
 //    mvc.view
   }
+
+//  def systemCacheView = {
+//    import com.imcode.imcms.sysadmin.cache.View
+//
+//    new cache.View(Imcms.getDocumentMapper.getCahcingDocumentGetter)
+//  }
+  def systemCacheView = new cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
 
   //
   // Languages panel

@@ -66,26 +66,26 @@
     </filter-mapping>
 
   <servlet>
-    <servlet-name>superadmin-vaadin</servlet-name>
+    <servlet-name>sysadmin-vaadin</servlet-name>
     <servlet-class>
         com.vaadin.terminal.gwt.server.ApplicationServlet
     </servlet-class>
     <init-param>
       <param-name>application</param-name>
-      <param-value>com.imcode.imcms.servlet.superadmin.vaadin.AdminApplication</param-value>
+      <param-value>com.imcode.imcms.sysadmin.Application</param-value>
     </init-param>
   </servlet>
 
-  <servlet>
-    <servlet-name>docadmin-vaadin</servlet-name>
-    <servlet-class>
-        com.vaadin.terminal.gwt.server.ApplicationServlet
-    </servlet-class>
-    <init-param>
-      <param-name>application</param-name>
-      <param-value>com.imcode.imcms.servlet.superadmin.vaadin.Docadmin</param-value>
-    </init-param>
-  </servlet>
+  <!--<servlet>-->
+    <!--<servlet-name>docadmin-vaadin</servlet-name>-->
+    <!--<servlet-class>-->
+        <!--com.vaadin.terminal.gwt.server.ApplicationServlet-->
+    <!--</servlet-class>-->
+    <!--<init-param>-->
+      <!--<param-name>application</param-name>-->
+      <!--<param-value></param-value>-->
+    <!--</init-param>-->
+  <!--</servlet>-->
     
     <servlet>
       <servlet-name>newadmin</servlet-name>
@@ -610,17 +610,17 @@
     </servlet-mapping>                                                  
 
       <servlet-mapping>
-        <servlet-name>superadmin-vaadin</servlet-name>
+        <servlet-name>sysadmin-vaadin</servlet-name>
         <url-pattern>/vaadin/*</url-pattern>
       </servlet-mapping>
 
-      <servlet-mapping>
-        <servlet-name>docadmin-vaadin</servlet-name>
-        <url-pattern>/vaadin-docadmin/*</url-pattern>
-      </servlet-mapping>
+      <!--<servlet-mapping>-->
+        <!--<servlet-name>docadmin-vaadin</servlet-name>-->
+        <!--<url-pattern>/vaadin-docadmin/*</url-pattern>-->
+      <!--</servlet-mapping>-->
 
       <servlet-mapping>
-        <servlet-name>superadmin-vaadin</servlet-name>
+        <servlet-name>sysadmin-vaadin</servlet-name>
         <url-pattern>/VAADIN/*</url-pattern>
       </servlet-mapping>
 

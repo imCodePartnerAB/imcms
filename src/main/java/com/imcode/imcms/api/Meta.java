@@ -393,6 +393,10 @@ public class Meta implements Serializable, Cloneable {
 		this.documentType = documentType;
 	}
 
+    public Integer getDocumentTypeId() {
+        return getDocumentType();
+    }
+
 	public Integer getCreatorId() {
 		return creatorId;
 	}

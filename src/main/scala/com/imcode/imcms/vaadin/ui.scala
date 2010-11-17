@@ -47,6 +47,10 @@ import com.vaadin.Application
 
 // generic application
 
+case class ContainerProperty[T <: AnyRef](id: AnyRef, defaultValue: AnyRef = null)(implicit m: Manifest[T]) {
+  val clazz = m.erasure
+}
+
 trait VaadinApplication extends Application {  
 
   def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
@@ -116,6 +120,10 @@ trait LinkStyle { this: Button =>
 
 trait Immediate { this: AbstractField =>
   setImmediate(true)
+}
+
+trait Selectable { this: Table =>
+  setSelectable(true)
 }
 
 trait NullSelection extends AbstractSelect {

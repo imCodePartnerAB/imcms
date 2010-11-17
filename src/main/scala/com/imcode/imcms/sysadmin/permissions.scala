@@ -216,24 +216,18 @@ class UsersView(application: VaadinApplication) extends {
     }  
 }
 
-case class TableProperty(id: AnyRef, clazz: JClass[_], defaultValue: AnyRef = null)
-
 class UserUI extends VerticalLayout {
   val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
   val filterUI = new UserViewFilter
-  val tblUsers = new Table {
-    val properties =
-      TableProperty("Id", classOf[JInteger]) ::
-      TableProperty ("Login", classOf[String]) ::
-      TableProperty("First name", classOf[String]) ::
-      TableProperty("Last name", classOf[String]) ::
-      TableProperty("Superadmin?", classOf[JBoolean]) ::
-      TableProperty("Active?", classOf[JBoolean]) :: Nil
-
-    properties foreach { c => addContainerProperty(c.id, c.clazz, c.defaultValue) }
+  val tblUsers = new Table with Immediate with Selectable {
+    addContainerProperties(this,
+      ContainerProperty[JInteger]("Id"),
+      ContainerProperty[String]("Login"),
+      ContainerProperty[String]("First name"),
+      ContainerProperty[String]("Last name"),
+      ContainerProperty[JBoolean]("Superadmin?"),
+      ContainerProperty[JBoolean]("Active?"))
     
-    setSelectable(true)
-    setImmediate(true)
     setPageLength(5)
   }
 
