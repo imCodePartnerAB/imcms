@@ -2,8 +2,7 @@ package imcode.server.document;
 
 import imcode.util.IdLocalizedNamePair;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 
@@ -27,6 +26,16 @@ public class DocumentTypeDomainObject extends IdLocalizedNamePair {
        TEXT,
        URL,
     } ;
+
+    public final static Map<Integer,  DocumentTypeDomainObject> TYPES = Collections.unmodifiableMap(
+            new HashMap<Integer, DocumentTypeDomainObject>() {
+                {
+                    for (DocumentTypeDomainObject type: ALL_DOCUMENT_TYPES) {
+                        put(type.getId(), type);
+                    }
+                }
+            }
+    );
 
     public DocumentTypeDomainObject( int id, LocalizedMessage name ) {
         super(id, name);

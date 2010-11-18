@@ -45,13 +45,8 @@ import com.vaadin.Application
 //  }
 //}
 
-// generic application
 
-case class ContainerProperty[T <: AnyRef](id: AnyRef, defaultValue: AnyRef = null)(implicit m: Manifest[T]) {
-  val clazz = m.erasure
-}
-
-trait VaadinApplication extends Application {  
+trait VaadinApplication extends Application {
 
   def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
     init(window)
@@ -62,8 +57,49 @@ trait VaadinApplication extends Application {
   }
 
   def show[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true) =
-   initAndShow(window, modal, resizable, draggable) { _ => }
+    initAndShow(window, modal, resizable, draggable) { _ => }
 }
+
+
+/**
+ * Must be mixed-in into a component used within an instance of VaadinApplication.
+ */
+trait I18nCaption extends AbstractComponent {
+  
+  /**
+   * Returns localized caption using original caption (assigned by setCaption) as a resource key or original caption if
+   * corresponding resource does not exists.
+   *
+   * @throws java.lang.ClassCastException if application is not an instance of VaadinApplication 
+   *
+   * @return caption.
+   */
+  // todo: implement
+  override def getCaption() = super.getCaption
+}
+
+
+/**
+ * Class to represent container property.
+ *
+ * @see com.imcode.imcms.vaadin#addContainerProperties
+ */
+case class ContainerProperty[T <: AnyRef](id: AnyRef, defaultValue: AnyRef = null)(implicit m: Manifest[T]) {
+  val clazz = m.erasure
+}
+
+
+/**
+ * Property value type.
+ * 
+ * Adds type-checked access to property value.
+ */
+//todo when-selected must mixin value type?
+trait ValueType[V] extends Property {
+  def value_=(v: V) = setValue(v)
+  def value() = getValue.asInstanceOf[V]
+}
+
 
 class AbstractFieldWrapper(f: com.vaadin.ui.AbstractField) {
   def stringValue = f.getValue.asInstanceOf[String]
@@ -76,11 +112,6 @@ object AbstractFieldWrapper {
 }
 
 import AbstractFieldWrapper._
-
-trait ValueType[V] extends Property {
-  def value_=(v: V) = setValue(v)
-  def value() = getValue.asInstanceOf[V]
-}
 
 trait Disabled { this: Component =>
   setEnabled(false)

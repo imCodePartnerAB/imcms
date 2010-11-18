@@ -197,7 +197,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
       def valueChange(e: ValueChangeEvent) {
         content.setSecondComponent(
           e.getProperty.getValue match {
-            case null | Menu.About => systemCacheView //labelAbout
+            case null | Menu.About => labelAbout
             
             case Menu.Statistics.SearchTerms => searchTerms
             case Menu.Documents.Categories => categories

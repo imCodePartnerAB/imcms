@@ -7,33 +7,37 @@ import com.imcode.imcms.vaadin.ContainerProperty
 import com.imcode._;
 
 package object vaadin {
-  
+
+  @deprecated("Use block instead")
   def unit(block: => Unit) = block _
+
+  def block(b: => Unit) = b _
 
   def menuCommand(handler: MenuBar#MenuItem => Unit) = new MenuBar.Command {
     def menuSelected(mi: MenuBar#MenuItem) = handler(mi)
   }
   
-  implicit def unitToMenuCommand(u: () => Unit) = menuCommand { _ => u() }
-
   def buttonClickListener(eventHandler: Button#ClickEvent => Unit) =
     new Button.ClickListener {
       def buttonClick(event: Button#ClickEvent) = eventHandler(event)
     }
 
-  implicit def unitToButtonClickListener(u: () => Unit) = buttonClickListener { _ => u() }
-
   def propertyValueChangeListener(handler: ValueChangeEvent => Unit): ValueChangeListener =
     new Property.ValueChangeListener {
       def valueChange(event: ValueChangeEvent) = handler(event)
     }
- 
-  implicit def unitToPropertyValueChangeListenerB(u: () => Unit) = propertyValueChangeListener { _ => u() }
+
+  implicit def fn0ToButtonClickListener(f: () => Unit) = buttonClickListener { _ => f() }
+  
+  implicit def fn0ToMenuCommand(f: () => Unit) = menuCommand { _ => f() }
+
+  implicit def fn0ToPropertyValueChangeListenerB(f: () => Unit) = propertyValueChangeListener { _ => f() }
 
   def addComponents(container: AbstractComponentContainer, component: Component, components: Component*) = {
     component +: components foreach { c => container addComponent c }
     container
   }
+
 
 //  implicit def wrapAbstractComponentContainer(container: AbstractComponentContainer): AbstractComponentContainerWrapper =
 //    new AbstractComponentContainerWrapper(container)
