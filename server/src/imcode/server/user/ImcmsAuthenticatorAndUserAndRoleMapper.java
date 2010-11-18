@@ -6,6 +6,7 @@ import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.*;
 import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import com.imcode.db.exceptions.StringTruncationException;
+import com.imcode.imcms.db.DatabaseUtils;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import imcode.server.ImcmsServices;
 import imcode.util.DateConstants;
@@ -34,8 +35,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private static final String SQL_SELECT_USERS = "SELECT user_id, login_name, login_password, first_name, last_name, "
                                                    + "title, company, address, city, zip, country, county_council, "
                                                    + "email, language, active, "
-                                                   + "create_date, external, session_id, remember_cd "
-                                                   + "FROM users";
+                                                   + "create_date, " + (DatabaseUtils.isDatabaseMSSql() ? "[external]" : "external") 
+                                                   + ", session_id, remember_cd FROM users";
+
 
     public static final String SQL_ROLES_COLUMNS = "roles.role_id, roles.role_name, roles.admin_role, roles.permissions";
     private static final String SQL_SELECT_ALL_ROLES = "SELECT " + SQL_ROLES_COLUMNS + " FROM roles";
@@ -226,6 +228,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 "" + user.getId(),
         };
         try {
+            String externalColumn = DatabaseUtils.isDatabaseMSSql() ? "[external]" : "external";
             services.getDatabase().execute(new SqlUpdateCommand("UPDATE users \n"
                                                                 + "SET login_name = ?,\n"
                                                                 + "login_password = ?,\n"
@@ -239,7 +242,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                                                                 + "country = ?,\n"
                                                                 + "county_council = ?,\n"
                                                                 + "email = ?,\n"
-                                                                + "external = ?,\n"
+                                                                + externalColumn + " = ?,\n"
                                                                 + "active = ?,\n"
                                                                 + "language = ?\n"
                                                                 + "WHERE user_id = ?", params));
@@ -290,6 +293,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             if ( user.isImcmsExternal() ) {
                 user.setPassword("");
             }
+            String externalColumn = DatabaseUtils.isDatabaseMSSql() ? "[external]" : "external";
             Number newUserId = (Number) services.getDatabase().execute(new InsertIntoTableDatabaseCommand("users", new String[][] {
                     { "login_name", user.getLoginName() },
                     { "login_password", user.getPassword() },
@@ -303,7 +307,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                     { "country", user.getCountry() },
                     { "county_council", user.getProvince() },
                     { "email", user.getEmailAddress() },
-                    { "external", user.isImcmsExternal() ? "1" : "0" },
+                    { externalColumn, user.isImcmsExternal() ? "1" : "0" },
                     { "active", user.isActive() ? "1" : "0" },
                     { "language", user.getLanguageIso639_2() },
                     { "create_date", Utility.makeSqlStringFromDate(new Date()) }
