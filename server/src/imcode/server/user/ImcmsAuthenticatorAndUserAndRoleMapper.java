@@ -32,13 +32,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     private static final int USER_EXTERN_ID = 2;
 
-    private static final String SQL_SELECT_USERS = "SELECT user_id, login_name, login_password, first_name, last_name, "
-                                                   + "title, company, address, city, zip, country, county_council, "
-                                                   + "email, language, active, "
-                                                   + "create_date, " + (DatabaseUtils.isDatabaseMSSql() ? "[external]" : "external") 
-                                                   + ", session_id, remember_cd FROM users";
-
-
     public static final String SQL_ROLES_COLUMNS = "roles.role_id, roles.role_name, roles.admin_role, roles.permissions";
     private static final String SQL_SELECT_ALL_ROLES = "SELECT " + SQL_ROLES_COLUMNS + " FROM roles";
     private static final String SQL_SELECT_ALL_ROLES_EXCEPT_USERS_ROLE = SQL_SELECT_ALL_ROLES
@@ -49,8 +42,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     public static final String SQL_INSERT_INTO_ROLES = "INSERT INTO roles (role_name, permissions, admin_role) VALUES(?,?,0)";
     private static final String TABLE__USERADMIN_ROLE_CROSSREF = "useradmin_role_crossref";
-    private static final String SQL__SELECT_USER_BY_ID = SQL_SELECT_USERS
-                                                         + " WHERE user_id = ?";
 
     private static final String SQL_UPDATE_USER_SESSION = "update users set session_id = ? where user_id = ?";
 
@@ -59,6 +50,18 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private static final String SQL_UPDATE_USER_REMEMBER_CD = "UPDATE users SET remember_cd = ? WHERE user_id = ?";
 
     private final ImcmsServices services;
+
+    private static String sqlSelectUsers(ImcmsServices services) {
+        return "SELECT user_id, login_name, login_password, first_name, last_name, "
+                + "title, company, address, city, zip, country, county_council, "
+               + "email, language, active, "
+               + "create_date, " + (DatabaseUtils.isDatabaseMSSql(services) ? "[external]" : "external")
+               + ", session_id, remember_cd FROM users";
+    }
+
+    private static String sqlSelectUserById(ImcmsServices services) {
+        return sqlSelectUsers(services) + " WHERE user_id = ?";
+    }
 
     public ImcmsAuthenticatorAndUserAndRoleMapper(ImcmsServices services) {
         this.services = services;
@@ -82,7 +85,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     private String[] sqlSelectUserByName(String loginName) {
         final Object[] parameters = new String[] { loginName.trim() };
-        return (String[]) services.getDatabase().execute(new SqlQueryCommand(SQL_SELECT_USERS
+        return (String[]) services.getDatabase().execute(new SqlQueryCommand(sqlSelectUsers(services)
                                                                              + " WHERE login_name = ?", parameters, Utility.STRING_ARRAY_HANDLER));
     }
 
@@ -163,7 +166,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         if ( !includeInactiveUsers ) {
             whereTests.add("active = 1");
         }
-        String sqlStr = SQL_SELECT_USERS;
+        String sqlStr = sqlSelectUsers(services);
         if ( whereTests.size() > 0 ) {
             sqlStr += " WHERE " + StringUtils.join(whereTests.iterator(), " AND ");
         }
@@ -179,7 +182,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
         try {
             final Object[] parameters = new String[] { "" + userId };
-            return (String[]) services.getDatabase().execute(new SqlQueryCommand(SQL__SELECT_USER_BY_ID, parameters, Utility.STRING_ARRAY_HANDLER));
+            return (String[]) services.getDatabase().execute(new SqlQueryCommand(sqlSelectUserById(services), parameters, Utility.STRING_ARRAY_HANDLER));
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }
@@ -228,7 +231,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 "" + user.getId(),
         };
         try {
-            String externalColumn = DatabaseUtils.isDatabaseMSSql() ? "[external]" : "external";
+            String externalColumn = DatabaseUtils.isDatabaseMSSql(services) ? "[external]" : "external";
             services.getDatabase().execute(new SqlUpdateCommand("UPDATE users \n"
                                                                 + "SET login_name = ?,\n"
                                                                 + "login_password = ?,\n"
@@ -293,7 +296,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             if ( user.isImcmsExternal() ) {
                 user.setPassword("");
             }
-            String externalColumn = DatabaseUtils.isDatabaseMSSql() ? "[external]" : "external";
+            String externalColumn = DatabaseUtils.isDatabaseMSSql(services) ? "[external]" : "external";
             Number newUserId = (Number) services.getDatabase().execute(new InsertIntoTableDatabaseCommand("users", new String[][] {
                     { "login_name", user.getLoginName() },
                     { "login_password", user.getPassword() },
@@ -532,7 +535,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     public UserDomainObject[] findUsersByNamePrefix(String namePrefix, boolean includeInactiveUsers) {
         try {
-            String sql = SQL_SELECT_USERS + " WHERE user_id != " + USER_EXTERN_ID
+            String sql = sqlSelectUsers(services) + " WHERE user_id != " + USER_EXTERN_ID
                          + " AND ( login_name LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR title LIKE ? OR email LIKE ? OR company LIKE ? )";
             if ( !includeInactiveUsers ) {
                 sql += " AND active = 1";
