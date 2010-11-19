@@ -135,7 +135,7 @@ class MetaMVC(val app: VaadinApplication, val metaModel: MetaModel) {
         
         w setMainContent content
         w addOkButtonClickListener unit {
-          content.txtKeyword setValue content.lstKeywords.asList[String].mkString(", ") 
+          content.txtKeyword setValue content.lstKeywords.value.mkString(", ") 
         }
       }
     }
@@ -228,7 +228,7 @@ class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2)
 
   type ItemIds = JCollection[String]
 
-  val lstKeywords = new ListSelect with MultiSelect with Immediate with NullSelection {
+  val lstKeywords = new ListSelect with ValueType[ItemIds] with MultiSelect with NullSelection with Immediate {
     setRows(10)
     setColumns(10)
   }
@@ -244,7 +244,7 @@ class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2)
   addComponent(btnRemove, 2, 0)
   addComponent(lstKeywords, 0, 1, 2, 1)
 
-  btnAdd addListener unit {
+  btnAdd addListener block {
     txtKeyword.stringValue.trim.toLowerCase match {
       case value if value.length > 0 && lstKeywords.getItem(value) == null =>
         setKeywords(value :: lstKeywords.getItemIds.asInstanceOf[ItemIds].toList)
@@ -254,12 +254,12 @@ class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2)
     txtKeyword setValue ""
   }
 
-  btnRemove addListener unit {
-    whenSelected[ItemIds](lstKeywords) { _ foreach (lstKeywords removeItem _) }
+  btnRemove addListener block {
+    whenSelected(lstKeywords) { _ foreach (lstKeywords removeItem _) }
   }
 
-  lstKeywords addListener unit {
-    lstKeywords.getValue.asInstanceOf[ItemIds].toList match {
+  lstKeywords addListener block {
+    lstKeywords.value match {
       case List(value) => txtKeyword setValue value
       case List(_, _, _*) => txtKeyword setValue ""
       case _ =>

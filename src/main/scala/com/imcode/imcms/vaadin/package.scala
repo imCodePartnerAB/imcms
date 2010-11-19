@@ -3,8 +3,8 @@ package com.imcode.imcms
 import com.vaadin.ui.{Table, Component, AbstractComponentContainer, Button, MenuBar}
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 import com.vaadin.data.{Container, Property}
-import com.imcode.imcms.vaadin.ContainerProperty
-import com.imcode._;
+import com.imcode._
+import vaadin.{ValueType, ContainerProperty}
 
 package object vaadin {
 
@@ -56,9 +56,14 @@ package object vaadin {
     for ((propertyId, propertyType, defaultValue) <- properties)
       table.addContainerProperty(propertyId, propertyType, defaultValue)
 
-  def whenSelected[A](field: com.vaadin.ui.AbstractField)(fn: A => Unit) = field.getValue match {
-    case null =>
-    case value: A => fn(value)
-    case other => error("Unexpected field value: %s." format other)
+//  def whenSelected[A, B](property: Property)(fn: A => B): Option[B] = property.getValue match {
+//    case null => None
+//    case value: A => Some(fn(value))
+//    case other => error("Unexpected field value: %s." format other)
+//  }
+
+  def whenSelected[A, B](property: ValueType[A])(fn: A => B): Option[B] = property.value match {
+    case null => None
+    case value => Some(fn(value))
   }
 }

@@ -10,7 +10,7 @@ import imcms.api.DocumentVersion
 import imcode.server.document.DocumentTypeDomainObject;
 
 class View(docLoaderCache: DocumentLoaderCachingProxy) extends VerticalLayout with Margin with Spacing {
-  val tblMetas = new Table("Metas") with I18nCaption with Selectable with Immediate {
+  val tblMetas = new Table("Metas") with ValueType[JInteger] with I18nCaption with Selectable with Immediate {
     addContainerProperties(this,
       ContainerProperty[JInteger]("Id"),
       ContainerProperty[String]("Type"),
@@ -65,7 +65,7 @@ class View(docLoaderCache: DocumentLoaderCachingProxy) extends VerticalLayout wi
     tblDocs.removeAllItems
     tblLanguages.removeAllItems
     
-    whenSelected[JInteger](tblMetas) { docId =>
+    whenSelected(tblMetas) { docId =>
       docLoaderCache.getMeta(docId).getLanguages foreach { l =>
         tblLanguages.addItem(Array(l.getName), l.getId)  
       }

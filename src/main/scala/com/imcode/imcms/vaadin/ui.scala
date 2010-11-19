@@ -15,14 +15,13 @@ import imcode.util.Utility
 import imcode.server.user._
 import com.imcode.imcms.api.{SystemProperty, IPAccess, Document}
 import imcode.server.{SystemData, Imcms}
-import java.util.{Date, Collection => JCollection}
 import com.vaadin.ui.Layout.MarginInfo
 import java.util.concurrent.atomic.AtomicReference
 import java.lang.{String, Class => JClass, Boolean => JBoolean, Integer => JInteger}
 import java.io.{ByteArrayOutputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
 import com.vaadin.Application
-
+import java.util.{Collections, LinkedList, ResourceBundle, Date, Collection => JCollection}
 //class ButtonWrapper(button: Button) {
 //
 //  def addListener(eventHandler: Button#ClickEvent => Unit) =
@@ -58,11 +57,18 @@ trait VaadinApplication extends Application {
 
   def show[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true) =
     initAndShow(window, modal, resizable, draggable) { _ => }
+
+  // todo: implement
+  val resourceBundle = new ResourceBundle {
+     def handleGetObject(key: String)  = "<" + key + ">"
+
+     val getKeys = Collections.enumeration(List.empty[String])
+  }
 }
 
 
 /**
- * Must be mixed-in into a component used within an instance of VaadinApplication.
+ * Must be mixed-in into a component which parent is VaadinApplication.
  */
 trait I18nCaption extends AbstractComponent {
   
@@ -74,8 +80,7 @@ trait I18nCaption extends AbstractComponent {
    *
    * @return caption.
    */
-  // todo: implement
-  override def getCaption() = super.getCaption
+  override def getCaption() =  getApplication.asInstanceOf[VaadinApplication].resourceBundle.getString(super.getCaption)
 }
 
 
@@ -94,17 +99,20 @@ case class ContainerProperty[T <: AnyRef](id: AnyRef, defaultValue: AnyRef = nul
  * 
  * Adds type-checked access to property value.
  */
-//todo when-selected must mixin value type?
 trait ValueType[V] extends Property {
   def value_=(v: V) = setValue(v)
   def value() = getValue.asInstanceOf[V]
 }
 
+//trait SelectType[V] extends ValueType[V] with AbstractSelect {
+//  def itemIds = getItemIds.asInstanceOf[JCollection[V]]
+//}
 
+// todo: rename to property wrapper/DELETE!!
 class AbstractFieldWrapper(f: com.vaadin.ui.AbstractField) {
   def stringValue = f.getValue.asInstanceOf[String]
   def booleanValue = Boolean unbox f.getValue.asInstanceOf[JBoolean] 
-  def asList[T <: AnyRef] = f.getValue.asInstanceOf[JCollection[T]].toList
+  //def asList[T <: AnyRef] = f.getValue.asInstanceOf[JCollection[T]].toList
 }
 
 object AbstractFieldWrapper {
@@ -342,8 +350,8 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
 
   val btnAdd = new Button("<<")
   val btnRemove = new Button(">>")
-  val lstAvailable = new ListSelect("Available")
-  val lstChosen = new ListSelect("Chosen")
+  val lstAvailable = new ListSelect("Available") with ValueType[JCollection[T]]
+  val lstChosen = new ListSelect("Chosen") with ValueType[JCollection[T]]
   val lytButtons = new VerticalLayout {
     addComponents(this, btnAdd, btnRemove)
   }
@@ -368,11 +376,11 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
   reset()
 
   def reset() {
-    btnAdd.setEnabled(lstAvailable.asList[T].size > 0)
-    btnRemove.setEnabled(lstChosen.asList[T].size > 0)
+    btnAdd.setEnabled(lstAvailable.value.size > 0)
+    btnRemove.setEnabled(lstChosen.value.size > 0)
   }
 
-  private [this] def move(src: ListSelect, dest: ListSelect) = src.asList[T]  foreach { itemId =>
+  private [this] def move(src: ListSelect with ValueType[JCollection[T]], dest: ListSelect with ValueType[JCollection[T]]) = src.value foreach { itemId =>
     let (src getItemCaption itemId) { itemCaption =>
       addItem(dest, itemId, itemCaption)
     }
@@ -546,12 +554,12 @@ trait UploadEventHandler extends Upload.SucceededListener with Upload.FailedList
 
 class TableView extends VerticalLayout {
 
-  val table = new Table {
+  val table = new Table with ValueType[JInteger] {
     setSelectable(true)
     setImmediate(true)
     setPageLength(10)
 
-    this addListener unit { resetComponents }
+    this addListener block { resetComponents }
 
     tableFields foreach { addContainerProperties(this, _) }
   }

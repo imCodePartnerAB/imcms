@@ -147,8 +147,8 @@ class UsersView(application: VaadinApplication) extends {
     }
   }
 
-  miEdit setCommand unit {
-    whenSelected[JInteger](table) { userId =>
+  miEdit setCommand block {
+    whenSelected(table) { userId =>
       application.initAndShow(new OkCancelDialog("Edit user")) { w =>
         let(w setMainContent new UserDialogContent) { c =>
           val user = roleMapper.getUser(userId.intValue)
@@ -219,7 +219,7 @@ class UsersView(application: VaadinApplication) extends {
 class UserUI extends VerticalLayout {
   val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
   val filterUI = new UserViewFilter
-  val tblUsers = new Table with Immediate with Selectable {
+  val tblUsers = new Table with ValueType[Integer] with Immediate with Selectable {
     addContainerProperties(this,
       ContainerProperty[JInteger]("Id"),
       ContainerProperty[String]("Login"),
@@ -232,9 +232,9 @@ class UserUI extends VerticalLayout {
   }
 
   addComponents(this, filterUI, tblUsers)
-
-  tblUsers addListener unit {
-    whenSelected[Integer](tblUsers) { id =>
+  // ?????
+  tblUsers addListener block {
+    whenSelected(tblUsers) { id =>
       tblUsers.removeAllItems
       
       roleMapper.getAllUsers.toList map { user =>
