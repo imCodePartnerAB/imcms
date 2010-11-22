@@ -1,15 +1,11 @@
 package com.imcode.imcms.docadmin
 
-import com.imcode.imcms.sysadmin.template._
-import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
-import scala.collection.JavaConversions._
 import com.imcode._
-import com.vaadin.event.ItemClickEvent
+import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
-import imcms.api._
+import com.imcode.imcms.api._
 import com.imcode.imcms.sysadmin.permissions.{UserUI, UsersView}
-import imcode.util.Utility
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
 import java.util.{Date, Collection => JCollection}
@@ -23,10 +19,58 @@ import com.imcode.imcms.vaadin.AbstractFieldWrapper._
 class MetaModel(val meta: Meta,
                 val defaultLanguage: I18nLanguage,
                 val languages: MMap[I18nLanguage, Boolean],
-                val labels: Map[I18nLanguage, I18nMeta],
+                val i18nMetas: Map[I18nLanguage, I18nMeta],
                 val versionInfo: Option[DocumentVersionInfo] = Option.empty) {
 
-  val isNew = versionInfo.isEmpty
+  val isNewDoc = versionInfo.isEmpty
+}
+
+
+object MetaModel {
+  
+  /** Creates meta model for existing document. */
+  def apply(id: JInteger): MetaModel = {
+    val meta = Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy.getMeta(id).clone
+    val versionInfo = Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy.getDocumentVersionInfo(id)    
+    val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage
+    val languagesMap = MMap[I18nLanguage, Boolean]()
+
+    Imcms.getI18nSupport.getLanguages foreach { language =>
+      languagesMap.put(language, meta.getLanguages.contains(language))
+    }
+    languagesMap.put(defaultLanguage, true)
+
+    val i18nMetas = Imcms.getServices.getDocumentMapper.getI18nMetas(id) map { i18nMeta =>
+      i18nMeta.getLanguage -> i18nMeta
+    } toMap
+
+    new MetaModel(meta, defaultLanguage, languagesMap, i18nMetas, Some(versionInfo))    
+  }
+
+  /** Creates meta model for new document. */
+  def apply(docType: Int, parentDoc: DocumentDomainObject): MetaModel = {
+    val doc = Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent(docType, parentDoc, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(UserDomainObject.DEFAULT_USER_ID))
+    val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage
+    val availableLanguages = Imcms.getI18nSupport.getLanguages
+    val languages = availableLanguages.zip(Stream.continually(false)).toMap.updated(defaultLanguage, true)
+    val i18nMetas = availableLanguages map { language =>
+      let(new I18nMeta) { i18nMeta =>
+        i18nMeta.setHeadline("")
+        i18nMeta.setMenuText("")
+        i18nMeta.setMenuImageURL("")
+        i18nMeta.setLanguage(language)
+
+        language -> i18nMeta
+      }
+    } toMap
+
+    new MetaModel(
+      doc.getMeta,
+      Imcms.getI18nSupport.getDefaultLanguage,
+      MMap(languages.toSeq : _*),
+      i18nMetas
+    )
+  }
 }
 
 
@@ -54,7 +98,7 @@ class DocFlowFactory(app: VaadinApplication) {
     val defaultLanguage = Imcms.getI18nSupport.getDefaultLanguage
     val availableLanguages = Imcms.getI18nSupport.getLanguages
     val languages = availableLanguages.zip(Stream.continually(false)).toMap.updated(defaultLanguage, true)
-    val labels = availableLanguages map { language =>
+    val i18nMetas = availableLanguages map { language =>
       let(new I18nMeta) { labels =>
         labels.setHeadline("")
         labels.setMenuText("")
@@ -69,7 +113,7 @@ class DocFlowFactory(app: VaadinApplication) {
       doc.getMeta,
       Imcms.getI18nSupport.getDefaultLanguage,
       MMap(languages.toSeq : _*),
-      labels
+      i18nMetas
     )
 
     docType match {
@@ -85,6 +129,9 @@ class DocFlowFactory(app: VaadinApplication) {
 }
 
 
+/**
+ * Initializes view and binds model to it.
+ */
 class MetaMVC(val app: VaadinApplication, val metaModel: MetaModel) {
   
   val view = createView 
@@ -92,17 +139,17 @@ class MetaMVC(val app: VaadinApplication, val metaModel: MetaModel) {
 //  def addLanguage(la: LanguagesArea) = {}
 //  def setActiveLanguages(la: LanguagesArea, languages: Seq[I18nLanguage]) = {}
 
-  def createView = letret(new MetaLyt) { v =>
+  def createView = letret(new MetaView) { v =>
     for {
       (language, enabled) <- metaModel.languages
-      labels = metaModel.labels(language)
+      labels = metaModel.i18nMetas(language)
     } {     
-      val lytLabels = letret(new LabelsLyt) { l =>        
+      val lytLabels = letret(new I18nMetaLyt) { l =>
         l.txtTitle setValue labels.getHeadline
         l.txtMenuText  setValue labels.getMenuText
       }
 
-      let(v.lytI18n.tsLabels.addTab(lytLabels)) { tab =>
+      let(v.lytI18n.tsI18nMetas.addTab(lytLabels)) { tab =>
         if (Imcms.getI18nSupport.isDefault(language)) {
           tab.setCaption(language.getName + " (default)")  
         } else {
@@ -159,6 +206,9 @@ class MetaMVC(val app: VaadinApplication, val metaModel: MetaModel) {
 }
 
 
+/**
+ * Document I18n settings modal dialog content.
+ */
 class I18nSettingsDialogContent extends FormLayout {
   val ogDisabledShowMode = new OptionGroup(
     "When disabled",
@@ -173,7 +223,10 @@ class I18nSettingsDialogContent extends FormLayout {
 }
 
 
-class LabelsLyt extends FormLayout with NoSpacing with UndefinedSize {
+/**
+ * Document I18nMeta content.
+ */
+class I18nMetaLyt extends FormLayout with NoSpacing with UndefinedSize {
   val txtTitle = new TextField("Title")
   val txtMenuText = new TextField("Menu text")
   val embLinkImage = new TextField("Link image")
@@ -182,6 +235,9 @@ class LabelsLyt extends FormLayout with NoSpacing with UndefinedSize {
 }
 
 
+/**
+ * Document publication parameters.
+ */
 class PublicationLyt extends GridLayout(2, 4) with Spacing {
   val lblPublisher = new Label("Publisher") with UndefinedSize
   val lblPublisherName = new Label("No publisher selected") with UndefinedSize
@@ -224,6 +280,9 @@ class PublicationLyt extends GridLayout(2, 4) with Spacing {
 }
 
 
+/**
+ * Document keywords modal dialog content.
+ */
 class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2) with Spacing {
 
   type ItemIds = JCollection[String]
@@ -275,6 +334,9 @@ class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2)
 }
 
 
+/**
+ * Document categories modal dialog content.
+ */
 class CategoriesDialogContent extends Panel {
   setStyleName(Panel.STYLE_LIGHT)
 
@@ -313,7 +375,10 @@ class CategoriesDialogContent extends Panel {
 }
 
 
-class MetaLyt extends FormLayout with Margin {
+/**
+ * Document meta (doc info) view.
+ */
+class MetaView extends FormLayout with Margin {
 
   val lytIdentity = new HorizontalLayout with Spacing {
     val txtId = new TextField("Document Id") with Disabled
@@ -325,12 +390,12 @@ class MetaLyt extends FormLayout with Margin {
   }
   
   val lytI18n = new VerticalLayout with UndefinedSize {
-    val tsLabels = new TabSheet with FullWidth
+    val tsI18nMetas = new TabSheet with FullWidth
     val btnSettings = new Button("Configure...") with LinkStyle
     val chkCopyLabelsTextToPage = new CheckBox("Copy link heading & subheading to text 1 & text 2 in page")
                                                                                               
     setCaption("Appearence")
-    addComponents(this, tsLabels, btnSettings, chkCopyLabelsTextToPage)
+    addComponents(this, tsI18nMetas, btnSettings, chkCopyLabelsTextToPage)
   }
   
   val lytLink = new VerticalLayout with Spacing {

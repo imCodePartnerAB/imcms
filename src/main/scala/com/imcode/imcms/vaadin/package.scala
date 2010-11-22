@@ -66,4 +66,6 @@ package object vaadin {
     case null => None
     case value => Some(fn(value))
   }
+
+  def addItem(table: Table, id: AnyRef, data: AnyRef*) = table.addItem(data.toArray[AnyRef], id)
 }

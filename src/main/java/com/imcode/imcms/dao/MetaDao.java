@@ -62,7 +62,7 @@ public class MetaDao extends HibernateTemplate {
 
 
 	@Transactional
-	public List<I18nMeta> getI18nMeta(Integer docId) {
+	public List<I18nMeta> getI18nMetas(Integer docId) {
         return (List<I18nMeta>)findByNamedQueryAndNamedParam("I18nMeta.getByDocId", "docId", docId);
 	}
 

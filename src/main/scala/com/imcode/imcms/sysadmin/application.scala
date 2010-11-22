@@ -211,7 +211,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
             case Menu.Filesystem => filesystem
             case Menu.Documents.Templates => templates
             case Menu.Documents.Structure => docStructure
-            case Menu.Documents.New => newDocument
+            case Menu.Documents.New => docadmin//newDocument
             case Menu.System.Cache => systemCacheView 
 
             case other => NA(other)
@@ -236,6 +236,78 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     Menu.items foreach { wndMain.treeMenu expandItemsRecursively _ }
     wndMain.treeMenu select Menu.About
     this setMainWindow wndMain    
+  }
+
+
+  // doadmin prototype
+  def docadmin = {
+    import com.imcode.imcms.docadmin.{MetaMVC, FlowUI, DocFlowFactory, MetaModel}
+
+    val dm = Imcms.getServices.getDocumentMapper
+    val btnNewTextDoc = new Button("New text doc")
+    val btnNewFileDoc = new Button("New file doc")
+    val btnNewHtmlDoc = new Button("New html doc")
+    val btnNewUrlDoc = new Button("New url doc")
+    val btnDocInfo = new Button("Doc info")
+    val btnEdit = new Button("Edit doc") // edit content
+    val btnReload = new Button("RELOAD") with LinkStyle
+
+    val tblDocs = new Table with ValueType[JInteger] with Selectable with Immediate {
+      addContainerProperties(this,
+        ContainerProperty[JInteger]("Id"),
+        ContainerProperty[String]("Type"),
+        ContainerProperty[Date]("Created date"),
+        ContainerProperty[Date]("Modified date"),
+        ContainerProperty[String]("Default version no"))
+    }
+
+    val lytBar = new HorizontalLayout with Spacing {
+      addComponents(this, btnNewTextDoc, btnNewFileDoc, btnNewHtmlDoc, btnNewUrlDoc, btnDocInfo, btnEdit, btnReload)
+    }
+
+    btnReload addListener { reload _ }
+
+    btnNewTextDoc addListener block {
+      val parentDoc = dm.getDocument(1001)
+      val model = MetaModel(DocumentTypeDomainObject.TEXT_ID, parentDoc)
+      val mvc = new MetaMVC(application, model)
+
+      initAndShow(new OkCancelDialog) { d =>
+        d.setMainContent(mvc.view)
+      }
+    }
+    
+    btnDocInfo addListener block {
+      whenSelected(tblDocs) { id =>
+        val model = MetaModel(id)
+        val mvc = new MetaMVC(application, model)
+
+        initAndShow(new OkCancelDialog) { d =>
+          d.setMainContent(mvc.view)
+        }        
+      }
+    }
+
+    btnEdit addListener block {
+      whenSelected(tblDocs) { id =>
+        // show edit meta dialog
+      }
+    }
+
+    def reload() {
+      tblDocs.removeAllItems
+      for {
+        id <- dm.getAllDocumentIds
+        meta = dm.getDocumentLoaderCachingProxy.getMeta(id)
+      } {
+        addItem(tblDocs, id, id, meta.getDocumentTypeId, meta.getCreatedDatetime, meta.getModifiedDatetime, meta.getDefaultVersionNo.toString)
+      }
+    }
+
+    new VerticalLayout with Margin with Spacing {
+      addComponents(this, lytBar, tblDocs)
+      reload()
+    }
   }
 
   def newDocument = {

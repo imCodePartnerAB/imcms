@@ -69,7 +69,7 @@ public class IndexDocumentFactory {
         DocumentDomainObject document = documentMapper.getCustomDocument(documentId, defaultDocVersionNo, Imcms.getI18nSupport().getDefaultLanguage());
 
         MetaDao metaDao = (MetaDao)Imcms.getSpringBean("metaDao");
-        Collection<I18nMeta> labelsColl = metaDao.getI18nMeta(documentId);
+        Collection<I18nMeta> labelsColl = metaDao.getI18nMetas(documentId);
 
         Document indexDocument = new Document();
 

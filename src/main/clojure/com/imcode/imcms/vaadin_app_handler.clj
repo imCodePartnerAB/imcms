@@ -16,8 +16,8 @@
 
     (com.vaadin.terminal ExternalResource ClassResource FileResource ThemeResource)
     (com.vaadin.data Property Property$ValueChangeListener)
-    (com.imcode.imcms.servlet.superadmin.vaadin.ui OkCancelDialog)
-    (com.imcode.imcms.servlet.superadmin.vaadin.filemanager FileBrowser FileBrowserWithImagePreview)
+    (com.imcode.imcms.vaadin OkCancelDialog)
+    (com.imcode.imcms.sysadmin.filemanager FileBrowser FileBrowserWithImagePreview)
     com.vaadin.data.util.ObjectProperty))
 
 

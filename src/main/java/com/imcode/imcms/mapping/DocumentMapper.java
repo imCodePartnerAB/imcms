@@ -630,7 +630,7 @@ public class DocumentMapper implements DocumentGetter {
         String copyHeadlineSuffix = "(Copy/Kopia)";
 
         Meta meta =  documentSaver.getMetaDao().getMeta(docId);
-        List<I18nMeta> i18nMetas = documentSaver.getMetaDao().getI18nMeta(docId);
+        List<I18nMeta> i18nMetas = documentSaver.getMetaDao().getI18nMetas(docId);
         List<DocumentDomainObject> docs = new LinkedList<DocumentDomainObject>();
 
         makeDocumentLookNew(meta, user);
@@ -910,6 +910,14 @@ public class DocumentMapper implements DocumentGetter {
         public int getMenuIndex() {
             return menuIndex;
         }
+    }
+
+    public I18nMeta getI18nMeta(Integer docId, I18nLanguage language) {
+        return documentSaver.getMetaDao().getI18nMeta(docId, language);    
+    }
+
+    public List<I18nMeta> getI18nMetas(Integer docId) {
+        return documentSaver.getMetaDao().getI18nMetas(docId);    
     }
 
     private class DocumentsIterator implements Iterator<DocumentDomainObject> {

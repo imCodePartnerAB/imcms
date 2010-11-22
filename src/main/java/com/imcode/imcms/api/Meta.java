@@ -389,6 +389,7 @@ public class Meta implements Serializable, Cloneable {
 		return documentType;
 	}
 
+    @Deprecated
 	public void setDocumentType(Integer documentType) {
 		this.documentType = documentType;
 	}
