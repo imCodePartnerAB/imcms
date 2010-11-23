@@ -241,7 +241,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
   // doadmin prototype
   def docadmin = {
-    import com.imcode.imcms.docadmin.{MetaMVC, FlowUI, DocFlowFactory, MetaModel}
+    import com.imcode.imcms.docadmin.{MetaMVC, FlowUI, DocFlowFactory, MetaModel, URLDocFlowFactory}
 
     val dm = Imcms.getServices.getDocumentMapper
     val btnNewTextDoc = new Button("New text doc")
@@ -278,6 +278,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     }
     
     btnDocInfo addListener block {
+      println("Inside block init/DOC INFO")
       whenSelected(tblDocs) { id =>
         val model = MetaModel(id)
         val mvc = new MetaMVC(application, model)
@@ -285,6 +286,14 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         initAndShow(new OkCancelDialog) { d =>
           d.setMainContent(mvc.view)
         }        
+      }
+    }
+
+    btnNewUrlDoc addListener block {
+      println("Inside block init/URL")
+      initAndShow(new Dialog("New url document")) { d =>
+        val parentDoc = dm.getDocument(1001)
+        d.setMainContent(URLDocFlowFactory.newDocFlow(application, parentDoc))
       }
     }
 
