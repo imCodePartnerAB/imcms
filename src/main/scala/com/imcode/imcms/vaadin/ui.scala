@@ -70,17 +70,17 @@ trait VaadinApplication extends Application {
 /**
  * Must be mixed-in into a component which parent is VaadinApplication.
  */
-trait I18nCaption extends AbstractComponent {
+trait ResourceCaption extends AbstractComponent {
   
   /**
-   * Returns localized caption using original caption (assigned by setCaption) as a resource key or original caption if
+   * Returns resource string using original caption (assigned by setCaption) as a resource key or original caption if
    * corresponding resource does not exists.
    *
    * @throws java.lang.ClassCastException if application is not an instance of VaadinApplication 
    *
    * @return caption.
    */
-  override def getCaption() =  getApplication.asInstanceOf[VaadinApplication].resourceBundle.getString(super.getCaption)
+  override def getCaption() = getApplication.asInstanceOf[VaadinApplication].resourceBundle.getString(super.getCaption)
 }
 
 

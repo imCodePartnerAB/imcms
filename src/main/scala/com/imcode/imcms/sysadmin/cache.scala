@@ -10,7 +10,7 @@ import imcms.api.DocumentVersion
 import imcode.server.document.DocumentTypeDomainObject;
 
 class View(docLoaderCache: DocumentLoaderCachingProxy) extends VerticalLayout with Margin with Spacing {
-  val tblMetas = new Table("Metas") with ValueType[JInteger] with I18nCaption with Selectable with Immediate {
+  val tblMetas = new Table("Metas") with ValueType[JInteger] with ResourceCaption with Selectable with Immediate {
     addContainerProperties(this,
       ContainerProperty[JInteger]("Id"),
       ContainerProperty[String]("Type"),
@@ -18,20 +18,20 @@ class View(docLoaderCache: DocumentLoaderCachingProxy) extends VerticalLayout wi
       ContainerProperty[Date]("Modified date"),
       ContainerProperty[String]("Default version"))    
   }
-  val tblVersions = new Table("Available versions") with I18nCaption {
+  val tblVersions = new Table("Available versions") with ResourceCaption {
     addContainerProperties(this,
       ContainerProperty[JInteger]("No"),
       ContainerProperty[Date]("Created"),
       ContainerProperty[Date]("Modified"))
   }
-  val tblDocs = new Table("Documents") with I18nCaption {
+  val tblDocs = new Table("Documents") with ResourceCaption {
     addContainerProperties(this,
       ContainerProperty[JInteger]("#"),
       ContainerProperty[String]("Version"),
       ContainerProperty[String]("Language"))
   }
 
-  val tblLanguages = new Table("Available languages") with I18nCaption {
+  val tblLanguages = new Table("Available languages") with ResourceCaption {
     addContainerProperties(this,
       ContainerProperty[String]("Name"))    
   }

@@ -15,6 +15,7 @@ import scala.collection.mutable.{Map => MMap}
 import imcode.server.document._
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.AbstractFieldWrapper._
+import java.util.concurrent.atomic.AtomicReference
 
 class MetaModel(val meta: Meta,
                 val defaultLanguage: I18nLanguage,
@@ -434,4 +435,123 @@ class MetaView extends FormLayout with Margin {
     c.setMargin(true)
     addComponent(c)
   }
+}
+
+
+/**
+ * Flow bar.
+ * If used in a dialog then flow bar should replace dialog buttons bar.
+ */
+class FlowBarUI extends VerticalLayout {
+  val btnPrev = new Button("Prev") with ResourceCaption
+  val btnNext = new Button("Next") with ResourceCaption
+  val btnFinish = new Button("Finish") with ResourceCaption
+  val btnCancel = new Button("Cancel") with ResourceCaption
+}
+
+class FlowPage(val component: () => Component, val validate: () => Option[String])
+
+/**
+ * @param fist the first page of the flow
+ * @param rest rest pages of the flow 
+ * @param commit commits flow
+ */
+class Flow(val commit: () => Either[String, String], first: FlowPage, rest: FlowPage*) {
+  val pages = first +: rest
+  private var pageNoRef = new AtomicReference(0)
+  private val lastPageNo = pages.length - 1;
+
+  /** Returns flow page. */
+  def page = pages(pageNoRef.get)
+
+  /** Returns if the flow page is the first. */
+  def isFirstPage = page == pages.head
+
+  /** Returns if the flow page is the last. */
+  def isLastPage = page == pages.last
+
+  /**
+   * If page validation fails returns failure message in Left.
+   * Otherwise if current page is the last page in the flow returns None. If there are more pages,
+   * next page become current and its component is returned in Some. 
+   */
+  def maybeGoNext(): Either[String, Option[Component]] = let(pageNo = pageNoRef.get) { pageNo =>
+    pages(pageNo).validate() match {
+      case Some(ex) => Left(ex)
+      case _ if pageNo == lastPageNo => Right(None)
+      case _ => let(pageNo + 1) { newPageNo =>
+        pageNoRef.set(newPageNo)
+        Right(Some(pages(newPageNo).component()))
+      }
+    }
+  }
+
+  /**
+   * If current page is the first page return None.
+   * Otherwise previous page become current and its component is returned in Some.
+   */  
+  def maybeGoPrev(): Option[Component] = pageNoRef.get match {
+    case 0 => None
+    case pageNo => let(pageNo - 1) { newPageNo =>
+      pageNoRef.set(newPageNo)
+      Some(pages(newPageNo).component())
+    }
+  }
+}
+
+// http/s, ftp???
+class URLDocView extends VerticalLayout {
+  val txtURL = new TextField
+  // open in ...
+}
+
+class FileDocView extends VerticalLayout {
+  // choose file
+  // drop down mime type
+  // open in
+}
+
+
+abstract class Flow2UI extends VerticalLayout {
+  val flow: Flow
+  val pnlPage = new Panel {setStype(Panel.STYLE_LIGHT)}  
+  val flowBarUI = new FlowBarUI
+
+  flowBarUI.btnPrev addListener block {
+    flow.maybeGoPrev match {
+      case Some(component) =>
+        pnlPage.removeAllComponents
+        pnlPage.addComponent(page.ui())
+
+      case _ =>
+    }
+  }
+
+  flowBarUI.btnNext addListener block {
+    flow.maybeGoNext match {
+      case Left(errorMsg) =>
+      case Right(Some(component)) =>
+        pnlPage.removeAllComponents
+        pnlPage.addComponent(page.ui())
+      case _ =>
+    }
+  }
+
+  flowBarUI.btnFinish addListener block {
+    flow.commit() match {
+      case Left(errorMsg) =>
+      case Right(okMsg) =>
+    }
+  }
+}
+
+// dlg-flow-mode
+// in-place-mode 
+
+
+class URLDocFlow extends VerticalLayout {
+  val firstPage = null
+
+  def addPage(p: Component, validateFn: () => Boolean) {}
+
 }
