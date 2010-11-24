@@ -3,15 +3,11 @@ package com.imcode.imcms.sysadmin
 import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
 import scala.collection.JavaConversions._
 import com.imcode._
-import com.vaadin.event.ItemClickEvent
-import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.vaadin.ui._
 import com.vaadin.data.Property
 import com.vaadin.data.Property._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import imcms.api._
-import imcms.docadmin.{DocFlowFactory, MetaMVC}
-import imcms.mapping.CategoryMapper
 import imcms.servlet.superadmin.AdminSearchTerms
 
 import imcms.sysadmin.chat.{MessageView, Chat}
@@ -22,7 +18,6 @@ import imcode.util.Utility
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
 import java.util.{Date, Collection => JCollection}
-import com.vaadin.ui.Layout.MarginInfo
 import scala.actors.Actor._
 import scala.actors._
 import imcode.server.document.textdocument.TextDocumentDomainObject
@@ -57,7 +52,7 @@ object ChatTopic extends Actor {
 
 class Application extends com.vaadin.Application with VaadinApplication { application =>
 
-  setTheme("imcms")
+  //setTheme("imcms")
   
   object Menu extends MenuItem {
     object About extends MenuItem(this)
@@ -71,7 +66,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
       object Profiles extends MenuItem(this)
       object Links extends MenuItem(this)
       object Structure extends MenuItem(this)
-      object New extends MenuItem(this)
+      object Edit extends MenuItem(this)
     }
     object Permissions extends MenuItem(this) {
       object Users extends MenuItem(this)
@@ -211,7 +206,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
             case Menu.Filesystem => filesystem
             case Menu.Documents.Templates => templates
             case Menu.Documents.Structure => docStructure
-            case Menu.Documents.New => docadmin//newDocument
+            case Menu.Documents.Edit => docadmin
             case Menu.System.Cache => systemCacheView 
 
             case other => NA(other)
@@ -241,16 +236,17 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
   // doadmin prototype
   def docadmin = {
-    import com.imcode.imcms.docadmin.{MetaMVC, FlowUI, DocFlowFactory, MetaModel, URLDocFlowFactory}
+    import com.imcode.imcms.docadmin.{MetaMVC, DocAdmin, MetaModel}
 
     val dm = Imcms.getServices.getDocumentMapper
     val btnNewTextDoc = new Button("New text doc")
     val btnNewFileDoc = new Button("New file doc")
-    val btnNewHtmlDoc = new Button("New html doc")
     val btnNewUrlDoc = new Button("New url doc")
     val btnDocInfo = new Button("Doc info")
     val btnEdit = new Button("Edit doc") // edit content
     val btnReload = new Button("RELOAD") with LinkStyle
+
+    val docAdmin = new DocAdmin(application)
 
     val tblDocs = new Table with ValueType[JInteger] with Selectable with Immediate {
       addContainerProperties(this,
@@ -262,23 +258,19 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     }
 
     val lytBar = new HorizontalLayout with Spacing {
-      addComponents(this, btnNewTextDoc, btnNewFileDoc, btnNewHtmlDoc, btnNewUrlDoc, btnDocInfo, btnEdit, btnReload)
+      addComponents(this, btnNewTextDoc, btnNewFileDoc, btnNewUrlDoc, btnDocInfo, btnEdit, btnReload)
     }
 
     btnReload addListener { reload _ }
 
     btnNewTextDoc addListener block {
-      val parentDoc = dm.getDocument(1001)
-      val model = MetaModel(DocumentTypeDomainObject.TEXT_ID, parentDoc)
-      val mvc = new MetaMVC(application, model)
-
-      initAndShow(new OkCancelDialog) { d =>
-        d.setMainContent(mvc.view)
+      initAndShow(new Dialog("New text document")) { d =>
+        val parentDoc = dm.getDocument(1001)
+        d.setMainContent(docAdmin.newTextDocFlow(parentDoc))
       }
     }
     
     btnDocInfo addListener block {
-      println("Inside block init/DOC INFO")
       whenSelected(tblDocs) { id =>
         val model = MetaModel(id)
         val mvc = new MetaMVC(application, model)
@@ -290,10 +282,24 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     }
 
     btnNewUrlDoc addListener block {
-      println("Inside block init/URL")
       initAndShow(new Dialog("New url document")) { d =>
         val parentDoc = dm.getDocument(1001)
-        d.setMainContent(URLDocFlowFactory.newDocFlow(application, parentDoc))
+        val flow = docAdmin.newURLDocFlow(parentDoc)
+        d.setMainContent(flow)
+        flow.pnlPageUI.setWidth("500px")
+        flow.pnlPageUI.setHeight("600px")
+        flow.setWidth("600px")
+        flow.setHeight("800px")
+        //d.setWidth("600px")
+        //d.setHeight("700px")
+        flow
+      }
+    }
+
+    btnNewFileDoc addListener block {
+      initAndShow(new Dialog("New file document")) { d =>
+        val parentDoc = dm.getDocument(1001)
+        d.setMainContent(docAdmin.newFileDocFlow(parentDoc))
       }
     }
 
@@ -317,24 +323,6 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
       addComponents(this, lytBar, tblDocs)
       reload()
     }
-  }
-
-  def newDocument = {
-    import com.imcode.imcms.docadmin.{MetaMVC, FlowUI, DocFlowFactory}
-
-    val flowFactory = new DocFlowFactory(this)
-    val parentDoc = Imcms.getServices.getDocumentMapper.getDocument(1001)
-    val flow = flowFactory.newDocFlow(DocumentTypeDomainObject.TEXT, parentDoc)
-
-    flow
-//
-//    val mvc = new MetaMVC(
-//      application,
-//      doc,
-//      Imcms.getI18nSupport.getLanguages map ((_, true)) toMap,
-//      Imcms.getSpringBean("metaDao").asInstanceOf[MetaDao].getLabels(1001) map (l => (l.getLanguage, l)) toMap)
-
-//    mvc.view
   }
 
 //  def systemCacheView = {

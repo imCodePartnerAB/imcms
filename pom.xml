@@ -685,9 +685,9 @@
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
-                <version>2.14.1</version>
+                <version>2.15.0</version>
                 <configuration>
-                    <scalaVersion>2.8.1.RC1</scalaVersion>
+                    <scalaVersion>2.8.1</scalaVersion>
                 </configuration>
 
                 <executions>

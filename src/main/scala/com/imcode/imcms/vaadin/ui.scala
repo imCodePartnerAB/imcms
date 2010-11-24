@@ -191,11 +191,12 @@ trait NoMultiSelect extends AbstractSelect {
 //}
 
 
-
-
-
-// Fixed size dialog window with full margin   
-// Buttons are centered
+/**
+ * Fixed size dialog window with full margin.
+ * The size of the dialog is adjusted automatically.
+ * 
+ * Buttons are centered
+ */
 class Dialog(caption: String = "") extends Window(caption) {
   protected [this] val content = new GridLayout(1, 2) {
     setMargin(true)
@@ -208,9 +209,12 @@ class Dialog(caption: String = "") extends Window(caption) {
 
   def mainContent = content.getComponent(0, 0)
 
-  // deprecated, breaks LSP !!
+  @deprecated("Breaks LSP")
   def mainContent_=[C <: Component](component: C): C = setMainContent(component)
 
+  /**
+   *  After component is set its size can be changed - must be undefined or fixed size.
+   */
   def setMainContent[C <: Component](component: C): C = {
     component.setSizeUndefined
 
@@ -232,15 +236,17 @@ class Dialog(caption: String = "") extends Window(caption) {
 }
 
 
+/**
+ * Size of this dialog must be set explicitly.
+ */
 trait CustomSizeDialog extends Dialog {
   content.setSizeFull
-  
-  override def mainContent_=[C <: Component](component: C): C = {
-    super.mainContent = component
-    component.setSizeFull
 
+  override def setMainContent[C <: Component](component: C): C = {
+    super.setMainContent(component)
+    component.setSizeFull
     component
-  }
+  }  
 }
 
 trait BottomMarginOnlyDialog extends Dialog {
