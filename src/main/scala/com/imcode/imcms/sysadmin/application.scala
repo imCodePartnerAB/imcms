@@ -27,6 +27,17 @@ import imcode.server.document._
 import com.imcode.imcms.vaadin._;
 import com.imcode.imcms.vaadin.AbstractFieldWrapper._;
 
+/* 
+ * Administration is performed using editors.
+ * An editor can be viewed as a MVC where model is typically an administered object (such as document, text or image)
+ * itself or in more sophisticated cases an instance of a separate class containing additional parameters and attributes.
+ * A view or UI of an editor is represented by one or several standard vaadin components such as Layout, Panel or Window.
+ * A controller is just set of routines and callbacks located inside or outside of UI and/or model classes. 
+ * In some (mostly trivial) cases model and/or controller are embedded in a view component.
+ *
+ * A flow is also an editor which contains one or more editors.
+ */
+
 
 object ChatTopic extends Actor {
 
@@ -236,7 +247,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
   // doadmin prototype
   def docadmin = {
-    import com.imcode.imcms.docadmin.{MetaMVC, DocAdmin, MetaModel}
+    import com.imcode.imcms.docadmin.{MetaEditor, EditorsFactory, MetaModel}
 
     val dm = Imcms.getServices.getDocumentMapper
     val btnNewTextDoc = new Button("New text doc")
@@ -246,7 +257,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     val btnEdit = new Button("Edit doc") // edit content
     val btnReload = new Button("RELOAD") with LinkStyle
 
-    val docAdmin = new DocAdmin(application)
+    val docAdmin = new EditorsFactory(application)
 
     val tblDocs = new Table with ValueType[JInteger] with Selectable with Immediate {
       addContainerProperties(this,
@@ -273,7 +284,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     btnDocInfo addListener block {
       whenSelected(tblDocs) { id =>
         val model = MetaModel(id)
-        val mvc = new MetaMVC(application, model)
+        val mvc = new MetaEditor(application, model)
 
         initAndShow(new OkCancelDialog) { d =>
           d.setMainContent(mvc.view)

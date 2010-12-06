@@ -22,9 +22,9 @@ import com.imcode.imcms.vaadin.flow.{Flow, FlowPage, FlowUI}
 
 
 /**
- *
+ * Document editors factory - creates and initializes document editors/flows.
  */
-class DocAdmin(application: VaadinApplication) {
+class EditorsFactory(application: VaadinApplication) {
   
   import scala.util.control.{Exception => E}
   
@@ -34,7 +34,7 @@ class DocAdmin(application: VaadinApplication) {
     val page0 = new FlowPage(() => docUI, docValidator)
 
     val metaModel = MetaModel(DocumentTypeDomainObject.URL_ID, parentDoc)
-    val metaMVC = new MetaMVC(application, metaModel)
+    val metaMVC = new MetaEditor(application, metaModel)
     val metaValidator = () => Some("meta is invalid, please fix the following errors..")
     val page1 = new FlowPage(() => metaMVC.view, metaValidator)
 
@@ -50,7 +50,7 @@ class DocAdmin(application: VaadinApplication) {
     val page0 = new FlowPage(() =>docUI, docValidator)
 
     val metaModel = MetaModel(DocumentTypeDomainObject.URL_ID, parentDoc)
-    val metaMVC = new MetaMVC(application, metaModel)
+    val metaMVC = new MetaEditor(application, metaModel)
     val metaValidator = () => Some("meta is invalid, please fix the following errors..")
     val page1 = new FlowPage(() => metaMVC.view, metaValidator)
 
@@ -61,7 +61,7 @@ class DocAdmin(application: VaadinApplication) {
 
   def newTextDocFlow(parentDoc: DocumentDomainObject): FlowUI = {
     val metaModel = MetaModel(DocumentTypeDomainObject.URL_ID, parentDoc)
-    val metaMVC = new MetaMVC(application, metaModel)
+    val metaMVC = new MetaEditor(application, metaModel)
     val metaValidator = () => Some("meta is invalid, please fix the following errors..")
     val page1 = new FlowPage(() => metaMVC.view, metaValidator)
 

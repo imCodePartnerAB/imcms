@@ -34,7 +34,7 @@ class FlowPage(val ui: () => AbstractComponent, val validator: () => Option[Stri
  *
  * @param fist the first page of the flow
  * @param rest rest pages of the flow
- * @param commit commits flow data - returns either <error> or <ok> message in case of commit's op failure/sucess.
+ * @param commit commits flow data - returns either <error> or <ok> message in case of commit's op failure/success.
  */
 class Flow(val commit: () => Either[String, String], first: FlowPage, rest: FlowPage*) {
   val pages = first +: rest

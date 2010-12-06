@@ -13,11 +13,9 @@ package object imcode {
   def flip[A1, A2, B](f: A1 => A2 => B): A2 => A1 => B = x1 => x2 => f(x2)(x1)
 
   object IntNumber {
-    def unapply(s: String): Option[Int] = try {
-      Some(s.toInt)
-    } catch {
-      case _ : java.lang.NumberFormatException => None
-    }
+    import scala.util.control.Exception.catching
+
+    def unapply(s: String): Option[Int] = catching(classOf[NumberFormatException]) opt { s.toInt }
   }
 
 //  object PosInt {

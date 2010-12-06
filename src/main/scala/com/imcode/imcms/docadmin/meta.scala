@@ -14,9 +14,7 @@ import imcode.server.document._
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.vaadin.AbstractFieldWrapper._
 
-/**
- * MetaUI model
- */
+/** Meta model */
 class MetaModel(val meta: Meta,
                 val defaultLanguage: I18nLanguage,
                 val languages: MMap[I18nLanguage, Boolean],
@@ -74,10 +72,7 @@ object MetaModel {
   }
 }
 
-/**
- * Initializes view and binds model to it.
- */
-class MetaMVC(val app: VaadinApplication, val metaModel: MetaModel) {
+class MetaEditor(val application: VaadinApplication, val metaModel: MetaModel) {
 
   val view = letret(new MetaUI) { v =>
     for {
@@ -100,7 +95,7 @@ class MetaMVC(val app: VaadinApplication, val metaModel: MetaModel) {
     }
 
     v.lytI18n.btnSettings addListener block {
-      app.initAndShow(new OkCancelDialog("Settings")) { w =>
+      application.initAndShow(new OkCancelDialog("Settings")) { w =>
         val content = new I18nSettingsDialogContent
 
         for ((language, enabled) <- metaModel.languages) {
@@ -117,7 +112,7 @@ class MetaMVC(val app: VaadinApplication, val metaModel: MetaModel) {
     }
 
     v.lytSearch.lytKeywords.btnEdit addListener block {
-      app.initAndShow(new OkCancelDialog("Keywords")) { w =>
+      application.initAndShow(new OkCancelDialog("Keywords")) { w =>
         val content = new KeywordsDialogContent(List("Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Fi", "Lambda"))
 
         w setMainContent content
@@ -128,7 +123,7 @@ class MetaMVC(val app: VaadinApplication, val metaModel: MetaModel) {
     }
 
     v.lytCategories.btnEdit addListener block {
-      app.initAndShow(new OkCancelDialog("Categories")) { w =>
+      application.initAndShow(new OkCancelDialog("Categories")) { w =>
         val mainContent = new CategoriesDialogContent
 
         let(w.setMainContent(mainContent)) { c =>
@@ -138,7 +133,7 @@ class MetaMVC(val app: VaadinApplication, val metaModel: MetaModel) {
     }
 
     v.lytPublication.btnChoosePublisher addListener block {
-      app.initAndShow(new OkCancelDialog("Publisher")) { w =>
+      application.initAndShow(new OkCancelDialog("Publisher")) { w =>
         w.setMainContent(new UserUI)
       }
     }
