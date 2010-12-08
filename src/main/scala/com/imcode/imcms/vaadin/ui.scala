@@ -195,8 +195,8 @@ trait Reloadable extends Table {
   //type ItemId <: AnyRef
   //type Value <: AnyRef
 
-  var itemsProvider: () => Seq[(AnyRef, Array[AnyRef])] =
-    () => error("Items function is not set.")
+  var itemsProvider: () => Seq[(AnyRef, Seq[AnyRef])] =
+    () => error("itemsProvider is not set.")
 
   def reload {
     removeAllItems

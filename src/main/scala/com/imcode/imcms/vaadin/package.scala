@@ -73,5 +73,9 @@ package object vaadin {
 
   def addItem(table: Table, id: AnyRef, data: AnyRef*) = table.addItem(data.toArray[AnyRef], id)
 
-  //implicit def wrapTextField(textField: TextField) = new TextField(textField) with ValueType[String]  
+  /** Text field value type is always String */
+  implicit def wrapTextField(textField: TextField) = new TextField(textField) with ValueType[String]
+
+  /** Checkbox value type is always JBoolean */
+  implicit def wrapCheckBox(checkBox: CheckBox) = new CheckBox(checkBox) with ValueType[JBoolean]
 }

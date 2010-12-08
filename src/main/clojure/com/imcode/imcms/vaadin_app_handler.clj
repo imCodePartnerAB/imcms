@@ -257,27 +257,24 @@
 
 
 
-(defn mk-main-wnd [app]
-  (let [wnd (Window. "Application main window")
-        content (VerticalLayout.)]
+(defn mk-main-wnd-content [app]
+  (let [content (doto (VerticalLayout.) .setSizeFull)
+        txt (TextField. "text")
+        btn (Button. "change text value using ref")]
 
-    (.setSizeFull content)
-
-    (let [b (Button. "Clock me!")
-          t (TextField. "abc")]
-
-
-
-      (add-components content b t))
-
-    (add-components content (Button. "CLICK ME PLEASE!!!!"))
-
-    (doto wnd
-      (.setContent content))))
+    (add-btn-click-listener btn _
+      (let [txtRef (TextField. txt)]
+        (.setValue txtRef "new text value")))
+    
+      (add-components content txt btn)))
 
 
 (defn init[^com.vaadin.Application app]
-  (let [wnd (mk-main-wnd app)]
+  (let [wnd (Window. "Main app window")
+        content (mk-main-wnd-content app)]
+
+    (.setContent wnd content)
+
     (doto app
       (.setTheme "runo")
       (.setMainWindow wnd))))

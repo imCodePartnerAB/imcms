@@ -127,7 +127,7 @@ class FileDocDialogContent extends FormLayout {
   // ui
   val sltMimeType = new ListSelect("Mime type")
   val lblUploadStatus = new Label
-  val txtFileId = new TextField("File id") with ValueType[String]
+  val txtFileId = new TextField("File id") //with ValueType[String]
   val upload = new Upload(null, uploadReceiver) with UploadEventHandler {
     setImmediate(true)
     setButtonCaption("Select")
@@ -158,9 +158,10 @@ class FileDocDialogContent extends FormLayout {
 class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject) {
   val ui = letret(new FileDocEditorUI) { ui =>
     ui.tblFiles.itemsProvider = () =>
-      for ((fileId, fdf) <- doc.getFiles.toSeq)
-        yield
-          (fileId, Array[AnyRef](fileId, fdf.getId, fdf.getMimeType, fdf.getInputStreamSource.getSize.toString, (fileId == doc.getDefaultFileId).toString))     
+      doc.getFiles.toSeq collect {
+        case (fileId, fdf) =>
+          fileId -> List(fileId, fdf.getId, fdf.getMimeType, fdf.getInputStreamSource.getSize.toString, (fileId == doc.getDefaultFileId).toString)
+      }
 
     ui.miAdd setCommand block {
       app.initAndShow(new OkCancelDialog("Add file")) { w =>
