@@ -1,22 +1,17 @@
 package com.imcode.imcms
 
-import com.vaadin.ui.{Table, Component, AbstractComponentContainer, Button, MenuBar}
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 import com.vaadin.data.{Container, Property}
 import com.imcode._
 import vaadin.{ValueType, ContainerProperty}
+import com.vaadin.ui._
 
 package object vaadin {
-
-  @deprecated("Use block instead")
-  def unit(block: => Unit) = block _
-
-  def block(b: => Unit) = b _
 
   def menuCommand(handler: MenuBar#MenuItem => Unit) = new MenuBar.Command {
     def menuSelected(mi: MenuBar#MenuItem) = handler(mi)
   }
-  
+
   def buttonClickListener(eventHandler: Button#ClickEvent => Unit) =
     new Button.ClickListener {
       def buttonClick(event: Button#ClickEvent) = eventHandler(event)
@@ -26,6 +21,15 @@ package object vaadin {
     new Property.ValueChangeListener {
       def valueChange(event: ValueChangeEvent) = handler(event)
     }
+  
+  @deprecated("Use block instead")
+  def unit(block: => Unit) = block _
+
+  /**
+   * Creates zero arity fn from by-name parameter.
+   * Used in listeners and menu commands.
+   */
+  def block(b: => Unit) = b _
 
   implicit def fn0ToButtonClickListener(f: () => Unit) = buttonClickListener { _ => f() }
   
@@ -68,4 +72,6 @@ package object vaadin {
   }
 
   def addItem(table: Table, id: AnyRef, data: AnyRef*) = table.addItem(data.toArray[AnyRef], id)
+
+  //implicit def wrapTextField(textField: TextField) = new TextField(textField) with ValueType[String]  
 }

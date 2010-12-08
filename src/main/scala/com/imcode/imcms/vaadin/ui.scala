@@ -100,8 +100,8 @@ case class ContainerProperty[T <: AnyRef](id: AnyRef, defaultValue: AnyRef = nul
  * Adds type-checked access to property value.
  */
 trait ValueType[V] extends Property {
+  def value = getValue.asInstanceOf[V]
   def value_=(v: V) = setValue(v)
-  def value() = getValue.asInstanceOf[V]
 }
 
 //trait SelectType[V] extends ValueType[V] with AbstractSelect {
@@ -191,11 +191,25 @@ trait NoMultiSelect extends AbstractSelect {
 //}
 
 
+trait Reloadable extends Table {
+  //type ItemId <: AnyRef
+  //type Value <: AnyRef
+
+  var itemsProvider: () => Seq[(AnyRef, Array[AnyRef])] =
+    () => error("Items function is not set.")
+
+  def reload {
+    removeAllItems
+    for ((id, values) <- itemsProvider()) addItem(values.toArray, id)
+  }
+}
+
+
 /**
  * Fixed size dialog window with full margin.
  * The size of the dialog is adjusted automatically.
  * 
- * Buttons are centered
+ * Buttons are centered                    
  */
 class Dialog(caption: String = "") extends Window(caption) {
   protected [this] val content = new GridLayout(1, 2) {

@@ -688,6 +688,15 @@
                 <version>2.15.0</version>
                 <configuration>
                     <scalaVersion>2.8.1</scalaVersion>
+                      <jvmArgs>
+                        <jvmArg>-Xms64m</jvmArg>
+                        <jvmArg>-Xmx1024m</jvmArg>
+                      </jvmArgs>
+                        <args>
+                          <arg>-unchecked</arg>
+                          <arg>-deprecation</arg>
+                          <arg>-explaintypes</arg>
+                        </args>
                 </configuration>
 
                 <executions>

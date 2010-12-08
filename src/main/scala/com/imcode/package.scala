@@ -7,6 +7,7 @@ package object imcode {
   type JClass[T <: AnyRef] = java.lang.Class[T]
   type JBoolean = java.lang.Boolean
   type JInteger = java.lang.Integer
+  type JLong = java.lang.Long
   type JFloat = java.lang.Float
   type JDouble = java.lang.Double
 

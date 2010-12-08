@@ -27,6 +27,7 @@ import imcode.server.document._
 import com.imcode.imcms.vaadin._;
 import com.imcode.imcms.vaadin.AbstractFieldWrapper._;
 
+// Controller VS HANDLER?
 /* 
  * Administration is performed using editors.
  * An editor can be viewed as a MVC where model is typically an administered object (such as document, text or image)
@@ -35,7 +36,7 @@ import com.imcode.imcms.vaadin.AbstractFieldWrapper._;
  * A controller is just set of routines and callbacks located inside or outside of UI and/or model classes. 
  * In some (mostly trivial) cases model and/or controller are embedded in a view component.
  *
- * A flow is also an editor which contains one or more editors.
+ * A flow is also an editor which contains one or more editors which may have (partially) shared model and controller.
  */
 
 

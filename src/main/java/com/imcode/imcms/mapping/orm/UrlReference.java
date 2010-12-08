@@ -2,6 +2,9 @@ package com.imcode.imcms.mapping.orm;
 
 import javax.persistence.*;
 
+/**
+ * URL target and frame name are legacy fields and never used.
+ */
 @Entity
 @Table(name="imcms_url_docs")
 public class UrlReference {
