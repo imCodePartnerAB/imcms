@@ -21,6 +21,7 @@ import com.sun.org.apache.xml.internal.security.utils.I18n
 import imcode.server.document.FileDocumentDomainObject.FileDocumentFile
 import imcode.util.io.InputStreamSource
 import java.io.ByteArrayInputStream
+import textdocument.TextDocumentDomainObject
 
 //todo: type Component = UI ??
 
@@ -32,7 +33,7 @@ class EditorsFactory(app: VaadinApplication) {
   
   import scala.util.control.{Exception => E}
   
-  def newURLDocFlow(parentDoc: DocumentDomainObject): FlowUI = {
+  def newURLDocFlow(parentDoc: DocumentDomainObject): FlowUI[UrlDocumentDomainObject] = {
     val docUI = new URLDocEditorUI
     val docValidator = () => E.allCatch.either(new URL(docUI.txtURL.value)) fold (ex => Some(ex.getMessage), url => None)
     val page0 = new FlowPage(() => docUI, docValidator)
@@ -44,12 +45,13 @@ class EditorsFactory(app: VaadinApplication) {
 
     val commit = () => Left("Not implemented")
 
-    new FlowUI(new Flow(commit, page0, page1))
+    new FlowUI[UrlDocumentDomainObject](new Flow(commit, page0, page1), { case _ => })
   }
 
   
-  def newFileDocFlow(parentDoc: DocumentDomainObject): FlowUI = {
-    val docEditor = new FileDocEditor(app, new FileDocumentDomainObject)
+  def newFileDocFlow(parentDoc: DocumentDomainObject, user: UserDomainObject, onCommit: FileDocumentDomainObject => Unit): FlowUI[FileDocumentDomainObject] = {
+    val doc = Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.FILE_ID, parentDoc, user).asInstanceOf[FileDocumentDomainObject]
+    val docEditor = new FileDocEditor(app, doc)
     val docValidator = () => None
     val page0 = new FlowPage(() => docEditor.ui, docValidator)
 
@@ -58,12 +60,19 @@ class EditorsFactory(app: VaadinApplication) {
     val metaValidator = () => Some("meta is invalid, please fix the following errors..")
     val page1 = new FlowPage(() => metaMVC.view, metaValidator)
 
-    val commit = () => Left("Not implemented")
+    val commit: Function0[String Either FileDocumentDomainObject] = () =>
+      E.allCatch[FileDocumentDomainObject].either {
+        doc.setMeta(metaModel.meta)
+        Imcms.getServices.getDocumentMapper.saveNewDocument(doc, metaModel.i18nMetas, user).asInstanceOf[FileDocumentDomainObject]
+      } match {
+        case Left(ex) => Left(ex.getMessage)
+        case Right(doc) => Right(doc)
+      }
 
-    new FlowUI(new Flow(commit, page0, page1))
+    new FlowUI[FileDocumentDomainObject](new Flow(commit, page0, page1), onCommit)
   }
 
-  def newTextDocFlow(parentDoc: DocumentDomainObject): FlowUI = {
+  def newTextDocFlow(parentDoc: DocumentDomainObject): FlowUI[TextDocumentDomainObject] = {
     val metaModel = MetaModel(DocumentTypeDomainObject.URL_ID, parentDoc)
     val metaMVC = new MetaEditor(app, metaModel)
     val metaValidator = () => Some("meta is invalid, please fix the following errors..")
@@ -71,7 +80,7 @@ class EditorsFactory(app: VaadinApplication) {
 
     val commit = () => Left("Not implemented")
 
-    new FlowUI(new Flow(commit, page1))
+    new FlowUI[TextDocumentDomainObject](new Flow(commit, page1), {case _ => })
   }
 
   def editURLDocument = new URLDocEditorUI
@@ -119,8 +128,8 @@ class FileDocEditorUI extends VerticalLayout {
   addComponents(this, menuBar, tblFiles)
 }
 
-
-class FileDocDialogContent extends FormLayout {
+/** Add/Edit file doc's file */
+class FileDocFileDialogContent extends FormLayout {
   // model
   val uploadReceiver = new MemoryUploadReceiver
 
@@ -142,8 +151,6 @@ class FileDocDialogContent extends FormLayout {
     }
   }
 
-  // test
-  txtFileId.value = "-0-"
   addComponents(this, lblUploadStatus, upload, sltMimeType, txtFileId)
   alterNameTextField()
 
@@ -163,9 +170,11 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject) {
           fileId -> List(fileId, fdf.getId, fdf.getMimeType, fdf.getInputStreamSource.getSize.toString, (fileId == doc.getDefaultFileId).toString)
       }
 
+    ui.tblFiles.reload  
+
     ui.miAdd setCommand block {
       app.initAndShow(new OkCancelDialog("Add file")) { w =>
-        let(w setMainContent new FileDocDialogContent) { c =>
+        let(w setMainContent new FileDocFileDialogContent) { c =>
           w addOkButtonClickListener {
             c.uploadReceiver.uploadRef.get match {
               case Some(upload) =>
@@ -187,16 +196,58 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject) {
       }
     }
 
+    // todo: replace old file - delete from storage
     ui.miEdit setCommand block {
+      whenSelected(ui.tblFiles) { fileId =>
+        app.initAndShow(new OkCancelDialog("Edit file")) { dlg =>
+          let(dlg.setMainContent(new FileDocFileDialogContent)) { c =>
+            val fdf = doc.getFile(fileId)
+            
+            c.txtFileId.value = fileId
+            //c.sltMimeType.value = "" // todo: set
+            c.lblUploadStatus.value = fdf.getFilename
 
+            dlg addOkButtonClickListener {
+              c.uploadReceiver.uploadRef.get match {
+                case Some(upload) => // relace fdf
+                  val newFdf = new FileDocumentFile
+                  val source = new InputStreamSource {
+                    def getInputStream = new ByteArrayInputStream(upload.content)
+                    def getSize = upload.content.length
+                  }
+
+                  newFdf.setInputStreamSource(source)
+                  newFdf.setFilename(c.txtFileId.value)
+
+                  doc.addFile(c.txtFileId.value, newFdf)
+                  doc.removeFile(fileId)
+
+                case _ => // update fdf
+                  fdf.setId(c.txtFileId.value)
+                  // todo: fdf.setMimeType()
+              }
+
+              ui.tblFiles.reload
+            }
+          }
+        }
+      }
     }
 
     ui.miDelete setCommand block {
+      whenSelected(ui.tblFiles) { fileId =>
+        doc.removeFile(fileId)
 
+        ui.tblFiles.reload
+      }
     }
 
     ui.miSetDefault setCommand block {
+      whenSelected(ui.tblFiles) { fileId =>
+        doc.setDefaultFileId(fileId)
 
+        ui.tblFiles.reload
+      }
     }
   }
 }

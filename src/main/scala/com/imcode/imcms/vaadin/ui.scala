@@ -247,6 +247,8 @@ class Dialog(caption: String = "") extends Window(caption) {
     content.addComponent(component, 0, 1)
     content.setComponentAlignment(component, Alignment.TOP_CENTER)
   }
+
+  override def close = super.close
 }
 
 
@@ -277,7 +279,7 @@ class MsgDialog(caption: String = "", msg: String ="") extends Dialog(caption) {
   mainContent = lblMessage
   buttonsBarContent = btnOk
 
-  btnOk addListener unit { close }
+  btnOk addListener block { close }
 }
 
 

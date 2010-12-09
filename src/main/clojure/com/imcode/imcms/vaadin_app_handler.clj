@@ -148,7 +148,7 @@
 
 (defn mk-panel-with-label-in-center-demo
   "See comments on mk-panel-with-button-in-center-demo
-   However, a label differs from a button - by default its width 100%.
+   However, a label differs from a button - by default its width is set to 100%.
    Should label apperar in center its width (size) must be set to undefined."
   [^String width, ^String height]
   (let [panel (Panel.)
@@ -258,15 +258,20 @@
 
 
 (defn mk-main-wnd-content [app]
-  (let [content (doto (VerticalLayout.) .setSizeFull)
-        txt (TextField. "text")
-        btn (Button. "change text value using ref")]
+  (let [content (doto (VerticalLayout.)
+                  (.setMargin true)
+                  (.setSpacing true))
+        txt (doto (TextField. "text") 
+                    (.setImmediate true))
+        txtRef (doto (TextField. txt)
+                       (.setImmediate true))
+        btn (Button. "click")]
 
-    (add-btn-click-listener btn _
-      (let [txtRef (TextField. txt)]
-        (.setValue txtRef "new text value")))
+;    (add-btn-click-listener btn _
+;      (let [txtRef (TextField. txt)]
+;        (.setValue txtRef "new text value")))
     
-      (add-components content txt btn)))
+      (add-components content txt txtRef btn)))
 
 
 (defn init[^com.vaadin.Application app]

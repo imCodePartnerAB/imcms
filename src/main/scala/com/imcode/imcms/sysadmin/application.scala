@@ -24,7 +24,8 @@ import imcode.server.document.textdocument.TextDocumentDomainObject
 import java.io.{ByteArrayInputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
 import imcode.server.document._
-import com.imcode.imcms.vaadin._;
+import com.imcode.imcms.vaadin._
+import com.vaadin.ui.Window.Notification;
 import com.imcode.imcms.vaadin.AbstractFieldWrapper._;
 
 // Controller VS HANDLER?
@@ -302,16 +303,32 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         flow.pnlPageUI.setHeight("600px")
         flow.setWidth("600px")
         flow.setHeight("800px")
-        //d.setWidth("600px")
-        //d.setHeight("700px")
         flow
       }
     }
 
     btnNewFileDoc addListener block {
-      initAndShow(new Dialog("New file document")) { d =>
+      initAndShow(new Dialog("New file document")) { dlg =>
         val parentDoc = dm.getDocument(1001)
-        d.setMainContent(docAdmin.newFileDocFlow(parentDoc))
+        val user = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(1)
+        val onCommit = { doc: FileDocumentDomainObject =>
+          getMainWindow.showNotification("File document [id = %d] has been created" format doc.getId, Notification.TYPE_HUMANIZED_MESSAGE)
+          dlg.close
+          reload()
+        }
+        
+        val flowUI = docAdmin.newFileDocFlow(parentDoc, user, onCommit)
+
+        flowUI.flowBar.btnCancel addListener block {
+          dlg.close
+        }
+        
+        dlg.setMainContent(flowUI)
+        //flow.pnlPageUI.setWidth("500px")
+        //flow.pnlPageUI.setHeight("600px")
+        flowUI.setWidth("600px")
+        flowUI.setHeight("800px")
+        flowUI
       }
     }
 

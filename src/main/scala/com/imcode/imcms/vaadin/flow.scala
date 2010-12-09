@@ -1,20 +1,9 @@
 package com.imcode.imcms.vaadin.flow
 
 import com.imcode._
-import scala.collection.JavaConversions._
 import com.vaadin.ui._
-import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
-import com.imcode.imcms.api._
-import com.imcode.imcms.sysadmin.permissions.{UserUI, UsersView}
-import imcode.server.user._
-import imcode.server.{Imcms}
-import java.util.{Date, Collection => JCollection}
-import scala.collection.mutable.{Map => MMap}
-import imcode.server.document._
 import com.imcode.imcms.vaadin._
-import com.imcode.imcms.vaadin.AbstractFieldWrapper._
 import java.util.concurrent.atomic.AtomicReference
-import java.net.{MalformedURLException, URL}
 import com.vaadin.ui.Window.Notification
 
 
@@ -29,14 +18,14 @@ class FlowPage(val ui: () => AbstractComponent, val validator: () => Option[Stri
 
 
 /**
- * Page flow consist of at least one flow poge.
+ * Page flow consist of at least one flow page.
  * Contains flow pages and logic to switch between flow pages and commit flow.
  *
  * @param fist the first page of the flow
  * @param rest rest pages of the flow
- * @param commit commits flow data - returns either <error> or <ok> message in case of commit's op failure/success.
+ * @param commit commits flow data - returns either error message or commit result.
  */
-class Flow(val commit: () => Either[String, String], first: FlowPage, rest: FlowPage*) {
+class Flow[T](val commit: () => Either[String, T], first: FlowPage, rest: FlowPage*) {
   val pages = first +: rest
   private var pageNoRef = new AtomicReference(0) // current page no ref
   private val lastPageNo = pages.length - 1;     // last page no
@@ -94,7 +83,7 @@ class FlowBarUI extends HorizontalLayout with Spacing with UndefinedSize {
 }
 
 
-class FlowUI(flow: Flow) extends VerticalLayout with FullSize with Spacing {
+class FlowUI[T](flow: Flow[T], onCommit: T => Unit) extends VerticalLayout with FullSize with Spacing {
   val lytPageUI = new VerticalLayout with UndefinedSize
   val pnlPageUI = new Panel(lytPageUI) with FullSize {
     setStyleName(Panel.STYLE_LIGHT)
@@ -113,13 +102,13 @@ class FlowUI(flow: Flow) extends VerticalLayout with FullSize with Spacing {
   flowBar.btnPrev addListener block {
     flow.maybeGoPrev match {
       case Some(page) => setPageUI(page)
-      case _ => getWindow().showNotification("This is the first page", "Press 'Next' or 'Finish>'", Notification.TYPE_WARNING_MESSAGE)
+      case _ => getWindow.showNotification("This is the first page", "Press 'Next' or 'Finish'", Notification.TYPE_WARNING_MESSAGE)
     }
   }
 
   flowBar.btnNext addListener block {
     flow.maybeGoNext match {
-      case Left(errorMsg) => getWindow().showNotification("Can't go to the next page", errorMsg, Notification.TYPE_ERROR_MESSAGE);
+      case Left(errorMsg) => getWindow.showNotification("Can't go to the next page", errorMsg, Notification.TYPE_ERROR_MESSAGE)
       case Right(Some(page)) => setPageUI(page)
       case _ => getWindow().showNotification("This is the last page", "Press 'Finish'", Notification.TYPE_WARNING_MESSAGE)
     }
@@ -127,8 +116,8 @@ class FlowUI(flow: Flow) extends VerticalLayout with FullSize with Spacing {
 
   flowBar.btnFinish addListener block {
     flow.commit() match {
-      case Left(errorMsg) => getWindow().showNotification("Can't commit flow", errorMsg, Notification.TYPE_ERROR_MESSAGE);
-      case Right(okMsg) =>
+      case Left(errorMsg) => getWindow.showNotification("Can't commit flow", errorMsg, Notification.TYPE_ERROR_MESSAGE)
+      case Right(result) => onCommit(result)
     }
   }
 
