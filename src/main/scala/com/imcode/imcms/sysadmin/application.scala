@@ -286,10 +286,10 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     btnDocInfo addListener block {
       whenSelected(tblDocs) { id =>
         val model = MetaModel(id)
-        val mvc = new MetaEditor(application, model)
+        val editor = new MetaEditor(application, model)
 
         initAndShow(new OkCancelDialog) { d =>
-          d.setMainContent(mvc.view)
+          d.setMainContent(editor.ui)
         }        
       }
     }
@@ -319,13 +319,12 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         
         val flowUI = docAdmin.newFileDocFlow(parentDoc, user, onCommit)
 
-        flowUI.flowBar.btnCancel addListener block {
+        flowUI.bar.btnCancel addListener block {
           dlg.close
         }
         
         dlg.setMainContent(flowUI)
-        //flow.pnlPageUI.setWidth("500px")
-        //flow.pnlPageUI.setHeight("600px")
+
         flowUI.setWidth("600px")
         flowUI.setHeight("800px")
         flowUI

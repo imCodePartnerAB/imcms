@@ -6,19 +6,22 @@ import com.imcode.imcms.vaadin._
 import java.util.concurrent.atomic.AtomicReference
 import com.vaadin.ui.Window.Notification
 
+//todo: connect flow and flowUI through (pageChanged) listeners ->
+//  then we can rewind a flow to a custom page in case of an error
+
 
 /**
  * Single flow page.
  * To extend flexibility page ui is not referenced directly but rather returned by a function.
  *
- * @param ui return flow page ui
- * @param validator page data validator - returns None if page is ok or Some(error message)
+ * @param ui returns flow page ui
+ * @param validator page data validator - returns Some(error message) or None if page data is valid
  */
 class FlowPage(val ui: () => AbstractComponent, val validator: () => Option[String])
 
 
 /**
- * Page flow consist of at least one flow page.
+ * Page flow consist at least of one page.
  * Contains flow pages and logic to switch between flow pages and commit flow.
  *
  * @param fist the first page of the flow
@@ -70,8 +73,8 @@ class Flow[T](val commit: () => Either[String, T], first: FlowPage, rest: FlowPa
 
 
 /**
- * Flow bar ui - just buttons.
- * If used in a dialog then flow bar should replace (/be used instead) dialog buttons bar.
+ * Flow bar ui - just navigation buttons.
+ * If used in a dialog then flow bar should replace (/be used instead of) dialog buttons bar.
  */
 class FlowBarUI extends HorizontalLayout with Spacing with UndefinedSize {
   val btnPrev = new Button("Prev") with ResourceCaption
@@ -89,7 +92,7 @@ class FlowUI[T](flow: Flow[T], onCommit: T => Unit) extends VerticalLayout with 
     setStyleName(Panel.STYLE_LIGHT)
     setScrollable(true)
   }
-  val flowBar = new FlowBarUI
+  val bar = new FlowBarUI
 
   private def setPageUI(page: FlowPage) {
     val ui = page.ui()
@@ -99,14 +102,14 @@ class FlowUI[T](flow: Flow[T], onCommit: T => Unit) extends VerticalLayout with 
     lytPageUI.setComponentAlignment(ui, Alignment.TOP_CENTER)
   }
 
-  flowBar.btnPrev addListener block {
+  bar.btnPrev addListener block {
     flow.maybeGoPrev match {
       case Some(page) => setPageUI(page)
       case _ => getWindow.showNotification("This is the first page", "Press 'Next' or 'Finish'", Notification.TYPE_WARNING_MESSAGE)
     }
   }
 
-  flowBar.btnNext addListener block {
+  bar.btnNext addListener block {
     flow.maybeGoNext match {
       case Left(errorMsg) => getWindow.showNotification("Can't go to the next page", errorMsg, Notification.TYPE_ERROR_MESSAGE)
       case Right(Some(page)) => setPageUI(page)
@@ -114,7 +117,7 @@ class FlowUI[T](flow: Flow[T], onCommit: T => Unit) extends VerticalLayout with 
     }
   }
 
-  flowBar.btnFinish addListener block {
+  bar.btnFinish addListener block {
     flow.commit() match {
       case Left(errorMsg) => getWindow.showNotification("Can't commit flow", errorMsg, Notification.TYPE_ERROR_MESSAGE)
       case Right(result) => onCommit(result)
@@ -122,7 +125,7 @@ class FlowUI[T](flow: Flow[T], onCommit: T => Unit) extends VerticalLayout with 
   }
 
   setPageUI(flow.page)
-  addComponents(this, pnlPageUI, flowBar)
+  addComponents(this, pnlPageUI, bar)
   setExpandRatio(pnlPageUI, 1.0f)
-  setComponentAlignment(flowBar, Alignment.TOP_CENTER)
+  setComponentAlignment(bar, Alignment.TOP_CENTER)
 }

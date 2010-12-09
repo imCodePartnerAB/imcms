@@ -25,6 +25,8 @@ import textdocument.TextDocumentDomainObject
 
 //todo: type Component = UI ??
 
+case class MimeType(name: String, displayName: String)
+
 
 /**
  * Document editors factory - creates and initializes document editors.
@@ -39,9 +41,9 @@ class EditorsFactory(app: VaadinApplication) {
     val page0 = new FlowPage(() => docUI, docValidator)
 
     val metaModel = MetaModel(DocumentTypeDomainObject.URL_ID, parentDoc)
-    val metaMVC = new MetaEditor(app, metaModel)
+    val metaEditor = new MetaEditor(app, metaModel)
     val metaValidator = () => Some("meta is invalid, please fix the following errors..")
-    val page1 = new FlowPage(() => metaMVC.view, metaValidator)
+    val page1 = new FlowPage(() => metaEditor.ui, metaValidator)
 
     val commit = () => Left("Not implemented")
 
@@ -51,16 +53,20 @@ class EditorsFactory(app: VaadinApplication) {
   
   def newFileDocFlow(parentDoc: DocumentDomainObject, user: UserDomainObject, onCommit: FileDocumentDomainObject => Unit): FlowUI[FileDocumentDomainObject] = {
     val doc = Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.FILE_ID, parentDoc, user).asInstanceOf[FileDocumentDomainObject]
-    val docEditor = new FileDocEditor(app, doc)
+    val mimeTypes = for {
+      Array(name, description) <- Imcms.getServices.getDocumentMapper.getAllMimeTypesWithDescriptions(user).toSeq
+    } yield  MimeType(name, description)
+
+    val docEditor = new FileDocEditor(app, doc, mimeTypes)
     val docValidator = () => None
     val page0 = new FlowPage(() => docEditor.ui, docValidator)
 
     val metaModel = MetaModel(DocumentTypeDomainObject.URL_ID, parentDoc)
-    val metaMVC = new MetaEditor(app, metaModel)
+    val metaEditor = new MetaEditor(app, metaModel)
     val metaValidator = () => Some("meta is invalid, please fix the following errors..")
-    val page1 = new FlowPage(() => metaMVC.view, metaValidator)
+    val page1 = new FlowPage(() => metaEditor.ui, metaValidator)
 
-    val commit: Function0[String Either FileDocumentDomainObject] = () =>
+    val commit = () =>  // : Function0[String Either FileDocumentDomainObject]
       E.allCatch[FileDocumentDomainObject].either {
         doc.setMeta(metaModel.meta)
         Imcms.getServices.getDocumentMapper.saveNewDocument(doc, metaModel.i18nMetas, user).asInstanceOf[FileDocumentDomainObject]
@@ -74,9 +80,9 @@ class EditorsFactory(app: VaadinApplication) {
 
   def newTextDocFlow(parentDoc: DocumentDomainObject): FlowUI[TextDocumentDomainObject] = {
     val metaModel = MetaModel(DocumentTypeDomainObject.URL_ID, parentDoc)
-    val metaMVC = new MetaEditor(app, metaModel)
+    val metaEditor = new MetaEditor(app, metaModel)
     val metaValidator = () => Some("meta is invalid, please fix the following errors..")
-    val page1 = new FlowPage(() => metaMVC.view, metaValidator)
+    val page1 = new FlowPage(() => metaEditor.ui, metaValidator)
 
     val commit = () => Left("Not implemented")
 
@@ -134,9 +140,9 @@ class FileDocFileDialogContent extends FormLayout {
   val uploadReceiver = new MemoryUploadReceiver
 
   // ui
-  val sltMimeType = new ListSelect("Mime type")
+  val sltMimeType = new Select("Mime type") with ValueType[String]
   val lblUploadStatus = new Label
-  val txtFileId = new TextField("File id") //with ValueType[String]
+  val txtFileId = new TextField("File id")
   val upload = new Upload(null, uploadReceiver) with UploadEventHandler {
     setImmediate(true)
     setButtonCaption("Select")
@@ -162,7 +168,7 @@ class FileDocFileDialogContent extends FormLayout {
   }
 }
 
-class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject) {
+class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject, mimeTypes: Seq[MimeType]) {
   val ui = letret(new FileDocEditorUI) { ui =>
     ui.tblFiles.itemsProvider = () =>
       doc.getFiles.toSeq collect {
@@ -175,6 +181,10 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject) {
     ui.miAdd setCommand block {
       app.initAndShow(new OkCancelDialog("Add file")) { w =>
         let(w setMainContent new FileDocFileDialogContent) { c =>
+          for (MimeType(name, displayName) <- mimeTypes) {
+            c.sltMimeType.addItem(name)  
+          }
+
           w addOkButtonClickListener {
             c.uploadReceiver.uploadRef.get match {
               case Some(upload) =>
@@ -186,6 +196,7 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject) {
 
                 file.setInputStreamSource(source)
                 file.setFilename(c.txtFileId.value)
+                file.setMimeType(c.sltMimeType.value)
 
                 doc.addFile(c.txtFileId.value, file)
                 ui.tblFiles.reload
@@ -251,6 +262,3 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject) {
     }
   }
 }
-
-
-

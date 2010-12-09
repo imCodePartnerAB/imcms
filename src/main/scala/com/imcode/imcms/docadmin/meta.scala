@@ -74,7 +74,7 @@ object MetaModel {
 
 class MetaEditor(val application: VaadinApplication, val metaModel: MetaModel) {
 
-  val view = letret(new MetaUI) { v =>
+  val ui = letret(new MetaUI) { v =>
     for {
       (language, enabled) <- metaModel.languages
       labels = metaModel.i18nMetas(language)
