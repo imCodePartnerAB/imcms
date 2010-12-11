@@ -99,9 +99,14 @@ case class ContainerProperty[T <: AnyRef](id: AnyRef, defaultValue: AnyRef = nul
  * 
  * Adds type-checked access to property value.
  */
-trait ValueType[V] extends Property {
-  def value = getValue.asInstanceOf[V]
-  def value_=(v: V) = setValue(v)
+trait ValueType[A <: AnyRef] extends Property {
+  def value = getValue.asInstanceOf[A]
+  def value_=(v: A) = setValue(v)
+}
+
+trait DataType[A <: AnyRef] extends AbstractComponent {
+  def data = getData.asInstanceOf[A]
+  def data_=(d: A) = setData(d)
 }
 
 //trait SelectType[V] extends ValueType[V] with AbstractSelect {

@@ -259,7 +259,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     val btnEdit = new Button("Edit doc") // edit content
     val btnReload = new Button("RELOAD") with LinkStyle
 
-    val docAdmin = new EditorsFactory(application)
+    val docAdmin = new EditorsFactory(application, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(1))
 
     val tblDocs = new Table with ValueType[JInteger] with Selectable with Immediate {
       addContainerProperties(this,
@@ -277,9 +277,17 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     btnReload addListener { reload _ }
 
     btnNewTextDoc addListener block {
-      initAndShow(new Dialog("New text document")) { d =>
+      initAndShow(new Dialog("New text document") with BottomMarginOnlyDialog) { dlg =>
         val parentDoc = dm.getDocument(1001)
-        d.setMainContent(docAdmin.newTextDocFlow(parentDoc))
+        val onCommit = { doc: TextDocumentDomainObject =>
+          getMainWindow.showNotification("Text document [id = %d] has been created" format doc.getId, Notification.TYPE_HUMANIZED_MESSAGE)
+          dlg.close
+          reload()
+        }
+        val flow = dlg.setMainContent(docAdmin.newTextDocFlow(parentDoc, onCommit))
+        flow.setWidth("600px")
+        flow.setHeight("800px")
+        flow
       }
     }
     
@@ -310,14 +318,13 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     btnNewFileDoc addListener block {
       initAndShow(new Dialog("New file document")) { dlg =>
         val parentDoc = dm.getDocument(1001)
-        val user = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(1)
         val onCommit = { doc: FileDocumentDomainObject =>
           getMainWindow.showNotification("File document [id = %d] has been created" format doc.getId, Notification.TYPE_HUMANIZED_MESSAGE)
           dlg.close
           reload()
         }
         
-        val flowUI = docAdmin.newFileDocFlow(parentDoc, user, onCommit)
+        val flowUI = docAdmin.newFileDocFlow(parentDoc, onCommit)
 
         flowUI.bar.btnCancel addListener block {
           dlg.close

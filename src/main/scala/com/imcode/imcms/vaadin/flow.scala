@@ -15,9 +15,10 @@ import com.vaadin.ui.Window.Notification
  * To extend flexibility page ui is not referenced directly but rather returned by a function.
  *
  * @param ui returns flow page ui
- * @param validator page data validator - returns Some(error message) or None if page data is valid
+ * @param validator page validates page data and/or stores page data into associated a model;
+ *        returns Some(error message) or None if page data is valid
  */
-class FlowPage(val ui: () => AbstractComponent, val validator: () => Option[String] = () => Option.empty)
+class FlowPage(val ui: () => ComponentContainer, val validator: Function0[Option[String]] = () => Option.empty)
 
 
 /**
@@ -86,9 +87,11 @@ class FlowBarUI extends HorizontalLayout with Spacing with UndefinedSize {
 }
 
 
+/**
+ * FlowUI size must be fixed or full - never undefined.
+ */
 class FlowUI[T](flow: Flow[T], onCommit: T => Unit) extends VerticalLayout with FullSize with Spacing {
-  val lytPageUI = new VerticalLayout with UndefinedSize
-  val pnlPageUI = new Panel(lytPageUI) with FullSize {
+  val pnlPageUI = new Panel with FullSize {
     setStyleName(Panel.STYLE_LIGHT)
     setScrollable(true)
   }
@@ -96,10 +99,8 @@ class FlowUI[T](flow: Flow[T], onCommit: T => Unit) extends VerticalLayout with 
 
   private def setPageUI(page: FlowPage) {
     val ui = page.ui()
-    
-    pnlPageUI.removeAllComponents
-    pnlPageUI.addComponent(ui)
-    lytPageUI.setComponentAlignment(ui, Alignment.TOP_CENTER)
+    //todo: assert ui size - must be fixed or undefined
+    pnlPageUI.setContent(ui)
   }
 
   bar.btnPrev addListener block {

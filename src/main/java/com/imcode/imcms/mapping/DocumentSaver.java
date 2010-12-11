@@ -24,6 +24,10 @@ import com.imcode.imcms.dao.*;
  */
 public class DocumentSaver {
 
+    public enum SaveParameter {
+        CopyI18nMetaTextsIntoTextFields
+    }
+
     private DocumentMapper documentMapper;
     
     private MetaDao metaDao;
@@ -481,7 +485,7 @@ public class DocumentSaver {
 
 
     @Transactional
-    public <T extends DocumentDomainObject> Integer saveNewDocument(T doc, List<I18nMeta> i18nMetas, UserDomainObject user)
+    public <T extends DocumentDomainObject> Integer saveNewDocument(T doc, List<I18nMeta> i18nMetas, EnumSet<DocumentSaver.SaveParameter> parameters, UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
         Meta meta = doc.getMeta();
@@ -518,6 +522,13 @@ public class DocumentSaver {
         doc.setVersion(version);
         
         DocumentCreatingVisitor docCreatingVisitor = new DocumentCreatingVisitor(documentMapper.getImcmsServices(), user);
+
+        if (doc instanceof TextDocumentDomainObject && parameters.contains(SaveParameter.CopyI18nMetaTextsIntoTextFields)) {
+            //todo: refactor and set for  all languages???
+            TextDocumentDomainObject textDoc = (TextDocumentDomainObject)doc;
+            textDoc.setText(1, new TextDomainObject(doc.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN));           
+            textDoc.setText(2, new TextDomainObject(doc.getMenuText(), TextDomainObject.TEXT_TYPE_PLAIN));
+        }
 
         doc.accept(docCreatingVisitor);
 

@@ -79,9 +79,11 @@ class MetaEditor(val application: VaadinApplication, val metaModel: MetaModel) {
       (language, enabled) <- metaModel.languages
       labels = metaModel.i18nMetas(language)
     } {
-      val lytLabels = letret(new I18nMetaLyt) { l =>
+      val lytLabels = letret(new I18nMetaLyt with DataType[I18nLanguage]) { l =>
         l.txtTitle setValue labels.getHeadline
-        l.txtMenuText  setValue labels.getMenuText
+        l.txtMenuText setValue labels.getMenuText
+
+        l.data = language
       }
 
       let(v.lytI18n.tsI18nMetas.addTab(lytLabels)) { tab =>
@@ -138,6 +140,33 @@ class MetaEditor(val application: VaadinApplication, val metaModel: MetaModel) {
       }
     }
   }
+
+  /**
+   * Validates data and populates model with values.
+   * @returns Some(error) in case of a validation error or None.
+   */
+  def validate(): Option[String] = {
+    ui.lytI18n.tsI18nMetas.getComponentIterator foreach {
+      case i18nMetaUI: I18nMetaLyt with DataType[I18nLanguage] =>
+        let(metaModel.i18nMetas(i18nMetaUI.data)) { i18nMeta =>
+          i18nMeta.setHeadline(i18nMetaUI.txtTitle.value)
+          i18nMeta.setMenuText(i18nMetaUI.txtMenuText.value)
+          i18nMeta.setMenuImageURL(i18nMetaUI.embLinkImage.value)
+        }
+    }
+
+    ui.lytIdentity.txtAlias.value.trim match {
+      case "" => metaModel.meta.removeAlis
+      case alias =>
+        // check alias
+        metaModel.meta.setAlias(alias)
+    }
+
+    metaModel.meta.setPublicationStatus(ui.lytPublication.sltStatus.value)
+
+    // test
+    if (ui.lytIdentity.txtName.value == "fuck") Some("Really bad name") else None
+  }
 }
 
 
@@ -183,10 +212,14 @@ class PublicationLyt extends GridLayout(2, 4) with Spacing {
   }
 
   val lblStatus = new Label("Status") with UndefinedSize
-  val sltStatus = new Select with NoNullSelection {
-    addItem("Approved")
-    addItem("Disapproved")
-    select("Disapproved")
+  // todo add status new??? - may need by someone???
+  val sltStatus = new Select with ValueType[Document.PublicationStatus] with NoNullSelection {
+    addItem(Document.PublicationStatus.APPROVED)
+    addItem(Document.PublicationStatus.DISAPPROVED)
+    select(Document.PublicationStatus.DISAPPROVED)
+
+    setItemCaption(Document.PublicationStatus.APPROVED, "Approved")
+    setItemCaption(Document.PublicationStatus.DISAPPROVED, "Disapproved")
   }
 
   val lblVersion = new Label("Version") with UndefinedSize

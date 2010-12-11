@@ -66,7 +66,7 @@ package object vaadin {
 //    case other => error("Unexpected field value: %s." format other)
 //  }
 
-  def whenSelected[A, B](property: ValueType[A] with AbstractSelect)(fn: A => B): Option[B] = property.value match {
+  def whenSelected[A <: AnyRef, B](property: ValueType[A] with AbstractSelect)(fn: A => B): Option[B] = property.value match {
     case null => None
     case value: JCollection[_] if value.isEmpty => None
     case value => Some(fn(value))

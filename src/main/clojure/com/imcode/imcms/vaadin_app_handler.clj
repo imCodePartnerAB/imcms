@@ -63,6 +63,10 @@
   [obj keyword & keywords]
   (doseq [kw (cons keyword keywords)]
     (condp = kw
+      :scrollable (.setScrollable obj true)
+      :unscrollable (.setScrollable obj false)
+      :checked (.setValue obj true)
+      :unchecked (.setValue obj false)
       :enabled (.setEnabled obj true)
       :disabled (.setEnabled obj false)
       :spacing (.setSpacing obj true)
@@ -80,6 +84,25 @@
   obj)
 
 
+(defn set-size
+  "Sets component size and returns component."
+  ([component width height]
+    (set-size component width height :px))
+
+  ([component width height kw-unit]
+    (condp = kw-unit
+      ;pixels
+      :px (doto component
+             (.setWidth (str width "px"))
+             (.setHeight (str height "px")))
+      ;percentage
+      :pg (doto component
+             (.setWidth (str width "%"))
+             (.setHeight (str height "%")))
+
+      ;points
+      ;todo (:pt ...
+      (throw (Exception. (format "Unable to set component %s size - undefined unit %s." component kw-unit))))))
 
 
 (defn mk-file-browser []
@@ -349,25 +372,46 @@
 
     ;;(doto lyt2 (.setWidth "800px") (.setHeight "800px"))
     ;;(doto ts (.setWidth "500px") (.setHeight "300px"))
-
-    (doseq [c (iterator-seq (.getComponentIterator lyt1)) :when (instance? TextField c)]
-      (println ">>> settin¤g text to text field:")
-      (.setEnabled c false)
-      (.setInputPrompt c "-not set-")
-      (.setVisible c false))
-
-
-    (println (format "Tab sheet default size: w=%s, h=%s" (.getWidth ts) (.getHeight ts)))
-    (println (format "Tab 1 default size: w=%s, h=%s" (.getWidth lyt1) (.getHeight lyt1)))
-    (println (format "Tab 2 default size: w=%s, h=%s" (.getWidth lyt2) (.getHeight lyt2)))
     ts))
-;    (println (format "Tab default size: w=%s, h=%s" (.getWidht tab) (.getHeight tab)))))
+
+(defn mk-chk-box-handler-demo
+  "Check box does not send event to click listeners while holding focus unless its set immediate."
+  []
+  (let [chk-default (with (CheckBox. "Check box with default behaviour - related button will become enabled/disabled only after focus is lost.")
+                      :checked)
+        btn-default (Button. "Button tied to check box with default behavior.")
+        chk-immediate (with (CheckBox. "Check box with imediate behaviour - related button become enabled/disabled immediately.")
+                        :checked :immediate)
+        btn-immediate (Button. "Button tied to check box with immediate behavior.")]
+
+    (add-btn-click-listener chk-default e
+      (.setEnabled btn-default (. chk-default getValue)))
+
+    (add-btn-click-listener chk-immediate e
+      (.setEnabled btn-immediate (. chk-immediate getValue)))
+
+    (doto (VerticalLayout.) (with :spacing :margin)
+      (add-components ,, chk-default btn-default chk-immediate btn-immediate))))
+
+
+(defn mk-panel-test []
+  (let [content (doto (HorizontalLayout.) (with :undefined-size))
+        panel (doto (Panel.) (with :scrollable :full-size)
+                (.setContent content))]
+
+    (dotimes [i 10] (.addComponent content (Button. (str "button " i))))
+
+    (set-size panel 900 900)
+
+    (doto (VerticalLayout.)
+      (with :full-size)
+      (.addComponent panel))))
 
 
 (defn mk-main-wnd-content [app]
   (let [content (-> (VerticalLayout.) (with :spacing :margin))]
     (add-components content
-      (mk-tab-sheet-size-demo))))
+      (mk-panel-test))))
 
 
 (defn init[^com.vaadin.Application app]

@@ -234,10 +234,10 @@ public class DocumentMapper implements DocumentGetter {
 
     /**
      * According to spec, when an user creates a new document using imCMS web interface he has ability
-     * to fill labels in all languages available in the system.
-     * However, DocumentDomainObject has one-to-one relationship with Labels. 
-     * To workaround this limitation and preserve backward compatibility with legacy API,
-     * doc labels are passed in a separate parameters. 
+     * to fill i18nMeta texts in all languages available in the system.
+     * However, a DocumentDomainObject has one-to-one relationship with i18nMeta. 
+     * To workaround this limitation and provide backward compatibility with legacy API,
+     * doc i18nMeta-s are passed in a separate parameters. 
      *
      * @param doc
      * @param i18nMetas
@@ -247,7 +247,9 @@ public class DocumentMapper implements DocumentGetter {
      * @throws DocumentSaveException
      * @throws NoPermissionToAddDocumentToMenuException
      */
-    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<I18nLanguage, I18nMeta> i18nMetas, final UserDomainObject user)
+    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<I18nLanguage, I18nMeta> i18nMetas,
+                                                              EnumSet<DocumentSaver.SaveParameter> parameters,
+                                                              final UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
 
         T docClone = (T)doc.clone();
@@ -258,11 +260,17 @@ public class DocumentMapper implements DocumentGetter {
             i18nMetasClone.add(e.getValue().clone());
         }
 
-        Integer docId = documentSaver.saveNewDocument(docClone, i18nMetasClone, user);
+        Integer docId = documentSaver.saveNewDocument(docClone, i18nMetasClone, parameters, user);
 
         invalidateDocument(docId);
 
         return (T)getWorkingDocument(docId, language);
+    }
+
+    public <T extends DocumentDomainObject> T saveNewDocument(final T doc, Map<I18nLanguage, I18nMeta> i18nMetas, final UserDomainObject user)
+            throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
+         
+        return saveNewDocument(doc, i18nMetas, EnumSet.noneOf(DocumentSaver.SaveParameter.class), user);
     }
 
 

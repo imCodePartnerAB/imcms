@@ -1,6 +1,7 @@
 package com.imcode.imcms.docadmin
 
 import com.imcode._
+import imcms.mapping.DocumentSaver
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
@@ -8,7 +9,6 @@ import com.imcode.imcms.api._
 import com.imcode.imcms.sysadmin.permissions.{UserUI, UsersView}
 import imcode.server.user._
 import imcode.server.{Imcms}
-import java.util.{Date, Collection => JCollection}
 import scala.collection.mutable.{Map => MMap}
 import imcode.server.document._
 import com.imcode.imcms.vaadin._
@@ -22,6 +22,7 @@ import imcode.server.document.FileDocumentDomainObject.FileDocumentFile
 import imcode.util.io.InputStreamSource
 import java.io.ByteArrayInputStream
 import textdocument.TextDocumentDomainObject
+import java.util.{EnumSet, Date, Collection => JCollection}
 
 //todo: type Component = UI ??
 
@@ -31,7 +32,8 @@ case class MimeType(name: String, displayName: String)
 /**
  * Document editors factory - creates and initializes document editors.
  */
-class EditorsFactory(app: VaadinApplication) {
+  // todo: add commit listener to a flow?
+class EditorsFactory(app: VaadinApplication, user: UserDomainObject) {
   
   import scala.util.control.{Exception => E}
   
@@ -51,7 +53,7 @@ class EditorsFactory(app: VaadinApplication) {
   }
 
   
-  def newFileDocFlow(parentDoc: DocumentDomainObject, user: UserDomainObject, onCommit: FileDocumentDomainObject => Unit): FlowUI[FileDocumentDomainObject] = {
+  def newFileDocFlow(parentDoc: DocumentDomainObject, onCommit: FileDocumentDomainObject => Unit): FlowUI[FileDocumentDomainObject] = {
     val doc = Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.FILE_ID, parentDoc, user).asInstanceOf[FileDocumentDomainObject]
     val mimeTypes = for {
       Array(name, description) <- Imcms.getServices.getDocumentMapper.getAllMimeTypesWithDescriptions(user).toSeq
@@ -78,21 +80,33 @@ class EditorsFactory(app: VaadinApplication) {
     new FlowUI[FileDocumentDomainObject](new Flow(commit, page0, page1), onCommit)
   }
 
-  def newTextDocFlow(parentDoc: DocumentDomainObject): FlowUI[TextDocumentDomainObject] = {
+  def newTextDocFlow(parentDoc: DocumentDomainObject, onCommit: TextDocumentDomainObject => Unit): FlowUI[TextDocumentDomainObject] = {
+    val doc = Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, user).asInstanceOf[TextDocumentDomainObject]
     val metaModel = MetaModel(DocumentTypeDomainObject.URL_ID, parentDoc)
     val metaEditor = new MetaEditor(app, metaModel)
-    //val metaValidator = Option.empty[String]
 
     val copyTextEditor = new NewTextDocumentFlowPage2(metaModel)
-    //val copyTextEditorValidator = Option.empty[String]
     
     // page0 - welcome?
-    val page1 = new FlowPage(() => metaEditor.ui)
+    val page1 = new FlowPage(() => metaEditor.ui, metaEditor.validate)
     val page2 = new FlowPage(() => {copyTextEditor.reload(); copyTextEditor.ui})
 
-    val commit = () => Left("Not implemented")
+    val commit = () =>  // : Function0[String Either TextDocumentDomainObject]
+      E.allCatch[TextDocumentDomainObject].either {
+        doc.setMeta(metaModel.meta)
 
-    new FlowUI[TextDocumentDomainObject](new Flow(commit, page1, page2), {case _ => })
+        val parameters = if (copyTextEditor.isCopyI18nMetaTextsToTextFields)
+          EnumSet.of(DocumentSaver.SaveParameter.CopyI18nMetaTextsIntoTextFields)
+        else
+          EnumSet.noneOf(classOf[DocumentSaver.SaveParameter])
+
+        Imcms.getServices.getDocumentMapper.saveNewDocument(doc, metaModel.i18nMetas, parameters, user)//.asInstanceOf[TextDocumentDomainObject]
+      } match {
+        case Left(ex) => Left(ex.getMessage)
+        case Right(doc) => Right(doc)
+      }
+
+    new FlowUI[TextDocumentDomainObject](new Flow(commit, page1, page2), onCommit)
   }
 
   def editURLDocument = new URLDocEditorUI
@@ -275,29 +289,33 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject, mimeT
  * User may choose whether copy link texts (filled in meta page) into the text fields no 1 and 2.
  * Every language's texts is shown in its tab.
  */
-class NewTextDocumentFlowPage2UI extends VerticalLayout with Spacing {
-  class TextsUI extends FormLayout with UndefinedSize {
+class NewTextDocumentFlowPage2UI extends VerticalLayout with FullSize with Spacing with Margin {
+  class TextsUI extends FormLayout with FullSize {
     val txtText1 = new TextField("No 1")
     val txtText2 = new TextField("No 2")
 
     addComponents(this, txtText1, txtText2)
   }
 
-  val chkCopyLinkTextsToTextFields = new CheckBox("Copy link heading & subheading to text 1 & text 2 in page")
-  val tsTexts = new TabSheet
+  val chkCopyI18nMetaTextsToTextFields = new CheckBox("Copy link heading & subheading to text 1 & text 2 in page")
+                                           with Immediate 
+  val tsTexts = new TabSheet with UndefinedSize with FullSize
 
-  addComponents(this, chkCopyLinkTextsToTextFields, tsTexts)
+  addComponents(this, chkCopyI18nMetaTextsToTextFields, tsTexts)
+  setExpandRatio(tsTexts, 1.0f)
 }
 
-// refactor
+// todo: prototype, refactor
 class NewTextDocumentFlowPage2(metaModel: MetaModel) {
   val ui = new NewTextDocumentFlowPage2UI
 
-  ui.chkCopyLinkTextsToTextFields addListener block { reload() }
+  ui.chkCopyI18nMetaTextsToTextFields addListener block { reload() }
   reload()
 
+  def isCopyI18nMetaTextsToTextFields = ui.chkCopyI18nMetaTextsToTextFields.booleanValue
+  
   def reload() {
-    val visible = ui.chkCopyLinkTextsToTextFields.value.booleanValue
+    val visible = isCopyI18nMetaTextsToTextFields
     
     ui.tsTexts.removeAllComponents
 
