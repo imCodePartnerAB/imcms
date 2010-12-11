@@ -10,7 +10,8 @@
     com.vaadin.Application
     (scala Some None$)
     (com.vaadin.ui Window SplitPanel Button Panel Label Button$ClickListener Embedded GridLayout HorizontalLayout
-                   FormLayout VerticalLayout Alignment TextField CheckBox MenuBar MenuBar$MenuItem MenuBar$Command)
+                   FormLayout VerticalLayout Alignment TextField CheckBox MenuBar MenuBar$MenuItem MenuBar$Command
+                   Select ListSelect TabSheet)
 
    ; (com.vaadin.ui.themes BaseTheme)
 
@@ -28,9 +29,6 @@
   (doseq [c components] (.addComponent container c))
   container)
 
-(defmacro when-selected [[sym field] & forms]
-  `(when-let [~sym (.getValue ~field)] ~@forms))
-
 
 (defmacro add-btn-click-listener [button event & body]
   `(let [btn# ~button]
@@ -38,6 +36,50 @@
        (reify Button$ClickListener
          (~'buttonClick [~'_, ~event] ~@body)))
      btn#))
+
+;(defmacro when-selected [[sym field] & forms]
+;  `(when-let [~sym (.getValue ~field)] ~@forms))
+
+
+(defmacro when-selected
+  "Allows multiple bindings if this AbstractSelect is multiselect.
+   The form (when-selected selectable value &body) must be used in single select and might be used in multiselect mode.
+   The form (when-selected selectable [v1 v2 & rest :as vals] &body) can be used in multiselect mode to defstruct bind,
+   however, the order of returned items may differ from selection order.
+   Returns nil if no item is selected or body evaluation result."   
+  [selectable binding & body]
+  `(when-let [value# (.getValue ~selectable)]
+     (if (instance? Iterable value#)
+       (when-let [value-seq# (seq value#)]
+         (let [~binding value-seq#]
+           ~@body))
+
+       (let [~binding value#]
+         ~@body))))                                    
+
+
+(defn with
+  "Sets properties to an object and returns it."
+  [obj keyword & keywords]
+  (doseq [kw (cons keyword keywords)]
+    (condp = kw
+      :enabled (.setEnabled obj true)
+      :disabled (.setEnabled obj false)
+      :spacing (.setSpacing obj true)
+      :no-spacing (.setSpacing obj false)
+      :margin (.setMargin obj true)
+      :no-margin (.setMargin obj false)
+      :multiselect (.setMultiSelect obj true)
+      :no-multiselect (.setMultiSelect obj false)
+      :immediate (.setImmediate obj true)
+      :full-size (.setSizeFull obj)
+      :undefined-size (.setSizeUndefined obj)
+      :null-selection (.setNullSelectionAllowed obj true)
+      :no-null-selection (.setNullSelectionAllowed obj false)
+      (throw (Exception. (format "Undefined property %s for object %s." kw obj)))))
+  obj)
+
+
 
 
 (defn mk-file-browser []
@@ -256,22 +298,76 @@
                                   (str (.. app getURL toString) "images/imCMSpower.gif"))))))))
 
 
+(defn mk-components-value-exchange-demo
+  "A componnent can be assigned as a datasource of another component.
+   In that case any value change throug API or UI controller automatically used by enother.
+   There is no difference between source and target component - any changes to target also reflects source component."
+  []
+  (let [lyt (-> (VerticalLayout.) (with :spacing :margin))
+        txt-src (-> (TextField. "source") (with :immediate))
+        txt-target (-> (TextField. "target" txt-src) (with :immediate))
+        btn-clear-src (Button. "clear source")
+        btn-clear-target (Button. "clear target")]
+    (add-btn-click-listener btn-clear-src _
+      (.setValue txt-src ""))
+    (add-btn-click-listener btn-clear-target _
+      (.setValue txt-target ""))
+
+    (add-components lyt
+      txt-src txt-target btn-clear-src btn-clear-target)))
+
+
+;        lst (doto (ListSelect. "list") (with :immediate :no-multiselect :undefined-size :null-selection)
+;              (.addItem "1")
+;              (.addItem "2"))]
+;
+;    (add-btn-click-listener btn _
+;      (when-selected lst [v1 v2 & rest :as vals]
+;                         (println v1 v2 vals)
+;        (.setValue txtRef val)))
+
+(defn mk-tab-sheet-size-demo
+  "Tab sheet does not automatically ajust its width according to its content like for ex. window does when tab content(s)
+   size is undefined.
+   By default tab sheet width is related (100%) and height is undefined.
+   Recipes:
+     -Tabsheet and its tab contents size are udefined:
+      Tabsheet's width equals to tab's caption widths; each tab's height is ajusted to content's height
+     -Tabsheet size is undefied and its tab contents size are defined:
+      Each tabsheet's tab size equals to contained component size.
+     -Tabsheet has defined size
+      Each tabsheet's tab size equals to tabsheet size.
+     In every case tab provides scrollbars is its content does not fit."
+  []
+  (let [ts (-> (TabSheet.) (with :enabled))
+        lyt1 (doto (FormLayout.) (with :margin :undefined-size)
+               (.setCaption "t1") (add-components ,, (TextField. "text1"), (TextField. "text2"), (Button. "button")))
+        lyt2 (doto (FormLayout.) (with :margin :undefined-size)
+               (.setCaption "t2") (add-components ,, (TextField. "text1"), (TextField. "text2"), (Button. "button") (Button. "button")))
+        tab1 (.addTab ts lyt1)
+        tab2 (.addTab ts lyt2)]
+
+    ;;(doto lyt2 (.setWidth "800px") (.setHeight "800px"))
+    ;;(doto ts (.setWidth "500px") (.setHeight "300px"))
+
+    (doseq [c (iterator-seq (.getComponentIterator lyt1)) :when (instance? TextField c)]
+      (println ">>> settin¤g text to text field:")
+      (.setEnabled c false)
+      (.setInputPrompt c "-not set-")
+      (.setVisible c false))
+
+
+    (println (format "Tab sheet default size: w=%s, h=%s" (.getWidth ts) (.getHeight ts)))
+    (println (format "Tab 1 default size: w=%s, h=%s" (.getWidth lyt1) (.getHeight lyt1)))
+    (println (format "Tab 2 default size: w=%s, h=%s" (.getWidth lyt2) (.getHeight lyt2)))
+    ts))
+;    (println (format "Tab default size: w=%s, h=%s" (.getWidht tab) (.getHeight tab)))))
+
 
 (defn mk-main-wnd-content [app]
-  (let [content (doto (VerticalLayout.)
-                  (.setMargin true)
-                  (.setSpacing true))
-        txt (doto (TextField. "text") 
-                    (.setImmediate true))
-        txtRef (doto (TextField. txt)
-                       (.setImmediate true))
-        btn (Button. "click")]
-
-;    (add-btn-click-listener btn _
-;      (let [txtRef (TextField. txt)]
-;        (.setValue txtRef "new text value")))
-    
-      (add-components content txt txtRef btn)))
+  (let [content (-> (VerticalLayout.) (with :spacing :margin))]
+    (add-components content
+      (mk-tab-sheet-size-demo))))
 
 
 (defn init[^com.vaadin.Application app]
@@ -281,7 +377,7 @@
     (.setContent wnd content)
 
     (doto app
-      (.setTheme "runo")
+      ;(.setTheme "runo")
       (.setMainWindow wnd))))
 
 

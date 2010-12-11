@@ -10,6 +10,7 @@ package object imcode {
   type JLong = java.lang.Long
   type JFloat = java.lang.Float
   type JDouble = java.lang.Double
+  type JCollection[A] = java.util.Collection[A]
 
   def flip[A1, A2, B](f: A1 => A2 => B): A2 => A1 => B = x1 => x2 => f(x2)(x1)
 

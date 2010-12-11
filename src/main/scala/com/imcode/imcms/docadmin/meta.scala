@@ -325,12 +325,11 @@ class MetaUI extends FormLayout with UndefinedSize with Margin {
   }
 
   val lytI18n = new VerticalLayout with UndefinedSize {
-    val tsI18nMetas = new TabSheet with FullWidth
+    val tsI18nMetas = new TabSheet with UndefinedSize
     val btnSettings = new Button("Configure...") with LinkStyle
-    val chkCopyLabelsTextToPage = new CheckBox("Copy link heading & subheading to text 1 & text 2 in page")
 
     setCaption("Appearence")
-    addComponents(this, tsI18nMetas, btnSettings, chkCopyLabelsTextToPage)
+    addComponents(this, tsI18nMetas, btnSettings)
   }
 
   val lytLink = new VerticalLayout with UndefinedSize with Spacing {

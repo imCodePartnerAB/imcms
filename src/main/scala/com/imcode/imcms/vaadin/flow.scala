@@ -17,7 +17,7 @@ import com.vaadin.ui.Window.Notification
  * @param ui returns flow page ui
  * @param validator page data validator - returns Some(error message) or None if page data is valid
  */
-class FlowPage(val ui: () => AbstractComponent, val validator: () => Option[String])
+class FlowPage(val ui: () => AbstractComponent, val validator: () => Option[String] = () => Option.empty)
 
 
 /**

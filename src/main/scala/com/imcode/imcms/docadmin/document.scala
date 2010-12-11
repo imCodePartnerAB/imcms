@@ -81,12 +81,18 @@ class EditorsFactory(app: VaadinApplication) {
   def newTextDocFlow(parentDoc: DocumentDomainObject): FlowUI[TextDocumentDomainObject] = {
     val metaModel = MetaModel(DocumentTypeDomainObject.URL_ID, parentDoc)
     val metaEditor = new MetaEditor(app, metaModel)
-    val metaValidator = () => Some("meta is invalid, please fix the following errors..")
-    val page1 = new FlowPage(() => metaEditor.ui, metaValidator)
+    //val metaValidator = Option.empty[String]
+
+    val copyTextEditor = new NewTextDocumentFlowPage2(metaModel)
+    //val copyTextEditorValidator = Option.empty[String]
+    
+    // page0 - welcome?
+    val page1 = new FlowPage(() => metaEditor.ui)
+    val page2 = new FlowPage(() => {copyTextEditor.reload(); copyTextEditor.ui})
 
     val commit = () => Left("Not implemented")
 
-    new FlowUI[TextDocumentDomainObject](new Flow(commit, page1), {case _ => })
+    new FlowUI[TextDocumentDomainObject](new Flow(commit, page1, page2), {case _ => })
   }
 
   def editURLDocument = new URLDocEditorUI
@@ -260,5 +266,52 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject, mimeT
         ui.tblFiles.reload
       }
     }
+  }
+}
+
+
+/**
+ * This page is shown as a second page in the flow - next after meta.
+ * User may choose whether copy link texts (filled in meta page) into the text fields no 1 and 2.
+ * Every language's texts is shown in its tab.
+ */
+class NewTextDocumentFlowPage2UI extends VerticalLayout with Spacing {
+  class TextsUI extends FormLayout with UndefinedSize {
+    val txtText1 = new TextField("No 1")
+    val txtText2 = new TextField("No 2")
+
+    addComponents(this, txtText1, txtText2)
+  }
+
+  val chkCopyLinkTextsToTextFields = new CheckBox("Copy link heading & subheading to text 1 & text 2 in page")
+  val tsTexts = new TabSheet
+
+  addComponents(this, chkCopyLinkTextsToTextFields, tsTexts)
+}
+
+// refactor
+class NewTextDocumentFlowPage2(metaModel: MetaModel) {
+  val ui = new NewTextDocumentFlowPage2UI
+
+  ui.chkCopyLinkTextsToTextFields addListener block { reload() }
+  reload()
+
+  def reload() {
+    val visible = ui.chkCopyLinkTextsToTextFields.value.booleanValue
+    
+    ui.tsTexts.removeAllComponents
+
+    for ((language, i18nMeta) <- metaModel.i18nMetas) {
+      val textsUI = new ui.TextsUI
+      textsUI.txtText1.value = i18nMeta.getHeadline
+      textsUI.txtText2.value = i18nMeta.getMenuText
+
+      ui.tsTexts.addTab(textsUI, language.getName, null)
+
+      forlet(textsUI.txtText1, textsUI.txtText2) { t=>
+        t setVisible visible
+        t setEnabled false
+      }
+    }    
   }
 }
