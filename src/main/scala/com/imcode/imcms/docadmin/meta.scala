@@ -11,7 +11,7 @@ import imcode.server.{Imcms}
 import java.util.{Date, Collection => JCollection}
 import scala.collection.mutable.{Map => MMap}
 import imcode.server.document._
-import com.imcode.imcms.vaadin._
+import com.imcode.imcms.vaadin.{TwinSelect => TWSelect, _}
 import com.imcode.imcms.vaadin.AbstractFieldWrapper._
 
 /** Meta model */
@@ -72,12 +72,12 @@ object MetaModel {
   }
 }
 
-class MetaEditor(val application: VaadinApplication, val metaModel: MetaModel) {
+class MetaEditor(val application: VaadinApplication, val model: MetaModel) {
 
-  val ui = letret(new MetaUI) { v =>
+  val ui = letret(new MetaUI) { ui =>
     for {
-      (language, enabled) <- metaModel.languages
-      labels = metaModel.i18nMetas(language)
+      (language, enabled) <- model.languages
+      labels = model.i18nMetas(language)
     } {
       val lytLabels = letret(new I18nMetaLyt with DataType[I18nLanguage]) { l =>
         l.txtTitle setValue labels.getHeadline
@@ -86,58 +86,131 @@ class MetaEditor(val application: VaadinApplication, val metaModel: MetaModel) {
         l.data = language
       }
 
-      let(v.lytI18n.tsI18nMetas.addTab(lytLabels)) { tab =>
+      let(ui.lytI18n.tsI18nMetas.addTab(lytLabels)) { tab =>
         if (Imcms.getI18nSupport.isDefault(language)) {
           tab.setCaption(language.getName + " (default)")
         } else {
           tab.setCaption(language.getName)
-          tab.setEnabled(enabled)
+          //tab.setEnabled(enabled)
         }
       }
     }
 
-    v.lytI18n.btnSettings addListener block {
-      application.initAndShow(new OkCancelDialog("Settings")) { w =>
-        val content = new I18nSettingsDialogContent
+    // changes model:
+    //  - languages and meta 
+    ui.lytI18n.btnSettings addListener block {
+      application.initAndShow(new OkCancelDialog("I18n settings")) { dlg =>
+        val content = dlg.setMainContent(new I18nSettingsDialogContent)
 
-        for ((language, enabled) <- metaModel.languages) {
-          val chkLanguage = new CheckBox(language.getName) {
+        for ((language, enabled) <- model.languages) {
+          val chkLanguage = new CheckBox(language.getName) with DataType[I18nLanguage] {
+            data = language
             setValue(enabled)
             setEnabled(!Imcms.getI18nSupport.isDefault(language))
-            // add listner - disable tab
           }
           content.lytLanguages.addComponent(chkLanguage)
         }
 
-        w.setMainContent(content)
-      }
-    }
+        content.ogDisabledShowMode.select(model.meta.getDisabledLanguageShowSetting)
 
-    v.lytSearch.lytKeywords.btnEdit addListener block {
-      application.initAndShow(new OkCancelDialog("Keywords")) { w =>
-        val content = new KeywordsDialogContent(List("Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Fi", "Lambda"))
+        dlg addOkButtonClickListener {
+          content.lytLanguages.getComponentIterator foreach {
+            case cb: CheckBox with DataType[I18nLanguage] => model.languages(cb.data) = cb.booleanValue
+          }
 
-        w setMainContent content
-        w addOkButtonClickListener block {
-          content.txtKeyword setValue content.lstKeywords.value.mkString(", ")
+          model.meta.setDisabledLanguageShowSetting(content.ogDisabledShowMode.value)
         }
       }
     }
 
-    v.lytCategories.btnEdit addListener block {
-      application.initAndShow(new OkCancelDialog("Categories")) { w =>
-        val mainContent = new CategoriesDialogContent
+    // affects model
+    ui.lytSearch.lytKeywords.btnEdit addListener block {
+      application.initAndShow(new OkCancelDialog("Keywords")) { dlg =>
+        val keywords = model.meta.getKeywords
+        val content = new KeywordsDialogContent(keywords.toSeq)
 
-        let(w.setMainContent(mainContent)) { c =>
-          c.setHeight("250px")
+        dlg setMainContent content
+        dlg addOkButtonClickListener {
+          val newKeywords = content.lstKeywords.itemIds
+          ui.lytSearch.lytKeywords.txtKeywords.value = newKeywords.mkString(", ")
+          keywords.clear
+          newKeywords foreach (keywords add _)
         }
       }
     }
 
-    v.lytPublication.btnChoosePublisher addListener block {
+    // affects model
+    ui.lytCategories.btnEdit addListener block {
+      application.initAndShow(new OkCancelDialog("Categories") with CustomSizeDialog) { dlg =>
+        val content = dlg.setMainContent(new CategoriesDialogContent)
+        val categoryIds = model.meta.getCategoryIds
+        
+        val categories = Imcms.getServices.getCategoryMapper.getAllCategories
+        val categoriesMap = categories map (c => c.getId -> c) toMap
+        val categoriesGroups = categories groupBy (_.getType) groupBy (_._1.isSingleSelect)
+        val (ssCategoriesGroup, msCategoriesGroup) = (categoriesGroups.get(true), categoriesGroups.get(false))
+        val sltCategories: Seq[Select with ValueType[CategoryDomainObject]] = ssCategoriesGroup match {
+          case None => List.empty
+          case Some(categoryGroups) => for ((cType, categories) <- categoryGroups.toSeq) yield
+            letret(new Select with ValueType[CategoryDomainObject] with SingleSelect with NoNullSelection) { slt =>
+              slt.setCaption(cType.getName)
+              categories foreach { c =>
+                slt.addItem(c)
+                slt.setItemCaption(c, c.getName)
+                if (categoryIds contains c.getId) slt.select(c)
+              }
+            }
+        }
+
+        val twsCategories: Seq[TWSelect[CategoryDomainObject]] = msCategoriesGroup match {
+          case None => List.empty
+          case Some(categoryGroups) => for ((cType, categories) <- categoryGroups.toSeq) yield
+            letret(new TWSelect[CategoryDomainObject]) { tws =>
+              tws.setCaption(cType.getName)
+              categories foreach { c =>
+                if (categoryIds contains c.getId) tws.addChosenItem(c, c.getName)
+                else tws.addAvailableItem(c, c.getName)
+              }
+            }
+        }
+
+        sltCategories foreach (content addComponent _)
+        twsCategories foreach (content addComponent _)
+
+        dlg.addOkButtonClickListener {
+          categoryIds.clear
+          sltCategories foreach (categoryIds add _.value.getId)
+          twsCategories foreach (_.chosenItemIds foreach (categoryIds add _.getId))
+
+          ui.lytCategories.txtCategories.value = categoryIds map (categoriesMap.get(_).getName) mkString ", "
+        }
+
+        dlg.setWidth("400px")
+        dlg.setHeight("600px")
+      }
+    }
+
+    ui.lytPublication.btnChoosePublisher addListener block {
       application.initAndShow(new OkCancelDialog("Publisher")) { w =>
         w.setMainContent(new UserUI)
       }
+    }
+
+    // does NOT alter meta - only reads its values
+    let(ui.lytPublication) { lyt =>
+      lyt.chkEnd addListener block {
+        lyt.chkEnd.booleanValue match {
+          case true =>
+            lyt.calEnd.setEnabled(true)
+            lyt.calEnd.value = model.meta.getPublicationEndDatetime
+          case false =>
+            lyt.calEnd.value = null
+            lyt.calEnd.setEnabled(false)
+        }
+      }
+
+      // fire event
+      lyt.chkEnd.fireClick
     }
   }
 
@@ -148,7 +221,7 @@ class MetaEditor(val application: VaadinApplication, val metaModel: MetaModel) {
   def validate(): Option[String] = {
     ui.lytI18n.tsI18nMetas.getComponentIterator foreach {
       case i18nMetaUI: I18nMetaLyt with DataType[I18nLanguage] =>
-        let(metaModel.i18nMetas(i18nMetaUI.data)) { i18nMeta =>
+        let(model.i18nMetas(i18nMetaUI.data)) { i18nMeta =>
           i18nMeta.setHeadline(i18nMetaUI.txtTitle.value)
           i18nMeta.setMenuText(i18nMetaUI.txtMenuText.value)
           i18nMeta.setMenuImageURL(i18nMetaUI.embLinkImage.value)
@@ -156,16 +229,30 @@ class MetaEditor(val application: VaadinApplication, val metaModel: MetaModel) {
     }
 
     ui.lytIdentity.txtAlias.value.trim match {
-      case "" => metaModel.meta.removeAlis
+      case "" => model.meta.removeAlis
       case alias =>
-        // check alias
-        metaModel.meta.setAlias(alias)
+        // todo: check alias
+        model.meta.setAlias(alias)
     }
 
-    metaModel.meta.setPublicationStatus(ui.lytPublication.sltStatus.value)
+    model.meta.setPublicationStatus(ui.lytPublication.sltStatus.value)
 
-    // test
-    if (ui.lytIdentity.txtName.value == "fuck") Some("Really bad name") else None
+    let(model.meta.getLanguages) { metaLanguages =>
+      metaLanguages.clear
+      for ((language, enabled) <- model.languages if enabled) metaLanguages.add(language)
+    }
+
+    model.meta.setPublicationStartDatetime(ui.lytPublication.calStart.value)
+    model.meta.setPublicationEndDatetime(
+      if (ui.lytPublication.chkEnd.booleanValue) ui.lytPublication.calEnd.value
+      else null
+    )
+
+    model.meta.setSearchDisabled(ui.lytSearch.chkExclude.value)
+    model.meta.setLinkedForUnauthorizedUsers(ui.lytLink.chkShowToUnauthorizedUser.value)
+    model.meta.setTarget(if (ui.lytLink.chkOpenInNewWindow.booleanValue) "_top" else "_self")
+
+    None
   }
 }
 
@@ -174,10 +261,12 @@ class MetaEditor(val application: VaadinApplication, val metaModel: MetaModel) {
  * I18n settings modal dialog content.
  */
 class I18nSettingsDialogContent extends FormLayout {
-  val ogDisabledShowMode = new OptionGroup(
-    "When disabled",
-    List("Show in default language", "Show 'Not found' page")
-  )
+  val ogDisabledShowMode = new OptionGroup("When disabled") with ValueType[Meta.DisabledLanguageShowSetting]
+
+  ogDisabledShowMode.addItem(Meta.DisabledLanguageShowSetting.DO_NOT_SHOW)
+  ogDisabledShowMode.addItem(Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE)
+  ogDisabledShowMode.setItemCaption(Meta.DisabledLanguageShowSetting.DO_NOT_SHOW, "Show 'Not found' page")
+  ogDisabledShowMode.setItemCaption(Meta.DisabledLanguageShowSetting.SHOW_IN_DEFAULT_LANGUAGE, "Show in default language")
 
   val lytLanguages = new VerticalLayout with UndefinedSize {
     setCaption("Enabled languages")
@@ -228,12 +317,10 @@ class PublicationLyt extends GridLayout(2, 4) with Spacing {
     select("Working")
   }
 
-  val calStart = new DateField { setValue(new Date) }
-  val calEnd = new DateField
-  val chkStart = new CheckBox("Start date") with Disabled { setValue(true) } // decoration, always disabled
-  val chkEnd = new CheckBox("End date") with Immediate {
-    setValue(false)
-  }
+  val calStart = new PopupDateField with MinuteResolution with Now
+  val calEnd = new PopupDateField with MinuteResolution
+  val chkStart = new CheckBox("Start date") with Checked with ReadOnly // decoration, always disabled
+  val chkEnd = new CheckBox("End date") with Immediate with ExposeFireClick
 
   val frmSchedule = new Form with UndefinedSize {
     setCaption("Schedule")
@@ -255,7 +342,7 @@ class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2)
 
   type ItemIds = JCollection[String]
 
-  val lstKeywords = new ListSelect with ValueType[ItemIds] with MultiSelect with NullSelection with Immediate {
+  object lstKeywords extends ListSelect with ValueType[ItemIds] with ItemIdType[String] with MultiSelect with NullSelection with Immediate {
     setRows(10)
     setColumns(10)
   }
@@ -304,49 +391,20 @@ class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2)
 
 /**
  * Categories modal dialog content.
+ *
+ * Categories are added dynamically in editor and grouped by their type.
+ * Single-choice categories appear in a Select component, multi-choice in TwinSelect component.
+ * Components (Select and TwinSelect) captions is set to type name.
+ *
+ * Dialog containing this content must have defined size.
  */
-class CategoriesDialogContent extends Panel {
-  setStyleName(Panel.STYLE_LIGHT)
-
-  val lytContent = new FormLayout
-
-  setContent(lytContent)
-
-  for {
-    categoryType <- Imcms.getServices.getCategoryMapper.getAllCategoryTypes
-    categories = Imcms.getServices.getCategoryMapper.getAllCategoriesOfType(categoryType)
-    if categories.nonEmpty
-  } {
-    val sltCategory =
-      if (categoryType.isSingleSelect) {
-        letret(new Select) { slt =>
-          slt.setNullSelectionAllowed(false)
-          slt.setMultiSelect(false)
-
-          categories foreach { c =>
-            slt.addItem(c)
-            slt.setItemCaption(c, c.getName)
-          }
-        }
-      } else {
-        letret(new TwinSelect[CategoryDomainObject]) { tws =>
-          categories foreach { c =>
-            tws.addAvailableItem(c, c.getName)
-          }
-        }
-      }
-
-    sltCategory.setCaption(categoryType.getName)
-
-    lytContent.addComponent(sltCategory)
-  }
-}
+class CategoriesDialogContent extends Panel(new FormLayout with UndefinedSize) with LightStyle with Scrollable with UndefinedSize
 
 
 /**
  * Meta (doc info) ui.
  */
-class MetaUI extends FormLayout with UndefinedSize with Margin {
+class MetaUI extends FormLayout /*with UndefinedSize*/ with Margin {
 
   val lytIdentity = new HorizontalLayout with UndefinedSize with Spacing {
     val txtId = new TextField("Document Id") with Disabled
@@ -357,8 +415,8 @@ class MetaUI extends FormLayout with UndefinedSize with Margin {
     addComponents(this, txtId, txtName, txtAlias)
   }
 
-  val lytI18n = new VerticalLayout with UndefinedSize {
-    val tsI18nMetas = new TabSheet with UndefinedSize
+  val lytI18n = new VerticalLayout {//with UndefinedSize {
+    val tsI18nMetas = new TabSheet// with UndefinedSize
     val btnSettings = new Button("Configure...") with LinkStyle
 
     setCaption("Appearence")

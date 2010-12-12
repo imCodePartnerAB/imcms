@@ -82,4 +82,7 @@ package object vaadin {
 
   /** Checkbox value type is always JBoolean */
   implicit def wrapCheckBox(checkBox: CheckBox) = new CheckBox("", checkBox) with ValueType[JBoolean]
+
+  /** Date field value type is always Date */
+  implicit def wrapDateField(dateField: DateField) = new DateField(dateField) with ValueType[java.util.Date]
 }

@@ -104,6 +104,10 @@ trait ValueType[A <: AnyRef] extends Property {
   def value_=(v: A) = setValue(v)
 }
 
+trait ItemIdType[A <: AnyRef] extends AbstractSelect {
+  def itemIds = getItemIds.asInstanceOf[JCollection[A]]
+}
+
 trait DataType[A <: AnyRef] extends AbstractComponent {
   def data = getData.asInstanceOf[A]
   def data_=(d: A) = setData(d)
@@ -130,6 +134,22 @@ trait Disabled { this: Component =>
   setEnabled(false)
 }
 
+trait ReadOnly { this: Component =>
+  setReadOnly(true)
+}
+
+trait Checked { this: CheckBox =>
+  setValue(true)
+}
+
+trait Unchecked { this: CheckBox =>
+  setValue(false)
+}
+
+trait ExposeFireClick extends Button {
+  override def fireClick = super.fireClick
+}
+
 trait Margin { this: AbstractLayout =>
   setMargin(true)
 }
@@ -146,6 +166,10 @@ trait UndefinedSize { this: AbstractComponent =>
   setSizeUndefined
 }
 
+trait Scrollable { this: com.vaadin.terminal.Scrollable =>
+  setScrollable(true)
+}
+
 trait FullSize { this: AbstractComponent =>
   setSizeFull
 }
@@ -160,6 +184,10 @@ trait FullHeight { this: AbstractComponent =>
 
 trait LinkStyle { this: Button =>
   setStyleName(Button.STYLE_LINK)
+}
+
+trait LightStyle { this: Panel =>
+  setStyleName(Panel.STYLE_LIGHT)
 }
 
 trait Immediate { this: AbstractField =>
@@ -182,8 +210,28 @@ trait MultiSelect extends AbstractSelect {
   setMultiSelect(true)
 }
 
-trait NoMultiSelect extends AbstractSelect {
+trait SingleSelect extends AbstractSelect {
   setMultiSelect(false)
+}
+
+trait Now extends DateField {
+  setValue(new java.util.Date)
+}
+
+trait YearResolution extends DateField {
+  setResolution(DateField.RESOLUTION_YEAR)  
+}
+
+trait MonthResolution extends DateField {
+  setResolution(DateField.RESOLUTION_MONTH)
+}
+
+trait DayResolution extends DateField {
+  setResolution(DateField.RESOLUTION_DAY)
+}
+
+trait MinuteResolution extends DateField {
+  setResolution(DateField.RESOLUTION_MIN)
 }
 
 //trait UndefiedWidth { this: AbstractComponent =>
@@ -372,6 +420,9 @@ class MenuItem(val parent: MenuItem = null, val handler: () => Unit = () => {}) 
 }
 
 
+/**
+ * @param T component select item and value type 
+ */
 class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
   setCaption(caption)
 
