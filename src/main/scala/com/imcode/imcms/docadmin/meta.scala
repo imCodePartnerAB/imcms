@@ -1,11 +1,11 @@
 package com.imcode.imcms.docadmin
 
 import com.imcode._
+import imcms.sysadmin.permissions.{UserList, UserUI, UsersView}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import com.imcode.imcms.api._
-import com.imcode.imcms.sysadmin.permissions.{UserUI, UsersView}
 import imcode.server.user._
 import imcode.server.{Imcms}
 import java.util.{Date, Collection => JCollection}
@@ -190,9 +190,20 @@ class MetaEditor(val application: VaadinApplication, val model: MetaModel) {
       }
     }
 
+    // affects model
     ui.lytPublication.btnChoosePublisher addListener block {
-      application.initAndShow(new OkCancelDialog("Publisher")) { w =>
-        w.setMainContent(new UserUI)
+      application.initAndShow(new OkCancelDialog("Publisher")) { dlg =>
+        val onSelect = (user: Option[UserDomainObject]) => user match {
+          case None =>
+            model.meta.setPublisherId(null)
+            dlg.btnOk.setEnabled(false)
+          
+          case Some(user) =>
+            model.meta.setPublisherId(user.getId)
+            dlg.btnOk.setEnabled(true)
+        }
+
+        dlg.mainContent = (new UserList(onSelect)).ui
       }
     }
 
@@ -342,7 +353,7 @@ class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2)
 
   type ItemIds = JCollection[String]
 
-  object lstKeywords extends ListSelect with ValueType[ItemIds] with ItemIdType[String] with MultiSelect with NullSelection with Immediate {
+  val lstKeywords = new ListSelect with ValueType[ItemIds] with ItemIdType[String] with MultiSelect with NullSelection with Immediate {
     setRows(10)
     setColumns(10)
   }
@@ -359,7 +370,7 @@ class KeywordsDialogContent(keywords: Seq[String] = Nil) extends GridLayout(3,2)
   addComponent(lstKeywords, 0, 1, 2, 1)
 
   btnAdd addListener block {
-    txtKeyword.stringValue.trim.toLowerCase match {
+    txtKeyword.value.trim.toLowerCase match {
       case value if value.length > 0 && lstKeywords.getItem(value) == null =>
         setKeywords(value :: lstKeywords.getItemIds.asInstanceOf[ItemIds].toList)
       case _ =>

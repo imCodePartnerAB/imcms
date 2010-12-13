@@ -13,7 +13,8 @@ import imcms.api.{CategoryType, SystemProperty, IPAccess, Document}
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
 import java.util.{Date, Collection => JCollection}
-import com.imcode.imcms.vaadin._;
+import com.imcode.imcms.vaadin._
+import com.vaadin.data.util.IndexedContainer;
 import imcode.server.document.{TemplateDomainObject, CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
 import java.io.{ByteArrayInputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
@@ -23,10 +24,17 @@ import com.imcode.imcms.vaadin.AbstractFieldWrapper._;
 
 // user-admin-roles???
 
-class UserViewFilter extends VerticalLayout { //CustomLayout
+// user search UI / user picker?
+
+
+
+/**
+ * 
+ */
+class UserListFilterUI extends VerticalLayout { //CustomLayout
   val lytParams = new FormLayout
   
-  val txtText = new TextField("Username, email, first name, last name, email") {
+  val txtText = new TextField("Ex: username, email, first name, last name...") {
     setColumns(20)
   }
   val lytText = new VerticalLayout {
@@ -36,10 +44,9 @@ class UserViewFilter extends VerticalLayout { //CustomLayout
   val btnApply = new Button("Search") with LinkStyle
   val btnClear = new Button("Clear") with LinkStyle
   val chkShowInactive = new CheckBox("Show inactive")
-  val lstRoles = new ListSelect("Only with role(s)") {
+  val lstRoles = new ListSelect("Only with role(s)") with ValueType[JCollection[RoleId]] with ItemIdType[RoleId] with MultiSelect {
     setColumns(21)
     setRows(5)
-    setNullSelectionAllowed(false)
   }
 
   val lytControls = new HorizontalLayout {
@@ -52,6 +59,70 @@ class UserViewFilter extends VerticalLayout { //CustomLayout
   setSpacing(true)
 }
 
+
+class UserListUI extends VerticalLayout {
+  val filterUI = new UserListFilterUI
+  val tblUsers = new Table with ValueType[JInteger] with ItemIdType[JInteger] with Reloadable with Immediate with Selectable {
+    addContainerProperties(this,
+      ContainerProperty[JInteger]("Id"),
+      ContainerProperty[String]("Login"),
+      ContainerProperty[String]("First name"),
+      ContainerProperty[String]("Last name"),
+      ContainerProperty[JBoolean]("Superadmin?"),
+      ContainerProperty[JBoolean]("Active?"))
+
+    setPageLength(5)
+  }
+
+  addComponents(this, filterUI, tblUsers)
+}
+
+
+// todo: prototype, db access, filtering should be optimized, + lazy loading
+class UserList(onSelect: Option[UserDomainObject] => Unit = { _ => }) {
+  private val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
+
+  val ui = letret(new UserListUI) { ui =>          
+    roleMapper.getAllRolesExceptUsersRole foreach { role =>
+      ui.filterUI.lstRoles.addItem(role.getId)
+      ui.filterUI.lstRoles.setItemCaption(role.getId, role.getName)
+    }     
+
+    ui.tblUsers.itemsProvider = () => {
+      val matchesText: UserDomainObject => Boolean = ui.filterUI.txtText.value.trim match {
+        case text if text.isEmpty => { _ => true }
+        case text => { _.getLoginName.contains(text) }
+      }
+
+      val matchesRole: UserDomainObject => Boolean = ui.filterUI.lstRoles.value match {
+        case rolesIds if rolesIds.isEmpty => { _ => true }
+        case rolesIds => { _.getRoleIds.intersect(rolesIds.toSeq).nonEmpty }
+      }
+
+      for {
+        user <- roleMapper.getAllUsers.toList if matchesText(user) && matchesRole(user)
+        userId = Int box user.getId
+      } yield userId -> List(userId,
+                             user.getLoginName,
+                             user.getFirstName,
+                             user.getLastName,
+                             Boolean box user.isSuperAdmin,
+                             Boolean box user.isActive)
+    }
+      
+    ui.filterUI.btnApply addListener block { ui.tblUsers.reload }
+    ui.filterUI.btnClear addListener block {
+      ui.filterUI.txtText.value = ""
+      ui.filterUI.lstRoles.select(null)
+      ui.tblUsers.reload
+    }
+    ui.tblUsers addListener block {
+      onSelect(Option(ui.tblUsers.value) map { roleMapper getUser _.intValue })
+    }
+  }
+}
+
+
 //
 
 class UserDialogContent extends FormLayout {
@@ -62,9 +133,9 @@ class UserDialogContent extends FormLayout {
   val txtLastName = new TextField("Last")
   val chkActivated = new CheckBox("Activated")
   val tslRoles = new TwinSelect[RoleId]("Roles")
-  val sltUILanguage = new Select("Interface language") {
-    setNullSelectionAllowed(false)
-  }
+  val sltUILanguage = new Select("Interface language") with ValueType[String] with NoNullSelection
+    
+
   val txtEmail = new TextField("Email")
   
   val lytPassword = new HorizontalLayoutView("Password") {
@@ -106,7 +177,7 @@ class UsersView(application: VaadinApplication) extends {
   val mbUser = new MenuBar
   val miNew = mbUser.addItem("Add new", new ThemeResource("icons/16/document-add.png"), null)
   val miEdit = mbUser.addItem("Edit", new ThemeResource("icons/16/settings.png"), null)
-  val filter = new UserViewFilter {
+  val filter = new UserListFilterUI {
     roleMapper.getAllRoleNames foreach { name =>
       lstRoles addItem name
     }
@@ -132,12 +203,12 @@ class UsersView(application: VaadinApplication) extends {
         w addOkButtonClickListener {
           let(new UserDomainObject) { u =>
             u setActive c.chkActivated.booleanValue
-            u setFirstName c.txtFirstName.stringValue
-            u setLastName c.txtLastName.stringValue
-            u setLoginName c.txtLogin.stringValue
-            u setPassword c.txtPassword.stringValue
+            u setFirstName c.txtFirstName.value
+            u setLastName c.txtLastName.value
+            u setLoginName c.txtLogin.value
+            u setPassword c.txtPassword.value
             u setRoleIds c.tslRoles.chosenItemIds.toArray
-            u setLanguageIso639_2 c.sltUILanguage.stringValue
+            u setLanguageIso639_2 c.sltUILanguage.value
 
             roleMapper.addUser(u)
             reloadTable
@@ -180,12 +251,12 @@ class UsersView(application: VaadinApplication) extends {
 
           w addOkButtonClickListener {
             user setActive c.chkActivated.booleanValue
-            user setFirstName c.txtFirstName.stringValue
-            user setLastName c.txtLastName.stringValue
-            user setLoginName c.txtLogin.stringValue
-            user setPassword c.txtPassword.stringValue
+            user setFirstName c.txtFirstName.value
+            user setLastName c.txtLastName.value
+            user setLoginName c.txtLogin.value
+            user setPassword c.txtPassword.value
             user setRoleIds c.tslRoles.chosenItemIds.toArray
-            user setLanguageIso639_2 c.sltUILanguage.stringValue
+            user setLanguageIso639_2 c.sltUILanguage.value
 
             roleMapper.saveUser(user)
             reloadTable
@@ -218,7 +289,7 @@ class UsersView(application: VaadinApplication) extends {
 
 class UserUI extends VerticalLayout {
   val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
-  val filterUI = new UserViewFilter
+  val filterUI = new UserListFilterUI
   val tblUsers = new Table with ValueType[Integer] with Immediate with Selectable {
     addContainerProperties(this,
       ContainerProperty[JInteger]("Id"),

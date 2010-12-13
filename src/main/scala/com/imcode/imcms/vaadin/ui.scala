@@ -5,7 +5,6 @@ import com.imcode._
 import com.vaadin.event.ItemClickEvent
 import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.vaadin.ui._
-import com.vaadin.data.Property
 import com.vaadin.data.Property._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import imcms.servlet.superadmin.AdminSearchTerms
@@ -22,6 +21,7 @@ import java.io.{ByteArrayOutputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
 import com.vaadin.Application
 import java.util.{Collections, LinkedList, ResourceBundle, Date, Collection => JCollection}
+import com.vaadin.data.{Item, Container, Property}
 //class ButtonWrapper(button: Button) {
 //
 //  def addListener(eventHandler: Button#ClickEvent => Unit) =
@@ -104,8 +104,12 @@ trait ValueType[A <: AnyRef] extends Property {
   def value_=(v: A) = setValue(v)
 }
 
-trait ItemIdType[A <: AnyRef] extends AbstractSelect {
+trait ItemIdType[A <: AnyRef] extends Container {
   def itemIds = getItemIds.asInstanceOf[JCollection[A]]
+
+  def item(id: A) = getItem(id)
+
+  //abstract override def addItem(id: A) = super.addItem(id)
 }
 
 trait DataType[A <: AnyRef] extends AbstractComponent {
@@ -116,19 +120,6 @@ trait DataType[A <: AnyRef] extends AbstractComponent {
 //trait SelectType[V] extends ValueType[V] with AbstractSelect {
 //  def itemIds = getItemIds.asInstanceOf[JCollection[V]]
 //}
-
-// todo: rename to property wrapper/DELETE!!
-class AbstractFieldWrapper(f: com.vaadin.ui.AbstractField) {
-  def stringValue = f.getValue.asInstanceOf[String]
-  def booleanValue = Boolean unbox f.getValue.asInstanceOf[JBoolean] 
-  //def asList[T <: AnyRef] = f.getValue.asInstanceOf[JCollection[T]].toList
-}
-
-object AbstractFieldWrapper {
-  implicit def wrapAbstractField(f: AbstractField) = new AbstractFieldWrapper(f)
-}
-
-import AbstractFieldWrapper._
 
 trait Disabled { this: Component =>
   setEnabled(false)

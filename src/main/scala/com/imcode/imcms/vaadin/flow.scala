@@ -74,6 +74,78 @@ class Flow[T](val commit: () => Either[String, T], first: FlowPage, rest: FlowPa
 
 
 /**
+ * @param onCommit
+ */
+class FlowV2[T](pages: Seq[FlowPage], commit: () => Either[String, T], var onCommit: Option[T => Unit] = None) {
+  require(pages.size > 0, "Flow must have at least one page.")
+
+  private var pageNoRef = new AtomicReference(0) // current page no ref
+  private val lastPageNo = pages.length - 1;     // last page no
+
+  /** Returns current flow page. */
+  def page = pages(pageNoRef.get)
+
+  /** Returns if the flow page is the first. */
+  def isFirstPage = page == pages.head
+
+  /** Returns if the flow page is the last. */
+  def isLastPage = page == pages.last
+
+  /**
+   * If page validation fails returns failure message in Left.
+   * Otherwise if current page is the last page in the flow returns None. If there are more pages,
+   * next page become current and returned in Some.
+   */
+  def maybeGoNext(): Either[String, Option[FlowPage]] = let(pageNoRef.get) { pageNo =>
+    pages(pageNo).validator() match {
+      case Some(ex) => Left(ex)
+      case _ if pageNo == lastPageNo => Right(None)
+      case _ => let(pageNo + 1) { newPageNo =>
+        pageNoRef.set(newPageNo)
+        Right(Some(pages(newPageNo)))
+      }
+    }
+  }
+
+  /**
+   * If current page is the first page return None.
+   * Otherwise previous page become current and returned in Some.
+   */
+  def maybeGoPrev(): Option[FlowPage] = pageNoRef.get match {
+    case 0 => None
+    case pageNo => let(pageNo - 1) { newPageNo =>
+      pageNoRef.set(newPageNo)
+      Some(pages(newPageNo))
+    }
+  }
+
+  val ui = letret(new FlowUIV2) { ui =>
+    ui.bar.btnPrev addListener block {
+      maybeGoPrev match {
+        case Some(page) => ui.setContent(page.ui())
+        case _ => ui.getWindow.showNotification("This is the first page", "Press 'Next' or 'Finish'", Notification.TYPE_WARNING_MESSAGE)
+      }
+    }
+
+    ui.bar.btnNext addListener block {
+      maybeGoNext match {
+        case Left(errorMsg) => ui.getWindow.showNotification("Can't go to the next page", errorMsg, Notification.TYPE_ERROR_MESSAGE)
+        case Right(Some(page)) => ui.setContent(page.ui())
+        case _ => ui.getWindow.showNotification("This is the last page", "Press 'Finish'", Notification.TYPE_WARNING_MESSAGE)
+      }
+    }
+
+    ui.bar.btnFinish addListener block {
+      commit() match {
+        case Left(errorMsg) => ui.getWindow.showNotification("Can't commit flow", errorMsg, Notification.TYPE_ERROR_MESSAGE)
+        case Right(result) => onCommit map { _.apply(result) }
+      }
+    }
+  }
+}
+
+
+/**
  * Flow bar ui - just navigation buttons.
  * If used in a dialog then flow bar should replace (/be used instead of) dialog buttons bar.
  */
@@ -126,6 +198,27 @@ class FlowUI[T](flow: Flow[T], onCommit: T => Unit) extends VerticalLayout with 
   }
 
   setPageUI(flow.page)
+  addComponents(this, pnlPageUI, bar)
+  setExpandRatio(pnlPageUI, 1.0f)
+  setComponentAlignment(bar, Alignment.TOP_CENTER)
+}
+
+
+/**
+ * FlowUI size must be fixed or full - never undefined.
+ */
+class FlowUIV2 extends VerticalLayout with FullSize with Spacing {
+  val pnlPageUI = new Panel with FullSize {
+    setStyleName(Panel.STYLE_LIGHT)
+    setScrollable(true)
+  }
+  val bar = new FlowBarUI
+
+  def setContent(content: ComponentContainer) {
+    //todo: assert content size - must be fixed or undefined
+    pnlPageUI.setContent(content)
+  }
+
   addComponents(this, pnlPageUI, bar)
   setExpandRatio(pnlPageUI, 1.0f)
   setComponentAlignment(bar, Alignment.TOP_CENTER)

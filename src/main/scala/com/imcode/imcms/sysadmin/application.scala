@@ -1242,8 +1242,8 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
               templateMapper.getAllTemplates foreach (c.twsTemplates addAvailableItem _.getName)
 
               w.addOkButtonClickListener {
-                templateMapper.createTemplateGroup(c.txtName.stringValue)
-                val group = templateMapper.getTemplateGroupByName(c.txtName.stringValue)
+                templateMapper.createTemplateGroup(c.txtName.value)
+                val group = templateMapper.getTemplateGroupByName(c.txtName.value)
                 c.twsTemplates.chosenItemIds foreach { name =>
                   templateMapper.getTemplateByName(name) match {
                     case null =>
@@ -1272,7 +1272,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
                     c.txtName setValue templateMapper.getTemplateGroupById(id.intValue).getName
 
                     w.addOkButtonClickListener {
-                      templateMapper.renameTemplateGroup(g, c.txtName.stringValue)
+                      templateMapper.renameTemplateGroup(g, c.txtName.value)
                       templateMapper.getTemplatesInGroup(g) foreach { t =>
                         templateMapper.removeTemplateFromGroup(t, g)
                       }
@@ -1319,9 +1319,9 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
       setRows(5)
       setColumns(11)
     }
-    val sltType = new Select("Type") {
-      setNullSelectionAllowed(false)
-    }
+    val sltType = new Select("Type") with ValueType[String] with NoNullSelection
+
+    
     val embIcon = new IconImagePicker(50, 50) {
       setCaption("Icon")
 
@@ -1415,9 +1415,9 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
                     w.txtDescription setValue category.getDescription
 
                     w addOkButtonClickListener {
-                      category setName w.txtName.stringValue
-                      category setDescription w.txtDescription.stringValue
-                      category setType categoryMapper.getCategoryTypeByName(w.sltType.stringValue)
+                      category setName w.txtName.value
+                      category setDescription w.txtDescription.value
+                      category setType categoryMapper.getCategoryTypeByName(w.sltType.value)
 
                       categoryMapper saveCategory category
                       reloadTableItems
