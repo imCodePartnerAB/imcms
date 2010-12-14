@@ -26,7 +26,6 @@ import com.vaadin.terminal.{ThemeResource, UserError}
 import imcode.server.document._
 import com.imcode.imcms.vaadin._
 import com.vaadin.ui.Window.Notification;
-import com.imcode.imcms.vaadin.AbstractFieldWrapper._;
 
 // Controller VS HANDLER?
 /* 
@@ -1125,7 +1124,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
                 c.uploadReceiver.uploadRef.get match {
                   case Some(upload) =>
                     val in = new ByteArrayInputStream(upload.content)
-                    val result = templateMapper.saveTemplate(c.txtName.stringValue,
+                    val result = templateMapper.saveTemplate(c.txtName.value,
                         upload.filename, in, c.chkOverwriteExisting.booleanValue)
 
                     result match {
@@ -1150,7 +1149,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
                 let(w.mainContent = new EditTemplateDialogContent) { c =>
                   c.txtName setValue name      
                   w addOkButtonClickListener {
-                    templateMapper.renameTemplate(name, c.txtName.stringValue)
+                    templateMapper.renameTemplate(name, c.txtName.value)
                     reloadTableItems
                   }
                 }

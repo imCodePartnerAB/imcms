@@ -12,7 +12,7 @@ import imcode.server.{Imcms}
 import scala.collection.mutable.{Map => MMap}
 import imcode.server.document._
 import com.imcode.imcms.vaadin._
-import com.imcode.imcms.vaadin.AbstractFieldWrapper._
+
 import java.util.concurrent.atomic.AtomicReference
 import java.net.{MalformedURLException, URL}
 import com.vaadin.ui.Window.Notification

@@ -22,7 +22,6 @@ import java.io.{OutputStream, FileOutputStream, File}
 import imcode.server.document.{CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
 import com.vaadin.terminal.{FileResource, Resource, UserError}
 import com.imcode.imcms.vaadin._;
-import com.imcode.imcms.vaadin.AbstractFieldWrapper._;
 
 class FileBrowser extends SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) {
   val tblDirContent = new DirectoryContentTable

@@ -21,7 +21,6 @@ import imcode.server.document.{TemplateDomainObject, CategoryDomainObject, Categ
 import java.io.{ByteArrayInputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
 import com.imcode.imcms.vaadin._;
-import com.imcode.imcms.vaadin.AbstractFieldWrapper._;
 
 
 // user-admin-roles???

@@ -12,7 +12,6 @@ import java.util.{Date, Collection => JCollection}
 import scala.collection.mutable.{Map => MMap}
 import imcode.server.document._
 import com.imcode.imcms.vaadin.{TwinSelect => TWSelect, _}
-import com.imcode.imcms.vaadin.AbstractFieldWrapper._
 
 /** Meta model */
 class MetaModel(val meta: Meta,

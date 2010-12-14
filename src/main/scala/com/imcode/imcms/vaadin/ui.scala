@@ -469,7 +469,7 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
   private [this] def addItem(listSelect: ListSelect, itemId: T, caption: String) {
     listSelect.addItem(itemId)
     listSelect.setItemCaption(itemId, caption)    
-  }
+  }                                                
 
   def setListRows(count: Int) = forlet(lstAvailable, lstChosen) { _ setRows count }
   def setListColumns(count: Int) = forlet(lstAvailable, lstChosen) { _ setColumns count }
