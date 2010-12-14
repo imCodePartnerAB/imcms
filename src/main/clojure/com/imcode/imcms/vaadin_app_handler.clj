@@ -11,7 +11,7 @@
     (scala Some None$)
     (com.vaadin.ui Window SplitPanel Button Panel Label Button$ClickListener Embedded GridLayout HorizontalLayout
                    FormLayout VerticalLayout Alignment TextField CheckBox MenuBar MenuBar$MenuItem MenuBar$Command
-                   Select ListSelect TabSheet)
+                   Select ListSelect TabSheet Table)
 
    ; (com.vaadin.ui.themes BaseTheme)
 
@@ -63,6 +63,7 @@
   [obj keyword & keywords]
   (doseq [kw (cons keyword keywords)]
     (condp = kw
+      :selectable (.setSelectable obj true)
       :scrollable (.setScrollable obj true)
       :unscrollable (.setScrollable obj false)
       :checked (.setValue obj true)
@@ -401,17 +402,60 @@
 
     (dotimes [i 10] (.addComponent content (Button. (str "button " i))))
 
-    (set-size panel 900 900)
+    (set-size panel 400 500)
+    (set-size content 500 200)
 
     (doto (VerticalLayout.)
       (with :full-size)
       (.addComponent panel))))
 
+(defn mk-table-test []
+  (let [table (Table. "table")
+        button (Button. "unselect")]
+
+    (add-btn-click-listener button _
+                                (println "NS:" (.getNullSelectionItemId table))
+                                (.select table nil))
+
+    (doto table
+      (with :selectable :no-null-selection)
+      (.setNullSelectionItemId "NL!")
+      (.addContainerProperty 1 Character nil)
+      (.addContainerProperty 2 Character nil)
+      (.addContainerProperty 3 Character nil)
+
+      (.addItem  (into-array "abc") "1")
+      (.addItem  (into-array "def") "2")
+      (.addItem  (into-array "ghi") "3"))
+
+    (doto (VerticalLayout.) (add-components button table))))
+
+
+(defn mk-multi-list-select-unselection-test
+ "If ListSelect is set to multiselect it can not have NullSelectionItemId,
+  however .getNullSelectionItemId still returns nil.
+  To unselect all items in multiselect list unselect should be call for every selected item."
+ []
+(let [list (-> (ListSelect. "ls") (with :null-selection :multiselect))
+      button (Button. "unselect")]
+
+  (add-btn-click-listener button _
+    (doseq [v (.getValue list)]
+      (println "unselecting" v)
+      (.unselect list v)))
+
+  (doto list
+    (.addItem   "1")
+    (.addItem   "2")
+    (.addItem   "3"))
+
+  (doto (VerticalLayout.)
+    (add-components button list))))
 
 (defn mk-main-wnd-content [app]
   (let [content (-> (VerticalLayout.) (with :spacing :margin))]
     (add-components content
-      (mk-panel-test))))
+      (mk-multi-list-select-unselection-test))))
 
 
 (defn init[^com.vaadin.Application app]

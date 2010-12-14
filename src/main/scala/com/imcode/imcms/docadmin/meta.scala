@@ -1,7 +1,7 @@
 package com.imcode.imcms.docadmin
 
 import com.imcode._
-import imcms.sysadmin.permissions.{UserList, UserUI, UsersView}
+import imcms.sysadmin.permissions.{UserSelectDialog, UserSelect, UserUI, UsersView}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
@@ -192,18 +192,18 @@ class MetaEditor(val application: VaadinApplication, val model: MetaModel) {
 
     // affects model
     ui.lytPublication.btnChoosePublisher addListener block {
-      application.initAndShow(new OkCancelDialog("Publisher")) { dlg =>
-        val onSelect = (user: Option[UserDomainObject]) => user match {
-          case None =>
-            model.meta.setPublisherId(null)
-            dlg.btnOk.setEnabled(false)
-          
-          case Some(user) =>
-            model.meta.setPublisherId(user.getId)
-            dlg.btnOk.setEnabled(true)
-        }
+      application.initAndShow(new OkCancelDialog("Choose publisher") with UserSelectDialog) { dlg =>
+        dlg.addOkButtonClickListener {
+          dlg.userSelect.selection match {
+            case Some(user) =>
+              model.meta.setPublisherId(user.getId)
+              ui.lytPublication.lblPublisherName.value = user.getLoginName
 
-        dlg.mainContent = (new UserList(onSelect)).ui
+            case None =>
+              model.meta.setPublisherId(null)
+              ui.lytPublication.lblPublisherName.value = "No publisher selected"
+          }
+        }
       }
     }
 

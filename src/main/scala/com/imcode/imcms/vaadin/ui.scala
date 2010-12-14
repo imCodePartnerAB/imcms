@@ -89,7 +89,7 @@ trait ResourceCaption extends AbstractComponent {
  *
  * @see com.imcode.imcms.vaadin#addContainerProperties
  */
-case class ContainerProperty[T <: AnyRef](id: AnyRef, defaultValue: AnyRef = null)(implicit m: Manifest[T]) {
+case class ContainerProperty[T >: Null](id: AnyRef, defaultValue: AnyRef = null)(implicit m: Manifest[T]) {
   val clazz = m.erasure
 }
 
@@ -99,20 +99,18 @@ case class ContainerProperty[T <: AnyRef](id: AnyRef, defaultValue: AnyRef = nul
  * 
  * Adds type-checked access to property value.
  */
-trait ValueType[A <: AnyRef] extends Property {
+trait ValueType[A >: Null] extends Property {
   def value = getValue.asInstanceOf[A]
   def value_=(v: A) = setValue(v)
 }
 
-trait ItemIdType[A <: AnyRef] extends Container {
+trait ItemIdType[A >: Null] extends Container {
   def itemIds = getItemIds.asInstanceOf[JCollection[A]]
-
   def item(id: A) = getItem(id)
-
   //abstract override def addItem(id: A) = super.addItem(id)
 }
 
-trait DataType[A <: AnyRef] extends AbstractComponent {
+trait DataType[A >: Null] extends AbstractComponent {
   def data = getData.asInstanceOf[A]
   def data_=(d: A) = setData(d)
 }
@@ -341,7 +339,7 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
 
   buttonsBarContent = lytButtons
 
-  btnCancel addListener unit { close }
+  btnCancel addListener block { close }
 
   // refactor
 //  def addOkButtonClickListener(listener: Button.ClickListener) {

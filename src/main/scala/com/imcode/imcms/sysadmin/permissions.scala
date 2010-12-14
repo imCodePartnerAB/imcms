@@ -2,6 +2,7 @@ package com.imcode.imcms.sysadmin.permissions
 
 import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
 import scala.collection.JavaConversions._
+import scala.collection.mutable.ListBuffer
 import com.imcode._
 import com.vaadin.event.ItemClickEvent
 import com.vaadin.terminal.gwt.server.WebApplicationContext
@@ -14,7 +15,8 @@ import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
 import java.util.{Date, Collection => JCollection}
 import com.imcode.imcms.vaadin._
-import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.util.IndexedContainer
+import java.util.concurrent.atomic.AtomicReference;
 import imcode.server.document.{TemplateDomainObject, CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}
 import java.io.{ByteArrayInputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
@@ -31,7 +33,7 @@ import com.imcode.imcms.vaadin.AbstractFieldWrapper._;
 /**
  * 
  */
-class UserListFilterUI extends VerticalLayout { //CustomLayout
+class UserSelectFilterUI extends VerticalLayout { //CustomLayout
   val lytParams = new FormLayout
   
   val txtText = new TextField("Ex: username, email, first name, last name...") {
@@ -60,8 +62,8 @@ class UserListFilterUI extends VerticalLayout { //CustomLayout
 }
 
 
-class UserListUI extends VerticalLayout {
-  val filterUI = new UserListFilterUI
+class UserSelectUI extends VerticalLayout {
+  val filterUI = new UserSelectFilterUI
   val tblUsers = new Table with ValueType[JInteger] with ItemIdType[JInteger] with Reloadable with Immediate with Selectable {
     addContainerProperties(this,
       ContainerProperty[JInteger]("Id"),
@@ -78,11 +80,14 @@ class UserListUI extends VerticalLayout {
 }
 
 
-// todo: prototype, db access, filtering should be optimized, + lazy loading
-class UserList(onSelect: Option[UserDomainObject] => Unit = { _ => }) {
+// todo: db access, filtering should be optimized, + lazy loading
+class UserSelect {
   private val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
+  private val selectionRef = new AtomicReference[Option[UserDomainObject]](None)
 
-  val ui = letret(new UserListUI) { ui =>          
+  val selectionListeners = ListBuffer.empty[Option[UserDomainObject] => Unit]
+
+  val ui = letret(new UserSelectUI) { ui =>
     roleMapper.getAllRolesExceptUsersRole foreach { role =>
       ui.filterUI.lstRoles.addItem(role.getId)
       ui.filterUI.lstRoles.setItemCaption(role.getId, role.getName)
@@ -99,8 +104,13 @@ class UserList(onSelect: Option[UserDomainObject] => Unit = { _ => }) {
         case rolesIds => { _.getRoleIds.intersect(rolesIds.toSeq).nonEmpty }
       }
 
+      val matchesActive: UserDomainObject => Boolean = ui.filterUI.chkShowInactive.booleanValue match {
+        case true => { _ => true}
+        case false => { _.isActive }
+      }
+
       for {
-        user <- roleMapper.getAllUsers.toList if matchesText(user) && matchesRole(user)
+        user <- roleMapper.getAllUsers.toList if List(matchesText, matchesRole, matchesActive) forall (_ apply user)
         userId = Int box user.getId
       } yield userId -> List(userId,
                              user.getLoginName,
@@ -113,13 +123,31 @@ class UserList(onSelect: Option[UserDomainObject] => Unit = { _ => }) {
     ui.filterUI.btnApply addListener block { ui.tblUsers.reload }
     ui.filterUI.btnClear addListener block {
       ui.filterUI.txtText.value = ""
-      ui.filterUI.lstRoles.select(null)
+      ui.filterUI.lstRoles.value foreach ui.filterUI.lstRoles.unselect
       ui.tblUsers.reload
     }
     ui.tblUsers addListener block {
-      onSelect(Option(ui.tblUsers.value) map { roleMapper getUser _.intValue })
+      selectionRef.set(Option(ui.tblUsers.value) map { roleMapper getUser _.intValue })
+      notifyListeners()
     }
   }
+
+  ui.tblUsers.reload
+
+  def selection = selectionRef.get
+
+  def notifyListeners() = let(selection) { optionUser => for (listener <- selectionListeners) listener(optionUser) }
+}
+
+
+trait UserSelectDialog { this: OkCancelDialog =>
+  
+  val userSelect = new UserSelect
+
+  mainContent = userSelect.ui
+
+  userSelect.selectionListeners += { btnOk setEnabled _.isDefined }
+  userSelect.notifyListeners()
 }
 
 
@@ -177,7 +205,7 @@ class UsersView(application: VaadinApplication) extends {
   val mbUser = new MenuBar
   val miNew = mbUser.addItem("Add new", new ThemeResource("icons/16/document-add.png"), null)
   val miEdit = mbUser.addItem("Edit", new ThemeResource("icons/16/settings.png"), null)
-  val filter = new UserListFilterUI {
+  val filter = new UserSelectFilterUI {
     roleMapper.getAllRoleNames foreach { name =>
       lstRoles addItem name
     }
@@ -289,7 +317,7 @@ class UsersView(application: VaadinApplication) extends {
 
 class UserUI extends VerticalLayout {
   val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
-  val filterUI = new UserListFilterUI
+  val filterUI = new UserSelectFilterUI
   val tblUsers = new Table with ValueType[Integer] with Immediate with Selectable {
     addContainerProperties(this,
       ContainerProperty[JInteger]("Id"),
