@@ -4,7 +4,7 @@ import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
 
 package object imcode {
 
-  type JClass[T <: AnyRef] = java.lang.Class[T]
+  type JClass[T >: Null] = java.lang.Class[T]
   type JBoolean = java.lang.Boolean
   type JInteger = java.lang.Integer
   type JLong = java.lang.Long
@@ -34,11 +34,11 @@ package object imcode {
 //    }
 //  }
 
-  def ?[A <: AnyRef](nullable: A): Option[A] = if (nullable eq null) None else Some(nullable)
+  def ?[A >: Null](nullable: A) = Option(nullable)
 
   def let[B, T](expr: B)(block: B => T): T = block(expr)
 
-  def letret[B, T](expr: B)(block: B => T): B = {
+  def letret[B](expr: B)(block: B => Any): B = {
     block(expr)
     expr
   }

@@ -6,23 +6,18 @@ import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import com.imcode.imcms.api._
-//import com.imcode.imcms.sysadmin.permissions
 import imcode.server.user._
 import imcode.server.{Imcms}
-import scala.collection.mutable.{Map => MMap}
 import imcode.server.document._
 import com.imcode.imcms.vaadin._
 
-import java.util.concurrent.atomic.AtomicReference
 import java.net.{MalformedURLException, URL}
-import com.vaadin.ui.Window.Notification
 import com.imcode.imcms.vaadin.flow.{Flow, FlowPage, FlowUI}
-import com.sun.org.apache.xml.internal.security.utils.I18n
 import imcode.server.document.FileDocumentDomainObject.FileDocumentFile
 import imcode.util.io.InputStreamSource
 import java.io.ByteArrayInputStream
 import textdocument.TextDocumentDomainObject
-import java.util.{EnumSet, Date, Collection => JCollection}
+import java.util.{EnumSet}
 
 //todo: type Component = UI ??
 
@@ -32,12 +27,11 @@ case class MimeType(name: String, displayName: String)
 /**
  * Document editors factory - creates and initializes document editors.
  */
-  // todo: add commit listener to a flow?
 class EditorsFactory(app: VaadinApplication, user: UserDomainObject) {
   
   import scala.util.control.{Exception => E}
   
-  def newURLDocFlow(parentDoc: DocumentDomainObject): FlowUI[UrlDocumentDomainObject] = {
+  def newURLDocFlow(parentDoc: DocumentDomainObject): Flow[UrlDocumentDomainObject] = {
     val docUI = new URLDocEditorUI
     val docValidator = () => E.allCatch.either(new URL(docUI.txtURL.value)) fold (ex => Some(ex.getMessage), url => None)
     val page0 = new FlowPage(() => docUI, docValidator)
@@ -49,11 +43,11 @@ class EditorsFactory(app: VaadinApplication, user: UserDomainObject) {
 
     val commit = () => Left("Not implemented")
 
-    new FlowUI[UrlDocumentDomainObject](new Flow(commit, page0, page1), { case _ => })
+    new Flow[UrlDocumentDomainObject](commit, page0, page1)
   }
 
   
-  def newFileDocFlow(parentDoc: DocumentDomainObject, onCommit: FileDocumentDomainObject => Unit): FlowUI[FileDocumentDomainObject] = {
+  def newFileDocFlow(parentDoc: DocumentDomainObject): Flow[FileDocumentDomainObject] = {
     val doc = Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.FILE_ID, parentDoc, user).asInstanceOf[FileDocumentDomainObject]
     val mimeTypes = for {
       Array(name, description) <- Imcms.getServices.getDocumentMapper.getAllMimeTypesWithDescriptions(user).toSeq
@@ -77,10 +71,10 @@ class EditorsFactory(app: VaadinApplication, user: UserDomainObject) {
         case Right(doc) => Right(doc)
       }
 
-    new FlowUI[FileDocumentDomainObject](new Flow(commit, page0, page1), onCommit)
+    new Flow[FileDocumentDomainObject](commit, page0, page1)
   }
 
-  def newTextDocFlow(parentDoc: DocumentDomainObject, onCommit: TextDocumentDomainObject => Unit): FlowUI[TextDocumentDomainObject] = {
+  def newTextDocFlow(parentDoc: DocumentDomainObject): Flow[TextDocumentDomainObject] = {
     val doc = Imcms.getServices.getDocumentMapper.createDocumentOfTypeFromParent(DocumentTypeDomainObject.TEXT_ID, parentDoc, user).asInstanceOf[TextDocumentDomainObject]
     val metaModel = MetaModel(DocumentTypeDomainObject.URL_ID, parentDoc)
     val metaEditor = new MetaEditor(app, metaModel)
@@ -106,7 +100,7 @@ class EditorsFactory(app: VaadinApplication, user: UserDomainObject) {
         case Right(doc) => Right(doc)
       }
 
-    new FlowUI[TextDocumentDomainObject](new Flow(commit, page1, page2), onCommit)
+    new Flow[TextDocumentDomainObject](commit, page1, page2)
   }
 
   def editURLDocument = new URLDocEditorUI

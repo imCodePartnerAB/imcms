@@ -283,10 +283,16 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
           dlg.close
           reload()
         }
-        val flow = dlg.setMainContent(docAdmin.newTextDocFlow(parentDoc, onCommit))
-        flow.setWidth("600px")
-        flow.setHeight("800px")
-        flow
+
+        val flow = docAdmin.newTextDocFlow(parentDoc)
+        val flowUI = flow.ui
+
+        flow.commitListeners += onCommit
+
+        dlg.setMainContent(flowUI)
+
+        flowUI.setWidth("600px")
+        flowUI.setHeight("800px")
       }
     }
     
@@ -302,15 +308,12 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     }
 
     btnNewUrlDoc addListener block {
-      initAndShow(new Dialog("New url document")) { d =>
+      initAndShow(new Dialog("New url document")) { dlg =>
         val parentDoc = dm.getDocument(1001)
         val flow = docAdmin.newURLDocFlow(parentDoc)
-        d.setMainContent(flow)
-        flow.pnlPageUI.setWidth("500px")
-        flow.pnlPageUI.setHeight("600px")
-        flow.setWidth("600px")
-        flow.setHeight("800px")
-        flow
+        dlg.setMainContent(flow.ui)
+        dlg.setWidth("600px")
+        dlg.setHeight("800px")
       }
     }
 
@@ -322,8 +325,11 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
           dlg.close
           reload()
         }
-        
-        val flowUI = docAdmin.newFileDocFlow(parentDoc, onCommit)
+
+        val flow = docAdmin.newFileDocFlow(parentDoc)
+        val flowUI = flow.ui
+
+        flow.commitListeners += onCommit
 
         flowUI.bar.btnCancel addListener block {
           dlg.close
@@ -331,9 +337,8 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         
         dlg.setMainContent(flowUI)
 
-        flowUI.setWidth("600px")
-        flowUI.setHeight("800px")
-        flowUI
+        dlg.setWidth("600px")
+        dlg.setHeight("800px")
       }
     }
 
