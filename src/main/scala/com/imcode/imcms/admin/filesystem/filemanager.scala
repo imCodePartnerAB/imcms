@@ -1,10 +1,7 @@
-package com.imcode.imcms.sysadmin.filemanager
+package com.imcode
+package imcms.admin.filesystem
 
-import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger, Long => JLong}
 import scala.collection.JavaConversions._
-import com.imcode._
-import com.vaadin.event.ItemClickEvent
-import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.vaadin.ui._
 import com.vaadin.data.Property
 import com.vaadin.data.Property._
@@ -16,7 +13,7 @@ import com.imcode.imcms.api.Document.PublicationStatus
 import imcode.util.Utility
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
-import java.util.{Date, Collection => JCollection}
+import java.util.{Date}
 import com.vaadin.ui.Layout.MarginInfo
 import java.io.{OutputStream, FileOutputStream, File}
 import imcode.server.document.{CategoryDomainObject, CategoryTypeDomainObject, DocumentDomainObject}

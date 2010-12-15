@@ -1,9 +1,7 @@
-package com.imcode.imcms.sysadmin.template
+package com.imcode
+package imcms.admin.document.template
 
-import com.imcode._
 import com.imcode.imcms.vaadin._
-//import com.vaadin.data.Property
-//import com.vaadin.data.Property._
 import com.vaadin.ui._
 import scala.collection.JavaConversions._
 

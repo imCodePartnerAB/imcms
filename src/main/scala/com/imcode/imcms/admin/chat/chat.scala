@@ -1,8 +1,8 @@
-package com.imcode.imcms.sysadmin.chat
+package com.imcode
+package imcms.admin.chat
 
-import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger, Long => JLong}
 import scala.collection.JavaConversions._
-import com.imcode._
+
 import com.vaadin.event.ItemClickEvent
 import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.vaadin.ui._

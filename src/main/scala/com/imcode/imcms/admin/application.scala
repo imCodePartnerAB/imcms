@@ -10,10 +10,10 @@ import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import imcms.api._
 import imcms.servlet.superadmin.AdminSearchTerms
 
-import imcms.sysadmin.chat.{MessageView, Chat}
-import imcms.sysadmin.filemanager.{FileBrowser, FileBrowserWithImagePreview, IconImagePicker}
-import imcms.sysadmin.permissions.{UserManager}
-import imcms.sysadmin.template.{TemplateGroupDialogContent, EditTemplateContentDialogContent, EditTemplateDialogContent, TemplateDialogContent}
+import imcms.admin.chat.{MessageView, Chat}
+import imcms.admin.filesystem.{FileBrowser, FileBrowserWithImagePreview, IconImagePicker}
+import imcms.admin.access.user.{UserManager}
+import imcms.admin.document.template.{TemplateGroupDialogContent, EditTemplateContentDialogContent, EditTemplateDialogContent, TemplateDialogContent}
 import imcode.util.Utility
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
@@ -364,7 +364,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 //
 //    new cache.View(Imcms.getDocumentMapper.getCahcingDocumentGetter)
 //  }
-  def systemCacheView = new com.imcode.imcms.sysadmin.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
+  def systemCacheView = new com.imcode.imcms.admin.monitor.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
 
   //
   // Languages panel

@@ -1,6 +1,6 @@
-package com.imcode.imcms.vaadin.flow
+package com.imcode
+package imcms.vaadin.flow
 
-import com.imcode._
 import com.vaadin.ui._
 import com.imcode.imcms.vaadin._
 import java.util.concurrent.atomic.AtomicReference
