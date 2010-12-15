@@ -1,6 +1,6 @@
-package com.imcode.imcms.docadmin
+package com.imcode
+package imcms.admin.document
 
-import com.imcode._
 import imcms.mapping.DocumentSaver
 import scala.collection.JavaConversions._
 import com.vaadin.ui._

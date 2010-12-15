@@ -1,6 +1,6 @@
-package com.imcode.imcms.sysadmin
+package com.imcode.imcms.admin
 
-import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
+
 import scala.collection.JavaConversions._
 import com.imcode._
 import com.vaadin.ui._
@@ -12,12 +12,12 @@ import imcms.servlet.superadmin.AdminSearchTerms
 
 import imcms.sysadmin.chat.{MessageView, Chat}
 import imcms.sysadmin.filemanager.{FileBrowser, FileBrowserWithImagePreview, IconImagePicker}
-import imcms.sysadmin.permissions.{UserManager, UsersView}
+import imcms.sysadmin.permissions.{UserManager}
 import imcms.sysadmin.template.{TemplateGroupDialogContent, EditTemplateContentDialogContent, EditTemplateDialogContent, TemplateDialogContent}
 import imcode.util.Utility
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
-import java.util.{Date, Collection => JCollection}
+import java.util.{Date}
 import scala.actors.Actor._
 import scala.actors._
 import imcode.server.document.textdocument.TextDocumentDomainObject
@@ -29,7 +29,7 @@ import com.vaadin.ui.Window.Notification;
 
 // Controller VS HANDLER?
 /* 
- * Administration is performed using editors.
+ * Administration is performed using managers and editors.
  * An editor can be viewed as a MVC where model is typically an administered object (such as document, text or image)
  * itself or in more sophisticated cases an instance of a separate class containing additional parameters and attributes.
  * A view or UI of an editor is represented by one or several standard vaadin components such as Layout, Panel or Window.
@@ -248,7 +248,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
   // doadmin prototype
   def docadmin = {
-    import com.imcode.imcms.docadmin.{MetaEditor, EditorsFactory, MetaModel}
+    import com.imcode.imcms.admin.document.{MetaEditor, EditorsFactory, MetaModel}
 
     val dm = Imcms.getServices.getDocumentMapper
     val btnNewTextDoc = new Button("New text doc")
@@ -364,7 +364,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 //
 //    new cache.View(Imcms.getDocumentMapper.getCahcingDocumentGetter)
 //  }
-  def systemCacheView = new cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
+  def systemCacheView = new com.imcode.imcms.sysadmin.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
 
   //
   // Languages panel
@@ -1654,5 +1654,3 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 //        w setHeight "350px"
 //      }
 //    }
-
-

@@ -1,14 +1,12 @@
-package com.imcode.imcms.docadmin
+package com.imcode
+package imcms.admin.document
 
-import com.imcode._
-import imcms.sysadmin.permissions.{UserSelectDialog, UserSelect, UsersView}
+import imcms.admin.access.user.{UserSelectDialog}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
-import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import com.imcode.imcms.api._
 import imcode.server.user._
 import imcode.server.{Imcms}
-import java.util.{Date, Collection => JCollection}
 import scala.collection.mutable.{Map => MMap}
 import imcode.server.document._
 import com.imcode.imcms.vaadin.{TwinSelect => TWSelect, _}

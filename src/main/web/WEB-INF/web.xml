@@ -66,13 +66,13 @@
     </filter-mapping>
 
   <servlet>
-    <servlet-name>sysadmin-vaadin</servlet-name>
+    <servlet-name>admin-vaadin</servlet-name>
     <servlet-class>
         com.vaadin.terminal.gwt.server.ApplicationServlet
     </servlet-class>
     <init-param>
       <param-name>application</param-name>
-      <param-value>com.imcode.imcms.sysadmin.Application</param-value>
+      <param-value>com.imcode.imcms.admin.Application</param-value>
     </init-param>
   </servlet>
 
@@ -610,7 +610,7 @@
     </servlet-mapping>                                                  
 
       <servlet-mapping>
-        <servlet-name>sysadmin-vaadin</servlet-name>
+        <servlet-name>admin-vaadin</servlet-name>
         <url-pattern>/vaadin/*</url-pattern>
       </servlet-mapping>
 
@@ -620,7 +620,7 @@
       <!--</servlet-mapping>-->
 
       <servlet-mapping>
-        <servlet-name>sysadmin-vaadin</servlet-name>
+        <servlet-name>admin-vaadin</servlet-name>
         <url-pattern>/VAADIN/*</url-pattern>
       </servlet-mapping>
 
