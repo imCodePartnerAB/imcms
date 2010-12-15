@@ -6,7 +6,7 @@ import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import com.imcode.imcms.api._
-import com.imcode.imcms.sysadmin.permissions.{UserUI, UsersView}
+//import com.imcode.imcms.sysadmin.permissions
 import imcode.server.user._
 import imcode.server.{Imcms}
 import scala.collection.mutable.{Map => MMap}
@@ -196,7 +196,7 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject, mimeT
           fileId -> List(fileId, fdf.getId, fdf.getMimeType, fdf.getInputStreamSource.getSize.toString, (fileId == doc.getDefaultFileId).toString)
       }
 
-    ui.tblFiles.reload  
+    ui.tblFiles.reload()
 
     ui.miAdd setCommand block {
       app.initAndShow(new OkCancelDialog("Add file")) { w =>
@@ -219,7 +219,7 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject, mimeT
                 file.setMimeType(c.sltMimeType.value)
 
                 doc.addFile(c.txtFileId.value, file)
-                ui.tblFiles.reload
+                ui.tblFiles.reload()
               case _ =>
             }
           }
@@ -258,7 +258,7 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject, mimeT
                   // todo: fdf.setMimeType()
               }
 
-              ui.tblFiles.reload
+              ui.tblFiles.reload()
             }
           }
         }
@@ -269,7 +269,7 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject, mimeT
       whenSelected(ui.tblFiles) { fileId =>
         doc.removeFile(fileId)
 
-        ui.tblFiles.reload
+        ui.tblFiles.reload()
       }
     }
 
@@ -277,7 +277,7 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject, mimeT
       whenSelected(ui.tblFiles) { fileId =>
         doc.setDefaultFileId(fileId)
 
-        ui.tblFiles.reload
+        ui.tblFiles.reload()
       }
     }
   }

@@ -123,6 +123,10 @@ trait Disabled { this: Component =>
   setEnabled(false)
 }
 
+trait Secret { this: TextField =>
+  setSecret(true)
+}
+
 trait ReadOnly { this: Component =>
   setReadOnly(true)
 }
@@ -240,7 +244,7 @@ trait Reloadable extends Table {
   var itemsProvider: () => Seq[(AnyRef, Seq[AnyRef])] =
     () => error("itemsProvider is not set.")
 
-  def reload {
+  def reload() {
     removeAllItems
     for ((id, values) <- itemsProvider()) addItem(values.toArray, id)
   }
@@ -681,4 +685,16 @@ class TableView extends VerticalLayout {
   }
 
   def resetComponents() {}
+}
+
+
+/**
+ * Reload button is placed under the content with right alignment.
+ */
+class ReloadableContentUI[T <: Component](val content: T) extends GridLayout(1,2) with Spacing {
+  val btnReload = new Button("Reload") with LinkStyle
+
+  addComponents(this, content, btnReload)
+  setComponentAlignment(content, Alignment.TOP_LEFT)
+  setComponentAlignment(btnReload, Alignment.BOTTOM_RIGHT)
 }

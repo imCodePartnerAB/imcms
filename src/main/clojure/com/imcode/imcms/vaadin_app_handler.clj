@@ -452,6 +452,8 @@
   (doto (VerticalLayout.)
     (add-components button list))))
 
+
+
 (defn mk-main-wnd-content [app]
   (let [content (-> (VerticalLayout.) (with :spacing :margin))]
     (add-components content

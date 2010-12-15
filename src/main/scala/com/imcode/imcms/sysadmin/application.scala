@@ -12,7 +12,7 @@ import imcms.servlet.superadmin.AdminSearchTerms
 
 import imcms.sysadmin.chat.{MessageView, Chat}
 import imcms.sysadmin.filemanager.{FileBrowser, FileBrowserWithImagePreview, IconImagePicker}
-import imcms.sysadmin.permissions.UsersView
+import imcms.sysadmin.permissions.{UserManager, UsersView}
 import imcms.sysadmin.template.{TemplateGroupDialogContent, EditTemplateContentDialogContent, EditTemplateDialogContent, TemplateDialogContent}
 import imcode.util.Utility
 import imcode.server.user._
@@ -1543,12 +1543,12 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
 
   //
-  // Users
+  // User manager
   //
   lazy val users = {
     new TabSheetView {
       addTab(new VerticalLayoutView("Users and their permissions.") {
-        addComponent(new UsersView(application))
+        addComponent(new UserManager(application) ui)
       })
     }
   }

@@ -1,7 +1,7 @@
 package com.imcode.imcms.docadmin
 
 import com.imcode._
-import imcms.sysadmin.permissions.{UserSelectDialog, UserSelect, UserUI, UsersView}
+import imcms.sysadmin.permissions.{UserSelectDialog, UserSelect, UsersView}
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}

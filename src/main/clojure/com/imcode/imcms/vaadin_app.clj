@@ -48,3 +48,12 @@
   (def server (create-server 9999))
   (restart server)
 )
+
+
+(defmacro def-watched [name & value]
+  `(do
+     (def ~name ~@value)
+     (add-watch (var ~name)
+                :re-bind
+                (fn [~'key ~'r old# new#]
+                  (println old# " -> " new#)))))
