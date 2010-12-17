@@ -42,7 +42,7 @@ class TemplateDialogContent extends FormLayout {
     setComponentAlignment(lblUploadStatus, Alignment.MIDDLE_LEFT)
   }
 
-  chkUseFilenameAsName addListener unit {
+  chkUseFilenameAsName addListener block {
     alterNameTextField()
   }
   

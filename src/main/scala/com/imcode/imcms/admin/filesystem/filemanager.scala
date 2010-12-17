@@ -54,7 +54,7 @@ class FileBrowser extends SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) {
 
   def addDirectoryTree(caption: String, root: File, icon: Option[Resource] = None) =
     letret(new DirectoryTree(root)) { dirTree =>
-      dirTree addListener unit { dirTreeValueChangeListener }
+      dirTree addListener block { dirTreeValueChangeListener }
       accDirTrees addTab (dirTree, caption, icon.orNull)
     }
 
@@ -180,7 +180,7 @@ class FileBrowserWithImagePreview(previewImgWidth: Int, previewImgHeight: Int) e
   setComponentAlignment(preview, Alignment.MIDDLE_CENTER)
   setExpandRatio(browser, 1.0f)
 
-  browser.tblDirContent addListener unit {
+  browser.tblDirContent addListener block {
     browser.tblDirContent.getValue match {
       case file: File if canPreview(file) => preview showImage file
       case _ => preview.showStub()

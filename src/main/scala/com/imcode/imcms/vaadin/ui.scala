@@ -66,6 +66,14 @@ trait VaadinApplication extends Application {
   }
 }
 
+/**
+ * Class to represent container property.
+ *
+ * //link -> addContainerProperties
+ */
+case class ContainerProperty[T >: Null](id: AnyRef, defaultValue: AnyRef = null)(implicit m: Manifest[T]) {
+  val clazz = m.erasure
+}
 
 /**
  * Must be mixed-in into a component which parent is VaadinApplication.
@@ -82,174 +90,6 @@ trait ResourceCaption extends AbstractComponent {
    */
   override def getCaption() = getApplication.asInstanceOf[VaadinApplication].resourceBundle.getString(super.getCaption)
 }
-
-
-/**
- * Class to represent container property.
- *
- * @see com.imcode.imcms.vaadin#addContainerProperties
- */
-case class ContainerProperty[T >: Null](id: AnyRef, defaultValue: AnyRef = null)(implicit m: Manifest[T]) {
-  val clazz = m.erasure
-}
-
-
-/**
- * Property value type.
- * 
- * Adds type-checked access to property value.
- */
-trait ValueType[A >: Null] extends Property {
-  def value = getValue.asInstanceOf[A]
-  def value_=(v: A) = setValue(v)
-}
-
-trait ItemIdType[A >: Null] extends Container {
-  def itemIds = getItemIds.asInstanceOf[JCollection[A]]
-  def item(id: A) = getItem(id)
-  //abstract override def addItem(id: A) = super.addItem(id)
-}
-
-trait DataType[A >: Null] extends AbstractComponent {
-  def data = getData.asInstanceOf[A]
-  def data_=(d: A) = setData(d)
-}
-
-//trait SelectType[V] extends ValueType[V] with AbstractSelect {
-//  def itemIds = getItemIds.asInstanceOf[JCollection[V]]
-//}
-
-trait Disabled { this: Component =>
-  setEnabled(false)
-}
-
-trait Secret { this: TextField =>
-  setSecret(true)
-}
-
-trait ReadOnly { this: Component =>
-  setReadOnly(true)
-}
-
-trait Checked { this: CheckBox =>
-  setValue(true)
-}
-
-trait Unchecked { this: CheckBox =>
-  setValue(false)
-}
-
-trait ExposeFireClick extends Button {
-  override def fireClick = super.fireClick
-}
-
-trait Margin { this: AbstractLayout =>
-  setMargin(true)
-}
-
-trait Spacing { this: Layout.SpacingHandler =>
-  setSpacing(true)
-}
-
-trait NoSpacing { this: Layout.SpacingHandler =>
-  setSpacing(false)
-}
-
-trait UndefinedSize { this: AbstractComponent =>
-  setSizeUndefined
-}
-
-trait Scrollable { this: com.vaadin.terminal.Scrollable =>
-  setScrollable(true)
-}
-
-trait FullSize { this: AbstractComponent =>
-  setSizeFull
-}
-
-trait FullWidth { this: AbstractComponent =>
-  setWidth("100%")
-}
-
-trait FullHeight { this: AbstractComponent =>
-  setHeight("100%")
-}
-
-trait LinkStyle { this: Button =>
-  setStyleName(Button.STYLE_LINK)
-}
-
-trait LightStyle { this: Panel =>
-  setStyleName(Panel.STYLE_LIGHT)
-}
-
-trait Immediate { this: AbstractField =>
-  setImmediate(true)
-}
-
-trait Selectable { this: Table =>
-  setSelectable(true)
-}
-
-trait NullSelection extends AbstractSelect {
-  setNullSelectionAllowed(true)
-}
-
-trait NoNullSelection extends AbstractSelect {
-  setNullSelectionAllowed(false)
-}
-
-trait MultiSelect extends AbstractSelect {
-  setMultiSelect(true)
-}
-
-trait SingleSelect extends AbstractSelect {
-  setMultiSelect(false)
-}
-
-trait Now extends DateField {
-  setValue(new java.util.Date)
-}
-
-trait YearResolution extends DateField {
-  setResolution(DateField.RESOLUTION_YEAR)  
-}
-
-trait MonthResolution extends DateField {
-  setResolution(DateField.RESOLUTION_MONTH)
-}
-
-trait DayResolution extends DateField {
-  setResolution(DateField.RESOLUTION_DAY)
-}
-
-trait MinuteResolution extends DateField {
-  setResolution(DateField.RESOLUTION_MIN)
-}
-
-//trait UndefiedWidth { this: AbstractComponent =>
-//  setSizeFull
-//  setWid
-//}
-//
-//trait UndefiedHeight { this: Layout.SpacingHandler =>
-//  setSpacing(true)
-//}
-
-
-trait Reloadable extends Table {
-  //type ItemId <: AnyRef
-  //type Value <: AnyRef
-
-  var itemsProvider: () => Seq[(AnyRef, Seq[AnyRef])] =
-    () => error("itemsProvider is not set.")
-
-  def reload() {
-    removeAllItems
-    for ((id, values) <- itemsProvider()) addItem(values.toArray, id)
-  }
-}
-
 
 /**
  * Fixed size dialog window with full margin.
@@ -361,10 +201,10 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
 //    }
 //  }
 
-  def addOkButtonClickListener(block: => Unit) {
-    btnOk addListener unit {
+  def addOkButtonClickListener(listener: => Unit) {
+    btnOk addListener block {
       try {
-        block
+        listener
         close
       } catch {
         case ex: Exception => using(new java.io.StringWriter) { w =>
@@ -438,11 +278,11 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
     l setItemCaptionMode AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT
   }
 
-  btnAdd addListener unit { move(lstAvailable, lstChosen) }
-  btnRemove addListener unit { move(lstChosen, lstAvailable) }
+  btnAdd addListener block { move(lstAvailable, lstChosen) }
+  btnRemove addListener block { move(lstChosen, lstAvailable) }
 
-  lstAvailable addListener unit { reset() }
-  lstChosen addListener unit { reset() }
+  lstAvailable addListener block { reset() }
+  lstChosen addListener block { reset() }
 
   reset()
 
@@ -636,7 +476,7 @@ class TableView extends VerticalLayout {
   }
 
   val btnReload = new Button("Reload") {
-    this addListener unit { reloadTable }
+    this addListener block { reloadTable }
     setStyleName(Button.STYLE_LINK)
     setIcon(new ThemeResource("icons/16/reload.png"))
   }

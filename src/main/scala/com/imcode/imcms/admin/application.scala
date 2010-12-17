@@ -30,6 +30,11 @@ import com.vaadin.ui.Window.Notification;
 // Controller VS HANDLER?
 /* 
  * Administration is performed using managers and editors.
+ *
+ * A manager controls one or more editor.
+ * Editor is intended to change and validate edited object (entity) model but not to perform physical changes - that a
+ * manager's task (commits).
+ *  
  * An editor can be viewed as a MVC where model is typically an administered object (such as document, text or image)
  * itself or in more sophisticated cases an instance of a separate class containing additional parameters and attributes.
  * A view or UI of an editor is represented by one or several standard vaadin components such as Layout, Panel or Window.
@@ -37,6 +42,7 @@ import com.vaadin.ui.Window.Notification;
  * In some (mostly trivial) cases model and/or controller are embedded in a view component.
  *
  * A flow is also an editor which contains one or more editors which may have (partially) shared model and controller.
+ * - commit???
  */
 
 
@@ -106,13 +112,13 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
       setImmediate(true)
       setPageLength(10)
 
-      addListener(unit { resetComponents })
+      addListener(block { resetComponents })
 
       tableProperties foreach (addContainerProperties(this, _))
     }
 
     val btnReload = new Button("Reload") {
-      addListener(unit { reloadTableItems })
+      addListener(block { reloadTableItems })
       setStyleName(Button.STYLE_LINK)
       setIcon(new ThemeResource("icons/16/reload.png"))
     }
@@ -522,14 +528,14 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
       }
     }
 
-    table addListener unit { resetControls }
+    table addListener block { resetControls }
 
 
     val pnlReloadBar = new Panel(new GridLayout(1,1))
     val btnReload = new Button("Reload")
     pnlReloadBar.addComponent(btnReload)
 
-    btnReload addListener unit { reloadTable }
+    btnReload addListener block { reloadTable }
 
     pnlReloadBar.getContent.setSizeFull
     pnlReloadBar.getContent.asInstanceOf[GridLayout].setComponentAlignment(btnReload, Alignment.MIDDLE_RIGHT)
@@ -631,7 +637,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
           btnDelete setEnabled true
         }
 
-      btnAdd addListener unit {
+      btnAdd addListener block {
         initAndShow(new IPAccessWindow("Add new IP Access")) { w =>
           Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllUsers foreach { u =>
             w.sltUser addItem u.getId
@@ -651,7 +657,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         }
       }
 
-      btnEdit addListener unit {
+      btnEdit addListener block {
         initAndShow(new IPAccessWindow("Edit IP Access")) { w =>
           Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllUsers foreach { u =>
             w.sltUser addItem u.getId
@@ -678,7 +684,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         }
       }
 
-      btnDelete addListener unit {
+      btnDelete addListener block {
         initAndShow(new ConfirmationDialog("Confirmation", "Delete IP Access?")) { w =>
           w.addOkButtonClickListener {
             ipAccessDao delete tblItems.getValue.asInstanceOf[JInteger]
@@ -745,7 +751,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
           role.getId -> List(Int box role.getId.intValue, role.getName)
         }
 
-      btnAdd addListener unit {
+      btnAdd addListener block {
         initAndShow(new RoleDataWindow("New role")) { w =>
           w.addOkButtonClickListener {
             val role = new RoleDomainObject(w.txtName.getValue.asInstanceOf[String])
@@ -758,7 +764,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         }
       }
 
-      btnEdit addListener unit {
+      btnEdit addListener block {
         initAndShow(new RoleDataWindow("Edit role")) { w =>
           val roleId = tblItems.getValue.asInstanceOf[RoleId]
           val role = roleMapper.getRole(roleId)
@@ -775,7 +781,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         }        
       }
 
-      btnDelete addListener unit {
+      btnDelete addListener block {
         initAndShow(new ConfirmationDialog("Confirmation", "Delete role?")) { w =>
           val roleId = tblItems.getValue.asInstanceOf[RoleId]
           val role = roleMapper.getRole(roleId)
@@ -860,11 +866,11 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
       }
     }
 
-    lytButtons.btnRevert addListener unit {
+    lytButtons.btnRevert addListener block {
       reload() 
     }
 
-    lytButtons.btnSave addListener unit {
+    lytButtons.btnSave addListener block {
       let(new SystemData) { d =>
         d setStartDocument pnlStartPage.txtNumber.getValue.asInstanceOf[String].toInt
         d setSystemMessage pnlSystemMessage.txtMessage.getValue.asInstanceOf[String]
@@ -924,8 +930,8 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         lytData.calStart setReadOnly true         
       }
 
-      lytButtons.btnReload addListener unit { reload() }
-      lytButtons.btnClear addListener unit {
+      lytButtons.btnReload addListener block { reload() }
+      lytButtons.btnClear addListener block {
         initAndShow(new ConfirmationDialog("Confirmation", "Clear counter statistics?")) { w =>
           w.addOkButtonClickListener {
             Imcms.getServices setSessionCounter 0
@@ -936,7 +942,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         }
       }
 
-      lytButtons.btnEdit addListener unit {
+      lytButtons.btnEdit addListener block {
         initAndShow(new OkCancelDialog("Edit session counter")) { w =>
           val txtValue = new TextField("Value")
           val calStart = new DateField("Start date")
@@ -1006,7 +1012,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         }
       }
 
-      lytBar.btnReload addListener unit { reload() }
+      lytBar.btnReload addListener block { reload() }
 
       reload()
     })
@@ -1062,8 +1068,8 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
       setExpandRatio(fileBrowser, 1.0f)
 
-      lytButtons.btnReload addListener unit { fileBrowser.reload()}
-      lytButtons.btnCopy addListener unit {
+      lytButtons.btnReload addListener block { fileBrowser.reload()}
+      lytButtons.btnCopy addListener block {
         initAndShow(new OkCancelDialog("Copy to - choose destination directory")
             with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
           let(w.mainContent = new FileBrowser) { b =>
@@ -1122,7 +1128,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         lytMenu.addComponent(menuBar)
 
         //btnNew addListener {
-        miAddNew setCommand unit {
+        miAddNew setCommand block {
           initAndShow(new OkCancelDialog("Add new template")) { w =>
             let(w.mainContent = new TemplateDialogContent) { c =>
               w addOkButtonClickListener {
@@ -1147,7 +1153,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         } // btnNew
 
         //btnRename addListener {
-        miRename setCommand unit {
+        miRename setCommand block {
           tblItems getValue match {
             case name: String =>
               initAndShow(new OkCancelDialog("Edit template")) { w =>
@@ -1165,7 +1171,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         } // btnRename
 
         //btnDelete addListener {
-        miDelete setCommand unit {
+        miDelete setCommand block {
           tblItems getValue match {
             case name: String =>
               initAndShow(new ConfirmationDialog("Delete selected template?")) { w =>
@@ -1180,7 +1186,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         } // btnDelete
 
         //btnEditContent addListener {
-        miEditContent setCommand unit {
+        miEditContent setCommand block {
           tblItems getValue match {
             case name: String =>
               initAndShow(new OkCancelDialog("Edit template content")
@@ -1240,7 +1246,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 //        replaceComponent(pnlHeader, menuBar)
 
         //btnNew addListener unit {
-        miAddNew setCommand unit {
+        miAddNew setCommand block {
           initAndShow(new OkCancelDialog("New group")) { w =>
             let(w.setMainContent(new TemplateGroupDialogContent)) { c =>
               templateMapper.getAllTemplates foreach (c.twsTemplates addAvailableItem _.getName)
@@ -1262,7 +1268,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         } // btnNew handler
 
         //btnEdit addListener unit {
-        miEdit setCommand unit {
+        miEdit setCommand block {
           initAndShow(new OkCancelDialog("Edit group")) { w =>
             let(w.setMainContent(new TemplateGroupDialogContent)) { c =>
               let(tblItems.getValue) {
@@ -1297,7 +1303,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         } // btnEdit handler
         
         //btnDelete addListener unit {
-        miDelete setCommand unit {
+        miDelete setCommand block {
           initAndShow(new ConfirmationDialog("Confirmation", "Detelete template group?")) { w =>
             w.addOkButtonClickListener {
               templateMapper deleteTemplateGroup tblItems.getValue.asInstanceOf[Int]
@@ -1329,7 +1335,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     val embIcon = new IconImagePicker(50, 50) {
       setCaption("Icon")
 
-      btnChoose addListener unit {
+      btnChoose addListener block {
         initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg")
                 with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
                 
@@ -1383,7 +1389,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
         addComponents(pnlHeader, btnAdd, btnEdit, btnDelete)
 
-        btnAdd addListener unit {
+        btnAdd addListener block {
           initAndShow(new OkCancelDialog("New category") with CategoryDialog) { w =>
             categoryMapper.getAllCategoryTypes foreach { c =>
               w.sltType addItem c.getName
@@ -1403,7 +1409,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
           }
         }
 
-        btnEdit addListener unit {
+        btnEdit addListener block {
           tblItems.getValue match {
             case id: JInteger =>
               categoryMapper.getCategoryById(id.intValue) match {
@@ -1433,7 +1439,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
           }
         }
 
-        btnDelete addListener unit {
+        btnDelete addListener block {
           initAndShow(new ConfirmationDialog("Delete category")) { w =>
             w addOkButtonClickListener {
               tblItems.getValue match {
@@ -1476,7 +1482,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
         addComponents(pnlHeader, btnNew, btnEdit, btnDelete)
 
-        btnNew addListener unit {
+        btnNew addListener block {
           initAndShow(new OkCancelDialog("New categor type")) { w =>
             val txtId = new TextField("Id")
             val txtName = new TextField("Name")
@@ -1504,7 +1510,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
           }
         }
 
-        btnDelete addListener unit {
+        btnDelete addListener block {
           tblItems.getValue match {
             case null =>
             case id: JInteger =>
@@ -1539,7 +1545,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         }
       }
 
-      btnSend addListener unit {
+      btnSend addListener block {
         ChatTopic ! ChatTopic.Message(txtText.getValue.asInstanceOf[String])
         txtText setValue ""
       }
@@ -1574,7 +1580,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         setSpacing(true)
       }
 
-      lytMenu.btnShow addListener unit {
+      lytMenu.btnShow addListener block {
         lytMenu.txtId.getValue match {
           case IntNumber(id) =>
             Imcms.getServices.getDocumentMapper.getDocument(id) match {

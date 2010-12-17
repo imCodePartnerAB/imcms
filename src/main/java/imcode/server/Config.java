@@ -128,6 +128,7 @@ public class Config {
 
     public void setImagePath( File imagePath ) {
         this.imagePath = imagePath;
+        this.imagePath = imagePath;
     }
 
     public String getFileAdminRootPaths() {
