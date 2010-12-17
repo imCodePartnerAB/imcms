@@ -5,7 +5,8 @@ import java.io.Serializable;
 /**
  * Permission set type.
  * 
- * Permission set is defined per document.
+ * Permission set is assigned per role per document.
+ * @see imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings
  * 
  * Permission set with lower type id (FULL) is most privileged.
  *   Any permission defined in a system is automatically included into this set.
@@ -15,12 +16,16 @@ import java.io.Serializable;
  *
  * READ permission set defines permissions only for document viewing.
  *
- * FULL, READ and NONE sets are fixed - i.e they always contain the same
- * predefined permissions for any document and can not be changed.
+ * FULL, READ and NONE sets are fixed - i.e each of them contains
+ * predefined unmodifiable set of permissions.
+ * Those sets are shared by all documents in a system.
  *
- * RESTRICTED_1 and RESTRICTED_2 are customizable permissions sets - any permissions from FULL set
- * can be also added to those sets (separately to any document).
- * Additionally any RESTRICTED_X set automatically contains fixed subset of permissions - READ. 
+ * RESTRICTED_1 and RESTRICTED_2 are sets customizable per document,
+ * however, they also contain the fixed subset of permissions - READ.
+ * Additionally any document may extend a restricted set of permissions with permissions from the FULL set.
+ *
+ * Please note:
+ * By definition RESTRICTED_2 is more restrictive than RESTRICTED_1 but this can be changed at a document level (why?).
  */
 public enum DocumentPermissionSetTypeDomainObject implements Serializable {
 

@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Probably should be abstract - API uses only ONE concrete implmentation:
+ * Probably should be abstract - API uses only ONE concrete implementation:
  * TextDocumentPermissionSetDomainObject
  */
 public class DocumentPermissionSetDomainObject implements Serializable, LazilyLoadedObject.Copyable, Cloneable {
