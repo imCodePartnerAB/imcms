@@ -524,7 +524,7 @@
 (def Nothing
   (reify
     Object
-      (toString [this] "Nothing")
+      (toString [_] "Nothing")
     Maybe
       (nothing? [_] true)
       (just? [_] false)
@@ -569,31 +569,86 @@
         (Right. model)))))
 
 
+;; test
+(def i18n-resources {
+  :editor-menu-ui {
+    :btn-new {:caption "New user" :tooltip "Create new user" :icon nil}
+    :btn-edit {:caption "Edit user" :tooltip "Edit selected user" :icon nil}
+    :btn-delete {:caption "Delete user" :tooltip "Delete selected user" :icon nil}
+  }
+
+  :user-editor-ui {
+    :txt-fname {:caption "First name" :tooltip nil}
+    :txt-sname {:caption "Second name" :tooltip nil}
+    :btn-submit {:caption "Create!" :tooltip nil :icon nil}
+  }
+})
+
+
+;; id - UI identity - namespace keyword - used for generic customization (for ex. i18n). Might be nil.
 ;; content - vaadin container or component
-;; components - exposed ui components
-(defrecord UI [content, components])
+;; components - exposed ui components map
+(defrecord UI [^clojure.lang.Keyword id, ^com.vaadin.ui.Component content, ^clojure.lang.IPersistentMap components])
 
 ;; ui - UI record instance
 ;; model - an atomic reference to a model
-(defrecord Editor [ui, model])
+(defrecord Editor [^UI ui, model])
+
+(defn i18n-ui [^UI ui]
+  ;; todo: extract namespace..
+  (when-let [id (:id ui)]
+    (let [resource-root-id (keyword (namespace id))
+          resource-id (keyword (name id))]
+      (when-let [resources (get i18n-resources resource-id)]
+        (let [components (:components ui)]
+          (doseq [[component-id, properties] resources, :let [component (get components component-id)] :when component]
+            (when-let [caption (:caption properties)]
+              (.setCaption component caption))))))))
 
 
-(defn user-editor-ui []
+(defn editor-menu-ui []
+  (let [content (setup (HorizontalLayout.) :spacing)
+        btn-new (Button. "New")
+        btn-edit (Button. "Edit")
+        btn-delete (Button. "Delete")]
+    (add-components content btn-new btn-edit btn-delete)
+    (UI. ::editor-menu-ui
+         content
+         {:btn-new btn-new
+          :btn-edit btn-edit
+          :btn-delete btn-delete})))
+
+
+(defn user-editor-ui [menu-ui]
   (let [txt-fname (setup (TextField. "Fist name") :resource-caption)
         txt-sname (setup (TextField. "Second name") :resource-caption)
         btn-submit (setup (Button. "Submit") :resource-caption)
         content (setup (GridLayout. 1 3) :spacing)]
-    (add-components content txt-fname txt-sname btn-submit)
-    (UI. content
+    (add-components content (:content menu-ui) txt-fname txt-sname btn-submit)
+    (UI. ::user-editor-ui
+         content
          {:txt-fname txt-fname,
           :txt-sname txt-sname,
           :btn-submit btn-submit})))
 
 
 (defn user-editor [model]
-  (let [ui (user-editor-ui)
+  (let [menu-ui (editor-menu-ui)
+        menu-ui-components (:components menu-ui)
+        ui (user-editor-ui menu-ui)
         ui-components (:components ui)
         editor (Editor. ui model)]
+
+    (doseq [ui [menu-ui menu-ui-components]] (i18n-ui ui))
+
+    (add-btn-click-listener (:btn-new menu-ui-components) _
+      (println "Creating new user..."))
+
+    (add-btn-click-listener (:btn-edit menu-ui-components) _
+      (println "Editing selected user..."))
+
+    (add-btn-click-listener (:btn-delete menu-ui-components) _
+      (println "Deleting selected user..."))
 
     (add-btn-click-listener (:btn-submit ui-components) _
       (let [update (update-model editor)
@@ -632,6 +687,16 @@
     (doto app
       (.setTheme "imcms")
       (.setMainWindow wnd))))
+
+(defn remove-first [a-seq a]
+  (let [[a-seq1, a-seq2] (split-with #(not= a %) a-seq)]
+    (concat a-seq1 (rest a-seq2))))
+
+(defn perms [a-seq]
+  (if (empty? a-seq)
+    (list ())
+    (for [a a-seq, perm (perms (remove-first a-seq a))]
+      (cons a perm))))
 
 
 

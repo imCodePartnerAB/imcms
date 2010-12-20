@@ -1,6 +1,7 @@
 package com.imcode.imcms.admin
 
 
+import document.PermissionsEditor
 import scala.collection.JavaConversions._
 import com.imcode._
 import com.vaadin.ui._
@@ -261,6 +262,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     val btnNewFileDoc = new Button("New file doc")
     val btnNewUrlDoc = new Button("New url doc")
     val btnDocInfo = new Button("Doc info")
+    val btnDocPermissions = new Button("Doc Permissions")
     val btnEdit = new Button("Edit doc") // edit content
     val btnReload = new Button("RELOAD") with LinkStyle
 
@@ -276,7 +278,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     }
 
     val lytBar = new HorizontalLayout with Spacing {
-      addComponents(this, btnNewTextDoc, btnNewFileDoc, btnNewUrlDoc, btnDocInfo, btnEdit, btnReload)
+      addComponents(this, btnNewTextDoc, btnNewFileDoc, btnNewUrlDoc, btnDocInfo, btnEdit, btnDocPermissions, btnReload)
     }
 
     btnReload addListener { reload _ }
@@ -299,6 +301,20 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
         flowUI.setWidth("600px")
         flowUI.setHeight("800px")
+      }
+    }
+
+    btnDocPermissions addListener block {
+
+      whenSelected(tblDocs) { id =>
+        val model = MetaModel(id)
+        val editor = new PermissionsEditor(application, model.meta, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(1))
+
+
+
+        initAndShow(new OkCancelDialog) { dlg =>
+          dlg.setMainContent(editor.ui)
+        }
       }
     }
     

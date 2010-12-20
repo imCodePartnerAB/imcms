@@ -12,51 +12,63 @@ import imcode.server.document._
 import com.imcode.imcms.vaadin._
 
 //todo: check user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document )
-class PermissionsEditor(meta: Meta, user: UserDomainObject) {
+class PermissionsEditor(app: VaadinApplication, meta: Meta, user: UserDomainObject) {
+  import DocumentPermissionSetTypeDomainObject.{NONE, FULL, READ, RESTRICTED_1, RESTRICTED_2}
+  
   val ui = letret(new PermissionsEditorUI) { ui =>
     val roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
-    val allButSuperadminRole = roleMapper.getAllRoles.filter(_.getId == RoleId.SUPERADMIN)
+    val allButSuperadminRole = roleMapper.getAllRoles.filterNot(_.getId == RoleId.SUPERADMIN)
+    val allButSuperadminRoleIds = allButSuperadminRole map { _.getId } 
     val roleIdToPermissionSetType = meta.getRoleIdToDocumentPermissionSetTypeMappings
-    val mappings = roleIdToPermissionSetType.getMappings
 
-    mappings foreach { mapping =>
-      val roleId = mapping.getRoleId
-      val role = roleMapper.getRole(roleId)
+    ui.tblRolesPermissions.itemsProvider = () => {
+      val types = List(READ, RESTRICTED_1, RESTRICTED_2, FULL)
 
-      if (role != null) {
+      for {
+        mapping <- roleIdToPermissionSetType.getMappings.toSeq
+        roleId = mapping.getRoleId
+        role <- ?(roleMapper.getRole(roleId))
+        documentPermissionSetType = mapping.getDocumentPermissionSetType
+        if !(documentPermissionSetType == NONE || RoleId.SUPERADMIN == roleId)
+      } yield 
+          (roleId, role.getName :: types.map(t => if (t == documentPermissionSetType) "X" else ""))
+    }
 
-        val documentPermissionSetType = mapping.getDocumentPermissionSetType
-        if (DocumentPermissionSetTypeDomainObject.NONE.equals(documentPermissionSetType) || RoleId.SUPERADMIN.equals(roleId)) {
-        } else {
-          // allButSuperadminRole.remove( role ) ;
-//                            %>
-//                            <tr align="center">
-//                                <td height="22" class="imcmsAdmText" align="left"><% if (user.hasRoleId( roleId )) { %>*<% } else { %>&nbsp;<% } %></td>
-//                                <td class="imcmsAdmText" align="left"><%= role.getName() %></td>
-//                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject.NONE, user, documentPermissionSetType, roleId, document ) %></td>
-//                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject.READ, user, documentPermissionSetType, roleId, document ) %></td>
-//                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject.RESTRICTED_2, user, documentPermissionSetType, roleId, document ) %></td>
-//                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject.RESTRICTED_1, user, documentPermissionSetType, roleId, document ) %></td>
-//                                <td><%= formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject.FULL, user, documentPermissionSetType, roleId, document ) %></td>
-//                            </tr>
-//                            <%
-//
-//    String formatRolePermissionRadioButton( DocumentPermissionSetTypeDomainObject radioButtonDocumentPermissionSetType, UserDomainObject user, DocumentPermissionSetTypeDomainObject documentPermissionSetType,
-//                                            RoleId roleId,
-//                                            DocumentDomainObject document ) {
-//        boolean checked = documentPermissionSetType == radioButtonDocumentPermissionSetType;
-//        String name = "role_" + roleId.intValue();
-//        String value = "" + radioButtonDocumentPermissionSetType;
+    ui.miRolePermissionAdd setCommand block {
+      app.initAndShow(new OkCancelDialog("Add role permission")) { dlg =>
+        let(dlg.setMainContent(new AddRolePermissionDialogContent)) { c =>
+          c.ogPermission.setValue("Read")
+          allButSuperadminRoleIds.filterNot(ui.tblRolesPermissions.itemIds contains) foreach { roleId =>
+            c.lstRoles.addItem(roleId, roleMapper.getRole(roleId).getName)
+          }
+
+          dlg.addOkButtonClickListener {
+            roleIdToPermissionSetType.setPermissionSetTypeForRole(c.lstRoles.value, READ)
+            ui.tblRolesPermissions.reload()
+          }
+        }
+      }
+    }
+
+    ui.miRolePermissionEdit setCommand block {
+
+    }
+
+    ui.miRolePermissionDelete setCommand block {
+
+    }    
+    // user role??
+
 //        if (user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document )) {
 //            return Html.radio(name, value, checked ) ;
 //        } else {
 //            return checked ? Html.hidden( name, value )+"X" : "O" ;
 //        }
-//    }
 
-        }
+    ui.tblRolesPermissions.reload()
+  }
 
-    }
+}
 
       // if (user.canDefineRestrictedOneFor( document ))
       //   (document instanceof TextDocumentDomainObject)  FOR NEW
@@ -76,38 +88,57 @@ class PermissionsEditor(meta: Meta, user: UserDomainObject) {
 
       // JUST INFO
       //<%= Utility.formatUser(userMapper.getUser(document.getCreatorId())) %>
-  }
-}
-}
 
 class PermissionsEditorUI extends VerticalLayout with Spacing {
-  class LimitedSettings extends HorizontalLayout with Spacing with UndefinedSize {
+  class CustomSettingsUI extends HorizontalLayout with Spacing with UndefinedSize {
     val btnEdit = new Button("Define") with LinkStyle
     val btnEditNew = new Button("Define for new document") with LinkStyle
   }
 
-  val lim1Settings = new LimitedSettings
-  val lim2Settings = new LimitedSettings
+  val customSettings1 = new CustomSettingsUI
+  val customSettings2 = new CustomSettingsUI
 
   // chk box Limited 1 is more privileged than limited 2.
   // lim: Default template for new pages - list
   //------------
-  // todo: add filter UI
-  val tblRolesPermissions = new Table with ValueType[RoleId] with SingleSelect with Immediate with Reloadable
+
+  val mbRolesPermissions = new MenuBar
+  val miRolePermissionAdd = mbRolesPermissions.addItem("Add", null)
+  val miRolePermissionEdit = mbRolesPermissions.addItem("Edit", null)
+  val miRolePermissionDelete = mbRolesPermissions.addItem("Delete", null)
+  val tblRolesPermissions = new Table with ValueType[RoleId] with ItemIdType[RoleId] with SingleSelect with Immediate with Reloadable
+//  val lytRoles = new VerticalLayout with Spacing {
+//    addComponents(this, mbRole, tblRolesPermissions)
+//  }
 
   addContainerProperties(tblRolesPermissions,
     ContainerProperty[String]("Role"),
-    ContainerProperty[String]("None"),
     ContainerProperty[String]("Read"),
-    ContainerProperty[String]("Lim-1"),
-    ContainerProperty[JBoolean]("Lim-2"),
-    ContainerProperty[JBoolean]("Full"))
+    ContainerProperty[String]("Limited-1"),
+    ContainerProperty[String]("Limited-2"),
+    ContainerProperty[String]("Full"))
+
+  addComponents(this, mbRolesPermissions, tblRolesPermissions, customSettings1, customSettings2)
 
   // share
   //Share
 	// chk Show link to unauthorized users
 	// chk Share the document with other administrators
   // label: Created by Super, Admin (admin)
+}
+
+class AddRolePermissionDialogContent extends FormLayout {
+  val lstRoles = new ListSelect("Roles") with SingleSelect2[RoleId] with NoNullSelection
+  val ogPermission = new OptionGroup("Permission", Array("Read", "Limited-1", "Limited-2", "Full").toList) //with ValueType[RoleId]
+              
+  addComponents(this, lstRoles, ogPermission)
+}
+
+class EditRolePermissionDialogContent extends FormLayout {
+  val lstRoles = new ListSelect("Roles")
+  val ogPermission = new OptionGroup("Permission", Array("Read", "Limited-1", "Limited-2", "Full").toList)
+
+  addComponents(this, lstRoles, ogPermission)
 }
 
 class LimitedPermissionsDialogContent extends FormLayout {

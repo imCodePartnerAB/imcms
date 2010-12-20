@@ -2,8 +2,8 @@ package com.imcode
 package imcms
 
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
-import com.vaadin.data.{Container, Property}
 import com.vaadin.ui._
+import com.vaadin.data.{Item, Container, Property}
 
 package object vaadin {
 
@@ -85,7 +85,6 @@ package object vaadin {
   trait ItemIdType[A >: Null] extends Container {
     def itemIds = getItemIds.asInstanceOf[JCollection[A]]
     def item(id: A) = getItem(id)
-    //abstract override def addItem(id: A) = super.addItem(id)
   }
 
   trait DataType[A >: Null] extends AbstractComponent {
@@ -182,6 +181,16 @@ package object vaadin {
   }
 
   trait SingleSelect extends AbstractSelect {
+    setMultiSelect(false)
+  }
+
+  trait XSelect[T >: Null] extends AbstractSelect with ItemIdType[T] {
+    def addItem(id: T, caption:String): Item = letret(addItem(id)) { _ =>
+      setItemCaption(id, caption)
+    }
+  }
+
+  trait SingleSelect2[T >: Null] extends XSelect[T] with ValueType[T] {
     setMultiSelect(false)
   }
 
