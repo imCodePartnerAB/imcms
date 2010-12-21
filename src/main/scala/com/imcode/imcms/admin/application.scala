@@ -31,6 +31,8 @@ import com.vaadin.ui.Window.Notification;
 // Controller VS HANDLER?
 /* 
  * Administration is performed using managers and editors.
+ * -or-??
+ *  Administration is performed using managers, editors and flows.
  *
  * A manager controls one or more editor.
  * Editor is intended to change and validate edited object (entity) model but not to perform physical changes - that a
@@ -47,31 +49,59 @@ import com.vaadin.ui.Window.Notification;
  */
 
 
-object ChatTopic extends Actor {
-
-  case class Subscribe(subscriber: Actor)
-  case class Message(text: String)
-
-  var subscribers: Set[Actor] = Set.empty
-
-  def act {
-    loop {
-      react {
-        case Subscribe(subscriber) =>
-          subscribers += subscriber // send 10 last messages?
-        case msg : Message => subscribers foreach (_ ! msg) 
-        case other => println("Unknown message: " + other)
-      }
-    }
-  }
-
-  start()
-}
+//object ChatTopic extends Actor {
+//
+//  case class Subscribe(subscriber: Actor)
+//  case class Message(text: String)
+//
+//  var subscribers: Set[Actor] = Set.empty
+//
+//  def act {
+//    loop {
+//      react {
+//        case Subscribe(subscriber) =>
+//          subscribers += subscriber // send 10 last messages?
+//        case msg : Message => subscribers foreach (_ ! msg)
+//        case other => println("Unknown message: " + other)
+//      }
+//    }
+//  }
+//
+//  start()
+//}
 
 
 class Application extends com.vaadin.Application with VaadinApplication { application =>
 
-  //setTheme("imcms")
+  // Main menu items IDS
+  object NewMenu {
+    object About
+    object Settings {
+      object Languages
+      object Properties
+    }
+    object Documents {
+      object Categories
+      object Templates
+      object Profiles
+      object Links
+      object Structure
+      object Edit
+    }
+    object Permissions {
+      object Users
+      object Roles
+      object IP_Access
+    }
+    object Statistics {
+      object SearchTerms
+      object SessionCounter
+    }
+    object Filesystem
+    object System {
+      object Cache
+    }
+  }
   
   object Menu extends MenuItem {
     object About extends MenuItem(this)
@@ -1335,238 +1365,92 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
   
   // CategoryDialogContent
-  trait CategoryDialog { this: OkCancelDialog =>
-    val txtId = new TextField("Id") {
-      setEnabled(false)
-      setColumns(11)
-    }
-    val txtName = new TextField("Name")
-    val txtDescription = new TextField("Description") {
-      setRows(5)
-      setColumns(11)
-    }
-    val sltType = new Select("Type") with ValueType[String] with NoNullSelection
-
-    
-    val embIcon = new IconImagePicker(50, 50) {
-      setCaption("Icon")
-
-      btnChoose addListener block {
-        initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg")
-                with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
-                
-          let(w.mainContent = new FileBrowserWithImagePreview(100, 100)) { b =>
-            b.browser setSplitPosition 30
-            b.browser addDirectoryTree("Images", new File(Imcms.getPath, "images"))
-            b.browser.tblDirContent setSelectable true
-
-            w.addOkButtonClickListener {
-              b.preview.image match {
-                case Some(source) => showImage(source)
-                case _ => showStub
-              }
-            }
-          }
-
-          w setWidth "650px"
-          w setHeight "350px"
-        }
-      }
-    }
-
-    mainContent = new HorizontalLayout {
-      addComponents(this, new FormLayout { addComponents(this, txtId, txtName, sltType, embIcon, txtDescription) })
-      setSizeUndefined
-    }
-  }
+//  trait CategoryDialog { this: OkCancelDialog =>
+//    val txtId = new TextField("Id") {
+//      setEnabled(false)
+//      setColumns(11)
+//    }
+//    val txtName = new TextField("Name")
+//    val txtDescription = new TextField("Description") {
+//      setRows(5)
+//      setColumns(11)
+//    }
+//    val sltType = new Select("Type") with ValueType[String] with NoNullSelection
+//
+//
+//    val embIcon = new IconImagePicker(50, 50) {
+//      setCaption("Icon")
+//
+//      btnChoose addListener block {
+//        initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg")
+//                with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
+//
+//          let(w.mainContent = new FileBrowserWithImagePreview(100, 100)) { b =>
+//            b.browser setSplitPosition 30
+//            b.browser addDirectoryTree("Images", new File(Imcms.getPath, "images"))
+//            b.browser.tblDirContent setSelectable true
+//
+//            w.addOkButtonClickListener {
+//              b.preview.image match {
+//                case Some(source) => showImage(source)
+//                case _ => showStub
+//              }
+//            }
+//          }
+//
+//          w setWidth "650px"
+//          w setHeight "350px"
+//        }
+//      }
+//    }
+//
+//    mainContent = new HorizontalLayout {
+//      addComponents(this, new FormLayout { addComponents(this, txtId, txtName, sltType, embIcon, txtDescription) })
+//      setSizeUndefined
+//    }
+//  }
 
 
   def categories = new TabSheetView {
     val categoryMapper = Imcms.getServices.getCategoryMapper
 
-    addTab(new VerticalLayoutView("Category") {
-      addComponent(new TableViewTemplate {
+    import com.imcode.imcms.admin.document.category.CategoryManager
+    import com.imcode.imcms.admin.document.category.`type`.CategoryTypeManager
+    val categoryManager = new CategoryManager(application)
+    val ui = categoryManager.ui
+    ui.setCaption("Category")
+    addTab(ui)
 
-        override def tableProperties =
-          ("Id", classOf[JInteger],  null) ::
-          ("Name", classOf[String],  null) ::
-          ("Description", classOf[String],  null) ::
-          ("Icon", classOf[String],  null) ::
-          ("Type", classOf[String],  null) ::
-          Nil
-
-        override def tableItems(): Seq[(AnyRef, Seq[AnyRef])] = categoryMapper.getAllCategories map { c =>
-          (Int box c.getId, Seq(Int box c.getId, c.getName, c.getDescription, c.getImageUrl, c.getType.getName))
-        }
-
-        val btnAdd = new Button("Add")
-        val btnEdit = new Button("Edit")
-        val btnDelete = new Button("Delete")
-
-        addComponents(pnlHeader, btnAdd, btnEdit, btnDelete)
-
-        btnAdd addListener block {
-          initAndShow(new OkCancelDialog("New category") with CategoryDialog) { w =>
-            categoryMapper.getAllCategoryTypes foreach { c =>
-              w.sltType addItem c.getName
-            }
-
-            w addOkButtonClickListener {
-              let(new CategoryDomainObject) { c =>
-                c setName w.txtName.getValue.asInstanceOf[String]
-                c setDescription w.txtDescription.getValue.asInstanceOf[String]
-                c setImageUrl ""//embIcon
-                c setType categoryMapper.getCategoryTypeByName(w.sltType.getValue.asInstanceOf[String])
-
-                categoryMapper saveCategory c
-                reloadTableItems
-              }
-            }
-          }
-        }
-
-        btnEdit addListener block {
-          tblItems.getValue match {
-            case id: JInteger =>
-              categoryMapper.getCategoryById(id.intValue) match {
-                case null => error("No such category")
-                case category =>
-                  initAndShow(new OkCancelDialog("Edit category") with CategoryDialog) { w =>
-                    categoryMapper.getAllCategoryTypes foreach { c =>
-                      w.sltType addItem c.getName
-                    }
-
-                    w.txtId setValue id
-                    w.txtName setValue category.getName
-                    w.txtDescription setValue category.getDescription
-
-                    w addOkButtonClickListener {
-                      category setName w.txtName.value
-                      category setDescription w.txtDescription.value
-                      category setType categoryMapper.getCategoryTypeByName(w.sltType.value)
-
-                      categoryMapper saveCategory category
-                      reloadTableItems
-                    }
-                  } // initAndShow
-              }
-
-            case _ =>
-          }
-        }
-
-        btnDelete addListener block {
-          initAndShow(new ConfirmationDialog("Delete category")) { w =>
-            w addOkButtonClickListener {
-              tblItems.getValue match {
-                case null =>
-                case id: JInteger =>
-                  let(categoryMapper getCategoryById id.intValue) { c =>
-                    categoryMapper deleteCategoryFromDb c   
-                  }
-                  reloadTableItems
-              }
-            }
-          }
-        }
-      })
-    })
-
-    addTab(new VerticalLayoutView("Category type") {
-      addComponent(new TableViewTemplate {
-        override def tableProperties = List(
-          ("Id", classOf[JInteger],  null),
-          ("Name", classOf[String],  null),
-          ("Multi select?", classOf[JBoolean],  null),
-          ("Inherited to new documents?", classOf[JBoolean],  null),
-          ("Used by image archive?", classOf[JBoolean],  null))
-//        override def tableProperties =
-//          ("Id", classOf[JInteger],  null) ::
-//          ("Name", classOf[String],  null) ::
-//          ("Multi select?", classOf[JBoolean],  null) ::
-//          ("Inherited to new documents?", classOf[JBoolean],  null) ::
-//          ("Used by image archive?", classOf[JBoolean],  null) ::
-//          Nil
-
-        override def tableItems(): Seq[(AnyRef, Seq[AnyRef])] = categoryMapper.getAllCategoryTypes map { t =>
-          (Int box t.getId, Seq(Int box t.getId, t.getName, Boolean box (t.getMaxChoices > 0), Boolean box t.isInherited, Boolean box t.isImageArchive))
-        }
-
-        val btnNew = new Button("New")
-        val btnEdit = new Button("Edit")
-        val btnDelete = new Button("Delete")
-
-        addComponents(pnlHeader, btnNew, btnEdit, btnDelete)
-
-        btnNew addListener block {
-          initAndShow(new OkCancelDialog("New categor type")) { w =>
-            val txtId = new TextField("Id")
-            val txtName = new TextField("Name")
-            val chkMultiSelect = new CheckBox("Multiselect")
-            val chkInherited = new CheckBox("Inherited to new documents")
-            val chkImageArchive = new CheckBox("Used by image archive")
-            
-            w.mainContent = new FormLayout {
-              addComponents(this, txtId, txtName, chkMultiSelect, chkInherited, chkImageArchive)
-
-              w.addOkButtonClickListener {
-                let(new CategoryTypeDomainObject(0,
-                    txtName.getValue.asInstanceOf[String],
-                    if (chkMultiSelect.booleanValue) 1 else 0,
-                    chkInherited.booleanValue)) {
-                  categoryType =>
-                  categoryType.setImageArchive(chkImageArchive.booleanValue)
-
-                  categoryMapper addCategoryTypeToDb categoryType
-                }
-
-                reloadTableItems
-              }
-            }
-          }
-        }
-
-        btnDelete addListener block {
-          tblItems.getValue match {
-            case null =>
-            case id: JInteger =>
-              initAndShow(new ConfirmationDialog("Delete category type")) { w =>
-                w.addOkButtonClickListener {
-                  val categoryType = categoryMapper getCategoryTypeById id.intValue
-
-                  categoryMapper deleteCategoryTypeFromDb  categoryType
-                  reloadTableItems
-                }
-              }
-          }
-        }
-      })
-    })
+    val categoryTypeManager = new CategoryTypeManager(application)
+    val tui = categoryTypeManager.ui
+    tui.setCaption("Category type")
+    addTab(tui)
   } // category
 
   //
   // Chat
   //
-  lazy val chat = new Chat {
-    setCaption("Chat messages")
-      setMargin(true)
-      val subscriber = actor {
-        loop {
-          react {
-            case ChatTopic.Message(text) =>
-              pnlMessages addMessage new MessageView("#user#", text)
-              pnlMessages.requestRepaint
-            case _ =>
-          }
-        }
-      }
-
-      btnSend addListener block {
-        ChatTopic ! ChatTopic.Message(txtText.getValue.asInstanceOf[String])
-        txtText setValue ""
-      }
-      ChatTopic ! ChatTopic.Subscribe(subscriber)
-    } //chat
+  lazy val chat =  new VerticalLayout
+//    new Chat {
+//    setCaption("Chat messages")
+//      setMargin(true)
+//      val subscriber = actor {
+//        loop {
+//          react {
+//            case ChatTopic.Message(text) =>
+//              pnlMessages addMessage new MessageView("#user#", text)
+//              pnlMessages.requestRepaint
+//            case _ =>
+//          }
+//        }
+//      }
+//
+//      btnSend addListener block {
+//        ChatTopic ! ChatTopic.Message(txtText.getValue.asInstanceOf[String])
+//        txtText setValue ""
+//      }
+//      ChatTopic ! ChatTopic.Subscribe(subscriber)
+//    } //chat
 
 
   //
