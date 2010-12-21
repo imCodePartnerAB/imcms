@@ -1,48 +1,24 @@
-package com.imcode.imcms.vaadin
+package com.imcode
+package imcms.vaadin
 
 import scala.collection.JavaConversions._
-import com.imcode._
-import com.vaadin.event.ItemClickEvent
-import com.vaadin.terminal.gwt.server.WebApplicationContext
+//import com.vaadin.event.ItemClickEvent
+//import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.vaadin.ui._
-import com.vaadin.data.Property._
-import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
-import imcms.servlet.superadmin.AdminSearchTerms
-import imcode.server.document.DocumentDomainObject
-import com.imcode.imcms.api.Document.PublicationStatus
-import imcode.util.Utility
-import imcode.server.user._
-import com.imcode.imcms.api.{SystemProperty, IPAccess, Document}
-import imcode.server.{SystemData, Imcms}
-import com.vaadin.ui.Layout.MarginInfo
+//import com.vaadin.data.Property._
+//import imcms.servlet.superadmin.AdminSearchTerms
+//import imcode.server.document.DocumentDomainObject
+//import com.imcode.imcms.api.Document.PublicationStatus
+//import imcode.util.Utility
+//import imcode.server.user._
+//import com.imcode.imcms.api.{SystemProperty, IPAccess, Document}
+//import imcode.server.{SystemData, Imcms}
+//import com.vaadin.ui.Layout.MarginInfo
 import java.util.concurrent.atomic.AtomicReference
-import java.lang.{String, Class => JClass, Boolean => JBoolean, Integer => JInteger}
 import java.io.{ByteArrayOutputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
 import com.vaadin.Application
 import java.util.{Collections, LinkedList, ResourceBundle, Date, Collection => JCollection}
-import com.vaadin.data.{Item, Container, Property}
-//class ButtonWrapper(button: Button) {
-//
-//  def addListener(eventHandler: Button#ClickEvent => Unit) =
-//    button add new Button.ClickListener {
-//      def buttonClick(event: Button#ClickEvent) = eventHandler(event)
-//    }
-//
-//  def addListener(block: => Unit) = addListener { _ => block }
-//}
-//
-//object ButtonWrapper {
-//  implicit def wrapButton(button: Button) = new ButtonWrapper(button)
-//}
-
-//class AbstractComponentContainerWrapper(container: AbstractComponentContainer) {  
-//
-//  def addComponents(component: Component, components: Component*) = {
-//    component +: components foreach container.addComponent
-//    container
-//  }
-//}
 
 
 trait VaadinApplication extends Application {
@@ -64,15 +40,6 @@ trait VaadinApplication extends Application {
 
      val getKeys = Collections.enumeration(List.empty[String])
   }
-}
-
-/**
- * Class to represent container property.
- *
- * //link -> addContainerProperties
- */
-case class ContainerProperty[T >: Null](id: AnyRef, defaultValue: AnyRef = null)(implicit m: Manifest[T]) {
-  val clazz = m.erasure
 }
 
 /**
@@ -229,6 +196,7 @@ class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(ca
 
 
 /** Creates root item; root is not displayed */
+@deprecated
 class MenuItem(val parent: MenuItem = null, val handler: () => Unit = () => {}) {
 
   import collection.mutable.ListBuffer
@@ -331,14 +299,14 @@ class TabSheetView extends VerticalLayout {
 }
 
 /** Vertical layout with margin, spacing and optional caption. */
-class VerticalLayoutView(caption: String = "", spacing: Boolean=true, margin: Boolean=true) extends VerticalLayout {
+class VerticalLayoutUI(caption: String = "", spacing: Boolean=true, margin: Boolean=true) extends VerticalLayout {
   setCaption(caption)
   setMargin(margin)
   setSpacing(spacing)
 }
 
 /** Horizontal layout with optional margin, spacing and caption. */
-class HorizontalLayoutView(caption: String = "", spacing: Boolean=true, margin: Boolean=false) extends HorizontalLayout {
+class HorizontalLayoutUI(caption: String = "", spacing: Boolean=true, margin: Boolean=false) extends HorizontalLayout {
   setCaption(caption)
   setMargin(margin)
   setSpacing(spacing)
@@ -463,6 +431,7 @@ trait UploadEventHandler extends Upload.SucceededListener with Upload.FailedList
 //}
 
 
+@deprecated("prototype code")
 class TableView extends VerticalLayout {
 
   val table = new Table with ValueType[JInteger] {

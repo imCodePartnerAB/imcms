@@ -192,12 +192,12 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
   }
 
   def NA(id: Any) = new TabSheetView {
-    addTab(new VerticalLayoutView(id.toString) {
+    addTab(new VerticalLayoutUI(id.toString) {
       addComponent(new Label("NOT AVAILABLE"))
     })
   }
 
-  val labelAbout = new VerticalLayoutView {
+  val labelAbout = new VerticalLayoutUI {
     addComponent(new Panel("About") {
       let(getContent) {
         case c: VerticalLayout =>
@@ -590,7 +590,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     resetControls
 
     new TabSheetView {
-      addTab(new VerticalLayoutView("Languages") {
+      addTab(new VerticalLayoutUI("Languages") {
         addComponent(new GridLayout(1,3) {
           addComponents(this, pnlControls, table, pnlReloadBar)
         })
@@ -600,7 +600,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
   
 
   def documentsTable = new TabSheetView {
-    addTab(new VerticalLayoutView("Documents") {
+    addTab(new VerticalLayoutUI("Documents") {
       val table = new Table()
       table.addContainerProperty("Page alias", classOf[String],  null)
       table.addContainerProperty("Status", classOf[String],  null)
@@ -741,7 +741,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     }
 
     new TabSheetView {
-      addTab(new VerticalLayoutView("IP Access") {    
+      addTab(new VerticalLayoutUI("IP Access") {
         addComponents(this,
           new Label("Users from a specific IP number or an intervall of numbers are given direct access to the system (so that the user does not have to log in)."),
           new IPAccessView)
@@ -850,7 +850,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     }
 
     new TabSheetView {
-      addTab(new VerticalLayoutView("Roles and their permissions.") {
+      addTab(new VerticalLayoutUI("Roles and their permissions.") {
         addComponent(new RolesView)
       })
     }
@@ -932,14 +932,14 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     reload()
 
     new TabSheetView {
-      addTab(new VerticalLayoutView("System Properties") {
+      addTab(new VerticalLayoutUI("System Properties") {
         addComponent(lytContent)
       })
     }   
   }
 
   def settingSessionCounter = new TabSheetView {
-    addTab(new VerticalLayoutView("Session counter") { self =>
+    addTab(new VerticalLayoutUI("Session counter") { self =>
       setSpacing(false)
       
       val lytData = new FormLayout {
@@ -1021,7 +1021,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
 
   lazy val searchTerms = new TabSheetView {
-    addTab(new VerticalLayoutView("Popular search terms") {
+    addTab(new VerticalLayoutUI("Popular search terms") {
       val tblTerms = new Table {
         addContainerProperties(this, ("Term", classOf[String], null), ("Count", classOf[String], null))
         setPageLength(10)
@@ -1066,22 +1066,22 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
 
 //  lazy val documentsLinks = new TabSheetView {
-//    addTab(new VerticalLayoutView("Validate links"))
+//    addTab(new VerticalLayoutUI("Validate links"))
 //  }
 //
 //  lazy val documentsProfiles = new TabSheetView {
-//    addTab(new VerticalLayoutView("Profiles"))
+//    addTab(new VerticalLayoutUI("Profiles"))
 //  }
 //
 //  lazy val documentsTemplates = new TabSheetView {
-//    addTab(new VerticalLayoutView("Templates"))
+//    addTab(new VerticalLayoutUI("Templates"))
 //  }
 
 
   lazy val filesystem = new TabSheetView {
     tabSheet.setSizeFull
     setSizeFull
-    addTab(new VerticalLayoutView("File manager") {
+    addTab(new VerticalLayoutUI("File manager") {
       setSizeFull
       val lytButtons = new HorizontalLayout {
         setSpacing(true)
@@ -1138,7 +1138,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     val templateMapper = Imcms.getServices.getTemplateMapper
 
     // templates tab
-    addTab(new VerticalLayoutView("Templates") {
+    addTab(new VerticalLayoutUI("Templates") {
       addComponent(new TableViewTemplate {
         override def tableProperties() =
           ("Name", classOf[String], null) ::
@@ -1260,7 +1260,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
 
     // templates groups
-    addTab(new VerticalLayoutView("Template group") {
+    addTab(new VerticalLayoutUI("Template group") {
       addComponent(new TableViewTemplate {
         override def tableProperties() =
           ("Id", classOf[JInteger], null) ::
@@ -1458,7 +1458,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
   //
   lazy val users = {
     new TabSheetView {
-      addTab(new VerticalLayoutView("Users and their permissions.") {
+      addTab(new VerticalLayoutUI("Users and their permissions.") {
         addComponent(new UserManager(application) ui)
       })
     }
@@ -1468,7 +1468,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
   //
   //
   def docStructure = new TabSheetView {
-    addTab(new VerticalLayoutView("Document structure outline") {
+    addTab(new VerticalLayoutUI("Document structure outline") {
       val lytMenu = new HorizontalLayout {
         setSpacing(true)
         val txtId = new TextField("Text doc (meta) id")

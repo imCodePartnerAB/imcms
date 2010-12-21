@@ -162,7 +162,7 @@ class CategoryDialogContentUI(app: VaadinApplication) extends FormLayout {
 }
 
 //def categories = new TabSheetView {
-//  addTab(new VerticalLayoutView("Category type") {
+//  addTab(new VerticalLayoutUI("Category type") {
 //    addComponent(new TableViewTemplate {
 //      override def tableProperties = List(
 //        ("Id", classOf[JInteger],  null),

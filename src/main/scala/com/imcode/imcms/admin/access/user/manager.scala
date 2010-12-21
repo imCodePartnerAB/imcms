@@ -122,17 +122,17 @@ class UserDialogContent extends FormLayout {
   val sltUILanguage = new Select("Interface language") with ValueType[String] with NoNullSelection
   val txtEmail = new TextField("Email")
 
-  val lytPassword = new HorizontalLayoutView("Password") {
+  val lytPassword = new HorizontalLayoutUI("Password") {
       addComponent(txtPassword)
       addComponent(txtVerifyPassword)
   }
 
-  val lytName = new HorizontalLayoutView("Name") {
+  val lytName = new HorizontalLayoutUI("Name") {
       addComponent(txtFirstName)
       addComponent(txtLastName)
   }
 
-  val lytLogin = new HorizontalLayoutView("Login") {
+  val lytLogin = new HorizontalLayoutUI("Login") {
     addComponents(this, txtLogin, chkActivated)
     setComponentAlignment(chkActivated, Alignment.BOTTOM_LEFT)
   }
