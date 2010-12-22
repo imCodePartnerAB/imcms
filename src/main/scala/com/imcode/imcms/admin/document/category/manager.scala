@@ -22,10 +22,10 @@ class CategoryManager(app: VaadinApplication) {
   val ui: CategoryManagerUI = letret(new CategoryManagerUI) { ui =>
     ui.tblCategories.itemsProvider = () => {
       for {
-        cdo <- categoryMapper.getAllCategories
-        id = Int box cdo.getId
+        vo <- categoryMapper.getAllCategories
+        id = Int box vo.getId
       } yield {
-        id -> Seq(id, cdo.getName, cdo.getDescription, cdo.getImageUrl, cdo.getType.getName)
+        id -> Seq(id, vo.getName, vo.getDescription, vo.getImageUrl, vo.getType.getName)
       }
     }
 
@@ -90,8 +90,11 @@ class CategoryManager(app: VaadinApplication) {
               voc setType categoryMapper.getCategoryTypeByName(c.sltType.value)
               // todo: move validate into separate fn
               val validationError: Option[String] = voc.getName match {
-                case "" => Some("Category name is not set")
-                case name => ?(categoryMapper.getCategoryByTypeAndName(voc.getType, name) map (_ => "Category with such name and type already exists")
+                case "" => ?("Category name is not set")
+                case name => ?(categoryMapper.getCategoryByTypeAndName(voc.getType, name)) collect {
+                  case category if category.getId != voc.getId =>
+                    "Category with such name and type already exists"
+                }
               }
 
               validationError foreach { msg =>
@@ -107,7 +110,16 @@ class CategoryManager(app: VaadinApplication) {
                     // todo: log ex, provide custom dialog with details -> show stack
                     app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
                     throw ex
-                  case _ => reload()
+                  case _ =>
+                    let(if (isNew) "New category has been added" else "Category has been updated") { msg =>
+                      app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
+                    }
+
+//                    let (Int box voc.getId) { id =>
+//                      ui.tblCategories.addItem(Array[AnyRef](id, voc.getDescription, voc.getImageUrl, voc.getType.getName), id)
+//                      ui.tblCategories.requestRepaint()
+//                    }
+                    reload()
                 }
               }
             }
