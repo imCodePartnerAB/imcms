@@ -26,7 +26,9 @@ import java.io.{ByteArrayInputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
 import imcode.server.document._
 import com.imcode.imcms.vaadin._
-import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.Window.Notification
+import com.vaadin.terminal.gwt.server.WebApplicationContext
+;
 
 // Controller VS HANDLER?
 /* 
@@ -72,6 +74,18 @@ import com.vaadin.ui.Window.Notification;
 
 
 class Application extends com.vaadin.Application with VaadinApplication { application =>
+
+  def canAccess {
+//            if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() ) {
+//                Utility.forwardToLogin( request, response );
+//                return;
+//            }
+//
+//        if ( !user.canAccessAdminPages() ) {
+//            Utility.forwardToLogin( request, response );
+//            return;
+//        }
+  }
 
   // Main menu items IDS
   object NewMenu {
@@ -1363,54 +1377,6 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
 
 
-  
-  // CategoryDialogContent
-//  trait CategoryDialog { this: OkCancelDialog =>
-//    val txtId = new TextField("Id") {
-//      setEnabled(false)
-//      setColumns(11)
-//    }
-//    val txtName = new TextField("Name")
-//    val txtDescription = new TextField("Description") {
-//      setRows(5)
-//      setColumns(11)
-//    }
-//    val sltType = new Select("Type") with ValueType[String] with NoNullSelection
-//
-//
-//    val embIcon = new IconImagePicker(50, 50) {
-//      setCaption("Icon")
-//
-//      btnChoose addListener block {
-//        initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg")
-//                with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
-//
-//          let(w.mainContent = new FileBrowserWithImagePreview(100, 100)) { b =>
-//            b.browser setSplitPosition 30
-//            b.browser addDirectoryTree("Images", new File(Imcms.getPath, "images"))
-//            b.browser.tblDirContent setSelectable true
-//
-//            w.addOkButtonClickListener {
-//              b.preview.image match {
-//                case Some(source) => showImage(source)
-//                case _ => showStub
-//              }
-//            }
-//          }
-//
-//          w setWidth "650px"
-//          w setHeight "350px"
-//        }
-//      }
-//    }
-//
-//    mainContent = new HorizontalLayout {
-//      addComponents(this, new FormLayout { addComponents(this, txtId, txtName, sltType, embIcon, txtDescription) })
-//      setSizeUndefined
-//    }
-//  }
-
-
   def categories = new TabSheetView {
     val categoryMapper = Imcms.getServices.getCategoryMapper
 
@@ -1419,6 +1385,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     val categoryManager = new CategoryManager(application)
     val ui = categoryManager.ui
     ui.setCaption("Category")
+    ui.setMargin(true)
     addTab(ui)
 
     val categoryTypeManager = new CategoryTypeManager(application)

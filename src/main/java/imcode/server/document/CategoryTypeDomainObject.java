@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 @Entity(name="CategoryType")
 @Table(name="category_types")
-public class CategoryTypeDomainObject implements Comparable, Serializable {
+public class CategoryTypeDomainObject implements Cloneable, Comparable, Serializable {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="category_type_id")	
@@ -113,5 +113,14 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
 
     public boolean isSingleSelect() {
         return !isMultiselect();
+    }
+
+    @Override
+    public CategoryTypeDomainObject clone() {
+        try {
+            return (CategoryTypeDomainObject)super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -218,7 +218,7 @@ class MetaEditor(val application: VaadinApplication, val model: MetaModel) {
       }
 
       // fire event
-      lyt.chkEnd.fireClick
+      lyt.chkEnd.fireClick()
     }
   }
 

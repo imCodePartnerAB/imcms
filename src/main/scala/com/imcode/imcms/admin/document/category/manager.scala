@@ -3,25 +3,19 @@ package imcms.admin.document.category
 
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
-import imcode.server.user._
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
 import com.imcode.imcms.admin.filesystem.{IconImagePicker, FileBrowserWithImagePreview}
 import imcode.server.document.{CategoryDomainObject}
 import java.io.File
 
-object Types {
-  type CategoryId = JInteger
-  type CategoryTypeId = JInteger
-}
-
-import Types.{CategoryId}
-
+// Only Superadmin can manage categories
+// todo: separate object with methods such as canManageXXX
 
 class CategoryManager(app: VaadinApplication) {
-  val ui = letret(new CategoryManagerUI) { ui =>
-    val categoryMapper = Imcms.getServices.getCategoryMapper
+  private val categoryMapper = Imcms.getServices.getCategoryMapper
 
+  val ui: CategoryManagerUI = letret(new CategoryManagerUI) { ui =>
     ui.tblCategories.itemsProvider = () => {
       for {
         cdo <- categoryMapper.getAllCategories
@@ -31,82 +25,102 @@ class CategoryManager(app: VaadinApplication) {
       }
     }
 
-    ui.rcCategories.btnReload addListener block { ui.tblCategories.reload() }
+    ui.rc.btnReload addListener block { reload() }
+    ui.tblCategories addListener block { handleSelection() }
 
-    ui.miAdd setCommand block {
-      app.initAndShow(new OkCancelDialog("New category")) { dlg =>
-        let(dlg.setMainContent(new CategoryDialogContentUI(app))) { c =>
-          categoryMapper.getAllCategoryTypes foreach { ct =>
-            c.sltType addItem ct.getName
-          }
+    ui.miNew setCommand block {
+      editCategory(new CategoryDomainObject)
+    }
 
-          dlg addOkButtonClickListener {
-            let(new CategoryDomainObject) { cdo =>
-              cdo setName c.txtName.getValue.asInstanceOf[String]
-              cdo setDescription c.txtDescription.getValue.asInstanceOf[String]
-              cdo setImageUrl ""//embIcon
-              cdo setType categoryMapper.getCategoryTypeByName(c.sltType.getValue.asInstanceOf[String])
-
-              categoryMapper saveCategory cdo
-              ui.tblCategories.reload()
-            }
-          }
+    ui.miEdit setCommand block {
+      whenSelected(ui.tblCategories) { id =>
+        categoryMapper.getCategoryById(id.intValue) match {
+          case null => error("No such category")
+          case category => editCategory(category)
         }
       }
     }
-
-//    ui.miEdit setCommand block {
-//        tblItems.getValue match {
-//          case id: JInteger =>
-//            categoryMapper.getCategoryById(id.intValue) match {
-//              case null => error("No such category")
-//              case category =>
-//                initAndShow(new OkCancelDialog("Edit category") with CategoryDialog) { w =>
-//                  categoryMapper.getAllCategoryTypes foreach { c =>
-//                    w.sltType addItem c.getName
-//                  }
-//
-//                  w.txtId setValue id
-//                  w.txtName setValue category.getName
-//                  w.txtDescription setValue category.getDescription
-//
-//                  w addOkButtonClickListener {
-//                    category setName w.txtName.value
-//                    category setDescription w.txtDescription.value
-//                    category setType categoryMapper.getCategoryTypeByName(w.sltType.value)
-//
-//                    categoryMapper saveCategory category
-//                    reloadTableItems
-//                  }
-//                } // initAndShow
-//            }
-//
-//          case _ =>
-//        }
-//    }
 
     ui.miDelete setCommand block {
       whenSelected(ui.tblCategories) { id =>
         app.initAndShow(new ConfirmationDialog("Delete category")) { dlg =>
           dlg addOkButtonClickListener {
-            let(categoryMapper getCategoryById id.intValue) { cdo =>
-              categoryMapper deleteCategoryFromDb cdo
+            let(categoryMapper getCategoryById id.intValue) { vo =>
+              if (canManage) categoryMapper deleteCategoryFromDb vo
+              else error("NO PERMISSIONS")
             }
-            ui.tblCategories.reload()
+            reload()
           }
         }
       }
     }
   }
+
+  reload()
+
+  //todo: refactor out
+  private  def canManage = app.user.isSuperAdmin
+
+  // todo: validate
+  // todo: dialog title
+  private def editCategory(vo: CategoryDomainObject) = {
+    val id = vo.getId
+    val isNew = id == 0
+    val types = categoryMapper.getAllCategoryTypes
+
+    if (types.isEmpty) error("Please define al leat one type.")
+
+    app.initAndShow(new OkCancelDialog("--Category--")) { dlg =>
+      let(dlg.setMainContent(new CategoryDialogContentUI(app))) { c =>
+        types foreach { c.sltType addItem _.getName }
+
+        c.txtId.value = if (isNew) "" else id.toString
+        c.txtName.value = ?(vo.getName) getOrElse ""
+        c.txtDescription.value = ?(vo.getDescription) getOrElse ""
+
+        dlg addOkButtonClickListener {
+          // validate ...
+          let(vo.clone()) { voc =>
+            voc setName c.txtName.getValue.asInstanceOf[String]
+            voc setDescription c.txtDescription.getValue.asInstanceOf[String]
+            voc setImageUrl ""//embIcon
+            voc setType categoryMapper.getCategoryTypeByName(c.sltType.getValue.asInstanceOf[String])
+
+            if (canManage) categoryMapper saveCategory voc
+            else error("NO PERMISSIONS")
+            reload()
+          }
+        }
+      }
+    }
+  }
+
+  private def reload() {
+    ui.tblCategories.reload()
+
+    let(canManage) { canManage =>
+      ui.tblCategories.setSelectable(canManage)
+      forlet[{def setEnabled(e: Boolean)}](ui.mb, ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled canManage }
+    }
+
+    handleSelection()
+  }
+
+  private def handleSelection() {
+    let(canManage && ui.tblCategories.isSelected) { isSelected =>
+      ui.miEdit.setEnabled(isSelected)
+      ui.miDelete.setEnabled(isSelected)
+    }
+  }
 }
 
 class CategoryManagerUI extends VerticalLayout with Spacing {
-  val mbCategory = new MenuBar
-  val miAdd = mbCategory.addItem("Add", null)
-  val miEdit = mbCategory.addItem("Edit", null)
-  val miDelete = mbCategory.addItem("Delete", null)
+  val mb = new MenuBar
+  val miNew = mb.addItem("New", null)
+  val miEdit = mb.addItem("Edit", null)
+  val miDelete = mb.addItem("Delete", null)
   val tblCategories = new Table with Reloadable with SingleSelect2[CategoryId] with Selectable with Immediate
-  val rcCategories = new ReloadableContentUI(tblCategories)
+  val rc = new ReloadableContentUI(tblCategories)
 
   addContainerProperties(tblCategories,
     ContainerProperty[JInteger]("Id"),
@@ -115,10 +129,9 @@ class CategoryManagerUI extends VerticalLayout with Spacing {
     ContainerProperty[String]("Icon"),
     ContainerProperty[String]("Type"))
 
-  addComponents(this, mbCategory, rcCategories)
+  addComponents(this, mb, rc)
 }
 
-//todo: dialog, add param - undefined size=true?
 
 class CategoryDialogContentUI(app: VaadinApplication) extends FormLayout {
   val txtId = new TextField("Id") with Disabled {
@@ -160,76 +173,3 @@ class CategoryDialogContentUI(app: VaadinApplication) extends FormLayout {
 
   addComponents(this, txtId, txtName, sltType, embIcon, txtDescription)
 }
-
-//def categories = new TabSheetView {
-//  addTab(new VerticalLayoutUI("Category type") {
-//    addComponent(new TableViewTemplate {
-//      override def tableProperties = List(
-//        ("Id", classOf[JInteger],  null),
-//        ("Name", classOf[String],  null),
-//        ("Multi select?", classOf[JBoolean],  null),
-//        ("Inherited to new documents?", classOf[JBoolean],  null),
-//        ("Used by image archive?", classOf[JBoolean],  null))
-////        override def tableProperties =
-////          ("Id", classOf[JInteger],  null) ::
-////          ("Name", classOf[String],  null) ::
-////          ("Multi select?", classOf[JBoolean],  null) ::
-////          ("Inherited to new documents?", classOf[JBoolean],  null) ::
-////          ("Used by image archive?", classOf[JBoolean],  null) ::
-////          Nil
-//
-//      override def tableItems(): Seq[(AnyRef, Seq[AnyRef])] = categoryMapper.getAllCategoryTypes map { t =>
-//        (Int box t.getId, Seq(Int box t.getId, t.getName, Boolean box (t.getMaxChoices > 0), Boolean box t.isInherited, Boolean box t.isImageArchive))
-//      }
-//
-//      val btnNew = new Button("New")
-//      val btnEdit = new Button("Edit")
-//      val btnDelete = new Button("Delete")
-//
-//      addComponents(pnlHeader, btnNew, btnEdit, btnDelete)
-//
-//      btnNew addListener block {
-//        initAndShow(new OkCancelDialog("New categor type")) { w =>
-//          val txtId = new TextField("Id")
-//          val txtName = new TextField("Name")
-//          val chkMultiSelect = new CheckBox("Multiselect")
-//          val chkInherited = new CheckBox("Inherited to new documents")
-//          val chkImageArchive = new CheckBox("Used by image archive")
-//
-//          w.mainContent = new FormLayout {
-//            addComponents(this, txtId, txtName, chkMultiSelect, chkInherited, chkImageArchive)
-//
-//            w.addOkButtonClickListener {
-//              let(new CategoryTypeDomainObject(0,
-//                  txtName.getValue.asInstanceOf[String],
-//                  if (chkMultiSelect.booleanValue) 1 else 0,
-//                  chkInherited.booleanValue)) {
-//                categoryType =>
-//                categoryType.setImageArchive(chkImageArchive.booleanValue)
-//
-//                categoryMapper addCategoryTypeToDb categoryType
-//              }
-//
-//              reloadTableItems
-//            }
-//          }
-//        }
-//      }
-//
-//      btnDelete addListener block {
-//        tblItems.getValue match {
-//          case null =>
-//          case id: JInteger =>
-//            initAndShow(new ConfirmationDialog("Delete category type")) { w =>
-//              w.addOkButtonClickListener {
-//                val categoryType = categoryMapper getCategoryTypeById id.intValue
-//
-//                categoryMapper deleteCategoryTypeFromDb  categoryType
-//                reloadTableItems
-//              }
-//            }
-//        }
-//      }
-//    })
-//  })
-//} // category

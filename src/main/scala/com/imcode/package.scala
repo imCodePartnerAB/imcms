@@ -1,7 +1,5 @@
 package com
 
-import java.lang.{Class => JClass, Boolean => JBoolean, Integer => JInteger}
-
 package object imcode {
 
   type JClass[T >: Null] = java.lang.Class[T]
@@ -12,8 +10,10 @@ package object imcode {
   type JDouble = java.lang.Double
   type JCollection[A] = java.util.Collection[A]
 
+  //?? delete ??
   def flip[A1, A2, B](f: A1 => A2 => B): A2 => A1 => B = x1 => x2 => f(x2)(x1)
 
+  //?? delete ??
   object IntNumber {
     import scala.util.control.Exception.catching
 
@@ -34,37 +34,39 @@ package object imcode {
 //    }
 //  }
 
+  /** Creates zero arity fn from by-name parameter. */
+  def block(byName: => Unit) = byName _
+
   def ?[A >: Null](nullable: A) = Option(nullable)
 
-  def let[B, T](expr: B)(block: B => T): T = block(expr)
+  def let[B, T](expr: B)(fn: B => T): T = fn(expr)
 
-  def letret[B](expr: B)(block: B => Any): B = {
-    block(expr)
+  def letret[B](expr: B)(fn: B => Any): B = {
+    fn(expr)
     expr
   }
 
-  def forlet[T](exprs: T*)(block: T => Unit): Unit = exprs foreach block  
+  def forlet[T](exprs: T*)(fn: T => Unit): Unit = exprs foreach fn
 
-  def using[R <: {def close(): Unit}, T](resource: R)(block: R => T): T = try {
-    block(resource)
+  def using[R <: {def close(): Unit}, T](resource: R)(fn: R => T): T = try {
+    fn(resource)
   } finally {
     resource.close()
   }
 
-  def bmap[T](test: => Boolean)(block: => T): List[T] = {
+  def bmap[T](test: => Boolean)(fn: => T): List[T] = {
     import collection.mutable.ListBuffer
     
     val ret = new ListBuffer[T]
-    while (test) ret += block
+    while (test) ret += fn
     ret.toList
   }
-
-  //def unit(block: => Unit) = block _
 
   /**
    * Converts camel-case string into underscore.
    * ex: IPAccess => ip_access, SearchTerms => search_terms, mrX => mr_x, iBot => i_bot
    */
+  @deprecated("prototype")
   def camelCaseToUnderscore(s: String): String = {
     def camelCaseToUnderscore(chars: List[Char]): List[Char] =
       chars span (c => c.isLower || !c.isLetter) match {
@@ -79,5 +81,5 @@ package object imcode {
       }
 
     camelCaseToUnderscore(s.toList) mkString
-  }  
+  }
 }

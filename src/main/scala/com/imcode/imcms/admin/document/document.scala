@@ -130,7 +130,7 @@ class URLDocEditorUI extends FormLayout {
  */
 class FileDocEditorUI extends VerticalLayout {
   val menuBar = new MenuBar
-  val miAdd = menuBar.addItem("Add", null)
+  val miNew = menuBar.addItem("Add", null)
   val miEdit = menuBar.addItem("Edit", null)
   val miDelete = menuBar.addItem("Delete", null)
   val miSetDefault = menuBar.addItem("Set default", null)
@@ -192,7 +192,7 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject, mimeT
 
     ui.tblFiles.reload()
 
-    ui.miAdd setCommand block {
+    ui.miNew setCommand block {
       app.initAndShow(new OkCancelDialog("Add file")) { w =>
         let(w setMainContent new FileDocFileDialogContent) { c =>
           for (MimeType(name, displayName) <- mimeTypes) {

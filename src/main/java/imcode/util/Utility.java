@@ -39,6 +39,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import javax.servlet.http.HttpSession;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -126,7 +127,11 @@ public class Utility {
     }
 
     public static UserDomainObject getLoggedOnUser( HttpServletRequest req ) {
-        return (UserDomainObject)req.getSession().getAttribute( LOGGED_IN_USER );
+        return getLoggedOnUser(req.getSession());
+    }
+
+    public static UserDomainObject getLoggedOnUser( HttpSession session ) {
+        return (UserDomainObject)session.getAttribute( LOGGED_IN_USER );
     }
 
     public static int compareDatesWithNullFirst( Date date1, Date date2 ) {

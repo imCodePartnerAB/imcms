@@ -7,16 +7,8 @@ import imcode.server.user._
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
 import imcode.server.document.{CategoryTypeDomainObject}
+import com.imcode.imcms.admin.document.category.{CategoryTypeId}
 
-object Types {
-  type CategoryId = JInteger
-  type CategoryTypeId = JInteger
-}
-
-import Types.{CategoryTypeId}
-
-
-//----------------------------------------------------------------------------------------------------------------------
 class CategoryTypeManager(app: VaadinApplication) {
   val ui = letret(new CategoryTypeManagerUI) { ui =>
     val categoryMapper = Imcms.getServices.getCategoryMapper

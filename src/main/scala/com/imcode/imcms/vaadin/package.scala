@@ -2,10 +2,15 @@ package com.imcode
 package imcms
 
 import com.vaadin.ui._
-import com.vaadin.data.{Item, Container, Property}
+import com.vaadin.data.{Container, Property}
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 
 package object vaadin {
+
+  // Current IDEA plugin can not resolve certain types from vaadin package without the import line below.
+  // However, it is not required by scala compiler
+  // todo: remove when the plugin will become smarter
+  import vaadin._
 
   def menuCommand(handler: MenuBar#MenuItem => Unit) = new MenuBar.Command {
     def menuSelected(mi: MenuBar#MenuItem) = handler(mi)
@@ -20,12 +25,6 @@ package object vaadin {
     new Property.ValueChangeListener {
       def valueChange(event: ValueChangeEvent) = handler(event)
     }
-  
-  /**
-   * Creates zero arity fn from by-name parameter.
-   * Used in listeners and menu commands.
-   */
-  def block(b: => Unit) = b _
 
   implicit def fn0ToButtonClickListener(f: () => Unit) = buttonClickListener { _ => f() }
   
@@ -37,15 +36,6 @@ package object vaadin {
     component +: components foreach { c => container addComponent c }
     container
   }
-
-
-//  implicit def wrapAbstractComponentContainer(container: AbstractComponentContainer): AbstractComponentContainerWrapper =
-//    new AbstractComponentContainerWrapper(container)
-
-//  def addComponents(container: AbstractComponentContainer, component: Component, components: Component*) = {
-//    component +: components foreach container.addComponent
-//    container
-//  }
 
   def addContainerProperties(container: Container, properties: ContainerProperty[_]*) =
     properties foreach { p =>
@@ -69,6 +59,7 @@ package object vaadin {
     case value => Some(fn(value))
   }
 
+  @deprecated("prototype code")
   def addItem(table: Table, id: AnyRef, data: AnyRef*) = table.addItem(data.toArray[AnyRef], id)
 
   /** Text field value type is always String */

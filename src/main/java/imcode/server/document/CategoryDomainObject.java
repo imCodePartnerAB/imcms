@@ -17,7 +17,7 @@ import org.hibernate.annotations.Cascade;
 
 @Entity(name="Category")
 @Table(name="categories")
-public class CategoryDomainObject implements Comparable, Serializable {
+public class CategoryDomainObject implements Comparable, Serializable, Cloneable {
 	
     private String name;
     
@@ -109,5 +109,17 @@ public class CategoryDomainObject implements Comparable, Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public CategoryDomainObject clone() {
+        try {
+            CategoryDomainObject clone = (CategoryDomainObject)super.clone();
+            if (type != null) clone.setType(type.clone());
+
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

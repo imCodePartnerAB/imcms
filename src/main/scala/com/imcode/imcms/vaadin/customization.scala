@@ -64,8 +64,9 @@ trait Unchecked { this: CheckBox =>
   setValue(false)
 }
 
+/** Changes fireClick visibility from protected to public. */
 trait ExposeFireClick extends Button {
-  override def fireClick = super.fireClick
+  override def fireClick() = super.fireClick()
 }
 
 trait Margin { this: AbstractLayout =>
@@ -128,6 +129,7 @@ trait MultiSelect extends AbstractSelect {
   setMultiSelect(true)
 }
 
+@deprecated("Prototype, replace with SingleSelect2")
 trait SingleSelect extends AbstractSelect {
   setMultiSelect(false)
 }
@@ -140,6 +142,8 @@ trait XSelect[T >: Null] extends AbstractSelect with ItemIdType[T] {
 
 trait SingleSelect2[T >: Null] extends XSelect[T] with ValueType[T] {
   setMultiSelect(false)
+
+  def isSelected = value != null
 }
 
 trait Now extends DateField {

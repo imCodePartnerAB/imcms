@@ -2,26 +2,20 @@ package com.imcode
 package imcms.vaadin
 
 import scala.collection.JavaConversions._
-//import com.vaadin.event.ItemClickEvent
-//import com.vaadin.terminal.gwt.server.WebApplicationContext
 import com.vaadin.ui._
-//import com.vaadin.data.Property._
-//import imcms.servlet.superadmin.AdminSearchTerms
-//import imcode.server.document.DocumentDomainObject
-//import com.imcode.imcms.api.Document.PublicationStatus
-//import imcode.util.Utility
-//import imcode.server.user._
-//import com.imcode.imcms.api.{SystemProperty, IPAccess, Document}
-//import imcode.server.{SystemData, Imcms}
-//import com.vaadin.ui.Layout.MarginInfo
 import java.util.concurrent.atomic.AtomicReference
 import java.io.{ByteArrayOutputStream, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{ThemeResource, UserError}
 import com.vaadin.Application
 import java.util.{Collections, LinkedList, ResourceBundle, Date, Collection => JCollection}
+import com.vaadin.terminal.gwt.server.WebApplicationContext
+import imcode.util.Utility
 
+//todo: dialog, add param - undefined size=true?
 
 trait VaadinApplication extends Application {
+
+  def user = Utility.getLoggedOnUser(getContext.asInstanceOf[WebApplicationContext].getHttpSession)
 
   def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
     init(window)
