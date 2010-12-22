@@ -8,10 +8,14 @@ import com.imcode.imcms.vaadin._
 import com.imcode.imcms.admin.filesystem.{IconImagePicker, FileBrowserWithImagePreview}
 import imcode.server.document.{CategoryDomainObject}
 import java.io.File
+import com.vaadin.ui.Window.Notification
 
 // Only Superadmin can manage categories
 // todo: separate object with methods such as canManageXXX
 
+/**
+ * Category is identified by its name and type.
+ */
 class CategoryManager(app: VaadinApplication) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
@@ -28,9 +32,7 @@ class CategoryManager(app: VaadinApplication) {
     ui.rc.btnReload addListener block { reload() }
     ui.tblCategories addListener block { handleSelection() }
 
-    ui.miNew setCommand block {
-      editCategory(new CategoryDomainObject)
-    }
+    ui.miNew setCommand block { editCategory(new CategoryDomainObject) }
 
     ui.miEdit setCommand block {
       whenSelected(ui.tblCategories) { id =>
@@ -61,34 +63,54 @@ class CategoryManager(app: VaadinApplication) {
   //todo: refactor out
   private  def canManage = app.user.isSuperAdmin
 
-  // todo: validate
-  // todo: dialog title
-  private def editCategory(vo: CategoryDomainObject) = {
-    val id = vo.getId
-    val isNew = id == 0
-    val types = categoryMapper.getAllCategoryTypes
+  private def editCategory(vo: CategoryDomainObject) {
+    val typesNames = categoryMapper.getAllCategoryTypes map (_.getName)
 
-    if (types.isEmpty) error("Please define al leat one type.")
+    if (typesNames.isEmpty) {
+      app.getMainWindow.showNotification("Please create at least one category type.", Notification.TYPE_WARNING_MESSAGE)
+    } else {
+      val id = vo.getId
+      val isNew = id == 0
+      val dialogTitle = if(isNew) "Create new category" else "Edit category"
 
-    app.initAndShow(new OkCancelDialog("--Category--")) { dlg =>
-      let(dlg.setMainContent(new CategoryDialogContentUI(app))) { c =>
-        types foreach { c.sltType addItem _.getName }
+      app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
+        let(dlg.setMainContent(new CategoryDialogContentUI(app))) { c =>
+          typesNames foreach { c.sltType addItem _ }
 
-        c.txtId.value = if (isNew) "" else id.toString
-        c.txtName.value = ?(vo.getName) getOrElse ""
-        c.txtDescription.value = ?(vo.getDescription) getOrElse ""
+          c.txtId.value = if (isNew) "" else id.toString
+          c.txtName.value = ?(vo.getName) getOrElse ""
+          c.txtDescription.value = ?(vo.getDescription) getOrElse ""
+          c.sltType.value = if (isNew) typesNames.head else vo.getType.getName
 
-        dlg addOkButtonClickListener {
-          // validate ...
-          let(vo.clone()) { voc =>
-            voc setName c.txtName.getValue.asInstanceOf[String]
-            voc setDescription c.txtDescription.getValue.asInstanceOf[String]
-            voc setImageUrl ""//embIcon
-            voc setType categoryMapper.getCategoryTypeByName(c.sltType.getValue.asInstanceOf[String])
+          dlg addOkButtonClickListener {
+            let(vo.clone()) { voc =>
+              voc setName c.txtName.value.trim
+              voc setDescription c.txtDescription.value.trim
+              voc setImageUrl ""//embIcon
+              voc setType categoryMapper.getCategoryTypeByName(c.sltType.value)
+              // todo: move validate into separate fn
+              val validationError: Option[String] = voc.getName match {
+                case "" => Some("Category name is not set")
+                case name => ?(categoryMapper.getCategoryByTypeAndName(voc.getType, name) map (_ => "Category with such name and type already exists")
+              }
 
-            if (canManage) categoryMapper saveCategory voc
-            else error("NO PERMISSIONS")
-            reload()
+              validationError foreach { msg =>
+                app.getMainWindow.showNotification(msg, Notification.TYPE_WARNING_MESSAGE)
+                error(msg)
+              }
+
+              if (!canManage) {
+                app.getMainWindow.showNotification("You are not allowed to manage categories", Notification.TYPE_ERROR_MESSAGE)
+              } else {
+                EX.allCatch.either(categoryMapper saveCategory voc) match {
+                  case Left(ex) =>
+                    // todo: log ex, provide custom dialog with details -> show stack
+                    app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
+                    throw ex
+                  case _ => reload()
+                }
+              }
+            }
           }
         }
       }
@@ -137,13 +159,13 @@ class CategoryDialogContentUI(app: VaadinApplication) extends FormLayout {
   val txtId = new TextField("Id") with Disabled {
     setColumns(11)
   }
-  val txtName = new TextField("Name")
+  val txtName = new TextField("Name") with Required
   val txtDescription = new TextField("Description") {
     setRows(5)
     setColumns(11)
   }
 
-  val sltType = new Select("Type") with ValueType[String] with NoNullSelection
+  val sltType = new Select("Type") with ValueType[String] with Required with NoNullSelection
 
   val embIcon = new IconImagePicker(50, 50) {
     setCaption("Icon")

@@ -10,6 +10,8 @@ package object imcode {
   type JDouble = java.lang.Double
   type JCollection[A] = java.util.Collection[A]
 
+  val EX = scala.util.control.Exception
+
   //?? delete ??
   def flip[A1, A2, B](f: A1 => A2 => B): A2 => A1 => B = x1 => x2 => f(x2)(x1)
 

@@ -166,6 +166,10 @@ trait MinuteResolution extends DateField {
   setResolution(DateField.RESOLUTION_MIN)
 }
 
+trait Required extends Field {
+  setRequired(true)
+}
+
 //trait UndefiedWidth { this: AbstractComponent =>
 //  setSizeFull
 //  setWid
