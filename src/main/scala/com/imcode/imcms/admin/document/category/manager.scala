@@ -4,7 +4,7 @@ package imcms.admin.document.category
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
-import com.imcode.imcms.vaadin._
+import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import com.imcode.imcms.admin.filesystem.{IconImagePicker, FileBrowserWithImagePreview}
 import imcode.server.document.{CategoryDomainObject}
 import java.io.File
@@ -32,13 +32,12 @@ class CategoryManager(app: VaadinApplication) {
     ui.rc.btnReload addListener block { reload() }
     ui.tblCategories addListener block { handleSelection() }
 
-    ui.miNew setCommand block { editCategory(new CategoryDomainObject) }
-
+    ui.miNew setCommand block { editInPopUp(new CategoryDomainObject) }
     ui.miEdit setCommand block {
       whenSelected(ui.tblCategories) { id =>
         categoryMapper.getCategoryById(id.intValue) match {
-          case null => error("No such category")
-          case category => editCategory(category)
+          case null => reload()
+          case vo => editInPopUp(vo)
         }
       }
     }
@@ -47,7 +46,7 @@ class CategoryManager(app: VaadinApplication) {
       whenSelected(ui.tblCategories) { id =>
         app.initAndShow(new ConfirmationDialog("Delete category")) { dlg =>
           dlg addOkButtonClickListener {
-            let(categoryMapper getCategoryById id.intValue) { vo =>
+            ?(categoryMapper getCategoryById id.intValue) foreach { vo =>
               if (canManage) categoryMapper deleteCategoryFromDb vo
               else error("NO PERMISSIONS")
             }
@@ -56,14 +55,15 @@ class CategoryManager(app: VaadinApplication) {
         }
       }
     }
-  }
+  } // val ui
 
   reload()
+  // END OF PRIMARY CONSTRUCTOR
 
-  //todo: refactor out
-  private  def canManage = app.user.isSuperAdmin
+  def canManage = app.user.isSuperAdmin
 
-  private def editCategory(vo: CategoryDomainObject) {
+  /** Edit in modal dialog. */
+  private def editInPopUp(vo: CategoryDomainObject) {
     val typesNames = categoryMapper.getAllCategoryTypes map (_.getName)
 
     if (typesNames.isEmpty) {
@@ -127,7 +127,7 @@ class CategoryManager(app: VaadinApplication) {
         }
       }
     }
-  }
+  } // editInPopUp
 
   private def reload() {
     ui.tblCategories.reload()
@@ -146,9 +146,9 @@ class CategoryManager(app: VaadinApplication) {
       ui.miDelete.setEnabled(isSelected)
     }
   }
-}
+} // class CategoryManager
 
-class CategoryManagerUI extends VerticalLayout with Spacing {
+class CategoryManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val mb = new MenuBar
   val miNew = mb.addItem("New", null)
   val miEdit = mb.addItem("Edit", null)
@@ -157,17 +157,17 @@ class CategoryManagerUI extends VerticalLayout with Spacing {
   val rc = new ReloadableContentUI(tblCategories)
 
   addContainerProperties(tblCategories,
-    ContainerProperty[JInteger]("Id"),
-    ContainerProperty[String]("Name"),
-    ContainerProperty[String]("Description"),
-    ContainerProperty[String]("Icon"),
-    ContainerProperty[String]("Type"))
+    CP[JInteger]("Id"),
+    CP[String]("Name"),
+    CP[String]("Description"),
+    CP[String]("Icon"),
+    CP[String]("Type"))
 
   addComponents(this, mb, rc)
 }
 
 
-class CategoryDialogContentUI(app: VaadinApplication) extends FormLayout {
+class CategoryDialogContentUI(app: VaadinApplication) extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id") with Disabled {
     setColumns(11)
   }
@@ -184,7 +184,7 @@ class CategoryDialogContentUI(app: VaadinApplication) extends FormLayout {
 
     btnChoose addListener block {
       app.initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg")
-              with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
+              with CustomSizeDialog with BottomMarginDialog, resizable = true) { w =>
 
         let(w.mainContent = new FileBrowserWithImagePreview(100, 100)) { b =>
           b.browser setSplitPosition 30

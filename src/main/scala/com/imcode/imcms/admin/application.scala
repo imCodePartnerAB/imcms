@@ -328,7 +328,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     btnReload addListener { reload _ }
 
     btnNewTextDoc addListener block {
-      initAndShow(new Dialog("New text document") with BottomMarginOnlyDialog) { dlg =>
+      initAndShow(new Dialog("New text document") with BottomMarginDialog) { dlg =>
         val parentDoc = dm.getDocument(1001)
         val onCommit = { doc: TextDocumentDomainObject =>
           getMainWindow.showNotification("Text document [id = %d] has been created" format doc.getId, Notification.TYPE_HUMANIZED_MESSAGE)
@@ -1131,7 +1131,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
       lytButtons.btnReload addListener block { fileBrowser.reload()}
       lytButtons.btnCopy addListener block {
         initAndShow(new OkCancelDialog("Copy to - choose destination directory")
-            with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
+            with CustomSizeDialog with BottomMarginDialog, resizable = true) { w =>
           let(w.mainContent = new FileBrowser) { b =>
             b setSplitPosition 30
             b addDirectoryTree("Home", Imcms.getPath)
@@ -1250,7 +1250,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
           tblItems getValue match {
             case name: String =>
               initAndShow(new OkCancelDialog("Edit template content")
-                      with CustomSizeDialog with BottomMarginOnlyDialog) { w =>
+                      with CustomSizeDialog with BottomMarginDialog) { w =>
                 let(w.mainContent = new EditTemplateContentDialogContent) { c =>
                   val file = new File(Imcms.getServices.getConfig.getTemplatePath,
                                       "text/" + templateMapper.getTemplateByName(name).getFileName)
@@ -1378,10 +1378,9 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
 
   def categories = new TabSheetView {
-    val categoryMapper = Imcms.getServices.getCategoryMapper
-
     import com.imcode.imcms.admin.document.category.CategoryManager
     import com.imcode.imcms.admin.document.category.`type`.CategoryTypeManager
+
     val categoryManager = new CategoryManager(application)
     val ui = categoryManager.ui
     ui.setCaption("Category")
@@ -1391,6 +1390,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     val categoryTypeManager = new CategoryTypeManager(application)
     val tui = categoryTypeManager.ui
     tui.setCaption("Category type")
+    tui.setMargin(true)
     addTab(tui)
   } // category
 
@@ -1504,7 +1504,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
 //    btnChooseFile addListener {
 //      initAndShow(new OkCancelDialog("Select template file - .htm .html .xhtml .jsp .jspx")
-//              with CustomSizeDialog with BottomMarginOnlyDialog, resizable = true) { w =>
+//              with CustomSizeDialog with BottomMarginDialog, resizable = true) { w =>
 //
 //        let(w.mainContent = new FileBrowser) { b =>
 //          b setSplitPosition 30

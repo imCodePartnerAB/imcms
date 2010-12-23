@@ -169,7 +169,7 @@ class ImagePreview(imgWidth: Int, imgHeight: Int) extends GridLayout(1, 2) {
 
 // prototype
 // todo add predicate - see comments on canPreview
-class FileBrowserWithImagePreview(previewImgWidth: Int, previewImgHeight: Int) extends HorizontalLayout {
+class FileBrowserWithImagePreview(previewImgWidth: Int, previewImgHeight: Int) extends HorizontalLayout with FullSize {
   val browser = new FileBrowser
   val preview = new ImagePreview(previewImgWidth, previewImgHeight)
 
@@ -186,8 +186,6 @@ class FileBrowserWithImagePreview(previewImgWidth: Int, previewImgHeight: Int) e
       case _ => preview.showStub()
     }
   }
-
-  setSizeFull
 }
 
 

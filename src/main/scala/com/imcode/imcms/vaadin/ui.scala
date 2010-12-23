@@ -5,11 +5,11 @@ import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import java.util.concurrent.atomic.AtomicReference
 import java.io.{ByteArrayOutputStream, OutputStream, FileOutputStream, File}
-import com.vaadin.terminal.{ThemeResource, UserError}
 import com.vaadin.Application
 import java.util.{Collections, LinkedList, ResourceBundle, Date, Collection => JCollection}
 import com.vaadin.terminal.gwt.server.WebApplicationContext
 import imcode.util.Utility
+import com.vaadin.terminal.{Sizeable, ThemeResource, UserError}
 
 //todo: dialog, add param - undefined size=true?
 
@@ -52,32 +52,39 @@ trait ResourceCaption extends AbstractComponent {
   override def getCaption() = getApplication.asInstanceOf[VaadinApplication].resourceBundle.getString(super.getCaption)
 }
 
+
 /**
- * Fixed size dialog window with full margin.
- * The size of the dialog is adjusted automatically.
+ * Fixed (auto-adjustable by default) size dialog window with full margin.
+
+ * Dialog is divided vertically into 2 areas - main content and buttons bar content.
+ * Buttons bar takes minimal required space and main content takes the rest.
  * 
- * Buttons are centered                    
+ * By default buttons bar content (buttons) are centered.
+ *
+ * The dialog size is adjusted automatically according to its content size.
  */
-class Dialog(caption: String = "") extends Window(caption) {
-  protected [this] val content = new GridLayout(1, 2) {
-    setMargin(true)
-    setSpacing(true)
-    setColumnExpandRatio(0, 1f)
-    setRowExpandRatio(0, 1f)    
-  }  
+class Dialog(caption: String = "",
+             protected var mainContentCheck: Component => Unit = Checks.checkNoWidthOrHeightInPercentage,
+             protected var buttonsBarContentCheck: Component => Unit = Checks.checkNoWidthOrHeightInPercentage) extends Window(caption) {
+
+  protected [this] val content = new GridLayout(1, 2) with Spacing with Margin
+//  {
+//    setColumnExpandRatio(0, 1f)     // <-- to custom size dialog???
+//    setRowExpandRatio(0, 1f)
+//  }
 
   setContent(content)
 
   def mainContent = content.getComponent(0, 0)
 
-  @deprecated("Breaks LSP")
+  @deprecated("Breaks LSP, Must not return a value.")
   def mainContent_=[C <: Component](component: C): C = setMainContent(component)
 
   /**
-   *  After component is set its size can be changed - must be undefined or fixed size.
+   * By default rejects components with width and/or height in percentage.
    */
   def setMainContent[C <: Component](component: C): C = {
-    component.setSizeUndefined
+    mainContentCheck(component)
 
     content.addComponent(component, 0, 0)
     content.setComponentAlignment(component, Alignment.TOP_LEFT)
@@ -88,32 +95,36 @@ class Dialog(caption: String = "") extends Window(caption) {
 
   def buttonsBarContent = content.getComponent(0, 1)
 
+  /**
+   * By default rejects components with width and/or height in percentage.
+   */
   def buttonsBarContent_=(component: Component) {
-    component.setSizeUndefined
-    
+    buttonsBarContentCheck(component)
+
     content.addComponent(component, 0, 1)
     content.setComponentAlignment(component, Alignment.TOP_CENTER)
   }
 
-  override def close = super.close
+  /** Exposes close method. */
+  override def close() = super.close()
 }
 
 
 /**
- * Size of this dialog must be set explicitly.
+ * Size (both width and height) of this dialog MUST be set explicitly.
  */
 trait CustomSizeDialog extends Dialog {
   content.setSizeFull
+  content.setColumnExpandRatio(0, 1f)
+  content.setRowExpandRatio(0, 1f)
 
-  override def setMainContent[C <: Component](component: C): C = {
-    super.setMainContent(component)
-    component.setSizeFull
-    component
-  }  
-}
+  mainContentCheck = Function.const(Unit)
 
-trait BottomMarginOnlyDialog extends Dialog {
-  content.setMargin(false, false, true, false)
+//  override def setMainContent[C <: Component](component: C): C = {
+//    super.setMainContent(component)
+//    component.setSizeFull
+//    component
+//  }
 }
 
 
@@ -121,7 +132,7 @@ trait BottomMarginOnlyDialog extends Dialog {
 class MsgDialog(caption: String = "", msg: String ="") extends Dialog(caption) {
   val btnOk = new Button("Ok") { setIcon(new ThemeResource("icons/16/ok.png")) }
 
-  val lblMessage = new Label(msg)
+  val lblMessage = new Label(msg) with UndefinedSize
 
   mainContent = lblMessage
   buttonsBarContent = btnOk
@@ -183,7 +194,7 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
 class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(caption) {
   def this(msg: String = "") = this("Confirmation", msg)
 
-  val lblMessage = new Label(msg)
+  val lblMessage = new Label(msg) with UndefinedSize
 
   mainContent = lblMessage
 }

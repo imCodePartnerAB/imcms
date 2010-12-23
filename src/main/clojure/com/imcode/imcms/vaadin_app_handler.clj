@@ -684,19 +684,13 @@
 ;      (let [obj (.newInstance clazz)]
 ;        (println (format "class: %s: width: %s, height: %s" (class obj) (.getWidth obj) (.getHeight obj)))))
 
+    (let [f (FormLayout. )]
+      (println "height:" (.getHeight f) (.getHeightUnits f))
+      (println "width:" (.getWidth f) (.getWidthUnits f)))
+
     (doto app
       (.setTheme "imcms")
       (.setMainWindow wnd))))
-
-(defn remove-first [a-seq a]
-  (let [[a-seq1, a-seq2] (split-with #(not= a %) a-seq)]
-    (concat a-seq1 (rest a-seq2))))
-
-(defn perms [a-seq]
-  (if (empty? a-seq)
-    (list ())
-    (for [a a-seq, perm (perms (remove-first a-seq a))]
-      (cons a perm))))
 
 
 

@@ -3,6 +3,7 @@ package imcms.vaadin
 
 import com.vaadin.ui._
 import com.vaadin.data.{Item, Container, Property}
+import com.vaadin.terminal.Sizeable
 
 /**
  * A container property.
@@ -69,8 +70,12 @@ trait ExposeFireClick extends Button {
   override def fireClick() = super.fireClick()
 }
 
-trait Margin { this: AbstractLayout =>
+trait Margin { this: Layout =>
   setMargin(true)
+}
+
+trait BottomMarginDialog extends Dialog {
+  content.setMargin(false, false, true, false)
 }
 
 trait Spacing { this: Layout.SpacingHandler =>
@@ -190,5 +195,12 @@ trait Reloadable extends Table {
   def reload() {
     removeAllItems
     for ((id, values) <- itemsProvider()) addItem(values.toArray, id)
+  }
+}
+
+object Checks {
+  def checkNoWidthOrHeightInPercentage(c: Component) {
+    require(c.getWidthUnits != Sizeable.UNITS_PERCENTAGE, "Component width must not be difined in percentage.")
+    require(c.getHeightUnits != Sizeable.UNITS_PERCENTAGE, "Component height must not be difined in percentage.")
   }
 }

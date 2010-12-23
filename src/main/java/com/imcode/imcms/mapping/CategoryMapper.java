@@ -100,6 +100,12 @@ public class CategoryMapper extends HibernateTemplate {
     }
 
     @Transactional
+    public void saveCategoryType(CategoryTypeDomainObject categoryType) {
+        if (categoryType.getId() == 0) addCategoryTypeToDb(categoryType);
+        else updateCategoryType(categoryType);
+    }
+
+    @Transactional
     public CategoryDomainObject addCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
         save(category);
         return category;
