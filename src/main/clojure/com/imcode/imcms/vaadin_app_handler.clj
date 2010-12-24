@@ -12,7 +12,7 @@
     (scala Some None$)
     (com.vaadin.ui Window SplitPanel Button Panel Label Button$ClickListener Embedded GridLayout HorizontalLayout
                    FormLayout VerticalLayout Alignment TextField CheckBox MenuBar MenuBar$MenuItem MenuBar$Command
-                   Select ListSelect TabSheet Table Tree CustomLayout)
+                   Select ListSelect TabSheet Table Tree CustomLayout Accordion AbstractSelect)
 
    ; (com.vaadin.ui.themes BaseTheme)
 
@@ -20,7 +20,9 @@
     (com.vaadin.data Property Property$ValueChangeListener)
     ;(com.imcode.imcms.vaadin OkCancelDialog)
     ;(com.imcode.imcms.sysadmin.filemanager FileBrowser FileBrowserWithImagePreview)
-    com.vaadin.data.util.ObjectProperty))
+    (com.imcode.imcms.admin.filesystem FileBrowser2)
+
+    (com.vaadin.data.util ObjectProperty FilesystemContainer)))
 
 
 (def None None$/MODULE$)
@@ -678,15 +680,17 @@
   (let [wnd (Window. "Main app window")
         content (mk-main-wnd-content app)]
 
-    (.setContent wnd content)
+    (.setContent wnd
+      (->
+        (doto (FileBrowser2.)
+          (.addLocation (java.io.File. "/") "Root", None)
+          (.addLocation (java.io.File. "/Users/ajosua") "Home", None))
+        .ui))
 
 ;    (doseq [clazz [Label Button TextField TabSheet Table Tree SplitPanel VerticalLayout HorizontalLayout GridLayout CustomLayout]]
 ;      (let [obj (.newInstance clazz)]
 ;        (println (format "class: %s: width: %s, height: %s" (class obj) (.getWidth obj) (.getHeight obj)))))
 
-    (let [f (FormLayout. )]
-      (println "height:" (.getHeight f) (.getHeightUnits f))
-      (println "width:" (.getWidth f) (.getWidthUnits f)))
 
     (doto app
       (.setTheme "imcms")
