@@ -11,8 +11,8 @@ import com.imcode.imcms.dao.{MetaDao, SystemDao, LanguageDao, IPAccessDao}
 import imcms.api._
 import imcms.servlet.superadmin.AdminSearchTerms
 
-import imcms.admin.chat.{MessageView, Chat}
-import imcms.admin.filesystem.{FileBrowser, FileBrowserWithImagePreview, IconImagePicker}
+//import imcms.admin.chat.{MessageView, Chat}
+
 import imcms.admin.access.user.{UserManager}
 import imcms.admin.document.template.{TemplateGroupDialogContent, EditTemplateContentDialogContent, EditTemplateDialogContent, TemplateDialogContent}
 import imcode.util.Utility
@@ -28,7 +28,7 @@ import imcode.server.document._
 import com.imcode.imcms.vaadin._
 import com.vaadin.ui.Window.Notification
 import com.vaadin.terminal.gwt.server.WebApplicationContext
-;
+
 
 // Controller VS HANDLER?
 /* 
@@ -1097,54 +1097,8 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
     setSizeFull
     addTab(new VerticalLayoutUI("File manager") {
       setSizeFull
-      val lytButtons = new HorizontalLayout {
-        setSpacing(true)
- 
-        val btnReload = new Button("Reload")
-        val btnView = new Button("View")
-        val btnEdit = new Button("Edit")
-        val btnCopy = new Button("Copy to..")
-        val btnMove = new Button("Move to..")
-        val btnDelete = new Button("Delete")
 
-        val btnDownload = new Button("Download")
-        val btnUpload = new Button("Upload")
-
-        addComponents(this, btnReload, new Label("|"), btnCopy, btnMove, btnDelete, new Label("|"), btnView, btnEdit, new Label("|"), btnDownload, btnUpload)
-      }
-
-      val fileBrowser = new FileBrowser {
-        addDirectoryTree("Home", Imcms.getPath)
-        addDirectoryTree("Templates", new File(Imcms.getPath, "WEB-INF/templates/text"))
-        addDirectoryTree("Images", new File(Imcms.getPath, "images"))
-        addDirectoryTree("Conf", new File(Imcms.getPath, "WEB-INF/conf"))
-        addDirectoryTree("Logs", new File(Imcms.getPath, "WEB-INF/logs"))
-
-        tblDirContent.setSelectable(true)
-        tblDirContent.setMultiSelect(true)
-      }
-
-      addComponents(this, lytButtons, fileBrowser)
-
-      setExpandRatio(fileBrowser, 1.0f)
-
-      lytButtons.btnReload addListener block { fileBrowser.reload()}
-      lytButtons.btnCopy addListener block {
-        initAndShow(new OkCancelDialog("Copy to - choose destination directory")
-            with CustomSizeDialog with BottomMarginDialog, resizable = true) { w =>
-          let(w.mainContent = new FileBrowser) { b =>
-            b setSplitPosition 30
-            b addDirectoryTree("Home", Imcms.getPath)
-            b addDirectoryTree("Templates", new File(Imcms.getPath, "WEB-INF/templates/text"))
-            b addDirectoryTree("Images", new File(Imcms.getPath, "images"))
-            b addDirectoryTree("Conf", new File(Imcms.getPath, "WEB-INF/conf"))
-            b addDirectoryTree("Logs", new File(Imcms.getPath, "WEB-INF/logs"))
-          }
-
-          w setWidth "600px"
-          w setHeight "400px"
-        }
-      }
+      addComponent(new com.imcode.imcms.admin.filesystem.FileManager ui)
     })
   }
 

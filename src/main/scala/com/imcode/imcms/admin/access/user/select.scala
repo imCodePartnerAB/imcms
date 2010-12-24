@@ -92,7 +92,7 @@ trait UserSelectDialog { this: OkCancelDialog =>
 }
 
 
-class UserSelectUI extends VerticalLayout {
+class UserSelectUI extends VerticalLayout with UndefinedSize {
   val filterUI = new UserSelectFilterUI
   val tblUsers = new Table with ValueType[JInteger] with ItemIdType[JInteger] with Reloadable with Immediate with Selectable {
     addContainerProperties(this,
@@ -113,8 +113,8 @@ class UserSelectUI extends VerticalLayout {
 /**
  *
  */
-class UserSelectFilterUI extends VerticalLayout { //CustomLayout
-  val lytParams = new FormLayout
+class UserSelectFilterUI extends VerticalLayout with UndefinedSize { //CustomLayout
+  val lytParams = new FormLayout with UndefinedSize
 
   val txtText = new TextField("Ex: username, email, first name, last name...") {
     setColumns(20)
@@ -131,7 +131,7 @@ class UserSelectFilterUI extends VerticalLayout { //CustomLayout
     setRows(5)
   }
 
-  val lytControls = new HorizontalLayout {
+  val lytControls = new HorizontalLayout with UndefinedSize {
     setSpacing(true)
     addComponents(this, chkShowInactive, btnReset, btnApply)
   }

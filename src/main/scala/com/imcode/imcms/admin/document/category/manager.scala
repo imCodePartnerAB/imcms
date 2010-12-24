@@ -187,9 +187,9 @@ class CategoryDialogContentUI(app: VaadinApplication) extends FormLayout with Un
               with CustomSizeDialog with BottomMarginDialog, resizable = true) { w =>
 
         let(w.mainContent = new FileBrowserWithImagePreview(100, 100)) { b =>
-          b.browser setSplitPosition 30
-          b.browser addDirectoryTree("Images", new File(Imcms.getPath, "images"))
-          b.browser.tblDirContent setSelectable true
+          b.browser.ui setSplitPosition 30
+          b.browser.addLocation("Images", new File(Imcms.getPath, "images"))
+          //b.browser.tblDirContent setSelectable true
 
           w.addOkButtonClickListener {
             b.preview.image match {
