@@ -7,12 +7,28 @@ import com.vaadin.data.Property
 import com.vaadin.data.Property._
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
-import java.util.{Date}
 import com.vaadin.terminal.{FileResource, Resource, UserError}
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import java.io.{FilenameFilter, OutputStream, FileOutputStream, File}
 
 // todo: file select, file select with preview
+
+/**
+ *
+ */
+trait FileSelectDialog extends OkCancelDialog with CustomSizeDialog with BottomMarginDialog {
+  val browser = new FileBrowser
+
+  mainContent = browser.ui
+
+  browser listen {
+    case DirContentSelection(selection) => btnOk setEnabled selection.isDefined
+    case _ =>
+  }
+
+  browser.notifyListeners()
+}
+
 
 // image file preview - prototype
 class ImagePreview(imgWidth: Int, imgHeight: Int) extends GridLayout(1, 2) {
@@ -56,7 +72,7 @@ class ImagePreview(imgWidth: Int, imgHeight: Int) extends GridLayout(1, 2) {
 // prototype
 // todo add predicate - see comments on canPreview
 class FileBrowserWithImagePreview(previewImgWidth: Int, previewImgHeight: Int) extends HorizontalLayout with FullSize {
-  val browser = new FileBrowser2
+  val browser = new FileBrowser
   val preview = new ImagePreview(previewImgWidth, previewImgHeight)
 
   // refactor to predicate fn taken as parameter

@@ -5,10 +5,10 @@ import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
-import com.imcode.imcms.admin.filesystem.{IconImagePicker, FileBrowserWithImagePreview}
 import imcode.server.document.{CategoryDomainObject}
 import java.io.File
 import com.vaadin.ui.Window.Notification
+import imcms.admin.filesystem.{FileSelectDialog, IconImagePicker, FileBrowserWithImagePreview}
 
 // Only Superadmin can manage categories
 // todo: separate object with methods such as canManageXXX
@@ -184,24 +184,37 @@ class CategoryDialogContentUI(app: VaadinApplication) extends FormLayout with Un
 
     btnChoose addListener block {
       app.initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg")
-              with CustomSizeDialog with BottomMarginDialog, resizable = true) { w =>
+            with FileSelectDialog, resizable = true) { dlg =>
+        dlg.browser.ui setSplitPosition 30
+        dlg.browser.addLocation("Images", new File(Imcms.getPath, "images"))
 
-        let(w.mainContent = new FileBrowserWithImagePreview(100, 100)) { b =>
-          b.browser.ui setSplitPosition 30
-          b.browser.addLocation("Images", new File(Imcms.getPath, "images"))
-          //b.browser.tblDirContent setSelectable true
-
-          w.addOkButtonClickListener {
-            b.preview.image match {
-              case Some(source) => showImage(source)
-              case _ => showStub
-            }
-          }
+        dlg.addOkButtonClickListener {
+          app.getMainWindow.showNotification("selected:" + dlg.browser.dirContentSelection.get.toString)
         }
 
-        w setWidth "650px"
-        w setHeight "350px"
+        dlg setWidth "650px"
+        dlg setHeight "350px"
       }
+
+//      app.initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg")
+//              with CustomSizeDialog with BottomMarginDialog, resizable = true) { w =>
+//
+//        let(w.mainContent = new FileBrowserWithImagePreview(100, 100)) { b =>
+//          b.browser.ui setSplitPosition 30
+//          b.browser.addLocation("Images", new File(Imcms.getPath, "images"))
+//          //b.browser.tblDirContent setSelectable true
+//
+//          w.addOkButtonClickListener {
+//            b.preview.image match {
+//              case Some(source) => showImage(source)
+//              case _ => showStub
+//            }
+//          }
+//        }
+//
+//        w setWidth "650px"
+//        w setHeight "350px"
+//      }
     }
   }
 

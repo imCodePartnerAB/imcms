@@ -8,6 +8,7 @@ import com.vaadin.data.Property._
 
 import imcode.util.Utility
 import imcode.server.user._
+import scala.collection.mutable.{Map => MMap}
 import imcode.server.{SystemData, Imcms}
 import java.util.{Date}
 import com.vaadin.ui.Layout.MarginInfo
@@ -16,17 +17,38 @@ import com.vaadin.terminal.{FileResource, Resource, UserError}
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import com.vaadin.data.util.FilesystemContainer
 import java.io.{FilenameFilter, OutputStream, FileOutputStream, File}
+import java.util.concurrent.atomic.AtomicReference
 
 //todo: manager, file select, file select with preview.
 
-// no-select-multielect-single-select as contructor param -> location??
-class FileBrowser2 {
-  private val locations = scala.collection.mutable.Map.empty[Component, (DirTree, DirContent)]
+sealed trait FileSelection
+case class DirTreeSelection(selection: Option[File]) extends FileSelection
+case class DirContentSelection(selection: Option[File]) extends FileSelection
+// case class DirContentMultiSelection(selection: File*) extends FileSelection  ???
 
-  val ui = letret(new FileBrowser2UI) { ui =>
+trait Publisher[T] {
+  var listeners = List.empty[T => Unit]
+
+  def listen(listener: T => Unit) {
+    listeners ::= listener
+  }
+
+  def notifyListeners(ev: T) = for (l <- listeners) l(ev)
+
+  def notifyListeners() {}
+}
+
+// todo: ADD DIR CONTENT MULTI SELECT?????
+class FileBrowser extends Publisher[FileSelection] {
+  private val locations = MMap.empty[Component, (DirTree, DirContent)]
+  private val dirTreeSelectionRef = new AtomicReference[Option[File]](None)
+  private val dirContentSelectionRef = new AtomicReference[Option[File]](None)
+
+  val ui = letret(new FileBrowserUI) { ui =>
     ui.accDirTrees.addListener(new TabSheet.SelectedTabChangeListener {
       def selectedTabChange(e: TabSheet#SelectedTabChangeEvent) {
         val (dirTree, dirContent) = locations(e.getTabSheet.getSelectedTab)
+        // No selection => reload
         if (dirTree.ui.value == null) dirTree.reload()
         ui.setSecondComponent(dirContent.ui)
       }
@@ -38,16 +60,32 @@ class FileBrowser2 {
     val dirContent = new DirContent
 
     dirTree.ui addListener block {
+      dirTreeSelectionRef set ?(dirTree.ui.value)
+
       whenSelected(dirTree.ui) { dirContent reload _ }
+      notifyListeners(DirTreeSelection(dirTreeSelection))
+    }
+
+    dirContent.ui addListener block {
+      dirContentSelectionRef set ?(dirContent.ui.value)
+      notifyListeners(DirContentSelection(dirContentSelection))
     }
 
     locations(dirTree.ui) = (dirTree, dirContent)
     ui.accDirTrees.addTab(dirTree.ui, caption, icon.orNull)
   }
+
+  def dirTreeSelection = dirTreeSelectionRef.get
+  def dirContentSelection = dirContentSelectionRef.get
+
+  override def notifyListeners() {
+    notifyListeners(DirTreeSelection(dirTreeSelection))
+    notifyListeners(DirContentSelection(dirContentSelection))
+  }
 }
 
 
-class FileBrowser2UI extends SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) with FullSize {
+class FileBrowserUI extends SplitPanel(SplitPanel.ORIENTATION_HORIZONTAL) with FullSize {
   val accDirTrees = new Accordion with FullSize
 
   setFirstComponent(accDirTrees)
@@ -76,7 +114,7 @@ class DirTree(dir: File) {
 
 
 class DirContent {
-  val ui = letret(new Table with ItemIdType[File] with Immediate with FullSize) { ui =>
+  val ui = letret(new Table with Selectable with SingleSelect2[File] with ItemIdType[File] with Immediate with FullSize) { ui =>
     addContainerProperties(ui,
       CP[String]("Name"),
       CP[Date]("Date modified"),
@@ -103,16 +141,4 @@ class DirContent {
       ui.addItem(Array[AnyRef](fsNode.getName, new Date(fsNode.lastModified), "%d %s".format(size, units), "--"), fsNode)
     }
   }
-}
-
-/**
- *
- */
-trait FileSelectDialog { this: OkCancelDialog =>
-  //val userSelect = new UserSelect
-
- //mainContent = userSelect.ui
-
-  //userSelect.selectionListeners += { btnOk setEnabled _.isDefined }
-  //userSelect.notifyListeners()
 }

@@ -11,7 +11,7 @@ import java.io.File
 import com.vaadin.ui.Window.Notification
 
 class FileManager {
-  val browser = letret(new FileBrowser2) { browser =>
+  val browser = letret(new FileBrowser) { browser =>
     browser.addLocation("Home", Imcms.getPath)
     browser.addLocation("Templates", new File(Imcms.getPath, "WEB-INF/templates/text"))
     browser.addLocation("Images", new File(Imcms.getPath, "images"))
@@ -24,7 +24,7 @@ class FileManager {
 }
 
 
-class FileManagerUI(browserUI: FileBrowser2UI) extends VerticalLayout with FullSize {
+class FileManagerUI(browserUI: FileBrowserUI) extends VerticalLayout with FullSize {
   val mb = new MenuBar
   val miReload = mb.addItem("Reload", null)
   val miView = mb.addItem("View", null)
