@@ -11,7 +11,9 @@ import java.io.{FilenameFilter, OutputStream, FileOutputStream, File}
 import com.vaadin.terminal.{Sizeable, FileResource, Resource, UserError}
 
 // todo: file select, file select with preview
-
+//// todo add predicate - see comments on canPreview
+//  // refactor to predicate fn taken as parameter
+//  def canPreview(file: File) = file.getName matches ".*\\.(gif|jpg|jpeg|png)$"
 
 /**
  *
@@ -69,27 +71,7 @@ class ImagePreview(imgWidth: Int, imgHeight: Int) extends GridLayout(1, 2) {
   }
 }
 
-//// prototype
-//// todo add predicate - see comments on canPreview
-//class FileBrowserWithImagePreview(previewImgWidth: Int, previewImgHeight: Int) extends HorizontalLayout with FullSize {
-//  val browser = new FileBrowser
-//  val preview = new ImagePreview(previewImgWidth, previewImgHeight)
-//
-//  // refactor to predicate fn taken as parameter
-//  def canPreview(file: File) = file.getName matches ".*\\.(gif|jpg|jpeg|png)$"
-//
-//  addComponents(this, browser.ui, preview)
-//  setComponentAlignment(preview, Alignment.MIDDLE_CENTER)
-//  setExpandRatio(browser.ui, 1.0f)
-//
-//  // ????????????????????????????????????????
-////  browser.tblDirContent addListener block {
-////    browser.tblDirContent.getValue match {
-////      case file: File if canPreview(file) => preview showImage file
-////      case _ => preview.showStub()
-////    }
-////  }
-//}
+
 
 
 class ImagePicker(app: VaadinApplication) {
@@ -134,25 +116,24 @@ class Preview(stub: Component) extends Publisher[Option[Component]] {
 
   def clear() {
     set(stub)
-    notifyListeners(None)
+    notifyListeners(component)
   }
 
-  def set(component: Component) {
-    component.setSizeFull
+  def set(c: Component) {
+    c.setSizeFull
     let(ui.content) { content =>
       content.removeAllComponents
-      content.addComponent(component)
-      content.setComponentAlignment(component, Alignment.MIDDLE_CENTER)
+      content.addComponent(c)
+      content.setComponentAlignment(c, Alignment.MIDDLE_CENTER)
     }
-    notifyListeners(Some(component))
+    notifyListeners(component)
   }
 
-  def component = ui.content.getComponent(0)
-
-  def isEmpty = component == stub
+  def component = if (isEmpty) None else Some(ui.content.getComponent(0))
+  def isEmpty = stub == ui.content.getComponent(0)
 }
 
-class PreviewUI(width: Int = 50, height: Int = 50) extends Panel {
+class PreviewUI(width: Int = 100, height: Int = 100) extends Panel {
   val content = new VerticalLayout with FullSize
 
   setContent(content)

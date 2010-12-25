@@ -9,6 +9,7 @@ import imcode.server.document.{CategoryDomainObject}
 import java.io.File
 import com.vaadin.ui.Window.Notification
 import imcms.admin.filesystem._
+import com.vaadin.terminal.FileResource
 
 // Only Superadmin can manage categories
 // todo: separate object with methods such as canManageXXX
@@ -74,7 +75,12 @@ class CategoryManager(app: VaadinApplication) {
       val dialogTitle = if(isNew) "Create new category" else "Edit category"
       val imagePicker = new ImagePicker(app)
       imagePicker.browser.addLocation("Images", new File(Imcms.getPath, "images"))
-
+      // todo: =>>>//("Select icon image - .gif  .png  .jpg  .jpeg")
+      val imageFile = for {
+        url <- ?(vo.getImageUrl)
+        file = new File(Imcms.getPath, "WEB-INF/" + url) if file.isFile
+      } imagePicker.preview.set(new Embedded("", new FileResource(file, app)))
+       println(">>>", vo.getImageUrl, new File(Imcms.getPath, "WEB-INF/" + vo.getImageUrl))
       app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
         let(dlg.setMainContent(new CategoryDialogContentUI(imagePicker.ui))) { c =>
           typesNames foreach { c.sltType addItem _ }
@@ -88,7 +94,7 @@ class CategoryManager(app: VaadinApplication) {
             let(vo.clone()) { voc =>
               voc setName c.txtName.value.trim
               voc setDescription c.txtDescription.value.trim
-              voc setImageUrl ""//embIcon
+              voc setImageUrl (if (imagePicker.preview.isEmpty) null else "../images/" + imagePicker.preview.component.get.asInstanceOf[Embedded].getSource.asInstanceOf[FileResource].getFilename)
               voc setType categoryMapper.getCategoryTypeByName(c.sltType.value)
               // todo: move validate into separate fn
               val validationError: Option[String] = voc.getName match {
@@ -109,7 +115,7 @@ class CategoryManager(app: VaadinApplication) {
               } else {
                 EX.allCatch.either(categoryMapper saveCategory voc) match {
                   case Left(ex) =>
-                    // todo: log ex, provide custom dialog with details -> show stack
+                  // todo: log ex, provide custom dialog with details -> show stack
                     app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
                     throw ex
                   case _ =>
@@ -117,17 +123,17 @@ class CategoryManager(app: VaadinApplication) {
                       app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
                     }
 
-//                    let (Int box voc.getId) { id =>
-//                      ui.tblCategories.addItem(Array[AnyRef](id, voc.getDescription, voc.getImageUrl, voc.getType.getName), id)
-//                      ui.tblCategories.requestRepaint()
-//                    }
+                    //                    let (Int box voc.getId) { id =>
+                    //                      ui.tblCategories.addItem(Array[AnyRef](id, voc.getDescription, voc.getImageUrl, voc.getType.getName), id)
+                    //                      ui.tblCategories.requestRepaint()
+                    //                    }
                     reload()
-                }
+                } // match
               }
             }
           }
         }
-      }
+      } // initAndShow
     }
   } // editInPopUp
 
@@ -169,7 +175,7 @@ class CategoryManagerUI extends VerticalLayout with Spacing with UndefinedSize {
 }
 
 
-class CategoryDialogContentUI(imagePcikerUI: ImagePickerUI) extends FormLayout with UndefinedSize {
+class CategoryDialogContentUI(val imagePcikerUI: ImagePickerUI) extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id") with Disabled {
     setColumns(11)
   }
@@ -181,45 +187,5 @@ class CategoryDialogContentUI(imagePcikerUI: ImagePickerUI) extends FormLayout w
 
   val sltType = new Select("Type") with ValueType[String] with Required with NoNullSelection
 
-  val embIcon = imagePcikerUI
-//  val embIcon = new IconImagePickerUI(50, 50) {
-//    setCaption("Icon")
-//
-//    btnChoose addListener block {
-//      app.initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg")
-//            with FileSelectDialog, resizable = true) { dlg =>
-//        dlg.browser.ui setSplitPosition 30
-//        dlg.browser.addLocation("Images", new File(Imcms.getPath, "images"))
-//
-//        dlg.addOkButtonClickListener {
-//          app.getMainWindow.showNotification("selected:" + dlg.browser.dirContentSelection.get.toString)
-//        }
-//
-//        dlg setWidth "650px"
-//        dlg setHeight "350px"
-//      }
-//
-////      app.initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg")
-////              with CustomSizeDialog with BottomMarginDialog, resizable = true) { w =>
-////
-////        let(w.mainContent = new FileBrowserWithImagePreview(100, 100)) { b =>
-////          b.browser.ui setSplitPosition 30
-////          b.browser.addLocation("Images", new File(Imcms.getPath, "images"))
-////          //b.browser.tblDirContent setSelectable true
-////
-////          w.addOkButtonClickListener {
-////            b.preview.image match {
-////              case Some(source) => showImage(source)
-////              case _ => showStub
-////            }
-////          }
-////        }
-////
-////        w setWidth "650px"
-////        w setHeight "350px"
-////      }
-//    }
-//  }
-
-  addComponents(this, txtId, txtName, sltType, embIcon, txtDescription)
+  addComponents(this, txtId, txtName, sltType, imagePcikerUI, txtDescription)
 }
