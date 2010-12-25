@@ -5,7 +5,6 @@ import scala.collection.JavaConversions._
 import com.vaadin.ui._
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
-import com.imcode.imcms.admin.filesystem.{IconImagePicker, FileBrowserWithImagePreview}
 import imcode.server.document.{CategoryDomainObject}
 import java.io.File
 import com.vaadin.ui.Window.Notification

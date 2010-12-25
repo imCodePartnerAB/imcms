@@ -6,27 +6,27 @@ import com.vaadin.ui._
 import com.vaadin.data.Property
 import com.vaadin.data.Property._
 import imcode.server.user._
-import imcode.server.{SystemData, Imcms}
-import com.vaadin.terminal.{FileResource, Resource, UserError}
-import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
+import com.imcode.imcms.vaadin._
 import java.io.{FilenameFilter, OutputStream, FileOutputStream, File}
+import com.vaadin.terminal.{Sizeable, FileResource, Resource, UserError}
 
 // todo: file select, file select with preview
+
 
 /**
  *
  */
 trait FileSelectDialog extends OkCancelDialog with CustomSizeDialog with BottomMarginDialog {
-  val browser = new FileBrowser
+  val fileBrowser: FileBrowser
 
-  mainContent = browser.ui
+  mainContent = fileBrowser.ui
 
-  browser listen {
+  fileBrowser listen {
     case DirContentSelection(selection) => btnOk setEnabled selection.isDefined
     case _ =>
   }
 
-  browser.notifyListeners()
+  fileBrowser.notifyListeners()
 }
 
 
@@ -69,62 +69,93 @@ class ImagePreview(imgWidth: Int, imgHeight: Int) extends GridLayout(1, 2) {
   }
 }
 
-// prototype
-// todo add predicate - see comments on canPreview
-class FileBrowserWithImagePreview(previewImgWidth: Int, previewImgHeight: Int) extends HorizontalLayout with FullSize {
+//// prototype
+//// todo add predicate - see comments on canPreview
+//class FileBrowserWithImagePreview(previewImgWidth: Int, previewImgHeight: Int) extends HorizontalLayout with FullSize {
+//  val browser = new FileBrowser
+//  val preview = new ImagePreview(previewImgWidth, previewImgHeight)
+//
+//  // refactor to predicate fn taken as parameter
+//  def canPreview(file: File) = file.getName matches ".*\\.(gif|jpg|jpeg|png)$"
+//
+//  addComponents(this, browser.ui, preview)
+//  setComponentAlignment(preview, Alignment.MIDDLE_CENTER)
+//  setExpandRatio(browser.ui, 1.0f)
+//
+//  // ????????????????????????????????????????
+////  browser.tblDirContent addListener block {
+////    browser.tblDirContent.getValue match {
+////      case file: File if canPreview(file) => preview showImage file
+////      case _ => preview.showStub()
+////    }
+////  }
+//}
+
+
+class ImagePicker(app: VaadinApplication) {
   val browser = new FileBrowser
-  val preview = new ImagePreview(previewImgWidth, previewImgHeight)
+  val preview = new Preview(new Label("-n/a-"))
+  val ui = letret(new ImagePickerUI(preview.ui)) { ui =>
+    ui.btnRemove addListener block {
+      preview.clear()
+    }
+    ui.btnChoose addListener block {
+      app.initAndShow(new {val fileBrowser = browser} with OkCancelDialog("Pick an image...") with FileSelectDialog,
+                      resizable = true) { dlg =>
+        dlg.addOkButtonClickListener {
+          for (selection <- browser.dirContentSelection)
+            preview.set(new Embedded("", new FileResource(selection, app)))
+        }
+      }
+    }
+  }
 
-  // refactor to predicate fn taken as parameter
-  def canPreview(file: File) = file.getName matches ".*\\.(gif|jpg|jpeg|png)$"
-
-  addComponents(this, browser.ui, preview)
-  setComponentAlignment(preview, Alignment.MIDDLE_CENTER)
-  setExpandRatio(browser.ui, 1.0f)
-
-  // ????????????????????????????????????????
-//  browser.tblDirContent addListener block {
-//    browser.tblDirContent.getValue match {
-//      case file: File if canPreview(file) => preview showImage file
-//      case _ => preview.showStub()
-//    }
-//  }
+  preview listen { ui.btnRemove setEnabled _.isDefined }
+  preview.notifyListeners()
 }
 
 
-class IconImagePicker(imgWidth: Int, imgHeight: Int) extends GridLayout(2, 1) {
-  val lytStub = new VerticalLayout {
-    val lblStub = new Label("No Icon")
+class ImagePickerUI(previewUI: PreviewUI) extends GridLayout(2, 1) with Spacing {
+  val lytButtons = new VerticalLayout with UndefinedSize
+  val btnChoose = new Button("Choose") with LinkStyle
+  val btnRemove = new Button("Remove") with LinkStyle
 
-    addComponent(lblStub)
-    setComponentAlignment(lblStub, Alignment.MIDDLE_CENTER)
+  addComponents(lytButtons, btnRemove, btnChoose)
+  addComponents(this, previewUI, lytButtons)
+
+  setComponentAlignment(lytButtons, Alignment.BOTTOM_LEFT)
+}
+
+
+
+class Preview(stub: Component) extends Publisher[Option[Component]] {
+  val ui = new PreviewUI
+  clear()
+
+  def clear() {
+    set(stub)
+    notifyListeners(None)
   }
 
-  val btnChoose = new Button("Choose")
-  val btnRemove = new Button("Remove")
-  val lytControls = new VerticalLayout {
-    addComponents(this, btnRemove, btnChoose)
-    forlet(btnChoose, btnRemove) { _ setWidth "100%" }
-    setSpacing(true)
-    setWidth("100px")
+  def set(component: Component) {
+    component.setSizeFull
+    let(ui.content) { content =>
+      content.removeAllComponents
+      content.addComponent(component)
+      content.setComponentAlignment(component, Alignment.MIDDLE_CENTER)
+    }
+    notifyListeners(Some(component))
   }
 
-  addComponent(lytControls, 1, 0)
-  setComponentAlignment(lytControls, Alignment.BOTTOM_LEFT)
-  setSpacing(true)
+  def component = ui.content.getComponent(0)
 
-  showStub()
+  def isEmpty = component == stub
+}
 
-  def showImage(embedded: Embedded) = show(embedded)
+class PreviewUI(width: Int = 50, height: Int = 50) extends Panel {
+  val content = new VerticalLayout with FullSize
 
-  def showStub() = show(lytStub)
-
-  private def show(component: Component) {
-    component.setHeight (imgHeight+"px")
-    component.setWidth (imgWidth+"px")
-
-    removeComponent(0, 0)
-    addComponent(new Panel {addComponent(component);  setSizeUndefined}, 0, 0)
-    btnRemove setEnabled component.isInstanceOf[Embedded]
-  }
+  setContent(content)
+  setWidth(width, Sizeable.UNITS_PIXELS)
+  setHeight(height, Sizeable.UNITS_PIXELS)
 }

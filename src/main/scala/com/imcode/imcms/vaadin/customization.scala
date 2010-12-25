@@ -118,6 +118,7 @@ trait Immediate { this: AbstractField =>
   setImmediate(true)
 }
 
+// Tree and Table
 trait Selectable { this: {def setSelectable(selectable: Boolean): Unit} =>
   setSelectable(true)
 }

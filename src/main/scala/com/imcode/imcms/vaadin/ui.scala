@@ -145,8 +145,7 @@ class MsgDialog(caption: String = "", msg: String ="") extends Dialog(caption) {
 class OkCancelDialog(caption: String = "") extends Dialog(caption) {
   val btnOk = new Button("Ok") { setIcon(new ThemeResource("icons/16/ok.png")) }
   val btnCancel = new Button("Cancel") { setIcon(new ThemeResource("icons/16/cancel.png")) }
-  val lytButtons = new GridLayout(2, 1) {
-    setSpacing(true)
+  val lytButtons = new GridLayout(2, 1) with Spacing {
     addComponent(btnOk)
     addComponent(btnCancel)
     setComponentAlignment(btnOk, Alignment.MIDDLE_RIGHT)

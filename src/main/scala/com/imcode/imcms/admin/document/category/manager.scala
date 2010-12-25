@@ -8,7 +8,7 @@ import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import imcode.server.document.{CategoryDomainObject}
 import java.io.File
 import com.vaadin.ui.Window.Notification
-import imcms.admin.filesystem.{FileSelectDialog, IconImagePicker, FileBrowserWithImagePreview}
+import imcms.admin.filesystem._
 
 // Only Superadmin can manage categories
 // todo: separate object with methods such as canManageXXX
@@ -72,9 +72,11 @@ class CategoryManager(app: VaadinApplication) {
       val id = vo.getId
       val isNew = id == 0
       val dialogTitle = if(isNew) "Create new category" else "Edit category"
+      val imagePicker = new ImagePicker(app)
+      imagePicker.browser.addLocation("Images", new File(Imcms.getPath, "images"))
 
       app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-        let(dlg.setMainContent(new CategoryDialogContentUI(app))) { c =>
+        let(dlg.setMainContent(new CategoryDialogContentUI(imagePicker.ui))) { c =>
           typesNames foreach { c.sltType addItem _ }
 
           c.txtId.value = if (isNew) "" else id.toString
@@ -167,7 +169,7 @@ class CategoryManagerUI extends VerticalLayout with Spacing with UndefinedSize {
 }
 
 
-class CategoryDialogContentUI(app: VaadinApplication) extends FormLayout with UndefinedSize {
+class CategoryDialogContentUI(imagePcikerUI: ImagePickerUI) extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id") with Disabled {
     setColumns(11)
   }
@@ -179,44 +181,45 @@ class CategoryDialogContentUI(app: VaadinApplication) extends FormLayout with Un
 
   val sltType = new Select("Type") with ValueType[String] with Required with NoNullSelection
 
-  val embIcon = new IconImagePicker(50, 50) {
-    setCaption("Icon")
-
-    btnChoose addListener block {
-      app.initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg")
-            with FileSelectDialog, resizable = true) { dlg =>
-        dlg.browser.ui setSplitPosition 30
-        dlg.browser.addLocation("Images", new File(Imcms.getPath, "images"))
-
-        dlg.addOkButtonClickListener {
-          app.getMainWindow.showNotification("selected:" + dlg.browser.dirContentSelection.get.toString)
-        }
-
-        dlg setWidth "650px"
-        dlg setHeight "350px"
-      }
-
+  val embIcon = imagePcikerUI
+//  val embIcon = new IconImagePickerUI(50, 50) {
+//    setCaption("Icon")
+//
+//    btnChoose addListener block {
 //      app.initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg")
-//              with CustomSizeDialog with BottomMarginDialog, resizable = true) { w =>
+//            with FileSelectDialog, resizable = true) { dlg =>
+//        dlg.browser.ui setSplitPosition 30
+//        dlg.browser.addLocation("Images", new File(Imcms.getPath, "images"))
 //
-//        let(w.mainContent = new FileBrowserWithImagePreview(100, 100)) { b =>
-//          b.browser.ui setSplitPosition 30
-//          b.browser.addLocation("Images", new File(Imcms.getPath, "images"))
-//          //b.browser.tblDirContent setSelectable true
-//
-//          w.addOkButtonClickListener {
-//            b.preview.image match {
-//              case Some(source) => showImage(source)
-//              case _ => showStub
-//            }
-//          }
+//        dlg.addOkButtonClickListener {
+//          app.getMainWindow.showNotification("selected:" + dlg.browser.dirContentSelection.get.toString)
 //        }
 //
-//        w setWidth "650px"
-//        w setHeight "350px"
+//        dlg setWidth "650px"
+//        dlg setHeight "350px"
 //      }
-    }
-  }
+//
+////      app.initAndShow(new OkCancelDialog("Select icon image - .gif  .png  .jpg  .jpeg")
+////              with CustomSizeDialog with BottomMarginDialog, resizable = true) { w =>
+////
+////        let(w.mainContent = new FileBrowserWithImagePreview(100, 100)) { b =>
+////          b.browser.ui setSplitPosition 30
+////          b.browser.addLocation("Images", new File(Imcms.getPath, "images"))
+////          //b.browser.tblDirContent setSelectable true
+////
+////          w.addOkButtonClickListener {
+////            b.preview.image match {
+////              case Some(source) => showImage(source)
+////              case _ => showStub
+////            }
+////          }
+////        }
+////
+////        w setWidth "650px"
+////        w setHeight "350px"
+////      }
+//    }
+//  }
 
   addComponents(this, txtId, txtName, sltType, embIcon, txtDescription)
 }
