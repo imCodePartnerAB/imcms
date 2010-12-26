@@ -20,7 +20,7 @@
     (com.vaadin.data Property Property$ValueChangeListener)
     ;(com.imcode.imcms.vaadin OkCancelDialog)
     ;(com.imcode.imcms.sysadmin.filemanager FileBrowser FileBrowserWithImagePreview)
-    (com.imcode.imcms.admin.filesystem FileBrowser2)
+    (com.imcode.imcms.admin.filesystem FileBrowser)
 
     (com.vaadin.data.util ObjectProperty FilesystemContainer)))
 
@@ -681,11 +681,11 @@
         content (mk-main-wnd-content app)]
 
     (.setContent wnd
-      (->
-        (doto (FileBrowser2.)
-          (.addLocation (java.io.File. "/") "Root", None)
-          (.addLocation (java.io.File. "/Users/ajosua") "Home", None))
-        .ui))
+      (doto (Panel.)
+        (.addComponent
+          (doto (Embedded.)
+            (.setStandby "WAIT!")
+            (set-size 100 100)))))
 
 ;    (doseq [clazz [Label Button TextField TabSheet Table Tree SplitPanel VerticalLayout HorizontalLayout GridLayout CustomLayout]]
 ;      (let [obj (.newInstance clazz)]

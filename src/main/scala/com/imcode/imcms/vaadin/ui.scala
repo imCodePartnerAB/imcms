@@ -25,7 +25,7 @@ trait ImcmsApplication extends Application {
     getMainWindow addWindow window
   }
 
-  def show[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true) =
+  def show(window: Window, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true) =
     initAndShow(window, modal, resizable, draggable) { _ => }
 
   // todo: implement
@@ -79,8 +79,6 @@ class Dialog(caption: String = "") extends Window(caption) {
 
     content.addComponent(component, 0, 0)
     content.setComponentAlignment(component, Alignment.TOP_LEFT)
-
-    component
   }
 
   def buttonsBarContent = content.getComponent(0, 1)
@@ -93,6 +91,7 @@ class Dialog(caption: String = "") extends Window(caption) {
     content.setComponentAlignment(component, Alignment.TOP_CENTER)
   }
 
+  @deprecated("prototype")
   def setMainContent[C <: Component](component: C): C = letret(component) { mainContent = _ }
 
   /** Exposes close method. */

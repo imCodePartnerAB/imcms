@@ -18,25 +18,15 @@ import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import com.vaadin.data.util.FilesystemContainer
 import java.io.{FilenameFilter, OutputStream, FileOutputStream, File}
 import java.util.concurrent.atomic.AtomicReference
+import com.imcode.util.event.Publisher
 
-//todo: manager, file select, file select with preview.
+
+//todo: manager actions
 
 sealed trait FileSelection
 case class DirTreeSelection(selection: Option[File]) extends FileSelection
 case class DirContentSelection(selection: Option[File]) extends FileSelection
 // case class DirContentMultiSelection(selection: File*) extends FileSelection  ???
-
-trait Publisher[T] {
-  var listeners = List.empty[T => Unit]
-
-  def listen(listener: T => Unit) {
-    listeners ::= listener
-  }
-
-  def notifyListeners(ev: T) = for (l <- listeners) l(ev)
-
-  def notifyListeners() {}
-}
 
 // todo: ADD DIR CONTENT MULTI SELECT?????
 class FileBrowser extends Publisher[FileSelection] {

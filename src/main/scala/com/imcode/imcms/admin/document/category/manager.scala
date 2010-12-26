@@ -82,7 +82,7 @@ class CategoryManager(app: ImcmsApplication) {
       } imagePicker.preview.set(new Embedded("", new FileResource(file, app)))
 
       app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-        let(dlg.setMainContent(new CategoryDialogContentUI(imagePicker.ui))) { c =>
+        dlg.mainContent = letret(new CategoryDialogContentUI(imagePicker.ui)) { c =>
           typesNames foreach { c.sltType addItem _ }
 
           c.txtId.value = if (isNew) "" else id.toString
@@ -94,7 +94,7 @@ class CategoryManager(app: ImcmsApplication) {
             let(vo.clone()) { voc =>
               voc setName c.txtName.value.trim
               voc setDescription c.txtDescription.value.trim
-              voc setImageUrl (if (imagePicker.preview.isEmpty) null else "../images/" + imagePicker.preview.component.get.asInstanceOf[Embedded].getSource.asInstanceOf[FileResource].getFilename)
+              voc setImageUrl (if (imagePicker.preview.isEmpty) null else "../images/" + imagePicker.preview.content.get.asInstanceOf[Embedded].getSource.asInstanceOf[FileResource].getFilename)
               voc setType categoryMapper.getCategoryTypeByName(c.sltType.value)
               // todo: move validate into separate fn
               val validationError: Option[String] = voc.getName match {
