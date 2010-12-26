@@ -7,7 +7,7 @@ import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin._
 
 
-class UserManager(app: VaadinApplication) {
+class UserManager(app: ImcmsApplication) {
   val userSelect = new UserSelect
 
   val ui = letret(new UserManagerUI(userSelect.ui)) { ui =>
@@ -27,7 +27,7 @@ class UserManager(app: VaadinApplication) {
 
           c.chkActivated.setValue(true)
 
-          dlg addOkButtonClickListener {
+          dlg addOkHandler {
             let(new UserDomainObject) { u =>
               u setActive c.chkActivated.booleanValue
               u setFirstName c.txtFirstName.value
@@ -76,7 +76,7 @@ class UserManager(app: VaadinApplication) {
 
             c.sltUILanguage.select(user.getLanguageIso639_2)
 
-            dlg addOkButtonClickListener {
+            dlg addOkHandler {
               user setActive c.chkActivated.booleanValue
               user setFirstName c.txtFirstName.value
               user setLastName c.txtLastName.value

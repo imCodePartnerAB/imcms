@@ -10,7 +10,7 @@ import imcode.server.document.{CategoryTypeDomainObject}
 import com.imcode.imcms.admin.document.category.{CategoryTypeId}
 import com.vaadin.ui.Window.Notification
 
-class CategoryTypeManager(app: VaadinApplication) {
+class CategoryTypeManager(app: ImcmsApplication) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
   val ui = letret(new CategoryTypeManagerUI) { ui =>
@@ -38,7 +38,7 @@ class CategoryTypeManager(app: VaadinApplication) {
     ui.miDelete setCommand block {
       whenSelected(ui.tblTypes) { id =>
         app.initAndShow(new ConfirmationDialog("Delete category type")) { dlg =>
-          dlg addOkButtonClickListener {
+          dlg addOkHandler {
             ?(categoryMapper getCategoryTypeById id.intValue) foreach { vo =>
               if (canManage) categoryMapper deleteCategoryTypeFromDb vo
               else error("NO PERMISSIONS")
@@ -69,7 +69,7 @@ class CategoryTypeManager(app: VaadinApplication) {
         c.chkInherited.value = Boolean box vo.isInherited
         c.chkMultiSelect.value = Boolean box vo.isMultiselect
 
-        dlg addOkButtonClickListener {
+        dlg addOkHandler {
           let(vo.clone()) { voc =>
             voc setName c.txtName.value.trim
             voc setInherited c.chkInherited.booleanValue
@@ -150,7 +150,7 @@ class CategoryTypeManagerUI extends VerticalLayout with Spacing with UndefinedSi
 }
 
 
-class CategoryTypeDialogContentUI(app: VaadinApplication) extends FormLayout with UndefinedSize {
+class CategoryTypeDialogContentUI(app: ImcmsApplication) extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id") with Disabled
   val txtName = new TextField("Name") with Required
   val chkMultiSelect = new CheckBox("Multiselect")

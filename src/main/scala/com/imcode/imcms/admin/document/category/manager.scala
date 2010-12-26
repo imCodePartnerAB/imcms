@@ -17,7 +17,7 @@ import com.vaadin.terminal.FileResource
 /**
  * Category is identified by its name and type.
  */
-class CategoryManager(app: VaadinApplication) {
+class CategoryManager(app: ImcmsApplication) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
   val ui: CategoryManagerUI = letret(new CategoryManagerUI) { ui =>
@@ -46,7 +46,7 @@ class CategoryManager(app: VaadinApplication) {
     ui.miDelete setCommand block {
       whenSelected(ui.tblCategories) { id =>
         app.initAndShow(new ConfirmationDialog("Delete category")) { dlg =>
-          dlg addOkButtonClickListener {
+          dlg addOkHandler {
             ?(categoryMapper getCategoryById id.intValue) foreach { vo =>
               if (canManage) categoryMapper deleteCategoryFromDb vo
               else error("NO PERMISSIONS")
@@ -80,7 +80,7 @@ class CategoryManager(app: VaadinApplication) {
         url <- ?(vo.getImageUrl)
         file = new File(Imcms.getPath, "WEB-INF/" + url) if file.isFile
       } imagePicker.preview.set(new Embedded("", new FileResource(file, app)))
-       println(">>>", vo.getImageUrl, new File(Imcms.getPath, "WEB-INF/" + vo.getImageUrl))
+
       app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
         let(dlg.setMainContent(new CategoryDialogContentUI(imagePicker.ui))) { c =>
           typesNames foreach { c.sltType addItem _ }
@@ -90,7 +90,7 @@ class CategoryManager(app: VaadinApplication) {
           c.txtDescription.value = ?(vo.getDescription) getOrElse ""
           c.sltType.value = if (isNew) typesNames.head else vo.getType.getName
 
-          dlg addOkButtonClickListener {
+          dlg addOkHandler {
             let(vo.clone()) { voc =>
               voc setName c.txtName.value.trim
               voc setDescription c.txtDescription.value.trim

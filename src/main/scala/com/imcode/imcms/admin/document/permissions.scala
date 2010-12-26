@@ -12,7 +12,7 @@ import imcode.server.document._
 import com.imcode.imcms.vaadin._
 
 //todo: check user.canSetDocumentPermissionSetTypeForRoleIdOnDocument( radioButtonDocumentPermissionSetType, roleId, document )
-class PermissionsEditor(app: VaadinApplication, meta: Meta, user: UserDomainObject) {
+class PermissionsEditor(app: ImcmsApplication, meta: Meta, user: UserDomainObject) {
   import DocumentPermissionSetTypeDomainObject.{NONE, FULL, READ, RESTRICTED_1, RESTRICTED_2}
   
   val ui = letret(new PermissionsEditorUI) { ui =>
@@ -42,7 +42,7 @@ class PermissionsEditor(app: VaadinApplication, meta: Meta, user: UserDomainObje
             c.lstRoles.addItem(roleId, roleMapper.getRole(roleId).getName)
           }
 
-          dlg.addOkButtonClickListener {
+          dlg.addOkHandler {
             roleIdToPermissionSetType.setPermissionSetTypeForRole(c.lstRoles.value, READ)
             ui.tblRolesPermissions.reload()
           }

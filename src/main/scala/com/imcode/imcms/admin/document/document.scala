@@ -27,7 +27,7 @@ case class MimeType(name: String, displayName: String)
 /**
  * Document editors factory - creates and initializes document editors.
  */
-class EditorsFactory(app: VaadinApplication, user: UserDomainObject) {
+class EditorsFactory(app: ImcmsApplication, user: UserDomainObject) {
   
   import scala.util.control.{Exception => E}
   
@@ -182,7 +182,7 @@ class FileDocFileDialogContent extends FormLayout {
   }
 }
 
-class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject, mimeTypes: Seq[MimeType]) {
+class FileDocEditor(app: ImcmsApplication, doc: FileDocumentDomainObject, mimeTypes: Seq[MimeType]) {
   val ui = letret(new FileDocEditorUI) { ui =>
     ui.tblFiles.itemsProvider = () =>
       doc.getFiles.toSeq collect {
@@ -199,7 +199,7 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject, mimeT
             c.sltMimeType.addItem(name)  
           }
 
-          w addOkButtonClickListener {
+          w addOkHandler {
             c.uploadReceiver.uploadRef.get match {
               case Some(upload) =>
                 val file = new FileDocumentFile
@@ -232,7 +232,7 @@ class FileDocEditor(app: VaadinApplication, doc: FileDocumentDomainObject, mimeT
             //c.sltMimeType.value = "" // todo: set
             c.lblUploadStatus.value = fdf.getFilename
 
-            dlg addOkButtonClickListener {
+            dlg addOkHandler {
               c.uploadReceiver.uploadRef.get match {
                 case Some(upload) => // relace fdf
                   val newFdf = new FileDocumentFile

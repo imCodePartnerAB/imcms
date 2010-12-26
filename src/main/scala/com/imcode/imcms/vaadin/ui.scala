@@ -11,11 +11,11 @@ import com.vaadin.terminal.gwt.server.WebApplicationContext
 import imcode.util.Utility
 import com.vaadin.terminal.{Sizeable, ThemeResource, UserError}
 
-//todo: dialog, add param - undefined size=true?
+trait ImcmsApplication extends Application {
 
-trait VaadinApplication extends Application {
+  def session = getContext.asInstanceOf[WebApplicationContext].getHttpSession
 
-  def user = Utility.getLoggedOnUser(getContext.asInstanceOf[WebApplicationContext].getHttpSession)
+  def user = Utility.getLoggedOnUser(session)
 
   def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
     init(window)
@@ -37,7 +37,7 @@ trait VaadinApplication extends Application {
 }
 
 /**
- * Must be mixed-in into a component which parent is VaadinApplication.
+ * Must be mixed-in into a component which parent is ImcmsApplication.
  */
 trait ResourceCaption extends AbstractComponent {
   
@@ -45,65 +45,55 @@ trait ResourceCaption extends AbstractComponent {
    * Returns resource string using original caption (assigned by setCaption) as a resource key or original caption if
    * corresponding resource does not exists.
    *
-   * @throws java.lang.ClassCastException if application is not an instance of VaadinApplication 
+   * @throws java.lang.ClassCastException if application is not an instance of ImcmsApplication
    *
    * @return caption.
    */
-  override def getCaption() = getApplication.asInstanceOf[VaadinApplication].resourceBundle.getString(super.getCaption)
+  override def getCaption() = getApplication.asInstanceOf[ImcmsApplication].resourceBundle.getString(super.getCaption)
 }
 
 
 /**
- * Fixed (auto-adjustable by default) size dialog window with full margin.
+ * Auto-adjustable size dialog window with full margin.
 
  * Dialog is divided vertically into 2 areas - main content and buttons bar content.
  * Buttons bar takes minimal required space and main content takes the rest.
  * 
- * By default buttons bar content (buttons) are centered.
- *
- * The dialog size is adjusted automatically according to its content size.
+ * By default:
+ *   -buttons bar content (buttons) are centered.
+ *   -size is adjusted automatically according to its content size.
  */
-class Dialog(caption: String = "",
-             protected var mainContentCheck: Component => Unit = Checks.checkNoWidthOrHeightInPercentage,
-             protected var buttonsBarContentCheck: Component => Unit = Checks.checkNoWidthOrHeightInPercentage) extends Window(caption) {
+class Dialog(caption: String = "") extends Window(caption) {
+  protected val mainContentCheck: Component => Unit = Checks.checkNoWidthOrHeightInPercentage
+  protected val buttonsBarContentCheck: Component => Unit = Checks.checkNoWidthOrHeightInPercentage
 
   protected [this] val content = new GridLayout(1, 2) with Spacing with Margin
-//  {
-//    setColumnExpandRatio(0, 1f)     // <-- to custom size dialog???
-//    setRowExpandRatio(0, 1f)
-//  }
 
   setContent(content)
 
   def mainContent = content.getComponent(0, 0)
 
-  @deprecated("Breaks LSP, Must not return a value.")
-  def mainContent_=[C <: Component](component: C): C = setMainContent(component)
-
-  /**
-   * By default rejects components with width and/or height in percentage.
-   */
-  def setMainContent[C <: Component](component: C): C = {
+  /** By default rejects components with width and/or height in percentage. */
+  def mainContent_=(component: Component) {
     mainContentCheck(component)
 
     content.addComponent(component, 0, 0)
     content.setComponentAlignment(component, Alignment.TOP_LEFT)
 
-    component    
+    component
   }
-
 
   def buttonsBarContent = content.getComponent(0, 1)
 
-  /**
-   * By default rejects components with width and/or height in percentage.
-   */
+  /** By default rejects components with width and/or height in percentage. */
   def buttonsBarContent_=(component: Component) {
     buttonsBarContentCheck(component)
 
     content.addComponent(component, 0, 1)
     content.setComponentAlignment(component, Alignment.TOP_CENTER)
   }
+
+  def setMainContent[C <: Component](component: C): C = letret(component) { mainContent = _ }
 
   /** Exposes close method. */
   override def close() = super.close()
@@ -114,17 +104,11 @@ class Dialog(caption: String = "",
  * Size (both width and height) of this dialog MUST be set explicitly.
  */
 trait CustomSizeDialog extends Dialog {
+  override protected val mainContentCheck: Component => Unit = Function.const(Unit)
+
   content.setSizeFull
   content.setColumnExpandRatio(0, 1f)
   content.setRowExpandRatio(0, 1f)
-
-  mainContentCheck = Function.const(Unit)
-
-//  override def setMainContent[C <: Component](component: C): C = {
-//    super.setMainContent(component)
-//    component.setSizeFull
-//    component
-//  }
 }
 
 
@@ -156,26 +140,10 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
 
   btnCancel addListener block { close }
 
-  // refactor
-//  def addOkButtonClickListener(listener: Button.ClickListener) {
-//    btnOk addListener { e: Button#ClickEvent =>
-//      try {
-//        listener buttonClick e
-//        close
-//      } catch {
-//        case ex: Exception => using(new java.io.StringWriter) { w =>
-//          ex.printStackTrace(new java.io.PrintWriter(w))
-//          //show(new MsgDialog("ERROR", "%s  ##  ##  ##  ## ## %s" format (ex.getMessage, w.getBuffer)))
-//          throw ex
-//        }
-//      }
-//    }
-//  }
-
-  def addOkButtonClickListener(listener: => Unit) {
+  def addOkHandler(handler: => Unit) {
     btnOk addListener block {
       try {
-        listener
+        handler
         close
       } catch {
         case ex: Exception => using(new java.io.StringWriter) { w =>

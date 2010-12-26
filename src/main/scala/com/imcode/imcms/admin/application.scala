@@ -73,7 +73,7 @@ import com.vaadin.terminal.gwt.server.WebApplicationContext
 //}
 
 
-class Application extends com.vaadin.Application with VaadinApplication { application =>
+class Application extends com.vaadin.Application with ImcmsApplication { application =>
 
   def canAccess {
 //            if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() ) {
@@ -509,7 +509,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
             initAndShow(new LanguageWindow("New language")) { wndEditLanguage =>
               val language = new com.imcode.imcms.api.I18nLanguage
 
-              wndEditLanguage addOkButtonClickListener {
+              wndEditLanguage addOkHandler {
                 if (!isInt(wndEditLanguage.txtId.getValue)) {
                   wndEditLanguage.txtId.setComponentError(new UserError("Id must be an Int"))
                 } else {
@@ -537,7 +537,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
               wndEditLanguage.txtNativeName.setValue(language.getNativeName)
               wndEditLanguage.chkEnabled.setValue(language.isEnabled)
 
-              wndEditLanguage addOkButtonClickListener {
+              wndEditLanguage addOkHandler {
                 language.setCode(wndEditLanguage.txtCode.getValue.asInstanceOf[String])
                 language.setName(wndEditLanguage.txtName.getValue.asInstanceOf[String])
                 language.setNativeName(wndEditLanguage.txtNativeName.getValue.asInstanceOf[String])
@@ -550,7 +550,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
           case `btnSetDefault` =>
             initAndShow(new ConfirmationDialog("Confirmation", "Change default language?")) { wndConfirmation =>
-              wndConfirmation addOkButtonClickListener {
+              wndConfirmation addOkHandler {
                 val languageId = table.getValue.asInstanceOf[JInteger]
                 val property = systemDao.getProperty("DefaultLanguageId")
 
@@ -562,7 +562,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
           case `btnDelete` =>
             initAndShow(new ConfirmationDialog("Confirmation", "Delete language from the system?")) { wndConfirmation =>
-              wndConfirmation addOkButtonClickListener {
+              wndConfirmation addOkHandler {
                 val languageId = table.getValue.asInstanceOf[JInteger]
                 languageDao.deleteLanguage(languageId)
                 reloadTable
@@ -704,7 +704,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
             w.sltUser setItemCaption (u.getId, u.getLoginName)
           }
 
-          w.addOkButtonClickListener {
+          w.addOkHandler {
             val ipAccess = new IPAccess
             ipAccess setUserId w.sltUser.getValue.asInstanceOf[Integer]
             ipAccess setStart fromDDN(w.txtFrom.getValue.asInstanceOf[String])
@@ -731,7 +731,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
           w.txtFrom setValue toDDN(ipAccess.getStart)
           w.txtTo setValue toDDN(ipAccess.getEnd)
 
-          w.addOkButtonClickListener {
+          w.addOkHandler {
             val ipAccess = new IPAccess
             ipAccess setUserId w.sltUser.getValue.asInstanceOf[Integer]
             ipAccess setStart fromDDN(w.txtFrom.getValue.asInstanceOf[String])
@@ -746,7 +746,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
       btnDelete addListener block {
         initAndShow(new ConfirmationDialog("Confirmation", "Delete IP Access?")) { w =>
-          w.addOkButtonClickListener {
+          w.addOkHandler {
             ipAccessDao delete tblItems.getValue.asInstanceOf[JInteger]
             reloadTableItems
           }
@@ -813,7 +813,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 
       btnAdd addListener block {
         initAndShow(new RoleDataWindow("New role")) { w =>
-          w.addOkButtonClickListener {
+          w.addOkHandler {
             val role = new RoleDomainObject(w.txtName.getValue.asInstanceOf[String])
             w.checkedPermissions foreach { p => role.addPermission(p) }
 
@@ -832,7 +832,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
           w.txtName setValue role.getName
           w checkPermissions role.getPermissions.toSet
 
-          w.addOkButtonClickListener {
+          w.addOkHandler {
             role.removeAllPermissions
             w.checkedPermissions foreach { p => role.addPermission(p) }
             roleMapper saveRole role
@@ -846,7 +846,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
           val roleId = tblItems.getValue.asInstanceOf[RoleId]
           val role = roleMapper.getRole(roleId)
           
-          w.addOkButtonClickListener {
+          w.addOkHandler {
             roleMapper deleteRole role
             reloadTableItems
           }
@@ -993,7 +993,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
       lytButtons.btnReload addListener block { reload() }
       lytButtons.btnClear addListener block {
         initAndShow(new ConfirmationDialog("Confirmation", "Clear counter statistics?")) { w =>
-          w.addOkButtonClickListener {
+          w.addOkHandler {
             Imcms.getServices setSessionCounter 0
             Imcms.getServices setSessionCounterDate new Date
 
@@ -1015,7 +1015,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
             addComponents(this, txtValue, calStart)
           }
 
-          w.addOkButtonClickListener {
+          w.addOkHandler {
             Imcms.getServices setSessionCounter txtValue.getValue.asInstanceOf[String].toInt
             Imcms.getServices setSessionCounterDate calStart.getValue.asInstanceOf[Date]
 
@@ -1144,8 +1144,8 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         //btnNew addListener {
         miAddNew setCommand block {
           initAndShow(new OkCancelDialog("Add new template")) { w =>
-            let(w.mainContent = new TemplateDialogContent) { c =>
-              w addOkButtonClickListener {
+            let(w.setMainContent(new TemplateDialogContent)) { c =>
+              w addOkHandler {
                 c.uploadReceiver.uploadRef.get match {
                   case Some(upload) =>
                     val in = new ByteArrayInputStream(upload.content)
@@ -1171,9 +1171,9 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
           tblItems getValue match {
             case name: String =>
               initAndShow(new OkCancelDialog("Edit template")) { w =>
-                let(w.mainContent = new EditTemplateDialogContent) { c =>
+                let(w.setMainContent(new EditTemplateDialogContent)) { c =>
                   c.txtName setValue name      
-                  w addOkButtonClickListener {
+                  w addOkHandler {
                     templateMapper.renameTemplate(name, c.txtName.value)
                     reloadTableItems
                   }
@@ -1189,7 +1189,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
           tblItems getValue match {
             case name: String =>
               initAndShow(new ConfirmationDialog("Delete selected template?")) { w =>
-                w addOkButtonClickListener {
+                w addOkHandler {
                   templateMapper deleteTemplate templateMapper.getTemplateByName(name)
                   reloadTableItems
                 }
@@ -1205,12 +1205,12 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
             case name: String =>
               initAndShow(new OkCancelDialog("Edit template content")
                       with CustomSizeDialog with BottomMarginDialog) { w =>
-                let(w.mainContent = new EditTemplateContentDialogContent) { c =>
+                let(w.setMainContent(new EditTemplateContentDialogContent)) { c =>
                   val file = new File(Imcms.getServices.getConfig.getTemplatePath,
                                       "text/" + templateMapper.getTemplateByName(name).getFileName)
                   
                   c.txtContent setValue scala.io.Source.fromFile(file).mkString
-                  w addOkButtonClickListener {
+                  w addOkHandler {
                     // save content
                   }
                 }
@@ -1265,7 +1265,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
             let(w.setMainContent(new TemplateGroupDialogContent)) { c =>
               templateMapper.getAllTemplates foreach (c.twsTemplates addAvailableItem _.getName)
 
-              w.addOkButtonClickListener {
+              w.addOkHandler {
                 templateMapper.createTemplateGroup(c.txtName.value)
                 val group = templateMapper.getTemplateGroupByName(c.txtName.value)
                 c.twsTemplates.chosenItemIds foreach { name =>
@@ -1295,7 +1295,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
                     c.txtId setValue id
                     c.txtName setValue templateMapper.getTemplateGroupById(id.intValue).getName
 
-                    w.addOkButtonClickListener {
+                    w.addOkHandler {
                       templateMapper.renameTemplateGroup(g, c.txtName.value)
                       templateMapper.getTemplatesInGroup(g) foreach { t =>
                         templateMapper.removeTemplateFromGroup(t, g)
@@ -1319,7 +1319,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
         //btnDelete addListener unit {
         miDelete setCommand block {
           initAndShow(new ConfirmationDialog("Confirmation", "Detelete template group?")) { w =>
-            w.addOkButtonClickListener {
+            w.addOkHandler {
               templateMapper deleteTemplateGroup tblItems.getValue.asInstanceOf[Int]
               reloadTableItems
             }
@@ -1465,7 +1465,7 @@ class Application extends com.vaadin.Application with VaadinApplication { applic
 //          b addDirectoryTree("Templates", new File(Imcms.getPath, "WEB-INF/templates"))
 //          b.tblDirContent setSelectable true
 //
-//          w.addOkButtonClickListener {
+//          w.addOkHandler {
 //            b.tblDirContent.getValue match {
 //              case file: File /*if canPreview(file)*/=>
 //                txtFilename.setReadOnly(false)
