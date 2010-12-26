@@ -21,7 +21,7 @@ class FileDialog(caption: String, browser: FileBrowser = new FileBrowser)
     extends OkCancelDialog(caption) with CustomSizeDialog with BottomMarginDialog {
 
   mainContent = {
-    val preview = new FilePreview(getApplication.asInstanceOf[ImcmsApplication], browser) // todo: appliaction casta - temp hack!
+    val preview = new FilePreview(browser)
     letret(new FileDialogUI(browser.ui, preview.ui)) { ui =>
 
     }
@@ -38,7 +38,7 @@ class FileDialog(caption: String, browser: FileBrowser = new FileBrowser)
 
 
 
-class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends GridLayout(2, 2) with Spacing with FullSize {
+class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends GridLayout(2, 2) with FullSize {
   val mb = new MenuBar
   val miFile = mb.addItem("File", null)
   val miOptions = mb.addItem("Options", null)
@@ -46,6 +46,12 @@ class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends G
 
   addComponent(mb, 0, 0, 1, 0)
   addComponents(this, browserUI, previewUI)
+
+  setComponentAlignment(previewUI, Alignment.MIDDLE_CENTER)
+  previewUI.setMargin(false, true, false, true)
+
+  setColumnExpandRatio(0, 1f)
+  setRowExpandRatio(1, 1f)
 }
 
 
@@ -54,7 +60,7 @@ class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends G
  * If selected file is eligible to preview
  */
 // todo: define file mime types, size and handlers (pwf -> large PDF mark)
-class FilePreview(app: ImcmsApplication, browser: FileBrowser) {
+class FilePreview(browser: FileBrowser) {
   private val enabledRef = new AtomicBoolean(false)
   val preview = new EmbeddedPreview
   val ui = new FilePreviewUI(preview.ui)
@@ -67,8 +73,11 @@ class FilePreview(app: ImcmsApplication, browser: FileBrowser) {
   }
 
   browser listen {
-    case DirContentSelection(Some(file)) => preview.set(new Embedded("", new FileResource(file, app)))
-    case _ =>
+    case DirContentSelection(Some(file)) =>
+      preview.set(new Embedded("", new FileResource(file, ui.getApplication)))
+    case DirContentSelection(None) =>
+      preview.clear
+    case other =>
   }
 
   preview listen { ui.btnEnlarge setEnabled _.isDefined }
