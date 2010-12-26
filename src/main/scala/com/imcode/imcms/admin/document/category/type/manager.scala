@@ -99,7 +99,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
                   app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
                   throw ex
                 case _ =>
-                  let(if (isNew) "New category type has been added" else "Category type has been updated") { msg =>
+                  let(if (isNew) "New category type has been created" else "Category type has been updated") { msg =>
                     app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
                   }
 

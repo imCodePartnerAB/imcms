@@ -6,16 +6,17 @@ import com.vaadin.ui._
 import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import imcode.server.document.{CategoryDomainObject}
-import java.io.File
 import com.vaadin.ui.Window.Notification
 import imcms.admin.filesystem._
 import com.vaadin.terminal.FileResource
+import java.io.File
 
-// Only Superadmin can manage categories
-// todo: separate object with methods such as canManageXXX
+// todo: separate object with methods such as canManageXXX ???
 
 /**
- * Category is identified by its name and type.
+ * Category manager.
+ *
+ * A category is identified by its name and type.
  */
 class CategoryManager(app: ImcmsApplication) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
@@ -122,7 +123,7 @@ class CategoryManager(app: ImcmsApplication) {
                     app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
                     throw ex
                   case _ =>
-                    let(if (isNew) "New category has been added" else "Category has been updated") { msg =>
+                    let(if (isNew) "New category has been created" else "Category has been updated") { msg =>
                       app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
                     }
 

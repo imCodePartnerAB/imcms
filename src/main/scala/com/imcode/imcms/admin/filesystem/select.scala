@@ -17,7 +17,10 @@ import com.vaadin.Application
 //  // refactor to predicate fn taken as parameter
 //  def canPreview(file: File) = file.getName matches ".*\\.(gif|jpg|jpeg|png)$"
 
-
+/**
+ * Generic file dialog.
+ * @param browser - preconfigured browser.
+ */
 class FileDialog(caption: String, browser: FileBrowser)
     extends OkCancelDialog(caption) with CustomSizeDialog with BottomMarginDialog {
   val preview = new FilePreview(browser)
@@ -60,8 +63,8 @@ class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends G
 
 
 /**
- * File preview is set to listen browser directory file selection.
- * If selected file is eligible to preview
+ * File preview is set to listen to browser's dir selection.
+ * If selected file is eligible to preview...
  */
 // todo: define file mime types, size and handlers (pwf -> large PDF mark)
 class FilePreview(browser: FileBrowser) {
@@ -106,21 +109,25 @@ class FilePreviewUI(val previewUI: EmbeddedPreviewUI) extends GridLayout(1, 2) w
   forlet(previewUI, btnEnlarge) { c => setComponentAlignment(c, Alignment.MIDDLE_CENTER) }
 }
 
-
+/**
+ * Allows to choose an image using FileDialog.
+ *
+ * @param app reference to enclosing application
+ * @param browser browser with preconfigured location(s)
+ */
 class ImagePicker(app: Application, browser: FileBrowser) {
   val preview = new EmbeddedPreview; preview.stubUI.value = "No Icon"
+  val fileDialog = letret(new FileDialog("Pick an image", browser)) { dlg =>
+    dlg.preview.enabled = true
+    dlg.addOkHandler {
+      for (file <- browser.dirContentSelection)
+        preview.set(new Embedded("", new FileResource(file, app)))
+    }
+  }
 
   val ui = letret(new ImagePickerUI(preview.ui)) { ui =>
     ui.btnRemove addListener block {
       preview.clear()
-    }
-
-    val fileDialog = letret(new FileDialog("Pick an image", browser)) { dlg =>
-      dlg.preview.enabled = true
-      dlg.addOkHandler {
-        for (file <- browser.dirContentSelection)
-          preview.set(new Embedded("", new FileResource(file, app)))
-      }
     }
 
     ui.btnChoose addListener block { app.show(fileDialog, resizable = true) }
@@ -146,12 +153,11 @@ class ImagePickerUI(previewUI: EmbeddedPreviewUI) extends GridLayout(2, 1) with 
  * Displays embedded component in a fixed size container.
  *
  * When embedded is not set displays a `stub` component instead.
- * A stub can be any component (also an embedded).
  * Preview is considered empty when stub is displayed.
+ * By default stub is a Label but it can be any component.
  */
 class EmbeddedPreview[A <: Component](val stubUI: A = new Label with UndefinedSize) extends Publisher[Option[Embedded]] {
   val ui = new EmbeddedPreviewUI
-
   clear()
 
   def clear() {
