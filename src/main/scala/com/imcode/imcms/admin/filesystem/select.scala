@@ -11,19 +11,20 @@ import com.vaadin.terminal.{Sizeable, FileResource, Resource, UserError}
 import com.vaadin.ui._
 import com.imcode.util.event.Publisher
 import java.util.concurrent.atomic.AtomicBoolean
+import com.vaadin.Application
 
 //// todo add predicate - see comments on canPreview
 //  // refactor to predicate fn taken as parameter
 //  def canPreview(file: File) = file.getName matches ".*\\.(gif|jpg|jpeg|png)$"
 
 
-class FileDialog(caption: String, browser: FileBrowser = new FileBrowser)
+class FileDialog(caption: String, browser: FileBrowser)
     extends OkCancelDialog(caption) with CustomSizeDialog with BottomMarginDialog {
+  val preview = new FilePreview(browser)
 
-  mainContent = {
-    val preview = new FilePreview(browser)
-    letret(new FileDialogUI(browser.ui, preview.ui)) { ui =>
-
+  mainContent = letret(new FileDialogUI(browser.ui, preview.ui)) { ui =>
+    ui.miViewPreview setCommand block {
+      preview.enabled = !preview.enabled
     }
   }
 
@@ -41,8 +42,11 @@ class FileDialog(caption: String, browser: FileBrowser = new FileBrowser)
 class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends GridLayout(2, 2) with FullSize {
   val mb = new MenuBar
   val miFile = mb.addItem("File", null)
-  val miOptions = mb.addItem("Options", null)
+  val miView = mb.addItem("View", null)
   val miHelp = mb.addItem("Help", null)
+  val miViewPreview = miView.addItem("Show/Hide preview", null)
+  val miFileUpload = miFile.addItem("Upload", null)
+  val miFileDownload = miFile.addItem("Download", null)
 
   addComponent(mb, 0, 0, 1, 0)
   addComponents(this, browserUI, previewUI)
@@ -72,19 +76,26 @@ class FilePreview(browser: FileBrowser) {
     }
   }
 
-  browser listen {
-    case DirContentSelection(Some(file)) =>
-      preview.set(new Embedded("", new FileResource(file, ui.getApplication)))
-    case DirContentSelection(None) =>
-      preview.clear
-    case other =>
+  browser listen { ev =>
+    if (enabled) ev match {
+      case DirContentSelection(Some(file)) =>
+        preview.set(new Embedded("", new FileResource(file, ui.getApplication)))
+      case DirContentSelection(None) =>
+        preview.clear
+      case other =>
+    }
   }
 
   preview listen { ui.btnEnlarge setEnabled _.isDefined }
   preview.notifyListeners()
+  enabled = false
 
   def enabled = enabledRef.get
-  def enabled_=(enabled: Boolean) = enabledRef.set(enabled)
+  def enabled_=(enabled: Boolean) {
+    enabledRef.set(enabled)
+    ui.setVisible(enabled)
+    if (enabled) browser.notifyListeners
+  }
 }
 
 
@@ -96,23 +107,23 @@ class FilePreviewUI(val previewUI: EmbeddedPreviewUI) extends GridLayout(1, 2) w
 }
 
 
-// val browser = new FileBrowser  || FileDialog???
-class ImagePicker(app: ImcmsApplication) {
-  val browser = new FileBrowser
-  val preview = new EmbeddedPreview; preview.stubUI.value = "No image"
+class ImagePicker(app: Application, browser: FileBrowser) {
+  val preview = new EmbeddedPreview; preview.stubUI.value = "No Icon"
 
   val ui = letret(new ImagePickerUI(preview.ui)) { ui =>
     ui.btnRemove addListener block {
       preview.clear()
     }
-    ui.btnChoose addListener block {
-      app.initAndShow(new FileDialog("Pick an image", browser), resizable = true) { dlg =>
-        dlg.addOkHandler {
-          for (file <- browser.dirContentSelection)
-            preview.set(new Embedded("", new FileResource(file, app)))
-        }
+
+    val fileDialog = letret(new FileDialog("Pick an image", browser)) { dlg =>
+      dlg.preview.enabled = true
+      dlg.addOkHandler {
+        for (file <- browser.dirContentSelection)
+          preview.set(new Embedded("", new FileResource(file, app)))
       }
     }
+
+    ui.btnChoose addListener block { app.show(fileDialog, resizable = true) }
   }
 
   preview listen { ui.btnRemove setEnabled _.isDefined }

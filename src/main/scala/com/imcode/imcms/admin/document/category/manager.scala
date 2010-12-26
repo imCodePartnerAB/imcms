@@ -73,8 +73,11 @@ class CategoryManager(app: ImcmsApplication) {
       val id = vo.getId
       val isNew = id == 0
       val dialogTitle = if(isNew) "Create new category" else "Edit category"
-      val imagePicker = new ImagePicker(app)
-      imagePicker.browser.addLocation("Images", new File(Imcms.getPath, "images"))
+      val browser = letret(new FileBrowser) { browser =>
+        browser.addLocation("Images", new File(Imcms.getPath, "images"))
+      }
+      val imagePicker = new ImagePicker(app, browser)
+
       // todo: =>>>//("Select icon image - .gif  .png  .jpg  .jpeg")
       val imageFile = for {
         url <- ?(vo.getImageUrl)
@@ -188,4 +191,5 @@ class CategoryDialogContentUI(val imagePcikerUI: ImagePickerUI) extends FormLayo
   val sltType = new Select("Type") with ValueType[String] with Required with NoNullSelection
 
   addComponents(this, txtId, txtName, sltType, imagePcikerUI, txtDescription)
+  imagePcikerUI.setCaption("Icon")
 }

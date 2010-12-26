@@ -1,4 +1,5 @@
-package com.imcode.imcms.admin
+package com.imcode
+package imcms.admin
 
 
 import document.PermissionsEditor
@@ -73,7 +74,7 @@ import com.vaadin.terminal.gwt.server.WebApplicationContext
 //}
 
 
-class Application extends com.vaadin.Application with ImcmsApplication { application =>
+class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
   def canAccess {
 //            if ( !user.isSuperAdmin() && !user.isUserAdminAndCanEditAtLeastOneRole() ) {
@@ -310,7 +311,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
     val btnEdit = new Button("Edit doc") // edit content
     val btnReload = new Button("RELOAD") with LinkStyle
 
-    val docAdmin = new EditorsFactory(application, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(1))
+    val docAdmin = new EditorsFactory(app, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(1))
 
     val tblDocs = new Table with ValueType[JInteger] with Selectable with Immediate {
       addContainerProperties(this,
@@ -328,7 +329,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
     btnReload addListener { reload _ }
 
     btnNewTextDoc addListener block {
-      initAndShow(new Dialog("New text document") with BottomMarginDialog) { dlg =>
+      app.initAndShow(new Dialog("New text document") with BottomMarginDialog) { dlg =>
         val parentDoc = dm.getDocument(1001)
         val onCommit = { doc: TextDocumentDomainObject =>
           getMainWindow.showNotification("Text document [id = %d] has been created" format doc.getId, Notification.TYPE_HUMANIZED_MESSAGE)
@@ -352,11 +353,11 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
 
       whenSelected(tblDocs) { id =>
         val model = MetaModel(id)
-        val editor = new PermissionsEditor(application, model.meta, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(1))
+        val editor = new PermissionsEditor(app, model.meta, Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getUser(1))
 
 
 
-        initAndShow(new OkCancelDialog) { dlg =>
+        app.initAndShow(new OkCancelDialog) { dlg =>
           dlg.setMainContent(editor.ui)
         }
       }
@@ -365,16 +366,16 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
     btnDocInfo addListener block {
       whenSelected(tblDocs) { id =>
         val model = MetaModel(id)
-        val editor = new MetaEditor(application, model)
+        val editor = new MetaEditor(app, model)
 
-        initAndShow(new OkCancelDialog) { d =>
+        app.initAndShow(new OkCancelDialog) { d =>
           d.setMainContent(editor.ui)
         }        
       }
     }
 
     btnNewUrlDoc addListener block {
-      initAndShow(new Dialog("New url document")) { dlg =>
+      app.initAndShow(new Dialog("New url document")) { dlg =>
         val parentDoc = dm.getDocument(1001)
         val flow = docAdmin.newURLDocFlow(parentDoc)
         dlg.setMainContent(flow.ui)
@@ -384,7 +385,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
     }
 
     btnNewFileDoc addListener block {
-      initAndShow(new Dialog("New file document")) { dlg =>
+      app.initAndShow(new Dialog("New file document")) { dlg =>
         val parentDoc = dm.getDocument(1001)
         val onCommit = { doc: FileDocumentDomainObject =>
           getMainWindow.showNotification("File document [id = %d] has been created" format doc.getId, Notification.TYPE_HUMANIZED_MESSAGE)
@@ -506,7 +507,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
               case _ => false
             }
 
-            initAndShow(new LanguageWindow("New language")) { wndEditLanguage =>
+            app.initAndShow(new LanguageWindow("New language")) { wndEditLanguage =>
               val language = new com.imcode.imcms.api.I18nLanguage
 
               wndEditLanguage addOkHandler {
@@ -529,7 +530,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
             val languageId = table.getValue.asInstanceOf[JInteger]
             val language = languageDao.getById(languageId)
 
-            initAndShow(new LanguageWindow("Edit language")) { wndEditLanguage =>
+            app.initAndShow(new LanguageWindow("Edit language")) { wndEditLanguage =>
               wndEditLanguage.txtId.setValue(language.getId)
               wndEditLanguage.txtId.setEnabled(false)
               wndEditLanguage.txtCode.setValue(language.getCode)
@@ -549,7 +550,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
             }
 
           case `btnSetDefault` =>
-            initAndShow(new ConfirmationDialog("Confirmation", "Change default language?")) { wndConfirmation =>
+            app.initAndShow(new ConfirmationDialog("Confirmation", "Change default language?")) { wndConfirmation =>
               wndConfirmation addOkHandler {
                 val languageId = table.getValue.asInstanceOf[JInteger]
                 val property = systemDao.getProperty("DefaultLanguageId")
@@ -561,7 +562,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
             }
 
           case `btnDelete` =>
-            initAndShow(new ConfirmationDialog("Confirmation", "Delete language from the system?")) { wndConfirmation =>
+            app.initAndShow(new ConfirmationDialog("Confirmation", "Delete language from the system?")) { wndConfirmation =>
               wndConfirmation addOkHandler {
                 val languageId = table.getValue.asInstanceOf[JInteger]
                 languageDao.deleteLanguage(languageId)
@@ -698,7 +699,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
         }
 
       btnAdd addListener block {
-        initAndShow(new IPAccessWindow("Add new IP Access")) { w =>
+        app.initAndShow(new IPAccessWindow("Add new IP Access")) { w =>
           Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllUsers foreach { u =>
             w.sltUser addItem u.getId
             w.sltUser setItemCaption (u.getId, u.getLoginName)
@@ -718,7 +719,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
       }
 
       btnEdit addListener block {
-        initAndShow(new IPAccessWindow("Edit IP Access")) { w =>
+        app.initAndShow(new IPAccessWindow("Edit IP Access")) { w =>
           Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllUsers foreach { u =>
             w.sltUser addItem u.getId
             w.sltUser setItemCaption (u.getId, u.getLoginName)
@@ -745,7 +746,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
       }
 
       btnDelete addListener block {
-        initAndShow(new ConfirmationDialog("Confirmation", "Delete IP Access?")) { w =>
+        app.initAndShow(new ConfirmationDialog("Confirmation", "Delete IP Access?")) { w =>
           w.addOkHandler {
             ipAccessDao delete tblItems.getValue.asInstanceOf[JInteger]
             reloadTableItems
@@ -812,7 +813,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
         }
 
       btnAdd addListener block {
-        initAndShow(new RoleDataWindow("New role")) { w =>
+        app.initAndShow(new RoleDataWindow("New role")) { w =>
           w.addOkHandler {
             val role = new RoleDomainObject(w.txtName.getValue.asInstanceOf[String])
             w.checkedPermissions foreach { p => role.addPermission(p) }
@@ -825,7 +826,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
       }
 
       btnEdit addListener block {
-        initAndShow(new RoleDataWindow("Edit role")) { w =>
+        app.initAndShow(new RoleDataWindow("Edit role")) { w =>
           val roleId = tblItems.getValue.asInstanceOf[RoleId]
           val role = roleMapper.getRole(roleId)
 
@@ -842,7 +843,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
       }
 
       btnDelete addListener block {
-        initAndShow(new ConfirmationDialog("Confirmation", "Delete role?")) { w =>
+        app.initAndShow(new ConfirmationDialog("Confirmation", "Delete role?")) { w =>
           val roleId = tblItems.getValue.asInstanceOf[RoleId]
           val role = roleMapper.getRole(roleId)
           
@@ -992,7 +993,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
 
       lytButtons.btnReload addListener block { reload() }
       lytButtons.btnClear addListener block {
-        initAndShow(new ConfirmationDialog("Confirmation", "Clear counter statistics?")) { w =>
+        app.initAndShow(new ConfirmationDialog("Confirmation", "Clear counter statistics?")) { w =>
           w.addOkHandler {
             Imcms.getServices setSessionCounter 0
             Imcms.getServices setSessionCounterDate new Date
@@ -1003,7 +1004,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
       }
 
       lytButtons.btnEdit addListener block {
-        initAndShow(new OkCancelDialog("Edit session counter")) { w =>
+        app.initAndShow(new OkCancelDialog("Edit session counter")) { w =>
           val txtValue = new TextField("Value")
           val calStart = new DateField("Start date")
 
@@ -1143,7 +1144,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
 
         //btnNew addListener {
         miAddNew setCommand block {
-          initAndShow(new OkCancelDialog("Add new template")) { w =>
+          app.initAndShow(new OkCancelDialog("Add new template")) { w =>
             let(w.setMainContent(new TemplateDialogContent)) { c =>
               w addOkHandler {
                 c.uploadReceiver.uploadRef.get match {
@@ -1170,7 +1171,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
         miRename setCommand block {
           tblItems getValue match {
             case name: String =>
-              initAndShow(new OkCancelDialog("Edit template")) { w =>
+              app.initAndShow(new OkCancelDialog("Edit template")) { w =>
                 let(w.setMainContent(new EditTemplateDialogContent)) { c =>
                   c.txtName setValue name      
                   w addOkHandler {
@@ -1188,7 +1189,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
         miDelete setCommand block {
           tblItems getValue match {
             case name: String =>
-              initAndShow(new ConfirmationDialog("Delete selected template?")) { w =>
+              app.initAndShow(new ConfirmationDialog("Delete selected template?")) { w =>
                 w addOkHandler {
                   templateMapper deleteTemplate templateMapper.getTemplateByName(name)
                   reloadTableItems
@@ -1203,7 +1204,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
         miEditContent setCommand block {
           tblItems getValue match {
             case name: String =>
-              initAndShow(new OkCancelDialog("Edit template content")
+              app.initAndShow(new OkCancelDialog("Edit template content")
                       with CustomSizeDialog with BottomMarginDialog) { w =>
                 let(w.setMainContent(new EditTemplateContentDialogContent)) { c =>
                   val file = new File(Imcms.getServices.getConfig.getTemplatePath,
@@ -1261,7 +1262,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
 
         //btnNew addListener unit {
         miAddNew setCommand block {
-          initAndShow(new OkCancelDialog("New group")) { w =>
+          app.initAndShow(new OkCancelDialog("New group")) { w =>
             let(w.setMainContent(new TemplateGroupDialogContent)) { c =>
               templateMapper.getAllTemplates foreach (c.twsTemplates addAvailableItem _.getName)
 
@@ -1283,7 +1284,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
 
         //btnEdit addListener unit {
         miEdit setCommand block {
-          initAndShow(new OkCancelDialog("Edit group")) { w =>
+          app.initAndShow(new OkCancelDialog("Edit group")) { w =>
             let(w.setMainContent(new TemplateGroupDialogContent)) { c =>
               let(tblItems.getValue) {
                 case null =>
@@ -1318,7 +1319,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
         
         //btnDelete addListener unit {
         miDelete setCommand block {
-          initAndShow(new ConfirmationDialog("Confirmation", "Detelete template group?")) { w =>
+          app.initAndShow(new ConfirmationDialog("Confirmation", "Detelete template group?")) { w =>
             w.addOkHandler {
               templateMapper deleteTemplateGroup tblItems.getValue.asInstanceOf[Int]
               reloadTableItems
@@ -1335,13 +1336,13 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
     import com.imcode.imcms.admin.document.category.CategoryManager
     import com.imcode.imcms.admin.document.category.`type`.CategoryTypeManager
 
-    val categoryManager = new CategoryManager(application)
+    val categoryManager = new CategoryManager(app)
     val ui = categoryManager.ui
     ui.setCaption("Category")
     ui.setMargin(true)
     addTab(ui)
 
-    val categoryTypeManager = new CategoryTypeManager(application)
+    val categoryTypeManager = new CategoryTypeManager(app)
     val tui = categoryTypeManager.ui
     tui.setCaption("Category type")
     tui.setMargin(true)
@@ -1380,7 +1381,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
   lazy val users = {
     new TabSheetView {
       addTab(new VerticalLayoutUI("Users and their permissions.") {
-        addComponent(new UserManager(application) ui)
+        addComponent(new UserManager(app) ui)
       })
     }
   }
@@ -1406,7 +1407,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
           case IntNumber(id) =>
             Imcms.getServices.getDocumentMapper.getDocument(id) match {
               case null =>
-                show(new MsgDialog("Information", "No document with id ["+id+"]."))
+                app.show(new MsgDialog("Information", "No document with id ["+id+"]."))
               case doc: TextDocumentDomainObject =>
                 lytStructure.removeAllComponents
                 lytStructure.addComponent(new Form(new GridLayout(2,1)) {
@@ -1440,11 +1441,11 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
                 })              
 
               case _ =>
-                show(new MsgDialog("Information", "Not a text document."))
+                app.show(new MsgDialog("Information", "Not a text document."))
                 
             }
           case _: String =>
-            show(new MsgDialog("Information", "Document id must be integer."))
+            app.show(new MsgDialog("Information", "Document id must be integer."))
         }
       }
 
@@ -1457,7 +1458,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { applica
 
 
 //    btnChooseFile addListener {
-//      initAndShow(new OkCancelDialog("Select template file - .htm .html .xhtml .jsp .jspx")
+//      app.initAndShow(new OkCancelDialog("Select template file - .htm .html .xhtml .jsp .jspx")
 //              with CustomSizeDialog with BottomMarginDialog, resizable = true) { w =>
 //
 //        let(w.mainContent = new FileBrowser) { b =>

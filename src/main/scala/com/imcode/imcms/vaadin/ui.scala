@@ -17,23 +17,26 @@ trait ImcmsApplication extends Application {
 
   def user = Utility.getLoggedOnUser(session)
 
-  def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
-    init(window)
-    window setModal modal
-    window setResizable resizable
-    window setDraggable draggable
-    getMainWindow addWindow window
-  }
-
-  def show(window: Window, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true) =
-    initAndShow(window, modal, resizable, draggable) { _ => }
-
   // todo: implement
   val resourceBundle = new ResourceBundle {
      def handleGetObject(key: String)  = "<" + key + ">"
 
      val getKeys = Collections.enumeration(List.empty[String])
   }
+}
+
+class ApplicationWrapper(app: Application) {
+
+  def initAndShow[W <: Window](window: W, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true)(init: W => Unit) {
+    init(window)
+    window setModal modal
+    window setResizable resizable
+    window setDraggable draggable
+    app.getMainWindow addWindow window
+  }
+
+  def show(window: Window, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true) =
+    initAndShow(window, modal, resizable, draggable) { _ => }
 }
 
 /**
@@ -49,7 +52,7 @@ trait ResourceCaption extends AbstractComponent {
    *
    * @return caption.
    */
-  override def getCaption() = getApplication.asInstanceOf[ImcmsApplication].resourceBundle.getString(super.getCaption)
+  override def getCaption() = getApplication.resourceBundle.getString(super.getCaption)
 }
 
 

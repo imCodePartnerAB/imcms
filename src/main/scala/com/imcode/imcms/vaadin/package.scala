@@ -4,6 +4,7 @@ package imcms
 import com.vaadin.ui._
 import com.vaadin.data.{Container, Property}
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
+import com.vaadin.Application
 
 package object vaadin {
 
@@ -73,4 +74,10 @@ package object vaadin {
 
   /** Date field value type is always Date */
   implicit def wrapDateField(dateField: DateField) = new DateField(dateField) with ValueType[java.util.Date]
+
+
+  implicit def applicationToImcmsApplication(app: Application) = app.asInstanceOf[ImcmsApplication]
+
+  implicit def wrapApplication(app: Application) = new ApplicationWrapper(app)
+
 }
