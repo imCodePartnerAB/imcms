@@ -1,12 +1,14 @@
-@import "../runo/styles.css";
+@import "../reindeer/styles.css";
 
-.v-select-optiongroup-horizontalgroup .v-select-option {
-    display: inline-block;
-}
+/*@import "../runo/styles.css";*/
 
-.v-select-option.v-radiobutton {
-    padding-right: 10px;
-}
+/*.v-select-optiongroup-horizontalgroup .v-select-option {*/
+    /*display: inline-block;*/
+/*}*/
+
+/*.v-select-option.v-radiobutton {*/
+    /*padding-right: 10px;*/
+/*}*/
 
 /*.v-app {*/
     /*background: green;*/

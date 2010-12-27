@@ -75,7 +75,8 @@ class CategoryManager(app: ImcmsApplication) {
       val isNew = id == 0
       val dialogTitle = if(isNew) "Create new category" else "Edit category"
       val browser = letret(new FileBrowser) { browser =>
-        browser.addLocation("Images", new File(Imcms.getPath, "images"))
+        //browser.addLocation("Images", new File(Imcms.getPath, "images"))
+        browser.addLocation("Images", new File(Imcms.getPath, "/"))
       }
       val imagePicker = new ImagePicker(app, browser)
 
@@ -98,7 +99,7 @@ class CategoryManager(app: ImcmsApplication) {
             let(vo.clone()) { voc =>
               voc setName c.txtName.value.trim
               voc setDescription c.txtDescription.value.trim
-              voc setImageUrl (if (imagePicker.preview.isEmpty) null else "../images/" + imagePicker.preview.content.get.asInstanceOf[Embedded].getSource.asInstanceOf[FileResource].getFilename)
+              voc setImageUrl (if (imagePicker.preview.isEmpty) null else "../images/" + imagePicker.preview.get.get.getSource.asInstanceOf[FileResource].getFilename)
               voc setType categoryMapper.getCategoryTypeByName(c.sltType.value)
               // todo: move validate into separate fn
               val validationError: Option[String] = voc.getName match {

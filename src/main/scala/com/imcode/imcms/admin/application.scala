@@ -291,6 +291,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   }
 
   def init {
+    setTheme("imcms")
     wndMain initMenu Menu
     Menu.items foreach { wndMain.treeMenu expandItemsRecursively _ }
     wndMain.treeMenu select Menu.About

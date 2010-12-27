@@ -7,11 +7,11 @@ import com.vaadin.data.Property._
 import imcode.server.user._
 import com.imcode.imcms.vaadin._
 import java.io.{FilenameFilter, OutputStream, FileOutputStream, File}
-import com.vaadin.terminal.{Sizeable, FileResource, Resource, UserError}
 import com.vaadin.ui._
 import com.imcode.util.event.Publisher
 import java.util.concurrent.atomic.AtomicBoolean
 import com.vaadin.Application
+import com.vaadin.terminal._
 
 //// todo add predicate - see comments on canPreview
 //  // refactor to predicate fn taken as parameter
@@ -62,35 +62,63 @@ class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends G
   setRowExpandRatio(1, 1f)
 }
 
+/**
+ * Full size preview is allowed if content source (resource) is an image of an appropriate size.
+ */
+class FilePreviewContent(val content: Embedded, val allowsFullSizePreview: Boolean)
+
+// todo: add file size check
+object FilePreviewContent {
+  val extRE = """(?i).*\.(\S+)""".r
+
+  def apply(app: Application, file: File) = {
+    val ext = file.getName match {
+      case extRE(ext) => ext
+      case _ => ""
+    }
+
+    val (resource, isImage) = ext.toLowerCase match {
+      case "gif" | "png" | "jpg" | "jpeg" =>
+        (new FileResource(file, app), true)
+      case other =>
+        val imageName = other match {
+          case "txt" => "txt"
+          case "jsp" | "htm" | "html" | "css" => "firefox"
+          case "pdf" => "pdf"
+          case _ => "file"
+        }
+        (new ThemeResource("images/noncommercial/%s.png" format imageName), false)
+    }
+
+    new FilePreviewContent(new Embedded("", resource), isImage)
+  }
+}
 
 /**
  * File preview is set to listen to browser's dir selection.
  * If selected file is eligible to preview...
  */
-// todo: define file mime types, size and handlers (pwf -> large PDF mark)
 class FilePreview(browser: FileBrowser) {
   private val enabledRef = new AtomicBoolean(false)
   val preview = new EmbeddedPreview
   val ui = new FilePreviewUI(preview.ui)
 
   ui.btnEnlarge addListener block {
-    browser.dirContentSelection match {
-      case Some(file) =>
-        // if can enlarge
-        ui.getApplication.initAndShow(new OKDialog("Preview") with CustomSizeDialog with BottomMarginDialog) { dlg =>
-          dlg.mainContent = letret(new Panel with FullSize with LightStyle) { panel =>
-            panel.setContent(new GridLayout(1,1) { addComponent(preview.content.get) })
-          }
-          dlg.setWidth("500px"); dlg.setHeight("500px")
-        }
-      case _ =>
+    for {
+      file <- browser.dirContentSelection
+      fpc = FilePreviewContent(ui.getApplication, file) if fpc.allowsFullSizePreview
+    } ui.getApplication.initAndShow(new Window("Preview"), resizable = true) { w =>
+      w.getContent.addComponent(fpc.content)
+      w.setWidth("500px"); w.setHeight("500px")
     }
   }
 
   browser listen { ev =>
     if (enabled) ev match {
       case DirContentSelection(Some(file)) =>
-        preview.set(new Embedded("", new FileResource(file, ui.getApplication)))
+        val fpc = FilePreviewContent(ui.getApplication, file)
+        preview.set(fpc.content)
+        ui.btnEnlarge.setEnabled(fpc.allowsFullSizePreview)
       case DirContentSelection(None) =>
         preview.clear
       case other =>
@@ -176,9 +204,9 @@ class EmbeddedPreview[A <: Component](val stubUI: A = new Label with UndefinedSi
     setPreviewComponent(embedded)
   }
 
-  def content = if (isEmpty) None else Some(ui.content.getComponent(0).asInstanceOf[Embedded])
+  def get = if (isEmpty) None else Some(ui.content.getComponent(0).asInstanceOf[Embedded])
   def isEmpty = getPreviewComponent eq stubUI
-  override def notifyListeners() = let(content) { notifyListeners _ }
+  override def notifyListeners() = let(get) { notifyListeners _ }
 
   private def getPreviewComponent = ui.content.getComponent(0)
   private def setPreviewComponent(component: Component) {
@@ -187,7 +215,7 @@ class EmbeddedPreview[A <: Component](val stubUI: A = new Label with UndefinedSi
       content.addComponent(component)
       content.setComponentAlignment(component, Alignment.MIDDLE_CENTER)
     }
-    notifyListeners(content)
+    notifyListeners(get)
   }
 }
 
