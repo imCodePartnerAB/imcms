@@ -76,11 +76,9 @@ class CategoryManager(app: ImcmsApplication) {
       val dialogTitle = if(isNew) "Create new category" else "Edit category"
       val browser = letret(new FileBrowser) { browser =>
         //browser.addLocation("Images", new File(Imcms.getPath, "images"))
-        browser.addLocation("Images", new File(Imcms.getPath, "/"))
+        browser.addLocation("Images", Location(new File(Imcms.getPath, "/"), Location.imageFileFilter))
       }
       val imagePicker = new ImagePicker(app, browser)
-
-      // todo: =>>>//("Select icon image - .gif  .png  .jpg  .jpeg")
       val imageFile = for {
         url <- ?(vo.getImageUrl)
         file = new File(Imcms.getPath, "WEB-INF/" + url) if file.isFile

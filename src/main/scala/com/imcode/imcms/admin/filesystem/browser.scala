@@ -29,6 +29,27 @@ case class DirContentSelection(selection: Option[File]) extends FileSelection
 // case class DirContentMultiSelection(selection: File*) extends FileSelection  ???
 
 // todo: ADD DIR CONTENT MULTI SELECT?????
+
+class Location(val dir: File, val dirContentFilter: File => Boolean)
+
+object Location {
+  import scala.util.matching.Regex
+
+  def defaultFileFilter(fsNode: File) = fsNode.isFile && !fsNode.isHidden
+
+  def fileNameREFilter(re: Regex)(fsNode: File) = defaultFileFilter(fsNode) && re.unapplySeq(fsNode.getName).isDefined
+
+  def fileExtFilter(ext: String, exts: String*) = fileNameREFilter("""(?i).*\.(%s)""".format(ext +: exts mkString("|")).r)_
+
+  def imageFileFilter = fileExtFilter("png", "gif", "jpg", "jpeg")
+
+  // todo: templateFileFilter
+
+  def apply(dir: File): Location = apply(dir, defaultFileFilter)
+
+  def apply(dir: File, dirContentFilter: File => Boolean) = new Location(dir, dirContentFilter)
+}
+
 class FileBrowser extends Publisher[FileSelection] {
   private val locations = MMap.empty[Component, (DirTree, DirContent)]
   private val dirTreeSelectionRef = new AtomicReference[Option[File]](None)
@@ -45,9 +66,9 @@ class FileBrowser extends Publisher[FileSelection] {
     })
   }
 
-  def addLocation(caption: String, dir: File, icon: Option[Resource] = None) {
-    val dirTree = new DirTree(dir)
-    val dirContent = new DirContent
+  def addLocation(caption: String, location: Location, icon: Option[Resource] = None) {
+    val dirTree = new DirTree(location.dir)
+    val dirContent = new DirContent(location.dirContentFilter)
 
     dirTree.ui addListener block {
       dirTreeSelectionRef set ?(dirTree.ui.value)
@@ -103,7 +124,7 @@ class DirTree(dir: File) {
 }
 
 
-class DirContent {
+class DirContent(filter: File => Boolean) {
   val ui = letret(new Table with Selectable with SingleSelect2[File] with ItemIdType[File] with Immediate with FullSize) { ui =>
     addContainerProperties(ui,
       CP[String]("Name"),
@@ -120,7 +141,7 @@ class DirContent {
     val baseFn = java.lang.Math.pow(1024, _:Int).toInt
 
     ui.removeAllItems()
-    for (fsNode <- dir.listFiles() if fsNode.isFile && !fsNode.isHidden) {
+    for (fsNode <- dir.listFiles() if filter(fsNode)) {
       val (size, units) = fsNode.length match {
         case size if size < baseFn(1) => (size, "--")
         case size if size < baseFn(2) => (size / base, "KB")
