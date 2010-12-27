@@ -37,9 +37,10 @@ class FileDialog(caption: String, browser: FileBrowser)
   }
 
   browser.notifyListeners()
+  // todo: refactor out
+  browser.ui.setSplitPosition(15)
   setWidth("500px"); setHeight("400px")
 }
-
 
 
 class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends GridLayout(2, 2) with FullSize {
@@ -75,6 +76,13 @@ class FilePreview(browser: FileBrowser) {
   ui.btnEnlarge addListener block {
     browser.dirContentSelection match {
       case Some(file) =>
+        // if can enlarge
+        ui.getApplication.initAndShow(new OKDialog("Preview") with CustomSizeDialog with BottomMarginDialog) { dlg =>
+          dlg.mainContent = letret(new Panel with FullSize with LightStyle) { panel =>
+            panel.setContent(new GridLayout(1,1) { addComponent(preview.content.get) })
+          }
+          dlg.setWidth("500px"); dlg.setHeight("500px")
+        }
       case _ =>
     }
   }
@@ -158,33 +166,29 @@ class ImagePickerUI(previewUI: EmbeddedPreviewUI) extends GridLayout(2, 1) with 
  */
 class EmbeddedPreview[A <: Component](val stubUI: A = new Label with UndefinedSize) extends Publisher[Option[Embedded]] {
   val ui = new EmbeddedPreviewUI
-  clear()
+  setPreviewComponent(stubUI)
 
-  def clear() {
-    let(ui.content) { content =>
-      content.removeAllComponents
-      content.addComponent(stubUI)
-      content.setComponentAlignment(stubUI, Alignment.MIDDLE_CENTER)
-    }
-    notifyListeners(content)
-  }
+  def clear() = if (!isEmpty) setPreviewComponent(stubUI)
 
   def set(embedded: Embedded) {
     assert(embedded ne stubUI, "Stub can not be used as a preview component.")
-
     embedded.setSizeFull
-    let(ui.content) { content =>
-      content.removeAllComponents
-      content.addComponent(embedded)
-      content.setComponentAlignment(embedded, Alignment.MIDDLE_CENTER)
-    }
-    notifyListeners(content)
+    setPreviewComponent(embedded)
   }
 
   def content = if (isEmpty) None else Some(ui.content.getComponent(0).asInstanceOf[Embedded])
-  def isEmpty = ui.content.getComponent(0) eq stubUI
+  def isEmpty = getPreviewComponent eq stubUI
+  override def notifyListeners() = let(content) { notifyListeners _ }
 
-  override def notifyListeners() = notifyListeners(content)
+  private def getPreviewComponent = ui.content.getComponent(0)
+  private def setPreviewComponent(component: Component) {
+    let(ui.content) { content =>
+      content.removeAllComponents
+      content.addComponent(component)
+      content.setComponentAlignment(component, Alignment.MIDDLE_CENTER)
+    }
+    notifyListeners(content)
+  }
 }
 
 class EmbeddedPreviewUI(width: Int = 100, height: Int = 100) extends Panel {

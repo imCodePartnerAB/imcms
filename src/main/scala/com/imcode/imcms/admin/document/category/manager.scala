@@ -34,12 +34,12 @@ class CategoryManager(app: ImcmsApplication) {
     ui.rc.btnReload addListener block { reload() }
     ui.tblCategories addListener block { handleSelection() }
 
-    ui.miNew setCommand block { editInPopUp(new CategoryDomainObject) }
+    ui.miNew setCommand block { editAndSave(new CategoryDomainObject) }
     ui.miEdit setCommand block {
       whenSelected(ui.tblCategories) { id =>
         categoryMapper.getCategoryById(id.intValue) match {
           case null => reload()
-          case vo => editInPopUp(vo)
+          case vo => editAndSave(vo)
         }
       }
     }
@@ -65,7 +65,7 @@ class CategoryManager(app: ImcmsApplication) {
   def canManage = app.user.isSuperAdmin
 
   /** Edit in modal dialog. */
-  private def editInPopUp(vo: CategoryDomainObject) {
+  private def editAndSave(vo: CategoryDomainObject) {
     val typesNames = categoryMapper.getAllCategoryTypes map (_.getName)
 
     if (typesNames.isEmpty) {
@@ -139,7 +139,7 @@ class CategoryManager(app: ImcmsApplication) {
         }
       } // initAndShow
     }
-  } // editInPopUp
+  } // editAndSave
 
   private def reload() {
     ui.tblCategories.reload()

@@ -113,6 +113,15 @@ trait CustomSizeDialog extends Dialog {
   content.setRowExpandRatio(0, 1f)
 }
 
+/** Empty dialog window. */
+class OKDialog(caption: String = "") extends Dialog(caption) {
+  val btnOk = new Button("Ok") { setIcon(new ThemeResource("icons/16/ok.png")) }
+
+  buttonsBarContent = btnOk
+
+  btnOk addListener block { close }
+}
+
 
 /** Message dialog window. */
 class MsgDialog(caption: String = "", msg: String ="") extends Dialog(caption) {
