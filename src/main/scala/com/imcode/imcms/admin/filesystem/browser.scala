@@ -59,7 +59,7 @@ class FileBrowser extends Publisher[FileSelection] {
     ui.accDirTrees.addListener(new TabSheet.SelectedTabChangeListener {
       def selectedTabChange(e: TabSheet#SelectedTabChangeEvent) {
         val (dirTree, dirContent) = locations(e.getTabSheet.getSelectedTab)
-        // No selection => reload
+        // No selection? => reload
         if (dirTree.ui.value == null) dirTree.reload()
         ui.setSecondComponent(dirContent.ui)
       }
@@ -152,4 +152,18 @@ class DirContent(filter: File => Boolean) {
       ui.addItem(Array[AnyRef](fsNode.getName, new Date(fsNode.lastModified), "%d %s".format(size, units), "--"), fsNode)
     }
   }
+}
+
+
+class FileUpload {
+  val ui = letret(new FileUploadUI) { ui =>
+
+  }
+}
+
+class FileUploadUI extends FormLayout with Spacing with UndefinedSize {
+  val upload = new Upload("Choose file...") with Immediate with LinkStyle
+  val txtFileName = new Label("File name") with UndefinedSize
+  val btnCancel = new Button("Cancel") with LinkStyle
+  val pi = new ProgressIndicator
 }
