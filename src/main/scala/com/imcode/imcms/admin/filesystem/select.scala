@@ -69,6 +69,7 @@ class FileDialogUI(browserUI: FileBrowserUI, previewUI: FilePreviewUI) extends G
   val miFile = mb.addItem("File", null)
   val miView = mb.addItem("View", null)
   val miHelp = mb.addItem("Help", null)
+  val miViewReload = miView.addItem("Reload", null)
   val miViewPreview = miView.addItem("Show/Hide preview", null)
   val miFileUpload = miFile.addItem("Upload", null)
   val miFileDownload = miFile.addItem("Download", null)

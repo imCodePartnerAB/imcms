@@ -55,14 +55,14 @@ class CategoryTypeManager(app: ImcmsApplication) {
 
   def canManage = app.user.isSuperAdmin
 
-  /** Edit in modal dialog. */
+  /** Edit in a modal dialog. */
   private def editAndSave(vo: CategoryTypeDomainObject) {
     val id = vo.getId
     val isNew = id == 0
     val dialogTitle = if(isNew) "Create new category type" else "Edit category type"
 
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-      let(dlg.setMainContent(new CategoryTypeDialogContentUI(app))) { c =>
+      dlg.mainContent = letret(new CategoryTypeDialogContentUI(app)) { c =>
         c.txtId.value = if (isNew) "" else id.toString
         c.txtName.value = ?(vo.getName) getOrElse ""
         c.chkImageArchive.value = Boolean box vo.isImageArchive

@@ -35,7 +35,7 @@ class FileUpload extends Publisher[UploadStatus] {
 
   val ui = letret(new FileUploadUI) { ui =>
     val receiver = new Upload.Receiver {
-      val out = new ByteArrayOutputStream { override def write(b: Int) {super.write(b); Thread.sleep(10)} }
+      val out = new ByteArrayOutputStream { override def write(b: Int) {super.write(b); Thread.sleep(100)} }  // for interrupt testing
       def receiveUpload(filename: String, mimeType: String) = out
     }
 

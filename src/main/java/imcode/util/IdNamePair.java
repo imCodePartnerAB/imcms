@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 import org.apache.commons.lang.ClassUtils;
 
-public class IdNamePair implements Comparable, Serializable {
+public class IdNamePair implements Comparable, Serializable, Cloneable {
 
-    private final IdObjectPair idObjectPair ;
+    private IdObjectPair idObjectPair ;
 
     public IdNamePair(int id, String name) {
         idObjectPair = new IdObjectPair(id, name);
@@ -44,5 +44,16 @@ public class IdNamePair implements Comparable, Serializable {
 
     public String toString() {
         return "("+ ClassUtils.getShortClassName(getClass())+" "+idObjectPair+")";
+    }
+
+    @Override
+    public IdNamePair clone() {
+        try {
+            IdNamePair o = (IdNamePair)super.clone();
+            o.idObjectPair = new IdObjectPair(getId(), getName());
+            return o;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

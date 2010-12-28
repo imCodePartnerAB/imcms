@@ -80,4 +80,8 @@ package object vaadin {
 
   implicit def wrapApplication(app: Application) = new ApplicationWrapper(app)
 
+  implicit def wrapMenuBar(mb: MenuBar) = new MenuBarWrapper(mb)
+
+  implicit def wrapMenuItem(mi: MenuBar#MenuItem) = new MenuItemWrapper(mi)
+
 }

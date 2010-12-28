@@ -186,6 +186,7 @@ trait Required extends Field {
 //}
 
 
+@deprecated("Prototype")
 trait Reloadable extends Table {
   //type ItemId <: AnyRef
   //type Value <: AnyRef

@@ -136,12 +136,3 @@ class EditTemplateContentDialogContent extends VerticalLayout {
 //    case _ =>
 //  }
 //}
-
-
-class TemplateGroupDialogContent extends FormLayout {
-  val txtId = new TextField("Id") {setEnabled(false)}
-  val txtName = new TextField("Name")
-  val twsTemplates = new TwinSelect[String]("Templates")
-
-  addComponents(this, txtId, txtName, twsTemplates)
-}

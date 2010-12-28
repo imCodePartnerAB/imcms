@@ -15,7 +15,7 @@ import imcms.servlet.superadmin.AdminSearchTerms
 //import imcms.admin.chat.{MessageView, Chat}
 
 import imcms.admin.access.user.{UserManager}
-import imcms.admin.document.template.{TemplateGroupDialogContent, EditTemplateContentDialogContent, EditTemplateDialogContent, TemplateDialogContent}
+import imcms.admin.document.template.{EditTemplateContentDialogContent, EditTemplateDialogContent, TemplateDialogContent}
 import imcode.util.Utility
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
@@ -1230,105 +1230,8 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
 
     // templates groups
-    addTab(new VerticalLayoutUI("Template group") {
-      addComponent(new TableViewTemplate {
-        override def tableProperties() =
-          ("Id", classOf[JInteger], null) ::
-          ("Name", classOf[String], null) ::
-          ("Templates count", classOf[JInteger], null) ::
-          Nil
-        
-        override def tableItems() = templateMapper.getAllTemplateGroups map { g =>
-          (Int box g.getId, List(Int box g.getId, g.getName, Int box templateMapper.getTemplatesInGroup(g).length))
-        }
-        
-//        lazy val btnNew = new Button("New")
-//        lazy val btnEdit = new Button("Edit")
-//        lazy val btnDelete = new Button("Delete")
-
-        lazy val menuBar = new MenuBar
-        lazy val miAddNew = menuBar.addItem("Add new", new ThemeResource("icons/16/document-add.png"), null)
-        lazy val miEdit = menuBar.addItem("Edit", new ThemeResource("icons/16/settings.png"), null)
-        lazy val miDelete = menuBar.addItem("Delete", new ThemeResource("icons/16/document-delete.png"), null)        
-
-        override def resetComponents() {
-          forlet(miEdit, miDelete) { b =>
-            b.setEnabled(tblItems.getValue != null)
-          }
-        }
-
-        lytMenu.addComponent(menuBar)
-        //addComponents(pnlHeader, btnNew, btnEdit, btnDelete)
-//        replaceComponent(pnlHeader, menuBar)
-
-        //btnNew addListener unit {
-        miAddNew setCommand block {
-          app.initAndShow(new OkCancelDialog("New group")) { w =>
-            let(w.setMainContent(new TemplateGroupDialogContent)) { c =>
-              templateMapper.getAllTemplates foreach (c.twsTemplates addAvailableItem _.getName)
-
-              w.addOkHandler {
-                templateMapper.createTemplateGroup(c.txtName.value)
-                val group = templateMapper.getTemplateGroupByName(c.txtName.value)
-                c.twsTemplates.chosenItemIds foreach { name =>
-                  templateMapper.getTemplateByName(name) match {
-                    case null =>
-                    case t => templateMapper.addTemplateToGroup(t, group)
-                  }
-                }
-                
-                reloadTableItems
-              }
-            }
-          }
-        } // btnNew handler
-
-        //btnEdit addListener unit {
-        miEdit setCommand block {
-          app.initAndShow(new OkCancelDialog("Edit group")) { w =>
-            let(w.setMainContent(new TemplateGroupDialogContent)) { c =>
-              let(tblItems.getValue) {
-                case null =>
-                case id: JInteger =>
-                  let(templateMapper getTemplateGroupById id.intValue) { g =>
-                    templateMapper.getTemplatesInGroup(g) foreach (c.twsTemplates addChosenItem _.getName)
-                    templateMapper.getTemplatesNotInGroup(g) foreach (c.twsTemplates addAvailableItem _.getName)
-
-                    c.txtId setValue id
-                    c.txtName setValue templateMapper.getTemplateGroupById(id.intValue).getName
-
-                    w.addOkHandler {
-                      templateMapper.renameTemplateGroup(g, c.txtName.value)
-                      templateMapper.getTemplatesInGroup(g) foreach { t =>
-                        templateMapper.removeTemplateFromGroup(t, g)
-                      }
-                                          
-                      c.twsTemplates.chosenItemIds foreach { name =>
-                        templateMapper.getTemplateByName(name) match {
-                          case null =>
-                          case t => templateMapper.addTemplateToGroup(t, g)
-                        }
-                      }
-
-                      reloadTableItems
-                    }
-                  }
-              } // let
-            }
-          }
-        } // btnEdit handler
-        
-        //btnDelete addListener unit {
-        miDelete setCommand block {
-          app.initAndShow(new ConfirmationDialog("Confirmation", "Detelete template group?")) { w =>
-            w.addOkHandler {
-              templateMapper deleteTemplateGroup tblItems.getValue.asInstanceOf[Int]
-              reloadTableItems
-            }
-          }          
-        } // btnDelete handler
-      })  
-    })
+    val tgm = new com.imcode.imcms.admin.document.template.group.TemplateGroupManager(app)
+    addTab(tgm.ui)
   }
 
 

@@ -9,7 +9,7 @@ import com.vaadin.Application
 import java.util.{Collections, LinkedList, ResourceBundle, Date, Collection => JCollection}
 import com.vaadin.terminal.gwt.server.WebApplicationContext
 import imcode.util.Utility
-import com.vaadin.terminal.{Sizeable, ThemeResource, UserError}
+import com.vaadin.terminal.{Resource, Sizeable, ThemeResource, UserError}
 
 trait ImcmsApplication extends Application {
 
@@ -37,6 +37,16 @@ class ApplicationWrapper(app: Application) {
 
   def show(window: Window, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true) =
     initAndShow(window, modal, resizable, draggable) { _ => }
+}
+
+class MenuBarWrapper(mb: MenuBar) {
+  def addItem(caption: String, resource: Resource) = mb.addItem(caption, resource, null)
+  def addItem(caption: String) = mb.addItem(caption, null)
+}
+
+class MenuItemWrapper(mi: MenuBar#MenuItem) {
+  def addItem(caption: String, resource: Resource) = mi.addItem(caption, resource, null)
+  def addItem(caption: String) = mi.addItem(caption, null)
 }
 
 /**
@@ -74,9 +84,11 @@ class Dialog(caption: String = "") extends Window(caption) {
 
   setContent(content)
 
+  def mainUI = mainContent
   def mainContent = content.getComponent(0, 0)
 
   /** By default rejects components with width and/or height in percentage. */
+  def mainUI_=(component: Component) = mainContent_=(component)
   def mainContent_=(component: Component) {
     mainContentCheck(component)
 
@@ -484,7 +496,11 @@ class TableView extends VerticalLayout {
  * Reload button is placed under the content with right alignment.
  */
 class ReloadableContentUI[T <: Component](val content: T) extends GridLayout(1,2) with Spacing {
-  val btnReload = new Button("Reload") with LinkStyle
+  import com.imcode.imcms.vaadin.Theme.Icons._
+
+  val btnReload = new Button("Reload") with LinkStyle {
+    setIcon(Reload16)
+  }
 
   addComponents(this, content, btnReload)
   setComponentAlignment(content, Alignment.TOP_LEFT)
