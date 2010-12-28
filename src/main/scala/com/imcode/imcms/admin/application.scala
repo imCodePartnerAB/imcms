@@ -1231,6 +1231,8 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
     // templates groups
     val tgm = new com.imcode.imcms.admin.document.template.group.TemplateGroupManager(app)
+    tgm.ui.setCaption("Template groups")
+    tgm.ui.setMargin(true)
     addTab(tgm.ui)
   }
 
