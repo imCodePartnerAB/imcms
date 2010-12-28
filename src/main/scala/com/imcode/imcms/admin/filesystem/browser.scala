@@ -20,7 +20,6 @@ import java.io.{FilenameFilter, OutputStream, FileOutputStream, File}
 import java.util.concurrent.atomic.AtomicReference
 import com.imcode.util.event.Publisher
 
-
 //todo: manager actions
 
 sealed trait FileSelection
@@ -152,18 +151,4 @@ class DirContent(filter: File => Boolean) {
       ui.addItem(Array[AnyRef](fsNode.getName, new Date(fsNode.lastModified), "%d %s".format(size, units), "--"), fsNode)
     }
   }
-}
-
-
-class FileUpload {
-  val ui = letret(new FileUploadUI) { ui =>
-
-  }
-}
-
-class FileUploadUI extends FormLayout with Spacing with UndefinedSize {
-  val upload = new Upload("Choose file...") with Immediate with LinkStyle
-  val txtFileName = new Label("File name") with UndefinedSize
-  val btnCancel = new Button("Cancel") with LinkStyle
-  val pi = new ProgressIndicator
 }

@@ -114,7 +114,7 @@ trait LightStyle { this: Panel =>
   setStyleName(Panel.STYLE_LIGHT)
 }
 
-trait Immediate { this: AbstractField =>
+trait Immediate { this: AbstractComponent =>
   setImmediate(true)
 }
 
