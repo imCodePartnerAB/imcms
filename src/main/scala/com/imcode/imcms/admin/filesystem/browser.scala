@@ -92,6 +92,12 @@ class FileBrowser extends Publisher[FileSelection] {
     notifyListeners(DirTreeSelection(dirTreeSelection))
     notifyListeners(DirContentSelection(dirContentSelection))
   }
+
+  // reloads dir content in a current accordion's tab.
+  def reloadDirContent() = for {
+    dirContent <- (?(ui.accDirTrees.getSelectedTab) map locations map (_._2))
+    selectedDir <- dirTreeSelection
+  } dirContent.reload(selectedDir)
 }
 
 

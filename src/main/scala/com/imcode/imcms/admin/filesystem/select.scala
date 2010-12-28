@@ -12,6 +12,8 @@ import com.imcode.util.event.Publisher
 import java.util.concurrent.atomic.AtomicBoolean
 import com.vaadin.Application
 import com.vaadin.terminal._
+import io.Source
+import org.apache.commons.io.FileUtils
 
 //// todo add predicate - see comments on canPreview
 //  // refactor to predicate fn taken as parameter
@@ -28,6 +30,25 @@ class FileDialog(caption: String, browser: FileBrowser)
   mainContent = letret(new FileDialogUI(browser.ui, preview.ui)) { ui =>
     ui.miViewPreview setCommand block {
       preview.enabled = !preview.enabled
+    }
+
+    ui.miFileUpload setCommand block {
+      ui.getApplication.initAndShow(new FileUploadDialog("Upload file")) { dlg =>
+        dlg.addOkHandler {
+          for {
+            data <- dlg.upload.data
+            dir <- browser.dirTreeSelection
+            filename = dlg.upload.ui.txtFilename.value // check not empty
+            file = new File(dir, filename)
+          } {
+            if (file.exists) error("File exists")
+            else {
+              FileUtils.writeByteArrayToFile(file, data.content)
+              browser.reloadDirContent
+            }
+          }
+        }
+      }
     }
   }
 
