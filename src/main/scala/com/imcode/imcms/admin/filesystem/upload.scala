@@ -33,63 +33,64 @@ class FileUploadDialog(caption: String = "") extends OkCancelDialog(caption) {
 class FileUpload extends Publisher[UploadStatus] {
   private val dataRef = new AtomicReference[Option[UploadedData]](None)
 
+  /** Creates file save as name from original filename. */
+  var fileNameToSaveAsName = identity[String]_
   val ui = letret(new FileUploadUI) { ui =>
     val receiver = new Upload.Receiver {
-      val out = new ByteArrayOutputStream { override def write(b: Int) {super.write(b); Thread.sleep(100)} }  // for interrupt testing
+      val out = new ByteArrayOutputStream
       def receiveUpload(filename: String, mimeType: String) = out
     }
 
     ui.upload.setReceiver(receiver)
     ui.upload.addListener(new Upload.StartedListener {
       def uploadStarted(ev: Upload#StartedEvent) = {
-        dataRef.set(None)
+        reset()
+        ui.txtSaveAsName.value = fileNameToSaveAsName(ev.getFilename)
         notifyListeners(UploadStarted(ev))
       }
     })
     ui.upload.addListener(new Upload.ProgressListener {
-      def updateProgress(readBytes: Long, contentLength: Long) = notifyListeners(UploadProgress(readBytes, contentLength))
+      def updateProgress(readBytes: Long, contentLength: Long) {
+        ui.pi.setValue(Float.box(readBytes.toFloat / contentLength))
+        notifyListeners(UploadProgress(readBytes, contentLength))
+      }
     })
     ui.upload.addListener(new Upload.FailedListener {
-      def uploadFailed(ev: Upload#FailedEvent) = notifyListeners(UploadFailed(ev))
+      def uploadFailed(ev: Upload#FailedEvent) {
+        ui.getApplication.getMainWindow.showNotification("Upload has been interrupted", Notification.TYPE_ERROR_MESSAGE)
+        notifyListeners(UploadFailed(ev))
+      }
     })
     ui.upload.addListener(new Upload.SucceededListener {
       def uploadSucceeded(ev: Upload#SucceededEvent) {
         let(UploadedData(ev.getFilename, ev.getMIMEType, receiver.out.toByteArray)) { data =>
           dataRef.set(Some(data))
+          ui.txtSaveAsName.setEnabled(true)
+          ui.txtSaveAsName.value = ev.getFilename
           notifyListeners(UploadSucceeded(ev, data))
         }
       }
     })
   }
 
-  listen {
-    case UploadNew =>
-      ui.txtFilename.setEnabled(false)
-    case UploadStarted(_) =>
-      ui.txtFilename.value = ""
-      ui.txtFilename.setEnabled(false)
-      ui.pi.setValue(0f)
-      ui.pi.setPollingInterval(500)
-    case UploadProgress(readBytes, contentLength) =>
-      ui.pi.setValue(Float.box(readBytes.toFloat / contentLength))
-    case UploadFailed(_) =>
-      ui.getApplication.getMainWindow.showNotification("Upload has been interrupted", Notification.TYPE_ERROR_MESSAGE)
-    case UploadSucceeded(ev, _) =>
-      ui.txtFilename.setEnabled(true)
-      ui.txtFilename.value = ev.getFilename
+  def reset() {
+    dataRef.set(None)
+    ui.txtSaveAsName.value = ""
+    ui.txtSaveAsName.setEnabled(false)
+    ui.pi.setValue(0f)
+    ui.pi.setPollingInterval(500)
+    notifyListeners(UploadNew)
   }
-
-  notifyListeners(UploadNew)
 
   def data = dataRef.get
 }
 
 class FileUploadUI extends FormLayout with UndefinedSize {
   val upload = new Upload("Choose file", null) with Immediate
-  val txtFilename = new TextField("Save as") with UndefinedSize
+  val txtSaveAsName = new TextField("Save as")
   val pi = new ProgressIndicator; pi.setCaption("Progress")
-  val ckhOverwrite = new CheckBox("Overwrite existing")
+  val chkOverwrite = new CheckBox("Overwrite existing")
 
   upload.setButtonCaption("...")
-  addComponents(this, upload, txtFilename, ckhOverwrite, pi)
+  addComponents(this, upload, txtSaveAsName, chkOverwrite, pi)
 }

@@ -1092,39 +1092,37 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     })
   }
 
-  def templates = new TabSheetView {
-    val templateMapper = Imcms.getServices.getTemplateMapper
+  lazy val templates = new VerticalLayout with Margin {
+    lazy val templateManager = new com.imcode.imcms.admin.document.template.TemplateManager(app)
+    lazy val templateGroupManager = new com.imcode.imcms.admin.document.template.group.TemplateGroupManager(app)
 
-    // templates files
-    val tfm = new com.imcode.imcms.admin.document.template.file.TemplateFileManager(app)
-    tfm.ui.setCaption("Template files")
-    tfm.ui.setMargin(true)
-    addTab(tfm.ui)
+    import com.imcode.imcms.vaadin.Theme.Icons._
 
-    // templates groups
-    val tgm = new com.imcode.imcms.admin.document.template.group.TemplateGroupManager(app)
-    tgm.ui.setCaption("Template groups")
-    tgm.ui.setMargin(true)
-    addTab(tgm.ui)
+    val tabSheet = new TabSheet
+    tabSheet.addTab(templateManager.ui, "Templates", Tab32)
+    tabSheet.addTab(templateGroupManager.ui, "Template Groups", Tab32)
+
+    templateManager.ui.setMargin(true)
+    templateGroupManager.ui.setMargin(true)
+
+    addComponent(tabSheet)
   }
 
 
+  lazy val categories = new VerticalLayout with Margin {
+    val categoryManager = new com.imcode.imcms.admin.document.category.CategoryManager(app)
+    val categoryTypeManager = new com.imcode.imcms.admin.document.category.`type`.CategoryTypeManager(app)
 
-  def categories = new TabSheetView {
-    import com.imcode.imcms.admin.document.category.CategoryManager
-    import com.imcode.imcms.admin.document.category.`type`.CategoryTypeManager
+    import com.imcode.imcms.vaadin.Theme.Icons._
 
-    val categoryManager = new CategoryManager(app)
-    val ui = categoryManager.ui
-    ui.setCaption("Category")
-    ui.setMargin(true)
-    addTab(ui)
+    val tabSheet = new TabSheet
+    tabSheet.addTab(categoryManager.ui, "Categories ", Tab32)
+    tabSheet.addTab(categoryTypeManager.ui, "Category types", Tab32)
 
-    val categoryTypeManager = new CategoryTypeManager(app)
-    val tui = categoryTypeManager.ui
-    tui.setCaption("Category type")
-    tui.setMargin(true)
-    addTab(tui)
+    categoryManager.ui.setMargin(true)
+    categoryTypeManager.ui.setMargin(true)
+
+    addComponent(tabSheet)
   } // category
 
   //

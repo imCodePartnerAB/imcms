@@ -29,7 +29,7 @@ case class DirContentSelection(selection: Option[File]) extends FileSelection
 
 // todo: ADD DIR CONTENT MULTI SELECT?????
 
-class Location(val dir: File, val dirContentFilter: File => Boolean)
+class Location(val dir: File, val dirContentFilter: File => Boolean, recursive: Boolean=true)
 
 object Location {
   import scala.util.matching.Regex

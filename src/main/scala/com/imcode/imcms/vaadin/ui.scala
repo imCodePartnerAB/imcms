@@ -283,6 +283,7 @@ class TwinSelect[T <: AnyRef](caption: String = "") extends GridLayout(3, 1) {
 }
 
 /** Vertical layout containing tab sheet. */
+@deprecated("prototype")
 class TabSheetView extends VerticalLayout {
   val tabSheet = new TabSheet
 

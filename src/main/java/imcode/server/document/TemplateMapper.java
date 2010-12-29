@@ -189,7 +189,7 @@ public class TemplateMapper {
         DocumentDomainObject[] documents = new DocumentDomainObject[temp.length];
         for ( int i = 0; i < documents.length; i++ ) {
             int documentId = Integer.parseInt( temp[i][0] );
-            //documents[i] = documentMapper.getDefaultDocument( documentId );
+            documents[i] = documentMapper.getDefaultDocument( documentId );
             documentMapper.getDocument( documentId );
         }
         return documents;
@@ -319,7 +319,6 @@ public class TemplateMapper {
         })) ;
     }
 
-    @Deprecated
     public int saveTemplate(String name, String file_name, InputStream templateData, boolean overwrite) {
 
         File f = new File( getTemplateDirectory(), name+"."+StringUtils.substringAfterLast(file_name,".") );
