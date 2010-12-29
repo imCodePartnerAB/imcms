@@ -49,6 +49,8 @@ import com.vaadin.terminal.gwt.server.WebApplicationContext
  *
  * A flow is also an editor which contains one or more editors which may have (partially) shared model and controller.
  * - commit???
+ *
+ * EDITOR UI, but NO EDITOR - explain
  */
 
 
@@ -1081,19 +1083,6 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   }
 
 
-//  lazy val documentsLinks = new TabSheetView {
-//    addTab(new VerticalLayoutUI("Validate links"))
-//  }
-//
-//  lazy val documentsProfiles = new TabSheetView {
-//    addTab(new VerticalLayoutUI("Profiles"))
-//  }
-//
-//  lazy val documentsTemplates = new TabSheetView {
-//    addTab(new VerticalLayoutUI("Templates"))
-//  }
-
-
   lazy val filesystem = new TabSheetView {
     tabSheet.setSizeFull
     setSizeFull
@@ -1128,22 +1117,14 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
           (t.getName, List(t.getName, kind, Int box templateMapper.getCountOfDocumentsUsingTemplate(t)))
         }
 
-//        val btnNew = new Button("Add new")
-//        val btnRename = new Button("Rename")
-//        val btnDelete = new Button("Delete")
-//        val btnEditContent = new Button("Edit content")
-
         val menuBar = new MenuBar
         val miAddNew = menuBar.addItem("Add new", new ThemeResource("icons/16/document-add.png"), null)
         val miRename = menuBar.addItem("Edit", new ThemeResource("icons/16/settings.png"), null)
         val miDelete = menuBar.addItem("Delete", new ThemeResource("icons/16/document-delete.png"), null)
         val miEditContent = menuBar.addItem("Edit content", new ThemeResource("icons/16/document-txt.png"), null)
 
-        //addComponents(pnlHeader, btnNew, btnRename, btnEditContent, new Label(" "), btnDelete)
-        //pnlHeader.addComponent(menuBar)
         lytMenu.addComponent(menuBar)
 
-        //btnNew addListener {
         miAddNew setCommand block {
           app.initAndShow(new OkCancelDialog("Add new template")) { w =>
             let(w.setMainContent(new TemplateDialogContent)) { c =>

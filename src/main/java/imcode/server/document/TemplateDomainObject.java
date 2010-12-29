@@ -1,6 +1,6 @@
 package imcode.server.document;
 
-public class TemplateDomainObject implements Comparable<TemplateDomainObject> {
+public class TemplateDomainObject implements Comparable<TemplateDomainObject>, Cloneable {
     private final String name;
     private final String fileName;
 
@@ -37,5 +37,14 @@ public class TemplateDomainObject implements Comparable<TemplateDomainObject> {
 
     public int hashCode() {
         return fileName.hashCode();
+    }
+
+    @Override
+    public TemplateDomainObject clone() {
+        try {
+            return (TemplateDomainObject)super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
