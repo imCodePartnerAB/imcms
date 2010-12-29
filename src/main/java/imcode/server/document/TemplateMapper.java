@@ -264,7 +264,7 @@ public class TemplateMapper {
         return true;
     }
 
-    private File getTemplateDirectory() {
+    public File getTemplateDirectory() {
         return new File(Imcms.getPath(), "WEB-INF/templates/text");
     }
 
@@ -319,6 +319,7 @@ public class TemplateMapper {
         })) ;
     }
 
+    @Deprecated
     public int saveTemplate(String name, String file_name, InputStream templateData, boolean overwrite) {
 
         File f = new File( getTemplateDirectory(), name+"."+StringUtils.substringAfterLast(file_name,".") );

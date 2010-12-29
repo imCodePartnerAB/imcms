@@ -41,7 +41,7 @@ class FileDialog(caption: String, browser: FileBrowser)
             filename = dlg.upload.ui.txtFilename.value // check not empty
             file = new File(dir, filename)
           } {
-            if (file.exists) error("File exists")
+            if (file.exists && !dlg.upload.ui.ckhOverwrite.booleanValue) error("File exists")
             else {
               FileUtils.writeByteArrayToFile(file, data.content)
               browser.reloadDirContent

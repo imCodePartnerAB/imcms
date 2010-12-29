@@ -85,10 +85,11 @@ class FileUpload extends Publisher[UploadStatus] {
 }
 
 class FileUploadUI extends FormLayout with UndefinedSize {
-  val upload = new Upload("Choose file", null) with Immediate {setStyleName("small")}
-  val txtFilename = new TextField("File name") with UndefinedSize
+  val upload = new Upload("Choose file", null) with Immediate
+  val txtFilename = new TextField("Save as") with UndefinedSize
   val pi = new ProgressIndicator; pi.setCaption("Progress")
-  upload.setButtonCaption("...")
+  val ckhOverwrite = new CheckBox("Overwrite existing")
 
-  addComponents(this, upload, txtFilename, pi)
+  upload.setButtonCaption("...")
+  addComponents(this, upload, txtFilename, ckhOverwrite, pi)
 }

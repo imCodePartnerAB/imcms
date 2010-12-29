@@ -15,7 +15,6 @@ import imcms.servlet.superadmin.AdminSearchTerms
 //import imcms.admin.chat.{MessageView, Chat}
 
 import imcms.admin.access.user.{UserManager}
-import imcms.admin.document.template.{EditTemplateContentDialogContent, EditTemplateDialogContent, TemplateDialogContent}
 import imcode.util.Utility
 import imcode.server.user._
 import imcode.server.{SystemData, Imcms}
@@ -1096,119 +1095,11 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   def templates = new TabSheetView {
     val templateMapper = Imcms.getServices.getTemplateMapper
 
-    // templates tab
-    addTab(new VerticalLayoutUI("Templates") {
-      addComponent(new TableViewTemplate {
-        override def tableProperties() =
-          ("Name", classOf[String], null) ::
-          ("Kind", classOf[String], null) ::
-          ("Documents count using template", classOf[JInteger], null) ::
-          Nil
-
-        override def tableItems = templateMapper.getAllTemplates map { t =>
-          val kind = let(t.getFileName) { filename =>
-            filename.lastIndexOf(".") match {
-              case -1 => ""
-              case n if (n + 1) == filename.length => ""
-              case n => filename.substring(n + 1)
-            }
-          }
-
-          (t.getName, List(t.getName, kind, Int box templateMapper.getCountOfDocumentsUsingTemplate(t)))
-        }
-
-        val menuBar = new MenuBar
-        val miAddNew = menuBar.addItem("Add new", new ThemeResource("icons/16/document-add.png"), null)
-        val miRename = menuBar.addItem("Edit", new ThemeResource("icons/16/settings.png"), null)
-        val miDelete = menuBar.addItem("Delete", new ThemeResource("icons/16/document-delete.png"), null)
-        val miEditContent = menuBar.addItem("Edit content", new ThemeResource("icons/16/document-txt.png"), null)
-
-        lytMenu.addComponent(menuBar)
-
-        miAddNew setCommand block {
-          app.initAndShow(new OkCancelDialog("Add new template")) { w =>
-            let(w.setMainContent(new TemplateDialogContent)) { c =>
-              w addOkHandler {
-                c.uploadReceiver.uploadRef.get match {
-                  case Some(upload) =>
-                    val in = new ByteArrayInputStream(upload.content)
-                    val result = templateMapper.saveTemplate(c.txtName.value,
-                        upload.filename, in, c.chkOverwriteExisting.booleanValue)
-
-                    result match {
-                      case 0 => reloadTableItems // ok
-                      case -1 => error("File exists") // file exists
-                      case -2 => error("IO error")  // io error
-                      case n => error("Unknown error: " + n)
-                    }
-
-                  case _ =>
-                }
-              }
-            }
-          }
-        } // btnNew
-
-        //btnRename addListener {
-        miRename setCommand block {
-          tblItems getValue match {
-            case name: String =>
-              app.initAndShow(new OkCancelDialog("Edit template")) { w =>
-                let(w.setMainContent(new EditTemplateDialogContent)) { c =>
-                  c.txtName setValue name      
-                  w addOkHandler {
-                    templateMapper.renameTemplate(name, c.txtName.value)
-                    reloadTableItems
-                  }
-                }
-              }
-
-            case _ =>
-          }
-        } // btnRename
-
-        //btnDelete addListener {
-        miDelete setCommand block {
-          tblItems getValue match {
-            case name: String =>
-              app.initAndShow(new ConfirmationDialog("Delete selected template?")) { w =>
-                w addOkHandler {
-                  templateMapper deleteTemplate templateMapper.getTemplateByName(name)
-                  reloadTableItems
-                }
-              }
-
-            case _ =>
-          }          
-        } // btnDelete
-
-        //btnEditContent addListener {
-        miEditContent setCommand block {
-          tblItems getValue match {
-            case name: String =>
-              app.initAndShow(new OkCancelDialog("Edit template content")
-                      with CustomSizeDialog with BottomMarginDialog) { w =>
-                let(w.setMainContent(new EditTemplateContentDialogContent)) { c =>
-                  val file = new File(Imcms.getServices.getConfig.getTemplatePath,
-                                      "text/" + templateMapper.getTemplateByName(name).getFileName)
-                  
-                  c.txtContent setValue scala.io.Source.fromFile(file).mkString
-                  w addOkHandler {
-                    // save content
-                  }
-                }
-
-                w setWidth "600px"
-                w setHeight "800px"
-              }
-
-            case _ =>
-          }
-        } // btnEditContent
-
-      }) // templates table view
-    }) // templates tab
-
+    // templates files
+    val tfm = new com.imcode.imcms.admin.document.template.file.TemplateFileManager(app)
+    tfm.ui.setCaption("Template files")
+    tfm.ui.setMargin(true)
+    addTab(tfm.ui)
 
     // templates groups
     val tgm = new com.imcode.imcms.admin.document.template.group.TemplateGroupManager(app)

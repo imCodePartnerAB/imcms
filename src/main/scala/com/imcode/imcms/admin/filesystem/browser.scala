@@ -40,9 +40,9 @@ object Location {
 
   def fileExtFilter(ext: String, exts: String*) = fileNameREFilter("""(?i).*\.(%s)""".format(ext +: exts mkString("|")).r)_
 
-  def imageFileFilter = fileExtFilter("png", "gif", "jpg", "jpeg")
+  val imageFileFilter = fileExtFilter("png", "gif", "jpg", "jpeg")
 
-  // todo: templateFileFilter
+  val templateFileFilter = fileExtFilter("jsp", "jspx", "html")
 
   def apply(dir: File): Location = apply(dir, defaultFileFilter)
 
