@@ -28,6 +28,9 @@ import imcode.server.document._
 import com.imcode.imcms.vaadin._
 import com.vaadin.ui.Window.Notification
 import com.vaadin.terminal.gwt.server.WebApplicationContext
+import com.imcode.imcms.vaadin.Theme.Icons._
+
+
 
 
 // Controller VS HANDLER?
@@ -129,8 +132,8 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       object Properties extends MenuItem(this)
     }
     object Documents extends MenuItem(this) {
-      object Categories extends MenuItem(this)
-      object Templates extends MenuItem(this)
+      object Categories extends MenuItem(this, Some(Done16))
+      object Templates extends MenuItem(this, Some(Done16))
       object Profiles extends MenuItem(this)
       object Links extends MenuItem(this)
       object Structure extends MenuItem(this)
@@ -244,11 +247,12 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       menu.parent match {
         case null =>
           menu.items foreach (initMenu(_))
-        
+
         case parent =>
           treeMenu addItem menu
           if (setParent) treeMenu setParent (menu, parent)
-          
+          menu.icon foreach (treeMenu.setItemIcon(menu, _))
+
           menu.items match {
             case Nil => treeMenu setChildrenAllowed (menu, false)
             case items => items foreach (initMenu(_, setParent=true))
@@ -1099,8 +1103,6 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     lazy val templateManager = new com.imcode.imcms.admin.document.template.TemplateManager(app)
     lazy val templateGroupManager = new com.imcode.imcms.admin.document.template.group.TemplateGroupManager(app)
 
-    import com.imcode.imcms.vaadin.Theme.Icons._
-
     val tabSheet = new TabSheet
     tabSheet.addTab(templateManager.ui, "Templates", Tab32)
     tabSheet.addTab(templateGroupManager.ui, "Template Groups", Tab32)
@@ -1115,8 +1117,6 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   lazy val categories = new VerticalLayout with Margin {
     val categoryManager = new com.imcode.imcms.admin.document.category.CategoryManager(app)
     val categoryTypeManager = new com.imcode.imcms.admin.document.category.`type`.CategoryTypeManager(app)
-
-    import com.imcode.imcms.vaadin.Theme.Icons._
 
     val tabSheet = new TabSheet
     tabSheet.addTab(categoryManager.ui, "Categories ", Tab32)

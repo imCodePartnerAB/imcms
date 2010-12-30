@@ -29,7 +29,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
     }
     ui.miDelete setCommand block {
       whenSelected(ui.tblTypes) { id =>
-        app.initAndShow(new ConfirmationDialog("Delete category type")) { dlg =>
+        app.initAndShow(new ConfirmationDialog("Delete category type?")) { dlg =>
           dlg setOkHandler {
             app.privileged(permission) {
               for (vo <- ?(categoryMapper getCategoryTypeById id.intValue))
@@ -134,11 +134,14 @@ class CategoryTypeManager(app: ImcmsApplication) {
 }
 
 class CategoryTypeManagerUI extends VerticalLayout with Spacing with UndefinedSize {
+  import com.imcode.imcms.vaadin.Theme.Icons._
+
   val mb = new MenuBar
-  val miNew = mb.addItem("New", null)
-  val miEdit = mb.addItem("Edit", null)
-  val miDelete = mb.addItem("Delete", null)
-  val tblTypes = new Table with SingleSelect2[CategoryTypeId] with Selectable with Immediate
+  val miNew = mb.addItem("Add new", New16)
+  val miEdit = mb.addItem("Edit", Edit16)
+  val miDelete = mb.addItem("Delete", Delete16)
+  val miHelp = mb.addItem("Help", Help16)
+  val tblTypes = new Table with SingleSelect2[CategoryTypeId] with Immediate
   val rc = new ReloadableContentUI(tblTypes)
 
   addContainerProperties(tblTypes,

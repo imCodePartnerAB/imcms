@@ -14,5 +14,10 @@ object Theme {
     val Reload16 = "icons/16/reload.png" : TR
     val EditContent16 = "icons/16/document-txt.png" : TR
     val Tab32 = "icons/32/folder.png" : TR
+    val Lock32 = "icons/32/lock.png" : TR
+    val Ok16 = "icons/16/ok.png" : TR
+    val Ok32 = "icons/32/ok.png" : TR
+    val Done16 = Ok16
+    val Done32 = Ok32
   }
 }

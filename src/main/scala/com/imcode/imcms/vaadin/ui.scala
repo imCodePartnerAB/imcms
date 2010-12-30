@@ -225,7 +225,7 @@ class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(ca
 
 /** Creates root item; root is not displayed */
 @deprecated
-class MenuItem(val parent: MenuItem = null, val handler: () => Unit = () => {}) {
+class MenuItem(val parent: MenuItem = null, val icon: Option[Resource]=None, val handler: () => Unit = () => {}) {
 
   import collection.mutable.ListBuffer
 

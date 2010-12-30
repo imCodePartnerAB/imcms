@@ -10,8 +10,7 @@ import com.vaadin.ui.Window.Notification
 import imcms.admin.filesystem._
 import com.vaadin.terminal.FileResource
 import java.io.File
-
-// todo: separate object with methods such as canManageXXX ???
+import imcms.security.{PermissionGranted, PermissionDenied}
 
 /**
  * Category manager.
@@ -22,15 +21,6 @@ class CategoryManager(app: ImcmsApplication) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
   val ui: CategoryManagerUI = letret(new CategoryManagerUI) { ui =>
-    ui.tblCategories.itemsProvider = () => {
-      for {
-        vo <- categoryMapper.getAllCategories
-        id = Int box vo.getId
-      } yield {
-        id -> Seq(id, vo.getName, vo.getDescription, vo.getImageUrl, vo.getType.getName)
-      }
-    }
-
     ui.rc.btnReload addListener block { reload() }
     ui.tblCategories addListener block { handleSelection() }
 
@@ -47,11 +37,16 @@ class CategoryManager(app: ImcmsApplication) {
     ui.miDelete setCommand block {
       whenSelected(ui.tblCategories) { id =>
         app.initAndShow(new ConfirmationDialog("Delete category")) { dlg =>
-          dlg setOkHandler {
-            ?(categoryMapper getCategoryById id.intValue) foreach { vo =>
-              if (canManage) categoryMapper deleteCategoryFromDb vo
-              else error("NO PERMISSIONS")
-            }
+          app.privileged(permission) {
+            for (vo <- ?(categoryMapper getCategoryById id.intValue))
+              EX.allCatch.either(categoryMapper deleteCategoryFromDb vo) match {
+                case Right(_) =>
+                  app.showInfoNotification("Category has been deleted")
+                case Left(ex) =>
+                  app.showErrorNotification("Internal error")
+                  throw ex
+              }
+
             reload()
           }
         }
@@ -63,6 +58,7 @@ class CategoryManager(app: ImcmsApplication) {
   // END OF PRIMARY CONSTRUCTOR
 
   def canManage = app.user.isSuperAdmin
+  def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage categories")
 
   /** Edit in modal dialog. */
   private def editAndSave(vo: CategoryDomainObject) {
@@ -75,8 +71,7 @@ class CategoryManager(app: ImcmsApplication) {
       val isNew = id == 0
       val dialogTitle = if(isNew) "Create new category" else "Edit category"
       val browser = letret(new FileBrowser) { browser =>
-        //browser.addLocation("Images", new File(Imcms.getPath, "images"))
-        browser.addLocation("Images", Location(new File(Imcms.getPath, "/"), Location.imageFileFilter))
+        browser.addLocation("Images", Location(new File(Imcms.getPath, "images"), Location.imageFileFilter))
       }
       val imagePicker = new ImagePicker(app, browser)
       val imageFile = for {
@@ -85,7 +80,7 @@ class CategoryManager(app: ImcmsApplication) {
       } imagePicker.preview.set(new Embedded("", new FileResource(file, app)))
 
       app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-        dlg.mainContent = letret(new CategoryDialogContentUI(imagePicker.ui)) { c =>
+        dlg.mainContent = letret(new CategoryEditorUI(imagePicker.ui)) { c =>
           typesNames foreach { c.sltType addItem _ }
 
           c.txtId.value = if (isNew) "" else id.toString
@@ -113,25 +108,19 @@ class CategoryManager(app: ImcmsApplication) {
                 error(msg)
               }
 
-              if (!canManage) {
-                app.getMainWindow.showNotification("You are not allowed to manage categories", Notification.TYPE_ERROR_MESSAGE)
-              } else {
+              app.privileged(permission) {
                 EX.allCatch.either(categoryMapper saveCategory voc) match {
                   case Left(ex) =>
-                  // todo: log ex, provide custom dialog with details -> show stack
+                    // todo: log ex, provide custom dialog with details -> show stack
                     app.getMainWindow.showNotification("Internal error, please contact your administrator", Notification.TYPE_ERROR_MESSAGE)
                     throw ex
                   case _ =>
-                    let(if (isNew) "New category has been created" else "Category has been updated") { msg =>
+                    let(if (isNew) "New category type has been created" else "Category type has been updated") { msg =>
                       app.getMainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE)
                     }
 
-                    //                    let (Int box voc.getId) { id =>
-                    //                      ui.tblCategories.addItem(Array[AnyRef](id, voc.getDescription, voc.getImageUrl, voc.getType.getName), id)
-                    //                      ui.tblCategories.requestRepaint()
-                    //                    }
                     reload()
-                } // match
+                }
               }
             }
           }
@@ -140,8 +129,12 @@ class CategoryManager(app: ImcmsApplication) {
     }
   } // editAndSave
 
-  private def reload() {
-    ui.tblCategories.reload()
+  def reload() {
+    ui.tblCategories.removeAllItems
+    for {
+      vo <- categoryMapper.getAllCategories
+      id = Int box vo.getId
+    } ui.tblCategories.addItem(Array[AnyRef](id, vo.getName, vo.getDescription, vo.getImageUrl, vo.getType.getName), id)
 
     let(canManage) { canManage =>
       ui.tblCategories.setSelectable(canManage)
@@ -159,12 +152,16 @@ class CategoryManager(app: ImcmsApplication) {
   }
 } // class CategoryManager
 
+
 class CategoryManagerUI extends VerticalLayout with Spacing with UndefinedSize {
+  import com.imcode.imcms.vaadin.Theme.Icons._
+
   val mb = new MenuBar
-  val miNew = mb.addItem("New", null)
-  val miEdit = mb.addItem("Edit", null)
-  val miDelete = mb.addItem("Delete", null)
-  val tblCategories = new Table with Reloadable with SingleSelect2[CategoryId] with Selectable with Immediate
+  val miNew = mb.addItem("Add new", New16)
+  val miEdit = mb.addItem("Edit", Edit16)
+  val miDelete = mb.addItem("Delete", Delete16)
+  val miHelp = mb.addItem("Help", Help16)
+  val tblCategories = new Table with SingleSelect2[CategoryId] with Immediate
   val rc = new ReloadableContentUI(tblCategories)
 
   addContainerProperties(tblCategories,
@@ -178,7 +175,7 @@ class CategoryManagerUI extends VerticalLayout with Spacing with UndefinedSize {
 }
 
 
-class CategoryDialogContentUI(val imagePcikerUI: ImagePickerUI) extends FormLayout with UndefinedSize {
+class CategoryEditorUI(val imagePickerUI: ImagePickerUI) extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id") with Disabled {
     setColumns(11)
   }
@@ -190,6 +187,6 @@ class CategoryDialogContentUI(val imagePcikerUI: ImagePickerUI) extends FormLayo
 
   val sltType = new Select("Type") with ValueType[String] with Required with NoNullSelection
 
-  addComponents(this, txtId, txtName, sltType, imagePcikerUI, txtDescription)
-  imagePcikerUI.setCaption("Icon")
+  addComponents(this, txtId, txtName, sltType, imagePickerUI, txtDescription)
+  imagePickerUI.setCaption("Icon")
 }
