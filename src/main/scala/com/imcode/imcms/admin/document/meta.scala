@@ -110,7 +110,7 @@ class MetaEditor(val application: ImcmsApplication, val model: MetaModel) {
 
         content.ogDisabledShowMode.select(model.meta.getDisabledLanguageShowSetting)
 
-        dlg addOkHandler {
+        dlg setOkHandler {
           content.lytLanguages.getComponentIterator foreach {
             case cb: CheckBox with DataType[I18nLanguage] => model.languages(cb.data) = cb.booleanValue
           }
@@ -127,7 +127,7 @@ class MetaEditor(val application: ImcmsApplication, val model: MetaModel) {
         val content = new KeywordsDialogContent(keywords.toSeq)
 
         dlg setMainContent content
-        dlg addOkHandler {
+        dlg setOkHandler {
           val newKeywords = content.lstKeywords.itemIds
           ui.lytSearch.lytKeywords.txtKeywords.value = newKeywords.mkString(", ")
           keywords.clear
@@ -174,7 +174,7 @@ class MetaEditor(val application: ImcmsApplication, val model: MetaModel) {
         sltCategories foreach (content addComponent _)
         twsCategories foreach (content addComponent _)
 
-        dlg.addOkHandler {
+        dlg.setOkHandler {
           categoryIds.clear
           sltCategories foreach (categoryIds add _.value.getId)
           twsCategories foreach (_.chosenItemIds foreach (categoryIds add _.getId))
@@ -190,7 +190,7 @@ class MetaEditor(val application: ImcmsApplication, val model: MetaModel) {
     // affects model
     ui.lytPublication.btnChoosePublisher addListener block {
       application.initAndShow(new OkCancelDialog("Choose publisher") with UserSelectDialog) { dlg =>
-        dlg.addOkHandler {
+        dlg.setOkHandler {
           dlg.userSelect.selection match {
             case Some(user) =>
               model.meta.setPublisherId(user.getId)

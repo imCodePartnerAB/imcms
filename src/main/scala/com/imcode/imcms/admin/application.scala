@@ -31,7 +31,10 @@ import com.vaadin.terminal.gwt.server.WebApplicationContext
 
 
 // Controller VS HANDLER?
-/* 
+/*
+   A manager is associated with a set of tasks
+   For every task a user must have a permission...
+
  * Administration is performed using managers and editors.
  * -or-??
  *  Administration is performed using managers, editors and flows.
@@ -512,7 +515,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
             app.initAndShow(new LanguageWindow("New language")) { wndEditLanguage =>
               val language = new com.imcode.imcms.api.I18nLanguage
 
-              wndEditLanguage addOkHandler {
+              wndEditLanguage setOkHandler {
                 if (!isInt(wndEditLanguage.txtId.getValue)) {
                   wndEditLanguage.txtId.setComponentError(new UserError("Id must be an Int"))
                 } else {
@@ -540,7 +543,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
               wndEditLanguage.txtNativeName.setValue(language.getNativeName)
               wndEditLanguage.chkEnabled.setValue(language.isEnabled)
 
-              wndEditLanguage addOkHandler {
+              wndEditLanguage setOkHandler {
                 language.setCode(wndEditLanguage.txtCode.getValue.asInstanceOf[String])
                 language.setName(wndEditLanguage.txtName.getValue.asInstanceOf[String])
                 language.setNativeName(wndEditLanguage.txtNativeName.getValue.asInstanceOf[String])
@@ -553,7 +556,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
           case `btnSetDefault` =>
             app.initAndShow(new ConfirmationDialog("Confirmation", "Change default language?")) { wndConfirmation =>
-              wndConfirmation addOkHandler {
+              wndConfirmation setOkHandler {
                 val languageId = table.getValue.asInstanceOf[JInteger]
                 val property = systemDao.getProperty("DefaultLanguageId")
 
@@ -565,7 +568,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
           case `btnDelete` =>
             app.initAndShow(new ConfirmationDialog("Confirmation", "Delete language from the system?")) { wndConfirmation =>
-              wndConfirmation addOkHandler {
+              wndConfirmation setOkHandler {
                 val languageId = table.getValue.asInstanceOf[JInteger]
                 languageDao.deleteLanguage(languageId)
                 reloadTable
@@ -707,7 +710,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
             w.sltUser setItemCaption (u.getId, u.getLoginName)
           }
 
-          w.addOkHandler {
+          w.setOkHandler {
             val ipAccess = new IPAccess
             ipAccess setUserId w.sltUser.getValue.asInstanceOf[Integer]
             ipAccess setStart fromDDN(w.txtFrom.getValue.asInstanceOf[String])
@@ -734,7 +737,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
           w.txtFrom setValue toDDN(ipAccess.getStart)
           w.txtTo setValue toDDN(ipAccess.getEnd)
 
-          w.addOkHandler {
+          w.setOkHandler {
             val ipAccess = new IPAccess
             ipAccess setUserId w.sltUser.getValue.asInstanceOf[Integer]
             ipAccess setStart fromDDN(w.txtFrom.getValue.asInstanceOf[String])
@@ -749,7 +752,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
       btnDelete addListener block {
         app.initAndShow(new ConfirmationDialog("Confirmation", "Delete IP Access?")) { w =>
-          w.addOkHandler {
+          w.setOkHandler {
             ipAccessDao delete tblItems.getValue.asInstanceOf[JInteger]
             reloadTableItems
           }
@@ -816,7 +819,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
       btnAdd addListener block {
         app.initAndShow(new RoleDataWindow("New role")) { w =>
-          w.addOkHandler {
+          w.setOkHandler {
             val role = new RoleDomainObject(w.txtName.getValue.asInstanceOf[String])
             w.checkedPermissions foreach { p => role.addPermission(p) }
 
@@ -835,7 +838,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
           w.txtName setValue role.getName
           w checkPermissions role.getPermissions.toSet
 
-          w.addOkHandler {
+          w.setOkHandler {
             role.removeAllPermissions
             w.checkedPermissions foreach { p => role.addPermission(p) }
             roleMapper saveRole role
@@ -849,7 +852,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
           val roleId = tblItems.getValue.asInstanceOf[RoleId]
           val role = roleMapper.getRole(roleId)
           
-          w.addOkHandler {
+          w.setOkHandler {
             roleMapper deleteRole role
             reloadTableItems
           }
@@ -996,7 +999,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       lytButtons.btnReload addListener block { reload() }
       lytButtons.btnClear addListener block {
         app.initAndShow(new ConfirmationDialog("Confirmation", "Clear counter statistics?")) { w =>
-          w.addOkHandler {
+          w.setOkHandler {
             Imcms.getServices setSessionCounter 0
             Imcms.getServices setSessionCounterDate new Date
 
@@ -1018,7 +1021,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
             addComponents(this, txtValue, calStart)
           }
 
-          w.addOkHandler {
+          w.setOkHandler {
             Imcms.getServices setSessionCounter txtValue.getValue.asInstanceOf[String].toInt
             Imcms.getServices setSessionCounterDate calStart.getValue.asInstanceOf[Date]
 
@@ -1242,7 +1245,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 //          b addDirectoryTree("Templates", new File(Imcms.getPath, "WEB-INF/templates"))
 //          b.tblDirContent setSelectable true
 //
-//          w.addOkHandler {
+//          w.setOkHandler {
 //            b.tblDirContent.getValue match {
 //              case file: File /*if canPreview(file)*/=>
 //                txtFilename.setReadOnly(false)

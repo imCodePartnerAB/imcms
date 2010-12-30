@@ -10,18 +10,37 @@ import java.util.{Collections, LinkedList, ResourceBundle, Date, Collection => J
 import com.vaadin.terminal.gwt.server.WebApplicationContext
 import imcode.util.Utility
 import com.vaadin.terminal.{Resource, Sizeable, ThemeResource, UserError}
+import com.vaadin.ui.Window.Notification
+import com.imcode.imcms.security._
 
 trait ImcmsApplication extends Application {
 
-  def session = getContext.asInstanceOf[WebApplicationContext].getHttpSession
+  def content = getContext.asInstanceOf[WebApplicationContext]
+
+  def session = content.getHttpSession
 
   def user = Utility.getLoggedOnUser(session)
 
   // todo: implement
   val resourceBundle = new ResourceBundle {
-     def handleGetObject(key: String)  = "<" + key + ">"
+    def handleGetObject(key: String)  = "<" + key + ">"
 
-     val getKeys = Collections.enumeration(List.empty[String])
+    val getKeys = asJavaEnumeration(List.empty[String].iterator)
+  }
+
+
+
+  /**
+   * If permission is granted executes an action.
+   * Otherwise shows error notification and throws an exception.
+   */
+  def privileged[T](permission: => Permission)(action: => T) {
+    permission match {
+      case PermissionGranted => action
+      case PermissionDenied(reason) =>
+        this.showErrorNotification(reason)
+        error(reason)
+    }
   }
 }
 
@@ -37,6 +56,18 @@ class ApplicationWrapper(app: Application) {
 
   def show(window: Window, modal: Boolean=true, resizable: Boolean=false, draggable: Boolean=true) =
     initAndShow(window, modal, resizable, draggable) { _ => }
+
+  def showNotification(caption: String, description: String, notificationType: Int) =
+    app.getMainWindow.showNotification(caption, description, notificationType)
+
+  def showErrorNotification(caption: String, description: String = null) =
+    showNotification(caption, description, Notification.TYPE_ERROR_MESSAGE)
+
+  def showWarningNotification(caption: String, description: String = null) =
+    showNotification(caption, description, Notification.TYPE_WARNING_MESSAGE)
+
+  def showInfoNotification(caption: String, description: String = null) =
+    showNotification(caption, description, Notification.TYPE_HUMANIZED_MESSAGE)
 }
 
 class MenuBarWrapper(mb: MenuBar) {
@@ -69,16 +100,16 @@ trait ResourceCaption extends AbstractComponent {
 /**
  * Auto-adjustable size dialog window with full margin.
 
- * Dialog is divided vertically into 2 areas - main content and buttons bar content.
- * Buttons bar takes minimal required space and main content takes the rest.
+ * Dialog UI is divided vertically into 2 areas - main UI and buttons bar UI.
+ * Buttons bar UI takes minimal required space and main UI takes the rest.
  * 
  * By default:
- *   -buttons bar content (buttons) are centered.
+ *   -buttons bar UI (buttons) are centered.
  *   -size is adjusted automatically according to its content size.
  */
 class Dialog(caption: String = "") extends Window(caption) {
-  protected val mainContentCheck: Component => Unit = Checks.checkNoWidthOrHeightInPercentage
-  protected val buttonsBarContentCheck: Component => Unit = Checks.checkNoWidthOrHeightInPercentage
+  protected val mainUICheck: Component => Unit = Checks.checkNoWidthOrHeightInPercentage
+  protected val buttonsBarUICheck: Component => Unit = Checks.checkNoWidthOrHeightInPercentage
 
   protected [this] val content = new GridLayout(1, 2) with Spacing with Margin
 
@@ -90,17 +121,19 @@ class Dialog(caption: String = "") extends Window(caption) {
   /** By default rejects components with width and/or height in percentage. */
   def mainUI_=(component: Component) = mainContent_=(component)
   def mainContent_=(component: Component) {
-    mainContentCheck(component)
+    mainUICheck(component)
 
     content.addComponent(component, 0, 0)
     content.setComponentAlignment(component, Alignment.TOP_LEFT)
   }
 
+  def buttonsBarUI = buttonsBarContent
   def buttonsBarContent = content.getComponent(0, 1)
 
   /** By default rejects components with width and/or height in percentage. */
+  def buttonsBarUI_=(component: Component) = buttonsBarContent = component
   def buttonsBarContent_=(component: Component) {
-    buttonsBarContentCheck(component)
+    buttonsBarUICheck(component)
 
     content.addComponent(component, 0, 1)
     content.setComponentAlignment(component, Alignment.TOP_CENTER)
@@ -118,7 +151,7 @@ class Dialog(caption: String = "") extends Window(caption) {
  * Size (both width and height) of this dialog MUST be set explicitly.
  */
 trait CustomSizeDialog extends Dialog {
-  override protected val mainContentCheck: Component => Unit = Function.const(Unit)
+  override protected val mainUICheck: Component => Unit = Function.const(Unit)
 
   content.setSizeFull
   content.setColumnExpandRatio(0, 1f)
@@ -129,7 +162,7 @@ trait CustomSizeDialog extends Dialog {
 class OKDialog(caption: String = "") extends Dialog(caption) {
   val btnOk = new Button("Ok") { setIcon(new ThemeResource("icons/16/ok.png")) }
 
-  buttonsBarContent = btnOk
+  buttonsBarUI = btnOk
 
   btnOk addListener block { close }
 }
@@ -141,8 +174,8 @@ class MsgDialog(caption: String = "", msg: String ="") extends Dialog(caption) {
 
   val lblMessage = new Label(msg) with UndefinedSize
 
-  mainContent = lblMessage
-  buttonsBarContent = btnOk
+  mainUI = lblMessage
+  buttonsBarUI = btnOk
 
   btnOk addListener block { close }
 }
@@ -159,19 +192,19 @@ class OkCancelDialog(caption: String = "") extends Dialog(caption) {
     setComponentAlignment(btnCancel, Alignment.MIDDLE_LEFT)
   }
 
-  buttonsBarContent = lytButtons
+  buttonsBarUI = lytButtons
 
   btnCancel addListener block { close }
 
-  def addOkHandler(handler: => Unit) {
+  /**
+   * Adds Ok button listener which invokes a handler and closes dialog if there is no exception.
+   */
+  def setOkHandler(handler: => Unit) {
     btnOk addListener block {
-      try {
-        handler
-        close
-      } catch {
-        case ex: Exception => using(new java.io.StringWriter) { w =>
+      EX.allCatch.either(handler) match {
+        case Right(_) => close
+        case Left(ex) => using(new java.io.StringWriter) { w =>
           ex.printStackTrace(new java.io.PrintWriter(w))
-          //show(new MsgDialog("ERROR", "%s  ##  ##  ##  ## ## %s" format (ex.getMessage, w.getBuffer)))
           throw ex
         }
       }
@@ -186,7 +219,7 @@ class ConfirmationDialog(caption: String, msg: String) extends OkCancelDialog(ca
 
   val lblMessage = new Label(msg) with UndefinedSize
 
-  mainContent = lblMessage
+  mainUI = lblMessage
 }
 
 

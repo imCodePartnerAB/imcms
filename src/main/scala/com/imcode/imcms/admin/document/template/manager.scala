@@ -21,7 +21,7 @@ class TemplateManager(app: ImcmsApplication) {
       app.initAndShow(new FileUploadDialog("Upload template file")) { dlg =>
         // strips filename extension, trims and replaces spaces with underscores
         dlg.upload.fileNameToSaveAsName = fileRE.unapplySeq(_:String).map(_.head.trim.replaceAll("""\s""", "_")).get
-        dlg.addOkHandler {
+        dlg.setOkHandler {
           for {
             data <- dlg.upload.data
             name = dlg.upload.ui.txtSaveAsName.value // check not empty
@@ -46,7 +46,7 @@ class TemplateManager(app: ImcmsApplication) {
           }
 
           dlg.mainUI = fileRenameUI
-          dlg.addOkHandler {
+          dlg.setOkHandler {
             if (canManage) { // move up!!
               templateMapper.renameTemplate(name, fileRenameUI.txtName.value)
             } else error("NO PERMISSIONS")
@@ -71,7 +71,7 @@ class TemplateManager(app: ImcmsApplication) {
     ui.miDelete setCommand block {
       whenSelected(ui.tblTemplates) { name =>
         app.initAndShow(new ConfirmationDialog("Delete selected template?")) { dlg =>
-          dlg addOkHandler {
+          dlg setOkHandler {
             if (canManage) {
               ?(templateMapper.getTemplateByName(name)) foreach { template =>
                 templateMapper deleteTemplate template

@@ -78,6 +78,10 @@ trait BottomMarginDialog extends Dialog {
   content.setMargin(false, false, true, false)
 }
 
+trait NoMarginDialog extends Dialog {
+  content.setMargin(false)
+}
+
 trait Spacing { this: Layout.SpacingHandler =>
   setSpacing(true)
 }

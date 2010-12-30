@@ -9,20 +9,12 @@ import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import imcode.server.document.{CategoryTypeDomainObject}
 import com.imcode.imcms.admin.document.category.{CategoryTypeId}
 import com.vaadin.ui.Window.Notification
+import imcms.security.{PermissionDenied, PermissionGranted}
 
 class CategoryTypeManager(app: ImcmsApplication) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
   val ui = letret(new CategoryTypeManagerUI) { ui =>
-    ui.tblTypes.itemsProvider = () => {
-      for {
-        vo <- categoryMapper.getAllCategoryTypes
-        id = Int box vo.getId
-      } yield {
-        id -> Seq(id, vo.getName, Boolean box (vo.getMaxChoices > 0), Boolean box vo.isInherited, Boolean box vo.isImageArchive)
-      }
-    }
-
     ui.rc.btnReload addListener block { reload() }
     ui.tblTypes addListener block { handleSelection() }
 
@@ -38,12 +30,19 @@ class CategoryTypeManager(app: ImcmsApplication) {
     ui.miDelete setCommand block {
       whenSelected(ui.tblTypes) { id =>
         app.initAndShow(new ConfirmationDialog("Delete category type")) { dlg =>
-          dlg addOkHandler {
-            ?(categoryMapper getCategoryTypeById id.intValue) foreach { vo =>
-              if (canManage) categoryMapper deleteCategoryTypeFromDb vo
-              else error("NO PERMISSIONS")
+          dlg setOkHandler {
+            app.privileged(permission) {
+              for (vo <- ?(categoryMapper getCategoryTypeById id.intValue))
+                EX.allCatch.either(categoryMapper deleteCategoryTypeFromDb vo) match {
+                  case Right(_) =>
+                    app.showInfoNotification("Category type has been deleted")
+                  case Left(ex) =>
+                    app.showErrorNotification("Internal error")
+                    throw ex
+                }
+
+              reload()
             }
-            reload()
           }
         }
       }
@@ -54,6 +53,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
   // END OF PRIMARY CONSTRUCTOR
 
   def canManage = app.user.isSuperAdmin
+  def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage category types")
 
   /** Edit in a modal dialog. */
   private def editAndSave(vo: CategoryTypeDomainObject) {
@@ -62,14 +62,14 @@ class CategoryTypeManager(app: ImcmsApplication) {
     val dialogTitle = if(isNew) "Create new category type" else "Edit category type"
 
     app.initAndShow(new OkCancelDialog(dialogTitle)) { dlg =>
-      dlg.mainContent = letret(new CategoryTypeDialogContentUI(app)) { c =>
+      dlg.mainUI = letret(new CategoryTypeEditorUI) { c =>
         c.txtId.value = if (isNew) "" else id.toString
         c.txtName.value = ?(vo.getName) getOrElse ""
         c.chkImageArchive.value = Boolean box vo.isImageArchive
         c.chkInherited.value = Boolean box vo.isInherited
         c.chkMultiSelect.value = Boolean box vo.isMultiselect
 
-        dlg addOkHandler {
+        dlg setOkHandler {
           let(vo.clone()) { voc =>
             voc setName c.txtName.value.trim
             voc setInherited c.chkInherited.booleanValue
@@ -90,9 +90,7 @@ class CategoryTypeManager(app: ImcmsApplication) {
               error(msg)
             }
 
-            if (!canManage) {
-              app.getMainWindow.showNotification("You are not allowed to manage categories types", Notification.TYPE_ERROR_MESSAGE)
-            } else {
+            app.privileged(permission) {
               EX.allCatch.either(categoryMapper saveCategoryType voc) match {
                 case Left(ex) =>
                   // todo: log ex, provide custom dialog with details -> show stack
@@ -112,8 +110,12 @@ class CategoryTypeManager(app: ImcmsApplication) {
     }
   } // editAndSave
 
-  private def reload() {
-    ui.tblTypes.reload()
+  def reload() {
+    ui.tblTypes.removeAllItems
+    for {
+      vo <- categoryMapper.getAllCategoryTypes
+      id = Int box vo.getId
+    } ui.tblTypes.addItem(Array[AnyRef](id, vo.getName, Boolean box vo.isMultiselect, Boolean box vo.isInherited, Boolean box vo.isImageArchive), id)
 
     let(canManage) { canManage =>
       ui.tblTypes.setSelectable(canManage)
@@ -136,7 +138,7 @@ class CategoryTypeManagerUI extends VerticalLayout with Spacing with UndefinedSi
   val miNew = mb.addItem("New", null)
   val miEdit = mb.addItem("Edit", null)
   val miDelete = mb.addItem("Delete", null)
-  val tblTypes = new Table with Reloadable with SingleSelect2[CategoryTypeId] with Selectable with Immediate
+  val tblTypes = new Table with SingleSelect2[CategoryTypeId] with Selectable with Immediate
   val rc = new ReloadableContentUI(tblTypes)
 
   addContainerProperties(tblTypes,
@@ -150,7 +152,7 @@ class CategoryTypeManagerUI extends VerticalLayout with Spacing with UndefinedSi
 }
 
 
-class CategoryTypeDialogContentUI(app: ImcmsApplication) extends FormLayout with UndefinedSize {
+class CategoryTypeEditorUI extends FormLayout with UndefinedSize {
   val txtId = new TextField("Id") with Disabled
   val txtName = new TextField("Name") with Required
   val chkMultiSelect = new CheckBox("Multiselect")
@@ -159,5 +161,3 @@ class CategoryTypeDialogContentUI(app: ImcmsApplication) extends FormLayout with
 
   addComponents(this, txtId, txtName, chkMultiSelect, chkInherited, chkImageArchive)
 }
-
-

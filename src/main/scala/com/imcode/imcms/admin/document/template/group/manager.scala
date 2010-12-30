@@ -31,7 +31,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
     ui.miDelete setCommand block {
       whenSelected(ui.tblGroups) { id =>
         app.initAndShow(new ConfirmationDialog("Delete template group")) { dlg =>
-          dlg addOkHandler {
+          dlg setOkHandler {
             if (canManage) templateMapper deleteTemplateGroup id.intValue
             else error("NO PERMISSIONS")
             reload()
@@ -59,7 +59,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
         templateMapper.getTemplatesInGroup(vo) foreach (c.twsTemplates addChosenItem _.getName)
         templateMapper.getTemplatesNotInGroup(vo) foreach (c.twsTemplates addAvailableItem _.getName)
 
-        dlg.addOkHandler {
+        dlg.setOkHandler {
 //                templateMapper.createTemplateGroup(c.txtName.value)
 //                val group = templateMapper.getTemplateGroupByName(c.txtName.value)
 //                c.twsTemplates.chosenItemIds foreach { name =>
