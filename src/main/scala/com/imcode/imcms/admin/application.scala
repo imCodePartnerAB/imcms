@@ -141,7 +141,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     }
     object Permissions extends MenuItem(this) {
       object Users extends MenuItem(this)
-      object Roles extends MenuItem(this)
+      object Roles extends MenuItem(this, Some(Done16))
       object IP_Access extends MenuItem(this)
     }
     object Statistics extends MenuItem(this) {
@@ -774,110 +774,15 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   }
 
 
-  lazy val roles = {
-    def roleMapper = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper
+  lazy val roles = new VerticalLayout with Margin {
+    val roleManager = new com.imcode.imcms.admin.access.role.RoleManager(app)
 
-    class RoleDataWindow(caption: String) extends OkCancelDialog(caption) {
-      val txtName = new TextField("Name")
-      val chkPermGetPasswordByEmail = new CheckBox("Permission to get password by email")
-      val chkPermAccessMyPages = new CheckBox("""Permission to access "My pages" """)
-      val chkPermUseImagesFromArchive = new CheckBox("Permission to use images from image archive")
-      val chkPermChangeImagesInArchive = new CheckBox("Permission to change images in image archive")
+    val tabSheet = new TabSheet
+    tabSheet.addTab(roleManager.ui, "Roles and their permissions", Tab32)
 
-      val lytForm = new FormLayout {
-        addComponents(this, txtName, chkPermGetPasswordByEmail, chkPermAccessMyPages, chkPermUseImagesFromArchive,
-          chkPermChangeImagesInArchive)
-      }
+    roleManager.ui.setMargin(true)
 
-      val permsToChkBoxes = Map(
-        RoleDomainObject.CHANGE_IMAGES_IN_ARCHIVE_PERMISSION -> chkPermChangeImagesInArchive,
-        RoleDomainObject.USE_IMAGES_IN_ARCHIVE_PERMISSION -> chkPermUseImagesFromArchive,
-        RoleDomainObject.PASSWORD_MAIL_PERMISSION -> chkPermGetPasswordByEmail,
-        RoleDomainObject.ADMIN_PAGES_PERMISSION -> chkPermAccessMyPages 
-      )
-      
-      def checkedPermissions =
-        for ((permission, chkBox) <- permsToChkBoxes if chkBox.getValue.asInstanceOf[Boolean]) yield permission
-
-      def checkPermissions(permissions: Set[RolePermissionDomainObject]) =
-        permissions foreach { p => permsToChkBoxes(p).setValue(true) }
-
-      mainContent = lytForm
-    }
-
-    class RolesView extends TableViewTemplate {
-      lazy val btnAdd = new Button("Add")
-      lazy val btnEdit = new Button("Edit")
-      lazy val btnDelete = new Button("Delete")
-
-      addComponents(pnlHeader, btnAdd, btnEdit, btnDelete)
-
-      override def tableProperties = List(
-        ("Id", classOf[JInteger],  null),
-        ("Name", classOf[String],  null))
-
-      override def tableItems() =
-        roleMapper.getAllRoles.toList map { role =>
-          role.getId -> List(Int box role.getId.intValue, role.getName)
-        }
-
-      btnAdd addListener block {
-        app.initAndShow(new RoleDataWindow("New role")) { w =>
-          w.setOkHandler {
-            val role = new RoleDomainObject(w.txtName.getValue.asInstanceOf[String])
-            w.checkedPermissions foreach { p => role.addPermission(p) }
-
-            roleMapper saveRole role
-
-            reloadTableItems
-          }
-        }
-      }
-
-      btnEdit addListener block {
-        app.initAndShow(new RoleDataWindow("Edit role")) { w =>
-          val roleId = tblItems.getValue.asInstanceOf[RoleId]
-          val role = roleMapper.getRole(roleId)
-
-          w.txtName setValue role.getName
-          w checkPermissions role.getPermissions.toSet
-
-          w.setOkHandler {
-            role.removeAllPermissions
-            w.checkedPermissions foreach { p => role.addPermission(p) }
-            roleMapper saveRole role
-            reloadTableItems
-          }
-        }        
-      }
-
-      btnDelete addListener block {
-        app.initAndShow(new ConfirmationDialog("Confirmation", "Delete role?")) { w =>
-          val roleId = tblItems.getValue.asInstanceOf[RoleId]
-          val role = roleMapper.getRole(roleId)
-          
-          w.setOkHandler {
-            roleMapper deleteRole role
-            reloadTableItems
-          }
-        }
-      }
-
-      override def resetComponents =
-        if (tblItems.getValue == null) {
-          btnDelete setEnabled false
-          btnEdit setEnabled false
-        } else {
-          btnEdit setEnabled true
-          btnDelete setEnabled true
-        }
-    }
-
-    new TabSheetView {
-      addTab(new VerticalLayoutUI("Roles and their permissions.") {
-        addComponent(new RolesView)
-      })
-    }
+    addComponent(tabSheet)
   }
 
   def settingsProperties = {

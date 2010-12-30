@@ -13,6 +13,8 @@ import java.io.{ByteArrayInputStream, File}
 import imcms.security.{PermissionDenied, PermissionGranted}
 
 //todo: common internal ex handler???
+//todo: add related docs handling
+//-upload fialog and save as handling
 class TemplateManager(app: ImcmsApplication) {
   private val templateMapper = Imcms.getServices.getTemplateMapper
   private val fileRE = """(?i)(.+?)(?:\.(\w+))?""".r // filename, (optional extension)

@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 
-public class RoleDomainObject implements Serializable, Comparable {
+public class RoleDomainObject implements Serializable, Comparable, Cloneable {
 
     public final static RolePermissionDomainObject PASSWORD_MAIL_PERMISSION = new RolePermissionDomainObject( 1, new LocalizedMessage( "role_permission/password_by_email/description" ) ) ;
     public static final RolePermissionDomainObject ADMIN_PAGES_PERMISSION = new RolePermissionDomainObject( 4, new LocalizedMessage( "role_permission/admin_pages_access/desciption" ) );
@@ -127,4 +127,12 @@ public class RoleDomainObject implements Serializable, Comparable {
         return ALL_ROLE_PERMISSIONS;
     }
 
+    @Override
+    public RoleDomainObject clone() throws CloneNotSupportedException {
+        RoleDomainObject clone = (RoleDomainObject)super.clone();
+        clone.id = new RoleId(getId().intValue());
+        clone.permissions = new HashSet(permissions);
+
+        return clone;
+    }
 }

@@ -18,6 +18,7 @@ import imcms.security.{PermissionGranted, PermissionDenied}
  * A category is identified by its name and type.
  */
 //todo: edit - image can not be null
+//todo: delete in use message
 class CategoryManager(app: ImcmsApplication) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
@@ -38,7 +39,7 @@ class CategoryManager(app: ImcmsApplication) {
     ui.miDelete setCommand block {
       whenSelected(ui.tblCategories) { id =>
         app.initAndShow(new ConfirmationDialog("Delete selected category?")) { dlg =>
-          dlg.setOkHandler {
+          dlg setOkHandler {
             app.privileged(permission) {
               EX.allCatch.either(?(categoryMapper getCategoryById id.intValue) foreach categoryMapper.deleteCategoryFromDb) match {
                 case Right(_) =>
