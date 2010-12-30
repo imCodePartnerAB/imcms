@@ -142,7 +142,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     object Permissions extends MenuItem(this) {
       object Users extends MenuItem(this)
       object Roles extends MenuItem(this, Some(Done16))
-      object IP_Access extends MenuItem(this)
+      object IP_Access extends MenuItem(this, Some(Done16))
     }
     object Statistics extends MenuItem(this) {
       object SearchTerms extends MenuItem(this)
