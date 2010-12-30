@@ -10,10 +10,12 @@ import com.vaadin.ui.Window.Notification
 import imcms.admin.filesystem._
 import org.apache.commons.io.FileUtils
 import java.io.{ByteArrayInputStream, File}
+import imcms.security.{PermissionDenied, PermissionGranted}
 
+//todo: common internal ex handler???
 class TemplateManager(app: ImcmsApplication) {
-  val fileRE = """(?i)(.+?)(?:\.(\w+))?""".r // filename, (optional extension)
-  val templateMapper = Imcms.getServices.getTemplateMapper
+  private val templateMapper = Imcms.getServices.getTemplateMapper
+  private val fileRE = """(?i)(.+?)(?:\.(\w+))?""".r // filename, (optional extension)
 
   val ui = letret(new TemplateManagerUI) { ui =>
     ui.tblTemplates addListener block { handleSelection() }
@@ -24,15 +26,22 @@ class TemplateManager(app: ImcmsApplication) {
         dlg.setOkHandler {
           for {
             data <- dlg.upload.data
-            name = dlg.upload.ui.txtSaveAsName.value // check not empty
+            name = dlg.upload.ui.txtSaveAsName.value // todo: check not empty
             in = new ByteArrayInputStream(data.content)
           } {
-            // check can manage
-            templateMapper.saveTemplate(name, data.filename, in, dlg.upload.ui.chkOverwrite.booleanValue) match {
-              case 0 => reload() // ok
-              case -1 => error("File exists") // file exists
-              case -2 => error("IO error")  // io error
-              case n => error("Unknown error: " + n)
+            app.privileged(permission) {
+              templateMapper.saveTemplate(name, data.filename, in, dlg.upload.ui.chkOverwrite.booleanValue) match {
+                case 0 => reload() // ok
+                case -1 =>
+                  app.showErrorNotification("Template with such name allready exists")
+                  error("File exists")
+                case -2 =>
+                  app.showErrorNotification("Internal error")
+                  error("IO error")
+                case n =>
+                  app.showErrorNotification("Internal error")
+                  error("Unknown error")
+              }
             }
           }
         }
@@ -47,9 +56,9 @@ class TemplateManager(app: ImcmsApplication) {
 
           dlg.mainUI = fileRenameUI
           dlg.setOkHandler {
-            if (canManage) { // move up!!
+            app.privileged(permission) {
               templateMapper.renameTemplate(name, fileRenameUI.txtName.value)
-            } else error("NO PERMISSIONS")
+            }
 
             reload()
           }
@@ -58,7 +67,7 @@ class TemplateManager(app: ImcmsApplication) {
     }
     ui.miEditContent setCommand block {
       whenSelected(ui.tblTemplates) { name =>
-        app.initAndShow(new Dialog("Template file content") with CustomSizeDialog) { dlg =>
+        app.initAndShow(new Dialog("Template file content") with CustomSizeDialog with NoMarginDialog) { dlg =>
           dlg.mainContent = letret(new TemplateContentEditorUI) { c =>
             c.txtContent.value = templateMapper.getTemplateData(name)
           }
@@ -72,13 +81,17 @@ class TemplateManager(app: ImcmsApplication) {
       whenSelected(ui.tblTemplates) { name =>
         app.initAndShow(new ConfirmationDialog("Delete selected template?")) { dlg =>
           dlg setOkHandler {
-            if (canManage) {
-              ?(templateMapper.getTemplateByName(name)) foreach { template =>
-                templateMapper deleteTemplate template
+            app.privileged(permission) {
+              EX.allCatch.either(?(templateMapper getTemplateByName name) foreach templateMapper.deleteTemplate) match {
+                case Right(_) =>
+                  app.showInfoNotification("Template has been deleted")
+                case Left(ex) =>
+                  app.showErrorNotification("Internal error")
+                  throw ex
               }
-            } else error("NO PERMISSIONS")
 
-            reload()
+              reload()
+            }
           }
         }
       }
@@ -89,8 +102,8 @@ class TemplateManager(app: ImcmsApplication) {
   // END OF PRIMARY CONSTRUCTOR
 
   def canManage = app.user.isSuperAdmin
+  def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage templates")
 
-  //todo add sec check
   def reload() {
     ui.tblTemplates.removeAllItems
     for {
@@ -99,16 +112,24 @@ class TemplateManager(app: ImcmsApplication) {
       fileRE(_, ext) = vo.getFileName
     } ui.tblTemplates.addItem(Array[AnyRef](name, ext, Int box templateMapper.getCountOfDocumentsUsingTemplate(vo)), name)
 
+    let(canManage) { canManage =>
+      import ui._
+      tblTemplates.setSelectable(canManage)
+      forlet[{def setEnabled(e: Boolean)}](miUpload, miDownload, miRename, miDelete, miEditContent) { _ setEnabled canManage }   //ui.mb,
+    }
+
     handleSelection()
   }
 
   private def handleSelection() {
-    let(canManage && ui.tblTemplates.isSelected) { isSelected =>
-      ui.miDownload.setEnabled(isSelected)
-      ui.miRename.setEnabled(isSelected)
-      ui.miEditContent.setEnabled(isSelected)
-      ui.miDelete.setEnabled(isSelected)
+    import ui._
+    let(canManage && tblTemplates.isSelected) { enabled =>
+      forlet(miDownload, miRename, miEditContent, miDelete) { _ setEnabled enabled }
     }
+
+    miDocuments.setEnabled(?(tblTemplates.value) map { name =>
+      templateMapper.getCountOfDocumentsUsingTemplate(templateMapper.getTemplateByName(name)) > 0
+    } getOrElse false)
   }
 }
 
@@ -121,8 +142,9 @@ class TemplateManagerUI extends VerticalLayout with Spacing with UndefinedSize {
   val miRename = mb.addItem("Rename", Edit16)
   val miDelete = mb.addItem("Delete", Delete16)
   val miEditContent = mb.addItem("Edit content", EditContent16)
+  val miDocuments = mb.addItem("Related documents", Documents16)
   val miHelp = mb.addItem("Help", Help16)
-  val tblTemplates = new Table with SingleSelect2[String] with Selectable with Immediate
+  val tblTemplates = new Table with SingleSelect2[TemplateName] with Selectable with Immediate
   val rc = new ReloadableContentUI(tblTemplates)
 
   addContainerProperties(tblTemplates,

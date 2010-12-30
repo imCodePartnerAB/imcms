@@ -1,5 +1,6 @@
 package com.imcode
-package imcms.admin.document.template.group
+package imcms.admin.document.template
+package group
 
 import scala.collection.JavaConversions._
 import com.vaadin.ui._
@@ -8,12 +9,13 @@ import imcode.server.{Imcms}
 import com.imcode.imcms.vaadin.{ContainerProperty => CP, _}
 import imcode.server.document.{TemplateGroupDomainObject}
 import com.vaadin.ui.Window.Notification
+import imcms.security.{PermissionDenied, PermissionGranted}
 
-
-//todo: canManage => wrap with privileged() {} ...
-//form check
+//todo: form check
+//todo: duplicate save check!
+//todo: internal error check
 class TemplateGroupManager(app: ImcmsApplication) {
-  val templateMapper = Imcms.getServices.getTemplateMapper
+  private val templateMapper = Imcms.getServices.getTemplateMapper
 
   val ui = letret(new TemplateGroupManagerUI) { ui =>
     ui.rc.btnReload addListener block { reload() }
@@ -30,11 +32,19 @@ class TemplateGroupManager(app: ImcmsApplication) {
     }
     ui.miDelete setCommand block {
       whenSelected(ui.tblGroups) { id =>
-        app.initAndShow(new ConfirmationDialog("Delete template group")) { dlg =>
+        app.initAndShow(new ConfirmationDialog("Delete selected template group?")) { dlg =>
           dlg setOkHandler {
-            if (canManage) templateMapper deleteTemplateGroup id.intValue
-            else error("NO PERMISSIONS")
-            reload()
+            app.privileged(permission) {
+              EX.allCatch.either(templateMapper deleteTemplateGroup id.intValue) match {
+                case Right(_) =>
+                  app.showInfoNotification("Template group has been deleted")
+                case Left(ex) =>
+                  app.showErrorNotification("Internal error")
+                  throw ex
+              }
+
+              reload()
+            }
           }
         }
       }
@@ -45,6 +55,7 @@ class TemplateGroupManager(app: ImcmsApplication) {
   // END OF PRIMARY CONSTRUCTOR
 
   def canManage = app.user.isSuperAdmin
+  def permission = if (canManage) PermissionGranted else PermissionDenied("No permissions to manage template groups")
 
   /** Edit in a modal dialog. */
   private def editAndSave(vo: TemplateGroupDomainObject) {
@@ -60,20 +71,14 @@ class TemplateGroupManager(app: ImcmsApplication) {
         templateMapper.getTemplatesNotInGroup(vo) foreach (c.twsTemplates addAvailableItem _.getName)
 
         dlg.setOkHandler {
-//                templateMapper.createTemplateGroup(c.txtName.value)
-//                val group = templateMapper.getTemplateGroupByName(c.txtName.value)
-//                c.twsTemplates.chosenItemIds foreach { name =>
-//                  templateMapper.getTemplateByName(name) match {
-//                    case null =>
-//                    case t => templateMapper.addTemplateToGroup(t, group)
-//                  }
-//                }
+          app.privileged(permission) {
+            val voc = if (isNew) {
+              templateMapper.createTemplateGroup(c.txtName.value)
+              templateMapper.getTemplateGroupByName(c.txtName.value)
+            } else letret(vo.clone()) { voc =>
+              templateMapper.renameTemplateGroup(voc, c.txtName.value)
+            }
 
-          let(vo.clone()) { voc =>
-            templateMapper.renameTemplateGroup(voc, c.txtName.value)
-//            templateMapper.getTemplatesInGroup(voc) foreach { t =>    // test
-//              templateMapper.removeTemplateFromGroup(t, voc)
-//            }
             templateMapper.getTemplatesInGroup(voc) foreach { templateMapper.removeTemplateFromGroup(_, voc) }
 
             for {
@@ -88,7 +93,6 @@ class TemplateGroupManager(app: ImcmsApplication) {
     }
   }
 
-  // todo: add can manage check
   def reload() {
     ui.tblGroups.removeAllItems
     for {
@@ -96,13 +100,17 @@ class TemplateGroupManager(app: ImcmsApplication) {
       id = Int box vo.getId
     } ui.tblGroups.addItem(Array[AnyRef](id, vo.getName, Int box templateMapper.getTemplatesInGroup(vo).length), id)
 
+    let(canManage) { canManage =>
+      ui.tblGroups.setSelectable(canManage)
+      forlet[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled canManage }   //ui.mb,
+    }
+
     handleSelection()
   }
 
   private def handleSelection() {
-    let(canManage && ui.tblGroups.isSelected) { isSelected =>
-      ui.miEdit.setEnabled(isSelected)
-      ui.miDelete.setEnabled(isSelected)
+    let(canManage && ui.tblGroups.isSelected) { enabled =>
+      forlet(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
     }
   }
 }
@@ -116,7 +124,7 @@ class TemplateGroupManagerUI extends VerticalLayout with Spacing with UndefinedS
   val miEdit = mb.addItem("Edit", Edit16)
   val miDelete = mb.addItem("Delete", Delete16)
   val miHelp = mb.addItem("Help", Help16)
-  val tblGroups = new Table with SingleSelect2[JInteger] with Selectable with Immediate
+  val tblGroups = new Table with SingleSelect2[TemplateGroupId] with Selectable with Immediate
   val rc = new ReloadableContentUI(tblGroups)
 
   addContainerProperties(tblGroups,

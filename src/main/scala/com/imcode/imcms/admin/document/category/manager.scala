@@ -17,6 +17,7 @@ import imcms.security.{PermissionGranted, PermissionDenied}
  *
  * A category is identified by its name and type.
  */
+//todo: edit - image can not be null
 class CategoryManager(app: ImcmsApplication) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
@@ -36,10 +37,10 @@ class CategoryManager(app: ImcmsApplication) {
 
     ui.miDelete setCommand block {
       whenSelected(ui.tblCategories) { id =>
-        app.initAndShow(new ConfirmationDialog("Delete category")) { dlg =>
-          app.privileged(permission) {
-            for (vo <- ?(categoryMapper getCategoryById id.intValue))
-              EX.allCatch.either(categoryMapper deleteCategoryFromDb vo) match {
+        app.initAndShow(new ConfirmationDialog("Delete selected category?")) { dlg =>
+          dlg.setOkHandler {
+            app.privileged(permission) {
+              EX.allCatch.either(?(categoryMapper getCategoryById id.intValue) foreach categoryMapper.deleteCategoryFromDb) match {
                 case Right(_) =>
                   app.showInfoNotification("Category has been deleted")
                 case Left(ex) =>
@@ -47,7 +48,8 @@ class CategoryManager(app: ImcmsApplication) {
                   throw ex
               }
 
-            reload()
+              reload()
+            }
           }
         }
       }
@@ -138,16 +140,15 @@ class CategoryManager(app: ImcmsApplication) {
 
     let(canManage) { canManage =>
       ui.tblCategories.setSelectable(canManage)
-      forlet[{def setEnabled(e: Boolean)}](ui.mb, ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled canManage }
+      forlet[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled canManage } //ui.mb,
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    let(canManage && ui.tblCategories.isSelected) { isSelected =>
-      ui.miEdit.setEnabled(isSelected)
-      ui.miDelete.setEnabled(isSelected)
+    let(canManage && ui.tblCategories.isSelected) { enabled =>
+      forlet(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
     }
   }
 } // class CategoryManager

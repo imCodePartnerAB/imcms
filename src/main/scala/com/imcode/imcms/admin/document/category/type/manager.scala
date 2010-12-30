@@ -11,6 +11,8 @@ import com.imcode.imcms.admin.document.category.{CategoryTypeId}
 import com.vaadin.ui.Window.Notification
 import imcms.security.{PermissionDenied, PermissionGranted}
 
+//todo:
+//fix: edit - multiselect - always on
 class CategoryTypeManager(app: ImcmsApplication) {
   private val categoryMapper = Imcms.getServices.getCategoryMapper
 
@@ -29,17 +31,16 @@ class CategoryTypeManager(app: ImcmsApplication) {
     }
     ui.miDelete setCommand block {
       whenSelected(ui.tblTypes) { id =>
-        app.initAndShow(new ConfirmationDialog("Delete category type?")) { dlg =>
+        app.initAndShow(new ConfirmationDialog("Delete selected category type?")) { dlg =>
           dlg setOkHandler {
             app.privileged(permission) {
-              for (vo <- ?(categoryMapper getCategoryTypeById id.intValue))
-                EX.allCatch.either(categoryMapper deleteCategoryTypeFromDb vo) match {
-                  case Right(_) =>
-                    app.showInfoNotification("Category type has been deleted")
-                  case Left(ex) =>
-                    app.showErrorNotification("Internal error")
-                    throw ex
-                }
+              EX.allCatch.either(?(categoryMapper getCategoryTypeById id.intValue) foreach categoryMapper.deleteCategoryTypeFromDb) match {
+                case Right(_) =>
+                  app.showInfoNotification("Category type has been deleted")
+                case Left(ex) =>
+                  app.showErrorNotification("Internal error")
+                  throw ex
+              }
 
               reload()
             }
@@ -119,16 +120,15 @@ class CategoryTypeManager(app: ImcmsApplication) {
 
     let(canManage) { canManage =>
       ui.tblTypes.setSelectable(canManage)
-      forlet[{def setEnabled(e: Boolean)}](ui.mb, ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled canManage }
+      forlet[{def setEnabled(e: Boolean)}](ui.miNew, ui.miEdit, ui.miDelete) { _ setEnabled canManage } //ui.mb,
     }
 
     handleSelection()
   }
 
   private def handleSelection() {
-    let(canManage && ui.tblTypes.isSelected) { isSelected =>
-      ui.miEdit.setEnabled(isSelected)
-      ui.miDelete.setEnabled(isSelected)
+    let(canManage && ui.tblTypes.isSelected) { enabled =>
+      forlet(ui.miEdit, ui.miDelete) { _ setEnabled enabled }
     }
   }
 }
