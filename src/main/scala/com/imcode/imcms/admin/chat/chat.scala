@@ -76,3 +76,46 @@ class Chat extends VerticalLayout {
   setExpandRatio(pnlMessages, 1.0f)
   setSizeFull
 }
+
+//    new Chat {
+//    setCaption("Chat messages")
+//      setMargin(true)
+//      val subscriber = actor {
+//        loop {
+//          react {
+//            case ChatTopic.Message(text) =>
+//              pnlMessages addMessage new MessageView("#user#", text)
+//              pnlMessages.requestRepaint
+//            case _ =>
+//          }
+//        }
+//      }
+//
+//      btnSend addListener block {
+//        ChatTopic ! ChatTopic.Message(txtText.getValue.asInstanceOf[String])
+//        txtText setValue ""
+//      }
+//      ChatTopic ! ChatTopic.Subscribe(subscriber)
+//    } //chat
+
+
+//object ChatTopic extends Actor {
+//
+//  case class Subscribe(subscriber: Actor)
+//  case class Message(text: String)
+//
+//  var subscribers: Set[Actor] = Set.empty
+//
+//  def act {
+//    loop {
+//      react {
+//        case Subscribe(subscriber) =>
+//          subscribers += subscriber // send 10 last messages?
+//        case msg : Message => subscribers foreach (_ ! msg)
+//        case other => println("Unknown message: " + other)
+//      }
+//    }
+//  }
+//
+//  start()
+//}

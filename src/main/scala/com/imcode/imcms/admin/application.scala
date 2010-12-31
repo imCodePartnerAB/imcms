@@ -57,30 +57,6 @@ import com.imcode.imcms.vaadin.Theme.Icons._
  *
  * EDITOR UI, but NO EDITOR - explain
  */
-
-
-//object ChatTopic extends Actor {
-//
-//  case class Subscribe(subscriber: Actor)
-//  case class Message(text: String)
-//
-//  var subscribers: Set[Actor] = Set.empty
-//
-//  def act {
-//    loop {
-//      react {
-//        case Subscribe(subscriber) =>
-//          subscribers += subscriber // send 10 last messages?
-//        case msg : Message => subscribers foreach (_ ! msg)
-//        case other => println("Unknown message: " + other)
-//      }
-//    }
-//  }
-//
-//  start()
-//}
-
-
 class Application extends com.vaadin.Application with ImcmsApplication { app =>
 
   def canAccess {
@@ -129,7 +105,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     object About extends MenuItem(this)
     object Settings extends MenuItem(this) {
       object Languages extends MenuItem(this, Some(Done16))
-      object Properties extends MenuItem(this)
+      object Properties extends MenuItem(this, Some(Done16))
     }
     object Documents extends MenuItem(this) {
       object Categories extends MenuItem(this, Some(Done16))
@@ -518,87 +494,19 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     addComponent(tabSheet)
   }
 
-  def settingsProperties = {
-    val pnlStartPage = new Panel("Start page") {
-      val txtNumber = new TextField("Number")
 
-      addComponent(txtNumber)
-    }
 
-    val pnlSystemMessage = new Panel("System message") {
-      val txtMessage = new TextField("Text")
 
-      txtMessage.setRows(5)
+  lazy val settingsProperties = new VerticalLayout with Margin {
+    val manager = new com.imcode.imcms.admin.settings.property.PropertyManagerManager(app)
+    val tabSheet = new TabSheet
+    tabSheet.addTab(manager.ui, "System Properties", Tab32)
 
-      addComponent(txtMessage)
-    }
+    manager.ui.setMargin(true)
 
-    val pnlServerMaster = new Panel("Server master") {
-      val txtName = new TextField("Name")
-      val txtEmail = new TextField("Email")
-
-      addComponents(this, txtName, txtEmail)
-    }
-
-    val pnlWebMaster = new Panel("Web master") {
-      val txtName = new TextField("Name")
-      val txtEmail = new TextField("Email")
-
-      addComponents(this, txtName, txtEmail)
-    }
-
-    val lytButtons = new HorizontalLayout {
-      val btnRevert = new Button("Revert")
-      val btnSave = new Button("Save")
-
-      setSpacing(true)
-
-      addComponents(this, btnRevert, btnSave)
-    }
-    
-    val lytContent = new VerticalLayout {
-      setSpacing(true)
-      setMargin(true)
-    }
-
-    addComponents(lytContent, pnlStartPage, pnlSystemMessage, pnlServerMaster, pnlWebMaster, lytButtons)
-
-    def reload() {
-      let(Imcms.getServices.getSystemData) { d =>
-        pnlStartPage.txtNumber setValue d.getStartDocument.toString
-        pnlSystemMessage.txtMessage setValue d.getSystemMessage
-        pnlWebMaster.txtName setValue d.getWebMaster
-        pnlWebMaster.txtEmail setValue d.getWebMasterAddress
-        pnlServerMaster.txtName setValue d.getServerMaster
-        pnlServerMaster.txtEmail setValue d.getServerMasterAddress        
-      }
-    }
-
-    lytButtons.btnRevert addListener block {
-      reload() 
-    }
-
-    lytButtons.btnSave addListener block {
-      let(new SystemData) { d =>
-        d setStartDocument pnlStartPage.txtNumber.getValue.asInstanceOf[String].toInt
-        d setSystemMessage pnlSystemMessage.txtMessage.getValue.asInstanceOf[String]
-        d setServerMaster pnlServerMaster.txtName.getValue.asInstanceOf[String]
-        d setServerMasterAddress pnlServerMaster.txtEmail.getValue.asInstanceOf[String]
-        d setWebMaster pnlWebMaster.txtName.getValue.asInstanceOf[String]
-        d setWebMasterAddress pnlWebMaster.txtEmail.getValue.asInstanceOf[String]
-
-        Imcms.getServices.setSystemData(d)
-      }
-    }
-
-    reload()
-
-    new TabSheetView {
-      addTab(new VerticalLayoutUI("System Properties") {
-        addComponent(lytContent)
-      })
-    }   
+    addComponent(tabSheet)
   }
+
 
   lazy val sessionMonitor = new VerticalLayout with Margin {
     val manager = new com.imcode.imcms.admin.monitor.session.counter.SessionCounterManager(app)
@@ -697,46 +605,17 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     addComponent(tabSheet)
   } // category
 
-  //
-  // Chat
-  //
   lazy val chat =  new VerticalLayout
-//    new Chat {
-//    setCaption("Chat messages")
-//      setMargin(true)
-//      val subscriber = actor {
-//        loop {
-//          react {
-//            case ChatTopic.Message(text) =>
-//              pnlMessages addMessage new MessageView("#user#", text)
-//              pnlMessages.requestRepaint
-//            case _ =>
-//          }
-//        }
-//      }
-//
-//      btnSend addListener block {
-//        ChatTopic ! ChatTopic.Message(txtText.getValue.asInstanceOf[String])
-//        txtText setValue ""
-//      }
-//      ChatTopic ! ChatTopic.Subscribe(subscriber)
-//    } //chat
 
-
-  //
-  // User manager
-  //
-  lazy val users = {
-    new TabSheetView {
-      addTab(new VerticalLayoutUI("Users and their permissions.") {
-        addComponent(new UserManager(app) ui)
-      })
-    }
+  lazy val users = new VerticalLayout with Margin {
+    val manager = new UserManager(app)
+    val tabSheet = new TabSheet
+    tabSheet.addTab(manager.ui, "Users and their permissions", Tab32)
+    manager.ui.setMargin(true)
+    addComponent(tabSheet)
   }
 
-  //
-  //
-  //
+
   def docStructure = new TabSheetView {
     addTab(new VerticalLayoutUI("Document structure outline") {
       val lytMenu = new HorizontalLayout {
