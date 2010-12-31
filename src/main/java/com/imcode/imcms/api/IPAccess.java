@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="ip_accesses")
-public class IPAccess {
+public class IPAccess implements Cloneable {
 
     @Id  @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="ip_access_id")
@@ -49,5 +49,10 @@ public class IPAccess {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    @Override
+    public IPAccess clone() throws CloneNotSupportedException {
+        return (IPAccess)super.clone();
     }
 }

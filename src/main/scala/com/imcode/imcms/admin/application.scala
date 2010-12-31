@@ -140,7 +140,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       object Edit extends MenuItem(this)
     }
     object Permissions extends MenuItem(this) {
-      object Users extends MenuItem(this)
+      object Users extends MenuItem(this, Some(Done16))
       object Roles extends MenuItem(this, Some(Done16))
       object IP_Access extends MenuItem(this, Some(Done16))
     }
@@ -662,116 +662,16 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
       addComponents(this, controls, table)
     })
   }
- 
-  def ipAccess = {
-    def toDDN(internalFormat: String) = Utility.ipLongToString(internalFormat.toLong)
-    def fromDDN(humanFormat: String) = Utility.ipStringToLong(humanFormat).toString
 
-    class IPAccessWindow(caption: String) extends OkCancelDialog(caption) {
-      val sltUser = new Select("Users")
-      val txtFrom = new TextField("From")
-      val txtTo = new TextField("To")
+  lazy val ipAccess = new VerticalLayout with Margin {
+    val manager = new com.imcode.imcms.admin.access.ip.IPAccessManager(app)
+    val tabSheet = new TabSheet
+    tabSheet.addTab(manager.ui, "IP Access ", Tab32)
 
-      val lytMainContent = new FormLayout
+    manager.ui.setMargin(true)
 
-      lytMainContent.addComponent(sltUser)
-      lytMainContent.addComponent(txtFrom)
-      lytMainContent.addComponent(txtTo)
-
-      mainContent = lytMainContent
-    }
-    
-    class IPAccessView extends TableViewTemplate {
-      lazy val btnAdd = new Button("Add")
-      lazy val btnEdit = new Button("Edit")
-      lazy val btnDelete = new Button("Delete")
-
-      addComponents(pnlHeader, btnAdd, btnEdit, btnDelete)
-
-      override def tableProperties = List(
-        ("User", classOf[String],  null),
-        ("IP range from", classOf[String],  null),
-        ("IP range to", classOf[String],  null))
-
-      override def tableItems() = ipAccessDao.getAll.toList map { ipAccess =>
-        val user = Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper getUser (Int unbox ipAccess.getUserId)
-        ipAccess.getUserId -> List(user.getLoginName, toDDN(ipAccess.getStart), toDDN(ipAccess.getEnd))
-      }
-
-      override def resetComponents =
-        if (tblItems.getValue == null) {
-          btnDelete setEnabled false
-          btnEdit setEnabled false
-        } else {
-          btnEdit setEnabled true
-          btnDelete setEnabled true
-        }
-
-      btnAdd addListener block {
-        app.initAndShow(new IPAccessWindow("Add new IP Access")) { w =>
-          Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllUsers foreach { u =>
-            w.sltUser addItem u.getId
-            w.sltUser setItemCaption (u.getId, u.getLoginName)
-          }
-
-          w.setOkHandler {
-            val ipAccess = new IPAccess
-            ipAccess setUserId w.sltUser.getValue.asInstanceOf[Integer]
-            ipAccess setStart fromDDN(w.txtFrom.getValue.asInstanceOf[String])
-            ipAccess setEnd fromDDN(w.txtTo.getValue.asInstanceOf[String])
-
-            ipAccessDao.save(ipAccess)
-
-            reloadTableItems
-          }
-        }
-      }
-
-      btnEdit addListener block {
-        app.initAndShow(new IPAccessWindow("Edit IP Access")) { w =>
-          Imcms.getServices.getImcmsAuthenticatorAndUserAndRoleMapper.getAllUsers foreach { u =>
-            w.sltUser addItem u.getId
-            w.sltUser setItemCaption (u.getId, u.getLoginName)
-          }
-
-          val ipAccessId = tblItems.getValue.asInstanceOf[JInteger]
-          val ipAccess = ipAccessDao get ipAccessId
-
-          w.sltUser select ipAccess.getUserId
-          w.txtFrom setValue toDDN(ipAccess.getStart)
-          w.txtTo setValue toDDN(ipAccess.getEnd)
-
-          w.setOkHandler {
-            val ipAccess = new IPAccess
-            ipAccess setUserId w.sltUser.getValue.asInstanceOf[Integer]
-            ipAccess setStart fromDDN(w.txtFrom.getValue.asInstanceOf[String])
-            ipAccess setEnd fromDDN(w.txtTo.getValue.asInstanceOf[String])
-
-            ipAccessDao.save(ipAccess)
-
-            reloadTableItems
-          }
-        }
-      }
-
-      btnDelete addListener block {
-        app.initAndShow(new ConfirmationDialog("Confirmation", "Delete IP Access?")) { w =>
-          w.setOkHandler {
-            ipAccessDao delete tblItems.getValue.asInstanceOf[JInteger]
-            reloadTableItems
-          }
-        }
-      }
-    }
-
-    new TabSheetView {
-      addTab(new VerticalLayoutUI("IP Access") {
-        addComponents(this,
-          new Label("Users from a specific IP number or an intervall of numbers are given direct access to the system (so that the user does not have to log in)."),
-          new IPAccessView)
-      })
-    }
-  }
+    addComponent(tabSheet)
+  } // category
 
 
   lazy val roles = new VerticalLayout with Margin {
@@ -1005,8 +905,8 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   }
 
   lazy val templates = new VerticalLayout with Margin {
-    lazy val templateManager = new com.imcode.imcms.admin.document.template.TemplateManager(app)
-    lazy val templateGroupManager = new com.imcode.imcms.admin.document.template.group.TemplateGroupManager(app)
+    val templateManager = new com.imcode.imcms.admin.document.template.TemplateManager(app)
+    val templateGroupManager = new com.imcode.imcms.admin.document.template.group.TemplateGroupManager(app)
 
     val tabSheet = new TabSheet
     tabSheet.addTab(templateManager.ui, "Templates", Tab32)
@@ -1137,37 +1037,3 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     })
   }
 }
-
-
-
-
-//    btnChooseFile addListener {
-//      app.initAndShow(new OkCancelDialog("Select template file - .htm .html .xhtml .jsp .jspx")
-//              with CustomSizeDialog with BottomMarginDialog, resizable = true) { w =>
-//
-//        let(w.mainContent = new FileBrowser) { b =>
-//          b setSplitPosition 30
-//          b addDirectoryTree("Templates", new File(Imcms.getPath, "WEB-INF/templates"))
-//          b.tblDirContent setSelectable true
-//
-//          w.setOkHandler {
-//            b.tblDirContent.getValue match {
-//              case file: File /*if canPreview(file)*/=>
-//                txtFilename.setReadOnly(false)
-//                txtFilename.setValue(file.getName)
-//                txtFilename.setData(file)
-//                txtFilename.setReadOnly(true)
-//
-//              case _ =>
-//                txtFilename.setReadOnly(false)
-//                txtFilename.setValue("")
-//                txtFilename.setData(null)
-//                txtFilename.setReadOnly(true)
-//            }
-//          }
-//        }
-//
-//        w setWidth "650px"
-//        w setHeight "350px"
-//      }
-//    }
