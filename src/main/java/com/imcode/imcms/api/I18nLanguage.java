@@ -2,10 +2,7 @@ package com.imcode.imcms.api;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -14,7 +11,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Table(name="imcms_languages")
 public class I18nLanguage implements Serializable, Cloneable {
 
-    @Id
+    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id;
 
     // Reserved for future use

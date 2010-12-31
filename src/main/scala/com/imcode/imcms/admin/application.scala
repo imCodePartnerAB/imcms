@@ -128,7 +128,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
   object Menu extends MenuItem {
     object About extends MenuItem(this)
     object Settings extends MenuItem(this) {
-      object Languages extends MenuItem(this)
+      object Languages extends MenuItem(this, Some(Done16))
       object Properties extends MenuItem(this)
     }
     object Documents extends MenuItem(this) {
@@ -447,179 +447,15 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
 //  }
   def systemCacheView = new com.imcode.imcms.admin.monitor.cache.View(Imcms.getServices.getDocumentMapper.getDocumentLoaderCachingProxy)
 
-  //
-  // Languages panel
-  // 
-  def languagesPanel = {
-    class LanguageWindow(caption: String) extends OkCancelDialog(caption) {
-      val txtId = new TextField("Id")
-      val txtCode = new TextField("Code")
-      val txtName = new TextField("Name")
-      val txtNativeName = new TextField("Native name")
-      val chkEnabled = new CheckBox("Enabled")
 
-      mainContent = new FormLayout {
-        addComponents(this, txtId, txtCode, txtName, txtNativeName, chkEnabled)  
-      }
-    }
+  lazy val languagesPanel = new VerticalLayout with Margin {
+    val manager = new com.imcode.imcms.admin.settings.language.LanguageManager(app)
+    val tabSheet = new TabSheet
+    tabSheet.addTab(manager.ui, "Language", Tab32)
 
-    val table = new Table
+    manager.ui.setMargin(true)
 
-    table setPageLength 10
-    table setSelectable true
-    table setImmediate true
-
-    table.addContainerProperty("Id", classOf[JInteger],  null)
-    table.addContainerProperty("Code", classOf[String],  null)
-    table.addContainerProperty("Name", classOf[String],  null)
-    table.addContainerProperty("Native name", classOf[String],  null)
-    table.addContainerProperty("Enabled", classOf[JBoolean],  null)
-    table.addContainerProperty("Default", classOf[JBoolean],  null)
-
-    def reloadTable {
-      table.removeAllItems
-
-      val defaultLanguageId = Int box systemDao.getProperty("DefaultLanguageId").getValue.toInt
-
-      languageDao.getAllLanguages.toList foreach { language =>
-        table.addItem(Array(language.getId, language.getCode, language.getName,
-                            language.getNativeName, language.isEnabled,
-                            Boolean box (language.getId == defaultLanguageId)),
-                      language.getId)
-      }
-    }    
-
-    val pnlControls = new Panel with Button.ClickListener {
-      val btnNew = new Button("New")
-      val btnEdit = new Button("Edit")
-      val btnSetDefault = new Button("Set default")
-      val btnDelete = new Button("Delete")
-
-      val layout = new HorizontalLayout
-      setContent(layout)
-      layout.setSpacing(true)
-
-      List(btnNew, btnEdit, btnSetDefault, btnDelete).foreach { btn =>
-        this addComponent btn
-        btn addListener this
-      }
-
-      def buttonClick(clickEvent: Button#ClickEvent) {
-        val defaultLanguageId = Int box systemDao.getProperty("DefaultLanguageId").getValue.toInt
-
-        clickEvent.getButton match {
-
-          case `btnNew` =>
-            def isInt(x:Any) = x match {
-              case n: Int => true
-              case s: String => s.nonEmpty && s.forall(_.isDigit)
-              case _ => false
-            }
-
-            app.initAndShow(new LanguageWindow("New language")) { wndEditLanguage =>
-              val language = new com.imcode.imcms.api.I18nLanguage
-
-              wndEditLanguage setOkHandler {
-                if (!isInt(wndEditLanguage.txtId.getValue)) {
-                  wndEditLanguage.txtId.setComponentError(new UserError("Id must be an Int"))
-                } else {
-                  language.setId(Int box wndEditLanguage.txtId.getValue.asInstanceOf[String].toInt)
-                  language.setCode(wndEditLanguage.txtCode.getValue.asInstanceOf[String])
-                  language.setName(wndEditLanguage.txtName.getValue.asInstanceOf[String])
-                  language.setNativeName(wndEditLanguage.txtNativeName.getValue.asInstanceOf[String])
-                  language.setEnabled(wndEditLanguage.chkEnabled.getValue.asInstanceOf[JBoolean])
-
-                  languageDao.saveLanguage(language)
-                  reloadTable
-                }
-              }
-            }
-
-          case `btnEdit` =>
-            val languageId = table.getValue.asInstanceOf[JInteger]
-            val language = languageDao.getById(languageId)
-
-            app.initAndShow(new LanguageWindow("Edit language")) { wndEditLanguage =>
-              wndEditLanguage.txtId.setValue(language.getId)
-              wndEditLanguage.txtId.setEnabled(false)
-              wndEditLanguage.txtCode.setValue(language.getCode)
-              wndEditLanguage.txtName.setValue(language.getName)
-              wndEditLanguage.txtNativeName.setValue(language.getNativeName)
-              wndEditLanguage.chkEnabled.setValue(language.isEnabled)
-
-              wndEditLanguage setOkHandler {
-                language.setCode(wndEditLanguage.txtCode.getValue.asInstanceOf[String])
-                language.setName(wndEditLanguage.txtName.getValue.asInstanceOf[String])
-                language.setNativeName(wndEditLanguage.txtNativeName.getValue.asInstanceOf[String])
-                language.setEnabled(wndEditLanguage.chkEnabled.getValue.asInstanceOf[JBoolean])
-
-                languageDao.saveLanguage(language)
-                reloadTable
-              }
-            }
-
-          case `btnSetDefault` =>
-            app.initAndShow(new ConfirmationDialog("Confirmation", "Change default language?")) { wndConfirmation =>
-              wndConfirmation setOkHandler {
-                val languageId = table.getValue.asInstanceOf[JInteger]
-                val property = systemDao.getProperty("DefaultLanguageId")
-
-                property.setValue(languageId.toString)
-                systemDao.saveProperty(property)
-                reloadTable
-              }
-            }
-
-          case `btnDelete` =>
-            app.initAndShow(new ConfirmationDialog("Confirmation", "Delete language from the system?")) { wndConfirmation =>
-              wndConfirmation setOkHandler {
-                val languageId = table.getValue.asInstanceOf[JInteger]
-                languageDao.deleteLanguage(languageId)
-                reloadTable
-              }
-            }
-        }
-      }
-    }    
-
-    def resetControls = {
-      val languageId = table.getValue.asInstanceOf[JInteger]
-
-      if (languageId == null) {
-        pnlControls.btnDelete.setEnabled(false)
-        pnlControls.btnEdit.setEnabled(false)
-        pnlControls.btnSetDefault.setEnabled(false)
-      } else {
-        val defaultLanguageId = Int box systemDao.getProperty("DefaultLanguageId").getValue.toInt
-
-        pnlControls.btnEdit.setEnabled(true)
-        pnlControls.btnDelete.setEnabled(languageId != defaultLanguageId)
-        pnlControls.btnSetDefault.setEnabled(languageId != defaultLanguageId)
-      }
-    }
-
-    table addListener block { resetControls }
-
-
-    val pnlReloadBar = new Panel(new GridLayout(1,1))
-    val btnReload = new Button("Reload")
-    pnlReloadBar.addComponent(btnReload)
-
-    btnReload addListener block { reloadTable }
-
-    pnlReloadBar.getContent.setSizeFull
-    pnlReloadBar.getContent.asInstanceOf[GridLayout].setComponentAlignment(btnReload, Alignment.MIDDLE_RIGHT)
-
-    reloadTable    
-    resetControls
-
-    new TabSheetView {
-      addTab(new VerticalLayoutUI("Languages") {
-        addComponent(new GridLayout(1,3) {
-          addComponents(this, pnlControls, table, pnlReloadBar)
-        })
-      })
-    }
+    addComponent(tabSheet)
   }
   
 
@@ -671,7 +507,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     manager.ui.setMargin(true)
 
     addComponent(tabSheet)
-  } // category
+  }
 
 
   lazy val roles = new VerticalLayout with Margin {
