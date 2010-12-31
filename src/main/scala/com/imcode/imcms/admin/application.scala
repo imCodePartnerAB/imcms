@@ -146,7 +146,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     }
     object Statistics extends MenuItem(this) {
       object SearchTerms extends MenuItem(this)
-      object SessionCounter extends MenuItem(this)
+      object Session extends MenuItem(this, Some(Done16))
     }
     object Filesystem extends MenuItem(this)
     object System extends MenuItem(this) {
@@ -154,11 +154,8 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     }
   } 
 
-  val languageDao = Imcms.getSpringBean("languageDao").asInstanceOf[LanguageDao]
   val systemDao = Imcms.getSpringBean("systemDao").asInstanceOf[SystemDao]
-  val ipAccessDao = Imcms.getSpringBean("ipAccessDao").asInstanceOf[IPAccessDao]  
 
-  
   abstract class TableViewTemplate extends VerticalLayout {
     val tblItems = new Table {
       setSelectable(true)
@@ -270,7 +267,7 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
             case Menu.Documents.Categories => categories
             case Menu.Settings.Languages => languagesPanel
             case Menu.Settings.Properties => settingsProperties
-            case Menu.Statistics.SessionCounter => settingSessionCounter
+            case Menu.Statistics.Session => sessionMonitor
             case Menu.Documents => documentsTable
             case Menu.Permissions.Roles => roles
             case Menu.Permissions.Users => users
@@ -603,84 +600,15 @@ class Application extends com.vaadin.Application with ImcmsApplication { app =>
     }   
   }
 
-  def settingSessionCounter = new TabSheetView {
-    addTab(new VerticalLayoutUI("Session counter") { self =>
-      setSpacing(false)
-      
-      val lytData = new FormLayout {
-        val txtValue = new TextField("Value:")
-        val calStart = new DateField("Start date:")
-        calStart.setResolution(DateField.RESOLUTION_DAY)
+  lazy val sessionMonitor = new VerticalLayout with Margin {
+    val manager = new com.imcode.imcms.admin.monitor.session.counter.SessionCounterManager(app)
+    val tabSheet = new TabSheet
+    tabSheet.addTab(manager.ui, "Counter", Tab32)
 
-        txtValue.setReadOnly(true)
-        calStart.setReadOnly(true)
+    manager.ui.setMargin(true)
 
-        addComponents(this, txtValue, calStart)
-      }
-
-      val lytButtons = new HorizontalLayout {
-        val btnReload = new Button("Reload")
-        val btnClear = new Button ("Clear")
-        val btnEdit = new Button("Edit")
-        setSpacing(true)
-
-        addComponents(this, btnEdit, btnClear, btnReload)
-      }
-
-      addComponents(this, lytData, lytButtons)
-
-      def reload() {
-        // ?!?! when read only throws exception ?!?!
-        lytData.txtValue setReadOnly false
-        lytData.calStart setReadOnly false
-
-        lytData.txtValue setValue Imcms.getServices.getSessionCounter.toString
-        lytData.calStart setValue Imcms.getServices.getSessionCounterDate
-
-        lytData.txtValue setReadOnly true
-        lytData.calStart setReadOnly true         
-      }
-
-      lytButtons.btnReload addListener block { reload() }
-      lytButtons.btnClear addListener block {
-        app.initAndShow(new ConfirmationDialog("Confirmation", "Clear counter statistics?")) { w =>
-          w.setOkHandler {
-            Imcms.getServices setSessionCounter 0
-            Imcms.getServices setSessionCounterDate new Date
-
-            reload()
-          }          
-        }
-      }
-
-      lytButtons.btnEdit addListener block {
-        app.initAndShow(new OkCancelDialog("Edit session counter")) { w =>
-          val txtValue = new TextField("Value")
-          val calStart = new DateField("Start date")
-
-          calStart.setResolution(DateField.RESOLUTION_DAY)
-          txtValue setValue Imcms.getServices.getSessionCounter.toString
-          calStart setValue Imcms.getServices.getSessionCounterDate
-
-          w.mainContent = new FormLayout {
-            addComponents(this, txtValue, calStart)
-          }
-
-          w.setOkHandler {
-            Imcms.getServices setSessionCounter txtValue.getValue.asInstanceOf[String].toInt
-            Imcms.getServices setSessionCounterDate calStart.getValue.asInstanceOf[Date]
-
-            reload()
-          }
-
-          reload() // enshure form and dialog values are same
-        }
-      }
-
-      reload()
-    })
+    addComponent(tabSheet)
   }
-
 
 
 
